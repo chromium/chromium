@@ -203,7 +203,7 @@ export class RealboxMatchElement extends PolymerElement {
    */
   private executeAction_(e: MouseEvent|KeyboardEvent) {
     this.pageHandler_.executeAction(
-        this.matchIndex, mojoTimeTicks(Date.now()),
+        this.matchIndex, this.match.destinationUrl, mojoTimeTicks(Date.now()),
         (e as MouseEvent).button || 0, e.altKey, e.ctrlKey, e.metaKey,
         e.shiftKey);
   }
@@ -247,7 +247,8 @@ export class RealboxMatchElement extends PolymerElement {
 
   private onMatchMouseDown_() {
     this.pageHandler_.onNavigationLikely(
-        this.matchIndex, NavigationPredictor.kMouseDown);
+        this.matchIndex, this.match.destinationUrl,
+        NavigationPredictor.kMouseDown);
   }
 
   private onRemoveButtonClick_(e: MouseEvent) {

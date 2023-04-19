@@ -532,7 +532,8 @@ export class RealboxElement extends PolymerElement {
     if (e.key === 'Delete') {
       if (e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey) {
         if (this.selectedMatch_ && this.selectedMatch_.supportsDeletion) {
-          this.pageHandler_.deleteAutocompleteMatch(this.selectedMatchIndex_);
+          this.pageHandler_.deleteAutocompleteMatch(
+              this.selectedMatchIndex_, this.selectedMatch_.destinationUrl);
           e.preventDefault();
         }
       }
@@ -581,11 +582,13 @@ export class RealboxElement extends PolymerElement {
     if (e.key === 'ArrowDown') {
       this.$.matches.selectNext();
       this.pageHandler_.onNavigationLikely(
-          this.selectedMatchIndex_, NavigationPredictor.kUpOrDownArrowButton);
+          this.selectedMatchIndex_, this.selectedMatch_!.destinationUrl,
+          NavigationPredictor.kUpOrDownArrowButton);
     } else if (e.key === 'ArrowUp') {
       this.$.matches.selectPrevious();
       this.pageHandler_.onNavigationLikely(
-          this.selectedMatchIndex_, NavigationPredictor.kUpOrDownArrowButton);
+          this.selectedMatchIndex_, this.selectedMatch_!.destinationUrl,
+          NavigationPredictor.kUpOrDownArrowButton);
     } else if (e.key === 'Escape' || e.key === 'PageUp') {
       this.$.matches.selectFirst();
     } else if (e.key === 'PageDown') {
@@ -640,7 +643,10 @@ export class RealboxElement extends PolymerElement {
    * @param e Event containing index of the match that was removed.
    */
   private onMatchRemove_(e: CustomEvent<number>) {
-    this.pageHandler_.deleteAutocompleteMatch(e.detail);
+    const index = e.detail;
+    const match = this.result_!.matches[index];
+    assert(match);
+    this.pageHandler_.deleteAutocompleteMatch(index, match.destinationUrl);
   }
 
   private onVoiceSearchClick_() {

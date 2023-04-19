@@ -759,7 +759,8 @@ void RealboxHandler::OpenAutocompleteMatch(
     bool ctrl_key,
     bool meta_key,
     bool shift_key) {
-  if (line >= autocomplete_controller()->result().size()) {
+  const AutocompleteMatch* match = GetMatchWithUrl(line, url);
+  if (!match) {
     // This can happen due to asynchronous updates changing the result while
     // the web UI is referencing a stale match.
     return;
@@ -774,48 +775,30 @@ void RealboxHandler::OpenAutocompleteMatch(
 
 void RealboxHandler::OnNavigationLikely(
     uint8_t line,
+    const GURL& url,
     omnibox::mojom::NavigationPredictor navigation_predictor) {
-  if (autocomplete_controller()->result().size() <= line) {
+  const AutocompleteMatch* match = GetMatchWithUrl(line, url);
+  if (!match) {
     // This can happen due to asynchronous updates changing the result while
     // the web UI is referencing a stale match.
     return;
   }
   if (auto* search_prefetch_service =
           SearchPrefetchServiceFactory::GetForProfile(profile_)) {
-    AutocompleteMatch match(autocomplete_controller()->result().match_at(line));
     search_prefetch_service->OnNavigationLikely(
-        line, match, navigation_predictor, web_contents_);
+        line, *match, navigation_predictor, web_contents_);
   }
 }
 
-void RealboxHandler::OpenURL(const GURL& destination_url,
-                             TemplateURLRef::PostContent* post_content,
-                             WindowOpenDisposition disposition,
-                             ui::PageTransition transition,
-                             AutocompleteMatchType::Type type,
-                             base::TimeTicks match_selection_timestamp,
-                             bool destination_url_entered_without_scheme,
-                             const std::u16string&,
-                             const AutocompleteMatch&,
-                             const AutocompleteMatch&,
-                             IDNA2008DeviationCharacter) {
-  // TODO(crbug.com/1431513): Cull this method and simplify base interfaces.
-  NOTREACHED();
-}
-
-void RealboxHandler::DeleteAutocompleteMatch(uint8_t line) {
-  if (autocomplete_controller()->result().size() <= line ||
-      !autocomplete_controller()->result().match_at(line).SupportsDeletion()) {
+void RealboxHandler::DeleteAutocompleteMatch(uint8_t line, const GURL& url) {
+  const AutocompleteMatch* match = GetMatchWithUrl(line, url);
+  if (!match || !match->SupportsDeletion()) {
     // This can happen due to asynchronous updates changing the result while
     // the web UI is referencing a stale match.
     return;
   }
-
-  const auto& match = autocomplete_controller()->result().match_at(line);
-  if (match.SupportsDeletion()) {
-    autocomplete_controller()->Stop(false);
-    autocomplete_controller()->DeleteMatch(match);
-  }
+  autocomplete_controller()->Stop(false);
+  autocomplete_controller()->DeleteMatch(*match);
 }
 
 void RealboxHandler::ToggleSuggestionGroupIdVisibility(
@@ -830,13 +813,15 @@ void RealboxHandler::ToggleSuggestionGroupIdVisibility(
 }
 
 void RealboxHandler::ExecuteAction(uint8_t line,
+                                   const GURL& url,
                                    base::TimeTicks match_selection_timestamp,
                                    uint8_t mouse_button,
                                    bool alt_key,
                                    bool ctrl_key,
                                    bool meta_key,
                                    bool shift_key) {
-  if (line >= autocomplete_controller()->result().size()) {
+  const AutocompleteMatch* match = GetMatchWithUrl(line, url);
+  if (!match) {
     // This can happen due to asynchronous updates changing the result while
     // the web UI is referencing a stale match.
     return;
@@ -844,14 +829,12 @@ void RealboxHandler::ExecuteAction(uint8_t line,
   const WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
-  const AutocompleteMatch& match =
-      autocomplete_controller()->result().match_at(line);
   // Realbox currently only supports one action button and gives preference to
   // actions over tab switch, but the omnibox shows tab switch button first.
   // This disparity can be eliminated once realbox supports multiple
   // actions on a button row.
-  const bool has_action = match.GetPrimaryAction() != nullptr;
-  DCHECK(has_action || match.has_tab_match.value_or(false));
+  const bool has_action = match->GetPrimaryAction() != nullptr;
+  DCHECK(has_action || match->has_tab_match.value_or(false));
   OmniboxPopupSelection selection(
       line, has_action
                 ? OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION
@@ -995,4 +978,22 @@ bool RealboxHandler::ShouldUseUpdatedConnectionSecurityIndicators() const {
 
 AutocompleteController* RealboxHandler::autocomplete_controller() const {
   return edit_model_->autocomplete_controller();
+}
+
+const AutocompleteMatch* RealboxHandler::GetMatchWithUrl(size_t index,
+                                                         const GURL& url) {
+  const AutocompleteResult& result = autocomplete_controller()->result();
+  if (index >= result.size()) {
+    // This can happen due to asynchronous updates changing the result while
+    // the web UI is referencing a stale match.
+    return nullptr;
+  }
+  const AutocompleteMatch& match = result.match_at(index);
+  if (match.destination_url != url) {
+    // This can happen also, for the same reason. We could search the result
+    // for the match with this URL, but there would be no guarantee that it's
+    // the same match, so for this edge case we treat result mismatch as none.
+    return nullptr;
+  }
+  return &match;
 }
