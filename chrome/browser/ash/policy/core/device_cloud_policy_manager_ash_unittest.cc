@@ -115,13 +115,6 @@ void CertCallbackSuccessWithValidCertificate(
   CertCallbackSuccess(std::move(callback), std::move(certificate));
 }
 
-void CertCallbackSuccessWithExpiredCertificate(
-    ash::attestation::AttestationFlow::CertificateCallback callback) {
-  std::string certificate;
-  ash::attestation::GetFakeCertificatePEM(base::Days(-1), &certificate);
-  CertCallbackSuccess(std::move(callback), std::move(certificate));
-}
-
 class FakeSigningServiceProvider final
     : public EnrollmentHandler::SigningServiceProvider {
  public:
@@ -639,16 +632,7 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
           mock_attestation_flow_,
           GetCertificate(
               ash::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-              /*force_new_key=*/false, _, _, _, _))
-          .Times(1)
-          .WillOnce(
-              WithArgs<7>(Invoke(CertCallbackSuccessWithExpiredCertificate)));
-      EXPECT_CALL(
-          mock_attestation_flow_,
-          GetCertificate(
-              ash::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
               /*force_new_key=*/true, _, _, _, _))
-          .Times(1)
           .WillOnce(
               WithArgs<7>(Invoke(CertCallbackSuccessWithValidCertificate)));
     }

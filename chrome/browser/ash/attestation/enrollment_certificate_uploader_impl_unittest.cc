@@ -123,7 +123,7 @@ TEST_F(EnrollmentCertificateUploaderTest, GetCertificateUnspecifiedFailure) {
   constexpr int total_attempts = kRetryLimit + 1;
   EXPECT_CALL(attestation_flow_,
               GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-                             /*force_new_key=*/false, _, _, _, _))
+                             /*force_new_key=*/true, _, _, _, _))
       .Times(total_attempts)
       .WillRepeatedly(WithArgs<7>(Invoke(CertCallbackUnspecifiedFailure)));
 
@@ -136,7 +136,7 @@ TEST_F(EnrollmentCertificateUploaderTest, GetCertificateBadRequestFailure) {
   // Shall fail without retries.
   EXPECT_CALL(attestation_flow_,
               GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-                             /*force_new_key=*/false, _, _, _, _))
+                             /*force_new_key=*/true, _, _, _, _))
       .Times(1)
       .WillOnce(WithArgs<7>(Invoke(CertCallbackBadRequestFailure)));
 
@@ -150,7 +150,7 @@ TEST_F(EnrollmentCertificateUploaderTest,
   // Shall fail on |CloudPolicyClient::is_registered()| check and not retry.
   EXPECT_CALL(attestation_flow_,
               GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-                             /*force_new_key=*/false, _, _, _, _))
+                             /*force_new_key=*/true, _, _, _, _))
       .Times(1)
       .WillOnce(WithArgs<7>(Invoke([this](CertCallback callback) {
         policy_client_.SetDMToken("");
@@ -173,7 +173,7 @@ TEST_F(EnrollmentCertificateUploaderTest, UploadCertificateFailure) {
     // Cannot use Times(kRetryLimit) because of expected sequence.
     EXPECT_CALL(attestation_flow_,
                 GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-                               /*force_new_key=*/false, _, _, _, _))
+                               /*force_new_key=*/true, _, _, _, _))
         .Times(1)
         .WillOnce(
             WithArgs<7>(Invoke([valid_certificate](CertCallback callback) {
@@ -197,7 +197,7 @@ TEST_F(EnrollmentCertificateUploaderTest,
   // Shall fail on |CloudPolicyClient::is_registered()| check and not retry.
   EXPECT_CALL(attestation_flow_,
               GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-                             /*force_new_key=*/false, _, _, _, _))
+                             /*force_new_key=*/true, _, _, _, _))
       .Times(1)
       .WillOnce(WithArgs<7>(Invoke([valid_certificate](CertCallback callback) {
         CertCallbackSuccess(std::move(callback), valid_certificate);
@@ -213,7 +213,7 @@ TEST_F(EnrollmentCertificateUploaderTest,
 
   EXPECT_CALL(attestation_flow_,
               GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-                             /*force_new_key=*/false, _, _, _, _))
+                             /*force_new_key=*/true, _, _, _, _))
       .Times(0);
 
   Run(/*expected_status=*/CertStatus::kInvalidClient);
@@ -228,33 +228,11 @@ TEST_F(EnrollmentCertificateUploaderTest,
   // Shall fail on |CloudPolicyClient::is_registered()| check and not retry.
   EXPECT_CALL(attestation_flow_,
               GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-                             /*force_new_key=*/false, _, _, _, _))
+                             /*force_new_key=*/true, _, _, _, _))
       .WillOnce(
           WithArgs<7>(Invoke([this, valid_certificate](CertCallback callback) {
             policy_client_.SetDMToken("");
             CertCallbackSuccess(std::move(callback), valid_certificate);
-          })));
-
-  EXPECT_CALL(policy_client_, UploadEnterpriseEnrollmentCertificate(_, _))
-      .Times(0);
-
-  Run(/*expected_status=*/CertStatus::kInvalidClient);
-}
-
-TEST_F(EnrollmentCertificateUploaderTest,
-       UnregisteredClientAfterExpiredCertificateRequested) {
-  std::string expired_certificate;
-  ASSERT_TRUE(GetFakeCertificatePEM(base::Days(-1), &expired_certificate));
-  InSequence s;
-
-  // Shall fail on |CloudPolicyClient::is_registered()| check and not retry.
-  EXPECT_CALL(attestation_flow_,
-              GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-                             /*force_new_key=*/false, _, _, _, _))
-      .WillOnce(WithArgs<7>(
-          Invoke([this, expired_certificate](CertCallback callback) {
-            policy_client_.SetDMToken("");
-            CertCallbackSuccess(std::move(callback), expired_certificate);
           })));
 
   EXPECT_CALL(policy_client_, UploadEnterpriseEnrollmentCertificate(_, _))
@@ -275,7 +253,7 @@ TEST_F(EnrollmentCertificateUploaderTest, UploadValidRsaCertificate) {
 
   EXPECT_CALL(attestation_flow_,
               GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-                             /*force_new_key=*/false,
+                             /*force_new_key=*/true,
                              ::attestation::KEY_TYPE_RSA, _, _, _))
       .Times(1)
       .WillOnce(WithArgs<7>(Invoke([valid_certificate](CertCallback callback) {
@@ -301,7 +279,7 @@ TEST_F(EnrollmentCertificateUploaderTest, UploadValidEccCertificate) {
 
   EXPECT_CALL(attestation_flow_,
               GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-                             /*force_new_key=*/false,
+                             /*force_new_key=*/true,
                              ::attestation::KEY_TYPE_ECC, _, _, _))
       .Times(1)
       .WillOnce(WithArgs<7>(Invoke([valid_certificate](CertCallback callback) {
@@ -339,113 +317,6 @@ TEST_F(EnrollmentCertificateUploaderTest, GetFeaturesNoAvailableCryptoKeyType) {
   Run(/*expected_status=*/CertStatus::kFailedToFetch);
 }
 
-TEST_F(EnrollmentCertificateUploaderTest,
-       UploadValidCertificateWhenOldCertificateExpired) {
-  std::string valid_certificate;
-  ASSERT_TRUE(GetFakeCertificatePEM(base::Days(1), &valid_certificate));
-  std::string expired_certificate;
-  ASSERT_TRUE(GetFakeCertificatePEM(base::Days(-1), &expired_certificate));
-  InSequence s;
-
-  // Shall check that existing certificate has expired and fetch and upload
-  // a new one.
-  EXPECT_CALL(attestation_flow_,
-              GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-                             /*force_new_key=*/false, _, _, _, _))
-      .Times(1)
-      .WillOnce(
-          WithArgs<7>(Invoke([expired_certificate](CertCallback callback) {
-            CertCallbackSuccess(std::move(callback), expired_certificate);
-          })));
-  EXPECT_CALL(attestation_flow_,
-              GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-                             /*force_new_key=*/true, _, _, _, _))
-      .Times(1)
-      .WillOnce(WithArgs<7>(Invoke([valid_certificate](CertCallback callback) {
-        CertCallbackSuccess(std::move(callback), valid_certificate);
-      })));
-  EXPECT_CALL(policy_client_,
-              UploadEnterpriseEnrollmentCertificate(valid_certificate, _))
-      .Times(1)
-      .WillOnce(WithArgs<1>(Invoke(ResultCallbackSuccess)));
-
-  Run(/*expected_status=*/CertStatus::kSuccess);
-}
-
-TEST_F(EnrollmentCertificateUploaderTest,
-       UploadValidCertificateWhenOldCertificateExpiredButOnce) {
-  std::string valid_certificate;
-  ASSERT_TRUE(GetFakeCertificatePEM(base::Days(1), &valid_certificate));
-  std::string expired_certificate;
-  ASSERT_TRUE(GetFakeCertificatePEM(base::Days(-1), &expired_certificate));
-  InSequence s;
-
-  // Shall check that existing certificate has expired and fetch and upload
-  // a new one.
-  EXPECT_CALL(attestation_flow_,
-              GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-                             /*force_new_key=*/false, _, _, _, _))
-      .Times(1)
-      .WillOnce(
-          WithArgs<7>(Invoke([expired_certificate](CertCallback callback) {
-            CertCallbackSuccess(std::move(callback), expired_certificate);
-          })));
-  EXPECT_CALL(attestation_flow_,
-              GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-                             /*force_new_key=*/true, _, _, _, _))
-      .Times(1)
-      .WillOnce(WithArgs<7>(Invoke([valid_certificate](CertCallback callback) {
-        CertCallbackSuccess(std::move(callback), valid_certificate);
-      })));
-  EXPECT_CALL(policy_client_,
-              UploadEnterpriseEnrollmentCertificate(valid_certificate, _))
-      .Times(1)
-      .WillOnce(WithArgs<1>(Invoke(ResultCallbackFailure)));
-  // After upload failure, shall fetch existing certificate.
-  for (int i = 0; i < kRetryLimit; ++i) {
-    // Cannot use Times(kRetryLimit) because of expected sequence.
-    EXPECT_CALL(attestation_flow_,
-                GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-                               /*force_new_key=*/false, _, _, _, _))
-        .Times(1)
-        .WillOnce(
-            WithArgs<7>(Invoke([valid_certificate](CertCallback callback) {
-              CertCallbackSuccess(std::move(callback), valid_certificate);
-            })));
-    EXPECT_CALL(policy_client_,
-                UploadEnterpriseEnrollmentCertificate(valid_certificate, _))
-        .Times(1)
-        .WillOnce(WithArgs<1>(Invoke(ResultCallbackFailure)));
-  }
-
-  Run(/*expected_status=*/CertStatus::kFailedToUpload);
-}
-
-TEST_F(EnrollmentCertificateUploaderTest,
-       UploadInvalidCertificateWhenCannotCheckExpiry) {
-  const std::string empty_certificate;
-  InSequence s;
-
-  constexpr int total_attempts = kRetryLimit + 1;
-  for (int i = 0; i < total_attempts; ++i) {
-    // Cannot use Times(kRetryLimit) because of expected sequence.
-    EXPECT_CALL(attestation_flow_,
-                GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-                               /*force_new_key=*/false, _, _, _, _))
-        .Times(1)
-        .WillOnce(
-            WithArgs<7>(Invoke([empty_certificate](CertCallback callback) {
-              CertCallbackSuccess(std::move(callback), empty_certificate);
-            })));
-    EXPECT_CALL(policy_client_,
-                UploadEnterpriseEnrollmentCertificate(empty_certificate, _))
-        .Times(1)
-        .WillOnce(WithArgs<1>(Invoke(ResultCallbackFailure)));
-  }
-
-  Run(/*expected_status=*/CertStatus::kFailedToUpload);
-}
-
 TEST_F(EnrollmentCertificateUploaderTest, UploadValidCertificateOnlyOnce) {
   std::string valid_certificate;
   ASSERT_TRUE(GetFakeCertificatePEM(base::Days(1), &valid_certificate));
@@ -453,7 +324,7 @@ TEST_F(EnrollmentCertificateUploaderTest, UploadValidCertificateOnlyOnce) {
 
   EXPECT_CALL(attestation_flow_,
               GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-                             /*force_new_key=*/false, _, _, _, _))
+                             /*force_new_key=*/true, _, _, _, _))
       .Times(1)
       .WillOnce(WithArgs<7>(Invoke([valid_certificate](CertCallback callback) {
         CertCallbackSuccess(std::move(callback), valid_certificate);
@@ -469,7 +340,7 @@ TEST_F(EnrollmentCertificateUploaderTest, UploadValidCertificateOnlyOnce) {
   // once.
   EXPECT_CALL(attestation_flow_,
               GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-                             /*force_new_key=*/false, _, _, _, _))
+                             /*force_new_key=*/true, _, _, _, _))
       .Times(1)
       .WillOnce(WithArgs<7>(Invoke([valid_certificate](CertCallback callback) {
         CertCallbackSuccess(std::move(callback), valid_certificate);

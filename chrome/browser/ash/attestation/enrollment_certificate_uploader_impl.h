@@ -61,22 +61,16 @@ class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
   // Starts certificate obtention and upload.
   void Start();
 
-  // Gets a certificate. If |force_new_key| is false, fetches existing
-  // certificate if any. Otherwise, fetches new certificate.
-  void GetCertificate(bool force_new_key);
+  // Gets a fresh certificate.
+  void GetCertificate();
 
-  // Checks the Attestation Features and gets a suitable certificate.
+  // Checks the Attestation Features and gets a fresh certificate.
   void OnGetFeaturesReady(
-      bool force_new_key,
       AttestationFlow::CertificateCallback callback,
       const ash::attestation::AttestationFeatures* features);
 
   // Handles failure of getting a certificate.
   void HandleGetCertificateFailure(AttestationStatus status);
-
-  // Checks if fetched certificate has expired. If so, starts again with
-  // fetching new certificate.
-  void CheckCertificateExpiry(const std::string& pem_certificate_chain);
 
   // Uploads an enterprise certificate to the policy server if it has not been
   // already uploaded. If it was uploaded - reports success without further

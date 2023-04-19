@@ -18,7 +18,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/attestation/certificate_util.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/policy/active_directory/active_directory_join_delegate.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
@@ -462,27 +461,22 @@ void EnrollmentHandler::StartRegistration() {
 
   SetStep(STEP_REGISTRATION);
   if (enrollment_config_.is_mode_attestation()) {
-    // First attempt to register with enrollment certificate. Do not force new
-    // key and fresh enrollment certificate.
-    StartAttestationBasedEnrollmentFlow(/*is_initial_attempt=*/true);
+    StartAttestationBasedEnrollmentFlow();
   } else {
     client_->Register(*register_params_, client_id_, dm_auth_.oauth_token());
   }
 }
 
-void EnrollmentHandler::StartAttestationBasedEnrollmentFlow(
-    bool is_initial_attempt) {
-  const bool force_new_key = !is_initial_attempt;
+void EnrollmentHandler::StartAttestationBasedEnrollmentFlow() {
   ash::attestation::AttestationFlow::CertificateCallback callback =
       base::BindOnce(&EnrollmentHandler::HandleRegistrationCertificateResult,
-                     weak_ptr_factory_.GetWeakPtr(), is_initial_attempt);
-  ash::attestation::AttestationFeatures::GetFeatures(base::BindOnce(
-      &EnrollmentHandler::OnGetFeaturesReady, weak_ptr_factory_.GetWeakPtr(),
-      force_new_key, std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr());
+  ash::attestation::AttestationFeatures::GetFeatures(
+      base::BindOnce(&EnrollmentHandler::OnGetFeaturesReady,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void EnrollmentHandler::OnGetFeaturesReady(
-    bool force_new_key,
     ash::attestation::AttestationFlow::CertificateCallback callback,
     const ash::attestation::AttestationFeatures* features) {
   if (!features) {
@@ -511,11 +505,13 @@ void EnrollmentHandler::OnGetFeaturesReady(
     return;
   }
 
+  // Always force a new key to obtain a fresh certificate. See crbug.com/1292897
+  // for context.
   attestation_flow_->GetCertificate(
       /*certificate_profile=*/ash::attestation::
           PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/std::string(),
-      /*force_new_key=*/force_new_key,
+      /*force_new_key=*/true,
       /*key_crypto_type=*/key_crypto_type,
       /*key_name=*/ash::attestation::kEnterpriseEnrollmentKey,
       /*profile_specific_data=*/absl::nullopt,
@@ -523,53 +519,12 @@ void EnrollmentHandler::OnGetFeaturesReady(
 }
 
 void EnrollmentHandler::HandleRegistrationCertificateResult(
-    bool is_initial_attempt,
     ash::attestation::AttestationStatus status,
     const std::string& pem_certificate_chain) {
   if (status != ash::attestation::ATTESTATION_SUCCESS) {
     ReportResult(EnrollmentStatus::ForStatus(
         EnrollmentStatus::REGISTRATION_CERT_FETCH_FAILED));
     return;
-  }
-
-  // Expiry threshold is 0 so no expiring soon certificates. The reason is that
-  // enrollment certificates expire in 1 day so there's no optimal threshold to
-  // catch expiring certificates.
-  const ash::attestation::CertificateExpiryStatus cert_status =
-      ash::attestation::CheckCertificateExpiry(
-          pem_certificate_chain,
-          /*expiry_threshold=*/base::TimeDelta());
-
-  switch (cert_status) {
-    case ash::attestation::CertificateExpiryStatus::kValid:
-      // Valid certificate, proceed with registration.
-      break;
-    case ash::attestation::CertificateExpiryStatus::kExpiringSoon:
-    case ash::attestation::CertificateExpiryStatus::kExpired:
-      if (is_initial_attempt) {
-        // The first certificate request resulted in expired enrollment
-        // certificate. Initiate second attempt with forced new key to fetch
-        // fresh enrollment certificate.
-        LOG(ERROR) << "Existing certificate has expired. Attempt to request "
-                      "fresh certificate.";
-        StartAttestationBasedEnrollmentFlow(/*is_initial_attempt=*/false);
-        return;
-      } else {
-        // Second attempt with forced new key resulted in expired certificate
-        // again. We cannot tell if any following attempt will result in a valid
-        // certificate. Proceed with registration with given certificate.
-        LOG(ERROR) << "Existing certificate has expired. Attempt to register.";
-        break;
-      }
-    case ash::attestation::CertificateExpiryStatus::kInvalidPemChain:
-    case ash::attestation::CertificateExpiryStatus::kInvalidX509:
-      // We cannot tell for sure what caused the certificate to be invalid,
-      // whether it can be accepted by the server, or will we get a valid
-      // certificate on the next attempt. Proceed with the registration to not
-      // to fall into potential infinite loop blocking fallback enrollment.
-      LOG(ERROR) << "Failed to parse certificate, cannot check expiry: "
-                 << CertificateExpiryStatusToString(cert_status);
-      break;
   }
 
   client_->RegisterWithCertificate(
