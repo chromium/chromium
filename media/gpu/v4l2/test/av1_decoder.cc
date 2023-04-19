@@ -963,7 +963,7 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
     return VideoDecoder::kEOStream;
   }
 
-  const bool isOUTPUTQueueNew = !OUTPUT_queue_;
+  const bool is_OUTPUT_queue_new = !OUTPUT_queue_;
   if (!OUTPUT_queue_) {
     CreateOUTPUTQueue(kDriverCodecFourcc);
   }
@@ -1070,7 +1070,7 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
   // dimensions and format will be ready. Specifying V4L2_CTRL_WHICH_CUR_VAL
   // when VIDIOC_S_EXT_CTRLS processes the request immediately so that the frame
   // is parsed by the driver and the state is readied.
-  v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls, isOUTPUTQueueNew);
+  v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls, is_OUTPUT_queue_new);
   v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_);
 
   if (!CAPTURE_queue_) {

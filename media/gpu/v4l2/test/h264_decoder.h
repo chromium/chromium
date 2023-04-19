@@ -122,7 +122,7 @@ class H264Decoder : public VideoDecoder {
       int frame_num,
       v4l2_ctrl_h264_decode_params& v4l2_decode_param,
       H264SliceMetadata& slice_metadata,
-      bool isOUTPUTQueueNew);
+      bool is_OUTPUT_queue_new);
 
   // Initializes H264 Slice Metadata based on slice header and
   // based on H264 specifications which it calculates its pic order count.

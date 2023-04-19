@@ -497,7 +497,7 @@ H264Parser::Result H264Decoder::ProcessNextFrame(
 
   v4l2_ctrl_h264_decode_params v4l2_decode_param = {};
 
-  const bool isOUTPUTQueueNew = !OUTPUT_queue_;
+  const bool is_OUTPUT_queue_new = !OUTPUT_queue_;
   if (!OUTPUT_queue_) {
     CreateOUTPUTQueue(kDriverCodecFourcc);
   }
@@ -514,7 +514,7 @@ H264Parser::Result H264Decoder::ProcessNextFrame(
         // transmitted yet, hence FinishFrame() needs to be called.
         if (slice_metadata.frame_num >= 0) {
           FinishFrame(*pending_slice_header_, frame_number, v4l2_decode_param,
-                      slice_metadata, isOUTPUTQueueNew);
+                      slice_metadata, is_OUTPUT_queue_new);
           break;
         }
         return H264Parser::kOk;
@@ -558,7 +558,7 @@ H264Parser::Result H264Decoder::ProcessNextFrame(
           reached_end_of_frame = true;
 
           FinishFrame(*pending_slice_header_, frame_number, v4l2_decode_param,
-                      slice_metadata, isOUTPUTQueueNew);
+                      slice_metadata, is_OUTPUT_queue_new);
 
           *resulting_slice_header = std::move(pending_slice_header_);
           pending_slice_header_ = std::move(curr_slice_header);
@@ -583,7 +583,7 @@ H264Parser::Result H264Decoder::ProcessNextFrame(
         // needs to be finished.
         if (slice_metadata.frame_num >= 0) {
           FinishFrame(*pending_slice_header_, frame_number, v4l2_decode_param,
-                      slice_metadata, isOUTPUTQueueNew);
+                      slice_metadata, is_OUTPUT_queue_new);
           reached_end_of_frame = true;
         }
         break;
@@ -598,7 +598,7 @@ H264Parser::Result H264Decoder::ProcessNextFrame(
         // needs to be finished.
         if (slice_metadata.frame_num >= 0) {
           FinishFrame(*pending_slice_header_, frame_number, v4l2_decode_param,
-                      slice_metadata, isOUTPUTQueueNew);
+                      slice_metadata, is_OUTPUT_queue_new);
           reached_end_of_frame = true;
         }
         break;
@@ -611,7 +611,7 @@ H264Parser::Result H264Decoder::ProcessNextFrame(
         // needs to be finished.
         if (slice_metadata.frame_num >= 0) {
           FinishFrame(*pending_slice_header_, frame_number, v4l2_decode_param,
-                      slice_metadata, isOUTPUTQueueNew);
+                      slice_metadata, is_OUTPUT_queue_new);
           reached_end_of_frame = true;
         }
         break;
@@ -638,7 +638,7 @@ VideoDecoder::Result H264Decoder::FinishFrame(
     const int frame_num,
     v4l2_ctrl_h264_decode_params& v4l2_decode_param,
     H264SliceMetadata& slice_metadata,
-    bool isOUTPUTQueueNew) {
+    bool is_OUTPUT_queue_new) {
   SetupDecodeParams(curr_slice, slice_metadata, &v4l2_decode_param);
 
   struct v4l2_ext_control ctrls[] = {
@@ -650,7 +650,7 @@ VideoDecoder::Result H264Decoder::FinishFrame(
   struct v4l2_ext_controls ext_ctrls = {
       .count = (sizeof(ctrls) / sizeof(ctrls[0])), .controls = ctrls};
 
-  v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls, isOUTPUTQueueNew);
+  v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls, is_OUTPUT_queue_new);
 
   // Picture is a reference picture.
   // H.264 section 8.2.4.
