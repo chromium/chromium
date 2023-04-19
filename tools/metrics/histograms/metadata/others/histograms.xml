@@ -6593,9 +6593,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="GridTabSwitcher.DirtySpan" units="ms"
-    expires_after="2020-11-15">
-  <owner>yusufo@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
+    expires_after="2023-10-08">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>meiliang@chromium.org</owner>
   <summary>
     This histogram records the dirty span of the transition animation between
     Tab and Grid Tab Switcher. The dirty span is the duration from the start of
@@ -6605,8 +6605,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="GridTabSwitcher.FramePerSecond" units="frame/sec"
     expires_after="2023-10-08">
-  <owner>yusufo@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>meiliang@chromium.org</owner>
   <summary>
     This histogram records the frame rate of the transition animation between
     Tab and Grid Tab Switcher.
@@ -6614,9 +6614,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="GridTabSwitcher.MaxFrameInterval" units="ms"
-    expires_after="2020-05-03">
-  <owner>yusufo@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
+    expires_after="2023-10-08">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>meiliang@chromium.org</owner>
   <summary>
     This histogram records the maximum interval between rendered frames during
     the transition animation between Tab and Grid Tab Switcher.
