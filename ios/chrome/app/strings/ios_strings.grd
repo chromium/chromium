@@ -591,8 +591,8 @@ locale.  The strings in this file are specific to iOS.
       </message>
       <message name="IDS_IOS_BRING_ANDROID_TABS_PROMPT_TITLE" desc="Title of the 'Bring Android Tabs' prompt shown to Android switchers to review their recently active tabs from Android. [iOS only]">
         {count, plural,
-          =1 {Pick up the tab you left off from Android?}
-          other {Pick up the tabs you left off from Android?}}
+          =1 {Pick up the tab you left on Android?}
+          other {Pick up the tabs you left on Android?}}
       </message>
       <message name="IDS_IOS_BRING_ANDROID_TABS_REVIEW_TABLE_OPEN_BUTTON" desc="Button to open selected tabs imported from Android. [iOS only]">
         {count, plural,
