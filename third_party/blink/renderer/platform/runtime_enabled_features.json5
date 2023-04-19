@@ -2010,6 +2010,10 @@
       settable_from_internals: true,
     },
     {
+      name: "LayoutDisableBrokenIntrinsicSize",
+      status: "stable",
+    },
+    {
       // crbug.com/1425520. Enabled since M113.
       name: "LayoutMediaChildPaintContainment",
       status: "stable",

@@ -402,7 +402,8 @@ void LayoutImage::ComputeIntrinsicSizingInfo(
 
     // Our intrinsicSize is empty if we're laying out generated images with
     // relative width/height. Figure out the right intrinsic size to use.
-    if (intrinsic_sizing_info.size.IsEmpty() &&
+    if (!RuntimeEnabledFeatures::LayoutDisableBrokenIntrinsicSizeEnabled() &&
+        intrinsic_sizing_info.size.IsEmpty() &&
         !image_resource_->HasIntrinsicSize() && !IsListMarkerImage()) {
       if (HasOverrideContainingBlockContentLogicalWidth() &&
           HasOverrideContainingBlockContentLogicalHeight()) {
