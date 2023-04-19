@@ -53,11 +53,6 @@ SplashScreen::SplashScreen(const std::u16string& bundle_name)
 
 SplashScreen::~SplashScreen() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // TODO(crbug.com/1059094) this assert may fire when the dtor is called
-  // while the window is fading out.
-  CHECK(state_ == WindowState::STATE_CREATED ||
-        state_ == WindowState::STATE_CLOSED);
 }
 
 void SplashScreen::Show() {
