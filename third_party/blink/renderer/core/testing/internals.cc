@@ -1331,6 +1331,43 @@ void Internals::setMarker(Document* document,
     document->Markers().AddGrammarMarker(EphemeralRange(range));
 }
 
+void Internals::removeMarker(Document* document,
+                             const Range* range,
+                             const String& marker_type,
+                             ExceptionState& exception_state) {
+  if (!document) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "No context document is available.");
+    return;
+  }
+
+  absl::optional<DocumentMarker::MarkerType> type = MarkerTypeFrom(marker_type);
+  if (!type) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        "The marker type provided ('" + marker_type + "') is invalid.");
+    return;
+  }
+
+  if (type != DocumentMarker::kSpelling && type != DocumentMarker::kGrammar) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                      "internals.setMarker() currently only "
+                                      "supports spelling and grammar markers; "
+                                      "attempted to add marker of type '" +
+                                          marker_type + "'.");
+    return;
+  }
+
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  if (type == DocumentMarker::kSpelling) {
+    document->Markers().RemoveMarkersInRange(
+        EphemeralRange(range), DocumentMarker::MarkerTypes::Spelling());
+  } else {
+    document->Markers().RemoveMarkersInRange(
+        EphemeralRange(range), DocumentMarker::MarkerTypes::Grammar());
+  }
+}
+
 unsigned Internals::markerCountForNode(Text* text,
                                        const String& marker_type,
                                        ExceptionState& exception_state) {

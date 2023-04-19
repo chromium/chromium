@@ -105,6 +105,7 @@
     DOMRectReadOnly boundingBox(Element element);
 
     [RaisesException] void setMarker(Document document, Range range, DOMString markerType);
+    [RaisesException] void removeMarker(Document document, Range range, DOMString markerType);
     [RaisesException] unsigned long markerCountForNode(Text text, DOMString markerType);
     unsigned long activeMarkerCountForNode(Text text);
     [RaisesException] Range markerRangeForNode(Text text, DOMString markerType, unsigned long index);

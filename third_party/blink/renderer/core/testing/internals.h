@@ -187,6 +187,7 @@ class Internals final : public ScriptWrappable {
   DOMRectReadOnly* boundingBox(Element*);
 
   void setMarker(Document*, const Range*, const String&, ExceptionState&);
+  void removeMarker(Document*, const Range*, const String&, ExceptionState&);
   unsigned markerCountForNode(Text*, const String&, ExceptionState&);
   unsigned activeMarkerCountForNode(Text*);
   Range* markerRangeForNode(Text*,
