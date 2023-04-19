@@ -353,8 +353,10 @@ class BookmarkButton : public BookmarkButtonBase {
     // Record duration if the event happens before PressedCallback invocation.
     if (!mouse_has_been_pressed_) {
       mouse_has_been_pressed_ = true;
-      CHECK(mouse_entered_time_.has_value());
-      base::TimeDelta duration = base::TimeTicks::Now() - *mouse_entered_time_;
+      auto now = base::TimeTicks::Now();
+      // It seems `mouse_entered_time_` could be empty, maybe OnMouseEntered()
+      // can be dropped sometime.
+      base::TimeDelta duration = now - mouse_entered_time_.value_or(now);
       base::UmaHistogramTimes(
           "Prerender.Experimental.BookmarkBar.EnterToPressDuration", duration);
       if (event.IsOnlyLeftMouseButton()) {
