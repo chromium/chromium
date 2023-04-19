@@ -16,38 +16,6 @@
 
 namespace content {
 
-class PrerendererImpl::PrerenderHostObserver : public PrerenderHost::Observer {
- public:
-  explicit PrerenderHostObserver(PrerenderHost* prerender_host);
-  ~PrerenderHostObserver() override;
-
-  // PrerenderHost::Observer implementation:
-  void OnHostDestroyed(PrerenderFinalStatus final_status) override;
-
-  bool destroyed_by_memory_limit_exceeded() const {
-    return destroyed_by_memory_limit_exceeded_;
-  }
-
- private:
-  bool destroyed_by_memory_limit_exceeded_ = false;
-  base::ScopedObservation<PrerenderHost, PrerenderHost::Observer> observation_{
-      this};
-};
-
-PrerendererImpl::PrerenderHostObserver::PrerenderHostObserver(
-    PrerenderHost* prerender_host) {
-  if (prerender_host)
-    observation_.Observe(prerender_host);
-}
-PrerendererImpl::PrerenderHostObserver::~PrerenderHostObserver() = default;
-
-void PrerendererImpl::PrerenderHostObserver::OnHostDestroyed(
-    PrerenderFinalStatus final_status) {
-  observation_.Reset();
-  if (final_status == PrerenderFinalStatus::kMemoryLimitExceeded)
-    destroyed_by_memory_limit_exceeded_ = true;
-}
-
 struct PrerendererImpl::PrerenderInfo {
   GURL url;
   Referrer referrer;
@@ -61,6 +29,7 @@ PrerendererImpl::PrerendererImpl(RenderFrameHost& render_frame_host)
   auto& rfhi = static_cast<RenderFrameHostImpl&>(render_frame_host);
   registry_ = rfhi.delegate()->GetPrerenderHostRegistry()->GetWeakPtr();
 }
+
 PrerendererImpl::~PrerendererImpl() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CancelStartedPrerenders();
@@ -270,19 +239,6 @@ bool PrerendererImpl::MaybePrerender(
                                    {.url = candidate->url,
                                     .referrer = referrer,
                                     .prerender_host_id = prerender_host_id});
-
-        // TODO(crbug.com/1350676): Observe PrerenderHost created for
-        // prerendering in a new tab like the kNoHint and kSelf cases.
-        // TODO(crbug.com/1350676): Update the counter of
-        // `count_started_same_tab_prerenders_`. We cannot update this counter
-        // at this point because the counter is used to calculate the
-        // percentage of started prerenders that failed due to
-        // kMemoryLimitExceeded, which is done by observing PrerenderHosts,
-        // but this class cannot observe the started new-tab prerender at this
-        // moment. Rational: COUNT(kMemoryLimitExceeded && non-new-tab) /
-        // COUNT(non-new-tab) should be close to COUNT(kMemoryLimitExceeded) /
-        // COUNT(*), but COUNT(kMemoryLimitExceeded && non-new-tab) / COUNT(*)
-        // would follow another distribution.
         break;
       }
       // Handle the rule as kNoHint if the prerender-in-new-tab is not
@@ -296,11 +252,6 @@ bool PrerendererImpl::MaybePrerender(
       started_prerenders_.insert(end, {.url = candidate->url,
                                        .referrer = referrer,
                                        .prerender_host_id = prerender_host_id});
-      count_started_same_tab_prerenders_++;
-      // Start to observe PrerenderHost to get the information about
-      // FinalStatus.
-      observers_.push_back(std::make_unique<PrerenderHostObserver>(
-          registry_->FindNonReservedHostById(prerender_host_id)));
       break;
     }
   }
@@ -320,26 +271,6 @@ bool PrerendererImpl::ShouldWaitForPrerenderResult(const GURL& url) {
 }
 
 void PrerendererImpl::CancelStartedPrerenders() {
-  // This function can be called twice and the histogram should be recorded in
-  // the first call. Also, skip recording the histogram when no prerendering
-  // starts.
-  if (count_started_same_tab_prerenders_ == 0) {
-    DCHECK(observers_.empty());
-    return;
-  }
-
-  // Record the percentage of destroyed prerenders due to the excessive memory
-  // usage.
-  // The closer the value is to 0, the less prerenders are cancelled by
-  // FinalStatus::kMemoryLimitExceeded. The result depends on Finch params
-  // `max_num_of_running_speculation_rules` and
-  // `acceptable_percent_of_system_memory`.
-  base::UmaHistogramPercentage(
-      "Prerender.Experimental.CancellationPercentageByExcessiveMemoryUsage."
-      "SpeculationRule",
-      GetNumberOfDestroyedByMemoryExceeded() * 100 /
-          count_started_same_tab_prerenders_);
-
   if (registry_) {
     std::vector<int> started_prerender_ids;
     for (auto& prerender_info : started_prerenders_) {
@@ -351,17 +282,6 @@ void PrerendererImpl::CancelStartedPrerenders() {
   }
 
   started_prerenders_.clear();
-  count_started_same_tab_prerenders_ = 0;
-  observers_.clear();
-}
-
-int PrerendererImpl::GetNumberOfDestroyedByMemoryExceeded() {
-  int destroyed_prerenders_by_memory_limit_exceeded = 0;
-  for (auto& observer : observers_) {
-    if (observer->destroyed_by_memory_limit_exceeded())
-      destroyed_prerenders_by_memory_limit_exceeded++;
-  }
-  return destroyed_prerenders_by_memory_limit_exceeded;
 }
 
 }  // namespace content
