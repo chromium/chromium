@@ -22,7 +22,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -118,8 +117,7 @@ public class PrivacySettings extends PreferenceFragmentCompat
             UserPrefs.get(mProfile).setBoolean(Pref.PRIVACY_GUIDE_VIEWED, true);
             return false;
         });
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_GUIDE) || mProfile.isChild()
-                || ManagedBrowserUtils.isBrowserManaged(mProfile)) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_GUIDE)) {
             getPreferenceScreen().removePreference(privacyGuidePreference);
         }
 
