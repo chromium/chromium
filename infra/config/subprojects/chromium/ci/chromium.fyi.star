@@ -1537,11 +1537,9 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             config = "main_builder",
         ),
     ),
-    builderless = True,
-    cores = 32,
-    # Target luci-chromium-ci-bionic-us-central1-c-1000-ssd-hm32-*.
+    builderless = False,
+    cores = None,  # rely on the builder dimension for the bot selection.
     os = os.LINUX_DEFAULT,
-    ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "buildperf",
         short_name = "and",
@@ -1582,10 +1580,8 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         ),
     ),
     builderless = False,
-    cores = 32,
-    # Target luci-chromium-ci-bionic-us-central1-c-1000-ssd-hm32-*.
+    cores = None,  # rely on the builder dimension for the bot selection.
     os = os.LINUX_DEFAULT,
-    ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "buildperf",
         short_name = "andss",
@@ -1616,11 +1612,9 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             ],
         ),
     ),
-    builderless = True,
-    cores = 16,
-    # Target luci-chromium-ci-bionic-us-central1-b-ssd-16-*.
+    builderless = False,
+    cores = None,  # rely on the builder dimension for the bot selection.
     os = os.LINUX_DEFAULT,
-    ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "buildperf",
         short_name = "lnx",
@@ -1655,10 +1649,8 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         ),
     ),
     builderless = False,
-    cores = 16,
-    # Target luci-chromium-ci-bionic-us-central1-b-ssd-16-*.
+    cores = None,  # rely on the builder dimension for the bot selection.
     os = os.LINUX_DEFAULT,
-    ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "buildperf",
         short_name = "lnxss",
@@ -1690,11 +1682,9 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             ],
         ),
     ),
-    builderless = True,
-    cores = 32,
-    # Target luci-chromium-ci-win10-ssd-32-*.
+    builderless = False,
+    cores = None,  # rely on the builder dimension for the bot selection.
     os = os.WINDOWS_DEFAULT,
-    ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "buildperf",
         short_name = "win",
@@ -1729,10 +1719,8 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         ),
     ),
     builderless = False,
-    cores = 32,
-    # Target luci-chromium-ci-win10-ssd-32-*.
+    cores = None,  # rely on the builder dimension for the bot selection.
     os = os.WINDOWS_DEFAULT,
-    ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "buildperf",
         short_name = "winss",
