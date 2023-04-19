@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.app.creator;
 
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 
 import androidx.appcompat.widget.Toolbar;
 
@@ -16,7 +15,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.WebContentsFactory;
-import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.creator.CreatorCoordinator;
 import org.chromium.chrome.browser.feed.SingleWebFeedEntryPoint;
 import org.chromium.chrome.browser.feed.webfeed.CreatorIntentConstants;
@@ -29,7 +27,6 @@ import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -43,10 +40,7 @@ import org.chromium.ui.base.IntentRequestTracker;
 public class CreatorActivity extends SnackbarActivity {
     private ActivityWindowAndroid mWindowAndroid;
     private BottomSheetController mBottomSheetController;
-    private ViewGroup mBottomSheetContainer;
     private CreatorActionDelegateImpl mCreatorActionDelegate;
-    private ScrimCoordinator mScrim;
-    private EphemeralTabCoordinator mEphemeralTabCoordinator;
     private ActivityTabProvider mActivityTabProvider;
     private ActivityLifecycleDispatcherImpl mLifecycleDispatcher;
     private UnownedUserDataSupplier<ShareDelegate> mShareDelegateSupplier;

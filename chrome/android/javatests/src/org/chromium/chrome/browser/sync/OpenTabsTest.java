@@ -51,8 +51,6 @@ public class OpenTabsTest {
     @Rule
     public SyncTestRule mSyncTestRule = new SyncTestRule();
 
-    private static final String TAG = "OpenTabsTest";
-
     private static final String OPEN_TABS_TYPE = "Sessions";
 
     // EmbeddedTestServer is preferred here but it can't be used. The test server

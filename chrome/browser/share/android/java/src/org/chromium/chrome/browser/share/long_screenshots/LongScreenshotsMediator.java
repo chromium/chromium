@@ -77,8 +77,6 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
     // 100MB/(24-bit ARGB888) = 3.3e7
     private static final long DOWNSCALE_AREA_THRESHOLD_PIXELS = 33000000;
 
-    private static final String TAG = "long_screenshots";
-
     public LongScreenshotsMediator(Activity activity, EntryManager entryManager) {
         mActivity = activity;
         mEntryManager = entryManager;

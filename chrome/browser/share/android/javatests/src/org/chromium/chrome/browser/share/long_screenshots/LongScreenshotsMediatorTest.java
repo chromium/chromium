@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -33,7 +32,6 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 public class LongScreenshotsMediatorTest {
     private Activity mActivity;
     private Bitmap mBitmap;
-    private FeatureList.TestValues mTestValues;
     private LongScreenshotsMediator mMediator;
 
     @Rule

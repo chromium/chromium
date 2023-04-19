@@ -56,7 +56,10 @@ import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 public class GoogleServicesSettings
         extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener, Listener,
                                                     FragmentHelpAndFeedbackLauncher {
-    private static final String SIGN_OUT_DIALOG_TAG = "sign_out_dialog_tag";
+    // No longer used. Do not delete. Do not reuse these same strings.
+    // private static final String SIGN_OUT_DIALOG_TAG = "sign_out_dialog_tag";
+    // public static final String PREF_AUTOFILL_ASSISTANT = "autofill_assistant";
+
     private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
 
     @VisibleForTesting
@@ -65,8 +68,6 @@ public class GoogleServicesSettings
     private static final String PREF_USAGE_AND_CRASH_REPORTING = "usage_and_crash_reports";
     private static final String PREF_URL_KEYED_ANONYMIZED_DATA = "url_keyed_anonymized_data";
     private static final String PREF_CONTEXTUAL_SEARCH = "contextual_search";
-    @VisibleForTesting
-    public static final String PREF_AUTOFILL_ASSISTANT = "autofill_assistant";
     @VisibleForTesting
     public static final String PREF_AUTOFILL_ASSISTANT_SUBSECTION = "autofill_assistant_subsection";
     @VisibleForTesting

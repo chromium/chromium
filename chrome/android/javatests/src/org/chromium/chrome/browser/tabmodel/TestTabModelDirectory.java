@@ -53,7 +53,6 @@ public class TestTabModelDirectory {
      * Information about a TabModel and all of the TabStates it needs to be restored.
      */
     public static final class TabModelMetaDataInfo {
-        public final int version;
         public final int selectedTabId;
         public final TabStateInfo[] contents;
         public final int numRegularTabs;
@@ -62,17 +61,11 @@ public class TestTabModelDirectory {
 
         TabModelMetaDataInfo(int version, int numIncognitoTabs, int selectedTabId,
                 TabStateInfo[] contents, String encodedFile) {
-            this.version = version;
             this.numRegularTabs = contents.length - numIncognitoTabs;
             this.numIncognitoTabs = numIncognitoTabs;
             this.selectedTabId = selectedTabId;
             this.contents = contents;
             this.encodedFile = encodedFile;
-        }
-
-        /** Returns how many non-Incognito tabs are described in the file. */
-        public int getNumRegularTabs() {
-            return contents.length - numIncognitoTabs;
         }
     }
 

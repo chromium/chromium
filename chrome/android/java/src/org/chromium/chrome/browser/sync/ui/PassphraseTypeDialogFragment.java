@@ -35,8 +35,6 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
  */
 public class PassphraseTypeDialogFragment
         extends DialogFragment implements DialogInterface.OnClickListener {
-    private static final String TAG = "PassphraseTypeDialogFragment";
-
     public interface Listener {
         /**
          * Called when the user doesn't have a custom passphrase and taps the option to set up one.

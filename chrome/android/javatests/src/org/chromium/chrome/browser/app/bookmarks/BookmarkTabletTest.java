@@ -4,13 +4,11 @@
 
 package org.chromium.chrome.browser.app.bookmarks;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,12 +16,10 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.bookmarks.BookmarkDelegate;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -59,9 +55,6 @@ public class BookmarkTabletTest {
     private BookmarkManagerCoordinator mBookmarkManagerCoordinator;
     private BookmarkModel mBookmarkModel;
     private RecyclerView mItemsContainer;
-    private @Nullable BookmarkActivity mBookmarkActivity;
-
-    private UserActionTester mActionTester;
 
     @Before
     public void setUp() {
@@ -69,12 +62,6 @@ public class BookmarkTabletTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mBookmarkModel = mActivityTestRule.getActivity().getBookmarkModelForTesting();
         });
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        if (mBookmarkActivity != null) ApplicationTestUtils.finishActivity(mBookmarkActivity);
-        if (mActionTester != null) mActionTester.tearDown();
     }
 
     private void openBookmarkManager() throws InterruptedException {

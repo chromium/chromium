@@ -42,8 +42,6 @@ public class AutofillTest {
     @Rule
     public SyncTestRule mSyncTestRule = new SyncTestRule();
 
-    private static final String TAG = "AutofillTest";
-
     private static final String AUTOFILL_TYPE = "Autofill Profiles";
 
     private static final String GUID = "EDC609ED-7EEE-4F27-B00C-423242A9C44B";

@@ -31,7 +31,6 @@ public class PassphraseActivity extends AppCompatActivity
         implements PassphraseDialogFragment.Listener, FragmentManager.OnBackStackChangedListener {
     public static final String FRAGMENT_PASSPHRASE = "passphrase_fragment";
     public static final String FRAGMENT_SPINNER = "spinner_fragment";
-    private static final String TAG = "PassphraseActivity";
 
     private SyncService.SyncStateChangedListener mSyncStateChangedListener;
 

@@ -39,8 +39,6 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
     private final String mUrl;
     private final String mTitle;
 
-    private static final int ACCOUNT_AVATAR_SIZE_DP = 24;
-
     public DevicePickerBottomSheetContent(Context context, String url, String title,
             BottomSheetController controller, List<TargetDeviceInfo> targetDevices,
             Profile profile) {

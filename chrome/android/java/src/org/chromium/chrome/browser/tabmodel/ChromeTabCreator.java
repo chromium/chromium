@@ -60,8 +60,6 @@ public class ChromeTabCreator extends TabCreator {
                 @NewTabPageLaunchOrigin int launchOrigin);
     }
 
-    private static final String TAG = "ChromeTabCreator";
-
     private final Activity mActivity;
     private final boolean mIncognito;
 
@@ -562,12 +560,5 @@ public class ChromeTabCreator extends TabCreator {
      */
     public TabDelegateFactory createDefaultTabDelegateFactory() {
         return mTabDelegateFactorySupplier != null ? mTabDelegateFactorySupplier.get() : null;
-    }
-
-    /**
-     * Sets the window to create tabs for.
-     */
-    public void setWindowAndroid(WindowAndroid window) {
-        mNativeWindow = window;
     }
 }

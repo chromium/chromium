@@ -44,7 +44,6 @@ import java.util.concurrent.TimeoutException;
 @Batch(SiteSettingsTest.SITE_SETTINGS_BATCH_NAME)
 public class PermissionInfoTest {
     private static final String DSE_ORIGIN = "https://www.google.com";
-    private static final String OTHER_ORIGIN = "https://www.other.com";
 
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =

@@ -122,7 +122,6 @@ public class BookmarkEditTest {
         Assert.assertEquals("Incorrect url.", URL_A,
                 mBookmarkEditActivity.getUrlEditText().getEditText().getText().toString());
 
-        int currentModelChangedCount = mModelChangedCallback.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mBookmarkEditActivity.getTitleEditText().getEditText().setText(TITLE_B);
             mBookmarkEditActivity.getUrlEditText().getEditText().setText(URL_B);

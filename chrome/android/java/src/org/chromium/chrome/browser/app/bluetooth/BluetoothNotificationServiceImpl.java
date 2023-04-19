@@ -18,8 +18,6 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
  * to a Bluetooth device or scanning for nearby Bluetooth devices.
  */
 public class BluetoothNotificationServiceImpl extends BluetoothNotificationService.Impl {
-    private static final String TAG = "BluetoothNotificationServiceImpl";
-
     private BluetoothNotificationManagerDelegate mManagerDelegate =
             new BluetoothNotificationManagerDelegate() {
                 @Override

@@ -160,11 +160,9 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
      * interactions. Calls reportPageLoaded when navigation completes.
      */
     private class FeedTabNavigationObserver extends EmptyTabObserver {
-        private final boolean mInNewTab;
         private final Runnable mCallback;
 
         FeedTabNavigationObserver(boolean inNewTab, Runnable callback) {
-            mInNewTab = inNewTab;
             mCallback = callback;
         }
 

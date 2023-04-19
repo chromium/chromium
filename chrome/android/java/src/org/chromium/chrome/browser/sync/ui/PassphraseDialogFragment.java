@@ -63,12 +63,6 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
         void onPassphraseCanceled();
     }
 
-    private static final int PASSPHRASE_DIALOG_OK = 0;
-    private static final int PASSPHRASE_DIALOG_ERROR = 1;
-    private static final int PASSPHRASE_DIALOG_CANCEL = 2;
-    private static final int PASSPHRASE_DIALOG_RESET_LINK = 3;
-    private static final int PASSPHRASE_DIALOG_LIMIT = 4;
-
     private EditText mPassphraseEditText;
     private TextView mVerifyingTextView;
 
@@ -230,20 +224,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
                 }));
     }
 
-    /**
-     * @return whether the incorrect passphrase text is currently visible.
-     */
-    private boolean isIncorrectPassphraseVisible() {
-        // Check if the verifying TextView is currently showing the incorrect passphrase text.
-        String incorrectPassphraseMessage =
-                getResources().getString(R.string.sync_passphrase_incorrect);
-        String verifyMessage = mVerifyingTextView.getText().toString();
-        return verifyMessage.equals(incorrectPassphraseMessage);
-    }
-
     private void handleCancel() {
-        int cancelReason =
-                isIncorrectPassphraseVisible() ? PASSPHRASE_DIALOG_ERROR : PASSPHRASE_DIALOG_CANCEL;
         getListener().onPassphraseCanceled();
     }
 

@@ -45,8 +45,6 @@ public class SyncTest {
     @Rule
     public TestRule mProcessorRule = new Features.JUnitProcessor();
 
-    private static final String TAG = "SyncTest";
-
     /**
      * Waits until {@link SyncService#isSyncingUnencryptedUrls} returns desired value.
      */

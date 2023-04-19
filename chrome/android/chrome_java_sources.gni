@@ -85,7 +85,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/app/download/home/DownloadManagerCoordinatorFactoryHelper.java",
   "java/src/org/chromium/chrome/browser/app/download/home/DownloadPage.java",
   "java/src/org/chromium/chrome/browser/app/download/home/FaviconProviderImpl.java",
-  "java/src/org/chromium/chrome/browser/app/download/home/FileDeletionQueue.java",
   "java/src/org/chromium/chrome/browser/app/download/home/PrefetchEnabledSupplier.java",
   "java/src/org/chromium/chrome/browser/app/feature_guide/notifications/FeatureNotificationGuideDelegate.java",
   "java/src/org/chromium/chrome/browser/app/feed/FeedActionDelegateImpl.java",
