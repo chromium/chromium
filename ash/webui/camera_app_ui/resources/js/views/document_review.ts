@@ -17,6 +17,7 @@ import {Filenamer} from '../models/file_namer.js';
 import {getI18nMessage} from '../models/load_time_data.js';
 import {ResultSaver} from '../models/result_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
+import {ToteMetricFormat} from '../mojo/type.js';
 import * as nav from '../nav.js';
 import {speakMessage} from '../spoken_msg.js';
 import {show as showToast} from '../toast.js';
@@ -253,10 +254,12 @@ export class DocumentReview extends View {
     const blobs = this.pages.map((page) => page.croppedBlob);
     const name = (new Filenamer()).newDocumentName(mimeType);
     if (mimeType === MimeType.JPEG) {
-      await this.resultSaver.savePhoto(blobs[0], name, null);
+      await this.resultSaver.savePhoto(
+          blobs[0], ToteMetricFormat.SCAN_JPG, name, null);
     } else {
       const pdfBlob = await ChromeHelper.getInstance().convertToPdf(blobs);
-      await this.resultSaver.savePhoto(pdfBlob, name, null);
+      await this.resultSaver.savePhoto(
+          pdfBlob, ToteMetricFormat.SCAN_PDF, name, null);
     }
   }
 

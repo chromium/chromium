@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 
 namespace content {
@@ -15,6 +16,7 @@ class WebUIDataSource;
 }  // namespace content
 
 namespace ash {
+class HoldingSpaceClient;
 
 // A delegate which exposes browser functionality from //chrome to the camera
 // app ui page handler.
@@ -50,6 +52,8 @@ class CameraAppUIDelegate {
   };
 
   virtual ~CameraAppUIDelegate() = default;
+
+  virtual HoldingSpaceClient* GetHoldingSpaceClient() = 0;
 
   // Sets Downloads folder as launch directory by File Handling API so that we
   // can get the handle on the app side.
@@ -95,6 +99,9 @@ class CameraAppUIDelegate {
 
   // Open "Storage management" page in system's Settings app.
   virtual void OpenStorageManagement() = 0;
+
+  // Gets the file path by given file |name|.
+  virtual base::FilePath GetFilePathByName(const std::string& name) = 0;
 };
 
 }  // namespace ash

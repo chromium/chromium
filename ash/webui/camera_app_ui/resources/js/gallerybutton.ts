@@ -15,6 +15,7 @@ import {
 import {ResultSaver} from './models/result_saver.js';
 import {TimeLapseSaver, VideoSaver} from './models/video_saver.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
+import {ToteMetricFormat} from './mojo/type.js';
 import {extractImageFromBlob} from './thumbnailer.js';
 import {
   ErrorLevel,
@@ -224,8 +225,9 @@ export class GalleryButton implements ResultSaver {
     return cameraFolderStable.wait();
   }
 
-  async savePhoto(blob: Blob, name: string, metadata: Metadata|null):
-      Promise<void> {
+  async savePhoto(
+      blob: Blob, format: ToteMetricFormat, name: string,
+      metadata: Metadata|null): Promise<void> {
     const file = await filesystem.saveBlob(blob, name);
     if (metadata !== null) {
       const metadataBlob =
@@ -235,11 +237,13 @@ export class GalleryButton implements ResultSaver {
 
     ChromeHelper.getInstance().sendNewCaptureBroadcast(
         {isVideo: false, name: file.name});
+    ChromeHelper.getInstance().notifyTote(format, name);
     await this.updateCover(file);
   }
 
   async saveGif(blob: Blob, name: string): Promise<void> {
     const file = await filesystem.saveBlob(blob, name);
+    ChromeHelper.getInstance().notifyTote(ToteMetricFormat.VIDEO_GIF, name);
     await this.updateCover(file);
   }
 
@@ -256,6 +260,8 @@ export class GalleryButton implements ResultSaver {
     await file.moveTo(this.directory, videoName);
     ChromeHelper.getInstance().sendNewCaptureBroadcast(
         {isVideo: true, name: file.name});
+    ChromeHelper.getInstance().notifyTote(
+        ToteMetricFormat.VIDEO_MP4, file.name);
     await this.updateCover(file);
   }
 }

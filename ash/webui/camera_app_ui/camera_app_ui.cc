@@ -179,7 +179,8 @@ CreateCameraAppDeviceProvider(const url::Origin& security_origin,
 std::unique_ptr<CameraAppHelperImpl> CreateCameraAppHelper(
     CameraAppUI* camera_app_ui,
     content::BrowserContext* browser_context,
-    aura::Window* window) {
+    aura::Window* window,
+    HoldingSpaceClient* holding_space_client) {
   DCHECK_NE(window, nullptr);
   auto handle_result_callback =
       base::BindRepeating(&HandleCameraResult, browser_context);
@@ -188,7 +189,7 @@ std::unique_ptr<CameraAppHelperImpl> CreateCameraAppHelper(
 
   return std::make_unique<CameraAppHelperImpl>(
       camera_app_ui, std::move(handle_result_callback),
-      std::move(send_broadcast_callback), window);
+      std::move(send_broadcast_callback), window, holding_space_client);
 }
 
 }  // namespace
@@ -272,7 +273,8 @@ void CameraAppUI::BindInterface(
 void CameraAppUI::BindInterface(
     mojo::PendingReceiver<camera_app::mojom::CameraAppHelper> receiver) {
   helper_ = CreateCameraAppHelper(
-      this, web_ui()->GetWebContents()->GetBrowserContext(), window());
+      this, web_ui()->GetWebContents()->GetBrowserContext(), window(),
+      delegate_->GetHoldingSpaceClient());
   helper_->Bind(std::move(receiver));
 }
 

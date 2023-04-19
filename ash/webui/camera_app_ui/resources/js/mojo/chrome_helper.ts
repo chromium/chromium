@@ -27,6 +27,7 @@ import {
   StorageMonitorCallbackRouter,
   StorageMonitorStatus,
   TabletModeMonitorCallbackRouter,
+  ToteMetricFormat,
 } from './type.js';
 import {wrapEndpoint} from './util.js';
 
@@ -272,6 +273,13 @@ export class ChromeHelper {
   sendNewCaptureBroadcast({isVideo, name}: {isVideo: boolean, name: string}):
       void {
     this.remote.sendNewCaptureBroadcast(isVideo, name);
+  }
+
+  /**
+   * Notifies Tote client when a photo/pdf/video/gif is captured.
+   */
+  notifyTote(format: ToteMetricFormat, name: string): void {
+    this.remote.notifyTote(format, name);
   }
 
   /**

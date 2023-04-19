@@ -46,7 +46,8 @@ class CameraAppHelperImpl : public TabletModeObserver,
   CameraAppHelperImpl(CameraAppUI* camera_app_ui,
                       CameraResultCallback camera_result_callback,
                       SendBroadcastCallback send_broadcast_callback,
-                      aura::Window* window);
+                      aura::Window* window,
+                      HoldingSpaceClient* holding_space_client);
 
   CameraAppHelperImpl(const CameraAppHelperImpl&) = delete;
   CameraAppHelperImpl& operator=(const CameraAppHelperImpl&) = delete;
@@ -80,6 +81,8 @@ class CameraAppHelperImpl : public TabletModeObserver,
   void GetWindowStateController(
       GetWindowStateControllerCallback callback) override;
   void SendNewCaptureBroadcast(bool is_video, const std::string& name) override;
+  void NotifyTote(const camera_app::mojom::ToteMetricFormat format,
+                  const std::string& name) override;
   void MonitorFileDeletion(const std::string& name,
                            MonitorFileDeletionCallback callback) override;
   void GetDocumentScannerReadyState(
@@ -158,6 +161,8 @@ class CameraAppHelperImpl : public TabletModeObserver,
 
   // Client to connect to document detection service.
   std::unique_ptr<DocumentScannerServiceClient> document_scanner_service_;
+
+  base::raw_ptr<HoldingSpaceClient> const holding_space_client_;
 
   base::WeakPtrFactory<CameraAppHelperImpl> weak_factory_{this};
 };

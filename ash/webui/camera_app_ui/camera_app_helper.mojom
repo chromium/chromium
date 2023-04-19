@@ -132,6 +132,14 @@ interface WindowStateController {
   Focus() => ();
 };
 
+enum ToteMetricFormat {
+  PHOTO = 0,
+  SCAN_JPG = 1,
+  SCAN_PDF = 2,
+  VIDEO_GIF = 3,
+  VIDEO_MP4 = 4,
+};
+
 enum DocumentOutputFormat {
   JPEG = 0,
   PDF = 1,
@@ -205,6 +213,9 @@ interface CameraAppHelper {
   // video is captured and false for a picture. |name| is the file name which
   // will be used to generate the URI for the broadcast.
   SendNewCaptureBroadcast(bool is_video, string name);
+
+  // Notifies Tote client when a photo/pdf/video/gif is captured.
+  NotifyTote(ToteMetricFormat format, string name);
 
   // Monitors the deletion for given file |name| in the camera folder. The
   // function will return when the deletion happens, or when another monitor
