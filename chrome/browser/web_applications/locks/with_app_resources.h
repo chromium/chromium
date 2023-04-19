@@ -19,6 +19,7 @@ class WebAppRegistrar;
 class WebAppSyncBridge;
 class WebAppTranslationManager;
 class WebAppUiManager;
+class WebAppOriginAssociationManager;
 
 // This gives access to web app components that allow read/write access to web
 // apps. A lock class that needs read/read access to web apps can inherit from
@@ -43,6 +44,7 @@ class WithAppResources {
   WebAppIconManager& icon_manager();
   WebAppTranslationManager& translation_manager();
   WebAppUiManager& ui_manager();
+  WebAppOriginAssociationManager& origin_association_manager();
 
  protected:
   explicit WithAppResources(base::WeakPtr<WebAppLockManager> lock_manager);
