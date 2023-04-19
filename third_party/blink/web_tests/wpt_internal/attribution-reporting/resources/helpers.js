@@ -13,14 +13,17 @@ const attribution_reporting_promise_test = (f, name) =>
       return f(t);
     }, name);
 
-const resetWptServerStash = () => Promise.all([
-  resetAttributionReports(eventLevelReportsUrl),
-  resetAttributionReports(aggregatableReportsUrl),
-  resetAttributionReports(eventLevelDebugReportsUrl),
-  resetAttributionReports(aggregatableDebugReportsUrl),
-  resetAttributionReports(verboseDebugReportsUrl),
-  resetRegisteredSources(),
-]);
+const resetWptServerStash = () =>
+    Promise
+        .all([
+          resetAttributionReports(eventLevelReportsUrl),
+          resetAttributionReports(aggregatableReportsUrl),
+          resetAttributionReports(eventLevelDebugReportsUrl),
+          resetAttributionReports(aggregatableDebugReportsUrl),
+          resetAttributionReports(verboseDebugReportsUrl),
+          resetRegisteredSources(),
+        ])
+        .then(() => console.log('stash reset'));
 
 const eventLevelReportsUrl =
     '/.well-known/attribution-reporting/report-event-attribution';
@@ -228,6 +231,7 @@ const registerAttributionSrc = async (t, {
       }
       document.body.appendChild(a);
       await test_driver.click(a);
+      console.log('test driver click completed');
       return 'navigation';
     case 'open':
       await test_driver.bless('open window', () => {
@@ -239,6 +243,7 @@ const registerAttributionSrc = async (t, {
           open(url, '_blank', 'attributionsrc');
         }
       });
+      console.log('test driver open completed');
       return 'navigation';
     case 'fetch':
       const headers = {};
@@ -278,17 +283,18 @@ const generateSourceEventId = () => {
 const delay = ms => new Promise(resolve => step_timeout(resolve, ms));
 
 /**
- * Method that polls a particular URL every interval for reports. Once reports
+ * Method that polls a particular URL for reports. Once reports
  * are received, returns the payload as promise.
  */
-const pollAttributionReports = async (url, origin = location.origin, interval = 100) => {
-  const resp = await fetch(new URL(url, origin));
-  const payload = await resp.json();
-  if (payload.reports.length === 0) {
-    await delay(interval);
-    return pollAttributionReports(url, origin, interval);
+const pollAttributionReports = async (url, origin = location.origin) => {
+  while (true) {
+    const resp = await fetch(new URL(url, origin));
+    const payload = await resp.json();
+    if (payload.reports.length > 0) {
+      return payload;
+    }
+    await delay(/*ms=*/ 100);
   }
-  return payload;
 };
 
 /**
@@ -310,16 +316,16 @@ const waitForSourceToBeRegistered = async (sourceId) => {
   throw new Error(`Timeout polling source ${sourceId} registration`);
 };
 
-const pollEventLevelReports = (origin, interval) =>
-    pollAttributionReports(eventLevelReportsUrl, origin, interval);
-const pollEventLevelDebugReports = (origin, interval) =>
-    pollAttributionReports(eventLevelDebugReportsUrl, origin, interval);
-const pollAggregatableReports = (origin, interval) =>
-    pollAttributionReports(aggregatableReportsUrl, origin, interval);
-const pollAggregatableDebugReports = (origin, interval) =>
-    pollAttributionReports(aggregatableDebugReportsUrl, origin, interval);
-const pollVerboseDebugReports = (origin, interval) =>
-    pollAttributionReports(verboseDebugReportsUrl, origin, interval);
+const pollEventLevelReports = (origin) =>
+    pollAttributionReports(eventLevelReportsUrl, origin);
+const pollEventLevelDebugReports = (origin) =>
+    pollAttributionReports(eventLevelDebugReportsUrl, origin);
+const pollAggregatableReports = (origin) =>
+    pollAttributionReports(aggregatableReportsUrl, origin);
+const pollAggregatableDebugReports = (origin) =>
+    pollAttributionReports(aggregatableDebugReportsUrl, origin);
+const pollVerboseDebugReports = (origin) =>
+    pollAttributionReports(verboseDebugReportsUrl, origin);
 
 const validateReportHeaders = headers => {
   assert_array_equals(headers['content-type'], ['application/json']);

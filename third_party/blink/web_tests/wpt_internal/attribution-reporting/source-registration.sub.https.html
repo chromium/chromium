@@ -37,12 +37,16 @@ attribution_reporting_promise_test(async t => {
   console.log('source-event-id', source.source_event_id);
 
   await waitForSourceToBeRegistered(source.source_event_id);
+  console.log('source registered');
+
   await registerAttributionSrc(t, {
     trigger: {
       event_trigger_data: [{}],
     },
     reportingOrigin,
   });
+
+  console.log('trigger registered');
 
   const payload = await pollEventLevelReports(reportingOrigin);
   console.log('event-level-reports', JSON.stringify(payload));
@@ -51,6 +55,8 @@ attribution_reporting_promise_test(async t => {
   const report = JSON.parse(payload.reports[0].body);
   assert_equals(report.source_event_id, source.source_event_id);
   assert_equals(report.source_type, sourceType);
+
+  console.log('event-level report received and checked');
 
   const debugReportPayload = await pollVerboseDebugReports(reportingOrigin);
   console.log('verbose-debug-reports', JSON.stringify(debugReportPayload));
