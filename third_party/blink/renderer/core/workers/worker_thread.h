@@ -216,7 +216,7 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
       // https://linear.app/replay/issue/RUN-1537#comment-d8416380
       if (recordreplay::IsRecordingOrReplaying("task-lifetime")) {
           base::AutoLock thread_locker(thread->lock_);
-          if (thread->requested_to_terminate_)
+          if (thread->exit_code_ != ExitCode::kNotTerminated)
             continue;
       }
       threads.push_back(thread);
@@ -224,9 +224,8 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
     std::sort(threads.begin(), threads.end(),
               recordreplay::CompareByPointerId());
 
-    recordreplay::Assert("[RUN-1537-1689] CallOnAllWorkerThreads %zu %u",
-                         threads.size(),
-                         InitializingWorkerThreads().size());
+    recordreplay::Assert("[RUN-1537-1689] CallOnAllWorkerThreads %zu",
+                         threads.size());
 
     for (WorkerThread* thread : threads) {
       PostCrossThreadTask(
