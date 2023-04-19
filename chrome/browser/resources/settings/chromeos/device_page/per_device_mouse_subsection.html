@@ -11,7 +11,7 @@
         $i18n{mouseSwapButtons}
       </div>
       <settings-dropdown-menu id="mouseSwapButtonDropdown"
-          aria-labeledby="mouseSwapButtonLabel"
+          label="[[mouse.name]]"
           pref="{{primaryRightPref}}"
           menu-options="[[swapPrimaryOptions]]"
           deep-link-focus-id$="[[Setting.kMouseSwapPrimaryButtons]]">
@@ -21,6 +21,7 @@
         class="hr"
         pref="{{accelerationPref}}"
         label="$i18n{mouseAccelerationLabel}"
+        aria-label="[[mouse.name]] $i18n{mouseAccelerationLabel}"
         deep-link-focus-id$="[[Setting.kMouseAcceleration]]">
     </settings-toggle-button>
     <div class="settings-box">
@@ -30,7 +31,7 @@
       <settings-slider id="mouseSpeedSlider"
           pref="{{sensitivityPref}}"
           ticks="[[sensitivityValues_]]"
-          label-aria="$i18n{mouseSpeed}"
+          label-aria="[[mouse.name]] $i18n{mouseSpeed}"
           label-min="$i18n{pointerSlow}"
           label-max="$i18n{pointerFast}"
           deep-link-focus-id$="[[Setting.kMouseSpeed]]">
@@ -38,6 +39,7 @@
     </div>
     <template is="dom-if" if="[[allowScrollSettings_]]" restamp>
       <settings-toggle-button id="mouseScrollAcceleration"
+          aria-label="[[mouse.name]] $i18n{mouseScrollAccelerationLabel}"
           class="hr"
           pref="{{scrollAccelerationPref}}"
           label="$i18n{mouseScrollAccelerationLabel}"
@@ -50,7 +52,7 @@
         <settings-slider id="mouseScrollSpeedSlider"
             pref="{{scrollSensitivityPref}}"
             ticks="[[sensitivityValues_]]"
-            label-aria="$i18n{mouseScrollSpeed}"
+            label-aria="[[mouse.name]] $i18n{mouseScrollSpeed}"
             label-min="$i18n{pointerSlow}"
             label-max="$i18n{pointerFast}">
         </settings-slider>
