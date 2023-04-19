@@ -40,9 +40,9 @@
 namespace blink {
 
 static unsigned ComputeMatchedPropertiesHash(const MatchResult& result) {
-  const MatchedPropertiesVector& vector = result.GetMatchedProperties();
+  const RecordReplayMatchedPropertiesVector vector = result.GetRecordReplayMatchedProperties();
   return StringHasher::HashMemory(vector.data(),
-                                  sizeof(MatchedProperties) * vector.size());
+                                  sizeof(RecordReplayMatchedProperties) * vector.size());
 }
 
 void CachedMatchedProperties::Set(const ComputedStyle& style,

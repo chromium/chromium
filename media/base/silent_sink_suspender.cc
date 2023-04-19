@@ -22,6 +22,7 @@ SilentSinkSuspender::SilentSinkSuspender(
       task_runner_(base::ThreadTaskRunnerHandle::Get()),
       silence_timeout_(silence_timeout),
       fake_sink_(std::move(worker), params_),
+      transition_lock_("SilentSinkSuspender"),
       sink_transition_callback_(
           base::BindRepeating(&SilentSinkSuspender::TransitionSinks,
                               base::Unretained(this))) {

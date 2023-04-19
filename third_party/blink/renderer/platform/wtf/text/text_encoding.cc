@@ -62,6 +62,9 @@ std::string TextEncoding::Encode(const String& string,
   if (string.empty())
     return std::string();
 
+  recordreplay::Assert("[RUN-1350-1765] TextEncoding::Encode %u %s %d", string.length(), GetName(),
+                       (int)handling);
+
   std::unique_ptr<TextCodec> text_codec = NewTextCodec(*this);
   std::string encoded_string;
   if (string.Is8Bit())

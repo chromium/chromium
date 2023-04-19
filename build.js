@@ -15,6 +15,8 @@ if (REPLAY_LOCAL_DRIVER_DIR && process.env.DRIVER_REVISION) {
   );
 }
 
+const outdir = process.env.REPLAY_BUILD_DIRECTORY || "out/Release";
+
 // Ensure that the git repository is "trusted", otherwise we'll get errors like:
 // fatal: unsafe repository ('/chromium/src' is owned by someone else)
 spawnChecked("git", [
@@ -104,12 +106,12 @@ if (useGoma) {
 
 // ensure that build configuration is written with correct paths
 const gn = currentPlatform() == "windows" ? "gn.bat" : "gn";
-spawnChecked(gn, ["gen", "out/Release"]);
+spawnChecked(gn, ["gen", outdir]);
 
 console.log(`Building...`);
 const autoninja =
   currentPlatform() == "windows" ? "autoninja.bat" : "autoninja";
-spawnChecked(autoninja, ["-C", "out/Release", "chrome"], {
+spawnChecked(autoninja, ["-C", outdir, "chrome"], {
   stdio: "inherit",
 });
 

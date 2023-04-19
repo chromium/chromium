@@ -377,37 +377,51 @@ bool IsMainThread() {
 
 static int gNextMainThreadId = 1;
 
-int NewIdMainThread(const char* name) {
-  if (IsRecordingOrReplaying()) {
-    if (!V8IsMainThread()) {
-      fprintf(stderr, "NewIdMainThread not main thread: %s\n", name);
-      CHECK(V8IsMainThread());
-    }
-    Assert("NewId %s", name);
-    return gNextMainThreadId++;
+static bool CheckNewId(const char* name) {
+  if (!IsRecordingOrReplaying()) {
+    // Don't track anything.
+    return false;
   }
-  return 0;
+  if (HasDivergedFromRecording()) {
+    // Everything is allowed when explicitly diverged.
+    return true;
+  }
+  if (AreEventsDisallowed()) {
+    // IDs can be created when events are disallowed when our own scripts
+    // create URL objects. This would be nice to improve.
+    if (!IsInReplayCode()) {
+      Warning("NewId when not allowed %s", name);
+    }
+    return false;
+  }
+  Assert("NewId %s", name);
+  return true;
+}
+
+int NewIdMainThread(const char* name) {
+  if (!CheckNewId(name)) {
+    return 0;
+  }
+  if (!V8IsMainThread()) {
+    fprintf(stderr, "NewIdMainThread not main thread: %s\n", name);
+    CHECK(V8IsMainThread());
+  }
+  return gNextMainThreadId++;
 }
 
 static std::atomic<int> gNextAnyThreadId{1};
 
 int NewIdAnyThread(const char* name) {
-  if (IsRecordingOrReplaying()) {
-    // IDs can be created when events are disallowed when gReplayScript
-    // creates URL objects. This would be nice to improve.
-    if (AreEventsDisallowed())
-      return 0;
-
-    Assert("NewId %s", name);
-    return (int)RecordReplayValue("NewId", (uintptr_t)gNextAnyThreadId++);
+  if (!CheckNewId(name)) {
+    return 0;
   }
-  return 0;
+  return (int)RecordReplayValue("NewId", (uintptr_t)gNextAnyThreadId++);
 }
 
 bool IsInReplayCode() {
-  // Allow cross-origin accesses from the replaying script installed to inspect
-  // DOM state. Events are disallowed when running replaying specific scripts.
-  // FIXME Use a separate API for this https://linear.app/replay/issue/RUN-1502
+  // Events are disallowed when running Replay's own scripts.
+  // FIXME Add to Recording API.
+  // https://linear.app/replay/issue/RUN-1502
   return IsReplaying() && AreEventsDisallowed();
 }
 

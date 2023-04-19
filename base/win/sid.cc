@@ -19,6 +19,8 @@
 #include "base/win/scoped_localalloc.h"
 #include "base/win/windows_version.h"
 
+#include "base/record_replay.h"
+
 namespace base {
 namespace win {
 
@@ -248,6 +250,19 @@ absl::optional<Sid> Sid::FromPSID(PSID sid) {
   DCHECK(sid);
   if (!sid || !::IsValidSid(sid))
     return absl::nullopt;
+
+  // When replaying the sid pointer can't be dereferenced,
+  // so we record/replay its contents.
+  if (recordreplay::IsRecordingOrReplaying("values")) {
+    uint32_t length = ::GetLengthSid(sid);
+    std::unique_ptr<char[]> buffer = std::make_unique<char[]>(length);
+    if (recordreplay::IsRecording()) {
+      memcpy(buffer.get(), sid, length);
+    }
+    recordreplay::RecordReplayBytes("Sid::FromPSID", buffer.get(), length);
+    return Sid(buffer.get(), length);
+  }
+
   return Sid(sid, ::GetLengthSid(sid));
 }
 

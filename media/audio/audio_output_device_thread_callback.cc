@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/record_replay.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
@@ -60,7 +61,9 @@ void AudioOutputDeviceThreadCallback::Process(uint32_t control_signal) {
                      "callback_num", callback_num_, "frames skipped",
                      frames_skipped);
 
-  base::TimeDelta delay = base::Microseconds(buffer->params.delay_us);
+  // RUN-1667: Record the delay_us param from the shared memory buffer (this is mutated by the other end.)
+  base::TimeDelta delay = base::Microseconds(
+    recordreplay::RecordReplayValue("audioparams::delay_us", buffer->params.delay_us));
 
   base::TimeTicks delay_timestamp =
       base::TimeTicks() + base::Microseconds(buffer->params.delay_timestamp_us);

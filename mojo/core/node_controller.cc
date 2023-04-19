@@ -62,8 +62,9 @@ ports::NodeName GetRandomNodeName() {
 
 Channel::MessagePtr SerializeEventMessage(ports::ScopedEvent event) {
   // https://linear.app/replay/issue/RUN-1243
-  recordreplay::Assert("[RUN-1243] NodeController::SerializeEventMessage eventType=%d",
-    event->type());
+  recordreplay::Assert(
+      "[RUN-1243] NodeController::SerializeEventMessage eventType=%d",
+      event->type());
 
   if (event->type() == ports::Event::Type::kUserMessage) {
     // User message events must already be partially serialized.
@@ -655,8 +656,16 @@ void NodeController::DropPeer(const ports::NodeName& node_name,
     auto it = peers_.find(name);
 
     if (it != peers_.end()) {
+      auto channel_has_one_ref = it->second.get()->HasOneRef();
+
+      // Since some amount of work happens after this point, there's no
+      // guarantee that this assert will fire even if there is a thread
+      // interleaving issue present.
+      //
       // https://linear.app/replay/issue/RUN-1050
-      recordreplay::Assert("[RUN-1050] NodeController::DropPeer #1");
+      recordreplay::Assert(
+          "[RUN-1050] NodeController::DropPeer #1 has_one_ref=%d",
+          channel_has_one_ref);
 
       ports::NodeName peer = it->first;
       peers_.erase(it);
@@ -1131,7 +1140,7 @@ void NodeController::OnEventMessage(const ports::NodeName& from_node,
 
   // https://linear.app/replay/issue/RUN-1243
   recordreplay::Assert("[RUN-1243] NodeController::OnEventMessage eventType=%d",
-    (int) event->type());
+                       (int)event->type());
 
   node_->AcceptEvent(from_node, std::move(event));
 

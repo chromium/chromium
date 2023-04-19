@@ -7,6 +7,7 @@
 
 #include "base/check_op.h"
 #include "base/record_replay.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "third_party/blink/renderer/platform/heap/write_barrier.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -133,8 +134,9 @@ struct MemberHashRecordReplayRegisteredPointerId
   static bool Equal(const U& a, const V& b) {
     return a == b;
   }
-};
 
+  static constexpr bool kIsRecordReplayDeterministicHash = true;
+};
 
 // Replay's hashing function with Member<>-wrapped objects, using the function
 // RecordReplayId for the hashing key.
@@ -195,24 +197,48 @@ struct MemberHashRecordReplayId
   static bool Equal(const U& a, const V& b) {
     return a == b;
   }
+
+  static constexpr bool kIsRecordReplayDeterministicHash = true;
 };
+
+template <typename T>
+class HasRecordReplayId {
+  template <typename U>
+  static auto Check(U* u) -> decltype(u->RecordReplayId(), std::true_type());
+  template <typename>
+  static std::false_type Check(...);
+
+ public:
+  static constexpr bool value = decltype(Check<T>(nullptr))::value;
+};
+
+template <typename T>
+constexpr bool has_record_replay_id = HasRecordReplayId<T>::value;
+
+// TODO: Consider making the default hash configurable at compile time so we
+//       can compare the behavior and performance across different combinations
+//       of configuration options.
+template <typename T>
+using DefaultHashTypeForMember = std::conditional_t<has_record_replay_id<T>,
+                                                    MemberHashRecordReplayId<T>,
+                                                    MemberHash<T>>;
 
 template <typename T>
 struct DefaultHash<blink::Member<T>> {
   STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
+  using Hash = DefaultHashTypeForMember<T>;
 };
 
 template <typename T>
 struct DefaultHash<blink::WeakMember<T>> {
   STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
+  using Hash = DefaultHashTypeForMember<T>;
 };
 
 template <typename T>
 struct DefaultHash<blink::UntracedMember<T>> {
   STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
+  using Hash = DefaultHashTypeForMember<T>;
 };
 
 template <typename T>
@@ -329,6 +355,12 @@ class ConstructTraits<blink::Member<T>, Traits, Allocator> final
 template <typename T, typename Traits, typename Allocator>
 class ConstructTraits<blink::WeakMember<T>, Traits, Allocator> final
     : public MemberConstructTraits<blink::WeakMember<T>> {};
+
+template <typename T>
+struct IsPointerType<blink::WeakMember<T>> : std::true_type {};
+
+template <typename T>
+struct IsPointerType<blink::Member<T>> : std::true_type {};
 
 }  // namespace WTF
 

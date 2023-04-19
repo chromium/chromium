@@ -172,6 +172,10 @@ CanvasRenderingContext2DState::~CanvasRenderingContext2DState() = default;
 
 void CanvasRenderingContext2DState::FontsNeedUpdate(FontSelector* font_selector,
                                                     FontInvalidationReason) {
+  recordreplay::Assert(
+    "[RUN-1219-1728] CanvasRenderingContext2DState::FontNeedsUpdate %d",
+    this->RecordReplayId()
+  );
   DCHECK_EQ(font_selector, font_.GetFontSelector());
   DCHECK(realized_font_);
 

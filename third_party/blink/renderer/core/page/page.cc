@@ -1022,6 +1022,15 @@ void Page::WillBeDestroyed() {
       });
   page_visibility_observer_set_.Clear();
 
+  if (recordreplay::AreEventsDisallowed() &&
+      recordreplay::IsRecordingOrReplaying("leak-references")) {
+    // If the dtor is called during GC (usually from |~SVGImage|),
+    // we leak the scheduler, so the finalizer does not touch the recording
+    // stream.
+    // https://linear.app/replay/issue/RUN-1347#comment-bc4e3f9d
+    page_scheduler_.release();
+  }
+
   page_scheduler_ = nullptr;
 }
 
