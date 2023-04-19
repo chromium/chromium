@@ -64,12 +64,13 @@ void SkiaOutputDeviceVulkanSecondaryCB::Submit(bool sync_cpu,
 }
 
 bool SkiaOutputDeviceVulkanSecondaryCB::Reshape(
-    const SkSurfaceCharacterization& characterization,
+    const SkImageInfo& image_info,
     const gfx::ColorSpace& color_space,
+    int sample_count,
     float device_scale_factor,
     gfx::OverlayTransform transform) {
   // No-op
-  size_ = gfx::SkISizeToSize(characterization.dimensions());
+  size_ = gfx::SkISizeToSize(image_info.dimensions());
   return true;
 }
 

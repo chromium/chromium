@@ -32,8 +32,9 @@ class VIZ_SERVICE_EXPORT OutputPresenterFuchsia : public OutputPresenter {
 
   // OutputPresenter implementation:
   void InitializeCapabilities(OutputSurface::Capabilities* capabilities) final;
-  bool Reshape(const SkSurfaceCharacterization& characterization,
+  bool Reshape(const SkImageInfo& image_info,
                const gfx::ColorSpace& color_space,
+               int sample_count,
                float device_scale_factor,
                gfx::OverlayTransform transform) final;
   std::vector<std::unique_ptr<Image>> AllocateImages(

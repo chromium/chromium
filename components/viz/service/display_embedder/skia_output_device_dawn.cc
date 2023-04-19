@@ -71,16 +71,16 @@ gpu::SurfaceHandle SkiaOutputDeviceDawn::GetChildSurfaceHandle() const {
   return child_window_.window();
 }
 
-bool SkiaOutputDeviceDawn::Reshape(
-    const SkSurfaceCharacterization& characterization,
-    const gfx::ColorSpace& color_space,
-    float device_scale_factor,
-    gfx::OverlayTransform transform) {
+bool SkiaOutputDeviceDawn::Reshape(const SkImageInfo& image_info,
+                                   const gfx::ColorSpace& color_space,
+                                   int sample_count,
+                                   float device_scale_factor,
+                                   gfx::OverlayTransform transform) {
   DCHECK_EQ(transform, gfx::OVERLAY_TRANSFORM_NONE);
 
-  size_ = gfx::SkISizeToSize(characterization.dimensions());
-  sk_color_space_ = characterization.refColorSpace();
-  sample_count_ = characterization.sampleCount();
+  size_ = gfx::SkISizeToSize(image_info.dimensions());
+  sk_color_space_ = image_info.refColorSpace();
+  sample_count_ = sample_count;
 
   wgpu::SwapChainDescriptor swap_chain_desc;
   swap_chain_desc.format = kSwapChainFormat;

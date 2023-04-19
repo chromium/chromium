@@ -147,8 +147,9 @@ class SkiaOutputSurfaceImplOnGpu
     return weak_ptr_;
   }
 
-  void Reshape(const SkSurfaceCharacterization& characterization,
+  void Reshape(const SkImageInfo& image_info,
                const gfx::ColorSpace& color_space,
+               int sample_count,
                float device_scale_factor,
                gfx::OverlayTransform transform);
   void FinishPaintCurrentFrame(

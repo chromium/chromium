@@ -437,24 +437,9 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
 
   void PageFlipComplete() { presenter_->SwapComplete(); }
 
-  SkSurfaceCharacterization CreateSkSurfaceCharacterization(
-      const gfx::Size size = kScreenSize) {
-    auto* gr_context = dependency_->GetSharedContextState()->gr_context();
-    auto gr_context_thread_safe_proxy = gr_context->threadSafeProxy();
-
-    auto image_info =
-        SkImageInfo::Make(size.width(), size.height(), kDefaultColorType,
-                          kPremul_SkAlphaType, nullptr);
-    const auto backend_format =
-        gr_context_thread_safe_proxy->defaultBackendFormat(kDefaultColorType,
-                                                           GrRenderable::kYes);
-    SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
-    auto cache_max_resource_bytes = gr_context->getResourceCacheLimit();
-    return gr_context_thread_safe_proxy->createCharacterization(
-        cache_max_resource_bytes, image_info, backend_format,
-        /*sampleCount=*/1, kTopLeft_GrSurfaceOrigin, surface_props,
-        /*isMipMapped=*/false,
-        /*willUseGLFBO0=*/false, /*isTextureable=*/true);
+  SkImageInfo CreateSkImageInfo(const gfx::Size size = kScreenSize) {
+    return SkImageInfo::Make(size.width(), size.height(), kDefaultColorType,
+                             kPremul_SkAlphaType, nullptr);
   }
 
   void FirstReshape() {
@@ -466,7 +451,8 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
       output_device_->EnsureMinNumberOfBuffers(
           output_device_->capabilities().number_of_buffers);
     }
-    output_device_->Reshape(CreateSkSurfaceCharacterization(), {}, 1.0f,
+    output_device_->Reshape(CreateSkImageInfo(), gfx::ColorSpace(),
+                            /*sample_count=*/1, /*device_scale_factor=*/1.0f,
                             gfx::OVERLAY_TRANSFORM_NONE);
   }
 
@@ -762,9 +748,10 @@ TEST_F_GPU(SkiaOutputDeviceBufferQueueTest, ReshapeWithInFlightSurfaces) {
   Present();
 
   output_device_->Reshape(
-      CreateSkSurfaceCharacterization(
+      CreateSkImageInfo(
           gfx::Size(kScreenSize.width() - 1, kScreenSize.height() - 1)),
-      {}, 1.0f, gfx::OVERLAY_TRANSFORM_NONE);
+      gfx::ColorSpace(), /*sample_count=*/1, /*device_scale_factor=*/1.0f,
+      gfx::OVERLAY_TRANSFORM_NONE);
 
   // swap completion callbacks should not be cleared.
   EXPECT_EQ(1u, swap_completion_callbacks().size());

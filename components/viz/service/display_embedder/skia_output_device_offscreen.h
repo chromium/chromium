@@ -30,8 +30,9 @@ class SkiaOutputDeviceOffscreen : public SkiaOutputDevice {
   ~SkiaOutputDeviceOffscreen() override;
 
   // SkiaOutputDevice implementation:
-  bool Reshape(const SkSurfaceCharacterization& characterization,
+  bool Reshape(const SkImageInfo& image_info,
                const gfx::ColorSpace& color_space,
+               int sample_count,
                float device_scale_factor,
                gfx::OverlayTransform transform) override;
   void Present(const absl::optional<gfx::Rect>& update_rect,

@@ -154,19 +154,18 @@ SkiaOutputDeviceGL::~SkiaOutputDeviceGL() {
   memory_type_tracker_->TrackMemFree(backbuffer_estimated_size_);
 }
 
-bool SkiaOutputDeviceGL::Reshape(
-    const SkSurfaceCharacterization& characterization,
-    const gfx::ColorSpace& color_space,
-    float device_scale_factor,
-    gfx::OverlayTransform transform) {
+bool SkiaOutputDeviceGL::Reshape(const SkImageInfo& image_info,
+                                 const gfx::ColorSpace& color_space,
+                                 int sample_count,
+                                 float device_scale_factor,
+                                 gfx::OverlayTransform transform) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK_EQ(transform, gfx::OVERLAY_TRANSFORM_NONE);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-  const gfx::Size size = gfx::SkISizeToSize(characterization.dimensions());
-  const SkColorType color_type = characterization.colorType();
-  const bool has_alpha =
-      !SkAlphaTypeIsOpaque(characterization.imageInfo().alphaType());
+  const gfx::Size size = gfx::SkISizeToSize(image_info.dimensions());
+  const SkColorType color_type = image_info.colorType();
+  const bool has_alpha = !image_info.isOpaque();
 
   if (!gl_surface_->Resize(size, device_scale_factor, color_space, has_alpha)) {
     CheckForLoopFailures();
@@ -186,15 +185,14 @@ bool SkiaOutputDeviceGL::Reshape(
   DCHECK(backend_format.isValid()) << "color_type: " << color_type;
   framebuffer_info.fFormat = backend_format.asGLFormatEnum();
 
-  GrBackendRenderTarget render_target(size.width(), size.height(),
-                                      characterization.sampleCount(),
+  GrBackendRenderTarget render_target(size.width(), size.height(), sample_count,
                                       /*stencilBits=*/0, framebuffer_info);
   auto origin = (gl_surface_->GetOrigin() == gfx::SurfaceOrigin::kTopLeft)
                     ? kTopLeft_GrSurfaceOrigin
                     : kBottomLeft_GrSurfaceOrigin;
   sk_surface_ = SkSurface::MakeFromBackendRenderTarget(
-      gr_context, render_target, origin, color_type,
-      characterization.refColorSpace(), &surface_props);
+      gr_context, render_target, origin, color_type, image_info.refColorSpace(),
+      &surface_props);
   if (!sk_surface_) {
     LOG(ERROR) << "Couldn't create surface:"
                << "\n  abandoned()=" << gr_context->abandoned()

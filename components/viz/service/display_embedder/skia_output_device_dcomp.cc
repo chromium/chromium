@@ -271,17 +271,16 @@ SkiaOutputDeviceDCompGLSurface::~SkiaOutputDeviceDCompGLSurface() {
   memory_type_tracker_->TrackMemFree(backbuffer_estimated_size_);
 }
 
-bool SkiaOutputDeviceDCompGLSurface::Reshape(
-    const SkSurfaceCharacterization& characterization,
-    const gfx::ColorSpace& color_space,
-    float device_scale_factor,
-    gfx::OverlayTransform transform) {
+bool SkiaOutputDeviceDCompGLSurface::Reshape(const SkImageInfo& image_info,
+                                             const gfx::ColorSpace& color_space,
+                                             int sample_count,
+                                             float device_scale_factor,
+                                             gfx::OverlayTransform transform) {
   DCHECK_EQ(transform, gfx::OVERLAY_TRANSFORM_NONE);
 
-  const gfx::Size size = gfx::SkISizeToSize(characterization.dimensions());
-  const SkColorType color_type = characterization.colorType();
-  const bool has_alpha =
-      !SkAlphaTypeIsOpaque(characterization.imageInfo().alphaType());
+  const gfx::Size size = gfx::SkISizeToSize(image_info.dimensions());
+  const SkColorType color_type = image_info.colorType();
+  const bool has_alpha = !image_info.isOpaque();
 
   if (!gl_surface_->Resize(size, device_scale_factor, color_space, has_alpha)) {
     CheckForLoopFailures();
@@ -314,15 +313,14 @@ bool SkiaOutputDeviceDCompGLSurface::Reshape(
       NOTREACHED() << "color_type: " << color_type;
   }
 
-  GrBackendRenderTarget render_target(size.width(), size.height(),
-                                      characterization.sampleCount(),
+  GrBackendRenderTarget render_target(size.width(), size.height(), sample_count,
                                       /*stencilBits=*/0, framebuffer_info);
   auto origin = (gl_surface_->GetOrigin() == gfx::SurfaceOrigin::kTopLeft)
                     ? kTopLeft_GrSurfaceOrigin
                     : kBottomLeft_GrSurfaceOrigin;
   sk_surface_ = SkSurface::MakeFromBackendRenderTarget(
       context_state_->gr_context(), render_target, origin, color_type,
-      characterization.refColorSpace(), &surface_props);
+      image_info.refColorSpace(), &surface_props);
   if (!sk_surface_) {
     LOG(ERROR) << "Couldn't create surface:"
                << "\n  abandoned()="
@@ -417,26 +415,20 @@ SkiaOutputDeviceDCompPresenter::SkiaOutputDeviceDCompPresenter(
 
 SkiaOutputDeviceDCompPresenter::~SkiaOutputDeviceDCompPresenter() = default;
 
-bool SkiaOutputDeviceDCompPresenter::Reshape(
-    const SkSurfaceCharacterization& characterization,
-    const gfx::ColorSpace& color_space,
-    float device_scale_factor,
-    gfx::OverlayTransform transform) {
+bool SkiaOutputDeviceDCompPresenter::Reshape(const SkImageInfo& image_info,
+                                             const gfx::ColorSpace& color_space,
+                                             int sample_count,
+                                             float device_scale_factor,
+                                             gfx::OverlayTransform transform) {
   DCHECK_EQ(transform, gfx::OVERLAY_TRANSFORM_NONE);
 
-  if (!characterization.isValid()) {
-    DLOG(ERROR) << "Invalid SkSurfaceCharacterization";
-    return false;
-  }
-
-  auto size = gfx::SkISizeToSize(characterization.dimensions());
+  auto size = gfx::SkISizeToSize(image_info.dimensions());
 
   // DCompPresenter calls SetWindowPos on resize, so we call it to reflect the
   // newly allocated root surface.
   // Note, we could inline SetWindowPos here, but we need access to the HWND.
-  if (!presenter_->Resize(
-          size, device_scale_factor, color_space,
-          !SkAlphaTypeIsOpaque(characterization.imageInfo().alphaType()))) {
+  if (!presenter_->Resize(size, device_scale_factor, color_space,
+                          /*has_alpha=*/!image_info.isOpaque())) {
     CheckForLoopFailures();
     // To prevent tail call, so we can see the stack.
     base::debug::Alias(nullptr);

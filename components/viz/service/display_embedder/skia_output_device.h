@@ -112,8 +112,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
   virtual std::unique_ptr<SkiaOutputDevice::ScopedPaint> BeginScopedPaint();
 
   // Changes the size of draw surface and invalidates it's contents.
-  virtual bool Reshape(const SkSurfaceCharacterization& characterization,
+  virtual bool Reshape(const SkImageInfo& image_info,
                        const gfx::ColorSpace& color_space,
+                       int sample_count,
                        float device_scale_factor,
                        gfx::OverlayTransform transform) = 0;
 

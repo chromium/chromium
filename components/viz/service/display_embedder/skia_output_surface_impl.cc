@@ -352,6 +352,7 @@ void SkiaOutputSurfaceImpl::Reshape(const ReshapeParams& params) {
       << "SkColorType is invalid for buffer format_index: " << format_index;
 
   auto sk_color_space = params.color_space.ToSkColorSpace();
+  // TODO(sunnyps): Localize SkSurfaceCharacterization creation to DDL recorder.
   characterization_ = CreateSkSurfaceCharacterizationCurrentFrame(
       params.size, color_type, params.alpha_type, /*mipmap=*/false,
       std::move(sk_color_space));
@@ -360,7 +361,8 @@ void SkiaOutputSurfaceImpl::Reshape(const ReshapeParams& params) {
   // SkiaOutputSurfaceImpl::dtor. So it is safe to use base::Unretained.
   auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::Reshape,
                              base::Unretained(impl_on_gpu_.get()),
-                             characterization_, params.color_space,
+                             characterization_.imageInfo(), params.color_space,
+                             characterization_.sampleCount(),
                              params.device_scale_factor, GetDisplayTransform());
   EnqueueGpuTask(std::move(task), {}, /*make_current=*/true,
                  /*need_framebuffer=*/!dependency_->IsOffscreen());

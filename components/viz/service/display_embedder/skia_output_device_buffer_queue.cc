@@ -599,14 +599,14 @@ gfx::Size SkiaOutputDeviceBufferQueue::GetSwapBuffersSize() {
   }
 }
 
-bool SkiaOutputDeviceBufferQueue::Reshape(
-    const SkSurfaceCharacterization& characterization,
-    const gfx::ColorSpace& color_space,
-    float device_scale_factor,
-    gfx::OverlayTransform transform) {
+bool SkiaOutputDeviceBufferQueue::Reshape(const SkImageInfo& image_info,
+                                          const gfx::ColorSpace& color_space,
+                                          int sample_count,
+                                          float device_scale_factor,
+                                          gfx::OverlayTransform transform) {
   DCHECK(pending_overlay_mailboxes_.empty());
-  if (!presenter_->Reshape(characterization, color_space, device_scale_factor,
-                           transform)) {
+  if (!presenter_->Reshape(image_info, color_space, sample_count,
+                           device_scale_factor, transform)) {
     LOG(ERROR) << "Failed to resize.";
     CheckForLoopFailuresBufferQueue();
     // To prevent tail call, so we can see the stack.
@@ -615,12 +615,12 @@ bool SkiaOutputDeviceBufferQueue::Reshape(
   }
 
   overlay_transform_ = transform;
-  gfx::Size size = gfx::SkISizeToSize(characterization.dimensions());
+  gfx::Size size = gfx::SkISizeToSize(image_info.dimensions());
   if (color_space_ == color_space && image_size_ == size)
     return true;
   color_space_ = color_space;
   image_size_ = size;
-  sample_count_ = characterization.sampleCount();
+  sample_count_ = sample_count;
 
   bool success = RecreateImages();
   if (!success) {
