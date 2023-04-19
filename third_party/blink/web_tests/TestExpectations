@@ -6869,3 +6869,7 @@ crbug.com/1432448 external/wpt/webnn/* [ Failure ]
 
 # Sheriff 2023-04-13
 crbug.com/1432763 [ Linux ] external/wpt/fetch/metadata/generated/element-picture.https.sub.html [ Crash Pass Timeout ]
+
+# Sheriff 2023-04-19
+crbug.com/1434731 http/tests/devtools/elements/styles-4/styles-overriden-properties.js [ Failure Pass ]
+crbug.com/1434731 http/tests/devtools/elements/styles-2/parse-declaration-with-quote.js [ Failure Pass ]
