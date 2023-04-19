@@ -99,7 +99,7 @@ a[href] {
 collapse-radio-button,
 controlled-radio-button,
 cr-radio-button {
-  min-height: var(--settings-row-min-height);
+  min-height: var(--cr-section-min-height);
 }
 
 cr-radio-group {
@@ -148,7 +148,7 @@ cr-radio-group {
 .list-item {
   align-items: center;
   display: flex;
-  min-height: var(--settings-row-min-height);
+  min-height: var(--cr-section-min-height);
   padding: 0;
 }
 
@@ -191,7 +191,7 @@ cr-radio-group {
 /* A row with two lines of text. Often the lower line will be .secondary.
  */
 .two-line {
-  min-height: var(--settings-row-two-line-min-height);
+  min-height: var(--cr-section-two-line-min-height);
 }
 
 /* A settings-box is a horizontal row of text or controls within a
@@ -217,7 +217,7 @@ cr-radio-group {
 }
 
 .settings-box.two-line {
-  min-height: var(--settings-row-two-line-min-height);
+  min-height: var(--cr-section-two-line-min-height);
 }
 
 .settings-box-text {

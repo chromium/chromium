@@ -18,9 +18,6 @@ html {
 
   --settings-error-color: var(--google-red-700);
 
-  --settings-row-min-height: var(--cr-section-min-height);
-  --settings-row-two-line-min-height: var(--cr-section-two-line-min-height);
-
   /* Spacing between a control (e.g. checkbox) and its label. */
   --settings-control-label-spacing: 20px;
 
