@@ -287,7 +287,6 @@ class MHTMLGenerationManager::Job {
   static bool CloseFileIfValid(base::File& file, int64_t* file_size);
 
   // Time tracking for performance metrics reporting.
-  const base::TimeTicks creation_time_;
   base::TimeTicks wait_on_renderer_start_time_;
   base::TimeDelta all_renderers_wait_time_;
   base::TimeDelta all_renderers_main_thread_time_;
@@ -352,8 +351,7 @@ MHTMLGenerationManager::Job::Job(
     WebContents* web_contents,
     const MHTMLGenerationParams& params,
     MHTMLGenerationResult::GenerateMHTMLCallback callback)
-    : creation_time_(base::TimeTicks::Now()),
-      params_(params),
+    : params_(params),
       frame_tree_node_id_of_busy_frame_(FrameTreeNode::kFrameTreeNodeInvalidId),
       mhtml_boundary_marker_(net::GenerateMimeMultipartBoundary()),
       salt_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
@@ -587,8 +585,6 @@ void MHTMLGenerationManager::Job::OnFinished(
   TRACE_EVENT_NESTABLE_ASYNC_END2("page-serialization", "SavingMhtmlJob", this,
                                   "job save status", save_status, "file size",
                                   file_size);
-  UMA_HISTOGRAM_TIMES("PageSerialization.MhtmlGeneration.FullPageSavingTime",
-                      base::TimeTicks::Now() - creation_time_);
   UMA_HISTOGRAM_ENUMERATION("PageSerialization.MhtmlGeneration.FinalSaveStatus",
                             save_status);
 

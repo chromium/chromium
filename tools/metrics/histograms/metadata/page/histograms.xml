@@ -3068,13 +3068,6 @@ chromium-metrics-reviews@google.com.
   <summary>Final status of the MHTML save operation for a page.</summary>
 </histogram>
 
-<histogram name="PageSerialization.MhtmlGeneration.FullPageSavingTime"
-    units="ms" expires_after="2020-12-01">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>Time taken to save a page into an MHTML file.</summary>
-</histogram>
-
 <histogram
     name="PageSerialization.MhtmlGeneration.RendererMainThreadTime.FrameTree"
     units="ms" expires_after="2020-12-01">
