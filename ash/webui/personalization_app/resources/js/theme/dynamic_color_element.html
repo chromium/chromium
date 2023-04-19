@@ -84,8 +84,8 @@
 </style>
 <div id="container">
   <div id="themeHeader">
-    <div id="themeTitle">$i18n{dynamicColorLabel}</div>
-    <div id="dynamicColorToggleDescription">$i18n{dynamicColorDescription}</div>
+    <div id="themeTitle" class="ellipsis">$i18n{dynamicColorLabel}</div>
+    <div id="dynamicColorToggleDescription" class="ellipsis">$i18n{dynamicColorDescription}</div>
     <cr-toggle checked="{{automaticSeedColorEnabled}}" id="dynamicColorToggle"
         on-change="onToggleChanged_" aria-labelledby="dynamicColorToggleDescription">
     </cr-toggle>
