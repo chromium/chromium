@@ -14,17 +14,4 @@ found in the LICENSE file.
         dist:title="@string/ar_module_title">
         <dist:fusing dist:include="true" />
     </dist:module>
-
-    <application>
-        <!-- This tag indicates that this application optionally uses ARCore. -->
-        <meta-data android:name="com.google.ar.core" android:value="optional" />
-    </application>
-
-    {% if channel in ['default'] %}
-      <queries>
-        <!-- TODO(https://crbug.com/1122210): This is needed for Android 11 to
-             allow checking if ARCore is installed when using ToT builds. -->
-        <package android:name="com.google.ar.core" />
-      </queries>
-    {% endif %}
 </manifest>

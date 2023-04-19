@@ -609,9 +609,6 @@ if (current_toolchain == default_toolchain) {
 
     # Include sources for start_surface_java_sources.gni
     sources += start_surface_java_sources
-    if (enable_arcore) {
-      deps += [ "//third_party/arcore-android-sdk-client:com_google_ar_core_java__ignored_manifest" ]
-    }
 
     if (enable_vr) {
       deps += [ ":chrome_vr_java_resources" ]
@@ -2874,16 +2871,9 @@ if (current_toolchain == default_toolchain) {
       deps = [
         ":chrome_test_ar_java",
         "//third_party/android_sdk:android_test_mock_java",
-      ]
 
-      # Include ArCore files directly instead of using bundles. This does
-      # require us to explicitly re-declare our dependency on ARCore, which
-      # otherwise should have already been included, since the native libraries
-      # need to know that it is available. Though we'd always need to forcibly
-      # include the manifest DEP here as well
-      deps += [
+        # Dependency needed so that libarcore_sdk_c.so will be extracted.
         "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
-        "//third_party/arcore-android-sdk-client:com_google_ar_core_java__ignored_manifest",
       ]
 
       _libarcore_dir = get_label_info(

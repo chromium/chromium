@@ -563,8 +563,8 @@ template("monochrome_public_common_apk_or_module_tmpl") {
         # meta-data tag is in the base manifest.
         if (enable_arcore) {
           deps += [
-            "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
-            "//third_party/arcore-android-sdk-client:com_google_ar_core_java__ignored_manifest",
+            "//third_party/arcore-android-sdk-client:arcore_base_manifest_java",
+            "//third_party/arcore-android-sdk-client:com_google_ar_core_J__unpack_aar",
           ]
         }
 

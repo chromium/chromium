@@ -72,13 +72,8 @@ source_set("android") {
   }
 }
 
-# In order to be able to be included in WebView/WebLayer targets; though this
-# does link in ARCore, it does not link in the necessary ARCore manifest changes
-# and due to other restrictions does not link in the native code required by
-# arcore. Consumers will need to link the native arcore libraries themselves and
-# will likely need to include the
-# "//third_party/arcore-android-sdk-client:com_google_ar_core_java__ignored_manifest"
-# target themselves somewhere in their build.
+# Does not cause the necessary .so files to be bundled.
+# Look for "libarcore_sdk_c.so" for examples of how to add it in.
 android_library("xr_java") {
   # Contains interfaces that should be permanently, and publicly, available and
   # can thus be depended on outside of this directory, regardless of whether xr

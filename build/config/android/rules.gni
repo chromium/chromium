@@ -4724,6 +4724,7 @@ if (enable_java_templates && is_android) {
                                [
                                  "deps",
                                  "input_jars_paths",
+                                 "mergeable_android_manifests",
                                  "proguard_configs",
                                ])
         if (!defined(deps)) {

@@ -98,10 +98,8 @@ android_apk("weblayer_support_apk") {
                          "target_out_dir") + "/com_google_ar_core_java/jni"
     loadable_modules +=
         [ "$_libarcore_dir/$android_app_abi/libarcore_sdk_c.so" ]
-    deps += [
-      "//third_party/arcore-android-sdk-client:com_google_ar_core_J__unpack_aar",
-      "//third_party/arcore-android-sdk-client:com_google_ar_core_java__ignored_manifest",
-    ]
+    deps +=
+        [ "//third_party/arcore-android-sdk-client:com_google_ar_core_java" ]
   }
 
   apk_name = "WebLayerSupport"

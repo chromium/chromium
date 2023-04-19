@@ -13,6 +13,14 @@
   </dist:module>  # DIFF-ANCHOR: 2805007f
   <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="33"/>
   <application>
+    <activity  # DIFF-ANCHOR: 28dc9019
+        android:name="com.google.ar.core.InstallActivity"
+        android:configChanges="keyboardHidden|orientation|screenSize"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:launchMode="singleTop"
+        android:theme="@android:style/Theme.Material.Light.Dialog.Alert">
+    </activity>  # DIFF-ANCHOR: 28dc9019
     <activity  # DIFF-ANCHOR: 93d41352
         android:name="org.chromium.chrome.browser.BrowserRestartActivity"
         android:excludeFromRecents="true"

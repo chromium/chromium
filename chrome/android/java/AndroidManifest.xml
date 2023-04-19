@@ -172,9 +172,6 @@ by a child template that "extends" this file.
         alternate mechanism.
       -->
       <queries>
-        {% if include_arcore_manifest_flag == 'true' %}
-          <package android:name="com.google.ar.core" />
-        {% endif %}
         {% if enable_vr == "true" %}
           <package android:name="com.google.vr.vrcore" />
         {% endif %}
@@ -1300,10 +1297,10 @@ by a child template that "extends" this file.
           android:resource="@xml/app_restrictions"/>
 
       {% if include_arcore_manifest_flag == 'true' %}
-      <!-- ARCore APK integration -->
       <!-- This tag indicates that this application optionally uses ARCore. -->
       <meta-data android:name="com.google.ar.core" android:value="optional" />
 
+      <!-- ARCore APK integration -->
       {% block base_application_extra_arcore_definitions %}
       <meta-data android:name="com.google.ar.core.session_settings"
           android:value="allow_front_facing_motion_tracking_6dof," />

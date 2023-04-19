@@ -103,14 +103,6 @@
         android:stateNotNeeded="true"
         android:theme="@style/Theme.PlayCore.Transparent">
     </activity>  # DIFF-ANCHOR: a2bae37c
-    <activity  # DIFF-ANCHOR: 28dc9019
-        android:name="com.google.ar.core.InstallActivity"
-        android:configChanges="keyboardHidden|orientation|screenSize"
-        android:excludeFromRecents="true"
-        android:exported="false"
-        android:launchMode="singleTop"
-        android:theme="@android:style/Theme.Material.Light.Dialog.Alert">
-    </activity>  # DIFF-ANCHOR: 28dc9019
     <activity  # DIFF-ANCHOR: a4438884
         android:name="org.chromium.android_webview.devui.MainActivity"
         android:exported="true"
