@@ -499,11 +499,7 @@ class WebAppOfflineDarkModeTest
 
   void SetUp() override {
 #if BUILDFLAG(IS_WIN)
-    if (base::win::GetVersion() < base::win::Version::WIN10) {
-      GTEST_SKIP();
-    } else {
-      InProcessBrowserTest::SetUp();
-    }
+    InProcessBrowserTest::SetUp();
 #elif BUILDFLAG(IS_MAC)
     // TODO(crbug.com/1298658): Get this test suite working.
     GTEST_SKIP();
@@ -546,6 +542,13 @@ class WebAppOfflineDarkModeTest
 #endif
 IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
                        MAYBE_WebAppOfflineDarkModeNoServiceWorker) {
+#if BUILDFLAG(IS_WIN)
+  if (GetParam() == blink::mojom::PreferredColorScheme::kLight &&
+      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
+    GTEST_SKIP() << "Host is in dark mode; skipping test";
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(true);
@@ -601,6 +604,13 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
 #endif
 IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
                        MAYBE_WebAppOfflineDarkModeEmptyServiceWorker) {
+#if BUILDFLAG(IS_WIN)
+  if (GetParam() == blink::mojom::PreferredColorScheme::kLight &&
+      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
+    GTEST_SKIP() << "Host is in dark mode; skipping test";
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* web_contents =
@@ -656,6 +666,13 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
 #endif
 IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
                        MAYBE_WebAppOfflineNoDarkModeColorsProvided) {
+#if BUILDFLAG(IS_WIN)
+  if (GetParam() == blink::mojom::PreferredColorScheme::kLight &&
+      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
+    GTEST_SKIP() << "Host is in dark mode; skipping test";
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* web_contents =
