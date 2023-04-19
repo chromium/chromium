@@ -229,6 +229,9 @@ const char kPasswordManagerLearnMoreURL[] =
     "https://support.google.com/chrome/?p=settings_password";
 #endif
 
+const char kPasswordManagerImportLearnMoreURL[] =
+    "https://support.google.com/chrome/?p=import-passwords-desktop";
+
 const char kPaymentMethodsURL[] =
     "https://pay.google.com/payments/"
     "home?utm_source=chrome&utm_medium=settings&utm_campaign=chrome-payment#"

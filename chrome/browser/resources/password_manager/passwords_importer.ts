@@ -12,6 +12,7 @@ import './site_favicon.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -29,6 +30,7 @@ enum DialogState {
   NO_DIALOG,
   STORE_PICKER,
   SUCCESS,
+  ERROR,
 }
 
 const PasswordsImporterElementBase = I18nMixin(PolymerElement);
@@ -207,12 +209,14 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
       case chrome.passwordsPrivate.ImportResultsStatus.SUCCESS:
         await this.handleSuccess_();
         return;
-      case chrome.passwordsPrivate.ImportResultsStatus.CONFLICTS:
+      case chrome.passwordsPrivate.ImportResultsStatus.MAX_FILE_SIZE:
       case chrome.passwordsPrivate.ImportResultsStatus.IO_ERROR:
       case chrome.passwordsPrivate.ImportResultsStatus.UNKNOWN_ERROR:
       case chrome.passwordsPrivate.ImportResultsStatus.NUM_PASSWORDS_EXCEEDED:
       case chrome.passwordsPrivate.ImportResultsStatus.BAD_FORMAT:
-      case chrome.passwordsPrivate.ImportResultsStatus.MAX_FILE_SIZE:
+        this.dialogState_ = DialogState.ERROR;
+        break;
+      case chrome.passwordsPrivate.ImportResultsStatus.CONFLICTS:
       case chrome.passwordsPrivate.ImportResultsStatus.IMPORT_ALREADY_ACTIVE:
         // TODO(crbug/1432962): Handle each status.
         break;
@@ -278,6 +282,29 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
     return this.results_.displayedEntries.length ?
         this.i18n('importPasswordsCompleteTitle') :
         this.i18n('importPasswordsSuccessTitle');
+  }
+
+  private getErrorDialogDescription_(): TrustedHTML {
+    assert(this.results_);
+    switch (this.results_.status) {
+      case chrome.passwordsPrivate.ImportResultsStatus.MAX_FILE_SIZE:
+        return this.i18nAdvanced('importPasswordsFileSizeExceeded');
+      case chrome.passwordsPrivate.ImportResultsStatus.IO_ERROR:
+      case chrome.passwordsPrivate.ImportResultsStatus.UNKNOWN_ERROR:
+        return this.i18nAdvanced('importPasswordsUnknownError');
+      case chrome.passwordsPrivate.ImportResultsStatus.NUM_PASSWORDS_EXCEEDED:
+        return this.i18nAdvanced('importPasswordsLimitExceeded');
+      case chrome.passwordsPrivate.ImportResultsStatus.BAD_FORMAT:
+        return this.i18nAdvanced('importPasswordsBadFormatError', {
+          attrs: ['class'],
+          substitutions: [
+            this.results_.fileName,
+            loadTimeData.getString('importPasswordsHelpURL'),
+          ],
+        });
+      default:
+        assertNotReached();
+    }
   }
 
   private getSuccessTipHtml_(): TrustedHTML {

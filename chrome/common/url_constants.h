@@ -220,6 +220,9 @@ extern const char kPasswordGenerationLearnMoreURL[];
 
 extern const char kPasswordManagerLearnMoreURL[];
 
+// Help URL for passwords import.
+extern const char kPasswordManagerImportLearnMoreURL[];
+
 // Help URL for the Payment methods page of the Google Pay site.
 extern const char kPaymentMethodsURL[];
 

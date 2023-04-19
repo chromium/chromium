@@ -29,6 +29,7 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "content/public/browser/url_data_source.h"
@@ -161,6 +162,13 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"help", IDS_PASSWORD_MANAGER_UI_HELP},
     {"hidePassword", IDS_PASSWORD_MANAGER_UI_HIDE_PASSWORD},
     {"importPasswords", IDS_PASSWORD_MANAGER_UI_IMPORT_BANNER_TITLE},
+    {"importPasswordsFileSizeExceeded",
+     IDS_PASSWORD_MANAGER_UI_IMPORT_FILE_SIZE_EXCEEDED},
+    {"importPasswordsUnknownError",
+     IDS_PASSWORD_MANAGER_UI_IMPORT_ERROR_UNKNOWN},
+    {"importPasswordsBadFormatError",
+     IDS_PASSWORD_MANAGER_UI_IMPORT_ERROR_BAD_FORMAT},
+    {"importPasswordsErrorTitle", IDS_PASSWORD_MANAGER_UI_IMPORT_ERROR_TITLE},
     {"importPasswordsMissingPassword",
      IDS_PASSWORD_MANAGER_UI_IMPORT_MISSING_PASSWORD},
     {"importPasswordsMissingURL", IDS_PASSWORD_MANAGER_UI_IMPORT_MISSING_URL},
@@ -367,6 +375,15 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
           IDS_PASSWORD_MANAGER_UI_STORE_PICKER_OPTION_DEVICE,
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE)));
+  source->AddString(
+      "importPasswordsLimitExceeded",
+      l10n_util::GetStringFUTF16(
+          IDS_PASSWORD_MANAGER_UI_IMPORT_ERROR_LIMIT_EXCEEDED,
+          base::NumberToString16(
+              password_manager::constants::kMaxPasswordsPerCSVFile)));
+
+  source->AddString("importPasswordsHelpURL",
+                    chrome::kPasswordManagerImportLearnMoreURL);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

@@ -5,6 +5,7 @@
 import 'chrome://password-manager/password_manager.js';
 
 import {CrDialogElement, Page, PasswordManagerImpl, PasswordsImporterElement, Router} from 'chrome://password-manager/password_manager.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -67,6 +68,26 @@ function assertButtonShouldCloseDialog(
   button.click();
   flush();
   assertFalse(!!importer.shadowRoot!.querySelector<CrDialogElement>('#dialog'));
+}
+
+async function assertErrorStateAndClose(
+    importer: PasswordsImporterElement, expectedDescription: string) {
+  const dialog = importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+  assertTrue(!!dialog);
+  assertTrue(dialog.open);
+
+  assertVisibleTextContent(
+      dialog, '#title', importer.i18n('importPasswordsErrorTitle'));
+
+  const description = dialog.querySelector('#description');
+  assertTrue(!!description);
+  assertEquals(expectedDescription, description.innerHTML.toString());
+
+  assertVisibleTextContent(
+      dialog, '#selectFileButton', importer.i18n('selectFile'));
+  assertVisibleTextContent(dialog, '#closeButton', importer.i18n('close'));
+
+  assertButtonShouldCloseDialog(importer, dialog, '#closeButton');
 }
 
 suite('PasswordsImporterTest', function() {
@@ -352,6 +373,78 @@ suite('PasswordsImporterTest', function() {
     assertVisibleTextContent(dialog, '#closeButton', importer.i18n('close'));
 
     assertButtonShouldCloseDialog(importer, dialog, '#closeButton');
+  });
+
+  test('bad format error dialog is correct', async function() {
+    const importer = createPasswordsImporter();
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.BAD_FORMAT,
+      numberImported: 0,
+      displayedEntries: [],
+      fileName: 'test.csv',
+    });
+    await triggerImportHelper(importer, passwordManager);
+
+    await assertErrorStateAndClose(
+        importer,
+        importer
+            .i18nAdvanced(
+                'importPasswordsBadFormatError',
+                {
+                  attrs: ['class'],
+                  substitutions: [
+                    'test.csv',
+                    loadTimeData.getString('importPasswordsHelpURL'),
+                  ],
+                },
+                )
+            .toString());
+  });
+
+  test('unknown error error dialog is correct', async function() {
+    const importer = createPasswordsImporter();
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.IO_ERROR,
+      numberImported: 0,
+      displayedEntries: [],
+      fileName: 'test.csv',
+    });
+    await triggerImportHelper(importer, passwordManager);
+
+    await assertErrorStateAndClose(
+        importer,
+        importer.i18nAdvanced('importPasswordsUnknownError').toString());
+  });
+
+  test('passwords per file limit error dialog is correct', async function() {
+    const importer = createPasswordsImporter();
+    passwordManager.setImportResults({
+      status:
+          chrome.passwordsPrivate.ImportResultsStatus.NUM_PASSWORDS_EXCEEDED,
+      numberImported: 0,
+      displayedEntries: [],
+      fileName: 'test.csv',
+    });
+    await triggerImportHelper(importer, passwordManager);
+
+    await assertErrorStateAndClose(
+        importer,
+        importer.i18nAdvanced('importPasswordsLimitExceeded').toString());
+  });
+
+  test('file size exceeded error dialog is correct', async function() {
+    const importer = createPasswordsImporter();
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.MAX_FILE_SIZE,
+      numberImported: 0,
+      displayedEntries: [],
+      fileName: 'test.csv',
+    });
+    await triggerImportHelper(importer, passwordManager);
+
+    await assertErrorStateAndClose(
+        importer,
+        importer.i18nAdvanced('importPasswordsFileSizeExceeded').toString());
   });
 
 });
