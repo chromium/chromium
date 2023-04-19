@@ -23,8 +23,6 @@ namespace bruschetta {
 // Launches Bruschetta. One instance per VM.
 class BruschettaLauncher {
  public:
-  struct Files;
-
   BruschettaLauncher(std::string vm_name, Profile* profile);
   virtual ~BruschettaLauncher();
   BruschettaLauncher(const BruschettaLauncher&) = delete;
@@ -40,14 +38,17 @@ class BruschettaLauncher {
   base::WeakPtr<BruschettaLauncher> GetWeakPtr();
 
  private:
-  void StartVm(std::unique_ptr<Files> files);
+  void StartVm();
   void OnStartVm(RunningVmPolicy launch_policy,
                  absl::optional<vm_tools::concierge::StartVmResponse> response);
 
-  base::File MaybeOpenBios();
+  void EnsureToolsDlcInstalled();
+  void OnMountToolsDlc(
+      const ash::DlcserviceClient::InstallResult& install_result);
 
-  void EnsureDlcInstalled();
-  void OnMountDlc(const ash::DlcserviceClient::InstallResult& install_result);
+  void EnsureFirmwareDlcInstalled();
+  void OnMountFirmwareDlc(
+      const ash::DlcserviceClient::InstallResult& install_result);
 
   void OnContainerRunning(guest_os::GuestInfo info);
 
