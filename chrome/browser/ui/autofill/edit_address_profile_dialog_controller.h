@@ -16,6 +16,7 @@ class EditAddressProfileDialogController {
   virtual ~EditAddressProfileDialogController() = default;
 
   virtual std::u16string GetWindowTitle() const = 0;
+  virtual const std::u16string& GetFooterMessage() const = 0;
   virtual std::u16string GetOkButtonLabel() const = 0;
   virtual const AutofillProfile& GetProfileToEdit() const = 0;
   virtual bool GetIsValidatable() const = 0;

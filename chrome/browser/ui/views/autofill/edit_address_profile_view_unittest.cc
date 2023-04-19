@@ -31,6 +31,7 @@ class MockEditAddressProfileDialogController
     : public EditAddressProfileDialogController {
  public:
   MOCK_METHOD(std::u16string, GetWindowTitle, (), (const, override));
+  MOCK_METHOD(const std::u16string&, GetFooterMessage, (), (const, override));
   MOCK_METHOD(std::u16string, GetOkButtonLabel, (), (const, override));
   MOCK_METHOD(const AutofillProfile&, GetProfileToEdit, (), (const, override));
   MOCK_METHOD(bool, GetIsValidatable, (), (const, override));
@@ -55,6 +56,9 @@ class EditAddressProfileViewTest : public ChromeViewsTestBase {
     address_profile_to_edit_ = test::GetFullProfile();
     test_web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+
+    ON_CALL(mock_controller_, GetFooterMessage)
+        .WillByDefault(::testing::ReturnRefOfCopy(std::u16string()));
   }
 
   void TearDown() override {
