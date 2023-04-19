@@ -91,8 +91,7 @@ class H264Decoder : public VideoDecoder {
  private:
   H264Decoder(std::unique_ptr<H264Parser> parser,
               std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
-              std::unique_ptr<V4L2Queue> OUTPUT_queue,
-              std::unique_ptr<V4L2Queue> CAPTURE_queue);
+              gfx::Size display_resolution);
 
   // Processes NALU's until reaching the end of the current frame.  To
   // know the end of the current frame it may be necessary to start parsing
@@ -122,7 +121,8 @@ class H264Decoder : public VideoDecoder {
       const H264SliceHeader& curr_slice,
       int frame_num,
       v4l2_ctrl_h264_decode_params& v4l2_decode_param,
-      H264SliceMetadata& slice_metadata);
+      H264SliceMetadata& slice_metadata,
+      bool isOUTPUTQueueNew);
 
   // Initializes H264 Slice Metadata based on slice header and
   // based on H264 specifications which it calculates its pic order count.

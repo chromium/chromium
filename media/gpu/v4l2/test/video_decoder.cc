@@ -41,17 +41,8 @@ uint32_t FileFourccToDriverFourcc(uint32_t header_fourcc) {
 }
 
 VideoDecoder::VideoDecoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
-                           std::unique_ptr<V4L2Queue> OUTPUT_queue,
-                           std::unique_ptr<V4L2Queue> CAPTURE_queue)
-    : needs_init(true),
-      v4l2_ioctl_(std::move(v4l2_ioctl)),
-      OUTPUT_queue_(std::move(OUTPUT_queue)),
-      CAPTURE_queue_(std::move(CAPTURE_queue)) {}
-
-VideoDecoder::VideoDecoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
                            gfx::Size display_resolution)
-    : needs_init(false),
-      v4l2_ioctl_(std::move(v4l2_ioctl)),
+    : v4l2_ioctl_(std::move(v4l2_ioctl)),
       display_resolution_(display_resolution) {
   // TODO(b/278748005): Remove |cur_val_is_supported_| when all drivers
   // fully support |V4L2_CTRL_WHICH_CUR_VAL|
@@ -133,34 +124,6 @@ void VideoDecoder::NegotiateCAPTUREFormat() {
       << media::FourccToString(fourcc)
       << " does not have the correct number of planes: "
       << static_cast<uint32_t>(fmt.fmt.pix_mp.num_planes);
-}
-
-void VideoDecoder::Initialize() {
-  v4l2_ioctl_->SetFmt(OUTPUT_queue_);
-
-  NegotiateCAPTUREFormat();
-
-  LOG_ASSERT(gfx::Rect(CAPTURE_queue_->resolution())
-                 .Contains(gfx::Rect(OUTPUT_queue_->resolution())))
-      << "Display size is not contained within the coded size. DRC?";
-
-  v4l2_ioctl_->ReqBufs(OUTPUT_queue_);
-  v4l2_ioctl_->QueryAndMmapQueueBuffers(OUTPUT_queue_);
-  v4l2_ioctl_->ReqBufs(CAPTURE_queue_);
-
-  v4l2_ioctl_->QueryAndMmapQueueBuffers(CAPTURE_queue_);
-
-  // Only 1 CAPTURE buffer is needed for 1st key frame decoding. Remaining
-  // CAPTURE buffers will be queued after that.
-  if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, 0))
-    LOG(FATAL) << "VIDIOC_QBUF failed for CAPTURE queue.";
-
-  int media_request_fd;
-  v4l2_ioctl_->MediaIocRequestAlloc(&media_request_fd);
-  OUTPUT_queue_->set_media_request_fd(media_request_fd);
-
-  v4l2_ioctl_->StreamOn(OUTPUT_queue_->type());
-  v4l2_ioctl_->StreamOn(CAPTURE_queue_->type());
 }
 
 void VideoDecoder::CreateOUTPUTQueue(uint32_t compressed_fourcc) {

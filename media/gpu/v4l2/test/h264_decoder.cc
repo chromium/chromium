@@ -36,6 +36,7 @@ struct H264SliceMetadata {
 };
 
 namespace {
+constexpr uint32_t kDriverCodecFourcc = V4L2_PIX_FMT_H264_SLICE;
 
 constexpr uint8_t zigzag_4x4[] = {0, 1,  4,  8,  5, 2,  3,  6,
                                   9, 12, 13, 10, 7, 11, 14, 15};
@@ -496,6 +497,11 @@ H264Parser::Result H264Decoder::ProcessNextFrame(
 
   v4l2_ctrl_h264_decode_params v4l2_decode_param = {};
 
+  const bool isOUTPUTQueueNew = !OUTPUT_queue_;
+  if (!OUTPUT_queue_) {
+    CreateOUTPUTQueue(kDriverCodecFourcc);
+  }
+
   std::unique_ptr<H264SliceHeader> curr_slice_header =
       std::move(pending_slice_header_);
   std::unique_ptr<H264NALU> nalu = std::move(pending_nalu_);
@@ -508,7 +514,7 @@ H264Parser::Result H264Decoder::ProcessNextFrame(
         // transmitted yet, hence FinishFrame() needs to be called.
         if (slice_metadata.frame_num >= 0) {
           FinishFrame(*pending_slice_header_, frame_number, v4l2_decode_param,
-                      slice_metadata);
+                      slice_metadata, isOUTPUTQueueNew);
           break;
         }
         return H264Parser::kOk;
@@ -552,7 +558,7 @@ H264Parser::Result H264Decoder::ProcessNextFrame(
           reached_end_of_frame = true;
 
           FinishFrame(*pending_slice_header_, frame_number, v4l2_decode_param,
-                      slice_metadata);
+                      slice_metadata, isOUTPUTQueueNew);
 
           *resulting_slice_header = std::move(pending_slice_header_);
           pending_slice_header_ = std::move(curr_slice_header);
@@ -577,7 +583,7 @@ H264Parser::Result H264Decoder::ProcessNextFrame(
         // needs to be finished.
         if (slice_metadata.frame_num >= 0) {
           FinishFrame(*pending_slice_header_, frame_number, v4l2_decode_param,
-                      slice_metadata);
+                      slice_metadata, isOUTPUTQueueNew);
           reached_end_of_frame = true;
         }
         break;
@@ -592,7 +598,7 @@ H264Parser::Result H264Decoder::ProcessNextFrame(
         // needs to be finished.
         if (slice_metadata.frame_num >= 0) {
           FinishFrame(*pending_slice_header_, frame_number, v4l2_decode_param,
-                      slice_metadata);
+                      slice_metadata, isOUTPUTQueueNew);
           reached_end_of_frame = true;
         }
         break;
@@ -605,7 +611,7 @@ H264Parser::Result H264Decoder::ProcessNextFrame(
         // needs to be finished.
         if (slice_metadata.frame_num >= 0) {
           FinishFrame(*pending_slice_header_, frame_number, v4l2_decode_param,
-                      slice_metadata);
+                      slice_metadata, isOUTPUTQueueNew);
           reached_end_of_frame = true;
         }
         break;
@@ -631,7 +637,8 @@ VideoDecoder::Result H264Decoder::FinishFrame(
     const H264SliceHeader& curr_slice,
     const int frame_num,
     v4l2_ctrl_h264_decode_params& v4l2_decode_param,
-    H264SliceMetadata& slice_metadata) {
+    H264SliceMetadata& slice_metadata,
+    bool isOUTPUTQueueNew) {
   SetupDecodeParams(curr_slice, slice_metadata, &v4l2_decode_param);
 
   struct v4l2_ext_control ctrls[] = {
@@ -643,7 +650,7 @@ VideoDecoder::Result H264Decoder::FinishFrame(
   struct v4l2_ext_controls ext_ctrls = {
       .count = (sizeof(ctrls) / sizeof(ctrls[0])), .controls = ctrls};
 
-  v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls);
+  v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls, isOUTPUTQueueNew);
 
   // Picture is a reference picture.
   // H.264 section 8.2.4.
@@ -709,6 +716,10 @@ VideoDecoder::Result H264Decoder::FinishFrame(
 
     v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_);
 
+    if (!CAPTURE_queue_) {
+      CreateCAPTUREQueue(kNumberOfBuffersInCaptureQueue);
+    }
+
     // If the outputted picture is not a reference picture, it doesn't have
     // to remain in the DPB and can be removed.
     if (!(*output_candidate)->ref) {
@@ -761,8 +772,6 @@ std::unique_ptr<H264Decoder> H264Decoder::Create(
   CHECK(coded_size);
   LOG(INFO) << "h.264 coded size : " << coded_size->ToString();
 
-  constexpr uint32_t kDriverCodecFourcc = V4L2_PIX_FMT_H264_SLICE;
-
   auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>(kDriverCodecFourcc);
 
   if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc)) {
@@ -771,32 +780,14 @@ std::unique_ptr<H264Decoder> H264Decoder::Create(
     return nullptr;
   }
 
-  // TODO(stevecho): might need to consider using more than 1 file descriptor
-  // (fd) & buffer with the output queue for 4K60 requirement.
-  // https://buganizer.corp.google.com/issues/202214561#comment31
-  auto OUTPUT_queue = std::make_unique<V4L2Queue>(
-      V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, coded_size.value(), V4L2_MEMORY_MMAP,
-      kNumberOfBuffersInOutputQueue);
-  OUTPUT_queue->set_fourcc(kDriverCodecFourcc);
-
-  // TODO(stevecho): enable V4L2_MEMORY_DMABUF memory for CAPTURE queue.
-  // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/pixfmt-v4l2-mplane.html#c.V4L.v4l2_plane_pix_format
-  auto CAPTURE_queue = std::make_unique<V4L2Queue>(
-      V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, coded_size.value(), V4L2_MEMORY_MMAP,
-      kNumberOfBuffersInCaptureQueue);
-
-  return base::WrapUnique(
-      new H264Decoder(std::move(parser), std::move(v4l2_ioctl),
-                      std::move(OUTPUT_queue), std::move(CAPTURE_queue)));
+  return base::WrapUnique(new H264Decoder(
+      std::move(parser), std::move(v4l2_ioctl), coded_size.value()));
 }
 
 H264Decoder::H264Decoder(std::unique_ptr<H264Parser> parser,
                          std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
-                         std::unique_ptr<V4L2Queue> OUTPUT_queue,
-                         std::unique_ptr<V4L2Queue> CAPTURE_queue)
-    : VideoDecoder::VideoDecoder(std::move(v4l2_ioctl),
-                                 std::move(OUTPUT_queue),
-                                 std::move(CAPTURE_queue)),
+                         gfx::Size display_resolution)
+    : VideoDecoder::VideoDecoder(std::move(v4l2_ioctl), display_resolution),
       parser_(std::move(parser)) {}
 
 H264Decoder::~H264Decoder() = default;

@@ -184,13 +184,6 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
-  // TODO(b/277338563): Decoders are going to be using a lazy initilization
-  // that occurs during decode time. Once all the decoders support that,
-  // the call to |Initialize| will be removed from here.
-  if (dec->needs_init) {
-    dec->Initialize();
-  }
-
   for (int i = 0; i < n_frames || n_frames == 0; i++) {
     LOG(INFO) << "Frame " << i << "...";
 
