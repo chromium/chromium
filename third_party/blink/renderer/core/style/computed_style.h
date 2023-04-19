@@ -2572,6 +2572,7 @@ class ComputedStyle : public ComputedStyleBase,
 
   static bool IsDisplayReplacedType(EDisplay display) {
     return display == EDisplay::kInlineBlock ||
+           display == EDisplay::kInlineFlowRootListItem ||
            display == EDisplay::kWebkitInlineBox ||
            display == EDisplay::kInlineFlex ||
            display == EDisplay::kInlineTable ||

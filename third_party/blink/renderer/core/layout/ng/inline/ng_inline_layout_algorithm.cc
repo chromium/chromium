@@ -263,8 +263,9 @@ void NGInlineLayoutAlgorithm::CreateLine(
   // strut, for *every* line. This matches other browsers. The intention may
   // have been to make sure that there's always room for the list item marker,
   // but that doesn't explain why it's done for every line...
-  if (quirks_mode_ && line_style.Display() == EDisplay::kListItem)
+  if (quirks_mode_ && ComputedStyle::IsDisplayListItem(line_style.Display())) {
     box->ComputeTextMetrics(line_style, *box->font, baseline_type_);
+  }
 
   for (NGInlineItemResult& item_result : *line_items) {
     DCHECK(item_result.item);
