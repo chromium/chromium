@@ -159,6 +159,12 @@ NET_EXPORT bool GetValidityTimes(CERTCertificate* cert,
 // (all zero) fingerprint on failure.
 NET_EXPORT SHA256HashValue CalculateFingerprint256(CERTCertificate* cert);
 
+// Prefer using NSSCertDatabase::ImportUserCert. Temporary public for Kcer.
+// Import a user certificate. The private key for the user certificate must
+// already be installed, otherwise returns ERR_NO_PRIVATE_KEY_FOR_CERT.
+// Returns OK or a network error code.
+NET_EXPORT int ImportUserCert(CERTCertificate* cert);
+
 }  // namespace net::x509_util
 
 #endif  // NET_CERT_X509_UTIL_NSS_H_

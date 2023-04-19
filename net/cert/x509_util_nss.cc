@@ -23,6 +23,7 @@
 #include "crypto/nss_util.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/cert/x509_util.h"
+#include "net/third_party/mozilla_security_manager/nsNSSCertificateDB.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
 namespace net::x509_util {
@@ -437,6 +438,10 @@ SHA256HashValue CalculateFingerprint256(CERTCertificate* cert) {
   DCHECK_EQ(SECSuccess, rv);
 
   return sha256;
+}
+
+int ImportUserCert(CERTCertificate* cert) {
+  return mozilla_security_manager::ImportUserCert(cert);
 }
 
 }  // namespace net::x509_util
