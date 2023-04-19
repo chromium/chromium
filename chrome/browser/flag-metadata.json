@@ -152,6 +152,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "android-app-inintegration",
+    "owners": [ "gangwu", "chrome-mobile-search@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "android-force-app-language-prompt",
     "owners": [ "perrier", "chrome-language@google.com" ],
     "expiry_milestone": 115

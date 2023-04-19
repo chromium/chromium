@@ -5508,6 +5508,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxWarmRecycledViewPoolName,
      flag_descriptions::kOmniboxWarmRecycledViewPoolDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kOmniboxWarmRecycledViewPool)},
+
+    {"android-app-inintegration", flag_descriptions::kAndroidAppIntegrationName,
+     flag_descriptions::kAndroidAppIntegrationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidAppIntegration)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"omnibox-local-history-zero-suggest-beyond-ntp",

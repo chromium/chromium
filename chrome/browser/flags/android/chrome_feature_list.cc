@@ -170,6 +170,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAddEduAccountFromAccountSettingsForSupervisedUsers,
     &kAddToHomescreenIPH,
     &kAllowNewIncognitoTabIntents,
+    &kAndroidAppIntegration,
     &kAndroidScrollOptimizations,
     &kAndroidSearchEngineChoiceNotification,
     &kAndroidWidgetFullscreenToast,
@@ -472,6 +473,10 @@ BASE_FEATURE(kAllowNewIncognitoTabIntents,
 BASE_FEATURE(kFocusOmniboxInIncognitoTabIntents,
              "FocusOmniboxInIncognitoTabIntents",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidAppIntegration,
+             "AndroidAppIntegration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidScrollOptimizations,
              "AndroidScrollOptimizations",

@@ -20,6 +20,7 @@ BASE_DECLARE_FEATURE(kAdaptiveButtonInTopToolbarCustomizationV2);
 BASE_DECLARE_FEATURE(kAddEduAccountFromAccountSettingsForSupervisedUsers);
 BASE_DECLARE_FEATURE(kAddToHomescreenIPH);
 BASE_DECLARE_FEATURE(kAllowNewIncognitoTabIntents);
+BASE_DECLARE_FEATURE(kAndroidAppIntegration);
 BASE_DECLARE_FEATURE(kAndroidScrollOptimizations);
 BASE_DECLARE_FEATURE(kAndroidWidgetFullscreenToast);
 BASE_DECLARE_FEATURE(kAndroidSearchEngineChoiceNotification);

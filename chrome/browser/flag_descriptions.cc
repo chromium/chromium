@@ -77,6 +77,10 @@ const char kWindowsFollowCursorDescription[] =
     "When there are multiple displays, windows open on the display where "
     "cursor is located.";
 
+const char kAndroidAppIntegrationName[] = "Integrate with Android App Search";
+const char kAndroidAppIntegrationDescription[] =
+    "If enabled, allows Chrome to integrate with the Android App Search.";
+
 const char kAnimatedImageResumeName[] = "Use animated image resume behavior";
 const char kAnimatedImageResumeDescription[] =
     "Resumes animated images from the last frame drawn rather than attempt "
