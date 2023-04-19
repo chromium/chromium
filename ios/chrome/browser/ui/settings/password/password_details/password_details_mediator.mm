@@ -16,7 +16,6 @@
 #import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_form.h"
-#import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/password_manager_features_util.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -88,9 +87,6 @@ bool ShouldDisplayCredentialAsCompromised(DetailsContext details_context,
   // The context in which the password details are accessed.
   DetailsContext _context;
 
-  // Password manager client provider.
-  raw_ptr<PasswordManagerClientProvider> _passwordManagerClientProvider;
-
   // The BrowserState pref service.
   raw_ptr<PrefService> _prefService;
 
@@ -117,11 +113,8 @@ bool ShouldDisplayCredentialAsCompromised(DetailsContext details_context,
              passwordCheckManager:(IOSChromePasswordCheckManager*)manager
                       prefService:(PrefService*)prefService
                       syncService:(syncer::SyncService*)syncService
-                          context:(DetailsContext)context
-    passwordManagerClientProvider:
-        (PasswordManagerClientProvider*)passwordManagerClientProvider {
+                          context:(DetailsContext)context {
   DCHECK(manager);
-  DCHECK(passwordManagerClientProvider);
   DCHECK(!credentials.empty());
 
   self = [super init];
@@ -135,7 +128,6 @@ bool ShouldDisplayCredentialAsCompromised(DetailsContext details_context,
   _passwordCheckObserver =
       std::make_unique<PasswordCheckObserverBridge>(self, manager);
   _context = context;
-  _passwordManagerClientProvider = passwordManagerClientProvider;
   _prefService = prefService;
   _syncService = syncService;
 

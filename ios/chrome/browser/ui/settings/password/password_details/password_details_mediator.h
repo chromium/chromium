@@ -13,7 +13,6 @@
 
 namespace password_manager {
 struct CredentialUIEntry;
-class PasswordManagerClient;
 }  // namespace password_manager
 
 namespace syncer {
@@ -25,15 +24,6 @@ class PrefService;
 class IOSChromePasswordCheckManager;
 @protocol PasswordDetailsConsumer;
 
-// Provides PasswordManagerClient (per-tab object) on-demand, so there's no need
-// to worry about tabs being closed.
-class PasswordManagerClientProvider {
- public:
-  virtual ~PasswordManagerClientProvider() = default;
-
-  virtual password_manager::PasswordManagerClient* GetAny() = 0;
-};
-
 // This mediator fetches and organises the credentials for its consumer.
 @interface PasswordDetailsMediator
     : NSObject <PasswordDetailsTableViewControllerDelegate>
@@ -41,17 +31,14 @@ class PasswordManagerClientProvider {
 // Vector of CredentialUIEntry is converted to an array of PasswordDetails and
 // passed to a consumer with the display name (title) for the Password Details
 // view.
-- (instancetype)initWithPasswords:
-                    (const std::vector<password_manager::CredentialUIEntry>&)
-                        credentials
-                      displayName:(NSString*)displayName
-             passwordCheckManager:(IOSChromePasswordCheckManager*)manager
-                      prefService:(PrefService*)prefService
-                      syncService:(syncer::SyncService*)syncService
-                          context:(DetailsContext)context
-    passwordManagerClientProvider:
-        (PasswordManagerClientProvider*)passwordManagerClientProvider
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)
+       initWithPasswords:
+           (const std::vector<password_manager::CredentialUIEntry>&)credentials
+             displayName:(NSString*)displayName
+    passwordCheckManager:(IOSChromePasswordCheckManager*)manager
+             prefService:(PrefService*)prefService
+             syncService:(syncer::SyncService*)syncService
+                 context:(DetailsContext)context NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

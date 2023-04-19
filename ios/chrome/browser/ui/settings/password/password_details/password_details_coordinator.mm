@@ -4,14 +4,11 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator.h"
 
-#import <set>
 #import <utility>
 #import <vector>
 
 #import "base/mac/foundation_util.h"
-#import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
-#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -20,8 +17,6 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/main/browser_list.h"
-#import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
@@ -50,70 +45,12 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-class PasswordManagerClientProviderImpl : public PasswordManagerClientProvider {
- public:
-  explicit PasswordManagerClientProviderImpl(Browser* browser)
-      : browser_(browser) {}
-
-  ~PasswordManagerClientProviderImpl() override = default;
-
-  PasswordManagerClientProviderImpl(const PasswordManagerClientProviderImpl&) =
-      delete;
-  PasswordManagerClientProviderImpl& operator=(
-      const PasswordManagerClientProviderImpl&) = delete;
-
-  password_manager::PasswordManagerClient* GetAny() override {
-    web::WebState* active_tab_in_browser =
-        browser_->GetWebStateList()->GetActiveWebState();
-    if (active_tab_in_browser) {
-      return PasswordTabHelper::FromWebState(active_tab_in_browser)
-          ->GetPasswordManagerClient();
-    }
-
-    // PasswordDetailsCoordinator and other settings coordinators always receive
-    // a normal Browser, even if they are started from incognito. So if only
-    // incognito tabs are open, `active_tab_in_browser` is null, causing a crash
-    // (crbug.com/1431975).
-    // In that case, use an open tab in any Browser. It doesn't matter which
-    // one. This is a sad workaround for the fact that some PasswordManager
-    // layers depend on tabs unnecessarily.
-    BrowserList* browser_list =
-        BrowserListFactory::GetForBrowserState(browser_->GetBrowserState());
-    for (const std::set<Browser*>& browsers :
-         {browser_list->AllRegularBrowsers(),
-          browser_list->AllIncognitoBrowsers()}) {
-      for (Browser* other_browser : browsers) {
-        web::WebState* other_active_tab =
-            other_browser->GetWebStateList()->GetActiveWebState();
-        if (other_active_tab) {
-          return PasswordTabHelper::FromWebState(other_active_tab)
-              ->GetPasswordManagerClient();
-        }
-      }
-    }
-
-    // It's impossible to open PasswordDetailsCoordinator without an open tab.
-    NOTREACHED_NORETURN();
-  }
-
- private:
-  const raw_ptr<Browser> browser_;
-};
-
-}  // namespace
-
 @interface PasswordDetailsCoordinator () <PasswordDetailsHandler> {
   password_manager::AffiliatedGroup _affiliatedGroup;
   password_manager::CredentialUIEntry _credential;
 
   // The context in which the password details are accessed.
   DetailsContext _context;
-
-  // See PasswordManagerClientProviderImpl docs.
-  std::unique_ptr<PasswordManagerClientProviderImpl>
-      _passwordManagerClientProvider;
 }
 
 // Main view controller for this coordinator.
@@ -198,19 +135,15 @@ class PasswordManagerClientProviderImpl : public PasswordManagerClientProvider {
   }
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  _passwordManagerClientProvider =
-      std::make_unique<PasswordManagerClientProviderImpl>(self.browser);
   self.mediator = [[PasswordDetailsMediator alloc]
-                  initWithPasswords:credentials
-                        displayName:displayName
-               passwordCheckManager:IOSChromePasswordCheckManagerFactory::
-                                        GetForBrowserState(browserState)
-                                            .get()
-                        prefService:browserState->GetPrefs()
-                        syncService:SyncServiceFactory::GetForBrowserState(
-                                        browserState)
-                            context:_context
-      passwordManagerClientProvider:_passwordManagerClientProvider.get()];
+         initWithPasswords:credentials
+               displayName:displayName
+      passwordCheckManager:IOSChromePasswordCheckManagerFactory::
+                               GetForBrowserState(browserState)
+                                   .get()
+               prefService:browserState->GetPrefs()
+               syncService:SyncServiceFactory::GetForBrowserState(browserState)
+                   context:_context];
   self.mediator.consumer = self.viewController;
   self.viewController.handler = self;
   self.viewController.delegate = self.mediator;
