@@ -109,6 +109,7 @@
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/crosapi/mojom/remoting.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
+#include "chromeos/crosapi/mojom/select_file.mojom.h"
 #include "chromeos/crosapi/mojom/sharesheet.mojom.h"
 #include "chromeos/crosapi/mojom/smart_reader.mojom.h"
 #include "chromeos/crosapi/mojom/speech_recognition.mojom.h"
@@ -124,6 +125,7 @@
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "chromeos/crosapi/mojom/virtual_keyboard.mojom.h"
+#include "chromeos/crosapi/mojom/volume_manager.mojom.h"
 #include "chromeos/crosapi/mojom/vpn_extension_observer.mojom.h"
 #include "chromeos/crosapi/mojom/vpn_service.mojom.h"
 #include "chromeos/crosapi/mojom/wallpaper.mojom.h"
@@ -277,6 +279,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::AudioService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Authentication>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Automation>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::AutomationFactory>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AccountManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AppPublisher>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AppServiceProxy>(),
@@ -350,6 +353,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::ResourceManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ScreenManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SearchControllerRegistry>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::SelectFile>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Sharesheet>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SmartReaderClient>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SpeechRecognition>(),
@@ -365,6 +369,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::VideoCaptureDeviceFactory>(),
     MakeInterfaceVersionEntry<crosapi::mojom::VideoConferenceManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::VirtualKeyboard>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::VolumeManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::VpnExtensionObserver>(),
     MakeInterfaceVersionEntry<crosapi::mojom::VpnService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Wallpaper>(),
