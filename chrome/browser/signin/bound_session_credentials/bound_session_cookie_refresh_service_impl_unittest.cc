@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.h"
+
 #include <memory>
 #include <utility>
 
@@ -12,13 +13,13 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
+#include "chrome/common/renderer_configuration.mojom.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,6 +71,8 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
 
 class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
  public:
+  const GURL kTestGaiaURL = GURL("https://google.com");
+
   BoundSessionCookieRefreshServiceImplTest()
       : identity_test_env_(&test_url_loader_factory_,
                            nullptr,
@@ -138,9 +141,31 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, VerifyControllerParams) {
   EXPECT_TRUE(service->IsBoundSession());
   FakeBoundSessionCookieController* controller = cookie_controller();
   EXPECT_TRUE(controller);
-  EXPECT_EQ(controller->url(), GaiaUrls::GetInstance()->secure_google_url());
+  EXPECT_EQ(controller->url(), kTestGaiaURL);
   EXPECT_EQ(controller->cookie_name(), kSIDTSCookieName);
   EXPECT_EQ(controller->cookie_expiration_time(), base::Time());
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       VerifyBoundSessionParamsUnboundSession) {
+  BoundSessionCookieRefreshServiceImpl* service =
+      CreateCookieRefreshServiceImpl();
+  EXPECT_FALSE(service->IsBoundSession());
+  EXPECT_TRUE(service->GetBoundSessionParams().is_null());
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       VerifyBoundSessionParamsBoundSession) {
+  identity_test_env()->MakePrimaryAccountAvailable(kEmail,
+                                                   ConsentLevel::kSignin);
+  BoundSessionCookieRefreshServiceImpl* service =
+      CreateCookieRefreshServiceImpl();
+  EXPECT_TRUE(service->IsBoundSession());
+
+  chrome::mojom::BoundSessionParamsPtr bound_session_params =
+      service->GetBoundSessionParams();
+  EXPECT_EQ(bound_session_params->domain, kTestGaiaURL.host());
+  EXPECT_EQ(bound_session_params->path, kTestGaiaURL.path_piece());
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
