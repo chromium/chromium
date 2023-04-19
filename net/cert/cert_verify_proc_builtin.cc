@@ -39,6 +39,7 @@
 #include "net/der/encode_values.h"
 #include "net/log/net_log_values.h"
 #include "net/log/net_log_with_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -591,6 +592,8 @@ CertPathBuilder::Result TryBuildPath(
       crl_set, net_fetcher, verification_type, digest_policy, flags,
       trust_store, ocsp_response, ev_metadata, checked_revocation, deadline);
 
+  absl::optional<CertIssuerSourceAia> aia_cert_issuer_source;
+
   // Initialize the path builder.
   CertPathBuilder path_builder(
       target, trust_store->trust_store(), &path_builder_delegate,
@@ -604,12 +607,13 @@ CertPathBuilder::Result TryBuildPath(
 
   // Allow the path builder to discover intermediates through AIA fetching.
   // TODO(crbug.com/634484): hook up netlog to AIA.
-  std::unique_ptr<CertIssuerSourceAia> aia_cert_issuer_source;
-  if (net_fetcher) {
-    aia_cert_issuer_source = std::make_unique<CertIssuerSourceAia>(net_fetcher);
-    path_builder.AddCertIssuerSource(aia_cert_issuer_source.get());
-  } else {
-    LOG(ERROR) << "No net_fetcher for performing AIA chasing.";
+  if (!(flags & CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES)) {
+    if (net_fetcher) {
+      aia_cert_issuer_source.emplace(net_fetcher);
+      path_builder.AddCertIssuerSource(&aia_cert_issuer_source.value());
+    } else {
+      LOG(ERROR) << "No net_fetcher for performing AIA chasing.";
+    }
   }
 
   path_builder.SetIterationLimit(kPathBuilderIterationLimit);

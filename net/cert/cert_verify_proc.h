@@ -60,7 +60,8 @@ class NET_EXPORT CertVerifyProc
     // Disable network fetches during verification. This will override
     // VERIFY_REV_CHECKING_ENABLED and
     // VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS if they are also specified.
-    // TODO(https://crbug.com/1432793): This should also disable AIA fetching.
+    // (Note that this entirely disables the online revocation/AIA code paths.
+    // Theoretically we could still check for cached results.)
     VERIFY_DISABLE_NETWORK_FETCHES = 1 << 4,
   };
 

@@ -244,6 +244,7 @@ android::CertVerifyStatusAndroid TryVerifyWithAIAFetching(
 bool VerifyFromAndroidTrustManager(
     const std::vector<std::string>& cert_bytes,
     const std::string& hostname,
+    int flags,
     scoped_refptr<CertNetFetcher> cert_net_fetcher,
     CertVerifyResult* verify_result) {
   android::CertVerifyStatusAndroid status;
@@ -255,7 +256,8 @@ bool VerifyFromAndroidTrustManager(
 
   // If verification resulted in a NO_TRUSTED_ROOT error, then fetch
   // intermediates and retry.
-  if (status == android::CERT_VERIFY_STATUS_ANDROID_NO_TRUSTED_ROOT) {
+  if (status == android::CERT_VERIFY_STATUS_ANDROID_NO_TRUSTED_ROOT &&
+      !(flags & CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES)) {
     status = TryVerifyWithAIAFetching(cert_bytes, hostname,
                                       std::move(cert_net_fetcher),
                                       verify_result, &verified_chain);
@@ -362,8 +364,8 @@ int CertVerifyProcAndroid::VerifyInternal(
     const NetLogWithSource& net_log) {
   std::vector<std::string> cert_bytes;
   GetChainDEREncodedBytes(cert, &cert_bytes);
-  if (!VerifyFromAndroidTrustManager(cert_bytes, hostname, cert_net_fetcher_,
-                                     verify_result)) {
+  if (!VerifyFromAndroidTrustManager(cert_bytes, hostname, flags,
+                                     cert_net_fetcher_, verify_result)) {
     return ERR_FAILED;
   }
 

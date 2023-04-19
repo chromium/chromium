@@ -3071,15 +3071,28 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   // intermediate and root).
   ASSERT_EQ(0u, leaf->intermediate_buffers().size());
 
-  const int flags = 0;
-  int error;
-  CertVerifyResult verify_result;
+  // VERIFY_DISABLE_NETWORK_FETCHES flag is not implemented in
+  // CertVerifyProcIOS, only test it on other verifiers.
+  if (verify_proc_type() != CERT_VERIFY_PROC_IOS) {
+    CertVerifyResult verify_result;
+    // If VERIFY_DISABLE_NETWORK_FETCHES is specified, AIA should not be
+    // attempted and verifying the chain should fail since the intermediate
+    // can't be found.
+    int error = Verify(leaf.get(), kHostname,
+                       CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES,
+                       CertificateList(), &verify_result);
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+    EXPECT_EQ(0u, verify_result.verified_cert->intermediate_buffers().size());
+  }
 
-  // Verifying the chain should succeed as the missing intermediate can be
-  // fetched via AIA.
-  error =
-      Verify(leaf.get(), kHostname, flags, CertificateList(), &verify_result);
-  EXPECT_THAT(error, IsOk());
+  {
+    CertVerifyResult verify_result;
+    // Verifying the chain should succeed as the missing intermediate can be
+    // fetched via AIA.
+    int error = Verify(leaf.get(), kHostname, /*flags=*/0, CertificateList(),
+                       &verify_result);
+    EXPECT_THAT(error, IsOk());
+  }
 }
 
 // This test is the same as IntermediateFromAia200Der, except the certificate is
