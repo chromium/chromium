@@ -538,9 +538,15 @@ BOOL gChromeContextMenuEnabled = NO;
 
   NSURLRequest* request =
       [[NSURLRequest alloc] initWithURL:net::NSURLWithGURL(URL)];
+
+  // The current implemention can't get the real navigation type for the
+  // navigation action which causes a new web view be created. So uses
+  // `CWVNavigationTypeNewWindow` before the real navigation type can be gotten
+  // here.
   CWVNavigationAction* navigationAction =
       [[CWVNavigationAction alloc] initWithRequest:request
-                                     userInitiated:initiatedByUser];
+                                     userInitiated:initiatedByUser
+                                    navigationType:CWVNavigationTypeNewWindow];
   CWVWebView* webView = [_UIDelegate webView:self
               createWebViewWithConfiguration:_configuration
                          forNavigationAction:navigationAction];

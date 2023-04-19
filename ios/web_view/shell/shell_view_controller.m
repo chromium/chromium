@@ -1308,6 +1308,8 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 
 #pragma mark CWVNavigationDelegate methods
 
+// Deprecated: this method will not work when `-[CWVNavigationDelegate
+// webView:decidePolicyForNavigationAction:decisionHandler:]` is implemented
 - (BOOL)webView:(CWVWebView*)webView
     shouldStartLoadWithRequest:(NSURLRequest*)request
                 navigationType:(CWVNavigationType)navigationType {
@@ -1315,11 +1317,29 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   return YES;
 }
 
+// Deprecated: this method will not work when `-[CWVNavigationDelegate
+// webView:decidePolicyForNavigationResponse:decisionHandler:]` is implemented
 - (BOOL)webView:(CWVWebView*)webView
     shouldContinueLoadWithResponse:(NSURLResponse*)response
                       forMainFrame:(BOOL)forMainFrame {
   NSLog(@"%@", NSStringFromSelector(_cmd));
   return YES;
+}
+
+- (void)webView:(CWVWebView*)webView
+    decidePolicyForNavigationAction:(CWVNavigationAction*)navigationAction
+                    decisionHandler:
+                        (void (^)(CWVNavigationActionPolicy))decisionHandler {
+  NSLog(@"%@", NSStringFromSelector(_cmd));
+  decisionHandler(CWVNavigationActionPolicyAllow);
+}
+
+- (void)webView:(CWVWebView*)webView
+    decidePolicyForNavigationResponse:(CWVNavigationResponse*)navigationResponse
+                      decisionHandler:(void (^)(CWVNavigationResponsePolicy))
+                                          decisionHandler {
+  NSLog(@"%@", NSStringFromSelector(_cmd));
+  decisionHandler(CWVNavigationResponsePolicyAllow);
 }
 
 - (void)webViewDidStartNavigation:(CWVWebView*)webView {

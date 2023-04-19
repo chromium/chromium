@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nonnull instancetype)initWithRequest:(NSURLRequest*)request
                           userInitiated:(BOOL)userInitiated
+                         navigationType:(CWVNavigationType)navigationType
     NS_DESIGNATED_INITIALIZER;
 
 @end

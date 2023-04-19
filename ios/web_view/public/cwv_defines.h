@@ -76,4 +76,10 @@
 // -[CWVUserContentController removeMessageHandlerForCommand] APIs.
 #define IOS_WEB_VIEW_SUPPORTS_USER_CONTENT_CONTROLLER_MESSAGE_HANDLERS 1
 
+// Supports -[CWVNavigationDelegate
+// webView:decidePolicyForNavigationAction:decisionHandler:] and
+// -[CWVNavigationDelegate
+// webView:decidePolicyForNavigationResponse:decisionHandler:] APIs.
+#define IOS_WEB_VIEW_SUPPORTS_ASYNCCHRONOUS_POLICY_DECISION_HANDLER 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_
