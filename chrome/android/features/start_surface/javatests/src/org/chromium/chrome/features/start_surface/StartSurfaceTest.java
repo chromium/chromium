@@ -461,6 +461,7 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @DisabledTest(message = "https://crbug.com/1434823")
     @CommandLineFlags.
     Add({START_SURFACE_TEST_BASE_PARAMS + "hide_switch_when_no_incognito_tabs/false"})
     public void testCreateNewTab_OpenNTPInsteadOfStart() {
