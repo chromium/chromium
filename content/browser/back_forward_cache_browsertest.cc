@@ -2854,9 +2854,9 @@ IN_PROC_BROWSER_TEST_P(
       }));
 
   // 3) Start navigation in subframe to |subframe_url|.
-  EXPECT_TRUE(ExecJs(
+  ExecuteScriptAsync(
       main_frame,
-      JsReplace("document.querySelector('#child').src = $1;", subframe_url)));
+      JsReplace("document.querySelector('#child').src = $1;", subframe_url));
   // 4) Wait until subframe navigation is pending commit.
   commit_message_delayer.Wait();
 }
