@@ -19,6 +19,12 @@ extern const char kOldMetricsServerUrl[];
 // The default MIME type for the uploaded metrics data.
 extern const char kDefaultMetricsMimeType[];
 
+// The UKM server's URL.
+extern const char kDefaultUkmServerUrl[];
+
+// The UKM server's MIME type.
+extern const char kUkmMimeType[];
+
 } // namespace metrics
 
 #endif // COMPONENTS_METRICS_URL_CONSTANTS_H_

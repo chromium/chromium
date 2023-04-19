@@ -16,4 +16,8 @@ const char kOldMetricsServerUrl[] = "https://clients4.google.com/uma/v2";
 
 const char kDefaultMetricsMimeType[] = "application/vnd.chrome.uma";
 
+const char kDefaultUkmServerUrl[] = "https://clients4.google.com/ukm";
+
+const char kUkmMimeType[] = "application/vnd.chrome.ukm";
+
 } // namespace metrics

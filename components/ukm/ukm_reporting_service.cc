@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/metrics_switches.h"
+#include "components/metrics/url_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/ukm/ukm_pref_names.h"
 #include "components/ukm/ukm_service.h"
@@ -28,12 +29,6 @@
 namespace ukm {
 
 namespace {
-
-// The UKM server's URL.
-constexpr char kDefaultServerUrl[] = "https://clients4.google.com/ukm";
-
-// The UKM server's MIME type.
-constexpr char kMimeType[] = "application/vnd.chrome.ukm";
 
 // The number of UKM logs that will be stored in UnsentLogStore before logs
 // start being dropped.
@@ -66,7 +61,7 @@ GURL GetServerUrl() {
       base::GetFieldTrialParamValueByFeature(kUkmFeature, "ServerUrl");
   if (!server_url.empty())
     return GURL(server_url);
-  return GURL(kDefaultServerUrl);
+  return GURL(metrics::kDefaultUkmServerUrl);
 }
 
 }  // namespace
@@ -109,7 +104,7 @@ GURL UkmReportingService::GetInsecureUploadUrl() const {
 }
 
 base::StringPiece UkmReportingService::upload_mime_type() const {
-  return kMimeType;
+  return metrics::kUkmMimeType;
 }
 
 metrics::MetricsLogUploader::MetricServiceType
