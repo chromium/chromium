@@ -40,8 +40,8 @@ data/attribution_reporting/aggregatable_report_goldens/version_/report_5.json
 data/attribution_reporting/aggregatable_report_goldens/version_/report_5_cleartext_payloads.json
 data/attribution_reporting/aggregatable_report_goldens/version_/report_6.json
 data/attribution_reporting/aggregatable_report_goldens/version_/report_6_cleartext_payloads.json
-data/attribution_reporting/databases/version_49.sql
 data/attribution_reporting/databases/version_50.sql
+data/attribution_reporting/databases/version_51.sql
 data/attribution_reporting/interop/aggregatable_budget.json
 data/attribution_reporting/interop/aggregatable_contributions_creation.json
 data/attribution_reporting/interop/aggregatable_dedup_key.json

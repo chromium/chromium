@@ -19,10 +19,10 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database& db,
     start_timestamp = base::ThreadTicks::Now();
   }
 
-  static_assert(AttributionStorageSql::kDeprecatedVersionNumber + 1 == 50,
+  static_assert(AttributionStorageSql::kDeprecatedVersionNumber + 1 == 51,
                 "Remove migration(s) below.");
 
-  static_assert(AttributionStorageSql::kCurrentVersionNumber == 50,
+  static_assert(AttributionStorageSql::kCurrentVersionNumber == 51,
                 "Add migration(s) above.");
 
   if (base::ThreadTicks::IsSupported()) {

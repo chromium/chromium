@@ -332,11 +332,12 @@ TEST_F(AttributionStorageSqlTest,
     // [conversion_domain_idx], [impression_expiry_idx],
     // [impression_origin_idx], [sources_by_source_time],
     // [reports_by_report_time], [reports_by_source_id_report_type],
-    // [reports_by_trigger_time], [rate_limit_source_site_reporting_origin_idx],
+    // [reports_by_trigger_time], [reports_by_reporting_origin],
+    // [rate_limit_source_site_reporting_origin_idx],
     // [rate_limit_reporting_origin_idx], [rate_limit_time_idx],
     // [rate_limit_impression_id_idx], [sources_by_destination_site], and the
     // meta table index.
-    EXPECT_EQ(13u, sql::test::CountSQLIndices(&raw_db));
+    EXPECT_EQ(14u, sql::test::CountSQLIndices(&raw_db));
   }
 }
 
@@ -758,12 +759,27 @@ TEST_F(AttributionStorageSqlTest, ClearData_KeepRateLimitData) {
 
 TEST_F(AttributionStorageSqlTest, DeleteAttributionDataByDataKey) {
   OpenDatabase();
-  storage()->StoreSource(SourceBuilder().Build());
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetReportingOrigin(
+              *attribution_reporting::SuitableOrigin::Deserialize(
+                  "https://report1.test"))
+          .Build());
+  storage()->StoreAttributionReportForTesting(
+      ReportBuilder(AttributionInfoBuilder().Build(),
+                    SourceBuilder()
+                        .SetReportingOrigin(
+                            *attribution_reporting::SuitableOrigin::Deserialize(
+                                "https://report2.test"))
+                        .BuildStored())
+          .SetReportTime(base::Time::Now())
+          .BuildNullAggregatable());
 
   std::vector keys = storage()->GetAllDataKeys();
-  ASSERT_THAT(keys, SizeIs(1));
+  ASSERT_THAT(keys, SizeIs(2));
 
   storage()->DeleteByDataKey(keys[0]);
+  storage()->DeleteByDataKey(keys[1]);
 
   CloseDatabase();
 

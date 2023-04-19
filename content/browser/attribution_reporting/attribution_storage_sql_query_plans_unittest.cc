@@ -111,6 +111,12 @@ TEST_F(AttributionSqlQueryPlanTest, kGetSourcesDataKeysSql) {
               UsesCoveringIndex("sources_by_active_reporting_origin"));
 }
 
+TEST_F(AttributionSqlQueryPlanTest, kGetNullReportsDataKeysSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::kGetNullReportsDataKeysSql,
+                      SqlFullScanReason::kNotOptimized),
+              UsesIndex("reports_by_reporting_origin"));
+}
+
 TEST_F(AttributionSqlQueryPlanTest, kGetRateLimitDataKeysSql) {
   EXPECT_THAT(GetPlan(attribution_queries::kGetRateLimitDataKeysSql,
                       SqlFullScanReason::kIntentional),

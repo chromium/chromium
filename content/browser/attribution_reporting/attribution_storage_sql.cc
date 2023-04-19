@@ -2349,6 +2349,18 @@ bool AttributionStorageSql::CreateSchema() {
     return false;
   }
 
+  // Optimizes data keys retrieval for null reports.
+  static_assert(
+      static_cast<int>(AttributionReport::Type::kNullAggregatable) == 2,
+      "update `report_type=2` clause below");
+  static constexpr char kReportsReportTypeReportingOriginIndexSql[] =
+      "CREATE INDEX reports_by_reporting_origin "
+      "ON reports(reporting_origin)"
+      "WHERE report_type=2";
+  if (!db_.Execute(kReportsReportTypeReportingOriginIndexSql)) {
+    return false;
+  }
+
   if (!rate_limit_table_.CreateTable(&db_)) {
     return false;
   }
@@ -2851,18 +2863,25 @@ AttributionStorageSql::GetAllDataKeys() {
   }
 
   std::vector<AttributionDataModel::DataKey> keys;
-  sql::Statement statement(db_.GetCachedStatement(
-      SQL_FROM_HERE, attribution_queries::kGetSourcesDataKeysSql));
 
-  while (statement.Step()) {
-    url::Origin reporting_origin = DeserializeOrigin(statement.ColumnString(0));
-    if (reporting_origin.opaque()) {
-      continue;
+  const auto get_data_keys = [&](sql::Statement& statement) {
+    while (statement.Step()) {
+      url::Origin reporting_origin =
+          DeserializeOrigin(statement.ColumnString(0));
+      if (reporting_origin.opaque()) {
+        continue;
+      }
+      keys.emplace_back(std::move(reporting_origin));
     }
-    keys.emplace_back(std::move(reporting_origin));
-  }
+  };
 
-  // TODO(crbug.com/1432558): Get data keys for null aggregatable reports.
+  sql::Statement sources_statement(db_.GetCachedStatement(
+      SQL_FROM_HERE, attribution_queries::kGetSourcesDataKeysSql));
+  get_data_keys(sources_statement);
+
+  sql::Statement null_reports_statement(db_.GetCachedStatement(
+      SQL_FROM_HERE, attribution_queries::kGetNullReportsDataKeysSql));
+  get_data_keys(null_reports_statement);
 
   rate_limit_table_.AppendRateLimitDataKeys(&db_, keys);
   return base::flat_set<AttributionDataModel::DataKey>(std::move(keys))

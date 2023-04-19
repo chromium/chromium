@@ -68,6 +68,13 @@ inline constexpr const char kDedupKeySql[] =
 inline constexpr const char kGetSourcesDataKeysSql[] =
     "SELECT DISTINCT reporting_origin FROM sources";
 
+static_assert(
+    static_cast<int>(
+        attribution_reporting::mojom::ReportType::kNullAggregatable) == 2,
+    "update `report_type=2` clause below");
+inline constexpr const char kGetNullReportsDataKeysSql[] =
+    "SELECT DISTINCT reporting_origin FROM reports WHERE report_type=2";
+
 inline constexpr const char kGetRateLimitDataKeysSql[] =
     "SELECT DISTINCT reporting_origin FROM rate_limits";
 
