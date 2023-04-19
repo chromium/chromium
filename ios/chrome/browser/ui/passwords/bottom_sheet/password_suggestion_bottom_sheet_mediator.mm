@@ -116,11 +116,15 @@
   _observer = nullptr;
 }
 
+- (BOOL)hasSuggestions {
+  return [self.suggestions count] > 0;
+}
+
 #pragma mark - Accessors
 
 - (void)setConsumer:(id<PasswordSuggestionBottomSheetConsumer>)consumer {
   _consumer = consumer;
-  if ([self.suggestions count] > 0) {
+  if ([self hasSuggestions]) {
     [consumer setSuggestions:self.suggestions];
   } else {
     [consumer dismiss];

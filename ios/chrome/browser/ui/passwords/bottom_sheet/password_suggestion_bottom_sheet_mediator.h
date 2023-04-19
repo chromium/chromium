@@ -32,6 +32,9 @@ class WebStateList;
 // Disconnects the mediator.
 - (void)disconnect;
 
+// Whether the mediator has any suggestions for the user.
+- (BOOL)hasSuggestions;
+
 // The bottom sheet suggestions consumer.
 @property(nonatomic, strong) id<PasswordSuggestionBottomSheetConsumer> consumer;
 

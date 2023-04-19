@@ -57,6 +57,14 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  // If the bottom sheet has no suggestion to show, do not show the bottom
+  // sheet. Instead, re-focus the field which triggered the bottom sheet and
+  // disable it.
+  if (![self.mediator hasSuggestions]) {
+    [self.mediator refocus];
+    return;
+  }
+
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES
                                       completion:nil];
