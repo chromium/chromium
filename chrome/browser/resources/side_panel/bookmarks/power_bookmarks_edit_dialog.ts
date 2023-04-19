@@ -165,6 +165,12 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
         'backButtonLabel', this.getFolderTitle_(activeFolderParent));
   }
 
+  private getForwardButtonTooltip_(folder: chrome.bookmarks.BookmarkTreeNode):
+      string {
+    return loadTimeData.getStringF(
+        'openBookmarkLabel', this.getFolderTitle_(folder));
+  }
+
   private getForwardButtonLabel_(folder: chrome.bookmarks.BookmarkTreeNode):
       string {
     return loadTimeData.getStringF(

@@ -28,7 +28,8 @@ export class SpHeading extends PolymerElement {
         valuse: false,
       },
 
-      backButtonLabel: String,
+      backButtonAriaLabel: String,
+      backButtonTitle: String,
 
       hideBackButton: {
         type: Boolean,
@@ -44,13 +45,14 @@ export class SpHeading extends PolymerElement {
   }
 
   compact: boolean;
-  backButtonLabel: string;
+  backButtonAriaLabel: string;
+  backButtonTitle: string;
   hideBackButton: boolean;
   disableBackButton: boolean;
 
   private onHideBackButtonChanged_() {
     if (!this.hideBackButton) {
-      assert(this.backButtonLabel);
+      assert(this.backButtonAriaLabel);
     }
   }
 

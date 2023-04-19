@@ -75,6 +75,10 @@ export class PowerBookmarkRowElement extends PolymerElement {
         type: String,
         value: '',
       },
+      trailingIconTooltip: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -89,6 +93,7 @@ export class PowerBookmarkRowElement extends PolymerElement {
   rowAriaLabel: string;
   trailingIcon: string;
   trailingIconAriaLabel: string;
+  trailingIconTooltip: string;
   imageUrls: string[];
 
   override connectedCallback() {

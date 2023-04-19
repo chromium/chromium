@@ -46,8 +46,12 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
       buttonAriaDescription: String,
       count: Number,
       description: String,
-      title: String,
       url: String,
+
+      title: {
+        reflectToAttribute: true,
+        type: String,
+      },
 
       hasBadges_: {
         type: Boolean,
@@ -101,7 +105,6 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   private hasDescription_: boolean;
   private isFolder_: boolean;
   size: CrUrlListItemSize;
-  override title: string;
   url?: string;
   imageUrls: string[];
   private firstImageLoaded_: boolean;
