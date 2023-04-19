@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_components/omnibox/realbox_dropdown.js';
 import 'chrome://resources/cr_components/omnibox/realbox_icon.js';
 
-import {AutocompleteMatch, AutocompleteResult, NavigationPredictor, PageCallbackRouter, PageHandlerInterface} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
+import {AutocompleteMatch, AutocompleteResult, NavigationPredictor, PageCallbackRouter, PageHandlerInterface, SideType} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
 import {RealboxBrowserProxy} from 'chrome://resources/cr_components/omnibox/realbox_browser_proxy.js';
 import {RealboxDropdownElement} from 'chrome://resources/cr_components/omnibox/realbox_dropdown.js';
 import {RealboxIconElement} from 'chrome://resources/cr_components/omnibox/realbox_icon.js';
@@ -70,6 +70,13 @@ export class RealboxElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
+      /** Whether the cr-realbox-dropdown should be visible. */
+      dropdownIsVisible: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
       /**
        * Whether the secondary side was at any point available to be shown.
        */
@@ -89,13 +96,6 @@ export class RealboxElement extends PolymerElement {
       /** Whether the theme is dark. */
       isDark: {
         type: Boolean,
-        reflectToAttribute: true,
-      },
-
-      /** Whether matches are currently visible. */
-      matchesAreVisible: {
-        type: Boolean,
-        value: false,
         reflectToAttribute: true,
       },
 
@@ -218,10 +218,10 @@ export class RealboxElement extends PolymerElement {
   }
 
   canShowSecondarySide: boolean;
+  dropdownIsVisible: boolean;
   hadSecondarySide: boolean;
   hasSecondarySide: boolean;
   isDark: boolean;
-  matchesAreVisible: boolean;
   matchSearchbox: boolean;
   realboxLensSearchEnabled: boolean;
   singleColoredIcons: boolean;
@@ -288,7 +288,13 @@ export class RealboxElement extends PolymerElement {
 
     this.result_ = result;
     const hasMatches = result?.matches?.length > 0;
-    this.matchesAreVisible = hasMatches;
+    const hasPrimaryMatches = result?.matches?.some(match => {
+      const sideType =
+          result.suggestionGroupsMap[match.suggestionGroupId]?.sideType ||
+          SideType.kDefaultPrimary;
+      return sideType === SideType.kDefaultPrimary;
+    });
+    this.dropdownIsVisible = hasPrimaryMatches;
 
     this.$.input.focus();
 
@@ -444,7 +450,7 @@ export class RealboxElement extends PolymerElement {
 
     // Query for zero-prefix matches if user is tabbing into an empty input and
     // matches are not visible.
-    if (!this.$.input.value && !this.matchesAreVisible) {
+    if (!this.$.input.value && !this.dropdownIsVisible) {
       this.queryAutocomplete_('');
     }
   }
@@ -456,7 +462,7 @@ export class RealboxElement extends PolymerElement {
 
     // Query for zero-prefix matches when the main (generally left) mouse button
     // is pressed on an empty input and matches are not visible.
-    if (!this.$.input.value && !this.matchesAreVisible) {
+    if (!this.$.input.value && !this.dropdownIsVisible) {
       this.queryAutocomplete_('');
     }
   }
@@ -475,7 +481,7 @@ export class RealboxElement extends PolymerElement {
         this.updateInput_({text: '', inline: ''});
         this.clearAutocompleteMatches_();
       } else {
-        this.matchesAreVisible = false;
+        this.dropdownIsVisible = false;
 
         // Stop autocomplete but leave (potentially stale) results and continue
         // listening for key presses. These stale results should never be shown.
@@ -507,7 +513,7 @@ export class RealboxElement extends PolymerElement {
     }
 
     // ArrowUp/ArrowDown query autocomplete when matches are not visible.
-    if (!this.matchesAreVisible) {
+    if (!this.dropdownIsVisible) {
       if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
         const inputValue = this.$.input.value;
         if (inputValue.trim() || !inputValue) {
@@ -642,7 +648,7 @@ export class RealboxElement extends PolymerElement {
   }
 
   private onLensSearchClick_() {
-    this.matchesAreVisible = false;
+    this.dropdownIsVisible = false;
     this.dispatchEvent(new Event('open-lens-search'));
   }
 
@@ -661,7 +667,7 @@ export class RealboxElement extends PolymerElement {
    * Clears the autocomplete result on the page and on the autocomplete backend.
    */
   private clearAutocompleteMatches_() {
-    this.matchesAreVisible = false;
+    this.dropdownIsVisible = false;
     this.result_ = null;
     this.$.matches.unselect();
     this.pageHandler_.stopAutocomplete(/*clearResult=*/ true);
@@ -678,7 +684,7 @@ export class RealboxElement extends PolymerElement {
     const delta =
         mojoTimeDelta(window.performance.now() - this.lastInputFocusTime_);
     this.pageHandler_.openAutocompleteMatch(
-        matchIndex, match.destinationUrl, this.matchesAreVisible, delta,
+        matchIndex, match.destinationUrl, this.dropdownIsVisible, delta,
         (e as MouseEvent).button || 0, e.altKey, e.ctrlKey, e.metaKey,
         e.shiftKey);
     e.preventDefault();

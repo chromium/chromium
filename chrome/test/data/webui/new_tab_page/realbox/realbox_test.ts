@@ -2271,6 +2271,40 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(2, matchEls.length);
   });
 
+  test('HidesDropdownIfNoPrimaryMatches', async () => {
+    realbox.$.input.value = '';
+    realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
+
+    const matches = [createUrlMatch({suggestionGroupId: 100})];
+    const suggestionGroupsMap = {
+      100: {
+        header: mojoString16('People also search for'),
+        hideGroupA11yLabel: mojoString16(''),
+        showGroupA11yLabel: mojoString16(''),
+        hidden: false,
+        sideType: SideType.kSecondary,
+      },
+    };
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: mojoString16(''),
+      matches,
+      suggestionGroupsMap,
+    });
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    assertFalse(areMatchesShowing());
+
+    // Verify updating the suggestion group to be a primary group makes the
+    // realbox dropdown show.
+    suggestionGroupsMap[100].sideType = SideType.kDefaultPrimary;
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: mojoString16(''),
+      matches,
+      suggestionGroupsMap,
+    });
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    assertTrue(areMatchesShowing());
+  });
+
   test(
       'focusing suggestion group header resets selection and input text',
       async () => {
