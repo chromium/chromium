@@ -53,6 +53,19 @@ COMPONENT_EXPORT(NETWORK_CPP)
 mojom::AllowCSPFromHeaderValuePtr ParseAllowCSPFromHeader(
     const net::HttpResponseHeaders& headers);
 
+// Parses a CSP source expression.
+// https://w3c.github.io/webappsec-csp/#source-lists
+//
+// Return false on errors.
+// Adds parsing error messages to |parsing_errors|.
+// Notice that this can return true and still add some parsing error message
+// (for example, if there is a url with a non-empty query part).
+COMPONENT_EXPORT(NETWORK_CPP)
+bool ParseSource(mojom::CSPDirectiveName directive_name,
+                 base::StringPiece expression,
+                 mojom::CSPSource* csp_source,
+                 std::vector<std::string>& parsing_errors);
+
 // Return true when the |policy| allows a request to the |url| in relation to
 // the |directive| for a given |context|.
 // Note: Any policy violation are reported to the |context|.
