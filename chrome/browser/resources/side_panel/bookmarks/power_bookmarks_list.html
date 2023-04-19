@@ -157,11 +157,15 @@
     width: 28px;
   }
 
-
   :host-context([chrome-refresh-2023])
       cr-toolbar-selection-overlay::part(clearIcon) {
     margin-inline-end: 0;
     margin-inline-start: -4px;
+  }
+
+  :host-context([chrome-refresh-2023]):host(:not([has-scrollbars_]))
+      sp-footer:has(cr-toolbar-selection-overlay[show]) {
+    border-top: solid 1px var(--color-side-panel-edit-footer-border);
   }
 </style>
 

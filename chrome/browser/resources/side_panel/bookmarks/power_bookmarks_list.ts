@@ -75,6 +75,7 @@ export interface SortOption {
 
 export interface PowerBookmarksListElement {
   $: {
+    bookmarks: HTMLElement,
     contextMenu: PowerBookmarksContextMenuElement,
     deletionToast: CrLazyRenderElement<CrToastElement>,
     powerBookmarksContainer: HTMLElement,
@@ -178,6 +179,13 @@ export class PowerBookmarksListElement extends PolymerElement {
         type: String,
         value: '',
       },
+
+      /* If container containing shown bookmarks has scrollbars. */
+      hasScrollbars_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -214,6 +222,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   private renamingId_: string;
   private deletionDescription_: string;
   private shownBookmarksResizeObserver_?: ResizeObserver;
+  private hasScrollbars_: boolean;
   private contextMenuBookmark_: chrome.bookmarks.BookmarkTreeNode|undefined;
 
   constructor() {
@@ -250,9 +259,8 @@ export class PowerBookmarksListElement extends PolymerElement {
 
     if (document.documentElement.hasAttribute('chrome-refresh-2023')) {
       this.shownBookmarksResizeObserver_ =
-          new ResizeObserver(this.resizeShownBookmarks_.bind(this));
-      this.shownBookmarksResizeObserver_.observe(
-          this.shadowRoot!.querySelector('#bookmarks')!);
+          new ResizeObserver(this.onShownBookmarksResize_.bind(this));
+      this.shownBookmarksResizeObserver_.observe(this.$.bookmarks);
     }
 
     this.recordMetricsOnConnected_();
@@ -1006,11 +1014,14 @@ export class PowerBookmarksListElement extends PolymerElement {
     }
   }
 
-  private resizeShownBookmarks_() {
+  private onShownBookmarksResize_() {
     // The iron-list of `shownBookmarks_` is in a dynamically sized card.
     // Any time the size changes, let iron-list know so that iron-list can
     // properly adjust to its possibly new height.
     this.$.shownBookmarksIronList.notifyResize();
+
+    this.hasScrollbars_ =
+        this.$.bookmarks.scrollHeight > this.$.bookmarks.offsetHeight;
   }
 }
 

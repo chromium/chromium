@@ -24,6 +24,8 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
   mixer[kColorSidePanelBadgeForegroundUpdated] = {
       ui::kColorSysOnTertiaryContainer};
 
+  mixer[kColorSidePanelEditFooterBorder] = {ui::kColorSysTonalOutline};
+
   mixer[kColorSidePanelFilterChipBorder] = {ui::kColorSysTonalOutline};
   mixer[kColorSidePanelFilterChipForeground] = {ui::kColorSysOnSurface};
   mixer[kColorSidePanelFilterChipForegroundSelected] = {
