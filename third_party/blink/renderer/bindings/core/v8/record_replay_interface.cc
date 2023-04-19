@@ -3450,7 +3450,7 @@ static void AddRecordingEvent(const v8::FunctionCallbackInfo<v8::Value>& args) {
 }
 
 static void GetPersistentId(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  if (args.Length() >= 1 && recordreplay::HasDivergedFromRecording()) {
+  if (args.Length() >= 1 && recordreplay::IsInReplayCode()) {
     int id = v8::internal::RecordReplayObjectId(args.GetIsolate(),
                                                 args.GetIsolate()->GetCurrentContext(),
                                                 args[0], /* allow_create */ false);
