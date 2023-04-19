@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
@@ -91,7 +91,7 @@ TEST(ParentGuidPreprocessingTest, ShouldPopulateParentGuidInInitialUpdates) {
   const std::string kBookmarkBarId = "bookmark_bar_id";
   const std::string kParentFolderId = "parent_folder_id";
   const std::string kParentFolderUuid =
-      base::GUID::GenerateRandomV4().AsLowercaseString();
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   // Populate updates representing:
   // bookmark_bar
@@ -125,9 +125,9 @@ TEST(ParentGuidPreprocessingTest,
   const std::string kFolderId = "folder_id";
 
   const std::string kFolderUuid =
-      base::GUID::GenerateRandomV4().AsLowercaseString();
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
   const std::string kParentUuidInSpecifics =
-      base::GUID::GenerateRandomV4().AsLowercaseString();
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   // Populate updates representing:
   // bookmark_bar
@@ -183,7 +183,7 @@ TEST(ParentGuidPreprocessingTest,
                /*specifics=*/dummy_specifics);
 
   // Add one regular (non-permanent) node.
-  bookmarks::BookmarkNode tracked_node(/*id=*/1, base::GUID::GenerateRandomV4(),
+  bookmarks::BookmarkNode tracked_node(/*id=*/1, base::Uuid::GenerateRandomV4(),
                                        GURL());
   tracker->Add(&tracked_node, kSyncId,
                /*server_version=*/0, /*creation_time=*/base::Time::Now(),
@@ -211,7 +211,7 @@ TEST(ParentGuidPreprocessingTest,
 
   const std::string kParentFolderId = "parent_folder_id";
   const std::string kParentFolderUuid =
-      base::GUID::GenerateRandomV4().AsLowercaseString();
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   // Populate updates representing:
   //  |- folder with unknown parent
