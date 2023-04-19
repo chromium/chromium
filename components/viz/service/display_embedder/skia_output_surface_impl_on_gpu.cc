@@ -356,6 +356,9 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
       << "We must have a valid context if copy requests were serviced";
   copy_output_images_.clear();
 
+  // |scoped_output_device_paint_| needs |output_device_|, so release it first.
+  scoped_output_device_paint_.reset();
+
   // |output_device_| may still need |shared_image_factory_|, so release it
   // first.
   output_device_.reset();
