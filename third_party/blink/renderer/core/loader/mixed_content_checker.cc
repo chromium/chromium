@@ -32,6 +32,8 @@
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -452,15 +454,24 @@ bool MixedContentChecker::ShouldBlockFetch(
           mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone ||
       settings->GetStrictMixedContentChecking();
 
-  const bool is_ip_address = GURL(url).HostIsIPAddress();
-
   mojom::blink::MixedContentContextType context_type =
       MixedContent::ContextTypeFromRequestContext(
           request_context, DecideCheckModeForPlugin(settings));
 
   switch (context_type) {
     case mojom::blink::MixedContentContextType::kOptionallyBlockable:
-      allowed = !strict_mode && !is_ip_address;
+
+#if BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(ENABLE_CAST_RECEIVER)
+      // Fuchsia WebEngine can be configured to allow loading Mixed Content from
+      // an insecure IP address. This is a workaround to revert Fuchsia Cast
+      // Receivers to the behavior before crrev.com/c/4032146.
+      // TODO(crbug.com/1434440): Remove this workaround when there is a better
+      // way to disable blocking Mixed Content with an IP address.
+      allowed = !strict_mode;
+#else
+      allowed = !strict_mode && !GURL(url).HostIsIPAddress();
+#endif  // BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(ENABLE_CAST_RECEIVER)
+
       if (allowed) {
         if (content_settings_client)
           content_settings_client->PassiveInsecureContentFound(url);
