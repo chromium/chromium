@@ -27,13 +27,6 @@ ScopedJavaLocalRef<jobject> JNI_Tab_CreateWebContents(JNIEnv* env) {
       WebContents::Create(content::WebContents::CreateParams(
           static_cast<BrowserContext*>(delegate->browser_context())));
 
-  // TODO: This is just for the proof-of-concept and URL should be loaded
-  // explicitly by `NavigationController.loadUrl` after creating WebContents.
-  NavigationController::LoadURLParams params(GURL("https://google.com"));
-  params.transition_type = static_cast<ui::PageTransition>(
-      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
-  web_contents->GetController().LoadURLWithParams(params);
-
   return web_contents.release()->GetJavaWebContents();
 }
 
