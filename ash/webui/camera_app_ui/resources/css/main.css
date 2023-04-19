@@ -1481,7 +1481,7 @@ body:not(.video) #settings-video-resolution {
 }
 
 [tabindex='0']:focus-visible {
-  outline: 2px solid var(--blue-300);
+  outline: 2px solid var(--cros-sys-focus_ring);
 }
 
 .circle :is(button, input) {
