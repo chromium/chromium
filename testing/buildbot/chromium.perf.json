@@ -33,62 +33,6 @@
       },
       {
         "args": [],
-        "isolate_name": "resource_sizes_monochrome_public_minimal_apks",
-        "merge": {
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "resource_sizes_monochrome_public_minimal_apks",
-        "override_compile_targets": [
-          "resource_sizes_monochrome_public_minimal_apks"
-        ],
-        "resultdb": {
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
-          "expiration": 7200,
-          "hard_timeout": 21600,
-          "io_timeout": 21600,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        }
-      },
-      {
-        "args": [],
-        "isolate_name": "resource_sizes_system_webview_bundle",
-        "merge": {
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "resource_sizes_system_webview_bundle",
-        "override_compile_targets": [
-          "resource_sizes_system_webview_bundle"
-        ],
-        "resultdb": {
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
-          "expiration": 7200,
-          "hard_timeout": 21600,
-          "io_timeout": 21600,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        }
-      },
-      {
-        "args": [],
         "isolate_name": "resource_sizes_system_webview_google_bundle",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
@@ -1221,62 +1165,6 @@
       },
       {
         "args": [],
-        "isolate_name": "resource_sizes_monochrome_public_minimal_apks",
-        "merge": {
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "resource_sizes_monochrome_public_minimal_apks",
-        "override_compile_targets": [
-          "resource_sizes_monochrome_public_minimal_apks"
-        ],
-        "resultdb": {
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
-          "expiration": 7200,
-          "hard_timeout": 21600,
-          "io_timeout": 21600,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        }
-      },
-      {
-        "args": [],
-        "isolate_name": "resource_sizes_system_webview_bundle",
-        "merge": {
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "resource_sizes_system_webview_bundle",
-        "override_compile_targets": [
-          "resource_sizes_system_webview_bundle"
-        ],
-        "resultdb": {
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
-          "expiration": 7200,
-          "hard_timeout": 21600,
-          "io_timeout": 21600,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        }
-      },
-      {
-        "args": [],
         "isolate_name": "resource_sizes_system_webview_google_bundle",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
@@ -1284,34 +1172,6 @@
         "name": "resource_sizes_system_webview_google_bundle",
         "override_compile_targets": [
           "resource_sizes_system_webview_google_bundle"
-        ],
-        "resultdb": {
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
-          "expiration": 7200,
-          "hard_timeout": 21600,
-          "io_timeout": 21600,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        }
-      },
-      {
-        "args": [],
-        "isolate_name": "resource_sizes_trichrome",
-        "merge": {
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "resource_sizes_trichrome",
-        "override_compile_targets": [
-          "resource_sizes_trichrome"
         ],
         "resultdb": {
           "has_native_resultdb_integration": true

@@ -1771,21 +1771,6 @@ targets.generated_script(
     label = "//chromeos/lacros:resource_sizes_lacros_chrome",
 )
 
-targets.generated_script(
-    name = "resource_sizes_monochrome_public_minimal_apks",
-    label = "//chrome/android:resource_sizes_monochrome_public_minimal_apks",
-)
-
-targets.generated_script(
-    name = "resource_sizes_trichrome",
-    label = "//chrome/android:resource_sizes_trichrome",
-)
-
-targets.generated_script(
-    name = "resource_sizes_system_webview_bundle",
-    label = "//android_webview:resource_sizes_system_webview_bundle",
-)
-
 targets.compile_target(
     name = "rust_build_tests",
     label = "//build/rust/tests",

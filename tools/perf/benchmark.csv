@@ -59,10 +59,7 @@ rendering.mobile.notracing,"jonross@chromium.org, chrome-gpu-metrics@google.com"
 resource_sizes_chromecast,"juke@chromium.org, eliribble@chromium.org",Chromecast,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
 resource_sizes_lacros_chrome,"erikchen@chromium.org, huangs@chromium.org",OS>LaCrOS,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
 resource_sizes_monochrome_minimal_apks,"agrieve@chromium.org, jbudorick@chromium.org",Build,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
-resource_sizes_monochrome_public_minimal_apks,"agrieve@chromium.org, jbudorick@chromium.org",Build,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
-resource_sizes_system_webview_bundle,"agrieve@chromium.org, jbudorick@chromium.org",Build,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
 resource_sizes_system_webview_google_bundle,"agrieve@chromium.org, jbudorick@chromium.org",Build,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
-resource_sizes_trichrome,"agrieve@chromium.org, jbudorick@chromium.org",Build,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
 resource_sizes_trichrome_google,"agrieve@chromium.org, jbudorick@chromium.org",Build,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
 speedometer,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,,all
 speedometer-future,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,,all
