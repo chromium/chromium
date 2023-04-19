@@ -4634,6 +4634,11 @@ const char kPasswordManagerRedesignName[] = "Password Manager new UI";
 const char kPasswordManagerRedesignDescription[] =
     "Enables new Password Manager UI on Desktop";
 
+const char kPermissionStorageAccessAPIName[] =
+    "Storage Access API permission UI";
+const char kPermissionStorageAccessAPIDescription[] =
+    "Enables the new Storage Access API permission UI on Desktop";
+
 const char kRealboxSecondaryZeroSuggestName[] =
     "Enables showing secondary zero-prefix suggestions in NTP realbox.";
 const char kRealboxSecondaryZeroSuggestDescription[] =

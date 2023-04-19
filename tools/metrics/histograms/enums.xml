@@ -59616,6 +59616,7 @@ from previous Chrome versions.
   <int value="-1321212159" label="MediaAppAnnotation:enabled"/>
   <int value="-1319688939" label="ignore-gpu-blacklist"/>
   <int value="-1318914924" label="OverflowIconsForMediaControls:enabled"/>
+  <int value="-1317768255" label="PermissionStorageAccessAPI:enabled"/>
   <int value="-1316769004" label="CrossOriginOpenerPolicyReporting:disabled"/>
   <int value="-1315360754" label="WindowLayoutMenu:disabled"/>
   <int value="-1314757884" label="TabGroupsSave:enabled"/>
@@ -59847,6 +59848,7 @@ from previous Chrome versions.
   <int value="-1205076560" label="EnableSearchBoxSelection:disabled"/>
   <int value="-1203955801" label="enable-password-change-support:disabled"/>
   <int value="-1203742042" label="enable-gesture-selection"/>
+  <int value="-1202556733" label="PermissionStorageAccessAPI:disabled"/>
   <int value="-1201741587" label="DataReductionProxyDecidesTransform:disabled"/>
   <int value="-1201183153" label="enable-centered-app-list"/>
   <int value="-1199738132" label="MediaAppMultiWindow:disabled"/>

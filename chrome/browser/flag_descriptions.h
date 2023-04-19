@@ -2666,6 +2666,9 @@ extern const char kPasswordsGroupingDescription[];
 extern const char kPasswordManagerRedesignName[];
 extern const char kPasswordManagerRedesignDescription[];
 
+extern const char kPermissionStorageAccessAPIName[];
+extern const char kPermissionStorageAccessAPIDescription[];
+
 extern const char kRealboxSecondaryZeroSuggestName[];
 extern const char kRealboxSecondaryZeroSuggestDescription[];
 
