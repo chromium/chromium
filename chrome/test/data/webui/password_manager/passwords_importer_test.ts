@@ -447,4 +447,28 @@ suite('PasswordsImporterTest', function() {
         importer.i18nAdvanced('importPasswordsFileSizeExceeded').toString());
   });
 
+  test('already active dialog state has correct state', async function() {
+    const importer = createPasswordsImporter();
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.IMPORT_ALREADY_ACTIVE,
+      numberImported: 0,
+      displayedEntries: [],
+      fileName: '',
+    });
+
+    await triggerImportHelper(importer, passwordManager);
+
+    const dialog =
+        importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+    assertTrue(!!dialog);
+    assertTrue(dialog.open);
+
+    assertVisibleTextContent(
+        dialog, '#title', importer.i18n('importPasswords'));
+    assertVisibleTextContent(
+        dialog, '#description', importer.i18n('importPasswordsAlreadyActive'));
+    assertVisibleTextContent(dialog, '#closeButton', importer.i18n('close'));
+
+    assertButtonShouldCloseDialog(importer, dialog, '#closeButton');
+  });
 });

@@ -31,6 +31,7 @@ enum DialogState {
   STORE_PICKER,
   SUCCESS,
   ERROR,
+  ALREADY_ACTIVE,
 }
 
 const PasswordsImporterElementBase = I18nMixin(PolymerElement);
@@ -217,8 +218,10 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
         this.dialogState_ = DialogState.ERROR;
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.CONFLICTS:
-      case chrome.passwordsPrivate.ImportResultsStatus.IMPORT_ALREADY_ACTIVE:
         // TODO(crbug/1432962): Handle each status.
+        break;
+      case chrome.passwordsPrivate.ImportResultsStatus.IMPORT_ALREADY_ACTIVE:
+        this.dialogState_ = DialogState.ALREADY_ACTIVE;
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.DISMISSED:
         // Dialog state should not change if a system file picker was dismissed.

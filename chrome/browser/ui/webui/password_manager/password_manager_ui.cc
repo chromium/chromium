@@ -162,6 +162,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"help", IDS_PASSWORD_MANAGER_UI_HELP},
     {"hidePassword", IDS_PASSWORD_MANAGER_UI_HIDE_PASSWORD},
     {"importPasswords", IDS_PASSWORD_MANAGER_UI_IMPORT_BANNER_TITLE},
+    {"importPasswordsAlreadyActive",
+     IDS_PASSWORD_MANAGER_UI_IMPORT_ALREADY_ACTIVE},
     {"importPasswordsFileSizeExceeded",
      IDS_PASSWORD_MANAGER_UI_IMPORT_FILE_SIZE_EXCEEDED},
     {"importPasswordsUnknownError",
