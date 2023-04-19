@@ -5,12 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_VIEWPORT_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_VIEWPORT_DATA_H_
 
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/page/display_cutout.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
@@ -60,8 +60,8 @@ class ViewportData final : public GarbageCollected<ViewportData> {
   mojom::ViewportFit viewport_fit_ = blink::mojom::ViewportFit::kAuto;
   bool force_expand_display_cutout_ = false;
 
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::AssociatedRemote<mojom::blink::DisplayCutoutHost> display_cutout_host_;
+  HeapMojoAssociatedRemote<mojom::blink::DisplayCutoutHost>
+      display_cutout_host_;
 };
 
 inline bool ViewportData::ShouldOverrideLegacyDescription(
