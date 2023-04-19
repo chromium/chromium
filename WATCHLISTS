@@ -1936,10 +1936,6 @@
     'switch_access': {
       'filepath': 'switch_access',
     },
-    'sync_android': {
-      'filepath': 'chrome/browser/sync/android/'\
-                  '|chrome/android/java/src/org/chromium/chrome/browser/sync/',
-    },
     'syncfs': {
       'filepath': 'sync_file_system',
     },
@@ -3044,7 +3040,6 @@
     'surface_layer_for_video': [ 'lethalantidote@chromium.org',
                                  'liberato@chromium.org'],
     'switch_access': ['anastasi+watch@google.com'],
-    'sync_android': ['victorvianna+watchlists@google.com'],
     'syncfs': ['kinuko+fileapi@chromium.org'],
     'system_web_apps': [ 'ortuno@chromium.org',
                          'dominicschulz@google.com',
