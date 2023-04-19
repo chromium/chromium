@@ -58722,6 +58722,7 @@ from previous Chrome versions.
       label="UseLookalikesForNavigationSuggestions:disabled"/>
   <int value="-1804485171" label="disable-fullscreen-tab-detaching"/>
   <int value="-1804411756" label="ClipboardSuggestionContentHidden:enabled"/>
+  <int value="-1802905985" label="OmniboxExpandedStateSuggestIcons:enabled"/>
   <int value="-1802559277" label="RunTasksByBatches:disabled"/>
   <int value="-1802502753" label="enable-manual-password-generation:enabled"/>
   <int value="-1801515363" label="ThreadedPreloadScanner:enabled"/>
@@ -63908,6 +63909,7 @@ from previous Chrome versions.
   <int value="1012643576" label="CommerceDeveloper:enabled"/>
   <int value="1012916096" label="AutocorrectToggle:enabled"/>
   <int value="1012942422" label="HorizontalTabSwitcherAndroid:disabled"/>
+  <int value="1012997760" label="OmniboxExpandedStateSuggestIcons:disabled"/>
   <int value="1013734783" label="WebViewXRequestedWithHeader:disabled"/>
   <int value="1015895665" label="drop-sync-credential:enabled"/>
   <int value="1017364362" label="VrIconInDaydreamHome:enabled"/>

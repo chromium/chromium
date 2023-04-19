@@ -5813,6 +5813,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxCR23ExpandedStateShapeDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kExpandedStateShape)},
 
+    {"omnibox-cr23-expanded-state-suggest-icons",
+     flag_descriptions::kOmniboxCR23ExpandedStateSuggestIconsName,
+     flag_descriptions::kOmniboxCR23ExpandedStateSuggestIconsDescription,
+     kOsDesktop, FEATURE_VALUE_TYPE(omnibox::kExpandedStateSuggestIcons)},
+
     {"omnibox-cr23-steady-state-icons",
      flag_descriptions::kOmniboxCR23SteadyStateIconsName,
      flag_descriptions::kOmniboxCR23SteadyStateIconsDescription, kOsAll,
