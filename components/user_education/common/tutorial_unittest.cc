@@ -490,18 +490,20 @@ TEST_F(TutorialTest, TutorialWithCustomEvent) {
 
 TEST_F(TutorialTest, TutorialWithNamedElement) {
   UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
-  static constexpr char kElementName[] = "Element Name";
+  static constexpr char kElementName1[] = "Element Name 1";
+  static constexpr char kElementName2[] = "Element Name 2";
+  static constexpr char kElementName3[] = "Element Name 3";
 
   const auto bubble_factory_registry =
       CreateTestTutorialBubbleFactoryRegistry();
   TutorialRegistry registry;
   TestTutorialService service(&registry, bubble_factory_registry.get());
 
-  // build elements and keep them for triggering show/hide
+  // Build elements and keep them for triggering show/hide.
   ui::test::TestElement element_1(kTestIdentifier1, kTestContext1);
   element_1.Show();
 
-  // Build the tutorial Description
+  // Build the tutorial description.
   TutorialDescription description;
   description.steps.emplace_back(
       IDS_OK, IDS_OK, ui::InteractionSequence::StepType::kShown,
@@ -511,12 +513,22 @@ TEST_F(TutorialTest, TutorialWithNamedElement) {
       /* transition_only_on_event =*/false,
       base::BindLambdaForTesting(
           [](ui::InteractionSequence* sequence, ui::TrackedElement* element) {
-            sequence->NameElement(element, base::StringPiece(kElementName));
+            sequence->NameElement(element, base::StringPiece(kElementName1));
             return true;
           }));
   description.steps.emplace_back(
+      TutorialDescription::HiddenStep::WaitForShown(kElementName1)
+          .NameElement(kElementName2));
+  description.steps.emplace_back(
+      TutorialDescription::HiddenStep::WaitForShown(kElementName2)
+          .NameElements(base::BindRepeating(
+              [](ui::InteractionSequence* sequence, ui::TrackedElement* el) {
+                sequence->NameElement(el, base::StringPiece(kElementName3));
+                return true;
+              })));
+  description.steps.emplace_back(
       IDS_OK, IDS_OK, ui::InteractionSequence::StepType::kShown,
-      ui::ElementIdentifier(), kElementName, HelpBubbleArrow::kNone);
+      ui::ElementIdentifier(), kElementName3, HelpBubbleArrow::kNone);
   registry.AddTutorial(kTestTutorial1, std::move(description));
 
   service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get());

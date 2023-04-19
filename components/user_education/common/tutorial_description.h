@@ -234,13 +234,17 @@ struct TutorialDescription {
     }
 
     Step& NameElement(const char name_[]) {
-      name_elements_callback = base::BindRepeating(
+      return NameElements(base::BindRepeating(
           [](const char name[], ui::InteractionSequence* sequence,
              ui::TrackedElement* element) {
             sequence->NameElement(element, base::StringPiece(name));
             return true;
           },
-          name_);
+          name_));
+    }
+
+    Step& NameElements(NameElementsCallback name_elements_callback_) {
+      name_elements_callback = std::move(name_elements_callback_);
       return *this;
     }
 
