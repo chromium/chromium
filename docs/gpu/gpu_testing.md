@@ -190,7 +190,8 @@ argument. The tests this script can invoke are
 in `src/content/test/gpu/gpu_tests/`. For example:
 
 *   `run_gpu_integration_test.py context_lost --browser=release`
-*   `run_gpu_integration_test.py webgl_conformance --browser=release --webgl-conformance-version=1.0.2`
+*   `run_gpu_integration_test.py webgl1_conformance --browser=release`
+*   `run_gpu_integration_test.py webgl2_conformance --browser=release --webgl-conformance-version=2.0.1`
 *   `run_gpu_integration_test.py maps --browser=release`
 *   `run_gpu_integration_test.py screenshot_sync --browser=release`
 *   `run_gpu_integration_test.py trace_test --browser=release`
@@ -221,13 +222,14 @@ per logical core.
 
 **Note:** The tests require some third-party Python packages. Obtaining these
 packages is handled automatically by `vpython3`, and the script's shebang should
-use vpython if running the script directly. If you're used to invoking `python3`
-to run a script, simply use `vpython3` instead, e.g.
-`vpython3 run_gpu_integration_test.py ...`.
+use vpython if running the script directly. Since shebangs are not used on
+Windows, you will need to manually specify the executable if you are on a
+Windows machine. If you're used to invoking `python3` to run a script, simply
+use `vpython3` instead, e.g. `vpython3 run_gpu_integration_test.py ...`.
 
 You can run a subset of tests with this harness:
 
-*   `run_gpu_integration_test.py webgl_conformance --browser=release
+*   `run_gpu_integration_test.py webgl1_conformance --browser=release
     --test-filter=conformance_attribs`
 
 The exact command used to invoke the test on the bots can be found in one of
