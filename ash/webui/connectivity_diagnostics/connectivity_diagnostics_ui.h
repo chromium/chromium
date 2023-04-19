@@ -7,13 +7,28 @@
 
 #include <string>
 
+#include "ash/webui/common/chrome_os_webui_config.h"
+#include "ash/webui/connectivity_diagnostics/url_constants.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom-forward.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom-forward.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash {
+
+class ConnectivityDiagnosticsUI;
+
+class ConnectivityDiagnosticsUIConfig
+    : public ChromeOSWebUIConfig<ConnectivityDiagnosticsUI> {
+ public:
+  explicit ConnectivityDiagnosticsUIConfig(
+      CreateWebUIControllerFunc create_controller_func)
+      : ChromeOSWebUIConfig(content::kChromeUIScheme,
+                            ash::kChromeUIConnectivityDiagnosticsHost,
+                            create_controller_func) {}
+};
 
 class ConnectivityDiagnosticsUI : public ui::MojoWebUIController {
  public:

@@ -8,14 +8,24 @@
 #include "content/public/browser/webui_config_map.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// Headers that are part of the //chrome/browser target.
+//
+// Depending on //chrome/browser would cause a circular dependency because it
+// depends on //chrome/browser/ui which depends on this file's target. So we
+// suppress gn warnings.
+#include "chrome/browser/app_mode/app_mode_utils.h"         // nogncheck
+#include "chrome/browser/feedback/feedback_dialog_utils.h"  // nogncheck
+
 #include "ash/constants/ash_features.h"
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/color_internals/color_internals_ui.h"
+#include "ash/webui/connectivity_diagnostics/connectivity_diagnostics_ui.h"
 #include "ash/webui/files_internals/files_internals_ui.h"
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
 #include "ash/webui/system_extensions_internals_ui/system_extensions_internals_ui.h"
+#include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/os_feedback/chrome_os_feedback_delegate.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/files_internals_ui_delegate.h"
@@ -92,6 +102,37 @@ std::unique_ptr<content::WebUIConfig> MakeComponentConfig() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+std::unique_ptr<content::WebUIConfig> MakeConnectivityDiagnosticsUIConfig() {
+  CreateWebUIControllerFunc create_controller_func =
+      [](content::WebUI* web_ui) -> std::unique_ptr<content::WebUIController> {
+    return std::make_unique<ash::ConnectivityDiagnosticsUI>(
+        web_ui,
+        /* BindNetworkDiagnosticsServiceCallback */
+        base::BindRepeating(
+            [](mojo::PendingReceiver<chromeos::network_diagnostics::mojom::
+                                         NetworkDiagnosticsRoutines> receiver) {
+              ash::network_health::NetworkHealthManager::GetInstance()
+                  ->BindDiagnosticsReceiver(std::move(receiver));
+            }),
+        /* BindNetworkHealthServiceCallback */
+        base::BindRepeating(
+            [](mojo::PendingReceiver<
+                chromeos::network_health::mojom::NetworkHealthService>
+                   receiver) {
+              ash::network_health::NetworkHealthManager::GetInstance()
+                  ->BindHealthReceiver(std::move(receiver));
+            }),
+        /* SendFeedbackReportCallback */
+        base::BindRepeating(
+            &chrome::ShowFeedbackDialogForWebUI,
+            chrome::WebUIFeedbackSource::kConnectivityDiagnostics),
+        /*show_feedback_button=*/!chrome::IsRunningInAppMode());
+  };
+
+  return std::make_unique<ash::ConnectivityDiagnosticsUIConfig>(
+      create_controller_func);
+}
+
 void RegisterAshChromeWebUIConfigs() {
   // Add `WebUIConfig`s for Ash ChromeOS to the list here.
   auto& map = content::WebUIConfigMap::GetInstance();
@@ -114,6 +155,7 @@ void RegisterAshChromeWebUIConfigs() {
       std::make_unique<ash::cloud_upload::CloudUploadUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::ColorInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::ConfirmPasswordChangeUIConfig>());
+  map.AddWebUIConfig(MakeConnectivityDiagnosticsUIConfig());
   map.AddWebUIConfig(std::make_unique<ash::CrostiniInstallerUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::CrostiniUpgraderUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::CryptohomeUIConfig>());

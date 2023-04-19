@@ -20,6 +20,7 @@ static_library("connectivity_diagnostics") {
     "//ui/webui",
   ]
   deps = [
+    "//ash/webui/common:chrome_os_webui_config",
     "//ash/webui/network_ui:network_diagnostics_resource_provider",
     "//ash/webui/network_ui:network_health_resource_provider",
     "//ash/webui/resources:connectivity_diagnostics_resources",

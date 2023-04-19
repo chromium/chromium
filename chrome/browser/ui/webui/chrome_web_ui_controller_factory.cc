@@ -188,8 +188,6 @@
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/color_internals/color_internals_ui.h"
 #include "ash/webui/color_internals/url_constants.h"
-#include "ash/webui/connectivity_diagnostics/connectivity_diagnostics_ui.h"
-#include "ash/webui/connectivity_diagnostics/url_constants.h"
 #include "ash/webui/diagnostics_ui/diagnostics_ui.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
@@ -693,33 +691,6 @@ WebUIController* NewWebUI<ash::multidevice::ProximityAuthUI>(WebUI* web_ui,
 }
 
 template <>
-WebUIController* NewWebUI<ash::ConnectivityDiagnosticsUI>(WebUI* web_ui,
-                                                          const GURL& url) {
-  return new ash::ConnectivityDiagnosticsUI(
-      web_ui,
-      /* BindNetworkDiagnosticsServiceCallback */
-      base::BindRepeating(
-          [](mojo::PendingReceiver<
-              chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
-                 receiver) {
-            ash::network_health::NetworkHealthManager::GetInstance()
-                ->BindDiagnosticsReceiver(std::move(receiver));
-          }),
-      /* BindNetworkHealthServiceCallback */
-      base::BindRepeating(
-          [](mojo::PendingReceiver<
-              chromeos::network_health::mojom::NetworkHealthService> receiver) {
-            ash::network_health::NetworkHealthManager::GetInstance()
-                ->BindHealthReceiver(std::move(receiver));
-          }),
-      /* SendFeedbackReportCallback */
-      base::BindRepeating(
-          &chrome::ShowFeedbackDialogForWebUI,
-          chrome::WebUIFeedbackSource::kConnectivityDiagnostics),
-      /*show_feedback_button=*/!chrome::IsRunningInAppMode());
-}
-
-template <>
 WebUIController* NewWebUI<ash::personalization_app::PersonalizationAppUI>(
     WebUI* web_ui,
     const GURL& url) {
@@ -994,8 +965,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewComponentUI<ash::file_manager::FileManagerUI,
                            ChromeFileManagerUIDelegate>;
   }
-  if (url.host_piece() == ash::kChromeUIConnectivityDiagnosticsHost)
-    return &NewWebUI<ash::ConnectivityDiagnosticsUI>;
   if (url.host_piece() == ash::kChromeUIGuestOSInstallerHost)
     return &NewWebUI<ash::GuestOSInstallerUI>;
   if (url.host_piece() == ash::kChromeUIHelpAppHost)
