@@ -9,6 +9,9 @@
       field_id: 2,
     },
   },
+  legacy_mappings: {
+    'cros-color-primary' : '$cros.sys.primary-container',
+  },
   colors: {
     /* Primary */
     primary: {

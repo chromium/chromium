@@ -317,7 +317,7 @@ if __name__ == '__main__':
 ! UPDATE_GOLDENS IS TRUE. EACH TIME THE TESTS ARE RUN ALL GOLDENS
   WILL BE UPDATED TO MATCH CURRENT BEHAVIOUR.
 ! ALL TESTS WILL PASS WITHOUT BEING CHECKED.
-! THE CODE SHOULD NOT BE SUBBMITTED AS IS.
+! THE CODE SHOULD NOT BE SUBMITTED AS IS.
 ===================================================================\033[0m
         """)
     unittest.main()
