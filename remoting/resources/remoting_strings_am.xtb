@@ -19,9 +19,9 @@
 <translation id="2038229918502634450">የመመሪያ ለውጥን ከግምት ለማስገባት፣ አስተናጋጅ ዳግም እየጀመረ ነው።</translation>
 <translation id="2078880767960296260">የአስተናጋጅ ሂደት</translation>
 <translation id="20876857123010370">የትራክፓድ ሁነታ</translation>
-<translation id="2198363917176605566"><ph name="PRODUCT_NAME" />ን ለመጠቀም በዚህ Mac ላይ ያሉ የማያ ገጽ ይዘቶች ወደ የርቀት ማሽን መላክ እንዲቻል «የማያ ገጽ ቀረጻ» ፈቃዱን መስጠት አለብዎት።
+<translation id="2198363917176605566"><ph name="PRODUCT_NAME" />ን ለመጠቀም በዚህ Mac ላይ ያሉ የማያ ገፅ ይዘቶች ወደ የርቀት ማሽን መላክ እንዲቻል «የማያ ገፅ ቀረጻ» ፈቃዱን መስጠት አለብዎት።
 
-ይህን ፈቃድ ለመስጠት ከታች «<ph name="BUTTON_NAME" />»ን ጠቅ አዳርገው «የማያ ገጽ ቀረጻ» ምርጫዎች መቃኑን ይክፈቱና ከ«<ph name="SERVICE_SCRIPT_NAME" />» ቀጥሎ ባለው ሳጥን ላይ ምልክት ያድርጉ።
+ይህን ፈቃድ ለመስጠት ከታች «<ph name="BUTTON_NAME" />»ን ጠቅ አዳርገው «የማያ ገፅ ቀረጻ» ምርጫዎች መቃኑን ይክፈቱና ከ«<ph name="SERVICE_SCRIPT_NAME" />» ቀጥሎ ባለው ሳጥን ላይ ምልክት ያድርጉ።
 
 «<ph name="SERVICE_SCRIPT_NAME" />» አስቀድሞ ምልክት ከተደረገበት ምልክቱን ያንሱትና እንደገና ምልክት ያድርጉበት።</translation>
 <translation id="225614027745146050">እንኳን ደህና መጡ</translation>
@@ -64,7 +64,7 @@
 <translation id="3950820424414687140">በመለያ ይግቡ</translation>
 <translation id="405887016757208221">የርቀት ኮምፒውተሩ ክፍለጊዜውን ለመጀመር ተስኖታል። ችግሩ ከቀጠለ እባክዎን አስተናጋጁን በድጋሚ ለማዋቀር ይሞክሩ።</translation>
 <translation id="4060747889721220580">ፋይል አውርድ</translation>
-<translation id="4126409073460786861">ማዋቀር ከተጠናቀቀ በኋላ ይህን ገጽ ያድሱት፣ ከዚያ መሣሪያዎን በመምረጥ እና ፒኑን በማስገባት ኮምፒውተሩን መድረስ ይችላሉ</translation>
+<translation id="4126409073460786861">ማዋቀር ከተጠናቀቀ በኋላ ይህን ገፅ ያድሱት፣ ከዚያ መሣሪያዎን በመምረጥ እና ፒኑን በማስገባት ኮምፒውተሩን መድረስ ይችላሉ</translation>
 <translation id="4145029455188493639">እንደ <ph name="EMAIL_ADDRESS" /> ሆነው ገብተዋል።</translation>
 <translation id="4155497795971509630">አንዳንድ የሚያስፈልጉ ክፍሎች ይጎድላሉ። እባክዎ የሶፍትዌሩ የቅርብ ጊዜውን ስሪት መጫንዎን ያረጋግጡና እንደገና ይሞክሩ።</translation>
 <translation id="4176825807642096119">የመዳረሻ ኮድ</translation>
@@ -109,7 +109,7 @@
 <translation id="5708869785009007625">ዴስክቶፕዎ በአሁኑ ጊዜ ከ<ph name="USER" /> ጋር ተጋርቷል።</translation>
 <translation id="5750083143895808682">እንደ <ph name="EMAIL_ADDRESS" /> ሆነው ገብተዋል።</translation>
 <translation id="579702532610384533">ዳግም ያገናኙ</translation>
-<translation id="5810269635982033450">ማያ ገጽ እንደ የመከታተያ ፓድ ይሆናል</translation>
+<translation id="5810269635982033450">ማያ ገፅ እንደ የመከታተያ ፓድ ይሆናል</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ማያ ገጽዎን ለማየት እና የእርስዎን ቁልፍ ሰሌዳ እና መዳፊት ለመቆጣጠር መዳረሻን ጠይቋል። ይህን ጥያቄ እየጠበቁ ካልሆነ ከሆነ «<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />»ን ይጫኑ። አለበለዚያ ዝግጁ ሲሆኑ ግንኙነትን ለመፍቀድ «<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />»ን ይምረጡ።</translation>
 <translation id="5823658491130719298">በርቀት ሊደርሱበት በሚፈልጉት ኮምፒውተር ላይ Chromeን ይክፈቱና <ph name="INSTALLATION_LINK" />ን ይጎብኙ</translation>
 <translation id="5841343754884244200">የማሳያ አማራጮች</translation>
@@ -121,7 +121,7 @@
 <translation id="6178645564515549384">ቤተኛ የመልዕክት መላኪያ አስተናጋጅ ለርቀት እርዳታ</translation>
 <translation id="618120821413932081">ከመስኮቱ ጋር ለማገጣጠም የርቀት ምስል ጥራቱን ያዘምኑ</translation>
 <translation id="6223301979382383752">የማያ ቀረጻ ምርጫዎችን ይክፈቱ</translation>
-<translation id="6284412385303060032">በመሥሪያ አመክንዮ ማያ ገጽ ላይ አያሄደ ያለው አስተናጋጅ በተጠቃሚ-ተኮር ክፍለ-ጊዜ ውስጥ በማሄድ የመጋረጃ ሁነታን ለመደገፍ ተዘግቷል።</translation>
+<translation id="6284412385303060032">በመሥሪያ አመክንዮ ማያ ገፅ ላይ አያሄደ ያለው አስተናጋጅ በተጠቃሚ-ተኮር ክፍለ-ጊዜ ውስጥ በማሄድ የመጋረጃ ሁነታን ለመደገፍ ተዘግቷል።</translation>
 <translation id="6542902059648396432">አንድ ችግር ሪፖርት አድርግ…</translation>
 <translation id="6583902294974160967">ድጋፍ</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del ላክ</translation>
@@ -135,7 +135,7 @@
 <translation id="7019153418965365059">ያልታወቀ የአስተናጋጅ ስህተት፦ <ph name="HOST_OFFLINE_REASON" />።</translation>
 <translation id="701976023053394610">የርቀት እርዳታ</translation>
 <translation id="7026930240735156896">ኮምፒውተርዎን ለርቀት መዳረሻ ለማዋቀር መመሪያዎቹን ይከተሉ</translation>
-<translation id="7067321367069083429">ማያ ገጽ እንደ ማያንካ ይሆናል</translation>
+<translation id="7067321367069083429">ማያ ገፅ እንደ ማያንካ ይሆናል</translation>
 <translation id="7116737094673640201">እንኳን ወደ Chrome የርቀት ዴስክቶፕ በደህና መጡ</translation>
 <translation id="7144878232160441200">እንደገና ሞክር</translation>
 <translation id="7312846573060934304">አስተናጋጅ ከመስመር ውጭ ነው።</translation>
@@ -179,16 +179,16 @@
 <translation id="8445362773033888690">በGoogle Play መደብር ውስጥ ይመልከቱ</translation>
 <translation id="8509907436388546015">ዴስክቶፕ የማዋሃድ ሂደት</translation>
 <translation id="8513093439376855948">ቤተኛ የመልዕክት መላኪያ አስተናጋጅ ለርቀት አስተናጋጅ አስተዳደር</translation>
-<translation id="8525306231823319788">ሙሉ ማያ ገጽ</translation>
+<translation id="8525306231823319788">ሙሉ ማያ ገፅ</translation>
 <translation id="858006550102277544">አስተያየት</translation>
 <translation id="8743328882720071828"><ph name="CLIENT_USERNAME" /> የእርስዎን ኮምፒውተር እንዲመለከት እና እንዲቆጣጠር እንዲፈቀድለት ይፈልጋሉr?</translation>
-<translation id="8747048596626351634">ክፍለ ጊዜው ተበላሽቷል ወይም ለመጀመር አልቻለም። ~/.chrome-የርቀት-ዴስክቶፕ-ክፍለ ጊዜ በርቀት ኮምፒውተሩ ላይ የሚገኝ ከሆነ እንደ የዴስክቶፕ ድባብ ወይም የመስኮት አስተዳዳሪ የመሰለ ከፊት ገጽ የሚሄድ ሂደትን በመጠቀም እንደሚጀምር ያረጋግጡ።</translation>
+<translation id="8747048596626351634">ክፍለ ጊዜው ተበላሽቷል ወይም ለመጀመር አልቻለም። ~/.chrome-የርቀት-ዴስክቶፕ-ክፍለ ጊዜ በርቀት ኮምፒውተሩ ላይ የሚገኝ ከሆነ እንደ የዴስክቶፕ ድባብ ወይም የመስኮት አስተዳዳሪ የመሰለ ከፊት ገፅ የሚሄድ ሂደትን በመጠቀም እንደሚጀምር ያረጋግጡ።</translation>
 <translation id="8804164990146287819">የግላዊነት መመሪያ</translation>
 <translation id="8906511416443321782">ድምጽን ለመቅዳት እና ወደ Chrome የርቀት ዴስክቶፕ ደንበኛው ለማሰራጨት የማይክሮፎን መዳረሻ ያስፈልጋል።</translation>
 <translation id="9111855907838866522">ከርቀት መሣሪያዎ ጋር ተገናኝተዋል። ምናሌውን ለመክፈት እባክዎ ማያ ገጹን በአራት ጣቶች መታ ያድርጉት።</translation>
 <translation id="9126115402994542723">ከዚህ መሣሪያ ሆኜ ከዚህ አስተናጋጅ ጋር ስገናኝ ዳግም ፒን አትጠይቅ።</translation>
 <translation id="916856682307586697">ነባሪውን XSession አስጀምር</translation>
-<translation id="9187628920394877737">ለ<ph name="PRODUCT_NAME" /> የ«ማያ ገጽ ቀረጻ» ፈቃዱን ይስጡ</translation>
+<translation id="9187628920394877737">ለ<ph name="PRODUCT_NAME" /> የ«ማያ ገፅ ቀረጻ» ፈቃዱን ይስጡ</translation>
 <translation id="9213184081240281106">ልክ ያልሆነ የአስተናጋጅ ውቅር።</translation>
 <translation id="981121421437150478">ከመስመር ውጭ</translation>
 <translation id="985602178874221306">የChromium ደራሲዎች</translation>
