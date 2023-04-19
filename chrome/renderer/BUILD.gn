@@ -117,7 +117,10 @@ static_library("renderer") {
 
   defines = []
 
-  public_deps = [ "//components/contextual_search:buildflags" ]
+  public_deps = [
+    "//components/contextual_search:buildflags",
+    "//components/signin/public/base:signin_buildflags",
+  ]
 
   deps = [
     "//base/allocator:buildflags",

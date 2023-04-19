@@ -137,15 +137,15 @@ ChromeRenderThreadObserver::ChromeRenderThreadObserver()
 
 ChromeRenderThreadObserver::~ChromeRenderThreadObserver() {}
 
-chrome::mojom::DynamicParams ChromeRenderThreadObserver::GetDynamicParams()
+chrome::mojom::DynamicParamsPtr ChromeRenderThreadObserver::GetDynamicParams()
     const {
   {
     base::AutoLock lock(dynamic_params_lock_);
     if (dynamic_params_) {
-      return *dynamic_params_;
+      return dynamic_params_.Clone();
     }
   }
-  return chrome::mojom::DynamicParams();
+  return chrome::mojom::DynamicParams::New();
 }
 
 void ChromeRenderThreadObserver::RegisterMojoInterfaces(

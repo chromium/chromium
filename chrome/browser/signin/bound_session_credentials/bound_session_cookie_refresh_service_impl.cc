@@ -7,9 +7,11 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller_impl.h"
+#include "chrome/common/renderer_configuration.mojom.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -185,6 +187,17 @@ bool BoundSessionCookieRefreshServiceImpl::IsBoundSession() const {
   return bound_session_tracker_->is_bound_session();
 }
 
+chrome::mojom::BoundSessionParamsPtr
+BoundSessionCookieRefreshServiceImpl::GetBoundSessionParams() const {
+  if (!cookie_controller_) {
+    return chrome::mojom::BoundSessionParamsPtr();
+  }
+
+  return chrome::mojom::BoundSessionParams::New(
+      cookie_controller_->url().host(), cookie_controller_->url().path(),
+      cookie_controller_->cookie_expiration_time());
+}
+
 void BoundSessionCookieRefreshServiceImpl::OnRequestBlockedOnCookie(
     base::OnceClosure resume_blocked_request) {
   if (!IsBoundSession()) {
@@ -195,6 +208,11 @@ void BoundSessionCookieRefreshServiceImpl::OnRequestBlockedOnCookie(
   DCHECK(cookie_controller_);
   cookie_controller_->OnRequestBlockedOnCookie(
       std::move(resume_blocked_request));
+}
+
+base::WeakPtr<BoundSessionCookieRefreshService>
+BoundSessionCookieRefreshServiceImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void BoundSessionCookieRefreshServiceImpl::OnCookieExpirationDateChanged() {

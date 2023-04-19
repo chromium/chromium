@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_REFRESH_SERVICE_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/common/renderer_configuration.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 // BoundSessionCookieRefreshService is responsible for maintaining cookies
@@ -28,6 +30,10 @@ class BoundSessionCookieRefreshService : public KeyedService {
   // Returns true if session is bound.
   virtual bool IsBoundSession() const = 0;
 
+  // Returns bound session params.
+  virtual chrome::mojom::BoundSessionParamsPtr GetBoundSessionParams()
+      const = 0;
+
   // Called when a network request requires a fresh SIDTS cookie. This function
   // is intended to be called by network requests throttlers.
   // The callback will be called once the cookie is fresh or the session is
@@ -35,6 +41,8 @@ class BoundSessionCookieRefreshService : public KeyedService {
   // previous conditions apply.
   virtual void OnRequestBlockedOnCookie(
       base::OnceClosure resume_blocked_request) = 0;
+
+  virtual base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() = 0;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_REFRESH_SERVICE_H_

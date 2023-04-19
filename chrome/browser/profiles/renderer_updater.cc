@@ -19,6 +19,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
@@ -187,6 +188,9 @@ void RendererUpdater::UpdateAllRenderers() {
 chrome::mojom::DynamicParamsPtr RendererUpdater::CreateRendererDynamicParams()
     const {
   return chrome::mojom::DynamicParams::New(
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+      chrome::mojom::BoundSessionParamsPtr(),
+#endif
       force_google_safesearch_.GetValue(), force_youtube_restrict_.GetValue(),
       allowed_domains_for_apps_.GetValue());
 }

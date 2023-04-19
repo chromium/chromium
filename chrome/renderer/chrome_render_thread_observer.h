@@ -87,7 +87,7 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
 
   // Return a copy of the dynamic parameters - those that may change while the
   // render process is running.
-  chrome::mojom::DynamicParams GetDynamicParams() const;
+  chrome::mojom::DynamicParamsPtr GetDynamicParams() const;
 
   visitedlink::VisitedLinkReader* visited_link_reader() {
     return visited_link_reader_.get();

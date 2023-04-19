@@ -8,7 +8,9 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 
 #include <memory>
+
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -29,6 +31,8 @@ class BoundSessionCookieRefreshServiceImpl
   // Returns true if session is bound.
   bool IsBoundSession() const override;
 
+  chrome::mojom::BoundSessionParamsPtr GetBoundSessionParams() const override;
+
   // Called when a network request requires a fresh SIDTS cookie. This function
   // is intended to be called by network requests throttlers.
   // The callback will be called once the cookie is fresh or the session is
@@ -36,6 +40,8 @@ class BoundSessionCookieRefreshServiceImpl
   // previous conditions apply.
   void OnRequestBlockedOnCookie(
       base::OnceClosure resume_blocked_request) override;
+
+  base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() override;
 
  private:
   class BoundSessionStateTracker;
@@ -73,6 +79,8 @@ class BoundSessionCookieRefreshServiceImpl
 
   std::unique_ptr<BoundSessionStateTracker> bound_session_tracker_;
   std::unique_ptr<BoundSessionCookieController> cookie_controller_;
+  base::WeakPtrFactory<BoundSessionCookieRefreshService> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_REFRESH_SERVICE_IMPL_H_

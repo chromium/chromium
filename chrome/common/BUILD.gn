@@ -10,6 +10,7 @@ import("//chrome/browser/downgrade/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
+import("//components/signin/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
@@ -497,6 +498,10 @@ static_library("common_lib") {
     ]
     public_deps += [ "//chrome/common:version_header" ]
   }
+
+  if (enable_bound_session_credentials) {
+    sources += [ "bound_session_request_throttled_listener.h" ]
+  }
 }
 
 process_version("version_header") {
@@ -782,6 +787,10 @@ mojom("mojo_bindings") {
 
   if (enable_plugins) {
     enabled_features += [ "enable_plugins" ]
+  }
+
+  if (enable_bound_session_credentials) {
+    enabled_features += [ "enable_bound_session_credentials" ]
   }
 }
 
