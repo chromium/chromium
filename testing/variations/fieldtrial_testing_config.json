@@ -1242,6 +1242,29 @@
             ]
         }
     ],
+    "AutofillLogUKMEventsWithSampleRate": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillLogUKMEventsWithSampleRate"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillMoreProminentPopup": [
         {
             "platforms": [
