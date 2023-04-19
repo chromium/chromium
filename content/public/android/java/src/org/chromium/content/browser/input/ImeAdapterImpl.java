@@ -9,6 +9,8 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.RectF;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -26,6 +28,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.BaseInputConnection;
+import android.view.inputmethod.EditorBoundsInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.ExtractedText;
 import android.view.inputmethod.InputConnection;
@@ -1139,6 +1142,13 @@ public class ImeAdapterImpl
         // Send focused edit bounds and caret center position to Stylus writing service.
         mWebContents.getStylusWritingHandler().onEditElementFocusedForStylusWriting(
                 focusedEditBounds, cursorPosition);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU) {
+            RectF bounds = new RectF(focusedEditBounds);
+            EditorBoundsInfo editorBoundsInfo =
+                    new EditorBoundsInfo.Builder().setHandwritingBounds(bounds).build();
+            mCursorAnchorInfoController.updateWithEditorBoundsInfo(
+                    editorBoundsInfo, getContainerView());
+        }
     }
 
     /**

@@ -93,5 +93,6 @@ public interface StylusWritingHandler {
      * @param focusedEditBounds the input field bounds in view
      * @param cursorPosition the input cursor Position point in pix
      */
-    void onEditElementFocusedForStylusWriting(Rect focusedEditBounds, Point cursorPosition);
+    default void onEditElementFocusedForStylusWriting(
+            Rect focusedEditBounds, Point cursorPosition) {}
 }

@@ -5,15 +5,10 @@
 package org.chromium.components.stylus_handwriting;
 
 import android.content.Context;
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.os.Build;
 import android.provider.Settings;
 import android.view.PointerIcon;
 import android.view.View;
-import android.view.inputmethod.CursorAnchorInfo;
-import android.view.inputmethod.EditorBoundsInfo;
 import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
 
@@ -127,17 +122,6 @@ public class AndroidStylusWritingHandler
         StylusApiOption.recordStylusHandwritingTriggered(Api.ANDROID);
         mInputMethodManager.startStylusHandwriting(mTargetView);
         return true;
-    }
-
-    @Override
-    public void onEditElementFocusedForStylusWriting(Rect focusedEditBounds, Point cursorPosition) {
-        CursorAnchorInfo.Builder cursorAnchorInfoBuilder = new CursorAnchorInfo.Builder();
-        RectF bounds = new RectF(focusedEditBounds);
-        EditorBoundsInfo editorBoundsInfo =
-                new EditorBoundsInfo.Builder().setHandwritingBounds(bounds).build();
-
-        cursorAnchorInfoBuilder.setEditorBoundsInfo(editorBoundsInfo);
-        mInputMethodManager.updateCursorAnchorInfo(mTargetView, cursorAnchorInfoBuilder.build());
     }
 
     @Override
