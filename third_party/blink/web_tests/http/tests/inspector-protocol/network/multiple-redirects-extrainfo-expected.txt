@@ -7,6 +7,7 @@ requestWillBeSents: 2
   redirectHasExtraInfo: true
 responseReceiveds: 1
   url: http://127.0.0.1:8000/inspector-protocol/resources/final.html
+  hasExtraInfo: true
 requestWillBeSentExtraInfos: 2
   has headers: true
   has headers: true
@@ -21,11 +22,10 @@ requestWillBeSents: 2
   redirectHasExtraInfo: true
 responseReceiveds: 1
   url: http://127.0.0.1:8000/inspector-protocol/resources/final.html
-requestWillBeSentExtraInfos: 2
+  hasExtraInfo: false
+requestWillBeSentExtraInfos: 1
   has headers: true
-  has headers: false
-responseReceivedExtraInfos: 2
-  has headers: true
+responseReceivedExtraInfos: 1
   has headers: true
 
 

@@ -39,7 +39,7 @@
     dp.Network.onResponseReceivedExtraInfo(event => {
       pushEvent('responseReceivedExtraInfo', event);
       extraInfoCount++;
-      if (extraInfoCount === 4)
+      if (extraInfoCount === 3)
         resolve();
     });
   });
@@ -83,6 +83,7 @@
       for (let i = 0; i < responseReceiveds.length; i++) {
         const responseReceived = responseReceiveds[i];
         testRunner.log(`  url: ${responseReceived.params.response.url}`);
+        testRunner.log(`  hasExtraInfo: ${responseReceived.params.hasExtraInfo}`);
       }
     } else {
       testRunner.log(`responseReceiveds: none`);
