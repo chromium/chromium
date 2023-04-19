@@ -20,9 +20,9 @@ class SyncService;
 }  // namespace syncer
 
 class PrefService;
-
 class IOSChromePasswordCheckManager;
 @protocol PasswordDetailsConsumer;
+@protocol PasswordDetailsMediatorDelegate;
 
 // This mediator fetches and organises the credentials for its consumer.
 @interface PasswordDetailsMediator
@@ -31,14 +31,16 @@ class IOSChromePasswordCheckManager;
 // Vector of CredentialUIEntry is converted to an array of PasswordDetails and
 // passed to a consumer with the display name (title) for the Password Details
 // view.
-- (instancetype)
-       initWithPasswords:
-           (const std::vector<password_manager::CredentialUIEntry>&)credentials
-             displayName:(NSString*)displayName
-    passwordCheckManager:(IOSChromePasswordCheckManager*)manager
-             prefService:(PrefService*)prefService
-             syncService:(syncer::SyncService*)syncService
-                 context:(DetailsContext)context NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithPasswords:
+                    (const std::vector<password_manager::CredentialUIEntry>&)
+                        credentials
+                      displayName:(NSString*)displayName
+             passwordCheckManager:(IOSChromePasswordCheckManager*)manager
+                      prefService:(PrefService*)prefService
+                      syncService:(syncer::SyncService*)syncService
+                          context:(DetailsContext)context
+                         delegate:(id<PasswordDetailsMediatorDelegate>)delegate
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -63,6 +65,9 @@ class IOSChromePasswordCheckManager;
 // Returns YES if the account stores the same username for the website with a
 // different password, NO otherwise.
 - (BOOL)hasPasswordConflictInAccount:(PasswordDetails*)password;
+
+// Dismisses the compromised credential warning.
+- (void)didConfirmWarningDismissalForPassword:(PasswordDetails*)password;
 
 @end
 

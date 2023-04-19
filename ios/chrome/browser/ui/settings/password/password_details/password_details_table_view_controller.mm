@@ -91,9 +91,22 @@ const CGFloat kRecommendationSymbolSize = 22;
 const int kMinNoteCharAmountForWarning = 901;
 
 // Returns the index of a password in the `passwords` array.
-int GetPasswordIndex(int section) {
+NSUInteger GetPasswordIndex(NSUInteger section) {
   // Only one password at position 0 shows if no grouping applied.
   return IsPasswordGroupingEnabled() ? section : 0;
+}
+
+// Returns true if the "Dismiss Warning" button should be shown.
+bool ShouldAllowToDismissWarning(DetailsContext context) {
+  switch (context) {
+    case DetailsContext::kGeneral:
+    case DetailsContext::kCompromisedIssues:
+      return password_manager::features::IsPasswordCheckupEnabled();
+    case DetailsContext::kDismissedWarnings:
+    case DetailsContext::kReusedIssues:
+    case DetailsContext::kWeakIssues:
+      return false;
+  }
 }
 
 }  // namespace
@@ -397,6 +410,17 @@ int GetPasswordIndex(int section) {
   return item;
 }
 
+- (TableViewTextItem*)dismissWarningItem {
+  TableViewTextItem* item = [[TableViewTextItem alloc]
+      initWithType:PasswordDetailsItemTypeDismissWarningButton];
+  item.text = l10n_util::GetNSString(IDS_IOS_DISMISS_WARNING);
+  item.textColor = self.tableView.editing
+                       ? [UIColor colorNamed:kTextSecondaryColor]
+                       : [UIColor colorNamed:kBlueColor];
+  item.accessibilityTraits = UIAccessibilityTraitButton;
+  return item;
+}
+
 - (TableViewTextItem*)deleteButtonItemForPasswordDetails:
     (PasswordDetails*)passwordDetails {
   TableViewTextItem* item = [[TableViewTextItem alloc]
@@ -520,6 +544,15 @@ int GetPasswordIndex(int section) {
       [textFieldCell.textView becomeFirstResponder];
       break;
     }
+    case PasswordDetailsItemTypeDismissWarningButton:
+      if (!self.tableView.editing) {
+        [self didTapDismissWarningButtonAtPasswordIndex:GetPasswordIndex(
+                                                            indexPath.section)];
+        [self.tableView
+            deselectRowAtIndexPath:self.tableView.indexPathForSelectedRow
+                          animated:YES];
+      }
+      break;
     case PasswordDetailsItemTypeDeleteButton:
       if (self.tableView.editing) {
         UITableViewCell* cell =
@@ -681,6 +714,7 @@ int GetPasswordIndex(int section) {
     case PasswordDetailsItemTypeWebsite:
     case PasswordDetailsItemTypeFederation:
     case PasswordDetailsItemTypeChangePasswordButton:
+    case PasswordDetailsItemTypeDismissWarningButton:
     case PasswordDetailsItemTypeDeleteButton:
       break;
   }
@@ -976,6 +1010,7 @@ int GetPasswordIndex(int section) {
     case PasswordDetailsItemTypeFederation:
     case PasswordDetailsItemTypeChangePasswordButton:
     case PasswordDetailsItemTypeChangePasswordRecommendation:
+    case PasswordDetailsItemTypeDismissWarningButton:
     case PasswordDetailsItemTypeDeleteButton:
     case PasswordDetailsItemTypeMoveToAccountButton:
     case PasswordDetailsItemTypeMoveToAccountRecommendation:
@@ -1190,6 +1225,11 @@ int GetPasswordIndex(int section) {
 
         if (passwordDetails.changePasswordURL.has_value()) {
           [model addItem:[self changePasswordItem]
+              toSectionWithIdentifier:sectionForCompromisedInfo];
+        }
+
+        if (ShouldAllowToDismissWarning(passwordDetails.context)) {
+          [model addItem:[self dismissWarningItem]
               toSectionWithIdentifier:sectionForCompromisedInfo];
         }
       }
@@ -1411,10 +1451,16 @@ int GetPasswordIndex(int section) {
   }
 }
 
+- (void)didTapDismissWarningButtonAtPasswordIndex:(NSUInteger)passwordIndex {
+  CHECK(passwordIndex >= 0 && passwordIndex < self.passwords.count);
+  CHECK(self.delegate);
+  [self.delegate dismissWarningForPassword:self.passwords[passwordIndex]];
+}
+
 - (void)didTapDeleteButton:(UITableViewCell*)cell
-           atPasswordIndex:(int)passwordIndex {
-  DCHECK(passwordIndex >= 0);
-  DCHECK(self.handler);
+           atPasswordIndex:(NSUInteger)passwordIndex {
+  CHECK(passwordIndex >= 0 && passwordIndex < self.passwords.count);
+  CHECK(self.handler);
   [self.handler
       showPasswordDeleteDialogWithPasswordDetails:self.passwords[passwordIndex]
                                        anchorView:cell];

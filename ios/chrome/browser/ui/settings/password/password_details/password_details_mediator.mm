@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -70,6 +71,11 @@ bool ShouldDisplayCredentialAsCompromised(DetailsContext details_context,
   }
 }
 
+bool SupportsMuteOperation(password_manager::InsecureType insecure_type) {
+  return (insecure_type == password_manager::InsecureType::kLeaked ||
+          insecure_type == password_manager::InsecureType::kPhished);
+}
+
 }  // namespace
 
 @interface PasswordDetailsMediator () <
@@ -92,6 +98,9 @@ bool ShouldDisplayCredentialAsCompromised(DetailsContext details_context,
 
   // The sync service.
   raw_ptr<syncer::SyncService> _syncService;
+
+  // Delegate for this mediator.
+  id<PasswordDetailsMediatorDelegate> _delegate;
 }
 
 // Dictionary of usernames of a same domain. Key: domain and value: NSSet of
@@ -107,13 +116,14 @@ bool ShouldDisplayCredentialAsCompromised(DetailsContext details_context,
 
 @implementation PasswordDetailsMediator
 
-- (instancetype)initWithPasswords:
-                    (const std::vector<CredentialUIEntry>&)credentials
-                      displayName:(NSString*)displayName
-             passwordCheckManager:(IOSChromePasswordCheckManager*)manager
-                      prefService:(PrefService*)prefService
-                      syncService:(syncer::SyncService*)syncService
-                          context:(DetailsContext)context {
+- (instancetype)
+       initWithPasswords:(const std::vector<CredentialUIEntry>&)credentials
+             displayName:(NSString*)displayName
+    passwordCheckManager:(IOSChromePasswordCheckManager*)manager
+             prefService:(PrefService*)prefService
+             syncService:(syncer::SyncService*)syncService
+                 context:(DetailsContext)context
+                delegate:(id<PasswordDetailsMediatorDelegate>)delegate {
   DCHECK(manager);
   DCHECK(!credentials.empty());
 
@@ -130,6 +140,7 @@ bool ShouldDisplayCredentialAsCompromised(DetailsContext details_context,
   _context = context;
   _prefService = prefService;
   _syncService = syncService;
+  _delegate = delegate;
 
   // TODO(crbug.com/1400692): Improve saved passwords logic when helper is
   // available in SavedPasswordsPresenter.
@@ -258,6 +269,37 @@ bool ShouldDisplayCredentialAsCompromised(DetailsContext details_context,
   return [self conflictingAccountPassword:password].has_value();
 }
 
+- (void)didConfirmWarningDismissalForPassword:(PasswordDetails*)password {
+  // Map from PasswordDetails to CredentialUIEntry.
+  auto it = base::ranges::find_if(
+      _credentials,
+      [password](const password_manager::CredentialUIEntry& credential) {
+        return MatchesRealmUsernameAndPassword(password, credential);
+      });
+
+  if (it == _credentials.end()) {
+    return;
+  }
+
+  _manager->MuteCredential(*it);
+
+  // TODO(crbug.com/1359392). Once kPasswordsGrouping launches, the mediator
+  // should update the passwords model and receive the updates via
+  // SavedPasswordsPresenterObserver, instead of replicating the updates to its
+  // own copy and calling [self providePasswordsToConsumer:]. Today when the
+  // flag is disabled and the password is edited, it's impossible to identify
+  // the new object to show (sign-on realm can't be used as an id, there might
+  // be multiple credentials; nor username/password since the values changed).
+  // The lines below should be removed once this is fixed.
+  for (auto& password_issue : it->password_issues) {
+    if (!password_issue.second.is_muted.value() &&
+        SupportsMuteOperation(password_issue.first)) {
+      password_issue.second.is_muted = password_manager::IsMuted(true);
+    }
+  }
+  [self providePasswordsToConsumer];
+}
+
 #pragma mark - PasswordDetailsTableViewControllerDelegate
 
 - (void)passwordDetailsViewController:
@@ -355,6 +397,11 @@ bool ShouldDisplayCredentialAsCompromised(DetailsContext details_context,
   // instead of delegating this to the `_manager`.
   return [[_usernamesWithSameDomainDict objectForKey:domain]
       containsObject:newUsername];
+}
+
+- (void)dismissWarningForPassword:(PasswordDetails*)password {
+  // Show confirmation dialog.
+  [_delegate showDismissWarningDialogWithPasswordDetails:password];
 }
 
 #pragma mark - PasswordCheckObserver

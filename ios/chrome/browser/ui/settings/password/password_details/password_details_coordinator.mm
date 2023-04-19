@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/password_utils.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -45,7 +46,8 @@
 #error "This file requires ARC support."
 #endif
 
-@interface PasswordDetailsCoordinator () <PasswordDetailsHandler> {
+@interface PasswordDetailsCoordinator () <PasswordDetailsHandler,
+                                          PasswordDetailsMediatorDelegate> {
   password_manager::AffiliatedGroup _affiliatedGroup;
   password_manager::CredentialUIEntry _credential;
 
@@ -143,7 +145,8 @@
                                    .get()
                prefService:browserState->GetPrefs()
                syncService:SyncServiceFactory::GetForBrowserState(browserState)
-                   context:_context];
+                   context:_context
+                  delegate:self];
   self.mediator.consumer = self.viewController;
   self.viewController.handler = self;
   self.viewController.delegate = self.mediator;
@@ -348,6 +351,37 @@
   DCHECK_EQ(self.baseNavigationController.topViewController,
             self.viewController);
   [self.baseNavigationController popViewControllerAnimated:YES];
+}
+
+#pragma mark - PasswordDetailsMediatorDelegate
+
+- (void)showDismissWarningDialogWithPasswordDetails:(PasswordDetails*)password {
+  NSString* title = l10n_util::GetNSString(IDS_IOS_DISMISS_WARNING);
+  NSString* message =
+      l10n_util::GetNSString(IDS_IOS_DISMISS_WARNING_DIALOG_MESSAGE);
+  self.alertCoordinator =
+      [[AlertCoordinator alloc] initWithBaseViewController:self.viewController
+                                                   browser:self.browser
+                                                     title:title
+                                                   message:message];
+
+  NSString* cancelButtonText = l10n_util::GetNSString(IDS_CANCEL);
+  [self.alertCoordinator addItemWithTitle:cancelButtonText
+                                   action:nil
+                                    style:UIAlertActionStyleDefault];
+
+  NSString* dismissButtonText =
+      l10n_util::GetNSString(IDS_IOS_DISMISS_WARNING_DIALOG_DISMISS_BUTTON);
+  __weak __typeof(self.mediator) weakMediator = self.mediator;
+  [self.alertCoordinator
+      addItemWithTitle:dismissButtonText
+                action:^{
+                  [weakMediator didConfirmWarningDismissalForPassword:password];
+                }
+                 style:UIAlertActionStyleDefault
+             preferred:YES
+               enabled:YES];
+  [self.alertCoordinator start];
 }
 
 @end

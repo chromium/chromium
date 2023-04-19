@@ -216,7 +216,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return item;
 }
 
-// Creates the item acting as a buton for presenting dismissed compromised
+// Creates the item acting as a button for presenting dismissed compromised
 // credential warnings. Returns nil when `_dismissedWarningsButtonText` is nil.
 - (TableViewTextItem*)dismissedWarningsItem {
   // The button is not visible either because there aren't dismissed compromised

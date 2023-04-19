@@ -16,6 +16,7 @@ source_set("password_details") {
     "password_details_coordinator_delegate.h",
     "password_details_mediator.h",
     "password_details_mediator.mm",
+    "password_details_mediator_delegate.h",
   ]
   deps = [
     ":password_details_ui",

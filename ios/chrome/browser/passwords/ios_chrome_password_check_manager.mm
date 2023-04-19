@@ -233,3 +233,8 @@ void IOSChromePasswordCheckManager::NotifyPasswordCheckStatusChanged() {
     observer.PasswordCheckStatusChanged(GetPasswordCheckState());
   }
 }
+
+void IOSChromePasswordCheckManager::MuteCredential(
+    const CredentialUIEntry& credential) {
+  insecure_credentials_manager_.MuteCredential(credential);
+}

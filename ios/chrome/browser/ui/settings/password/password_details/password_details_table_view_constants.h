@@ -26,6 +26,7 @@ typedef NS_ENUM(NSInteger, PasswordDetailsItemType) {
   PasswordDetailsItemTypeFederation,
   PasswordDetailsItemTypeChangePasswordButton,
   PasswordDetailsItemTypeChangePasswordRecommendation,
+  PasswordDetailsItemTypeDismissWarningButton,
   PasswordDetailsItemTypeDeleteButton,
   PasswordDetailsItemTypeMoveToAccountButton,
   PasswordDetailsItemTypeMoveToAccountRecommendation,
