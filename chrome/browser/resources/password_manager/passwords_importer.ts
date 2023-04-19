@@ -303,6 +303,44 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
         'passwordsStoreOptionAccount', this.i18n('localPasswordManager'),
         this.accountEmail);
   }
+
+  private getFailedEntryErrorMessage_(
+      status: chrome.passwordsPrivate.ImportEntryStatus): string {
+    // TODO(crbug/1434221): Use constants for length limits.
+    switch (status) {
+      case chrome.passwordsPrivate.ImportEntryStatus.MISSING_PASSWORD:
+        return this.i18n('importPasswordsMissingPassword');
+      case chrome.passwordsPrivate.ImportEntryStatus.MISSING_URL:
+        return this.i18n('importPasswordsMissingURL');
+      case chrome.passwordsPrivate.ImportEntryStatus.INVALID_URL:
+        return this.i18n('importPasswordsInvalidURL');
+      case chrome.passwordsPrivate.ImportEntryStatus.LONG_URL:
+        return this.i18n('importPasswordsLongURL');
+      case chrome.passwordsPrivate.ImportEntryStatus.NON_ASCII_URL:
+        return this.i18n('importPasswordsNonASCIIURL');
+      case chrome.passwordsPrivate.ImportEntryStatus.LONG_PASSWORD:
+        return this.i18n('importPasswordsLongPassword');
+      case chrome.passwordsPrivate.ImportEntryStatus.LONG_USERNAME:
+        return this.i18n('importPasswordsLongUsername');
+      case chrome.passwordsPrivate.ImportEntryStatus.CONFLICT_PROFILE:
+        if (this.isUserSyncingPasswords) {
+          return this.i18n(
+              'importPasswordsConflictAccount',
+              this.i18n('localPasswordManager'), this.accountEmail);
+        }
+        return this.i18n('importPasswordsConflictDevice');
+      case chrome.passwordsPrivate.ImportEntryStatus.CONFLICT_ACCOUNT:
+        return this.i18n(
+            'importPasswordsConflictAccount', this.i18n('localPasswordManager'),
+            this.accountEmail);
+      case chrome.passwordsPrivate.ImportEntryStatus.LONG_NOTE:
+      case chrome.passwordsPrivate.ImportEntryStatus.LONG_CONCATENATED_NOTE:
+        return this.i18n('importPasswordsLongNote');
+      case chrome.passwordsPrivate.ImportEntryStatus.UNKNOWN_ERROR:
+      default:
+        assertNotReached();
+    }
+  }
 }
 
 declare global {
