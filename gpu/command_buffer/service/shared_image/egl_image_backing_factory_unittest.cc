@@ -430,7 +430,7 @@ TEST_F(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
 
     wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
     wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPassDesc);
-    pass.EndPass();
+    pass.End();
     wgpu::CommandBuffer commands = encoder.Finish();
 
     wgpu::Queue queue = device.GetQueue();
