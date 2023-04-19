@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/sessions/fake_tab_restore_service.h"
+#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -23,11 +25,22 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+std::unique_ptr<KeyedService> BuildFakeTabRestoreService(
+    web::BrowserState* browser_state) {
+  return std::make_unique<FakeTabRestoreService>();
+}
+}  // namespace
+
 // Test fixture for testing functions in browser_util.h/mm.
 class BrowserUtilTest : public PlatformTest {
  protected:
   BrowserUtilTest() {
     TestChromeBrowserState::Builder test_browser_state_builder;
+    test_browser_state_builder.AddTestingFactory(
+        IOSChromeTabRestoreServiceFactory::GetInstance(),
+        base::BindRepeating(BuildFakeTabRestoreService));
+
     chrome_browser_state_ = test_browser_state_builder.Build();
 
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
@@ -53,6 +66,10 @@ class BrowserUtilTest : public PlatformTest {
     AppendNewWebState(browser_.get());
     AppendNewWebState(browser_.get());
     AppendNewWebState(incognito_browser_.get());
+
+    tab_restore_service_ =
+        IOSChromeTabRestoreServiceFactory::GetForBrowserState(
+            chrome_browser_state_.get());
   }
 
   // Appends a new web state in the web state list of `browser`.
@@ -79,15 +96,18 @@ class BrowserUtilTest : public PlatformTest {
   std::unique_ptr<Browser> incognito_browser_;
   std::unique_ptr<Browser> other_incognito_browser_;
   BrowserList* browser_list_;
+  sessions::TabRestoreService* tab_restore_service_;
 };
 
 // Tests that an incognito tab is moved from one incognito browser to another.
 TEST_F(BrowserUtilTest, TestMoveTabAcrossIncognitoBrowsers) {
   ASSERT_EQ(1, incognito_browser_->GetWebStateList()->count());
   ASSERT_TRUE(other_incognito_browser_->GetWebStateList()->empty());
+  ASSERT_TRUE(tab_restore_service_->entries().empty());
   NSString* tab_id = GetTabIDForWebStateAt(0, incognito_browser_.get());
   MoveTabToBrowser(tab_id, other_incognito_browser_.get(),
                    /*destination_index=*/0);
+  ASSERT_TRUE(tab_restore_service_->entries().empty());
   EXPECT_TRUE(incognito_browser_->GetWebStateList()->empty());
   EXPECT_EQ(1, other_incognito_browser_->GetWebStateList()->count());
 }
@@ -97,8 +117,10 @@ TEST_F(BrowserUtilTest, TestMoveTabAcrossIncognitoBrowsers) {
 TEST_F(BrowserUtilTest, TestMoveTabAcrossRegularBrowsers) {
   ASSERT_EQ(3, browser_->GetWebStateList()->count());
   ASSERT_TRUE(other_browser_->GetWebStateList()->empty());
+  ASSERT_TRUE(tab_restore_service_->entries().empty());
   NSString* tab_id = GetTabIDForWebStateAt(1, browser_.get());
   MoveTabToBrowser(tab_id, other_browser_.get(), /*destination_index=*/0);
+  ASSERT_TRUE(tab_restore_service_->entries().empty());
   EXPECT_EQ(2, browser_->GetWebStateList()->count());
   EXPECT_EQ(1, other_browser_->GetWebStateList()->count());
   EXPECT_NE(tab_id, GetTabIDForWebStateAt(1, browser_.get()));
@@ -108,8 +130,10 @@ TEST_F(BrowserUtilTest, TestMoveTabAcrossRegularBrowsers) {
 // Tests that a tab is reordered within the same browser.
 TEST_F(BrowserUtilTest, TestReorderTabWithinSameBrowser) {
   ASSERT_EQ(3, browser_->GetWebStateList()->count());
+  ASSERT_TRUE(tab_restore_service_->entries().empty());
   NSString* tab_id = GetTabIDForWebStateAt(0, browser_.get());
   MoveTabToBrowser(tab_id, browser_.get(), /*destination_index=*/2);
+  ASSERT_TRUE(tab_restore_service_->entries().empty());
   EXPECT_EQ(3, browser_->GetWebStateList()->count());
   EXPECT_NE(tab_id, GetTabIDForWebStateAt(0, browser_.get()));
   EXPECT_EQ(tab_id, GetTabIDForWebStateAt(2, browser_.get()));

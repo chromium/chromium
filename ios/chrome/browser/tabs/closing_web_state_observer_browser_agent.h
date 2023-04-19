@@ -48,10 +48,6 @@ class ClosingWebStateObserverBrowserAgent
                           web::WebState* new_web_state,
                           int index) override;
 
-  void WillDetachWebStateAt(WebStateList* web_state_list,
-                            web::WebState* web_state,
-                            int index) override;
-
   void WillCloseWebStateAt(WebStateList* web_state_list,
                            web::WebState* web_state,
                            int index,

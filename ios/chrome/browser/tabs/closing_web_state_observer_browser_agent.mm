@@ -91,18 +91,12 @@ void ClosingWebStateObserverBrowserAgent::WebStateReplacedAt(
   SnapshotTabHelper::FromWebState(old_web_state)->RemoveSnapshot();
 }
 
-void ClosingWebStateObserverBrowserAgent::WillDetachWebStateAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index) {
-  RecordHistoryForWebStateAtIndex(web_state, index);
-}
-
 void ClosingWebStateObserverBrowserAgent::WillCloseWebStateAt(
     WebStateList* web_state_list,
     web::WebState* web_state,
     int index,
     bool user_action) {
+  RecordHistoryForWebStateAtIndex(web_state, index);
   if (user_action) {
     SnapshotTabHelper::FromWebState(web_state)->RemoveSnapshot();
   }
