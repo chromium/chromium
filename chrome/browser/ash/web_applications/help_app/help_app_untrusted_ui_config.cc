@@ -77,8 +77,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
                         "device-help-content-id"));
 
   // Add any features that have been enabled.
-  source->AddBoolean("colorThemes",
-                     chromeos::features::IsDarkLightModeEnabled());
+  source->AddBoolean("colorThemes", true);
   source->AddBoolean("HelpAppReleaseNotes", true);
   source->AddBoolean(
       "HelpAppLauncherSearch",
