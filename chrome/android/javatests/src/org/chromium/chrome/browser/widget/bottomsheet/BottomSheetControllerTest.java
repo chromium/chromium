@@ -24,6 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -34,6 +35,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
@@ -136,6 +138,7 @@ public class BottomSheetControllerTest {
             mTestSupport.forceDismissAllContent();
             mTestSupport.endAllAnimations();
         });
+        CachedFeatureFlags.resetFlagsForTesting();
     }
 
     /** @return The height of the container view. */
@@ -216,17 +219,25 @@ public class BottomSheetControllerTest {
                 mSheetController.getSheetState());
     }
 
+    // TODO(https://crbug.com/1434474): Remove this test (and flag) once it is safe.
     @Test
     @MediumTest
     @Feature({"BottomSheetController"})
     @Features.DisableFeatures({ChromeFeatureList.BOTTOM_SHEET_GTS_SUPPORT})
     @RequiresRestart("Requires re-creating BottomSheetManager for flag change.")
-    public void testSheetPeekAfterTabSwitcher() throws TimeoutException {
+    public void testSheetPeekAfterTabSwitcher() throws Exception {
         requestContentInSheet(mLowPriorityContent, true);
         enterAndExitTabSwitcher();
         BottomSheetTestSupport.waitForState(mSheetController, SheetState.PEEK);
         assertEquals("The bottom sheet is showing incorrect content.", mLowPriorityContent,
                 mSheetController.getCurrentSheetContent());
+
+        // TODO(https://crbug.com/1434471): Finish activity early. During teardown
+        // BOTTOM_SHEET_GTS_SUPPORT may revert to enabled before the activity is finished. If this
+        // happens it is possible that BottomSheetManager's StartSurface StateObserver will trigger
+        // an assert to check that the flag is disabled during shutdown.
+        ApplicationTestUtils.finishActivity(mActivity);
+        mActivity = null;
     }
 
     @Test
@@ -257,12 +268,13 @@ public class BottomSheetControllerTest {
                 mSheetController.getCurrentSheetContent());
     }
 
+    // TODO(https://crbug.com/1434474): Remove this test (and flag) once it is safe.
     @Test
     @MediumTest
     @Feature({"BottomSheetController"})
     @Features.DisableFeatures({ChromeFeatureList.BOTTOM_SHEET_GTS_SUPPORT})
     @RequiresRestart("Requires re-creating BottomSheetManager for flag change.")
-    public void testSheetHiddenAfterTabSwitcher() throws TimeoutException {
+    public void testSheetHiddenAfterTabSwitcher() throws Exception {
         // Open a second tab.
         Tab tab1 = mActivity.getActivityTab();
         openNewTabInForeground();
@@ -289,6 +301,13 @@ public class BottomSheetControllerTest {
                 mSheetController.getSheetState());
         assertNull("The bottom sheet is unexpectedly has content.",
                 mSheetController.getCurrentSheetContent());
+
+        // TODO(https://crbug.com/1434471): Finish activity early. During teardown
+        // BOTTOM_SHEET_GTS_SUPPORT may revert to enabled before the activity is finished. If this
+        // happens it is possible that BottomSheetManager's StartSurface StateObserver will trigger
+        // an assert to check that the flag is disabled during shutdown.
+        ApplicationTestUtils.finishActivity(mActivity);
+        mActivity = null;
     }
 
     @Test
