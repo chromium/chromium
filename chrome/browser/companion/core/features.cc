@@ -18,7 +18,9 @@ BASE_FEATURE(kSidePanelCompanion,
              "SidePanelCompanion",
              base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<std::string> kHomepageURLForCompanion{
-    &kSidePanelCompanion, "companion-homepage-url", "https://www.example.com"};
+    &kSidePanelCompanion, "companion-homepage-url",
+    "https://lens.google.com/companion"};
+
 constexpr base::FeatureParam<std::string> kImageUploadURLForCompanion{
     &kSidePanelCompanion, "companion-image-upload-url",
     "https://www.example.com"};
