@@ -1638,7 +1638,7 @@ deps = {
     'packages': [
       {
         'package': 'infra/build/siso/${{platform}}',
- 'version': Var('siso_version'),
+        'version': Var('siso_version'),
       }
     ],
     'dep_type': 'cipd',
