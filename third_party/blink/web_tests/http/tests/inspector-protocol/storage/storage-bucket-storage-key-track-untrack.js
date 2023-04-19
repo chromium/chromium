@@ -15,7 +15,10 @@
   {
     testRunner.log(`Create bucket`);
 
-    const eventPromise = dp.Storage.onceStorageBucketCreatedOrUpdated();
+    // Note that we could also get an event for creation of the default bucket.
+    // Let us filter the events to our "test-bucket".
+    const eventPromise = dp.Storage.onceStorageBucketCreatedOrUpdated(
+        event => event.params.bucket.name === 'test-bucket');
 
     // Create bucket.
     const result = await session.evaluateAsync(`
@@ -41,7 +44,8 @@
   {
     testRunner.log(`Update bucket`);
 
-    const eventPromise = dp.Storage.onceStorageBucketCreatedOrUpdated();
+    const eventPromise = dp.Storage.onceStorageBucketCreatedOrUpdated(
+        event => event.params.bucket.name === 'test-bucket');
 
     // Update bucket.
     const result = await session.evaluateAsync(`
