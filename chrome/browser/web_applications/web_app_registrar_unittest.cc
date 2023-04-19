@@ -1214,6 +1214,43 @@ TEST_F(WebAppRegistrarTest_TabStrip, TabbedAppAutoNewTabUrl) {
             registrar().GetAppStartUrl(app_id));
 }
 
+TEST_F(WebAppRegistrarTest, VerifyPlaceholderFinderBehavior) {
+  // Please note, this is a bad state done to test crbug.com/1427340.
+  // This should not occur once crbug.com/1434692 is implemented.
+  InitSyncBridge();
+
+  // Add first app with install_url in the registry as a non-placeholder app,
+  // verify that the app is not a placeholder.
+  GURL install_url("https://start_install.com/");
+  auto web_app1 =
+      test::CreateWebApp(GURL("https://start1.com"), WebAppManagement::kPolicy);
+  const AppId app_id1 = web_app1->app_id();
+  RegisterApp(std::move(web_app1));
+  test::AddInstallUrlAndPlaceholderData(
+      profile()->GetPrefs(), &sync_bridge(), app_id1, install_url,
+      ExternalInstallSource::kExternalPolicy, /*is_placeholder=*/false);
+  EXPECT_FALSE(
+      registrar()
+          .LookupPlaceholderAppId(install_url, WebAppManagement::kPolicy)
+          .has_value());
+
+  // Add second app with same install_url in the registrar as a placeholder,
+  // verify that app shows up as a placeholder.
+  auto web_app2 =
+      test::CreateWebApp(GURL("https://start2.com"), WebAppManagement::kPolicy);
+  const AppId app_id2 = web_app2->app_id();
+  RegisterApp(std::move(web_app2));
+  test::AddInstallUrlAndPlaceholderData(
+      profile()->GetPrefs(), &sync_bridge(), app_id2, install_url,
+      ExternalInstallSource::kExternalPolicy, /*is_placeholder=*/true);
+  auto placeholder_id = registrar().LookupPlaceholderAppId(
+      install_url, WebAppManagement::kPolicy);
+
+  // This will fail if the fix for crbug.com/1427340 is reverted.
+  EXPECT_TRUE(placeholder_id.has_value());
+  EXPECT_EQ(placeholder_id.value(), app_id2);
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 class WebAppRegistrarAshTest : public WebAppTest, public WithCrosapiParam {
