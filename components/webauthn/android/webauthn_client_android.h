@@ -41,6 +41,13 @@ class WebAuthnClientAndroid {
   // Cancels a request if one is outstanding. Revokes the credential list and
   // causes the callback to be called with an empty credential.
   virtual void CancelWebAuthnRequest(content::RenderFrameHost* frame_host) = 0;
+
+  // Called when a pendingGetCredential call is completed. The provided closure
+  // can be used to trigger CredMan UI flows. Android U+ only.
+  void OnCredManConditionalRequestPending(
+      content::RenderFrameHost* render_frame_host,
+      bool has_results,
+      base::RepeatingClosure full_assertion_request);
 };
 
 }  // namespace components

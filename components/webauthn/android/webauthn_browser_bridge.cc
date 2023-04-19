@@ -115,6 +115,30 @@ void WebAuthnBrowserBridge::OnCredentialsDetailsListReceived(
           base::android::ScopedJavaGlobalRef<jobject>(env, jcallback)));
 }
 
+void TriggerFullRequest(
+    const base::android::JavaRef<jobject>& jfull_request_runnable) {
+  base::android::RunRunnableAndroid(jfull_request_runnable);
+}
+
+void WebAuthnBrowserBridge::OnCredManConditionalRequestPending(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jframe_host,
+    jboolean jhas_results,
+    const base::android::JavaParamRef<jobject>& jfull_request_runnable) {
+  auto* client = components::WebAuthnClientAndroid::GetClient();
+  auto* render_frame_host =
+      content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);
+  if (!client || !render_frame_host ||
+      !content::WebContents::FromRenderFrameHost(render_frame_host)) {
+    return;
+  }
+  client->OnCredManConditionalRequestPending(
+      render_frame_host, jhas_results,
+      base::BindRepeating(&TriggerFullRequest,
+                          base::android::ScopedJavaGlobalRef<jobject>(
+                              env, jfull_request_runnable)));
+}
+
 void WebAuthnBrowserBridge::CancelRequest(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jframe_host) const {

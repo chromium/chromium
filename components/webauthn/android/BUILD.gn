@@ -82,6 +82,8 @@ source_set("android") {
     "webauthn_browser_bridge.h",
     "webauthn_client_android.cc",
     "webauthn_client_android.h",
+    "webauthn_cred_man_delegate.cc",
+    "webauthn_cred_man_delegate.h",
   ]
   deps = [
     ":jni_headers",
