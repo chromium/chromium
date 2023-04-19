@@ -156,7 +156,8 @@ class WrappedGLTexturePassthroughCompoundImageRepresentation
   std::unique_ptr<GLTexturePassthroughImageRepresentation> wrapped_;
 };
 
-class WrappedSkiaCompoundImageRepresentation : public SkiaImageRepresentation {
+class WrappedSkiaCompoundImageRepresentation
+    : public SkiaGaneshImageRepresentation {
  public:
   WrappedSkiaCompoundImageRepresentation(
       GrDirectContext* gr_context,
@@ -164,7 +165,7 @@ class WrappedSkiaCompoundImageRepresentation : public SkiaImageRepresentation {
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
       std::unique_ptr<SkiaImageRepresentation> wrapped)
-      : SkiaImageRepresentation(gr_context, manager, backing, tracker),
+      : SkiaGaneshImageRepresentation(gr_context, manager, backing, tracker),
         wrapped_(std::move(wrapped)) {
     DCHECK(wrapped_);
   }

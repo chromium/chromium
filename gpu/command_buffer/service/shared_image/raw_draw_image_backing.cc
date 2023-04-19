@@ -56,13 +56,13 @@ class RawDrawImageBacking::RasterRawDrawImageRepresentation
 };
 
 class RawDrawImageBacking::SkiaRawDrawImageRepresentation
-    : public SkiaImageRepresentation {
+    : public SkiaGaneshImageRepresentation {
  public:
   SkiaRawDrawImageRepresentation(GrDirectContext* gr_context,
                                  SharedImageManager* manager,
                                  SharedImageBacking* backing,
                                  MemoryTypeTracker* tracker)
-      : SkiaImageRepresentation(gr_context, manager, backing, tracker) {}
+      : SkiaGaneshImageRepresentation(gr_context, manager, backing, tracker) {}
 
   bool SupportsMultipleConcurrentReadAccess() override { return true; }
 

@@ -34,10 +34,10 @@ SkiaVkAndroidImageRepresentation::SkiaVkAndroidImageRepresentation(
     AndroidImageBacking* backing,
     scoped_refptr<SharedContextState> context_state,
     MemoryTypeTracker* tracker)
-    : SkiaImageRepresentation(context_state->gr_context(),
-                              manager,
-                              backing,
-                              tracker),
+    : SkiaGaneshImageRepresentation(context_state->gr_context(),
+                                    manager,
+                                    backing,
+                                    tracker),
       context_state_(std::move(context_state)) {
   DCHECK(backing);
   DCHECK(context_state_);

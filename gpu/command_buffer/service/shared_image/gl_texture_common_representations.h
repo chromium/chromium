@@ -73,7 +73,7 @@ class GLTexturePassthroughGLCommonRepresentation
 };
 
 // Skia representation for both GLTextureImageBackingHelper.
-class SkiaGLCommonRepresentation : public SkiaImageRepresentation {
+class SkiaGLCommonRepresentation : public SkiaGaneshImageRepresentation {
  public:
   class Client {
    public:

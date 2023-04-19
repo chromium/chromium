@@ -10,14 +10,14 @@
 #include "ui/gl/gl_context.h"
 
 namespace gpu {
-// This is a wrapper class for SkiaImageRepresentation to be used in GL
+// This is a wrapper class for SkiaGaneshImageRepresentation to be used in GL
 // mode. For most of the SharedImageBackings, GLTextureImageRepresentation
-// and SkiaImageRepresentation implementations do the same work which
+// and SkiaGaneshImageRepresentation implementations do the same work which
 // results in duplicate code. Hence instead of implementing
-// SkiaImageRepresentation, this wrapper can be directly used or
+// SkiaGaneshImageRepresentation, this wrapper can be directly used or
 // implemented by the backings.
 class GPU_GLES2_EXPORT SkiaGLImageRepresentation
-    : public SkiaImageRepresentation {
+    : public SkiaGaneshImageRepresentation {
  public:
   static std::unique_ptr<SkiaGLImageRepresentation> Create(
       std::unique_ptr<GLTextureImageRepresentationBase> gl_representation,

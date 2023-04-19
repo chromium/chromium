@@ -61,13 +61,13 @@ class TestGLTexturePassthroughImageRepresentation
   const scoped_refptr<gles2::TexturePassthrough> texture_;
 };
 
-class TestSkiaImageRepresentation : public SkiaImageRepresentation {
+class TestSkiaImageRepresentation : public SkiaGaneshImageRepresentation {
  public:
   TestSkiaImageRepresentation(GrDirectContext* gr_context,
                               SharedImageManager* manager,
                               SharedImageBacking* backing,
                               MemoryTypeTracker* tracker)
-      : SkiaImageRepresentation(gr_context, manager, backing, tracker) {}
+      : SkiaGaneshImageRepresentation(gr_context, manager, backing, tracker) {}
 
  protected:
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(

@@ -112,7 +112,7 @@ class GLTextureIOSurfaceRepresentation
 };
 
 // Skia representation for both GLTextureImageBackingHelper.
-class SkiaIOSurfaceRepresentation : public SkiaImageRepresentation {
+class SkiaIOSurfaceRepresentation : public SkiaGaneshImageRepresentation {
  public:
   SkiaIOSurfaceRepresentation(
       SharedImageManager* manager,

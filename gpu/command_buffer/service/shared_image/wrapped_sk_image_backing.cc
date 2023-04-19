@@ -40,16 +40,16 @@ std::string GetLabel(const std::string& debug_label) {
 }  // namespace
 
 class WrappedSkImageBacking::SkiaImageRepresentationImpl
-    : public SkiaImageRepresentation {
+    : public SkiaGaneshImageRepresentation {
  public:
   SkiaImageRepresentationImpl(SharedImageManager* manager,
                               SharedImageBacking* backing,
                               MemoryTypeTracker* tracker,
                               scoped_refptr<SharedContextState> context_state)
-      : SkiaImageRepresentation(context_state->gr_context(),
-                                manager,
-                                backing,
-                                tracker),
+      : SkiaGaneshImageRepresentation(context_state->gr_context(),
+                                      manager,
+                                      backing,
+                                      tracker),
         context_state_(std::move(context_state)) {}
 
   ~SkiaImageRepresentationImpl() override { DCHECK(write_surfaces_.empty()); }

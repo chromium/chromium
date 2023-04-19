@@ -34,10 +34,10 @@ SkiaVkOzoneImageRepresentation::SkiaVkOzoneImageRepresentation(
     scoped_refptr<SharedContextState> context_state,
     std::unique_ptr<VulkanImage> vulkan_image,
     MemoryTypeTracker* tracker)
-    : SkiaImageRepresentation(context_state->gr_context(),
-                              manager,
-                              backing,
-                              tracker),
+    : SkiaGaneshImageRepresentation(context_state->gr_context(),
+                                    manager,
+                                    backing,
+                                    tracker),
       vulkan_image_(std::move(vulkan_image)),
       context_state_(std::move(context_state)) {
   DCHECK(backing);

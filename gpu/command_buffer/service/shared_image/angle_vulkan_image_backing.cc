@@ -62,13 +62,13 @@ gl::ScopedEGLImage CreateEGLImage(VkImage image,
 }  // namespace
 
 class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
-    : public SkiaImageRepresentation {
+    : public SkiaGaneshImageRepresentation {
  public:
   SkiaAngleVulkanImageRepresentation(GrDirectContext* gr_context,
                                      SharedImageManager* manager,
                                      AngleVulkanImageBacking* backing,
                                      MemoryTypeTracker* tracker)
-      : SkiaImageRepresentation(gr_context, manager, backing, tracker),
+      : SkiaGaneshImageRepresentation(gr_context, manager, backing, tracker),
         context_state_(backing_impl()->context_state_) {}
 
   ~SkiaAngleVulkanImageRepresentation() override = default;

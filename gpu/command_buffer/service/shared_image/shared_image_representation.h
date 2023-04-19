@@ -474,6 +474,19 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
 };
 
 ///////////////////////////////////////////////////////////////////////////////
+// SkiaGaneshImageRepresentation
+
+class GPU_GLES2_EXPORT SkiaGaneshImageRepresentation
+    : public SkiaImageRepresentation {
+ public:
+  SkiaGaneshImageRepresentation(GrDirectContext* gr_context,
+                                SharedImageManager* manager,
+                                SharedImageBacking* backing,
+                                MemoryTypeTracker* tracker)
+      : SkiaImageRepresentation(gr_context, manager, backing, tracker) {}
+};
+
+///////////////////////////////////////////////////////////////////////////////
 // DawnImageRepresentation
 
 class GPU_GLES2_EXPORT DawnImageRepresentation

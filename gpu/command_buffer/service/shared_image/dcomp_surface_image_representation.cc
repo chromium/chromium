@@ -47,10 +47,10 @@ DCompSurfaceSkiaImageRepresentation::DCompSurfaceSkiaImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker)
-    : SkiaImageRepresentation(context_state->gr_context(),
-                              manager,
-                              backing,
-                              tracker),
+    : SkiaGaneshImageRepresentation(context_state->gr_context(),
+                                    manager,
+                                    backing,
+                                    tracker),
       context_state_(std::move(context_state)) {
   DCHECK(context_state_);
 }

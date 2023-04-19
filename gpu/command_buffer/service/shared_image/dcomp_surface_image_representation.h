@@ -28,7 +28,7 @@ class DCompSurfaceOverlayImageRepresentation
 
 // See DCompSurfaceImageBacking::ProduceSkia for more information.
 class DCompSurfaceSkiaImageRepresentation
-    : public gpu::SkiaImageRepresentation {
+    : public SkiaGaneshImageRepresentation {
  public:
   DCompSurfaceSkiaImageRepresentation(
       scoped_refptr<SharedContextState> context_state,
