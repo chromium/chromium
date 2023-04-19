@@ -64,7 +64,7 @@ void DevToolsSettings::Register(const std::string& name,
   remove_update->Remove(name);
 }
 
-base::Value DevToolsSettings::Get() {
+base::Value::Dict DevToolsSettings::Get() {
   base::Value::Dict settings;
 
   PrefService* prefs = profile_->GetPrefs();
@@ -76,7 +76,7 @@ base::Value DevToolsSettings::Get() {
   settings.Merge(prefs->GetDict(prefs::kDevToolsPreferences).Clone());
   settings.Merge(prefs->GetDict(GetDictionaryNameForSyncedPrefs()).Clone());
 
-  return base::Value(std::move(settings));
+  return settings;
 }
 
 absl::optional<base::Value> DevToolsSettings::Get(const std::string& name) {

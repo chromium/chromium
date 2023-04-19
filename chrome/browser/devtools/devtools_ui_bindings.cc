@@ -1228,7 +1228,7 @@ void DevToolsUIBindings::RegisterPreference(const std::string& name,
 }
 
 void DevToolsUIBindings::GetPreferences(DispatchCallback callback) {
-  base::Value settings = settings_.Get();
+  base::Value settings = base::Value(settings_.Get());
   std::move(callback).Run(&settings);
 }
 
