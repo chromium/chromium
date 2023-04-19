@@ -1972,40 +1972,55 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // Returns the size that should be dedicated the the Inactive Tabs button
 // header.
 - (CGSize)inactiveTabsButtonHeaderSize {
-  NSString* kind = UICollectionElementKindSectionHeader;
-  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
-                                               inSection:kOpenTabsSectionIndex];
-  InactiveTabsButtonHeader* header =
-      base::mac::ObjCCastStrict<InactiveTabsButtonHeader>([self
-                             collectionView:self.collectionView
-          viewForSupplementaryElementOfKind:kind
-                                atIndexPath:indexPath]);
+  // Keep a sizing header.
+  static InactiveTabsButtonHeader* gHeader =
+      [[InactiveTabsButtonHeader alloc] init];
+
+  // Configure it.
+  [gHeader configureWithDaysThreshold:self.inactiveTabsDaysThreshold];
+  if (IsShowInactiveTabsCountEnabled()) {
+    [gHeader configureWithCount:self.inactiveTabsCount];
+  }
+
+  // Get its fitting size.
   CGFloat width = CGRectGetWidth(self.collectionView.bounds);
   CGSize targetSize = CGSize(width, UILayoutFittingExpandedSize.height);
+  // Host the view in the hierarchy for it to get the appropriate trait
+  // collection. This might be due a UIKit/SwiftUI interaction bug, as this is
+  // not necessary for `InactiveTabsPreambleHeader` below for example.
+  gHeader.parent = self;
+  [self.view addSubview:gHeader];
+
   CGSize size =
-      [header systemLayoutSizeFittingSize:targetSize
-            withHorizontalFittingPriority:UILayoutPriorityRequired
-                  verticalFittingPriority:UILayoutPriorityFittingSizeLevel];
+      [gHeader systemLayoutSizeFittingSize:targetSize
+             withHorizontalFittingPriority:UILayoutPriorityRequired
+                   verticalFittingPriority:UILayoutPriorityFittingSizeLevel];
+
+  // De-parent the header.
+  [gHeader removeFromSuperview];
+  gHeader.parent = nil;
+
   return CGSizeMake(width, size.height);
 }
 
 // Returns the size that should be dedicated the the Inactive Tabs preamble
 // header.
 - (CGSize)inactiveTabsPreambleHeaderSize {
-  NSString* kind = UICollectionElementKindSectionHeader;
-  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
-                                               inSection:kOpenTabsSectionIndex];
-  InactiveTabsPreambleHeader* header =
-      base::mac::ObjCCastStrict<InactiveTabsPreambleHeader>([self
-                             collectionView:self.collectionView
-          viewForSupplementaryElementOfKind:kind
-                                atIndexPath:indexPath]);
+  // Keep a sizing header.
+  static InactiveTabsPreambleHeader* gHeader =
+      [[InactiveTabsPreambleHeader alloc] init];
+
+  // Configure it.
+  gHeader.daysThreshold = self.inactiveTabsDaysThreshold;
+
+  // Get its fitting size.
   CGFloat width = CGRectGetWidth(self.collectionView.bounds);
   CGSize targetSize = CGSize(width, UILayoutFittingExpandedSize.height);
   CGSize size =
-      [header systemLayoutSizeFittingSize:targetSize
-            withHorizontalFittingPriority:UILayoutPriorityRequired
-                  verticalFittingPriority:UILayoutPriorityFittingSizeLevel];
+      [gHeader systemLayoutSizeFittingSize:targetSize
+             withHorizontalFittingPriority:UILayoutPriorityRequired
+                   verticalFittingPriority:UILayoutPriorityFittingSizeLevel];
+
   return CGSizeMake(width, size.height);
 }
 
