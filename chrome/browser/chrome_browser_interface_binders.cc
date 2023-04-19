@@ -1242,12 +1242,6 @@ void PopulateChromeWebUIFrameBinders(
       chromeos::printing::printing_manager::mojom::PrintingMetadataProvider,
       ash::printing::printing_manager::PrintManagementUI>(map);
 
-  RegisterWebUIControllerInterfaceBinder<cros::mojom::CameraAppDeviceProvider,
-                                         ash::CameraAppUI>(map);
-
-  RegisterWebUIControllerInterfaceBinder<
-      ash::camera_app::mojom::CameraAppHelper, ash::CameraAppUI>(map);
-
   RegisterWebUIControllerInterfaceBinder<
       ash::help_app::mojom::PageHandlerFactory, ash::HelpAppUI>(map);
 
@@ -1502,6 +1496,10 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
     registry.ForWebUI<ash::FaceMLAppUI>()
         .Add<ash::mojom::face_ml_app::PageHandlerFactory>();
   }
+  registry.ForWebUI<ash::CameraAppUI>()
+      .Add<color_change_listener::mojom::PageHandler>()
+      .Add<cros::mojom::CameraAppDeviceProvider>()
+      .Add<ash::camera_app::mojom::CameraAppHelper>();
   registry.ForWebUI<ash::ColorInternalsUI>()
       .Add<color_change_listener::mojom::PageHandler>()
       .Add<ash::color_internals::mojom::WallpaperColorsHandler>();

@@ -1,0 +1,31 @@
+/* Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* This file will override dynamic color tokens for a color scheme that is same
+ * as the theme before dynamic color.
+ * TODO(pihsun): Remove this file and all references once dynamic color is
+ * enabled by default.
+ */
+:root {
+  --cros-sys-app_base: var(--grey-900);
+  --cros-sys-app_base_elevated: var(--grey-200);
+  --cros-sys-inverse_on_surface: black;
+  --cros-sys-on_surface: var(--grey-200);
+}
+
+.mode-item > input:checked + span {
+  background: white;
+  box-shadow: 0 2px 3px rgba(var(--grey-900-rgb), 0.3);
+}
+
+.mode-subgroup {
+  backdrop-filter: blur(30px);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.mode-subgroup > .item input:checked + div.label {
+  background: var(--grey-200);
+  box-shadow: 0 2px 3px rgba(var(--grey-900-rgb), 0.3);
+  color: var(--grey-900);
+}

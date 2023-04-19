@@ -31,6 +31,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #include "ui/aura/window.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_allowlist.h"
 
 namespace ash {
@@ -273,6 +274,16 @@ void CameraAppUI::BindInterface(
   helper_ = CreateCameraAppHelper(
       this, web_ui()->GetWebContents()->GetBrowserContext(), window());
   helper_->Bind(std::move(receiver));
+}
+
+void CameraAppUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window());
+  // Camera app is always dark.
+  widget->SetColorModeOverride(ui::ColorProviderManager::ColorMode::kDark);
+
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 aura::Window* CameraAppUI::window() {

@@ -6,5 +6,6 @@
  * Name of the chrome flags.
  */
 export enum Flag {
+  JELLY = 'jelly',
   TIME_LAPSE = 'timeLapse',
 }

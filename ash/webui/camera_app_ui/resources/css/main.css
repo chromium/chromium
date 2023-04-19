@@ -49,7 +49,7 @@ audio {
 }
 
 body {
-  background: var(--grey-900);
+  background: var(--cros-sys-app_base);
   bottom: 0;
   font-family: var(--default-font-family);
   height: 100%;
@@ -328,10 +328,8 @@ div.mode-item>span {
 }
 
 .mode-item>input:checked + span {
-  background: white;
-  box-shadow: 0 2px 3px rgba(32, 33, 36, 0.3);
-  color: black;
-  text-shadow: none;
+  background: var(--cros-sys-primary);
+  color: var(--cros-sys-inverse_on_surface);
 }
 
 button.shutter {
@@ -1557,5 +1555,5 @@ body:not(.video) #settings-video-resolution {
 }
 
 #open-settings {
-  color: white;
+  color: var(--cros-sys-on_surface);
 }

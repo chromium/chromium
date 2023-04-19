@@ -3,6 +3,11 @@
 // found in the LICENSE file.
 
 import {
+  startColorChangeUpdater,
+} from
+    'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+
+import {
   getDefaultWindowSize,
 } from './app_window.js';
 import {assert, assertInstanceof} from './assert.js';
@@ -406,6 +411,27 @@ function preloadImages() {
 }
 
 /**
+ * Append dynamic color CSS files and setup watcher for color changes.
+ */
+async function setupDynamicColor(): Promise<void> {
+  function loadCSS(url: string): Promise<void> {
+    return new Promise((resolve) => {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = url;
+      link.addEventListener('load', () => resolve());
+      document.head.appendChild(link);
+    });
+  }
+  if (loadTimeData.getChromeFlag(Flag.JELLY)) {
+    await loadCSS('chrome://theme/colors.css?sets=sys');
+    startColorChangeUpdater();
+  } else {
+    await loadCSS('/css/colors_default.css');
+  }
+}
+
+/**
  * Singleton of the App object.
  */
 let instance: App|null = null;
@@ -419,6 +445,8 @@ let instance: App|null = null;
   }
 
   const perfLogger = new PerfLogger();
+
+  await setupDynamicColor();
 
   const {intent, facing, mode, autoTake, openFrom} = parseSearchParams();
 
