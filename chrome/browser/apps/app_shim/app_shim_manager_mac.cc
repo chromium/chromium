@@ -317,8 +317,9 @@ struct AppShimManager::AppState {
   bool ShouldDeleteAppState() const;
 
   // Mark the last-active profiles in AppShimRegistry, so that they will re-open
-  // when the app is started next.
-  void SaveLastActiveProfiles() const;
+  // when the app is started next. Does nothing if this isn't a multi-profile
+  // app, or if `did_save_last_active_profiles_on_terminate` is true.
+  void MaybeSaveLastActiveProfiles() const;
 
   const std::string app_id;
 
@@ -376,9 +377,10 @@ bool AppShimManager::AppState::ShouldDeleteAppState() const {
   return profiles.empty();
 }
 
-void AppShimManager::AppState::SaveLastActiveProfiles() const {
-  if (!IsMultiProfile())
+void AppShimManager::AppState::MaybeSaveLastActiveProfiles() const {
+  if (!IsMultiProfile() || did_save_last_active_profiles_on_terminate) {
     return;
+  }
   std::set<base::FilePath> last_active_profile_paths;
   for (auto iter_profile = profiles.begin(); iter_profile != profiles.end();
        ++iter_profile) {
@@ -1073,12 +1075,11 @@ void AppShimManager::OnShimProcessDisconnected(AppShimHost* host) {
   AppState* app_state = found_app->second.get();
   DCHECK(app_state);
 
+  app_state->MaybeSaveLastActiveProfiles();
+
   // For multi-profile apps, just delete the AppState, which will take down
   // |host| and all profiles' state.
   if (app_state->IsMultiProfile()) {
-    if (!app_state->did_save_last_active_profiles_on_terminate) {
-      app_state->SaveLastActiveProfiles();
-    }
     DCHECK_EQ(host, app_state->multi_profile_host.get());
     apps_.erase(found_app);
     if (apps_.empty())
@@ -1194,11 +1195,9 @@ void AppShimManager::OnShimWillTerminate(AppShimHost* host) {
   AppState* app_state = found_app->second.get();
   DCHECK(app_state);
 
-  if (app_state->IsMultiProfile()) {
-    DCHECK(!app_state->did_save_last_active_profiles_on_terminate);
-    app_state->SaveLastActiveProfiles();
-    app_state->did_save_last_active_profiles_on_terminate = true;
-  }
+  DCHECK(!app_state->did_save_last_active_profiles_on_terminate);
+  app_state->MaybeSaveLastActiveProfiles();
+  app_state->did_save_last_active_profiles_on_terminate = true;
 }
 
 void AppShimManager::OnProfileAdded(Profile* profile) {
@@ -1265,11 +1264,13 @@ void AppShimManager::OnAppDeactivated(content::BrowserContext* context,
     AppState* app_state = found_app->second.get();
     auto found_profile = app_state->profiles.find(profile);
     if (found_profile != app_state->profiles.end()) {
-      if (app_state->profiles.size() == 1)
-        app_state->SaveLastActiveProfiles();
+      if (app_state->profiles.size() == 1) {
+        app_state->MaybeSaveLastActiveProfiles();
+      }
       app_state->profiles.erase(found_profile);
-      if (app_state->ShouldDeleteAppState())
+      if (app_state->ShouldDeleteAppState()) {
         apps_.erase(found_app);
+      }
     }
   }
 
