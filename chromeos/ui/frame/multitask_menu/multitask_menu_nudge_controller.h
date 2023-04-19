@@ -19,6 +19,7 @@ class PrefRegistrySimple;
 
 namespace ash {
 class MultitaskMenuNudgeControllerTest;
+class MultitaskMenuNudgeTest;
 }
 
 namespace ui {
@@ -51,6 +52,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
     virtual void SetNudgePreferences(bool tablet_mode,
                                      int count,
                                      base::Time time) = 0;
+    // Returns true if the user has logged in for the first time. We don't want
+    // to show the nudge in this case.
+    virtual bool IsUserNew() const;
 
    protected:
     Delegate();
@@ -99,6 +103,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
 
  private:
   friend class ::ash::MultitaskMenuNudgeControllerTest;
+  friend class ::ash::MultitaskMenuNudgeTest;
 
   // Used to control the clock in a test setting.
   static void SetOverrideClockForTesting(base::Clock* test_clock);

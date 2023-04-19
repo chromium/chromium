@@ -6,6 +6,8 @@
 
 #include "base/barrier_callback.h"
 #include "base/json/values_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "multitask_menu_nudge_delegate_lacros.h"
 
@@ -119,4 +121,9 @@ void MultitaskMenuNudgeDelegateLacros::OnGotAllPreferences(
   DCHECK(last_shown_time.has_value());
   std::move(callback).Run(/*tablet_mode=*/false, *shown_count,
                           *last_shown_time);
+}
+
+bool MultitaskMenuNudgeDelegateLacros::IsUserNew() const {
+  auto* profile = ProfileManager::GetPrimaryUserProfile();
+  return profile && profile->IsNewProfile();
 }

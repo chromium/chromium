@@ -25,6 +25,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_pref_names.h"
+#include "components/user_manager/user_manager.h"
 #endif
 
 namespace chromeos {
@@ -118,6 +119,16 @@ MultitaskMenuNudgeController::Delegate::Delegate() {
   g_delegate_instance = this;
 }
 
+bool MultitaskMenuNudgeController::Delegate::IsUserNew() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return user_manager::UserManager::IsInitialized()
+             ? user_manager::UserManager::Get()->IsCurrentUserNew()
+             : false;
+#else
+  return false;
+#endif
+}
+
 MultitaskMenuNudgeController::MultitaskMenuNudgeController() {
   display::Screen::GetScreen()->AddObserver(this);
 }
@@ -149,7 +160,7 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
 void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window,
                                                   views::View* anchor_view) {
   // Delegate could be null if the associated window was created during OOBE.
-  if (!g_delegate_instance) {
+  if (!g_delegate_instance || g_delegate_instance->IsUserNew()) {
     return;
   }
 

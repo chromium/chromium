@@ -33,6 +33,7 @@ class MultitaskMenuNudgeDelegateLacros
   void SetNudgePreferences(bool tablet_mode,
                            int count,
                            base::Time time) override;
+  bool IsUserNew() const override;
 
  private:
   using PrefPair = std::pair<crosapi::mojom::PrefPath, base::Value>;
