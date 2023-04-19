@@ -20429,6 +20429,38 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(u"PASS", title_watcher.WaitAndGetTitle());
 }
 
+// Verify that navigation API can be used to traverse to same-origin urls, even
+// if they are cross site instance. Regression test for
+// https://crbug.com/1431412.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       NavigationApiBackSameOriginDifferentSiteInstance) {
+  GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url2(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+  scoped_refptr<SiteInstance> initial_site_instance =
+      contents()->GetSiteInstance();
+
+  TestNavigationObserver navigation_observer(contents());
+  NavigationController::LoadURLParams params(url2);
+  params.force_new_browsing_instance = true;
+  controller.LoadURLWithParams(params);
+  navigation_observer.Wait();
+  EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
+  EXPECT_NE(initial_site_instance, contents()->GetSiteInstance());
+
+  EXPECT_TRUE(EvalJs(shell(), "navigation.canGoBack").ExtractBool());
+  TestNavigationObserver navigation_observer2(contents());
+  ExecuteScriptAsync(contents()->GetPrimaryFrameTree().root(),
+                     "navigation.back()");
+  navigation_observer2.Wait();
+
+  EXPECT_EQ(url1, controller.GetLastCommittedEntry()->GetURL());
+  EXPECT_EQ(initial_site_instance, contents()->GetSiteInstance());
+}
+
 // Tests that renderer-initiated navigation cancellation from the same JS task
 // that created the navigation can still be triggered after WillProcessResponse,
 // as the browser defers the navigation until the JS task that started it

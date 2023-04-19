@@ -4647,8 +4647,6 @@ NavigationControllerImpl::ShouldNavigateToEntryForNavigationApiKey(
     const std::string& navigation_api_key) {
   if (!target_entry || !target_entry->committed_origin())
     return HistoryNavigationAction::kStopLooking;
-  if (current_entry->site_instance() != target_entry->site_instance())
-    return HistoryNavigationAction::kStopLooking;
   if (!current_entry->committed_origin()->IsSameOriginWith(
           *target_entry->committed_origin())) {
     return HistoryNavigationAction::kStopLooking;
