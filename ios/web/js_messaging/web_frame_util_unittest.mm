@@ -50,65 +50,6 @@ TEST_F(WebFrameUtilTest, GetMainFrame) {
   EXPECT_EQ(nullptr, GetMainFrame(&fake_web_state_));
 }
 
-// Tests the GetMainWebFrameId function.
-TEST_F(WebFrameUtilTest, GetMainWebFrameId) {
-  // Still no main frame.
-  EXPECT_TRUE(GetMainWebFrameId(&fake_web_state_).empty());
-  auto iframe = FakeWebFrame::CreateChildWebFrame(GURL::EmptyGURL());
-  fake_web_frames_manager_->AddWebFrame(std::move(iframe));
-  // Still no main frame.
-  EXPECT_TRUE(GetMainWebFrameId(&fake_web_state_).empty());
-
-  auto main_frame = FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
-  FakeWebFrame* main_frame_ptr = main_frame.get();
-  fake_web_frames_manager_->AddWebFrame(std::move(main_frame));
-  // Now there is a main frame.
-  EXPECT_EQ(kMainFakeFrameId, GetMainWebFrameId(&fake_web_state_));
-
-  fake_web_frames_manager_->RemoveWebFrame(main_frame_ptr->GetFrameId());
-  // Now there is no main frame.
-  EXPECT_TRUE(GetMainWebFrameId(&fake_web_state_).empty());
-}
-
-// Tests the GetWebFrameWithId function.
-TEST_F(WebFrameUtilTest, GetWebFrameWithId) {
-  // Still no main frame.
-  EXPECT_EQ(nullptr, GetWebFrameWithId(&fake_web_state_, kChildFakeFrameId));
-  EXPECT_EQ(nullptr, GetWebFrameWithId(&fake_web_state_, kMainFakeFrameId));
-  EXPECT_EQ(nullptr, GetWebFrameWithId(&fake_web_state_, "unused"));
-  auto iframe = FakeWebFrame::CreateChildWebFrame(GURL::EmptyGURL());
-  FakeWebFrame* iframe_ptr = iframe.get();
-  fake_web_frames_manager_->AddWebFrame(std::move(iframe));
-  // There is an iframe.
-  EXPECT_EQ(iframe_ptr, GetWebFrameWithId(&fake_web_state_, kChildFakeFrameId));
-  EXPECT_EQ(nullptr, GetWebFrameWithId(&fake_web_state_, kMainFakeFrameId));
-  EXPECT_EQ(nullptr, GetWebFrameWithId(&fake_web_state_, "unused"));
-
-  auto main_frame = FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
-  FakeWebFrame* main_frame_ptr = main_frame.get();
-  fake_web_frames_manager_->AddWebFrame(std::move(main_frame));
-  // Now there is a main frame.
-  EXPECT_EQ(iframe_ptr, GetWebFrameWithId(&fake_web_state_, kChildFakeFrameId));
-  EXPECT_EQ(main_frame_ptr,
-            GetWebFrameWithId(&fake_web_state_, kMainFakeFrameId));
-  EXPECT_EQ(nullptr, GetWebFrameWithId(&fake_web_state_, "unused"));
-
-  fake_web_frames_manager_->RemoveWebFrame(main_frame_ptr->GetFrameId());
-  // Now there is only an iframe.
-  EXPECT_EQ(iframe_ptr, GetWebFrameWithId(&fake_web_state_, kChildFakeFrameId));
-  EXPECT_EQ(nullptr, GetWebFrameWithId(&fake_web_state_, kMainFakeFrameId));
-  EXPECT_EQ(nullptr, GetWebFrameWithId(&fake_web_state_, "unused"));
-
-  // Now there nothing left.
-  fake_web_frames_manager_->RemoveWebFrame(iframe_ptr->GetFrameId());
-  EXPECT_EQ(nullptr, GetWebFrameWithId(&fake_web_state_, kChildFakeFrameId));
-  EXPECT_EQ(nullptr, GetWebFrameWithId(&fake_web_state_, kMainFakeFrameId));
-  EXPECT_EQ(nullptr, GetWebFrameWithId(&fake_web_state_, "unused"));
-
-  // Test that GetWebFrameWithId returns nullptr for the empty string.
-  EXPECT_EQ(nullptr, GetWebFrameWithId(&fake_web_state_, ""));
-}
-
 // Tests the GetWebFrameId GetWebFrameId function.
 TEST_F(WebFrameUtilTest, GetWebFrameId) {
   EXPECT_EQ(std::string(), GetWebFrameId(nullptr));

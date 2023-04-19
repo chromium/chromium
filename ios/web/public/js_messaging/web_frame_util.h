@@ -15,14 +15,6 @@ class WebState;
 // Returns the main WebFrame in `web_state`.
 WebFrame* GetMainFrame(WebState* web_state);
 
-// Returns the ID of the main WebFrame in `web_state`.
-// Returns "" if `web_state` does not have a main frame.
-std::string GetMainWebFrameId(WebState* web_state);
-
-// Returns the frame with ID `frame_id` in `web_state`.
-// Returns nullptr if `web_state` does not have a frame with this ID.
-WebFrame* GetWebFrameWithId(WebState* web_state, const std::string& frame_id);
-
 // Returns the ID of `frame`. Returns std::string() if `frame` is nullptr.
 std::string GetWebFrameId(WebFrame* frame);
 
