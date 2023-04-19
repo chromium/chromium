@@ -35,7 +35,7 @@ DownloadDBEntry CreateDownloadDBEntry() {
   DownloadDBEntry entry;
   DownloadInfo download_info;
   download_info.in_progress_info = InProgressInfo();
-  download_info.guid = base::GenerateUuid();
+  download_info.guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   static int id = 0;
   download_info.id = ++id;
   download_info.in_progress_info->hash = "abc";
