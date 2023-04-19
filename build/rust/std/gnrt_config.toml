@@ -19,14 +19,14 @@ output_dir = '$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib
 extra_gn_deps = ['//build/rust/std:std_build_deps']
 
 [crate.libc]
-# Requires:
-# * cfg(libc_align) for new enough rustc, which is normally provided by build.rs
-#   but we don't run build scripts for std crates.
-# * cfg(libc_priv_mod_use) is required for the below to work properly.
-# * cfg(libc_core_cvoid) to use the same ffi c_void definition as libcore.
-#
+# Many flags are set by libc's build.rs based on new enough rustc but we don't
+# run build scripts for std crates.
 # See https://github.com/rust-lang/libc/blob/master/build.rs
-cfg = ['libc_align', 'libc_priv_mod_use', 'libc_core_cvoid']
+cfg = ['libc_priv_mod_use', 'libc_union', 'libc_const_size_of', 'libc_align',
+'libc_int128', 'libc_core_cvoid', 'libc_packedN', 'libc_cfg_target_vendor',
+'libc_non_exhaustive', 'libc_long_array', 'libc_ptr_addr_of',
+'libc_underscore_const_names', 'libc_const_extern_fn'
+]
 
 [crate.std]
 # Requires:
