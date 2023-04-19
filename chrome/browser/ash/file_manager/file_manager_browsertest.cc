@@ -2188,7 +2188,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("showSearchResultMessageWhenSearching").EnableSearchV2(),
         TestCase("showsEducationNudge").EnableSearchV2(),
         TestCase("searchFromMyFiles").EnableSearchV2(),
-        TestCase("selectionPath").EnableSearchV2()
+        TestCase("selectionPath").EnableSearchV2(),
+        TestCase("searchHierarchy").EnableSearchV2()
         // TODO(b/189173190): Enable
         // TestCase("searchQueryLaunchParam")
         ));
