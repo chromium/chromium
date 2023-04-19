@@ -209,9 +209,6 @@ SVGImage::SVGImage(ImageObserver* observer, bool is_multipart)
                                  ->CreateAgentGroupScheduler()),
       has_pending_timeline_rewind_(false) {}
 
-// RUN-1347
-static std::vector<std::unique_ptr<PageScheduler>>* gReplayLeakedSchedulers = nullptr;
-
 SVGImage::~SVGImage() {
   AllowDestroyingLayoutObjectInFinalizerScope scope;
 
@@ -219,19 +216,6 @@ SVGImage::~SVGImage() {
     frame_client_->ClearImage();
 
   if (page_) {
-
-    if (recordreplay::IsRecordingOrReplaying()) {
-      // Since the dtor is called by the GC, we leak the scheduler, so it won't
-      // try touching the recording stream during `WillBeDestroyed` below.
-      // https://linear.app/replay/issue/RUN-1347#comment-73b7832e
-      CHECK(IsMainThread());
-      if (!gReplayLeakedSchedulers) {
-        gReplayLeakedSchedulers = new std::vector<std::unique_ptr<PageScheduler>>();
-      }
-      std::unique_ptr<PageScheduler> scheduler(page_->GetPageScheduler());
-      gReplayLeakedSchedulers->push_back(std::move(scheduler));
-    }
-
     // It is safe to allow UA events within this scope, because event
     // dispatching inside the SVG image's document doesn't trigger JavaScript
     // execution. All script execution is forbidden when an SVG is loaded as an
