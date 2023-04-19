@@ -1000,9 +1000,7 @@ if (is_win || is_mac || is_linux) {
     }
     if (is_linux) {
       data_deps = [ "//chrome/updater/linux:updater_test" ]
-      if (is_chrome_branded) {
-        data_deps += [ "//third_party/updater:old_updater" ]
-      }
+      data_deps += [ "//third_party/updater:old_updater" ]
     }
   }
 
