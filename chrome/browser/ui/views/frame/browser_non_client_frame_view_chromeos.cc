@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -32,7 +31,6 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -74,7 +72,6 @@
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
 #include "ash/wm/window_util.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
@@ -322,7 +319,7 @@ SkColor BrowserNonClientFrameViewChromeOS::GetFrameColor(
 
   SkColor fallback_color = chromeos::kDefaultFrameColor;
 
-  if (chromeos::features::IsDarkLightModeEnabled() && GetWidget()) {
+  if (GetWidget()) {
     // TODO(skau): Migrate to ColorProvider.
     fallback_color =
         cros_styles::ResolveColor(cros_styles::ColorName::kBgColor,
@@ -802,9 +799,6 @@ void BrowserNonClientFrameViewChromeOS::OnProfileAvatarChanged(
 }
 
 void BrowserNonClientFrameViewChromeOS::AddedToWidget() {
-  if (!chromeos::features::IsDarkLightModeEnabled())
-    return;
-
   if (highlight_border_overlay_ ||
       !GetWidget()->GetNativeWindow()->GetProperty(
           chromeos::kShouldHaveHighlightBorderOverlay)) {

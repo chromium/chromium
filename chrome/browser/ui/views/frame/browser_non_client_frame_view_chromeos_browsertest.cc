@@ -1227,25 +1227,16 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest, AppFrameColor) {
   SkColor active_frame_color =
       window->GetProperty(chromeos::kFrameActiveColorKey);
 
-  if (!chromeos::features::IsDarkLightModeEnabled()) {
-    // `kDefaultFrameColor` will only be used when dark/light mode feature is
-    // not enabled.
-    EXPECT_EQ(active_frame_color, SkColorSetRGB(0xFD, 0xFE, 0xFF))
-        << "RGB: " << SkColorGetR(active_frame_color) << ", "
-        << SkColorGetG(active_frame_color) << ", "
-        << SkColorGetB(active_frame_color);
-  } else {
-    const bool is_dark_mode_state =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->GetNativeTheme()
-            ->ShouldUseDarkColors();
-    EXPECT_EQ(active_frame_color, is_dark_mode_state
-                                      ? gfx::kGoogleGrey900
-                                      : SkColorSetRGB(0xFF, 0xFF, 0xFF))
-        << "RGB: " << SkColorGetR(active_frame_color) << ", "
-        << SkColorGetG(active_frame_color) << ", "
-        << SkColorGetB(active_frame_color);
-  }
+  const bool is_dark_mode_state =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetNativeTheme()
+          ->ShouldUseDarkColors();
+  EXPECT_EQ(active_frame_color, is_dark_mode_state
+                                    ? gfx::kGoogleGrey900
+                                    : SkColorSetRGB(0xFF, 0xFF, 0xFF))
+      << "RGB: " << SkColorGetR(active_frame_color) << ", "
+      << SkColorGetG(active_frame_color) << ", "
+      << SkColorGetB(active_frame_color);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

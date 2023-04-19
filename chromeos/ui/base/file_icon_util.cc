@@ -315,16 +315,6 @@ gfx::ImageSkia GetIconForPath(const base::FilePath& filepath,
 
 gfx::ImageSkia GetChipIconForPath(const base::FilePath& filepath,
                                   bool dark_background) {
-  if (!features::IsDarkLightModeEnabled()) {
-    // For a chip icon we need to draw 2 icons: a white circle background icon
-    // (kFiletypeChipBackgroundIcon) and the icon of the file.
-    return gfx::ImageSkiaOperations::CreateSuperimposedImage(
-        gfx::CreateVectorIcon(kFiletypeChipBackgroundIcon, kIconDefaultDipSize,
-                              SK_ColorWHITE),
-        GetVectorIconFromIconType(internal::GetIconTypeForPath(filepath),
-                                  /*dark_background=*/false, absl::nullopt));
-  }
-
   return GetIconForPath(filepath, dark_background);
 }
 

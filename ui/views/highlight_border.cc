@@ -4,7 +4,6 @@
 
 #include "ui/views/highlight_border.h"
 
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
