@@ -4230,7 +4230,8 @@ crbug.com/1220891 virtual/portals/external/wpt/portals/csp/frame-src.sub.html [ 
 # Sheriff 2019-04-17
 crbug.com/953591 [ Win ] fast/forms/datalist/input-appearance-range-with-transform.html [ Failure Pass ]
 crbug.com/953591 [ Win ] transforms/matrix-02.html [ Failure Pass ]
-crbug.com/938884 http/tests/devtools/elements/styles-3/styles-add-blank-property.js [ Pass Timeout ]
+# The following test also increased in flakiness due to icon rework: crbug.com/1427397 (but was flaky before)
+crbug.com/938884 http/tests/devtools/elements/styles-3/styles-add-blank-property.js [ Failure Pass Timeout ]
 
 # Sheriff 2019-04-30
 crbug.com/948785 fast/events/pointerevents/pointer-event-consumed-touchstart-in-slop-region.html [ Crash Failure Pass Timeout ]
