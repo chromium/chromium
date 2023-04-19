@@ -50,6 +50,28 @@ chromium-metrics-reviews@google.com.
   <summary>The steady state feature status of PhoneHub on user login.</summary>
 </histogram>
 
+<histogram name="PhoneHub.Attestation.GeneratingTime" units="ms"
+    expires_after="2024-04-01">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The time to generate valid attestation before sending message to phone.
+    Emitted when a valid attestation is generated and ready to send CrosState
+    message to phone.
+  </summary>
+</histogram>
+
+<histogram name="PhoneHub.Attestation.GeneratingTime.Invalid" units="ms"
+    expires_after="2024-04-01">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The time to generate an invalid attestation before sending message to phone.
+    Emitted when an invalid attestation is generated and ready to send CrosState
+    message to phone.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.BubbleOpened.Connectable.Failed.HostLastSeen"
     units="ms" expires_after="2023-10-15">
   <owner>jonmann@chromium.org</owner>

@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/phonehub/cros_state_sender.h"
 #include "ash/constants/ash_features.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/message_sender.h"
 #include "chromeos/ash/components/phonehub/phone_model.h"
@@ -103,6 +104,7 @@ void CrosStateSender::PerformUpdateCrosState() {
     return;
   }
 
+  attestation_generating_start_time_ = base::Time::Now();
   attestation_certificate_generator_->GenerateCertificate(
       base::BindRepeating(&CrosStateSender::OnAttestationCertificateGenerated,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -112,10 +114,16 @@ void CrosStateSender::OnAttestationCertificateGenerated(
     const std::vector<std::string>& attestation_certs,
     bool is_valid) {
   if (!is_valid) {
+    base::UmaHistogramLongTimes(
+        "PhoneHub.Attestation.GeneratingTime.Invalid",
+        base::Time::Now() - attestation_generating_start_time_);
     SendCrosStateMessage(/*attestation_certs=*/nullptr);
     return;
   }
 
+  base::UmaHistogramLongTimes(
+      "PhoneHub.Attestation.GeneratingTime",
+      base::Time::Now() - attestation_generating_start_time_);
   SendCrosStateMessage(std::move(&attestation_certs));
 }
 

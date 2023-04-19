@@ -71,6 +71,7 @@ class CrosStateSender
   base::TimeDelta retry_delay_;
   std::unique_ptr<AttestationCertificateGenerator>
       attestation_certificate_generator_;
+  base::Time attestation_generating_start_time_;
   base::WeakPtrFactory<CrosStateSender> weak_ptr_factory_{this};
 };
 
