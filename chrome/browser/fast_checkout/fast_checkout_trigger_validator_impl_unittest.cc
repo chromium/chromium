@@ -4,7 +4,6 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator_impl.h"
 
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper.h"
@@ -130,7 +129,7 @@ class FastCheckoutTriggerValidatorTest
   }
   FastCheckoutTriggerValidatorImpl* validator() { return validator_.get(); }
 
-  bool ShouldRun() {
+  FastCheckoutTriggerOutcome ShouldRun() {
     return validator()->ShouldRun(form_, field_, ui_state_, is_running_,
                                   *autofill_manager());
   }
@@ -159,134 +158,90 @@ class FastCheckoutTriggerValidatorTest
 };
 
 TEST_F(FastCheckoutTriggerValidatorTest, ShouldRun_AllChecksPass_ReturnsTrue) {
-  EXPECT_TRUE(ShouldRun());
-  histogram_tester_.ExpectUniqueSample(kUmaKeyFastCheckoutTriggerOutcome,
-                                       FastCheckoutTriggerOutcome::kSuccess,
-                                       1u);
+  EXPECT_EQ(ShouldRun(), FastCheckoutTriggerOutcome::kSuccess);
 }
 
 TEST_F(FastCheckoutTriggerValidatorTest,
        ShouldRun_FeatureDisabled_ReturnsFalse) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(::features::kFastCheckout);
-
-  EXPECT_FALSE(ShouldRun());
-  EXPECT_EQ(histogram_tester_.GetTotalSum(kUmaKeyFastCheckoutTriggerOutcome),
-            0);
+  EXPECT_EQ(ShouldRun(), FastCheckoutTriggerOutcome::kUnsupportedFieldType);
 }
 
 TEST_F(FastCheckoutTriggerValidatorTest,
        ShouldRun_AlreadyRunning_ReturnsFalse) {
   is_running_ = true;
-
-  EXPECT_FALSE(ShouldRun());
-  EXPECT_EQ(histogram_tester_.GetTotalSum(kUmaKeyFastCheckoutTriggerOutcome),
-            0);
+  EXPECT_EQ(ShouldRun(), FastCheckoutTriggerOutcome::kUnsupportedFieldType);
 }
 
 TEST_F(FastCheckoutTriggerValidatorTest,
        ShouldRun_NotContextSecure_ReturnsFalse) {
   ON_CALL(*autofill_client(), IsContextSecure).WillByDefault(Return(false));
-
-  EXPECT_FALSE(ShouldRun());
-  EXPECT_EQ(histogram_tester_.GetTotalSum(kUmaKeyFastCheckoutTriggerOutcome),
-            0);
+  EXPECT_EQ(ShouldRun(), FastCheckoutTriggerOutcome::kUnsupportedFieldType);
 }
 
 TEST_F(FastCheckoutTriggerValidatorTest, ShouldRun_NoTriggerForm_ReturnsFalse) {
   ON_CALL(*capabilities_fetcher(), IsTriggerFormSupported)
       .WillByDefault(Return(false));
 
-  EXPECT_FALSE(ShouldRun());
-  EXPECT_EQ(histogram_tester_.GetTotalSum(kUmaKeyFastCheckoutTriggerOutcome),
-            0);
+  EXPECT_EQ(ShouldRun(), FastCheckoutTriggerOutcome::kUnsupportedFieldType);
 }
 
 TEST_F(FastCheckoutTriggerValidatorTest, ShouldRun_UiIsShowing_ReturnsFalse) {
   ui_state_ = FastCheckoutUIState::kIsShowing;
-
-  EXPECT_FALSE(ShouldRun());
-  histogram_tester_.ExpectUniqueSample(
-      kUmaKeyFastCheckoutTriggerOutcome,
-      FastCheckoutTriggerOutcome::kFailureShownBefore, 1u);
+  EXPECT_EQ(ShouldRun(), FastCheckoutTriggerOutcome::kFailureShownBefore);
 }
 
 TEST_F(FastCheckoutTriggerValidatorTest, ShouldRun_UiWasShown_ReturnsFalse) {
   ui_state_ = FastCheckoutUIState::kWasShown;
-
-  EXPECT_FALSE(ShouldRun());
-  histogram_tester_.ExpectUniqueSample(
-      kUmaKeyFastCheckoutTriggerOutcome,
-      FastCheckoutTriggerOutcome::kFailureShownBefore, 1u);
+  EXPECT_EQ(ShouldRun(), FastCheckoutTriggerOutcome::kFailureShownBefore);
 }
 
 TEST_F(FastCheckoutTriggerValidatorTest,
        ShouldRun_FieldNotFocusable_ReturnsFalse) {
   field_.is_focusable = false;
-
-  EXPECT_FALSE(ShouldRun());
-  histogram_tester_.ExpectUniqueSample(
-      kUmaKeyFastCheckoutTriggerOutcome,
-      FastCheckoutTriggerOutcome::kFailureFieldNotFocusable, 1u);
+  EXPECT_EQ(ShouldRun(), FastCheckoutTriggerOutcome::kFailureFieldNotFocusable);
 }
 
 TEST_F(FastCheckoutTriggerValidatorTest, ShouldRun_FieldHasValue_ReturnsFalse) {
   field_.value = u"value";
-
-  EXPECT_FALSE(ShouldRun());
-  histogram_tester_.ExpectUniqueSample(
-      kUmaKeyFastCheckoutTriggerOutcome,
-      FastCheckoutTriggerOutcome::kFailureFieldNotEmpty, 1u);
+  EXPECT_EQ(ShouldRun(), FastCheckoutTriggerOutcome::kFailureFieldNotEmpty);
 }
 
 TEST_F(FastCheckoutTriggerValidatorTest,
        ShouldRun_CannotShowAutofillUi_ReturnsFalse) {
   ON_CALL(*autofill_manager(), CanShowAutofillUi).WillByDefault(Return(false));
-
-  EXPECT_FALSE(ShouldRun());
-  histogram_tester_.ExpectUniqueSample(
-      kUmaKeyFastCheckoutTriggerOutcome,
-      FastCheckoutTriggerOutcome::kFailureCannotShowAutofillUi, 1u);
+  EXPECT_EQ(ShouldRun(),
+            FastCheckoutTriggerOutcome::kFailureCannotShowAutofillUi);
 }
 
 TEST_F(FastCheckoutTriggerValidatorTest,
        ShouldRun_AutofillProfileDisabled_ReturnsFalse) {
   ON_CALL(*pdm(), IsAutofillProfileEnabled).WillByDefault(Return(false));
-
-  EXPECT_FALSE(ShouldRun());
-  EXPECT_EQ(histogram_tester_.GetTotalSum(kUmaKeyFastCheckoutTriggerOutcome),
-            0);
+  EXPECT_EQ(ShouldRun(),
+            FastCheckoutTriggerOutcome::kFailureAutofillProfileDisabled);
 }
 
 TEST_F(FastCheckoutTriggerValidatorTest,
        ShouldRun_CreditCardDisabled_ReturnsFalse) {
   ON_CALL(*pdm(), IsAutofillCreditCardEnabled).WillByDefault(Return(false));
-
-  EXPECT_FALSE(ShouldRun());
-  EXPECT_EQ(histogram_tester_.GetTotalSum(kUmaKeyFastCheckoutTriggerOutcome),
-            0);
+  EXPECT_EQ(ShouldRun(),
+            FastCheckoutTriggerOutcome::kFailureAutofillCreditCardDisabled);
 }
 
 TEST_F(FastCheckoutTriggerValidatorTest,
        ShouldRun_NoValidAddressProfiles_ReturnsFalse) {
   ON_CALL(*personal_data_helper(), GetValidAddressProfiles)
       .WillByDefault(Return(std::vector<autofill::AutofillProfile*>{}));
-
-  EXPECT_FALSE(ShouldRun());
-  histogram_tester_.ExpectUniqueSample(
-      kUmaKeyFastCheckoutTriggerOutcome,
-      FastCheckoutTriggerOutcome::kFailureNoValidAutofillProfile, 1u);
+  EXPECT_EQ(ShouldRun(),
+            FastCheckoutTriggerOutcome::kFailureNoValidAutofillProfile);
 }
 
 TEST_F(FastCheckoutTriggerValidatorTest,
        ShouldRun_NoValidCreditCards_ReturnsFalse) {
   ON_CALL(*personal_data_helper(), GetValidCreditCards)
       .WillByDefault(Return(std::vector<autofill::CreditCard*>{}));
-
-  EXPECT_FALSE(ShouldRun());
-  histogram_tester_.ExpectUniqueSample(
-      kUmaKeyFastCheckoutTriggerOutcome,
-      FastCheckoutTriggerOutcome::kFailureNoValidCreditCard, 1u);
+  EXPECT_EQ(ShouldRun(), FastCheckoutTriggerOutcome::kFailureNoValidCreditCard);
 }
 
 }  // namespace

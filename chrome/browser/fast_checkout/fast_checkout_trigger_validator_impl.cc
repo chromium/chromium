@@ -4,7 +4,6 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator_impl.h"
 
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -12,13 +11,6 @@
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/logging/log_macros.h"
-
-namespace {
-void LogUmaTriggerOutcome(FastCheckoutTriggerOutcome trigger_outcome) {
-  base::UmaHistogramEnumeration(kUmaKeyFastCheckoutTriggerOutcome,
-                                trigger_outcome);
-}
-}  // namespace
 
 FastCheckoutTriggerValidatorImpl::FastCheckoutTriggerValidatorImpl(
     autofill::AutofillClient* autofill_client,
@@ -28,7 +20,7 @@ FastCheckoutTriggerValidatorImpl::FastCheckoutTriggerValidatorImpl(
       capabilities_fetcher_(capabilities_fetcher),
       personal_data_helper_(personal_data_helper) {}
 
-bool FastCheckoutTriggerValidatorImpl::ShouldRun(
+FastCheckoutTriggerOutcome FastCheckoutTriggerValidatorImpl::ShouldRun(
     const autofill::FormData& form,
     const autofill::FormFieldData& field,
     const FastCheckoutUIState ui_state,
@@ -41,14 +33,14 @@ bool FastCheckoutTriggerValidatorImpl::ShouldRun(
   if (!base::FeatureList::IsEnabled(::features::kFastCheckout)) {
     LogAutofillInternals(
         "not triggered because FastCheckout flag is disabled.");
-    return false;
+    return FastCheckoutTriggerOutcome::kUnsupportedFieldType;
   }
 
   // Trigger only if there is no ongoing run.
   if (is_running) {
     LogAutofillInternals(
         "not triggered because Fast Checkout is already running.");
-    return false;
+    return FastCheckoutTriggerOutcome::kUnsupportedFieldType;
   }
 
   // Trigger only if the URL scheme is cryptographic and security level is not
@@ -57,53 +49,47 @@ bool FastCheckoutTriggerValidatorImpl::ShouldRun(
     LogAutofillInternals(
         "not triggered because context is not secure, e.g. not https or "
         "dangerous security level.");
-    return false;
+    return FastCheckoutTriggerOutcome::kUnsupportedFieldType;
   }
 
   // Trigger only if the form is a trigger form for Fast Checkout.
   if (!IsTriggerForm(form, field)) {
-    return false;
+    return FastCheckoutTriggerOutcome::kUnsupportedFieldType;
   }
 
   // UMA drop out metrics are recorded after this point only to avoid collecting
   // unnecessary metrics that would dominate the other data points.
   // Trigger only if not shown before.
   if (ui_state != FastCheckoutUIState::kNotShownYet) {
-    LogUmaTriggerOutcome(FastCheckoutTriggerOutcome::kFailureShownBefore);
     LogAutofillInternals("not triggered because it was shown before.");
-    return false;
+    return FastCheckoutTriggerOutcome::kFailureShownBefore;
   }
 
   // Trigger only on focusable fields.
   if (!field.is_focusable) {
-    LogUmaTriggerOutcome(FastCheckoutTriggerOutcome::kFailureFieldNotFocusable);
     LogAutofillInternals("not triggered because field was not focusable.");
-    return false;
+    return FastCheckoutTriggerOutcome::kFailureFieldNotFocusable;
   }
 
   // Trigger only on empty fields.
   if (!field.value.empty()) {
-    LogUmaTriggerOutcome(FastCheckoutTriggerOutcome::kFailureFieldNotEmpty);
     LogAutofillInternals("not triggered because field was not empty.");
-    return false;
+    return FastCheckoutTriggerOutcome::kFailureFieldNotEmpty;
   }
 
   // Trigger only if the UI is available.
   if (!autofill_manager.CanShowAutofillUi()) {
-    LogUmaTriggerOutcome(
-        FastCheckoutTriggerOutcome::kFailureCannotShowAutofillUi);
     LogAutofillInternals("not triggered because Autofill UI cannot be shown.");
-    return false;
+    return FastCheckoutTriggerOutcome::kFailureCannotShowAutofillUi;
   }
 
-  if (!HasValidPersonalData()) {
-    return false;
+  FastCheckoutTriggerOutcome result = HasValidPersonalData();
+  if (result != FastCheckoutTriggerOutcome::kSuccess) {
+    return result;
   }
 
-  LogUmaTriggerOutcome(FastCheckoutTriggerOutcome::kSuccess);
   LogAutofillInternals("was triggered successfully.");
-
-  return true;
+  return FastCheckoutTriggerOutcome::kSuccess;
 }
 
 bool FastCheckoutTriggerValidatorImpl::IsTriggerForm(
@@ -132,40 +118,38 @@ bool FastCheckoutTriggerValidatorImpl::IsTriggerForm(
   return is_trigger_form;
 }
 
-bool FastCheckoutTriggerValidatorImpl::HasValidPersonalData() const {
+FastCheckoutTriggerOutcome
+FastCheckoutTriggerValidatorImpl::HasValidPersonalData() const {
   autofill::PersonalDataManager* pdm =
       personal_data_helper_->GetPersonalDataManager();
   if (!pdm->IsAutofillProfileEnabled()) {
     LogAutofillInternals("not triggered because Autofill profile is disabled.");
-    return false;
+    return FastCheckoutTriggerOutcome::kFailureAutofillProfileDisabled;
   }
 
   if (!pdm->IsAutofillCreditCardEnabled()) {
     LogAutofillInternals(
         "not triggered because Autofill credit card is disabled.");
-    return false;
+    return FastCheckoutTriggerOutcome::kFailureAutofillCreditCardDisabled;
   }
 
   // Trigger only if there is at least 1 valid Autofill profile on file.
   if (personal_data_helper_->GetValidAddressProfiles().empty()) {
-    LogUmaTriggerOutcome(
-        FastCheckoutTriggerOutcome::kFailureNoValidAutofillProfile);
     LogAutofillInternals(
         "not triggered because the client does not have at least one valid "
         "Autofill profile stored.");
-    return false;
+    return FastCheckoutTriggerOutcome::kFailureNoValidAutofillProfile;
   }
 
   // Trigger only if there is at least 1 complete valid credit card on file.
   if (personal_data_helper_->GetValidCreditCards().empty()) {
-    LogUmaTriggerOutcome(FastCheckoutTriggerOutcome::kFailureNoValidCreditCard);
     LogAutofillInternals(
         "not triggered because the client does not have at least one "
         "valid Autofill credit card stored.");
-    return false;
+    return FastCheckoutTriggerOutcome::kFailureNoValidCreditCard;
   }
 
-  return true;
+  return FastCheckoutTriggerOutcome::kSuccess;
 }
 
 void FastCheckoutTriggerValidatorImpl::LogAutofillInternals(

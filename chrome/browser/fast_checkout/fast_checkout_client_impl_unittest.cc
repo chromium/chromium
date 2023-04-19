@@ -199,7 +199,7 @@ class MockFastCheckoutTriggerValidator : public FastCheckoutTriggerValidator {
   MockFastCheckoutTriggerValidator() = default;
   ~MockFastCheckoutTriggerValidator() override = default;
 
-  MOCK_METHOD(bool,
+  MOCK_METHOD(FastCheckoutTriggerOutcome,
               ShouldRun,
               (const FormData&,
                const FormFieldData&,
@@ -207,7 +207,7 @@ class MockFastCheckoutTriggerValidator : public FastCheckoutTriggerValidator {
                const bool,
                const AutofillManager&),
               (const));
-  MOCK_METHOD(bool, HasValidPersonalData, (), (const));
+  MOCK_METHOD(FastCheckoutTriggerOutcome, HasValidPersonalData, (), (const));
 };
 
 class MockAutofillClient : public autofill::TestContentAutofillClient {
@@ -266,7 +266,8 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
         std::make_unique<NiceMock<MockFastCheckoutTriggerValidator>>();
     validator_ = trigger_validator.get();
     test_client_->trigger_validator_ = std::move(trigger_validator);
-    ON_CALL(*validator(), ShouldRun).WillByDefault(Return(true));
+    ON_CALL(*validator(), ShouldRun)
+        .WillByDefault(Return(FastCheckoutTriggerOutcome::kSuccess));
 
     test_client_->autofill_client_ = autofill_client();
 
@@ -348,6 +349,9 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
     EXPECT_TRUE(fast_checkout_client()->TryToStart(
         GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
         autofill_manager()->GetWeakPtr()));
+    histogram_tester_.ExpectUniqueSample(kUmaKeyFastCheckoutTriggerOutcome,
+                                         FastCheckoutTriggerOutcome::kSuccess,
+                                         1u);
     OnAfterAskForValuesToFill();
     fast_checkout_client()->OnOptionsSelected(
         std::move(autofill_profile_unique_ptr),
@@ -472,13 +476,34 @@ TEST_F(FastCheckoutClientImplTest, Start_InvalidAutofillManager_NoRun) {
   // Do not expect Autofill popups to be hidden.
   EXPECT_CALL(*autofill_client(), HideAutofillPopup).Times(0);
 
+  OnBeforeAskForValuesToFill();
   EXPECT_FALSE(fast_checkout_client()->TryToStart(
       GURL(kUrl), autofill::FormData(), autofill::FormFieldData(), nullptr));
   EXPECT_TRUE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(FastCheckoutClientImplTest, Start_ShouldRunReturnsFalse_NoRun) {
-  ON_CALL(*validator(), ShouldRun).WillByDefault(Return(false));
+TEST_F(FastCheckoutClientImplTest, Start_ShouldRunReturnsInvalidData_NoRun) {
+  ON_CALL(*validator(), ShouldRun)
+      .WillByDefault(
+          Return(FastCheckoutTriggerOutcome::kFailureNoValidAutofillProfile));
+
+  // `FastCheckoutClient` is not running initially.
+  EXPECT_FALSE(fast_checkout_client()->IsRunning());
+
+  OnBeforeAskForValuesToFill();
+  EXPECT_FALSE(fast_checkout_client()->TryToStart(
+      GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
+      autofill_manager()->GetWeakPtr()));
+  histogram_tester_.ExpectUniqueSample(
+      kUmaKeyFastCheckoutTriggerOutcome,
+      FastCheckoutTriggerOutcome::kFailureNoValidAutofillProfile, 1u);
+  EXPECT_TRUE(fast_checkout_client()->IsNotShownYet());
+}
+
+TEST_F(FastCheckoutClientImplTest,
+       Start_ShouldRunReturnsUnsupportedFile_NoRun) {
+  ON_CALL(*validator(), ShouldRun)
+      .WillByDefault(Return(FastCheckoutTriggerOutcome::kUnsupportedFieldType));
 
   // `FastCheckoutClient` is not running initially.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
@@ -491,10 +516,13 @@ TEST_F(FastCheckoutClientImplTest, Start_ShouldRunReturnsFalse_NoRun) {
   EXPECT_FALSE(fast_checkout_client()->TryToStart(
       GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
       autofill_manager()->GetWeakPtr()));
+  // Does not report metrics in case of `kUnsupportedFieldType` trigger outcome.
+  EXPECT_EQ(histogram_tester_.GetTotalSum(kUmaKeyFastCheckoutTriggerOutcome),
+            0);
   EXPECT_TRUE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(FastCheckoutClientImplTest, Start_ShouldRunReturnsTrue_Run) {
+TEST_F(FastCheckoutClientImplTest, Start_ShouldRunReturnsSuccess_Run) {
   // `FastCheckoutClient` is not running initially.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 
@@ -524,7 +552,9 @@ TEST_F(FastCheckoutClientImplTest, Start_ShouldRunReturnsTrue_Run) {
 
 TEST_F(FastCheckoutClientImplTest,
        OnPersonalDataChanged_StopIfInvalidPersonalData) {
-  ON_CALL(*validator(), HasValidPersonalData).WillByDefault(Return(false));
+  ON_CALL(*validator(), HasValidPersonalData)
+      .WillByDefault(
+          Return(FastCheckoutTriggerOutcome::kFailureNoValidAutofillProfile));
 
   // `FastCheckoutClient` is not running initially.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
@@ -539,6 +569,9 @@ TEST_F(FastCheckoutClientImplTest,
       autofill_manager()->GetWeakPtr()));
   OnAfterAskForValuesToFill();
 
+  histogram_tester_.ExpectUniqueSample(kUmaKeyFastCheckoutTriggerOutcome,
+                                       FastCheckoutTriggerOutcome::kSuccess,
+                                       1u);
   // `FastCheckoutClient` is running.
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
 
@@ -555,7 +588,8 @@ TEST_F(FastCheckoutClientImplTest,
 
 TEST_F(FastCheckoutClientImplTest,
        OnPersonalDataChanged_UpdatesTheUIWithNewData) {
-  ON_CALL(*validator(), HasValidPersonalData).WillByDefault(Return(true));
+  ON_CALL(*validator(), HasValidPersonalData)
+      .WillByDefault(Return(FastCheckoutTriggerOutcome::kSuccess));
 
   // `FastCheckoutClient` is not running initially.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());

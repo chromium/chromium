@@ -36884,6 +36884,8 @@ Called by update_extension_permission.py.-->
   <int value="4" label="Failure: The Autofill Ui cannot be shown."/>
   <int value="5" label="Failure: There is no valid credit card."/>
   <int value="6" label="Failure: There is no valid Autofill profile."/>
+  <int value="7" label="Failure: AutofillProfile setting is disabled."/>
+  <int value="8" label="Failure: AutofillCreditCard settings is disabled."/>
 </enum>
 
 <enum name="FastPairAccountKeyFailure">

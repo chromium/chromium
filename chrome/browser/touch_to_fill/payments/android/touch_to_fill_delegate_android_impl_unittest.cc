@@ -53,7 +53,7 @@ class MockFastCheckoutClient : public FastCheckoutClient {
               (const autofill::FormData&,
                const autofill::FormFieldData&,
                const autofill::AutofillManager&),
-              (override));
+              (const override));
   MOCK_METHOD(bool, IsNotShownYet, (), (const, override));
 };
 

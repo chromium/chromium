@@ -28,7 +28,14 @@ enum class FastCheckoutTriggerOutcome {
   kFailureNoValidCreditCard = 5,
   // The sheet was not shown because there is no valid Autofill profile.
   kFailureNoValidAutofillProfile = 6,
-  kMaxValue = kFailureNoValidAutofillProfile
+  // The sheet was not shown because AutofillProfile setting is disabled.
+  kFailureAutofillProfileDisabled = 7,
+  // The sheet was not shown because AutofillCreditCard setting is disabled.
+  kFailureAutofillCreditCardDisabled = 8,
+  // FastCheckout is not supported for this field type. This value is not logged
+  // to UMA.
+  kUnsupportedFieldType = 9,
+  kMaxValue = kUnsupportedFieldType
 };
 
 // Enum defining possible outcomes of a Fast Checkout run.

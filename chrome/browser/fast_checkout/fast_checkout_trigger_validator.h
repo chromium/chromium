@@ -20,18 +20,19 @@ class FastCheckoutTriggerValidator {
   FastCheckoutTriggerValidator& operator=(const FastCheckoutTriggerValidator&) =
       delete;
 
-  // Returns `true` if a Fast Checkout run should be permitted, `false`
-  // otherwise. Logs outcome to UMA and chrome://autofill-internals.
-  virtual bool ShouldRun(
+  // Checks all preconditions that assert whether a Fast Checkout run should be
+  // permitted. Logs outcome to chrome://autofill-internals.
+  virtual FastCheckoutTriggerOutcome ShouldRun(
       const autofill::FormData& form,
       const autofill::FormFieldData& field,
       const FastCheckoutUIState ui_state,
       const bool is_running,
       const autofill::AutofillManager& autofill_manager) const = 0;
 
-  // Returns `true` if the current profile has Autofill data enabled and at
-  // least one valid Autofill profile and credit card stored, `false` otherwise.
-  virtual bool HasValidPersonalData() const = 0;
+  // Returns `FastCheckoutTriggerOutcome::kSuccess` if the current profile has
+  // Autofill data enabled and at least one valid Autofill profile and credit
+  // card stored, another `FastCheckoutTriggerOutcome` constant otherwise.
+  virtual FastCheckoutTriggerOutcome HasValidPersonalData() const = 0;
 
  protected:
   FastCheckoutTriggerValidator() = default;
