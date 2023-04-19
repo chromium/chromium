@@ -1855,7 +1855,7 @@ Handoff must also be enabled in the General section of Settings, and your device
           other {After {COUNT} Days}}
       </message>
       <message name="IDS_IOS_OPTIONS_MOVE_INACTIVE_TABS" desc="Title for opening the setting for when tabs should be considered inactive. (Title case)">
-        Move Inactive Tabs
+        Inactive
       </message>
       <message name="IDS_IOS_OPTIONS_PRELOAD_WEBPAGES" desc="Title for opening the setting for if/when to preload webpages. [Length: 20em] [iOS only]">
         Preload Webpages
