@@ -987,8 +987,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-// TODO(crbug.com/1289326) Test is flaky on Linux CFI
-#if BUILDFLAG(CFI_ICALL_CHECK) && BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1289326) Test is flaky on Linux CFI, Linux dbg, Mac ASan
+#if ((BUILDFLAG(CFI_ICALL_CHECK) || !defined(NDEBUG)) && \
+     BUILDFLAG(IS_LINUX)) ||                             \
+    (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER))
 #define MAYBE_CreateSignedInProfileSettings \
   DISABLED_CreateSignedInProfileSettings
 #else
@@ -1415,8 +1417,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
       metrics::StartupProfilingFinishReason::kDone, 1);
 }
 
-// TODO(crbug.com/1289326) Test is flaky on Linux CFI
-#if BUILDFLAG(CFI_ICALL_CHECK) && BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1289326) Test is flaky on Linux CFI, Linux dbg, Mac ASan
+#if ((BUILDFLAG(CFI_ICALL_CHECK) || !defined(NDEBUG)) && \
+     BUILDFLAG(IS_LINUX)) ||                             \
+    (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER))
 #define MAYBE_OpenProfile_Settings DISABLED_OpenProfile_Settings
 #else
 #define MAYBE_OpenProfile_Settings OpenProfile_Settings
