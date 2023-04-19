@@ -41,7 +41,8 @@ bool ReadAnythingMenuButton::IsGroupFocusTraversable() const {
 
 void ReadAnythingMenuButton::ButtonPressed() {
   menu_runner_ = std::make_unique<views::MenuRunner>(
-      menu_model_.get(), views::MenuRunner::HAS_MNEMONICS);
+      menu_model_.get(),
+      views::MenuRunner::COMBOBOX | views::MenuRunner::HAS_MNEMONICS);
 
   gfx::Point screen_loc;
   views::View::ConvertPointToScreen(this, &screen_loc);
