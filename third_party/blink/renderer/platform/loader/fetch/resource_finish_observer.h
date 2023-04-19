@@ -25,7 +25,7 @@ class PLATFORM_EXPORT ResourceFinishObserver
     : public GarbageCollected<ResourceFinishObserver> {
  public:
   ResourceFinishObserver() {
-    // RUN-1724
+    // Pointer registration is needed for sorting in NotifyFinishObservers.
     recordreplay::RegisterPointer("ResourceFinishObserver", this);
   }
   virtual ~ResourceFinishObserver() {
@@ -40,8 +40,6 @@ class PLATFORM_EXPORT ResourceFinishObserver
   virtual String DebugName() const = 0;
 
   virtual void Trace(Visitor* visitor) const {}
-
-  int RecordReplayId() const { return recordreplay::PointerId(this); }
 };
 
 }  // namespace blink

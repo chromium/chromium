@@ -670,8 +670,8 @@ void WorkerThread::InitializeOnWorkerThread(
   {
     base::AutoLock locker(ThreadSetLock());
 
-    recordreplay::Assert("[RUN-1537-1689] InitializeOnWorkerThread %d",
-                         recordreplay::PointerId(this));
+    recordreplay::Assert("[RUN-1537-1689] InitializeOnWorkerThread %d %u %u",
+                         recordreplay::PointerId(this), WorkerThreads().size(), InitializingWorkerThreads().size());
 
     DCHECK(InitializingWorkerThreads().Contains(this));
     DCHECK(!WorkerThreads().Contains(this));
