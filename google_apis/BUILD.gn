@@ -298,7 +298,10 @@ test("google_apis_unittests") {
   }
 
   if (is_chromeos) {
-    deps += [ "//google_apis/tasks:tasks_unittests" ]
+    deps += [
+      "//google_apis/classroom:classroom_unittests",
+      "//google_apis/tasks:tasks_unittests",
+    ]
   }
 }
 

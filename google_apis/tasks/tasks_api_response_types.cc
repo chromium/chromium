@@ -25,7 +25,6 @@ using ::base::JSONValueConverter;
 constexpr char kTaskListsKind[] = "tasks#taskLists";
 constexpr char kTasksKind[] = "tasks#tasks";
 
-constexpr char kApiResponseNextPageTokenKey[] = "nextPageToken";
 constexpr char kApiResponseParentKey[] = "parent";
 constexpr char kApiResponseStatusKey[] = "status";
 constexpr char kApiResponseTitleKey[] = "title";

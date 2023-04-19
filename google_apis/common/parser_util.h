@@ -12,11 +12,12 @@
 namespace google_apis {
 
 // Common JSON names
-constexpr char kApiResponseKindKey[] = "kind";
-constexpr char kApiResponseIdKey[] = "id";
 constexpr char kApiResponseETagKey[] = "etag";
+constexpr char kApiResponseIdKey[] = "id";
 constexpr char kApiResponseItemsKey[] = "items";
+constexpr char kApiResponseKindKey[] = "kind";
 constexpr char kApiResponseNameKey[] = "name";
+constexpr char kApiResponseNextPageTokenKey[] = "nextPageToken";
 
 // Checks if the JSON is expected kind.
 bool IsResourceKindExpected(const base::Value& value,
