@@ -2225,7 +2225,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Passwords are saved in your Google Account so you can use them on any device.
       </message>
       <message name="IDS_SAVE_PASSWORD_FOOTER_DISPLAYING_USER_EMAIL" desc="The footer text of the infobar that offers user to save/update a password to Chrome; also display's current user's email.">
-        You can use saved passwords on any device. They're saved to Google Password Manager for <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
+        You can use saved passwords on any device. They're saved to Google Password Manager for <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>.
       </message>
       <message name="IDS_IOS_PERMISSIONS_CAMERA" desc="Usually used to show whether user has enabled a site's permission to use the device camera.">
         Camera
