@@ -662,8 +662,7 @@ void AutomationV8Bindings::AddV8Routes() {
       "GetDocLoaded",
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
          AutomationAXTreeWrapper* tree_wrapper) {
-        result.Set(
-            v8::Boolean::New(isolate, tree_wrapper->ax_tree()->data().loaded));
+        result.Set(tree_wrapper->ax_tree()->data().loaded);
       });
   RouteTreeIDFunction(
       "GetDocLoadingProgress",
@@ -682,8 +681,7 @@ void AutomationV8Bindings::AddV8Routes() {
         if (!anchor)
           return;
 
-        result.Set(v8::Boolean::New(
-            isolate, tree_wrapper->ax_tree()->data().sel_is_backward));
+        result.Set(tree_wrapper->ax_tree()->data().sel_is_backward);
       });
   RouteTreeIDFunction(
       "GetAnchorObjectID",
@@ -919,7 +917,7 @@ void AutomationV8Bindings::AddV8Routes() {
         if (!node->GetBoolAttribute(attribute, &attr_value))
           return;
 
-        result.Set(v8::Boolean::New(isolate, attr_value));
+        result.Set(attr_value);
       });
   RouteNodeIDPlusAttributeFunction(
       "GetIntAttribute",
@@ -1063,7 +1061,7 @@ void AutomationV8Bindings::AddV8Routes() {
             bool value =
                 node->GetIntAttribute(ax::mojom::IntAttribute::kTextPosition) ==
                 static_cast<int32_t>(ax::mojom::TextPosition::kSubscript);
-            result.Set(v8::Boolean::New(isolate, value));
+            result.Set(value);
           }));
   RouteNodeIDFunction(
       "GetSuperscript",
@@ -1073,7 +1071,7 @@ void AutomationV8Bindings::AddV8Routes() {
             bool value =
                 node->GetIntAttribute(ax::mojom::IntAttribute::kTextPosition) ==
                 static_cast<int32_t>(ax::mojom::TextPosition::kSuperscript);
-            result.Set(v8::Boolean::New(isolate, value));
+            result.Set(value);
           }));
   RouteNodeIDFunction(
       "GetBold",
@@ -1081,7 +1079,7 @@ void AutomationV8Bindings::AddV8Routes() {
           [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
              AutomationAXTreeWrapper* tree_wrapper, AXNode* node) {
             bool value = node->data().HasTextStyle(ax::mojom::TextStyle::kBold);
-            result.Set(v8::Boolean::New(isolate, value));
+            result.Set(value);
           }));
   RouteNodeIDFunction(
       "GetItalic", base::BindRepeating([](v8::Isolate* isolate,
@@ -1089,7 +1087,7 @@ void AutomationV8Bindings::AddV8Routes() {
                                           AutomationAXTreeWrapper* tree_wrapper,
                                           AXNode* node) {
         bool value = node->data().HasTextStyle(ax::mojom::TextStyle::kItalic);
-        result.Set(v8::Boolean::New(isolate, value));
+        result.Set(value);
       }));
   RouteNodeIDFunction(
       "GetUnderline",
@@ -1098,7 +1096,7 @@ void AutomationV8Bindings::AddV8Routes() {
              AutomationAXTreeWrapper* tree_wrapper, AXNode* node) {
             bool value =
                 node->data().HasTextStyle(ax::mojom::TextStyle::kUnderline);
-            result.Set(v8::Boolean::New(isolate, value));
+            result.Set(value);
           }));
   RouteNodeIDFunction(
       "GetLineThrough",
@@ -1107,7 +1105,7 @@ void AutomationV8Bindings::AddV8Routes() {
              AutomationAXTreeWrapper* tree_wrapper, AXNode* node) {
             bool value =
                 node->data().HasTextStyle(ax::mojom::TextStyle::kLineThrough);
-            result.Set(v8::Boolean::New(isolate, value));
+            result.Set(value);
           }));
   RouteNodeIDFunction(
       "GetDetectedLanguage",
@@ -1340,7 +1338,7 @@ void AutomationV8Bindings::AddV8Routes() {
           [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
              AutomationAXTreeWrapper* tree_wrapper, AXNode* node) {
             bool value = IsButton(node->GetRole());
-            result.Set(v8::Boolean::New(isolate, value));
+            result.Set(value);
           }));
   RouteNodeIDFunction(
       "GetIsCheckBox",
@@ -1348,7 +1346,7 @@ void AutomationV8Bindings::AddV8Routes() {
           [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
              AutomationAXTreeWrapper* tree_wrapper, AXNode* node) {
             bool value = IsCheckBox(node->GetRole());
-            result.Set(v8::Boolean::New(isolate, value));
+            result.Set(value);
           }));
   RouteNodeIDFunction(
       "GetIsComboBox",
@@ -1356,7 +1354,7 @@ void AutomationV8Bindings::AddV8Routes() {
           [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
              AutomationAXTreeWrapper* tree_wrapper, AXNode* node) {
             bool value = IsComboBox(node->GetRole());
-            result.Set(v8::Boolean::New(isolate, value));
+            result.Set(value);
           }));
   RouteNodeIDFunction(
       "GetIsImage",
@@ -1364,7 +1362,7 @@ void AutomationV8Bindings::AddV8Routes() {
           [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
              AutomationAXTreeWrapper* tree_wrapper, AXNode* node) {
             bool value = IsImage(node->GetRole());
-            result.Set(v8::Boolean::New(isolate, value));
+            result.Set(value);
           }));
   RouteNodeIDPlusStringBoolFunction(
       "GetNextTextMatch",

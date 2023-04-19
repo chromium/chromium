@@ -32,10 +32,9 @@ void UserGesturesNativeHandler::AddRoutes() {
 
 void UserGesturesNativeHandler::IsProcessingUserGesture(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
-  args.GetReturnValue().Set(v8::Boolean::New(
-      args.GetIsolate(),
+  args.GetReturnValue().Set(
       ExtensionInteractionProvider::HasActiveExtensionInteraction(
-          context()->v8_context())));
+          context()->v8_context()));
 }
 
 void UserGesturesNativeHandler::RunWithUserActivationForTest(
