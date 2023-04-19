@@ -28945,6 +28945,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.AdMeasurement.Disabled">
   <owner>rubindl@chromium.org</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User disables the privacy sandbox Ad Measurement API in the Ad Measurement
     setting page.
@@ -28954,6 +28955,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.AdMeasurement.Enabled">
   <owner>rubindl@chromium.org</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User enables the privacy sandbox Ad Measurement API in the Ad Measurement
     setting page.
@@ -28963,12 +28965,14 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.AdMeasurement.Opened">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>User opened Ad measurement subpage.</description>
 </action>
 
 <action name="Settings.PrivacySandbox.AdPersonalization.LearnMoreClicked">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User selected &quot;Learn more&quot; about Ad Personalization.
   </description>
@@ -28977,6 +28981,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.AdPersonalization.Opened">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User opened Ad Personalization subpage from main sandbox settings page.
   </description>
@@ -28985,6 +28990,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.AdPersonalization.SiteRemoved">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User removed a site that was previously in their allowed sites list.
     TODO(crbug.com/1378703): Deprecate this action in favor of
@@ -28995,6 +29001,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.AdPersonalization.TopicRemoved">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User removed a topic that was previously in their allowed topics list.
     TODO(crbug.com/1378703): Deprecate this action in favor of
@@ -29006,6 +29013,7 @@ should be able to be added at any place in this file.
   <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User disables the privacy sandbox APIs in the privacy sandbox page.
   </description>
@@ -29015,6 +29023,7 @@ should be able to be added at any place in this file.
   <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User enables the privacy sandbox APIs in the privacy sandbox page.
   </description>
@@ -29024,6 +29033,7 @@ should be able to be added at any place in this file.
   <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User changes cookie setting and moves from a state where 3P cookies are
     enabled, to one where 3P cookies are disabled. Only recorded if the privacy
@@ -29037,6 +29047,7 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>User accepted the privacy sandbox consent.</description>
 </action>
 
@@ -29044,6 +29055,7 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     Consent dialog closed with no interaction (e.g. browser shutdown).
   </description>
@@ -29053,6 +29065,7 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>User declined the privacy sandbox consent.</description>
 </action>
 
@@ -29060,6 +29073,7 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User closed the Learn More in the Privacy Sandbox Consent.
   </description>
@@ -29069,6 +29083,7 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User expanded the Learn More in the Privacy Sandbox Consent.
   </description>
@@ -29078,6 +29093,7 @@ should be able to be added at any place in this file.
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core-eng@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User clicked on the More button in the Privacy Sandbox Consent.
   </description>
@@ -29087,12 +29103,14 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>User is shown the Privacy Sandbox consent.</description>
 </action>
 
 <action name="Settings.PrivacySandbox.Fledge.AllSitesOpened">
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User opened the all sites subpage, by clicking on the pref in the Fledge
     settings page.
@@ -29102,6 +29120,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Fledge.BlockedSitesOpened">
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User opened the blocked sites section, by clicking on the button in the
     Topics settings page.
@@ -29111,6 +29130,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Fledge.Disabled">
   <owner>rubindl@chromium.org</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User disables the privacy sandbox Fledge API in the Fledge settings page.
   </description>
@@ -29119,6 +29139,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Fledge.Enabled">
   <owner>rubindl@chromium.org</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User enables the privacy sandbox Fledge API in the Fledge settings page.
   </description>
@@ -29127,6 +29148,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Fledge.LearnMoreClicked">
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User opened the learn more about fledge section, by clicking on the button
     in the Fledge settings page.
@@ -29136,6 +29158,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Fledge.Opened">
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User opened Fledge subpage from main sandbox settings page.
   </description>
@@ -29144,6 +29167,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Fledge.SiteAdded">
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User added back a site that was previously in their removed sites list.
   </description>
@@ -29152,6 +29176,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Fledge.SiteRemoved">
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User removed a site that was previously in their allowed sites list.
   </description>
@@ -29160,6 +29185,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.FlocSubpageOpened">
   <owner>andzaytsev@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User opens the FLoC subpage by clicking on an element on the privacy sandbox
     page.
@@ -29170,6 +29196,7 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>User acknowledged the Privacy Sandbox notice.</description>
 </action>
 
@@ -29177,6 +29204,7 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     Notice dialog closed with no interaction (e.g. browser shutdown).
   </description>
@@ -29186,6 +29214,7 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>User dismissed the Privacy Sandbox notice.</description>
 </action>
 
@@ -29193,6 +29222,7 @@ should be able to be added at any place in this file.
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User clicked on the link &quot;estimates your interests&quot; from the
     Privacy Sandbox notice. It opens Privacy Sandbox settings page with
@@ -29204,6 +29234,7 @@ should be able to be added at any place in this file.
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>tommasin@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User closed the Learn More in the Privacy Sandbox Notice.
   </description>
@@ -29213,6 +29244,7 @@ should be able to be added at any place in this file.
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>tommasin@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User expanded the Learn More in the Privacy Sandbox Notice.
   </description>
@@ -29222,6 +29254,7 @@ should be able to be added at any place in this file.
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kartoffel-core-eng@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User clicked on the More button in the Privacy Sandbox Notice.
   </description>
@@ -29231,6 +29264,7 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User opened settings from the Privacy Sandbox notice.
   </description>
@@ -29240,6 +29274,7 @@ should be able to be added at any place in this file.
   <owner>harrisonsean@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>User is shown the Privacy Sandbox notice.</description>
 </action>
 
@@ -29247,6 +29282,7 @@ should be able to be added at any place in this file.
   <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User clicks the toast shown on the cookies page after blocking 3P cookies to
     open the privacy sandbox page.
@@ -29257,6 +29293,7 @@ should be able to be added at any place in this file.
   <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User clicks the privacy sandbox row in the privacy page to open the privacy
     sandbox page.
@@ -29267,6 +29304,7 @@ should be able to be added at any place in this file.
   <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User clicks the details button in the privacy sandbox page to see the
     privacy sandbox explainer.
@@ -29276,6 +29314,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.RemovedInterests.Opened">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User clicked on &quot;Interests you removed&quot;, to visit the blocked
     interests subpage.
@@ -29285,6 +29324,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.RemovedInterests.SiteAdded">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User added back a site that was previously in their removed sites list.
     TODO(crbug.com/1378703): Deprecate this action in favor of
@@ -29295,6 +29335,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.RemovedInterests.TopicAdded">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User added back a topic that was previously in their removed topics list.
     TODO(crbug.com/1378703): Deprecate this action in favor of
@@ -29323,12 +29364,14 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.SpamFraud.Opened">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>User opened Fraud prevention subpage.</description>
 </action>
 
 <action name="Settings.PrivacySandbox.Topics.BlockedTopicsOpened">
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User opened the blocked Topics section, by clicking on the button in the
     Topics settings page.
@@ -29338,6 +29381,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Topics.Disabled">
   <owner>rubindl@chromium.org</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User disables the privacy sandbox Topics API in the Topics setting page.
   </description>
@@ -29346,6 +29390,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Topics.Enabled">
   <owner>rubindl@chromium.org</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User enables the privacy sandbox Topics API in the Topics settings page.
   </description>
@@ -29354,6 +29399,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Topics.LearnMoreClicked">
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User opened the learn more about topics section, by clicking on the button
     in the Topics settings page.
@@ -29363,6 +29409,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Topics.Opened">
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User opened Topics subpage from main sandbox settings page.
   </description>
@@ -29371,6 +29418,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Topics.TopicAdded">
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User added back a topic that was previously in their removed topics list.
   </description>
@@ -29379,6 +29427,7 @@ should be able to be added at any place in this file.
 <action name="Settings.PrivacySandbox.Topics.TopicRemoved">
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
+  <owner>kartoffel-core@google.com</owner>
   <description>
     User removed a topic that was previously in their allowed topics list.
   </description>
