@@ -3573,7 +3573,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
     ExpectRestored(FROM_HERE);
 
     ASSERT_TRUE(waiter_start.WaitForNotification());
-    EXPECT_EQ(waiter_start.event_render_frame_host(), rfh_a.get());
+    auto* waiter_start_rfhi = static_cast<RenderFrameHostImpl*>(
+        waiter_start.event_browser_accessibility_manager()->delegate());
+    EXPECT_EQ(waiter_start_rfhi, rfh_a.get());
   }
 }
 

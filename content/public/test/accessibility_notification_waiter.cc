@@ -165,7 +165,8 @@ void AccessibilityNotificationWaiter::OnAccessibilityEvent(
   if (event_to_wait_for_ == ax::mojom::Event::kNone ||
       event_to_wait_for_ == event_type) {
     event_target_id_ = event_target_id;
-    event_render_frame_host_ = rfhi;
+    event_browser_accessibility_manager_ =
+        rfhi ? rfhi->GetOrCreateBrowserAccessibilityManager() : nullptr;
     notification_received_ = true;
 
     loop_runner_quit_closure_.Run();
@@ -205,7 +206,8 @@ void AccessibilityNotificationWaiter::OnGeneratedEvent(
 
   if (generated_event_to_wait_for_ == event) {
     event_target_id_ = event_target_id;
-    event_render_frame_host_ = render_frame_host;
+    event_browser_accessibility_manager_ =
+        render_frame_host->GetOrCreateBrowserAccessibilityManager();
     notification_received_ = true;
     loop_runner_quit_closure_.Run();
   }

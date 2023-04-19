@@ -22,6 +22,7 @@ class RunLoop;
 
 namespace content {
 
+class BrowserAccessibilityManager;
 class RenderFrameHost;
 class RenderFrameHostImpl;
 class WebContents;
@@ -70,9 +71,9 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   bool notification_received() const { return notification_received_; }
 
   // After WaitForNotification returns, use this to retrieve the
-  // RenderFrameHostImpl that was the target of the event.
-  RenderFrameHostImpl* event_render_frame_host() const {
-    return event_render_frame_host_;
+  // `BrowserAccessibilityManager` that was the target of the event.
+  BrowserAccessibilityManager* event_browser_accessibility_manager() const {
+    return event_browser_accessibility_manager_;
   }
 
   // WebContentsObserver override:
@@ -132,8 +133,8 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   std::unique_ptr<base::RunLoop> loop_runner_;
   base::RepeatingClosure loop_runner_quit_closure_;
   int event_target_id_ = 0;
-  raw_ptr<RenderFrameHostImpl, DanglingUntriaged> event_render_frame_host_ =
-      nullptr;
+  raw_ptr<BrowserAccessibilityManager, DanglingUntriaged>
+      event_browser_accessibility_manager_ = nullptr;
   bool notification_received_ = false;
 
   base::WeakPtrFactory<AccessibilityNotificationWaiter> weak_factory_{this};
