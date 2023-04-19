@@ -59,10 +59,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-// Replay includes: we need these because their hash function depends on |RecordReplayId|.
-#include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_finish_observer.h"
-
 namespace base {
 class Clock;
 }
@@ -493,9 +489,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // Returns the memory dump name used for tracing. See Resource::OnMemoryDump.
   String GetMemoryDumpName() const;
 
-  const HeapHashCountedSet<WeakMember<ResourceClient>,
-                           WTF::MemberHashRecordReplayId<ResourceClient>>&
-  Clients() const {
+  const HeapHashCountedSet<WeakMember<ResourceClient>>& Clients() const {
     return clients_;
   }
 
@@ -550,21 +544,10 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // Ordered list of all redirects followed while fetching this resource.
   Vector<RedirectPair> redirect_chain_;
 
-  HeapHashCountedSet<WeakMember<ResourceClient>,
-                     WTF::MemberHashRecordReplayId<ResourceClient>> clients_;
-  HeapHashCountedSet<WeakMember<ResourceClient>,
-                     WTF::MemberHashRecordReplayId<ResourceClient>> clients_awaiting_callback_;
-  HeapHashCountedSet<WeakMember<ResourceClient>,
-                     WTF::MemberHashRecordReplayId<ResourceClient>> finished_clients_;
-  HeapHashSet<WeakMember<ResourceFinishObserver>,
-              WTF::MemberHashRecordReplayId<ResourceFinishObserver>> finish_observers_;
-
-  // RUN-1724: Keep strong references to prevent above data structures from becoming
-  // divergent.
-  // [RUN-1457 cleanup]
-  HeapHashSet<Member<ResourceClient>> replay_clients_strong_;
-  // [RUN-1457 cleanup]
-  HeapHashSet<Member<ResourceFinishObserver>> replay_finish_observers_strong_;
+  HeapHashCountedSet<WeakMember<ResourceClient>> clients_;
+  HeapHashCountedSet<WeakMember<ResourceClient>> clients_awaiting_callback_;
+  HeapHashCountedSet<WeakMember<ResourceClient>> finished_clients_;
+  HeapHashSet<WeakMember<ResourceFinishObserver>> finish_observers_;
 
   ResourceLoaderOptions options_;
 

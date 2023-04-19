@@ -963,10 +963,6 @@ void StyleEngine::MarkCounterStylesNeedUpdate() {
 }
 
 void StyleEngine::FontsNeedUpdate(FontSelector*, FontInvalidationReason) {
-  recordreplay::Assert(
-    "[RUN-1219-1728] StyleEngine::FontsNeedUpdate %d",
-    this->RecordReplayId()
-  );
   if (!GetDocument().IsActive())
     return;
 

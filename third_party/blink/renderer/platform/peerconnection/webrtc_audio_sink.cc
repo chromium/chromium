@@ -169,8 +169,7 @@ WebRtcAudioSink::Adapter::Adapter(
       label_(label),
       source_(std::move(source)),
       signaling_task_runner_(std::move(signaling_task_runner)),
-      main_task_runner_(std::move(main_task_runner)),
-      lock_("WebRtcAudioSink::Adapter") {
+      main_task_runner_(std::move(main_task_runner)) {
   DCHECK(signaling_task_runner_);
   DCHECK(main_task_runner_);
   SendLogMessage(

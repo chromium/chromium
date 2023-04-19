@@ -481,12 +481,10 @@ FontSelector* FontBuilder::ComputeFontSelector(const ComputedStyle& style) {
 
 void FontBuilder::CreateFont(ComputedStyle& style,
                              const ComputedStyle* parent_style) {
-  recordreplay::Assert("[RUN-1219-1708] FontBuilder::CreateFont #0");
   DCHECK(document_);
 
   if (!flags_)
     return;
-  recordreplay::Assert("[RUN-1219-1708] FontBuilder::CreateFont #1");
 
   FontDescription description = style.GetFontDescription();
 
@@ -497,10 +495,7 @@ void FontBuilder::CreateFont(ComputedStyle& style,
   FontSelector* font_selector = ComputeFontSelector(style);
   UpdateAdjustedSize(description, style, font_selector);
 
-  recordreplay::Assert("[RUN-1219-1708] FontBuilder::CreateFont #2 sel=%d",
-    (int) !!font_selector);
   style.SetFontInternal(Font(description, font_selector));
-  recordreplay::Assert("[RUN-1219-1708] FontBuilder::CreateFont #3");
   flags_ = 0;
 }
 

@@ -21,8 +21,6 @@ extern bool RecordReplayStateEnsureInitialized();
 
 namespace recordreplay {
 
-extern bool IsMainThread();
-
 struct SharedBitmapInfo {
   viz::SharedBitmapId id_;
   uint8_t* memory_;
@@ -214,15 +212,22 @@ void OnReadyToCommit() {
   gLastCommitBookmark = gCurrentPaintBookmark;
 }
 
+// Whether the compositor thread is currently repainting.
+static bool gCompositorRepainting = false;
+
+void OnCompositorRepainting() {
+  gCompositorRepainting = true;
+}
+
 // How to encode repainted graphics.
 static const char* gRepaintMimeType;
 static int gRepaintJPEGQuality;
 
 // Event to signal when repainting has finished.
-static std::atomic<base::WaitableEvent*> gRepaintEvent;
+static base::WaitableEvent* gRepaintEvent;
 
 // Encoded result of repainting.
-static std::atomic<char*> gRepaintResult;
+static char* gRepaintResult;
 
 void OnPaintFinished(const SkPixmap& pixmap) {
   static bool hasPaints = false;
@@ -233,11 +238,12 @@ void OnPaintFinished(const SkPixmap& pixmap) {
 
   gCurrentPixmap = &pixmap;
 
-  if (HasDivergedFromRecording()) {
-    // If we've diverged from the recording then we're probably repainting,
-    // and in any case don't need to notify the recorder that the paint finished.
-    if (gRepaintEvent)
-      gRepaintResult = EncodeBitmapContents(gRepaintMimeType, gRepaintJPEGQuality);
+  if (gCompositorRepainting) {
+    CHECK(HasDivergedFromRecording());
+
+    char* encoded = EncodeBitmapContents(gRepaintMimeType, gRepaintJPEGQuality);
+    CHECK(!gRepaintResult);
+    gRepaintResult = encoded;
   } else {
     size_t bookmark = gLastCommitBookmark;
     if (bookmark) {
@@ -249,29 +255,18 @@ void OnPaintFinished(const SkPixmap& pixmap) {
 }
 
 void OnRepaintFinished() {
+  CHECK(gCompositorRepainting);
   CHECK(HasDivergedFromRecording());
-  gRepaintEvent.load()->Signal();
+  gRepaintEvent->Signal();
 }
 
 static cc::ProxyMain* gCurrentCompositorProxy;
 
 void SetCompositorProxy(cc::ProxyMain* proxy) {
-  CHECK(IsMainThread());
   gCurrentCompositorProxy = proxy;
 }
 
-void CompositorProxyDestroyed(cc::ProxyMain* proxy) {
-  CHECK(IsMainThread());
-  if (gCurrentCompositorProxy == proxy)
-    gCurrentCompositorProxy = nullptr;
-}
-
 static char* PaintWhenDiverged(const char* mime_type, int jpeg_quality) {
-  CHECK(IsMainThread());
-
-  if (!gCurrentCompositorProxy)
-    return nullptr;
-
   gRepaintMimeType = mime_type;
   gRepaintJPEGQuality = jpeg_quality;
   gRepaintResult = nullptr;
@@ -290,7 +285,7 @@ static char* PaintWhenDiverged(const char* mime_type, int jpeg_quality) {
   gCurrentCompositorProxy->RecordReplayRepaint();
 
   // Wait for the repainting frame to complete.
-  bool signaled = event.TimedWait(base::Milliseconds(500));
+  bool signaled = event.TimedWait(base::Milliseconds(200));
   CHECK(signaled);
 
   gRepaintEvent = nullptr;

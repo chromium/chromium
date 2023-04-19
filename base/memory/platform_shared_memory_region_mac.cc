@@ -181,13 +181,11 @@ bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
   bool is_read_only = kr == KERN_INVALID_RIGHT;
   bool expected_read_only = mode == Mode::kReadOnly;
 
-  // vm_map doesn't behave identically when replaying, so treat things as
-  // consistent. If any checks fail while recording then the process would have
-  // crashed anyways.
-  if (recordreplay::IsReplaying())
-    return true;
-
-  if (is_read_only != expected_read_only) {
+  // mach_vm_map doesn't behave identically when replaying, so we manually
+  // enforce that the match result is consistent.
+  bool mismatch = recordreplay::RecordReplayValue("CheckPlatformHandlePermissionsCorrespondToMode",
+                                                  is_read_only != expected_read_only);
+  if (mismatch) {
     // TODO(crbug.com/838365): convert to DLOG when bug fixed.
     LOG(ERROR) << "VM region has a wrong protection mask: it is"
                << (is_read_only ? " " : " not ") << "read-only but it should"

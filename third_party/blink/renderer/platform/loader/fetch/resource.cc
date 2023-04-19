@@ -64,9 +64,13 @@ namespace blink {
 namespace {
 
 void NotifyFinishObservers(
-    HeapHashSet<WeakMember<ResourceFinishObserver>, WTF::MemberHashRecordReplayId<ResourceFinishObserver>>* observers,
-    HeapVector<Member<ResourceFinishObserver>>* observers_strong) {
+    HeapHashSet<WeakMember<ResourceFinishObserver>>* observers) {
+  HeapVector<Member<ResourceFinishObserver>> observers_vector;
   for (const auto& observer : *observers)
+    observers_vector.push_back(observer);
+  std::sort(observers_vector.begin(), observers_vector.end(),
+            recordreplay::CompareMemberByPointerId<Member<ResourceFinishObserver>>());
+  for (const auto& observer : observers_vector)
     observer->NotifyFinished();
 }
 
@@ -183,8 +187,6 @@ void Resource::Trace(Visitor* visitor) const {
   visitor->Trace(clients_awaiting_callback_);
   visitor->Trace(finished_clients_);
   visitor->Trace(finish_observers_);
-  visitor->Trace(replay_clients_strong_);
-  visitor->Trace(replay_finish_observers_strong_);
   MemoryPressureListener::Trace(visitor);
 }
 
@@ -292,25 +294,14 @@ void Resource::TriggerNotificationForFinishObservers(
   if (finish_observers_.empty())
     return;
 
-  // RUN-1724
-  // [RUN-1457 cleanup]
-  HeapVector<Member<ResourceFinishObserver>>* new_collections_strong =
-      MakeGarbageCollected<HeapVector<Member<ResourceFinishObserver>>>();
-  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers")) {
-    new_collections_strong->AppendRange(replay_finish_observers_strong_.begin(), replay_finish_observers_strong_.end());
-    replay_finish_observers_strong_.clear();
-  }
-
-
   auto* new_collections =
-      MakeGarbageCollected<HeapHashSet<WeakMember<ResourceFinishObserver>, WTF::MemberHashRecordReplayId<ResourceFinishObserver>>>(
+      MakeGarbageCollected<HeapHashSet<WeakMember<ResourceFinishObserver>>>(
           std::move(finish_observers_));
   finish_observers_.clear();
 
   task_runner->PostTask(
       FROM_HERE,
-      WTF::BindOnce(&NotifyFinishObservers, WrapPersistent(new_collections),
-                    WrapPersistent(new_collections_strong)));
+      WTF::BindOnce(&NotifyFinishObservers, WrapPersistent(new_collections)));
 
   DidRemoveClientOrObserver();
 }
@@ -618,8 +609,6 @@ void Resource::AddClient(ResourceClient* client,
 
   if (is_revalidating_) {
     clients_.insert(client);
-    if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers"))
-      replay_clients_strong_.insert(client);
     return;
   }
 
@@ -628,8 +617,6 @@ void Resource::AddClient(ResourceClient* client,
   if ((ErrorOccurred() || !GetResponse().IsNull()) &&
       !NeedsSynchronousCacheHit(GetType(), options_)) {
     clients_awaiting_callback_.insert(client);
-    if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers"))
-        replay_clients_strong_.insert(client);
     if (!async_finish_pending_clients_task_.IsActive()) {
       async_finish_pending_clients_task_ =
           PostCancellableTask(*task_runner, FROM_HERE,
@@ -640,8 +627,6 @@ void Resource::AddClient(ResourceClient* client,
   }
 
   clients_.insert(client);
-  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers"))
-    replay_clients_strong_.insert(client);
   DidAddClient(client);
   return;
 }
@@ -655,8 +640,6 @@ void Resource::RemoveClient(ResourceClient* client) {
     clients_awaiting_callback_.erase(client);
   else
     clients_.erase(client);
-  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers"))
-    replay_clients_strong_.erase(client);
 
   if (clients_awaiting_callback_.empty() &&
       async_finish_pending_clients_task_.IsActive()) {
@@ -673,8 +656,6 @@ void Resource::AddFinishObserver(ResourceFinishObserver* client,
 
   WillAddClientOrObserver();
   finish_observers_.insert(client);
-  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers"))
-    replay_finish_observers_strong_.insert(client);
   if (IsLoaded())
     TriggerNotificationForFinishObservers(task_runner);
 }
@@ -683,8 +664,6 @@ void Resource::RemoveFinishObserver(ResourceFinishObserver* client) {
   CHECK(!is_add_remove_client_prohibited_);
 
   finish_observers_.erase(client);
-  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers"))
-    replay_finish_observers_strong_.erase(client);
   DidRemoveClientOrObserver();
 }
 
@@ -742,6 +721,9 @@ void Resource::FinishPendingClients() {
   // ensure a client is either in cliens_ or clients_awaiting_callback_.
   HeapVector<Member<ResourceClient>> clients_to_notify;
   CopyToVector(clients_awaiting_callback_, clients_to_notify);
+
+  std::sort(clients_to_notify.begin(), clients_to_notify.end(),
+            recordreplay::CompareMemberByPointerId<Member<ResourceClient>>());
 
   for (const auto& client : clients_to_notify) {
     // Handle case (2) to skip removed clients.
