@@ -143,7 +143,8 @@ class AudioDecoderTest
         break;
 #elif BUILDFLAG(IS_MAC)
       case AudioDecoderType::kAudioToolbox:
-        decoder_ = std::make_unique<AudioToolboxAudioDecoder>();
+        decoder_ =
+            std::make_unique<AudioToolboxAudioDecoder>(media_log_.Clone());
         break;
 #elif BUILDFLAG(IS_WIN)
       case AudioDecoderType::kMediaFoundation:

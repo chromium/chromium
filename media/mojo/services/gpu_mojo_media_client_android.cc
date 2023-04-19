@@ -92,7 +92,8 @@ GetPlatformSupportedVideoDecoderConfigs(
 }
 
 std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    std::unique_ptr<MediaLog> media_log) {
   return std::make_unique<MediaCodecAudioDecoder>(std::move(task_runner));
 }
 

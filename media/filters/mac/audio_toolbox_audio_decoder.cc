@@ -14,6 +14,7 @@
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_discard_helper.h"
 #include "media/base/limits.h"
+#include "media/base/media_log.h"
 #include "media/base/status.h"
 #include "media/base/timestamp_constants.h"
 #include "media/formats/mp4/es_descriptor.h"
@@ -144,7 +145,9 @@ void AudioToolboxAudioDecoder::ScopedAudioConverterRefTraits::Release(
       << "AudioConverterDispose() failed";
 }
 
-AudioToolboxAudioDecoder::AudioToolboxAudioDecoder() = default;
+AudioToolboxAudioDecoder::AudioToolboxAudioDecoder(
+    std::unique_ptr<MediaLog> media_log)
+    : media_log_(std::move(media_log)) {}
 
 AudioToolboxAudioDecoder::~AudioToolboxAudioDecoder() = default;
 
@@ -224,7 +227,8 @@ void AudioToolboxAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   }
 
   if (result != noErr && result != kNoMoreDataError) {
-    OSSTATUS_DLOG(ERROR, result) << "AudioConverterFillComplexBuffer() failed";
+    OSSTATUS_MEDIA_LOG(ERROR, result, media_log_)
+        << "AudioConverterFillComplexBuffer() failed";
     base::BindPostTaskToCurrentDefault(std::move(decode_cb))
         .Run(DecoderStatus::Codes::kPlatformDecodeFailure);
     return;
@@ -274,7 +278,8 @@ bool AudioToolboxAudioDecoder::CreateAACDecoder(
                                        magic_cookie.size(), magic_cookie.data(),
                                        &format_size, &input_format);
   if (status != noErr) {
-    OSSTATUS_DLOG(ERROR, status) << "AudioFormatGetProperty() failed";
+    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_)
+        << "AudioFormatGetProperty() failed";
     return false;
   }
 
@@ -301,7 +306,8 @@ bool AudioToolboxAudioDecoder::CreateAACDecoder(
   auto result = AudioConverterNew(&input_format, &output_format,
                                   decoder_.InitializeInto());
   if (result != noErr) {
-    OSSTATUS_DLOG(ERROR, result) << "AudioConverterNew() failed";
+    OSSTATUS_MEDIA_LOG(ERROR, result, media_log_)
+        << "AudioConverterNew() failed";
     return false;
   }
 
@@ -320,7 +326,8 @@ bool AudioToolboxAudioDecoder::CreateAACDecoder(
                                      kAudioConverterDecompressionMagicCookie,
                                      magic_cookie.size(), magic_cookie.data());
   if (result != noErr) {
-    OSSTATUS_DLOG(ERROR, result) << "AudioConverterSetProperty() failed";
+    OSSTATUS_MEDIA_LOG(ERROR, result, media_log_)
+        << "AudioConverterSetProperty() failed";
     return false;
   }
 
@@ -331,7 +338,7 @@ bool AudioToolboxAudioDecoder::CreateAACDecoder(
       AudioConverterSetProperty(decoder_, kAudioCodecPropertyProgramTargetLevel,
                                 sizeof(kDefaultLoudness), &kDefaultLoudness);
   if (result != noErr) {
-    OSSTATUS_DLOG(ERROR, result)
+    OSSTATUS_MEDIA_LOG(ERROR, result, media_log_)
         << "AudioConverterSetProperty() failed to set loudness.";
     return false;
   }
@@ -344,7 +351,7 @@ bool AudioToolboxAudioDecoder::CreateAACDecoder(
                                      sizeof(kDefaultEffectType),
                                      &kDefaultEffectType);
   if (result != noErr) {
-    OSSTATUS_DLOG(ERROR, result)
+    OSSTATUS_MEDIA_LOG(ERROR, result, media_log_)
         << "AudioConverterSetProperty() failed to set DRC effect type.";
     return false;
   }

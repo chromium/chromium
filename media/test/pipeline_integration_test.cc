@@ -2076,9 +2076,10 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackHashed_M4A) {
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 std::unique_ptr<AudioDecoder> CreateXheAacDecoder(
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    MediaLog& media_log) {
 #if BUILDFLAG(IS_MAC)
-  return std::make_unique<AudioToolboxAudioDecoder>();
+  return std::make_unique<AudioToolboxAudioDecoder>(media_log.Clone());
 #elif BUILDFLAG(IS_ANDROID)
   return std::make_unique<MediaCodecAudioDecoder>(task_runner);
 #elif BUILDFLAG(IS_WIN)
@@ -2096,8 +2097,8 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackXHE_AAC) {
 
   auto prepend_audio_decoders_cb = base::BindLambdaForTesting([this]() {
     std::vector<std::unique_ptr<AudioDecoder>> audio_decoders;
-    audio_decoders.push_back(
-        CreateXheAacDecoder(task_environment_.GetMainThreadTaskRunner()));
+    audio_decoders.push_back(CreateXheAacDecoder(
+        task_environment_.GetMainThreadTaskRunner(), media_log_));
     return audio_decoders;
   });
 
@@ -2123,8 +2124,8 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlaybackXHE_AAC) {
 
   auto prepend_audio_decoders_cb = base::BindLambdaForTesting([this]() {
     std::vector<std::unique_ptr<AudioDecoder>> audio_decoders;
-    audio_decoders.push_back(
-        CreateXheAacDecoder(task_environment_.GetMainThreadTaskRunner()));
+    audio_decoders.push_back(CreateXheAacDecoder(
+        task_environment_.GetMainThreadTaskRunner(), media_log_));
     return audio_decoders;
   });
 

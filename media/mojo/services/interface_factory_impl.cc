@@ -62,20 +62,9 @@ void InterfaceFactoryImpl::CreateAudioDecoder(
     mojo::PendingReceiver<mojom::AudioDecoder> receiver) {
   DVLOG(2) << __func__;
 #if BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER)
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner(
-      base::SingleThreadTaskRunner::GetCurrentDefault());
-
-  std::unique_ptr<AudioDecoder> audio_decoder =
-      mojo_media_client_->CreateAudioDecoder(task_runner);
-  if (!audio_decoder) {
-    DLOG(ERROR) << "AudioDecoder creation failed.";
-    return;
-  }
-
-  audio_decoder_receivers_.Add(
-      std::make_unique<MojoAudioDecoderService>(&cdm_service_context_,
-                                                std::move(audio_decoder)),
-      std::move(receiver));
+  audio_decoder_receivers_.Add(std::make_unique<MojoAudioDecoderService>(
+                                   mojo_media_client_, &cdm_service_context_),
+                               std::move(receiver));
 #endif  // BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER)
 }
 

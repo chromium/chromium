@@ -5,6 +5,7 @@
 #include "media/mojo/services/media_foundation_mojo_media_client.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "media/base/media_log.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/cdm/win/media_foundation_cdm_factory.h"
 #include "media/filters/win/media_foundation_audio_decoder.h"
@@ -23,7 +24,8 @@ MediaFoundationMojoMediaClient::~MediaFoundationMojoMediaClient() {
 
 std::unique_ptr<AudioDecoder>
 MediaFoundationMojoMediaClient::CreateAudioDecoder(
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    std::unique_ptr<MediaLog> media_log) {
   return MediaFoundationAudioDecoder::Create();
 }
 

@@ -118,7 +118,8 @@ GetPlatformSupportedVideoDecoderConfigs(
 // Creates a platform-specific media::AudioDecoder. Most platforms don't do
 // anything here, but android, for example, does.
 std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
-    scoped_refptr<base::SequencedTaskRunner> task_runner);
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    std::unique_ptr<MediaLog> media_log);
 
 // Creates a platform-specific media::AudioEncoder. Most platforms don't do
 // anything here.
@@ -160,7 +161,8 @@ class MEDIA_MOJO_EXPORT GpuMojoMediaClient final : public MojoMediaClient {
   SupportedVideoDecoderConfigs GetSupportedVideoDecoderConfigs() final;
   VideoDecoderType GetDecoderImplementationType() final;
   std::unique_ptr<AudioDecoder> CreateAudioDecoder(
-      scoped_refptr<base::SequencedTaskRunner> task_runner) final;
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      std::unique_ptr<MediaLog> media_log) final;
   std::unique_ptr<AudioEncoder> CreateAudioEncoder(
       scoped_refptr<base::SequencedTaskRunner> task_runner) final;
 

@@ -28,7 +28,8 @@ class MediaFoundationMojoMediaClient final : public MojoMediaClient {
 
   // MojoMediaClient implementation.
   std::unique_ptr<AudioDecoder> CreateAudioDecoder(
-      scoped_refptr<base::SequencedTaskRunner> task_runner) override;
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      std::unique_ptr<MediaLog> media_log) override;
 
   // MojoMediaClient implementation.
   std::unique_ptr<Renderer> CreateMediaFoundationRenderer(

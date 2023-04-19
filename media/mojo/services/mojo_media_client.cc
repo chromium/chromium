@@ -23,7 +23,8 @@ MojoMediaClient::~MojoMediaClient() = default;
 void MojoMediaClient::Initialize() {}
 
 std::unique_ptr<AudioDecoder> MojoMediaClient::CreateAudioDecoder(
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    std::unique_ptr<media::MediaLog> media_log) {
   return nullptr;
 }
 

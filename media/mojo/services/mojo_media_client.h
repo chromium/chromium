@@ -55,7 +55,8 @@ class MEDIA_MOJO_EXPORT MojoMediaClient {
   virtual void Initialize();
 
   virtual std::unique_ptr<AudioDecoder> CreateAudioDecoder(
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      std::unique_ptr<MediaLog> media_log);
 
   virtual std::unique_ptr<AudioEncoder> CreateAudioEncoder(
       scoped_refptr<base::SequencedTaskRunner> task_runner);

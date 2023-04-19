@@ -24,12 +24,13 @@ namespace media {
 
 class MojoCdmServiceContext;
 class MojoDecoderBufferReader;
+class MojoMediaClient;
 
 class MEDIA_MOJO_EXPORT MojoAudioDecoderService final
     : public mojom::AudioDecoder {
  public:
-  MojoAudioDecoderService(MojoCdmServiceContext* mojo_cdm_service_context,
-                          std::unique_ptr<media::AudioDecoder> decoder);
+  MojoAudioDecoderService(MojoMediaClient* mojo_media_client,
+                          MojoCdmServiceContext* mojo_cdm_service_context);
 
   MojoAudioDecoderService(const MojoAudioDecoderService&) = delete;
   MojoAudioDecoderService& operator=(const MojoAudioDecoderService&) = delete;
@@ -38,7 +39,8 @@ class MEDIA_MOJO_EXPORT MojoAudioDecoderService final
 
   // mojom::AudioDecoder implementation
   void Construct(
-      mojo::PendingAssociatedRemote<mojom::AudioDecoderClient> client) final;
+      mojo::PendingAssociatedRemote<mojom::AudioDecoderClient> client,
+      mojo::PendingRemote<mojom::MediaLog> media_log) final;
   void Initialize(const AudioDecoderConfig& config,
                   const absl::optional<base::UnguessableToken>& cdm_id,
                   InitializeCallback callback) final;
@@ -73,6 +75,8 @@ class MEDIA_MOJO_EXPORT MojoAudioDecoderService final
   void OnWaiting(WaitingReason reason);
 
   std::unique_ptr<MojoDecoderBufferReader> mojo_decoder_buffer_reader_;
+
+  const raw_ptr<MojoMediaClient> mojo_media_client_;
 
   // A helper object required to get CDM from CDM id.
   const raw_ptr<MojoCdmServiceContext> mojo_cdm_service_context_ = nullptr;

@@ -15,14 +15,16 @@
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "media/mojo/services/mojo_cdm_service_context.h"
+#include "media/mojo/services/mojo_media_client.h"
+#include "media/mojo/services/mojo_media_log.h"
 
 namespace media {
 
 MojoAudioDecoderService::MojoAudioDecoderService(
-    MojoCdmServiceContext* mojo_cdm_service_context,
-    std::unique_ptr<media::AudioDecoder> decoder)
-    : mojo_cdm_service_context_(mojo_cdm_service_context),
-      decoder_(std::move(decoder)) {
+    MojoMediaClient* mojo_media_client,
+    MojoCdmServiceContext* mojo_cdm_service_context)
+    : mojo_media_client_(mojo_media_client),
+      mojo_cdm_service_context_(mojo_cdm_service_context) {
   DCHECK(mojo_cdm_service_context_);
   weak_this_ = weak_factory_.GetWeakPtr();
 }
@@ -30,9 +32,17 @@ MojoAudioDecoderService::MojoAudioDecoderService(
 MojoAudioDecoderService::~MojoAudioDecoderService() = default;
 
 void MojoAudioDecoderService::Construct(
-    mojo::PendingAssociatedRemote<mojom::AudioDecoderClient> client) {
+    mojo::PendingAssociatedRemote<mojom::AudioDecoderClient> client,
+    mojo::PendingRemote<mojom::MediaLog> media_log) {
   DVLOG(1) << __func__;
   client_.Bind(std::move(client));
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      base::SingleThreadTaskRunner::GetCurrentDefault();
+  auto mojo_media_log =
+      std::make_unique<MojoMediaLog>(std::move(media_log), task_runner);
+  decoder_ = mojo_media_client_->CreateAudioDecoder(std::move(task_runner),
+                                                    std::move(mojo_media_log));
 }
 
 void MojoAudioDecoderService::Initialize(
@@ -40,6 +50,12 @@ void MojoAudioDecoderService::Initialize(
     const absl::optional<base::UnguessableToken>& cdm_id,
     InitializeCallback callback) {
   DVLOG(1) << __func__ << " " << config.AsHumanReadableString();
+
+  if (!decoder_) {
+    OnInitialized(std::move(callback),
+                  DecoderStatus::Codes::kFailedToCreateDecoder);
+    return;
+  }
 
   // |cdm_context_ref_| must be kept as long as |cdm_context| is used by the
   // |decoder_|. We do NOT support resetting |cdm_context_ref_| because in
