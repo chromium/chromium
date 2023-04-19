@@ -494,29 +494,36 @@ typedef NS_ENUM(NSInteger, ItemType) {
                            IDS_IOS_BOOKMARK_NEW_GROUP_EDITOR_CREATE_TITLE)];
 }
 
+// Updates `_parentFolderItem` without updating the table view.
+- (void)updateParentFolderItem {
+  CHECK(_parentFolderItem);
+  _parentFolderItem.title =
+      bookmark_utils_ios::TitleForBookmarkNode(_parentFolder);
+  BookmarkModelType type = bookmark_utils_ios::GetBookmarkModelType(
+      _parentFolder, _profileBookmarkModel.get(), _accountBookmarkModel.get());
+  switch (type) {
+    case BookmarkModelType::kProfile:
+      _parentFolderItem.shouldDisplayCloudSlashIcon =
+          bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
+              _syncSetupService);
+      break;
+    case BookmarkModelType::kAccount:
+      _parentFolderItem.shouldDisplayCloudSlashIcon = NO;
+      break;
+  }
+}
+
+// Updates `_parentFolderItem` and reload the table view cell.
 - (void)updateParentFolderState {
   if ([self cancelIfParentFolderIsUnavailable]) {
     return;
   }
-
+  [self updateParentFolderItem];
   NSIndexPath* folderSelectionIndexPath =
       [self.tableViewModel indexPathForItemType:ItemTypeParentFolder
                               sectionIdentifier:SectionIdentifierInfo];
-  _parentFolderItem.title =
-      bookmark_utils_ios::TitleForBookmarkNode(_parentFolder);
-  _parentFolderItem.shouldDisplayCloudSlashIcon =
-      bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
-          _syncSetupService);
   [self.tableView reloadRowsAtIndexPaths:@[ folderSelectionIndexPath ]
                         withRowAnimation:UITableViewRowAnimationNone];
-
-  if (_editingExistingFolder && self.navigationController.isToolbarHidden) {
-    [self addToolbar];
-  }
-
-  if (!_editingExistingFolder && !self.navigationController.isToolbarHidden) {
-    self.navigationController.toolbarHidden = YES;
-  }
 }
 
 - (void)setupCollectionViewModel {
@@ -538,15 +545,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   _parentFolderItem =
       [[BookmarkParentFolderItem alloc] initWithType:ItemTypeParentFolder];
-  _parentFolderItem.title =
-      bookmark_utils_ios::TitleForBookmarkNode(_parentFolder);
-  _parentFolderItem.shouldDisplayCloudSlashIcon =
-      bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
-          _syncSetupService);
+  [self updateParentFolderItem];
   [self.tableViewModel addItem:_parentFolderItem
        toSectionWithIdentifier:SectionIdentifierInfo];
 }
 
+// Adds delete button at the bottom.
 - (void)addToolbar {
   self.navigationController.toolbarHidden = NO;
   NSString* titleString = l10n_util::GetNSString(IDS_IOS_BOOKMARK_GROUP_DELETE);
@@ -574,14 +578,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
-  _parentFolderItem.shouldDisplayCloudSlashIcon =
-      bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
-          _syncSetupService);
-  NSIndexPath* indexPath =
-      [self.tableViewModel indexPathForItemType:ItemTypeParentFolder
-                              sectionIdentifier:SectionIdentifierInfo];
-  [self.tableView reloadRowsAtIndexPaths:@[ indexPath ]
-                        withRowAnimation:UITableViewRowAnimationAutomatic];
+  [self updateParentFolderState];
 }
 
 @end
