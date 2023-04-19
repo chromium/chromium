@@ -56,8 +56,9 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
   void InstallToolsDlc();
   void OnToolsDlcInstalled(
       const ash::DlcserviceClient::InstallResult& install_result);
-  void DownloadFirmware();
-  void OnFirmwareDownloaded(const download::CompletionInfo& completion_info);
+  void InstallFirmwareDlc();
+  void OnFirmwareDlcInstalled(
+      const ash::DlcserviceClient::InstallResult& install_result);
   void DownloadBootDisk();
   void OnBootDiskDownloaded(const download::CompletionInfo& completion_info);
   void DownloadPflash();
@@ -87,7 +88,6 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
   base::GUID download_guid_;
   DownloadCallback download_callback_;
 
-  base::FilePath firmware_path_;
   base::FilePath boot_disk_path_;
   base::FilePath pflash_path_;
   std::string disk_path_;

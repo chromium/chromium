@@ -15,6 +15,7 @@ class Profile;
 namespace bruschetta {
 
 extern const char kToolsDlc[];
+extern const char kUefiDlc[];
 
 extern const char kBruschettaVmName[];
 extern const char kBruschettaDisplayName[];

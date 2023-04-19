@@ -17,16 +17,17 @@ enum class BruschettaInstallResult {
   kUnknown = 0,
   kSuccess = 1,
   kInstallationProhibited = 2,
-  kDlcInstallError = 3,
+  kToolsDlcInstallError = 3,
   kDownloadError = 4,
-  kInvalidFirmware = 5,
+  // Deprecated: kInvalidFirmware = 5,
   kInvalidBootDisk = 6,
   kInvalidPflash = 7,
   kUnableToOpenImages = 8,
   kCreateDiskError = 9,
   kStartVmFailed = 10,
   kInstallPflashError = 11,
-  kMaxValue = kInstallPflashError,
+  kFirmwareDlcInstallError = 12,
+  kMaxValue = kFirmwareDlcInstallError,
 };
 
 // Returns the string name of the BruschettaResult.
@@ -37,8 +38,8 @@ class BruschettaInstaller {
  public:
   enum class State {
     kInstallStarted,
-    kDlcInstall,
-    kFirmwareDownload,
+    kToolsDlcInstall,
+    kFirmwareDlcInstall,
     kBootDiskDownload,
     kPflashDownload,
     kOpenFiles,
