@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
@@ -323,6 +324,7 @@ void NetworkingLog::UpdateNetworkList(
   }
 
   active_guid_ = active_guid;
+  ++update_network_list_call_count_for_testing_;
 }
 
 void NetworkingLog::UpdateNetworkState(mojom::NetworkPtr network) {
@@ -421,6 +423,11 @@ void NetworkingLog::LogWiFiRoamedAccessPoint(const mojom::NetworkPtr& network,
       network->mac_address.value_or("").c_str(), GetSsid(network).c_str(),
       old_bssid.c_str(), GetBssid(network).c_str());
   LogEvent(line);
+}
+
+size_t NetworkingLog::update_network_list_call_count_for_testing() const {
+  CHECK_IS_TEST();
+  return update_network_list_call_count_for_testing_;
 }
 
 }  // namespace diagnostics

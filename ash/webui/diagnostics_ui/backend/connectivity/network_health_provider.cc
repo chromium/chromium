@@ -643,7 +643,7 @@ void NetworkHealthProvider::NotifyNetworkListObservers() {
     observer->OnNetworkListChanged(mojo::Clone(observer_guids), active_guid_);
   }
 
-  if (IsLoggingEnabled()) {
+  if (IsLoggingEnabled() && !active_guid_.empty()) {
     networking_log_ptr_->UpdateNetworkList(observer_guids, active_guid_);
   }
 }
