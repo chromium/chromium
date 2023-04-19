@@ -24,14 +24,12 @@ namespace {
 #if defined(ARCH_CPU_X86_64)
 const char kPolicyImageKeyArchSpecific[] = "installer_image_x86_64";
 const char kPolicyPflashKeyArchSpecific[] = "uefi_pflash_x86_64";
-const char kPolicyUefiKeyArchSpecific[] = "uefi_image_x86_64";
 
 constexpr policy::PolicyMap::MessageType kUninstallableErrorLevel =
     policy::PolicyMap::MessageType::kError;
 #else
 const char kPolicyImageKeyArchSpecific[] = "";
 const char kPolicyPflashKeyArchSpecific[] = "";
-const char kPolicyUefiKeyArchSpecific[] = "";
 
 constexpr policy::PolicyMap::MessageType kUninstallableErrorLevel =
     policy::PolicyMap::MessageType::kInfo;
@@ -133,14 +131,6 @@ bool BruschettaPolicyHandler::CheckPolicySettings(
       }
     }
 
-    const auto* uefi_image = config.FindDict(kPolicyUefiKeyArchSpecific);
-    if (uefi_image) {
-      if (!CheckDownloadableObject(errors, id, kPolicyUefiKeyArchSpecific,
-                                   *uefi_image)) {
-        valid_config = false;
-      }
-    }
-
     const auto* pflash = config.FindDict(kPolicyPflashKeyArchSpecific);
     if (pflash) {
       if (!CheckDownloadableObject(errors, id, kPolicyPflashKeyArchSpecific,
@@ -151,7 +141,7 @@ bool BruschettaPolicyHandler::CheckPolicySettings(
 
     if (EnabledStrToEnum(*config.FindString(prefs::kPolicyEnabledKey)) ==
         prefs::PolicyEnabledState::INSTALL_ALLOWED) {
-      if (!installer_image || !uefi_image) {
+      if (!installer_image) {
         // This is an error on x86_64, since that's currently our *only*
         // supported architecture so this definitely indicates a
         // misconfiguration, but we also leave an informational level message
@@ -161,7 +151,7 @@ bool BruschettaPolicyHandler::CheckPolicySettings(
                          policy::PolicyErrorPath{id}, kUninstallableErrorLevel);
       }
 
-      if (!installer_image || !uefi_image || !valid_config) {
+      if (!installer_image || !valid_config) {
         downgraded_by_error_.insert(id);
       }
     }
@@ -213,13 +203,6 @@ void BruschettaPolicyHandler::ApplyPolicySettings(
           config.FindDict(kPolicyImageKeyArchSpecific);
       if (installer_image && installable) {
         pref_config.Set(prefs::kPolicyImageKey, installer_image->Clone());
-      }
-    }
-
-    {
-      const auto* uefi_image = config.FindDict(kPolicyUefiKeyArchSpecific);
-      if (uefi_image && installable) {
-        pref_config.Set(prefs::kPolicyUefiKey, uefi_image->Clone());
       }
     }
 
