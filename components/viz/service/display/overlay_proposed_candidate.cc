@@ -64,6 +64,19 @@ OverlayProposedCandidate::GetRoundedDisplayMasksBounds(
   return mask_rects;
 }
 
+OverlayProposedCandidate::OverlayProposedCandidate(
+    QuadList::Iterator it,
+    OverlayCandidate overlay_candidate,
+    OverlayProcessorStrategy* overlay_strategy)
+    : quad_iter(it), candidate(overlay_candidate), strategy(overlay_strategy) {}
+
+OverlayProposedCandidate::OverlayProposedCandidate(
+    const OverlayProposedCandidate&) = default;
+OverlayProposedCandidate& OverlayProposedCandidate::operator=(
+    const OverlayProposedCandidate&) = default;
+
+OverlayProposedCandidate::~OverlayProposedCandidate() = default;
+
 ProposedCandidateKey OverlayProposedCandidate::ToProposeKey(
     const OverlayProposedCandidate& proposed) {
   return {proposed.candidate.tracking_id, proposed.strategy->GetUMAEnum()};
