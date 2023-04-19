@@ -629,7 +629,11 @@ void PasswordsPrivateDelegateImpl::MovePasswordsToAccount(
     credentials_to_move.push_back(*entry);
   }
 
-  saved_passwords_presenter_.MoveCredentialsToAccount(credentials_to_move);
+  // Desktop settings only offer bulk move, not invidual moves.
+  saved_passwords_presenter_.MoveCredentialsToAccount(
+      credentials_to_move,
+      password_manager::metrics_util::MoveToAccountStoreTrigger::
+          kExplicitlyTriggeredForMultiplePasswordsInSettings);
 }
 
 void PasswordsPrivateDelegateImpl::ImportPasswords(

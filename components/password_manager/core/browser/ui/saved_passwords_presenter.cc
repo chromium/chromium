@@ -359,7 +359,8 @@ SavedPasswordsPresenter::EditSavedCredentials(
 }
 
 void SavedPasswordsPresenter::MoveCredentialsToAccount(
-    const std::vector<CredentialUIEntry>& credentials) {
+    const std::vector<CredentialUIEntry>& credentials,
+    metrics_util::MoveToAccountStoreTrigger trigger) {
   for (const auto& credential : credentials) {
     std::vector<PasswordForm> move_form_candidates =
         GetCorrespondingPasswordForms(credential);
@@ -387,8 +388,7 @@ void SavedPasswordsPresenter::MoveCredentialsToAccount(
 
   base::UmaHistogramEnumeration(
       "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2",
-      metrics_util::MoveToAccountStoreTrigger::
-          kExplicitlyTriggeredForMultiplePasswordsInSettings);
+      trigger);
 }
 
 std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetSavedCredentials()

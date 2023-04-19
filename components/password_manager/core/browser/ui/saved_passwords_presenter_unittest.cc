@@ -1709,7 +1709,9 @@ TEST_F(SavedPasswordsPresenterMoveToAccountTest, MovesToAccount) {
   EXPECT_CALL(*profile_store(), RemoveLogin(form_1));
   EXPECT_CALL(*profile_store(), RemoveLogin(form_2));
 
-  presenter().MoveCredentialsToAccount(credentials);
+  presenter().MoveCredentialsToAccount(
+      credentials,
+      metrics_util::MoveToAccountStoreTrigger::kExplicitlyTriggeredInSettings);
 }
 
 TEST_F(SavedPasswordsPresenterMoveToAccountTest,
@@ -1742,7 +1744,9 @@ TEST_F(SavedPasswordsPresenterMoveToAccountTest,
   EXPECT_CALL(*account_store(), AddLogin).Times(0);
   EXPECT_CALL(*profile_store(), RemoveLogin(form_profile));
 
-  presenter().MoveCredentialsToAccount(credentials);
+  presenter().MoveCredentialsToAccount(
+      credentials,
+      metrics_util::MoveToAccountStoreTrigger::kExplicitlyTriggeredInSettings);
 }
 
 }  // namespace password_manager

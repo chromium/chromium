@@ -21,6 +21,10 @@
 
 namespace password_manager {
 
+namespace metrics_util {
+enum class MoveToAccountStoreTrigger;
+}
+
 class AffiliationService;
 class PasswordUndoHelper;
 class PasswordsGrouper;
@@ -151,9 +155,11 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
                                   const CredentialUIEntry& updated_credential);
 
   // Moves credential to an account by deleting them from profile password store
-  // and adding them to the account password store.
+  // and adding them to the account password store. `trigger` is used to record
+  // per entry point metrics.
   void MoveCredentialsToAccount(
-      const std::vector<CredentialUIEntry>& credentials);
+      const std::vector<CredentialUIEntry>& credentials,
+      metrics_util::MoveToAccountStoreTrigger trigger);
 
   // Returns a list of unique passwords which includes normal credentials,
   // federated credentials and blocked forms. If a same form is present both on

@@ -230,7 +230,9 @@ bool ShouldDisplayCredentialAsCompromised(DetailsContext details_context,
   }
 
   it->stored_in = {password_manager::PasswordForm::Store::kAccountStore};
-  _manager->GetSavedPasswordsPresenter()->MoveCredentialsToAccount({*it});
+  _manager->GetSavedPasswordsPresenter()->MoveCredentialsToAccount(
+      {*it}, password_manager::metrics_util::MoveToAccountStoreTrigger::
+                 kExplicitlyTriggeredInSettings);
   [self providePasswordsToConsumer];
 }
 
