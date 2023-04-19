@@ -131,10 +131,10 @@ class CallClosureHandler : public MessagePumpForIO::FdWatcher {
 TEST_F(FdWatchControllerPosixTest, FileDescriptorWatcherOutlivesMessageLoop) {
   // Simulate a MessageLoop that dies before an FileDescriptorWatcher.
   // This could happen when people use the Singleton pattern or atexit.
+  TestHandler handler;
 
   // Arrange for watcher to live longer than message loop.
   MessagePumpForIO::FdWatchController watcher(FROM_HERE);
-  TestHandler handler;
   {
     test::TaskEnvironment env(test::TaskEnvironment::MainThreadType::IO);
 

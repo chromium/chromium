@@ -162,7 +162,10 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
 
     // State used only with libevent
     std::unique_ptr<event> event_;
-    raw_ptr<MessagePumpLibevent> libevent_pump_ = nullptr;
+
+    // Tests (e.g. FdWatchControllerPosixTest) deliberately make this dangle.
+    raw_ptr<MessagePumpLibevent, DisableDanglingPtrDetection> libevent_pump_ =
+        nullptr;
 
     // State used only with epoll
     WeakPtr<MessagePumpEpoll> epoll_pump_;
