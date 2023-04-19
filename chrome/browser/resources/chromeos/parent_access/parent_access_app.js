@@ -68,6 +68,7 @@ class ParentAccessApp extends PolymerElement {
 
     this.addEventListener('show-authentication-flow', () => {
       this.switchScreen_(Screens.AUTHENTICATION_FLOW);
+      getParentAccessUIHandler().onBeforeScreenDone();
     });
 
     this.addEventListener('show-error', () => {

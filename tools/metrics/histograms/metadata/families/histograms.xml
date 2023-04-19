@@ -143,7 +143,8 @@ chromium-metrics-reviews@google.com.
     Other is for all other users that do not fall into any of the below
     categories. Users under the age of consent automatically have supervision
     applied to their accounts. Users over the age of consent can opt into
-    supervision.
+    supervision. WebApprovals metrics are included from M110 onwards.
+    ExtensionApprovals metrics are included from M115 onwards.
   </summary>
 </histogram>
 
@@ -154,10 +155,13 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the state at which the Parent Access dialog is closed for all parent
     access flows. Allows to track the drop rate by important states during the
-    parent access flow. This metric is recorded for ChromeOS only.
+    parent access flow. This metric is recorded for ChromeOS only. WebApprovals
+    metrics are available from M110 onwards. ExtensionApprovals metrics are
+    available from M115 onwards.
   </summary>
   <token key="FlowType">
     <variant name="All"/>
+    <variant name="ExtensionApprovals"/>
     <variant name="WebApprovals"/>
   </token>
 </histogram>
@@ -171,6 +175,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FlowType">
     <variant name="All"/>
+    <variant name="ExtensionApprovals"/>
     <variant name="WebApprovals"/>
   </token>
 </histogram>

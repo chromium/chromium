@@ -97,6 +97,7 @@ suite(parent_access_app_tests.suiteName, function() {
         const askParentButton =
             parentAccessBefore.shadowRoot.querySelector('.action-button');
         askParentButton.click();
+        assertEquals(handler.getCallCount('onBeforeScreenDone'), 1);
         await flushTasks();
 
         // Verify online flow is showing and switch to the after screen.

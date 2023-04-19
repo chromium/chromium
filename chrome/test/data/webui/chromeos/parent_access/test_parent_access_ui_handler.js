@@ -14,6 +14,7 @@ export class TestParentAccessUIHandler extends TestBrowserProxy {
       'getParentAccessParams',
       'getParentAccessURL',
       'onParentAccessDone',
+      'onBeforeScreenDone',
     ]);
 
     /** @private {?ParentAccessParams} */
@@ -55,6 +56,11 @@ export class TestParentAccessUIHandler extends TestBrowserProxy {
   /** @override */
   onParentAccessDone(parentAccessResult) {
     this.methodCalled('onParentAccessDone', parentAccessResult);
+  }
+
+  /** @override */
+  onBeforeScreenDone() {
+    this.methodCalled('onBeforeScreenDone');
   }
 
   /**

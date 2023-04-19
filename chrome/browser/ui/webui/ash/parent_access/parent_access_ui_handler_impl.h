@@ -59,6 +59,7 @@ class ParentAccessUIHandlerImpl
   void OnParentAccessDone(parent_access_ui::mojom::ParentAccessResult result,
                           OnParentAccessDoneCallback callback) override;
   void GetParentAccessURL(GetParentAccessURLCallback callback) override;
+  void OnBeforeScreenDone(OnBeforeScreenDoneCallback callback) override;
 
   // Returns nullptr if the parent was not verified.
   const kids::platform::parentaccess::client::proto::ParentAccessToken*

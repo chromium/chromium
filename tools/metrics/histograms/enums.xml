@@ -78816,6 +78816,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Access approved"/>
   <int value="4" label="Access declined"/>
   <int value="5" label="Error"/>
+  <int value="6" label="Requests Disabled"/>
 </enum>
 
 <enum name="ParentFrameKnown">
