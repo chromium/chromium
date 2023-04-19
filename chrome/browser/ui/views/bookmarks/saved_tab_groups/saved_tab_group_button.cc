@@ -185,10 +185,6 @@ void SavedTabGroupButton::PaintButtonContents(gfx::Canvas* canvas) {
 void SavedTabGroupButton::UpdateButtonLayout() {
   if (GetText().empty()) {
     // When the text is empty force the button to have square dimensions.
-    // Likewise, we already have a constant that denotes the standard button
-    // height for all elements in the bookmarks bar. As such, we will use
-    // this constant for the width of the button to create a square that will
-    // comfortably fit in the bookmarks bar.
     SetPreferredSize(gfx::Size(kButtonSize, kButtonSize));
   } else {
     SetPreferredSize(CalculatePreferredSize());
@@ -197,7 +193,6 @@ void SavedTabGroupButton::UpdateButtonLayout() {
   // Relies on logic in theme_helper.cc to determine dark/light palette.
   ui::ColorId text_and_outline_color =
       GetTabGroupDialogColorId(tab_group_color_id_);
-
   ui::ColorId background_color =
       GetTabGroupBookmarkColorId(tab_group_color_id_);
 
@@ -227,18 +222,7 @@ SavedTabGroupButton::CreateDefaultBorder() const {
 
 void SavedTabGroupButton::OnThemeChanged() {
   views::MenuButton::OnThemeChanged();
-
-  // We don't always have a theme provider (ui tests, for example).
-  SkColor text_color = gfx::kPlaceholderColor;
-  const ui::ColorProvider* const cp = GetColorProvider();
-  if (cp) {
-    SkColor background_color =
-        cp->GetColor(GetTabGroupBookmarkColorId(tab_group_color_id_));
-    text_color = cp->GetColor(GetTabGroupDialogColorId(tab_group_color_id_));
-    text_color = color_utils::PickGoogleColor(
-        text_color, background_color,
-        color_utils::kMinimumReadableContrastRatio);
-  }
+  UpdateButtonLayout();
 }
 
 void SavedTabGroupButton::WriteDragDataForView(View* sender,
