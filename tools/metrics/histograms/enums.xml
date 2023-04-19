@@ -64098,6 +64098,8 @@ from previous Chrome versions.
   <int value="1115532551" label="EnableFrameSinkDesktopCapturerInCrd:enabled"/>
   <int value="1115564918" label="LacrosWaylandLogging:enabled"/>
   <int value="1115635149" label="EnableUnifiedMultiDeviceSetup:enabled"/>
+  <int value="1115946303"
+      label="EnableMachineLearningNeuralNetworkService:enabled"/>
   <int value="1116084116" label="BindingManagerConnectionLimit:enabled"/>
   <int value="1116593018" label="CaptureThumbnailOnLoadFinished:disabled"/>
   <int value="1116798400" label="NoncedPartitionedCookies:enabled"/>
@@ -65928,6 +65930,8 @@ from previous Chrome versions.
       label="WebAuthenticationPasskeysUIExperiment:disabled"/>
   <int value="2098714203" label="enable-generic-sensors"/>
   <int value="2098907258" label="UseSurfaceLayerForVideo:disabled"/>
+  <int value="2099135667"
+      label="EnableMachineLearningNeuralNetworkService:disabled"/>
   <int value="2099583779" label="DefaultLinkCapturingInBrowser:enabled"/>
   <int value="2099945365" label="OmniboxAssistantVoiceSearch:enabled"/>
   <int value="2100128918" label="LibAssistantV2:enabled"/>

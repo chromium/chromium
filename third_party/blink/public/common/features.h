@@ -761,6 +761,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThreadedPreloadScanner);
 // If enabled, allows the use of WebSQL in non-secure contexts.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebSQLNonSecureContextAccess);
 
+// Enables the Web Machine Learning Neural Network Service to access hardware
+// acceleration out of renderer process. Explainer:
+// https://github.com/webmachinelearning/webnn/blob/main/explainer.md
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kEnableMachineLearningNeuralNetworkService);
+
 // Switch to temporary turn back on file system url navigation.
 // TODO(https://crbug.com/1332598): Remove this feature.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFileSystemUrlNavigation);

@@ -46,6 +46,7 @@ test("services_unittests") {
       "//services/viz/public/cpp/compositing:tests",
       "//services/viz/public/cpp/gpu:tests",
       "//services/viz/public/cpp/hit_test:tests",
+      "//services/webnn:tests",
     ]
   }
 

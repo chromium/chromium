@@ -34,6 +34,11 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_cros.h"
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_mojo.h"
+#endif
+
 namespace blink {
 
 namespace {
@@ -1926,6 +1931,19 @@ ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
   if (ml_context_->GetDevicePreference() == V8MLDevicePreference::Enum::kAuto ||
       ml_context_->GetDevicePreference() == V8MLDevicePreference::Enum::kCpu) {
     MLGraphCrOS::ValidateAndBuildAsync(ml_context_, named_outputs, resolver);
+    return promise;
+  }
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // The runtime enable feature is used to disable the cross process hardware
+  // acceleration by default.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kEnableMachineLearningNeuralNetworkService)) {
+    // Reject unsupported error on unimplemented platform when getting
+    // `WebNNContext` mojo interface with BrowserInterfaceBroker's
+    // GetInterface() method before creating `WebNNGraph` message pipe.
+    MLGraphMojo::ValidateAndBuildAsync(ml_context_, named_outputs, resolver);
     return promise;
   }
 #endif
