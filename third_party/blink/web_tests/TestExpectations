@@ -2948,6 +2948,7 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 crbug.com/626703 external/wpt/css/css-multicol/file-control-crash.html [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Win11 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=a&eligible [ Skip Timeout ]
 crbug.com/626703 [ Linux ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=a&eligible [ Skip Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=a&eligible [ Skip Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=a&eligible [ Skip Timeout ]
