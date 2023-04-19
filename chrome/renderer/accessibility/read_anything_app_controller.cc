@@ -697,6 +697,19 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
     return;
   }
 
+  ui::AXNode* focus_node = model_.GetAXNode(focus_node_id);
+  ui::AXNode* anchor_node = model_.GetAXNode(anchor_node_id);
+  // Some text fields, like Gmail, allow a <div> to be returned as a focus
+  // node for selection, most frequently when a triple click causes an entire
+  // range of text to be selected, including non-text nodes. This can cause
+  // inconsistencies in how the selection is handled. e.g. the focus node can
+  // be before the anchor node and set to a non-text node, which can cause
+  // page_handler_->OnSelectionChange to be incorrectly triggered, resulting in
+  // a failing DCHECK. Therefore, return early if this happens.
+  if (!focus_node->IsText() || !anchor_node->IsText()) {
+    return;
+  }
+
   // If the selection change matches the tree's selection, this means it was
   // set by the controller. Javascript selections set by the controller are
   // always forward selections. This means the anchor node always comes before

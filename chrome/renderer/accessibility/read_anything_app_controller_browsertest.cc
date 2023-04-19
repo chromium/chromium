@@ -1077,6 +1077,16 @@ TEST_F(ReadAnythingAppControllerTest, OnLinkClicked_DistillationInProgress) {
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnSelectionChange) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(3);
+  update.nodes[0].id = 2;
+  update.nodes[1].id = 3;
+  update.nodes[2].id = 4;
+  update.nodes[0].role = ax::mojom::Role::kStaticText;
+  update.nodes[1].role = ax::mojom::Role::kStaticText;
+  update.nodes[2].role = ax::mojom::Role::kStaticText;
+  AccessibilityEventReceived({update});
   ui::AXNodeID anchor_node_id = 2;
   int anchor_offset = 0;
   ui::AXNodeID focus_node_id = 3;
@@ -1090,6 +1100,15 @@ TEST_F(ReadAnythingAppControllerTest, OnSelectionChange) {
 
 TEST_F(ReadAnythingAppControllerTest,
        OnSelectionChange_ClickDoesNotUpdateSelection) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(3);
+  update.nodes[0].id = 2;
+  update.nodes[1].id = 3;
+  update.nodes[2].id = 4;
+  update.nodes[0].role = ax::mojom::Role::kStaticText;
+  update.nodes[1].role = ax::mojom::Role::kStaticText;
+  update.nodes[2].role = ax::mojom::Role::kStaticText;
   ui::AXNodeID anchor_node_id = 2;
   int anchor_offset = 15;
   ui::AXNodeID focus_node_id = 2;
@@ -1109,6 +1128,7 @@ TEST_F(ReadAnythingAppControllerTest,
   SetUpdateTreeID(&update, new_tree_id);
   update.root_id = 1;
   update.nodes.resize(1);
+  update.nodes[0].role = ax::mojom::Role::kStaticText;
   update.nodes[0].id = 1;
   AccessibilityEventReceived({update});
   EXPECT_CALL(*distiller_, Distill).Times(1);
@@ -1117,6 +1137,30 @@ TEST_F(ReadAnythingAppControllerTest,
   // If distillation is in progress, OnSelectionChange should not be called.
   EXPECT_CALL(page_handler_, OnSelectionChange).Times(0);
   OnSelectionChange(2, 0, 3, 1);
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnSelectionChange_NonTextFieldDoesNotUpdateSelection) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(3);
+  update.nodes[0].id = 2;
+  update.nodes[1].id = 3;
+  update.nodes[2].id = 4;
+  update.nodes[0].role = ax::mojom::Role::kTextField;
+  update.nodes[1].role = ax::mojom::Role::kGenericContainer;
+  update.nodes[2].role = ax::mojom::Role::kTextField;
+  AccessibilityEventReceived({update});
+  ui::AXNodeID anchor_node_id = 2;
+  int anchor_offset = 0;
+  ui::AXNodeID focus_node_id = 3;
+  int focus_offset = 1;
+  EXPECT_CALL(page_handler_,
+              OnSelectionChange(tree_id_, anchor_node_id, anchor_offset,
+                                focus_node_id, focus_offset))
+      .Times(0);
+  OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id, focus_offset);
   page_handler_.FlushForTesting();
 }
 
