@@ -8658,6 +8658,8 @@
                 {
                     "name": "AndroidExperiments",
                     "params": {
+                        "AdditionalRelatedQueries": "5",
+                        "AdditionalTrendingQueries": "5",
                         "RepeatableQueriesIgnoreDuplicateVisits": "true",
                         "RepeatableQueriesMaxAgeDays": "7",
                         "RepeatableQueriesMinVisitCount": "12"
@@ -8667,7 +8669,9 @@
                         "NewTabPageTilesTitleWrapAround",
                         "OmniboxDynamicMaxAutocomplete",
                         "OmniboxFocusTriggersSRPZeroSuggest",
+                        "OmniboxGroupingFrameworkForZPS",
                         "OmniboxHeaderPaddingUpdate",
+                        "OmniboxInspireMe",
                         "OmniboxMaxURLMatches",
                         "OmniboxMostVisitedTilesDynamicSpacing",
                         "OmniboxMostVisitedTilesFadingOnTablet",
