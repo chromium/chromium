@@ -49,7 +49,7 @@ class Connection
   // is authenticated before calling this function.
   void MarkConnectionAuthenticated();
 
- protected:
+ private:
   friend class ConnectionTest;
 
   using ConnectionResponseCallback =

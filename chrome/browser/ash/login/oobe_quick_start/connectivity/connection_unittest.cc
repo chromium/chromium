@@ -65,25 +65,6 @@ constexpr std::array<uint8_t, 32> kSharedSecret = {
 constexpr std::array<uint8_t, 6> kRandomSessionId = {0x6b, 0xb3, 0x85,
                                                      0x27, 0xbb, 0x28};
 
-class FakeConnection : public Connection {
- public:
-  explicit FakeConnection(
-      NearbyConnection* nearby_connection,
-      base::OnceClosure on_connection_closed,
-      Connection::ConnectionAuthenticatedCallback on_connection_authenticated)
-      : Connection(nearby_connection,
-                   RandomSessionId(kRandomSessionId),
-                   kSharedSecret,
-                   std::move(on_connection_closed),
-                   std::move(on_connection_authenticated)) {}
-
-  void SendPayloadAndReadResponseWrapperForTesting(
-      const base::Value::Dict& message_payload,
-      PayloadResponseCallback callback) {
-    SendPayloadAndReadResponse(message_payload, std::move(callback));
-  }
-};
-
 }  // namespace
 
 class ConnectionTest : public testing::Test {
@@ -101,8 +82,9 @@ class ConnectionTest : public testing::Test {
     fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
     NearbyConnection* nearby_connection = fake_nearby_connection_.get();
     fake_quick_start_decoder_ = std::make_unique<FakeQuickStartDecoder>();
-    connection_ = std::make_unique<FakeConnection>(
-        nearby_connection, /*on_connection_closed=*/base::DoNothing(),
+    connection_ = std::make_unique<Connection>(
+        nearby_connection, session_id_, kSharedSecret,
+        /*on_connection_closed=*/base::DoNothing(),
         /*on_connection_authenticated=*/
         base::BindLambdaForTesting(
             [&](base::WeakPtr<
@@ -128,9 +110,16 @@ class ConnectionTest : public testing::Test {
     assertion_info_ = assertion_info;
   }
 
+  void SendPayloadAndReadResponse(
+      const base::Value::Dict& message_payload,
+      base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)> callback) {
+    connection_->SendPayloadAndReadResponse(message_payload,
+                                            std::move(callback));
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<FakeNearbyConnection> fake_nearby_connection_;
-  std::unique_ptr<FakeConnection> connection_;
+  std::unique_ptr<Connection> connection_;
   RandomSessionId session_id_ = RandomSessionId(kRandomSessionId);
   bool ran_assertion_response_callback_ = false;
   bool ran_connection_authenticated_callback_ = false;
@@ -343,7 +332,7 @@ TEST_F(ConnectionTest, SendPayloadAndReadResponse) {
       std::vector<uint8_t>(std::begin(kTestBytes), std::end(kTestBytes)));
 
   base::RunLoop run_loop;
-  connection_->SendPayloadAndReadResponseWrapperForTesting(
+  SendPayloadAndReadResponse(
       message_payload,
       base::BindLambdaForTesting(
           [&run_loop](absl::optional<std::vector<uint8_t>> response) {
@@ -369,8 +358,8 @@ TEST_F(ConnectionTest, SendPayloadAndReadResponse) {
 TEST_F(ConnectionTest, TestDisconnectionTriggersListener) {
   base::test::TestFuture<void> future;
   std::unique_ptr<Connection> connection_under_test =
-      std::make_unique<FakeConnection>(
-          fake_nearby_connection_.get(),
+      std::make_unique<Connection>(
+          fake_nearby_connection_.get(), session_id_, kSharedSecret,
           /*on_connection_closed=*/future.GetCallback(),
           /*on_connection_authenticated=*/base::DoNothing());
 
