@@ -213,6 +213,7 @@ dist_aar("content_aar") {
     "org/chromium/components/embedder_support/delegate/*.class",
     "org/chromium/components/embedder_support/view/*.class",
     "org/chromium/components/metrics/*.class",
+    "org/chromium/components/url_formatter/*.class",
     "org/chromium/components/variations/*.class",
     "org/chromium/components/viz/service/frame_sinks/*.class",
     "org/chromium/content_public/*.class",
