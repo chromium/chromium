@@ -120,6 +120,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   void Activate() override;
   void Deactivate() override;
   bool IsActive() const override;
+  void PaintAsActiveChanged() override;
   void Maximize() override;
   void Minimize() override;
   void Restore() override;

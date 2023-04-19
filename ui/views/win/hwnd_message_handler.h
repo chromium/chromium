@@ -172,6 +172,8 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
 
   void FrameTypeChanged();
 
+  void PaintAsActiveChanged();
+
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon);
 

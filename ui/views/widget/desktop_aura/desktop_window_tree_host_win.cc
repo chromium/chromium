@@ -400,6 +400,10 @@ bool DesktopWindowTreeHostWin::IsActive() const {
   return message_handler_->IsActive();
 }
 
+void DesktopWindowTreeHostWin::PaintAsActiveChanged() {
+  message_handler_->PaintAsActiveChanged();
+}
+
 void DesktopWindowTreeHostWin::Maximize() {
   message_handler_->Maximize();
 }

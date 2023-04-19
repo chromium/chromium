@@ -169,6 +169,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   void Activate() override;
   void Deactivate() override;
   bool IsActive() const override;
+  void PaintAsActiveChanged() override;
   void SetZOrderLevel(ui::ZOrderLevel order) override;
   ui::ZOrderLevel GetZOrderLevel() const override;
   void SetVisibleOnAllWorkspaces(bool always_visible) override;

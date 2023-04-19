@@ -21,6 +21,8 @@ gfx::Rect NativeWidgetPrivate::ConstrainBoundsToDisplayWorkArea(
   return new_bounds;
 }
 
+void NativeWidgetPrivate::PaintAsActiveChanged() {}
+
 void NativeWidgetPrivate::ShowEmojiPanel() {
   ui::ShowEmojiPanel();
 }

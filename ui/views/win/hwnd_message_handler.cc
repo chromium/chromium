@@ -1073,6 +1073,17 @@ void HWNDMessageHandler::FrameTypeChanged() {
     PerformDwmTransition();
 }
 
+void HWNDMessageHandler::PaintAsActiveChanged() {
+  if (!delegate_->HasNonClientView() || !delegate_->CanActivate() ||
+      !delegate_->HasFrame() ||
+      (delegate_->GetFrameMode() == FrameMode::CUSTOM_DRAWN)) {
+    return;
+  }
+
+  DefWindowProcWithRedrawLock(WM_NCACTIVATE, delegate_->ShouldPaintAsActive(),
+                              0);
+}
+
 void HWNDMessageHandler::SetWindowIcons(const gfx::ImageSkia& window_icon,
                                         const gfx::ImageSkia& app_icon) {
   if (!window_icon.isNull()) {

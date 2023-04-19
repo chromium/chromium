@@ -189,6 +189,7 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   virtual void Activate() = 0;
   virtual void Deactivate() = 0;
   virtual bool IsActive() const = 0;
+  virtual void PaintAsActiveChanged();
   virtual void SetZOrderLevel(ui::ZOrderLevel order) = 0;
   virtual ui::ZOrderLevel GetZOrderLevel() const = 0;
   virtual void SetVisibleOnAllWorkspaces(bool always_visible) = 0;

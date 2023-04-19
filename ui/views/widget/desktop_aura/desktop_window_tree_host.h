@@ -128,6 +128,7 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   virtual void Activate() = 0;
   virtual void Deactivate() = 0;
   virtual bool IsActive() const = 0;
+  virtual void PaintAsActiveChanged();
   virtual void Maximize() = 0;
   virtual void Minimize() = 0;
   virtual void Restore() = 0;

@@ -1072,6 +1072,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Called when the ShouldPaintAsActive() of parent changes.
   void OnParentShouldPaintAsActiveChanged();
 
+  // Notifies registered callbacks and the native widget of changes to
+  // the ShouldPaintAsActive() state.
+  void NotifyPaintAsActiveChanged();
+
   base::WeakPtr<Widget> GetWeakPtr();
 
   // Overridden from NativeWidgetDelegate:

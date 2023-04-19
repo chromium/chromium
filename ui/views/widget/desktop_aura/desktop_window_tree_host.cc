@@ -20,6 +20,8 @@ bool DesktopWindowTreeHost::IsMoveLoopSupported() const {
 void DesktopWindowTreeHost::UpdateWindowShapeIfNeeded(
     const ui::PaintContext& context) {}
 
+void DesktopWindowTreeHost::PaintAsActiveChanged() {}
+
 std::unique_ptr<aura::client::ScreenPositionClient>
 DesktopWindowTreeHost::CreateScreenPositionClient() {
   return std::make_unique<DesktopScreenPositionClient>(
