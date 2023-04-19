@@ -1108,7 +1108,7 @@ export class EmojiPicker extends PolymerElement {
    */
   private isCategoryHistoryEmpty(category: CategoryEnum) {
     return this.incognito ||
-        this.categoriesHistory[category]?.data?.history?.length == 0;
+        (this.categoriesHistory[category]?.data?.history?.length ?? 0) === 0;
   }
 
   /**
@@ -1428,6 +1428,19 @@ export class EmojiPicker extends PolymerElement {
       return new Date();
     }
     return new Date(stored);
+  }
+
+  private computeListContainerClass(category: CategoryEnum, status: Status): string {
+    // Only displays emoji-error if there is no internet connection and we are in GIF category.
+    if (category === CategoryEnum.GIF && status !== Status.kHttpOk) {
+      return 'error-only';
+    }
+    // Do not display GIF emoji groups if there is no internet connection and we are in non-GIF
+    // category.
+    if (category !== CategoryEnum.GIF && status !== Status.kHttpOk) {
+      return 'no-gif';
+    }
+    return '';
   }
 }
 

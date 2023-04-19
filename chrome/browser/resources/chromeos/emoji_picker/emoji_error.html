@@ -17,6 +17,7 @@
     font-weight: 500;
     line-height: 22px;
     margin: 8px 0;
+    color: var(--cros-text-color-secondary);
   }
 
   .try-again-button {
@@ -45,8 +46,12 @@
     </picture>
   </template>
   <template is="dom-if" if="[[isGifInNetworkErrorState(status)]]">
-    <iron-icon id="no-internet-icon" icon="emoji_picker_v2:cloud_off">
-    </iron-icon>
+    <picture>
+      <source
+        srcset="network_error_dark.svg"
+        media="(prefers-color-scheme: dark)">
+      <img src="network_error.svg">
+    </picture>
   </template>
   <span class="error-text">[[getErrorMessage(status)]]</span>
   <a class="try-again-button" onclick="[[onClickTryAgain]]">Try again</a>
