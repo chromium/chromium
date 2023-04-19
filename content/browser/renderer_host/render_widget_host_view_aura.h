@@ -400,6 +400,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   ui::Compositor* GetCompositor() override;
 
+  DelegatedFrameHost* GetDelegatedFrameHostForTesting() const {
+    return delegated_frame_host_.get();
+  }
+
  protected:
   ~RenderWidgetHostViewAura() override;
 

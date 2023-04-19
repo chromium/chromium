@@ -565,6 +565,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   virtual void UnlockOrientation() {}
   virtual void SetHasPersistentVideo(bool has_persistent_video) {}
 
+  bool HasFallbackSurfaceForTesting() const { return HasFallbackSurface(); }
+
  protected:
   explicit RenderWidgetHostViewBase(RenderWidgetHost* host);
   ~RenderWidgetHostViewBase() override;
