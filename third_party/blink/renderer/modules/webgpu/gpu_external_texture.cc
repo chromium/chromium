@@ -355,8 +355,8 @@ void GPUExternalTexture::Expire() {
 }
 
 void GPUExternalTexture::Destroy() {
-  CHECK(!destroyed());
-  CHECK(mailbox_texture_);
+  DCHECK(!destroyed());
+  DCHECK(mailbox_texture_);
 
   status_ = Status::Destroyed;
   mailbox_texture_.reset();
