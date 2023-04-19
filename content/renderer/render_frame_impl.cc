@@ -5418,8 +5418,7 @@ void RenderFrameImpl::SerializeAsMHTML(mojom::SerializeAsMHTMLParamsPtr params,
       *params,
       base::BindOnce(&RenderFrameImpl::OnWriteMHTMLComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(serialized_resources_uri_digests),
-                     main_thread_use_time),
+                     std::move(serialized_resources_uri_digests)),
       GetTaskRunner(blink::TaskType::kInternalDefault));
 
   if (save_status == mojom::MhtmlSaveStatus::kSuccess && has_some_data) {
@@ -5432,7 +5431,6 @@ void RenderFrameImpl::SerializeAsMHTML(mojom::SerializeAsMHTMLParamsPtr params,
 void RenderFrameImpl::OnWriteMHTMLComplete(
     SerializeAsMHTMLCallback callback,
     std::unordered_set<std::string> serialized_resources_uri_digests,
-    base::TimeDelta main_thread_use_time,
     mojom::MhtmlSaveStatus save_status) {
   TRACE_EVENT1("page-serialization", "RenderFrameImpl::OnWriteMHTMLComplete",
                "frame save status", save_status);
@@ -5447,8 +5445,7 @@ void RenderFrameImpl::OnWriteMHTMLComplete(
   // Notify the browser process about completion using the callback.
   // Note: we assume this method is fast enough to not need to be accounted for
   // in PageSerialization.MhtmlGeneration.RendererMainThreadTime.SingleFrame.
-  std::move(callback).Run(save_status, std::move(digests_of_new_parts),
-                          main_thread_use_time);
+  std::move(callback).Run(save_status, std::move(digests_of_new_parts));
 }
 
 #ifndef STATIC_ASSERT_ENUM

@@ -887,7 +887,6 @@ class CONTENT_EXPORT RenderFrameImpl
   void OnWriteMHTMLComplete(
       SerializeAsMHTMLCallback callback,
       std::unordered_set<std::string> serialized_resources_uri_digests,
-      base::TimeDelta main_thread_use_time,
       mojom::MhtmlSaveStatus save_status);
 
   // Requests that the browser process navigates to |url|.

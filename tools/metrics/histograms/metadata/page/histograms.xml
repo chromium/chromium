@@ -3069,17 +3069,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageSerialization.MhtmlGeneration.RendererMainThreadTime.FrameTree"
-    units="ms" expires_after="2020-12-01">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Time spent by the main threads of all involved render processes while saving
-    the frame tree of a page to MHTML.
-  </summary>
-</histogram>
-
-<histogram
     name="PageSerialization.MhtmlGeneration.RendererMainThreadTime.SingleFrame"
     units="ms" expires_after="2020-12-01">
   <owner>sclittle@chromium.org</owner>
@@ -3087,20 +3076,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time spent by the renderer main thread while saving one frame of a page to
     MHTML.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageSerialization.MhtmlGeneration.RendererMainThreadTime.SlowestFrame"
-    units="ms" expires_after="2020-12-01">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    The longest time taken by the main thread of a render processes to save one
-    frame of a page being saved to MHTML. In other words this is the maximum
-    value reported in
-    PageSerialization.MhtmlGeneration.RendererMainThreadTime.SingleFrame for one
-    page save operation.
   </summary>
 </histogram>
 

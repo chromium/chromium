@@ -132,9 +132,7 @@ class MockWriterBase : public mojom::MhtmlFileWriter {
  protected:
   void SendResponse(SerializeAsMHTMLCallback callback) {
     std::vector<std::string> dummy_digests;
-    base::TimeDelta dummy_time_delta = base::Milliseconds(100);
-    std::move(callback).Run(mojom::MhtmlSaveStatus::kSuccess, dummy_digests,
-                            dummy_time_delta);
+    std::move(callback).Run(mojom::MhtmlSaveStatus::kSuccess, dummy_digests);
   }
 
   void WriteDataToDestinationFile(base::File& destination_file) {
