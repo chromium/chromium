@@ -142,7 +142,7 @@ TEST_F(SandboxedSevenZipAnalyzerTest, TwoBinariesAndFolder) {
             ToHex(results.archived_binary[0].digests().sha256()));
   EXPECT_EQ(0, results.archived_binary[0].length());
   EXPECT_FALSE(results.archived_binary[0].is_encrypted());
-  EXPECT_TRUE(results.archived_binary[0].is_executable());
+  EXPECT_FALSE(results.archived_binary[0].is_executable());
   EXPECT_FALSE(results.archived_binary[0].is_archive());
 
   EXPECT_EQ("file.exe", results.archived_binary[1].file_basename());

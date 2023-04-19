@@ -88,7 +88,7 @@ void RarAnalyzer::AnalyzeRarFile() {
     } else {
       UpdateArchiveAnalyzerResultsWithFile(
           root_rar_path_.Append(entry.file_path), &temp_file_, entry.file_size,
-          entry.is_encrypted, results_);
+          entry.is_encrypted, entry.is_directory, results_);
     }
   }
   results_->success = true;

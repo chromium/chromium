@@ -97,9 +97,9 @@ void ZipAnalyzer::AnalyzeZipFile() {
         AnalyzeNestedArchive(GetFileType(entry->path), entry->path)) {
       return;
     } else {
-      UpdateArchiveAnalyzerResultsWithFile(root_zip_path_.Append(entry->path),
-                                           &temp_file_, writer.file_length(),
-                                           entry->is_encrypted, results_);
+      UpdateArchiveAnalyzerResultsWithFile(
+          root_zip_path_.Append(entry->path), &temp_file_, writer.file_length(),
+          entry->is_encrypted, entry->is_directory, results_);
     }
   }
 

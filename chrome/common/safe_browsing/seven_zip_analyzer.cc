@@ -89,7 +89,7 @@ class SevenZipDelegate : public seven_zip::Delegate {
 
     UpdateArchiveAnalyzerResultsWithFile(entry.file_path, &temp_file_,
                                          entry.file_size, entry.is_encrypted,
-                                         results_);
+                                         /*is_directory=*/true, results_);
     results_->directory_count++;
     return true;
   }
@@ -116,7 +116,7 @@ class SevenZipDelegate : public seven_zip::Delegate {
       mapped_file_.reset();
       UpdateArchiveAnalyzerResultsWithFile(entry.file_path, &temp_file_,
                                            entry.file_size, entry.is_encrypted,
-                                           results_);
+                                           /*is_directory=*/false, results_);
     } else {
       success_ = false;
     }

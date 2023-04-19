@@ -336,7 +336,7 @@ TEST_F(SandboxedZipAnalyzerTest, ZippedTooManyNestedArchive) {
                   "download_protection/zipfile_too_many_nested_archives.zip"),
               &results);
   ASSERT_TRUE(results.success);
-  EXPECT_TRUE(results.has_executable);
+  EXPECT_FALSE(results.has_executable);
   EXPECT_TRUE(results.has_archive);
   EXPECT_EQ(14, results.archived_binary.size());
   ASSERT_EQ(3u, results.archived_archive_filenames.size());
