@@ -308,8 +308,10 @@ class DragImageOverflowBadge : public views::View {
 
   void InitLayout(size_t count) {
     // Background.
-    SetBackground(views::CreateThemedRoundedRectBackground(
-        ui::kColorAshFocusRing,
+    // NOTE: `this` is never added to a widget, so background color must be
+    // explicitly resolved with the `color_provider_`.
+    SetBackground(views::CreateRoundedRectBackground(
+        color_provider_->GetColor(ui::kColorAshFocusRing),
         /*radius=*/kDragImageOverflowBadgeMinimumSize.height() / 2));
 
     // Layout.
@@ -322,14 +324,12 @@ class DragImageOverflowBadge : public views::View {
         views::BoxLayout::MainAxisAlignment::kCenter);
 
     // Label.
+    // NOTE: `this` is never added to a widget, so enabled color must be
+    // explicitly resolved with the `color_provider_`.
     auto* label =
         AddChildView(bubble_utils::CreateLabel(TypographyToken::kCrosButton1));
-    // `this` is never added to widget, enabled color id will never be resolved.
-    // Thus we need to manually resolve it and set the color as the enabled
-    // color for the label.
     label->SetEnabledColor(
         color_provider_->GetColor(kColorAshDragImageOverflowBadgeTextColor));
-
     label->SetText(base::UTF8ToUTF16(base::NumberToString(count)));
   }
 
