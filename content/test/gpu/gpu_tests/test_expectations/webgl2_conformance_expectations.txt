@@ -12,6 +12,7 @@
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
 #             android-sm-a235m
 #         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
+#             chromeos-board-jacuzzi chromeos-board-octopus
 #         fuchsia-board-astro fuchsia-board-sherlock fuchsia-board-qemu-x64 ]
 # Platform
 # tags: [ desktop
@@ -893,6 +894,14 @@ crbug.com/angleproject/5038 [ chromeos chromeos-board-amd64-generic mesa_ge_21.0
 
 # Still frequently times out with Slow expectation.
 crbug.com/1426913 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/sync/sync-webgl-specific.html [ Failure ]
+
+#####################
+# Lacros failures #
+#####################
+
+crbug.com/1392806 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/rendering/blitframebuffer-multisampled-readbuffer.html [ Failure ]
+crbug.com/1392806 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/rendering/blitframebuffer-r11f-g11f-b10f.html [ Failure ]
+crbug.com/1392806 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/rendering/draw-with-integer-texture-base-level.html [ Failure ]
 
 ##############################
 # Lacros-like Linux Failures #

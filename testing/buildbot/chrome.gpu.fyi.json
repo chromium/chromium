@@ -8,132 +8,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "context_lost",
-          "--show-stdout",
-          "--browser=lacros-chrome",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
-          "--deploy-lacros",
-          "--remote=variable_chromeos_device_hostname"
-        ],
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "context_lost_passthrough_tests Ash ToT",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "device_type": "jacuzzi",
-              "os": "ChromeOS",
-              "pool": "chrome.tests"
-            }
-          ],
-          "expiration": 21600,
-          "idempotent": false,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "trigger_script": {
-          "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
-        },
-        "variant_id": "Ash ToT"
-      },
-      {
-        "args": [
-          "gpu_process",
-          "--show-stdout",
-          "--browser=lacros-chrome",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc",
-          "--deploy-lacros",
-          "--remote=variable_chromeos_device_hostname"
-        ],
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "gpu_process_launch_tests Ash ToT",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "device_type": "jacuzzi",
-              "os": "ChromeOS",
-              "pool": "chrome.tests"
-            }
-          ],
-          "expiration": 21600,
-          "idempotent": false,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "trigger_script": {
-          "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
-        },
-        "variant_id": "Ash ToT"
-      },
-      {
-        "args": [
-          "hardware_accelerated_feature",
-          "--show-stdout",
-          "--browser=lacros-chrome",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc",
-          "--deploy-lacros",
-          "--remote=variable_chromeos_device_hostname"
-        ],
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "hardware_accelerated_feature_tests Ash ToT",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "device_type": "jacuzzi",
-              "os": "ChromeOS",
-              "pool": "chrome.tests"
-            }
-          ],
-          "expiration": 21600,
-          "idempotent": false,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "trigger_script": {
-          "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
-        },
-        "variant_id": "Ash ToT"
-      },
-      {
-        "args": [
           "maps",
           "--show-stdout",
           "--browser=lacros-chrome",
@@ -236,14 +110,17 @@
       },
       {
         "args": [
-          "screenshot_sync",
+          "webgl2_conformance",
           "--show-stdout",
           "--browser=lacros-chrome",
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
-          "--dont-restore-color-profile-after-test",
+          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
+          "--webgl-conformance-version=2.0.1",
+          "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_tests_output.json",
+          "--test-filter=conformance/rendering/*::conformance2/rendering/*",
+          "--jobs=1",
           "--deploy-lacros",
           "--remote=variable_chromeos_device_hostname"
         ],
@@ -251,7 +128,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "screenshot_sync_passthrough_tests Ash ToT",
+        "name": "webgl2_conformance_gles_passthrough_tests Ash ToT",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -279,15 +156,15 @@
       },
       {
         "args": [
-          "webgl2_conformance",
+          "webgl1_conformance",
           "--show-stdout",
           "--browser=lacros-chrome",
           "--passthrough",
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
-          "--webgl-conformance-version=2.0.1",
-          "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_tests_output.json",
+          "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json",
+          "--test-filter=conformance/rendering/*",
           "--jobs=1",
           "--deploy-lacros",
           "--remote=variable_chromeos_device_hostname"
@@ -296,7 +173,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgl2_conformance_gles_passthrough_tests Ash ToT",
+        "name": "webgl_conformance_gles_passthrough_tests Ash ToT",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -314,8 +191,7 @@
           ],
           "expiration": 21600,
           "idempotent": false,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "trigger_script": {
@@ -332,132 +208,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "context_lost",
-          "--show-stdout",
-          "--browser=lacros-chrome",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
-          "--deploy-lacros",
-          "--remote=variable_chromeos_device_hostname"
-        ],
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "context_lost_passthrough_tests Ash ToT",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "device_type": "octopus",
-              "os": "ChromeOS",
-              "pool": "chrome.tests"
-            }
-          ],
-          "expiration": 21600,
-          "idempotent": false,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "trigger_script": {
-          "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
-        },
-        "variant_id": "Ash ToT"
-      },
-      {
-        "args": [
-          "gpu_process",
-          "--show-stdout",
-          "--browser=lacros-chrome",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc",
-          "--deploy-lacros",
-          "--remote=variable_chromeos_device_hostname"
-        ],
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "gpu_process_launch_tests Ash ToT",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "device_type": "octopus",
-              "os": "ChromeOS",
-              "pool": "chrome.tests"
-            }
-          ],
-          "expiration": 21600,
-          "idempotent": false,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "trigger_script": {
-          "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
-        },
-        "variant_id": "Ash ToT"
-      },
-      {
-        "args": [
-          "hardware_accelerated_feature",
-          "--show-stdout",
-          "--browser=lacros-chrome",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc",
-          "--deploy-lacros",
-          "--remote=variable_chromeos_device_hostname"
-        ],
-        "isolate_name": "telemetry_gpu_integration_test",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "hardware_accelerated_feature_tests Ash ToT",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "containment_type": "AUTO",
-          "dimension_sets": [
-            {
-              "device_type": "octopus",
-              "os": "ChromeOS",
-              "pool": "chrome.tests"
-            }
-          ],
-          "expiration": 21600,
-          "idempotent": false,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "trigger_script": {
-          "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
-        },
-        "variant_id": "Ash ToT"
-      },
-      {
-        "args": [
           "maps",
           "--show-stdout",
           "--browser=lacros-chrome",
@@ -560,14 +310,17 @@
       },
       {
         "args": [
-          "screenshot_sync",
+          "webgl2_conformance",
           "--show-stdout",
           "--browser=lacros-chrome",
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
-          "--dont-restore-color-profile-after-test",
+          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
+          "--webgl-conformance-version=2.0.1",
+          "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_tests_output.json",
+          "--test-filter=conformance/rendering/*::conformance2/rendering/*",
+          "--jobs=1",
           "--deploy-lacros",
           "--remote=variable_chromeos_device_hostname"
         ],
@@ -575,7 +328,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "screenshot_sync_passthrough_tests Ash ToT",
+        "name": "webgl2_conformance_gles_passthrough_tests Ash ToT",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -603,15 +356,15 @@
       },
       {
         "args": [
-          "webgl2_conformance",
+          "webgl1_conformance",
           "--show-stdout",
           "--browser=lacros-chrome",
           "--passthrough",
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
-          "--webgl-conformance-version=2.0.1",
-          "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_tests_output.json",
+          "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json",
+          "--test-filter=conformance/rendering/*",
           "--jobs=1",
           "--deploy-lacros",
           "--remote=variable_chromeos_device_hostname"
@@ -620,7 +373,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgl2_conformance_gles_passthrough_tests Ash ToT",
+        "name": "webgl_conformance_gles_passthrough_tests Ash ToT",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -638,8 +391,7 @@
           ],
           "expiration": 21600,
           "idempotent": false,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 20
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "trigger_script": {
