@@ -51,6 +51,7 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   combobox->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum));
+  combobox->SetGroup(kToolbarGroupId);
 
   // Create the decrease/increase text size buttons.
   auto decrease_size_button = std::make_unique<ReadAnythingButtonView>(
@@ -61,6 +62,7 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
           IDS_READING_MODE_DECREASE_FONT_SIZE_BUTTON_LABEL));
   decrease_size_button->SetProperty(views::kCrossAxisAlignmentKey,
                                     views::LayoutAlignment::kCenter);
+  decrease_size_button->SetGroup(kToolbarGroupId);
 
   auto increase_size_button = std::make_unique<ReadAnythingButtonView>(
       base::BindRepeating(&ReadAnythingToolbarView::IncreaseFontSizeCallback,
@@ -70,6 +72,7 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
           IDS_READING_MODE_INCREASE_FONT_SIZE_BUTTON_LABEL));
   increase_size_button->SetProperty(views::kCrossAxisAlignmentKey,
                                     views::LayoutAlignment::kCenter);
+  increase_size_button->SetGroup(kToolbarGroupId);
 
   // Create theme selection menubutton.
   auto colors_button = std::make_unique<ReadAnythingMenuButton>(
@@ -78,6 +81,7 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
       kPaletteIcon,
       l10n_util::GetStringUTF16(IDS_READING_MODE_COLORS_COMBOBOX_LABEL),
       delegate_->GetColorsModel());
+  colors_button->SetGroup(kToolbarGroupId);
 
   // Create line spacing menubutton.
   auto line_spacing_button = std::make_unique<ReadAnythingMenuButton>(
@@ -86,6 +90,7 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
       kReadAnythingLineSpacingIcon,
       l10n_util::GetStringUTF16(IDS_READING_MODE_LINE_SPACING_COMBOBOX_LABEL),
       delegate_->GetLineSpacingModel());
+  line_spacing_button->SetGroup(kToolbarGroupId);
 
   // Create letter spacing menubutton.
   auto letter_spacing_button = std::make_unique<ReadAnythingMenuButton>(
@@ -94,6 +99,7 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
       kReadAnythingLetterSpacingIcon,
       l10n_util::GetStringUTF16(IDS_READING_MODE_LETTER_SPACING_COMBOBOX_LABEL),
       delegate_->GetLetterSpacingModel());
+  letter_spacing_button->SetGroup(kToolbarGroupId);
 
   // Add all views as children.
   font_combobox_ = AddChildView(std::move(combobox));

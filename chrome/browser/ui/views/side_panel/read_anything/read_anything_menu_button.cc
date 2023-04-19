@@ -34,6 +34,11 @@ ReadAnythingMenuButton::ReadAnythingMenuButton(
 
 ReadAnythingMenuButton::~ReadAnythingMenuButton() = default;
 
+bool ReadAnythingMenuButton::IsGroupFocusTraversable() const {
+  // Only the first item in the toolbar should be reachable with tab
+  return false;
+}
+
 void ReadAnythingMenuButton::ButtonPressed() {
   menu_runner_ = std::make_unique<views::MenuRunner>(
       menu_model_.get(), views::MenuRunner::HAS_MNEMONICS);

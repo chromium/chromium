@@ -26,6 +26,9 @@ class ReadAnythingMenuButton : public views::MenuButton {
   ReadAnythingMenuButton& operator=(const ReadAnythingMenuButton&) = delete;
   ~ReadAnythingMenuButton() override;
 
+  // views::MenuButton
+  bool IsGroupFocusTraversable() const override;
+
   void SetMenuModel(ReadAnythingMenuModel* menu_model);
   ReadAnythingMenuModel* GetMenuModel() const;
   absl::optional<size_t> GetSelectedIndex() const;

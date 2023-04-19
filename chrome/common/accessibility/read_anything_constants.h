@@ -26,6 +26,9 @@ namespace {
 const ui::AXMode kReadAnythingAXMode =
     ui::AXMode::kWebContents | ui::AXMode::kHTML | ui::AXMode::kScreenReader;
 
+// Group id for the toolbar
+const int kToolbarGroupId = 0;
+
 // Visual constants for Read Anything feature.
 const int kInternalInsets = 8;
 const int kSeparatorTopBottomPadding = 4;

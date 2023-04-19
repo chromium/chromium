@@ -30,6 +30,9 @@ class ReadAnythingButtonView : public views::ImageButton {
   ReadAnythingButtonView& operator=(const ReadAnythingButtonView&) = delete;
   ~ReadAnythingButtonView() override;
 
+  // views::ImageButton
+  bool IsGroupFocusTraversable() const override;
+
   void UpdateIcon(const gfx::VectorIcon& icon,
                   int icon_size,
                   ui::ColorId icon_color);
