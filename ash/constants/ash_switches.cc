@@ -1006,6 +1006,10 @@ const char kGetAccessTokenForTest[] = "get-access-token-for-test";
 const char kCameraEffectsSupportedByHardware[] =
     "camera-effects-supported-by-hardware";
 
+// Prevent kiosk autolaunch for testing.
+const char kPreventKioskAutolaunchForTesting[] =
+    "prevent-kiosk-autolaunch-for-testing";
+
 bool IsAuthSessionCryptohomeEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kCryptohomeUseAuthSession);

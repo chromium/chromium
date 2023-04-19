@@ -150,6 +150,16 @@ void SetEphemeralKioskPreferencesListForTesting(
 
 bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line,
                               PrefService* local_state) {
+  // We shouldn't auto launch kiosk app if a designated command line switch was
+  // used.
+  //
+  // For example, in Tast tests command line switch is used to prevent kiosk
+  // autolaunch configured by policy from a previous test. This way ChromeOS
+  // will stay on the login screen and Tast can perform policies cleanup.
+  if (command_line.HasSwitch(switches::kPreventKioskAutolaunchForTesting)) {
+    return false;
+  }
+
   KioskAppManager* app_manager = KioskAppManager::Get();
   WebKioskAppManager* web_app_manager = WebKioskAppManager::Get();
   ArcKioskAppManager* arc_app_manager = ArcKioskAppManager::Get();
