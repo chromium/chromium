@@ -139,6 +139,9 @@ class CAPTURE_EXPORT UvcControl {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                  "UvcControl::SetControlCurrent", "control_name", control_name);
     CHECK(interface_);
+    if (!IsControlAvailable(control_selector)) {
+      return;
+    }
     IOUSBDevRequestTO command =
         CreateEmptyCommand(uvc::kVcRequestCodeSetCur, kUSBOut, control_selector,
                            sizeof(ValueType));
@@ -161,6 +164,9 @@ class CAPTURE_EXPORT UvcControl {
                  "UvcControl::SendControlRequest", "request_code", request_code,
                  "control_name", control_name);
     CHECK(interface_);
+    if (!IsControlAvailable(control_selector)) {
+      return false;
+    }
     IOUSBDevRequestTO command = CreateEmptyCommand(
         request_code, kUSBIn, control_selector, sizeof(ValueType));
     ValueType data;
@@ -177,6 +183,10 @@ class CAPTURE_EXPORT UvcControl {
     return true;
   }
 
+  // Returns whether a control is available based on the bmControls bit-map from
+  // the descriptor.
+  bool IsControlAvailable(int control_selector) const;
+
   // Create an empty IOUSBDevRequestTO for a USB device to either set or get
   // controls.
   IOUSBDevRequestTO CreateEmptyCommand(int request_code,
@@ -184,8 +194,10 @@ class CAPTURE_EXPORT UvcControl {
                                        int control_selector,
                                        int control_command_size) const;
 
+  int descriptor_subtype_;
   ScopedIOUSBInterfaceInterface interface_;
   int unit_id_;
+  std::vector<uint8_t> controls_;
 };
 
 }  // namespace media
