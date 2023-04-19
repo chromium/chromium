@@ -42,28 +42,6 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
   env->SetVar("XDG_RUNTIME_DIR", scoped_temp_dir_xdg_.GetPath().AsUTF8Unsafe());
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  // Put lacros logs in CAS outputs on bots.
-  if (command_line->HasSwitch("test-launcher-summary-output")) {
-    std::string test_name = base::JoinString(
-        {::testing::UnitTest::GetInstance()
-             ->current_test_info()
-             ->test_suite_name(),
-         ::testing::UnitTest::GetInstance()->current_test_info()->name()},
-        ".");
-    base::FilePath output_file_path =
-        command_line->GetSwitchValuePath("test-launcher-summary-output");
-    base::FilePath test_output_folder =
-        output_file_path.DirName().Append(test_name);
-    command_line->AppendSwitchPath(switches::kUserDataDir, test_output_folder);
-  } else {
-    LOG(WARNING)
-        << "By default, lacros logs are in some random folder. If you need "
-        << "lacros log, please run with --test-launcher-summary-output. e.g. "
-        << "Run with --test-launcher-summary-output=/tmp/default/output.json. "
-        << "For each lacros in a test, the log will be in "
-        << "/tmp/default/test_suite.test_name folder.";
-  }
-
   scoped_feature_list_.InitWithFeatures(
       {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
        ash::features::kLacrosOnly},
