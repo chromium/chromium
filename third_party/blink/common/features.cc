@@ -349,15 +349,6 @@ const base::FeatureParam<int>
     kSharedStorageMaxAllowedFencedFrameDepthForSelectURL = {
         &kSharedStorageAPI,
         "SharedStorageMaxAllowedFencedFrameDepthForSelectURL", 1};
-const base::FeatureParam<SharedStorageWorkletImplementationType>::Option
-    shared_storage_worklet_implementation_types[] = {
-        {SharedStorageWorkletImplementationType::kLegacy, "legacy"},
-        {SharedStorageWorkletImplementationType::kBlinkStyle, "blink_style"}};
-const base::FeatureParam<SharedStorageWorkletImplementationType>
-    kSharedStorageWorkletImplementationType = {
-        &kSharedStorageAPI, "SharedStorageWorkletImplementationType",
-        SharedStorageWorkletImplementationType::kBlinkStyle,
-        &shared_storage_worklet_implementation_types};
 
 BASE_FEATURE(kSharedStorageSelectURLLimit,
              "SharedStorageSelectURLLimit",

@@ -259,7 +259,6 @@ target(link_target_type, "renderer") {
     "//content/gpu:gpu_sources",
     "//content/public/child:child_sources",
     "//content/services/auction_worklet:auction_worklet",
-    "//content/services/shared_storage_worklet",
     "//crypto",
     "//device/base/synchronization",
     "//device/gamepad/public/cpp:shared_with_blink",

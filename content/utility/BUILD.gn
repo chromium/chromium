@@ -51,7 +51,6 @@ source_set("utility") {
     "//content/public/common:common_sources",
     "//content/public/common:content_descriptor_keys",
     "//content/services/auction_worklet",
-    "//content/services/shared_storage_worklet",
     "//device/vr/buildflags",
     "//media:media_buildflags",
     "//mojo/public/cpp/bindings",
