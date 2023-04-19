@@ -78,7 +78,7 @@ public class PrivacySandboxDialogNoticeRestrictedV4
             PrivacySandboxBridge.promptActionOccurred(PromptAction.RESTRICTED_NOTICE_ACKNOWLEDGE);
             dismiss();
         } else if (id == R.id.settings_button) {
-            PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_OPEN_SETTINGS);
+            PrivacySandboxBridge.promptActionOccurred(PromptAction.RESTRICTED_NOTICE_OPEN_SETTINGS);
             dismiss();
             PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(
                     getContext(), mSettingsLauncher, PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE);

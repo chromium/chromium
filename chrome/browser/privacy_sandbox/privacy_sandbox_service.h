@@ -98,11 +98,13 @@ class PrivacySandboxService : public KeyedService {
     kConsentMoreButtonClicked = 14,
     kNoticeMoreButtonClicked = 15,
 
-    // Restricted notice interactions, including only acknowledgement as the
-    // other interactions are treated as a normal notice.
+    // Restricted notice interactions, including only the interactions that
+    // complete
+    // the notice, using the `kNoticeXxx` for all other interactions.
     kRestrictedNoticeAcknowledge = 16,
+    kRestrictedNoticeOpenSettings = 17,
 
-    kMaxValue = kRestrictedNoticeAcknowledge,
+    kMaxValue = kRestrictedNoticeOpenSettings,
   };
 
   // TODO(crbug.com/1378703): Integrate this when handling Notice and Consent

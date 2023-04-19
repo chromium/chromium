@@ -1638,6 +1638,11 @@ void PrivacySandboxService::RecordPromptActionMetrics(
           "Settings.PrivacySandbox.RestrictedNotice.Acknowledged"));
       break;
     }
+    case (PromptAction::kRestrictedNoticeOpenSettings): {
+      base::RecordAction(base::UserMetricsAction(
+          "Settings.PrivacySandbox.RestrictedNotice.OpenedSettings"));
+      break;
+    }
   }
 }
 

@@ -540,7 +540,7 @@ public final class PrivacySandboxDialogTest {
         // Click on the settings button and verify it worked correctly.
         launchDialog();
         tryClickOn(withId(R.id.settings_button));
-        assertEquals("Last dialog action", PromptAction.NOTICE_OPEN_SETTINGS,
+        assertEquals("Last dialog action", PromptAction.RESTRICTED_NOTICE_OPEN_SETTINGS,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
         Mockito.verify(mSettingsLauncher)

@@ -29311,6 +29311,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacySandbox.RestrictedNotice.OpenedSettings">
+  <owner>djmitche@chromium.org</owner>
+  <owner>kartoffel-core@google.com</owner>
+  <owner>tommasin@chromium.org</owner>
+  <description>
+    User opened settings from the Restricted Privacy Sandbox notice.
+  </description>
+</action>
+
 <action name="Settings.PrivacySandbox.SpamFraud.Opened">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
