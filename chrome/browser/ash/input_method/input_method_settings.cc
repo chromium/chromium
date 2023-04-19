@@ -9,6 +9,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
 #include "chrome/common/pref_names.h"
@@ -152,6 +153,14 @@ bool IsPinyinEngine(const std::string& engine_id) {
 
 bool IsZhuyinEngine(const std::string& engine_id) {
   return engine_id == "zh-hant-t-i0-und";
+}
+
+bool IsVietnameseTelexEngine(base::StringPiece engine_id) {
+  return engine_id == "vkd_vi_telex";
+}
+
+bool IsVietnameseVniEngine(base::StringPiece engine_id) {
+  return engine_id == "vkd_vi_vni";
 }
 
 mojom::LatinSettingsPtr CreateLatinSettings(
@@ -505,6 +514,14 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
   if (IsZhuyinEngine(engine_id)) {
     return mojom::InputMethodSettings::NewZhuyinSettings(
         CreateZhuyinSettings(input_method_specific_pref));
+  }
+  if (IsVietnameseTelexEngine(engine_id)) {
+    return mojom::InputMethodSettings::NewVietnameseTelexSettings(
+        mojom::VietnameseTelexSettings::New());
+  }
+  if (IsVietnameseVniEngine(engine_id)) {
+    return mojom::InputMethodSettings::NewVietnameseVniSettings(
+        mojom::VietnameseVniSettings::New());
   }
   // TODO(b/232341104): Add the code to send the Japanese settings to
   // the engine if the engine_id is nacl_mozc_jp or nacl_mozc_us.
