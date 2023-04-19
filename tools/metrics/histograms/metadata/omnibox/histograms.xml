@@ -129,13 +129,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.ActionInSuggest.Shown" enum="ActionInSuggestType"
-    expires_after="2023-08-20">
+<histogram name="Omnibox.ActionInSuggest.{ShownOrUsed}"
+    enum="ActionInSuggestType" expires_after="2023-08-20">
   <owner>ender@google.com</owner>
-  <owner>chrome-omnibox-team@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
   <summary>
-    Counts how often Omnibox Action in Suggest are shown and records the type
-    (Omnibox Action in Suggest Type) of every shown action.
+    Counts how often Omnibox Action in Suggest are {ShownOrUsed} and records the
+    type (Omnibox Action in Suggest Type) of every {ShownOrUsed} action.
 
     Recorded once at the end of the interaction with the Omnibox Suggestions for
     every Action presented to the user. Not recorded for Suggestions that are
@@ -144,9 +144,11 @@ chromium-metrics-reviews@google.com.
 
     Action in Suggest are the Omnibox Action chips attached to a search
     suggestion.
-
-    This histogram is related to Omnibox.SuggestionUsed.ActionInSuggest.
   </summary>
+  <token key="ShownOrUsed">
+    <variant name="Shown" summary="shown"/>
+    <variant name="Used" summary="used"/>
+  </token>
 </histogram>
 
 <histogram name="Omnibox.AnswerParseSuccess" enum="BooleanSuccess"
@@ -1610,26 +1612,6 @@ chromium-metrics-reviews@google.com.
 
     True counts roughly correspond to keystrokes or on-focus events, and can be
     used as a normalizer for per-user-gesture metrics.
-  </summary>
-</histogram>
-
-<histogram name="Omnibox.SuggestionUsed.ActionInSuggest"
-    enum="ActionInSuggestType" expires_after="2023-08-20">
-  <owner>ender@google.com</owner>
-  <owner>chrome-mobile-search@google.com</owner>
-  <summary>
-    Counts how often Omnibox Action in Suggest are used and records the type
-    (Omnibox Action in Suggest Type) of the used action.
-
-    Recorded when the user completes the interaction with the Omnibox by
-    selecting an Action in Suggest. Not recorded for Suggestions that are
-    annotated with Action in Suggest, where the Action in Suggest row was not
-    shown to the user.
-
-    Action in Suggest are the Omnibox Action chips attached to a search
-    suggestion.
-
-    This histogram is related to Omnibox.ActionInSuggest.Shown.
   </summary>
 </histogram>
 

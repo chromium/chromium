@@ -17,9 +17,45 @@
 #include "url/android/gurl_android.h"
 #endif
 
-// TODO(crbug/1418077) export this from upstream.
-// See entity_info.proto, ActionType.
-constexpr int kActionTypeCount = 20;
+namespace {
+// UMA reported Type of ActionInSuggest.
+//
+// Automatically generate a corresponding Java enum:
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.omnibox.action
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: ActionInSuggestUmaType
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. The values should remain
+// synchronized with the enum AutocompleteMatchType in
+// //tools/metrics/histograms/enums.xml.
+enum class ActionInSuggestUmaType {
+  kUnknown = 0,
+  kCall,
+  kDirections,
+  kWebsite,
+
+  // Sentinel value. Must be set to the last valid ActionInSuggestUmaType.
+  kMaxValue = kWebsite
+};
+
+// Get the UMA action type from ActionInfo::ActionType.
+constexpr ActionInSuggestUmaType ToUmaActionType(
+    omnibox::ActionInfo_ActionType action_type) {
+  switch (action_type) {
+    case omnibox::ActionInfo_ActionType_CALL:
+      return ActionInSuggestUmaType::kCall;
+
+    case omnibox::ActionInfo_ActionType_DIRECTIONS:
+      return ActionInSuggestUmaType::kDirections;
+
+    case omnibox::ActionInfo_ActionType_WEBSITE:
+      return ActionInSuggestUmaType::kWebsite;
+
+    default:
+      return ActionInSuggestUmaType::kUnknown;
+  }
+}
+
+}  // namespace
 
 OmniboxActionInSuggest::OmniboxActionInSuggest(omnibox::ActionInfo action_info)
     : OmniboxAction(
@@ -52,16 +88,9 @@ OmniboxActionInSuggest::GetOrCreateJavaObject(JNIEnv* env) const {
 
 void OmniboxActionInSuggest::RecordActionShown(size_t position,
                                                bool executed) const {
-  // TODO(crbug/1418077): propagate count value from upstream and drop casting.
-  base::UmaHistogramEnumeration(
-      "Omnibox.ActionInSuggest.Shown", action_info_.action_type(),
-      static_cast<omnibox::ActionInfo_ActionType>(kActionTypeCount));
-
-  if (executed) {
-    base::UmaHistogramExactLinear(
-        "Omnibox.SuggestionUsed.ActionInSuggest", action_info_.action_type(),
-        static_cast<omnibox::ActionInfo_ActionType>(kActionTypeCount));
-  }
+  base::UmaHistogramEnumeration(executed ? "Omnibox.ActionInSuggest.Used"
+                                         : "Omnibox.ActionInSuggest.Shown",
+                                ToUmaActionType(action_info_.action_type()));
 }
 
 void OmniboxActionInSuggest::Execute(ExecutionContext& context) const {
