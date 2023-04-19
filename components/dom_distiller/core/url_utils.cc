@@ -36,7 +36,7 @@ std::string SHA256InHex(base::StringPiece str) {
 
 const GURL GetDistillerViewUrlFromEntryId(const std::string& scheme,
                                           const std::string& entry_id) {
-  GURL url(scheme + "://" + base::GenerateUuid());
+  GURL url(scheme + "://" + base::Uuid::GenerateRandomV4().AsLowercaseString());
   return net::AppendOrReplaceQueryParameter(url, kEntryIdKey, entry_id);
 }
 
@@ -44,8 +44,9 @@ const GURL GetDistillerViewUrlFromUrl(const std::string& scheme,
                                       const GURL& url,
                                       const std::string& title,
                                       int64_t start_time_ms) {
-  GURL view_url(scheme + "://" + base::GenerateUuid() + kSeparator +
-                SHA256InHex(url.spec()));
+  GURL view_url(scheme + "://" +
+                base::Uuid::GenerateRandomV4().AsLowercaseString() +
+                kSeparator + SHA256InHex(url.spec()));
   view_url = net::AppendOrReplaceQueryParameter(view_url, kTitleKey, title);
   if (start_time_ms > 0) {
     view_url = net::AppendOrReplaceQueryParameter(

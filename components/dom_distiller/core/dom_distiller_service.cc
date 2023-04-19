@@ -23,7 +23,7 @@ namespace {
 
 ArticleEntry CreateSkeletonEntryForUrl(const GURL& url) {
   ArticleEntry skeleton;
-  skeleton.entry_id = base::GenerateUuid();
+  skeleton.entry_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   skeleton.pages.push_back(url);
 
   DCHECK(IsEntryValid(skeleton));
