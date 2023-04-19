@@ -4,7 +4,6 @@
 
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 
-#include <limits>
 #include <utility>
 #include <vector>
 
@@ -291,7 +290,7 @@ TEST_F(CommandBufferProxyImplTest, CreateTransferBufferOOM) {
 
   int32_t id = -1;
   scoped_refptr<gpu::Buffer> transfer_buffer_oom = proxy->CreateTransferBuffer(
-      std::numeric_limits<uint32_t>::max(), &id, 0,
+      std::numeric_limits<uint32_t>::max(), &id,
       TransferBufferAllocationOption::kReturnNullOnOOM);
   if (transfer_buffer_oom) {
     // In this test, there's no guarantee allocating UINT32_MAX will definitely
@@ -316,7 +315,7 @@ TEST_F(CommandBufferProxyImplTest, CreateTransferBufferOOM) {
       .RetiresOnSaturation();
 
   transfer_buffer_oom = proxy->CreateTransferBuffer(
-      std::numeric_limits<uint32_t>::max(), &id, 0,
+      std::numeric_limits<uint32_t>::max(), &id,
       TransferBufferAllocationOption::kLoseContextOnOOM);
 
   EXPECT_CALL(mock_gpu_channel_, DestroyCommandBuffer(_))

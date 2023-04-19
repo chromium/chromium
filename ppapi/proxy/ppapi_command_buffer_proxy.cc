@@ -119,7 +119,6 @@ void PpapiCommandBufferProxy::SetGetBuffer(int32_t transfer_buffer_id) {
 scoped_refptr<gpu::Buffer> PpapiCommandBufferProxy::CreateTransferBuffer(
     uint32_t size,
     int32_t* id,
-    uint32_t alignment,
     gpu::TransferBufferAllocationOption option) {
   *id = -1;
 

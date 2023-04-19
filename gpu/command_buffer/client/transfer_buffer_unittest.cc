@@ -230,19 +230,17 @@ class MockClientCommandBufferCanFail : public MockClientCommandBufferMockFlush {
   MockClientCommandBufferCanFail() = default;
   ~MockClientCommandBufferCanFail() override = default;
 
-  MOCK_METHOD4(CreateTransferBuffer,
+  MOCK_METHOD3(CreateTransferBuffer,
                scoped_refptr<Buffer>(uint32_t size,
                                      int32_t* id,
-                                     uint32_t alignment,
                                      TransferBufferAllocationOption option));
 
   scoped_refptr<gpu::Buffer> RealCreateTransferBuffer(
       uint32_t size,
       int32_t* id,
-      uint32_t alignment,
       TransferBufferAllocationOption option) {
-    return MockClientCommandBufferMockFlush::CreateTransferBuffer(
-        size, id, alignment, option);
+    return MockClientCommandBufferMockFlush::CreateTransferBuffer(size, id,
+                                                                  option);
   }
 };
 
@@ -280,7 +278,7 @@ void TransferBufferExpandContractTest::SetUp() {
   command_buffer_->SetTokenForSetGetBuffer(0);
 
   EXPECT_CALL(*command_buffer(),
-              CreateTransferBuffer(kCommandBufferSizeBytes, _, _, _))
+              CreateTransferBuffer(kCommandBufferSizeBytes, _, _))
       .WillOnce(
           Invoke(command_buffer(),
                  &MockClientCommandBufferCanFail::RealCreateTransferBuffer))
@@ -293,7 +291,7 @@ void TransferBufferExpandContractTest::SetUp() {
   transfer_buffer_id_ = command_buffer()->GetNextFreeTransferBufferId();
 
   EXPECT_CALL(*command_buffer(),
-              CreateTransferBuffer(kStartTransferBufferSize, _, _, _))
+              CreateTransferBuffer(kStartTransferBufferSize, _, _))
       .WillOnce(
           Invoke(command_buffer(),
                  &MockClientCommandBufferCanFail::RealCreateTransferBuffer))
@@ -344,7 +342,7 @@ TEST_F(TransferBufferExpandContractTest, ExpandWithSmallAllocations) {
     EXPECT_CALL(*command_buffer(), OrderingBarrier(_))
         .Times(1)
         .RetiresOnSaturation();
-    EXPECT_CALL(*command_buffer(), CreateTransferBuffer(size, _, _, _))
+    EXPECT_CALL(*command_buffer(), CreateTransferBuffer(size, _, _))
         .WillOnce(
             Invoke(command_buffer(),
                    &MockClientCommandBufferCanFail::RealCreateTransferBuffer))
@@ -441,7 +439,7 @@ TEST_F(TransferBufferExpandContractTest, ExpandWithLargeAllocations) {
     EXPECT_CALL(*command_buffer(), OrderingBarrier(_))
         .Times(1)
         .RetiresOnSaturation();
-    EXPECT_CALL(*command_buffer(), CreateTransferBuffer(size, _, _, _))
+    EXPECT_CALL(*command_buffer(), CreateTransferBuffer(size, _, _))
         .WillOnce(
             Invoke(command_buffer(),
                    &MockClientCommandBufferCanFail::RealCreateTransferBuffer))
@@ -491,7 +489,7 @@ TEST_F(TransferBufferExpandContractTest, ShrinkRingBuffer) {
     EXPECT_CALL(*command_buffer(), OrderingBarrier(_))
         .Times(1)
         .RetiresOnSaturation();
-    EXPECT_CALL(*command_buffer(), CreateTransferBuffer(size, _, _, _))
+    EXPECT_CALL(*command_buffer(), CreateTransferBuffer(size, _, _))
         .WillOnce(
             Invoke(command_buffer(),
                    &MockClientCommandBufferCanFail::RealCreateTransferBuffer))
@@ -539,12 +537,12 @@ TEST_F(TransferBufferExpandContractTest, Contract) {
 
   // Try to allocate again, fail first request
   EXPECT_CALL(*command_buffer(),
-              CreateTransferBuffer(kStartTransferBufferSize, _, _, _))
+              CreateTransferBuffer(kStartTransferBufferSize, _, _))
       .WillOnce(
           DoAll(SetArgPointee<1>(-1), Return(scoped_refptr<gpu::Buffer>())))
       .RetiresOnSaturation();
   EXPECT_CALL(*command_buffer(),
-              CreateTransferBuffer(kMinTransferBufferSize, _, _, _))
+              CreateTransferBuffer(kMinTransferBufferSize, _, _))
       .WillOnce(
           Invoke(command_buffer(),
                  &MockClientCommandBufferCanFail::RealCreateTransferBuffer))
@@ -572,7 +570,7 @@ TEST_F(TransferBufferExpandContractTest, Contract) {
 
   // Try to allocate again,
   EXPECT_CALL(*command_buffer(),
-              CreateTransferBuffer(kMinTransferBufferSize, _, _, _))
+              CreateTransferBuffer(kMinTransferBufferSize, _, _))
       .WillOnce(
           Invoke(command_buffer(),
                  &MockClientCommandBufferCanFail::RealCreateTransferBuffer))
@@ -598,7 +596,7 @@ TEST_F(TransferBufferExpandContractTest, OutOfMemory) {
   EXPECT_FALSE(transfer_buffer_->HaveBuffer());
 
   // Try to allocate again, fail both requests.
-  EXPECT_CALL(*command_buffer(), CreateTransferBuffer(_, _, _, _))
+  EXPECT_CALL(*command_buffer(), CreateTransferBuffer(_, _, _))
       .WillOnce(
           DoAll(SetArgPointee<1>(-1), Return(scoped_refptr<gpu::Buffer>())))
       .WillOnce(
@@ -628,7 +626,7 @@ TEST_F(TransferBufferExpandContractTest, ReallocsToDefault) {
 
   // See that it gets reallocated.
   EXPECT_CALL(*command_buffer(),
-              CreateTransferBuffer(kStartTransferBufferSize, _, _, _))
+              CreateTransferBuffer(kStartTransferBufferSize, _, _))
       .WillOnce(
           Invoke(command_buffer(),
                  &MockClientCommandBufferCanFail::RealCreateTransferBuffer))

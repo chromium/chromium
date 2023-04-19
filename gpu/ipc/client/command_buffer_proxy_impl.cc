@@ -342,7 +342,6 @@ void CommandBufferProxyImpl::SetGetBuffer(int32_t shm_id) {
 scoped_refptr<gpu::Buffer> CommandBufferProxyImpl::CreateTransferBuffer(
     uint32_t size,
     int32_t* id,
-    uint32_t alignment,
     TransferBufferAllocationOption option) {
   CheckLock();
   base::AutoLock lock(last_state_lock_);

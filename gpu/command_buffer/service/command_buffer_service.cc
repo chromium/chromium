@@ -309,15 +309,12 @@ void CommandBufferService::SetReleaseCount(uint64_t release_count) {
   UpdateState();
 }
 
-scoped_refptr<Buffer> CommandBufferService::CreateTransferBuffer(
-    uint32_t size,
-    int32_t* id,
-    uint32_t alignment) {
+scoped_refptr<Buffer> CommandBufferService::CreateTransferBuffer(uint32_t size,
+                                                                 int32_t* id) {
   *id = GetNextBufferId();
-  auto result = CreateTransferBufferWithId(size, *id, alignment);
-  if (!result) {
+  auto result = CreateTransferBufferWithId(size, *id);
+  if (!result)
     *id = -1;
-  }
   return result;
 }
 
@@ -338,9 +335,8 @@ bool CommandBufferService::RegisterTransferBuffer(
 
 scoped_refptr<Buffer> CommandBufferService::CreateTransferBufferWithId(
     uint32_t size,
-    int32_t id,
-    uint32_t alignment) {
-  scoped_refptr<Buffer> buffer = MakeMemoryBuffer(size, alignment);
+    int32_t id) {
+  scoped_refptr<Buffer> buffer = MakeMemoryBuffer(size);
   if (!RegisterTransferBuffer(id, buffer)) {
     SetParseError(gpu::error::kOutOfBounds);
     return nullptr;

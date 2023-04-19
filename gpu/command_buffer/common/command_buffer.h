@@ -119,7 +119,6 @@ class GPU_EXPORT CommandBuffer {
   virtual scoped_refptr<gpu::Buffer> CreateTransferBuffer(
       uint32_t size,
       int32_t* id,
-      uint32_t alignment = 0,
       TransferBufferAllocationOption option =
           TransferBufferAllocationOption::kLoseContextOnOOM) = 0;
 

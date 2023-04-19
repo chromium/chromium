@@ -34,12 +34,11 @@ class FakeCommandBuffer : public CommandBuffer {
   scoped_refptr<gpu::Buffer> CreateTransferBuffer(
       uint32_t size,
       int32_t* id,
-      uint32_t alignment = 0,
       TransferBufferAllocationOption option =
           TransferBufferAllocationOption::kLoseContextOnOOM) override {
     *id = next_id_++;
     active_ids_.insert(*id);
-    return MakeMemoryBuffer(size, alignment);
+    return MakeMemoryBuffer(size);
   }
   void DestroyTransferBuffer(int32_t id) override {
     auto found = active_ids_.find(id);

@@ -7,7 +7,6 @@
 #include <limits>
 #include <vector>
 
-#include "cc/paint/paint_op_writer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -115,13 +114,13 @@ ImageProvider::ScopedResult TestOptionsProvider::GetRasterContent(
   ClientImageTransferCacheEntry cache_entry(
       ClientImageTransferCacheEntry::Image(&bitmap.pixmap()),
       false /* needs_mips */, target_color_params);
-  const uint32_t data_size = cache_entry.SerializedSize();
-  auto data = PaintOpWriter::AllocateAlignedBuffer<uint8_t>(data_size);
-  if (!cache_entry.Serialize(base::span<uint8_t>(data.get(), data_size))) {
+  std::vector<uint8_t> data;
+  data.resize(cache_entry.SerializedSize());
+  if (!cache_entry.Serialize(base::span<uint8_t>(data.data(), data.size()))) {
     return ScopedResult();
   }
 
-  CreateEntryDirect(entry_key, base::span<uint8_t>(data.get(), data_size));
+  CreateEntryDirect(entry_key, base::span<uint8_t>(data.data(), data.size()));
 
   return ScopedResult(DecodedDrawImage(
       image_id, nullptr, SkSize::MakeEmpty(), draw_image.scale(),
