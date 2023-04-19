@@ -16,8 +16,8 @@
   Resources.ServiceWorkersView.setThrottleDisabledForDebugging = true;
 
   UI.panels.resources.sidebar.serviceWorkersTreeElement.select();
-  ApplicationTestRunner.registerServiceWorker(scriptURL, scope1);
-  ApplicationTestRunner.registerServiceWorker(scriptURL, scope2);
+  await ApplicationTestRunner.registerServiceWorker(scriptURL, scope1);
+  await ApplicationTestRunner.registerServiceWorker(scriptURL, scope2);
   const element = UI.panels.resources.visibleView.contentElement;
 
   await AxeCoreTestRunner.runValidation(element);
