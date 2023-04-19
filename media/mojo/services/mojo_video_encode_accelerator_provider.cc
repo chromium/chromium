@@ -73,8 +73,7 @@ void MojoVideoEncodeAcceleratorProvider::CreateVideoEncodeAccelerator(
 
   if (base::FeatureList::IsEnabled(kUseTaskRunnerForMojoVEAService)) {
 #if BUILDFLAG(IS_WIN)
-    base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()},
-        base::SingleThreadTaskRunnerThreadMode::DEDICATED)
+    base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})
 #else
     base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
 #endif
