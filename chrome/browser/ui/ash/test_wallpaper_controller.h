@@ -90,6 +90,9 @@ class TestWallpaperController : public ash::WallpaperController {
 
   // ash::WallpaperController:
   void SetClient(ash::WallpaperControllerClient* client) override;
+  ash::WallpaperDragDropDelegate* GetDragDropDelegate() override;
+  void SetDragDropDelegate(
+      std::unique_ptr<ash::WallpaperDragDropDelegate> delegate) override;
   void SetDriveFsDelegate(
       std::unique_ptr<ash::WallpaperDriveFsDelegate> drivefs_delegate) override;
   void Init(const base::FilePath& user_data,

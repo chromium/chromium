@@ -31,6 +31,7 @@ namespace ash {
 
 class WallpaperControllerObserver;
 class WallpaperControllerClient;
+class WallpaperDragDropDelegate;
 class WallpaperDriveFsDelegate;
 
 // Used by Chrome to set the wallpaper displayed by ash.
@@ -49,6 +50,12 @@ class ASH_PUBLIC_EXPORT WallpaperController {
 
   // Sets the client interface, used to show the wallpaper picker, etc.
   virtual void SetClient(WallpaperControllerClient* client) = 0;
+
+  // Gets/sets the delegate for drag-and-drop events over the wallpaper.
+  // NOTE: May be `nullptr` when drag-and-drop related features are disabled.
+  virtual WallpaperDragDropDelegate* GetDragDropDelegate() = 0;
+  virtual void SetDragDropDelegate(
+      std::unique_ptr<WallpaperDragDropDelegate> delegate) = 0;
 
   virtual void SetDriveFsDelegate(
       std::unique_ptr<WallpaperDriveFsDelegate> drivefs_delegate) = 0;

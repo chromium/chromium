@@ -5,13 +5,15 @@
 #ifndef ASH_WALLPAPER_WALLPAPER_VIEW_H_
 #define ASH_WALLPAPER_WALLPAPER_VIEW_H_
 
+#include <set>
+
 #include "ash/wallpaper/wallpaper_base_view.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ui/views/context_menu_controller.h"
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
 
 namespace ash {
 
@@ -43,6 +45,13 @@ class WallpaperView : public WallpaperBaseView,
   const char* GetClassName() const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  bool AreDropTypesRequired() override;
+  bool CanDrop(const ui::OSExchangeData& data) override;
+  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override;
+  bool GetDropFormats(int*, std::set<ui::ClipboardFormatType>*) override;
+  void OnDragEntered(const ui::DropTargetEvent& event) override;
+  int OnDragUpdated(const ui::DropTargetEvent& event) override;
+  void OnDragExited() override;
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(views::View* source,

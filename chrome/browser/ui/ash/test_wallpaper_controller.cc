@@ -9,6 +9,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_drivefs_delegate.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "ash/wallpaper/wallpaper_drag_drop_delegate.h"
 #include "base/containers/adapters.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -48,6 +49,15 @@ void TestWallpaperController::ClearCounts() {
 void TestWallpaperController::SetClient(
     ash::WallpaperControllerClient* client) {
   was_client_set_ = true;
+}
+
+ash::WallpaperDragDropDelegate* TestWallpaperController::GetDragDropDelegate() {
+  return nullptr;
+}
+
+void TestWallpaperController::SetDragDropDelegate(
+    std::unique_ptr<ash::WallpaperDragDropDelegate> delegate) {
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void TestWallpaperController::SetDriveFsDelegate(
