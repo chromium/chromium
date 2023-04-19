@@ -89,9 +89,9 @@ Tile* PictureLayerTiling::CreateTile(const Tile::CreateInfo& info) {
 
   all_tiles_done_ = false;
   std::unique_ptr<Tile> tile = client_->CreateTile(info);
-  Tile* raw_ptr = tile.get();
+  Tile* tile_ptr = tile.get();
   tiles_[key] = std::move(tile);
-  return raw_ptr;
+  return tile_ptr;
 }
 
 void PictureLayerTiling::CreateMissingTilesInLiveTilesRect() {

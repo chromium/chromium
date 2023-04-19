@@ -638,8 +638,8 @@ void GpuDiskCache::Cache(const std::string& key, const std::string& blob) {
 
   auto shim = std::make_unique<GpuDiskCacheEntry>(this, key, blob);
   shim->Cache();
-  auto* raw_ptr = shim.get();
-  entries_.insert(std::make_pair(raw_ptr, std::move(shim)));
+  auto* ptr = shim.get();
+  entries_.insert(std::make_pair(ptr, std::move(shim)));
 }
 
 int GpuDiskCache::Clear(base::Time begin_time,

@@ -155,27 +155,27 @@ TEST(HashMapTest, OwnPtrAsValue) {
 TEST(HashMapTest, RefPtrAsKey) {
   bool is_deleted = false;
   DummyRefCounted::ref_invokes_count_ = 0;
-  scoped_refptr<DummyRefCounted> ptr =
+  scoped_refptr<DummyRefCounted> object =
       base::AdoptRef(new DummyRefCounted(is_deleted));
   EXPECT_EQ(0, DummyRefCounted::ref_invokes_count_);
   HashMap<scoped_refptr<DummyRefCounted>, int> map;
-  map.insert(ptr, 1);
+  map.insert(object, 1);
   // Referenced only once (to store a copy in the container).
   EXPECT_EQ(1, DummyRefCounted::ref_invokes_count_);
-  EXPECT_EQ(1, map.at(ptr));
+  EXPECT_EQ(1, map.at(object));
 
-  DummyRefCounted* raw_ptr = ptr.get();
+  DummyRefCounted* ptr = object.get();
 
-  EXPECT_TRUE(map.Contains(raw_ptr));
-  EXPECT_NE(map.end(), map.find(raw_ptr));
   EXPECT_TRUE(map.Contains(ptr));
   EXPECT_NE(map.end(), map.find(ptr));
+  EXPECT_TRUE(map.Contains(object));
+  EXPECT_NE(map.end(), map.find(object));
   EXPECT_EQ(1, DummyRefCounted::ref_invokes_count_);
 
-  ptr = nullptr;
+  object = nullptr;
   EXPECT_FALSE(is_deleted);
 
-  map.erase(raw_ptr);
+  map.erase(ptr);
   EXPECT_EQ(1, DummyRefCounted::ref_invokes_count_);
   EXPECT_TRUE(is_deleted);
   EXPECT_TRUE(map.empty());
@@ -188,16 +188,16 @@ TEST(HashMaptest, RemoveAdd) {
   typedef HashMap<int, scoped_refptr<DummyRefCounted>> Map;
   Map map;
 
-  scoped_refptr<DummyRefCounted> ptr =
+  scoped_refptr<DummyRefCounted> object =
       base::AdoptRef(new DummyRefCounted(is_deleted));
   EXPECT_EQ(0, DummyRefCounted::ref_invokes_count_);
 
-  map.insert(1, ptr);
+  map.insert(1, object);
   // Referenced only once (to store a copy in the container).
   EXPECT_EQ(1, DummyRefCounted::ref_invokes_count_);
-  EXPECT_EQ(ptr, map.at(1));
+  EXPECT_EQ(object, map.at(1));
 
-  ptr = nullptr;
+  object = nullptr;
   EXPECT_FALSE(is_deleted);
 
   map.erase(1);

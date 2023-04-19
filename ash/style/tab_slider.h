@@ -49,9 +49,9 @@ class ASH_EXPORT TabSlider : public views::View {
   // AddButton(std::make_unique<SliderButtonType>(...)).
   template <typename T>
   T* AddButton(std::unique_ptr<T> button) {
-    T* raw_ptr = button.get();
+    T* button_ptr = button.get();
     AddButtonInternal(button.release());
-    return raw_ptr;
+    return button_ptr;
   }
 
   // Add a button with the button's ctor arguments. For example

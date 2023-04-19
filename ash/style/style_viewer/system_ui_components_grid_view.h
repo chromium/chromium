@@ -41,9 +41,9 @@ class SystemUIComponentsGridView : public views::View {
   // Adds a new instance and returns the raw pointer of the instance.
   template <typename T>
   T* AddInstance(const std::u16string& name, std::unique_ptr<T> instance) {
-    T* raw_ptr = instance.get();
+    T* instance_ptr = instance.get();
     AddInstanceImpl(name, instance.release());
-    return raw_ptr;
+    return instance_ptr;
   }
 
   // views::View:
