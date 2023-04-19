@@ -215,7 +215,7 @@ TEST_F(IBANSaveManagerTest, LocallySaveIBAN_AttemptToOfferIBANLocalSave) {
 TEST_F(IBANSaveManagerTest,
        LocallySaveIBAN_MaxStrikesShouldNotOfferToSave_Metrics) {
   base::HistogramTester histogram_tester;
-  IBAN iban(base::GenerateUuid());
+  IBAN iban(base::Uuid::GenerateRandomV4().AsLowercaseString());
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
   IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
   iban_save_strike_database.AddStrikes(
@@ -235,7 +235,7 @@ TEST_F(IBANSaveManagerTest,
 
 TEST_F(IBANSaveManagerTest, StrikesPresentWhenIBANSaved_Local) {
   base::HistogramTester histogram_tester;
-  IBAN iban(base::GenerateUuid());
+  IBAN iban(base::Uuid::GenerateRandomV4().AsLowercaseString());
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
   IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
   iban_save_strike_database.AddStrike(IBANSaveManager::GetPartialIbanHashString(
