@@ -445,4 +445,10 @@ void RootFrameSink::OnCaptureStarted(const viz::FrameSinkId& frame_sink_id) {
     client_->Invalidate();
 }
 
+void RootFrameSink::InvalidateForOverlays() {
+  if (client_) {
+    client_->Invalidate();
+  }
+}
+
 }  // namespace android_webview
