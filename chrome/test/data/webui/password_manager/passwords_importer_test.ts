@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {CrDialogElement, PasswordManagerImpl, PasswordsImporterElement} from 'chrome://password-manager/password_manager.js';
+import {CrDialogElement, Page, PasswordManagerImpl, PasswordsImporterElement, Router} from 'chrome://password-manager/password_manager.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -217,6 +217,38 @@ suite('PasswordsImporterTest', function() {
     assertVisibleTextContent(dialog, '#closeButton', importer.i18n('close'));
 
     assertButtonShouldCloseDialog(importer, dialog, '#closeButton');
+  });
+
+
+  test('view passwords navigates to the passwords page', async function() {
+    const importer = createPasswordsImporter();
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
+      numberImported: 42,
+      displayedEntries: [],
+      fileName: 'test.csv',
+    });
+
+    await triggerImportHelper(importer, passwordManager);
+    await pluralString.whenCalled('getPluralString');
+    await flushTasks();
+
+    const dialog =
+        importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+    assertTrue(!!dialog);
+    assertTrue(dialog.open);
+
+    assertVisibleTextContent(
+        dialog, '#viewPasswordsButton', importer.i18n('viewPasswordsButton'));
+    const button = dialog.querySelector<HTMLElement>('#viewPasswordsButton');
+    assertTrue(!!button);
+    // Should close the dialog and navigate to PASSWORDS page.
+    button.click();
+    flush();
+    assertFalse(
+        !!importer.shadowRoot!.querySelector<CrDialogElement>('#dialog'));
+    await flushTasks();
+    assertEquals(Page.PASSWORDS, Router.getInstance().currentRoute.page);
   });
 
   test('has correct success state with failures', async function() {

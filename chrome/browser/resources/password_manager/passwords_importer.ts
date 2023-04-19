@@ -17,6 +17,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_importer.html.js';
+import {Page, Router} from './router.js';
 
 export interface PasswordsImporterElement {
   $: {
@@ -169,6 +170,11 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
 
   private onCloseClick_() {
     this.closeDialog_();
+  }
+
+  private onViewPasswordsClick_() {
+    this.closeDialog_();
+    Router.getInstance().navigateTo(Page.PASSWORDS);
   }
 
   private async onSelectFileClick_() {
