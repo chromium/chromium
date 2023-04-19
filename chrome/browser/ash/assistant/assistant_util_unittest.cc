@@ -46,38 +46,10 @@ class ScopedSpoofGoogleBrandedDevice {
   ~ScopedSpoofGoogleBrandedDevice() { OverrideIsGoogleDeviceForTesting(false); }
 };
 
-class FakeUserManagerWithLocalState : public ash::FakeChromeUserManager {
- public:
-  explicit FakeUserManagerWithLocalState(
-      TestingProfileManager* testing_profile_manager)
-      : testing_profile_manager_(testing_profile_manager),
-        test_local_state_(std::make_unique<TestingPrefServiceSimple>()) {
-    RegisterPrefs(test_local_state_->registry());
-  }
-
-  FakeUserManagerWithLocalState(const FakeUserManagerWithLocalState&) = delete;
-  FakeUserManagerWithLocalState& operator=(
-      const FakeUserManagerWithLocalState&) = delete;
-
-  PrefService* GetLocalState() const override {
-    return test_local_state_.get();
-  }
-
-  TestingProfileManager* testing_profile_manager() {
-    return testing_profile_manager_;
-  }
-
- private:
-  // Unowned pointer.
-  TestingProfileManager* const testing_profile_manager_;
-
-  std::unique_ptr<TestingPrefServiceSimple> test_local_state_;
-};
-
 class ScopedLogIn {
  public:
   ScopedLogIn(
-      FakeUserManagerWithLocalState* fake_user_manager,
+      ash::FakeChromeUserManager* fake_user_manager,
       signin::IdentityTestEnvironment* identity_test_env,
       const AccountId& account_id,
       user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR)
@@ -179,7 +151,7 @@ class ScopedLogIn {
     return account_id_.GetAccountType() == AccountType::GOOGLE;
   }
 
-  FakeUserManagerWithLocalState* fake_user_manager_;
+  ash::FakeChromeUserManager* fake_user_manager_;
   signin::IdentityTestEnvironment* identity_test_env_;
   const AccountId account_id_;
 };
@@ -209,8 +181,7 @@ class ChromeAssistantUtilTest : public testing::Test {
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<FakeUserManagerWithLocalState>(
-            profile_manager_.get()));
+        std::make_unique<ash::FakeChromeUserManager>());
 
     ui::DeviceDataManager::CreateInstance();
   }
@@ -230,8 +201,8 @@ class ChromeAssistantUtilTest : public testing::Test {
     return identity_test_env_adaptor_->identity_test_env();
   }
 
-  FakeUserManagerWithLocalState* GetFakeUserManager() const {
-    return static_cast<FakeUserManagerWithLocalState*>(
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 

@@ -63,9 +63,10 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
     kMaxValue = kLSUDeleted
   };
 
-  // Creates UserManagerBase with |task_runner| for UI thread.
-  explicit UserManagerBase(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  // Creates UserManagerBase with |task_runner| for UI thread, and given
+  // |local_state|. |local_state| must outlive this UserManager.
+  UserManagerBase(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+                  PrefService* local_state);
 
   UserManagerBase(const UserManagerBase&) = delete;
   UserManagerBase& operator=(const UserManagerBase&) = delete;
@@ -159,6 +160,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   void NotifyUserToBeRemoved(const AccountId& account_id) override;
   void NotifyUserRemoved(const AccountId& account_id,
                          UserRemovalReason reason) override;
+  PrefService* GetLocalState() const final;
   void Initialize() override;
 
   // This method updates "User was added to the device in this session nad is
@@ -417,6 +419,8 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
   // TaskRunner for UI thread.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  const base::raw_ptr<PrefService> local_state_;
 
   base::WeakPtrFactory<UserManagerBase> weak_factory_{this};
 };

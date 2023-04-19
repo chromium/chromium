@@ -1166,8 +1166,8 @@ TEST_F(ManagementUIHandlerTests,
                    base::Value("www.test-dns.com"));
 
   // Owned by |scoped_user_manager|.
-  auto user_manager = std::make_unique<user_manager::FakeUserManager>();
-  user_manager->set_local_state(&local_state_);
+  auto user_manager =
+      std::make_unique<user_manager::FakeUserManager>(&local_state_);
   // The DNS templates with identifiers only work is a user is logged in.
   const AccountId account_id(AccountId::FromUserEmailGaiaId(kUser, kGaiaId));
   user_manager->AddUser(account_id);

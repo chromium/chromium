@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/net/fake_nss_service.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/ownership/mock_owner_key_util.h"
@@ -48,8 +49,6 @@ class OwnerKeyLoaderTest : public testing::Test {
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
 
-    user_manager_->CreateLocalState();
-
     owner_key_util_ = base::MakeRefCounted<ownership::MockOwnerKeyUtil>();
 
     device_settings_service_.SetSessionManager(&session_manager_client_,
@@ -83,6 +82,8 @@ class OwnerKeyLoaderTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  ScopedTestingLocalState scoped_local_state_{
+      TestingBrowserProcess::GetGlobal()};
 
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   ash::FakeChromeUserManager* user_manager_ = nullptr;

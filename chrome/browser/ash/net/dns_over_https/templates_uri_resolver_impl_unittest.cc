@@ -95,8 +95,7 @@ class TemplatesUriResolverImplTest : public testing::Test {
         prefs::kDnsOverHttpsTemplatesWithIdentifiers, "");
     pref_service_.registry()->RegisterStringPref(prefs::kDnsOverHttpsSalt, "");
 
-    fake_user_manager_ = new user_manager::FakeUserManager();
-    fake_user_manager_->set_local_state(&pref_service_);
+    fake_user_manager_ = new user_manager::FakeUserManager(&pref_service_);
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager_));
 

@@ -34,7 +34,6 @@
 #include "components/user_manager/user.h"
 
 class PrefRegistrySimple;
-class PrefService;
 
 namespace gfx {
 class ImageSkia;
@@ -143,7 +142,6 @@ class ChromeUserManagerImpl
 
  protected:
   const std::string& GetApplicationLocale() const override;
-  PrefService* GetLocalState() const override;
   void LoadDeviceLocalAccounts(std::set<AccountId>* users_set) override;
   void NotifyOnLogin() override;
   void NotifyUserAddedToSession(const user_manager::User* added_user,

@@ -24,6 +24,8 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -232,14 +234,6 @@ class BrowserDataMigratorRestartTest : public ::testing::Test {
     fake_user_manager_ = new ash::FakeChromeUserManager;
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager_));
-    fake_user_manager_->CreateLocalState();
-
-    auto* local_state_simple =
-        static_cast<TestingPrefServiceSimple*>(local_state());
-    BrowserDataMigratorImpl::RegisterLocalStatePrefs(
-        local_state_simple->registry());
-    crosapi::browser_util::RegisterLocalStatePrefs(
-        local_state_simple->registry());
   }
 
   void AddRegularUser(const std::string& email) {
@@ -259,6 +253,8 @@ class BrowserDataMigratorRestartTest : public ::testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  ScopedTestingLocalState scoped_local_state_{
+      TestingBrowserProcess::GetGlobal()};
   TestingProfile testing_profile_;
   ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;

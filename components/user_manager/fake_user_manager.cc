@@ -42,10 +42,10 @@ class FakeTaskRunner : public base::SingleThreadTaskRunner {
 
 namespace user_manager {
 
-FakeUserManager::FakeUserManager() : UserManagerBase(new FakeTaskRunner()) {}
+FakeUserManager::FakeUserManager(PrefService* local_state)
+    : UserManagerBase(new FakeTaskRunner(), local_state) {}
 
-FakeUserManager::~FakeUserManager() {
-}
+FakeUserManager::~FakeUserManager() = default;
 
 std::string FakeUserManager::GetFakeUsernameHash(const AccountId& account_id) {
   // Consistent with the
@@ -358,10 +358,6 @@ void FakeUserManager::SetEphemeralModeConfig(
 const std::string& FakeUserManager::GetApplicationLocale() const {
   static const std::string default_locale("en-US");
   return default_locale;
-}
-
-PrefService* FakeUserManager::GetLocalState() const {
-  return local_state_;
 }
 
 bool FakeUserManager::IsEnterpriseManaged() const {

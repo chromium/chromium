@@ -375,7 +375,6 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
     }
 
     GetFakeUserManager()->LoginUser(account_id);
-    GetFakeUserManager()->CreateLocalState();
 
     // Create test profile.
     TestingProfile::Builder profile_builder;

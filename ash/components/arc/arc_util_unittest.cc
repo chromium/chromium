@@ -389,12 +389,11 @@ TEST_F(ArcUtilTest, IsArcOptInVerificationDisabled) {
 }
 
 TEST_F(ArcUtilTest, IsArcAllowedForUser) {
+  TestingPrefServiceSimple local_state;
   user_manager::FakeUserManager* fake_user_manager =
-      new user_manager::FakeUserManager();
+      new user_manager::FakeUserManager(&local_state);
   user_manager::ScopedUserManager scoped_user_manager(
       base::WrapUnique(fake_user_manager));
-  TestingPrefServiceSimple local_state;
-  fake_user_manager->set_local_state(&local_state);
 
   struct {
     user_manager::UserType user_type;

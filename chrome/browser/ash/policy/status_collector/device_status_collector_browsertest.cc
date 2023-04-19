@@ -57,6 +57,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_unit_test_suite.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
@@ -837,10 +838,6 @@ class DeviceStatusCollectorTest : public testing::Test {
         crash_dumps_dir_override_(chrome::DIR_CRASH_DUMPS) {
     scoped_stub_install_attributes_.Get()->SetCloudManaged("managed.com",
                                                            "device_id");
-    auto* user_manager = GetFakeChromeUserManager();
-    user_manager->CreateLocalState();
-    TestingPrefServiceSimple* local_state =
-        static_cast<TestingPrefServiceSimple*>(user_manager->GetLocalState());
 
     // Ensure mojo is started, otherwise browser context keyed services that
     // rely on mojo will explode.
@@ -884,14 +881,8 @@ class DeviceStatusCollectorTest : public testing::Test {
 
     // DiskMountManager takes ownership of the MockDiskMountManager.
     DiskMountManager::InitializeForTesting(mock_disk_mount_manager.release());
-    TestingDeviceStatusCollector::RegisterPrefs(local_state->registry());
     TestingDeviceStatusCollector::RegisterProfilePrefs(
         profile_pref_service_.registry());
-
-    // Set up a fake local state for KioskAppManager and KioskCryptohomeRemover.
-    TestingBrowserProcess::GetGlobal()->SetLocalState(local_state);
-    ash::KioskAppManager::RegisterLocalStatePrefs(local_state->registry());
-    ash::KioskCryptohomeRemover::RegisterPrefs(local_state->registry());
 
     // Use FakeUpdateEngineClient.
     update_engine_client_ = ash::UpdateEngineClient::InitializeFakeForTest();
@@ -929,7 +920,6 @@ class DeviceStatusCollectorTest : public testing::Test {
     ash::UpdateEngineClient::Shutdown();
     ash::cros_healthd::FakeCrosHealthd::Shutdown();
     ash::FakeSpacedClient::Shutdown();
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 
     // Finish pending tasks.
     content::RunAllTasksUntilIdle();
@@ -1179,6 +1169,8 @@ class DeviceStatusCollectorTest : public testing::Test {
   // unit test setup and make a TestingBrowserProcess. Must be first member.
   TestingBrowserProcessInitializer initializer_;
   content::BrowserTaskEnvironment task_environment_;
+  ScopedTestingLocalState scoped_local_state_{
+      TestingBrowserProcess::GetGlobal()};
 
   ChromeContentClient content_client_;
   ChromeContentBrowserClient browser_content_client_;

@@ -34,9 +34,11 @@ std::string FullyCanonicalize(const std::string& email) {
 
 ChromeUserManager::ChromeUserManager(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : UserManagerBase(std::move(task_runner)) {}
+    : UserManagerBase(
+          std::move(task_runner),
+          g_browser_process ? g_browser_process->local_state() : nullptr) {}
 
-ChromeUserManager::~ChromeUserManager() {}
+ChromeUserManager::~ChromeUserManager() = default;
 
 // static
 void ChromeUserManager::RegisterPrefs(PrefRegistrySimple* registry) {

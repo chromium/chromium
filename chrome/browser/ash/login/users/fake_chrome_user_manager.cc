@@ -662,11 +662,6 @@ bool FakeChromeUserManager::IsUserAllowed(
   return true;
 }
 
-void FakeChromeUserManager::CreateLocalState() {
-  local_state_ = std::make_unique<TestingPrefServiceSimple>();
-  ChromeUserManager::RegisterPrefs(local_state_->registry());
-}
-
 void FakeChromeUserManager::SimulateUserProfileLoad(
     const AccountId& account_id) {
   for (auto* user : users_) {
@@ -675,13 +670,6 @@ void FakeChromeUserManager::SimulateUserProfileLoad(
       break;
     }
   }
-}
-
-PrefService* FakeChromeUserManager::GetLocalState() const {
-  if (local_state_.get()) {
-    return local_state_.get();
-  }
-  return g_browser_process ? g_browser_process->local_state() : nullptr;
 }
 
 void FakeChromeUserManager::SetIsCurrentUserNew(bool is_new) {

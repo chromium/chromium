@@ -108,7 +108,6 @@ class AppMenuModelTest : public BrowserWithTestWindowTest,
     user_manager->UserLoggedIn(account_id, user->username_hash(),
                                /*browser_restart=*/false,
                                /*is_child=*/false);
-    user_manager->set_local_state(g_browser_process->local_state());
 #endif
   }
 

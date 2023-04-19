@@ -68,10 +68,6 @@ class FakeChromeUserManager : public ChromeUserManager {
       user_manager::UserType user_type,
       TestingProfile* profile);
 
-  // Creates the instance returned by `GetLocalState()` (which returns nullptr
-  // by default).
-  void CreateLocalState();
-
   // Sets the user profile created flag to simulate finishing user
   // profile loading. Note this does not create a profile.
   void SimulateUserProfileLoad(const AccountId& account_id);
@@ -134,7 +130,6 @@ class FakeChromeUserManager : public ChromeUserManager {
   bool IsGaiaUserAllowed(const user_manager::User& user) const override;
   bool IsUserAllowed(const user_manager::User& user) const override;
   bool IsEphemeralAccountId(const AccountId& account_id) const override;
-  PrefService* GetLocalState() const override;
   const AccountId& GetGuestAccountId() const override;
   bool IsFirstExecAfterBoot() const override;
   void AsyncRemoveCryptohome(const AccountId& account_id) const override;
@@ -249,8 +244,6 @@ class FakeChromeUserManager : public ChromeUserManager {
   mutable std::unique_ptr<UserFlow> default_flow_;
 
   using FlowMap = std::map<AccountId, UserFlow*>;
-
-  std::unique_ptr<TestingPrefServiceSimple> local_state_;
 
   // Specific flows by user e-mail.
   // Keys should be canonicalized before access.
