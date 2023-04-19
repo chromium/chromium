@@ -18,13 +18,13 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
@@ -253,7 +253,7 @@ AggregatableReportRequest CreateExampleRequestWithReportTime(
              AggregatableReportSharedInfo(
                  /*scheduled_report_time=*/report_time,
                  /*report_id=*/
-                 base::GUID::GenerateRandomV4(),
+                 base::Uuid::GenerateRandomV4(),
                  url::Origin::Create(GURL("https://reporting.example")),
                  AggregatableReportSharedInfo::DebugMode::kDisabled,
                  /*additional_fields=*/base::Value::Dict(),
