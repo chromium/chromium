@@ -17,6 +17,7 @@
 #include "components/policy/core/browser/configuration_policy_handler.h"  // nogncheck http://crbug.com/1227148
 #include "components/policy/core/browser/url_blocklist_policy_handler.h"  // nogncheck http://crbug.com/1227148
 #include "components/policy/core/common/async_policy_provider.h"  // nogncheck http://crbug.com/1227148
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "headless/lib/browser/policy/headless_prefs.h"
@@ -81,7 +82,11 @@ scoped_refptr<PrefStore> HeadlessBrowserPolicyConnector::CreatePrefStore(
 
 void HeadlessBrowserPolicyConnector::Init(
     PrefService* local_state,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {}
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  if (PolicyLogger::GetInstance()->IsPolicyLoggingEnabled()) {
+    PolicyLogger::GetInstance()->EnableLogDeletion();
+  }
+}
 
 bool HeadlessBrowserPolicyConnector::IsDeviceEnterpriseManaged() const {
   return false;

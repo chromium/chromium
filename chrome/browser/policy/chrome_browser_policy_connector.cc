@@ -30,6 +30,7 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/command_line_policy_provider.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_proto_decoders.h"
@@ -107,6 +108,9 @@ void ChromeBrowserPolicyConnector::OnResourceBundleCreated() {
 void ChromeBrowserPolicyConnector::Init(
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  if (PolicyLogger::GetInstance()->IsPolicyLoggingEnabled()) {
+    PolicyLogger::GetInstance()->EnableLogDeletion();
+  }
   std::unique_ptr<DeviceManagementService::Configuration> configuration(
       new DeviceManagementServiceConfiguration(GetDeviceManagementUrl(),
                                                GetRealtimeReportingUrl(),

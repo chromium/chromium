@@ -72,6 +72,7 @@ TEST_F(PolicyLoggerTest, PolicyLoggingEnabled) {
 // Checks that the deletion of expired logs works as expected.
 TEST_F(PolicyLoggerTest, DeleteOldLogs) {
   PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();
+  policy_logger->EnableLogDeletion();
   size_t logs_size_before_adding = policy_logger->GetPolicyLogsSizeForTesting();
 
   AddLogs("First log at t=0.", policy_logger);

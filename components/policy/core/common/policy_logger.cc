@@ -179,7 +179,7 @@ void PolicyLogger::AddLog(PolicyLogger::Log&& new_log) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(logs_list_sequence_checker_);
     logs_.emplace_back(std::move(new_log));
 
-    if (!is_log_deletion_scheduled_) {
+    if (!is_log_deletion_scheduled_ && is_log_deletion_enabled_) {
       ScheduleOldLogsDeletion();
     }
   }
@@ -225,6 +225,10 @@ bool PolicyLogger::IsPolicyLoggingEnabled() const {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+void PolicyLogger::EnableLogDeletion() {
+  is_log_deletion_enabled_ = true;
+}
+
 size_t PolicyLogger::GetPolicyLogsSizeForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(logs_list_sequence_checker_);
   return logs_.size();
@@ -234,6 +238,7 @@ void PolicyLogger::ResetLoggerAfterTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(logs_list_sequence_checker_);
   logs_.erase(logs_.begin(), logs_.end());
   is_log_deletion_scheduled_ = false;
+  is_log_deletion_enabled_ = false;
 }
 
 }  // namespace policy

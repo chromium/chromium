@@ -18,6 +18,7 @@
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/configuration_policy_provider.h"
 #import "components/policy/core/common/policy_loader_ios.h"
+#import "components/policy/core/common/policy_logger.h"
 #import "ios/chrome/browser/policy/chrome_browser_cloud_management_controller_ios.h"
 #import "ios/chrome/browser/policy/device_management_service_configuration_ios.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -53,6 +54,9 @@ ConfigurationPolicyProvider* BrowserPolicyConnectorIOS::GetPlatformProvider() {
 void BrowserPolicyConnectorIOS::Init(
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  if (policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled()) {
+    policy::PolicyLogger::GetInstance()->EnableLogDeletion();
+  }
   std::unique_ptr<policy::DeviceManagementService::Configuration> configuration(
       new policy::DeviceManagementServiceConfigurationIOS(
           GetDeviceManagementUrl(), GetRealtimeReportingUrl(),
