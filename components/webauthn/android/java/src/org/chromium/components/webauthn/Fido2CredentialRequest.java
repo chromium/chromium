@@ -13,7 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.OutcomeReceiver;
 import android.os.Parcel;
-import android.os.SystemClock;
 import android.util.Base64;
 import android.util.Pair;
 
@@ -88,7 +87,6 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     private FidoErrorResponseCallback mErrorCallback;
     private WebContents mWebContents;
     private boolean mAppIdExtensionUsed;
-    private long mStartTimeMs;
     private boolean mEchoCredProps;
     private WebAuthnBrowserBridge mBrowserBridge;
     private boolean mAttestationAcceptable;
@@ -502,11 +500,6 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
             return;
         }
-
-        // Record starting time that will be used to establish a timeout that will
-        // be activated when we receive a response that cannot be returned to the
-        // relying party prior to timeout.
-        mStartTimeMs = SystemClock.elapsedRealtime();
 
         if (!mIntentSender.showIntent(pendingIntent, this)) {
             Log.e(TAG, "Failed to send intent to FIDO API");
