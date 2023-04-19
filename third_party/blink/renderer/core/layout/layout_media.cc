@@ -66,8 +66,6 @@ void LayoutMedia::UpdateLayout() {
 
   auto new_rect = PhysicalContentBoxRect().ToLayoutRect();
 
-  LayoutState state(*this);
-
 // Iterate the children in reverse order so that the media controls are laid
 // out before the text track container. This is to ensure that the text
 // track rendering has an up-to-date position of the media controls for

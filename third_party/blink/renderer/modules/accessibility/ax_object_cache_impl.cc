@@ -2834,14 +2834,10 @@ void AXObjectCacheImpl::FireAXEventImmediately(
     ax::mojom::blink::Action event_from_action,
     const BlinkAXEventIntentsSet& event_intents) {
 #if DCHECK_IS_ON()
-  // Make sure none of the layout views are in the process of being laid out.
-  // Notifications should only be sent after the layoutObject has finished
-  auto* ax_layout_object = DynamicTo<AXLayoutObject>(obj);
-  if (ax_layout_object) {
-    LayoutObject* layout_object = ax_layout_object->GetLayoutObject();
-    if (layout_object && layout_object->View())
-      DCHECK(!layout_object->View()->GetLayoutState());
-  }
+  // Make sure that we're not in the process of being laid out. Notifications
+  // should only be sent after the LayoutObject has finished
+  DCHECK(GetDocument().Lifecycle().GetState() !=
+         DocumentLifecycle::kInPerformLayout);
 
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
 #endif  // DCHECK_IS_ON()

@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_quote.h"
-#include "third_party/blink/renderer/core/layout/layout_state.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -178,11 +177,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   void CalculateScrollbarModes(mojom::blink::ScrollbarMode& h_mode,
                                mojom::blink::ScrollbarMode& v_mode) const;
 
-  LayoutState* GetLayoutState() const {
-    NOT_DESTROYED();
-    return layout_state_;
-  }
-
   bool CanHaveAdditionalCompositingReasons() const override {
     NOT_DESTROYED();
     return true;
@@ -277,16 +271,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   // https://drafts.csswg.org/css-values-4/#dynamic-viewport-size
   gfx::SizeF DynamicViewportSizeForViewportUnits() const;
 
-  void PushLayoutState(LayoutState& layout_state) {
-    NOT_DESTROYED();
-    layout_state_ = &layout_state;
-  }
-  void PopLayoutState() {
-    NOT_DESTROYED();
-    DCHECK(layout_state_);
-    layout_state_ = layout_state_->Next();
-  }
-
   PhysicalRect LocalVisualRectIgnoringVisibility() const override;
 
   // Invalidates paint for the entire view, including composited descendants,
@@ -358,13 +342,7 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
  private:
   bool CanHaveChildren() const override;
-
   void UpdateBlockLayout(bool relayout_children) override;
-
-#if DCHECK_IS_ON()
-  void CheckLayoutState();
-#endif
-
   void UpdateFromStyle() override;
 
   Member<LocalFrameView> frame_view_;
@@ -373,12 +351,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   // This is only used during printing to split the content into pages.
   // Outside of printing, this is 0x0.
   PhysicalSize page_size_;
-
-  // LayoutState is an optimization used during layout.
-  // |m_layoutState| will be nullptr outside of layout.
-  //
-  // See the class comment for more details.
-  LayoutState* layout_state_;
 
   Member<ViewFragmentationContext> fragmentation_context_;
 

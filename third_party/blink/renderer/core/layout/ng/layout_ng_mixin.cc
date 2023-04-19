@@ -298,12 +298,11 @@ const NGLayoutResult* LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
   DCHECK(this->CreatesNewFormattingContext());
 
   const NGLayoutResult* previous_result = Base::GetSingleCachedLayoutResult();
-  bool is_layout_root = !Base::View()->GetLayoutState()->Next();
 
   // If we are a layout root, use the previous space if available. This will
   // include any stretched sizes if applicable.
   NGConstraintSpace constraint_space =
-      is_layout_root && CanUseConstraintSpaceForCaching(previous_result, *this)
+      CanUseConstraintSpaceForCaching(previous_result, *this)
           ? previous_result->GetConstraintSpaceForCaching()
           : NGConstraintSpace::CreateFromLayoutObject(*this);
 
@@ -320,7 +319,7 @@ const NGLayoutResult* LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
 
   // Even if we are a layout root, our baseline may have shifted. In this
   // (rare) case, mark our containing-block for layout.
-  if (is_layout_root && previous_result) {
+  if (previous_result) {
     if (To<NGPhysicalBoxFragment>(previous_result->PhysicalFragment())
             .FirstBaseline() != physical_fragment.FirstBaseline()) {
       if (auto* containing_block = Base::ContainingBlock()) {

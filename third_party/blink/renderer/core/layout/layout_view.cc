@@ -103,7 +103,6 @@ class HitTestLatencyRecorder {
 LayoutView::LayoutView(ContainerNode* document)
     : LayoutBlockFlow(document),
       frame_view_(To<Document>(document)->View()),
-      layout_state_(nullptr),
       layout_quote_head_(nullptr),
       layout_counter_count_(0),
       hit_test_count_(0),
@@ -270,13 +269,6 @@ bool LayoutView::CanHaveChildren() const {
   return !owner->IsDisplayNone();
 }
 
-#if DCHECK_IS_ON()
-void LayoutView::CheckLayoutState() {
-  NOT_DESTROYED();
-  DCHECK(!layout_state_->Next());
-}
-#endif
-
 bool LayoutView::ShouldPlaceBlockDirectionScrollbarOnLogicalLeft() const {
   NOT_DESTROYED();
   LocalFrame& frame = GetFrameView()->GetFrame();
@@ -353,9 +345,6 @@ void LayoutView::UpdateLayout() {
     fragmentation_context_.Clear();
   }
 
-  DCHECK(!layout_state_);
-  LayoutState root_layout_state(*this);
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // The font code in FontPlatformData does not have a direct connection to the
   // document, the frame or anything from which we could retrieve the device
@@ -371,10 +360,6 @@ void LayoutView::UpdateLayout() {
 #endif
 
   LayoutBlockFlow::UpdateLayout();
-
-#if DCHECK_IS_ON()
-  CheckLayoutState();
-#endif
   ClearNeedsLayout();
 }
 

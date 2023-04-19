@@ -673,7 +673,6 @@ bool LocalFrameView::LayoutFromRootObject(LayoutObject& root) {
     return false;
   }
 
-  LayoutState layout_state(root);
   if (scroll_anchoring_scrollable_areas_) {
     for (auto& scrollable_area : *scroll_anchoring_scrollable_areas_) {
       if (scrollable_area->GetScrollAnchor() &&

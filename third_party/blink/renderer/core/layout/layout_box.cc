@@ -1030,7 +1030,6 @@ void LayoutBox::UpdateLayout() {
     return;
   }
 
-  LayoutState state(*this);
   while (child) {
     child->LayoutIfNeeded();
     DCHECK(!child->NeedsLayout());
