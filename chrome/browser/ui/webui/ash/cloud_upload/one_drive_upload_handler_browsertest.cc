@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -85,10 +86,10 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest {
     file_system_provider::MountOptions options("odfs", "ODFS");
     const file_system_provider::ProviderId provider_id =
         file_system_provider::ProviderId::CreateFromExtensionId(
-            file_manager::file_tasks::kODFSExtensionId);
+            extension_misc::kODFSExtensionId);
     service->RegisterProvider(
         file_system_provider::FakeExtensionProvider::Create(
-            file_manager::file_tasks::kODFSExtensionId));
+            extension_misc::kODFSExtensionId));
     EXPECT_EQ(base::File::FILE_OK,
               service->MountFileSystem(provider_id, options));
   }

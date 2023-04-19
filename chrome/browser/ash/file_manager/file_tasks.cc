@@ -109,7 +109,6 @@ const char kActionIdWebDriveOfficePowerPoint[] =
     "open-web-drive-office-powerpoint";
 const char kActionIdOpenInOffice[] = "open-in-office";
 const char kActionIdOpenWeb[] = "OPEN_WEB";
-const char kODFSExtensionId[] = "gnnndjlaomemikopnjhhnoombakkkkdg";
 
 // Searches for the installed extension in order of preference.
 std::string GetODFSExtensionId(Profile* profile) {
@@ -124,8 +123,8 @@ std::string GetODFSExtensionId(Profile* profile) {
     const auto& extension_id = provider_id.GetExtensionId();
 
     // App from official internal build.
-    if (extension_id == kODFSExtensionId) {
-      return kODFSExtensionId;
+    if (extension_id == extension_misc::kODFSExtensionId) {
+      return extension_misc::kODFSExtensionId;
     }
 
     // App built manually from internal repo.

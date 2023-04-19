@@ -40,6 +40,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -562,7 +563,7 @@ class FixUpFlowBrowserTest : public InProcessBrowserTest {
   void AddFakeODFS() {
     auto fake_provider =
         ash::file_system_provider::FakeExtensionProvider::Create(
-            file_manager::file_tasks::kODFSExtensionId);
+            extension_misc::kODFSExtensionId);
     const auto kProviderId = fake_provider->GetId();
     auto* service = file_system_provider::Service::Get(profile());
     service->RegisterProvider(std::move(fake_provider));

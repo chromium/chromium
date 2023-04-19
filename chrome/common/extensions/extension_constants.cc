@@ -80,6 +80,7 @@ const char kContactCenterInsightsExtensionId[] =
 const char kDeskApiExtensionId[] = "kflgdebkpepnpjobkdfeeipcjdahoomc";
 const char kBruSecurityKeyForwarderExtensionId[] =
     "lcooaekmckohjjnpaaokodoepajbnill";
+const char kODFSExtensionId[] = "gnnndjlaomemikopnjhhnoombakkkkdg";
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kAccessibilityCommonExtensionId[] =

@@ -131,8 +131,6 @@ extern const char kActionIdWebDriveOfficePowerPoint[];
 extern const char kActionIdOpenInOffice[];
 extern const char kActionIdOpenWeb[];
 
-extern const char kODFSExtensionId[];
-
 // Checks which extension is installed and return the latest one installed or ""
 // if none is installed
 std::string GetODFSExtensionId(Profile* profile);
