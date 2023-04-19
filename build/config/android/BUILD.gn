@@ -50,8 +50,10 @@ config("compiler") {
   if (current_cpu == "arm64") {
     if (arm_control_flow_integrity == "standard") {
       cflags += [ "-mbranch-protection=standard" ]
+      rustflags = [ "-Zbranch-protection=bti" ]
     } else if (arm_control_flow_integrity == "pac") {
       cflags += [ "-mbranch-protection=pac-ret" ]
+      rustflags = [ "-Zbranch-protection=pac-ret" ]
     }
   }
 
