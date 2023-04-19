@@ -44,6 +44,7 @@
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  self.view.accessibilityViewIsModal = YES;
   self.view.backgroundColor = UIColor.blackColor;
 
   UIView* gridView = _gridViewController.view;
@@ -119,6 +120,18 @@
       CGRectGetMaxY(self.view.bounds) - CGRectGetMinY(_bottomBar.frame);
   _gridViewController.gridView.contentInset =
       UIEdgeInsetsMake(topInset, 0, bottomInset, 0);
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  _gridViewController.view);
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+  [super viewWillDisappear:animated];
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  nil);
 }
 
 #pragma mark - UIBarPositioningDelegate
