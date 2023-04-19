@@ -305,13 +305,6 @@ if (toolchain_has_rust) {
     }
 
     config("local_rust_stdlib_config") {
-      ldflags = []
-      lib_dir = rebase_path("$local_rustc_sysroot/$sysroot_lib_subdir",
-                            root_build_dir)
-      foreach(lib, stdlib_files) {
-        this_file = "$lib_dir/lib$lib.rlib"
-        ldflags += [ this_file ]
-      }
       if (is_win) {
         # TODO(crbug.com/1434092): This should really be `libs`, however that
         # breaks. Normally, we specify lib files with the `.lib` suffix but
@@ -320,7 +313,7 @@ if (toolchain_has_rust) {
         #
         # Omitting the `.lib` suffix breaks linking as well, when clang drives
         # the linking step of a C++ EXE that depends on Rust.
-        ldflags += _windows_lib_deps
+        ldflags = _windows_lib_deps
       }
     }
 
