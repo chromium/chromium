@@ -27,7 +27,7 @@ void FakeDeviceTest::SetUp() {
   requestable_settings_.resolution_change_policy =
       media::ResolutionChangePolicy::FIXED_RESOLUTION;
   requestable_settings_.power_line_frequency =
-      media::PowerLineFrequency::FREQUENCY_DEFAULT;
+      media::PowerLineFrequency::kDefault;
 
   video_source_provider_->GetVideoSource(
       i420_fake_device_info_.descriptor.device_id,

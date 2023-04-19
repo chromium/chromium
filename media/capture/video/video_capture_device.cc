@@ -106,7 +106,7 @@ void VideoCaptureDevice::TakePhoto(TakePhotoCallback callback) {}
 PowerLineFrequency VideoCaptureDevice::GetPowerLineFrequencyForLocation() {
   const std::string current_country = base::CountryCodeForCurrentTimezone();
   if (current_country.empty())
-    return PowerLineFrequency::FREQUENCY_DEFAULT;
+    return PowerLineFrequency::kDefault;
   // Sorted out list of countries with 60Hz power line frequency, from
   // http://en.wikipedia.org/wiki/Mains_electricity_by_country
   const char* countries_using_60Hz[] = {
@@ -115,17 +115,17 @@ PowerLineFrequency VideoCaptureDevice::GetPowerLineFrequencyForLocation() {
       "KN", "KR", "KY", "MS", "MX", "NI", "PA", "PE", "PF", "PH", "PR",
       "PW", "SA", "SR", "SV", "TT", "TW", "UM", "US", "VG", "VI", "VE"};
   if (!base::Contains(countries_using_60Hz, current_country)) {
-    return PowerLineFrequency::FREQUENCY_50HZ;
+    return PowerLineFrequency::k50Hz;
   }
-  return PowerLineFrequency::FREQUENCY_60HZ;
+  return PowerLineFrequency::k60Hz;
 }
 
 // static
 PowerLineFrequency VideoCaptureDevice::GetPowerLineFrequency(
     const VideoCaptureParams& params) {
   switch (params.power_line_frequency) {
-    case PowerLineFrequency::FREQUENCY_50HZ:  // fall through
-    case PowerLineFrequency::FREQUENCY_60HZ:
+    case PowerLineFrequency::k50Hz:  // fall through
+    case PowerLineFrequency::k60Hz:
       return params.power_line_frequency;
     default:
       return GetPowerLineFrequencyForLocation();

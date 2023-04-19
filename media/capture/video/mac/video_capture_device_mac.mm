@@ -170,7 +170,7 @@ void VideoCaptureDeviceMac::AllocateAndStart(
     return;
 
   PowerLineFrequency frequency = GetPowerLineFrequency(params);
-  if (frequency != PowerLineFrequency::FREQUENCY_DEFAULT) {
+  if (frequency != PowerLineFrequency::kDefault) {
     // Try setting the power line frequency removal (anti-flicker). The built-in
     // cameras are normally suspended so the configuration must happen right
     // before starting capture and during configuration.
@@ -180,8 +180,7 @@ void VideoCaptureDeviceMac::AllocateAndStart(
     if (device_model.length() > 2 * kVidPidSize) {
       if (UvcControl uvc(device_model, uvc::kVcProcessingUnit); uvc.Good()) {
         int power_line_flag_value =
-            (frequency == PowerLineFrequency::FREQUENCY_50HZ) ? uvc::k50Hz
-                                                              : uvc::k60Hz;
+            (frequency == PowerLineFrequency::k50Hz) ? uvc::k50Hz : uvc::k60Hz;
         uvc.SetControlCurrent<uint8_t>(uvc::kPuPowerLineFrequencyControl,
                                        power_line_flag_value,
                                        "power line frequency");

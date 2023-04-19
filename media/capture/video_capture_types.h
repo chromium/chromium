@@ -47,12 +47,10 @@ enum class ResolutionChangePolicy {
 // Potential values of the googPowerLineFrequency optional constraint passed to
 // getUserMedia. Note that the numeric values are currently significant, and are
 // used to map enum values to corresponding frequency values.
-// TODO(ajose): http://crbug.com/525167 Consider making this a class.
 enum class PowerLineFrequency {
-  FREQUENCY_DEFAULT = 0,
-  FREQUENCY_50HZ = 50,
-  FREQUENCY_60HZ = 60,
-  FREQUENCY_MAX = FREQUENCY_60HZ
+  kDefault = 0,
+  k50Hz = 50,
+  k60Hz = 60,
 };
 
 enum class VideoCaptureBufferType {
@@ -61,8 +59,8 @@ enum class VideoCaptureBufferType {
   kGpuMemoryBuffer
 };
 
-// WARNING: Do not change the values assigned to the entries. They are used for
-// UMA logging.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class VideoCaptureError {
   kNone = 0,
   kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested =
@@ -249,12 +247,12 @@ enum class VideoCaptureFrameDropReason {
 };
 
 // Assert that the int:frequency mapping is correct.
-static_assert(static_cast<int>(PowerLineFrequency::FREQUENCY_DEFAULT) == 0,
-              "static_cast<int>(FREQUENCY_DEFAULT) must equal 0.");
-static_assert(static_cast<int>(PowerLineFrequency::FREQUENCY_50HZ) == 50,
-              "static_cast<int>(FREQUENCY_DEFAULT) must equal 50.");
-static_assert(static_cast<int>(PowerLineFrequency::FREQUENCY_60HZ) == 60,
-              "static_cast<int>(FREQUENCY_DEFAULT) must equal 60.");
+static_assert(static_cast<int>(PowerLineFrequency::kDefault) == 0,
+              "static_cast<int>(PowerLineFrequency::kDefault) must equal 0.");
+static_assert(static_cast<int>(PowerLineFrequency::k50Hz) == 50,
+              "static_cast<int>(PowerLineFrequency::k50Hz) must equal 50.");
+static_assert(static_cast<int>(PowerLineFrequency::k60Hz) == 60,
+              "static_cast<int>(PowerLineFrequency::k60Hz) must equal 60.");
 
 // Some drivers use rational time per frame instead of float frame rate, this
 // constant k is used to convert between both: A fps -> [k/k*A] seconds/frame.

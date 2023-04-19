@@ -84,7 +84,7 @@ class MockDeviceSharedAccessTest : public ::testing::Test {
     requestable_settings_.resolution_change_policy =
         media::ResolutionChangePolicy::FIXED_RESOLUTION;
     requestable_settings_.power_line_frequency =
-        media::PowerLineFrequency::FREQUENCY_DEFAULT;
+        media::PowerLineFrequency::kDefault;
   }
 
   void LetClient1ConnectWithRequestableSettingsAndExpectToGetThem() {

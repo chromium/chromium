@@ -27,9 +27,9 @@ namespace {
 
 int TranslatePowerLineFrequencyToV4L2(PowerLineFrequency frequency) {
   switch (frequency) {
-    case PowerLineFrequency::FREQUENCY_50HZ:
+    case PowerLineFrequency::k50Hz:
       return V4L2_CID_POWER_LINE_FREQUENCY_50HZ;
-    case PowerLineFrequency::FREQUENCY_60HZ:
+    case PowerLineFrequency::k60Hz:
       return V4L2_CID_POWER_LINE_FREQUENCY_60HZ;
     default:
       // If we have no idea of the frequency, at least try and set it to AUTO.

@@ -68,7 +68,7 @@ void MockDeviceTest::SetUp() {
   requested_settings_.resolution_change_policy =
       media::ResolutionChangePolicy::FIXED_RESOLUTION;
   requested_settings_.power_line_frequency =
-      media::PowerLineFrequency::FREQUENCY_DEFAULT;
+      media::PowerLineFrequency::kDefault;
 
   mock_video_frame_handler_ = std::make_unique<MockVideoFrameHandler>(
       mock_subscriber_.InitWithNewPipeAndPassReceiver());

@@ -52,11 +52,11 @@ media::mojom::PowerLineFrequency EnumTraits<
     media::mojom::PowerLineFrequency,
     media::PowerLineFrequency>::ToMojom(media::PowerLineFrequency input) {
   switch (input) {
-    case media::PowerLineFrequency::FREQUENCY_DEFAULT:
+    case media::PowerLineFrequency::kDefault:
       return media::mojom::PowerLineFrequency::DEFAULT;
-    case media::PowerLineFrequency::FREQUENCY_50HZ:
+    case media::PowerLineFrequency::k50Hz:
       return media::mojom::PowerLineFrequency::HZ_50;
-    case media::PowerLineFrequency::FREQUENCY_60HZ:
+    case media::PowerLineFrequency::k60Hz:
       return media::mojom::PowerLineFrequency::HZ_60;
   }
   NOTREACHED();
@@ -69,13 +69,13 @@ bool EnumTraits<media::mojom::PowerLineFrequency, media::PowerLineFrequency>::
               media::PowerLineFrequency* output) {
   switch (input) {
     case media::mojom::PowerLineFrequency::DEFAULT:
-      *output = media::PowerLineFrequency::FREQUENCY_DEFAULT;
+      *output = media::PowerLineFrequency::kDefault;
       return true;
     case media::mojom::PowerLineFrequency::HZ_50:
-      *output = media::PowerLineFrequency::FREQUENCY_50HZ;
+      *output = media::PowerLineFrequency::k50Hz;
       return true;
     case media::mojom::PowerLineFrequency::HZ_60:
-      *output = media::PowerLineFrequency::FREQUENCY_60HZ;
+      *output = media::PowerLineFrequency::k60Hz;
       return true;
   }
   NOTREACHED();
