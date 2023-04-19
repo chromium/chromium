@@ -54,7 +54,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -110,7 +109,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.NightModeTestUtils;
-import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 
@@ -1417,7 +1415,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1333546
+    @DisabledTest(message = "crbug.com/1434777")
     public void testShowInFolder_Scroll() throws Exception {
         addFolder(TEST_FOLDER_TITLE); // Index 8
         addBookmark(TEST_TITLE_A, mTestUrlA);
@@ -1456,7 +1454,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1333546
+    @DisabledTest(message = "crbug.com/1434777")
     public void testShowInFolder_OpenOtherFolder() throws Exception {
         BookmarkId testId = addFolder(TEST_FOLDER_TITLE);
         TestThreadUtils.runOnUiThreadBlocking(
