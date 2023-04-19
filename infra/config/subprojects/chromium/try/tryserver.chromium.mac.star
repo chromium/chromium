@@ -525,6 +525,7 @@ ios_builder(
     name = "ios15-sdk-simulator",
     mirrors = ["ci/ios15-sdk-simulator"],
     os = os.MAC_13,
+    cpu = cpu.ARM64,
 )
 
 ios_builder(
