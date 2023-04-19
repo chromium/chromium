@@ -45,8 +45,13 @@ class SaveUpdateAddressProfileBubbleControllerImpl
 
   // SaveUpdateAddressProfileBubbleController:
   std::u16string GetWindowTitle() const override;
+  absl::optional<HeaderImages> GetHeaderImages() const override;
+  std::u16string GetBodyText() const override;
+  std::u16string GetAddressSummary() const override;
+  std::u16string GetProfileEmail() const override;
+  std::u16string GetProfilePhone() const override;
   std::u16string GetOkButtonLabel() const override;
-  absl::optional<std::u16string> GetFooterMessage() const override;
+  std::u16string GetFooterMessage() const override;
   const AutofillProfile& GetProfileToSave() const override;
   const AutofillProfile* GetOriginalProfile() const override;
   void OnUserDecision(
@@ -93,6 +98,8 @@ class SaveUpdateAddressProfileBubbleControllerImpl
 
   // Whether the bubble prompts to save (migrate) the profile into account.
   bool is_migration_to_account_ = false;
+
+  std::string app_locale_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

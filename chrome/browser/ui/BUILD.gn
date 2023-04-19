@@ -81,6 +81,8 @@ static_library("ui") {
     "autofill/risk_util.h",
     "autofill/test/test_autofill_bubble_handler.cc",
     "autofill/test/test_autofill_bubble_handler.h",
+    "autofill/ui_util.cc",
+    "autofill/ui_util.h",
     "blocked_content/blocked_window_params.cc",
     "blocked_content/blocked_window_params.h",
     "blocked_content/chrome_popup_navigation_delegate.cc",
