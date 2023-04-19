@@ -109,9 +109,7 @@ _SWAP_CHAIN_GET_FRAME_STATISTICS_MEDIA_FAILED = -1
 
 _GET_STATISTICS_EVENT_NAME = 'GetFrameStatisticsMedia'
 _SWAP_CHAIN_PRESENT_EVENT_NAME = 'SwapChain::Present'
-_PRESENT_TO_SWAP_CHAIN_EVENT_NAME = 'SwapChainPresenter::PresentToSwapChain'
-_PRESENT_ROOT_SWAP_CHAIN_EVENT_NAME =\
-    'DirectCompositionChildSurfaceWin::PresentSwapChain'
+_UPDATE_OVERLAY_EVENT_NAME = 'DCLayerTree::VisualTree::UpdateOverlay'
 
 _SUPPORTED_WIN_AMD_GPUS_WITH_NV12_ROTATED_OVERLAYS = [0x7340]
 
@@ -881,7 +879,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     for event in event_iterator:
       if event.category != category:
         continue
-      if event.name != _PRESENT_TO_SWAP_CHAIN_EVENT_NAME:
+      if event.name != _UPDATE_OVERLAY_EVENT_NAME:
         continue
       image_type = event.args.get('image_type', None)
       if image_type == 'DCompVisualContent':
@@ -890,11 +888,11 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if expect_overlay and not found_overlay:
       self.fail(
           'Overlay expected but not found: matching %s events were not found' %
-          _PRESENT_TO_SWAP_CHAIN_EVENT_NAME)
+          _UPDATE_OVERLAY_EVENT_NAME)
     elif expect_no_overlay and found_overlay:
       self.fail(
           'Overlay not expected but found: matching %s events were found' %
-          _PRESENT_TO_SWAP_CHAIN_EVENT_NAME)
+          _UPDATE_OVERLAY_EVENT_NAME)
 
   def _EvaluateSuccess_CheckWebGLCanvasCapture(self, category: str,
                                                event_iterator: Iterator,

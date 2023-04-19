@@ -53,6 +53,9 @@ struct GL_EXPORT DCLayerOverlayParams {
   gfx::HDRMetadata hdr_metadata;
 
   bool maybe_video_fullscreen_letterboxing = false;
+
+  // When false, this overlay will be scaled with linear sampling.
+  bool nearest_neighbor_filter = false;
 };
 
 }  // namespace gl
