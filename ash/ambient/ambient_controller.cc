@@ -356,6 +356,11 @@ void AmbientController::OnAutoShowTimeOut() {
   ShowUi();
 }
 
+void AmbientController::OnLoginOrLockScreenCreated() {
+  // TODO(b/269579917) Add checks to start Hidden UI when the ambient mode is
+  // enabled.
+}
+
 void AmbientController::OnLockStateChanged(bool locked) {
   if (!locked) {
     // Ambient screen will be destroyed along with the lock screen when user

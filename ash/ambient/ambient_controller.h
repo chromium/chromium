@@ -127,6 +127,10 @@ class ASH_EXPORT AmbientController
   // AssistantInteractionModelObserver:
   void OnInteractionStateChanged(InteractionState interaction_state) override;
 
+  // Invoked by the `LockScreen` to notify ambient mode that either the login or
+  // lock screen is created.
+  void OnLoginOrLockScreenCreated();
+
   void ShowUi();
   void StartScreenSaverPreview();
   // Ui will be enabled but not shown immediately. If there is no user activity

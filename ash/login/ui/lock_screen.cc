@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/ambient/ambient_controller.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/login/ui/lock_contents_view.h"
 #include "ash/login/ui/lock_debug_view.h"
@@ -151,6 +152,17 @@ void LockScreen::Show(ScreenType type) {
   Shell::Get()->wallpaper_controller()->AddFirstWallpaperAnimationEndCallback(
       base::BindOnce(&LockScreen::ShowWidgetUponWallpaperReady),
       instance_->widget_->GetNativeView());
+
+  // Notify the ambient controller that the login/lock screen has been created
+  // to make sure it can start showing the screensaver when the preconditions
+  // are met. This is needed as we cannot rely on the
+  // SessionManagerObserver::OnLoginOrLockScreenVisible callback in ash, as the
+  // DEPS rules don't allow depending on SessionManager in /ash. Note:
+  // AmbientController is created in shell and has the same lifetime as shell so
+  // should out-live the `LockScreen`.
+  if (Shell::Get()->ambient_controller()) {
+    Shell::Get()->ambient_controller()->OnLoginOrLockScreenCreated();
+  }
 }
 
 // static
