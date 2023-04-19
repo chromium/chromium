@@ -180,7 +180,10 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | WML | install_or_shortcut_by_user_windowed(NotPromotable) | switch_profile_clients | install_locally(NotPromotable) | navigate_browser(NotPromotable) | check_install_icon_not_shown |
 | WML | install_or_shortcut_by_user_windowed(NotPromotable) | switch_profile_clients | install_locally(NotPromotable) | navigate_browser(NotPromotable) | check_launch_icon_shown |
 | WML | install_or_shortcut_by_user(NotPromotable) | switch_profile_clients | install_locally(NotPromotable) | check_platform_shortcut_and_icon(NotPromotable) |
-| WML | install_or_shortcut_by_user_windowed | switch_profile_clients | install_locally | launch | check_window_created |
+| WML | install_or_shortcut_by_user_windowed | switch_profile_clients | install_locally | launch_not_from_platform_shortcut | check_window_created |
+| WL | install_or_shortcut_by_user_windowed | switch_profile_clients | install_locally | launch_from_platform_shortcut | check_window_created |
+| M | install_or_shortcut_by_user_windowed | switch_profile_clients | install_locally | launch_from_platform_shortcut | check_window_not_created |
+| M | install_or_shortcut_by_user_windowed | close_pwa | switch_profile_clients | install_locally | launch_from_platform_shortcut | check_window_created |
 | WML | install_or_shortcut_by_user_tabbed | switch_profile_clients | launch_from_chrome_apps | check_tab_not_created | check_app_loaded_in_tab |
 | C | install_or_shortcut_by_user_tabbed | switch_profile_clients | launch_from_chrome_apps | check_tab_created(One) | check_app_loaded_in_tab |
 | WML | install_or_shortcut_by_user_tabbed | switch_profile_clients | install_locally | launch_from_chrome_apps | check_tab_not_created | check_app_loaded_in_tab |

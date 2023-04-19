@@ -86,6 +86,14 @@ if (is_win || is_mac || is_linux) {
   sync_integration_tests_sources += [ "../browser/sync/test/integration/two_client_web_apps_integration_test_mac_win_linux.cc" ]
 }
 
+if (is_win || is_linux) {
+  sync_integration_tests_sources += [ "../browser/sync/test/integration/two_client_web_apps_integration_test_win_linux.cc" ]
+}
+
+if (is_mac) {
+  sync_integration_tests_sources += [ "../browser/sync/test/integration/two_client_web_apps_integration_test_mac.cc" ]
+}
+
 if (is_win) {
   sync_integration_tests_sources += [ "../browser/sync/test/integration/two_client_web_apps_integration_test_win.cc" ]
 }

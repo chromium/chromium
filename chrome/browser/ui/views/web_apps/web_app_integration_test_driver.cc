@@ -1596,16 +1596,28 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
     // expected to open a new one, so only wait for a new browser to be added
     // if there wasn't an open one already.
     app_browser_ = GetBrowserForAppId(profile(), app_id);
+    bool had_open_browsers = false;
+    for (auto* profile : GetAllProfiles()) {
+      auto* provider = GetProviderForProfile(profile);
+      if (!provider) {
+        continue;
+      }
+      if (provider->ui_manager().GetNumWindowsForApp(app_id) > 0) {
+        had_open_browsers = true;
+      }
+    }
     base::RunLoop run_loop;
     apps::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
     LaunchFromAppShim(site, /*urls=*/{}, /*wait_for_complete_launch=*/true);
     run_loop.Run();
-    if (!app_browser_) {
+    if (!app_browser_ && !had_open_browsers) {
       browser_added_waiter.Wait();
       app_browser_ = browser_added_waiter.browser_added();
     }
-    active_app_id_ = app_id;
-    EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser(), app_id));
+    if (app_browser_) {
+      active_app_id_ = app_id;
+      EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser(), app_id));
+    }
   } else {
     base::RunLoop run_loop;
     apps::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
