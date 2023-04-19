@@ -552,6 +552,9 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_CAST_CAST_DESKTOP_NOTIFICATION_MESSAGE" desc="The notification message to tell the user we are casting the desktop.">
         You are currently casting screen.
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_CAST_CAST_PAUSED" desc="The notification message to tell the user that casting is paused.">
+        Casting is paused
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_CAST_CAST_TAB" desc="The title label used in the tray popup to tell the user we are casting a tab.">
         <ph name="ROUTE_TITLE">$1<ex>YouTube</ex></ph> on <ph name="RECEIVER_NAME">$2<ex>Living Room</ex></ph>
       </message>

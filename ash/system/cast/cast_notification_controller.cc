@@ -50,6 +50,9 @@ std::u16string GetNotificationTitle(const CastSink& sink,
 }
 
 std::u16string GetNotificationMessage(const CastRoute& route) {
+  if (route.freeze_info.is_frozen) {
+    return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_CAST_PAUSED);
+  }
   switch (route.content_source) {
     case ContentSource::kUnknown:
       return std::u16string();

@@ -6,9 +6,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/cast_config_controller.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -91,6 +93,19 @@ SinkAndRoute CreateDeviceLocalRoute() {
   device.route.title = "Casting tab";
   device.route.is_local_source = true;
   device.route.content_source = ContentSource::kTab;
+
+  return device;
+}
+
+SinkAndRoute CreateDeviceLocalRouteDesktop() {
+  SinkAndRoute device;
+  device.sink.id = "fake_sink_id_localroutedesktop";
+  device.sink.name = "Sink Name localRouteDesktop";
+  device.sink.sink_icon_type = SinkIconType::kCast;
+  device.route.id = "fake_route_id_localroutedesktop";
+  device.route.title = "Casting screen";
+  device.route.is_local_source = true;
+  device.route.content_source = ContentSource::kDesktop;
 
   return device;
 }
@@ -240,6 +255,37 @@ TEST_F(CastNotificationControllerTest, FreezeWithTrayOpen) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(cast_config_.freeze_route_count_, 1u);
+}
+
+TEST_F(CastNotificationControllerTest, NotificationMessage) {
+  cast_config_.has_sinks_and_routes_ = true;
+  cast_config_.has_active_routes_ = true;
+
+  // Create notification for a tab casting route.
+  SinkAndRoute device1 = CreateDeviceLocalRoute();
+  notification_controller_->OnDevicesUpdated({device1});
+  EXPECT_EQ(GetNotification()->message(),
+            base::UTF8ToUTF16(device1.route.title));
+
+  // Create notification for a desktop route.
+  SinkAndRoute device2 = CreateDeviceLocalRouteDesktop();
+  notification_controller_->OnDevicesUpdated({device2});
+  std::u16string desktop_casting_message = l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_CAST_CAST_DESKTOP_NOTIFICATION_MESSAGE);
+  EXPECT_EQ(GetNotification()->message(), desktop_casting_message);
+
+  // Create notification for a paused route.
+  SinkAndRoute device3 = CreateDeviceLocalRoute();
+  device3.route.freeze_info.is_frozen = true;
+  notification_controller_->OnDevicesUpdated({device3});
+  std::u16string casting_paused_message =
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_CAST_PAUSED);
+  EXPECT_EQ(GetNotification()->message(), casting_paused_message);
+
+  SinkAndRoute device4 = CreateDeviceLocalRouteDesktop();
+  device4.route.freeze_info.is_frozen = true;
+  notification_controller_->OnDevicesUpdated({device4});
+  EXPECT_EQ(GetNotification()->message(), casting_paused_message);
 }
 
 }  // namespace ash
