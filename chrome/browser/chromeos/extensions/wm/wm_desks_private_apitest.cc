@@ -304,7 +304,13 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, DISABLED_SaveAndRecallDeskTest) {
 }
 
 // Tests save and delete a desk.
-IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, SaveAndDeleteDeskTest) {
+// TODO(1430982): Flaky on linux-chromeos-rel.
+#if defined(NDEBUG)
+#define MAYBE_SaveAndDeleteDeskTest DISABLED_SaveAndDeleteDeskTest
+#else
+#define MAYBE_SaveAndDeleteDeskTest SaveAndDeleteDeskTest
+#endif
+IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, MAYBE_SaveAndDeleteDeskTest) {
   // Save a desk.
   auto save_desk_function =
       base::MakeRefCounted<WmDesksPrivateSaveActiveDeskFunction>();
