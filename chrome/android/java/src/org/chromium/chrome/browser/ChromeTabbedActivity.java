@@ -377,6 +377,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     // The URL of the last active Tab read from the Tab metadata file during cold startup.
     private String mLastActiveTabUrl;
 
+    // A flag is set to be true in #createInitialTab() when there isn't any Tab and will create
+    // the first Tab. We use this flag to prevent Start surface from showing during cold startup
+    // since the first initial Tab has been created.
+    private boolean mInitialTabCreated;
+
     private final IncognitoTabHost mIncognitoTabHost = new IncognitoTabHost() {
         @Override
         public boolean hasIncognitoTabs() {
@@ -1088,9 +1093,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // showing a glimpse of the tab selector during start up. 2) on warm startup from an
         // resumption. Defer it to onResumeWitheNative() since it needs to check the latest Intent
         // which is only guaranteed to be updated onResume() if onNewIntent() is called.
-        if (!mPendingInitialTabCreation && !mFromResumption) {
+        if (!mPendingInitialTabCreation && !mFromResumption && !mInitialTabCreated) {
             setInitialOverviewState(shouldShowOverviewPageOnStart());
         }
+        mInitialTabCreated = false;
 
         Bundle savedInstanceState = getSavedInstanceState();
         if (savedInstanceState != null
@@ -1430,6 +1436,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // tab.
         boolean shouldShowOverviewPageOnStart = shouldShowOverviewPageOnStart();
         if (!shouldShowOverviewPageOnStart) {
+            mInitialTabCreated = true;
             String url = HomepageManager.getHomepageUri();
             if (TextUtils.isEmpty(url)) {
                 url = UrlConstants.NTP_URL;
