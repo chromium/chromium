@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -118,6 +119,10 @@ public class BookmarkManagerMediatorTest {
     private ArgumentCaptor<BookmarkModelObserver> mBookmarkModelObserverArgumentCaptor;
     @Captor
     private ArgumentCaptor<DragListener> mDragListenerArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<SyncStateChangedListener> mSyncStateChangedListenerCaptor;
+    @Captor
+    private ArgumentCaptor<Runnable> mFinishLoadingBookmarkModelCaptor;
 
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
@@ -190,7 +195,13 @@ public class BookmarkManagerMediatorTest {
     }
 
     void finishLoading() {
-        mMediator.onBookmarkModelLoaded();
+        when(mBookmarkModel.isBookmarkModelLoaded()).thenReturn(true);
+        verify(mBookmarkModel, atLeast(0))
+                .finishLoadingBookmarkModel(mFinishLoadingBookmarkModelCaptor.capture());
+        for (Runnable finishLoadingBookmarkModel :
+                mFinishLoadingBookmarkModelCaptor.getAllValues()) {
+            finishLoadingBookmarkModel.run();
+        }
     }
 
     @Test
@@ -210,9 +221,13 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     public void syncStateChangedBeforeModelLoaded() {
-        SyncStateChangedListener syncStateChangedListener =
-                mMediator.getSyncStateChangedListenerForTesting();
-        syncStateChangedListener.syncStateChanged();
+        verify(mSyncService, atLeast(1))
+                .addSyncStateChangedListener(mSyncStateChangedListenerCaptor.capture());
+        for (SyncStateChangedListener syncStateChangedListener :
+                mSyncStateChangedListenerCaptor.getAllValues()) {
+            syncStateChangedListener.syncStateChanged();
+        }
+
         verify(mBookmarkModel, times(0)).getDesktopFolderId();
         verify(mBookmarkModel, times(0)).getMobileFolderId();
         verify(mBookmarkModel, times(0)).getOtherFolderId();

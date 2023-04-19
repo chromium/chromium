@@ -10,6 +10,9 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.verify;
+
 import static org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils.checkHighlightOff;
 import static org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils.checkHighlightPulse;
 
@@ -36,6 +39,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.metrics.RecordHistogram;
@@ -74,6 +82,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncService.SyncStateChangedListener;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -124,15 +134,15 @@ public class BookmarkTest {
     // clang-format on
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
-
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
                     .build();
+    @Rule
+    public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final String TEST_PAGE_URL_GOOGLE = "/chrome/test/data/android/google.html";
     private static final String TEST_PAGE_TITLE_GOOGLE = "The Google";
@@ -156,6 +166,11 @@ public class BookmarkTest {
     private @Nullable BookmarkActivity mBookmarkActivity;
     private UserActionTester mActionTester;
 
+    @Mock
+    private SyncService mSyncService;
+    @Captor
+    private ArgumentCaptor<SyncStateChangedListener> mSyncStateChangedListenerCaptor;
+
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
         ChromeNightModeTestUtils.setUpNightModeBeforeChromeActivityLaunched();
@@ -172,6 +187,7 @@ public class BookmarkTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mBookmarkModel = mActivityTestRule.getActivity().getBookmarkModelForTesting();
+            SyncService.overrideForTests(mSyncService);
         });
         // Use a custom port so the links are consistent for render tests.
         mActivityTestRule.getEmbeddedTestServerRule().setServerPort(TEST_PORT);
@@ -1348,7 +1364,14 @@ public class BookmarkTest {
                     mBookmarkModel.getOtherFolderId(), 0, TEST_TITLE_A, mTestUrlA));
         });
 
+        verify(mSyncService, atLeast(1))
+                .addSyncStateChangedListener(mSyncStateChangedListenerCaptor.capture());
+        for (SyncStateChangedListener syncStateChangedListener :
+                mSyncStateChangedListenerCaptor.getAllValues()) {
+            TestThreadUtils.runOnUiThreadBlocking(syncStateChangedListener::syncStateChanged);
+        }
         TestThreadUtils.runOnUiThreadBlocking(getTestingDelegate()::simulateSignInForTesting);
+
         Assert.assertEquals(
                 "Expected promo, \"Reading List\", \"Mobile Bookmarks\" and \"Other Bookmarks\" folder to appear!",
                 4, getAdapter().getItemCount());
