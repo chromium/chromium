@@ -106,6 +106,7 @@ suite('TextDefaults', function() {
   });
 });
 
+// <if expr="not is_linux">
 // Test that text_defaults_md.css reverts back to the text_defaults.css
 // behavior when the WebUiSystemFont flag is enabled.
 suite('TextDefaultsSystemFont', function() {
@@ -125,3 +126,4 @@ suite('TextDefaultsSystemFont', function() {
         true /*expectingSystemFont*/);
   });
 });
+// </if>

@@ -39,9 +39,11 @@ namespace {
 constexpr float kMaxScaleFactor = 1000.0f;
 
 std::string GetFontFamilyMd() {
+#if !BUILDFLAG(IS_LINUX)
   if (base::FeatureList::IsEnabled(features::kWebUiSystemFont)) {
     return GetFontFamily();
   }
+#endif
 
   return "Roboto, " + GetFontFamily();
 }

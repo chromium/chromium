@@ -475,9 +475,11 @@ ChromeRefresh2023Level GetChromeRefresh2023Level() {
                                : ChromeRefresh2023Level::kDisabled;
 }
 
+#if !BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kWebUiSystemFont,
              "WebUiSystemFont",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 #if BUILDFLAG(IS_APPLE)
 // Font Smoothing was enabled by default prior to introducing this feature.

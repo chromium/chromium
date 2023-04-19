@@ -2407,10 +2407,12 @@ const char kWebUIOmniboxPopupName[] = "WebUI Omnibox Popup";
 const char kWebUIOmniboxPopupDescription[] =
     "If enabled, shows the omnibox suggestions popup in WebUI.";
 
+#if !BUILDFLAG(IS_LINUX)
 const char kWebUiSystemFontName[] = "WebUI System font";
 const char kWebUiSystemFontDescription[] =
     "If enabled, all WebUI surfaces will use the default UI font of the "
     "underlying platform.";
+#endif
 
 const char kOmniboxMaxURLMatchesName[] = "Omnibox Max URL Matches";
 const char kOmniboxMaxURLMatchesDescription[] =

@@ -9553,9 +9553,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebUIOmniboxPopupDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxPopup)},
 
+#if !BUILDFLAG(IS_LINUX)
     {"webui-system-font", flag_descriptions::kWebUiSystemFontName,
      flag_descriptions::kWebUiSystemFontDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kWebUiSystemFont)},
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"arc-nearby-share-fuse-box", flag_descriptions::kArcNearbyShareFuseBoxName,
