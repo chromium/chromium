@@ -251,7 +251,7 @@ bool SpellingServiceClient::ParseResponse(
     return false;
 
   // Check for errors from spelling service.
-  const base::Value* error = value->FindDictPath(kErrorPath);
+  const base::Value* error = value->GetDict().Find(kErrorPath);
   if (error)
     return false;
 
