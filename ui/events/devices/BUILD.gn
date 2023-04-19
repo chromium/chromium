@@ -76,6 +76,21 @@ if (is_android) {
   }
 }
 
+source_set("unittests") {
+  testonly = true
+
+  sources = [
+    "input_device_unittest.cc",
+    "touchscreen_device_unittest.cc",
+  ]
+
+  deps = [
+    ":devices",
+    "//base",
+    "//base/test:test_support",
+  ]
+}
+
 source_set("test_support") {
   sources = [
     "device_data_manager_test_api.cc",
