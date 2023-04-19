@@ -455,9 +455,7 @@ HoverHighlightView* AccessibilityDetailedView::AddSpokenFeedbackView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->spoken_feedback().enabled();
   return AddScrollListFeatureItem(
-      container,
-      is_qs_revamp_enabled_ ? kQuickSettingsA11yChromevoxIcon
-                            : kSystemMenuAccessibilityChromevoxIcon,
+      container, kSystemMenuAccessibilityChromevoxIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SPOKEN_FEEDBACK),
       checked, controller->IsEnterpriseIconVisibleForSpokenFeedback());
@@ -468,9 +466,7 @@ HoverHighlightView* AccessibilityDetailedView::AddSelectToSpeakView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->select_to_speak().enabled();
   return AddScrollListFeatureItem(
-      container,
-      is_qs_revamp_enabled_ ? kQuickSettingsA11ySelectToSpeakIcon
-                            : kSystemMenuAccessibilitySelectToSpeakIcon,
+      container, kSystemMenuAccessibilitySelectToSpeakIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK),
       checked, controller->IsEnterpriseIconVisibleForSelectToSpeak());
@@ -481,9 +477,7 @@ HoverHighlightView* AccessibilityDetailedView::AddDictationView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->dictation().enabled();
   return AddScrollListFeatureItem(
-      container,
-      is_qs_revamp_enabled_ ? kQuickSettingsA11yDictationIcon
-                            : kDictationMenuIcon,
+      container, kDictationMenuIcon,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION),
       checked, controller->IsEnterpriseIconVisibleForDictation());
 }
@@ -504,9 +498,7 @@ HoverHighlightView* AccessibilityDetailedView::AddScreenMagnifierView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = Shell::Get()->accessibility_delegate()->IsMagnifierEnabled();
   return AddScrollListFeatureItem(
-      container,
-      is_qs_revamp_enabled_ ? kQuickSettingsA11yFullscreenMagnifierIcon
-                            : kSystemMenuAccessibilityFullscreenMagnifierIcon,
+      container, kSystemMenuAccessibilityFullscreenMagnifierIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SCREEN_MAGNIFIER),
       checked, controller->IsEnterpriseIconVisibleForFullScreenMagnifier());
@@ -517,9 +509,7 @@ HoverHighlightView* AccessibilityDetailedView::AddDockedMagnifierView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = Shell::Get()->docked_magnifier_controller()->GetEnabled();
   return AddScrollListFeatureItem(
-      container,
-      is_qs_revamp_enabled_ ? kQuickSettingsA11yDockedMagnifierIcon
-                            : kSystemMenuAccessibilityDockedMagnifierIcon,
+      container, kSystemMenuAccessibilityDockedMagnifierIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DOCKED_MAGNIFIER),
       checked, controller->IsEnterpriseIconVisibleForDockedMagnifier());
@@ -540,9 +530,7 @@ HoverHighlightView* AccessibilityDetailedView::AddVirtualKeyboardView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->virtual_keyboard().enabled();
   return AddScrollListFeatureItem(
-      container,
-      is_qs_revamp_enabled_ ? kQuickSettingsA11yOnscreenKeyboardIcon
-                            : kSystemMenuKeyboardLegacyIcon,
+      container, kSystemMenuKeyboardLegacyIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD),
       checked, controller->IsEnterpriseIconVisibleForVirtualKeyboard());
@@ -553,9 +541,7 @@ HoverHighlightView* AccessibilityDetailedView::AddSwitchAccessView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->switch_access().enabled();
   return AddScrollListFeatureItem(
-      container,
-      is_qs_revamp_enabled_ ? kQuickSettingsA11ySwitchAccessIcon
-                            : kSwitchAccessIcon,
+      container, kSwitchAccessIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SWITCH_ACCESS),
       checked, controller->IsEnterpriseIconVisibleForSwitchAccess());
@@ -566,9 +552,7 @@ HoverHighlightView* AccessibilityDetailedView::AddLiveCaptionView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->live_caption().enabled();
   return AddScrollListFeatureItem(
-      container,
-      is_qs_revamp_enabled_ ? kQuickSettingsA11yLiveCaptionIcon
-                            : vector_icons::kLiveCaptionOnIcon,
+      container, vector_icons::kLiveCaptionOnIcon,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LIVE_CAPTION), checked,
       controller->IsEnterpriseIconVisibleForLiveCaption());
 }
