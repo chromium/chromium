@@ -38,6 +38,7 @@
 #import "ios/web/find_in_page/java_script_find_in_page_manager_impl.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -284,6 +285,8 @@ TEST_F(KeyCommandsProviderTest, CanPerform_FindInPageActions) {
 
   // Open a tab.
   web::FakeWebState* web_state = InsertNewWebState(0);
+  web_state->SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
+                                 std::make_unique<web::FakeWebFramesManager>());
   web::JavaScriptFindInPageManagerImpl::CreateForWebState(web_state);
   JavaScriptFindTabHelper::CreateForWebState(web_state);
 
@@ -833,6 +836,8 @@ TEST_F(KeyCommandsProviderTest, BackForward) {
 TEST_F(KeyCommandsProviderTest, ValidateCommands) {
   // Open a tab.
   web::FakeWebState* web_state = InsertNewWebState(0);
+  web_state->SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
+                                 std::make_unique<web::FakeWebFramesManager>());
   web::JavaScriptFindInPageManagerImpl::CreateForWebState(web_state);
   JavaScriptFindTabHelper::CreateForWebState(web_state);
 

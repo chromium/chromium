@@ -39,14 +39,18 @@ class JavaScriptFindInPageManagerImplTest : public WebTest {
   void SetUp() override {
     WebTest::SetUp();
 
+    FindInPageJavaScriptFeature* feature =
+        FindInPageJavaScriptFeature::GetInstance();
+
     fake_web_state_ = std::make_unique<FakeWebState>();
     fake_web_state_->SetBrowserState(GetBrowserState());
     auto frames_manager = std::make_unique<FakeWebFramesManager>();
     fake_web_frames_manager_ = frames_manager.get();
-    fake_web_state_->SetWebFramesManager(std::move(frames_manager));
+    fake_web_state_->SetWebFramesManager(feature->GetSupportedContentWorld(),
+                                         std::move(frames_manager));
 
     JavaScriptFeatureManager::FromBrowserState(GetBrowserState())
-        ->ConfigureFeatures({FindInPageJavaScriptFeature::GetInstance()});
+        ->ConfigureFeatures({feature});
     JavaScriptFindInPageManagerImpl::CreateForWebState(fake_web_state_.get());
     GetFindInPageManager()->SetDelegate(&fake_delegate_);
   }

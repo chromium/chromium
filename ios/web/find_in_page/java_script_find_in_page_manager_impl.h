@@ -11,6 +11,7 @@
 #import "base/values.h"
 #import "ios/web/find_in_page/java_script_find_in_page_request.h"
 #import "ios/web/public/find_in_page/java_script_find_in_page_manager.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #include "ios/web/public/web_state_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -22,7 +23,8 @@ class WebState;
 class WebFrame;
 
 class JavaScriptFindInPageManagerImpl : public JavaScriptFindInPageManager,
-                                        public web::WebStateObserver {
+                                        public WebFramesManager::Observer,
+                                        public WebStateObserver {
  public:
   explicit JavaScriptFindInPageManagerImpl(web::WebState* web_state);
   ~JavaScriptFindInPageManagerImpl() override;
@@ -66,11 +68,13 @@ class JavaScriptFindInPageManagerImpl : public JavaScriptFindInPageManager,
   // currently selected match.
   void SelectCurrentMatch();
 
+  // WebFramesManager::Observer
+  void WebFrameBecameAvailable(WebFramesManager* web_frames_manager,
+                               WebFrame* web_frame) override;
+  void WebFrameBecameUnavailable(WebFramesManager* web_frames_manager,
+                                 const std::string& frame_id) override;
+
   // WebStateObserver overrides
-  void WebFrameDidBecomeAvailable(WebState* web_state,
-                                  WebFrame* web_frame) override;
-  void WebFrameWillBecomeUnavailable(WebState* web_state,
-                                     WebFrame* web_frame) override;
   void WebStateDestroyed(WebState* web_state) override;
 
  protected:
