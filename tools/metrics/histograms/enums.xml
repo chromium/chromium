@@ -107022,6 +107022,14 @@ others/histograms.xml -->
   <int value="4" label="L2TP/IPsec PSK"/>
 </enum>
 
+<enum name="VpnServiceBuilderCompatApisList">
+<!-- Value from components/arc/mojom/metrics.mojom -->
+
+  <int value="0" label="Unsupported"/>
+  <int value="1" label="VPN Exclude Route"/>
+  <int value="2" label="VPN Add Route"/>
+</enum>
+
 <enum name="VPNUserAuthenticationType">
   <int value="0" label="OpenVPN None"/>
   <int value="1" label="OpenVPN Certificate"/>

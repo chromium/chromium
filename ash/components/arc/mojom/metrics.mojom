@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 29
+// Next MinVersion: 30
 module arc.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -312,6 +312,22 @@ enum LowLatencyStylusLibApiId {
   kGLInkOverlaySetViewMatrix = 4,
 };
 
+// Enumerates the API call from ChromeOS VPN service builder compat
+// that provides functionality for Vpn exclude and add route
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused
+[Extensible]
+enum VpnServiceBuilderCompatApiId {
+  // If the library version doesn't support an API call, the API
+  // call will be recorded as UNSUPPORTED.
+  [Default] kUnsupported = 0,
+
+  // com.google.android.chromeos.vpn.VpnServiceBuilderCompat
+  kVpnExcludeRoute = 1,
+
+  // com.google.android.chromeos.vpn.VpnServiceBuilderCompat
+  kVpnAddRoute = 2,
+};
 // Status for migration of the main account hash code from v2 to v3.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -373,7 +389,7 @@ enum WaylandTimingEvent {
 };
 
 // Deprecated method IDs: 25
-// Next method ID: 32
+// Next method ID: 33
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -511,6 +527,10 @@ interface MetricsHost {
 
   // Reports first WebView started event to collect WebView usage in ARC.
   [MinVersion=27] ReportWebViewProcessStarted@31();
+
+  // Reports api usage of vpn exclude route.
+  [MinVersion=29] ReportVpnServiceBuilderCompatApiUsage@32
+      (VpnServiceBuilderCompatApiId api_id);
 };
 
 // Deprecated method IDs: 0

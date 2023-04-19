@@ -2706,6 +2706,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.VpnServiceBuilderCompatApisCounter"
+    enum="VpnServiceBuilderCompatApisList" expires_after="2023-10-24">
+  <owner>mhasank@google.com</owner>
+  <owner>preranap@google.com</owner>
+  <owner>arc-commercial@google.com</owner>
+  <summary>
+    Records the number of times an API for adding and excluding route in VPN is
+    called from ChromeOS Vpn Service Builder Compat Library.
+  </summary>
+</histogram>
+
 <histogram name="Arc.Wayland.LateTiming.Duration{WaylandEventType}" units="ms"
     expires_after="2023-09-16">
   <owner>alanding@google.com</owner>

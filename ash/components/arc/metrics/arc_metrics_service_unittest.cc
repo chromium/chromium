@@ -464,6 +464,23 @@ TEST_F(ArcMetricsServiceTest, ReportWebViewProcessStarted_SomeUsageReported) {
                            static_cast<base::HistogramBase::Sample>(1), 2);
 }
 
+TEST_F(ArcMetricsServiceTest, ReportVpnServiceBuilderCompatApiUsage) {
+  base::HistogramTester tester;
+
+  service()->ReportVpnServiceBuilderCompatApiUsage(
+      mojom::VpnServiceBuilderCompatApiId::kVpnExcludeRoute);
+  service()->ReportVpnServiceBuilderCompatApiUsage(
+      mojom::VpnServiceBuilderCompatApiId::kVpnAddRoute);
+
+  tester.ExpectBucketCount(
+      "Arc.VpnServiceBuilderCompatApisCounter",
+      static_cast<int>(mojom::VpnServiceBuilderCompatApiId::kVpnExcludeRoute),
+      1);
+  tester.ExpectBucketCount(
+      "Arc.VpnServiceBuilderCompatApisCounter",
+      static_cast<int>(mojom::VpnServiceBuilderCompatApiId::kVpnAddRoute), 1);
+}
+
 class ArcVmArcMetricsServiceTest
     : public ArcMetricsServiceTest,
       public testing::WithParamInterface<

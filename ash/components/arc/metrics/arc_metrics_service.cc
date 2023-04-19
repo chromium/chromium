@@ -713,6 +713,13 @@ void ArcMetricsService::ReportLowLatencyStylusLibApiUsage(
   UMA_HISTOGRAM_ENUMERATION("Arc.LowLatencyStylusLibraryApisCounter", api_id);
 }
 
+void ArcMetricsService::ReportVpnServiceBuilderCompatApiUsage(
+    mojom::VpnServiceBuilderCompatApiId api_id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::UmaHistogramEnumeration("Arc.VpnServiceBuilderCompatApisCounter",
+                                api_id);
+}
+
 void ArcMetricsService::ReportLowLatencyStylusLibPredictionTarget(
     mojom::LowLatencyStylusLibPredictionTargetPtr prediction_target) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
