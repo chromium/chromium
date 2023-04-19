@@ -95,6 +95,9 @@ class CSSStyleGenerator(BaseGenerator):
                 '$css_name-font-weight',
                 '$css_name-line-height',
             ])
+        elif variable_type == VariableType.LEGACY_MAPPING:
+            # No Clients should be directly using any of the legacy mappings.
+            pass
         else:
             raise ValueError("GetGeneratedVars() for '%s' not implemented")
 
