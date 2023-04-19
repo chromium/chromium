@@ -22,12 +22,11 @@ declare_args() {
   # TODO(crbug.com/1426472): use_clang_coverage
   # TODO(crbug.com/1427362): using_sanitizer
   # TODO(crbug.com/1427364): target_cpu != "x86"
-  # TODO(crbug.com/1429401): Android builds are arm64 only
   # There is no specific bug for !is_official_build or other platforms, since
   # this is just a matter of rolling things out slowly and carefully and there
   # may be no actual bugs there.
-  enable_rust = (is_linux || (is_android && target_cpu == "arm64")) &&
-                !is_official_build && !using_sanitizer && target_cpu != "x86" &&
+  enable_rust = (is_linux || is_android) && !is_official_build &&
+                !using_sanitizer && target_cpu != "x86" &&
                 !use_clang_coverage && is_clang && build_with_chromium
 
   # As we incrementally enable Rust on mainstream builders, we want to enable
