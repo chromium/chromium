@@ -15,12 +15,12 @@
 #include "aom/aom_integer.h"
 #include "aom_dsp/odintrin.h"
 #include "aom_dsp/txfm_common.h"
-#include "av1/common/common.h"
-#include "av1/common/enums.h"
-#include "av1/common/quant_common.h"
-#include "av1/common/filter.h"
-#include "av1/common/convolve.h"
 #include "av1/common/av1_txfm.h"
+#include "av1/common/common.h"
+#include "av1/common/convolve.h"
+#include "av1/common/enums.h"
+#include "av1/common/filter.h"
+#include "av1/common/quant_common.h"
 #include "av1/common/restoration.h"
 
 struct macroblockd;

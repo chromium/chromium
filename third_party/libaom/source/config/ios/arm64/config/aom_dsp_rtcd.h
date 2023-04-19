@@ -14,9 +14,8 @@
 
 #include "aom/aom_integer.h"
 #include "aom_dsp/aom_dsp_common.h"
-#include "av1/common/enums.h"
 #include "av1/common/blockd.h"
-
+#include "av1/common/enums.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,7 +45,13 @@ void aom_blend_a64_vmask_neon(uint8_t *dst, uint32_t dst_stride, const uint8_t *
 #define aom_blend_a64_vmask aom_blend_a64_vmask_neon
 
 void aom_comp_avg_pred_c(uint8_t *comp_pred, const uint8_t *pred, int width, int height, const uint8_t *ref, int ref_stride);
-#define aom_comp_avg_pred aom_comp_avg_pred_c
+void aom_comp_avg_pred_neon(uint8_t* comp_pred,
+                            const uint8_t* pred,
+                            int width,
+                            int height,
+                            const uint8_t* ref,
+                            int ref_stride);
+#define aom_comp_avg_pred aom_comp_avg_pred_neon
 
 void aom_comp_mask_pred_c(uint8_t *comp_pred, const uint8_t *pred, int width, int height, const uint8_t *ref, int ref_stride, const uint8_t *mask, int mask_stride, int invert_mask);
 #define aom_comp_mask_pred aom_comp_mask_pred_c
@@ -110,7 +115,11 @@ void aom_dc_128_predictor_64x32_c(uint8_t *dst, ptrdiff_t y_stride, const uint8_
 #define aom_dc_128_predictor_64x32 aom_dc_128_predictor_64x32_c
 
 void aom_dc_128_predictor_64x64_c(uint8_t *dst, ptrdiff_t y_stride, const uint8_t *above, const uint8_t *left);
-#define aom_dc_128_predictor_64x64 aom_dc_128_predictor_64x64_c
+void aom_dc_128_predictor_64x64_neon(uint8_t* dst,
+                                     ptrdiff_t y_stride,
+                                     const uint8_t* above,
+                                     const uint8_t* left);
+#define aom_dc_128_predictor_64x64 aom_dc_128_predictor_64x64_neon
 
 void aom_dc_128_predictor_8x16_c(uint8_t *dst, ptrdiff_t y_stride, const uint8_t *above, const uint8_t *left);
 #define aom_dc_128_predictor_8x16 aom_dc_128_predictor_8x16_c
@@ -171,7 +180,11 @@ void aom_dc_left_predictor_64x32_c(uint8_t *dst, ptrdiff_t y_stride, const uint8
 #define aom_dc_left_predictor_64x32 aom_dc_left_predictor_64x32_c
 
 void aom_dc_left_predictor_64x64_c(uint8_t *dst, ptrdiff_t y_stride, const uint8_t *above, const uint8_t *left);
-#define aom_dc_left_predictor_64x64 aom_dc_left_predictor_64x64_c
+void aom_dc_left_predictor_64x64_neon(uint8_t* dst,
+                                      ptrdiff_t y_stride,
+                                      const uint8_t* above,
+                                      const uint8_t* left);
+#define aom_dc_left_predictor_64x64 aom_dc_left_predictor_64x64_neon
 
 void aom_dc_left_predictor_8x16_c(uint8_t *dst, ptrdiff_t y_stride, const uint8_t *above, const uint8_t *left);
 #define aom_dc_left_predictor_8x16 aom_dc_left_predictor_8x16_c
@@ -232,7 +245,11 @@ void aom_dc_predictor_64x32_c(uint8_t *dst, ptrdiff_t y_stride, const uint8_t *a
 #define aom_dc_predictor_64x32 aom_dc_predictor_64x32_c
 
 void aom_dc_predictor_64x64_c(uint8_t *dst, ptrdiff_t y_stride, const uint8_t *above, const uint8_t *left);
-#define aom_dc_predictor_64x64 aom_dc_predictor_64x64_c
+void aom_dc_predictor_64x64_neon(uint8_t* dst,
+                                 ptrdiff_t y_stride,
+                                 const uint8_t* above,
+                                 const uint8_t* left);
+#define aom_dc_predictor_64x64 aom_dc_predictor_64x64_neon
 
 void aom_dc_predictor_8x16_c(uint8_t *dst, ptrdiff_t y_stride, const uint8_t *above, const uint8_t *left);
 #define aom_dc_predictor_8x16 aom_dc_predictor_8x16_c
@@ -293,7 +310,11 @@ void aom_dc_top_predictor_64x32_c(uint8_t *dst, ptrdiff_t y_stride, const uint8_
 #define aom_dc_top_predictor_64x32 aom_dc_top_predictor_64x32_c
 
 void aom_dc_top_predictor_64x64_c(uint8_t *dst, ptrdiff_t y_stride, const uint8_t *above, const uint8_t *left);
-#define aom_dc_top_predictor_64x64 aom_dc_top_predictor_64x64_c
+void aom_dc_top_predictor_64x64_neon(uint8_t* dst,
+                                     ptrdiff_t y_stride,
+                                     const uint8_t* above,
+                                     const uint8_t* left);
+#define aom_dc_top_predictor_64x64 aom_dc_top_predictor_64x64_neon
 
 void aom_dc_top_predictor_8x16_c(uint8_t *dst, ptrdiff_t y_stride, const uint8_t *above, const uint8_t *left);
 #define aom_dc_top_predictor_8x16 aom_dc_top_predictor_8x16_c
@@ -429,14 +450,6 @@ void aom_fft4x4_float_c(const float *input, float *temp, float *output);
 
 void aom_fft8x8_float_c(const float *input, float *temp, float *output);
 #define aom_fft8x8_float aom_fft8x8_float_c
-
-void aom_get16x16var_c(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, unsigned int *sse, int *sum);
-void aom_get16x16var_neon(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, unsigned int *sse, int *sum);
-#define aom_get16x16var aom_get16x16var_neon
-
-void aom_get8x8var_c(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, unsigned int *sse, int *sum);
-void aom_get8x8var_neon(const uint8_t *src_ptr, int source_stride, const uint8_t *ref_ptr, int ref_stride, unsigned int *sse, int *sum);
-#define aom_get8x8var aom_get8x8var_neon
 
 void aom_get_blk_sse_sum_c(const int16_t *data, int stride, int bw, int bh, int *x_sum, int64_t *x2_sum);
 #define aom_get_blk_sse_sum aom_get_blk_sse_sum_c
@@ -825,7 +838,13 @@ unsigned int aom_masked_sub_pixel_variance8x8_c(const uint8_t *src, int src_stri
 #define aom_masked_sub_pixel_variance8x8 aom_masked_sub_pixel_variance8x8_c
 
 void aom_minmax_8x8_c(const uint8_t *s, int p, const uint8_t *d, int dp, int *min, int *max);
-#define aom_minmax_8x8 aom_minmax_8x8_c
+void aom_minmax_8x8_neon(const uint8_t* s,
+                         int p,
+                         const uint8_t* d,
+                         int dp,
+                         int* min,
+                         int* max);
+#define aom_minmax_8x8 aom_minmax_8x8_neon
 
 unsigned int aom_mse16x16_c(const uint8_t *src_ptr, int  source_stride, const uint8_t *ref_ptr, int  recon_stride, unsigned int *sse);
 unsigned int aom_mse16x16_neon(const uint8_t *src_ptr, int  source_stride, const uint8_t *ref_ptr, int  recon_stride, unsigned int *sse);
@@ -926,9 +945,6 @@ void aom_paeth_predictor_8x8_c(uint8_t *dst, ptrdiff_t y_stride, const uint8_t *
 void aom_paeth_predictor_8x8_neon(uint8_t *dst, ptrdiff_t y_stride, const uint8_t *above, const uint8_t *left);
 #define aom_paeth_predictor_8x8 aom_paeth_predictor_8x8_neon
 
-void aom_pixel_scale_c(const int16_t *src_diff, ptrdiff_t src_stride, int16_t *coeff, int log_scale, int h8, int w8);
-#define aom_pixel_scale aom_pixel_scale_c
-
 void aom_quantize_b_c(const tran_low_t *coeff_ptr, intptr_t n_coeffs, const int16_t *zbin_ptr, const int16_t *round_ptr, const int16_t *quant_ptr, const int16_t *quant_shift_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan);
 void aom_quantize_b_neon(const tran_low_t *coeff_ptr, intptr_t n_coeffs, const int16_t *zbin_ptr, const int16_t *round_ptr, const int16_t *quant_ptr, const int16_t *quant_shift_ptr, tran_low_t *qcoeff_ptr, tran_low_t *dqcoeff_ptr, const int16_t *dequant_ptr, uint16_t *eob_ptr, const int16_t *scan, const int16_t *iscan);
 #define aom_quantize_b aom_quantize_b_neon
@@ -976,9 +992,6 @@ void aom_sad128x64x4d_neon(const uint8_t *src_ptr, int src_stride, const uint8_t
 
 void aom_sad128x64x4d_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, const uint8_t *second_pred, uint32_t sad_array[4]);
 #define aom_sad128x64x4d_avg aom_sad128x64x4d_avg_c
-
-unsigned int aom_sad128xh_c(const uint8_t *a, int a_stride, const uint8_t *b, int b_stride, int width, int height);
-#define aom_sad128xh aom_sad128xh_c
 
 unsigned int aom_sad16x16_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
 unsigned int aom_sad16x16_neon(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
@@ -1034,9 +1047,6 @@ void aom_sad16x8x4d_neon(const uint8_t *src_ptr, int src_stride, const uint8_t *
 void aom_sad16x8x4d_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, const uint8_t *second_pred, uint32_t sad_array[4]);
 #define aom_sad16x8x4d_avg aom_sad16x8x4d_avg_c
 
-unsigned int aom_sad16xh_c(const uint8_t *a, int a_stride, const uint8_t *b, int b_stride, int width, int height);
-#define aom_sad16xh aom_sad16xh_c
-
 unsigned int aom_sad32x16_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
 unsigned int aom_sad32x16_neon(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
 #define aom_sad32x16 aom_sad32x16_neon
@@ -1091,9 +1101,6 @@ void aom_sad32x64x4d_neon(const uint8_t *src_ptr, int src_stride, const uint8_t 
 void aom_sad32x64x4d_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, const uint8_t *second_pred, uint32_t sad_array[4]);
 #define aom_sad32x64x4d_avg aom_sad32x64x4d_avg_c
 
-unsigned int aom_sad32xh_c(const uint8_t *a, int a_stride, const uint8_t *b, int b_stride, int width, int height);
-#define aom_sad32xh aom_sad32xh_c
-
 unsigned int aom_sad4x4_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
 unsigned int aom_sad4x4_neon(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
 #define aom_sad4x4 aom_sad4x4_neon
@@ -1129,9 +1136,6 @@ void aom_sad4x8x4d_neon(const uint8_t *src_ptr, int src_stride, const uint8_t * 
 
 void aom_sad4x8x4d_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, const uint8_t *second_pred, uint32_t sad_array[4]);
 #define aom_sad4x8x4d_avg aom_sad4x8x4d_avg_c
-
-unsigned int aom_sad4xh_c(const uint8_t *a, int a_stride, const uint8_t *b, int b_stride, int width, int height);
-#define aom_sad4xh aom_sad4xh_c
 
 unsigned int aom_sad64x128_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
 unsigned int aom_sad64x128_neon(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
@@ -1187,9 +1191,6 @@ void aom_sad64x64x4d_neon(const uint8_t *src_ptr, int src_stride, const uint8_t 
 void aom_sad64x64x4d_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, const uint8_t *second_pred, uint32_t sad_array[4]);
 #define aom_sad64x64x4d_avg aom_sad64x64x4d_avg_c
 
-unsigned int aom_sad64xh_c(const uint8_t *a, int a_stride, const uint8_t *b, int b_stride, int width, int height);
-#define aom_sad64xh aom_sad64xh_c
-
 unsigned int aom_sad8x16_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
 unsigned int aom_sad8x16_neon(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
 #define aom_sad8x16 aom_sad8x16_neon
@@ -1243,9 +1244,6 @@ void aom_sad8x8x4d_neon(const uint8_t *src_ptr, int src_stride, const uint8_t * 
 
 void aom_sad8x8x4d_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, const uint8_t *second_pred, uint32_t sad_array[4]);
 #define aom_sad8x8x4d_avg aom_sad8x8x4d_avg_c
-
-unsigned int aom_sad8xh_c(const uint8_t *a, int a_stride, const uint8_t *b, int b_stride, int width, int height);
-#define aom_sad8xh aom_sad8xh_c
 
 unsigned int aom_sad_skip_128x128_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
 unsigned int aom_sad_skip_128x128_neon(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
