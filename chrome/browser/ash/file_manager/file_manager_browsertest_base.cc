@@ -3136,9 +3136,9 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     web_contents = swa_web_contents_[*app_id];
 
     absl::optional<bool> leftClick = value.FindBool("leftClick");
-    ASSERT_TRUE(leftClick);
-    auto button = leftClick ? blink::WebMouseEvent::Button::kLeft
-                            : blink::WebMouseEvent::Button::kRight;
+    ASSERT_TRUE(leftClick.has_value());
+    auto button = leftClick.value() ? blink::WebMouseEvent::Button::kLeft
+                                    : blink::WebMouseEvent::Button::kRight;
     SimulateMouseClickAt(web_contents, 0 /* modifiers */, button,
                          gfx::Point(*click_x, *click_y));
     return;
