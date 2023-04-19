@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_MANUAL_TESTING_PROFILE_IMPORT_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_MANUAL_TESTING_PROFILE_IMPORT_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_MANUAL_TESTING_IMPORT_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_MANUAL_TESTING_IMPORT_H_
 
 #include <vector>
 
@@ -103,4 +103,4 @@ void MaybeImportDataForManualTesting(base::WeakPtr<PersonalDataManager> pdm);
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_MANUAL_TESTING_PROFILE_IMPORT_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_MANUAL_TESTING_IMPORT_H_

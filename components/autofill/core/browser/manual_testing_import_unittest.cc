@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "components/autofill/core/browser/manual_testing_profile_import.h"
+#include "components/autofill/core/browser/manual_testing_import.h"
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
