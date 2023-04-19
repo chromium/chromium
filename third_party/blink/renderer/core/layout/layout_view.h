@@ -342,7 +342,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
  private:
   bool CanHaveChildren() const override;
-  void UpdateBlockLayout(bool relayout_children) override;
   void UpdateFromStyle() override;
 
   Member<LocalFrameView> frame_view_;
