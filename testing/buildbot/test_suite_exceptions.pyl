@@ -1519,6 +1519,12 @@
           '--avd-config=../../tools/android/avd/proto/generic_playstore_android31.textpb',
         ],
         'swarming': {
+          'dimension_sets': [
+            {
+              # TODO(crbug.com/1434504): Move this to jammy.
+              'os': 'Ubuntu-18.04',
+            },
+          ],
           # soft affinity so that bots with caches will be picked first
           'optional_dimensions': {
             '60': [
