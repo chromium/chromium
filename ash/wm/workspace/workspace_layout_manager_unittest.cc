@@ -1960,50 +1960,6 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, SpokenFeedbackFullscreenBackground) {
   EXPECT_EQ(kNoSoundKey, client.GetPlayedEarconAndReset());
 }
 
-TEST_F(WorkspaceLayoutManagerBackdropTest, SpokenFeedbackForArc) {
-  WorkspaceController* wc = ShellTestApi().workspace_controller();
-  WorkspaceControllerTestApi test_helper(wc);
-  AccessibilityControllerImpl* controller =
-      Shell::Get()->accessibility_controller();
-  TestAccessibilityControllerClient client;
-
-  controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
-  EXPECT_TRUE(controller->spoken_feedback().enabled());
-
-  aura::test::TestWindowDelegate delegate;
-  std::unique_ptr<aura::Window> window_arc(CreateTestWindowInShellWithDelegate(
-      &delegate, 0, gfx::Rect(0, 0, 100, 100)));
-  window_arc->Show();
-  std::unique_ptr<aura::Window> window_nonarc(
-      CreateTestWindowInShellWithDelegate(&delegate, 0,
-                                          gfx::Rect(0, 0, 100, 100)));
-  window_nonarc->Show();
-
-  window_arc->SetProperty(aura::client::kAppType,
-                          static_cast<int>(AppType::ARC_APP));
-  EXPECT_FALSE(test_helper.GetBackdropWindow());
-
-  // ARC window will have a backdrop only when it's active.
-  wm::ActivateWindow(window_arc.get());
-  EXPECT_TRUE(test_helper.GetBackdropWindow());
-
-  wm::ActivateWindow(window_nonarc.get());
-  EXPECT_FALSE(test_helper.GetBackdropWindow());
-
-  wm::ActivateWindow(window_arc.get());
-  EXPECT_TRUE(test_helper.GetBackdropWindow());
-
-  // Make sure that clicking the backdrop window will play sound.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->MoveMouseTo(300, 300);
-  generator->ClickLeftButton();
-  EXPECT_EQ(Sound::kVolumeAdjust, client.GetPlayedEarconAndReset());
-
-  generator->MoveMouseTo(70, 70);
-  generator->ClickLeftButton();
-  EXPECT_EQ(kNoSoundKey, client.GetPlayedEarconAndReset());
-}
-
 class WorkspaceLayoutManagerKeyboardTest : public AshTestBase {
  public:
   WorkspaceLayoutManagerKeyboardTest() : layout_manager_(nullptr) {}

@@ -489,15 +489,6 @@ bool BackdropController::WindowShouldHaveBackdrop(aura::Window* window) {
   if (backdrop_mode == WindowBackdrop::BackdropMode::kDisabled)
     return false;
 
-  // If |window| is the current active window and is an ARC app window, |window|
-  // should have a backdrop when spoken feedback is enabled.
-  if (window->GetProperty(aura::client::kAppType) ==
-          static_cast<int>(AppType::ARC_APP) &&
-      wm::IsActiveWindow(window) &&
-      Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
-    return true;
-  }
-
   if (!desks_util::IsDeskContainer(container_))
     return false;
 
