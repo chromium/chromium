@@ -439,9 +439,9 @@ ClientTreeNode* AXTreeSerializer<AXSourceNode>::GetClientTreeNodeParent(
     return nullptr;
   if (!ClientTreeNodeById(parent->id)) {
     std::ostringstream error;
-    error << "Child: " << tree_->GetDebugString(tree_->GetFromId(obj->id))
+    error << "Child: " << tree_->GetDebugString(tree_->EnsureGetFromId(obj->id))
           << "\nParent: "
-          << tree_->GetDebugString(tree_->GetFromId(parent->id));
+          << tree_->GetDebugString(tree_->EnsureGetFromId(parent->id));
     static auto* missing_parent_err = base::debug::AllocateCrashKeyString(
         "ax_ts_missing_parent_err", base::debug::CrashKeySize::Size256);
     base::debug::SetCrashKeyString(missing_parent_err,
@@ -721,11 +721,11 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
       // also reset virtual buffers, causing users to lose their place.
       std::ostringstream error;
       error << "Passed-in parent: "
-            << tree_->GetDebugString(tree_->GetFromId(client_node->id))
+            << tree_->GetDebugString(tree_->EnsureGetFromId(client_node->id))
             << "\nChild: " << tree_->GetDebugString(child)
             << "\nChild's parent: "
             << tree_->GetDebugString(
-                   tree_->GetFromId(client_child->parent->id));
+                   tree_->EnsureGetFromId(client_child->parent->id));
       static auto* reparent_err = base::debug::AllocateCrashKeyString(
           "ax_ts_reparent_err", base::debug::CrashKeySize::Size256);
       base::debug::SetCrashKeyString(reparent_err, error.str().substr(0, 230));
@@ -783,11 +783,12 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
           << "A kRootWebArea role was used on an object that is not the root: "
           << "\n* Actual root: " << tree_->GetDebugString(tree_->GetRoot())
           << "\n* Illegal node with root web area role: "
-          << tree_->GetDebugString(tree_->GetFromId(serialized_node->id))
+          << tree_->GetDebugString(tree_->EnsureGetFromId(serialized_node->id))
           << "\n* Parent of illegal node: "
-          << (client_node->parent ? tree_->GetDebugString(tree_->GetFromId(
-                                        client_node->parent->id))
-                                  : "");
+          << (client_node->parent
+                  ? tree_->GetDebugString(
+                        tree_->EnsureGetFromId(client_node->parent->id))
+                  : "");
     }
   }
 
@@ -842,10 +843,10 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
         std::ostringstream error;
         error << "Child id " << child_id << " already in map."
               << "\nChild: "
-              << tree_->GetDebugString(tree_->GetFromId(child_id))
+              << tree_->GetDebugString(tree_->EnsureGetFromId(child_id))
               << "\nWanted for parent " << tree_->GetDebugString(node)
               << "\nAlready had parent "
-              << tree_->GetDebugString(tree_->GetFromId(
+              << tree_->GetDebugString(tree_->EnsureGetFromId(
                      ClientTreeNodeById(child_id)->parent->id));
         static auto* dupe_id_err = base::debug::AllocateCrashKeyString(
             "ax_ts_dupe_id_err", base::debug::CrashKeySize::Size256);

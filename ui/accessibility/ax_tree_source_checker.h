@@ -133,7 +133,7 @@ bool AXTreeSourceChecker<AXSourceNode>::Check(AXSourceNode node,
     }
     AXNodeID parent_id = tree_->GetId(parent);
     if (parent_id != expected_parent_id) {
-      AXSourceNode expected_parent = tree_->GetFromId(expected_parent_id);
+      AXSourceNode expected_parent = tree_->EnsureGetFromId(expected_parent_id);
       std::string msg = base::StringPrintf(
           "Expected node %d to have a parent of %d, but found a parent of %d.\n"
           "Node: %s\n"
