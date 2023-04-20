@@ -531,8 +531,12 @@ void VP8VaapiVideoEncoderDelegate::SetFrameHeader(
 
   picture.frame_hdr->quantization_hdr.y_ac_qi =
       rate_ctrl_->ComputeQP(frame_params);
+  picture.frame_hdr->loopfilter_hdr.level =
+      base::checked_cast<uint8_t>(rate_ctrl_->GetLoopfilterLevel());
   DVLOGF(4) << "qp="
             << static_cast<int>(picture.frame_hdr->quantization_hdr.y_ac_qi)
+            << ", filter_level="
+            << static_cast<int>(picture.frame_hdr->loopfilter_hdr.level)
             << (keyframe ? " (keyframe)" : "")
             << (picture.metadata_for_encoding
                     ? " temporal id=" +

@@ -11,11 +11,19 @@
 namespace media {
 
 // Template method specialization for VP9.
-// TODO(mcasas): Remove when VP8 also has a GetLoopfilterLevel() method.
+// TODO(b/278162842): Remove when AV1 also has a GetLoopfilterLevel() method.
 template <>
 int VideoRateControl<libvpx::VP9RateControlRtcConfig,
                      libvpx::VP9RateControlRTC,
                      libvpx::VP9FrameParamsQpRTC>::GetLoopfilterLevel() const {
+  return impl_->GetLoopfilterLevel();
+}
+
+// Template method specialization for VP8.
+template <>
+int VideoRateControl<libvpx::VP8RateControlRtcConfig,
+                     libvpx::VP8RateControlRTC,
+                     libvpx::VP8FrameParamsQpRTC>::GetLoopfilterLevel() const {
   return impl_->GetLoopfilterLevel();
 }
 
