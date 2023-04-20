@@ -460,7 +460,7 @@ BASE_FEATURE(kAdaptiveButtonInTopToolbarCustomizationV2,
 
 BASE_FEATURE(kAddEduAccountFromAccountSettingsForSupervisedUsers,
              "AddEduAccountFromAccountSettingsForSupervisedUsers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAddToHomescreenIPH,
              "AddToHomescreenIPH",
