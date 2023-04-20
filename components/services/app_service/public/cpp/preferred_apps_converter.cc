@@ -154,20 +154,21 @@ base::Value ConvertPreferredAppsToValue(const PreferredApps& preferred_apps) {
 
 PreferredApps ParseValueToPreferredApps(
     const base::Value& preferred_apps_value) {
-  const base::Value* preferred_apps_list = nullptr;
+  const base::Value::List* preferred_apps_list = nullptr;
   if (preferred_apps_value.is_list()) {
-    preferred_apps_list = &preferred_apps_value;
+    preferred_apps_list = &preferred_apps_value.GetList();
   } else if (preferred_apps_value.is_dict()) {
-    preferred_apps_list = preferred_apps_value.FindListKey(kPreferredAppsKey);
+    preferred_apps_list =
+        preferred_apps_value.GetDict().FindList(kPreferredAppsKey);
   }
-  if (!preferred_apps_list || !preferred_apps_list->is_list()) {
+  if (!preferred_apps_list) {
     DVLOG(0)
         << "Fail to parse preferred apps. Cannot find the preferred app list.";
     return PreferredApps();
   }
 
   PreferredApps preferred_apps;
-  for (const base::Value& entry_val : preferred_apps_list->GetList()) {
+  for (const base::Value& entry_val : *preferred_apps_list) {
     const base::Value::Dict& entry = entry_val.GetDict();
     const std::string* app_id = entry.FindString(kAppIdKey);
     if (!app_id) {
@@ -208,7 +209,7 @@ bool IsUpgradedForSharing(const base::Value& preferred_apps_value) {
   if (preferred_apps_value.is_list()) {
     return false;
   }
-  auto version = preferred_apps_value.FindIntKey(kVersionKey);
+  auto version = preferred_apps_value.GetDict().FindInt(kVersionKey);
   return version.value_or(kVersionInitial) >= kVersionSupportsSharing;
 }
 
