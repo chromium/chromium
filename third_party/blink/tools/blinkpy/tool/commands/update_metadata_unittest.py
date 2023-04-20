@@ -61,8 +61,12 @@ class BaseUpdateMetadataTest(LoggingTestCase):
                         ],
                         'variant.html': [
                             'b8db5972284d1ac6bbda0da81621d9bca5d04ee7',
-                            ['variant.html?foo=bar/abc', {}],
-                            ['variant.html?foo=baz', {}],
+                            ['variant.html?foo=bar/abc', {
+                                'timeout': 'long'
+                            }],
+                            ['variant.html?foo=baz', {
+                                'timeout': 'long'
+                            }],
                         ],
                     },
                 },
@@ -1048,8 +1052,8 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
         default).
         """
         self.write_contents(
-            'external/wpt/variant.html.ini', """\
-            [variant.html?foo=baz]
+            'external/wpt/pass.html.ini', """\
+            [pass.html]
               [subtest]
                 expected:
                   if (product == "content_shell") and (os == "win"): PASS
@@ -1063,7 +1067,7 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                 },
                 'results': [{
                     'test':
-                    '/variant.html?foo=baz',
+                    '/pass.html',
                     'status':
                     'TIMEOUT',
                     'expected':
@@ -1097,8 +1101,8 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
         #
         # without a full update (i.e., `--overwrite-conditions=no`).
         self.assert_contents(
-            'external/wpt/variant.html.ini', """\
-            [variant.html?foo=baz]
+            'external/wpt/pass.html.ini', """\
+            [pass.html]
               expected:
                 if (product == "content_shell") and (os == "win"): TIMEOUT
               [subtest]
@@ -1246,6 +1250,33 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
             [variant.html?foo=baz]
               [subtest]
                 expected: FAIL
+            """)
+
+    def test_disable_slow_timeouts(self):
+        self.update(
+            {
+                'run_info': {
+                    'product': 'content_shell',
+                },
+                'results': [{
+                    'test': '/variant.html?foo=baz',
+                    'status': 'OK',
+                }],
+            }, {
+                'run_info': {
+                    'product': 'chrome',
+                },
+                'results': [{
+                    'test': '/variant.html?foo=baz',
+                    'status': 'TIMEOUT',
+                }],
+            })
+        self.assert_contents(
+            'external/wpt/variant.html.ini', """\
+            [variant.html?foo=baz]
+              disabled: times out even with extended deadline
+              expected:
+                if product == "chrome": TIMEOUT
             """)
 
     def test_stable_rendering(self):

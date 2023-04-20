@@ -57,7 +57,6 @@ from wptrunner import (
     wpttest,
 )
 from wptrunner.wptmanifest import node as wptnode
-from wptrunner.wptmanifest.backends import conditional
 from wptrunner.wptmanifest.parser import ParseError
 
 _log = logging.getLogger(__name__)
@@ -532,6 +531,7 @@ class MetadataUpdater:
     def __init__(
         self,
         test_files: TestFileMap,
+        slow_tests: Set[str],
         configs: Dict[metadata.RunInfo, Port],
         fs: FileSystem,
         primary_properties: Optional[List[str]] = None,
@@ -543,6 +543,7 @@ class MetadataUpdater:
         dry_run: bool = False,
     ):
         self._configs = configs
+        self._slow_tests = slow_tests
         self._fs = fs
         self._default_expected = _default_expected_by_type()
         self._primary_properties = primary_properties or [
@@ -583,7 +584,7 @@ class MetadataUpdater:
         test_filter = testloader.TestFilter(manifests,
                                             include=include,
                                             exclude=exclude)
-        test_files = {}
+        test_files, slow_tests = {}, set()
         for manifest, paths in manifests.items():
             # Unfortunately, test filtering is tightly coupled to the
             # `testloader.TestLoader` API. Monkey-patching here is the cleanest
@@ -595,9 +596,12 @@ class MetadataUpdater:
                 test_files.update(
                     metadata.create_test_tree(paths['metadata_path'],
                                               manifest))
+                for _, _, tests in manifest:
+                    slow_tests.update(test.id for test in tests
+                                      if getattr(test, 'timeout') == 'long')
             finally:
                 manifest.itertypes = itertypes
-        return cls(test_files, configs, fs, **options)
+        return cls(test_files, slow_tests, configs, fs, **options)
 
     def collect_results(self, reports: Iterable[io.TextIOBase]) -> Set[str]:
         """Parse and record test results."""
@@ -654,8 +658,8 @@ class MetadataUpdater:
         Missing configs are only detected at the test level so that subtests can
         still be pruned.
         """
-        expectations = self._make_initialized_expectations(test_file)
-        for test in expectations.child_map.values():
+        expected = self._make_initialized_expectations(test_file)
+        for test in expected.child_map.values():
             updated_configs = self._updated_configs(test_file, test.id)
             # Nothing to update. This commonly occurs when every port runs
             # expectedly. As an optimization, skip this file's update entirely
@@ -715,20 +719,20 @@ class MetadataUpdater:
         # `manifestexpected.ExpectedManifest` because the former is
         # conditionally compiled, meaning keys can be evaluated against
         # different run info without needing to re-read the file.
-        expectations = test_file.expected(
+        expected = test_file.expected(
             (self._primary_properties, self._dependent_properties),
             update_intermittent=(not self._disable_intermittent),
             remove_intermittent=(not self._keep_statuses))
         for test_id in test_file.data:
-            test = expectations.get_test(test_id)
+            test = expected.get_test(test_id)
             if not test:
                 test = manifestupdate.TestNode.create(test_id)
-                expectations.append(test)
+                expected.append(test)
             for subtest in test_file.data.get(test_id, []):
                 if subtest != None:
                     # This creates the subtest node if it doesn't exist.
                     test.get_subtest(subtest)
-        return expectations
+        return expected
 
     def _eval_statuses(
             self,
@@ -817,6 +821,8 @@ class MetadataUpdater:
             #   https://github.com/web-platform-tests/wpt/blob/merge_pr_35624/tools/wptrunner/wptrunner/manifestupdate.py#L422-L436
             update_intermittent=(not self._disable_intermittent),
             remove_intermittent=(not self._keep_statuses))
+        if expected:
+            self._disable_slow_timeouts(test_file, expected)
 
         modified = expected and expected.modified
         if modified:
@@ -827,10 +833,36 @@ class MetadataUpdater:
                 metadata.write_new_expected(test_file.metadata_path, expected)
         return modified
 
-    def _add_bug_url(self, expected: conditional.ManifestItem):
-        for test_id_section in expected.iterchildren():
-            if test_id_section.modified:
-                test_id_section.set('bug', 'crbug.com/%d' % self._bug)
+    def _disable_slow_timeouts(
+            self,
+            test_file: metadata.TestFileData,
+            expected: manifestupdate.ExpectedManifest,
+            message: str = 'times out even with extended deadline'):
+        """Disable tests that are simultaneously slow and consistently time out.
+
+        Such tests provide too little value for the large amount of time/compute
+        that they consume.
+        """
+        for test in expected.iterchildren():
+            if test.id not in self._slow_tests:
+                continue
+            results = test_file.data.get(test.id, {}).get(None, [])
+            statuses_by_config = collections.defaultdict(set)
+            for prop, config, value in results:
+                if prop == 'status':
+                    statuses_by_config[config].add(value)
+            # Writing a conditional `disabled` value is complicated, so just
+            # disable the test unconditionally if any configuration times out
+            # consistently.
+            if any(statuses == {'TIMEOUT'}
+                   for statuses in statuses_by_config.values()):
+                test.set('disabled', message)
+                test.modified = True
+
+    def _add_bug_url(self, expected: manifestupdate.ExpectedManifest):
+        for test in expected.iterchildren():
+            if test.modified:
+                test.set('bug', 'crbug.com/%d' % self._bug)
 
 
 def sort_metadata_ast(node: wptnode.DataNode) -> None:
