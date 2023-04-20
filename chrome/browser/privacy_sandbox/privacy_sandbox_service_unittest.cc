@@ -1197,6 +1197,11 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
                    "Settings.PrivacySandbox.Notice.OpenedSettings"));
 
   privacy_sandbox_service()->PromptActionOccurred(
+      PrivacySandboxService::PromptAction::kRestrictedNoticeOpenSettings);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Settings.PrivacySandbox.RestrictedNotice.OpenedSettings"));
+
+  privacy_sandbox_service()->PromptActionOccurred(
       PrivacySandboxService::PromptAction::kNoticeAcknowledge);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.Acknowledged"));

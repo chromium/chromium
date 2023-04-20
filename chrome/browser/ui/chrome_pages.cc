@@ -491,6 +491,13 @@ void ShowPrivacySandboxSettings(Browser* browser) {
   }
 }
 
+void ShowPrivacySandboxAdMeasurementSettings(Browser* browser) {
+  base::RecordAction(UserMetricsAction("Options_ShowPrivacySandbox"));
+  CHECK(
+      base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4));
+  ShowSettingsSubPage(browser, kPrivacySandboxMeasurementSubpage);
+}
+
 void ShowPrivacySandboxAdPersonalization(Browser* browser) {
   base::RecordAction(UserMetricsAction("Options_ShowPrivacySandbox"));
   ShowSettingsSubPage(browser, kPrivacySandboxAdPersonalizationSubPage);

@@ -523,6 +523,7 @@ extern const char kCfmNetworkSettingsURL[];
 // Settings sub-pages.
 extern const char kAccessibilitySubPage[];
 extern const char kAdPrivacySubPage[];
+extern const char kPrivacySandboxMeasurementSubpage[];
 extern const char kAddressesSubPage[];
 extern const char kAppearanceSubPage[];
 extern const char kAutofillSubPage[];

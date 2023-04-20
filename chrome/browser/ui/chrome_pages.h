@@ -196,6 +196,7 @@ void ShowAboutChrome(Browser* browser);
 void ShowSearchEngineSettings(Browser* browser);
 void ShowWebStore(Browser* browser);
 void ShowPrivacySandboxSettings(Browser* browser);
+void ShowPrivacySandboxAdMeasurementSettings(Browser* browser);
 void ShowPrivacySandboxAdPersonalization(Browser* browser);
 void ShowPrivacySandboxLearnMore(Browser* browser);
 void ShowAddresses(Browser* browser);

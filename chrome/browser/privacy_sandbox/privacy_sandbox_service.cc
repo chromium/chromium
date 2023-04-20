@@ -360,7 +360,8 @@ void PrivacySandboxService::PromptActionOccurredM1(
     RecordUpdatedTopicsConsent(
         privacy_sandbox::TopicsConsentUpdateSource::kConfirmation, false);
   }
-  // TODO(crbug.com/1428506): Handle PromptAction::kRestrictedNoticeAcknowledge.
+  // TODO(crbug.com/1428506): Handle PromptAction::kRestrictedNoticeAcknowledge
+  // and PromptAction::kRestrictedNoticeOpenSettings.
 }
 
 // static
