@@ -95,6 +95,7 @@ ci.builder(
             target_platform = builder_config.target_platform.FUCHSIA,
         ),
         build_gs_bucket = "chromium-fyi-archive",
+        run_tests_serially = True,
     ),
     console_view_entry = [
         consoles.console_view_entry(
@@ -129,6 +130,7 @@ ci.builder(
             target_platform = builder_config.target_platform.FUCHSIA,
         ),
         build_gs_bucket = "chromium-fyi-archive",
+        run_tests_serially = True,
     ),
     console_view_entry = [
         consoles.console_view_entry(
