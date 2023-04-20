@@ -11,10 +11,12 @@
 #include "base/json/values_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/idle/action.h"
 #include "chrome/common/pref_names.h"
+#include "components/browsing_data/core/features.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
@@ -22,6 +24,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/pref_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -56,6 +59,7 @@ class IdleTimeoutPolicyHandlerTest : public testing::Test {
   void ApplyPolicySettings() {
     timeout_handler_.ApplyPolicySettings(policies_, &prefs_);
     actions_handler_.ApplyPolicySettings(policies_, &prefs_);
+    actions_handler_.PrepareForDisplaying(&policies_);
   }
 
   void CheckAndApplyPolicySettings() {
@@ -354,7 +358,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest, SyncNotDisabled) {
               UnorderedElementsAre(
                   u"These actions require the SyncDisabled policy to be set to "
                   u"Enabled: clear_browsing_history, clear_password_signin, "
-                  u"clear_autofill, clear_hosted_app_data."));
+                  u"clear_autofill, clear_site_settings."));
 
   // Prefs should not be set.
   const base::Value* pref_value;
@@ -386,13 +390,130 @@ TEST_F(IdleTimeoutPolicyHandlerTest, SyncDisabledIsFalse) {
               UnorderedElementsAre(
                   u"These actions require the SyncDisabled policy to be set to "
                   u"Enabled: clear_browsing_history, clear_password_signin, "
-                  u"clear_autofill, clear_hosted_app_data."));
+                  u"clear_autofill, clear_site_settings."));
 
   // Prefs should not be set.
   const base::Value* pref_value;
   EXPECT_FALSE(prefs().GetValue(prefs::kIdleTimeout, &pref_value));
   EXPECT_FALSE(prefs().GetValue(prefs::kIdleTimeoutActions, &pref_value));
 }
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// When browser sign in is disabled by policy, the clear actions should
+// be applied and the error map and messages should be empty
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(IdleTimeoutPolicyHandlerTest, BrowserSigninDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatureState(
+      browsing_data::features::kDataRetentionPoliciesDisableSyncTypesNeeded,
+      true);
+  SetPolicyValue(policy::key::kIdleTimeout, base::Value(15));
+  SetPolicyValue(policy::key::kBrowserSignin, base::Value(0));
+
+  base::Value::List list;
+  list.Append("clear_browsing_history");
+  list.Append("clear_download_history");
+  SetPolicyValue(policy::key::kIdleTimeoutActions,
+                 base::Value(std::move(list)));
+
+  CheckAndApplyPolicySettings();
+
+  EXPECT_THAT(errors(), IsEmpty());
+
+  // Prefs should be set.
+  const base::Value* pref_value;
+  EXPECT_TRUE(prefs().GetValue(prefs::kIdleTimeout, &pref_value));
+  ASSERT_THAT(pref_value, testing::NotNull());
+  EXPECT_EQ(base::TimeDeltaToValue(base::Minutes(15)), *pref_value);
+
+  EXPECT_TRUE(prefs().GetValue(prefs::kIdleTimeoutActions, &pref_value));
+  ASSERT_THAT(pref_value, testing::NotNull());
+  EXPECT_TRUE(pref_value->is_list());
+  EXPECT_THAT(pref_value->GetList(),
+              testing::ElementsAre(
+                  static_cast<int>(ActionType::kClearBrowsingHistory),
+                  static_cast<int>(ActionType::kClearDownloadHistory)));
+}
+#endif
+
+TEST_F(IdleTimeoutPolicyHandlerTest, SyncTypesDisabledForClearActions) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatureState(
+      browsing_data::features::kDataRetentionPoliciesDisableSyncTypesNeeded,
+      true);
+  // Start with sync prefs enabled so we can sense that they have changed.
+  prefs().SetBoolean(syncer::prefs::kSyncAutofill, true);
+  prefs().SetBoolean(syncer::prefs::kSyncPreferences, true);
+  prefs().SetBoolean(syncer::prefs::kSyncTypedUrls, true);
+  prefs().SetBoolean(syncer::prefs::kSyncTabs, true);
+  prefs().SetBoolean(syncer::prefs::kSyncSavedTabGroups, true);
+  prefs().SetBoolean(syncer::prefs::kSyncPasswords, true);
+
+  SetPolicyValue(policy::key::kIdleTimeout, base::Value(15));
+  SetPolicyValue(policy::key::kSyncDisabled, base::Value(false));
+
+  base::Value::List list;
+#if !BUILDFLAG(IS_ANDROID)
+  list.Append("close_browsers");
+  list.Append("show_profile_picker");
+#endif  // !BUILDFLAG(IS_ANDROID)
+  list.Append("clear_browsing_history");
+  list.Append("clear_download_history");
+  list.Append("clear_cookies_and_other_site_data");
+  list.Append("clear_cached_images_and_files");
+  list.Append("clear_password_signin");
+  list.Append("clear_autofill");
+  list.Append("clear_site_settings");
+  list.Append("clear_hosted_app_data");
+  list.Append("reload_pages");
+  SetPolicyValue(policy::key::kIdleTimeoutActions,
+                 base::Value(std::move(list)));
+
+  CheckAndApplyPolicySettings();
+
+  EXPECT_THAT(errors(), IsEmpty());
+  EXPECT_TRUE(policies()
+                  .Get(policy::key::kIdleTimeoutActions)
+                  ->HasMessage(policy::PolicyMap::MessageType::kInfo));
+
+  // Prefs should be set.
+  const base::Value* pref_value;
+  EXPECT_TRUE(prefs().GetValue(prefs::kIdleTimeout, &pref_value));
+  ASSERT_THAT(pref_value, testing::NotNull());
+  EXPECT_EQ(base::TimeDeltaToValue(base::Minutes(15)), *pref_value);
+
+  EXPECT_TRUE(prefs().GetValue(prefs::kIdleTimeoutActions, &pref_value));
+  ASSERT_THAT(pref_value, testing::NotNull());
+  EXPECT_TRUE(pref_value->is_list());
+  EXPECT_THAT(pref_value->GetList(),
+              testing::ElementsAre(
+#if !BUILDFLAG(IS_ANDROID)
+                  static_cast<int>(ActionType::kCloseBrowsers),
+                  static_cast<int>(ActionType::kShowProfilePicker),
+#endif  // !BUILDFLAG(IS_ANDROID)
+                  static_cast<int>(ActionType::kClearBrowsingHistory),
+                  static_cast<int>(ActionType::kClearDownloadHistory),
+                  static_cast<int>(ActionType::kClearCookiesAndOtherSiteData),
+                  static_cast<int>(ActionType::kClearCachedImagesAndFiles),
+                  static_cast<int>(ActionType::kClearPasswordSignin),
+                  static_cast<int>(ActionType::kClearAutofill),
+                  static_cast<int>(ActionType::kClearSiteSettings),
+                  static_cast<int>(ActionType::kClearHostedAppData),
+                  static_cast<int>(ActionType::kReloadPages)));
+
+  bool enabled;
+  ASSERT_TRUE(prefs().GetBoolean(syncer::prefs::kSyncPreferences, &enabled));
+  EXPECT_FALSE(enabled);
+  ASSERT_TRUE(prefs().GetBoolean(syncer::prefs::kSyncTypedUrls, &enabled));
+  EXPECT_FALSE(enabled);
+  ASSERT_TRUE(prefs().GetBoolean(syncer::prefs::kSyncTabs, &enabled));
+  EXPECT_FALSE(enabled);
+  ASSERT_TRUE(prefs().GetBoolean(syncer::prefs::kSyncSavedTabGroups, &enabled));
+  EXPECT_FALSE(enabled);
+  ASSERT_TRUE(prefs().GetBoolean(syncer::prefs::kSyncAutofill, &enabled));
+  EXPECT_FALSE(enabled);
+  ASSERT_TRUE(prefs().GetBoolean(syncer::prefs::kSyncPasswords, &enabled));
+  EXPECT_FALSE(enabled);
+}
 }  // namespace enterprise_idle

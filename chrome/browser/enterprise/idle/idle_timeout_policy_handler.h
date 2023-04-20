@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_IDLE_IDLE_TIMEOUT_POLICY_HANDLER_H_
 
 #include "components/policy/core/browser/configuration_policy_handler.h"
+#include "components/sync/base/user_selectable_type.h"
 
 class PrefValueMap;
 
@@ -51,6 +52,12 @@ class IdleTimeoutActionsPolicyHandler
                            PrefValueMap* prefs) override;
   bool CheckPolicySettings(const policy::PolicyMap& policies,
                            policy::PolicyErrorMap* errors) override;
+  void PrepareForDisplaying(policy::PolicyMap* policies) const override;
+
+ private:
+  // Caches sync types required when the policy is checked, to
+  // avoid recomputing when it is applied or prepared for display.
+  syncer::UserSelectableTypeSet forced_disabled_sync_types_;
 };
 
 }  // namespace enterprise_idle
