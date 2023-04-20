@@ -178,8 +178,9 @@ class WebAppNavigatePrerenderingBrowserTest : public WebAppNavigateBrowserTest {
 
 // Tests that prerendering doesn't change the existing App ID. It also doesn't
 // call ManifestUpdateManager as a primary page is not changed.
+// TODO(crbug.com/1434842): Test is flaky.
 IN_PROC_BROWSER_TEST_F(WebAppNavigatePrerenderingBrowserTest,
-                       NotUpdateInPrerendering) {
+                       DISABLED_NotUpdateInPrerendering) {
   const GURL example_url =
       embedded_test_server()->GetURL("/banners/manifest_test_page.html");
 
