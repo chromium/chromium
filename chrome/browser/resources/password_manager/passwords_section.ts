@@ -22,18 +22,20 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_element
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {FocusConfig} from './focus_config.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_section.html.js';
 // <if expr="_google_chrome">
 import {PromoCardId} from './promo_cards/promo_card.js';
 import {PromoCard, PromoCardsProxyImpl} from './promo_cards/promo_cards_browser_proxy.js';
 // </if>
-import {Route, RouteObserverMixin, UrlParam} from './router.js';
+import {Page, Route, RouteObserverMixin, UrlParam} from './router.js';
 import {UserUtilMixin} from './user_utils_mixin.js';
 
 export interface PasswordsSectionElement {
@@ -61,6 +63,11 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   static get properties() {
     return {
+      focusConfig: {
+        type: Object,
+        observer: 'focusConfigChanged_',
+      },
+
       /**
        * Password groups displayed in the UI.
        */
@@ -117,9 +124,16 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
             'prefs.credentials_enable_service.enforcement, ' +
             'prefs.credentials_enable_service.value)',
       },
+
+      /**
+       * The element to return focus to, when moving from details page to
+       * passwords page.
+       */
+      activeListItem_: {type: Object, value: null},
     };
   }
 
+  focusConfig: FocusConfig;
   private groups_: chrome.passwordsPrivate.CredentialGroup[] = [];
   private searchTerm_: string;
   private shownGroupsCount_: number;
@@ -131,6 +145,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private promoCard_: PromoCard|null;
   // </if>
   private passwordManagerDisabled_: boolean;
+  private activeListItem_: HTMLElement|null;
 
   private setSavedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
@@ -176,7 +191,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     this.authTimedOutListener_ = null;
   }
 
-  override currentRouteChanged(newRoute: Route, _oldRoute: Route): void {
+  override currentRouteChanged(newRoute: Route): void {
     const searchTerm = newRoute.queryParameters.get(UrlParam.SEARCH_TERM) || '';
     if (searchTerm !== this.searchTerm_) {
       this.searchTerm_ = searchTerm;
@@ -309,6 +324,24 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   private showNoPasswordsFound_(): boolean {
     return this.hideGroupsList_() && this.groups_.length > 0;
+  }
+
+  private onPasswordDetailsShown_(e: CustomEvent) {
+    this.activeListItem_ = e.detail;
+  }
+
+  private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
+    // focusConfig is set only once on the parent, so this observer should
+    // only fire once.
+    assert(!oldConfig);
+
+    this.focusConfig.set(Page.PASSWORD_DETAILS, () => {
+      if (!this.activeListItem_) {
+        return;
+      }
+
+      focusWithoutInk(this.activeListItem_);
+    });
   }
 }
 

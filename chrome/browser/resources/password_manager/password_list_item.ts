@@ -85,6 +85,9 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
             iconUrl: this.item.iconUrl,
             entries: entries,
           };
+          this.dispatchEvent(new CustomEvent(
+              'password-details-shown',
+              {bubbles: true, composed: true, detail: this}));
           Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
         })
         .catch(() => {});

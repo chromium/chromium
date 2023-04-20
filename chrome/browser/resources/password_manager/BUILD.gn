@@ -69,6 +69,7 @@ build_webui("build") {
     "passkeys_browser_proxy.ts",
     "password_manager_proxy.ts",
     "prefs/extension_control_browser_proxy.ts",
+    "focus_config.ts",
     "router.ts",
     "searchable_label.ts",
     "show_password_mixin.ts",
