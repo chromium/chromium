@@ -212,6 +212,8 @@ SK_API void SkDebugf_FileLine(const char* file,
 //
 // Remove these as we update our sites.
 
+#define SK_LEGACY_HALF_PRECISION_COLOR_SPACE_MATH
+
 #define SK_LEGACY_LAYER_BOUNDS_EXPANSION  // skbug.com/12083, skbug.com/12303
 
 // Workaround for poor anisotropic mipmap quality,
