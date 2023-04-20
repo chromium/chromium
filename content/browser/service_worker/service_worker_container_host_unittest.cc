@@ -393,7 +393,7 @@ TEST_F(ServiceWorkerContainerHostTest, MatchRegistration) {
   container_host->RemoveMatchingRegistration(registration1_.get());
   ASSERT_EQ(nullptr, container_host->MatchRegistration());
 
-  // SetDocumentUrl sets all of matching registrations
+  // UpdateUrls sets all of matching registrations
   container_host->UpdateUrls(
       GURL("https://www.example.com/example1"),
       url::Origin::Create(GURL("https://www.example.com/example1")),
@@ -403,7 +403,7 @@ TEST_F(ServiceWorkerContainerHostTest, MatchRegistration) {
   container_host->RemoveMatchingRegistration(registration2_.get());
   ASSERT_EQ(registration1_, container_host->MatchRegistration());
 
-  // SetDocumentUrl with another origin also updates matching registrations
+  // UpdateUrls with another origin also updates matching registrations
   container_host->UpdateUrls(
       GURL("https://other.example.com/example"),
       url::Origin::Create(GURL("https://other.example.com/example")),
@@ -736,7 +736,7 @@ TEST_F(ServiceWorkerContainerHostTest,
   SetBrowserClientForTesting(old_browser_client);
 }
 
-TEST_F(ServiceWorkerContainerHostTest, AllowsServiceWorker) {
+TEST_F(ServiceWorkerContainerHostTest, AllowServiceWorker) {
   // Create an active version.
   scoped_refptr<ServiceWorkerVersion> version =
       base::MakeRefCounted<ServiceWorkerVersion>(
