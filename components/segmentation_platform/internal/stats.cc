@@ -566,6 +566,14 @@ void RecordSegmentSelectionFailure(const Config& config,
       reason);
 }
 
+void RecordSegmentSelectionFailure(const std::string& segmentation_key,
+                                   SegmentationSelectionFailureReason reason) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"SegmentationPlatform.SelectionFailedReason.",
+                    SegmentationKeyToUmaName(segmentation_key)}),
+      reason);
+}
+
 std::string FeatureProcessingErrorToString(FeatureProcessingError error) {
   switch (error) {
     case FeatureProcessingError::kUkmEngineDisabled:
@@ -614,6 +622,43 @@ void RecordTrainingDataCollectionEvent(SegmentId segment_id,
       "SegmentationPlatform.TrainingDataCollectionEvents." +
           SegmentIdToHistogramVariant(segment_id),
       event);
+}
+
+// This conversion exists because segment selector uses the result state
+// differently. TODO(ritikagup): Remove this conversion when selector is
+// deleted.
+SegmentationSelectionFailureReason GetSuccessOrFailureReason(
+    SegmentResultProvider::ResultState result_state) {
+  switch (result_state) {
+    case SegmentResultProvider::ResultState::kUnknown:
+      NOTREACHED();
+      return SegmentationSelectionFailureReason::kMaxValue;
+    case SegmentResultProvider::ResultState::kSuccessFromDatabase:
+      return SegmentationSelectionFailureReason::kScoreUsedFromDatabase;
+    case SegmentResultProvider::ResultState::kDefaultModelScoreUsed:
+      return SegmentationSelectionFailureReason::kScoreComputedFromDefaultModel;
+    case SegmentResultProvider::ResultState::kTfliteModelScoreUsed:
+      return SegmentationSelectionFailureReason::kScoreComputedFromTfliteModel;
+    case SegmentResultProvider::ResultState::kDatabaseScoreNotReady:
+      return SegmentationSelectionFailureReason::kAtLeastOneSegmentNotReady;
+    case SegmentResultProvider::ResultState::kSegmentNotAvailable:
+      return SegmentationSelectionFailureReason::kAtLeastOneSegmentNotAvailable;
+    case SegmentResultProvider::ResultState::kSignalsNotCollected:
+      return SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentSignalsNotCollected;
+    case SegmentResultProvider::ResultState::kDefaultModelMetadataMissing:
+      return SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentDefaultMissingMetadata;
+    case SegmentResultProvider::ResultState::kDefaultModelSignalNotCollected:
+      return SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentDefaultSignalNotCollected;
+    case SegmentResultProvider::ResultState::kDefaultModelExecutionFailed:
+      return SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentDefaultExecFailed;
+    case SegmentResultProvider::ResultState::kTfliteModelExecutionFailed:
+      return SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentTfliteExecFailed;
+  }
 }
 
 }  // namespace segmentation_platform::stats

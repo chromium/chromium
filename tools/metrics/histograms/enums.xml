@@ -92941,6 +92941,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="22"
       label="Model execution score is obtained from executing server model"/>
   <int value="23" label="Multi output is not supported by the config"/>
+  <int value="24" label="Ondemand model not executed or failed."/>
+  <int value="25" label="Classification API result returned from prefs."/>
+  <int value="26" label="Classification API result not available in prefs."/>
 </enum>
 
 <enum name="SelectedTheme">

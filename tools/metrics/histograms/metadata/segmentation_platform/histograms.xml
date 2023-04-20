@@ -634,9 +634,13 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
     Records the reason why the segmentation platform was unable to return a
-    segment selection for {SegmentationKey}, or if a result was available.
-    Recorded when failure is hit when trying to compute selection, or when
-    reading the selected segment.
+    segment selection for {SegmentationKey}, or if a result was available. It
+    supports multi output segments and records the reason why segmentation
+    platform failed or was successful to return a result both when segments are
+    executed at chrome startup and from GetClassificationAPI for both on demand
+    and non-ondemand cases. Recorded when failure/success is hit when trying to
+    compute selection, or when reading the selected segment from prefs, or when
+    result for segment is updated in prefs.
   </summary>
   <token key="SegmentationKey" variants="SegmentationKey"/>
 </histogram>

@@ -119,6 +119,8 @@ void RequestHandlerImpl::OnGetModelResultForClassification(
   PredictionStatus status = PredictionStatus::kFailed;
   proto::PredictionResult pred_result;
   if (result) {
+    stats::RecordSegmentSelectionFailure(
+        *config_, stats::GetSuccessOrFailureReason(result->state));
     status = ResultStateToPredictionStatus(result->state);
     pred_result = result->result;
     stats::RecordClassificationResultComputed(*config_, pred_result);
@@ -130,6 +132,10 @@ void RequestHandlerImpl::OnGetModelResultForClassification(
           config_->segments.begin()->first, input_context,
           proto::TrainingOutputs::TriggerConfig::ONDEMAND);
     }
+  } else {
+    stats::RecordSegmentSelectionFailure(
+        *config_, stats::SegmentationSelectionFailureReason::
+                      kOnDemandModelExecutionFailed);
   }
   ClassificationResult classification_result =
       post_processor.GetPostProcessedClassificationResult(pred_result, status);

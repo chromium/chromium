@@ -7,6 +7,7 @@
 
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
+#include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -214,11 +215,18 @@ enum class SegmentationSelectionFailureReason {
   kScoreComputedFromDefaultModel = 21,
   kScoreComputedFromTfliteModel = 22,
   kMultiOutputNotSupported = 23,
-  kMaxValue = kMultiOutputNotSupported,
+  kOnDemandModelExecutionFailed = 24,
+  kClassificationResultFromPrefs = 25,
+  kClassificationResultNotAvailableInPrefs = 26,
+  kMaxValue = kClassificationResultNotAvailableInPrefs,
 };
 
 // Records the reason for failure or success to compute a segment selection.
 void RecordSegmentSelectionFailure(const Config& config,
+                                   SegmentationSelectionFailureReason reason);
+
+// Records the reason for failure or success to compute a segment selection.
+void RecordSegmentSelectionFailure(const std::string& segmentation_key,
                                    SegmentationSelectionFailureReason reason);
 
 // Keep in sync with SegmentationPlatformFeatureProcessingError in
@@ -287,6 +295,9 @@ enum class TrainingDataCollectionEvent {
 // Records analytics for training data collection.
 void RecordTrainingDataCollectionEvent(SegmentId segment_id,
                                        TrainingDataCollectionEvent event);
+
+SegmentationSelectionFailureReason GetSuccessOrFailureReason(
+    SegmentResultProvider::ResultState result_state);
 
 }  // namespace segmentation_platform::stats
 

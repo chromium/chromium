@@ -78,6 +78,14 @@ void RequestDispatcher::GetClassificationResult(
     // Returns result directly from prefs for non-ondemand models.
     auto result =
         cached_result_provider_->GetCachedResultForClient(segmentation_key);
+
+    stats::RecordSegmentSelectionFailure(
+        segmentation_key, result.status == PredictionStatus::kSucceeded
+                              ? stats::SegmentationSelectionFailureReason::
+                                    kClassificationResultFromPrefs
+                              : stats::SegmentationSelectionFailureReason::
+                                    kClassificationResultNotAvailableInPrefs);
+
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(wrapped_callback), result));
     return;
@@ -99,6 +107,9 @@ void RequestDispatcher::GetClassificationResult(
   // If the platform initialization failed, invoke callback to return invalid
   // results.
   if (!storage_init_status_.value()) {
+    stats::RecordSegmentSelectionFailure(
+        segmentation_key,
+        stats::SegmentationSelectionFailureReason::kDBInitFailure);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
