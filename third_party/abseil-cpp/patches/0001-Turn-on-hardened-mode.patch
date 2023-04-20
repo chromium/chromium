@@ -17,15 +17,6 @@ diff --git a/third_party/abseil-cpp/absl/base/options.h b/third_party/abseil-cpp
 index 230bf1eecc4a4..1641271cd3ff9 100644
 --- a/third_party/abseil-cpp/absl/base/options.h
 +++ b/third_party/abseil-cpp/absl/base/options.h
-@@ -100,7 +100,7 @@
- // User code should not inspect this macro.  To check in the preprocessor if
- // absl::any is a typedef of std::any, use the feature macro ABSL_USES_STD_ANY.
- 
--#define ABSL_OPTION_USE_STD_ANY 2
-+#define ABSL_OPTION_USE_STD_ANY 0
- 
- 
- // ABSL_OPTION_USE_STD_OPTIONAL
 @@ -127,7 +127,7 @@
  // absl::optional is a typedef of std::optional, use the feature macro
  // ABSL_USES_STD_OPTIONAL.
