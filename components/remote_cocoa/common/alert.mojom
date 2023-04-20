@@ -48,4 +48,8 @@ interface AlertBridge {
   Show(AlertBridgeInitParams params) =>
       (AlertDisposition disposition, mojo_base.mojom.String16 text_field_value,
        bool check_box_value);
+
+  // Called by JavaScriptAppModalDialogCocoa to indicate that the alert can be
+  // destroyed without reporting results.
+  Dismiss();
 };
