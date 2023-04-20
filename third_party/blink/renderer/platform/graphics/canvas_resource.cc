@@ -130,6 +130,7 @@ void CanvasResource::WaitSyncToken(const gpu::SyncToken& sync_token) {
 
 static void ReleaseFrameResources(
     base::WeakPtr<CanvasResourceProvider> resource_provider,
+    viz::ReleaseCallback&& viz_release_callback,
     scoped_refptr<CanvasResource>&& resource,
     const gpu::SyncToken& sync_token,
     bool lost_resource) {
@@ -138,8 +139,24 @@ static void ReleaseFrameResources(
   // In such cases, ReleaseFrameResources will be called again when
   // CanvasResourceDispatcher destroys the corresponding FrameResource object,
   // at which time this resource will be safely recycled.
-  if (!resource || resource->HasLastUnrefCallback())
+  if (!resource) {
     return;
+  }
+
+  if (resource->HasLastUnrefCallback()) {
+    // Currently, there is no code path that should end up here with
+    // a viz_release_callback, but if we ever change ExternalCanvasResource's
+    // Bitmap() method to register a non-trivial release callback that needs
+    // to call the viz_release_callback, then we'll need to find another way
+    // hold on to the viz_release_callback in the current thread.  The CHECK
+    // below guards the current assumption that only the
+    // CanvasResourceDispatcher triggers calls to this method for
+    // ExternalCanvasResource objects.
+    CHECK(!viz_release_callback);
+    return;
+  }
+
+  resource->SetVizReleaseCallback(std::move(viz_release_callback));
 
   resource->WaitSyncToken(sync_token);
 
@@ -164,7 +181,13 @@ bool CanvasResource::PrepareTransferableResource(
   DCHECK(IsValid());
 
   DCHECK(out_callback);
-  *out_callback = WTF::BindOnce(&ReleaseFrameResources, provider_);
+  // out_callback is stored in CanvasResourceDispatcher, which never leaves
+  // the current thread, so we used a bound argument to hold onto the
+  // viz::ReleaseCallback, which is not thread safe.  We will re-attach
+  // the callback to this CanvasResource in ReleaseFrameResources(), after
+  // references held by other threads have been released.
+  *out_callback = WTF::BindOnce(&ReleaseFrameResources, provider_,
+                                TakeVizReleaseCallback());
 
   if (!out_resource)
     return true;
@@ -622,8 +645,8 @@ void CanvasResourceRasterSharedImage::OnBitmapImageDestroyed(
   }
 
   auto weak_provider = resource->WeakProvider();
-  ReleaseFrameResources(std::move(weak_provider), std::move(resource),
-                        sync_token, is_lost);
+  ReleaseFrameResources(std::move(weak_provider), viz::ReleaseCallback(),
+                        std::move(resource), sync_token, is_lost);
 }
 
 void CanvasResourceRasterSharedImage::Transfer() {
