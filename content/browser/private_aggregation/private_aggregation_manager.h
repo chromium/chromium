@@ -5,11 +5,14 @@
 #ifndef CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_MANAGER_H_
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_MANAGER_H_
 
+#include <string>
+
 #include "base/functional/callback_forward.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-forward.h"
 
 namespace base {
@@ -34,12 +37,15 @@ class CONTENT_EXPORT PrivateAggregationManager {
 
   // Binds a new pending receiver for a worklet, allowing messages to be sent
   // and processed. However, the receiver is not bound if the `worklet_origin`
-  // is not potentially trustworthy. The return value indicates whether the
-  // receiver was accepted.
+  // is not potentially trustworthy or if `context_id` is too long. The return
+  // value indicates whether the receiver was accepted. If `context_id` is set,
+  // only one `SendHistogramReport()` call can be made. If none is made by
+  // disconnection, a null report will be sent.
   [[nodiscard]] virtual bool BindNewReceiver(
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
       PrivateAggregationBudgetKey::Api api_for_budgeting,
+      absl::optional<std::string> context_id,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
           pending_receiver) = 0;
 

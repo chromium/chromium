@@ -302,6 +302,10 @@ class MockMojomPrivateAggregationHost
        blink::mojom::blink::AggregationServiceMode,
        blink::mojom::blink::DebugModeDetailsPtr),
       (override));
+  MOCK_METHOD(void,
+              SetDebugModeDetailsOnNullReport,
+              (blink::mojom::blink::DebugModeDetailsPtr),
+              (override));
 
  private:
   mojo::ReceiverSet<blink::mojom::blink::PrivateAggregationHost> receiver_set_;

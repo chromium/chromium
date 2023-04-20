@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_INTEREST_GROUP_TEST_INTEREST_GROUP_PRIVATE_AGGREGATION_MANAGER_H_
 
 #include <map>
+#include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -16,6 +17,7 @@
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom-forward.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/origin.h"
@@ -39,6 +41,7 @@ class TestInterestGroupPrivateAggregationManager
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
       PrivateAggregationBudgetKey::Api api_for_budgeting,
+      absl::optional<std::string> context_id,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
           pending_receiver) override;
   void ClearBudgetData(base::Time delete_begin,
@@ -51,6 +54,8 @@ class TestInterestGroupPrivateAggregationManager
       std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
           contributions,
       blink::mojom::AggregationServiceMode aggregation_mode,
+      blink::mojom::DebugModeDetailsPtr debug_mode_details) override;
+  void SetDebugModeDetailsOnNullReport(
       blink::mojom::DebugModeDetailsPtr debug_mode_details) override;
 
   // Returns a logging callback and saves all requests passed to it. These can

@@ -92,11 +92,12 @@ bool PrivateAggregationManagerImpl::BindNewReceiver(
     url::Origin worklet_origin,
     url::Origin top_frame_origin,
     PrivateAggregationBudgetKey::Api api_for_budgeting,
+    absl::optional<std::string> context_id,
     mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
         pending_receiver) {
-  return host_->BindNewReceiver(std::move(worklet_origin),
-                                std::move(top_frame_origin), api_for_budgeting,
-                                std::move(pending_receiver));
+  return host_->BindNewReceiver(
+      std::move(worklet_origin), std::move(top_frame_origin), api_for_budgeting,
+      std::move(context_id), std::move(pending_receiver));
 }
 
 void PrivateAggregationManagerImpl::ClearBudgetData(

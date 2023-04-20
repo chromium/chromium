@@ -506,22 +506,33 @@ TEST_F(PrivateAggregationManagerImplTest,
   const url::Origin example_main_frame_origin =
       url::Origin::Create(GURL(kExampleMainFrameUrl));
 
-  EXPECT_CALL(*host_,
-              BindNewReceiver(example_origin, example_main_frame_origin,
-                              PrivateAggregationBudgetKey::Api::kFledge, _))
+  EXPECT_CALL(*host_, BindNewReceiver(example_origin, example_main_frame_origin,
+                                      PrivateAggregationBudgetKey::Api::kFledge,
+                                      testing::Eq(absl::nullopt), _))
       .WillOnce(Return(true));
   EXPECT_TRUE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
-      PrivateAggregationBudgetKey::Api::kFledge,
+      PrivateAggregationBudgetKey::Api::kFledge, /*context_id=*/absl::nullopt,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 
-  EXPECT_CALL(*host_, BindNewReceiver(
-                          example_origin, example_main_frame_origin,
-                          PrivateAggregationBudgetKey::Api::kSharedStorage, _))
+  EXPECT_CALL(*host_,
+              BindNewReceiver(example_origin, example_main_frame_origin,
+                              PrivateAggregationBudgetKey::Api::kSharedStorage,
+                              testing::Eq(absl::nullopt), _))
       .WillOnce(Return(false));
   EXPECT_FALSE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
       PrivateAggregationBudgetKey::Api::kSharedStorage,
+      /*context_id=*/absl::nullopt,
+      mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
+
+  EXPECT_CALL(*host_, BindNewReceiver(example_origin, example_main_frame_origin,
+                                      PrivateAggregationBudgetKey::Api::kFledge,
+                                      testing::Eq("example_context_id"), _))
+      .WillOnce(Return(true));
+  EXPECT_TRUE(manager_.BindNewReceiver(
+      example_origin, example_main_frame_origin,
+      PrivateAggregationBudgetKey::Api::kFledge, "example_context_id",
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 }
 

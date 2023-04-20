@@ -30,4 +30,10 @@ interface PrivateAggregationHost {
       array<AggregatableReportHistogramContribution> contributions,
       AggregationServiceMode aggregation_mode,
       DebugModeDetails debug_mode_details);
+
+  // If a null report is sent (i.e. because a context ID was set, but no
+  // `SendHistogramReport()` call has occurred by pipe disconnection), it will
+  // use the `debug_mode_details`. Should only be called at most once.
+  SetDebugModeDetailsOnNullReport(
+      DebugModeDetails debug_mode_details);
 };

@@ -5,6 +5,7 @@
 #include "content/browser/interest_group/test_interest_group_private_aggregation_manager.h"
 
 #include <map>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -21,6 +22,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "url/origin.h"
 
@@ -38,10 +40,12 @@ bool TestInterestGroupPrivateAggregationManager::BindNewReceiver(
     url::Origin worklet_origin,
     url::Origin top_frame_origin,
     PrivateAggregationBudgetKey::Api api_for_budgeting,
+    absl::optional<std::string> context_id,
     mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
         pending_receiver) {
   EXPECT_EQ(expected_top_frame_origin_, top_frame_origin);
   EXPECT_EQ(PrivateAggregationBudgetKey::Api::kFledge, api_for_budgeting);
+  EXPECT_FALSE(context_id.has_value());
 
   receiver_set_.Add(this, std::move(pending_receiver), worklet_origin);
   return true;
@@ -69,6 +73,11 @@ void TestInterestGroupPrivateAggregationManager::SendHistogramReport(
           aggregation_mode, std::move(debug_mode_details));
 
   private_aggregation_requests_[worklet_origin].push_back(std::move(request));
+}
+void TestInterestGroupPrivateAggregationManager::
+    SetDebugModeDetailsOnNullReport(
+        blink::mojom::DebugModeDetailsPtr debug_mode_details) {
+  ADD_FAILURE() << "Null report details are not expected in FLEDGE.";
 }
 
 InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback

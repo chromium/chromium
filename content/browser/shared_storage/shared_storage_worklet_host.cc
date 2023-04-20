@@ -916,6 +916,7 @@ SharedStorageWorkletHost::MaybeBindPrivateAggregationHost() {
   bool success = private_aggregation_manager->BindNewReceiver(
       shared_storage_origin_, main_frame_origin_,
       PrivateAggregationBudgetKey::Api::kSharedStorage,
+      /*context_id=*/absl::nullopt,
       pending_pa_host_remote.InitWithNewPipeAndPassReceiver());
   CHECK(success);
 

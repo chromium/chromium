@@ -520,6 +520,7 @@ void FencedFrameReporter::MaybeBindPrivateAggregationHost() {
   bool bound = private_aggregation_manager_->BindNewReceiver(
       winner_origin_.value(), main_frame_origin_.value(),
       PrivateAggregationBudgetKey::Api::kFledge,
+      /*context_id=*/absl::nullopt,
       private_aggregation_host_.BindNewPipeAndPassReceiver());
   // FLEDGE's worklets should all be trustworthy, including `winner_origin_`, so
   // the receiver `private_aggregation_host_` should be accepted.

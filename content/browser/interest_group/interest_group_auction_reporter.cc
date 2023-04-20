@@ -210,6 +210,7 @@ void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
     if (!private_aggregation_manager->BindNewReceiver(
             origin, main_frame_origin,
             PrivateAggregationBudgetKey::Api::kFledge,
+            /*context_id=*/absl::nullopt,
             remote.BindNewPipeAndPassReceiver())) {
       continue;
     }
