@@ -113,6 +113,7 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/smbfs/smbfs_host.h"
 #include "chromeos/ash/components/smbfs/smbfs_mounter.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
@@ -2056,9 +2057,9 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
   }
 
   if (options.enable_upload_office_to_cloud) {
-    enabled_features.push_back(ash::features::kUploadOfficeToCloud);
+    enabled_features.push_back(chromeos::features::kUploadOfficeToCloud);
   } else {
-    disabled_features.push_back(ash::features::kUploadOfficeToCloud);
+    disabled_features.push_back(chromeos::features::kUploadOfficeToCloud);
   }
 
   if (command_line->HasSwitch(switches::kDevtoolsCodeCoverage) &&

@@ -161,7 +161,8 @@ void SetUpCommandLineForNonManagedUser(base::CommandLine* command_line) {
 class FileHandlerDialogBrowserTest : public InProcessBrowserTest {
  public:
   FileHandlerDialogBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kUploadOfficeToCloud);
+    feature_list_.InitAndEnableFeature(
+        chromeos::features::kUploadOfficeToCloud);
   }
 
   FileHandlerDialogBrowserTest(const FileHandlerDialogBrowserTest&) = delete;
@@ -541,7 +542,8 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OnDialogCompleteNoCrash) {
 class FixUpFlowBrowserTest : public InProcessBrowserTest {
  public:
   FixUpFlowBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kUploadOfficeToCloud);
+    feature_list_.InitAndEnableFeature(
+        chromeos::features::kUploadOfficeToCloud);
   }
 
   FixUpFlowBrowserTest(const FixUpFlowBrowserTest&) = delete;
@@ -831,7 +833,8 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
 class MoveConfirmationDialogBrowserTest : public InProcessBrowserTest {
  public:
   MoveConfirmationDialogBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kUploadOfficeToCloud);
+    feature_list_.InitAndEnableFeature(
+        chromeos::features::kUploadOfficeToCloud);
   }
 
   MoveConfirmationDialogBrowserTest(const MoveConfirmationDialogBrowserTest&) =

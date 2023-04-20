@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/file_system_provider/request_dispatcher_impl.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -13,6 +12,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
 #include "extensions/browser/event_router.h"
 #include "url/gurl.h"
@@ -36,7 +36,7 @@ bool RequestDispatcherImpl::DispatchRequest(
     int request_id,
     absl::optional<std::string> file_system_id,
     std::unique_ptr<extensions::Event> event) {
-  if (features::IsUploadOfficeToCloudEnabled()) {
+  if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
     DCHECK(!event->did_dispatch_callback);
     extensions::file_system_provider::RequestKey request_key{
         extension_id_, file_system_id.value_or(""), request_id};
@@ -49,7 +49,7 @@ bool RequestDispatcherImpl::DispatchRequest(
   if (event_router_->ExtensionHasEventListener(extension_id_,
                                                event->event_name)) {
     event_router_->DispatchEventToExtension(extension_id_, std::move(event));
-    if (features::IsUploadOfficeToCloudEnabled()) {
+    if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
       sw_lifetime_manager_->StartRequest(
           {extension_id_, file_system_id.value_or(""), request_id});
     }
@@ -60,7 +60,7 @@ bool RequestDispatcherImpl::DispatchRequest(
     GURL terminal(chrome::kChromeUIUntrustedTerminalURL);
     if (event_router_->URLHasEventListener(terminal, event->event_name)) {
       event_router_->DispatchEventToURL(terminal, std::move(event));
-      if (features::IsUploadOfficeToCloudEnabled()) {
+      if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
         sw_lifetime_manager_->StartRequest(
             {extension_id_, file_system_id.value_or(""), request_id});
       }
@@ -76,7 +76,7 @@ bool RequestDispatcherImpl::DispatchRequest(
                       ->remotes();
   if (!remotes.empty()) {
     auto remote = remotes.begin();
-    if (features::IsUploadOfficeToCloudEnabled()) {
+    if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
       auto callback =
           base::BindOnce(&RequestDispatcherImpl::OperationForwarded,
                          weak_ptr_factory_.GetWeakPtr(), request_id);
@@ -106,7 +106,7 @@ bool RequestDispatcherImpl::DispatchRequest(
 void RequestDispatcherImpl::CancelRequest(
     int request_id,
     absl::optional<std::string> file_system_id) {
-  if (!features::IsUploadOfficeToCloudEnabled()) {
+  if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
     return;
   }
   // Don't bother checking if the original request was sent locally or to Lacros

@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_DIALOG_BROWSERTEST_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_DIALOG_BROWSERTEST_H_
 
-#include "ash/constants/ash_features.h"
 #include "chrome/test/base/web_ui_browser_test.h"
+#include "chromeos/constants/chromeos_features.h"
 
 // |WebUIBrowserTest| for a non-managed user. Used by |CloudUploadDialogTest| to
 // enable the Cloud Upload WebUI by ensuring
@@ -15,7 +15,8 @@
 class NonManagedUserWebUIBrowserTest : public WebUIBrowserTest {
  public:
   NonManagedUserWebUIBrowserTest() {
-    feature_list_.InitAndEnableFeature(ash::features::kUploadOfficeToCloud);
+    feature_list_.InitAndEnableFeature(
+        chromeos::features::kUploadOfficeToCloud);
   }
 
   NonManagedUserWebUIBrowserTest(const NonManagedUserWebUIBrowserTest&) =

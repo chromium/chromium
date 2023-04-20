@@ -2135,11 +2135,6 @@ BASE_FEATURE(kTrilinearFiltering,
              "TrilinearFiltering",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the Office files upload workflow to improve Office files support.
-BASE_FEATURE(kUploadOfficeToCloud,
-             "UploadOfficeToCloud",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Uses new AuthFactor-based API when communicating with cryptohome.
 // This feature flag also affects usage of AuthSessions in QuickUnlock, but
 // only in case when cryptohome is used as backend.
@@ -3377,10 +3372,6 @@ bool IsTrilinearFilteringEnabled() {
   static bool use_trilinear_filtering =
       base::FeatureList::IsEnabled(kTrilinearFiltering);
   return use_trilinear_filtering;
-}
-
-bool IsUploadOfficeToCloudEnabled() {
-  return base::FeatureList::IsEnabled(kUploadOfficeToCloud);
 }
 
 bool IsUseLoginShelfWidgetEnabled() {

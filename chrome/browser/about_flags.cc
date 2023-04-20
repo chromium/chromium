@@ -5363,7 +5363,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(sandbox::policy::features::kSpectreVariant2Mitigation)},
     {"upload-office-to-cloud", flag_descriptions::kUploadOfficeToCloudName,
      flag_descriptions::kUploadOfficeToCloudName, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kUploadOfficeToCloud)},
+     FEATURE_VALUE_TYPE(chromeos::features::kUploadOfficeToCloud)},
     {"eap-gtc-wifi-authentication",
      flag_descriptions::kEapGtcWifiAuthenticationName,
      flag_descriptions::kEapGtcWifiAuthenticationDescription, kOsCrOS,

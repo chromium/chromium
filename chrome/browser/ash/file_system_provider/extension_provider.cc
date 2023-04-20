@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
@@ -31,7 +31,7 @@ namespace {
 
 extensions::file_system_provider::ServiceWorkerLifetimeManager*
 GetServiceWorkerLifetimeManager(Profile* profile) {
-  if (!features::IsUploadOfficeToCloudEnabled()) {
+  if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
     return nullptr;
   }
   return extensions::file_system_provider::ServiceWorkerLifetimeManager::Get(

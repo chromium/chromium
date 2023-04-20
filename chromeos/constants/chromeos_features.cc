@@ -84,6 +84,11 @@ BASE_FEATURE(kQuickAnswersRichCard,
              "QuickAnswersRichCard",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the Office files upload workflow to improve Office files support.
+BASE_FEATURE(kUploadOfficeToCloud,
+             "UploadOfficeToCloud",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsCloudGamingDeviceEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsCloudGamingDevice();
@@ -124,6 +129,10 @@ bool IsQuickAnswersRichCardEnabled() {
 
 bool IsQuickAnswersV2SettingsSubToggleEnabled() {
   return base::FeatureList::IsEnabled(kQuickAnswersV2SettingsSubToggle);
+}
+
+bool IsUploadOfficeToCloudEnabled() {
+  return base::FeatureList::IsEnabled(kUploadOfficeToCloud);
 }
 
 }  // namespace chromeos::features

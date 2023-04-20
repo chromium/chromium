@@ -6,7 +6,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -67,6 +66,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/drive/file_errors.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/network_service_instance.h"
@@ -782,7 +782,8 @@ class NonManagedAccount : public TestAccountBrowserTest {
  public:
   NonManagedAccount()
       : TestAccountBrowserTest(kNonManaged, /*is_google_account=*/false) {
-    feature_list_.InitAndEnableFeature(ash::features::kUploadOfficeToCloud);
+    feature_list_.InitAndEnableFeature(
+        chromeos::features::kUploadOfficeToCloud);
   }
 
   void SetUpOnMainThread() override {
@@ -854,7 +855,8 @@ class EnterpriseAccount : public TestAccountBrowserTest {
  public:
   EnterpriseAccount()
       : TestAccountBrowserTest(kEnterprise, /*is_google_account=*/false) {
-    feature_list_.InitAndEnableFeature(ash::features::kUploadOfficeToCloud);
+    feature_list_.InitAndEnableFeature(
+        chromeos::features::kUploadOfficeToCloud);
   }
 
  private:
@@ -871,7 +873,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseAccount,
 class ChildAccount : public TestAccountBrowserTest {
  public:
   ChildAccount() : TestAccountBrowserTest(kChild, /*is_google_account=*/false) {
-    feature_list_.InitAndEnableFeature(ash::features::kUploadOfficeToCloud);
+    feature_list_.InitAndEnableFeature(
+        chromeos::features::kUploadOfficeToCloud);
   }
 
  private:
@@ -889,7 +892,8 @@ class GoogleAccount : public TestAccountBrowserTest {
   GoogleAccount()
       : TestAccountBrowserTest(kTestAccountTypeNotSet,
                                /*is_google_account=*/true) {
-    feature_list_.InitAndEnableFeature(ash::features::kUploadOfficeToCloud);
+    feature_list_.InitAndEnableFeature(
+        chromeos::features::kUploadOfficeToCloud);
   }
 
  private:
@@ -986,7 +990,8 @@ class DriveTest : public TestAccountBrowserTest {
  public:
   DriveTest()
       : TestAccountBrowserTest(kNonManaged, /*is_google_account=*/false) {
-    feature_list_.InitAndEnableFeature(ash::features::kUploadOfficeToCloud);
+    feature_list_.InitAndEnableFeature(
+        chromeos::features::kUploadOfficeToCloud);
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     drive_mount_point_ = temp_dir_.GetPath();
     test_file_name_ = "text.docx";
@@ -1384,7 +1389,8 @@ class OneDriveTest : public TestAccountBrowserTest {
  public:
   OneDriveTest()
       : TestAccountBrowserTest(kNonManaged, /*is_google_account=*/false) {
-    feature_list_.InitAndEnableFeature(ash::features::kUploadOfficeToCloud);
+    feature_list_.InitAndEnableFeature(
+        chromeos::features::kUploadOfficeToCloud);
     test_file_name_ = "text.docx";
     // Relative path for a file on ODFS and Android OneDrive.
     relative_test_path_ = base::FilePath(test_file_name_);

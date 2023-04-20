@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -39,6 +38,7 @@
 #include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "extensions/browser/event_router.h"
 
 namespace net {
@@ -52,7 +52,7 @@ namespace {
 
 extensions::file_system_provider::ServiceWorkerLifetimeManager*
 GetServiceWorkerLifetimeManager(Profile* profile) {
-  if (!features::IsUploadOfficeToCloudEnabled()) {
+  if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
     return nullptr;
   }
   return extensions::file_system_provider::ServiceWorkerLifetimeManager::Get(

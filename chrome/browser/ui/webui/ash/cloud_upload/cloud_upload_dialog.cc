@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -32,6 +31,7 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
@@ -370,7 +370,7 @@ bool IsEligibleAndEnabledUploadOfficeToCloud() {
     return false;
   }
 
-  return features::IsUploadOfficeToCloudEnabled();
+  return chromeos::features::IsUploadOfficeToCloudEnabled();
 }
 
 bool ShouldFixUpOffice(Profile* profile, const CloudProvider cloud_provider) {

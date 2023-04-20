@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -49,7 +49,8 @@ base::FilePath GetTestFilePath(const std::string& file_name) {
 class OneDriveUploadHandlerTest : public InProcessBrowserTest {
  public:
   OneDriveUploadHandlerTest() {
-    feature_list_.InitAndEnableFeature(features::kUploadOfficeToCloud);
+    feature_list_.InitAndEnableFeature(
+        chromeos::features::kUploadOfficeToCloud);
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     my_files_dir_ = temp_dir_.GetPath().Append("myfiles");
     test_file_name_ = "text.docx";
