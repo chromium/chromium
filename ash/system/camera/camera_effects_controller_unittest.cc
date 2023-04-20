@@ -260,13 +260,13 @@ TEST_F(CameraEffectsControllerTest, ResourceDependencyFlags) {
   SimulateUserLogin("testuser@gmail.com");
 
   // Makes sure that all registered effects have the correct dependency flag.
-  auto* background_blur = camera_effects_controller()->GetEffect(0);
-  ASSERT_EQ(VcEffectId::kBackgroundBlur, background_blur->id());
+  auto* background_blur =
+      camera_effects_controller()->GetEffectById(VcEffectId::kBackgroundBlur);
   EXPECT_EQ(VcHostedEffect::ResourceDependency::kCamera,
             background_blur->dependency_flags());
 
-  auto* portrait_relight = camera_effects_controller()->GetEffect(1);
-  ASSERT_EQ(VcEffectId::kPortraitRelighting, portrait_relight->id());
+  auto* portrait_relight = camera_effects_controller()->GetEffectById(
+      VcEffectId::kPortraitRelighting);
   EXPECT_EQ(VcHostedEffect::ResourceDependency::kCamera,
             portrait_relight->dependency_flags());
 }

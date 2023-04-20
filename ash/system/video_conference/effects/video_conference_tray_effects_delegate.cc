@@ -42,22 +42,31 @@ VcEffectsDelegate::VcEffectsDelegate() = default;
 VcEffectsDelegate::~VcEffectsDelegate() = default;
 
 void VcEffectsDelegate::AddEffect(std::unique_ptr<VcHostedEffect> effect) {
-  effects_.push_back(std::move(effect));
+  const auto& id = effect->id();
+  if (!effects_.contains(id)) {
+    effects_[id] = std::move(effect);
+  }
+}
+
+void VcEffectsDelegate::RemoveEffect(VcEffectId effect_id) {
+  effects_.erase(effect_id);
 }
 
 int VcEffectsDelegate::GetNumEffects() {
   return effects_.size();
 }
 
-const VcHostedEffect* VcEffectsDelegate::GetEffect(int index) {
-  DCHECK(index >= 0 && index < GetNumEffects());
-  return effects_[index].get();
+const VcHostedEffect* VcEffectsDelegate::GetEffectById(VcEffectId effect_id) {
+  if (effects_.contains(effect_id)) {
+    return effects_[effect_id].get();
+  }
+  return nullptr;
 }
 
 std::vector<VcHostedEffect*> VcEffectsDelegate::GetEffects(VcEffectType type) {
   std::vector<VcHostedEffect*> effects_of_type;
 
-  for (auto& effect : effects_) {
+  for (const auto& [effect_id, effect] : effects_) {
     if (!DependenciesSatisfied(effect.get())) {
       // `effect` has at least one resource dependency that is not satisfied,
       // and is therefore not inserted in the output vector.

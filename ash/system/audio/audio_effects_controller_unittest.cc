@@ -107,8 +107,8 @@ TEST_F(AudioEffectsControllerTest, NoiseCancellationSupported) {
       VcEffectId::kNoiseCancellation));
 
   // Makes sure the dependency flag is set when the effect is supported.
-  auto* effect = audio_effects_controller()->GetEffect(0);
-  ASSERT_EQ(VcEffectId::kNoiseCancellation, effect->id());
+  auto* effect =
+      audio_effects_controller()->GetEffectById(VcEffectId::kNoiseCancellation);
   EXPECT_EQ(VcHostedEffect::ResourceDependency::kMicrophone,
             effect->dependency_flags());
 }

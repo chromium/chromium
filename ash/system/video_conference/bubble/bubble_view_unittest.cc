@@ -344,7 +344,8 @@ TEST_F(BubbleViewTest, SetValueButtonClicked) {
   // Verify that the delegate hosts a single effect which has at least two
   // values.
   EXPECT_EQ(shaggy_fur()->GetNumEffects(), 1);
-  EXPECT_GE(shaggy_fur()->GetEffect(0)->GetNumStates(), 2);
+  EXPECT_GE(
+      shaggy_fur()->GetEffectById(VcEffectId::kTestEffect)->GetNumStates(), 2);
 
   // Add one set-value effect.
   controller()->effects_manager().RegisterDelegate(shaggy_fur());
@@ -384,7 +385,9 @@ TEST_F(BubbleViewTest, ValidEffectState) {
   // Verify that the delegate hosts a single effect which has at least two
   // values.
   EXPECT_EQ(super_cuteness()->GetNumEffects(), 1);
-  EXPECT_GE(super_cuteness()->GetEffect(0)->GetNumStates(), 2);
+  EXPECT_GE(
+      super_cuteness()->GetEffectById(VcEffectId::kTestEffect)->GetNumStates(),
+      2);
 
   // Add one set-value effect.
   controller()->effects_manager().RegisterDelegate(super_cuteness());
@@ -404,7 +407,9 @@ TEST_F(BubbleViewTest, InvalidEffectState) {
   // Verify that the delegate hosts a single effect which has at least two
   // values.
   EXPECT_EQ(super_cuteness()->GetNumEffects(), 1);
-  EXPECT_GE(super_cuteness()->GetEffect(0)->GetNumStates(), 2);
+  EXPECT_GE(
+      super_cuteness()->GetEffectById(VcEffectId::kTestEffect)->GetNumStates(),
+      2);
 
   // Add one set-value effect.
   controller()->effects_manager().RegisterDelegate(super_cuteness());
