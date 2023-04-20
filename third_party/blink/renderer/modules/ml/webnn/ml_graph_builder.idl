@@ -85,6 +85,10 @@ dictionary MLClampOptions {
   float maxValue;
 };
 
+dictionary MLEluOptions {
+  float alpha = 1;
+};
+
 enum MLInterpolationMode {"nearest-neighbor", "linear" };
 
 dictionary MLResample2dOptions {
@@ -123,6 +127,9 @@ dictionary MLTransposeOptions{
   [RaisesException] MLOperand div(MLOperand a, MLOperand b);
   [RaisesException] MLOperand max(MLOperand a, MLOperand b);
   [RaisesException] MLOperand min(MLOperand a, MLOperand b);
+
+  [RaisesException] MLOperand elu(MLOperand x, optional MLEluOptions options = {});
+  [RaisesException] MLActivation elu(optional MLEluOptions options = {});
 
   [RaisesException] MLOperand gemm(MLOperand a, MLOperand b, optional MLGemmOptions options = {});
 

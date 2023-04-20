@@ -5523,6 +5523,7 @@ interface MLGraphBuilder
     method conv2d
     method convTranspose2d
     method div
+    method elu
     method gemm
     method hardSwish
     method input

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
@@ -1290,6 +1291,43 @@ BUILD_ELEMENTWISE_BINARY_OP(mul, kMul)
 BUILD_ELEMENTWISE_BINARY_OP(div, kDiv)
 BUILD_ELEMENTWISE_BINARY_OP(min, kMin)
 BUILD_ELEMENTWISE_BINARY_OP(max, kMax)
+
+MLOperand* MLGraphBuilder::elu(const MLOperand* input,
+                               const MLEluOptions* options,
+                               ExceptionState& exception_state) {
+  // The current spec doesn't specify the operand type constraints of elu. An
+  // issue has been filed to track it:
+  // https://github.com/webmachinelearning/webnn/issues/283.
+  if (!IsFloatingPointType(input->Type())) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The type of input must be one of the floating point types.");
+    return nullptr;
+  }
+  auto* elu = MakeGarbageCollected<MLOperator>(
+      this, MLOperator::OperatorKind::kElu, options);
+  // According to WebNN spec
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-elu, the output tensor of
+  // elu has the same type and dimensions as its input.
+  String error_message;
+  auto* output = MLOperand::ValidateAndCreateOutput(
+      this, input->Type(), input->Dimensions(), elu, error_message);
+  if (!output) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
+    return nullptr;
+  }
+  elu->Connect({input}, {output});
+  return output;
+}
+
+MLActivation* MLGraphBuilder::elu(const MLEluOptions* options,
+                                  ExceptionState& exception_state) {
+  // Create the elu operator that would be used as an activation
+  // function.
+  return MakeGarbageCollected<MLActivation>(
+      this, MLOperator::OperatorKind::kElu, options);
+}
 
 MLOperand* MLGraphBuilder::gemm(const MLOperand* a,
                                 const MLOperand* b,

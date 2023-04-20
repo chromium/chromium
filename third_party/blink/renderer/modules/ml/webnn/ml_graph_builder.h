@@ -25,6 +25,7 @@ class MLContext;
 class MLClampOptions;
 class MLConv2dOptions;
 class MLConvTranspose2dOptions;
+class MLEluOptions;
 class MLGemmOptions;
 class MLGraph;
 class MLLeakyReluOptions;
@@ -133,6 +134,12 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* min(const MLOperand* a,
                  const MLOperand* b,
                  ExceptionState& exception_state);
+
+  MLOperand* elu(const MLOperand* input,
+                 const MLEluOptions* options,
+                 ExceptionState& exception_state);
+  MLActivation* elu(const MLEluOptions* options,
+                    ExceptionState& exception_state);
 
   MLOperand* gemm(const MLOperand* a,
                   const MLOperand* b,

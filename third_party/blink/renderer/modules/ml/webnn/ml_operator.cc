@@ -34,6 +34,8 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "max";
     case MLOperator::OperatorKind::kMin:
       return "min";
+    case MLOperator::OperatorKind::kElu:
+      return "elu";
     case MLOperator::OperatorKind::kGemm:
       return "gemm";
     case MLOperator::OperatorKind::kHardSwish:

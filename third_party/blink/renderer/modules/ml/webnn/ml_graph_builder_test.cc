@@ -3425,6 +3425,69 @@ TEST_F(MLGraphBuilderTest, ClampTest) {
   }
 }
 
+void TestBuildElu(V8TestingScope& scope,
+                  MLGraphBuilder* builder,
+                  const MLOperand* input,
+                  const Vector<uint32_t>& output_shape,
+                  const MLEluOptions* options) {
+  auto* output = builder->elu(input, options, scope.GetExceptionState());
+  EXPECT_NE(output, nullptr);
+  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Type(), input->Type());
+  EXPECT_EQ(output->Dimensions(), output_shape);
+  auto* elu = output->Operator();
+  EXPECT_NE(elu, nullptr);
+  EXPECT_EQ(elu->Kind(), MLOperator::OperatorKind::kElu);
+  EXPECT_EQ(elu->IsConnected(), true);
+  EXPECT_NE(elu->Options(), nullptr);
+}
+
+TEST_F(MLGraphBuilderTest, EluTest) {
+  V8TestingScope scope;
+  MLGraphBuilder* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  {
+    // Test building elu with float32 input and default options.
+    auto* input =
+        BuildInput(builder, "input", {1, 2, 3}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* options = MLEluOptions::Create();
+    EXPECT_TRUE(options->hasAlpha());
+    EXPECT_EQ(options->alpha(), 1.0f);
+    TestBuildElu(scope, builder, input, {1, 2, 3}, options);
+  }
+  {
+    // Test building elu with int32 input and alpha = 0.1.
+    auto* input =
+        BuildInput(builder, "input", {2, 2, 3}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* options = MLEluOptions::Create();
+    options->setAlpha(0.1);
+    TestBuildElu(scope, builder, input, {2, 2, 3}, options);
+  }
+  {
+    // Test building elu with int32 input.
+    auto* input =
+        BuildInput(builder, "input", {2, 2, 3}, V8MLOperandType::Enum::kInt32,
+                   scope.GetExceptionState());
+    auto* output =
+        builder->elu(input, MLEluOptions::Create(), scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The type of input must be one of the floating point types.");
+  }
+  {
+    // Test building elu as a standalone operator.
+    auto* elu = builder->elu(MLEluOptions::Create(), scope.GetExceptionState());
+    EXPECT_NE(elu, nullptr);
+    EXPECT_NE(elu->Operator(), nullptr);
+    EXPECT_EQ(elu->Operator()->Kind(), MLOperator::OperatorKind::kElu);
+    EXPECT_EQ(elu->Operator()->IsConnected(), false);
+    EXPECT_NE(elu->Operator()->Options(), nullptr);
+  }
+}
+
 MLOperand* BuildLeakyRelu(V8TestingScope& scope,
                           MLGraphBuilder* builder,
                           const MLOperand* input,
