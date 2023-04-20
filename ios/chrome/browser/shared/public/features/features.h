@@ -62,6 +62,17 @@ extern const char kIOSEditMenuPartialTranslateNoIncognitoParam[];
 // Feature flag to enable partial translate in the edit menu.
 BASE_DECLARE_FEATURE(kIOSEditMenuPartialTranslate);
 
+// Feature param under kIOSEditMenuSearchWith to select the title.
+extern const char kIOSEditMenuSearchWithTitleParamTitle[];
+extern const char kIOSEditMenuSearchWithTitleSearchParam[];
+extern const char kIOSEditMenuSearchWithTitleSearchWithParam[];
+extern const char kIOSEditMenuSearchWithTitleWebSearchParam[];
+// Feature flag to enable search with in the edit menu.
+BASE_DECLARE_FEATURE(kIOSEditMenuSearchWith);
+
+// Feature flag to hide search web in the edit menu.
+BASE_DECLARE_FEATURE(kIOSEditMenuHideSearchWeb);
+
 // Helper function to check if kIOSEditMenuPartialTranslate is enabled in
 // incognito.
 bool ShouldShowPartialTranslateInIncognito();

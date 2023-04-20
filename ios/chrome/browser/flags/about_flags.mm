@@ -617,6 +617,24 @@ const FeatureEntry::FeatureVariation kBringYourOwnTabsIOSVariations[] = {
     {"with bottom message on tab grid", kBringYourOwnTabsIOSBottomMessage,
      std::size(kBringYourOwnTabsIOSBottomMessage), nullptr}};
 
+const FeatureEntry::FeatureParam kIOSEditMenuSearchWithTitleSearchWith[] = {
+    {kIOSEditMenuSearchWithTitleParamTitle,
+     kIOSEditMenuSearchWithTitleSearchWithParam}};
+const FeatureEntry::FeatureParam kIOSEditMenuSearchWithTitleSearch[] = {
+    {kIOSEditMenuSearchWithTitleParamTitle,
+     kIOSEditMenuSearchWithTitleSearchParam}};
+const FeatureEntry::FeatureParam kIOSEditMenuSearchWithTitleWebSearch[] = {
+    {kIOSEditMenuSearchWithTitleParamTitle,
+     kIOSEditMenuSearchWithTitleWebSearchParam}};
+const FeatureEntry::FeatureVariation kIOSEditMenuSearchWithVariations[] = {
+    {"Search with DSE", kIOSEditMenuSearchWithTitleSearchWith,
+     std::size(kIOSEditMenuSearchWithTitleSearchWith), nullptr},
+    {"Search", kIOSEditMenuSearchWithTitleSearch,
+     std::size(kIOSEditMenuSearchWithTitleSearch), nullptr},
+    {"Web Search", kIOSEditMenuSearchWithTitleWebSearch,
+     std::size(kIOSEditMenuSearchWithTitleWebSearch), nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1501,6 +1519,15 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFeedDisableHotStartRefreshName,
      flag_descriptions::kFeedDisableHotStartRefreshDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kFeedDisableHotStartRefresh)},
+    {"ios-edit-menu-search-with", flag_descriptions::kIOSEditMenuSearchWithName,
+     flag_descriptions::kIOSEditMenuSearchWithDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSEditMenuSearchWith,
+                                    kIOSEditMenuSearchWithVariations,
+                                    "IOSEditMenuSearchWith")},
+    {"ios-edit-menu-hide-search-web",
+     flag_descriptions::kIOSEditMenuHideSearchWebName,
+     flag_descriptions::kIOSEditMenuHideSearchWebDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSEditMenuHideSearchWeb)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

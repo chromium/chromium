@@ -4630,9 +4630,19 @@
     "expiry_milestone": 125
   },
   {
+    "name": "ios-edit-menu-hide-search-web",
+    "owners": [ "olivierrobin@chromium.org", "bling-flags@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "ios-edit-menu-partial-translate",
     "owners": [ "olivierrobin@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 125
+  },
+  {
+    "name": "ios-edit-menu-search-with",
+    "owners": [ "olivierrobin@chromium.org", "bling-flags@google.com" ],
+    "expiry_milestone": 130
   },
   {
     "name": "ios-force-translate-enabled",

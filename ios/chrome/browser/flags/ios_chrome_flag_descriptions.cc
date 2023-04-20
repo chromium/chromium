@@ -540,6 +540,16 @@ const char kIOSEditMenuPartialTranslateDescription[] =
     "Replace the Apple translate entry in the web edit menu to use Google "
     "Translate instead.";
 
+extern const char kIOSEditMenuSearchWithName[] =
+    "Enable Search with in edit menu";
+extern const char kIOSEditMenuSearchWithDescription[] =
+    "Add an entry to search the web selection with your default search engine.";
+
+extern const char kIOSEditMenuHideSearchWebName[] =
+    "Hides Search Web in edit menu";
+extern const char kIOSEditMenuHideSearchWebDescription[] =
+    "Hides the Search Web entry in edit menu.";
+
 const char kIOSForceTranslateEnabledName[] = "Allow force translate on iOS.";
 const char kIOSForceTranslateEnabledDescription[] =
     "Enable the translate feature when language detection failed.";

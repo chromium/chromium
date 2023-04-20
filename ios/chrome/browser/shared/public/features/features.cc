@@ -76,6 +76,19 @@ bool ShouldShowPartialTranslateInIncognito() {
       kIOSEditMenuPartialTranslateNoIncognitoParam, false);
 }
 
+const char kIOSEditMenuSearchWithTitleParamTitle[] =
+    "IOSEditMenuSearchWithTitleParam";
+const char kIOSEditMenuSearchWithTitleSearchParam[] = "Search";
+const char kIOSEditMenuSearchWithTitleSearchWithParam[] = "SearchWith";
+const char kIOSEditMenuSearchWithTitleWebSearchParam[] = "WebSearch";
+BASE_FEATURE(kIOSEditMenuSearchWith,
+             "IOSEditMenuSearchWith",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIOSEditMenuHideSearchWeb,
+             "IOSEditMenuHideSearchWeb",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kIOSNewOmniboxImplementation,
              "kIOSNewOmniboxImplementation",
              base::FEATURE_DISABLED_BY_DEFAULT);
