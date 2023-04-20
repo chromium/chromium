@@ -12,6 +12,7 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/rotator/screen_rotation_animator.h"
 #include "ash/scoped_animation_disabler.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
@@ -751,6 +752,19 @@ void FloatController::OnDisplayMetricsChanged(const display::Display& display,
   }
   for (auto* window : windows_need_reset)
     ResetFloatedWindow(window);
+
+  // Do not observe the animator in `OnRootWindowAdded` because there is an
+  // unittest that overwrites the animator for the root window just before
+  // running the animation.
+  if (display::DisplayObserver::DISPLAY_METRIC_ROTATION & metrics) {
+    if (auto* const root_window = Shell::GetRootWindowForDisplayId(display.id())) {
+      auto* const animator =
+          ScreenRotationAnimator::GetForRootWindow(root_window);
+      if (!screen_rotation_observations_.IsObservingSource(animator)) {
+        screen_rotation_observations_.AddObservation(animator);
+      }
+    }
+  }
 }
 
 void FloatController::OnRootWindowAdded(aura::Window* root_window) {
@@ -759,6 +773,35 @@ void FloatController::OnRootWindowAdded(aura::Window* root_window) {
           root_window->GetChildById(kShellWindowId_FloatContainer));
   root_window->GetChildById(kShellWindowId_FloatContainer)
       ->SetLayoutManager(std::make_unique<FloatLayoutManager>());
+}
+
+void FloatController::OnRootWindowWillShutdown(aura::Window* root_window) {
+  auto* const animator = ScreenRotationAnimator::GetForRootWindow(root_window);
+  if (screen_rotation_observations_.IsObservingSource(animator)) {
+    screen_rotation_observations_.RemoveObservation(animator);
+  }
+}
+
+void FloatController::OnScreenCopiedBeforeRotation() {}
+
+void FloatController::OnScreenRotationAnimationFinished(
+    ScreenRotationAnimator* animator,
+    bool canceled) {
+  // Re-send the correct floated bounds here. ARC sometimes overwrites the
+  // floated bounds against the new bounds during the rotation animation.
+  // TODO(b/278519956): Remove this workaround once ARC/Exo handle rotation
+  // bounds better.
+  for (auto& [window, info] : floated_window_info_map_) {
+    if (window->GetProperty(aura::client::kAppType) ==
+        static_cast<int>(AppType::ARC_APP)) {
+      const gfx::Rect bounds =
+          Shell::Get()->tablet_mode_controller()->InTabletMode()
+              ? GetPreferredFloatWindowTabletBounds(window)
+              : GetPreferredFloatWindowClamshellBounds(window);
+      const SetBoundsWMEvent event(bounds);
+      WindowState::Get(window)->OnWMEvent(&event);
+    }
+  }
 }
 
 void FloatController::OnPinnedStateChanged(aura::Window* pinned_window) {
