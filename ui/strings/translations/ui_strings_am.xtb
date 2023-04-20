@@ -131,7 +131,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">ምስል።</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{በ 1ዓ ውስጥ}one{በ #ዓ ውስጥ}other{በ #ዓ ውስጥ}}</translation>
-<translation id="588258955323874662">ሙሉ ገጽ ዕይታ</translation>
+<translation id="588258955323874662">ሙሉ ገፅ ዕይታ</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 ሰከንድ ቀርቷል}one{# ሰከንዶች ቀርቷል}other{# ሰከንዶች ቀርቷል}}</translation>
 <translation id="5941711191222866238">አሳንስ</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 ሰዓት}one{# ሰዓቶች}other{# ሰዓቶች}}</translation>
@@ -158,7 +158,7 @@
 <translation id="6808150112686056157">ሚዲያ አቁም</translation>
 <translation id="6845383723252244143">አቃፊ ምረጥ</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 ሰዓት ቀርቷል}one{# ሰዓቶች ቀርቷል}other{# ሰዓቶች ቀርተዋል}}</translation>
-<translation id="688711909580084195">ርዕስ-አልባ ድረ-ገጽ</translation>
+<translation id="688711909580084195">ርዕስ-አልባ ድረ-ገፅ</translation>
 <translation id="6902419395050653510">የኤች ቲ ኤም ኤል ይዘት</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> ፔባ/ሰ</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{1 ዓመት ቀርቷል}one{# ዓመቶች ቀርተዋል}other{# ዓመቶች ቀርተዋል}}</translation>
@@ -188,7 +188,7 @@
 <translation id="8090736967111090568">ቁጥር ከ<ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 ሰዓት በፊት}one{# ሰዓቶች በፊት}other{# ሰዓቶች በፊት}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 ሰከንድ ቀርቷል}one{# ሰከንዶች ቀርቷል}other{# ሰከንዶች ቀርተዋል}}</translation>
-<translation id="8134065097954893699">ይህን ገጽ ዳግም በመጫን ላይ</translation>
+<translation id="8134065097954893699">ይህን ገፅ ዳግም በመጫን ላይ</translation>
 <translation id="815598010540052116">ወደ ታች ሸብልል</translation>
 <translation id="8179976553408161302">አስገባ</translation>
 <translation id="8210608804940886430">ወደታች አንቀሳቅስ</translation>

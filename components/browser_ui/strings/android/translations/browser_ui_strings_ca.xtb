@@ -451,7 +451,7 @@
 <translation id="913657688200966289">Activa els permisos per a <ph name="APP_NAME" /> a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">El zoom actual és <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Aquesta pàgina és perillosa</translation>
-<translation id="9201023452444595544">S'esborraran totes les dades sense connexió</translation>
+<translation id="9201023452444595544">S'esborraran totes les dades fora de línia</translation>
 <translation id="930525582205581608">Vols oblidar aquest lloc web?</translation>
 <translation id="967624055006145463">Dades emmagatzemades</translation>
 </translationbundle>

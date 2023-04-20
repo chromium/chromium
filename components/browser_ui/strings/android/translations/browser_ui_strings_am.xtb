@@ -10,7 +10,7 @@
 <translation id="1201402288615127009">ቀጣይ</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> ላይ ተካትቷል</translation>
 <translation id="1272079795634619415">አቁም</translation>
-<translation id="1289742167380433257">ውሂብ እንዲቆጥብልዎ የዚህ ገጽ ምስሎች በGoogle እንዲተቡ ተደርገዋል።</translation>
+<translation id="1289742167380433257">ውሂብ እንዲቆጥብልዎ የዚህ ገፅ ምስሎች በGoogle እንዲተቡ ተደርገዋል።</translation>
 <translation id="129382876167171263">በድር ጣቢያዎች የተቀመጡ ፋይሎች እዚህ ይታያሉ</translation>
 <translation id="131112695174432497">ማስታወቂያን ግላዊነት ማላበስ ላይ ተጽዕኖ የሚያሳድር ውሂብ ተሰርዟል</translation>
 <translation id="1317194122196776028">ይህን ጣቢያ እርሳ</translation>
@@ -165,7 +165,7 @@
 <translation id="3967822245660637423">ማውረድ ተጠናቅቋል</translation>
 <translation id="3987993985790029246">አገናኝ ቅዳ</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
-<translation id="3992684624889376114">ስለዚህ ገጽ</translation>
+<translation id="3992684624889376114">ስለዚህ ገፅ</translation>
 <translation id="4002066346123236978">ርዕስ</translation>
 <translation id="4008040567710660924">የተወሰነ ጣቢያ ኩኪዎችን ፍቀድ።</translation>
 <translation id="4046123991198612571">ቀጣይ ትራክ</translation>
@@ -228,7 +228,7 @@
 <translation id="5225463052809312700">ካሜራን አብራ</translation>
 <translation id="5234764350956374838">አሰናብት</translation>
 <translation id="5264323282659631142">«<ph name="CHIP_LABEL" />»ን ያስወግዱ</translation>
-<translation id="528192093759286357">ከሙሉ ማያ ገጽ ለመውጣት ከላይ ይጎትቱ እና የተመለስ አዝራሩን ይንኩ።</translation>
+<translation id="528192093759286357">ከሙሉ ማያ ገፅ ለመውጣት ከላይ ይጎትቱ እና የተመለስ አዝራሩን ይንኩ።</translation>
 <translation id="5300589172476337783">አሳይ</translation>
 <translation id="5301954838959518834">እሺ፣ ገባኝ</translation>
 <translation id="5317780077021120954">አስቀምጥ</translation>
@@ -359,7 +359,7 @@
 <translation id="7658239707568436148">ይቅር</translation>
 <translation id="7667547420449112975">አስደናቂው የኦዝ ምትሃተኛ</translation>
 <translation id="7684642910516280563">አንድ ጣቢያ የሦስተኛ ወገን ኩኪዎችን እንዲጠቀም አይፍቀዱ</translation>
-<translation id="7719367874908701697">ገጽ አጉላ</translation>
+<translation id="7719367874908701697">ገፅ አጉላ</translation>
 <translation id="7781829728241885113">ትናንት</translation>
 <translation id="7791543448312431591">ያክሉ</translation>
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>
@@ -413,8 +413,8 @@
 <translation id="8499083585497694743">የማይክሮፎን ድምፀ-ከል አንሳ</translation>
 <translation id="8514955299594277296">ጣቢያዎች በመሣሪያዎ ላይ ውሂብ እንዲያስቀምጡ አይፍቀዱ (አይመከርም)</translation>
 <translation id="851751545965956758">ጣቢያዎች ከመሣሪያዎች ጋር እንዳይገናኙ አግድ</translation>
-<translation id="8525306231823319788">ሙሉ ማያ ገጽ</translation>
-<translation id="8528440122773422556">ይህ እርምጃ በ<ph name="ORIGIN" /> ሥር ወይም በእርስዎ መነሻ ማያ ገጽ ላይ በመተግበሪያው ሁሉም ጣቢያዎች የተከማቹትን ሁሉንም ውሂብ እና ኩኪዎች ያጸዳል</translation>
+<translation id="8525306231823319788">ሙሉ ማያ ገፅ</translation>
+<translation id="8528440122773422556">ይህ እርምጃ በ<ph name="ORIGIN" /> ሥር ወይም በእርስዎ መነሻ ማያ ገፅ ላይ በመተግበሪያው ሁሉም ጣቢያዎች የተከማቹትን ሁሉንም ውሂብ እና ኩኪዎች ያጸዳል</translation>
 <translation id="8541410041357371550">ይህ ጣቢያ ይበልጥ አግባብነት ያላቸው ማስታወቂያዎችን ለእርስዎ ለማሳየት የእርስዎን የማስታወቂያ ርዕሶች ከChrome ያገኛል</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{ለ<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ጣቢያ የተፈቀደ ኩኪ}one{ለ<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ጣቢያ የተፈቀደ ኩኪ}other{ለ<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ጣቢያዎች የተፈቀዱ ኩኪዎች}}</translation>
 <translation id="857943718398505171">ተፈቅዷል (የሚመከር)</translation>
@@ -450,7 +450,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ}one{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ}other{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ}}</translation>
 <translation id="913657688200966289">ለ <ph name="APP_NAME" /> በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ፈቃዶችን ያብሩ።</translation>
 <translation id="9138217887606523162">የአሁን ማጉላት <ph name="ZOOM_LEVEL" /> %% ነው</translation>
-<translation id="9162462602695099906">ይህ ገጽ አደገኛ ነው</translation>
+<translation id="9162462602695099906">ይህ ገፅ አደገኛ ነው</translation>
 <translation id="9201023452444595544">ማናቸውም የመስመር ውጭ ውሂብ ይጸዳል</translation>
 <translation id="930525582205581608">ይህ ጣቢያ ይረሳ?</translation>
 <translation id="967624055006145463">የተከማቸ ውሂብ</translation>

@@ -604,7 +604,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Орнотулган колдонмо, Тындырылды</translation>
 <translation id="423685346499232137">Учурда контентти көчүрүп же чаптоого болбойт</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4242533952199664413">Жөндөөлөрдү ачуу</translation>
+<translation id="4242533952199664413">Параметрлерди ачуу</translation>
 <translation id="4247123849143712100">Жаңыртуу жана өчүрүү</translation>
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="425364040945105958">SIM-карта жок</translation>
@@ -1431,7 +1431,7 @@
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> таймер</translation>
 <translation id="8647931990447795414">Бирөөнү кошуу үчүн, Family Link'теги ата-эненин кирүү кодун териңиз</translation>
 <translation id="8649597172973390955">Текче ар дайым көрсөтүлүп турат</translation>
-<translation id="8652175077544655965">Жөндөөлөрдү жабуу</translation>
+<translation id="8652175077544655965">Параметрлерди жабуу</translation>
 <translation id="8653151467777939995">Билдирмелердин параметрлерин көрсөтүү. Билдирмелер күйүк</translation>
 <translation id="8660331759611631213">71 квадраттык тамыры</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" /></translation>

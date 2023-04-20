@@ -158,7 +158,7 @@
 <translation id="2304820083631266885">ፕላኔት</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ወጥቷል።</translation>
 <translation id="2307462900900812319">አውታረ መረብ አዋቅር</translation>
-<translation id="2325650632570794183">ይህ ፋይል አይነት አይደገፍም። የዚህ አይነት ፋይል መክፈት የሚችል መተግበሪያን ለማግኘት እባክዎ Chrome የድር ሱቁን ይጎብኙ።</translation>
+<translation id="2325650632570794183">ይህ ፋይል ዓይነት አይደገፍም። የዚህ ዓይነት ፋይል መክፈት የሚችል መተግበሪያን ለማግኘት እባክዎ Chrome የድር ሱቁን ይጎብኙ።</translation>
 <translation id="2326539130272988168">ቡልጋሪያኛ</translation>
 <translation id="2337715497728194187">ለBruschetta ያጋሩ</translation>
 <translation id="23721837607121582">የሞባይል መገለጫን ያውርዱ፣ አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" /></translation>
@@ -166,14 +166,14 @@
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> አቃፊዎች ለLinux ተጋርተዋል</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ፋይሎች ተመርጠዋል</translation>
 <translation id="2383454254762599978">ወደ መጣያ ውሰድ</translation>
-<translation id="2387458720915042159">የተኪ ግንኙነት አይነት</translation>
+<translation id="2387458720915042159">የተኪ ግንኙነት ዓይነት</translation>
 <translation id="2389832672041313158">በርማኛ/ማያንማር</translation>
 <translation id="2392369802118427583">አግብር</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> ይገኛል</translation>
 <translation id="2417486498593892439">ወደ አውታረ መረብ በመለያ ይግቡ</translation>
 <translation id="2425665904502185219">ጠቅላላ የፋይል መጠን</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" />ንጥሎችን ወደ <ph name="FOLDER_NAME" /> በመቅዳት ላይ</translation>
-<translation id="2448312741937722512">አይነት</translation>
+<translation id="2448312741937722512">ዓይነት</translation>
 <translation id="2452444014801043526">ሜጋፎን የያዘ ሰው</translation>
 <translation id="2464079411014186876">አይስክሬም</translation>
 <translation id="2464089476039395325">የኤችቲቲፒ ተኪ</translation>
