@@ -77,7 +77,7 @@
           "spellCheck": {"type": "boolean", "description": "Whether the text field wants spell-check."},
           "shouldDoLearning": {"type": "boolean", "description": "Whether text entered into the text field should be used to improve typing suggestions for the user."},
           "focusReason": {"$ref": "FocusReason", "description": "How the text field was focused"},
-          "hasBeenPassword": {"type": "boolean", "description": "Whether the text field has ever been a password field."},
+          "hasBeenPassword": {"type": "boolean", "description": "DEPRECATED: when this was true, we now just set input field type to be password. Was: Whether the text field has ever been a password field."},
           "appKey": {"type": "string", "optional": true, "description": "Key of the app associated with this text field if any."}
         }
       },
