@@ -910,8 +910,22 @@ void ServiceWorkerContainerHost::UpdateUrls(
   DCHECK((origin_to_dcheck.opaque() && key_.origin().opaque()) ||
          origin_to_dcheck.IsSameOriginWith(key_.origin()))
       << origin_to_dcheck << " and " << key_.origin() << " should be equal.";
-  // TODO(https://crbug.com/1199077): Make `top_frame_origin` non-optional and
-  // DCHECK that it's value is compatible with storage key's top_frame_site.
+  // TODO(crbug.com/1402965): verify that `top_frame_origin` matches the
+  // `top_level_site` of `storage_key`, in most cases.
+  //
+  // This is currently not the case if:
+  //  - The storage key is not for the "real" top-level site, such as when the
+  //    top-level site is actually an extension.
+  //  - The storage key has a nonce, in which case its `top_level_site` will be
+  //    for the frame that introduced the nonce (such as a fenced frame) and not
+  //    the same as `top_level_site`.
+  //  - The storage key was generated without third-party storage partitioning.
+  //    This may be the case even when 3PSP is enabled, due to enterprise policy
+  //    or deprecation trials.
+  //
+  // Consider adding a DHCECK here once the last of those conditions is
+  // resolved. See
+  // https://chromium-review.googlesource.com/c/chromium/src/+/4378900/4.
 #endif
 
   // The remaining parts of this function don't make sense for service worker
