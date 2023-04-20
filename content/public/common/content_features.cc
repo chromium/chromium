@@ -575,7 +575,7 @@ BASE_FEATURE(kInMemoryCodeCache,
 // cases, e.g. PDF tiles are ignored. See https://crbug.com/1360351 for details.
 BASE_FEATURE(kInnerFrameCompositorSurfaceEviction,
              "InnerFrameCompositorSurfaceEviction",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch for the GetInstalledRelatedApps API.
 BASE_FEATURE(kInstalledApp, "InstalledApp", base::FEATURE_ENABLED_BY_DEFAULT);
