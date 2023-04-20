@@ -178,11 +178,11 @@ class DCompPresenterTest : public testing::Test {
     // Without this, the following check always fails.
     display_ = gl::init::InitializeGLNoExtensionsOneOff(
         /*init_bindings=*/true, /*gpu_preference=*/gl::GpuPreference::kDefault);
-    if (!DirectCompositionSupported()) {
-      LOG(WARNING) << "DirectComposition not supported, skipping test.";
-      return;
-    }
     presenter_ = CreateDCompPresenter();
+
+    // All bots run on non-blocklisted hardware that supports DComp (>Win7)
+    ASSERT_TRUE(DirectCompositionSupported());
+
     gl_surface_ = init::CreateOffscreenGLSurface(
         gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size());
     context_ = CreateGLContext(gl_surface_);
@@ -249,10 +249,6 @@ class DCompPresenterTest : public testing::Test {
 
 // Ensure that the overlay image isn't presented again unless it changes.
 TEST_F(DCompPresenterTest, NoPresentTwice) {
-  if (!presenter_) {
-    return;
-  }
-
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       QueryD3D11DeviceObjectFromANGLE();
 
@@ -333,10 +329,6 @@ TEST_F(DCompPresenterTest, NoPresentTwice) {
 // Ensure the swapchain size is set to the correct size if HW overlay scaling
 // is support - swapchain should be set to the onscreen video size.
 TEST_F(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
-  if (!presenter_) {
-    return;
-  }
-
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       QueryD3D11DeviceObjectFromANGLE();
 
@@ -404,10 +396,6 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
 // Ensure the swapchain size is set to the correct size if HW overlay scaling
 // is not support - swapchain should be the onscreen video size.
 TEST_F(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
-  if (!presenter_) {
-    return;
-  }
-
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       QueryD3D11DeviceObjectFromANGLE();
 
@@ -464,10 +452,6 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
 
 // Test protected video flags
 TEST_F(DCompPresenterTest, ProtectedVideos) {
-  if (!presenter_) {
-    return;
-  }
-
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       QueryD3D11DeviceObjectFromANGLE();
 
@@ -799,10 +783,6 @@ TEST_F(DCompPresenterVideoPixelTest, InvalidColorSpace) {
 }
 
 TEST_F(DCompPresenterPixelTest, SoftwareVideoSwapchain) {
-  if (!presenter_) {
-    return;
-  }
-
   gfx::Size window_size(100, 100);
   EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
 
@@ -833,10 +813,6 @@ TEST_F(DCompPresenterPixelTest, SoftwareVideoSwapchain) {
 }
 
 TEST_F(DCompPresenterPixelTest, VideoHandleSwapchain) {
-  if (!presenter_) {
-    return;
-  }
-
   gfx::Size window_size(100, 100);
   gfx::Size texture_size(50, 50);
   gfx::Rect content_rect(texture_size);
@@ -851,10 +827,6 @@ TEST_F(DCompPresenterPixelTest, VideoHandleSwapchain) {
 }
 
 TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyBoundsRect) {
-  if (!presenter_) {
-    return;
-  }
-
   gfx::Size window_size(100, 100);
   gfx::Size texture_size(50, 50);
   gfx::Rect content_rect(texture_size);
@@ -871,9 +843,6 @@ TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyBoundsRect) {
 }
 
 TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyContentsRect) {
-  if (!presenter_) {
-    return;
-  }
   // Swap chain size is overridden to onscreen size only if scaled overlays
   // are supported.
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
@@ -913,9 +882,6 @@ TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyContentsRect) {
 }
 
 TEST_F(DCompPresenterPixelTest, NV12SwapChain) {
-  if (!presenter_) {
-    return;
-  }
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
@@ -947,15 +913,13 @@ TEST_F(DCompPresenterPixelTest, NV12SwapChain) {
 }
 
 TEST_F(DCompPresenterPixelTest, YUY2SwapChain) {
-  if (!presenter_) {
-    return;
-  }
-  // CreateSwapChainForCompositionSurfaceHandle fails with YUY2 format on
-  // Win10/AMD bot (Radeon RX550). See https://crbug.com/967860.
   if (context_ && context_->GetVersionInfo() &&
       context_->GetVersionInfo()->driver_vendor.find("AMD") !=
-          std::string::npos)
-    return;
+          std::string::npos) {
+    GTEST_SKIP()
+        << "CreateSwapChainForCompositionSurfaceHandle fails with YUY2 format "
+           "on Win10/AMD bot (Radeon RX550). See https://crbug.com/967860.";
+  }
 
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
@@ -990,9 +954,6 @@ TEST_F(DCompPresenterPixelTest, YUY2SwapChain) {
 }
 
 TEST_F(DCompPresenterPixelTest, NonZeroBoundsOffset) {
-  if (!presenter_) {
-    return;
-  }
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
@@ -1028,9 +989,6 @@ TEST_F(DCompPresenterPixelTest, NonZeroBoundsOffset) {
 }
 
 TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
-  if (!presenter_) {
-    return;
-  }
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
@@ -1153,14 +1111,11 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
 }
 
 TEST_F(DCompPresenterPixelTest, SwapChainImage) {
-  if (!presenter_) {
-    return;
-  }
-  // Fails on AMD RX 5500 XT. https://crbug.com/1152565.
   if (context_ && context_->GetVersionInfo() &&
       context_->GetVersionInfo()->driver_vendor.find("AMD") !=
-          std::string::npos)
-    return;
+          std::string::npos) {
+    GTEST_SKIP() << "Fails on AMD RX 5500 XT. https://crbug.com/1152565.";
+  }
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       QueryD3D11DeviceObjectFromANGLE();
@@ -1319,16 +1274,6 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
 
 // Test that the overlay quad rect's offset is affected by its transform.
 TEST_F(DCompPresenterPixelTest, QuadOffsetAppliedAfterTransform) {
-  if (!presenter_) {
-    return;
-  }
-  // Fails on AMD RX 5500 XT. https://crbug.com/1152565.
-  if (context_ && context_->GetVersionInfo() &&
-      context_->GetVersionInfo()->driver_vendor.find("AMD") !=
-          std::string::npos) {
-    return;
-  }
-
   // Our overlay quad rect is at 0,50 50x50 and scaled down by 1/2. Since we
   // expect the transform to affect the quad rect offset, we expect the output
   // rect to be at 0,25 25x25.
@@ -1383,48 +1328,18 @@ TEST_F(DCompPresenterPixelTest, QuadOffsetAppliedAfterTransform) {
 // Test that scaling a (very) small texture up works with nearest neighbor
 // filtering using the content rect and quad rects.
 TEST_F(DCompPresenterPixelTest, NearestNeighborFilteringScaleViaBuffer) {
-  if (!presenter_) {
-    return;
-  }
-  // Fails on AMD RX 5500 XT. https://crbug.com/1152565.
-  if (context_ && context_->GetVersionInfo() &&
-      context_->GetVersionInfo()->driver_vendor.find("AMD") !=
-          std::string::npos) {
-    return;
-  }
-
   RunNearestNeighborTest(true);
 }
 
 // Test that scaling a (very) small texture up works with nearest neighbor
 // filtering using the overlay's transform.
 TEST_F(DCompPresenterPixelTest, NearestNeighborFilteringScaleViaTransform) {
-  if (!presenter_) {
-    return;
-  }
-  // Fails on AMD RX 5500 XT. https://crbug.com/1152565.
-  if (context_ && context_->GetVersionInfo() &&
-      context_->GetVersionInfo()->driver_vendor.find("AMD") !=
-          std::string::npos) {
-    return;
-  }
-
   RunNearestNeighborTest(false);
 }
 
 // Test that the |content_rect| of an overlay scales the buffer to fit the
 // display rect, if needed.
 TEST_F(DCompPresenterPixelTest, ContentRectScalesUpBuffer) {
-  if (!presenter_) {
-    return;
-  }
-  // Fails on AMD RX 5500 XT. https://crbug.com/1152565.
-  if (context_ && context_->GetVersionInfo() &&
-      context_->GetVersionInfo()->driver_vendor.find("AMD") !=
-          std::string::npos) {
-    return;
-  }
-
   const gfx::Size window_size(100, 100);
   const gfx::Rect root_surface_hole = gfx::Rect(5, 10, 50, 75);
 
@@ -1443,16 +1358,6 @@ TEST_F(DCompPresenterPixelTest, ContentRectScalesUpBuffer) {
 // Test that the |content_rect| of an overlay scales the buffer to fit the
 // display rect, if needed.
 TEST_F(DCompPresenterPixelTest, ContentRectScalesDownBuffer) {
-  if (!presenter_) {
-    return;
-  }
-  // Fails on AMD RX 5500 XT. https://crbug.com/1152565.
-  if (context_ && context_->GetVersionInfo() &&
-      context_->GetVersionInfo()->driver_vendor.find("AMD") !=
-          std::string::npos) {
-    return;
-  }
-
   const gfx::Size window_size(100, 100);
   const gfx::Rect root_surface_hole = gfx::Rect(5, 10, 50, 75);
 
@@ -1470,16 +1375,6 @@ TEST_F(DCompPresenterPixelTest, ContentRectScalesDownBuffer) {
 
 // Test that the |content_rect| of an overlay clips portions of the buffer.
 TEST_F(DCompPresenterPixelTest, ContentRectClipsBuffer) {
-  if (!presenter_) {
-    return;
-  }
-  // Fails on AMD RX 5500 XT. https://crbug.com/1152565.
-  if (context_ && context_->GetVersionInfo() &&
-      context_->GetVersionInfo()->driver_vendor.find("AMD") !=
-          std::string::npos) {
-    return;
-  }
-
   const gfx::Size window_size(100, 100);
   const gfx::Rect tex_coord = gfx::Rect(1, 2, 50, 60);
   const gfx::Rect root_surface_hole =
@@ -1506,16 +1401,6 @@ TEST_F(DCompPresenterPixelTest, ContentRectClipsBuffer) {
 // Test that the |content_rect| of an overlay can clip a buffer and scale it's
 // contents.
 TEST_F(DCompPresenterPixelTest, ContentRectClipsAndScalesBuffer) {
-  if (!presenter_) {
-    return;
-  }
-  // Fails on AMD RX 5500 XT. https://crbug.com/1152565.
-  if (context_ && context_->GetVersionInfo() &&
-      context_->GetVersionInfo()->driver_vendor.find("AMD") !=
-          std::string::npos) {
-    return;
-  }
-
   const gfx::Size window_size(100, 100);
   const gfx::Rect tex_coord = gfx::Rect(5, 10, 15, 20);
   const gfx::Rect root_surface_hole =
@@ -1569,10 +1454,6 @@ class DCompPresenterBufferCountTest : public DCompPresenterTest,
 };
 
 TEST_P(DCompPresenterBufferCountTest, VideoSwapChainBufferCount) {
-  if (!presenter_) {
-    return;
-  }
-
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
 
   constexpr gfx::Size window_size(100, 100);
