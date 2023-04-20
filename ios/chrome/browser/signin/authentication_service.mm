@@ -433,8 +433,6 @@ void AuthenticationService::SignOut(
   const bool is_first_setup_complete =
       sync_setup_service_->IsFirstSetupComplete();
 
-  sync_service_->StopAndClear();
-
   auto* account_mutator = identity_manager_->GetPrimaryAccountMutator();
   // GetPrimaryAccountMutator() returns nullptr on ChromeOS only.
   DCHECK(account_mutator);
