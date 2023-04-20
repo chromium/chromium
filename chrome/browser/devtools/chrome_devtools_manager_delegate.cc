@@ -50,7 +50,6 @@
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/view_type.mojom.h"
-#include "extensions/common/permissions/permissions_data.h"
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -248,18 +247,8 @@ bool ChromeDevToolsManagerDelegate::AllowInspection(
     case Availability::kAllowed:
       return true;
     case Availability::kDisallowedForForceInstalledExtensions:
-      if (!extension) {
-        return true;
-      }
-      if (extensions::Manifest::IsPolicyLocation(extension->location())) {
-        return false;
-      }
-      if (extensions::Manifest::IsComponentLocation(extension->location()) &&
-          extension->permissions_data()->HasAPIPermission(
-              extensions::mojom::APIPermissionID::kManagement)) {
-        return false;
-      }
-      return true;
+      return !extension ||
+             !extensions::Manifest::IsPolicyLocation(extension->location());
     default:
       NOTREACHED() << "Unknown developer tools policy";
       return true;

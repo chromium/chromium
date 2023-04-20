@@ -1,8 +1,0 @@
-{
-  "name": "management permission",
-  "version": "1.0",
-  "manifest_version": 3,
-  "permissions": [
-    "management"
-  ]
-}
