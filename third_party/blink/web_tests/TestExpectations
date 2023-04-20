@@ -4320,10 +4320,6 @@ crbug.com/994692 [ Win ] compositing/reflections/nested-reflection-anchor-point.
 
 crbug.com/996219 [ Win ] virtual/text-antialias/emoji-vertical-origin-visual.html [ Failure ]
 
-# Sheriff 2019-08-22
-crbug.com/994008 [ Linux ] http/tests/devtools/elements/styles-3/styles-computed-trace.js [ Failure Pass Timeout ]
-crbug.com/994008 [ Win ] http/tests/devtools/elements/styles-3/styles-computed-trace.js [ Failure Pass Timeout ]
-
 # Temporarily disable test to land "Roll devtools-internal"
 crbug.com/995669 [ Win ] http/tests/media/video-throttled-load-metadata.html [ Crash Failure Pass ]
 
@@ -5891,9 +5887,6 @@ crbug.com/1327764 inspector-protocol/overlay/overlay-persistent-overlays.js [ Fa
 
 # Sheriff 2022-05-26
 crbug.com/1329596 virtual/gpu-rasterization/images/jpeg-with-non-interleaved-dc-channels.html [ Failure Pass ]
-
-# Sheriff 2022-05-30
-crbug.com/1330238 [ Mac ] http/tests/devtools/elements/styles-3/styles-computed-trace.js [ Failure Pass Timeout ]
 
 # Sheriff 2022-05-31
 crbug.com/1330555 external/wpt/service-workers/service-worker/resource-timing-fetch-variants.https.html [ Failure Pass ]
