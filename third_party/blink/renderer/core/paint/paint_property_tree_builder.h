@@ -223,8 +223,6 @@ struct PaintPropertyTreeBuilderContext final {
   // (not this one).
   unsigned was_layout_shift_root : 1 = false;
 
-  unsigned was_main_thread_scrolling : 1 = false;
-
   // Main thread scrolling reasons that apply to all scrollers in the current
   // LocalFrameView subtree.
   unsigned global_main_thread_scrolling_reasons : 5 = 0;

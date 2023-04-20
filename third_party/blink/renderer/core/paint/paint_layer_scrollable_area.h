@@ -267,6 +267,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void DidCompositorScroll(const gfx::PointF&) override;
 
   bool ShouldScrollOnMainThread() const override;
+  void SetShouldScrollOnMainThread(bool);
+
   bool IsActive() const override;
   bool IsScrollCornerVisible() const override;
   gfx::Rect ScrollCornerRect() const override;
@@ -747,6 +749,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
   unsigned is_scrollbar_freeze_root_ : 1;
   unsigned is_horizontal_scrollbar_frozen_ : 1;
   unsigned is_vertical_scrollbar_frozen_ : 1;
+
+  // In CompositeScrollAfterPaint, this is updated after
+  // PaintArtifactCompositor::Update(). Otherwise it's updated during PrePaint.
+  unsigned should_scroll_on_main_thread_ : 1;
 
   // There are 6 possible combinations of writing mode and direction. Scroll
   // origin will be non-zero in the x or y axis if there is any reversed

@@ -142,6 +142,7 @@ PaintLayerScrollableArea::PaintLayerScrollableArea(PaintLayer& layer)
       is_scrollbar_freeze_root_(false),
       is_horizontal_scrollbar_frozen_(false),
       is_vertical_scrollbar_frozen_(false),
+      should_scroll_on_main_thread_(true),
       scrollbar_manager_(*this),
       has_last_committed_scroll_offset_(false),
       scroll_corner_(nullptr),
@@ -2412,20 +2413,23 @@ ScrollingCoordinator* PaintLayerScrollableArea::GetScrollingCoordinator()
 }
 
 bool PaintLayerScrollableArea::ShouldScrollOnMainThread() const {
-  if (HasBeenDisposed())
-    return true;
-
-  // Property tree state is not available until the PrePaint lifecycle stage.
-  // PaintPropertyTreeBuilder needs to get the old status during PrePaint.
   DCHECK_GE(GetDocument()->Lifecycle().GetState(),
-            DocumentLifecycle::kInPrePaint);
-  const auto* properties = GetLayoutBox()->FirstFragment().PaintProperties();
-  if (!properties || !properties->Scroll() ||
-      properties->Scroll()->GetMainThreadScrollingReasons())
-    return true;
+            RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()
+                ? DocumentLifecycle::kPaintClean
+                : DocumentLifecycle::kInPrePaint);
+  return HasBeenDisposed() || should_scroll_on_main_thread_;
+}
 
-  DCHECK(properties->ScrollTranslation());
-  return !properties->ScrollTranslation()->HasDirectCompositingReasons();
+void PaintLayerScrollableArea::SetShouldScrollOnMainThread(
+    bool scroll_on_main_thread) {
+  DCHECK_EQ(GetDocument()->Lifecycle().GetState(),
+            RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()
+                ? DocumentLifecycle::kPaintClean
+                : DocumentLifecycle::kInPrePaint);
+  if (scroll_on_main_thread != should_scroll_on_main_thread_) {
+    should_scroll_on_main_thread_ = scroll_on_main_thread;
+    MainThreadScrollingDidChange();
+  }
 }
 
 bool PaintLayerScrollableArea::PrefersNonCompositedScrolling() const {

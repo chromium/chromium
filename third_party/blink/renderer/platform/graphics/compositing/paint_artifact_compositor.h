@@ -206,6 +206,8 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
                                const gfx::PointF& scroll_offset);
 
   uint32_t GetMainThreadScrollingReasons(const ScrollPaintPropertyNode&) const;
+  // Returns true if the scroll node is currently composited in cc.
+  bool UsesCompositedScrolling(const ScrollPaintPropertyNode&) const;
 
   // The root layer of the tree managed by this object.
   cc::Layer* RootLayer() const { return root_layer_.get(); }

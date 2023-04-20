@@ -1115,6 +1115,17 @@ uint32_t PaintArtifactCompositor::GetMainThreadScrollingReasons(
       *root_layer_->layer_tree_host(), scroll);
 }
 
+bool PaintArtifactCompositor::UsesCompositedScrolling(
+    const ScrollPaintPropertyNode& scroll) const {
+  DCHECK(RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled());
+  CHECK(root_layer_);
+  if (!root_layer_->layer_tree_host()) {
+    return false;
+  }
+  return PropertyTreeManager::UsesCompositedScrolling(
+      *root_layer_->layer_tree_host(), scroll);
+}
+
 void PaintArtifactCompositor::SetLayerDebugInfoEnabled(bool enabled) {
   if (enabled == layer_debug_info_enabled_)
     return;

@@ -2075,11 +2075,7 @@ Animation::CheckCanStartAnimationOnCompositorInternal() const {
   // If the scroll source is not composited, fall back to main thread.
   // TODO(crbug.com/476553): Once all ScrollNodes including uncomposited ones
   // are in the compositor, the animation should be composited.
-  // TODO(crbug.com/1414885): In CompositeScrollAfterPaint, the composited
-  // scrolling status is unknown at this time, so we have to require the above
-  // TODO to be implemented, with crbug.com/1416223 fixed.
-  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled() &&
-      timeline_ && timeline_->IsScrollTimeline() &&
+  if (timeline_ && timeline_->IsScrollTimeline() &&
       !CompositorAnimations::CheckUsesCompositedScrolling(
           To<ScrollTimeline>(*timeline_).ResolvedSource())) {
     reasons |= CompositorAnimations::kTimelineSourceHasInvalidCompositingState;

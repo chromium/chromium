@@ -2741,8 +2741,21 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
 
   size_t total_animations_count = 0;
   ForAllNonThrottledLocalFrameViews(
-      [this, &needed_update,
+      [this, needed_update,
        &total_animations_count](LocalFrameView& frame_view) {
+        if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled() &&
+            needed_update && paint_artifact_compositor_ &&
+            frame_view.UserScrollableAreas()) {
+          for (auto& scrollable_area : *frame_view.UserScrollableAreas()) {
+            const auto* properties = scrollable_area->GetLayoutBox()
+                                         ->FirstFragment()
+                                         .PaintProperties();
+            scrollable_area->SetShouldScrollOnMainThread(
+                !properties || !properties->Scroll() ||
+                paint_artifact_compositor_->GetMainThreadScrollingReasons(
+                    *properties->Scroll()));
+          }
+        }
         if (auto* scrollable_area = frame_view.GetScrollableArea())
           scrollable_area->UpdateCompositorScrollAnimations();
         if (const auto* animating_scrollable_areas =
@@ -4589,8 +4602,10 @@ String LocalFrameView::MainThreadScrollingReasonsAsText() {
   DCHECK_GE(Lifecycle().GetState(), DocumentLifecycle::kPaintClean);
   const auto* properties = GetLayoutView()->FirstFragment().PaintProperties();
   if (properties && properties->Scroll()) {
-    reasons = paint_artifact_compositor_->GetMainThreadScrollingReasons(
-        *properties->Scroll());
+    const auto* compositor =
+        GetFrame().LocalFrameRoot().View()->paint_artifact_compositor_.get();
+    CHECK(compositor);
+    reasons = compositor->GetMainThreadScrollingReasons(*properties->Scroll());
   }
   return String(cc::MainThreadScrollingReason::AsText(reasons).c_str());
 }

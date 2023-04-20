@@ -155,6 +155,8 @@ class PropertyTreeManager {
 
   static uint32_t GetMainThreadScrollingReasons(const cc::LayerTreeHost&,
                                                 const ScrollPaintPropertyNode&);
+  static bool UsesCompositedScrolling(const cc::LayerTreeHost&,
+                                      const ScrollPaintPropertyNode&);
 
   // Ensures cc::ScrollNodes and cc::TransformNodes for all scroll translations.
   void EnsureCompositorScrollTranslationNodes(

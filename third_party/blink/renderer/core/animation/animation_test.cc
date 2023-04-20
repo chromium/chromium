@@ -2316,11 +2316,8 @@ TEST_P(AnimationAnimationTestCompositing,
 
   UpdateAllLifecyclePhasesForTest();
   scroll_animation->play();
-  EXPECT_EQ(
-      scroll_animation->CheckCanStartAnimationOnCompositor(nullptr),
-      RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()
-          ? CompositorAnimations::kNoFailure
-          : CompositorAnimations::kTimelineSourceHasInvalidCompositingState);
+  EXPECT_EQ(scroll_animation->CheckCanStartAnimationOnCompositor(nullptr),
+            CompositorAnimations::kTimelineSourceHasInvalidCompositingState);
 }
 
 #if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
