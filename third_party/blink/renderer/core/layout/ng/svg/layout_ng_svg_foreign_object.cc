@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_foreign_object.h"
 
+#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -120,14 +122,13 @@ void LayoutNGSVGForeignObject::UpdateBlockLayout(bool relayout_children) {
   // This is necessary for external/wpt/inert/inert-on-non-html.html.
   // See FullyClipsContents() in fully_clipped_state_stack.cc.
   const float zoom = style.EffectiveZoom();
-  const LayoutUnit zoomed_width = LayoutUnit(viewport_.width() * zoom);
-  const LayoutUnit zoomed_height = LayoutUnit(viewport_.height() * zoom);
-  if (style.IsHorizontalWritingMode()) {
-    SetOverrideLogicalWidth(zoomed_width);
-    SetOverrideLogicalHeight(zoomed_height);
-  } else {
-    SetOverrideLogicalWidth(zoomed_height);
-    SetOverrideLogicalHeight(zoomed_width);
+  LogicalSize zoomed_size = PhysicalSize(LayoutUnit(viewport_.width() * zoom),
+                                         LayoutUnit(viewport_.height() * zoom))
+                                .ConvertToLogical(style.GetWritingMode());
+
+  if (!RuntimeEnabledFeatures::LayoutNewSVGForeignObjectEntryEnabled()) {
+    SetOverrideLogicalWidth(zoomed_size.inline_size);
+    SetOverrideLogicalHeight(zoomed_size.block_size);
   }
 
   // Use the zoomed version of the viewport as the location, because we will
@@ -143,7 +144,18 @@ void LayoutNGSVGForeignObject::UpdateBlockLayout(bool relayout_children) {
   // specifying them through CSS.
   overridden_location_ = LayoutPoint(zoomed_location);
 
-  UpdateNGBlockLayout();
+  if (RuntimeEnabledFeatures::LayoutNewSVGForeignObjectEntryEnabled()) {
+    NGConstraintSpaceBuilder builder(
+        style.GetWritingMode(), style.GetWritingDirection(),
+        /* is_new_fc */ true, /* adjust_inline_size_if_needed */ false);
+    builder.SetAvailableSize(zoomed_size);
+    builder.SetIsFixedInlineSize(true);
+    builder.SetIsFixedBlockSize(true);
+    NGBlockNode(this).Layout(builder.ToConstraintSpace());
+  } else {
+    UpdateNGBlockLayout();
+  }
+
   DCHECK(!NeedsLayout() || ChildLayoutBlockedByDisplayLock());
   const bool bounds_changed = old_frame_rect != FrameRect();
 

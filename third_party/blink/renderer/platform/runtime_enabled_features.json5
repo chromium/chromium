@@ -2042,6 +2042,10 @@
       status: "stable",
     },
     {
+      name: "LayoutNewSVGForeignObjectEntry",
+      status: "stable",
+    },
+    {
       // crbug.com/1353190
       name: "LayoutNGNoCopyBack",
       depends_on: ["LayoutMediaNGContainer", "RemoveConvertToLayerCoords"],
