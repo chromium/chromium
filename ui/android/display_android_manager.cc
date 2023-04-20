@@ -16,6 +16,7 @@
 #include "ui/android/ui_android_jni_headers/DisplayAndroidManager_jni.h"
 #include "ui/android/window_android.h"
 #include "ui/display/display.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/icc_profile.h"
 
 namespace ui {
@@ -81,6 +82,7 @@ void DisplayAndroidManager::DoUpdateDisplay(display::Display* display,
                                             int rotationDegrees,
                                             int bitsPerPixel,
                                             int bitsPerComponent,
+                                            jfloat hdrMaxLuminanceRatio,
                                             bool isWideColorGamut) {
   if (!Display::HasForceDeviceScaleFactor())
     display->set_device_scale_factor(dipScale);
@@ -98,10 +100,13 @@ void DisplayAndroidManager::DoUpdateDisplay(display::Display* display,
             gfx::BufferFormat::RGBA_8888);
       }
     }
+    display_color_spaces.SetHDRMaxLuminanceRelative(hdrMaxLuminanceRatio);
     display->set_color_spaces(display_color_spaces);
   } else {
-    display->set_color_spaces(gfx::DisplayColorSpaces(
-        gfx::ColorSpace::CreateSRGB(), gfx::BufferFormat::RGBA_8888));
+    gfx::DisplayColorSpaces display_color_spaces(gfx::ColorSpace::CreateSRGB(),
+                                                 gfx::BufferFormat::RGBA_8888);
+    display_color_spaces.SetHDRMaxLuminanceRelative(hdrMaxLuminanceRatio);
+    display->set_color_spaces(display_color_spaces);
   }
 
   display->set_size_in_pixels(size_in_pixels);
@@ -125,14 +130,15 @@ void DisplayAndroidManager::UpdateDisplay(
     jint rotationDegrees,
     jint bitsPerPixel,
     jint bitsPerComponent,
-    jboolean isWideColorGamut) {
+    jboolean isWideColorGamut,
+    jfloat hdrMaxLuminanceRatio) {
   gfx::Rect bounds_in_pixels = gfx::Rect(width, height);
   const gfx::Rect bounds_in_dip = gfx::Rect(
       gfx::ScaleToCeiledSize(bounds_in_pixels.size(), 1.0f / dipScale));
 
   display::Display display(sdkDisplayId, bounds_in_dip);
   DoUpdateDisplay(&display, bounds_in_pixels.size(), dipScale, rotationDegrees,
-                  bitsPerPixel, bitsPerComponent,
+                  bitsPerPixel, bitsPerComponent, hdrMaxLuminanceRatio,
                   isWideColorGamut && use_display_wide_color_gamut_);
   ProcessDisplayChanged(display, sdkDisplayId == primary_display_id_);
 }

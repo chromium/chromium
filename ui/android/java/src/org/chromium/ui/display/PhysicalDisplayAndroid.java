@@ -15,16 +15,24 @@ import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
 
+import androidx.annotation.OptIn;
+import androidx.core.os.BuildCompat;
+
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.compat.ApiHelperForR;
 import org.chromium.base.compat.ApiHelperForS;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 
 /**
  * A DisplayAndroid implementation tied to a physical Display.
@@ -39,6 +47,79 @@ import java.util.List;
     // the zero means it is not. The non existing object (i.e. null reference) means that
     // the existence and value of the forced DIP scale has not yet been determined.
     private static Float sForcedDIPScale;
+
+    private static boolean sLookupMethodSucceeded;
+    private static boolean sLookupMethodFailed;
+    private static Method sIsHdrSdrRatioAvailableMethod;
+    private static Method sGetHdrSdrRatioMethod;
+    private static Method sRegisterHdrSdrRatioChangedListenerMethod;
+    private static Method sUnregisterHdrSdrRatioChangedListenerMethod;
+
+    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
+    private static boolean lookupHdrSdrRatioMethods() {
+        if (sLookupMethodFailed) return false;
+        if (sLookupMethodSucceeded) return true;
+        if (!BuildCompat.isAtLeastU()) {
+            sLookupMethodSucceeded = false;
+            return false;
+        }
+        try {
+            sIsHdrSdrRatioAvailableMethod =
+                    Display.class.getDeclaredMethod("isHdrSdrRatioAvailable");
+            sGetHdrSdrRatioMethod = Display.class.getDeclaredMethod("getHdrSdrRatio");
+            sRegisterHdrSdrRatioChangedListenerMethod = Display.class.getDeclaredMethod(
+                    "registerHdrSdrRatioChangedListener", Executor.class, Consumer.class);
+            sUnregisterHdrSdrRatioChangedListenerMethod = Display.class.getDeclaredMethod(
+                    "unregisterHdrSdrRatioChangedListener", Consumer.class);
+        } catch (NoSuchMethodException e) {
+            sLookupMethodFailed = true;
+            return false;
+        }
+        sLookupMethodSucceeded = true;
+        return true;
+    }
+
+    private static Float getHdrSdrRatio(Display display) {
+        if (!lookupHdrSdrRatioMethods()) return null;
+        try {
+            return (Float) sGetHdrSdrRatioMethod.invoke(display);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            Log.w(TAG, "getHdrSdrRatioMethod failed", e);
+            return null;
+        }
+    }
+
+    private static boolean isHdrSdrRatioAvailable(Display display) {
+        if (!lookupHdrSdrRatioMethods()) return false;
+        try {
+            return (Boolean) sIsHdrSdrRatioAvailableMethod.invoke(display);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            Log.w(TAG, "isHdrSdrRatioAvailable failed", e);
+            return false;
+        }
+    }
+
+    private static boolean registerHdrSdrRatioChangedListener(
+            Display display, Executor executor, Consumer<Display> listener) {
+        if (!lookupHdrSdrRatioMethods()) return false;
+        try {
+            sRegisterHdrSdrRatioChangedListenerMethod.invoke(display, executor, listener);
+            return true;
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            Log.w(TAG, "registerHdrSdrRatioChangedListener failed", e);
+            return false;
+        }
+    }
+
+    private static void unregisterHdrSdrRatioChangedListener(
+            Display display, Consumer<Display> listener) {
+        if (!lookupHdrSdrRatioMethods()) return;
+        try {
+            sUnregisterHdrSdrRatioChangedListenerMethod.invoke(display, listener);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            Log.w(TAG, "unregisterHdrSdrRatioChangedListener failed", e);
+        }
+    }
 
     private static boolean hasForcedDIPScale() {
         if (sForcedDIPScale == null) {
@@ -134,6 +215,8 @@ import java.util.List;
 
     private final Context mWindowContext;
     private final ComponentCallbacks mComponentCallbacks;
+    private final Display mDisplay;
+    private Consumer<Display> mHdrSdrRatioCallback;
 
     /* package */ PhysicalDisplayAndroid(Display display) {
         super(display.getDisplayId());
@@ -156,10 +239,23 @@ import java.util.List;
                 }
             };
             mWindowContext.registerComponentCallbacks(mComponentCallbacks);
+            mDisplay = ApiHelperForR.getDisplay(mWindowContext);
             updateFromConfiguration();
         } else {
             mWindowContext = null;
             mComponentCallbacks = null;
+            mDisplay = display;
+        }
+
+        if (isHdrSdrRatioAvailable(mDisplay)) {
+            mHdrSdrRatioCallback = this::hdrSdrRatioChanged;
+            if (!registerHdrSdrRatioChangedListener(mDisplay, (Runnable runnable) -> {
+                    ThreadUtils.getUiThreadHandler().post(runnable);
+                }, mHdrSdrRatioCallback)) {
+                mHdrSdrRatioCallback = null;
+            }
+        } else {
+            mHdrSdrRatioCallback = null;
         }
     }
 
@@ -182,13 +278,16 @@ import java.util.List;
         if (USE_CONFIGURATION) {
             mWindowContext.unregisterComponentCallbacks(mComponentCallbacks);
         }
+        if (mHdrSdrRatioCallback != null) {
+            unregisterHdrSdrRatioChangedListener(mDisplay, mHdrSdrRatioCallback);
+            mHdrSdrRatioCallback = null;
+        }
     }
 
     @SuppressWarnings("deprecation")
     /* package */ void updateFromDisplay(Display display) {
         if (USE_CONFIGURATION) {
-            assert display.getDisplayId()
-                    == ApiHelperForR.getDisplay(mWindowContext).getDisplayId();
+            assert display.getDisplayId() == mDisplay.getDisplayId();
             // Needed to update non-configuration info such as refresh rate.
             updateFromConfiguration();
             return;
@@ -204,6 +303,12 @@ import java.util.List;
         }
         updateCommon(
                 size, displayMetrics.density, displayMetrics.xdpi, displayMetrics.ydpi, display);
+    }
+
+    private void hdrSdrRatioChanged(Display display) {
+        assert display.getDisplayId() == mDisplay.getDisplayId();
+        super.update(null, null, null, null, null, null, null, null, null, null, null, null,
+                getHdrSdrRatio(mDisplay));
     }
 
     private void updateCommon(Point size, float density, float xdpi, float ydpi, Display display) {
@@ -228,6 +333,6 @@ import java.util.List;
 
         super.update(size, density, xdpi, ydpi, bitsPerPixel(pixelFormatId),
                 bitsPerComponent(pixelFormatId), display.getRotation(), isWideColorGamut, null,
-                display.getRefreshRate(), currentMode, supportedModes);
+                display.getRefreshRate(), currentMode, supportedModes, getHdrSdrRatio(display));
     }
 }
