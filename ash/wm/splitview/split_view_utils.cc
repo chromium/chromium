@@ -522,8 +522,7 @@ views::Widget::InitParams CreateWidgetInitParams(
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
   params.activatable = views::Widget::InitParams::Activatable::kNo;
-  params.parent =
-      Shell::GetContainer(parent_window, kShellWindowId_AlwaysOnTopContainer);
+  params.parent = parent_window;
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
   params.name = widget_name;
   return params;

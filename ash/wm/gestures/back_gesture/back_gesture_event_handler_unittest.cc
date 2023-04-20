@@ -352,7 +352,7 @@ TEST_F(BackGestureEventHandlerTest, DragFromSplitViewDivider) {
 
   gfx::Rect divider_bounds =
       split_view_controller->split_view_divider()->GetDividerBoundsInScreen(
-          false);
+          /*is_dragging=*/false);
   ui::test::EventGenerator* generator = GetEventGenerator();
   // Drag from the splitview divider's non-resizable area with larger than
   // |kSwipingDistanceForGoingBack| distance should trigger back gesture. The
@@ -389,10 +389,10 @@ TEST_F(BackGestureEventHandlerTest, DragFromSplitViewDivider) {
   split_view_controller->EndSplitView();
 }
 
-// Tests that in different screen orientations should always activate the
-// snapped window in splitview that is underneath the finger. And should be the
-// snapped window that is underneath to go back to the previous page.
-TEST_F(BackGestureEventHandlerTest, BackInSplitViewMode) {
+// Tests that back gesture should always activate the snapped window in split
+// view that is underneath the finger in different screen orientations. And that
+// the snapped window that is underneath should go back to the previous page.
+TEST_F(BackGestureEventHandlerTest, BackGestureInSplitViewMode) {
   int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   display::test::ScopedSetInternalDisplayId set_internal(display_manager,
@@ -436,7 +436,7 @@ TEST_F(BackGestureEventHandlerTest, BackInSplitViewMode) {
 
   gfx::Rect divider_bounds =
       split_view_controller->split_view_divider()->GetDividerBoundsInScreen(
-          false);
+          /*is_dragging=*/false);
   start = gfx::Point(divider_bounds.x(), 10);
   update_and_end =
       gfx::Point(divider_bounds.x() + kSwipingDistanceForGoingBack + 10, 10);
@@ -663,8 +663,8 @@ TEST_F(BackGestureEventHandlerTest, BackGestureWithCrosKeyboardTest) {
   EXPECT_EQ(1, target_back_release.accelerator_count());
 }
 
-// Tests when back performs on the split view divider bar inside or outside of
-// virtual keyboard.
+// Tests that the back gesture works properly on the split view divider bar both
+// inside and outside of cros virtual keyboard.
 TEST_F(BackGestureEventHandlerTest,
        BackGestureWithCrosKeyboardInSplitViewTest) {
   ui::TestAcceleratorTarget target_back_press, target_back_release;
@@ -695,11 +695,13 @@ TEST_F(BackGestureEventHandlerTest,
   EXPECT_TRUE(keyboard_ui_controller->IsKeyboardVisible());
   gfx::Rect keyboard_bounds = keyboard_ui_controller->GetVisualBoundsInScreen();
 
-  // Start drag from splitview divider bar position outside VK bounds.
+  // Start dragging from a position that is right outside the divider bar bounds
+  // and outside the VK bounds.
   gfx::Rect divider_bounds =
       split_view_controller->split_view_divider()->GetDividerBoundsInScreen(
           false);
   gfx::Point start = gfx::Point(divider_bounds.CenterPoint().x(), 10);
+  EXPECT_FALSE(keyboard_bounds.Contains(start));
   gfx::Point end =
       gfx::Point(start.x() + kSwipingDistanceForGoingBack + 10, start.y());
   GetEventGenerator()->GestureScrollSequence(start, end,
@@ -711,11 +713,13 @@ TEST_F(BackGestureEventHandlerTest,
   EXPECT_EQ(0, target_back_press.accelerator_count());
   EXPECT_EQ(0, target_back_release.accelerator_count());
 
-  // Start drag from splitview divider bar position inside VK bounds.
+  // Start dragging from the split view divider bar position that is inside the
+  // VK bounds.
   keyboard_controller->ShowKeyboard();
   EXPECT_TRUE(keyboard_controller->IsKeyboardVisible());
   start = gfx::Point(divider_bounds.CenterPoint().x(),
                      keyboard_bounds.CenterPoint().y());
+  EXPECT_TRUE(keyboard_bounds.Contains(start));
   end = gfx::Point(start.x() + kSwipingDistanceForGoingBack + 10, start.y());
   GetEventGenerator()->GestureScrollSequence(start, end,
                                              base::Milliseconds(100), 3);
@@ -753,8 +757,8 @@ TEST_F(BackGestureEventHandlerTest, BackGestureWithAndroidKeyboardTest) {
   EXPECT_FALSE(window_state->IsMinimized());
 }
 
-// Tests when back performs on the split view divider bar inside or outside of
-// android virtual keyboard.
+// Tests that the back gesture works properly on the split view divider bar both
+// inside and outside of Android virtual keyboard.
 TEST_F(BackGestureEventHandlerTest,
        BackGestureWithAndroidKeyboardInSplitViewTest) {
   UpdateDisplay("800x600");
@@ -784,11 +788,13 @@ TEST_F(BackGestureEventHandlerTest,
   keyboard->OnArcInputMethodBoundsChanged(keyboard_bounds);
   EXPECT_TRUE(keyboard->arc_keyboard_visible());
 
-  // Start drag from splitview divider bar position outside VK bounds.
+  // Start dragging from the split view divider bar position that is outside the
+  // VK bounds.
   gfx::Rect divider_bounds =
       split_view_controller->split_view_divider()->GetDividerBoundsInScreen(
           false);
   gfx::Point start = gfx::Point(divider_bounds.CenterPoint().x(), 10);
+  EXPECT_FALSE(keyboard_bounds.Contains(start));
   gfx::Point end =
       gfx::Point(start.x() + kSwipingDistanceForGoingBack + 10, start.y());
   GetEventGenerator()->GestureScrollSequence(start, end,
@@ -802,13 +808,15 @@ TEST_F(BackGestureEventHandlerTest,
   EXPECT_EQ(SplitViewController::State::kBothSnapped,
             split_view_controller->state());
 
-  // Start drag from splitview divider bar position inside VK bounds.
+  // Start dragging from the split view divider bar position that is inside the
+  // VK bounds.
   target_back_press.ResetCounts();
   target_back_release.ResetCounts();
   keyboard->OnArcInputMethodBoundsChanged(keyboard_bounds);
   EXPECT_TRUE(keyboard->arc_keyboard_visible());
   start = gfx::Point(divider_bounds.CenterPoint().x(),
                      keyboard_bounds.CenterPoint().y());
+  EXPECT_TRUE(keyboard_bounds.Contains(start));
   end = gfx::Point(start.x() + kSwipingDistanceForGoingBack + 10, start.y());
   GetEventGenerator()->GestureScrollSequence(start, end,
                                              base::Milliseconds(100), 3);

@@ -24,7 +24,6 @@ class SnapGroup : public aura::WindowObserver {
 
   // aura::WindowObserver:
   // TODO: Implement `OnWindowParentChanged`.
-  void OnWindowStackingChanged(aura::Window* window) override;
   void OnWindowDestroying(aura::Window* window) override;
 
   aura::Window* window1() const { return window1_; }

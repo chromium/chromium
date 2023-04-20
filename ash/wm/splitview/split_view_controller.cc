@@ -1622,7 +1622,7 @@ void SplitViewController::OnWindowDragStarted(aura::Window* dragged_window) {
   }
 
   if (split_view_divider_) {
-    split_view_divider_->OnWindowDragStarted();
+    split_view_divider_->OnWindowDragStarted(dragged_window);
   }
 }
 
@@ -2350,7 +2350,6 @@ void SplitViewController::CreateSplitViewDividerInClamshell() {
   split_view_divider_ = std::make_unique<SplitViewDivider>(this);
   UpdateSnappedWindowsAndDividerBounds();
   NotifyDividerPositionChanged();
-  split_view_divider_->StackOnTopOfTheObservedWindows();
 }
 
 void SplitViewController::UpdateBlackScrim(
@@ -2649,10 +2648,6 @@ void SplitViewController::OnWindowSnapped(
                                                         secondary_window_));
   }
 
-  // The order here matters as we needs to update the stack of
-  // `split_view_divider_` after been created.
-  UpdateWindowStackingAfterSnap(window);
-
   // If the snapped window was removed from overview and was the active window
   // before entering overview, it should be the active window after snapping in
   // splitview.
@@ -2874,27 +2869,6 @@ void SplitViewController::RestoreTransformIfApplicable(aura::Window* window) {
         gfx::RectF(snapped_bounds), gfx::RectF(item_bounds));
     SetTransformWithAnimation(window, starting_transform, gfx::Transform());
   }
-}
-
-void SplitViewController::UpdateWindowStackingAfterSnap(
-    aura::Window* newly_snapped) {
-  if (split_view_divider_) {
-    if (IsInTabletMode()) {
-      split_view_divider_->SetAlwaysOnTop(true);
-    } else {
-      split_view_divider_->StackOnTopOfTheObservedWindows();
-    }
-  }
-
-  aura::Window* other_snapped =
-      newly_snapped == primary_window_ ? secondary_window_ : primary_window_;
-  if (other_snapped) {
-    DCHECK(newly_snapped == primary_window_ ||
-           newly_snapped == secondary_window_);
-    other_snapped->parent()->StackChildAtTop(other_snapped);
-  }
-
-  newly_snapped->parent()->StackChildAtTop(newly_snapped);
 }
 
 void SplitViewController::SetWindowsTransformDuringResizing() {

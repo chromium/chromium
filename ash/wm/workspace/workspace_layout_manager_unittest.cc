@@ -2162,7 +2162,7 @@ TEST_F(WorkspaceLayoutManagerKeyboardTest,
 }
 
 // Test that backdrop works in split view mode.
-TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitScreenTest) {
+TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   SetTabletModeEnabled(true);
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
@@ -2189,15 +2189,17 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitScreenTest) {
   // Test that backdrop window is visible and is the second child in the
   // container. Its bounds should be the same as the container bounds.
   EXPECT_EQ(2U, default_container()->children().size());
-  for (auto* child : default_container()->children())
+  for (auto* child : default_container()->children()) {
     EXPECT_TRUE(child->IsVisible());
+  }
+
   EXPECT_EQ(window1.get(), default_container()->children()[1]);
   EXPECT_EQ(default_container()->bounds(),
             default_container()->children()[0]->bounds());
 
   // Snap the window to left. Test that the backdrop window is still visible
-  // and is the second child in the container. Its bounds should be the same
-  // as the snapped window's bounds.
+  // and is the third child (split view divider as one of the children) in the
+  // container. Its bounds should be the same as the snapped window's bounds.
   split_view_controller()->SnapWindow(
       window1.get(), SplitViewController::SnapPosition::kPrimary);
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
@@ -2214,7 +2216,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitScreenTest) {
                                                        ->GetNativeWindow();
                                 }),
                  children.end());
-  EXPECT_EQ(2U, children.size());
+  EXPECT_EQ(3U, children.size());
 
   // Backdrop is hidden in overview mode. So test the window and backdrop
   // separately.
@@ -2224,15 +2226,17 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitScreenTest) {
   EXPECT_EQ(window1->bounds(), children[0]->bounds());
 
   // Now snap another window to right. Test that the backdrop window is still
-  // visible but is now the third window in the container. Its bounds should
+  // visible but is now the fourth window in the container. Its bounds should
   // still be the same as the container bounds.
   std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
   split_view_controller()->SnapWindow(
       window2.get(), SplitViewController::SnapPosition::kSecondary);
 
-  EXPECT_EQ(3U, default_container()->children().size());
-  for (auto* child : default_container()->children())
+  EXPECT_EQ(4U, default_container()->children().size());
+  for (auto* child : default_container()->children()) {
     EXPECT_TRUE(child->IsVisible());
+  }
+
   EXPECT_EQ(window1.get(), default_container()->children()[1]);
   EXPECT_EQ(window2.get(), default_container()->children()[2]);
   EXPECT_EQ(default_container()->bounds(),

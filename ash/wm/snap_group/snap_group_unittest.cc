@@ -598,7 +598,6 @@ TEST_F(SnapGroupEntryPointArm1Test, SplitViewDividerStackingOrderTest) {
   std::unique_ptr<aura::Window> w1(CreateTestWindow());
   std::unique_ptr<aura::Window> w2(CreateTestWindow());
   SnapTwoTestWindowsInArm1(w1.get(), w2.get());
-
   wm::ActivateWindow(w1.get());
 
   SplitViewDivider* divider = split_view_divider();
@@ -657,10 +656,12 @@ TEST_F(SnapGroupEntryPointArm1Test, SplitViewDividerEnlargedHitArea) {
   auto* event_generator = GetEventGenerator();
   gfx::Point hover_location =
       cached_divider_center_point -
-      gfx::Vector2d(kSplitViewDividerExtraInset.width(), 0);
+      gfx::Vector2d(kSplitviewDividerShortSideLength / 2 +
+                        kSplitViewDividerExtraInset / 2,
+                    0);
   event_generator->MoveMouseTo(hover_location);
   event_generator->PressLeftButton();
-  const auto move_vector = -gfx::Vector2d(20, 0);
+  const auto move_vector = -gfx::Vector2d(50, 0);
   event_generator->MoveMouseTo(hover_location + move_vector);
   event_generator->ReleaseLeftButton();
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());

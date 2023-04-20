@@ -5,32 +5,19 @@
 #include "ash/wm/snap_group/snap_group.h"
 
 #include "ash/shell.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
-#include "ash/wm/splitview/split_view_controller.h"
-#include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "chromeos/ui/base/display_util.h"
-#include "ui/wm/public/activation_client.h"
 
 namespace ash {
 
 namespace {
 
 using ::chromeos::WindowStateType;
-
-bool IsStackedBelow(aura::Window* win1, aura::Window* win2) {
-  CHECK_NE(win1, win2);
-  CHECK_EQ(win1->parent(), win2->parent());
-
-  const auto& children = win1->parent()->children();
-  auto win1_iter = base::ranges::find(children, win1);
-  auto win2_iter = base::ranges::find(children, win2);
-  CHECK(win1_iter != children.end());
-  CHECK(win2_iter != children.end());
-  return win1_iter < win2_iter;
-}
 
 }  // namespace
 
@@ -46,30 +33,6 @@ SnapGroup::SnapGroup(aura::Window* window1, aura::Window* window2)
 
 SnapGroup::~SnapGroup() {
   StopObservingWindows();
-}
-
-void SnapGroup::OnWindowStackingChanged(aura::Window* window) {
-  // Update the stacking order of the other window in the snap group so that the
-  // two windows are always placed on top, both of which will be stacked below
-  // the `split_view_divider` if applicable afterwards.
-  aura::Window* top_window =
-      IsStackedBelow(window1_, window2_) ? window2_ : window1_;
-  aura::Window* target_window = top_window == window1_ ? window2_ : window1_;
-  auto* parent_container = target_window->parent();
-  parent_container->StackChildBelow(target_window, top_window);
-
-    // Update the stacking order of the `split_view_divider` to be on top of the
-    // `top_window` which makes the overall stacking order become
-    // `divider_widget->GetNativeWindow()` --> `top_window` --> `target_window`.
-    aura::Window* root_window = window1_->GetRootWindow();
-    auto* split_view_controller = SplitViewController::Get(root_window);
-    DCHECK(split_view_controller);
-    auto* split_view_divider = split_view_controller->split_view_divider();
-    DCHECK(split_view_divider);
-    auto* divider_widget = split_view_divider->divider_widget();
-    DCHECK(divider_widget);
-    parent_container->StackChildAbove(divider_widget->GetNativeWindow(),
-                                      top_window);
 }
 
 void SnapGroup::OnWindowDestroying(aura::Window* window) {
