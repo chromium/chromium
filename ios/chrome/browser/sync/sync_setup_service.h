@@ -83,6 +83,8 @@ class SyncSetupService : public KeyedService {
   // Returns false if it is either finished or not started.
   // This method is guaranteed not to start the sync backend so it can be
   // called at start-up.
+  // DEPRECATED: do not use, will be removed once the internal repository
+  // has been fixed to not use this method.
   virtual bool IsInitialSetupOngoing();
 
   // Pauses sync allowing the user to configure what data to sync before
@@ -97,7 +99,7 @@ class SyncSetupService : public KeyedService {
       syncer::SyncFirstSetupCompleteSource source);
 
   // Returns true if the user finished the Sync setup flow.
-  bool IsFirstSetupComplete() const;
+  virtual bool IsFirstSetupComplete() const;
 
   // Commits all the pending configuration changes to Sync.
   void CommitSyncChanges();
