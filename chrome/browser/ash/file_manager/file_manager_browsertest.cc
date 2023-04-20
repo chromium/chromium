@@ -2281,7 +2281,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableTrash(),
         TestCase("trashEnsureOldEntriesArePeriodicallyRemoved").EnableTrash(),
         TestCase("trashDragDropOutOfTrashPerformsRestoration").EnableTrash(),
-        TestCase("trashCopyShouldBeDisabledCutShouldBeEnabled").EnableTrash(),
         TestCase("trashRestorationDialogInProgressDoesntShowUndo")
             .EnableTrash(),
         TestCase("trashTogglingTrashEnabledNavigatesAwayFromTrashRoot")
@@ -2292,7 +2291,14 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase(
             "trashPressingEnterOnFileInTrashRootShowsDialogWithRestoreButton")
             .EnableTrash(),
-        TestCase("trashCantRenameFilesInTrashRoot").EnableTrash(),
+        TestCase("trashInfeasibleActionsForFileDisabledAndHiddenInTrashRoot")
+            .EnableTrash(),
+        TestCase("trashInfeasibleActionsForFolderDisabledAndHiddenInTrashRoot")
+            .EnableTrash(),
+        TestCase("trashExtractAllForZipHiddenAndDisabledInTrashRoot")
+            .EnableTrash(),
+        TestCase("trashAllActionsDisabledForBlankSpaceInTrashRoot")
+            .EnableTrash(),
         TestCase("trashNudgeShownOnFirstTrashOperation").EnableTrash(),
         TestCase("trashStaleTrashInfoFilesAreRemovedAfterOneHour")
             .EnableTrash()));

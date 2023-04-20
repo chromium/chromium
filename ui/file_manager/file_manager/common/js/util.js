@@ -404,13 +404,21 @@ util.isComputersEntry = entry => {
 };
 
 /**
+ * Returns true if the given root type is Trash.
+ * @param {VolumeManagerCommon.RootType|null} rootType
+ * @returns {boolean}
+ */
+util.isTrashRootType = rootType => {
+  return rootType == VolumeManagerCommon.RootType.TRASH;
+};
+
+/**
  * Returns true if the given entry is the root folder of Trash.
  * @param {!Entry|!FilesAppEntry} entry Entry or a fake entry.
  * @returns {boolean}
  */
 util.isTrashRoot = entry => {
-  return entry.fullPath === '/' &&
-      entry.rootType == VolumeManagerCommon.RootType.TRASH;
+  return entry.fullPath === '/' && util.isTrashRootType(entry.rootType);
 };
 
 /**
@@ -419,8 +427,7 @@ util.isTrashRoot = entry => {
  * @returns {boolean}
  */
 util.isTrashEntry = entry => {
-  return entry.fullPath !== '/' &&
-      entry.rootType == VolumeManagerCommon.RootType.TRASH;
+  return entry.fullPath !== '/' && util.isTrashRootType(entry.rootType);
 };
 
 
