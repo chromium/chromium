@@ -15,6 +15,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/rounded_container.h"
+#include "ash/style/typography.h"
 #include "ash/system/audio/mic_gain_slider_controller.h"
 #include "ash/system/audio/mic_gain_slider_view.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
@@ -31,6 +32,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
 #include "components/vector_icons/vector_icons.h"
@@ -224,10 +226,13 @@ void AudioDetailedView::AddAudioSubHeader(views::View* container,
 
   auto* sub_header_label_ = TrayPopupUtils::CreateDefaultLabel();
   sub_header_label_->SetText(l10n_util::GetStringUTF16(text_id));
-  sub_header_label_->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
-  // TODO(b/262281693): Update the font for `sub_header_label_`.
+  sub_header_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
   TrayPopupUtils::SetLabelFontList(sub_header_label_,
                                    TrayPopupUtils::FontStyle::kSubHeader);
+  if (chromeos::features::IsJellyEnabled()) {
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
+                                          *sub_header_label_);
+  }
   sub_header_label_->SetBorder(views::CreateEmptyBorder(kTextRowInsets));
   container->AddChildView(sub_header_label_);
   return;
@@ -246,7 +251,7 @@ views::View* AudioDetailedView::AddDeviceSlider(
   // TODO(b/262281693): Update the font for `device_name_container` text label.
   device_name_container->text_label()->SetEnabledColorId(
       device.active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                    : cros_tokens::kCrosSysSecondary);
+                    : cros_tokens::kCrosSysOnSurfaceVariant);
   device_name_container->SetPaintToLayer();
   // If this device is the active one, disables event handling on
   // `device_name_container` so that `slider` can handle the events.
@@ -338,6 +343,8 @@ void AudioDetailedView::CreateLiveCaptionView() {
   live_caption_view_->AddViewAndLabel(
       std::move(toggle_icon),
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LIVE_CAPTION));
+  live_caption_view_->text_label()->SetEnabledColorId(
+      cros_tokens::kCrosSysOnSurface);
 
   // Creates a toggle button on the right.
   auto toggle = std::make_unique<Switch>(base::BindRepeating(
@@ -431,6 +438,13 @@ AudioDetailedView::CreateQsNoiseCancellationToggleRow(
       std::move(toggle_icon),
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_AUDIO_INPUT_NOISE_CANCELLATION));
+  if (chromeos::features::IsJellyEnabled()) {
+    views::Label* noise_cancellation_label =
+        noise_cancellation_view->text_label();
+    noise_cancellation_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                          *noise_cancellation_label);
+  }
 
   // Create a non-clickable non-focusable toggle button on the right. The events
   // and focus behavior should be handled by `noise_cancellation_view_` instead.

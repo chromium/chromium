@@ -206,7 +206,7 @@ void MicGainSliderView::Update(bool by_user) {
     slider_icon()->SetImage(ui::ImageModel::FromVectorIcon(
         is_muted ? kMutedMicrophoneIcon : kImeMenuMicrophoneIcon,
         is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                  : cros_tokens::kCrosSysSecondary,
+                  : cros_tokens::kCrosSysOnSurfaceVariant,
         kQsSliderIconSize));
   }
 

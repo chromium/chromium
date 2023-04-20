@@ -13,6 +13,7 @@
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/typography.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/system_menu_button.h"
@@ -23,6 +24,7 @@
 #include "base/containers/adapters.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -707,8 +709,15 @@ void TrayDetailedView::OnThemeChanged() {
   views::View::OnThemeChanged();
   auto* color_provider = AshColorProvider::Get();
   if (title_label_) {
-    title_label_->SetEnabledColor(color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    title_label_->SetEnabledColor(
+        features::IsQsRevampEnabled()
+            ? GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface)
+            : color_provider->GetContentLayerColor(
+                  AshColorProvider::ContentLayerType::kTextColorPrimary));
+    if (chromeos::features::IsJellyEnabled()) {
+      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
+                                            *title_label_);
+    }
   }
   if (sub_header_label_) {
     sub_header_label_->SetEnabledColor(color_provider->GetContentLayerColor(

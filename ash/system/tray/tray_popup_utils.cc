@@ -21,9 +21,11 @@
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/tray/unfocusable_label.h"
 #include "base/functional/bind.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
@@ -297,7 +299,14 @@ void TrayPopupUtils::InitializeAsCheckableRow(HoverHighlightView* container,
                                               bool enterprise_managed) {
   const int dip_size = GetDefaultSizeOfVectorIcon(kCheckCircleIcon);
   ui::ImageModel check_mark = ui::ImageModel::FromVectorIcon(
-      kHollowCheckCircleIcon, kColorAshIconColorProminent, dip_size);
+      kHollowCheckCircleIcon,
+      // The mapping of `cros_tokens::kCrosSysSystemOnPrimaryContainer` cannot
+      // accommodate `check_mark` and other components, so we still want to
+      // guard with Jelly flag here.
+      chromeos::features::IsJellyEnabled()
+          ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+          : static_cast<ui::ColorId>(kColorAshIconColorProminent),
+      dip_size);
   if (enterprise_managed) {
     ui::ImageModel enterprise_managed_icon = ui::ImageModel::FromVectorIcon(
         chromeos::kEnterpriseIcon, kColorAshIconColorBlocked, dip_size);

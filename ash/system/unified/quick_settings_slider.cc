@@ -121,7 +121,7 @@ SkColor QuickSettingsSlider::GetThumbColor() const {
           cros_tokens::kCrosSysSystemPrimaryContainer));
     case Style::kRadioInactive:
       return GetColorProvider()->GetColor(
-          static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemOnBase));
+          static_cast<ui::ColorId>(cros_tokens::kCrosSysDisabledContainer));
     default:
       NOTREACHED();
   }
@@ -142,7 +142,7 @@ SkColor QuickSettingsSlider::GetTroughColor() const {
           static_cast<ui::ColorId>(cros_tokens::kCrosSysHighlightShape));
     case Style::kRadioInactive:
       return GetColorProvider()->GetColor(
-          static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemOnBase));
+          static_cast<ui::ColorId>(cros_tokens::kCrosSysDisabledContainer));
     default:
       NOTREACHED();
   }
@@ -203,7 +203,7 @@ void QuickSettingsSlider::OnPaint(gfx::Canvas* canvas) {
   if (HasFocus()) {
     cc::PaintFlags highlight_border;
     highlight_border.setColor(GetColorProvider()->GetColor(
-        static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing)));
+        static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimary)));
     highlight_border.setAntiAlias(true);
     highlight_border.setStyle(cc::PaintFlags::kStroke_Style);
     highlight_border.setStrokeWidth(kLineThickness);
