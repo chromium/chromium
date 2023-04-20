@@ -408,6 +408,7 @@ Polymer({
       // `cros_styles.css` with `theme/colors.css` directly in `index.html`.
       document.querySelector('link[href*=\'cros_styles.css\']')
           ?.setAttribute('href', 'chrome://theme/colors.css?sets=legacy,sys');
+      document.body.classList.add('jelly-enabled');
       startColorChangeUpdater();
     }
   },

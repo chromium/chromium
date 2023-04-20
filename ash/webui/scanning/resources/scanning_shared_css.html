@@ -1,5 +1,5 @@
 <template>
-  <style include="cr-shared-style md-select scanning-fonts">
+  <style include="cr-shared-style md-select scanning-fonts cros-color-overrides">
     :host {
       --scanning-progress-bar: var(--google-blue-600);
       --scanning-progress-bar-track: rgba(
@@ -8,6 +8,20 @@
       --scanning-scrollbar-rgb: var(--google-grey-600-rgb);
       --scanning-scrollbar: rgba(var(--scanning-scrollbar-rgb), 0.38);
       --scanning-scrollbar-thumb: rgb(var(--scanning-scrollbar-rgb))
+    }
+
+    :host-context(body.jelly-enabled) {
+      --scanning-progress-bar: var(--cros-sys-progress);
+      --scanning-progress-bar-track:  var(--cros-sys-progress_container);
+      --scanning-scrollbar-rgb: var(--google-grey-600-rgb);
+      --scanning-scrollbar: var(--cros-sys-scrollbar);
+      --scanning-scrollbar-thumb: var(--cros-sys-on_secondary);
+    }
+
+    :host-context(body.jelly-enabled) select.md-select {
+      --md-select-bg-color: var(--cros-sys-app_base_shaded);
+      --md-select-focus-shadow-color: var(--cros-sys-focus_ring);
+      --md-select-option-bg-color: var(--cros-sys-app_base_shaded);
     }
 
     paper-progress {
@@ -125,7 +139,7 @@
     }
 
     @media (prefers-color-scheme: dark) {
-      :host {
+      :host-context(body:not(.jelly-enabled)) {
         --scanning-progress-bar: var(--google-blue-300);
         --scanning-progress-bar-track: rgba(
             var(--google-blue-300-rgb),

@@ -1,7 +1,25 @@
 <style include="scanning-shared scanning-fonts">
   :host {
     --preview-border-width: 2px;
-    --image-focus-shadow: rgba(var(--google-blue-600-rgb), .4) 0 0 0 var(--preview-border-width);
+    --image-focus-shadow:
+        rgba(var(--google-blue-600-rgb), .4) 0 0 0 var(--preview-border-width);
+    --scanned-image-shadow:
+        rgba(var(--google-grey-200-rgb), .3) 0 4px 4px 0,
+        rgba(var(--google-grey-900-rgb), .15) 0 8px 12px 1px;
+  }
+
+  :host-context(body.jelly-enabled) {
+    --image-focus-shadow: var(--cros-sys-primary) 0 0 0 var(--preview-border-width);
+    --scanned-image-shadow: 0 4px 4px 0 var(--cros-shadow-color-key),
+                            0 8px 12px 1px var(--cros-shadow-color-ambient);
+  }
+
+  :host-context(body.jelly-enabled) #helpOrProgress {
+    background-color: var(--cros-sys-app_base);
+  }
+
+  :host-context(body.jelly-enabled) .preview:focus {
+    box-shadow: 0 0 0 var(--preview-border-width) var(--cros-button-active-shadow-color-key-primary);
   }
 
   #helpDiv {
@@ -72,8 +90,7 @@
   }
 
   .scanned-image {
-    box-shadow: rgba(var(--google-grey-200-rgb), .3) 0 4px 4px 0,
-                rgba(var(--google-grey-900-rgb), .15) 0 8px 12px 1px;
+    box-shadow: var(--scanned-image-shadowed)
     margin-bottom: var(--scanned-image-margin-bottom);
     margin-inline-start: 12px;
     width: calc(100% - 24px);
