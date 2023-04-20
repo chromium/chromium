@@ -81,8 +81,9 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
 
         mReauthenticationHelper = new PasswordAccessReauthenticationHelper(
                 mFragmentView.getActivity(), mFragmentView.getParentFragmentManager());
+        // TODO(crbug.com/1434876): Clean up the ReauthenticatorBridge usage.
         mReauthenticatorBridge =
-                new ReauthenticatorBridge(DeviceAuthRequester.PASSWORD_CHECK_AUTO_PWD_CHANGE);
+                ReauthenticatorBridge.create(DeviceAuthRequester.PASSWORD_CHECK_AUTO_PWD_CHANGE);
 
         PasswordCheckChangePasswordHelper changePasswordHelper =
                 new PasswordCheckChangePasswordHelper(mFragmentView.getActivity(),

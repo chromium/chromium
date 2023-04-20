@@ -38,7 +38,7 @@ public class IncognitoReauthManager {
     }
 
     public IncognitoReauthManager() {
-        this(new ReauthenticatorBridge(DeviceAuthRequester.INCOGNITO_REAUTH_PAGE));
+        this(ReauthenticatorBridge.create(DeviceAuthRequester.INCOGNITO_REAUTH_PAGE));
     }
 
     public IncognitoReauthManager(ReauthenticatorBridge reauthenticatorBridge) {

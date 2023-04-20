@@ -72,6 +72,7 @@ bool isAndroidPasswordManagerRequester(
     case device_reauth::DeviceAuthRequester::kPasswordsInSettings:
     case device_reauth::DeviceAuthRequester::kLocalCardAutofill:
     case device_reauth::DeviceAuthRequester::kDeviceLockPage:
+    case device_reauth::DeviceAuthRequester::kPaymentMethodsReauthInSettings:
       return false;
   }
 }

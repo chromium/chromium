@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.device_reauth;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -13,16 +15,18 @@ import org.chromium.base.annotations.NativeMethods;
  * It forwards messages to and from its C++ counterpart and owns it.
  */
 public class ReauthenticatorBridge {
+    private static ReauthenticatorBridge sReauthenticatorBridgeForTesting;
+
     private long mNativeReauthenticatorBridge;
     private Callback<Boolean> mAuthResultCallback;
 
-    public ReauthenticatorBridge(@DeviceAuthRequester int requester) {
+    private ReauthenticatorBridge(@DeviceAuthRequester int requester) {
         mNativeReauthenticatorBridge = ReauthenticatorBridgeJni.get().create(this, requester);
     }
 
     /**
-     * Checks if authentication can be used. Note. Check is specific to the biometric
-     * authentication.
+     * Checks if authentication can be used. Note that whether check is specific to biometric
+     * authentication or biometric + screen lock is based on DeviceAuthRequester.
      *
      * @return Whether authentication can be used.
      */
@@ -42,6 +46,23 @@ public class ReauthenticatorBridge {
         mAuthResultCallback = callback;
         ReauthenticatorBridgeJni.get().reauthenticate(
                 mNativeReauthenticatorBridge, useLastValidAuth);
+    }
+
+    /**
+     * Create an instance of {@link ReauthenticatorBridge} based on the provided
+     * {@link DeviceAuthRequester}.
+     * */
+    public static ReauthenticatorBridge create(@DeviceAuthRequester int requester) {
+        if (sReauthenticatorBridgeForTesting != null) {
+            return sReauthenticatorBridgeForTesting;
+        }
+        return new ReauthenticatorBridge(requester);
+    }
+
+    /** For testing only. */
+    @VisibleForTesting
+    public static void setInstanceForTesting(ReauthenticatorBridge instance) {
+        sReauthenticatorBridgeForTesting = instance;
     }
 
     @CalledByNative

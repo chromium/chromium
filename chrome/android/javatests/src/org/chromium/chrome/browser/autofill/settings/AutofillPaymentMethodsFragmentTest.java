@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.Mockito.when;
+
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.test.filters.MediumTest;
@@ -18,10 +20,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -50,9 +57,14 @@ public class AutofillPaymentMethodsFragmentTest {
     @Rule
     public final AutofillTestRule rule = new AutofillTestRule();
     @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule
     public final SettingsActivityTestRule<AutofillPaymentMethodsFragment>
             mSettingsActivityTestRule =
                     new SettingsActivityTestRule<>(AutofillPaymentMethodsFragment.class);
+
+    @Mock
+    private ReauthenticatorBridge mReauthenticatorMock;
 
     // Card Issuer values that map to the browser CreditCard.Issuer enum.
     private static final int CARD_ISSUER_UNKNOWN = 0;
@@ -106,11 +118,13 @@ public class AutofillPaymentMethodsFragmentTest {
     @Before
     public void setUp() {
         mAutofillTestHelper = new AutofillTestHelper();
+        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
     }
 
     @After
     public void tearDown() throws TimeoutException {
         mAutofillTestHelper.clearAllDataForTesting();
+        ReauthenticatorBridge.setInstanceForTesting(null);
     }
 
     @Test
@@ -273,6 +287,9 @@ public class AutofillPaymentMethodsFragmentTest {
     // Use the policy to simulate AutofillCreditCard is disabled.
     @Policies.Add({ @Policies.Item(key = "AutofillCreditCardEnabled", string = "false") })
     public void testMandatoryReauthToggle_notShownWhenAutofillDisabled() throws Exception {
+        // Simulate the user can authenticate with biometric.
+        when(mReauthenticatorMock.canUseAuthentication()).thenReturn(true);
+
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         // Verify that Reauth toggle is not shown when Autofill toggle is disabled. The preferences
@@ -284,12 +301,28 @@ public class AutofillPaymentMethodsFragmentTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
+    public void testMandatoryReauthToggle_notShownWhenBiometricIsDisabled() throws Exception {
+        // Simulate the user can't authenticate with biometric.
+        when(mReauthenticatorMock.canUseAuthentication()).thenReturn(false);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the preferences on the initial screen map are Save and Fill toggle + Add Card
+        // button + Payment Apps.
+        Assert.assertEquals(3, getPreferenceScreen(activity).getPreferenceCount());
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
     public void testMandatoryReauthToggle_displayToggle() throws Exception {
         // Simulate the pref was enabled previously, to ensure the toggle value is set
         // correspondingly.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
         });
+        // Simulate the user can authenticate with biometric, so that Reauth toggle can be shown.
+        when(mReauthenticatorMock.canUseAuthentication()).thenReturn(true);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -312,6 +345,8 @@ public class AutofillPaymentMethodsFragmentTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, false);
         });
+        // Simulate the user can authenticate with biometric, so that Reauth toggle can be shown.
+        when(mReauthenticatorMock.canUseAuthentication()).thenReturn(true);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 

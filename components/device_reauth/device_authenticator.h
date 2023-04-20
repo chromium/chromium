@@ -56,7 +56,12 @@ enum class DeviceAuthRequester {
   // or create one if none exist.
   kDeviceLockPage = 9,
 
-  kMaxValue = kDeviceLockPage,
+  // The prompt displayed when user is trying to enable/disable payment method
+  // mandatory reauth toggle or edit local card when reauth is enabled in
+  // Settings page on Android.
+  kPaymentMethodsReauthInSettings = 10,
+
+  kMaxValue = kPaymentMethodsReauthInSettings,
 };
 
 // This interface encapsulates operations related to biometric authentication.
