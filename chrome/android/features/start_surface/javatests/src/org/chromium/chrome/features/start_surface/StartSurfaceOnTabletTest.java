@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.features.start_surface;
 
-import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.INSTANT_START_TEST_BASE_PARAMS;
+import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_ON_TABLET_TEST_PARAMS;
 
 import android.text.TextUtils;
 
@@ -55,7 +55,7 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
     @DisableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
     public void testStartSurfaceOnTabletDisabled() throws IOException {
         StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
@@ -69,7 +69,7 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
     public void testStartSurfaceOnTablet() throws IOException {
         StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
@@ -83,7 +83,7 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
     @DisabledTest(message = "https://crbug.com/1431467")
     public void testStartSurfaceOnTabletWithNtpExist() throws IOException {
         // The existing NTP isn't the last active Tab.
@@ -103,7 +103,7 @@ public class StartSurfaceOnTabletTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
     public void testStartSurfaceOnTabletWithActiveNtpExist() throws IOException {
         // The existing NTP is set as the last active Tab.
         String modifiedNtpUrl = UrlConstants.NTP_URL + "/1";

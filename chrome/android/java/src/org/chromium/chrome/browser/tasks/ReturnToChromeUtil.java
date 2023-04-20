@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tasks;
 
-import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +29,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -170,17 +169,13 @@ public final class ReturnToChromeUtil {
      *
      * @param lastTimeMillis The last time the application was backgrounded or foreground, depends
      *                       on which time is the max. Set in ChromeTabbedActivity::onStopWithNative
+     * @param isTablet Whether the activity is running in tablet mode.
      * @return true if past threshold, false if not past threshold or experiment cannot be loaded.
      */
-    public static boolean shouldShowTabSwitcher(final long lastTimeMillis) {
-        long tabSwitcherAfterMillis =
-                StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.getValue()
-                * DateUtils.SECOND_IN_MILLIS;
-        if (ChromeFeatureList.sStartSurfaceReturnTime.isEnabled()
-                && StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.getValue() != 0
-                && StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_USE_MODEL.getValue()) {
-            tabSwitcherAfterMillis = getReturnTimeFromSegmentation();
-        }
+    public static boolean shouldShowTabSwitcher(final long lastTimeMillis, boolean isTablet) {
+        long tabSwitcherAfterMillis = getReturnTime(isTablet
+                        ? StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS
+                        : StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS);
 
         if (lastTimeMillis == -1) {
             // No last background timestamp set, use control behavior unless "immediate" was set.
@@ -196,6 +191,19 @@ public final class ReturnToChromeUtil {
     }
 
     /**
+     * Gets the return time interval. The return time is in the unit of milliseconds.
+     * @param returnTime The return time parameter based on form factor, either phones or tablets.
+     */
+    private static long getReturnTime(IntCachedFieldTrialParameter returnTime) {
+        if (ChromeFeatureList.sStartSurfaceReturnTime.isEnabled() && returnTime.getValue() != 0
+                && StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_USE_MODEL.getValue()) {
+            return getReturnTimeFromSegmentation(returnTime);
+        }
+
+        return returnTime.getValue() * DateUtils.SECOND_IN_MILLIS;
+    }
+
+    /**
      * Gets the cached return time obtained from the segmentation platform service.
      * Note: this function should NOT been called on tablets! The default value for tablets is -1
      * which means not showing.
@@ -203,11 +211,11 @@ public final class ReturnToChromeUtil {
      *         0 means showing immediately. The return time is in the unit of milliseconds.
      */
     @VisibleForTesting
-    public static long getReturnTimeFromSegmentation() {
+    public static long getReturnTimeFromSegmentation(IntCachedFieldTrialParameter returnTime) {
         // Sets the default value as 8 hours; 0 means showing immediately.
         return SharedPreferencesManager.getInstance().readLong(
                 ChromePreferenceKeys.START_RETURN_TIME_SEGMENTATION_RESULT_MS,
-                START_SURFACE_RETURN_TIME_SECONDS.getDefaultValue());
+                returnTime.getDefaultValue());
     }
 
     /**
@@ -494,7 +502,7 @@ public final class ReturnToChromeUtil {
         long lastBackgroundTimeMs = inactivityTracker.getLastBackgroundedTimeMs();
         return IntentUtils.isMainIntentFromLauncher(intent)
                 && ReturnToChromeUtil.shouldShowTabSwitcher(
-                        Math.max(lastBackgroundTimeMs, lastVisibleTimeMs));
+                        Math.max(lastBackgroundTimeMs, lastVisibleTimeMs), isTablet);
     }
 
     /**

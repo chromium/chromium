@@ -87,9 +87,9 @@ public class StartSurfaceNoTabsTest {
         if (mImmediateReturn) {
             START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
             assertEquals(0, START_SURFACE_RETURN_TIME_SECONDS.getValue());
-            assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
+            assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1, false));
         } else {
-            assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
+            assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(-1, false));
         }
         ReturnToChromeUtil.setSkipInitializationCheckForTesting(true);
 

@@ -105,6 +105,10 @@ public class StartSurfaceTestUtils {
             + "/open_ntp_instead_of_start/false/open_start_as_homepage/true";
     public static final String START_SURFACE_TEST_BASE_PARAMS =
             "force-fieldtrial-params=Study.Group:";
+
+    public static final String START_SURFACE_ON_TABLET_TEST_PARAMS =
+            "force-fieldtrial-params=Study.Group:"
+            + StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS_PARAM + "/0";
     public static List<ParameterSet> sClassParamsForStartSurfaceTest =
             Arrays.asList(new ParameterSet().value(false, false).name("NoInstant_NoReturn"),
                     new ParameterSet().value(true, false).name("Instant_NoReturn"),
@@ -135,7 +139,7 @@ public class StartSurfaceTestUtils {
         if (immediateReturn) {
             StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
             assertEquals(0, StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.getValue());
-            assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
+            assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1, false));
 
             // Need to start main activity from launcher for immediate return to be effective.
             // However, need at least one tab for carousel to show, which starting main activity
@@ -146,7 +150,7 @@ public class StartSurfaceTestUtils {
             TabAttributeCache.setTitleForTesting(0, "tab title");
             startMainActivityFromLauncher(activityTestRule);
         } else {
-            assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
+            assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(-1, false));
             // Cannot use StartSurfaceTestUtils.startMainActivityFromLauncher().
             // Otherwise tab switcher could be shown immediately if single-pane is enabled.
             activityTestRule.startMainActivityOnBlankPage();

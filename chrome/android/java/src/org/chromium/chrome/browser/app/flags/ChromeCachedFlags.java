@@ -154,6 +154,7 @@ public class ChromeCachedFlags {
                 WarmupManager.SPARE_TAB_INITIALIZE_RENDERER,
                 StartSurfaceConfiguration.IS_DOODLE_SUPPORTED,
                 StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS,
+                StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS,
                 StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_USE_MODEL,
                 StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER,
                 StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT,

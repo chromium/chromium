@@ -2290,15 +2290,20 @@ const FeatureEntry::FeatureVariation kTabGroupsContinuationAndroidVariations[] =
 };
 
 const FeatureEntry::FeatureParam kStartSurfaceReturnTime_Immediate[] = {
-    {"start_surface_return_time_seconds", "0"}};
+    {"start_surface_return_time_seconds", "0"},
+    {"start_surface_return_time_on_tablet_seconds", "0"}};
 const FeatureEntry::FeatureParam kStartSurfaceReturnTime_10Seconds[] = {
-    {"start_surface_return_time_seconds", "10"}};
+    {"start_surface_return_time_seconds", "10"},
+    {"start_surface_return_time_on_tablet_seconds", "10"}};
 const FeatureEntry::FeatureParam kStartSurfaceReturnTime_1Minute[] = {
-    {"start_surface_return_time_seconds", "60"}};
+    {"start_surface_return_time_seconds", "60"},
+    {"start_surface_return_time_on_tablet_seconds", "60"}};
 const FeatureEntry::FeatureParam kStartSurfaceReturnTime_5Minute[] = {
-    {"start_surface_return_time_seconds", "300"}};
+    {"start_surface_return_time_seconds", "300"},
+    {"start_surface_return_time_on_tablet_seconds", "300"}};
 const FeatureEntry::FeatureParam kStartSurfaceReturnTime_60Minute[] = {
-    {"start_surface_return_time_seconds", "3600"}};
+    {"start_surface_return_time_seconds", "3600"},
+    {"start_surface_return_time_on_tablet_seconds", "3600"}};
 const FeatureEntry::FeatureVariation kStartSurfaceReturnTimeVariations[] = {
     {"Immediate", kStartSurfaceReturnTime_Immediate,
      std::size(kStartSurfaceReturnTime_Immediate), nullptr},
