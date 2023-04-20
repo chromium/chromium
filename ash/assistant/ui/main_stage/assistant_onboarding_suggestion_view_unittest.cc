@@ -9,7 +9,6 @@
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_suggestion.h"
 #include "components/prefs/pref_service.h"
 #include "ui/gfx/color_palette.h"

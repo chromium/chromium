@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
@@ -27,7 +26,6 @@
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash {
@@ -65,10 +63,6 @@ class ThemeSelectionScreenTest
     : public OobeBaseTest,
       public ::testing::WithParamInterface<test::UIPath> {
  public:
-  ThemeSelectionScreenTest() {
-    feature_list_.InitWithFeatures({chromeos::features::kDarkLightMode}, {});
-  }
-
   void SetUpOnMainThread() override {
     ThemeSelectionScreen* theme_selection_screen =
         WizardController::default_controller()
@@ -106,9 +100,6 @@ class ThemeSelectionScreenTest
   ThemeSelectionScreen::ScreenExitCallback original_callback_;
   absl::optional<ThemeSelectionScreen::Result> result_;
   base::HistogramTester histogram_tester_;
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 
  private:
   void HandleScreenExit(ThemeSelectionScreen::Result result) {

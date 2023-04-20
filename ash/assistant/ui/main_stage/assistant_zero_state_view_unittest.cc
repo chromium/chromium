@@ -9,14 +9,12 @@
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/ui/colors/assistant_colors.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/views/controls/label.h"
@@ -27,8 +25,6 @@ namespace {
 using AssistantZeroStateViewUnittest = AssistantAshTestBase;
 
 TEST_F(AssistantZeroStateViewUnittest, ThemeDarkLightMode) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      chromeos::features::kDarkLightMode);
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
   dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
@@ -232,9 +228,8 @@ TEST_F(AssistantZeroStateViewUnittest, LearnMoreToastTitleLabelMaxWidth) {
 TEST_F(AssistantZeroStateViewUnittest, ThemeDarkLightModeForToast) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {chromeos::features::kDarkLightMode,
-       assistant::features::kEnableAssistantLearnMore},
-      {});
+      {/*enabled_features=*/assistant::features::kEnableAssistantLearnMore},
+      /*disabled_features=*/{});
 
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
   dark_light_mode_controller->OnActiveUserPrefServiceChanged(

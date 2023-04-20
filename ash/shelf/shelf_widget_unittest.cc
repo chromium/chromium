@@ -43,7 +43,6 @@
 #include "base/run_loop.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/models/image_model.h"
@@ -163,11 +162,6 @@ TEST_F(ShelfWidgetTest, TestAlignmentForMultipleDisplays) {
 
 class ShelfWidgetDarkLightModeTest : public ShelfWidgetTest {
  public:
-  ShelfWidgetDarkLightModeTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kDarkLightMode);
-  }
-
   void SetUp() override {
     ShelfWidgetTest::SetUp();
 
@@ -175,9 +169,6 @@ class ShelfWidgetDarkLightModeTest : public ShelfWidgetTest {
     // where shelf layers get recreated during the tablet mode transition.
     TabletModeController::SetUseScreenshotForTest(true);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ShelfWidgetDarkLightModeTest, TabletModeTransition) {

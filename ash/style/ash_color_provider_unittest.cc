@@ -9,9 +9,7 @@
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_provider_manager.h"
@@ -58,8 +56,7 @@ class AshColorProviderBase
     : public testing::TestWithParam<ColorsTestCase<LayerType>> {
  public:
   AshColorProviderBase()
-      : scoped_feature_list_({chromeos::features::kDarkLightMode}),
-        task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
 
   void SetUp() override {
     ash_test_helper_.SetUp();
@@ -72,7 +69,6 @@ class AshColorProviderBase
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   AshTestHelper ash_test_helper_;
   AshColorProvider* color_provider_;

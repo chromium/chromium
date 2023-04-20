@@ -15,7 +15,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 
 namespace ash {
 
@@ -29,11 +28,12 @@ class DarkModeFeaturePodControllerTest
   // AshTestBase:
   void SetUp() override {
     if (IsQsRevampEnabled()) {
-      feature_list_.InitWithFeatures(
-          {chromeos::features::kDarkLightMode, features::kQsRevamp}, {});
+      feature_list_.InitWithFeatures({/*enabled_features=*/features::kQsRevamp},
+                                     /*disabled_features=*/{});
     } else {
-      feature_list_.InitWithFeatures({chromeos::features::kDarkLightMode},
-                                     {features::kQsRevamp});
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{features::kQsRevamp});
     }
     AshTestBase::SetUp();
 

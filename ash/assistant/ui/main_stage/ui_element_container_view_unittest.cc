@@ -13,7 +13,6 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
-#include "base/test/scoped_feature_list.h"
 #include "cc/base/math_util.h"
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_interaction_metadata.h"
 #include "ui/compositor/layer.h"
