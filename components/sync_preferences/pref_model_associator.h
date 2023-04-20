@@ -40,6 +40,7 @@ class PrefServiceForAssociator {
   virtual base::Value::Type GetRegisteredPrefType(
       const std::string& pref_name) const = 0;
   virtual void OnIsSyncingChanged() = 0;
+  virtual uint32_t GetWriteFlags(const std::string& pref_name) const = 0;
 };
 
 // Contains all preference sync related logic.

@@ -40,18 +40,6 @@
 
 namespace {
 
-// Returns the WriteablePrefStore::PrefWriteFlags for the pref with the given
-// |path|.
-uint32_t GetWriteFlags(const PrefService::Preference* pref) {
-  uint32_t write_flags = WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS;
-
-  if (!pref)
-    return write_flags;
-
-  if (pref->registration_flags() & PrefRegistry::LOSSY_PREF)
-    write_flags |= WriteablePrefStore::LOSSY_PREF_WRITE_FLAG;
-  return write_flags;
-}
 
 }  // namespace
 
@@ -698,3 +686,17 @@ void PrefService::RemoveStandaloneBrowserPref(const std::string& path) {
       path, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 }
 #endif
+
+// static
+uint32_t PrefService::GetWriteFlags(const PrefService::Preference* pref) {
+  uint32_t write_flags = WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS;
+
+  if (!pref) {
+    return write_flags;
+  }
+
+  if (pref->registration_flags() & PrefRegistry::LOSSY_PREF) {
+    write_flags |= WriteablePrefStore::LOSSY_PREF_WRITE_FLAG;
+  }
+  return write_flags;
+}

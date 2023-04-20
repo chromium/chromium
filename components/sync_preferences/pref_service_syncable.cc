@@ -280,4 +280,10 @@ void PrefServiceSyncable::OnIsSyncingChanged() {
   }
 }
 
+uint32_t PrefServiceSyncable::GetWriteFlags(
+    const std::string& pref_name) const {
+  const Preference* pref = FindPreference(pref_name);
+  return PrefService::GetWriteFlags(pref);
+}
+
 }  // namespace sync_preferences

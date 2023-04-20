@@ -34,16 +34,6 @@ namespace sync_preferences {
 
 namespace {
 
-uint32_t GetWriteFlags(const std::string& pref_name) {
-  // Note: Just always use the default write flags here. The only other option
-  // that exists is LOSSY, which (a) currently (as of 2023-02) no syncable prefs
-  // use, and (b) even if any did, using regular writes instead of lossy ones
-  // here would only have a very minor performance impact.
-  // TODO(crbug.com/1404937): Plumb the proper write flags through
-  // PrefServiceForAssociator.
-  return WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS;
-}
-
 const sync_pb::PreferenceSpecifics& GetSpecifics(const syncer::SyncData& pref) {
   switch (pref.GetDataType()) {
     case syncer::PREFERENCES:
@@ -167,7 +157,8 @@ void PrefModelAssociator::InitPrefAndAssociate(
         // Overwrite updates to the account store.
         if (sync_value.is_none()) {
           LOG(WARNING) << "Sync has null value for pref " << pref_name.c_str();
-          user_prefs_->RemoveValue(pref_name, GetWriteFlags(pref_name));
+          user_prefs_->RemoveValue(pref_name,
+                                   pref_service_->GetWriteFlags(pref_name));
         } else if (*user_pref_value != sync_value) {
           SetPrefWithTypeCheck(pref_name, sync_value);
         }
@@ -180,7 +171,8 @@ void PrefModelAssociator::InitPrefAndAssociate(
         // server.
         if (new_value.is_none()) {
           LOG(WARNING) << "Sync has null value for pref " << pref_name.c_str();
-          user_prefs_->RemoveValue(pref_name, GetWriteFlags(pref_name));
+          user_prefs_->RemoveValue(pref_name,
+                                   pref_service_->GetWriteFlags(pref_name));
         } else if (*user_pref_value != new_value) {
           SetPrefWithTypeCheck(pref_name, new_value);
         }
@@ -358,7 +350,8 @@ absl::optional<syncer::ModelError> PrefModelAssociator::ProcessSyncChanges(
     }
 
     if (sync_change.change_type() == syncer::SyncChange::ACTION_DELETE) {
-      user_prefs_->RemoveValue(pref_name, GetWriteFlags(pref_name));
+      user_prefs_->RemoveValue(pref_name,
+                               pref_service_->GetWriteFlags(pref_name));
       continue;
     }
 
@@ -538,7 +531,8 @@ bool PrefModelAssociator::SetPrefWithTypeCheck(const std::string& pref_name,
   }
   // Write directly to the user controlled value store, which is ignored if the
   // preference is controlled by a higher-priority layer (e.g. policy).
-  user_prefs_->SetValue(pref_name, new_value.Clone(), GetWriteFlags(pref_name));
+  user_prefs_->SetValue(pref_name, new_value.Clone(),
+                        pref_service_->GetWriteFlags(pref_name));
   return true;
 }
 

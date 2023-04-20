@@ -399,6 +399,9 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 #endif
 
+  // Returns the WriteablePrefStore::PrefWriteFlags for `pref`.
+  static uint32_t GetWriteFlags(const PrefService::Preference* pref);
+
  protected:
   // The PrefNotifier handles registering and notifying preference observers.
   // It is created and owned by this PrefService. Subclasses may access it for
