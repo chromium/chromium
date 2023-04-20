@@ -6172,6 +6172,7 @@ crbug.com/1427180 [ Mac11 ] external/wpt/top-level-storage-access-api/tentative/
 crbug.com/1427180 [ Mac10.15 ] external/wpt/top-level-storage-access-api/tentative/requestStorageAccessFor.sub.https.window.html [ Failure ]
 crbug.com/1422340 [ Win ] virtual/media-foundation-for-clear-dcomp/media/video-move-to-document-pip.html [ Failure ]
 
+crbug.com/1434123 media/video-source-type.html [ Failure Pass ]
 crbug.com/1434123 media/video-source-type-params.html [ Failure Pass ]
 
 # Suppress http/tests/inspector-protocol/network/navigate-iframe-in2out.js test cluster
