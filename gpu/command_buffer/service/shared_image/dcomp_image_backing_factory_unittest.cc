@@ -277,10 +277,8 @@ TEST_F(DCompImageBackingFactoryTest, CanReadDXGISwapChain) {
 
   EXPECT_EQ(0u, end_semaphores.size());
   GrFlushInfo flush_info;
-  std::unique_ptr<GrBackendSurfaceMutableState> end_state =
-      write_access->TakeEndState();
   EXPECT_EQ(GrSemaphoresSubmitted::kYes,
-            write_access->surface()->flush(flush_info, end_state.get()));
+            write_access->surface()->flush(flush_info, nullptr));
   skia_representation->SetCleared();
 
   std::unique_ptr<const SkImage::AsyncReadResult> readback_result;
@@ -544,10 +542,8 @@ class DCompImageBackingFactoryVisualTreeTest
 
     EXPECT_EQ(0u, end_semaphores.size());
     GrFlushInfo flush_info;
-    std::unique_ptr<GrBackendSurfaceMutableState> end_state =
-        write_access->TakeEndState();
     EXPECT_EQ(GrSemaphoresSubmitted::kYes,
-              write_access->surface()->flush(flush_info, end_state.get()));
+              write_access->surface()->flush(flush_info, nullptr));
 
     context_state_->gr_context()->submit(true);
   }

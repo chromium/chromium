@@ -103,13 +103,16 @@ void OutputPresenter::Image::EndWriteSkia(bool force_flush) {
   // The Flush now takes place in finishPaintCurrentBuffer on the CPU side.
   // check if end_semaphores is not empty then flush here
   DCHECK(scoped_skia_write_access_);
-  auto end_state = scoped_skia_write_access_->TakeEndState();
-  if (!end_semaphores_.empty() || end_state || force_flush) {
+  if (!end_semaphores_.empty() || force_flush) {
     GrFlushInfo flush_info = {
         .fNumSemaphores = end_semaphores_.size(),
         .fSignalSemaphores = end_semaphores_.data(),
     };
-    scoped_skia_write_access_->surface()->flush(flush_info, end_state.get());
+    // This flushes paint ops first, then applies Vulkan transition layouts and
+    // then submit semaphores to signal.
+    scoped_skia_write_access_->surface()->flush();
+    scoped_skia_write_access_->ApplyBackendSurfaceEndState();
+    scoped_skia_write_access_->surface()->flush(flush_info, nullptr);
     auto* direct_context = scoped_skia_write_access_->surface()
                                ->recordingContext()
                                ->asDirectContext();
@@ -125,9 +128,7 @@ void OutputPresenter::Image::EndWriteSkia(bool force_flush) {
 
 void OutputPresenter::Image::PreGrContextSubmit() {
   DCHECK(scoped_skia_write_access_);
-  if (auto end_state = scoped_skia_write_access_->TakeEndState()) {
-    scoped_skia_write_access_->surface()->flush({}, end_state.get());
-  }
+  scoped_skia_write_access_->ApplyBackendSurfaceEndState();
 }
 
 bool OutputPresenter::Image::SetPurgeable() {

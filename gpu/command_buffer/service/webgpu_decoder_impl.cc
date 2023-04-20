@@ -846,13 +846,12 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
       procs_->bufferRelease(buffer);
 
+      // It's ok to pass in empty GrFlushInfo here since SignalSemaphores()
+      // will populate it with semaphores and call GrDirectContext::flush.
+      surface->flush();
       // Transition the image back to the desired end state. This is used for
       // transitioning the image to the external queue for Vulkan/GL interop.
-      if (auto end_state = scoped_write_access->TakeEndState()) {
-        // It's ok to pass in empty GrFlushInfo here since SignalSemaphores()
-        // will populate it with semaphores and call GrDirectContext::flush.
-        surface->flush(/*info=*/{}, end_state.get());
-      }
+      scoped_write_access->ApplyBackendSurfaceEndState();
 
       SignalSemaphores(std::move(end_semaphores));
 

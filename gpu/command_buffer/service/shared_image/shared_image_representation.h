@@ -328,7 +328,9 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
       return promise_image_textures_[plane_index].get();
     }
 
-    [[nodiscard]] std::unique_ptr<GrBackendSurfaceMutableState> TakeEndState();
+    // Applies the GrBackendSurfaceMutableState for Vulkan layout and external
+    // queue transitions needed for Vulkan/GL interop.
+    void ApplyBackendSurfaceEndState();
 
    private:
     // A vector of surfaces and promise textures corresponding to the number of

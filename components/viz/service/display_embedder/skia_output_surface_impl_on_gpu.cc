@@ -731,8 +731,13 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
 
     gl::ScopedProgressReporter scoped_process_reporter(
         context_state_->progress_reporter());
-    auto end_state = scoped_access->TakeEndState();
-    auto result = surface->flush(flush_info, end_state.get());
+
+    // This flushes paint ops first, then applies Vulkan transition layouts and
+    // then submit semaphores to signal.
+    surface->flush();
+    scoped_access->ApplyBackendSurfaceEndState();
+    auto result = surface->flush(flush_info, nullptr);
+
     if (result != GrSemaphoresSubmitted::kYes &&
         !(begin_semaphores.empty() && end_semaphores.empty())) {
       if (!return_release_fence_cb.is_null()) {
@@ -879,7 +884,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
       bool should_submit = !end_semaphores.empty();
 
       if (!FlushSurface(scoped_write->surface(), end_semaphores,
-                        scoped_write->TakeEndState())) {
+                        scoped_write.get())) {
         // TODO(penghuang): handle vulkan device lost.
         FailedSkiaFlush("CopyOutputRGBA dest_surface->flush()");
         return;
@@ -946,7 +951,7 @@ void SkiaOutputSurfaceImplOnGpu::RenderSurface(
 bool SkiaOutputSurfaceImplOnGpu::FlushSurface(
     SkSurface* surface,
     std::vector<GrBackendSemaphore>& end_semaphores,
-    std::unique_ptr<GrBackendSurfaceMutableState> end_state,
+    gpu::SkiaImageRepresentation::ScopedWriteAccess* scoped_write_access,
     GrGpuFinishedProc finished_proc,
     GrGpuFinishedContext finished_context) {
   GrFlushInfo flush_info;
@@ -957,8 +962,10 @@ bool SkiaOutputSurfaceImplOnGpu::FlushSurface(
   gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider_, &flush_info);
   gl::ScopedProgressReporter scoped_process_reporter(
       context_state_->progress_reporter());
-  GrSemaphoresSubmitted flush_result =
-      surface->flush(flush_info, end_state.get());
+  GrSemaphoresSubmitted flush_result = surface->flush(flush_info, nullptr);
+  if (scoped_write_access) {
+    scoped_write_access->ApplyBackendSurfaceEndState();
+  }
   return flush_result == GrSemaphoresSubmitted::kYes || end_semaphores.empty();
 }
 
@@ -1293,7 +1300,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
 
     if (!FlushSurface(
             plane_surfaces[i], plane_access_datas[i].end_semaphores,
-            plane_access_datas[i].scoped_write->TakeEndState(),
+            plane_access_datas[i].scoped_write.get(),
             should_wait_for_gpu_work
                 ? &NV12SinglePlaneReadyContext::OnNV12PlaneReady
                 : nullptr,
@@ -1436,7 +1443,6 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
       scoped_access;
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
-  std::unique_ptr<GrBackendSurfaceMutableState> end_state;
   if (from_framebuffer) {
     surface = scoped_output_device_paint_->sk_surface();
   } else {
@@ -1456,7 +1462,6 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
           &end_semaphores,
           gpu::SharedImageRepresentation::AllowUnclearedAccess::kNo);
       surface = scoped_access->surface();
-      end_state = scoped_access->TakeEndState();
       if (!begin_semaphores.empty()) {
         auto result =
             surface->wait(begin_semaphores.size(), begin_semaphores.data(),
@@ -1467,8 +1472,9 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
   }
 
   // Do not support reading back from vulkan secondary command buffer.
-  if (!surface)
+  if (!surface) {
     return;
+  }
 
   // If a platform doesn't support RGBX_8888 format, we will use RGBA_8888
   // instead. In this case, we need discard alpha channel (modify the alpha
@@ -1565,7 +1571,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     }
   }
 
-  if (!FlushSurface(surface, end_semaphores, std::move(end_state))) {
+  if (!FlushSurface(surface, end_semaphores, scoped_access.get())) {
     // TODO(penghuang): handle vulkan device lost.
     FailedSkiaFlush("surface->flush() failed.");
     return;

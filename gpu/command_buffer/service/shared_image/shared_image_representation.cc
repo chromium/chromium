@@ -198,9 +198,28 @@ SkiaImageRepresentation::ScopedWriteAccess::~ScopedWriteAccess() {
   representation()->EndWriteAccess();
 }
 
-std::unique_ptr<GrBackendSurfaceMutableState>
-SkiaImageRepresentation::ScopedWriteAccess::TakeEndState() {
-  return std::move(end_state_);
+void SkiaImageRepresentation::ScopedWriteAccess::ApplyBackendSurfaceEndState() {
+  if (!end_state_) {
+    return;
+  }
+  DCHECK(promise_image_textures_.empty() || surfaces_.empty());
+
+  int num_planes = representation()->format().NumberOfPlanes();
+  if (!surfaces_.empty()) {
+    for (int plane = 0; plane < num_planes; plane++) {
+      surface(plane)->flush(/*info=*/{}, end_state_.get());
+    }
+  }
+  if (!promise_image_textures_.empty()) {
+    for (int plane = 0; plane < num_planes; plane++) {
+      if (!representation()->gr_context()->setBackendTextureState(
+              promise_image_texture(plane)->backendTexture(), *end_state_)) {
+        LOG(ERROR) << "setBackendTextureState() failed for plane: " << plane;
+        return;
+      }
+    }
+  }
+  end_state_ = nullptr;
 }
 
 std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>

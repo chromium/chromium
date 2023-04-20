@@ -160,12 +160,12 @@ base::expected<void, GLError> ConvertYUVACommon(
 
 void FlushSurface(SkiaImageRepresentation::ScopedWriteAccess* access) {
   int num_planes = access->representation()->format().NumberOfPlanes();
-  auto end_state = access->TakeEndState();
   for (int plane_index = 0; plane_index < num_planes; plane_index++) {
     auto* surface = access->surface(plane_index);
     DCHECK(surface);
-    surface->flush({}, end_state.get());
+    surface->flush();
   }
+  access->ApplyBackendSurfaceEndState();
 }
 
 void SubmitIfNecessary(std::vector<GrBackendSemaphore> signal_semaphores,
