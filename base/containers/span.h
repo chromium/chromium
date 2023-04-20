@@ -6,6 +6,7 @@
 #define BASE_CONTAINERS_SPAN_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <array>
 #include <iterator>
