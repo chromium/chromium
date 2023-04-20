@@ -89,19 +89,14 @@ class AmbientBadgeManager : public InstallableAmbientBadgeClient {
   virtual void UpdateState(State state);
 
  private:
-  // Perform checks and shows the install ambient badge.
-  void MaybeShowAmbientBadge();
-
-  void CheckEngagementForAmbientBadge();
+  // Perform checks and shows the install ambient badge. Uses legacy conditions
+  // instead of the segmentation APIs.
+  void MaybeShowAmbientBadgeLegacy();
 
   void PerformWorkerCheckForAmbientBadge();
 
-  // Checks whether the web page has sufficient engagement for showing the
-  // ambient badge.
-  bool HasSufficientEngagementForAmbientBadge();
-
   // Returns true if it's the first visit and  the badge should be suprressed.
-  bool ShouldSuppressAmbientBadge();
+  bool ShouldSuppressAmbientBadgeOnFirstVisit();
 
   // Called to show UI that promotes installation of a PWA. This is normally the
   // mini-infobar ("banner") but clients can override it by providing a
