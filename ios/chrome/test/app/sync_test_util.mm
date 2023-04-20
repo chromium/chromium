@@ -172,27 +172,27 @@ void AddLegacyBookmarkToFakeSyncServer(std::string url,
 }
 
 void AddSessionToFakeSyncServer(
-    const synced_sessions::DistantSession* session) {
+    const synced_sessions::DistantSession& session) {
   std::vector<sync_pb::SessionSpecifics> specifics_list;
   SessionID window_id = SessionID::FromSerializedValue(1);
   // Tab specifics.
   std::vector<SessionID> tab_list;
   sync_sessions::SessionSyncTestHelper helper;
   for (const std::unique_ptr<synced_sessions::DistantTab>& distant_tab :
-       session->tabs) {
+       session.tabs) {
     sync_pb::SessionSpecifics tab = helper.BuildTabSpecifics(
-        session->tag, base::UTF16ToUTF8(distant_tab->title),
+        session.tag, base::UTF16ToUTF8(distant_tab->title),
         distant_tab->virtual_url.spec(), window_id, distant_tab->tab_id);
     specifics_list.push_back(tab);
     tab_list.push_back(distant_tab->tab_id);
   }
   // Compute device type.
   // TODO(crbug.com/1434959): This is a temporary workaround. Remove the switch
-  // statement and use `session->form_factor` after
+  // statement and use `session.form_factor` after
   // `BuildHeaderSpecificsWithoutWindows` is updated.
   sync_pb::SyncEnums_DeviceType device_type =
       sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_UNSET;
-  switch (session->form_factor) {
+  switch (session.form_factor) {
     case syncer::DeviceInfo::FormFactor::kDesktop:
       device_type =
           sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_MAC;
@@ -209,7 +209,7 @@ void AddSessionToFakeSyncServer(
   // Header specifics.
   sync_pb::SessionSpecifics header =
       sync_sessions::SessionSyncTestHelper::BuildHeaderSpecificsWithoutWindows(
-          session->tag, device_type);
+          session.tag, device_type);
   sync_sessions::SessionSyncTestHelper::AddWindowSpecifics(window_id, tab_list,
                                                            &header);
   specifics_list.push_back(header);
@@ -221,9 +221,9 @@ void AddSessionToFakeSyncServer(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
             /*non_unique_name=*/"",
             sync_sessions::SessionStore::GetClientTag(entity.session()), entity,
-            /*creation_time=*/syncer::TimeToProtoTime(session->modified_time),
+            /*creation_time=*/syncer::TimeToProtoTime(session.modified_time),
             /*last_modified_time=*/
-            syncer::TimeToProtoTime(session->modified_time)));
+            syncer::TimeToProtoTime(session.modified_time)));
   }
 }
 
