@@ -27,6 +27,39 @@ import {UserUtilMixin} from '../user_utils_mixin.js';
 
 import {getTemplate} from './add_password_dialog.html.js';
 
+/**
+ * Represents different user interactions related to adding credential from the
+ * settings. Should be kept in sync with
+ * |metrics_util::AddCredentialFromSettingsUserInteractions|. These values are
+ * persisted to logs. Entries should not be renumbered and numeric values should
+ * never be reused.
+ */
+export enum AddCredentialFromSettingsUserInteractions {
+  // Used when the add credential dialog is opened from the settings.
+  ADD_DIALOG_OPENED = 0,
+  // Used when the add credential dialog is closed from the settings.
+  ADD_DIALOG_CLOSED = 1,
+  // Used when a new credential is added from the settings .
+  CREDENTIAL_ADDED = 2,
+  // Used when a new credential is being added from the add credential dialog in
+  // settings and another credential exists with the same username/website
+  // combination.
+  DUPLICATED_CREDENTIAL_ENTERED = 3,
+  // Used when an existing credential is viewed while adding a new credential
+  // from the settings.
+  DUPLICATE_CREDENTIAL_VIEWED = 4,
+  // Must be last.
+  COUNT = 5,
+}
+
+function recordAddCredentialInteraction(
+    interaction: AddCredentialFromSettingsUserInteractions) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      'PasswordManager.AddCredentialFromSettings.UserAction2', interaction,
+      AddCredentialFromSettingsUserInteractions.COUNT);
+}
+
+
 export interface AddPasswordDialogElement {
   $: {
     addButton: CrButtonElement,
@@ -177,6 +210,8 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
         this.setSavedPasswordsListener_);
     PasswordManagerImpl.getInstance().addSavedPasswordListChangedListener(
         this.setSavedPasswordsListener_);
+    recordAddCredentialInteraction(
+        AddCredentialFromSettingsUserInteractions.ADD_DIALOG_OPENED);
   }
 
   override disconnectedCallback() {
@@ -198,7 +233,9 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
     }
   }
 
-  private onCancel_() {
+  private closeDialog_() {
+    recordAddCredentialInteraction(
+        AddCredentialFromSettingsUserInteractions.ADD_DIALOG_CLOSED);
     this.$.dialog.close();
   }
 
@@ -236,6 +273,8 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
     }
     if (this.usernamesBySignonRealm_.has(signonRealm) &&
         this.usernamesBySignonRealm_.get(signonRealm)!.has(this.username_)) {
+      recordAddCredentialInteraction(AddCredentialFromSettingsUserInteractions
+                                         .DUPLICATED_CREDENTIAL_ENTERED);
       return this.i18n('usernameAlreadyUsed', this.website_);
     }
     return null;
@@ -288,6 +327,8 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   private onAddClick_() {
     assert(this.computeCanAddPassword_());
     assert(this.urlCollection_);
+    recordAddCredentialInteraction(
+        AddCredentialFromSettingsUserInteractions.CREDENTIAL_ADDED);
     const useAccountStore = this.isAccountStoreUser &&
         (this.$.storePicker.value === this.storeOptionAccountValue_);
 
@@ -300,7 +341,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
           useAccountStore: useAccountStore,
         })
         .then(() => {
-          this.$.dialog.close();
+          this.closeDialog_();
         })
         .catch(() => {});
   }
@@ -314,10 +355,12 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   }
 
   private onViewExistingPasswordClick_(e: Event) {
+    recordAddCredentialInteraction(
+        AddCredentialFromSettingsUserInteractions.DUPLICATE_CREDENTIAL_VIEWED);
     e.preventDefault();
     Router.getInstance().navigateTo(
         Page.PASSWORD_DETAILS, this.urlCollection_?.shown);
-    this.$.dialog.close();
+    this.closeDialog_();
   }
 }
 
