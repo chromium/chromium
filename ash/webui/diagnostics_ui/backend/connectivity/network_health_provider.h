@@ -11,7 +11,6 @@
 
 #include "ash/webui/diagnostics_ui/mojom/network_health_provider.mojom.h"
 #include "base/containers/flat_map.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
