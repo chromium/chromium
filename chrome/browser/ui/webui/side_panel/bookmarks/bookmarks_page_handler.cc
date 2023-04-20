@@ -229,9 +229,9 @@ void BookmarksPageHandler::ExecuteRemoveFromBookmarksBarCommand(
 }
 
 void BookmarksPageHandler::ExecuteDeleteCommand(
-    int64_t node_id,
+    const std::vector<int64_t>& node_ids,
     side_panel::mojom::ActionSource source) {
-  ExecuteContextMenuCommand({node_id}, source, IDC_BOOKMARK_BAR_REMOVE);
+  ExecuteContextMenuCommand(node_ids, source, IDC_BOOKMARK_BAR_REMOVE);
 }
 
 void BookmarksPageHandler::ExecuteContextMenuCommand(

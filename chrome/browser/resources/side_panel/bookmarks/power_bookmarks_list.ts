@@ -828,23 +828,23 @@ export class PowerBookmarksListElement extends PolymerElement {
         });
   }
 
-  private onContextMenuEditClicked_(event: CustomEvent<{id: string}>) {
+  private onContextMenuEditClicked_(
+      event: CustomEvent<{bookmarks: chrome.bookmarks.BookmarkTreeNode[]}>) {
     event.preventDefault();
     event.stopPropagation();
-    const bookmark =
-        this.bookmarksService_.findBookmarkWithId(event.detail.id)!;
-    if (editingDisabledByPolicy([bookmark])) {
+    if (editingDisabledByPolicy(event.detail.bookmarks)) {
       this.showDisabledFeatureDialog_();
       return;
     }
-    this.showEditDialog_([bookmark], false);
+    this.showEditDialog_(
+        event.detail.bookmarks, event.detail.bookmarks.length > 1);
   }
 
-  private onContextMenuDeleteClicked_(event: MouseEvent) {
+  private onContextMenuDeleteClicked_(
+      event: CustomEvent<{bookmarks: chrome.bookmarks.BookmarkTreeNode[]}>) {
     event.preventDefault();
     event.stopPropagation();
-    // Context menu delete is expected to only be called on a single bookmark.
-    this.showDeletionToastWithCount_(1);
+    this.showDeletionToastWithCount_(event.detail.bookmarks.length);
     this.editing_ = false;
   }
 

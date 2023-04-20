@@ -79,9 +79,9 @@ interface BookmarksPageHandler {
   // context menu.
   ExecuteRemoveFromBookmarksBarCommand(int64 node_id, ActionSource source);
 
-  // Deletes bookmark specified by node_id, using the same logic as the native
-  // bookmarks context menu.
-  ExecuteDeleteCommand(int64 node_id, ActionSource source);
+  // Deletes bookmarks specified by node_ids, using the same logic as the
+  // native bookmarks context menu.
+  ExecuteDeleteCommand(array<int64> node_ids, ActionSource source);
 
   // Opens the bookmark specified by node_id. Passes the parent folder
   // depth for metrics collection and the action source to identify

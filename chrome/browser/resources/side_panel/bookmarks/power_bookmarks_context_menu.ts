@@ -9,6 +9,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -139,7 +140,21 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
       });
     }
 
-    if (this.bookmarks_.length !== 1 ||
+    if (this.bookmarks_.length !== 1) {
+      menuItems.push(
+          {id: MenuItemId.DIVIDER},
+          {
+            id: MenuItemId.EDIT,
+            label: loadTimeData.getString('tooltipMove'),
+          },
+          {id: MenuItemId.DIVIDER},
+          {
+            id: MenuItemId.DELETE,
+            label: loadTimeData.getString('tooltipDelete'),
+          },
+      );
+      return menuItems;
+    } else if (
         this.bookmarks_[0]!.id === loadTimeData.getString('bookmarksBarId')) {
       return menuItems;
     }
@@ -243,9 +258,8 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
             this.bookmarks_.map(bookmark => bookmark.id),
             ActionSource.kBookmark);
         break;
-      // Everything below is not expected to ever be called when
-      // this.bookmarks_ has more than one entry.
       case MenuItemId.ADD_TO_BOOKMARKS_BAR:
+        assert(this.bookmarks_.length === 1);
         if (editingDisabledByPolicy(this.bookmarks_)) {
           this.dispatchDisabledFeatureEvent_();
         } else {
@@ -254,6 +268,7 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
         }
         break;
       case MenuItemId.REMOVE_FROM_BOOKMARKS_BAR:
+        assert(this.bookmarks_.length === 1);
         if (editingDisabledByPolicy(this.bookmarks_)) {
           this.dispatchDisabledFeatureEvent_();
         } else {
@@ -262,6 +277,7 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
         }
         break;
       case MenuItemId.TRACK_PRICE:
+        assert(this.bookmarks_.length === 1);
         if (editingDisabledByPolicy(this.bookmarks_)) {
           this.dispatchDisabledFeatureEvent_();
         } else {
@@ -283,11 +299,12 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
           bubbles: true,
           composed: true,
           detail: {
-            id: this.bookmarks_[0]!.id,
+            bookmarks: this.bookmarks_,
           },
         }));
         break;
       case MenuItemId.RENAME:
+        assert(this.bookmarks_.length === 1);
         if (editingDisabledByPolicy(this.bookmarks_)) {
           this.dispatchDisabledFeatureEvent_();
         } else {
@@ -305,12 +322,13 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
           this.dispatchDisabledFeatureEvent_();
         } else {
           this.bookmarksApi_.contextMenuDelete(
-              this.bookmarks_[0]!.id, ActionSource.kBookmark);
+              this.bookmarks_.map(bookmark => bookmark.id),
+              ActionSource.kBookmark);
           this.dispatchEvent(new CustomEvent('delete-clicked', {
             bubbles: true,
             composed: true,
             detail: {
-              id: this.bookmarks_[0]!.id,
+              bookmarks: this.bookmarks_,
             },
           }));
         }

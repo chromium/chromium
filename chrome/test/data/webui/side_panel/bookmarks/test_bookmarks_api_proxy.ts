@@ -108,8 +108,8 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
     this.methodCalled('contextMenuRemoveFromBookmarksBar', id, source);
   }
 
-  contextMenuDelete(id: string, source: ActionSource) {
-    this.methodCalled('contextMenuDelete', id, source);
+  contextMenuDelete(ids: string[], source: ActionSource) {
+    this.methodCalled('contextMenuDelete', ids, source);
   }
 
   copyBookmark(id: string): Promise<void> {
