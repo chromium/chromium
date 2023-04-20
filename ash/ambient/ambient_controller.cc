@@ -88,6 +88,15 @@ namespace {
 // Used by wake lock APIs.
 constexpr char kWakeLockReason[] = "AmbientMode";
 
+// Time taken from releasing wake lock to turning off display.
+// NOTE: This value was found experimentally and is temporarily here until the
+// source of the delay is resolved.
+// TODO(b/278939395): Find the code that causes this delay.
+constexpr base::TimeDelta kReleaseWakeLockDelay = base::Seconds(38);
+
+// kAmbientModeRunningDurationMinutes with value 0 means "forever".
+constexpr int kDurationForever = 0;
+
 std::unique_ptr<AmbientBackendController> CreateAmbientBackendController() {
 #if BUILDFLAG(ENABLE_CROS_AMBIENT_MODE_BACKEND)
   return std::make_unique<AmbientBackendControllerImpl>();
@@ -270,7 +279,9 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       // Cancels the timer upon shown.
       inactivity_timer_.Stop();
 
-      if (IsChargerConnected()) {
+      if (ash::features::IsScreenSaverDurationEnabled()) {
+        StartTimerToReleaseWakeLock();
+      } else if (IsChargerConnected()) {
         // Requires wake lock to prevent display from sleeping.
         AcquireWakeLock();
       }
@@ -297,6 +308,10 @@ void AmbientController::OnAmbientUiVisibilityChanged(
 
       // Should do nothing if the wake lock has already been released.
       ReleaseWakeLock();
+
+      if (ash::features::IsScreenSaverDurationEnabled()) {
+        screensaver_running_timer_.Stop();
+      }
 
       Shell::Get()->RemovePreTargetHandler(this);
 
@@ -445,7 +460,8 @@ void AmbientController::OnActiveUserPrefServiceChanged(
 }
 
 void AmbientController::OnPowerStatusChanged() {
-  if (ambient_ui_model_.ui_visibility() != AmbientUiVisibility::kShown) {
+  if (ambient_ui_model_.ui_visibility() != AmbientUiVisibility::kShown ||
+      ash::features::IsScreenSaverDurationEnabled()) {
     // No action needed if ambient screen is not shown.
     return;
   }
@@ -679,6 +695,35 @@ void AmbientController::SetScreenSaverDuration(int minutes) {
   }
   pref_service->Set(ambient::prefs::kAmbientModeRunningDurationMinutes,
                     base::Value(minutes));
+}
+
+int AmbientController::GetScreenSaverDuration() {
+  auto* pref_service = GetPrimaryUserPrefService();
+  if (!ash::features::IsScreenSaverDurationEnabled() || !pref_service) {
+    return -1;
+  }
+  return pref_service->GetInteger(
+      ambient::prefs::kAmbientModeRunningDurationMinutes);
+}
+
+void AmbientController::StartTimerToReleaseWakeLock() {
+  AcquireWakeLock();
+
+  auto* pref_service = GetPrimaryUserPrefService();
+  if (!pref_service) {
+    return;
+  }
+
+  const int session_duration_in_minutes = pref_service->GetInteger(
+      ambient::prefs::kAmbientModeRunningDurationMinutes);
+  DCHECK(session_duration_in_minutes >= 0);
+
+  if (session_duration_in_minutes != kDurationForever) {
+    const base::TimeDelta delay =
+        base::Minutes(session_duration_in_minutes) - kReleaseWakeLockDelay;
+    screensaver_running_timer_.Start(FROM_HERE, delay, this,
+                                     &AmbientController::ReleaseWakeLock);
+  }
 }
 
 bool AmbientController::IsShown() const {

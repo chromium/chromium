@@ -713,4 +713,12 @@ void AmbientAshTestBase::CreateTestImageJpegFile(base::FilePath path,
   ASSERT_EQ(data.size(), bytes_written);
 }
 
+void AmbientAshTestBase::SetScreenSaverDuration(int minutes) {
+  ambient_controller()->SetScreenSaverDuration(minutes);
+}
+
+int AmbientAshTestBase::GetScreenSaverDuration() {
+  return ambient_controller()->GetScreenSaverDuration();
+}
+
 }  // namespace ash

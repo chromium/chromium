@@ -144,6 +144,12 @@ class ASH_EXPORT AmbientController
   // device into sleep. |minutes| with a value 0 means forever.
   void SetScreenSaverDuration(int minutes);
 
+  // Get the number of minutes to run screen saver before sleep from
+  // pref_service.
+  int GetScreenSaverDuration();
+
+  void StartTimerToReleaseWakeLock();
+
   // Returns true if ambient mode containers are visible or are being
   // constructed.
   bool IsShown() const;
@@ -273,6 +279,9 @@ class ASH_EXPORT AmbientController
 
   // Monitors the device inactivity and controls the auto-show of ambient.
   base::OneShotTimer inactivity_timer_;
+
+  // Monitors the running time since screen saver starts.
+  base::OneShotTimer screensaver_running_timer_;
 
   // Lazily initialized on the first call of |AcquireWakeLock|.
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
