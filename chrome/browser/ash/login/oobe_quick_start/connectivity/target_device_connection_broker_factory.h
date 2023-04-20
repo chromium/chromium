@@ -37,6 +37,7 @@ class TargetDeviceConnectionBrokerFactory {
 
  protected:
   virtual std::unique_ptr<TargetDeviceConnectionBroker> CreateInstance(
+      base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
       RandomSessionId session_id) = 0;
 
  private:

@@ -35,6 +35,7 @@ FakeTargetDeviceConnectionBroker::Factory::~Factory() = default;
 
 std::unique_ptr<TargetDeviceConnectionBroker>
 FakeTargetDeviceConnectionBroker::Factory::CreateInstance(
+    base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
     RandomSessionId session_id) {
   auto connection_broker = std::make_unique<FakeTargetDeviceConnectionBroker>();
   connection_broker->set_feature_support_status(
@@ -86,7 +87,8 @@ void FakeTargetDeviceConnectionBroker::AuthenticateConnection(
   mojo::PendingRemote<mojom::QuickStartDecoder> remote;
   fake_quick_start_decoder_ = std::make_unique<FakeQuickStartDecoder>();
   auto random_session_id = RandomSessionId();
-  auto connection = std::make_unique<Connection>(
+  auto connection_factory = std::make_unique<Connection::Factory>();
+  auto connection = connection_factory->Create(
       nearby_connection, random_session_id, kSharedSecret, base::DoNothing(),
       base::BindOnce(
           &FakeTargetDeviceConnectionBroker::OnConnectionAuthenticated,

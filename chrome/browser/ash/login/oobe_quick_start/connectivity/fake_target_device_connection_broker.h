@@ -43,7 +43,9 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
     FeatureSupportStatus initial_feature_support_status_ =
         FeatureSupportStatus::kSupported;
 
+    // TargetDeviceConnectionBrokerFactory:
     std::unique_ptr<TargetDeviceConnectionBroker> CreateInstance(
+        base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
         RandomSessionId session_id) override;
 
     std::vector<FakeTargetDeviceConnectionBroker*> instances_;

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
 
+#include <array>
+
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
@@ -28,15 +30,37 @@ const char kNotifySourceOfUpdateMessageKey[] = "isForcedUpdateRequired";
 
 }  // namespace
 
+Connection::Factory::~Factory() = default;
+
+std::unique_ptr<Connection> Connection::Factory::Create(
+    NearbyConnection* nearby_connection,
+    RandomSessionId session_id,
+    SharedSecret shared_secret,
+    base::OnceClosure on_connection_closed,
+    ConnectionAuthenticatedCallback on_connection_authenticated) {
+  auto nonce_generator = std::make_unique<NonceGenerator>();
+  return std::make_unique<Connection>(
+      nearby_connection, session_id, shared_secret, std::move(nonce_generator),
+      std::move(on_connection_closed), std::move(on_connection_authenticated));
+}
+
+Connection::Nonce Connection::NonceGenerator::Generate() {
+  Nonce nonce;
+  crypto::RandBytes(nonce);
+  return nonce;
+}
+
 Connection::Connection(
     NearbyConnection* nearby_connection,
     RandomSessionId session_id,
     SharedSecret shared_secret,
+    std::unique_ptr<NonceGenerator> nonce_generator,
     base::OnceClosure on_connection_closed,
     ConnectionAuthenticatedCallback on_connection_authenticated)
     : nearby_connection_(nearby_connection),
       random_session_id_(session_id),
       shared_secret_(shared_secret),
+      nonce_generator_(std::move(nonce_generator)),
       on_connection_closed_(std::move(on_connection_closed)),
       on_connection_authenticated_(std::move(on_connection_authenticated)) {
   crypto::RandBytes(secondary_shared_secret_);
@@ -85,8 +109,8 @@ void Connection::RequestAccountTransferAssertion(
           requests::BuildAssertionRequestMessage(challenge_b64url),
           std::move(parse_assertion_response)));
 
-  // Set up a callback to call GetInfo, calling back into RequestAssertion (and
-  // ignoring the results of GetInfo) after the call succeeds.
+  // Set up a callback to call GetInfo, calling back into RequestAssertion
+  // (and ignoring the results of GetInfo) after the call succeeds.
   auto get_info = base::IgnoreArgs<absl::optional<std::vector<uint8_t>>>(
       base::BindOnce(&Connection::SendMessage, weak_ptr_factory_.GetWeakPtr(),
                      requests::BuildGetInfoRequestMessage(),
@@ -169,6 +193,15 @@ void Connection::SendMessage(std::unique_ptr<QuickStartMessage> message,
                              ConnectionResponseCallback callback) {
   SendPayload(*message->GenerateEncodedMessage());
   nearby_connection_->Read(std::move(callback));
+}
+
+void Connection::InitiateHandshake(const std::string& authentication_token,
+                                   HandshakeSuccessCallback callback) {
+  Connection::Nonce nonce = nonce_generator_->Generate();
+  nearby_connection_->Write(requests::BuildTargetDeviceHandshakeMessage(
+      authentication_token, shared_secret_, nonce));
+
+  // TODO(b/234655072): Read response from phone and run callback.
 }
 
 void Connection::SendPayload(const base::Value::Dict& message_payload) {

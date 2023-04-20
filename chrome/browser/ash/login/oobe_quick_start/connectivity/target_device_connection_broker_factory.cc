@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_impl.h"
 
@@ -18,11 +19,12 @@ TargetDeviceConnectionBrokerFactory::Create(
   RandomSessionId id = session_id ? *session_id : RandomSessionId();
 
   if (test_factory_) {
-    return test_factory_->CreateInstance(id);
+    return test_factory_->CreateInstance(nearby_connections_manager, id);
   }
 
+  auto connection_factory = std::make_unique<Connection::Factory>();
   return std::make_unique<TargetDeviceConnectionBrokerImpl>(
-      id, nearby_connections_manager);
+      id, nearby_connections_manager, std::move(connection_factory));
 }
 
 // static

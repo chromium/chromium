@@ -31,12 +31,40 @@ class Connection
     : public TargetDeviceConnectionBroker::AuthenticatedConnection {
  public:
   using SharedSecret = TargetDeviceConnectionBroker::SharedSecret;
+  using Nonce = std::array<uint8_t, 12>;
+  using HandshakeSuccessCallback = base::OnceCallback<void(bool)>;
   using ConnectionAuthenticatedCallback = base::OnceCallback<void(
       base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>)>;
+
+  class Factory {
+   public:
+    Factory() = default;
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+    virtual ~Factory();
+
+    virtual std::unique_ptr<Connection> Create(
+        NearbyConnection* nearby_connection,
+        RandomSessionId session_id,
+        SharedSecret shared_secret,
+        base::OnceClosure on_connection_closed,
+        ConnectionAuthenticatedCallback on_connection_authenticated);
+  };
+
+  class NonceGenerator {
+   public:
+    NonceGenerator() = default;
+    NonceGenerator(const NonceGenerator&) = delete;
+    NonceGenerator& operator=(const NonceGenerator&) = delete;
+    virtual ~NonceGenerator() = default;
+
+    virtual Nonce Generate();
+  };
 
   Connection(NearbyConnection* nearby_connection,
              RandomSessionId session_id,
              SharedSecret shared_secret,
+             std::unique_ptr<NonceGenerator> nonce_generator,
              base::OnceClosure on_connection_closed,
              ConnectionAuthenticatedCallback on_connection_authenticated);
 
@@ -48,6 +76,15 @@ class Connection
   // ConnectionAuthenticatedCallback. The caller must ensure that the connection
   // is authenticated before calling this function.
   void MarkConnectionAuthenticated();
+
+  // Sends a cryptographic challenge to the source device. If the source device
+  // can prove that it posesses the shared secret, then the connection is
+  // authenticated. If the callback returns true, then the handshake has
+  // succeeded; otherwise, the handshake has failed, which may mean that the
+  // source device is untrustworthy and the target device should close the
+  // connection. This is virtual to allow for overriding in unit tests.
+  virtual void InitiateHandshake(const std::string& authentication_token,
+                                 HandshakeSuccessCallback callback);
 
  private:
   friend class ConnectionTest;
@@ -99,6 +136,7 @@ class Connection
   RandomSessionId random_session_id_;
   SharedSecret shared_secret_;
   SharedSecret secondary_shared_secret_;
+  std::unique_ptr<NonceGenerator> nonce_generator_;
   base::OnceClosure on_connection_closed_;
   bool authenticated_ = false;
   ConnectionAuthenticatedCallback on_connection_authenticated_;

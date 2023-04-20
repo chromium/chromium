@@ -15,6 +15,7 @@ static_library("quick_start") {
     "quick_start_requests.h",
   ]
   deps = [
+    "proto",
     "//base",
     "//components/cbor",
     "//crypto",

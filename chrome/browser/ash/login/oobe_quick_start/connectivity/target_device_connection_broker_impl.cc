@@ -123,9 +123,11 @@ TargetDeviceConnectionBrokerImpl::BluetoothAdapterFactoryWrapper*
 
 TargetDeviceConnectionBrokerImpl::TargetDeviceConnectionBrokerImpl(
     RandomSessionId session_id,
-    base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager)
+    base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
+    std::unique_ptr<Connection::Factory> connection_factory)
     : random_session_id_(session_id),
-      nearby_connections_manager_(nearby_connections_manager) {
+      nearby_connections_manager_(nearby_connections_manager),
+      connection_factory_(std::move(connection_factory)) {
   crypto::RandBytes(shared_secret_);
   GetBluetoothAdapter();
 }
@@ -403,16 +405,23 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
                << endpoint_id;
 
   // TODO(b/234655072): Handle Connection Closed in the Connection Broker
-  connection_ = std::make_unique<Connection>(
+  connection_ = connection_factory_->Create(
       nearby_connection, random_session_id_, shared_secret_, base::DoNothing(),
       base::BindOnce(
           &TargetDeviceConnectionBrokerImpl::OnConnectionAuthenticated,
           weak_ptr_factory_.GetWeakPtr()));
 
   if (use_pin_authentication_) {
-    // For pin verification, if the source device has accepted the Nearby
-    // Connection, then the connection is authenticated.
+    QS_LOG(INFO) << "Pin authentication completed!";
     connection_->MarkConnectionAuthenticated();
+  } else {
+    QS_LOG(INFO) << "Initiating cryptographic handshake.";
+    absl::optional<std::string> auth_token =
+        nearby_connections_manager_->GetAuthenticationToken(endpoint_id);
+    CHECK(auth_token);
+    // TODO(b/234655072): Handle the handshake callback once the handshake is
+    // fully implemented.
+    connection_->InitiateHandshake(*auth_token, base::DoNothing());
   }
 }
 

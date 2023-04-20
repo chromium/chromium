@@ -88,6 +88,9 @@ class FakeNearbyConnectionsManager
   void CleanupForProcessStopped();
   ConnectionsCallback GetStartAdvertisingCallback();
   ConnectionsCallback GetStopAdvertisingCallback();
+  IncomingConnectionListener* GetAdvertisingListener() const {
+    return advertising_listener_;
+  }
 
   bool is_shutdown() const { return is_shutdown_; }
   DataUsage advertising_data_usage() const { return advertising_data_usage_; }
