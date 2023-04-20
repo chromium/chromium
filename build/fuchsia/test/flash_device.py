@@ -43,7 +43,7 @@ def _get_system_info(target: Optional[str],
     if running_unattended():
         try:
             boot_device(target, BootMode.REGULAR, serial_num)
-        except (subprocess.CalledProcessError, RuntimeError):
+        except (subprocess.CalledProcessError, common.StateTransitionError):
             logging.warning('Could not boot device. Assuming in ZEDBOOT')
             return ('', '')
         wait_cmd = common.run_ffx_command(('target', 'wait', '-t', '180'),

@@ -59,6 +59,14 @@ _STATE_TO_BOOTMODE = {
 _BOOTMODE_TO_STATE = {value: key for key, value in _STATE_TO_BOOTMODE.items()}
 
 
+class StateNotFoundError(Exception):
+    """Raised when target's state cannot be found."""
+
+
+class StateTransitionError(Exception):
+    """Raised when target does not transition to desired state."""
+
+
 def _state_string_to_state(state_str: str) -> TargetState:
     state_str = state_str.strip().lower()
     if state_str == 'product':
@@ -91,10 +99,10 @@ def get_target_state(target_id: Optional[str],
         TargetState of the given node, if found.
 
     Raises:
-        RuntimeError: If target cannot be found, or default target is not
+        StateNotFoundError: If target cannot be found, or default target is not
             defined if |target_id| is not given.
     """
-    for _ in range(num_attempts):
+    for i in range(num_attempts):
         targets = json.loads(
             run_ffx_command(('target', 'list'),
                             check=True,
@@ -109,14 +117,16 @@ def get_target_state(target_id: Optional[str],
             if serial_num == target['serial']:
                 # Should only return Fastboot.
                 return _state_string_to_state(target['target_state'])
-        time.sleep(10)
+        # Do not sleep for last attempt.
+        if i < num_attempts - 1:
+            time.sleep(10)
 
     # Could not find a state for given target.
     error_target = target_id
     if target_id is None:
         error_target = 'default target'
 
-    raise RuntimeError(f'Could not find state for {error_target}.')
+    raise StateNotFoundError(f'Could not find state for {error_target}.')
 
 
 def set_ffx_isolate_dir(isolate_dir: str) -> None:
@@ -478,6 +488,8 @@ def boot_device(target_id: Optional[str],
         target_id: Optional target_id of device.
         mode: Desired boot mode.
         must_boot: Forces device to boot, regardless of current state.
+    Raises:
+        StateTransitionError: When final state of device is not desired.
     """
     # Skip boot call if already in the state and not skipping check.
     state = get_target_state(target_id, serial_num, num_attempts=3)
@@ -501,7 +513,7 @@ def boot_device(target_id: Optional[str],
                 if local_state != current_state:
                     # Changed states - can continue
                     break
-            except RuntimeError:
+            except StateNotFoundError:
                 logging.debug('Device disconnected...')
                 if current_state != TargetState.DISCONNECTED:
                     # Changed states - can continue
@@ -519,7 +531,7 @@ def boot_device(target_id: Optional[str],
                 local_state = get_target_state(target_id, serial_num)
                 if local_state == wanted_state:
                     return local_state
-            except RuntimeError:
+            except StateNotFoundError:
                 logging.warning('Could not find target state.'
                                 ' Sleeping then retrying...')
             finally:
@@ -530,7 +542,7 @@ def boot_device(target_id: Optional[str],
         (lambda: _boot_device_ffx(target_id, serial_num, state, mode)), state)
 
     if state == TargetState.DISCONNECTED:
-        raise RuntimeError('Target could not be found!')
+        raise StateNotFoundError('Target could not be found!')
 
     if state == wanted_state:
         return
@@ -544,7 +556,7 @@ def boot_device(target_id: Optional[str],
         (lambda: _boot_device_dm(target_id, serial_num, state, mode)), state)
 
     if state != wanted_state:
-        raise RuntimeError(
+        raise StateTransitionError(
             f'Could not get device to desired state. Wanted {wanted_state},'
             f' got {state}')
     logging.debug('Got desired state: %s', state)
@@ -580,11 +592,12 @@ def _boot_device_dm(target_id: Optional[str], serial_num: Optional[str],
                     current_state: TargetState, mode: BootMode):
     # Can only use DM if device is in regular boot.
     if current_state != TargetState.PRODUCT:
+        if mode == BootMode.REGULAR:
+            raise StateTransitionError('Cannot boot to Regular via DM - '
+                                       'FFX already failed to do so.')
         # Boot to regular.
         _boot_device_ffx(target_id, serial_num, current_state,
                          BootMode.REGULAR)
-        if mode == BootMode.REGULAR:
-            return
 
     ssh_prefix = get_ssh_prefix(get_ssh_address(target_id))
 

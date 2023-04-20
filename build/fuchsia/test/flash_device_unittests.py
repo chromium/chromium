@@ -124,7 +124,8 @@ class FlashDeviceTest(unittest.TestCase):
                 mock.patch('flash_device.boot_device') as mock_boot, \
                 mock.patch('flash_device.get_system_info') as mock_sys_info, \
                 mock.patch('flash_device.subprocess.run'):
-            mock_boot.side_effect = RuntimeError('Incorrect state')
+            mock_boot.side_effect = common.StateTransitionError(
+                'Incorrect state')
             self._ffx_mock.return_value.stdout = \
                 '[{"title": "Build", "child": [{"value": "wrong.version"}, ' \
                 '{"value": "wrong_product"}]}]'
