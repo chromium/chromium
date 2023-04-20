@@ -117,8 +117,7 @@ TEST_F(PrintingMetricsApiUnittest, GetPrintJobs_NoPrintJobs) {
   SetUpMockPrintJobHistoryService(ReturnNoPrintJobs);
 
   auto function = base::MakeRefCounted<PrintingMetricsGetPrintJobsFunction>();
-  std::unique_ptr<base::Value> result =
-      RunFunctionAndReturnValue(function.get(), "[]");
+  auto result = RunFunctionAndReturnValue(function.get(), "[]");
 
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_list());
@@ -131,8 +130,7 @@ TEST_F(PrintingMetricsApiUnittest, GetPrintJobs_OnePrintJob) {
   SetUpMockPrintJobHistoryService(ReturnOnePrintJob);
 
   auto function = base::MakeRefCounted<PrintingMetricsGetPrintJobsFunction>();
-  std::unique_ptr<base::Value> result =
-      RunFunctionAndReturnValue(function.get(), "[]");
+  auto result = RunFunctionAndReturnValue(function.get(), "[]");
 
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_list());
@@ -161,8 +159,7 @@ TEST_F(PrintingMetricsApiUnittest, GetPrintJobs_TwoPrintJobs) {
   SetUpMockPrintJobHistoryService(ReturnTwoPrintJobs);
 
   auto function = base::MakeRefCounted<PrintingMetricsGetPrintJobsFunction>();
-  std::unique_ptr<base::Value> result =
-      RunFunctionAndReturnValue(function.get(), "[]");
+  auto result = RunFunctionAndReturnValue(function.get(), "[]");
 
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_list());
