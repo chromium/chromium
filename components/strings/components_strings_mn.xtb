@@ -307,6 +307,7 @@
 <translation id="1658918301167915956">bluetooth төхөөрөмжүүд</translation>
 <translation id="1662550410081243962">Төлбөрийн хэрэгслүүдийг хадгалах болон бөглөх</translation>
 <translation id="1663943134801823270">Карт, хаягийг Chrome-с харж болно. Та тэдгээрийг <ph name="BEGIN_LINK" />Тохиргоо<ph name="END_LINK" /> хэсэгт хянах боломжтой.</translation>
+<translation id="1668071460721346172">Имэйл хүлээн авах</translation>
 <translation id="1671391448414634642">Одооноос <ph name="SOURCE_LANGUAGE" /> хэл дээрх хуудсыг <ph name="TARGET_LANGUAGE" /> хэл рүү орчуулна.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> -с <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Эхлээд богино зах</translation>
@@ -367,6 +368,7 @@
 <translation id="1806174020048213474">Энэ апп Wi-Fi-н мандат үнэмлэхүүдийг суулгах зөвшөөрөл хүсэж байна. Тохируулсны дараа таны <ph name="DEVICE_TYPE" /> оролцож буй Wi-Fi сүлжээнүүдэд автоматаар холбогдоно. Эдгээр мандат үнэмлэхийг хасахын тулд аппыг устгана уу.</translation>
 <translation id="1807246157184219062">Гэрэлтүүлэг</translation>
 <translation id="1807528111851433570">Эхлэлийн хүснэгт</translation>
+<translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">Таны Карт баталгаажуулалтын код нь картын тань ар талд байдаг. Энэ нь гарын үсгийн нүдний баруун дээд талд байх сүүлийн 3 орон юм.</translation>
 <translation id="181000283860817563">Олон сайт дээр үнэ хянах</translation>
 <translation id="1810391395243432441">Дэлгэцийн түгжээгээрээ нууц үгээ хамгаалах</translation>
@@ -510,6 +512,7 @@
 <translation id="2166049586286450108">Админы бүрэн хандалт</translation>
 <translation id="2166378884831602661">Энэ сайтад холбогдоход аюултай</translation>
 <translation id="2168151236314517198">Энэ контентыг хэвлэх сонголтыг администраторын бодлогоор блоклосон байна</translation>
+<translation id="2176974405772725904">Бүртгэлд хаяг хадгалах</translation>
 <translation id="2181821976797666341">Тохиргоонууд</translation>
 <translation id="2183608646556468874">Утасны дугаар</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 хаяг}other{# хаяг}}</translation>
@@ -523,7 +526,6 @@
 <translation id="2204482073374652408">Шинэчилж дууслаа!</translation>
 <translation id="22081806969704220">Гарах цаасны тавиур 3</translation>
 <translation id="2210794033760923560">Тайлан байршуулах</translation>
-<translation id="2212579473415663542">Энэ хаягийг таны Google Бүртгэлд (<ph name="ACCOUNT" />) хадгаллаа. Та хаягийг дурын төхөөрөмжөөр Google-н бүтээгдэхүүнүүдэд ашиглах боломжтой.</translation>
 <translation id="2212735316055980242">Тохиргоо олдсонгүй</translation>
 <translation id="2213606439339815911">Оролтыг оруулж байна...</translation>
 <translation id="2213612003795704869">Хуудсыг хэвлэсэн</translation>
@@ -1587,6 +1589,7 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{Байхгүй}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" />-н хайлт</translation>
 <translation id="4879491255372875719">Автомат (өгөгдмөл)</translation>
+<translation id="4879723019639546076">Энэ хаягийг зөвхөн Chrome-д хадгалсан. Үүнийг Google-н бүтээгдэхүүнүүдэд ашиглахын тулд Google Бүртгэлдээ (<ph name="ACCOUNT" />) хадгална уу.</translation>
 <translation id="4880827082731008257">Түүхийг хайх</translation>
 <translation id="4881695831933465202">Нээх</translation>
 <translation id="4881808915112408168">24 x 31.5 инч</translation>
@@ -1737,6 +1740,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Нэмэлт</translation>
 <translation id="5234764350956374838">Хэрэгсэхгүй болго</translation>
+<translation id="5238301240406177137">Бүртгэлд хадгалах</translation>
 <translation id="5239623327352565343">Байршлыг зөвшөөрсөн</translation>
 <translation id="5242889659037569123">Ачаа тээш, аяллын хэрэгсэл</translation>
 <translation id="5244732203286792411">Ачаалж байна...
@@ -2143,6 +2147,7 @@
 <translation id="6279183038361895380">Курсороо харуулахын тулд |<ph name="ACCELERATOR" />|-г дарна уу</translation>
 <translation id="6280223929691119688">Энэ хаяг руу хүргэх боломжгүй тул өөр хаяг сонгоно уу.</translation>
 <translation id="6284292079994426700">26 x 38 инч</translation>
+<translation id="6284517535531159884">Хувилбарын үрийн төрөл</translation>
 <translation id="6285507000506177184">Chrome-д таталтуудыг удирдах товчлуур, Chrome-д татсан файлуудаа удирдахын тулд Enter дээр дарна уу</translation>
 <translation id="6289939620939689042">Хуудасны өнгө</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2252,6 +2257,7 @@
 <translation id="6545864417968258051">Bluetooth скан хийх</translation>
 <translation id="6547208576736763147">Зүүн ирмэг дагуу хоёр нүх цоолох</translation>
 <translation id="6549443526281184652">Хувцас</translation>
+<translation id="6551873053534932690">Бүртгэлд хаяг хадгалах уу?</translation>
 <translation id="6554732001434021288">Хамгийн сүүлд <ph name="NUM_DAYS" /> хоногийн өмнө зочилсон</translation>
 <translation id="6556866813142980365">Дахин хийх</translation>
 <translation id="6557715786897013164">14 x 17 инч</translation>
@@ -2316,6 +2322,7 @@
 <translation id="6716672519412350405"><ph name="URL" /> нь таны эргэн тойрны 3D газрын зургийг үүсгэж, камерын хөдөлгөөнийг хянахыг хүсэж байна</translation>
 <translation id="6718612893943028815">Камер ашиглах уу?</translation>
 <translation id="6721678857435001674">Аюулгүй байдлын түлхүүрийнхээ бүтэц болон загварыг харах</translation>
+<translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">камер</translation>
 <translation id="6738516213925468394">Таны өгөгдлийг таны <ph name="BEGIN_LINK" />синкийн нэвтрэх үгтэй<ph name="END_LINK" /> <ph name="TIME" />-д синк хийсэн байна. Синкийг эхлүүлэхийн тулд үүнийг оруулна уу.</translation>

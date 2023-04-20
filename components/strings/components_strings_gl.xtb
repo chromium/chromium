@@ -307,6 +307,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1658918301167915956">dispositivos Bluetooth</translation>
 <translation id="1662550410081243962">Gardar e autocompletar métodos de pago</translation>
 <translation id="1663943134801823270">As tarxetas e enderezos proceden de Chrome. Podes xestionalos en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
+<translation id="1668071460721346172">Recibir un correo electrónico</translation>
 <translation id="1671391448414634642">As páxinas en <ph name="SOURCE_LANGUAGE" /> traduciranse ao <ph name="TARGET_LANGUAGE" /> a partir de agora.</translation>
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Co bordo curto primeiro</translation>
@@ -367,6 +368,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1806174020048213474">Esta aplicación está solicitando permiso para instalar credenciais de acceso wifi. Despois da configuración, o dispositivo <ph name="DEVICE_TYPE" /> conectarase automaticamente ás redes wifi participantes. Para quitalas, desinstala a aplicación.</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1807528111851433570">Folla de inicio</translation>
+<translation id="180757923930449935">(emula un dispositivo de 64 bits)</translation>
 <translation id="180991881384371158">O CVC está na parte traseira da tarxeta. Son os últimos 3 díxitos que están no recanto superior dereito da caixa de sinaturas.</translation>
 <translation id="181000283860817563">Facer un seguimento dos prezos en varios sitios</translation>
 <translation id="1810391395243432441">Protexe os contrasinais co bloqueo de pantalla</translation>
@@ -510,6 +512,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2166049586286450108">Acceso de administrador completo</translation>
 <translation id="2166378884831602661">Este sitio non pode fornecer unha conexión segura</translation>
 <translation id="2168151236314517198">A política do administrador bloqueou a impresión deste contido</translation>
+<translation id="2176974405772725904">Gardar o enderezo na conta</translation>
 <translation id="2181821976797666341">Políticas</translation>
 <translation id="2183608646556468874">Número de teléfono</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 enderezo}other{# enderezos}}</translation>
@@ -523,7 +526,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2204482073374652408">Rematou a actualización</translation>
 <translation id="22081806969704220">Bandexa 3</translation>
 <translation id="2210794033760923560">Cargar informe</translation>
-<translation id="2212579473415663542">Agora este enderezo está gardado na túa Conta de Google (<ph name="ACCOUNT" />). Podes usalo nos produtos de Google con calquera dispositivo.</translation>
 <translation id="2212735316055980242">Política non atopada</translation>
 <translation id="2213606439339815911">Obtendo entradas...</translation>
 <translation id="2213612003795704869">Imprimiuse a páxina</translation>
@@ -1224,6 +1226,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4031179711345676612">Permítese o micrófono</translation>
 <translation id="4040350669425716613">Facultades e universidades</translation>
 <translation id="4047351652147966654">18 × 24 in</translation>
+<translation id="4047620889508350431">Agora podes utilizar os enderezos desde a túa Conta de Google.</translation>
 <translation id="405399507749852140">Recibe alertas se baixa o prezo en calquera sitio</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Permite que Google te axude a atopar descontos para os teus carros</translation>
@@ -1586,6 +1589,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4877083676943085827">{COUNT,plural, =0{Ningún}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" /> e <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Busca de "<ph name="TEXT" />"</translation>
 <translation id="4879491255372875719">Automático (opción predeterminada)</translation>
+<translation id="4879723019639546076">Este enderezo gárdase só en Chrome. Para usalo nos produtos de Google, gárdao na túa Conta de Google (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">Historial de busca</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4881808915112408168">24 x 31,5 polgadas</translation>
@@ -1736,6 +1740,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Rexeitar</translation>
+<translation id="5238301240406177137">Gardar na conta</translation>
 <translation id="5239623327352565343">O acceso á localización está permitido</translation>
 <translation id="5242889659037569123">Maletas e accesorios de viaxe</translation>
 <translation id="5244732203286792411">Cargando...
@@ -2143,6 +2148,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6279183038361895380">Preme |<ph name="ACCELERATOR" />| para mostrar o cursor</translation>
 <translation id="6280223929691119688">Non se pode realizar a entrega neste enderezo. Selecciona un diferente.</translation>
 <translation id="6284292079994426700">26 × 38 in</translation>
+<translation id="6284517535531159884">Tipo de orixe das variacións</translation>
 <translation id="6285507000506177184">Botón para xestionar as descargas en Chrome. Se queres xestionar os ficheiros que descargaches en Chrome, preme Introducir</translation>
 <translation id="6289939620939689042">Cor das páxinas</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2252,6 +2258,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6545864417968258051">Busca de dispositivos Bluetooth</translation>
 <translation id="6547208576736763147">Dúas perforacións na parte esquerda</translation>
 <translation id="6549443526281184652">Disfraces</translation>
+<translation id="6551873053534932690">Queres gardar o enderezo na conta?</translation>
 <translation id="6554732001434021288">Visitouse hai <ph name="NUM_DAYS" /> días por última vez</translation>
 <translation id="6556866813142980365">Refacer</translation>
 <translation id="6557715786897013164">14 x 17 polgadas</translation>
@@ -2316,6 +2323,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6716672519412350405"><ph name="URL" /> quere crear un mapa 3D do que te rodea e facer un seguimento da posición da cámara</translation>
 <translation id="6718612893943028815">Queres usar a cámara?</translation>
 <translation id="6721678857435001674">Ver a marca e o modelo da túa chave de seguranza</translation>
+<translation id="6726832600570791992">(emula un dispositivo de 32 bits)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">cámara</translation>
 <translation id="6738516213925468394">Os teus datos encriptáronse coa túa <ph name="BEGIN_LINK" />frase de acceso de sincronización<ph name="END_LINK" /> o <ph name="TIME" />. Introdúcea para comezar a sincronización.</translation>

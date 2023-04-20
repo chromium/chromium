@@ -2212,6 +2212,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2852385257476173980">Une liste de sites que vous visitez peut s'afficher ici au fur et à mesure que vous naviguez sur le Web</translation>
 <translation id="285241945869362924">Génère automatiquement des sous-titres pour les contenus audio et vidéo. L'audio et les sous-titres ne quittent jamais votre appareil.</translation>
 <translation id="2856776373509145513">Créer un conteneur</translation>
+<translation id="2859741939921354763">Importer des mots de passe dans <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">Mise à jour terminée. Veuillez redémarrer le système.</translation>
 <translation id="2861941300086904918">Gestionnaire de sécurité de Native Client</translation>
 <translation id="2862815659905780618">Supprimer l'environnement de conception Linux</translation>
@@ -4290,6 +4291,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="47158868804223727">Cliquez sur le nom du groupe pour le développer ou le réduire</translation>
 <translation id="4716483597559580346">Powerwash pour une sécurité accrue</translation>
 <translation id="471759229191973607">Changer de thème</translation>
+<translation id="4718046540206070045">Plus qu'un navigateur</translation>
 <translation id="4718564115458102525">Aucun clavier détecté</translation>
 <translation id="4722735765955348426">Mot de passe pour <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> partage votre écran.</translation>
@@ -4654,7 +4656,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5063480226653192405">Utilisation</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Gérer la fonctionnalité DNS sécurisé dans les paramètres de Chrome OS</translation>
-<translation id="5066160542186949327">Déplacer vers un autre dossier</translation>
 <translation id="5067399438976153555">Toujours activé</translation>
 <translation id="5067867186035333991">Demander mon autorisation si <ph name="HOST" /> veut accéder au microphone</translation>
 <translation id="5068553687099139861">afficher les mots de passe</translation>
@@ -5436,6 +5437,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5787146423283493983">Accord de la clé</translation>
 <translation id="5787420647064736989">Nom de l'appareil</translation>
 <translation id="5788367137662787332">Nous sommes désolés, il y a au moins une partition sur le périphérique <ph name="DEVICE_LABEL" /> qui n'est pas installable.</translation>
+<translation id="5789581866075720267">Pour importer des mots de passe dans <ph name="BRAND" /> sur cet appareil, sélectionnez un fichier CSV</translation>
 <translation id="5789643057113097023">,</translation>
 <translation id="5790085346892983794">Opération réussie</translation>
 <translation id="5790651917470750848">Cette redirection de port existe déjà</translation>
@@ -5680,6 +5682,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5984222099446776634">Dossiers récents</translation>
 <translation id="5985458664595100876">Format d'URL incorrect. Les formats pris en charge sont \\server\share et smb://server/share.</translation>
 <translation id="598810097218913399">Retirer l'attribution</translation>
+<translation id="5989629029899728491">Au-delà des témoins</translation>
 <translation id="5990266201903445068">Wi-Fi seulement</translation>
 <translation id="5990386583461751448">Traduit</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Pour vous assurer de pouvoir continuer à naviguer sur le Web, demandez à votre administrateur de supprimer cette application.}one{Pour vous assurer de pouvoir continuer à naviguer sur le Web, demandez à votre administrateur de supprimer cette application.}other{Pour vous assurer de pouvoir continuer à naviguer sur le Web, demandez à votre administrateur de supprimer ces applications.}}</translation>
@@ -5790,6 +5793,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> : fait partie d'un groupe sans nom</translation>
 <translation id="6085886413119427067">Détermine la manière de communiquer avec des sites Web par connexion sécurisée</translation>
 <translation id="6086004606538989567">Le compte que vous avez vérifié n'est pas autorisé à accéder à cet appareil.</translation>
+<translation id="6086347269144967242">Lire les renseignements et les données de l'appareil joint</translation>
 <translation id="6086846494333236931">Élément installé par votre administrateur</translation>
 <translation id="6087746524533454243">Vous recherchez la page à propos du navigateur? Consultez</translation>
 <translation id="6087960857463881712">Superbe visage</translation>
@@ -8356,6 +8360,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Vous avez déjà enregistré cet appareil. Vous n'avez pas à l'enregistrer de nouveau.</translation>
 <translation id="8357388086258943206">Erreur lors de l'installation de Linux</translation>
+<translation id="8357591920094529889">Ce guide vous aide à comprendre les choix importants que vous avez lorsque vous utilisez Chrome. Et cela vous aide à faire ces choix, afin que Chrome fonctionne comme vous le souhaitez.</translation>
 <translation id="8358685469073206162">Restaurer les pages qui étaient ouvertes?</translation>
 <translation id="8358912028636606457">La diffusion de l'audio de l'onglet n'est pas prise en charge sur cet appareil.</translation>
 <translation id="835951711479681002">Enregistrer dans votre compte Google</translation>
@@ -8409,6 +8414,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8398877366907290961">Continuer</translation>
 <translation id="8399282673057829204">Afficher le mot de passe</translation>
 <translation id="8401432541486058167">Entrez le NIP associé à votre carte à puce.</translation>
+<translation id="8403618281196981152">Vos données dans Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> ne peut vérifier vos mots de passe que si vous les enregistrez</translation>
 <translation id="8405046151008197676">Consultez les faits saillants de la dernière mise à jour</translation>
 <translation id="8407199357649073301">Niveau de journalisation :</translation>
@@ -8468,6 +8474,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8460932807646981183">Gérer les moteurs de recherche et la recherche de sites</translation>
 <translation id="84613761564611563">IU de configuration du réseau nécessaire. Veuillez patienter…</translation>
 <translation id="8461914792118322307">Mandataire</translation>
+<translation id="8461973047386722744">Aucun mot de passe trouvé</translation>
 <translation id="8463001014623882202">Échec de l'autorisation</translation>
 <translation id="846374874681391779">Barre des téléchargements</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> désactivé.</translation>
@@ -8526,6 +8533,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8512476990829870887">Arrêter le processus</translation>
 <translation id="851263357009351303">Toujours autoriser <ph name="HOST" /> à afficher les images</translation>
 <translation id="8513108775083588393">Rotation auto</translation>
+<translation id="8513357934662532537">Pour importer des mots de passe dans <ph name="BRAND" /> pour <ph name="USER_EMAIL" />, sélectionnez un fichier CSV.</translation>
 <translation id="8514746246728959655">Essayez une clé de sécurité différente</translation>
 <translation id="8514955299594277296">Ne pas autoriser les sites à enregistrer des données sur votre appareil (non recommandé)</translation>
 <translation id="8517759303731677493">Modifier…</translation>

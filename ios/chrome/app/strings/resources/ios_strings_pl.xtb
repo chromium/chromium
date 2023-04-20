@@ -358,7 +358,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3305294846493618482">więcej</translation>
 <translation id="3311748811247479259">Wyłączono</translation>
 <translation id="3324193307694657476">Adres 2</translation>
-<translation id="3328459813621383194">Przenieś nieaktywne karty</translation>
 <translation id="3328801116991980348">Informacje o witrynie</translation>
 <translation id="3344485292736684439">{count,plural, =1{Zakładka została zapisana w folderze „{title}” na Twoim koncie {email}}few{Zakładki zostały zapisane w folderze „{title}” na Twoim koncie {email}}many{Zakładki zostały zapisane w folderze „{title}” na Twoim koncie {email}}other{Zakładki zostały zapisane w folderze „{title}” na Twoim koncie {email}}}</translation>
 <translation id="3371831930909698441">Dostępne jest tłumaczenie. Opcje znajdują się u dołu ekranu.</translation>
@@ -499,6 +498,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4343046787186034850">Przyznano dostęp do aparatu i mikrofonu</translation>
 <translation id="4359125752503270327">Strona zostanie otwarta w innej aplikacji.</translation>
 <translation id="4371526908359194219">Powiadomienia e-mail</translation>
+<translation id="4371591986692297148">Nieaktywna</translation>
 <translation id="4375040482473363939">Wyszukiwanie z użyciem kodu QR</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Kliknij, by zmienić język.</translation>
@@ -629,7 +629,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5168414296986405587">Stworzona dla iPadOS</translation>
 <translation id="5173088371991956744">Synchronizacja musi potwierdzić Twoją tożsamość</translation>
 <translation id="5176312250994681348">Zachowaj ostatnie hasło</translation>
-<translation id="51802232683641391">{count,plural, =1{Czy chcesz wrócić na kartę ostatnio wyświetlaną na Androidzie?}few{Czy chcesz wrócić na karty ostatnio wyświetlane na Androidzie?}many{Czy chcesz wrócić na karty ostatnio wyświetlane na Androidzie?}other{Czy chcesz wrócić na karty ostatnio wyświetlane na Androidzie?}}</translation>
 <translation id="5181140330217080051">Pobieranie</translation>
 <translation id="5184329579814168207">Otwórz w Chrome</translation>
 <translation id="5186185447130319458">Prywatna</translation>
@@ -907,7 +906,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="6807889908376551050">Pokaż wszystkie...</translation>
 <translation id="681368974849482173">Utworzono element</translation>
 <translation id="6822587385560699678">Gdy to ustawienie jest włączone, hasła są zapisywane na koncie <ph name="ACCOUNT" />. Gdy jest wyłączone, hasła są zapisywane tylko na tym urządzeniu.</translation>
-<translation id="683022620450280906">Zapisanych haseł możesz używać na dowolnym urządzeniu. Menedżer haseł Google przechowuje je na koncie <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Tłumacz</translation>
 <translation id="6842136130964845393">Aby zapewnić sobie stały dostęp do zapisanych haseł, potwierdź swoją tożsamość</translation>
 <translation id="6851516051005285358">Wersja na komputer</translation>

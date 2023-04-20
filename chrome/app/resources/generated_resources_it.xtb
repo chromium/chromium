@@ -802,6 +802,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1666232093776384142">Disattiva la protezione dell'accesso ai dati per le periferiche</translation>
 <translation id="1667842670298352129">Attiva la lettura ad alta voce di testo specifico. Seleziona prima l'icona Seleziona per ascoltare nella parte inferiore dello schermo, quindi evidenzia il testo. Puoi anche usare una scorciatoia da tastiera: evidenzia il testo e premi il tasto per la ricerca + S.</translation>
 <translation id="1668435968811469751">Registrazione manuale</translation>
+<translation id="1668804837842452164">Salva su <ph name="BRAND" /> per <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Ulteriori informazioni sui suggerimenti</translation>
 <translation id="1670399744444387456">Base</translation>
 <translation id="1673137583248014546"><ph name="URL" /> vuole accedere a marca e modello del token di sicurezza</translation>
@@ -1567,6 +1568,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> il sistema verrà riavviato durante la procedura.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ha richiesto altre autorizzazioni.</translation>
+<translation id="2306794767168143227">Salva su <ph name="BRAND" /> su questo dispositivo</translation>
 <translation id="2307462900900812319">Configura rete</translation>
 <translation id="2307553512430195144">Se accetti, l'Assistente Google attenderà in modalità standby per individuare il comando "Hey Google" e potrà riconoscere la voce di <ph name="SUPERVISED_USER_NAME" /> con Voice Match.
     <ph name="BR" />
@@ -4659,7 +4661,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5063480226653192405">Utilizzo</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Gestisci DNS sicuro nelle impostazioni di ChromeOS</translation>
-<translation id="5066160542186949327">Sposta in un'altra cartella</translation>
 <translation id="5067399438976153555">Sempre attivo</translation>
 <translation id="5067867186035333991">Chiedi conferma se <ph name="HOST" /> vuole accedere al microfono</translation>
 <translation id="5068553687099139861">mostrare le password</translation>

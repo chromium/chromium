@@ -225,6 +225,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1978498689038657292">Vnos besedila</translation>
 <translation id="1980808257969311265">Pridružite se temu: <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Prikaz prejšnjega tedna</translation>
+<translation id="1986150224850161328">Poskrbite, da sta telefon in Chromebook povezana v isto omrežje, nato poskusite znova. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Vsebine ni mogoče zajeti</translation>
 <translation id="1990046457226896323">Datoteke za govor so bile prenesene.</translation>
 <translation id="1993072747612765854">Več informacij o najnovejši posodobitvi za <ph name="SYSTEM_APP_NAME" /></translation>
@@ -373,6 +374,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2761723519669354964">Odpiranje označenega elementa s police</translation>
 <translation id="2778650143428714839">Napravo <ph name="DEVICE_TYPE" /> upravlja domena <ph name="MANAGER" />.</translation>
 <translation id="2782591952652094792">Zapiranje načina zajema</translation>
+<translation id="2785499565474703580">1 naprava je povezana</translation>
 <translation id="2791421900609674576">Prikazana bodo priporočila, da boste lahko nadaljevali tam, kjer ste končali. Priporočila lahko odstranite tako, da se dotaknete in pridržite.</translation>
 <translation id="2792498699870441125">Alt + iskanje</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1277,6 +1279,7 @@ Nova namestitev</translation>
 <translation id="6941333068993625698">Pošiljanje povratnih informacij</translation>
 <translation id="6942518653766415536">Meni oblike zapisa posnetka</translation>
 <translation id="6945221475159498467">Izberi</translation>
+<translation id="6945922087561257829">Telefon uporablja mobilno omrežje. Poskrbite, da sta telefon in Chromebook povezana v isto omrežje Wi-Fi, nato poskusite znova. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Ni aktivirano. Obrnite se na operaterja.</translation>
 <translation id="6961121602502368900">Utišanje telefona ni na voljo v delovnem profilu</translation>
 <translation id="6961840794482373852">Bližnjica na tipkovnici alt + puščica gor je spremenjena. Če želite uporabiti tipko za stran navzgor, pritisnite tipko za <ph name="LAUNCHER_KEY_NAME" /> in puščico gor.</translation>
@@ -1331,6 +1334,7 @@ Nova namestitev</translation>
 <translation id="7188494361780961876">Meni je bil premaknjen v zgornji levi kot zaslona.</translation>
 <translation id="7189412385142492784">Kako daleč je Venera</translation>
 <translation id="7198435252016571249">Fotoaparat je pripet v spodnji desni kot. To je v navzkrižju s sistemskim okoljem.</translation>
+<translation id="7219573373513695352">Nobena naprava ni povezana</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ta Chromebook je treba znova zagnati, če želite uveljaviti posodobitev. Traja lahko največ eno minuto.</translation>
 <translation id="7256634071279256947">Zadnji mikrofon</translation>
 <translation id="7258828758145722155">Urejeno včeraj</translation>
@@ -1481,6 +1485,7 @@ Nova namestitev</translation>
 <translation id="7902625623987030061">Dotaknite se tipala prstnih odtisov.</translation>
 <translation id="7904094684485781019">Skrbnik tega računa je onemogočil prijavo z več računi.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422">Povezane naprave (<ph name="DEVICECOUNT" />)</translation>
 <translation id="7930731167419639574">Govor se zdaj obdela lokalno in narek deluje brez povezave.</translation>
 <translation id="7932451802722951285">Odpri v Google Koledarju</translation>
 <translation id="7933084174919150729">Pomočnik Google je na voljo samo za primarni profil.</translation>

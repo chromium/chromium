@@ -70,6 +70,7 @@
 <translation id="1375321115329958930">סיסמאות שמורות</translation>
 <translation id="1377255359165588604">הסנכרון הפסיק לפעול.</translation>
 <translation id="1377321085342047638">מספר כרטיס</translation>
+<translation id="1377508275003315939">סיסמאות</translation>
 <translation id="1383876407941801731">חיפוש</translation>
 <translation id="138618066238211776">המשך בתור <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">מארבעת השבועות האחרונים</translation>
@@ -123,6 +124,7 @@
 <translation id="1750238553597293878">‏המשך השימוש בסיסמאות בחשבון Google שלך</translation>
 <translation id="1752547299766512813">שמירת סיסמאות</translation>
 <translation id="1753905327828125965">עם המבקרים הרבים ביותר</translation>
+<translation id="1757699834933698436">{count,plural, =1{יש סיסמה חלשה אחת ({count})}one{יש {count} סיסמאות חלשות}two{יש {count} סיסמאות חלשות}other{יש {count} סיסמאות חלשות}}</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1789803444939621101">שמחים שחזרת, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">שם בעל הכרטיס</translation>
@@ -229,6 +231,7 @@
 <translation id="2576499762020411840">‏שימוש בסיסמאות ושמירה שלהן בחשבון Google</translation>
 <translation id="2578571896248130439">שליחת דף האינטרנט</translation>
 <translation id="2584132361465095047">חשבון חדש…</translation>
+<translation id="2587010742985678408">{count,plural, =0{אין סיסמאות שנחשפו}=1{יש סיסמה אחת ({count}) שנחשפה}one{יש {count} סיסמאות שנחשפו}two{יש {count} סיסמאות שנחשפו}other{יש {count} סיסמאות שנחשפו}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{כרטיסיות פתוחות שלא נעשה בהן שימוש במשך יום אחד או יותר עוברות לקטע 'כרטיסיות לא פעילות', כך שתהיה לך אפשרות להתמקד בקלות בכרטיסיות שנעשה בהן שימוש בתדירות הגבוהה ביותר. תמיד אפשר לשנות זאת בהגדרות.}one{כרטיסיות פתוחות שלא נעשה בהן שימוש במשך {COUNT} ימים או יותר עוברות לקטע 'כרטיסיות לא פעילות', כך שתהיה לך אפשרות להתמקד בקלות בכרטיסיות שנעשה בהן שימוש בתדירות הגבוהה ביותר. תמיד אפשר לשנות זאת בהגדרות.}two{כרטיסיות פתוחות שלא נעשה בהן שימוש במשך יומיים ({COUNT}) או יותר עוברות לקטע 'כרטיסיות לא פעילות', כך שתהיה לך אפשרות להתמקד בקלות בכרטיסיות שנעשה בהן שימוש בתדירות הגבוהה ביותר. תמיד אפשר לשנות זאת בהגדרות.}other{כרטיסיות פתוחות שלא נעשה בהן שימוש במשך {COUNT} ימים או יותר עוברות לקטע 'כרטיסיות לא פעילות', כך שתהיה לך אפשרות להתמקד בקלות בכרטיסיות שנעשה בהן שימוש בתדירות הגבוהה ביותר. תמיד אפשר לשנות זאת בהגדרות.}}</translation>
 <translation id="2600682495497606169">‏ניקוי קובצי ה-cookie של אתרים</translation>
 <translation id="2609008503159898744">לסגור את כל הכרטיסיות?</translation>
@@ -272,6 +275,7 @@
 <translation id="2797029671965852011">הצגת ההיסטוריה</translation>
 <translation id="2800683595868705743">‏יציאה מ-Tab Switcher</translation>
 <translation id="2815198996063984598">2. מקישים על אפליקציית הדפדפן שמוגדרת כברירת מחדל</translation>
+<translation id="2818821771744632548">‏המערכת הוציאה אותך מהחשבון, <ph name="USER_NAME" />, במסגרת האיפוס של iPhone. כדי להיכנס שוב לחשבון צריך להקיש על 'המשך' למטה.</translation>
 <translation id="2822917246944009066">הכרטיסייה הוצמדה</translation>
 <translation id="2830972654601096923">ניהול כתובות...</translation>
 <translation id="2834399722155632105">3‏. מקישים על 'אפשרויות של סיסמאות'</translation>
@@ -352,7 +356,6 @@
 <translation id="3305294846493618482">עוד</translation>
 <translation id="3311748811247479259">כבוי</translation>
 <translation id="3324193307694657476">כתובת, שורה 2</translation>
-<translation id="3328459813621383194">העברת הכרטיסיות הלא פעילות</translation>
 <translation id="3328801116991980348">פרטי אתר</translation>
 <translation id="3344485292736684439">{count,plural, =1{הסימנייה נשמרה בתיקייה ’{title}‘ בחשבון שלך, {email}}one{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}two{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}other{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}}</translation>
 <translation id="3371831930909698441">‏Translate זמין. האפשרויות מוצגות בחלק התחתון של המסך.</translation>
@@ -493,6 +496,7 @@
 <translation id="4343046787186034850">יש הרשאות גישה למצלמה ולמיקרופון</translation>
 <translation id="4359125752503270327">הדף הזה ייפתח באפליקציה אחרת.</translation>
 <translation id="4371526908359194219">התראות באימייל</translation>
+<translation id="4371591986692297148">לא פעיל</translation>
 <translation id="4375040482473363939">‏חיפוש של קוד QR</translation>
 <translation id="4378154925671717803">טלפון</translation>
 <translation id="4389019817280890563">צריך להקיש לשינוי שפה</translation>
@@ -531,6 +535,7 @@
 <translation id="4620246317052452550">דפים שקראת</translation>
 <translation id="4620888520263267479">הפעלת התצוגה המקדימה של הקישורים</translation>
 <translation id="4630540211544979320">תרגום דפים</translation>
+<translation id="4631335160486397366">יש <ph name="COUNT" /> סיסמאות בשימוש חוזר</translation>
 <translation id="4634124774493850572">שימוש בסיסמה</translation>
 <translation id="4636930964841734540">מידע</translation>
 <translation id="4642472735733036929">המעקב אחר מחירים הופסק</translation>
@@ -622,7 +627,6 @@
 <translation id="5168414296986405587">‏מותאם ל-iPadOS</translation>
 <translation id="5173088371991956744">כדי לסנכרן צריך לאמת את הזהות שלך</translation>
 <translation id="5176312250994681348">שמירת הסיסמה האחרונה</translation>
-<translation id="51802232683641391">{count,plural, =1{‏רוצה לחזור לכרטיסייה האחרונה שבה גלשת ב-Android?}one{‏רוצה לחזור לכרטיסיות האחרונות שבהן גלשת ב-Android?}two{‏רוצה לחזור לכרטיסיות האחרונות שבהן גלשת ב-Android?}other{‏רוצה לחזור לכרטיסיות האחרונות שבהן גלשת ב-Android?}}</translation>
 <translation id="5181140330217080051">מוריד</translation>
 <translation id="5184329579814168207">‏פתיחה ב-Chrome</translation>
 <translation id="5186185447130319458">פרטי</translation>
@@ -665,6 +669,7 @@
 <translation id="5520466080178053306">מקישים על 'מנהל הסיסמאות' ואז על 'הוספה'</translation>
 <translation id="5525095647255982834">‏כדי לשלוח את הכרטיסייה הזו למכשיר אחר, יש להיכנס ל-Chrome במכשיר האחר.</translation>
 <translation id="5525269841082836315">יצירת ביטוי סיסמה</translation>
+<translation id="553151287733286479">{COUNT,plural, =1{יש סיסמה חלשה אחת ({COUNT})}one{יש {COUNT} סיסמאות חלשות}two{יש {COUNT} סיסמאות חלשות}other{יש {COUNT} סיסמאות חלשות}}</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> נמצאו</translation>
 <translation id="5548760955356983418">‏Handoff מאפשר לך להתחיל לגלוש באתר מסוים במכשיר הזה ולאחר מכן להמשיך בקלות ב-Mac. האתר הפתוח הנוכחי יופיע ב-Dock של ה-Mac שלך.
 
@@ -795,6 +800,7 @@
 <translation id="6293101329759844770">‏כדי להפעיל גלישה בטוחה, יש להיכנס ל<ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" /> ולהקיש על 'גלישה בטוחה'.</translation>
 <translation id="6321526113093607004">הוספה לסימניות</translation>
 <translation id="6324669097367352121">הגדרות כניסה</translation>
+<translation id="6331180460633101391">יש <ph name="COUNT" /> סיסמאות בשימוש חוזר</translation>
 <translation id="6337234675334993532">הצפנה</translation>
 <translation id="633809752005859102">משהו לגמרי השתבש. נעבוד על זה.</translation>
 <translation id="6340285871011301182">תרגום חלקי לא זמין.</translation>
@@ -898,7 +904,6 @@
 <translation id="6807889908376551050">הצגת הכול...</translation>
 <translation id="681368974849482173">הפריט נוצר</translation>
 <translation id="6822587385560699678">כשההגדרה מופעלת, הסיסמאות נשמרות בחשבון <ph name="ACCOUNT" />. כשההגדרה מושבתת, הסיסמאות נשמרות רק במכשיר הזה.</translation>
-<translation id="683022620450280906">‏אפשר להשתמש בסיסמאות השמורות שלך בכל מכשיר. הן נשמרות במנהל הסיסמאות של Google בחשבון <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">תרגום</translation>
 <translation id="6842136130964845393">כדי לוודא שתמיד תהיה לך גישה לסיסמאות השמורות, עליך לאמת את זהותך</translation>
 <translation id="6851516051005285358">בקשת אתר למחשב</translation>
@@ -1106,6 +1111,7 @@
 <translation id="8261506727792406068">מחיקה</translation>
 <translation id="8264966119170358612">‏חלק מהסיסמאות השמורות שלך נחשפו ברשומות שאינן של Google עקב פרצה באבטחת מידע. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8265018477030547118">רק במכשיר הזה</translation>
+<translation id="826614135184049678">‏המערכת הוציאה אותך מהחשבון, <ph name="USER_NAME" />, במסגרת האיפוס של iPad. כדי להיכנס שוב לחשבון צריך להקיש על 'המשך' למטה.</translation>
 <translation id="8271720166617117963">אישור וכניסה</translation>
 <translation id="8278938988428169257">מזינים מילה או ביטוי</translation>
 <translation id="8281781826761538115">ברירת מחדל - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1154,6 +1160,7 @@
 <translation id="8620640915598389714">עריכה</translation>
 <translation id="8626393685701737946">אפשר לשנות את תצוגת האתר שמוגדרת כברירת מחדל לגרסה הייעודית למחשב ב'הגדרות' &gt; 'הגדרות תוכן'</translation>
 <translation id="8636825310635137004">כדי לקבל את הכרטיסיות מהמכשירים האחרים שלך, יש להפעיל את הסנכרון.</translation>
+<translation id="8638151046944329622">{COUNT,plural, =0{אין סיסמאות שנחשפו}=1{יש סיסמה אחת ({COUNT}) שנחשפה}one{יש {COUNT} סיסמאות שנחשפו}two{יש {COUNT} סיסמאות שנחשפו}other{יש {COUNT} סיסמאות שנחשפו}}</translation>
 <translation id="8654802032646794042">ביטול</translation>
 <translation id="8663764600409216912">בחרת סיסמאות שקשה לנחש</translation>
 <translation id="8668210798914567634">דף זה נשמר ברשימת הקריאה שלך.</translation>

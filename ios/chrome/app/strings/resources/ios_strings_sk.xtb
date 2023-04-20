@@ -357,7 +357,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3305294846493618482">viac</translation>
 <translation id="3311748811247479259">Vypnuté</translation>
 <translation id="3324193307694657476">Adresa 2</translation>
-<translation id="3328459813621383194">Presun neaktívnych kariet</translation>
 <translation id="3328801116991980348">Informácie o stránkach</translation>
 <translation id="3344485292736684439">{count,plural, =1{Záložka bola uložená do priečinka {title} vo vašom účte {email}}few{Záložky boli uložené do priečinka {title} vo vašom účte {email}}many{Bookmarks saved to "{title}" in your account, {email}}other{Záložky boli uložené do priečinka {title} vo vašom účte {email}}}</translation>
 <translation id="3371831930909698441">Prekladač je k dispozícii. Možnosti nájdete v dolnej časti obrazovky.</translation>
@@ -498,6 +497,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4343046787186034850">Prístup ku kamere a mikrofónu je povolený</translation>
 <translation id="4359125752503270327">Táto stránka sa otvorí v ďalšej aplikácii.</translation>
 <translation id="4371526908359194219">E‑mailové upozornenia</translation>
+<translation id="4371591986692297148">Neaktívne</translation>
 <translation id="4375040482473363939">Vyhľadávanie QR kódov</translation>
 <translation id="4378154925671717803">Telefón</translation>
 <translation id="4389019817280890563">Klepnutím zmeníte jazyk.</translation>
@@ -628,7 +628,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5168414296986405587">Vytvorené pre iPadOS</translation>
 <translation id="5173088371991956744">Synchronizácia potrebuje overiť vašu totožnosť</translation>
 <translation id="5176312250994681348">Ponechať posledné heslo</translation>
-<translation id="51802232683641391">{count,plural, =1{Chcete pokračovať na karte, ktorú ste používali v zariadení s Androidom?}few{Chcete pokračovať na kartách, ktoré ste používali v zariadení s Androidom?}many{Pick up the tabs you left off from Android?}other{Chcete pokračovať na kartách, ktoré ste používali v zariadení s Androidom?}}</translation>
 <translation id="5181140330217080051">Sťahovanie</translation>
 <translation id="5184329579814168207">Otvoriť v prehliadači Chrome</translation>
 <translation id="5186185447130319458">Súkromné</translation>
@@ -906,7 +905,6 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="6807889908376551050">Zobraziť všetky...</translation>
 <translation id="681368974849482173">Položka bola vytvorená</translation>
 <translation id="6822587385560699678">Keď je táto funkcia zapnutá, heslá sa ukladajú do účtu <ph name="ACCOUNT" />. Keď je vypnutá, heslá sa ukladajú iba do tohto zariadenia.</translation>
-<translation id="683022620450280906">Uložené heslá môžete používať v ľubovoľnom zariadení. Sú uložené v správcovi hesiel Google v účte <ph name="EMAIL" />.</translation>
 <translation id="6831043979455480757">Preložiť</translation>
 <translation id="6842136130964845393">Ak chcete mať neustály prístup k svojim uloženým heslám, overte svoju totožnosť</translation>
 <translation id="6851516051005285358">Vyžiadať stránky pre počítač</translation>

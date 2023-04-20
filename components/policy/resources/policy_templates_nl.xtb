@@ -323,7 +323,6 @@ Als je het beleid niet instelt, is het beleid <ph name="ASK_WINDOW_MANAGEMENT_PO
 
 Dit vervangt het beëindigde beleid <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" />.</translation>
 <translation id="129206366270737897">Zet alle asynchrone methoden van <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> uit.</translation>
-<translation id="129392056654547767">De UEFI-firmware-image die door de VM wordt gebruikt. Dit bestaat als tijdelijke maatregel terwijl we het pakket verpakken als ChromeOS DLC.</translation>
 <translation id="1294263471858445589">Ambient-verificatie in normale en incognitosessies aanzetten.</translation>
 <translation id="1295737447968372331">Dicteren op het inlogscherm aanzetten</translation>
 <translation id="1297182715641689552">Een PAC-script voor de proxy gebruiken</translation>
@@ -579,7 +578,6 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor Cloudbeheer voor de Chrome-browser. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="1530812829012954197">De volgende URL-patronen altijd verwerken in de hostbrowser</translation>
 <translation id="1542491165152947087">Sta gebruikers toe de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentieonderwerpen op hun apparaat aan of uit te zetten.</translation>
-<translation id="1547424904796464052">Hexadecimale gecodeerde SHA-256-hash van de firmware-image.</translation>
 <translation id="1550295162561011575">Als je dit beleid instelt, kunnen beheerders automatisering instellen om apps te starten op <ph name="PRODUCT_NAME" />-apparaten. Deze apps kunnen worden gestart nadat de gebruiker is ingelogd of kunnen gelijktijdig door de gebruiker worden gestart vanuit de launcher.</translation>
 <translation id="1552418937045050762">Als deze instelling aanstaat, kunnen gebruikers zich aanmelden voor Dichtbij delen. Daarmee kunnen ze bestanden sturen naar en ontvangen van mensen in de buurt.
 
@@ -7546,7 +7544,6 @@ Het gebruik van <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> of <ph name="LA
 <translation id="802776363472387903">De SHA-256-hash van de <ph name="PLUGIN_VM_NAME" />-afbeelding.</translation>
 <translation id="8028814157747157754">De standaard zoekprovider aanzetten en toestaan dat gebruikers de lijst met zoekproviders wijzigen</translation>
 <translation id="8029201909194194377">Maximale toegestane sessieduur voor verbindingen voor externe toegang</translation>
-<translation id="8033908599068513676">URL van de firmware-image die moet worden gedownload.</translation>
 <translation id="8035570672225663428">Het model voor aangepast opladen aanzetten om het oplaadproces te onderbreken om de batterijduur te verlengen</translation>
 <translation id="8044493735196713914">Opstartmodus van apparaat melden</translation>
 <translation id="8044720778481009876">De bestemmingen <ph name="CLOUD_PRINT_NAME" /> en Opslaan in Google Drive (beëindigd)</translation>

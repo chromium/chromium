@@ -496,6 +496,7 @@
             <ph name="LINE_BREAKS" />
            ブックマーク、履歴、保存したパスワードへの影響はありません。</translation>
 <translation id="1425040197660226913">アップロードできません。20 MB 未満の画像を使用してください。</translation>
+<translation id="1425282319410216613">ダウンロード完了時に表示しない</translation>
 <translation id="1426410128494586442">はい</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> はブロックされています</translation>
 <translation id="1426870617281699524">[再試行] をクリックし、パソコンに表示されるメッセージに同意してください</translation>
@@ -1896,6 +1897,7 @@
 <translation id="25899519884572181">リーダーモードを終了</translation>
 <translation id="2593499352046705383">開始する前に、データがバックアップされていることを確認してください。<ph name="DEVICE_OS" /> をインストールすると、ハードドライブは上書きされます。詳しくは、g.co/flex/InstallGuide をご覧ください。</translation>
 <translation id="2594999711683503743">Google で検索、または URL を入力</translation>
+<translation id="2598710988533271874">新しい Chrome をご利用いただけます</translation>
 <translation id="2599048253926156421">ユーザー名をクリップボードにコピーしました</translation>
 <translation id="2602501489742255173">開始するには上にスワイプします</translation>
 <translation id="2603115962224169880">パソコンのクリーンアップ</translation>
@@ -3660,6 +3662,7 @@
 <translation id="4144468798716165316">簡単なコマンド</translation>
 <translation id="4146026355784316281">常にシステム ビューアで開く</translation>
 <translation id="4146785383423576110">リセットとクリーンアップ</translation>
+<translation id="4147099377280085053">点字表を選択</translation>
 <translation id="4147911968024186208">もう一度お試しください。このエラーが再び表示される場合は、サポート担当者にお問い合わせください。</translation>
 <translation id="4150201353443180367">表示</translation>
 <translation id="4150569944729499860">画面のコンテキスト</translation>
@@ -3881,6 +3884,7 @@
 <translation id="4366138410738374926">印刷を開始しました</translation>
 <translation id="4367513928820380646">削除された権限を確認</translation>
 <translation id="4369215744064167350">ウェブサイトへのアクセスが承認されました</translation>
+<translation id="436926121798828366">これは <ph name="SETTINGS_LINK" /> でいつでも変更できます</translation>
 <translation id="4369735607080757018">広告のパフォーマンスを測定するため、広告が表示された時刻など、限定的な種類のデータがサイト間で共有されます</translation>
 <translation id="4370975561335139969">入力したメールアドレスとパスワードが一致しません</translation>
 <translation id="4374805630006466253">別のスマートフォンまたはタブレットを使用する</translation>
@@ -4039,6 +4043,7 @@
 <translation id="450552327874992444">この語句はすでに追加されています</translation>
 <translation id="4507128560633489176">データを消去しました。</translation>
 <translation id="4507373251891673233"><ph name="HOST" /> のすべての拡張機能をブロックしました</translation>
+<translation id="4508032221004253235">位置情報へのアクセスを許可したアプリとウェブサイト、ChromeOS で、ご使用の Wi-Fi またはモバイル ネットワークによって判定された位置情報を使用できるようになります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="450867954911715010">ユーザー補助機能の設定</translation>
 <translation id="4508765956121923607">ソースを表示(&amp;O)</translation>
 <translation id="4509421746503122514">再起動して更新する</translation>
@@ -4644,7 +4649,6 @@
 <translation id="5063480226653192405">使用状況</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Chrome OS の設定でセキュア DNS を管理する</translation>
-<translation id="5066160542186949327">別のフォルダに移動</translation>
 <translation id="5067399438976153555">常にオン</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> がマイクへのアクセスを必要としているときは確認画面を表示する</translation>
 <translation id="5068553687099139861">パスワードを表示</translation>
@@ -4829,6 +4833,7 @@
 <translation id="5235750401727657667">新しいタブを開いたときの表示ページを変更する</translation>
 <translation id="5236374273162681467">これらのパスワードを Google アカウントに移動すると、お持ちのすべてのデバイスで簡単に使用できるようになります</translation>
 <translation id="523862956770478816">サイトの権限</translation>
+<translation id="5239752869099890912">これらの拡張機能の更新後の設定をこのサイトに適用するには、このページを再読み込みしてください</translation>
 <translation id="5242724311594467048">「<ph name="EXTENSION_NAME" />」を有効にしますか？</translation>
 <translation id="5243522832766285132">しばらくしてからもう一度お試しください</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> に同期しています</translation>
@@ -5212,6 +5217,7 @@
 <translation id="558170650521898289">Microsoft Windows ハードウェア ドライバの確認</translation>
 <translation id="5581876958763461074">すべてのメモ</translation>
 <translation id="5581972110672966454">デバイスをドメインに追加できません。もう一度お試しいただくか、デバイス所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
+<translation id="5582634344048669777">8 点式</translation>
 <translation id="5582839680698949063">メインメニュー</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">ユーザー名を保存しますか？</translation>
@@ -5868,6 +5874,7 @@
 <translation id="6164832038898943453">自動翻訳する言語を追加</translation>
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6166185671393271715">Chrome にパスワードをインポート</translation>
+<translation id="6166659775803431">カートのアイテム</translation>
 <translation id="6169040057125497443">マイクを確認してください。</translation>
 <translation id="6169967265765719844">Steam 経由でインストールしたゲームやアプリの権限は、<ph name="LINK_BEGIN" />Steam アプリの設定<ph name="LINK_END" />で管理できます。</translation>
 <translation id="6170470584681422115">サンドイッチ</translation>
@@ -6763,6 +6770,7 @@
 <translation id="6968288415730398122">画面ロックを設定するにはパスワードを入力します</translation>
 <translation id="6969047215179982698">ニアバイシェアをオフにする</translation>
 <translation id="6969216690072714773">このデバイスに関連付ける新しい情報を入力するか、既存の情報を更新します。</translation>
+<translation id="696942486482903620">Google アカウントにパスワードを保存すると、このデバイスやログインしている他のデバイスで使用できるようになります</translation>
 <translation id="6970480684834282392">起動タイプ</translation>
 <translation id="6970543303783413625">パスワードをインポートできません。一度にインポートできるパスワードは最大 <ph name="COUNT" /> 件です。</translation>
 <translation id="6970856801391541997">指定したページを印刷</translation>
@@ -7027,6 +7035,7 @@
 <translation id="7222204278952406003">Chrome をデフォルトのブラウザに設定しました</translation>
 <translation id="7222232353993864120">メール アドレス</translation>
 <translation id="7222235798733126207">サイト間での共有の制限</translation>
+<translation id="7222335051802562841">更新を完了</translation>
 <translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" /> のグループ内の 1 件のサイト}other{<ph name="FPS_OWNER" /> のグループ内の {MEMBERS} 件のサイト}}</translation>
 <translation id="7225082563376899794">Windows Hello を使用してパスワードを入力する</translation>
 <translation id="7225179976675429563">ネットワークの種類が指定されていません</translation>
@@ -7217,6 +7226,7 @@
 <translation id="7400447915166857470"><ph name="OLD_SEARCH_PROVIDER" /> に戻しますか？</translation>
 <translation id="7400839060291901923">「<ph name="PHONE_NAME" />」で接続設定を行ってください</translation>
 <translation id="7401778920660465883">このメッセージを表示しない</translation>
+<translation id="7402198013420237102">保存したパスワードを Google アカウントに移動しますか？</translation>
 <translation id="7403642243184989645">リソースのダウンロード</translation>
 <translation id="7404065585741198296">USB ケーブルで接続したスマートフォン</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{安全確認を 1 時間前に実行しました}other{安全確認を {NUM_HOURS} 時間前に実行しました}}</translation>
@@ -8090,6 +8100,7 @@
 <translation id="8138997515734480534"><ph name="VM_NAME" /> ステータス</translation>
 <translation id="8139447493436036221">Google ドライブのファイル</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />、<ph name="SECOND_DEVICE" /></translation>
+<translation id="8141260936970642964">アプリとウェブサイト、およびシステム タイムゾーンが、Google 位置情報サービスによって判定された位置情報を使用することを許可します。位置情報へのアクセスがオフになっている場合でも、位置情報が IP アドレスを通じて表示される場合があります。</translation>
 <translation id="8141418916163800697">スマートフォン ハブではその他の機能も設定できます</translation>
 <translation id="8141584439523427891">まもなく代替ブラウザで開きます</translation>
 <translation id="8141725884565838206">パスワードを管理する</translation>
@@ -8162,6 +8173,7 @@
 <translation id="8195737548602430447">字幕をターゲット言語に自動的に翻訳します。</translation>
 <translation id="8197673340773315084">名前やラベル（仕事、個人など）を入力</translation>
 <translation id="8198456017687137612">タブをキャスト中</translation>
+<translation id="8198511718495409170">「<ph name="EXTENSION_NAME" />」の更新後の設定をこのサイトに適用するには、このページを再読み込みしてください</translation>
 <translation id="8199300056570174101">ネットワーク（サービス）とデバイスのプロパティ</translation>
 <translation id="8200772114523450471">再開</translation>
 <translation id="8200789660596905522"><ph name="DEVICE_NAME" /> でキャスト リクエストを承認してください。</translation>
@@ -9349,6 +9361,7 @@
 <translation id="952471655966876828">デバイスの電源がオンになったときや使用されているときは自動的に接続します</translation>
 <translation id="953434574221655299">このデバイスのアクティブ状態の検出を許可する</translation>
 <translation id="956500788634395331">有害な可能性がある拡張機能から保護されています</translation>
+<translation id="957179356621191750">6 点式</translation>
 <translation id="957960681186851048">このサイトで複数ファイルの自動ダウンロードが試行されました</translation>
 <translation id="960987915827980018">あと約 1 時間</translation>
 <translation id="962802172452141067">ブックマーク フォルダ ツリー</translation>

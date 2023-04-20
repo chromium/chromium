@@ -244,6 +244,15 @@ Si se inhabilita esta política, la protección contra phishing en el cliente no
       El valor predeterminado es RollbackDisabled.</translation>
 <translation id="1221359380862872747">Cargar URL especificadas en el inicio de sesión de demostración</translation>
 <translation id="1221955019309484560">Habilitar actualizaciones de todos los componentes</translation>
+<translation id="1222694988453895594">Permite definir una lista de protocolos y una lista asociada de patrones de origen permitidos para cada uno de los protocolos que pueden abrir una aplicación externa sin pedir permiso al usuario. No se debe incluir el separador del final al añadir el protocolo a la lista, así que añade "skype" en lugar de "skype:" o "skype://".
+
+Si se define esta política, un protocolo solo podrá abrir una aplicación externa sin pedir permiso (por política) si está en la lista y si el origen del sitio que intenta iniciar el protocolo coincide con uno de los patrones de origen de la lista allowed_origins del protocolo. Si no se cumple alguna de estas condiciones, esta política no omitirá la solicitud para iniciar el protocolo externo.
+
+Si no se define esta política, no se podrá iniciar ningún protocolo sin pedir permiso (de forma predeterminada). Los usuarios pueden rechazar las solicitudes por protocolo o por sitio, a menos que la política <ph name="EXTERNAL_PROTOCOL_DIALOG_SHOW_ALWAYS_OPEN_CHECKBOX_POLICY_NAME" /> se inhabilite. Esta política no tiene ningún efecto sobre las exenciones de solicitudes por protocolos o por sitios establecidas por los usuarios.
+
+Los patrones que coinciden con el origen tienen un formato similar a los de la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, tal y como se indica en la página https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Sin embargo, los patrones de esta política que coinciden con el origen no pueden contener los elementos "/path" ni "@query". Se ignorarán todos los patrones que contengan un elemento "/path" o "@query".</translation>
 <translation id="1223789468190631420">Estado habilitado de Navegación segura con fuentes de confianza</translation>
 <translation id="123018742985150697">Requerir que el usuario local y el propietario del host de acceso remoto coincidan</translation>
 <translation id="123081309365616809">Habilita el envío de contenido al dispositivo</translation>
@@ -314,7 +323,6 @@ Si la política no se establece, se aplicará la política <ph name="ASK_WINDOW_
 
 Esta política sustituye a la obsoleta de <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" />.</translation>
 <translation id="129206366270737897">Inhabilita cualquier método asíncrono de <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />.</translation>
-<translation id="129392056654547767">La imagen del firmware de la UEFI usada por la VM. Se trata de una medida temporal mientras la empaquetamos como DLC de ChromeOS.</translation>
 <translation id="1294263471858445589">Habilita la autenticación pasiva en sesiones normales y de incógnito.</translation>
 <translation id="1295737447968372331">Habilita el dictado en la pantalla de inicio de sesión</translation>
 <translation id="1297182715641689552">Utilizar una secuencia de comandos .pac de proxy</translation>
@@ -570,7 +578,6 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o que se hayan registrado en Gestión en la nube del navegador Chrome. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="1530812829012954197">Mostrar siempre los patrones de URL que se indican a continuación en el navegador del host</translation>
 <translation id="1542491165152947087">Permitir que los usuarios activen o desactiven la opción de temas de anuncios de <ph name="PRIVACY_SANDBOX_NAME" /> en sus dispositivos.</translation>
-<translation id="1547424904796464052">Hash SHA-256 codificado en formato hexadecimal de la imagen de firmware.</translation>
 <translation id="1550295162561011575">Si se establece esta política, los administradores podrán configurar la automatización para iniciar aplicaciones en dispositivos <ph name="PRODUCT_NAME" />. Estas aplicaciones pueden iniciarse cuando el usuario inicie sesión o, si se prefiere, el usuario puede iniciarlas juntas desde el menú de aplicaciones.</translation>
 <translation id="1552418937045050762">Si se habilita esta opción, los usuarios podrán usar Compartir con Nearby, lo que les permitirá enviar y recibir archivos de personas cercanas.
 
@@ -3965,6 +3972,7 @@ Si no se establece la política, los usuarios podrán cambiar la lista de aplica
 <translation id="4693779768620889402">Destinos basados en extensiones</translation>
 <translation id="4694138212536142867">Habilitar los informes sobre el estado del hardware del dispositivo</translation>
 <translation id="4697581738794063407">Controlar la función para filtrar parámetros de URL</translation>
+<translation id="4698895924806859508">No informar de eventos de red</translation>
 <translation id="4699172675775169585">Archivos e imágenes almacenados en caché</translation>
 <translation id="4699592681017489215">Esta política configura un interruptor local que puede usarse para inhabilitar las comprobaciones de interceptación de DNS. Con las comprobaciones, se intenta averiguar si el navegador está detrás de un proxy que redirige nombres de host desconocidos.
 
@@ -6679,6 +6687,13 @@ Si se define, la lista de valores predeterminados se amplía con los valores con
 
       Si la política está inhabilitada o no está configurada, WebDriver no puede anular las políticas incompatibles.</translation>
 <translation id="7145335384492396213">Modo predeterminado de impresión con PIN</translation>
+<translation id="7145764791559889135">Esta política impide copiar datos en el portapapeles en URLs específicas.
+
+Las listas de URLs <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> controlan los sitios en los que se puede escribir en el portapapeles. Se bloquea la escritura en el portapapeles si la URL coincide con un patrón en la lista de URLs permitidas y no coincide con un patrón en la lista de bloqueadas. No se impide copiar si la URL no coincide con ningún patrón.
+
+Los patrones que coinciden con el origen tienen un formato similar a los de la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, tal y como se indica en la página https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+El campo <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la cantidad mínima de datos (en bytes) que activa la comprobación de patrones. Esto significa que la escritura en el portapapeles desde una URL bloqueada se permitiría si el tamaño de los datos copiados es inferior al valor especificado en este campo. El valor predeterminado es 100 bytes si el campo se deja sin establecer.</translation>
 <translation id="7146198347561863646">Si se habilita esta política o no se le asigna ningún valor, se permitirán los wake locks para la gestión de energía. Las extensiones pueden solicitar los wake locks a través de la API de extensión de gestión de energía y las aplicaciones de ARC.
 
       Si se inhabilita esta política, se ignorarán las solicitudes de wake locks.</translation>
@@ -6977,6 +6992,7 @@ Esta política sustituye a la obsoleta de <ph name="WINDOW_PLACEMENT_BLOCKED_FOR
       Nota: Si la acción es la suspensión, <ph name="PRODUCT_OS_NAME" /> se puede configurar por separado para bloquear o no la pantalla antes de entrar en modo de suspensión.</translation>
 <translation id="7477149584454865826">Indicador booleano que especifica si se debe usar IPP Everywhere para configurar la impresora.</translation>
 <translation id="7477231245051133709">Habilita la función de accesibilidad de audio en mono</translation>
+<translation id="7479408102162550711">Informar de eventos de red</translation>
 <translation id="7480826412572122600">Lista con los ajustes de los servicios de conectores de Chrome Enterprise que se van a aplicar al conector <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> de Enterprise, que se activa cuando se descarga un archivo en Chrome.
 
       Los campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> se usan para determinar si el conector debe enviar un archivo para su análisis cuando se descargue de una página específica y qué etiquetas se van a incluir en la solicitud de análisis del archivo. Se incluirá en la solicitud de análisis una etiqueta correspondiente a un patrón "enable" si la URL de la página coincide con un patrón asociado a esta etiqueta, siempre y cuando no se encuentre una misma etiqueta que coincida con la URL de la página con el patrón "disable". El análisis se realiza si se debe incluir al menos 1 etiqueta en la solicitud.
@@ -7369,6 +7385,10 @@ NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente refle
       Si se le asigna el valor False o no se le asigna ningún valor, es posible que se bloquee el contenido <ph name="FLASH_PLUGIN_NAME" /> de otros orígenes o de tamaño reducido.
 
       Nota: Para controlar qué sitios web pueden ejecutar <ph name="FLASH_PLUGIN_NAME" />, consulta las políticas <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7804859754080118507">Informa de eventos de conexión de red y de intensidad de señal en dispositivos registrados.
+
+      Si se le asigna el valor false a esta política o no se le asigna ningún valor, no se enviará esta información.
+      Si se le asigna el valor true, se enviará información sobre los eventos de red del dispositivo.</translation>
 <translation id="780629758750905699">Permitir que se añadan cuentas de Family Link al dispositivo</translation>
 <translation id="7807120658089613760">Inhabilita la cámara, la configuración del navegador, los ajustes del sistema operativo, los análisis y las funciones de Web Store, Canvas, Explorar y Crosh</translation>
 <translation id="7807139251387225825">Lista de tipos que se deben excluir de la sincronización</translation>
@@ -7614,7 +7634,6 @@ Usar <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> o <ph name="LACROS_SELECTI
 <translation id="802776363472387903">El hash SHA-256 de la imagen de <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Habilitar el proveedor de búsqueda predeterminado y permitir a los usuarios modificar la lista de proveedores de búsqueda</translation>
 <translation id="8029201909194194377">Duración máxima permitida de la sesión para conexiones de acceso remoto</translation>
-<translation id="8033908599068513676">URL de la imagen de firmware que se va a descargar.</translation>
 <translation id="8035570672225663428">Habilitar el modelo de Carga inteligente para suspender el proceso de carga y prolongar la duración de la batería</translation>
 <translation id="8044493735196713914">Notificar modo de inicio de dispositivo</translation>
 <translation id="8044720778481009876">Destinos de <ph name="CLOUD_PRINT_NAME" /> y Guardar en Google Drive (obsoleta)</translation>

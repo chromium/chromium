@@ -225,6 +225,7 @@
 <translation id="1978498689038657292">קלט טקסט</translation>
 <translation id="1980808257969311265">הצטרפות ל-'<ph name="EVENT_SUMMARY" />'</translation>
 <translation id="1982717156487272186">הצגת השבוע הקודם</translation>
+<translation id="1986150224850161328">‏צריך לוודא שהטלפון ו-Chromebook מחוברים לאותה רשת ולנסות שוב. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">לא ניתן לצלם תוכן</translation>
 <translation id="1990046457226896323">הסתיימה ההורדה של קובצי הדיבור</translation>
 <translation id="1993072747612765854">מידע נוסף על העדכון האחרון של <ph name="SYSTEM_APP_NAME" /></translation>
@@ -373,6 +374,7 @@
 <translation id="2761723519669354964">פתיחת הפריט המודגש מהמדף</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> מנוהל על ידי <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">יציאה ממצב של צילום מסך</translation>
+<translation id="2785499565474703580">מכשיר אחד מחובר</translation>
 <translation id="2791421900609674576">יוצגו לך המלצות כדי שתהיה לך אפשרות להמשיך מאיפה שהפסקת. ניתן להסיר את ההמלצות בלחיצה ארוכה.</translation>
 <translation id="2792498699870441125">‏Alt + חיפוש</translation>
 <translation id="2797741504905337289">קבוצת מדפים</translation>
@@ -1277,6 +1279,7 @@
 <translation id="6941333068993625698">שליחת משוב</translation>
 <translation id="6942518653766415536">התפריט של פורמט הצילום</translation>
 <translation id="6945221475159498467">בחירה</translation>
+<translation id="6945922087561257829">‏הטלפון מחובר לרשת הסלולרית. צריך לוודא שהטלפון ו-Chromebook מחוברים לאותה רשת Wi-Fi ולנסות שוב. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">הרשת לא פעילה. עליך לפנות לספק חבילת הסלולר שלך.</translation>
 <translation id="6961121602502368900">השתקת הטלפון לא זמינה בפרופיל העבודה</translation>
 <translation id="6961840794482373852">‏מקשי הקיצור Alt + חץ למעלה הוחלפו. כדי לדמות את הפעולה של המקש Page Up, יש להקיש על <ph name="LAUNCHER_KEY_NAME" /> + החץ למעלה.</translation>
@@ -1331,6 +1334,7 @@
 <translation id="7188494361780961876">התפריט הועבר לפינה הימנית העליונה של המסך.</translation>
 <translation id="7189412385142492784">מה המרחק בין כדור הארץ לנוגה</translation>
 <translation id="7198435252016571249">המצלמה מוצמדת לפינה השמאלית התחתונה. התנגשות עם תצוגת המערכת.</translation>
+<translation id="7219573373513695352">אין מכשירים מחוברים</translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />. יש להפעיל את ה-Chromebook מחדש כדי להחיל עדכון. התהליך עשוי להימשך עד דקה אחת.</translation>
 <translation id="7256634071279256947">מיקרופון אחורי</translation>
 <translation id="7258828758145722155">נערך אתמול</translation>
@@ -1483,6 +1487,7 @@
 <translation id="7902625623987030061">יש לגעת בחיישן טביעות האצבע</translation>
 <translation id="7904094684485781019">מנהל החשבון הזה אסר על כניסה עם מספר חשבונות.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> מכשירים מחוברים</translation>
 <translation id="7930731167419639574">העיבוד של דיבור נעשה עכשיו באופן מקומי ותכונת ההכתבה פועלת אופליין.</translation>
 <translation id="7932451802722951285">‏פתיחה ביומן Google</translation>
 <translation id="7933084174919150729">‏Google Assistant זמינה רק לפרופיל ראשי.</translation>

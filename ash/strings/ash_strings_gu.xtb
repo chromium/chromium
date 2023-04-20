@@ -34,6 +34,7 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> માટે માહિતી સંવાદ ખોલો</translation>
 <translation id="1150989369772528668">કૅલેન્ડર</translation>
 <translation id="1153356358378277386">જોડી કરેલા ઉપકરણો</translation>
+<translation id="1160215328209699296">ચાલુ અને ઉપયોગમાં</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">તમારો USB-C કેબલ ડિસ્પ્લે સાથે કદાચ યોગ્ય રીતે કનેક્ટ ન થાય</translation>
 <translation id="1175572348579024023">સ્ક્રોલ કરો</translation>
@@ -241,6 +242,7 @@
 <translation id="2049240716062114887">ડેસ્કનું નામ બદલીને <ph name="DESK_NAME" /> કરવામાં આવ્યું હતું</translation>
 <translation id="2064048859448024834">કૅમેરા પ્રીવ્યૂ ચાલુ છે</translation>
 <translation id="2067602449040652523">કીબોર્ડનું તેજ</translation>
+<translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> ટૉગલ કરો. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> છે</translation>
 <translation id="2078034614700056995">આગલી ડેસ્ક પર સ્વિચ કરવા માટે ચાર આંગળી વડે જમણી તરફ સ્વાઇપ કરો</translation>
 <translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="2083190527011054446">ગુડ નાઇટ <ph name="GIVEN_NAME" />,</translation>
@@ -325,6 +327,7 @@
 <translation id="2487915095798731898">જોડાઓ</translation>
 <translation id="2501920221385095727">સ્ટિકી કી</translation>
 <translation id="2509468283778169019">CAPS LOCK ચાલુ છે</translation>
+<translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> રોકો. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> છે</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">વિન્ડો અનલૉક કરો</translation>
 <translation id="2530896289327917474">ટેક્સ્ટના કર્સર વડે બ્રાઉઝ કરવાનું ચાલુ અથવા બંધ કરો</translation>
@@ -1520,6 +1523,7 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> નામનો નમૂનો પહેલેથી જ અસ્તિત્વમાં છે</translation>
 <translation id="8052898407431791827">ક્લિપબોર્ડ પર કૉપિ કર્યો</translation>
 <translation id="8054466585765276473">બેટરી સમયની ગણના કરે છે.</translation>
+<translation id="8079538659226626406">સ્ક્રીન શેરિંગ</translation>
 <translation id="8083540854303889870">પછીના માટે સાચવેલી</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> વાગ્યે શરૂ થશે <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">ઑટોમૅટિક અપડેટ</translation>

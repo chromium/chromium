@@ -358,7 +358,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3305294846493618482">meer</translation>
 <translation id="3311748811247479259">Uit</translation>
 <translation id="3324193307694657476">Adres 2</translation>
-<translation id="3328459813621383194">Inactieve tabbladen verplaatsen</translation>
 <translation id="3328801116991980348">Site-informatie</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bookmark opgeslagen in {title} in je account {email}}other{Bookmarks opgeslagen in {title} in je account {email}}}</translation>
 <translation id="3371831930909698441">Vertalen is beschikbaar. Opties beschikbaar onderaan het scherm.</translation>
@@ -499,6 +498,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4343046787186034850">Camera- en microfoontoegang toegestaan</translation>
 <translation id="4359125752503270327">Deze pagina wordt geopend in een andere app.</translation>
 <translation id="4371526908359194219">E-mailmeldingen</translation>
+<translation id="4371591986692297148">Inactief</translation>
 <translation id="4375040482473363939">Zoeken naar QR-code</translation>
 <translation id="4378154925671717803">Telefoon</translation>
 <translation id="4389019817280890563">Tik om de taal te wijzigen.</translation>
@@ -629,7 +629,6 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="5168414296986405587">Gebouwd voor iPadOS</translation>
 <translation id="5173088371991956744">Synchronisatie moet bevestigen dat jij het bent</translation>
 <translation id="5176312250994681348">Recent wachtwoord behouden</translation>
-<translation id="51802232683641391">{count,plural, =1{Wil je doorgaan met het tabblad waar je gebleven was in Android?}other{Wil je doorgaan met de tabbladen waar je gebleven was in Android?}}</translation>
 <translation id="5181140330217080051">Downloaden</translation>
 <translation id="5184329579814168207">Openen in Chrome</translation>
 <translation id="5186185447130319458">Privé</translation>
@@ -907,7 +906,6 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="6807889908376551050">Alles bekijken...</translation>
 <translation id="681368974849482173">Item gemaakt</translation>
 <translation id="6822587385560699678">Als dit aanstaat, worden wachtwoorden opgeslagen in <ph name="ACCOUNT" />. Als dit uitstaat, worden wachtwoorden alleen opgeslagen op dit apparaat.</translation>
-<translation id="683022620450280906">Je kunt opgeslagen wachtwoorden op elk apparaat gebruiken. Ze worden opgeslagen in Google Wachtwoordmanager voor <ph name="EMAIL" />.</translation>
 <translation id="6831043979455480757">Vertalen</translation>
 <translation id="6842136130964845393">Bevestig dat jij het bent zodat je altijd toegang hebt tot je opgeslagen wachtwoorden</translation>
 <translation id="6851516051005285358">Desktopsite opvragen</translation>

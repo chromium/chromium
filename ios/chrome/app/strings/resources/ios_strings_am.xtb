@@ -346,6 +346,7 @@
 <translation id="3244271242291266297">ወወ</translation>
 <translation id="3245744387817103524">ለውጥዎ መቀመጥ አልቻለም።</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />፣ <ph name="ADDITIONAL_INFO" />፣ <ph name="INDEX" /> ከ<ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3260117527409269737">ይህ አድራሻ የሚቀመጠው Chrome ላይ ብቻ ነው። በሁሉም የGoogle ምርቶች ላይ እንዲጠቀሙት በGoogle መለያዎ <ph name="USER_EMAIL" /> ውስጥ ያስቀምጡት።</translation>
 <translation id="3264775633254836593">የይለፍ ቃላትን ራስ-ሙላ</translation>
 <translation id="3268451620468152448">ክፍት ትሮች</translation>
 <translation id="3272527697863656322">ይቅር</translation>
@@ -356,7 +357,6 @@
 <translation id="3305294846493618482">ተጨማሪ</translation>
 <translation id="3311748811247479259">ጠፍቷል</translation>
 <translation id="3324193307694657476">አድራሻ 2</translation>
-<translation id="3328459813621383194">ገቢር ያልሆኑ ትሮችን ያንቀሳቅሱ</translation>
 <translation id="3328801116991980348">የጣቢያ መረጃ</translation>
 <translation id="3344485292736684439">{count,plural, =1{በመለያዎ፣ {email} ውስጥ ዕልባት ወደ «{title}» ተቀምጧል}one{በመለያዎ፣ {email} ውስጥ ዕልባት ወደ «{title}» ተቀምጧል}other{በመለያዎ፣ {email} ውስጥ ዕልባቶች ወደ «{title}» ተቀምጠዋል}}</translation>
 <translation id="3371831930909698441">ትርጉም ይገኛል። አማራጮች ከማያው ግርጌ አጠገብ ይገኛሉ።</translation>
@@ -497,6 +497,7 @@
 <translation id="4343046787186034850">የካሜራ እና የማይክሮፎን መዳረሻ ተፈቅዷል</translation>
 <translation id="4359125752503270327">ይህ ገፅ በሌላ መተግበሪያ ውስጥ ይከፈታል።</translation>
 <translation id="4371526908359194219">የኢሜይል ማሳወቂያዎች</translation>
+<translation id="4371591986692297148">ያልነቃ</translation>
 <translation id="4375040482473363939">የQR ኮድ ፍለጋ</translation>
 <translation id="4378154925671717803">ስልክ</translation>
 <translation id="4389019817280890563">ቋንቋን ለመለወጥ መታ ያድርጉ።</translation>
@@ -627,7 +628,6 @@
 <translation id="5168414296986405587">ለiPadOS ይፍጠሩ</translation>
 <translation id="5173088371991956744">ስምረት እርስዎ መሆንዎን ማረጋገጥ ይፈልጋል</translation>
 <translation id="5176312250994681348">የቅርብ ጊዜውን የይለፍ ቃል አቆይ</translation>
-<translation id="51802232683641391">{count,plural, =1{ከAndroid ትተውት የነበረ ትርን ለመቀጠል ይከፈት?}one{ከAndroid ትተውት የነበረ ትርን ለመቀጠል ይከፈት?}other{ከAndroid ትተዋቸው የነበሩ ትሮችን ለመቀጠል ይከፈቱ?}}</translation>
 <translation id="5181140330217080051">በማውረድ ላይ</translation>
 <translation id="5184329579814168207">በChrome ውስጥ ክፈት</translation>
 <translation id="5186185447130319458">የግል</translation>
@@ -905,7 +905,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6807889908376551050">ሁሉንም አሳይ...</translation>
 <translation id="681368974849482173">ንጥል ተፈጥሯል</translation>
 <translation id="6822587385560699678">ሲበራ የይለፍ ቃላት <ph name="ACCOUNT" /> ውስጥ ይቀመጣሉ። ሲጠፋ የይለፍ ቃላት በዚህ መሣሪያ ላይ ብቻ ይቀመጣሉ።</translation>
-<translation id="683022620450280906">በማንኛውም መሣሪያ ላይ የተቀመጡ የይለፍ ቃላትን መጠቀም ይችላሉ። ለ<ph name="EMAIL" /> በGoogle የይለፍ ቃል አስተዳዳሪ ላይ ይቀመጣሉ</translation>
 <translation id="6831043979455480757">መተርጎም</translation>
 <translation id="6842136130964845393">የተቀመጡ የይለፍ ቃላትዎን ሁልጊዜ መድረስ መቻልዎን ለማረጋገጥ እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="6851516051005285358">የዴስክቶፕ ጣቢያን ጠይቅ</translation>

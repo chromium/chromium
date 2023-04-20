@@ -307,6 +307,7 @@
 <translation id="1658918301167915956">‏מכשירי Bluetooth</translation>
 <translation id="1662550410081243962">שמירה ומילוי של אמצעי תשלום</translation>
 <translation id="1663943134801823270">‏הכרטיסים והכתובות נלקחים מ-Chrome. אפשר לנהל אותם ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
+<translation id="1668071460721346172">קבלת אימייל</translation>
 <translation id="1671391448414634642">דפים ב<ph name="SOURCE_LANGUAGE" /> יתורגמו מעכשיו ל<ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ל<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">הקצה הקצר ראשון</translation>
@@ -367,6 +368,7 @@
 <translation id="1806174020048213474">‏האפליקציה הזו מבקשת הרשאה להתקין פרטי כניסה ל-Wi-Fi. לאחר ההגדרה, <ph name="DEVICE_TYPE" /> יתחבר באופן אוטומטי לרשתות ה-Wi-Fi הקיימות. כדי להסיר את פרטי הכניסה האלה, צריך להסיר את האפליקציה.</translation>
 <translation id="1807246157184219062">בהיר</translation>
 <translation id="1807528111851433570">גיליון ראשון</translation>
+<translation id="180757923930449935">(64‎-bit emulated)</translation>
 <translation id="180991881384371158">‏קוד האימות (CVC) מופיע בגב הכרטיס. אלה 3 הספרות האחרונות שמופיעות בצד הימני של תיבת החתימה.</translation>
 <translation id="181000283860817563">מעקב אחר מחירים בכמה אתרים</translation>
 <translation id="1810391395243432441">הגנה על סיסמאות באמצעות נעילת המסך</translation>
@@ -523,7 +525,6 @@
 <translation id="2204482073374652408">העדכון הסתיים.</translation>
 <translation id="22081806969704220">מגש 3</translation>
 <translation id="2210794033760923560">העלאת הדוח</translation>
-<translation id="2212579473415663542">‏הכתובת הזו שמורה בחשבון Google שלך (<ph name="ACCOUNT" />). ניתן להשתמש בכתובת במוצרי Google בכל מכשיר.</translation>
 <translation id="2212735316055980242">לא נמצאה מדיניות</translation>
 <translation id="2213606439339815911">מאחזר רשומות...</translation>
 <translation id="2213612003795704869">הדף מודפס</translation>
@@ -1590,6 +1591,7 @@ Del</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{אין}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> - חיפוש</translation>
 <translation id="4879491255372875719">אוטומטי (ברירת מחדל)</translation>
+<translation id="4879723019639546076">‏הכתובת הזו שמורה רק ב-Chrome. כדי להשתמש בה בכל מוצרי Google, צריך לשמור אותה בחשבון Google שלך (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">חיפוש בהיסטוריה</translation>
 <translation id="4881695831933465202">פתיחה</translation>
 <translation id="4881808915112408168">‏24x31.5 אינץ'</translation>
@@ -2148,6 +2150,7 @@ Del</translation>
 <translation id="6279183038361895380">יש להקיש על |<ph name="ACCELERATOR" />| כדי להציג את הסמן</translation>
 <translation id="6280223929691119688">לא ניתן לבצע מסירה בכתובת זו. עליך לבחור כתובת אחרת.</translation>
 <translation id="6284292079994426700">‏26x38 אינץ'</translation>
+<translation id="6284517535531159884">וריאציות של סוג המקור</translation>
 <translation id="6285507000506177184">‏הלחצן לניהול הורדות ב-Chrome, מקישים על Enter לניהול הקבצים שהורדת ב-Chrome</translation>
 <translation id="6289939620939689042">צבע הדף</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2321,6 +2324,7 @@ Del</translation>
 <translation id="6716672519412350405">האתר <ph name="URL" /> רוצה ליצור מפה בתלת ממד של הסביבה שלך ולעקוב אחר מיקום המצלמה</translation>
 <translation id="6718612893943028815">להשתמש במצלמה?</translation>
 <translation id="6721678857435001674">לראות את היצרן והדגם של מפתח האבטחה</translation>
+<translation id="6726832600570791992">(32‎-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">מצלמה</translation>
 <translation id="6738516213925468394">הנתונים שלך הוצפנו באמצעות <ph name="BEGIN_LINK" />ביטוי סיסמה לסנכרון<ph name="END_LINK" /> בתאריך <ph name="TIME" />. צריך להזין אותו כדי להתחיל את הסנכרון.</translation>

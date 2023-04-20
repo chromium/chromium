@@ -496,6 +496,7 @@
             <ph name="LINE_BREAKS" />
            书签、历史记录和已保存的密码不会受到影响。</translation>
 <translation id="1425040197660226913">无法上传。请使用小于 20MB 的图片。</translation>
+<translation id="1425282319410216613">下载完毕后不显示此气泡</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="142655739075382478">“<ph name="APP_NAME" />”已被禁用</translation>
 <translation id="1426870617281699524">请点击“重试”，然后接受计算机上显示的提示</translation>
@@ -796,6 +797,7 @@
 <translation id="1666232093776384142">停用“外围设备数据访问保护”设置</translation>
 <translation id="1667842670298352129">让系统大声朗读特定文字。首先，选择屏幕底部的“随选朗读”图标，然后突出显示文字。您也可以使用键盘快捷键：突出显示文字，然后按搜索键 + S。</translation>
 <translation id="1668435968811469751">手动注册</translation>
+<translation id="1668804837842452164">保存到 <ph name="EMAIL" /> 的 <ph name="BRAND" /></translation>
 <translation id="1668979692599483141">了解建议</translation>
 <translation id="1670399744444387456">基本</translation>
 <translation id="1673137583248014546"><ph name="URL" /> 想查看您的安全密钥的品牌和型号</translation>
@@ -1559,6 +1561,7 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />注意<ph name="END_BOLD" />：在此过程中，系统将会重新启动。</translation>
 <translation id="23030561267973084">“<ph name="EXTENSION_NAME" />”请求获得更多权限。</translation>
+<translation id="2306794767168143227">保存到此设备上的 <ph name="BRAND" /></translation>
 <translation id="2307462900900812319">配置网络</translation>
 <translation id="2307553512430195144">如果您同意，Google 助理将会在待机模式下等待检测“Ok Google”，并可以通过 Voice Match 识别出是<ph name="SUPERVISED_USER_NAME" />在说话。
     <ph name="BR" />
@@ -1894,6 +1897,7 @@
 <translation id="25899519884572181">退出阅读器模式</translation>
 <translation id="2593499352046705383">在开始之前，请确保已备份数据。安装 <ph name="DEVICE_OS" /> 会覆盖您的硬盘。如需了解详情，请访问 g.co/flex/InstallGuide。</translation>
 <translation id="2594999711683503743">使用 Google 执行搜索，或者输入网址</translation>
+<translation id="2598710988533271874">有新版 Chrome 可用</translation>
 <translation id="2599048253926156421">用户名已复制到剪贴板</translation>
 <translation id="2602501489742255173">向上滑动即可开始使用</translation>
 <translation id="2603115962224169880">清理计算机</translation>
@@ -3659,6 +3663,7 @@
 <translation id="4144468798716165316">快捷命令</translation>
 <translation id="4146026355784316281">始终使用系统查看器打开</translation>
 <translation id="4146785383423576110">重置并清理</translation>
+<translation id="4147099377280085053">选择一种盲文表</translation>
 <translation id="4147911968024186208">请重试。如果系统仍提示此错误，请与您的支持代表联系。</translation>
 <translation id="4150201353443180367">显示</translation>
 <translation id="4150569944729499860">屏幕上下文</translation>
@@ -3878,6 +3883,7 @@
 <translation id="4366138410738374926">已开始打印</translation>
 <translation id="4367513928820380646">查看已撤消的权限</translation>
 <translation id="4369215744064167350">网站请求已获批准</translation>
+<translation id="436926121798828366">您随时可在<ph name="SETTINGS_LINK" />中更改此设置</translation>
 <translation id="4369735607080757018">为了衡量各自的广告效果，网站之间会分享有限类型的数据，例如一天当中向您展示广告的时段</translation>
 <translation id="4370975561335139969">您输入的电子邮件地址和密码不匹配。</translation>
 <translation id="4374805630006466253">改用别的手机或平板电脑</translation>
@@ -4643,7 +4649,6 @@
 <translation id="5063480226653192405">空间占用量</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">在 Chrome 操作系统设置中管理安全 DNS</translation>
-<translation id="5066160542186949327">移至其他文件夹</translation>
 <translation id="5067399438976153555">始终启用</translation>
 <translation id="5067867186035333991">当 <ph name="HOST" /> 想要使用麦克风时询问我</translation>
 <translation id="5068553687099139861">显示密码</translation>
@@ -5213,6 +5218,7 @@
 <translation id="558170650521898289">Microsoft Windows 硬件驱动程序验证</translation>
 <translation id="5581876958763461074">所有记事</translation>
 <translation id="5581972110672966454">无法将设备加入到网域中。请重试，或与设备所有者/管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
+<translation id="5582634344048669777">8 点式</translation>
 <translation id="5582839680698949063">主菜单</translation>
 <translation id="5583640892426849032">退格</translation>
 <translation id="5584088138253955452">保存用户名？</translation>
@@ -5869,6 +5875,7 @@
 <translation id="6164832038898943453">添加可自动翻译的语言</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6166185671393271715">将密码导入到 Chrome 中</translation>
+<translation id="6166659775803431">在购物车中</translation>
 <translation id="6169040057125497443">请检查您的麦克风。</translation>
 <translation id="6169967265765719844">您可以在 <ph name="LINK_BEGIN" />Steam 应用设置<ph name="LINK_END" />中管理通过 Steam 安装的游戏和应用的权限。</translation>
 <translation id="6170470584681422115">三明治</translation>
@@ -6766,6 +6773,7 @@
 <translation id="6968288415730398122">需输入您的密码，才能配置屏幕锁定</translation>
 <translation id="6969047215179982698">关闭“附近分享”功能</translation>
 <translation id="6969216690072714773">输入要与此设备关联的新信息，或者更新要与此设备关联的现有信息。</translation>
+<translation id="696942486482903620">将密码保存到您的 Google 帐号后，您便可以在此设备和您已登录的任何其他设备上使用这些密码</translation>
 <translation id="6970480684834282392">启动类型</translation>
 <translation id="6970543303783413625">无法导入密码。您一次最多只能导入 <ph name="COUNT" /> 个密码。</translation>
 <translation id="6970856801391541997">打印特定页面</translation>
@@ -6793,7 +6801,7 @@
 <translation id="6988094684494323731">正在启动 Linux 容器</translation>
 <translation id="6988403677482707277">此标签页已移至标签栏的开头</translation>
 <translation id="6989123022222588975">您尚未移除任何兴趣</translation>
-<translation id="6990209147952697693">传统版 Chrome</translation>
+<translation id="6990209147952697693">经典 Chrome 外观</translation>
 <translation id="6991665348624301627">选择目标打印机</translation>
 <translation id="6992554835374084304">开启增强的“拼写检查”功能</translation>
 <translation id="6993000214273684335">此标签页已从未命名的组中移除 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
@@ -7030,6 +7038,7 @@
 <translation id="7222204278952406003">Chrome 是您的默认浏览器</translation>
 <translation id="7222232353993864120">电子邮件地址</translation>
 <translation id="7222235798733126207">受限的网站间共享</translation>
+<translation id="7222335051802562841">完成更新</translation>
 <translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" /> 的群组中有 1 个网站}other{<ph name="FPS_OWNER" /> 的群组中有 {MEMBERS} 个网站}}</translation>
 <translation id="7225082563376899794">填充密码时使用 Windows Hello</translation>
 <translation id="7225179976675429563">缺少网络类型</translation>
@@ -7221,6 +7230,7 @@
 <translation id="7400447915166857470">改回 <ph name="OLD_SEARCH_PROVIDER" />？</translation>
 <translation id="7400839060291901923">请在您的 <ph name="PHONE_NAME" /> 设备上设置连接</translation>
 <translation id="7401778920660465883">关闭此消息</translation>
+<translation id="7402198013420237102">将已保存的密码移至您的 Google 帐号？</translation>
 <translation id="7403642243184989645">正在下载资源</translation>
 <translation id="7404065585741198296">使用 USB 线连接手机</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{1 小时前运行过安全检查}other{{NUM_HOURS} 小时前运行过安全检查}}</translation>
@@ -7465,7 +7475,7 @@
 <translation id="7614260613810441905">在网站想要修改您设备上的文件或文件夹时先询问您（推荐）</translation>
 <translation id="761530003705945209">备份到 Google 云端硬盘。您随时可以轻松地恢复数据或更换设备。您的备份内容包含应用数据。您的备份内容将上传到 Google 并使用您的 Google 帐号密码进行加密。</translation>
 <translation id="7615365294369022248">添加帐号时出错</translation>
-<translation id="7615807797520072741">重置为传统版 Chrome</translation>
+<translation id="7615807797520072741">重置为经典 Chrome 外观</translation>
 <translation id="7616214729753637086">正在注册设备…</translation>
 <translation id="7617263010641145920">开启 Play 商店</translation>
 <translation id="7617648809369507487">使用干扰性更低的提示方式</translation>
@@ -9358,6 +9368,7 @@
 <translation id="952471655966876828">已开启且正被使用时，设备会自动连接</translation>
 <translation id="953434574221655299">允许以下网站了解您何时在主动使用设备</translation>
 <translation id="956500788634395331">系统会保护您免受可能有害的扩展程序的威胁</translation>
+<translation id="957179356621191750">6 点式</translation>
 <translation id="957960681186851048">此网站试图自动下载多个文件</translation>
 <translation id="960987915827980018">约剩 1 小时</translation>
 <translation id="962802172452141067">书签文件夹树</translation>

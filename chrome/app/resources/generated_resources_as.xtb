@@ -4065,6 +4065,7 @@
 <translation id="450552327874992444">শব্দটো ইতিমধ্যে যোগ দিয়া হৈছে</translation>
 <translation id="4507128560633489176">ডেটা মচা হ’ল।</translation>
 <translation id="4507373251891673233">আপুনি <ph name="HOST" />ৰ পৰা আটাইবোৰ এক্সটেনশ্বন অৱৰোধ কৰিছে</translation>
+<translation id="4508032221004253235">এইটোৱে অৱস্থানৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইট আৰু ChromeOSক ৱাই-ফাই আৰু ম’বাইল নেটৱৰ্কে নির্ধাৰণ কৰা অৱস্থান ব্যৱহাৰ কৰাৰ অনুমতি দিয়ে। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="450867954911715010">সাধ্য সুবিধাৰ ছেটিং</translation>
 <translation id="4508765956121923607">উ&amp;ৎস চাওক</translation>
 <translation id="4509421746503122514">আপডে’ট কৰিবলৈ পুনৰ লঞ্চ কৰক</translation>
@@ -4671,7 +4672,6 @@
 <translation id="5063480226653192405">ব্যৱহাৰ</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOSৰ ছেটিঙত সুৰক্ষিত DNS পৰিচালনা কৰক</translation>
-<translation id="5066160542186949327">আন এটা ফ’ল্ডাৰলৈ স্থানান্তৰ কৰক</translation>
 <translation id="5067399438976153555">সদায় অন</translation>
 <translation id="5067867186035333991">যদি <ph name="HOST" />এ আপোনাৰ মাইক্ৰ‘ফ‘নটো এক্সেছ কৰিব বিচাৰে তেন্তে সোধক।</translation>
 <translation id="5068553687099139861">পাছৱৰ্ড দেখুৱাওক</translation>
@@ -4857,6 +4857,7 @@
 <translation id="5235750401727657667">আপুনি এটা নতুন টেব খুলোঁতে দেখা পোৱা পৃষ্ঠাটো সলনি কৰক</translation>
 <translation id="5236374273162681467">আপোনাৰ আটাইবোৰ ডিভাইচত এইবোৰ সহজে ব্যৱহাৰ কৰিবলৈ, আপুনি সেইবোৰ নিজৰ Google একাউণ্টলৈ নিব পাৰে</translation>
 <translation id="523862956770478816">ছাইটৰ অনুমতি</translation>
+<translation id="5239752869099890912">আপোনাৰ আপডে’ট কৰা ছেটিংসমূহ এই ছাইটটোত এই এক্সটেনশ্বনসমূহৰ বাবে প্ৰয়োগ কৰিবলৈ এই পৃষ্ঠাখন পুনৰ ল’ড কৰক</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" সক্ষম কৰিবনে?</translation>
 <translation id="5243522832766285132">অলপ সময়ৰ পাছত পুনৰ চেষ্টা কৰক</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" />ত ছিংক কৰি থকা হৈছে</translation>
@@ -8132,6 +8133,7 @@
 <translation id="8138997515734480534"><ph name="VM_NAME" />ৰ স্থিতি</translation>
 <translation id="8139447493436036221">Google Driveৰ ফাইল</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
+<translation id="8141260936970642964">এপ্ আৰু ৱেবছাইটসমূহ আৰু ছিষ্টেমৰ সময় মণ্ডলক Google অৱস্থান সেৱাৰ দ্বাৰা নির্ধাৰিত অৱস্থানটো ব্যৱহাৰ কৰিবলৈ দিয়ক। যদি অৱস্থানৰ এক্সেছ অফ কৰা হয়, আপোনাৰ অৱস্থানটো তথাপি আপোনাৰ আইপি ঠিকনাৰ জৰিয়তে দৃশ্যমান হ'ব।</translation>
 <translation id="8141418916163800697">আপুনি ফ’ন হাবৰ ছেটিঙত অধিক সুবিধা ছেট আপ কৰিব পাৰে</translation>
 <translation id="8141584439523427891">এতিয়া বিকল্প ব্ৰাউজাৰত খুলি আছে</translation>
 <translation id="8141725884565838206">আপোনাৰ পাছৱর্ডসমূহ পৰিচালনা কৰক</translation>
@@ -8204,6 +8206,7 @@
 <translation id="8195737548602430447">কেপশ্বনসমূহ স্বয়ংক্ৰিয়ভাৱে এটা লক্ষ্য হিচাপে লোৱা ভাষালৈ অনুবাদ কৰক।</translation>
 <translation id="8197673340773315084">কৰ্মস্থান অথবা ব্যক্তিগতৰ দৰে এটা নাম অথবা এখন লেবেল যোগ দিয়ক</translation>
 <translation id="8198456017687137612">টেব কাষ্ট কৰি থকা হৈছে</translation>
+<translation id="8198511718495409170">আপোনাৰ আপডে’ট কৰা ছেটিংসমূহ এই ছাইটটোত "<ph name="EXTENSION_NAME" />"ৰ বাবে প্ৰয়োগ কৰিবলৈ এই পৃষ্ঠাখন পুনৰ ল’ড কৰক</translation>
 <translation id="8199300056570174101">নেটৱৰ্ক (সেৱা) আৰু ডিভাইচৰ বৈশিষ্ট্য</translation>
 <translation id="8200772114523450471">পুনৰ আৰম্ভ কৰক</translation>
 <translation id="8200789660596905522">আপোনাৰ <ph name="DEVICE_NAME" />ত কাষ্ট কৰাৰ অনুৰোধ গ্ৰহণ কৰাটো নিশ্চিত কৰক।</translation>

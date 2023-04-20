@@ -55,6 +55,7 @@
 <translation id="104419033123549300">ຮູບແບບແຜນຜັງປຸ່ມ</translation>
 <translation id="1046219820096501039"><ph name="BEGIN_PARAGRAPH1" />ການອະນຸຍາດໃຫ້ອຸປະກອນ ChromeOS ສົ່ງລາຍງານອັດຕະໂນມັດຈະຊ່ວຍໃຫ້ພວກເຮົາຈັດລຳດັບຄວາມສຳຄັນໄດ້ວ່າຈະແກ້ໄຂ ແລະ ປັບປຸງຫຍັງໃນ ChromeOS. ລາຍງານເຫຼົ່ານີ້ສາມາດຮວມເອົາຂໍ້ມູນຕ່າງໆ ເຊັ່ນ: ChromeOS ຫຼົ້ມຕອນໃດ, ມີການໃຊ້ຄຸນສົມບັດໃດ ແລະ ໂດຍປົກກະຕິແລ້ວໃຊ້ໜ່ວຍຄວາມຈຳເທົ່າໃດ. ຂໍ້ມູນການວິນິໄສ ແລະ ການນຳໃຊ້ແອັບອື່ນໆ, ເຊິ່ງມີການຮວບຮວມກັນສຳລັບແອັບ Android ແລະ ເວັບແອັບ ຫາກມີການເປີດໃຊ້ການຊິ້ງແອັບ.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ທ່ານສາມາດເລີ່ມ ຫຼື ຢຸດການອະນຸຍາດລາຍງານເຫຼົ່ານີ້ຕອນໃດກໍໄດ້ໃນການຕັ້ງຄ່າອຸປະກອນ ChromeOS ຂອງລູກທ່ານ. ຫາກທ່ານເປັນຜູ້ເບິ່ງແຍງລະບົບໂດເມນ, ທ່ານສາມາດປ່ຽນການຕັ້ງຄ່ານີ້ໄດ້ໃນຄອນໂຊນຂອງຜູ້ເບິ່ງແຍງ.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 ລະຫັດຜ່ານຖືກນໍາເຂົ້າໃສ່ <ph name="BRAND" /> ຢູ່ອຸປະກອນນີ້}other{{NUM_PASSWORDS} ລະຫັດຜ່ານຖືກນຳເຂົ້າໃສ່ <ph name="BRAND" /> ຢູ່ອຸປະກອນນີ້}}</translation>
 <translation id="104710386808485638">ຣິສະຕາດ Linux ບໍ?</translation>
 <translation id="1047431265488717055">ອັດ​ສຳ​ເນົາ​ຂໍ້​ຄວາມ​ລິ້ງ</translation>
 <translation id="1048286738600630630">ການສະແດງຜົນ</translation>
@@ -137,6 +138,7 @@
 <translation id="1110155001042129815">ລໍ​ຖ້າ</translation>
 <translation id="1110965959145884739">ເລືອກພາສາທີ່ຈະຕິດຕັ້ງຢູ່ອຸປະກອນນີ້. ໄຟລ໌ພາສາແມ່ນມີການແບ່ງປັນລະຫວ່າງຜູ້ໃຊ້ເພື່ອປະຢັດພື້ນທີ່ດິສກ໌. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">ແຖບໃນພື້ນຫຼັງກຳລັງໃຊ້ Bluetooth ຢູ່</translation>
+<translation id="1112998165730922436">ການສົ່ງສັນຍານຢຸດຊົ່ວຄາວ</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">ເພັດ</translation>
 <translation id="1114427165525619358">ລະຫັດຜ່ານໃນອຸປະກອນນີ້ ແລະ ໃນບັນຊີ Google ຂອງທ່ານ</translation>
@@ -803,6 +805,7 @@
 <translation id="1666232093776384142">ປິດການນຳໃຊ້ການປົກປ້ອງການເຂົ້າເຖິງສຳລັບອຸປະກອນຕໍ່ພ່ວງ</translation>
 <translation id="1667842670298352129">ຟັງຂໍ້ຄວາມສະເພາະທີ່ອ່ານອອກສຽງ. ທໍາອິດ, ໃຫ້ເລືອກໄອຄອນເລືອກເພື່ອເວົ້າຢູ່ດ້ານລຸ່ມຂອງໜ້າຈໍທ່ານ, ຈາກນັ້ນໃຫ້ໄຮໄລ້ຂໍ້ຄວາມ. ນອກຈາກນັ້ນ, ທ່ານຍັງສາມາດໃຊ້ຄີລັດ: ຂໍ້ຄວາມໄຮໄລ້, ແລ້ວກົດຊອກຫາ + S.</translation>
 <translation id="1668435968811469751">ລົງທະບຽນດ້ວຍຕົນເອງ</translation>
+<translation id="1668804837842452164">ບັນທຶກໃສ່ <ph name="BRAND" /> ສຳລັບ <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">ສຶກສາກ່ຽວກັບຄຳແນະນຳ</translation>
 <translation id="1670399744444387456">ພື້ນ​ຖານ</translation>
 <translation id="1673137583248014546"><ph name="URL" /> ຕ້ອງການເບິ່ງຍີ່ຫໍ້ ແລະ ລຸ້ນຂອງກະແຈຄວາມປອດໄພຂອງທ່ານ</translation>
@@ -1037,6 +1040,7 @@
 <translation id="1854180393107901205">ຢຸດ​ການ​ຄາສທ໌</translation>
 <translation id="1856715684130786728">ເພີ່ມ​ທີ່ຕັ້ງ...</translation>
 <translation id="1858585891038687145">ເຊື່ອໝັ້ນໃບຢັ້ງຢືນນີ້ສຳລັບການລະບຸຕົວຕົນຜູ້ສ້າງຊອບແວ</translation>
+<translation id="1859339856433307593">ລະຫັດຜ່ານສຳລັບບັນຊີນີ້ຖືກບັນທຶກໃສ່ <ph name="BRAND" /> (<ph name="USER_EMAIL" />) ຂອງທ່ານແລ້ວ</translation>
 <translation id="1861262398884155592">ໂຟນເດີນີ້ຫວ່າງເປົ່າ</translation>
 <translation id="1862311223300693744">ທ່ານມີ VPN, ພຣັອກຊີ, firewall ຫຼື ຊອບແວ NAS ພິເສດຕິດຕັ້ງໄວ້ບໍ່?</translation>
 <translation id="1863182668524159459">ບໍ່ພົບຜອດອະນຸກຳ</translation>
@@ -1581,6 +1585,7 @@
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />ໝາຍເຫດ:<ph name="END_BOLD" /> ລະບົບຈະປິດເປີດໃໝ່ໃນລະຫວ່າງຂັ້ນຕອນ.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ຂໍການອະນຸຍາດເພີ່ມເຕີມແລ້ວ.</translation>
+<translation id="2306794767168143227">ບັນທຶກໃສ່ <ph name="BRAND" /> ຢູ່ອຸປະກອນນີ້</translation>
 <translation id="2307462900900812319">ປັບຕັ້ງຄ່າເຄືອຂ່າຍ</translation>
 <translation id="2307553512430195144">ຫາກທ່ານຍອມຮັບ, ຜູ້ຊ່ວຍ Google ຈະລໍຖ້າໃນໂໝດສະແຕນບາຍເພື່ອກວດຫາຄຳສັ່ງ “Ok Google” ແລະ ສາມາດຈຳແນກມັນເປັນການເວົ້າຂອງ <ph name="SUPERVISED_USER_NAME" /> ດ້ວຍ Voice Match ໄດ້.
     <ph name="BR" />
@@ -3767,6 +3772,7 @@
 <translation id="4242145785130247982">ບໍ່ຮອງຮັບຫຼາຍໃບຮັບຮອງລູກຂ່າຍ</translation>
 <translation id="4242533952199664413">ເປີດ​ການ​ຕັ້ງ​ຄ່າ</translation>
 <translation id="4242577469625748426">ຕິດຕັ້ງການຕັ້ງຄ່ານະໂຍບາຍຢູ່ໃນເຄື່ອງນີ້ບໍ່ສໍາເລັດ: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4242928980248289922">ປະຢັດໄປແລ້ວ <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="4243504193894350135">ເຄື່ອງພິມຢຸດເຮັດວຽກຊົ່ວຄາວ</translation>
 <translation id="4244238649050961491">ຊອກຫາແອັບປາຍປາກກາເພີ່ມເຕີມ</translation>
 <translation id="4246980464509998944">ຄໍາ​ເຫັນ​ເພີ່ມ​ເຕີມ​:</translation>
@@ -4067,6 +4073,7 @@
 <translation id="450552327874992444">ເພີ່ມຄຳສັບແລ້ວ</translation>
 <translation id="4507128560633489176">ລຶບລ້າງຂໍ້ມູນແລ້ວ.</translation>
 <translation id="4507373251891673233">ທ່ານໄດ້ບລັອກສ່ວນຂະຫຍາຍທັງໝົດຈາກ <ph name="HOST" /></translation>
+<translation id="4508032221004253235">ການດຳເນີນການນີ້ຊ່ວຍໃຫ້ແອັບ ແລະ ເວັບໄຊທີ່ມີການອະນຸຍາດເຂົ້າເຖິງສະຖານທີ່ ແລະ ChromeOS ໃຊ້ສະຖານທີ່ທີ່ລະບຸໂດຍ Wi-Fi ຫຼື ເຄືອຂ່າຍມືຖືຂອງທ່ານໄດ້. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="450867954911715010">ການຕັ້ງຄ່າການຊ່ວຍເຂົ້າເຖິງ</translation>
 <translation id="4508765956121923607">ເບິ່ງແຫຼ່ງທີ່ມາ</translation>
 <translation id="4509421746503122514">ເລີ່ມເປີດໃຊ້ໃໝ່ເພື່ອອັບເດດ</translation>
@@ -4181,6 +4188,7 @@
 <translation id="4598776695426288251">Wi-Fi ມີໃຫ້ນຳໃຊ້ຜ່ານຫຼາຍອຸປະກອນ</translation>
 <translation id="4600071396330666617">ຈຳນວນການແນະນຳ</translation>
 <translation id="4601426376352205922">ໝາຍວ່າຍັງບໍ່ໄດ້ອ່ານ</translation>
+<translation id="460190672235687855">ເບິ່ງລະຫັດຜ່ານ</translation>
 <translation id="4602466770786743961">ອະນຸຍາດໃຫ້ <ph name="HOST" /> ​​ເຂົ້າຫາ​ກ້ອງ​ຖ່າຍ​ຮູບ​ ແລະໄມໂຄຣໂຟນຂອງ​ທ່ານສະເໝີ</translation>
 <translation id="4606551464649945562">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊສ້າງແຜນທີ່ 3 ມິຕິຂອງສິ່ງທີ່ຢູ່ອ້ອມຂ້າງຕົວທ່ານ ຫຼື ຕິດຕາມຕຳແໜ່ງກ້ອງ</translation>
 <translation id="4608500690299898628">ຊອກຫາ...</translation>
@@ -4673,7 +4681,6 @@
 <translation id="5063480226653192405">ການນໍາໃຊ້</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ຈັດການ DNS ທີ່ປອດໄພໃນການຕັ້ງຄ່າ ChromeOS</translation>
-<translation id="5066160542186949327">ຍ້າຍໄປໃສ່ໂຟນເດີອື່ນ</translation>
 <translation id="5067399438976153555">ເປີດ​ສະ​ເໝີ​ໄປ</translation>
 <translation id="5067867186035333991">ຖາມ​ເບິ່ງວ່າ <ph name="HOST" /> ຕ້ອງ​ການ​​ເຂົ້າຫາໄມໂຄຣໂຟນຂອງ​ທ່ານບໍ່</translation>
 <translation id="5068553687099139861">ສະແດງລະຫັດຜ່ານ</translation>
@@ -4859,6 +4866,7 @@
 <translation id="5235750401727657667">ປ່ຽນແທນໜ້າເວັບທີ່ທ່ານເຫັນໃນເວລາທີ່ເປີດແຖບໃໝ່</translation>
 <translation id="5236374273162681467">ເພື່ອໃຊ້ພວກມັນຢ່າງງ່າຍດາຍຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ, ທ່ານສາມາດຍ້າຍພວກມັນໄປໃສ່ບັນຊີ Google ຂອງທ່ານໄດ້</translation>
 <translation id="523862956770478816">ການອະນຸຍາດເວັບໄຊ</translation>
+<translation id="5239752869099890912">ເພື່ອໃຊ້ການຕັ້ງຄ່າທີ່ອັບເດດແລ້ວຂອງທ່ານກັບເວັບໄຊນີ້ສຳລັບສ່ວນຂະຫຍາຍເຫຼົ່ານີ້, ໃຫ້ໂຫຼດໜ້ານີ້ຄືນໃໝ່</translation>
 <translation id="5242724311594467048">ເປີດໃຊ້ງານ "<ph name="EXTENSION_NAME" />" ບໍ?</translation>
 <translation id="5243522832766285132">ກະລຸນາລອງໃໝ່ໃນໄວໆນີ້</translation>
 <translation id="5244474230056479698">ກຳລັງຊິ້ງຂໍ້ມູນກັບ <ph name="EMAIL" /></translation>
@@ -6922,6 +6930,7 @@
 <translation id="70641621694466590">ເຂົ້າໄປໜ້າລະຫັດຜ່ານ</translation>
 <translation id="7064734931812204395">ກຳລັງຕັ້ງຄ່າກ່ອງບັນຈຸ Linux ຢູ່. ນີ້ອາດຈະໃຊ້ເວລາບໍ່ເກີນ 30 ນາທີ.</translation>
 <translation id="7065223852455347715">ອຸ​ປະ​ກອນ​ນີ້​ຖືກ​ລັອກ​ຢູ່​ໃນ​ໂໝດ​ທີ່​ປ້ອງ​ກັນ​ການ​ຈົດ​ທະ​ບຽນ​ວິ​ສາ​ຫະ​ກິດ. ຖ້າ​ທ່ານ​ຕ້ອງ​ການ​ຈົດ​ທະ​ບຽນ​ອຸ​ປະ​ກອນ ທ່ານ​ຈຳ​ເປັນ​ຕ້ອງ​ໄປ​ຜ່ານ​ການ​ກູ້​ຄືນ​ອຸ​ປະ​ກອນ​ກ່ອນ.</translation>
+<translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{1 ລະຫັດຜ່ານຖືກນຳເຂົ້າໃສ່ <ph name="BRAND" /> ສຳລັບ <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} ລະຫັດຜ່ານຖືກນຳເຂົ້າໃສ່ <ph name="BRAND" /> ສຳລັບ <ph name="USER_EMAIL" />}}</translation>
 <translation id="7065534935986314333">ກ່ຽວກັບລະບົບ</translation>
 <translation id="706626672220389329">ເກີດຂໍ້ຜິດພາດໃນການເຊື່ອມຕໍ່ການແບ່ງປັນ. ການແບ່ງປັນທີ່ລະບຸໄວ້ຖືກເຊື່ອມຕໍ່ແລ້ວ.</translation>
 <translation id="7067396782363924830">ສີແວດລ້ອມ</translation>
@@ -7805,6 +7814,7 @@
 <translation id="7861846108263890455">ພາສາບັນຊີ Google</translation>
 <translation id="7864539943188674973">ປິດການນຳໃຊ້ Bluetooth</translation>
 <translation id="7865127013871431856">ຕົວເລືອກແປພາສາ</translation>
+<translation id="7866941897628979955">ປະຢັດໄປແລ້ວ <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - ຈັບຄູ່ແລ້ວ</translation>
 <translation id="7869655448736341731">ໃດກໍໄດ້</translation>
 <translation id="787069710204604994">ຕົວຢ່າງ: ຫາກທ່ານເຂົ້າເບິ່ງເວັບໄຊທີ່ຂາຍເກີບແລ່ນໄລຍະໄກ, ເວັບໄຊດັ່ງກ່າວອາດເຂົ້າໃຈວ່າທ່ານສົນໃຈໃນການແລ່ນມາຣາທອນ. ຕໍ່ມາ, ຖ້າທ່ານເຂົ້າເບິ່ງເວັບໄຊອື່ນ, ເວັບໄຊນັ້ນກໍອາດສະແດງໂຄສະນາເກີບແລ່ນທີ່ແນະນຳໂດຍເວັບໄຊທຳອິດໃຫ້ທ່ານເຫັນ.</translation>
@@ -8129,6 +8139,7 @@
 <translation id="8138997515734480534">ສະຖານະ <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">ໄຟລ໌ Google Drive</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
+<translation id="8141260936970642964">ອະນຸຍາດໃຫ້ແອັບ ແລະ ເວັບໄຊ ພ້ອມທັງເຂດເວລາຂອງລະບົບໃຊ້ສະຖານທີ່ທີ່ລະບຸໂດຍບໍລິການສະຖານທີ່ Google. ຫາກປິດການເຂົ້າເຖິງສະຖານທີ່ແລ້ວ, ສະຖານທີ່ຂອງທ່ານອາດຍັງສະແດງຜ່ານທີ່ຢູ່ IP ຂອງທ່ານ.</translation>
 <translation id="8141418916163800697">ທ່ານສາມາດຕັ້ງຄ່າຄຸນສົມບັດເພີ່ມເຕີມໄດ້ໃນການຕັ້ງຄ່າ Phone Hub</translation>
 <translation id="8141584439523427891">ກຳລັງເປີດໃນໂປຣແກຣມທ່ອງເວັບສຳຮອງຕອນນີ້</translation>
 <translation id="8141725884565838206">ຈັດການລະ​ຫັດ​ຜ່ານ​ຂອງ​ທ່ານ</translation>
@@ -8201,6 +8212,7 @@
 <translation id="8195737548602430447">ແປພາສາຄຳບັນຍາຍເປັນພາສາເປົ້າໝາຍໂດຍອັດຕະໂນມັດ.</translation>
 <translation id="8197673340773315084">ເພີ່ມຊື່ ຫຼື ປ້າຍກຳກັບ, ເຊັ່ນ: ບ່ອນເຮັດວຽກ ຫຼື ສ່ວນຕົວ</translation>
 <translation id="8198456017687137612">ແຖບການສົ່ງສັນຍານ</translation>
+<translation id="8198511718495409170">ເພື່ອໃຊ້ການຕັ້ງຄ່າທີ່ອັບເດດແລ້ວຂອງທ່ານສຳລັບ "<ph name="EXTENSION_NAME" />" ກັບເວັບໄຊນີ້, ໃຫ້ໂຫຼດໜ້ານີ້ຄືນໃໝ່</translation>
 <translation id="8199300056570174101">ຄຸນລັກສະນະຂອງເຄືອຂ່າຍ (ການບໍລິການ) ແລະ ອຸປະກອນ</translation>
 <translation id="8200772114523450471">ເລີ່ມຕົ້ນປິດເປີດໃໝ່</translation>
 <translation id="8200789660596905522">ກະລຸນາກວດສອບວ່າທ່ານຕອບຮັບຄຳຮ້ອງຂໍການສົ່ງສັນຍານຢູ່ <ph name="DEVICE_NAME" /> ຂອງທ່ານ.</translation>
@@ -8898,6 +8910,7 @@
 <translation id="8821045908425223359">ກຳນົດຄ່າທີ່ຢູ່ IP ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> ພ້ອມໃຫ້ນຳໃຊ້ແລ້ວ.</translation>
 <translation id="882204272221080310">ອັບເດດເຟີມແວເພື່ອເພີ່ມຄວາມປອດໄພ.</translation>
+<translation id="8823232385406094878">ໃນປັດຈຸບັນການກູ້ຄືນຂໍ້ມູນໃນເຄື່ອງແມ່ນຍັງບໍ່ຖືກຮອງຮັບ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" />.</translation>
 <translation id="8823514049557262177">ອັດ​ສຳ​ເນົາ​ຂໍ້​ຄວາມ​ລິ້ງ</translation>
 <translation id="8823559166155093873">ບລັອກຄຸກກີ້</translation>
 <translation id="8823704566850948458">ແນະນຳລະຫັດຜ່ານ...</translation>

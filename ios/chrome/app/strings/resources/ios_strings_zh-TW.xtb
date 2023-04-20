@@ -358,7 +358,6 @@
 <translation id="3305294846493618482">更多</translation>
 <translation id="3311748811247479259">關閉</translation>
 <translation id="3324193307694657476">地址 2</translation>
-<translation id="3328459813621383194">移動閒置分頁</translation>
 <translation id="3328801116991980348">網站資訊</translation>
 <translation id="3344485292736684439">{count,plural, =1{書籤已儲存到帳戶 ({email}) 中的「{title}」}other{書籤已儲存到帳戶 ({email}) 中的「{title}」}}</translation>
 <translation id="3371831930909698441">有可用的翻譯。翻譯選項的位置接近畫面底部。</translation>
@@ -499,6 +498,7 @@
 <translation id="4343046787186034850">已允許存取相機和麥克風</translation>
 <translation id="4359125752503270327">這個網頁會在其他應用程式中開啟。</translation>
 <translation id="4371526908359194219">電子郵件通知</translation>
+<translation id="4371591986692297148">未啟用</translation>
 <translation id="4375040482473363939">QR 圖碼搜尋</translation>
 <translation id="4378154925671717803">電話</translation>
 <translation id="4389019817280890563">輕觸即可變更語言。</translation>
@@ -629,7 +629,6 @@
 <translation id="5168414296986405587">專為 iPadOS 打造</translation>
 <translation id="5173088371991956744">同步功能需要驗證你的身分</translation>
 <translation id="5176312250994681348">保留最新的密碼</translation>
-<translation id="51802232683641391">{count,plural, =1{要接續使用先前在 Android 上開啟的分頁嗎？}other{要接續使用先前在 Android 上開啟的分頁嗎？}}</translation>
 <translation id="5181140330217080051">下載中</translation>
 <translation id="5184329579814168207">在 Chrome 中開啟</translation>
 <translation id="5186185447130319458">私人</translation>
@@ -907,7 +906,6 @@
 <translation id="6807889908376551050">全部顯示...</translation>
 <translation id="681368974849482173">項目已建立</translation>
 <translation id="6822587385560699678">如果開啟，系統會將密碼儲存在 <ph name="ACCOUNT" /> 中。如果關閉，密碼只會儲存在這部裝置上。</translation>
-<translation id="683022620450280906">你可以在任何裝置上使用儲存的密碼。系統會將密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理員中</translation>
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6842136130964845393">為確保你可以隨時存取已儲存的密碼，請驗證你的身分</translation>
 <translation id="6851516051005285358">切換為電腦版網站</translation>

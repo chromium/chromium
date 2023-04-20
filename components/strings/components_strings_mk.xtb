@@ -307,6 +307,7 @@
 <translation id="1658918301167915956">уреди со Bluetooth</translation>
 <translation id="1662550410081243962">Зачувувај и пополнувај начини на плаќање</translation>
 <translation id="1663943134801823270">Картичките и адресите се од Chrome. Со нив може да управувате во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
+<translation id="1668071460721346172">Добијте е-порака</translation>
 <translation id="1671391448414634642">Отсега, страниците на <ph name="SOURCE_LANGUAGE" /> ќе се преведуваат на <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478">Од <ph name="SOURCE_LANGUAGE" /> на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Прво краткиот раб</translation>
@@ -367,6 +368,7 @@
 <translation id="1806174020048213474">Апликацијава бара дозвола за инсталирање акредитиви за Wi-Fi. По поставувањето, вашиот уред <ph name="DEVICE_TYPE" /> ќе се поврзе автоматски на поставените Wi-Fi мрежи. За да ги отстраните акредитививе, деинсталирајте ја апликацијата.</translation>
 <translation id="1807246157184219062">Светла</translation>
 <translation id="1807528111851433570">Почетен лист</translation>
+<translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">Вашиот CVC е на задната страна на картичката. Тоа се последните 3 цифри горе, десно од полето за потпис.</translation>
 <translation id="181000283860817563">Следете ги цените на повеќе сајтови</translation>
 <translation id="1810391395243432441">Заштитете ги лозинките со заклучувањето екран</translation>
@@ -524,7 +526,6 @@
 <translation id="2204482073374652408">Ажурирањето е завршено!</translation>
 <translation id="22081806969704220">Фиока 3</translation>
 <translation id="2210794033760923560">Прикачи пријава</translation>
-<translation id="2212579473415663542">Адресава е зачувана во вашата сметка на Google (<ph name="ACCOUNT" />). Може да ја користите на производите на Google на кој било уред.</translation>
 <translation id="2212735316055980242">Политиката не е пронајдена</translation>
 <translation id="2213606439339815911">Земање записи...</translation>
 <translation id="2213612003795704869">Страницата е испечатена</translation>
@@ -1588,6 +1589,7 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{Ниеден}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Пребарување <ph name="TEXT" /></translation>
 <translation id="4879491255372875719">Автоматски (стандардно)</translation>
+<translation id="4879723019639546076">Адресава ќе се зачува само на Chrome. За да ја користите на производите на Google, зачувајте ја во вашата сметка на Google (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">Историја на пребарување</translation>
 <translation id="4881695831933465202">Отвори</translation>
 <translation id="4881808915112408168">24 x 31,5 инчи</translation>
@@ -2146,6 +2148,7 @@
 <translation id="6279183038361895380">Притиснете |<ph name="ACCELERATOR" />| за да се покаже покажувачот</translation>
 <translation id="6280223929691119688">Не може да се достави на оваа адреса. Изберете друга.</translation>
 <translation id="6284292079994426700">26 x 38 инчи</translation>
+<translation id="6284517535531159884">Тип извори на варијации</translation>
 <translation id="6285507000506177184">Копче „Управувајте со преземањата во Chrome“, притиснете Enter за да управувате со датотеките што сте ги презеле во Chrome</translation>
 <translation id="6289939620939689042">Боја на страницата</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2320,6 +2323,7 @@
 <translation id="6716672519412350405"><ph name="URL" /> сака да создаде 3D-карта на опкружувањето и да ја следи позицијата на камерата</translation>
 <translation id="6718612893943028815">Да се користи камерата?</translation>
 <translation id="6721678857435001674">да ја види марката и моделот на вашиот безбедносен клуч</translation>
+<translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6738516213925468394">Податоците се шифрирани со вашата <ph name="BEGIN_LINK" />лозинка за синхронизација<ph name="END_LINK" /> на <ph name="TIME" />. Внесете ја за да започне синхронизацијата.</translation>

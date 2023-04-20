@@ -34,6 +34,7 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> को जानकारीको डायलग खोल्नुहोस्</translation>
 <translation id="1150989369772528668">पात्रो</translation>
 <translation id="1153356358378277386">कनेक्ट गरिएका डिभाइस</translation>
+<translation id="1160215328209699296">अन छ र प्रयोग भइरहेको छ</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">तपाईंको USB-C केबल डिस्प्लेहरूमा राम्रोसँग नजोडिन सक्छ</translation>
 <translation id="1175572348579024023">स्क्रोल गर्नुहोस्</translation>
@@ -225,6 +226,7 @@
 <translation id="1978498689038657292">पाठ इनपुट</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" /> मा सामेल हुनुहोस्</translation>
 <translation id="1982717156487272186">अघिल्लो हप्ताका कार्यक्रम देखाइयोस्</translation>
+<translation id="1986150224850161328">तपाईंको फोन र Chromebook एउटै नेटवर्कमा कनेक्ट गरिएका छन् भन्ने कुरा सुनिश्चित गर्नुहोस्। <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">सामग्री क्याप्चर गर्न मिल्दैन</translation>
 <translation id="1990046457226896323">बोलीसम्बन्धी फाइलहरू डाउनलोड गरिए</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> को पछिल्लो अद्यावधिकबारे थप जान्नुहोस्</translation>
@@ -240,6 +242,7 @@
 <translation id="2049240716062114887">डेस्कको नाम बदलेर <ph name="DESK_NAME" /> बनाइयो</translation>
 <translation id="2064048859448024834">क्यामेरामा फोटोको प्रिभ्यू हेर्ने सुविधा अन छ</translation>
 <translation id="2067602449040652523">किबोर्डको चमक</translation>
+<translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> टगल गर्नुहोस्। <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /></translation>
 <translation id="2078034614700056995">अर्को डेस्कमा जान टचप्याडमा चारवटा औँलाले दायाँतिर स्वाइप गर्नुहोस्</translation>
 <translation id="2079545284768500474">अन्डू गर्नुहोस्</translation>
 <translation id="2083190527011054446">नमस्ते <ph name="GIVEN_NAME" />,</translation>
@@ -324,6 +327,7 @@
 <translation id="2487915095798731898">सामेल हुनुहोस्</translation>
 <translation id="2501920221385095727">स्टिकी कुञ्जीहरू</translation>
 <translation id="2509468283778169019">CAPS LOCK खुला छ</translation>
+<translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> बन्द गर्नुहोस्। <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">विन्डोहरू अनलक गर्नुहोस्</translation>
 <translation id="2530896289327917474">क्यारेट ब्राउजिङ अन वा अफ गर्नुहोस्</translation>
@@ -373,6 +377,7 @@
 <translation id="2761723519669354964">सेल्फबाट हाइलाइट गरिएको वस्तु खोल्नुहोस्</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> ले <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ</translation>
 <translation id="2782591952652094792">क्याप्चर मोडबाट बाहिर निस्कनुहोस्</translation>
+<translation id="2785499565474703580">एउटा डिभाइस कनेक्ट गरिएको छ</translation>
 <translation id="2791421900609674576">तपाईं आफूले छाडेकै ठाउँबाट जारी राख्न सक्नुहोस् भन्नाका लागि तपाईंलाई सिफारिसहरू देखाइने छन्।  तपाईं टच एण्ड होल्ड गरेर ती सिफारिसहरू हटाउन सक्नुहुन्छ।</translation>
 <translation id="2792498699870441125">Alt + खोज</translation>
 <translation id="2797741504905337289">सेल्फ पार्टी</translation>
@@ -1277,6 +1282,7 @@
 <translation id="6941333068993625698">प्रतिक्रिया पेस गर्नुहोस्</translation>
 <translation id="6942518653766415536">रेकर्डिङको फर्म्याटसम्बन्धी मेनु</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
+<translation id="6945922087561257829">तपाईंको फोनमा मोबाइल नेटवर्क प्रयोग गरिराखिएको छ। तपाईंको फोन र Chromebook एउटै Wi-Fi नेटवर्कमा कनेक्ट गरिएका छन् भन्ने कुरा सुनिश्चित गर्नुहोस्। <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">सक्रिय गरिएको छैन। आफ्नो सेवा प्रदायकमा सम्पर्क गर्नुहोस्।</translation>
 <translation id="6961121602502368900">कार्य प्रोफाइल प्रयोग गरिएका बेला फोन साइलेन्ट बनाउने सुविधा उपलब्ध हुँदैन</translation>
 <translation id="6961840794482373852">Alt + अप एरो किबोर्ड सर्टकट परिवर्तन गरिएको छ। Page Up की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + अप एरो की थिच्नुहोस्।</translation>
@@ -1331,6 +1337,7 @@
 <translation id="7188494361780961876">मेनु सारेर स्क्रिनको सिरानको बायाँ कुनामा लगियो।</translation>
 <translation id="7189412385142492784">शुक्र ग्रह पृथ्वीबाट कति टाढा छ</translation>
 <translation id="7198435252016571249">क्यामेरा पुछारको दायाँ कुनामा स्न्याप गरियो। सिस्टमको सतहसँग बाझियो।</translation>
+<translation id="7219573373513695352">कुनै पनि डिभाइस कनेक्ट गरिएको छैन</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। कुनै अद्यावधिक लागू गर्न यो Chromebook पुनः सुरु गर्नु पर्ने हुन्छ। यो प्रक्रिया पूरा हुन १ मिनेटसम्म लाग्न सक्छ।</translation>
 <translation id="7256634071279256947">पछाडिको माइक्रोफोन</translation>
 <translation id="7258828758145722155">हिजो सम्पादन गरिएको</translation>
@@ -1481,6 +1488,7 @@
 <translation id="7902625623987030061">फिंगरप्रिन्ट सेन्सरमा छुनुहोस्</translation>
 <translation id="7904094684485781019">यो खाताको प्रशासकले बहु साइन इनलाई अनुमति दिएको छैन ।</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> वटा डिभाइस कनेक्ट गरिएका छन्</translation>
 <translation id="7930731167419639574">बोलिएका कुरा अबदेखि डिभाइसमा नै प्रोसेस गरिन्छ र स्पिच-टु-टेक्स्टले इन्टरनेटविना नै काम गर्छ</translation>
 <translation id="7932451802722951285">Google पात्रोमा खोल्नुहोस्</translation>
 <translation id="7933084174919150729">Google सहायक प्राथमिक प्रोफाइलहरूका लागि मात्र उपलब्ध छ।</translation>
@@ -1515,6 +1523,7 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> नाम गरेको टेम्प्लेट पहिल्यैदेखि छ</translation>
 <translation id="8052898407431791827">कपी गरेर क्लिपबोर्डमा पेस्ट गरियो</translation>
 <translation id="8054466585765276473">ब्याटरि समय हिसाब गर्दै।</translation>
+<translation id="8079538659226626406">स्क्रिन सेयर गर्नुहोस्</translation>
 <translation id="8083540854303889870">पछि खरिद गर्नका लागि सेभ गरिएका वस्तु</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> मा सुरु हुन्छ</translation>
 <translation id="8091387634532529612">स्वतः अपडेट गर्ने सुविधा</translation>

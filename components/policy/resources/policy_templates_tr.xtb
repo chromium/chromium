@@ -246,6 +246,15 @@ Bu politika devre dışı bırakıldığında istemci taraflı kimlik avı korum
       Varsayılan, RollbackDisabled şeklindedir.</translation>
 <translation id="1221359380862872747">Demo girişinde belirtilen URL'leri yükle</translation>
 <translation id="1221955019309484560">Tüm bileşenler için güncellemeleri etkinleştir</translation>
+<translation id="1222694988453895594">Protokol listesi ayarlamanıza ve ayarladığınız her protokol için izin verilen kaynak kalıplarının ilişkilendirilmiş bir listesini oluşturmanıza izin verir. Bu kalıplar kullanıcıya sormadan harici bir uygulama başlatabilir. Protokol listelenirken sondaki ayırıcı dahil edilmemelidir, o yüzden listeye "skype:" ya da "skype://" yerine doğrudan "skype" olarak ekleyin.
+
+Bu politika ayarlanırsa protokol, listelendiği ve protokolü başlatmaya çalışan sitenin kaynağı protokolün izin_verilen_kaynaklar listesindeki kaynak kalıplarından biriyle eşleştiği takdirde politika tarafından sorulmadan yalnızca harici uygulamaları başlatma iznine sahip olur. İki koşul da yanlış ise harici protokol başlatma istemi politika tarafından atlanmaz.
+
+Bu politika ayarlı değilse protokoller istem olmadan varsayılan halde başlayamaz. <ph name="EXTERNAL_PROTOCOL_DIALOG_SHOW_ALWAYS_OPEN_CHECKBOX_POLICY_NAME" /> politikası, devre dışı bırakılmadığı sürece kullanıcılar protokol/site bazında istemlerin kapsamı dışında kalmayı seçebilir. Bu politika, kullanıcıların ayarladığı protokol/site bazında istem muafiyetleri üzerinde etkili değildir.
+
+Kaynakları eşleşen kalıplar, https://support.google.com/chrome/a?p=url_blocklist_filter_format adresinde bulabileceğiniz "<ph name="URL_BLOCKLIST_POLICY_NAME" />" politikasıyla benzer bir biçimi kullanır.
+
+Fakat, bu politika için kaynakları eşleşen kalıplar "/path" ya da "@query" öğelerini içeremez. "/path" ya da "@query" öğelerini içeren kalıplar yoksayılacaktır.</translation>
 <translation id="1223789468190631420">Güvenilen kaynaklar için Güvenli Tarama etkinleştirme durumu</translation>
 <translation id="123018742985150697">Yerel kullanıcı ile uzaktan erişim ana makine sahibinin eşleşmesini zorunlu tut</translation>
 <translation id="123081309365616809">Cihaza içerik yayınlamayı etkinleştirme</translation>
@@ -316,7 +325,6 @@ Politikayı ayarlamadan bırakırsanız <ph name="ASK_WINDOW_MANAGEMENT_POLICY_N
 
 Bu politika, kullanımdan kaldırılan <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> politikasının yerini almıştır.</translation>
 <translation id="129206366270737897">Eşzamansız <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> yöntemlerini devre dışı bırakır.</translation>
-<translation id="129392056654547767">Sanal makine tarafından kullanılan UEFI donanım yazılımı görüntüsü. ChromeOS DLC'si olarak paketlendiği sırada geçici bir önlem olarak kullanılabilir.</translation>
 <translation id="1294263471858445589">Ambiyans kimlik doğrulamasını gizli ve normal oturumlarda etkinleştir.</translation>
 <translation id="1295737447968372331">Giriş ekranında dikte özelliğini etkinleştir</translation>
 <translation id="1297182715641689552">.pac proxy komut dosyası kullan</translation>
@@ -571,7 +579,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       <ph name="MS_WIN_NAME" /> işletim sisteminde bu işlev yalnızca Windows 10 Pro üzerinde çalışan bir <ph name="MS_AD_NAME" /> alan adına katılmış veya Chrome Tarayıcı Bulut Yönetimi'ne kaydolmuş örneklerde kullanılabilir. <ph name="MAC_OS_NAME" /> işletim sisteminde bu işlev yalnızca MDM ile çalışan veya MCX aracılığıyla bir alan adına katılmış örneklerde kullanılabilir.</translation>
 <translation id="1530812829012954197">Aşağıdaki URL kalıplarını her zaman ana makine tarayıcısında oluştur</translation>
 <translation id="1542491165152947087">Kullanıcıların, cihazlarında <ph name="PRIVACY_SANDBOX_NAME" /> reklam konuları ayarını etkinleştirmesine veya devre dışı bırakmasına izin ver.</translation>
-<translation id="1547424904796464052">Donanım yazılımı görüntüsünün on altılı kodlanmış SHA-256 karması.</translation>
 <translation id="1550295162561011575">Bu politika ayarlandığında, yöneticilerin <ph name="PRODUCT_NAME" /> cihazlarda uygulama başlatmak için otomasyon yapılandırmasına izin verilir. Bu uygulamalar, kullanıcı giriş yaptığında başlatılabilir veya kullanıcılar Başlatıcı aracılığıyla uygulamaları birlikte başlatabilir.</translation>
 <translation id="1552418937045050762">Bu ayar etkinleştirilirse kullanıcıların Yakındakilerle Paylaş özelliğini etkinleştirmesine izin verilir. Böylece kullanıcılar yakınlardaki kişilere dosya gönderip bu kişilerden dosya alabilirler.
 
@@ -6683,6 +6690,13 @@ Politika ayarlanırsa varsayılan değer listesine yeni yapılandırılan değer
 
       Politika devre dışı bırakılır veya yapılandırılmazsa WebDriver'ın uyumlu olmayan politikaları geçersiz kılmasına izin verilmez.</translation>
 <translation id="7145335384492396213">Varsayılan PIN ile yazdırma modu</translation>
+<translation id="7145764791559889135">Bu politika, belirli URL'lerdeki verilerin panoya kopyalanmasını engeller.
+
+      <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> ve <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> URL listeleri, hangi sitelerin panoya yazmasına izin verildiğini kontrol eder. URL, "etkinleştir" seçeneğindeki bir kalıpla eşleşiyor ancak "devre dışı bırak" seçeneğindeki bir kalıpla eşleşmiyorsa panoya yazma engellenir. URL hiçbir kalıpla eşleşmiyorsa kopyalama işlemi engellenmez.
+
+Kaynakları eşleşen kalıplar, https://support.google.com/chrome/a?p=url_blocklist_filter_format adresinde bulabileceğiniz "<ph name="URL_BLOCKLIST_POLICY_NAME" />" politikasıyla benzer bir biçimi kullanır.
+
+<ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" />, kalıp kontrolünü tetikleyen bayt cinsinden minimum veri miktarını gösterir. Bu da kopyalanan verilerin boyutunun bu alanda belirtilen değerden küçük olması halinde, engellenen bir URL'den panoya yazmaya izin verileceği anlamına gelir. Alan ayarlanmadan bırakılırsa varsayılan değer 100 bayttır.</translation>
 <translation id="7146198347561863646">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa güç yönetimi için uyanık kalma kilitlerine izin verilir. Uzantılar, güç yönetimi uzantı API'si ve ARC uygulamaları aracılığıyla uyandırma kilitleri isteyebilir.
 
       Politika, Devre Dışı değerine ayarlanırsa uyanık kalma kilidi istekleri yok sayılır.</translation>
@@ -7619,7 +7633,6 @@ yapmak da güvenli seçeneklerden biridir.</translation>
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> resminin SHA-256 karması.</translation>
 <translation id="8028814157747157754">Varsayılan arama sağlayıcısını etkinleştir ve kullanıcıların arama sağlayıcısı listesini değiştirmesine izin ver</translation>
 <translation id="8029201909194194377">Uzaktan erişim bağlantıları için izin verilen maksimum oturum süresi</translation>
-<translation id="8033908599068513676">İndirilecek donanım yazılımı görüntüsünün URL'si.</translation>
 <translation id="8035570672225663428">Uyarlanabilir şarj modelinin, pil ömrünü uzatmak için şarj sürecini geçici olarak durdurmasına izin ver</translation>
 <translation id="8044493735196713914">Rapor cihazı önyükleme modu</translation>
 <translation id="8044720778481009876"><ph name="CLOUD_PRINT_NAME" /> ve "Google Drive'a kaydet" hedefleri (Kullanımdan kaldırıldı)</translation>

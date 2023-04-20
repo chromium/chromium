@@ -225,6 +225,7 @@
 <translation id="1978498689038657292">Ввод текста</translation>
 <translation id="1980808257969311265">Присоединиться к мероприятию "<ph name="EVENT_SUMMARY" />"</translation>
 <translation id="1982717156487272186">Показать прошлую неделю</translation>
+<translation id="1986150224850161328">Убедитесь, что телефон и Chromebook подключены к одной сети, затем повторите попытку. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Не удается сделать снимок контента</translation>
 <translation id="1990046457226896323">Файлы автоматических субтитров скачаны.</translation>
 <translation id="1993072747612765854">Подробнее о последнем обновлении <ph name="SYSTEM_APP_NAME" />…</translation>
@@ -373,6 +374,7 @@
 <translation id="2761723519669354964">Открыть выделенный элемент на панели запуска</translation>
 <translation id="2778650143428714839">Устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />.</translation>
 <translation id="2782591952652094792">Выйти из режима съемки</translation>
+<translation id="2785499565474703580">Подключено 1 устройство.</translation>
 <translation id="2791421900609674576">Следуйте рекомендациям, чтобы продолжить работу с того места, на котором вы остановились. Нажмите на них и удерживайте, чтобы удалить.</translation>
 <translation id="2792498699870441125">Alt + Search</translation>
 <translation id="2797741504905337289">Совместный просмотр панели запуска</translation>
@@ -1277,6 +1279,7 @@
 <translation id="6941333068993625698">Отправить отзыв</translation>
 <translation id="6942518653766415536">Меню форматов записи</translation>
 <translation id="6945221475159498467">Выбрать</translation>
+<translation id="6945922087561257829">Телефон использует мобильный интернет. Подключите его и Chromebook к одной сети Wi-Fi и повторите попытку. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Сеть не активирована. Свяжитесь с оператором.</translation>
 <translation id="6961121602502368900">Отключение звука на телефоне недоступно в рабочем профиле</translation>
 <translation id="6961840794482373852">Функция сочетания клавиш Alt + Стрелка вверх изменилась. Чтобы выполнить действие клавиши Page Up, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка вверх.</translation>
@@ -1331,6 +1334,7 @@
 <translation id="7188494361780961876">Меню перемещено в левый верхний угол экрана.</translation>
 <translation id="7189412385142492784">Расстояние до Венеры</translation>
 <translation id="7198435252016571249">Окно предварительного просмотра камеры привязано к правому нижнему углу, так как перекрывало элементы системного интерфейса</translation>
+<translation id="7219573373513695352">Нет подключенных устройств.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" /> Для установки обновления необходимо перезапустить Chromebook. Это может занять около минуты.</translation>
 <translation id="7256634071279256947">Основной микрофон</translation>
 <translation id="7258828758145722155">Изменено вчера</translation>
@@ -1481,6 +1485,7 @@
 <translation id="7902625623987030061">Коснитесь сканера отпечатков.</translation>
 <translation id="7904094684485781019">Администратор этого аккаунта запретил множественный вход</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422">Подключено несколько устройств (<ph name="DEVICECOUNT" />).</translation>
 <translation id="7930731167419639574">Речь теперь обрабатывается на устройстве. Вы можете пользоваться голосовым вводом офлайн.</translation>
 <translation id="7932451802722951285">Открыть в Google Календаре</translation>
 <translation id="7933084174919150729">Google Ассистент доступен только в основном профиле</translation>

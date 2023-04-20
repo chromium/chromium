@@ -307,6 +307,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1658918301167915956">mga bluetooth device</translation>
 <translation id="1662550410081243962">I-save at punan ang mga paraan ng pagbabayad</translation>
 <translation id="1663943134801823270">Ang mga card at address ay mula sa Chrome. Maaari mong pamahalaan ang mga ito sa <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" />.</translation>
+<translation id="1668071460721346172">Tumanggap ng email</translation>
 <translation id="1671391448414634642">Simula ngayon ay ita-translate na sa <ph name="TARGET_LANGUAGE" /> ang mga page na nasa <ph name="SOURCE_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> na isasalin sa <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Short edge muna</translation>
@@ -367,6 +368,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1806174020048213474">Nagre-request ang app na ito ng pahintulot na i-install ang mga kredensyal ng Wi-Fi. Pagkatapos ng pag-set up, awtomatikong makokonekta ang iyong <ph name="DEVICE_TYPE" /> sa mga kalahok na Wi-Fi network. Para alisin ang mga kredensyal na ito, i-uninstall ang app.</translation>
 <translation id="1807246157184219062">Maliwanag</translation>
 <translation id="1807528111851433570">Panimulang sheet</translation>
+<translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">Nasa likod ng iyong card ang CVC mo. Ito ang huling 3 digit sa kanang bahagi sa itaas ng kahon para sa lagda.</translation>
 <translation id="181000283860817563">I-track ang mga presyo sa maraming site</translation>
 <translation id="1810391395243432441">Protektahan ang mga password gamit ang iyong lock ng screen</translation>
@@ -524,7 +526,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2204482073374652408">Natapos na ang pag-update!</translation>
 <translation id="22081806969704220">Tray 3</translation>
 <translation id="2210794033760923560">Mag-upload ng Ulat</translation>
-<translation id="2212579473415663542">Naka-save ang address na ito sa iyong Google Account (<ph name="ACCOUNT" />). Puwede mong gamitin ang address sa lahat ng produkto ng Google sa anumang device.</translation>
 <translation id="2212735316055980242">Hindi nahanap ang patakaran</translation>
 <translation id="2213606439339815911">Kinukuha ang mga entry...</translation>
 <translation id="2213612003795704869">Na-print ang page</translation>
@@ -1225,6 +1226,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4031179711345676612">Pinapayagan ang mikropono</translation>
 <translation id="4040350669425716613">Mga kolehiyo at unibersidad</translation>
 <translation id="4047351652147966654">18 x 24 in</translation>
+<translation id="4047620889508350431">Puwede ka na ngayong gumamit ng mga address mula sa iyong Google Account.</translation>
 <translation id="405399507749852140">Makatanggap ng mga alerto kapag bumaba ang presyo sa alinmang site</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Hayaan ang Google na tulungan kang makahanap ng mga diskwento para sa iyong mga cart</translation>
@@ -1587,6 +1589,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4877083676943085827">{COUNT,plural, =0{Wala}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">paghahanap para sa <ph name="TEXT" /></translation>
 <translation id="4879491255372875719">Awtomatiko (default)</translation>
+<translation id="4879723019639546076">Sa Chrome lang naka-save ang address na ito. Para gamitin ito sa mga produkto ng Google, i-save ito sa iyong Google Account (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">History ng paghahanap</translation>
 <translation id="4881695831933465202">Buksan</translation>
 <translation id="4881808915112408168">24 x 31.5 in</translation>
@@ -2145,6 +2148,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6279183038361895380">Pindutin ang |<ph name="ACCELERATOR" />| upang ipakita ang iyong cursor</translation>
 <translation id="6280223929691119688">Hindi maaaring maghatid sa address na ito. Pumili ng ibang address.</translation>
 <translation id="6284292079994426700">26 x 38 in</translation>
+<translation id="6284517535531159884">Uri ng Seed ng Mga Variation</translation>
 <translation id="6285507000506177184">Button na Pamahalaan ang mga download sa Chrome, pindutin ang Enter para pamahalaan ang mga file na na-download mo sa Chrome</translation>
 <translation id="6289939620939689042">Kulay ng Page</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2319,6 +2323,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6716672519412350405">Gusto ng <ph name="URL" /> na gumawa ng 3D na mapa ng iyong kapaligiran at subaybayan ang posisyon ng camera</translation>
 <translation id="6718612893943028815">Gamitin ang camera?</translation>
 <translation id="6721678857435001674">Tingnan ang manufacturer at modelo ng iyong Security Key</translation>
+<translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">camera</translation>
 <translation id="6738516213925468394">Na-encrypt ang data mo gamit ang iyong <ph name="BEGIN_LINK" />passphrase sa pag-sync<ph name="END_LINK" /> noong <ph name="TIME" />. Ilagay ito para simulan ang pag-sync.</translation>

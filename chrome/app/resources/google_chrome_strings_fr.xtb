@@ -18,11 +18,14 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1278833599417554002">Relancer et mettre à jour &amp;Chrome</translation>
 <translation id="1302523850133262269">Veuillez patienter pendant que Chrome installe les dernières mises à jour du système.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> exige que vous lisiez et acceptiez les conditions d'utilisation suivantes pour utiliser cet appareil. Celles-ci n'étendent, ne modifient ni ne restreignent les conditions d'utilisation de Google ChromeOS Flex.</translation>
+<translation id="1341711321000856656">Vous pouvez changer de profil pour voir les mots de passe d'un autre profil Chrome</translation>
 <translation id="1363996462118479832">Impossible de synchroniser vos données dans Chrome OS, car une erreur s'est produite lors de la connexion.</translation>
 <translation id="137466361146087520">Version bêta de Google Chrome</translation>
 <translation id="1399397803214730675">Une version plus récente de Google Chrome est déjà installée sur cet ordinateur. Si celle-ci ne fonctionne pas, désinstallez Google Chrome, puis réessayez.</translation>
 <translation id="139993653570221430">Vous pouvez changer d'avis à tout moment dans les paramètres Chrome. Les tests étant menés parallèlement à la façon actuelle dont les annonces sont diffusées, vous ne verrez pas tout de suite de changement.</translation>
+<translation id="1425903838053942728">{COUNT,plural, =0{La mise à jour de Chrome est terminée. Elle sera disponible dès que vous relancerez le navigateur. Vos onglets actuels s'ouvriront alors de nouveau.}=1{La mise à jour de Chrome est terminée. Elle sera disponible dès que vous relancerez le navigateur. Vos onglets actuels s'ouvriront alors de nouveau. La fenêtre de navigation privée ne sera pas rouverte.}one{La mise à jour de Chrome est terminée. Elle sera disponible dès que vous relancerez le navigateur. Vos onglets actuels s'ouvriront alors de nouveau. # fenêtre de navigation privée ne sera pas rouverte.}other{La mise à jour de Chrome est terminée. Elle sera disponible dès que vous relancerez le navigateur. Vos onglets actuels s'ouvriront alors de nouveau. Les # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="1434626383986940139">Applications Chrome Canary</translation>
+<translation id="1492280395845991349">Relancer pour terminer la mise à jour de Chrome</translation>
 <translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome n'est connecté à aucun appareil HID}=1{Google Chrome est connecté à un appareil HID}one{Google Chrome est connecté à un appareil HID}other{Google Chrome est connecté à plusieurs appareils HID}}</translation>
 <translation id="1507198376417198979">Personnalisez votre nouveau profil Chrome</translation>
 <translation id="1516530951338665275">Google Chrome a besoin d'accéder au Bluetooth pour continuer 
@@ -95,6 +98,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2652691236519827073">Ouvrir le lien dans un nouvel ongle&amp;t Chrome</translation>
 <translation id="2665296953892887393">Aidez-nous à améliorer Google Chrome en nous envoyant des rapports d'erreur et des <ph name="UMA_LINK" />.</translation>
 <translation id="2689103672227170538">Cette extension a modifié la page qui s'affiche lorsque vous démarrez Chrome.</translation>
+<translation id="2712234843277364121">Relancer pour mettre à jour – Vos onglets seront rouverts</translation>
 <translation id="2742320827292110288">Avertissement : Google Chrome ne peut pas empêcher les extensions d'enregistrer l'historique de votre navigation. Pour désactiver cette extension en mode navigation privée, désélectionnez cette option.</translation>
 <translation id="2765403129283291972">Chrome a besoin de votre autorisation pour accéder à votre micro pour ce site</translation>
 <translation id="2770231113462710648">Remplacer le navigateur par défaut par :</translation>
@@ -281,6 +285,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6365489425007284765">{COUNT,plural, =1{Votre administrateur supprime automatiquement les données de navigation lorsqu'elles ne sont pas utilisées pendant une minute. Il peut s'agir de l'historique, de la saisie automatique et des téléchargements. Vos onglets existants resteront ouverts.}one{Votre administrateur supprime automatiquement les données de navigation lorsqu'elles ne sont pas utilisées pendant # minute. Il peut s'agir de l'historique, de la saisie automatique et des téléchargements. Vos onglets existants resteront ouverts.}other{Votre administrateur supprime automatiquement les données de navigation lorsqu'elles ne sont pas utilisées pendant # minutes. Il peut s'agir de l'historique, de la saisie automatique et des téléchargements. Vos onglets existants resteront ouverts.}}</translation>
 <translation id="6412673304250309937">Il vérifie les URL d'après une liste de sites dangereux stockée dans Chrome. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la fonctionnalité de navigation sécurisée.</translation>
 <translation id="6418662306461808273">Passer au profil Chrome existant ?</translation>
+<translation id="648319183876919572">La navigation sécurisée avec protection renforcée vous protège davantage contre les sites Web et les téléchargements malveillants</translation>
 <translation id="6493527311031785448">Google Chrome tente <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Pour créer un plan 3D de votre environnement, Chrome a besoin de l'autorisation d'accéder à la caméra</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome pour les développeurs</translation>
@@ -411,6 +416,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="8989968390305463310">Votre historique de navigation influe sur les annonces que vous voyez et les centres d'intérêt estimés ci-dessous. Pour protéger votre confidentialité, Chrome supprime automatiquement vos centres d'intérêt tous les mois. Les centres d'intérêt peuvent s'actualiser, sauf si vous les supprimez.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Une mise à jour de Chrome est disponible}=1{Une mise à jour de Chrome est disponible}one{Une mise à jour de Chrome est disponible depuis # jour}other{Une mise à jour de Chrome est disponible depuis # jours}}</translation>
 <translation id="9053892488859122171">Système ChromeOS Flex</translation>
+<translation id="9054037008353851982">Relancer pour mettre à jour – Vos onglets seront rouverts</translation>
 <translation id="911206726377975832">Supprimer également vos données de navigation ?</translation>
 <translation id="9138603949443464873">Pour appliquer vos modifications, relancez Chrome</translation>
 <translation id="9195993889682885387">Chrome peut estimer quels sont vos centres d'intérêt en fonction de votre historique de navigation des dernières semaines. Ces informations restent sur votre appareil.</translation>

@@ -127,6 +127,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1757699834933698436">{count,plural, =1{{count} weak password}other{{count} weak passwords}}</translation>
 <translation id="1767766085187034454">Google Translate</translation>
 <translation id="1789803444939621101">Welcome back, <ph name="USER_NAME" /></translation>
+<translation id="179367147360747549">Make sure your passwords are safe, find out if they’ve been compromised and get advice to help protect yourself online. <ph name="BEGIN_LINK" />Learn more.<ph name="END_LINK" /></translation>
 <translation id="1803264062614276815">Cardholder name</translation>
 <translation id="1809939268435598390">Delete folder</translation>
 <translation id="1813414402673211292">Clear Browsing Data</translation>
@@ -358,7 +359,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3305294846493618482">more</translation>
 <translation id="3311748811247479259">Off</translation>
 <translation id="3324193307694657476">Address 2</translation>
-<translation id="3328459813621383194">Move inactive tabs</translation>
 <translation id="3328801116991980348">Site information</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bookmark saved to ‘{title}’ in your account, {email}}other{Bookmarks saved to ‘{title}’ in your account, {email}}}</translation>
 <translation id="3371831930909698441">Translate is available. Options available near bottom of the screen.</translation>
@@ -499,6 +499,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4343046787186034850">Camera and microphone access allowed</translation>
 <translation id="4359125752503270327">This page will open in another application.</translation>
 <translation id="4371526908359194219">Email notifications</translation>
+<translation id="4371591986692297148">Inactive</translation>
 <translation id="4375040482473363939">QR code Search</translation>
 <translation id="4378154925671717803">Phone</translation>
 <translation id="4389019817280890563">Tap to change language.</translation>
@@ -629,7 +630,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5168414296986405587">Built for iPadOS</translation>
 <translation id="5173088371991956744">Sync needs to verify that it's you</translation>
 <translation id="5176312250994681348">Keep recent password</translation>
-<translation id="51802232683641391">{count,plural, =1{Pick up the tab from where you left off in Android?}other{Pick up the tabs from where you left off in Android?}}</translation>
 <translation id="5181140330217080051">Downloading</translation>
 <translation id="5184329579814168207">Open in Chrome</translation>
 <translation id="5186185447130319458">Private</translation>
@@ -907,7 +907,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6807889908376551050">Show All...</translation>
 <translation id="681368974849482173">Item created</translation>
 <translation id="6822587385560699678">When on, passwords are saved in <ph name="ACCOUNT" />. When off, passwords are saved only to this device.</translation>
-<translation id="683022620450280906">You can use saved passwords on any device. They're saved to Google Password Manager for <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6842136130964845393">To make sure that you can always access your saved passwords, verify that it's you</translation>
 <translation id="6851516051005285358">Request desktop site</translation>

@@ -357,7 +357,6 @@
 <translation id="3305294846493618482">आणखी</translation>
 <translation id="3311748811247479259">बंद</translation>
 <translation id="3324193307694657476">पत्ता 2</translation>
-<translation id="3328459813621383194">इनॅक्टिव्ह टॅब हलवा</translation>
 <translation id="3328801116991980348">साइट माहिती</translation>
 <translation id="3344485292736684439">{count,plural, =1{बुकमार्क तुमच्या {email} खात्यामध्ये "{title}" वर सेव्ह केला आहे}other{बुकमार्क तुमच्या {email} खात्यामध्ये "{title}" वर सेव्ह केले आहेत}}</translation>
 <translation id="3371831930909698441">भाषांतर उपलब्ध आहे. स्क्रीनच्या खाली पर्याय उपलब्ध आहेत.</translation>
@@ -498,6 +497,7 @@
 <translation id="4343046787186034850">कॅमेरा आणि मायक्रोफोन अ‍ॅक्सेस करण्याची अनुमती दिली आहे</translation>
 <translation id="4359125752503270327">हे पेज दुसऱ्या ॲप्समध्ये उघडेल.</translation>
 <translation id="4371526908359194219">ईमेल सूचना</translation>
+<translation id="4371591986692297148">इनॅक्टिव्ह आहे</translation>
 <translation id="4375040482473363939">QR कोड शोध</translation>
 <translation id="4378154925671717803">फोन</translation>
 <translation id="4389019817280890563">भाषा बदलण्यासाठी टॅप करा.</translation>
@@ -628,7 +628,6 @@
 <translation id="5168414296986405587">iPadOS साठी बिल्ड केले आहे</translation>
 <translation id="5173088371991956744">सिंकला हे तुम्हीच आहात याची पडताळणी करायची आहे</translation>
 <translation id="5176312250994681348">अलीकडील पासवर्ड ठेवा</translation>
-<translation id="51802232683641391">{count,plural, =1{तुम्ही Android वर सोडलेला टॅब निवडायचा का?}other{तुम्ही Android वर सोडलेले टॅब निवडायचे का?}}</translation>
 <translation id="5181140330217080051">डाउनलोड करीत आहे</translation>
 <translation id="5184329579814168207">Chrome मध्ये उघडा</translation>
 <translation id="5186185447130319458">खाजगी</translation>
@@ -907,7 +906,6 @@
 <translation id="6807889908376551050">सर्व दर्शवा...</translation>
 <translation id="681368974849482173">तयार केलेला आयटम</translation>
 <translation id="6822587385560699678">सुरू असल्यास, पासवर्ड <ph name="ACCOUNT" /> मध्ये सेव्ह केले जातात. बंद असल्यास, पासवर्ड फक्त या डिव्हाइसवर सेव्ह केले जातात.</translation>
-<translation id="683022620450280906">तुम्ही सेव्ह केलेले पासवर्ड कोणत्याही डिव्हाइसवर वापरू शकता. ते <ph name="EMAIL" /> साठी Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले आहेत</translation>
 <translation id="6831043979455480757">भाषांतर करा</translation>
 <translation id="6842136130964845393">तुम्ही तुमचे सेव्ह केलेले पासवर्ड कधीही ॲक्सेस करू शकता याची खात्री करण्यासाठी, हे तुम्हीच आहात याची पडताळणी करा</translation>
 <translation id="6851516051005285358">डेस्कटॉप साइटची विनंती करा</translation>

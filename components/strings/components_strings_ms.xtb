@@ -439,6 +439,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2003775180883135320">Empat tebukan atas</translation>
 <translation id="201174227998721785">Urus kebenaran dan data yang disimpan merentas berbilang laman dalam tetapan Chrome</translation>
 <translation id="2019607688127825327">Butang urus tetapan kebolehaksesan, tekan Enter untuk memeribadikan alat kebolehaksesan anda dalam tetapan Chrome</translation>
+<translation id="2021333772895814435">Dasar ini melumpuhkan penyegerakan merentas peranti secara automatik untuk: <ph name="ACTION_LIST" />.</translation>
 <translation id="202224654587969958">12 x 19 in</translation>
 <translation id="2025115093177348061">Realiti tambahan</translation>
 <translation id="2025186561304664664">Proksi ditetapkan kepada auto konfigurasi.</translation>
@@ -526,7 +527,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2204482073374652408">Kemaskinian selesai!</translation>
 <translation id="22081806969704220">Dulang 3</translation>
 <translation id="2210794033760923560">Muat Naik Laporan</translation>
-<translation id="2212579473415663542">Alamat ini disimpan dalam Google Account anda (<ph name="ACCOUNT" />). Anda boleh menggunakan alamat di seluruh produk Google pada mana-mana peranti.</translation>
 <translation id="2212735316055980242">Dasar tidak dijumpai</translation>
 <translation id="2213606439339815911">Mengambil entri…</translation>
 <translation id="2213612003795704869">Halaman dicetak</translation>
@@ -641,6 +641,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2521736961081452453">Buat borang</translation>
 <translation id="2523886232349826891">Disimpan pada peranti ini sahaja</translation>
 <translation id="2524461107774643265">Tambahkan Maklumat Lanjut</translation>
+<translation id="2526280916094749336">Anda boleh menggunakan alamat yang disimpan pada seluruh produk Google. Alamat ini akan disimpan dalam Google Account anda, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">CVC tertera pada bahagian hadapan kad anda. CVC ialah kod 4 digit pada bahagian atas sebelah kanan, di atas nombor kad anda.</translation>
 <translation id="2529899080962247600">Medan ini tidak boleh mengandungi lebih daripada <ph name="MAX_ITEMS_LIMIT" /> entri. Semua entri berikutnya akan diabaikan.</translation>
 <translation id="253493526287553278">Lihat butiran kod promosi</translation>
@@ -1665,6 +1666,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5043480802608081735">Pautan yang Anda Salin</translation>
 <translation id="5045550434625856497">Kata laluan tidak sah</translation>
 <translation id="5051305769747448211">Jenaka langsung</translation>
+<translation id="5051576404387708797">Alamat ini hanya disimpan pada Chrome. Untuk menggunakan alamat ini pada seluruh produk Google, simpan alamat ini dalam Google Account anda, <ph name="ACCOUNT" />.</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Untuk menghantar fail ini menggunakan Kongsi Berdekatan, kosongkan ruang (<ph name="DISK_SPACE_SIZE" />) pada peranti anda}other{Untuk menghantar fail ini menggunakan Kongsi Berdekatan, kosongkan ruang (<ph name="DISK_SPACE_SIZE" />) pada peranti anda}}</translation>
 <translation id="5060483733937416656">Anda memilih untuk mengesahkan dengan Windows Hello pada laman web yang menggunakan <ph name="PROVIDER_ORIGIN" />. Pembekal ini mungkin telah menyimpan maklumat tentang kaedah pembayaran anda, yang boleh anda <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Adakah anda maksudkan <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -1675,6 +1677,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Menyemak alamat proksi<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Gulungan Kesepuluh</translation>
 <translation id="507130231501693183">Peti mel 4</translation>
+<translation id="5075622717059767637">Alamat ini hanya disimpan pada peranti ini. Untuk menggunakan alamat ini pada seluruh produk Google, simpan alamat ini dalam Google Account anda, <ph name="ACCOUNT" />.</translation>
 <translation id="5078060223219502807">Kata laluan yang baru anda gunakan ditemukan dalam pelanggaran data. Untuk melindungi akaun anda, Password Manager mengesyorkan agar anda menukarnya sekarang, kemudian menyemak kata laluan yang disimpan.</translation>
 <translation id="5086225927071063542">Perkomputeran awan &amp; teragih</translation>
 <translation id="5087286274860437796">Sijil pelayan tidak sah pada masa ini.</translation>
@@ -2071,6 +2074,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6051221802930200923">Anda tidak boleh melawati <ph name="SITE" /> sekarang kerana laman web ini menggunakan penyematan sijil. Ralat dan serangan rangkaian biasanya bersifat sementara. Oleh sebab itu, halaman ini mungkin akan berfungsi semula kemudian.</translation>
 <translation id="6051898664905071243">Kiraan halaman:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6053584886670442526">Anda boleh menggunakan alamat yang disimpan pada seluruh produk Google. Alamat ini disimpan dalam Google Account anda, <ph name="ACCOUNT" />.</translation>
 <translation id="6053735090575989697">Ketahui lebih lanjut tentang cara Google melindungi data anda dalam Dasar Privasi kami.</translation>
 <translation id="6055888660316801977">Bukti kelayakan pembayaran selamat tiada helaian bukti kelayakan yang sepadan</translation>
 <translation id="6058977677006700226">Gunakan kad anda pada semua peranti anda?</translation>
@@ -2251,6 +2255,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6513005815064132016">Boleh meminta untuk menjejak kedudukan kamera anda</translation>
 <translation id="6517596291481585650">Amaran: Dasar ini tidak digabungkan sebagai senarai seperti yang dinyatakan oleh dasar kerana dasar ini bukan senarai.</translation>
 <translation id="6518133107902771759">Sahkan</translation>
+<translation id="65203098586853226">Menterjemahkan <ph name="SOURCE" /> kepada <ph name="TARGET" /></translation>
 <translation id="6521745193039995384">Tidak aktif</translation>
 <translation id="6529173248185917884">Gulungan Ketujuh</translation>
 <translation id="6529602333819889595">&amp;Buat Semula Pemadaman</translation>

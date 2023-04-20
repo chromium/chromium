@@ -34,6 +34,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1148499908455722006">Buka dialog info untuk <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Perangkat dihubungkan</translation>
+<translation id="1160215328209699296">aktif dan sedang digunakan</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Kabel USB-C mungkin tidak terhubung dengan benar ke layar</translation>
 <translation id="1175572348579024023">Scroll</translation>
@@ -225,6 +226,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1978498689038657292">Masukan teks</translation>
 <translation id="1980808257969311265">Gabung ke <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Tampilkan minggu sebelumnya</translation>
+<translation id="1986150224850161328">Pastikan ponsel dan Chromebook berada di jaringan yang sama, lalu coba lagi. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Tidak dapat menangkap konten</translation>
 <translation id="1990046457226896323">File ucapan didownload</translation>
 <translation id="1993072747612765854">Pelajari lebih lanjut update <ph name="SYSTEM_APP_NAME" /> terbaru</translation>
@@ -240,6 +242,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2049240716062114887">Nama desktop diubah menjadi <ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">Pratinjau kamera aktif</translation>
 <translation id="2067602449040652523">Kecerahan keyboard</translation>
+<translation id="2075520525463668108">Tombol <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /></translation>
 <translation id="2078034614700056995">Geser ke kanan dengan empat jari untuk beralih ke desktop berikutnya</translation>
 <translation id="2079545284768500474">Urungkan</translation>
 <translation id="2083190527011054446">Selamat malam <ph name="GIVEN_NAME" />,</translation>
@@ -324,6 +327,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2487915095798731898">Gabung</translation>
 <translation id="2501920221385095727">Tombol lekat</translation>
 <translation id="2509468283778169019">CAPS LOCK aktif</translation>
+<translation id="2514415433888497495">Hentikan <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Buka kunci jendela</translation>
 <translation id="2530896289327917474">Mengaktifkan atau menonaktifkan penjelajahan dengan keyboard</translation>
@@ -373,6 +377,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2761723519669354964">Buka item yang ditandai dari rak</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> dikelola oleh <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Keluar dari mode tangkapan layar</translation>
+<translation id="2785499565474703580">1 perangkat terhubung</translation>
 <translation id="2791421900609674576">Rekomendasi akan ditampilkan sehingga Anda dapat melanjutkan aktivitas terakhir yang Anda lakukan. Anda dapat menyentuh lama untuk menghapus rekomendasi.</translation>
 <translation id="2792498699870441125">Alt+Telusuri</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1277,6 +1282,7 @@ Baru diinstal</translation>
 <translation id="6941333068993625698">Mengirim masukan</translation>
 <translation id="6942518653766415536">Menu format rekaman</translation>
 <translation id="6945221475159498467">Pilih</translation>
+<translation id="6945922087561257829">Ponsel Anda menggunakan jaringan seluler. Pastikan ponsel dan Chromebook berada di jaringan Wi-Fi yang sama, lalu coba lagi. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Tidak diaktifkan. Hubungi operator.</translation>
 <translation id="6961121602502368900">Fitur senyapkan ponsel tidak tersedia di profil kerja</translation>
 <translation id="6961840794482373852">Pintasan keyboard Alt + Panah Atas telah diubah. Untuk menggunakan tombol Page Up, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + Panah Atas.</translation>
@@ -1331,6 +1337,7 @@ Baru diinstal</translation>
 <translation id="7188494361780961876">Menu dipindahkan ke pojok kiri atas layar.</translation>
 <translation id="7189412385142492784">Seberapa jauh Venus</translation>
 <translation id="7198435252016571249">Kamera dipaskan ke pojok kanan bawah. Bertentangan dengan platform sistem.</translation>
+<translation id="7219573373513695352">Tidak ada perangkat yang terhubung</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook ini perlu dimulai ulang untuk menerapkan update. Proses ini dapat memerlukan waktu hingga 1 menit.</translation>
 <translation id="7256634071279256947">Mikrofon belakang</translation>
 <translation id="7258828758145722155">Diedit kemarin</translation>
@@ -1481,6 +1488,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7902625623987030061">Sentuh sensor sidik jari</translation>
 <translation id="7904094684485781019">Administrator untuk akun ini menonaktifkan fitur masuk banyak akun.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> perangkat terhubung</translation>
 <translation id="7930731167419639574">Ucapan sekarang diproses secara lokal dan Dikte berfungsi secara offline</translation>
 <translation id="7932451802722951285">Buka di Google Kalender</translation>
 <translation id="7933084174919150729">Asisten Google hanya tersedia untuk profil utama.</translation>
@@ -1515,6 +1523,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8051716679295756675">Template bernama <ph name="DESK_TEMPLATE_NAME" /> sudah ada</translation>
 <translation id="8052898407431791827">Disalin ke papan klip</translation>
 <translation id="8054466585765276473">Menghitung masa pakai baterai.</translation>
+<translation id="8079538659226626406">Berbagi Layar</translation>
 <translation id="8083540854303889870">Disimpan untuk nanti</translation>
 <translation id="8091153018031979607">Dimulai pukul <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Update otomatis</translation>

@@ -34,6 +34,7 @@
 <translation id="1148499908455722006">باز کردن کادر گفتگوی اطلاعات برای <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">تقویم</translation>
 <translation id="1153356358378277386">دستگاه‌های مرتبط‌شده</translation>
+<translation id="1160215328209699296">روشن و درحال استفاده</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />،<ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">‏کابل USB-C شما ممکن است نتواند درست به نمایشگرها وصل شود</translation>
 <translation id="1175572348579024023">پیمایش</translation>
@@ -241,6 +242,7 @@
 <translation id="2049240716062114887">نام میزکار به <ph name="DESK_NAME" /> تغییر کرد</translation>
 <translation id="2064048859448024834">پیش‌نمای دوربین روشن است</translation>
 <translation id="2067602449040652523">روشنایی صفحه‌کلید</translation>
+<translation id="2075520525463668108">روشن/ خاموش کردن <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> است</translation>
 <translation id="2078034614700056995">برای رفتن به میزکار بعدی، با ۴ انگشت تند به راست بکشید</translation>
 <translation id="2079545284768500474">لغو</translation>
 <translation id="2083190527011054446">شب‌به‌خیر <ph name="GIVEN_NAME" />،</translation>
@@ -325,6 +327,7 @@
 <translation id="2487915095798731898">پیوستن</translation>
 <translation id="2501920221385095727">کلیدهای چسبان</translation>
 <translation id="2509468283778169019">‏CAPS LOCK روشن است</translation>
+<translation id="2514415433888497495">متوقف کردن <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> است</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">باز کردن قفل پنجره‌ها</translation>
 <translation id="2530896289327917474">روشن یا خاموش کردن مرور با نشانگر نوشتار</translation>
@@ -1519,6 +1522,7 @@
 <translation id="8051716679295756675">الگویی با نام <ph name="DESK_TEMPLATE_NAME" /> ازقبل وجود دارد</translation>
 <translation id="8052898407431791827">در بریده‌دان کپی شد</translation>
 <translation id="8054466585765276473">درحال محاسبه زمان شارژ باتری.</translation>
+<translation id="8079538659226626406">هم‌رسانی صفحه‌نمایش</translation>
 <translation id="8083540854303889870">برای بعد ذخیره شده است</translation>
 <translation id="8091153018031979607">در <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> شروع می‌شود</translation>
 <translation id="8091387634532529612">به‌روزرسانی‌های خودکار</translation>

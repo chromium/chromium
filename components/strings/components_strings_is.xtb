@@ -307,6 +307,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1658918301167915956">Bluetooth-tæki</translation>
 <translation id="1662550410081243962">Vista og fylla út greiðslumáta</translation>
 <translation id="1663943134801823270">Spjöld og heimilisföng eru úr Chrome. Þú getur haft umsjón með þeim í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
+<translation id="1668071460721346172">Fá tölvupóst</translation>
 <translation id="1671391448414634642">Síður á tungumálinu „<ph name="SOURCE_LANGUAGE" />“ verða héðan í frá þýddar yfir á eftirfarandi tungumál: <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> &gt; <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Skammhlið fyrst</translation>
@@ -367,6 +368,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1806174020048213474">Þetta forrit biður um heimild til að setja upp WiFi-skilríki. Eftir uppsetningu tengist <ph name="DEVICE_TYPE" /> sjálfkrafa við skráð WiFi-net. Fjarlægðu forritið til að fjarlægja skilríkin.</translation>
 <translation id="1807246157184219062">Ljóst</translation>
 <translation id="1807528111851433570">Fyrsta blað</translation>
+<translation id="180757923930449935">(64 bita herming)</translation>
 <translation id="180991881384371158">CVC-númerið er á bakhlið kortsins. Það eru 3 síðustu tölurnar til hægri ofan við undirskriftarreitinn.</translation>
 <translation id="181000283860817563">Fylgjast með verði á mörgum vefsvæðum</translation>
 <translation id="1810391395243432441">Verndaðu aðgangsorðin þín með skjálásnum</translation>
@@ -510,6 +512,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2166049586286450108">Fullt stjórnandaaðgengi</translation>
 <translation id="2166378884831602661">Þetta vefsvæði getur ekki ábyrgst örugga tengingu</translation>
 <translation id="2168151236314517198">Regla stjórnanda kemur í veg fyrir að hægt sé að prenta þetta efni</translation>
+<translation id="2176974405772725904">Vista heimilisfang á reikningi</translation>
 <translation id="2181821976797666341">Reglur</translation>
 <translation id="2183608646556468874">Símanúmer</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{Eitt heimilisfang}one{# heimilisfang}other{# heimilisföng}}</translation>
@@ -523,7 +526,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2204482073374652408">Uppfærslu lokið!</translation>
 <translation id="22081806969704220">Bakki 3</translation>
 <translation id="2210794033760923560">Hlaða upp skýrslu</translation>
-<translation id="2212579473415663542">Heimilisfangið er vistað á Google-reikningnum þínum (<ph name="ACCOUNT" />). Þú getur notað heimilisfangið í Google-vörum í hvaða tæki sem er.</translation>
 <translation id="2212735316055980242">Regla fannst ekki</translation>
 <translation id="2213606439339815911">Sækir færslur...</translation>
 <translation id="2213612003795704869">Síða er prentuð</translation>
@@ -1586,6 +1588,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4877083676943085827">{COUNT,plural, =0{Ekkert}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" />-leit</translation>
 <translation id="4879491255372875719">Sjálfvirkt (sjálfgildi)</translation>
+<translation id="4879723019639546076">Þetta heimilisfang er eingöngu vistað í Chrome. Til að nota það í Google-vörum skaltu vista það á Google-reikningnum þínum (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">Leitarferill</translation>
 <translation id="4881695831933465202">Opna</translation>
 <translation id="4881808915112408168">24 x 31,5 to.</translation>
@@ -1736,6 +1739,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4+</translation>
 <translation id="5234764350956374838">Hunsa</translation>
+<translation id="5238301240406177137">Vista á reikningi</translation>
 <translation id="5239623327352565343">Staðsetning leyfð</translation>
 <translation id="5242889659037569123">Farangur og aukahlutir fyrir ferðalög</translation>
 <translation id="5244732203286792411">Hleður...
@@ -2143,6 +2147,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6279183038361895380">Ýttu á |<ph name="ACCELERATOR" />| til að sýna bendilinn</translation>
 <translation id="6280223929691119688">Ekki er hægt að senda á þetta heimilisfang. Veldu annað heimilisfang.</translation>
 <translation id="6284292079994426700">26 x 38 to.</translation>
+<translation id="6284517535531159884">Dreifingargerð tilbrigðis (Variations Seed Type)</translation>
 <translation id="6285507000506177184">Hnappur til að stjórna niðurhali í Chrome, ýttu á Enter til að stjórna skrám sem þú hefur sótt í Chrome</translation>
 <translation id="6289939620939689042">Síðulitur</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2252,6 +2257,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6545864417968258051">Bluetooth-leit</translation>
 <translation id="6547208576736763147">Tvö göt vinstra megin</translation>
 <translation id="6549443526281184652">Búningar</translation>
+<translation id="6551873053534932690">Vista heimilisfang á reikningi?</translation>
 <translation id="6554732001434021288">Síðast opnað fyrir <ph name="NUM_DAYS" /> dögum</translation>
 <translation id="6556866813142980365">Endurgera</translation>
 <translation id="6557715786897013164">14 x 17 to.</translation>
@@ -2316,6 +2322,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6716672519412350405"><ph name="URL" /> vill búa til þrívíddarkort af umhverfinu og rekja staðsetningu myndavélarinnar</translation>
 <translation id="6718612893943028815">Nota myndavél?</translation>
 <translation id="6721678857435001674">Sjá gerð og útgáfu öryggislykilsins þíns</translation>
+<translation id="6726832600570791992">(32 bita herming)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">myndavél</translation>
 <translation id="6738516213925468394">Gögnin þín voru dulkóðuð með <ph name="BEGIN_LINK" />aðgangsorði samstillingar<ph name="END_LINK" /> <ph name="TIME" />. Sláðu það inn til að hefja samstillingu.</translation>

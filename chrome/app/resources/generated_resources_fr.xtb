@@ -497,6 +497,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
             <ph name="LINE_BREAKS" />
            En revanche, la réinitialisation n'aura aucune incidence sur les favoris, l'historique et les mots de passe enregistrés.</translation>
 <translation id="1425040197660226913">Impossible d'importer. Utilisez une image de moins de 20 Mo.</translation>
+<translation id="1425282319410216613">Ne pas afficher lorsque le téléchargement est terminé</translation>
 <translation id="1426410128494586442">Oui</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> est bloqué</translation>
 <translation id="1426870617281699524">Cliquez sur "Réessayer" et acceptez l'invite sur votre ordinateur</translation>
@@ -1903,6 +1904,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="25899519884572181">Quitter le mode Lecteur</translation>
 <translation id="2593499352046705383">Avant de commencer, vérifiez que vous avez une copie de sauvegarde de vos données. L'installation de <ph name="DEVICE_OS" /> va écraser les données de votre disque dur. En savoir plus : g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Rechercher sur Google ou saisir une URL</translation>
+<translation id="2598710988533271874">Nouvelle version de Chrome disponible</translation>
 <translation id="2599048253926156421">Nom d'utilisateur copié dans le presse-papiers</translation>
 <translation id="2602501489742255173">Balayez l'écran vers le haut pour démarrer</translation>
 <translation id="2603115962224169880">Nettoyer l'ordinateur</translation>
@@ -2211,6 +2213,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2852385257476173980">La liste des sites que vous consulterez pourra s'afficher ici dès que vous naviguerez sur le Web</translation>
 <translation id="285241945869362924">Crée automatiquement des sous-titres pour les contenus audio et vidéo. Les contenus audio et les sous-titres ne quittent pas votre appareil.</translation>
 <translation id="2856776373509145513">Créer un conteneur</translation>
+<translation id="2859741939921354763">Importez des mots de passe dans <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">Mise à jour terminée. Veuillez redémarrer le système.</translation>
 <translation id="2861941300086904918">Gestionnaire de sécurité Native Client</translation>
 <translation id="2862815659905780618">Supprimer l'environnement de développement Linux</translation>
@@ -3668,6 +3671,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4144468798716165316">Commandes rapides</translation>
 <translation id="4146026355784316281">Toujours ouvrir avec le lecteur système</translation>
 <translation id="4146785383423576110">Réinitialiser et nettoyer</translation>
+<translation id="4147099377280085053">Sélectionner une table braille</translation>
 <translation id="4147911968024186208">Veuillez réessayer. Si l'erreur se reproduit, veuillez contacter le service d'assistance.</translation>
 <translation id="4150201353443180367">Écran</translation>
 <translation id="4150569944729499860">Contexte de l'écran</translation>
@@ -3889,6 +3893,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4366138410738374926">L'impression a commencé</translation>
 <translation id="4367513928820380646">Examiner les autorisations retirées</translation>
 <translation id="4369215744064167350">Demande de site Web approuvée</translation>
+<translation id="436926121798828366">Vous pouvez modifier cela à tout moment dans les <ph name="SETTINGS_LINK" /></translation>
 <translation id="4369735607080757018">Seuls quelques types de données sont partagés entre les sites pour mesurer les performances des annonces, comme l'heure à laquelle une annonce vous a été présentée.</translation>
 <translation id="4370975561335139969">L'adresse e-mail et le mot de passe saisis ne correspondent pas.</translation>
 <translation id="4374805630006466253">Utiliser un autre téléphone ou une autre tablette</translation>
@@ -3922,7 +3927,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{Tout &amp;ouvrir}=1{&amp;Ouvrir le favori}one{Tout &amp;ouvrir ({COUNT})}other{Tout &amp;ouvrir ({COUNT})}}</translation>
 <translation id="4397372003838952832">Vous n'aurez pas besoin de mémoriser ce mot de passe. Il sera enregistré dans le <ph name="GOOGLE_PASSWORD_MANAGER" /> pour <ph name="EMAIL" />.</translation>
 <translation id="4397844455100743910">En savoir plus sur les demandes d'accès.</translation>
-<translation id="439817266247065935">Votre appareil ne s'est arrêté pas correctement. Redémarrez Linux pour utiliser les applications Linux.</translation>
+<translation id="439817266247065935">Votre appareil ne s'est pas arrêté correctement. Redémarrez Linux pour utiliser les applications Linux.</translation>
 <translation id="4400367121200150367">Les sites pour lesquels vos mots de passe ne seront jamais enregistrés s'afficheront ici</translation>
 <translation id="4400632832271803360">Maintenir la touche du lanceur d'applications enfoncée pour modifier la fonction des touches de la rangée supérieure</translation>
 <translation id="4400963414856942668">Vous pouvez cliquer sur l'étoile pour ajouter un onglet à vos favoris</translation>
@@ -4289,6 +4294,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="47158868804223727">Cliquez sur le nom du groupe pour le développer ou le réduire</translation>
 <translation id="4716483597559580346">Powerwash pour plus de sécurité</translation>
 <translation id="471759229191973607">Modifier le thème</translation>
+<translation id="4718046540206070045">Bien plus qu'un navigateur</translation>
 <translation id="4718564115458102525">Aucun clavier détecté</translation>
 <translation id="4722735765955348426">Mot de passe associé à <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856">Votre écran est partagé par le biais de l'application <ph name="APP_NAME" />.</translation>
@@ -4653,7 +4659,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5063480226653192405">Utilisation</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Gérer le DNS sécurisé dans les paramètres Chrome OS</translation>
-<translation id="5066160542186949327">Déplacer vers un autre dossier</translation>
 <translation id="5067399438976153555">Toujours activé</translation>
 <translation id="5067867186035333991">Demander si l'accès à votre micro est requis sur <ph name="HOST" /></translation>
 <translation id="5068553687099139861">d'afficher les mots de passe</translation>
@@ -5223,6 +5228,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="558170650521898289">Vérification de pilote matériel Microsoft Windows</translation>
 <translation id="5581876958763461074">Toutes les notes</translation>
 <translation id="5581972110672966454">Impossible d'associer l'appareil au domaine. Veuillez réessayer, ou contactez le propriétaire ou l'administrateur de l'appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
+<translation id="5582634344048669777">8 points</translation>
 <translation id="5582839680698949063">Menu principal</translation>
 <translation id="5583640892426849032">Retour</translation>
 <translation id="5584088138253955452">Enregistrer le nom d'utilisateur ?</translation>
@@ -5436,6 +5442,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5787146423283493983">Accord de la clé</translation>
 <translation id="5787420647064736989">Nom de l'appareil</translation>
 <translation id="5788367137662787332">Désolé, impossible d'installer au moins une partition du périphérique <ph name="DEVICE_LABEL" />.</translation>
+<translation id="5789581866075720267">Pour importer des mots de passe dans <ph name="BRAND" /> sur cet appareil, sélectionnez un fichier CSV.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Succès</translation>
 <translation id="5790651917470750848">Ce port existe déjà</translation>
@@ -5680,6 +5687,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5984222099446776634">Consultations récentes</translation>
 <translation id="5985458664595100876">Le format de l'URL n'est pas valide. Les formats acceptés sont \\server\share et smb://server/share.</translation>
 <translation id="598810097218913399">Supprimer l'attribution</translation>
+<translation id="5989629029899728491">Au-delà des cookies</translation>
 <translation id="5990266201903445068">Wi-Fi uniquement</translation>
 <translation id="5990386583461751448">Traduite</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Pour pouvoir continuer à naviguer sur Internet, demandez à votre administrateur de supprimer cette application.}one{Pour pouvoir continuer à naviguer sur Internet, demandez à votre administrateur de supprimer cette application.}other{Pour pouvoir continuer à naviguer sur Internet, demandez à votre administrateur de supprimer ces applications.}}</translation>
@@ -5790,6 +5798,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – Fait partie d'un groupe sans nom</translation>
 <translation id="6085886413119427067">Détermine comment se connecter aux sites Web via une connexion sécurisée</translation>
 <translation id="6086004606538989567">Le compte que vous avez validé n'est pas autorisé à accéder à cet appareil.</translation>
+<translation id="6086347269144967242">Lire les informations provenant de l'appareil associé et ses données</translation>
 <translation id="6086846494333236931">Installée par votre administrateur</translation>
 <translation id="6087746524533454243">Vous recherchez des informations à propos du navigateur ? Accédez à la page</translation>
 <translation id="6087960857463881712">Visage "Génial"</translation>
@@ -5880,6 +5889,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6164832038898943453">Ajoutez des langues à traduire automatiquement</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6166185671393271715">Importer des mots de passe dans Chrome</translation>
+<translation id="6166659775803431">Dans votre panier</translation>
 <translation id="6169040057125497443">Veuillez vérifier votre micro.</translation>
 <translation id="6169967265765719844">Les autorisations pour les jeux et applis installés via Steam peuvent être gérées dans les <ph name="LINK_BEGIN" />paramètres de l'appli Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Sandwich</translation>
@@ -6779,6 +6789,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6968288415730398122">Saisissez votre mot de passe pour configurer le verrouillage de l'écran</translation>
 <translation id="6969047215179982698">Désactiver le Partage à proximité</translation>
 <translation id="6969216690072714773">Saisissez ou mettez à jour les informations associées à cet appareil.</translation>
+<translation id="696942486482903620">Vous pouvez utiliser les mots de passe que vous enregistrez dans votre compte Google sur cet appareil et sur tous ceux sur lesquels vous êtes connecté</translation>
 <translation id="6970480684834282392">Type de démarrage</translation>
 <translation id="6970543303783413625">Impossible d'importer les mots de passe. Vous ne pouvez en importer que <ph name="COUNT" /> à la fois.</translation>
 <translation id="6970856801391541997">Imprimer des pages spécifiques</translation>
@@ -7043,6 +7054,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7222204278952406003">Chrome est votre navigateur par défaut</translation>
 <translation id="7222232353993864120">Adresse e-mail</translation>
 <translation id="7222235798733126207">Partage limité entre les sites</translation>
+<translation id="7222335051802562841">Terminer la mise à jour</translation>
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 site dans le groupe de <ph name="FPS_OWNER" />}one{{MEMBERS} site dans le groupe de <ph name="FPS_OWNER" />}other{{MEMBERS} sites dans le groupe de <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Utiliser Windows Hello pour saisir les mots de passe</translation>
 <translation id="7225179976675429563">Type de réseau manquant.</translation>
@@ -7234,6 +7246,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7400447915166857470">Revenir à <ph name="OLD_SEARCH_PROVIDER" /> ?</translation>
 <translation id="7400839060291901923">Configurer la connexion sur votre <ph name="PHONE_NAME" /></translation>
 <translation id="7401778920660465883">Fermer ce message</translation>
+<translation id="7402198013420237102">Transférer les mots de passe enregistrés vers votre compte Google ?</translation>
 <translation id="7403642243184989645">Téléchargement des ressources</translation>
 <translation id="7404065585741198296">Votre téléphone avec un câble USB</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Contrôle de sécurité effectué il y a 1 heure}one{Contrôle de sécurité effectué il y a {NUM_HOURS} heure}other{Contrôle de sécurité effectué il y a {NUM_HOURS} heures}}</translation>
@@ -8357,6 +8370,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Vous avez déjà enregistré cet appareil. Il n'est pas nécessaire de l'enregistrer à nouveau.</translation>
 <translation id="8357388086258943206">Erreur lors de l'installation de Linux</translation>
+<translation id="8357591920094529889">Ce guide vous aide à comprendre les choix importants qui s'offrent à vous lorsque vous utilisez Chrome. Il vous aide aussi dans ces choix pour que Chrome fonctionne comme vous le souhaitez.</translation>
 <translation id="8358685469073206162">Restaurer les pages ?</translation>
 <translation id="8358912028636606457">Impossible de caster le contenu audio de l'onglet sur cet appareil.</translation>
 <translation id="835951711479681002">Enregistrer dans votre compte Google</translation>
@@ -8410,6 +8424,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8398877366907290961">Poursuivre quand même</translation>
 <translation id="8399282673057829204">Afficher le mot de passe</translation>
 <translation id="8401432541486058167">Utilisez le code associé à votre carte à puce.</translation>
+<translation id="8403618281196981152">Vos données dans Chrome</translation>
 <translation id="8403807918453631441">Le <ph name="BRAND" /> peut vérifier vos mots de passe lorsque vous les enregistrez</translation>
 <translation id="8405046151008197676">Découvrez les nouveautés de la dernière mise à jour</translation>
 <translation id="8407199357649073301">Niveau de consignation :</translation>
@@ -8469,6 +8484,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8460932807646981183">Gérer les moteurs de recherche et la recherche sur les sites</translation>
 <translation id="84613761564611563">Demande d'interface utilisateur en cours pour la configuration réseau. Merci de patienter…</translation>
 <translation id="8461914792118322307">Proxy</translation>
+<translation id="8461973047386722744">Aucun mot de passe trouvé</translation>
 <translation id="8463001014623882202">Échec de l'autorisation</translation>
 <translation id="846374874681391779">Barre de téléchargements</translation>
 <translation id="8463955938112983119">Plug-in <ph name="PLUGIN_NAME" /> désactivé.</translation>
@@ -8527,6 +8543,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8512476990829870887">Arrêter le processus</translation>
 <translation id="851263357009351303">Toujours autoriser <ph name="HOST" /> à afficher les images</translation>
 <translation id="8513108775083588393">Rotation auto</translation>
+<translation id="8513357934662532537">Pour importer des mots de passe dans <ph name="BRAND" /> pour <ph name="USER_EMAIL" />, sélectionnez un fichier CSV.</translation>
 <translation id="8514746246728959655">Essayer une autre clé de sécurité</translation>
 <translation id="8514955299594277296">Ne pas autoriser les sites à enregistrer des données sur votre appareil (déconseillé)</translation>
 <translation id="8517759303731677493">Modifier…</translation>
@@ -9368,6 +9385,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="952471655966876828">L'appareil se connecte automatiquement lorsqu'il est allumé ou utilisé</translation>
 <translation id="953434574221655299">Autorisés à savoir quand vous utilisez activement votre appareil</translation>
 <translation id="956500788634395331">Vous êtes protégé contre les extensions potentiellement dangereuses</translation>
+<translation id="957179356621191750">6 points</translation>
 <translation id="957960681186851048">Une tentative de téléchargement automatique de plusieurs fichiers a été initiée via ce site</translation>
 <translation id="960987915827980018">Environ 1 heure restante</translation>
 <translation id="962802172452141067">Arborescence de dossiers des favoris</translation>

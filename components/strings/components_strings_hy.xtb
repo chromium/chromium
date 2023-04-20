@@ -307,6 +307,7 @@
 <translation id="1658918301167915956">bluetooth սարքեր</translation>
 <translation id="1662550410081243962">Պահել վճարման եղանակները և դրանց տվյալներով ինքնալրացնել ձևերը</translation>
 <translation id="1663943134801823270">Քարտերն ու հասցեները նշված են Chrome-ում: Դրանք կարող եք կառավարել <ph name="BEGIN_LINK" />Կարգավորումներում<ph name="END_LINK" />:</translation>
+<translation id="1668071460721346172">Ստանալ էլփոստով</translation>
 <translation id="1671391448414634642">Այսուհետ <ph name="SOURCE_LANGUAGE" /> լեզվով էջերը կթարգմանվեն <ph name="TARGET_LANGUAGE" />:</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />ից <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Կարճ եզրից սկսած</translation>
@@ -367,6 +368,7 @@
 <translation id="1806174020048213474">Այս հավելվածը Wi-Fi-ի մուտքի տվյալներ տեղադրելու թույլտվություն է հայցում։ Կարգավորումից հետո ձեր <ph name="DEVICE_TYPE" /> սարքն ավտոմատ կմիանա մասնակից Wi-Fi ցանցերին։ Մուտքի այս տվյալները հեռացնելու համար ապատեղադրեք հավելվածը։</translation>
 <translation id="1807246157184219062">Բաց</translation>
 <translation id="1807528111851433570">Առաջին թերթ</translation>
+<translation id="180757923930449935">(64 բիթանոց էմուլացված տարբերակ)</translation>
 <translation id="180991881384371158">CVC կոդը նշված է քարտի դարձերեսին։ Այն եռանիշ թիվ է և գտնվում է ստորագրության դաշտի վերևի աջ կողմում (վերջին երեք թվանշանները)։</translation>
 <translation id="181000283860817563">Հետագծել գները մի քանի կայքերում</translation>
 <translation id="1810391395243432441">Պաշտպանեք գաղտնաբառերը էկրանի կողպման միջոցով</translation>
@@ -510,6 +512,7 @@
 <translation id="2166049586286450108">Ադմինիստրատորի ամբողջական թույլտվություն</translation>
 <translation id="2166378884831602661">Այս կայքը չի կարող անվտանգ կապակցում ապահովել</translation>
 <translation id="2168151236314517198">Ադմինիստրատորը թույլ չի տալիս տպել այս բովանդակությունը</translation>
+<translation id="2176974405772725904">Պահեք հասցեն հաշվում</translation>
 <translation id="2181821976797666341">Կանոններ</translation>
 <translation id="2183608646556468874">Հեռախոսահամար</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 հասցե}one{# հասցե}other{# հասցե}}</translation>
@@ -523,7 +526,6 @@
 <translation id="2204482073374652408">Թարմացումն ավարտվեց</translation>
 <translation id="22081806969704220">Դարակ 3</translation>
 <translation id="2210794033760923560">Վերբեռնել զեկույցը</translation>
-<translation id="2212579473415663542">Այս հասցեն պահվում է ձեր Google գաշվում (<ph name="ACCOUNT" />)։ Դուք կարող եք հասցեն օգտագործել ցանկացած սարքից՝ Google-ի արտադրանքներում։</translation>
 <translation id="2212735316055980242">Կանոնը չգտնվեց</translation>
 <translation id="2213606439339815911">Գրառումները քաշվում են…</translation>
 <translation id="2213612003795704869">Էջը տպված է</translation>
@@ -1224,6 +1226,7 @@
 <translation id="4031179711345676612">Խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="4040350669425716613">Քոլեջներ և համալսարաններ</translation>
 <translation id="4047351652147966654">18 x 24 դյույմ</translation>
+<translation id="4047620889508350431">Այժմ դուք կարող եք օգտագործել հասցեներ ձեր Google հաշվից։</translation>
 <translation id="405399507749852140">Դուք ծանուցում կստանաք, երբ որևէ կայքում գնիջեցում լինի</translation>
 <translation id="4056223980640387499">Սեպիա</translation>
 <translation id="4063063121357725926">Թույլ տվեք Google-ին օգնել ձեզ զեղչեր գտնել ձեր զամբյուղներում ավելացված ապրանքների համար</translation>
@@ -1586,6 +1589,7 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{Չկա}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Որոնել «<ph name="TEXT" />»</translation>
 <translation id="4879491255372875719">Ավտոմատ (կանխադրված)</translation>
+<translation id="4879723019639546076">Այս հասցեն պահված է միայն Chrome-ում։ Պահեք հասցեն Google հաշվում, որպեսզի այն օգտագործեք Google-ի տարբեր արտադրանքներում (<ph name="ACCOUNT" />)։</translation>
 <translation id="4880827082731008257">Որոնել պատմությունում</translation>
 <translation id="4881695831933465202">Բացել</translation>
 <translation id="4881808915112408168">24 x 31,5 դյույմ</translation>
@@ -1737,6 +1741,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Փակել</translation>
+<translation id="5238301240406177137">Պահել հաշվում</translation>
 <translation id="5239623327352565343">Տեղադրության տվյալների օգտագործումը թույլատրված է</translation>
 <translation id="5242889659037569123">Ճամպրուկներ և ճամփորդական պարագաներ</translation>
 <translation id="5244732203286792411">Բեռնում...
@@ -2144,6 +2149,7 @@
 <translation id="6279183038361895380">Նշորդը ցուցադրելու համար սեղմեք |<ph name="ACCELERATOR" />|</translation>
 <translation id="6280223929691119688">Այս հասցեով հնարավոր չէ առաքել: Ընտրեք այլ հասցե:</translation>
 <translation id="6284292079994426700">26 x 38 դյույմ</translation>
+<translation id="6284517535531159884">Տարբերակների նախնական տեսակ</translation>
 <translation id="6285507000506177184">«Կառավարել ներբեռնումները Chrome-ում» կոճակ։ Սեղմեք Enter՝ Chrome-ում ձեր ներբեռնած ֆայլերը կառավարելու համար։</translation>
 <translation id="6289939620939689042">Էջի գույնը</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2253,6 +2259,7 @@
 <translation id="6545864417968258051">Bluetooth սարքերի որոնում</translation>
 <translation id="6547208576736763147">Երկու անցք ձախ կողմում</translation>
 <translation id="6549443526281184652">Կոստյումներ</translation>
+<translation id="6551873053534932690">Պահե՞լ հասցեն հաշվում</translation>
 <translation id="6554732001434021288">Վերջին այցելությունը՝ <ph name="NUM_DAYS" /> օր առաջ</translation>
 <translation id="6556866813142980365">Կրկնել</translation>
 <translation id="6557715786897013164">14 x 17 դյույմ</translation>
@@ -2317,6 +2324,7 @@
 <translation id="6716672519412350405"><ph name="URL" /> կայքն ուզում է ստեղծել ձեր շրջակայքի եռաչափ քարտեզը և հետագծել տեսախցիկի դիրքը</translation>
 <translation id="6718612893943028815">Օգտագործե՞լ տեսախցիկը</translation>
 <translation id="6721678857435001674">Տեսնել անվտանգության բանալու արտադրողի և մոդելի անունը</translation>
+<translation id="6726832600570791992">(32 բիթանոց էմուլացված տարբերակ)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">տեսախցիկ</translation>
 <translation id="6738516213925468394">Ձեր տվյալները գաղտնագրվել են <ph name="BEGIN_LINK" />համաժամացման ձեր անցաբառի<ph name="END_LINK" /> միջոցով (<ph name="TIME" />): Համաժամացումը սկսելու համար մուտքագրեք անցաբառը:</translation>

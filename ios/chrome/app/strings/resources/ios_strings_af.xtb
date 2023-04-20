@@ -357,7 +357,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3305294846493618482">meer</translation>
 <translation id="3311748811247479259">Af</translation>
 <translation id="3324193307694657476">Adres 2</translation>
-<translation id="3328459813621383194">Skuif onaktiewe oortjies</translation>
 <translation id="3328801116991980348">Werfinligting</translation>
 <translation id="3344485292736684439">{count,plural, =1{Boekmerk is gestoor in “{title}” in jou rekening, {email}}other{Boekmerke is gestoor in “{title}” in jou rekening, {email}}}</translation>
 <translation id="3371831930909698441">Vertaal is beskikbaar. Opsies is naby die onderkant van die skerm beskikbaar.</translation>
@@ -498,6 +497,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4343046787186034850">Kamera- en mikrofoontoegang word toegelaat</translation>
 <translation id="4359125752503270327">Hierdie bladsy sal in 'n ander program oopmaak.</translation>
 <translation id="4371526908359194219">E-poskennisgewings</translation>
+<translation id="4371591986692297148">Onaktief</translation>
 <translation id="4375040482473363939">QR-kodesoektog</translation>
 <translation id="4378154925671717803">Foon</translation>
 <translation id="4389019817280890563">Tik om taal te verander.</translation>
@@ -628,7 +628,6 @@ Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om te begi
 <translation id="5168414296986405587">Gebou vir iPadOS</translation>
 <translation id="5173088371991956744">Sinkronisering moet verifieer dat dit jy is</translation>
 <translation id="5176312250994681348">Hou onlangse wagwoord</translation>
-<translation id="51802232683641391">{count,plural, =1{Maak die oortjie oop wat jy onlangs op Android gebruik het?}other{Maak die oortjies oop wat jy onlangs op Android gebruik het?}}</translation>
 <translation id="5181140330217080051">Laai tans af</translation>
 <translation id="5184329579814168207">Maak in Chrome oop</translation>
 <translation id="5186185447130319458">Privaat</translation>
@@ -906,7 +905,6 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="6807889908376551050">Wys alles …</translation>
 <translation id="681368974849482173">Item is geskep</translation>
 <translation id="6822587385560699678">Indien dit aan is, word wagwoorde in <ph name="ACCOUNT" /> gestoor. Indien dit af is, word wagwoorde net op hierdie toestel gestoor.</translation>
-<translation id="683022620450280906">Jy kan gestoorde wagwoorde op enige toestel gebruik. Hulle word vir <ph name="EMAIL" /> in Google Wagwoordbestuurder gestoor</translation>
 <translation id="6831043979455480757">Vertaal</translation>
 <translation id="6842136130964845393">Verifieer dis jy om seker te maak dat jy altyd toegang tot jou gestoorde wagwoorde het</translation>
 <translation id="6851516051005285358">Versoek werkskermwerf</translation>

@@ -346,6 +346,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="3244271242291266297">AA</translation>
 <translation id="3245744387817103524">Yaptığınız değişiklik kaydedilemedi.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3260117527409269737">Bu adres yalnızca Chrome'a kaydedilir. Adresi diğer Google ürünlerinde kullanmak için Google Hesabınıza (<ph name="USER_EMAIL" />) kaydedin.</translation>
 <translation id="3264775633254836593">Şifreleri Otomatik Olarak Doldurun</translation>
 <translation id="3268451620468152448">Açık Sekmeler</translation>
 <translation id="3272527697863656322">İptal</translation>
@@ -356,7 +357,6 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="3305294846493618482">daha fazla</translation>
 <translation id="3311748811247479259">Kapalı</translation>
 <translation id="3324193307694657476">Adres 2</translation>
-<translation id="3328459813621383194">Etkin Olmayan Sekmeleri Taşı</translation>
 <translation id="3328801116991980348">Site bilgileri</translation>
 <translation id="3344485292736684439">{count,plural, =1{Yer işareti {email} hesabınızda "{title}" konumuna kaydedildi}other{Yer işaretleri {email} hesabınızda "{title}" konumuna kaydedildi}}</translation>
 <translation id="3371831930909698441">Çeviri kullanılabilir. Kullanılabilen seçenekler sayfanın altına yakın bir yerdedir.</translation>
@@ -497,6 +497,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="4343046787186034850">Kamera ve Mikrofon Erişimine İzin Veriliyor</translation>
 <translation id="4359125752503270327">Bu sayfa, başka bir uygulamada açılacak.</translation>
 <translation id="4371526908359194219">E-posta Bildirimleri</translation>
+<translation id="4371591986692297148">Etkin değil</translation>
 <translation id="4375040482473363939">QR kodu Arama</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Dili değiştirmek için dokunun.</translation>
@@ -627,7 +628,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5168414296986405587">iPadOS için geliştirildi</translation>
 <translation id="5173088371991956744">Senkronizasyonun, Kimliğinizi Doğrulaması Gerekiyor</translation>
 <translation id="5176312250994681348">Son şifreyi sakla</translation>
-<translation id="51802232683641391">{count,plural, =1{Android'de açık bıraktığınız sekme getirilsin mi?}other{Android'de açık bıraktığınız sekmeler getirilsin mi?}}</translation>
 <translation id="5181140330217080051">İndiriliyor</translation>
 <translation id="5184329579814168207">Chrome'da aç</translation>
 <translation id="5186185447130319458">Gizli</translation>
@@ -905,7 +905,6 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="6807889908376551050">Tümünü Göster...</translation>
 <translation id="681368974849482173">Öğe oluşturuldu</translation>
 <translation id="6822587385560699678">Bu ayar etkinken şifreler <ph name="ACCOUNT" /> hesabına kaydedilir. Devre dışı bırakıldığında şifreler yalnızca bu cihaza kaydedilir.</translation>
-<translation id="683022620450280906">Kayıtlı şifrelerinizi herhangi bir cihazda kullanabilirsiniz. Şifreleriniz <ph name="EMAIL" /> için Google Şifre Yöneticisi'ne kaydedilir</translation>
 <translation id="6831043979455480757">Çevir</translation>
 <translation id="6842136130964845393">Kayıtlı şifrelerinize her zaman erişebileceğinizden emin olmak için kimliğinizi doğrulayın</translation>
 <translation id="6851516051005285358">Masaüstü Sitesi İste</translation>

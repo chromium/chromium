@@ -34,6 +34,7 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> కోసం సమాచార డైలాగ్‌ను తెరవండి</translation>
 <translation id="1150989369772528668">క్యాలెండర్</translation>
 <translation id="1153356358378277386">జత చేసిన పరికరాలు</translation>
+<translation id="1160215328209699296">ఆన్ చేసి, వినియోగించబడుతోంది</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">మీ USB-C కేబుల్, డిస్‌ప్లేలకు సరిగ్గా కనెక్ట్ కాకపోవచ్చు</translation>
 <translation id="1175572348579024023">స్క్రోల్ చేస్తుంది</translation>
@@ -241,6 +242,7 @@
 <translation id="2049240716062114887">డెస్క్ పేరు <ph name="DESK_NAME" />గా మార్చబడింది</translation>
 <translation id="2064048859448024834">కెమెరా ప్రివ్యూ ఆన్‌లో ఉంది</translation>
 <translation id="2067602449040652523">కీబోర్డ్ ప్రకాశం</translation>
+<translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" />ను టోగుల్ చేయండి. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" />లో ఉంది</translation>
 <translation id="2078034614700056995">తర్వాతి డెస్క్‌కు మారడానికి నాలుగు వేళ్లతో కుడి వైపు స్వైప్ చేయండి</translation>
 <translation id="2079545284768500474">చర్య రద్దు</translation>
 <translation id="2083190527011054446">శుభరాత్రి <ph name="GIVEN_NAME" />,</translation>
@@ -325,6 +327,7 @@
 <translation id="2487915095798731898">చేర్చు</translation>
 <translation id="2501920221385095727">స్టిక్కీ కీలు</translation>
 <translation id="2509468283778169019">CAPS LOCK ఆన్‌లో ఉంది</translation>
+<translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" />ను స్టాప్ చేయండి. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" />లో ఉంది</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">విండోలను అన్‌లాక్ చేయండి</translation>
 <translation id="2530896289327917474">క్యారెట్ బ్రౌజింగ్‌ను ఆన్ లేదా ఆఫ్ చేస్తుంది</translation>
@@ -1521,6 +1524,7 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> పేరు ఉన్న టెంప్లేట్ ఇప్పటికే ఉంది</translation>
 <translation id="8052898407431791827">క్లిప్‌బోర్డ్‌కు కాపీ చేయబడింది</translation>
 <translation id="8054466585765276473">బ్యాటరీ సమయాన్ని లెక్కిస్తోంది.</translation>
+<translation id="8079538659226626406">స్క్రీన్ షేర్</translation>
 <translation id="8083540854303889870">తర్వాత ఉపయోగించడానికి సేవ్ చేయబడింది</translation>
 <translation id="8091153018031979607"><ph name="DAYS_ELAPSED" /><ph name="START_TIME" />‌కు ప్రారంభమవుతుంది</translation>
 <translation id="8091387634532529612">ఆటోమేటిక్ అప్‌డేట్‌లు</translation>

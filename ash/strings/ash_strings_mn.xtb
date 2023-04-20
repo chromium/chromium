@@ -34,6 +34,7 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" />-н мэдээллийн харилцах цонхыг нээх</translation>
 <translation id="1150989369772528668">Календарь</translation>
 <translation id="1153356358378277386">Хослуулсан төхөөрөмж</translation>
+<translation id="1160215328209699296">асаалттай бөгөөд ашиглагдаж байна</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Таны USB-C кабель дэлгэцүүдэд зохих ёсоор холбогдохгүй байж магадгүй</translation>
 <translation id="1175572348579024023">Гүйлгэх</translation>
@@ -225,6 +226,7 @@
 <translation id="1978498689038657292">Текстээр оруулах</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" />-д нэгдэх</translation>
 <translation id="1982717156487272186">Өмнөх долоо хоногийг харуулах</translation>
+<translation id="1986150224850161328">Таны утас болон Chromebook ижил сүлжээнд байгаа эсэхийг шалгаж, дахин оролдоно уу. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Контентын зургийг авах боломжгүй</translation>
 <translation id="1990046457226896323">Ярианы файлуудыг татсан</translation>
 <translation id="1993072747612765854">Хамгийн сүүлийн <ph name="SYSTEM_APP_NAME" /> шинэчлэлтийн талаар дэлгэрэнгүй үзэх</translation>
@@ -240,6 +242,7 @@
 <translation id="2049240716062114887">Дэлгэцийн нэрийг <ph name="DESK_NAME" /> болгож өөрчилсөн</translation>
 <translation id="2064048859448024834">Камерын урьдчилан үзэлт асаалттай байна</translation>
 <translation id="2067602449040652523">Гарын гэрэлтүүлэг</translation>
+<translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" />-г унтраана уу/асаана уу. <ph name="CAPTURE_MEDIUM" /> нь <ph name="CAPTURE_STATE" /></translation>
 <translation id="2078034614700056995">Дараагийн дэлгэц рүү сэлгэхийн тулд дөрвөн хуруугаараа баруун тийш шударна уу</translation>
 <translation id="2079545284768500474">Буцаах</translation>
 <translation id="2083190527011054446">Сайхан амраарай <ph name="GIVEN_NAME" />,</translation>
@@ -324,6 +327,7 @@
 <translation id="2487915095798731898">Нэгдэх</translation>
 <translation id="2501920221385095727">Холбогч түлхүүр</translation>
 <translation id="2509468283778169019">CAPS LOCK асаалттай байна</translation>
+<translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" />-г зогсооно уу. <ph name="CAPTURE_MEDIUM" /> нь <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Цонхнуудын түгжээг тайлах</translation>
 <translation id="2530896289327917474">Caret browsing-г асаах эсвэл унтраах</translation>
@@ -373,6 +377,7 @@
 <translation id="2761723519669354964">Тавиураас тодруулсан зүйл нээх</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирддаг</translation>
 <translation id="2782591952652094792">Зураг авах горимоос гарах</translation>
+<translation id="2785499565474703580">1 төхөөрөмж холбогдсон</translation>
 <translation id="2791421900609674576">Та зөвлөмжүүд харах бөгөөд ингэснээр орхисон газраасаа үргэлжлүүлэх боломжтой.  Та зөвлөмжүүдийг хасахын тулд удаан дарж болно.</translation>
 <translation id="2792498699870441125">Alt+ Хайлт</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1278,6 +1283,7 @@
 <translation id="6941333068993625698">Санал хүсэлт илгээх</translation>
 <translation id="6942518653766415536">Бичлэгийн форматын цэс</translation>
 <translation id="6945221475159498467">Сонгох</translation>
+<translation id="6945922087561257829">Таны утас мобайл сүлжээ ашиглаж байна. Таны утас болон Chromebook ижил Wi-Fi сүлжээнд байгаа эсэхийг шалгаж, дахин оролдоно уу. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Идэвхжүүлээгүй байна. Оператор компанитайгаа холбогдоно уу.</translation>
 <translation id="6961121602502368900">Ажлын профайл дээр утсыг чимээгүй болгох боломжгүй</translation>
 <translation id="6961840794482373852">Alt + Дээш сумны товчлуурын шууд холбоосыг өөрчилсөн байна. Page Up товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + Дээш сумыг дарна уу.</translation>
@@ -1332,6 +1338,7 @@
 <translation id="7188494361780961876">Цэсийг дэлгэцийн зүүн дээд булан руу зөөсөн.</translation>
 <translation id="7189412385142492784">Сугар гараг хэр хол вэ?</translation>
 <translation id="7198435252016571249">Камерыг баруун доод булан руу зэрэгцүүлсэн. Системийн гадаргуутай зөрчилдсөн.</translation>
+<translation id="7219573373513695352">Ямар ч төхөөрөмж холбогдоогүй</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Энэ Chromebook-д шинэчлэлтийг хэрэгжүүлэхийн тулд үүнийг дахин эхлүүлэх шаардлагатай. Үүнд 1 минут хүртэл хугацаа шаардагдаж болно.</translation>
 <translation id="7256634071279256947">Арын микрофон</translation>
 <translation id="7258828758145722155">Өчигдөр зассан</translation>
@@ -1482,6 +1489,7 @@
 <translation id="7902625623987030061">Хурууны хээ мэдрэгчид хүрнэ үү</translation>
 <translation id="7904094684485781019">Энэ бүртгэлийн админ нь олон тооны нэвтрэлтийг хэрэгсэхгүй болгосон байна.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> төхөөрөмж холбогдсон</translation>
 <translation id="7930731167419639574">Яриаг одоо дотоодод боловсруулах бөгөөд Дуу хоолойгоор бичих онцлог офлайнаар ажиллана</translation>
 <translation id="7932451802722951285">Google Календарьт нээх</translation>
 <translation id="7933084174919150729">Google Туслах зөвхөн үндсэн профайлд боломжтой.</translation>
@@ -1516,6 +1524,7 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> нэртэй загвар аль хэдийн байна</translation>
 <translation id="8052898407431791827">Түр санах ойд хуулсан</translation>
 <translation id="8054466585765276473">Цэнэгний хугацааг тооцож байна.</translation>
+<translation id="8079538659226626406">Дэлгэц хуваалцах</translation>
 <translation id="8083540854303889870">Дараа ашиглахаар хадгалсан</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" />-д эхэлнэ <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Автомат шинэчлэлт</translation>

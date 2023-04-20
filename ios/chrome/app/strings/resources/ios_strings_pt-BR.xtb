@@ -358,7 +358,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3305294846493618482">mais</translation>
 <translation id="3311748811247479259">Desativada</translation>
 <translation id="3324193307694657476">Endereço 2</translation>
-<translation id="3328459813621383194">Mover guias inativas</translation>
 <translation id="3328801116991980348">Informações do site</translation>
 <translation id="3344485292736684439">{count,plural, =1{Favorito salvo em "{title}" na conta {email}}one{Favorito salvo em "{title}" na conta {email}}other{Favoritos salvos em "{title}" na conta {email}}}</translation>
 <translation id="3371831930909698441">Tradução disponível. Opções disponíveis perto da parte inferior da tela.</translation>
@@ -499,6 +498,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4343046787186034850">Acesso à câmera e ao microfone permitido</translation>
 <translation id="4359125752503270327">Esta página será aberta em outro aplicativo.</translation>
 <translation id="4371526908359194219">Notificações por e-mail</translation>
+<translation id="4371591986692297148">Inativos</translation>
 <translation id="4375040482473363939">Pesquisa por código QR</translation>
 <translation id="4378154925671717803">Telefone</translation>
 <translation id="4389019817280890563">Toque para mudar o idioma.</translation>
@@ -629,7 +629,6 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5168414296986405587">Desenvolvido para iPadOS</translation>
 <translation id="5173088371991956744">A sincronização precisa confirmar sua identidade</translation>
 <translation id="5176312250994681348">Manter senha recente</translation>
-<translation id="51802232683641391">{count,plural, =1{Continuar a usar a guia que você deixou no Android?}one{Continuar a usar a guia que você deixou no Android?}other{Continuar a usar as guias que você deixou no Android?}}</translation>
 <translation id="5181140330217080051">Fazendo download</translation>
 <translation id="5184329579814168207">Abrir no Google Chrome</translation>
 <translation id="5186185447130319458">Particular</translation>
@@ -907,7 +906,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6807889908376551050">Mostrar todos...</translation>
 <translation id="681368974849482173">Item criado</translation>
 <translation id="6822587385560699678">Quando essa configuração está ativada, as senhas são salvas em <ph name="ACCOUNT" />. Quando está desativada, elas são salvas apenas neste dispositivo.</translation>
-<translation id="683022620450280906">Você pode usar as senhas salvas em qualquer dispositivo. Elas ficam armazenadas na conta <ph name="EMAIL" /> do Gerenciador de senhas do Google</translation>
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="6842136130964845393">Para garantir o acesso às suas senhas salvas, confirme sua identidade</translation>
 <translation id="6851516051005285358">Solicitar site para computador</translation>

@@ -512,6 +512,7 @@
 <translation id="2166049586286450108">Tam Admin Girişi</translation>
 <translation id="2166378884831602661">Bu sayt təhlükəsiz bağlantı təmin edə bilməz</translation>
 <translation id="2168151236314517198">Bu məzmunun çap edilməsi administrator siyasəti əsasında bloklanıb</translation>
+<translation id="2176974405772725904">Ünvanı Hesabda yadda saxlayın</translation>
 <translation id="2181821976797666341">Siyasətlər</translation>
 <translation id="2183608646556468874">Telefon Nömrəsi</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 ünvan}other{# ünvan}}</translation>
@@ -525,7 +526,6 @@
 <translation id="2204482073374652408">Güncəllənmə yekunlaşdı!</translation>
 <translation id="22081806969704220">Qab 3</translation>
 <translation id="2210794033760923560">Hesabatı yükləyin</translation>
-<translation id="2212579473415663542">Bu ünvan Google Hesabınızda (<ph name="ACCOUNT" />) saxlanılıb. İstənilən cihazda Google məhsullarında ünvandan istifadə edə bilərsiniz.</translation>
 <translation id="2212735316055980242">Siyasət tapılmadı</translation>
 <translation id="2213606439339815911">Daxil etmələr əldə edilir...</translation>
 <translation id="2213612003795704869">Səhifə çap olunub</translation>
@@ -1735,6 +1735,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Kənarlaşdırın</translation>
+<translation id="5238301240406177137">Hesabda yadda saxlayın</translation>
 <translation id="5239623327352565343">Məkana icazə verilib</translation>
 <translation id="5242889659037569123">Baqaj və səyahət aksesuarları</translation>
 <translation id="5244732203286792411">Yüklənir...
@@ -2252,6 +2253,7 @@
 <translation id="6545864417968258051">Bluetooth axtarışı</translation>
 <translation id="6547208576736763147">Soldan qoşa deşik açın</translation>
 <translation id="6549443526281184652">Kostyumlar</translation>
+<translation id="6551873053534932690">Ünvan Hesabda yadda saxlansın?</translation>
 <translation id="6554732001434021288">Son ziyarət <ph name="NUM_DAYS" /> gün əvvəl olub</translation>
 <translation id="6556866813142980365">Yenidən edin</translation>
 <translation id="6557715786897013164">14 x 17 düym</translation>

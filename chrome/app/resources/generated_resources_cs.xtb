@@ -498,6 +498,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
             <ph name="LINE_BREAKS" />
            Záložky, historie ani uložená hesla nebudou dotčena.</translation>
 <translation id="1425040197660226913">Soubor nelze nahrát. Použijte obrázek menší než 20 MB.</translation>
+<translation id="1425282319410216613">Nezobrazovat po dokončení stahování</translation>
 <translation id="1426410128494586442">Ano</translation>
 <translation id="142655739075382478">Aplikace <ph name="APP_NAME" /> je zablokována</translation>
 <translation id="1426870617281699524">Klikněte na Zkusit znovu a potvrďte výzvu na počítači</translation>
@@ -1904,6 +1905,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="25899519884572181">Ukončit režim čtečky</translation>
 <translation id="2593499352046705383">Před zahájením se ujistěte, zda máte zálohu dat. Při instalaci systému <ph name="DEVICE_OS" /> se pevný disk přepíše. Další informace najdete na stránce g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Vyhledávejte na Googlu nebo zadejte adresu URL</translation>
+<translation id="2598710988533271874">K dispozici je nový Chrome</translation>
 <translation id="2599048253926156421">Uživatelské jméno bylo zkopírováno do schránky</translation>
 <translation id="2602501489742255173">Začněte přejetím nahoru</translation>
 <translation id="2603115962224169880">Vyčištění počítače</translation>
@@ -3669,6 +3671,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4144468798716165316">Rychlé příkazy</translation>
 <translation id="4146026355784316281">Vždy otevřít pomocí systémového prohlížeče</translation>
 <translation id="4146785383423576110">Resetovat a vyčistit</translation>
+<translation id="4147099377280085053">Vyberte typ Braillova písma</translation>
 <translation id="4147911968024186208">Zkuste to znovu. Pokud se opět zobrazí tato chyba, kontaktujte zástupce podpory.</translation>
 <translation id="4150201353443180367">Displej</translation>
 <translation id="4150569944729499860">Kontext obrazovky</translation>
@@ -3890,6 +3893,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4366138410738374926">Tisk byl zahájen</translation>
 <translation id="4367513928820380646">Zkontrolujte odstraněná oprávnění</translation>
 <translation id="4369215744064167350">Žádost webu byla schválena</translation>
+<translation id="436926121798828366">V <ph name="SETTINGS_LINK" /> to můžete kdykoliv změnit</translation>
 <translation id="4369735607080757018">Mezi weby se sdílejí omezené typy dat, aby mohly měřit výkon reklam, například v kterou denní dobu se vám reklama zobrazila.</translation>
 <translation id="4370975561335139969">Zadaný e-mail a heslo se neshodují.</translation>
 <translation id="4374805630006466253">Použít jiný telefon nebo tablet</translation>
@@ -4655,7 +4659,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5063480226653192405">Použití</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Spravovat zabezpečené DNS v nastavení systému ChromeOS</translation>
-<translation id="5066160542186949327">Přesunout do jiné složky</translation>
 <translation id="5067399438976153555">Vždy zapnuto</translation>
 <translation id="5067867186035333991">Zobrazit dotaz, pokud bude chtít web <ph name="HOST" /> používat mikrofon</translation>
 <translation id="5068553687099139861">zobrazovat hesla</translation>
@@ -5225,6 +5228,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="558170650521898289">Ověření ovladače hardwaru systému Microsoft Windows</translation>
 <translation id="5581876958763461074">Všechny poznámky</translation>
 <translation id="5581972110672966454">Zařízení nelze do domény přidat. Zkuste to znovu nebo kontaktujte vlastníka nebo administrátora zařízení. Kód chyby: <ph name="ERROR_CODE" />.</translation>
+<translation id="5582634344048669777">Osmibodové</translation>
 <translation id="5582839680698949063">Hlavní nabídka</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">Uložit uživatelské jméno?</translation>
@@ -5881,6 +5885,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6164832038898943453">Přidejte jazyky, které se mají automaticky překládat</translation>
 <translation id="6165508094623778733">Další informace</translation>
 <translation id="6166185671393271715">Import hesel do Chromu</translation>
+<translation id="6166659775803431">Ve vašem košíku</translation>
 <translation id="6169040057125497443">Zkontrolujte mikrofon.</translation>
 <translation id="6169967265765719844">Oprávnění pro hry a aplikace nainstalované prostřednictvím služby Steam lze spravovat v <ph name="LINK_BEGIN" />nastavení aplikace Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Sendvič</translation>
@@ -6782,6 +6787,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6968288415730398122">Chcete-li nakonfigurovat zámek obrazovky, zadejte heslo</translation>
 <translation id="6969047215179982698">Vypnout sdílení nablízko</translation>
 <translation id="6969216690072714773">Zadejte nové údaje, které budou přidruženy k tomuto zařízení, případně aktualizujte stávající.</translation>
+<translation id="696942486482903620">Když hesla uložíte do účtu Google, budete je kromě tohoto zařízení moci používat i na všech dalších zařízeních, ve kterých budete přihlášeni</translation>
 <translation id="6970480684834282392">Typ spouštění</translation>
 <translation id="6970543303783413625">Hesla se nepodařilo importovat. Najednou lze importovat maximálně <ph name="COUNT" /> hesel.</translation>
 <translation id="6970856801391541997">Tisknout konkrétní stránky</translation>
@@ -7046,6 +7052,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7222204278952406003">Chrome je váš výchozí prohlížeč</translation>
 <translation id="7222232353993864120">E-mailová adresa</translation>
 <translation id="7222235798733126207">Omezené sdílení mezi weby</translation>
+<translation id="7222335051802562841">Dokončit aktualizaci</translation>
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 web ve skupině vlastníka <ph name="FPS_OWNER" />}few{{MEMBERS} weby ve skupině vlastníka <ph name="FPS_OWNER" />}many{{MEMBERS} webu ve skupině vlastníka <ph name="FPS_OWNER" />}other{{MEMBERS} webů ve skupině vlastníka <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Při vyplňování hesel používat Windows Hello</translation>
 <translation id="7225179976675429563">Typ sítě není k dispozici.</translation>
@@ -7237,6 +7244,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7400447915166857470">Změnit zpět na <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Nastavte připojení na zařízení <ph name="PHONE_NAME" /></translation>
 <translation id="7401778920660465883">Zavřít tuto zprávu</translation>
+<translation id="7402198013420237102">Přesunout uložená hesla do účtu Google?</translation>
 <translation id="7403642243184989645">Stahování zdrojů</translation>
 <translation id="7404065585741198296">Váš telefon s kabelem USB</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Bezpečnostní kontrola proběhla před hodinou}few{Bezpečnostní kontrola proběhla před {NUM_HOURS} hodinami}many{Bezpečnostní kontrola proběhla před {NUM_HOURS} hodiny}other{Bezpečnostní kontrola proběhla před {NUM_HOURS} hodinami}}</translation>
@@ -9375,6 +9383,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="952471655966876828">Když zařízení bude zapnuté a bude používáno, automaticky se připojí</translation>
 <translation id="953434574221655299">Mohou zjistit, kdy aktivně používáte své zařízení</translation>
 <translation id="956500788634395331">Jste chráněni před potenciálně škodlivými rozšířenými</translation>
+<translation id="957179356621191750">Šestibodové</translation>
 <translation id="957960681186851048">Tento web se pokusil automaticky stáhnout několik souborů</translation>
 <translation id="960987915827980018">Zbývá přibližně hodina</translation>
 <translation id="962802172452141067">Strom seznamu záložek</translation>

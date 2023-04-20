@@ -510,6 +510,7 @@
 <translation id="2166049586286450108">Accès administrateur complet</translation>
 <translation id="2166378884831602661">Ce site ne fournit pas de connexion sécurisée</translation>
 <translation id="2168151236314517198">La politique définie par l'administrateur empêche l'impression de ce contenu</translation>
+<translation id="2176974405772725904">Enregistrer l'adresse dans le compte</translation>
 <translation id="2181821976797666341">Règles</translation>
 <translation id="2183608646556468874">Numéro de téléphone</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresse}one{# adresse}other{# adresses}}</translation>
@@ -523,7 +524,6 @@
 <translation id="2204482073374652408">Mise à jour terminée!</translation>
 <translation id="22081806969704220">Bac 3</translation>
 <translation id="2210794033760923560">Téléverser le rapport</translation>
-<translation id="2212579473415663542">Cette adresse est enregistrée dans votre compte Google (<ph name="ACCOUNT" />). Vous pouvez l'utiliser dans tous les produits Google, sur n'importe quel appareil.</translation>
 <translation id="2212735316055980242">Règle introuvable</translation>
 <translation id="2213606439339815911">Récupération des entrées...</translation>
 <translation id="2213612003795704869">La page est imprimée</translation>
@@ -1736,6 +1736,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Fermer</translation>
+<translation id="5238301240406177137">Enregistrer dans le compte</translation>
 <translation id="5239623327352565343">Accès à la position autorisé</translation>
 <translation id="5242889659037569123">Bagages et accessoires de voyage</translation>
 <translation id="5244732203286792411">Chargement en cours…
@@ -2252,6 +2253,7 @@
 <translation id="6545864417968258051">Recherche d'appareils Bluetooth</translation>
 <translation id="6547208576736763147">Double perforation à gauche</translation>
 <translation id="6549443526281184652">Costumes</translation>
+<translation id="6551873053534932690">Enregistrer l'adresse dans le compte?</translation>
 <translation id="6554732001434021288">Dernière visite il y a <ph name="NUM_DAYS" /> jours</translation>
 <translation id="6556866813142980365">Rétablir</translation>
 <translation id="6557715786897013164">14 po x 17 po</translation>

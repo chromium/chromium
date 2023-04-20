@@ -346,6 +346,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3244271242291266297">kk</translation>
 <translation id="3245744387817103524">Teie muudatust ei õnnestunud salvestada.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> <ph name="NUM_SUGGESTIONS" />-st</translation>
+<translation id="3260117527409269737">See aadress salvestatakse ainult Chrome'i. Kui soovite seda Google'i teenustes kasutada, salvestage see oma Google'i kontole <ph name="USER_EMAIL" />.</translation>
 <translation id="3264775633254836593">Paroolide automaattäide</translation>
 <translation id="3268451620468152448">Avatud vahelehed</translation>
 <translation id="3272527697863656322">Loobu</translation>
@@ -356,7 +357,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3305294846493618482">rohkem</translation>
 <translation id="3311748811247479259">Väljas</translation>
 <translation id="3324193307694657476">Aadress 2</translation>
-<translation id="3328459813621383194">Inaktiivsete vahelehtede teisaldamine</translation>
 <translation id="3328801116991980348">Saiditeave</translation>
 <translation id="3344485292736684439">{count,plural, =1{Järjehoidja salvestati teie kontol {email} kausta „{title}“}other{Järjehoidjad salvestati teie kontol {email} kausta „{title}“}}</translation>
 <translation id="3371831930909698441">Tõlkimine on saadaval. Valikud on saadaval ekraanikuva allosas.</translation>
@@ -497,6 +497,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4343046787186034850">Juurdepääs kaamerale ja mikrofonile on lubatud</translation>
 <translation id="4359125752503270327">See leht avatakse teises rakenduses.</translation>
 <translation id="4371526908359194219">Meilimärguanded</translation>
+<translation id="4371591986692297148">Mitteaktiivne</translation>
 <translation id="4375040482473363939">QR-koodi otsing</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Puudutage keele muutmiseks.</translation>
@@ -627,7 +628,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5168414296986405587">Loodud iPadOS-ile</translation>
 <translation id="5173088371991956744">Sünkroonimisfunktsioon peab teie isiku kinnitama</translation>
 <translation id="5176312250994681348">Säilita hiljutine parool</translation>
-<translation id="51802232683641391">{count,plural, =1{Kas jätkata vahelehega, mis teil Androidis pooleli jäi?}other{Kas jätkata vahelehtedega, mis teil Androidis pooleli jäid?}}</translation>
 <translation id="5181140330217080051">Allalaadimine</translation>
 <translation id="5184329579814168207">Ava Chrome'is</translation>
 <translation id="5186185447130319458">Privaatne</translation>
@@ -905,7 +905,6 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="6807889908376551050">Kuva kõik ...</translation>
 <translation id="681368974849482173">Üksus on loodud</translation>
 <translation id="6822587385560699678">Pärast sisselülitamist salvestatakse paroolid kontole <ph name="ACCOUNT" />. Kui see on välja lülitatud, salvestatakse paroolid ainult sellesse seadmesse.</translation>
-<translation id="683022620450280906">Saate salvestatud paroole kasutada mis tahes seadmes. Need salvestatakse konto <ph name="EMAIL" /> Google'i paroolihaldurisse.</translation>
 <translation id="6831043979455480757">Tõlgi</translation>
 <translation id="6842136130964845393">Selleks, et saaksite alati oma salvesatud paroolidele juurde pääseda, kinnitage oma isik</translation>
 <translation id="6851516051005285358">Taotle arvutisaiti</translation>

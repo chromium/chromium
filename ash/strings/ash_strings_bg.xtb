@@ -34,6 +34,7 @@
 <translation id="1148499908455722006">Отваряне на диалогов прозорец с информация за <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Календар</translation>
 <translation id="1153356358378277386">Сдвоени устройства</translation>
+<translation id="1160215328209699296">вкл. и се използва</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">USB-C кабелът ви може да не се свързва правилно с дисплеи</translation>
 <translation id="1175572348579024023">Превъртане</translation>
@@ -225,6 +226,7 @@
 <translation id="1978498689038657292">Въвеждане на текст</translation>
 <translation id="1980808257969311265">Присъединяване към <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Показване на предходната седмица</translation>
+<translation id="1986150224850161328">Уверете се, че телефонът ви и Chromebook са свързани с една и съща мрежа, и опитайте отново. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Не е възможно заснемане на съдържание</translation>
 <translation id="1990046457226896323">Файловете за говор бяха изтеглени</translation>
 <translation id="1993072747612765854">Научете повече за най-новата актуализация на <ph name="SYSTEM_APP_NAME" /></translation>
@@ -240,6 +242,7 @@
 <translation id="2049240716062114887">Името на работния кът бе променено на „<ph name="DESK_NAME" />“</translation>
 <translation id="2064048859448024834">Визуализацията на камерата е включена</translation>
 <translation id="2067602449040652523">Яркост на клавиатурата</translation>
+<translation id="2075520525463668108">Превключване на „<ph name="CAPTURE_MEDIUM" />“. „<ph name="CAPTURE_MEDIUM" />“ е <ph name="CAPTURE_STATE" /></translation>
 <translation id="2078034614700056995">Прекарайте четири пръста надясно, за да превключите към следващия работен кът</translation>
 <translation id="2079545284768500474">Отмяна</translation>
 <translation id="2083190527011054446">Добър вечер, <ph name="GIVEN_NAME" />,</translation>
@@ -324,6 +327,7 @@
 <translation id="2487915095798731898">Присъединяване</translation>
 <translation id="2501920221385095727">Оставащи клавиши</translation>
 <translation id="2509468283778169019">„CAPS LOCK“ е включен</translation>
+<translation id="2514415433888497495">Спиране на „<ph name="CAPTURE_MEDIUM" />“. „<ph name="CAPTURE_MEDIUM" />“ е <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Отключване на прозорците</translation>
 <translation id="2530896289327917474">Включване или изключване на Caret Browsing</translation>
@@ -373,6 +377,7 @@
 <translation id="2761723519669354964">Отваряне на откроения елемент от лентата</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Изход от режима на заснемане</translation>
+<translation id="2785499565474703580">1 свързано устройство</translation>
 <translation id="2791421900609674576">Ще виждате препоръки, така че да можете да продължавате оттам, откъдето сте прекъснали. Имате възможност да докоснете и задържите дадена препоръка, за да я премахнете.</translation>
 <translation id="2792498699870441125">Alt + търсене</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1277,6 +1282,7 @@
 <translation id="6941333068993625698">Изпращане на отзиви</translation>
 <translation id="6942518653766415536">Меню за формата на записа</translation>
 <translation id="6945221475159498467">Избиране</translation>
+<translation id="6945922087561257829">Телефонът ви използва мобилна мрежа. Уверете се, че той и Chromebook са свързани с една и съща Wi-Fi мрежа, и опитайте отново. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Не е активирана. Свържете се с оператора си.</translation>
 <translation id="6961121602502368900">Функцията за заглушаване на телефона не е налице в служебни потребителски профили</translation>
 <translation id="6961840794482373852">Клавишната комбинация Alt + стрелка нагоре се промени. За да използвате клавиша Page Up, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + стрелката нагоре.</translation>
@@ -1331,6 +1337,7 @@
 <translation id="7188494361780961876">Менюто е преместено в горния ляв ъгъл на екрана.</translation>
 <translation id="7189412385142492784">How far is Venus</translation>
 <translation id="7198435252016571249">Картината от камерата е прилепена към долния десен ъгъл. Възникна конфликт с интерфейса на системата.</translation>
+<translation id="7219573373513695352">Няма свързани устройства</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Този Chromebook трябва да бъде рестартиран, за да се приложи актуализация. Това може да отнеме до минута.</translation>
 <translation id="7256634071279256947">Заден микрофон</translation>
 <translation id="7258828758145722155">Редактирано вчера</translation>
@@ -1481,6 +1488,7 @@
 <translation id="7902625623987030061">Докоснете сензора за отпечатъци</translation>
 <translation id="7904094684485781019">Администраторът на този профил е забранил централизирания вход.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> свързани устройства</translation>
 <translation id="7930731167419639574">Говорът вече се обработва локално, а диктуването работи офлайн</translation>
 <translation id="7932451802722951285">Отваряне в Google Календар</translation>
 <translation id="7933084174919150729">Google Асистент е налице само за основния потребителски профил.</translation>
@@ -1515,6 +1523,7 @@
 <translation id="8051716679295756675">Вече съществува шаблон с името „<ph name="DESK_TEMPLATE_NAME" />“</translation>
 <translation id="8052898407431791827">Копирано в буферната памет</translation>
 <translation id="8054466585765276473">Издръжливостта на батерията се изчислява.</translation>
+<translation id="8079538659226626406">Споделяне на екрана</translation>
 <translation id="8083540854303889870">Запазено за по-късно</translation>
 <translation id="8091153018031979607">Започва в <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Автоматични актуализации</translation>

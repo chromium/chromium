@@ -2221,6 +2221,7 @@
 <translation id="2852385257476173980">ድሩን ሲያስሱ የሚጎበኟቸው የጣቢያዎች ዝርዝር እዚህ ሊታይ ይችላል</translation>
 <translation id="285241945869362924">ለኦዲዮ እና ለቪዲዮ የመግለጫ ጽሑፎችን በራስ-ሰር ይፈጥራል። ኦዲዮ እና መግለጫ ጽሑፎች መሣሪያዎን በጭራሽ አይተዉም።</translation>
 <translation id="2856776373509145513">አዲስ መያዣ ይፍጠሩ</translation>
+<translation id="2859741939921354763">የይለፍ ቃላትን ወደ <ph name="BRAND" /> ያስመጡ</translation>
 <translation id="2861301611394761800">የስርዓት ዝማኔ ተጠናቅቋል። እባክዎ ስርዓቱን ዳግም ያስጀምሩት።</translation>
 <translation id="2861941300086904918">ቤተኛ የደንበኛ ደህንነት አቀናባሪ</translation>
 <translation id="2862815659905780618">የLinux ግንባታ አካባቢን አስወግድ</translation>
@@ -4299,6 +4300,7 @@
 <translation id="47158868804223727">እሱን ለመዘርጋት ወይም ለመሰብሰብ የቡድኑን ስም ጠቅ ያድርጉ</translation>
 <translation id="4716483597559580346">Powerwash ለደህንነት ታክሏል</translation>
 <translation id="471759229191973607">ገጽታን ለውጥ</translation>
+<translation id="4718046540206070045">ከአሳሽ በላይ</translation>
 <translation id="4718564115458102525">ምንም የቁልፍ ሰሌዳ አልተለየም</translation>
 <translation id="4722735765955348426">የ<ph name="USERNAME" /> ይለፍ ቃል</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> ማያ ገጽዎን እያጋራ ነው።</translation>
@@ -4663,7 +4665,6 @@
 <translation id="5063480226653192405">አጠቃቀም</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">በChromeOS ቅንብሮች ውስጥ ደህንነቱ የተጠበቀ ዲኤንኤስን ያቀናብሩ</translation>
-<translation id="5066160542186949327">ወደ ሌላ አቃፊ አንቀሳቅስ</translation>
 <translation id="5067399438976153555">ሁሌም አብራ</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> ማይክሮፎንዎን መድረስ የሚፈልግ ከሆነ ይጠይቅ</translation>
 <translation id="5068553687099139861">የይለፍ ቃላትን አሳይ</translation>
@@ -5446,6 +5447,7 @@
 <translation id="5787146423283493983">ቁልፍ ስምምነት</translation>
 <translation id="5787420647064736989">የመሣሪያ ስም</translation>
 <translation id="5788367137662787332">ይቅርታ፣ በመሣሪያ <ph name="DEVICE_LABEL" /> ላይ ያለ ቢያንስ አንድ ክፍልፍል ሊፈናጠጥ አልቻለም።</translation>
+<translation id="5789581866075720267">በዚህ መሣሪያ ላይ የይለፍ ቃላትን ወደ <ph name="BRAND" /> ለማስመጣት አንድ CSV ፋይል ይምረጡ</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">ተሳክቷል</translation>
 <translation id="5790651917470750848">ወደብ ማስተላለፍ አስቀድሞ አለ</translation>
@@ -5690,6 +5692,7 @@
 <translation id="5984222099446776634">በቅርብ ጊዜ የተጎበኙ</translation>
 <translation id="5985458664595100876">ልክ ያልሆነ የዩአርኤል ቅርጸት። የሚደገፉ ቅርጸቶች \\server\share እና smb://server/share ናቸው።</translation>
 <translation id="598810097218913399">ምደባን አስወግድ</translation>
+<translation id="5989629029899728491">ከኩኪዎች በላይ</translation>
 <translation id="5990266201903445068">Wi-Fi ብቻ</translation>
 <translation id="5990386583461751448">የተተረጎመ</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{ድሩን ማሰስ መቀጠል መቻልዎን ለማረጋገጥ አስተዳዳሪዎ ይህን መተግበሪያ እንዲያስወግዱ ይጠይቋቸው።}one{ድሩን ማሰስ መቀጠል መቻልዎን ለማረጋገጥ አስተዳዳሪዎ እነዚህን መተግበሪያዎች እንዲያስወግዱ ይጠይቋቸው።}other{ድሩን ማሰስ መቀጠል መቻልዎን ለማረጋገጥ አስተዳዳሪዎ እነዚህን መተግበሪያዎች እንዲያስወግዱ ይጠይቋቸው።}}</translation>
@@ -5800,6 +5803,7 @@
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - ያልተሰየመ ቡድን አካል</translation>
 <translation id="6085886413119427067">እንዴት ደህንነቱ በተጠበቀ ግንኙነት ላይ ከድር ጣቢያዎች ጋር እንደሚገናኙ ይወስናል</translation>
 <translation id="6086004606538989567">ያረጋገጡት መለያ ይህን መሣሪያ የመድረስ ፈቃድ የለውም።</translation>
+<translation id="6086347269144967242">ዓባሪ የሆነውን የመሣሪያ መረጃ እና ውሂብ ያንብቡ</translation>
 <translation id="6086846494333236931">በእርስዎ አስተዳዳሪ የተጫነ</translation>
 <translation id="6087746524533454243">የአሳሹን ስለ ገፅ እየፈለጉ ነው? ይጎብኙ</translation>
 <translation id="6087960857463881712">ግሩም ፊት</translation>
@@ -8376,6 +8380,7 @@ nil</translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">ይህን መሣሪያ አስቀድመው አስመዝግበዋል። ዳግም ማስመዝገብ አያስፈልገዎትም።</translation>
 <translation id="8357388086258943206">Linuxን በመጫን ላይ ስህተት</translation>
+<translation id="8357591920094529889">ይህ መመሪያ Chromeን ሲጠቀሙ ያለዎን አስፈላጊ ምርጫዎች እንዲረዱ ያግዝዎታል። እና Chrome እርስዎ በሚፈልጉት መንገድ እንዲሠራ እነዚያን ምርጫዎች እንዲያደርጉ ያግዝዎታል።</translation>
 <translation id="8358685469073206162">ገጹ ዳግም ይጀምር?</translation>
 <translation id="8358912028636606457">የትር ኦዲዮን Cast ማድረግ በዚህ መሣሪያ ላይ አይደገፍም።</translation>
 <translation id="835951711479681002">በGoogle መለያዎ ውስጥ ያስቀምጡ</translation>
@@ -8429,6 +8434,7 @@ nil</translation>
 <translation id="8398877366907290961">ለማንኛውም ቀጥል</translation>
 <translation id="8399282673057829204">የይለፍ ቃልን አሳይ</translation>
 <translation id="8401432541486058167">ከእርስዎ ዘመናዊ ካርድ ጋር የተቆራኘውን ፒን ይስጡ።</translation>
+<translation id="8403618281196981152">በChrome ውስጥ ያለው የእርስዎ ውሂብ</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> እርስዎ የይለፍ ቃላትዎን ሲያስቀምጧቸው ሊፈትሻቸው ይችላል</translation>
 <translation id="8405046151008197676">ከቅርብ ጊዜው ዝማኔ ድምቀቶችን ያግኙ</translation>
 <translation id="8407199357649073301">የምዝግብ ማስታወሻ ደረጃ፦</translation>
@@ -8488,6 +8494,7 @@ nil</translation>
 <translation id="8460932807646981183">የፍለጋ ፕሮግራሞችን እና የጣቢያ ፍለጋን ያቀናብሩ</translation>
 <translation id="84613761564611563">የአውታረ መረብ ውቅረት በይነገጽ ተጠይቋል፣ እባክዎ ይጠብቁ...</translation>
 <translation id="8461914792118322307">ተኪ</translation>
+<translation id="8461973047386722744">ምንም የይለፍ ቃላት አልተገኙም</translation>
 <translation id="8463001014623882202">ማረጋግጥ አልተሳካም።</translation>
 <translation id="846374874681391779">የውርዶች አሞሌ</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> ተሰናክሏል።</translation>
@@ -8546,6 +8553,7 @@ nil</translation>
 <translation id="8512476990829870887">ሂደቱን ግታ</translation>
 <translation id="851263357009351303">ሁልጊዜ <ph name="HOST" /> ምስሎችን እዲያሳይ ፍቀድ</translation>
 <translation id="8513108775083588393">በራስ ሰር አሽከርክር</translation>
+<translation id="8513357934662532537">ለ<ph name="USER_EMAIL" /> የይለፍ ቃላትን ወደ <ph name="BRAND" /> ለማስመጣት የCSV ፋይልን ይምረጡ።</translation>
 <translation id="8514746246728959655">የተለየ የደህንነት ቁልፍ ይሞክሩ</translation>
 <translation id="8514955299594277296">ጣቢያዎች በመሣሪያዎ ላይ ውሂብ እንዲያስቀምጡ አይፍቀዱ (አይመከርም)</translation>
 <translation id="8517759303731677493">አርትዕ…</translation>

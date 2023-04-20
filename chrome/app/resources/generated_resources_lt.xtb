@@ -4073,6 +4073,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="450552327874992444">Žodis jau pridėtas</translation>
 <translation id="4507128560633489176">Duomenys išvalyti.</translation>
 <translation id="4507373251891673233">Užblokavote visus plėtinius iš <ph name="HOST" /></translation>
+<translation id="4508032221004253235">Tai leidžia programoms ir svetainėms, turinčioms leidimą pasiekti vietovės duomenis ir „ChromeOS“, naudoti vietovę, nustatytą „Wi-Fi“ ar mobiliojo ryšio tinklų. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="450867954911715010">Pasiekiamumo nustatymai</translation>
 <translation id="4508765956121923607">Žiūrėti ša&amp;ltinį</translation>
 <translation id="4509421746503122514">Paleisti iš naujo, kad būtų atnaujinta</translation>
@@ -4679,7 +4680,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5063480226653192405">Naudojimas</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Tvarkyti saugią DNS „Chrome“ OS nustatymuose</translation>
-<translation id="5066160542186949327">Perkelti į kitą aplanką</translation>
 <translation id="5067399438976153555">Visada įjungta</translation>
 <translation id="5067867186035333991">Klausti, jei <ph name="HOST" /> nori pasiekti mikrofoną</translation>
 <translation id="5068553687099139861">rodyti slaptažodžius</translation>
@@ -4865,6 +4865,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5235750401727657667">Pakeisti puslapį, kuris rodomas atidarant naują skirtuką</translation>
 <translation id="5236374273162681467">Kad slaptažodžius būtų paprasta naudoti visuose įrenginiuose, juos galite perkelti į „Google“ paskyrą</translation>
 <translation id="523862956770478816">Svetainių leidimai</translation>
+<translation id="5239752869099890912">Kad pritaikytumėte atnaujintus šių plėtinių nustatymus šioje svetainėje, iš naujo įkelkite šį puslapį</translation>
 <translation id="5242724311594467048">Įgalinti „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="5243522832766285132">Po kelių minučių bandykite dar kartą</translation>
 <translation id="5244474230056479698">Sinchronizavimas su <ph name="EMAIL" /></translation>
@@ -8146,6 +8147,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8138997515734480534">Virtualaus įrenginio „<ph name="VM_NAME" />“ būsena</translation>
 <translation id="8139447493436036221">„Google“ disko failai</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
+<translation id="8141260936970642964">Leiskite programoms ir svetainėms bei sistemos laiko juostai naudoti vietovę, nustatytą naudojant „Google“ vietovės paslaugą. Jei prieiga prie vietovės išjungta, vietovė vis tiek gali būti matoma pagal jūsų IP adresą.</translation>
 <translation id="8141418916163800697">Daugiau funkcijų galite nustatyti „Phone Hub“ nustatymuose</translation>
 <translation id="8141584439523427891">Atidaroma alternatyvioje naršyklėje</translation>
 <translation id="8141725884565838206">Tvarkykite slaptažodžius</translation>
@@ -8218,6 +8220,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8195737548602430447">Automatiškai verskite subtitrus į tikslinę kalbą.</translation>
 <translation id="8197673340773315084">Pridėkite vardą arba etiketę, pvz., „Darbo“ arba „Asmeninis“</translation>
 <translation id="8198456017687137612">Perduodamas skirtukas</translation>
+<translation id="8198511718495409170">Kad pritaikytumėte atnaujintus plėtinio „<ph name="EXTENSION_NAME" />“ nustatymus šioje svetainėje, iš naujo įkelkite šį puslapį</translation>
 <translation id="8199300056570174101">Tinklo (paslaugos) ir įrenginio nuosavybės</translation>
 <translation id="8200772114523450471">Atnaujinti</translation>
 <translation id="8200789660596905522">Įsitikinkite, kad priėmėte perdavimo užklausą įrenginyje „<ph name="DEVICE_NAME" />“.</translation>

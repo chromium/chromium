@@ -1253,7 +1253,7 @@
 <translation id="2048554637254265991">啟動容器管理員時發生錯誤。請再試一次。</translation>
 <translation id="2048653237708779538">無法執行操作</translation>
 <translation id="204914487372604757">建立捷徑</translation>
-<translation id="2050339315714019657">直向</translation>
+<translation id="2050339315714019657">人像</translation>
 <translation id="2051555741181591333">自動停用熱點</translation>
 <translation id="2052572566310583903">您在其他裝置上安裝的應用程式</translation>
 <translation id="2053105195397337973">我們正在探索方法，讓網站阻止垃圾廣告和欺詐行為，同時限制追蹤功能。</translation>
@@ -1583,7 +1583,7 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />系統會在程序中途重新啟動。</translation>
 <translation id="23030561267973084">「<ph name="EXTENSION_NAME" />」要求其他權限。</translation>
-<translation id="2306794767168143227">儲存至這部裝置的 <ph name="BRAND" /></translation>
+<translation id="2306794767168143227">儲存至此裝置上的 <ph name="BRAND" /></translation>
 <translation id="2307462900900812319">設定網絡</translation>
 <translation id="2307553512430195144">如果您同意，「Google 助理」會處於待機模式，以便偵測「Ok Google」指令，並透過 Voice Match 功能識別<ph name="SUPERVISED_USER_NAME" />是否正在說話。
     <ph name="BR" />
@@ -4677,7 +4677,6 @@
 <translation id="5063480226653192405">使用狀況</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">在 Chrome OS 設定中管理安全 DNS</translation>
-<translation id="5066160542186949327">移至其他資料夾</translation>
 <translation id="5067399438976153555">保持開啟</translation>
 <translation id="5067867186035333991">當 <ph name="HOST" /> 要求存取麥克風時詢問我。</translation>
 <translation id="5068553687099139861">顯示密碼</translation>

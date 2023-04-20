@@ -4065,6 +4065,7 @@
 <translation id="450552327874992444">واژه قبلاً اضافه شده است</translation>
 <translation id="4507128560633489176">داده‌ها پاک شد.</translation>
 <translation id="4507373251891673233">همه افزونه‌های <ph name="HOST" /> را مسدود کرده‌اید</translation>
+<translation id="4508032221004253235">‏با این کار، برنامه‌ها و وب‌سایت‌های دارای اجازه مکان و ChromeOS می‌توانند از مکان تعیین‌شده توسط شبکه‌های تلفن همراه و Wi-Fi شما استفاده کنند. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="450867954911715010">تنظیمات دسترس‌پذیری</translation>
 <translation id="4508765956121923607">مشاهده م&amp;نبع</translation>
 <translation id="4509421746503122514">برای به‌روزرسانی، راه‌اندازی مجدد کنید</translation>
@@ -4671,7 +4672,6 @@
 <translation id="5063480226653192405">کاربر </translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">‏مدیریت ساناد امن در تنظیمات ChromeOS</translation>
-<translation id="5066160542186949327">انتقال به پوشه‌ای دیگر</translation>
 <translation id="5067399438976153555">همیشه روشن</translation>
 <translation id="5067867186035333991">اگر <ph name="HOST" /> می‌خواهد به میکروفن شما دسترسی داشته باشد از من سوال شود</translation>
 <translation id="5068553687099139861">نمایش گذرواژه‌ها</translation>
@@ -4857,6 +4857,7 @@
 <translation id="5235750401727657667">جایگزین کردن صفحه‌ای که هنگام باز کردن برگه جدید می‌بینید</translation>
 <translation id="5236374273162681467">‏برای استفاده آسان از گذرواژه‌ها در همه دستگاه‌ها، می‌توانید آن‌ها را به «حساب Google» خودتان منتقل کنید</translation>
 <translation id="523862956770478816">اجازه‌های سایت</translation>
+<translation id="5239752869099890912">برای اعمال کردن تنظیمات به‌روزشده در این سایت برای این افزونه‌ها، این صفحه را مجدداً بار کنید</translation>
 <translation id="5242724311594467048">«<ph name="EXTENSION_NAME" />» فعال شود؟</translation>
 <translation id="5243522832766285132">چند لحظه دیگر دوباره امتحان کنید</translation>
 <translation id="5244474230056479698">درحال همگام‌سازی در <ph name="EMAIL" /></translation>
@@ -8132,6 +8133,7 @@
 <translation id="8138997515734480534">وضعیت <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">‏فایل‌های Google Drive</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />،<ph name="SECOND_DEVICE" /></translation>
+<translation id="8141260936970642964">‏به برنامه‌ها، وب‌سایت‌ها، و منطقه زمانی سیستم اجازه داده شود از مکان تعیین‌شده توسط «خدمات مکان Google» استفاده کنند. اگر دسترسی به مکان خاموش باشد، مکانتان ممکن است همچنان ازطریق نشانی IP شما نمایان باشد.</translation>
 <translation id="8141418916163800697">می‌توانید در تنظیمات «مرکز کنترل تلفن»، ویژگی‌های بیشتری را راه‌اندازی کنید</translation>
 <translation id="8141584439523427891">اکنون باز کردن در مرورگر جایگزین</translation>
 <translation id="8141725884565838206">مدیریت گذرواژه‌های شما</translation>
@@ -8204,6 +8206,7 @@
 <translation id="8195737548602430447">به‌طور خودکار زیرنویس ناشنوایان به زبان هدف ترجمه می‌شود.</translation>
 <translation id="8197673340773315084">نام یا برچسبی مثل «کاری» یا «شخصی» اضافه کنید</translation>
 <translation id="8198456017687137612">فرستادن برگه</translation>
+<translation id="8198511718495409170">برای اعمال کردن تنظیمات به‌روزشده «<ph name="EXTENSION_NAME" />» در این سایت، این صفحه را مجدداً بار کنید</translation>
 <translation id="8199300056570174101">مشخصات دستگاه و شبکه (سرویس)</translation>
 <translation id="8200772114523450471">ازسرگیری</translation>
 <translation id="8200789660596905522">حتماً درخواست پخش در <ph name="DEVICE_NAME" /> را بپذیرید.</translation>

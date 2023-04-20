@@ -324,7 +324,6 @@ Se il criterio non viene configurato, si applica il criterio <ph name="ASK_WINDO
 
 Questo sostituisce il criterio <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> obsoleto.</translation>
 <translation id="129206366270737897">Consente di disattivare tutti i metodi asincroni di <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />.</translation>
-<translation id="129392056654547767">L'immagine del firmware UEFI utilizzata dalla VM. Questa è una misura temporanea adottata durante la pacchettizzazione come DLC di ChromeOS.</translation>
 <translation id="1294263471858445589">Attiva l'autenticazione ambientale nelle sessioni standard e in modalità in incognito.</translation>
 <translation id="1295737447968372331">Attiva la dettatura sulla schermata di accesso</translation>
 <translation id="1297182715641689552">Utilizza uno script proxy .pac</translation>
@@ -579,7 +578,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in Chrome Browser Cloud Management. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="1530812829012954197">Visualizza sempre i seguenti schemi URL nel browser host</translation>
 <translation id="1542491165152947087">Consenti agli utenti di attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli argomenti degli annunci.</translation>
-<translation id="1547424904796464052">Hash SHA-256 esadecimale codificato dell'immagine del firmware.</translation>
 <translation id="1550295162561011575">L'impostazione di questo criterio consente agli amministratori di configurare l'automazione per il lancio di app sui dispositivi <ph name="PRODUCT_NAME" />. Queste app possono essere lanciate al momento dell'accesso dell'utente oppure insieme da Avvio app.</translation>
 <translation id="1552418937045050762">Se questa impostazione viene attivata, gli utenti possono scegliere di utilizzare la funzionalità Condivisione nelle vicinanze, che consente di inviare e ricevere file dalle persone nelle vicinanze.
 
@@ -7571,7 +7569,6 @@ In questo tipo di scenari non è garantita la corretta migrazione dei dati.
 <translation id="802776363472387903">L'hash SHA-256 dell'immagine <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Attiva il provider di ricerca predefinito e consenti agli utenti di modificare l'elenco dei provider di ricerca</translation>
 <translation id="8029201909194194377">Durata massima della sessione consentita per le connessioni di accesso remoto</translation>
-<translation id="8033908599068513676">URL dell'immagine del firmware da scaricare.</translation>
 <translation id="8035570672225663428">Consenti al modello di ricarica adattiva di sospendere la procedura di ricarica per prolungare la durata della batteria</translation>
 <translation id="8044493735196713914">Indicazione modalità di avvio dispositivo</translation>
 <translation id="8044720778481009876">Destinazioni <ph name="CLOUD_PRINT_NAME" /> e "Salva su Google Drive" (deprecate)</translation>

@@ -439,6 +439,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2003775180883135320">Quad punch top</translation>
 <translation id="201174227998721785">Manage permissions and data stored across sites in Chrome settings</translation>
 <translation id="2019607688127825327">Manage accessibility settings button; press Enter to personalise your accessibility tools in Chrome settings</translation>
+<translation id="2021333772895814435">This policy automatically disables syncing across devices for: <ph name="ACTION_LIST" />.</translation>
 <translation id="202224654587969958">12 in x 19 in</translation>
 <translation id="2025115093177348061">Augmented reality</translation>
 <translation id="2025186561304664664">Proxy is set to auto-configured.</translation>
@@ -526,7 +527,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2204482073374652408">Finished updating!</translation>
 <translation id="22081806969704220">Tray 3</translation>
 <translation id="2210794033760923560">Upload report</translation>
-<translation id="2212579473415663542">This address is saved in your Google Account (<ph name="ACCOUNT" />). You can use this address across Google products on any device.</translation>
 <translation id="2212735316055980242">Policy not found</translation>
 <translation id="2213606439339815911">Fetching entries...</translation>
 <translation id="2213612003795704869">Page is printed</translation>

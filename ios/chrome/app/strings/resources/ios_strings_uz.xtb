@@ -357,7 +357,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3305294846493618482">yana</translation>
 <translation id="3311748811247479259">Oʻchiq</translation>
 <translation id="3324193307694657476">Manzil, 2-qator</translation>
-<translation id="3328459813621383194">Nofaol varaqlarni koʻchirish</translation>
 <translation id="3328801116991980348">Sayt haqida ma’lumot</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bukmark {email} hisobingizdagi “{title}” jildiga saqlandi}other{Bukmark {email} hisobingizdagi “{title}” jildiga saqlandi}}</translation>
 <translation id="3371831930909698441">Tarjima mavjud. Parametrlar ekranning quyi qismiga yaqinroq joyda</translation>
@@ -498,6 +497,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4343046787186034850">Kamera va mikrofondan foydalanishga ruxsat berildi</translation>
 <translation id="4359125752503270327">Bu sahifa boshqa ilovada ochiladi.</translation>
 <translation id="4371526908359194219">Email bildirishnomalari</translation>
+<translation id="4371591986692297148">Nofaol</translation>
 <translation id="4375040482473363939">QR kod asosida qidirish</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Tilni almashtirish uchun bosing.</translation>
@@ -628,7 +628,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5168414296986405587">iPadOS uchun ishlab chiqilgan</translation>
 <translation id="5173088371991956744">Sinxronizatsiya uchun shaxsingizni tasdiqlang</translation>
 <translation id="5176312250994681348">Oxirgi parol saqlansin</translation>
-<translation id="51802232683641391">{count,plural, =1{Android tizimida ochiq qolgan varaq olinsinmi?}other{Android tizimida ochiq qolgan varaqlar olinsinmi?}}</translation>
 <translation id="5181140330217080051">Yuklab olinmoqda</translation>
 <translation id="5184329579814168207">Chrome brauzerida ochish</translation>
 <translation id="5186185447130319458">Shaxsiy</translation>
@@ -906,7 +905,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="6807889908376551050">Hammasini ochish...</translation>
 <translation id="681368974849482173">Saqlandi</translation>
 <translation id="6822587385560699678">Yoniqligida parollar <ph name="ACCOUNT" /> hisobiga saqlanadi. Oʻchiq boʻlsa, parollar faqat bu qurilmaga saqlanadi.</translation>
-<translation id="683022620450280906">Saqlangan parollardan istalgan qurilmada foydalanishingiz mumkin. Ular Google Parollar menejerida <ph name="EMAIL" /> hisobiga saqlangan.</translation>
 <translation id="6831043979455480757">Tarjima</translation>
 <translation id="6842136130964845393">Parollarni istalgan vaqt ochish uchun shaxsingizni tasdiqlang</translation>
 <translation id="6851516051005285358">Kompyuter versiyasi</translation>

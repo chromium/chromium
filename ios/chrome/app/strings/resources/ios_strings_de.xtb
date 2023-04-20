@@ -134,6 +134,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1820259098641718022">Zur Leseliste hinzugefügt</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Gehackte Passwörter}=1{{COUNT} gehacktes Passwort}other{{COUNT} gehackte Passwörter}}</translation>
 <translation id="1832848789136765277">Bestätige deine Identität, damit du jederzeit auf deine synchronisierten Daten zugreifen kannst</translation>
+<translation id="1836891464494477513">{count,plural, =1{Das Lesezeichen wurde in deinem Google-Konto ({email}) gespeichert}other{Die Lesezeichen wurden in deinem Google-Konto ({email}) gespeichert}}</translation>
 <translation id="1870148520156231997">Passwort einblenden</translation>
 <translation id="1872096359983322073">Taschenlampe</translation>
 <translation id="1883255238294161206">Liste ausblenden</translation>
@@ -357,7 +358,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3305294846493618482">mehr</translation>
 <translation id="3311748811247479259">Aus</translation>
 <translation id="3324193307694657476">Adresse 2</translation>
-<translation id="3328459813621383194">Inaktive Tabs verschieben</translation>
 <translation id="3328801116991980348">Websiteinformationen</translation>
 <translation id="3344485292736684439">{count,plural, =1{Lesezeichen unter „{title}“ in deinem Konto {email} gespeichert}other{Lesezeichen unter „{title}“ in deinem Konto {email} gespeichert}}</translation>
 <translation id="3371831930909698441">Übersetzer ist verfügbar. Optionen sind unten auf dem Bildschirm verfügbar.</translation>
@@ -498,6 +498,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4343046787186034850">Kamera- und Mikrofonzugriff gewährt</translation>
 <translation id="4359125752503270327">Diese Seite wird in einer anderen Anwendung geöffnet.</translation>
 <translation id="4371526908359194219">E‑Mail-Benachrichtigungen</translation>
+<translation id="4371591986692297148">Inaktiv</translation>
 <translation id="4375040482473363939">QR-Code-Suche</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Zum Ändern der Sprache hier tippen.</translation>
@@ -628,7 +629,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5168414296986405587">Entwickelt für iPadOS</translation>
 <translation id="5173088371991956744">Zur Synchronisierung muss deine Identität bestätigt werden</translation>
 <translation id="5176312250994681348">Letztes Passwort beibehalten</translation>
-<translation id="51802232683641391">{count,plural, =1{Mit dem Tab weitermachen, mit dem du bei Android aufgehört hast?}other{Mit den Tabs weitermachen, mit denen du bei Android aufgehört hast?}}</translation>
 <translation id="5181140330217080051">Download wird ausgeführt...</translation>
 <translation id="5184329579814168207">In Chrome öffnen</translation>
 <translation id="5186185447130319458">Privat</translation>
@@ -906,7 +906,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="6807889908376551050">Alle anzeigen...</translation>
 <translation id="681368974849482173">Element erstellt</translation>
 <translation id="6822587385560699678">Wenn diese Option aktiviert ist, werden Passwörter in <ph name="ACCOUNT" /> gespeichert. Ist sie deaktiviert, werden Passwörter nur auf diesem Gerät gespeichert.</translation>
-<translation id="683022620450280906">Du kannst gespeicherte Passwörter auf jedem Gerät nutzen. Sie werden im Google Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="6831043979455480757">Übersetzen</translation>
 <translation id="6842136130964845393">Bestätige deine Identität, damit du jederzeit auf deine gespeicherten Passwörter zugreifen kannst</translation>
 <translation id="6851516051005285358">Desktop-Version</translation>
@@ -1044,6 +1043,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7845466610722898">Leseliste anzeigen</translation>
 <translation id="784551991304901159">Inhalte siehst du, wenn du im Menü „Aktivieren“ auswählst</translation>
 <translation id="7846158885638438868">{count,plural, =1{Als Lesezeichen in „{title}“ gespeichert}other{Als Lesezeichen in „{title}“ gespeichert}}</translation>
+<translation id="7852017611907717397">RÜCKGÄNGIG</translation>
 <translation id="7853202427316060426">Aktivität</translation>
 <translation id="7856733331829174190">Fehler beim Download</translation>
 <translation id="785938070103630874">Passwörter, Zahlungsmethoden oder Adresse aufrufen</translation>

@@ -342,6 +342,7 @@
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">நீங்கள் செய்த மாற்றத்தைச் சேமிக்க முடியவில்லை.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3260117527409269737">இந்த முகவரி Chromeமில் மட்டுமே சேமிக்கப்படும். Google தயாரிப்புகள் முழுவதிலும் அதைப் பயன்படுத்த உங்கள் Google கணக்கில் (<ph name="USER_EMAIL" />) அதைச் சேமிக்கவும்.</translation>
 <translation id="3264775633254836593">கடவுச்சொற்களைத் தானாக நிரப்பு</translation>
 <translation id="3268451620468152448">திறந்த தத்தல்கள்</translation>
 <translation id="3272527697863656322">ரத்துசெய்</translation>
@@ -352,7 +353,6 @@
 <translation id="3305294846493618482">மேலும்</translation>
 <translation id="3311748811247479259">ஆஃப்</translation>
 <translation id="3324193307694657476">முகவரி 2</translation>
-<translation id="3328459813621383194">செயலில் இல்லாத பக்கங்களை நகர்த்துதல்</translation>
 <translation id="3328801116991980348">தளம் குறித்த தகவல்</translation>
 <translation id="3344485292736684439">{count,plural, =1{உங்கள் கணக்கில் ({email}) உள்ள “{title}” ஃபோல்டரில் புக்மார்க் சேமிக்கப்பட்டது}other{உங்கள் கணக்கில் ({email}) உள்ள “{title}” ஃபோல்டரில் புக்மார்க்குகள் சேமிக்கப்பட்டன}}</translation>
 <translation id="3371831930909698441">மொழியாக்கம் கிடைக்கிறது திரையின் கீழ்ப்பகுதிக்கு அருகில் விருப்பத்தேர்வுகள் உள்ளன.</translation>
@@ -493,6 +493,7 @@
 <translation id="4343046787186034850">கேமரா மற்றும் மைக்ரோஃபோனுக்கான அணுகல் வழங்கப்பட்டது</translation>
 <translation id="4359125752503270327">இந்தப் பக்கம் மற்றொரு பயன்பாட்டில் திறக்கப்படும்.</translation>
 <translation id="4371526908359194219">மின்னஞ்சல் அறிவிப்புகள்</translation>
+<translation id="4371591986692297148">செயலில் இல்லை</translation>
 <translation id="4375040482473363939">QR குறியீட்டுத் தேடல்</translation>
 <translation id="4378154925671717803">மொபைல்</translation>
 <translation id="4389019817280890563">மொழியை மாற்ற தட்டவும்.</translation>
@@ -622,7 +623,6 @@
 <translation id="5168414296986405587">iPadOSஸுக்காக உருவாக்கப்பட்டது</translation>
 <translation id="5173088371991956744">ஒத்திசைக்க இது நீங்கள்தான் என உறுதிசெய்ய வேண்டும்</translation>
 <translation id="5176312250994681348">சமீபத்திய கடவுச்சொல் மட்டும் இருக்கட்டும்</translation>
-<translation id="51802232683641391">{count,plural, =1{Androidல் சமீபத்தில் செயலில் இருந்த பக்கத்தைப் பார்க்க வேண்டுமா?}other{Androidல் சமீபத்தில் செயலில் இருந்த பக்கங்களைப் பார்க்க வேண்டுமா?}}</translation>
 <translation id="5181140330217080051">பதிவிறக்குகிறது</translation>
 <translation id="5184329579814168207">Chrome இல் திற</translation>
 <translation id="5186185447130319458">தனிப்பட்டது</translation>
@@ -898,7 +898,6 @@
 <translation id="6807889908376551050">எல்லாவற்றையும் காட்டு...</translation>
 <translation id="681368974849482173">புத்தகக்குறி உருவாக்கப்பட்டது</translation>
 <translation id="6822587385560699678">இயக்கத்தில் இருக்கும்போது <ph name="ACCOUNT" /> கணக்கில் கடவுச்சொற்கள் சேமிக்கப்படும். முடக்கத்தில் இருக்கும்போது கடவுச்சொற்கள் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்படும்.</translation>
-<translation id="683022620450280906">சேமிக்கப்பட்டுள்ள கடவுச்சொற்களை எந்தச் சாதனத்திலும் பயன்படுத்தலாம். <ph name="EMAIL" /> கணக்கின் Google கடவுச்சொல் நிர்வாகியில் இவை சேமிக்கப்படும்</translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6842136130964845393">நீங்கள் சேமித்துள்ள கடவுச்சொற்களை எப்போது வேண்டுமானாலும் அணுக இது நீங்கள்தான் என உறுதிசெய்யவும்</translation>
 <translation id="6851516051005285358">டெஸ்க்டாப் தளத்தைக் கோரு</translation>

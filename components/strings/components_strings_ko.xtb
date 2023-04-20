@@ -307,6 +307,7 @@
 <translation id="1658918301167915956">블루투스 기기</translation>
 <translation id="1662550410081243962">결제 수단 저장 및 자동 입력</translation>
 <translation id="1663943134801823270">카드와 주소는 Chrome에서 가져왔습니다. 이 정보는 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
+<translation id="1668071460721346172">이메일 받기</translation>
 <translation id="1671391448414634642">지금부터 <ph name="SOURCE_LANGUAGE" />로 된 페이지가 <ph name="TARGET_LANGUAGE" />로 번역됩니다.</translation>
 <translation id="1674504678466460478">출발어: <ph name="SOURCE_LANGUAGE" />, 도착어: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">짧은 쪽 먼저</translation>
@@ -367,6 +368,7 @@
 <translation id="1806174020048213474">이 앱에서 Wi-Fi 사용자 인증 정보를 설치할 권한을 요청합니다. 설정이 완료되면 <ph name="DEVICE_TYPE" /> 기기가 제휴 Wi-Fi 네트워크에 자동으로 연결됩니다. 이러한 사용자 인증 정보를 삭제하려면 앱을 제거하세요.</translation>
 <translation id="1807246157184219062">밝게</translation>
 <translation id="1807528111851433570">시작 시트</translation>
+<translation id="180757923930449935">(64비트 에뮬레이션됨)</translation>
 <translation id="180991881384371158">CVC는 카드 뒷면에 있습니다. 서명란 오른쪽 상단의 마지막 3자리 숫자입니다.</translation>
 <translation id="181000283860817563">여러 사이트의 가격 추적</translation>
 <translation id="1810391395243432441">화면 잠금으로 비밀번호 보호</translation>
@@ -510,6 +512,7 @@
 <translation id="2166049586286450108">전체 관리자 액세스</translation>
 <translation id="2166378884831602661">사이트에 보안 연결할 수 없음</translation>
 <translation id="2168151236314517198">관리자 정책에서 이 콘텐츠 인쇄를 차단했습니다.</translation>
+<translation id="2176974405772725904">계정에 주소 저장</translation>
 <translation id="2181821976797666341">정책</translation>
 <translation id="2183608646556468874">전화번호</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{주소 1개}other{주소 #개}}</translation>
@@ -523,7 +526,6 @@
 <translation id="2204482073374652408">업데이트 완료됨</translation>
 <translation id="22081806969704220">트레이 3</translation>
 <translation id="2210794033760923560">보고서 업로드</translation>
-<translation id="2212579473415663542">Google 계정(<ph name="ACCOUNT" />)에 저장된 주소입니다. 어느 기기에서나 모든 Google 제품에서 주소를 사용할 수 있습니다.</translation>
 <translation id="2212735316055980242">정책을 찾을 수 없음</translation>
 <translation id="2213606439339815911">항목을 가져오는 중...</translation>
 <translation id="2213612003795704869">페이지가 인쇄됨</translation>
@@ -1224,6 +1226,7 @@
 <translation id="4031179711345676612">마이크 허용됨</translation>
 <translation id="4040350669425716613">대학(단과/종합)</translation>
 <translation id="4047351652147966654">18x24인치</translation>
+<translation id="4047620889508350431">이제 Google 계정의 주소를 사용할 수 있습니다.</translation>
 <translation id="405399507749852140">사이트에서 가격이 인하되면 알림이 전송됩니다</translation>
 <translation id="4056223980640387499">세피아</translation>
 <translation id="4063063121357725926">Google이 내 장바구니에 맞는 할인 혜택을 찾도록 허용</translation>
@@ -1586,6 +1589,7 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{없음}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> 검색</translation>
 <translation id="4879491255372875719">자동(기본값)</translation>
+<translation id="4879723019639546076">이 주소는 Chrome에만 저장됩니다. Google 제품에서 사용하려면 Google 계정(<ph name="ACCOUNT" />)에 저장하세요.</translation>
 <translation id="4880827082731008257">기록 검색</translation>
 <translation id="4881695831933465202">열기</translation>
 <translation id="4881808915112408168">24x31.5인치</translation>
@@ -1736,6 +1740,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">닫기</translation>
+<translation id="5238301240406177137">계정에 저장</translation>
 <translation id="5239623327352565343">위치 허용됨</translation>
 <translation id="5242889659037569123">여행 가방 및 여행용품</translation>
 <translation id="5244732203286792411">로드 중입니다.
@@ -2143,6 +2148,7 @@
 <translation id="6279183038361895380">|<ph name="ACCELERATOR" />|을(를) 눌러 커서 표시</translation>
 <translation id="6280223929691119688">이 주소로 배달할 수 없습니다. 다른 주소를 선택하세요.</translation>
 <translation id="6284292079994426700">26x38인치</translation>
+<translation id="6284517535531159884">버전 시드 유형</translation>
 <translation id="6285507000506177184">Chrome 다운로드 관리 버튼, Chrome에서 다운로드한 파일을 관리하려면 Enter를 누르세요</translation>
 <translation id="6289939620939689042">페이지 색상</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2252,6 +2258,7 @@
 <translation id="6545864417968258051">블루투스 검색</translation>
 <translation id="6547208576736763147">왼쪽 2공 펀칭</translation>
 <translation id="6549443526281184652">코스튬</translation>
+<translation id="6551873053534932690">계정에 주소를 저장하시겠습니까?</translation>
 <translation id="6554732001434021288">최근 방문: <ph name="NUM_DAYS" />일 전</translation>
 <translation id="6556866813142980365">다시실행</translation>
 <translation id="6557715786897013164">14x17인치</translation>
@@ -2316,6 +2323,7 @@
 <translation id="6716672519412350405"><ph name="URL" />에서 주변 환경의 3D 지도를 생성하고 카메라 위치를 추적하려고 합니다.</translation>
 <translation id="6718612893943028815">카메라를 사용하시겠습니까?</translation>
 <translation id="6721678857435001674">보안 키 제조업체와 모델을 확인하려고 합니다.</translation>
+<translation id="6726832600570791992">(32비트 에뮬레이션됨)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">카메라</translation>
 <translation id="6738516213925468394"><ph name="TIME" />자로 <ph name="BEGIN_LINK" />동기화 암호<ph name="END_LINK" />를 통해 데이터가 암호화되었습니다. 동기화를 시작하려면 암호를 입력하세요.</translation>

@@ -17,11 +17,14 @@
 <translation id="1278833599417554002">Päivitä &amp;Chrome käynnistämällä se uudelleen</translation>
 <translation id="1302523850133262269">Odota hetki, Chrome asentaa uusimpia järjestelmäpäivityksiä.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> edellyttää, että luet ja hyväksyt seuraavat käyttöehdot ennen tämän laitteen käyttöä. Nämä ehdot eivät laajenna, muokkaa tai rajoita Google ChromeOS Flexin ehtoja.</translation>
+<translation id="1341711321000856656">Voit vaihtaa profiilia nähdäksesi toisen Chrome-profiilin salasanat</translation>
 <translation id="1363996462118479832">Chrome-käyttöjärjestelmä ei voi synkronoida dataa sisäänkirjautumisvirheen vuoksi.</translation>
 <translation id="137466361146087520">Google Chromen betaversio</translation>
 <translation id="1399397803214730675">Tietokoneessa on jo Google Chromen uudempi versio. Jos sovellus ei toimi, poista Google Chrome ja yritä uudelleen.</translation>
 <translation id="139993653570221430">Voit muuttaa tämän milloin tahansa Chromen asetuksista. Kokeilut ovat voimassa mainosten nykyisen näyttötavan ohessa, joten et heti näe muutoksia.</translation>
+<translation id="1425903838053942728">{COUNT,plural, =0{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen.}=1{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. Incognito-ikkunaasi ei avata uudelleen.}other{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. # incognito-ikkunaasi ei avata uudelleen.}}</translation>
 <translation id="1434626383986940139">Chrome Canary -sovellukset</translation>
+<translation id="1492280395845991349">Viimeistele Chrome-päivitys käynnistämällä se uudelleen</translation>
 <translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome oli yhdistettynä HID-laitteeseen}=1{Google Chrome on yhdistetty HID-laitteeseen}other{Google Chrome on yhdistetty HID-laitteisiin}}</translation>
 <translation id="1507198376417198979">Muokkaa uusi Chrome-profiili näköiseksesi</translation>
 <translation id="1516530951338665275">Google Chrome tarvitsee Bluetoothia jatkaakseen
@@ -92,6 +95,7 @@
 <translation id="2652691236519827073">Avaa linkki uudella Chromen välilehdellä</translation>
 <translation id="2665296953892887393">Auta parantamaan Google Chromea lähettämällä kaatumisilmoitukset ja <ph name="UMA_LINK" /> Googlelle</translation>
 <translation id="2689103672227170538">Tämä laajennus on vaihtanut Chromen aloitussivun.</translation>
+<translation id="2712234843277364121">Päivitä käynnistämällä uudelleen – Välilehdet avataan uudelleen</translation>
 <translation id="2742320827292110288">Varoitus: Google Chrome ei voi estää laajennuksia tallentamasta selaushistoriaasi. Voit poistaa tämän laajennuksen käytöstä incognito-tilassa poistamalla tämän valinnan.</translation>
 <translation id="2765403129283291972">Chrome tarvitsee oikeuden käyttää mikrofoniasi tällä sivustolla.</translation>
 <translation id="2770231113462710648">Vaihda oletusselaimeksi:</translation>
@@ -274,6 +278,7 @@
 <translation id="6365489425007284765">{COUNT,plural, =1{Järjestelmänvalvoja poistaa selausdatan automaattisesti, kun sitä ei ole käytetty 1 minuuttiin. Tämä voi sisältää historian, automaattisen täytön ja lataukset. Nykyiset välilehdet pysyvät auki.}other{Järjestelmänvalvoja poistaa selausdatan automaattisesti, kun sitä ei ole käytetty # minuuttiin. Tämä voi sisältää historian, automaattisen täytön ja lataukset. Nykyiset välilehdet pysyvät auki.}}</translation>
 <translation id="6412673304250309937">Tarkistaa URL-osoitteet Chromeen tallennetun vaarallisten sivustojen luettelon avulla. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chrome voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, mukaan lukien osia sivujen sisällöstä.</translation>
 <translation id="6418662306461808273">Vaihdetaanko nykyiseen Chrome-profiiliin?</translation>
+<translation id="648319183876919572">Parannettu selaussuoja suojaa sinua entistä paremmin vaarallisilta sivustoilta ja latauksilta</translation>
 <translation id="6493527311031785448">Google Chrome yrittää seuraavaa: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome tarvitsee kameran luvan, jotta se voi luoda 3D-kartan ympäristöstäsi</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
@@ -404,6 +409,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8989968390305463310">Selaushistoria vaikuttaa näkemiisi mainoksiin ja alla kuvatulla tavalla arvioituihin kiinnostuksen kohteisiisi. Yksityisyyden suojaamiseksi Chrome poistaa kiinnostuksen kohteesi automaattisesti kuukausittain. Kiinnostuksen kohteet voivat päivittyä, ellet poista niitä.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome-päivitys on saatavilla}=1{Chrome-päivitys on saatavilla}other{Chrome-päivitys on ollut saatavilla # vuorokauden ajan}}</translation>
 <translation id="9053892488859122171">ChromeOS Flexin järjestelmä</translation>
+<translation id="9054037008353851982">Päivitä käynnistämällä uudelleen – Välilehdet avataan uudelleen</translation>
 <translation id="911206726377975832">Poistetaanko myös selailutiedot?</translation>
 <translation id="9138603949443464873">Ota muutokset käyttöön käynnistämällä Chrome uudelleen</translation>
 <translation id="9195993889682885387">Chrome voi arvioida kiinnostuksen kohteitasi muutaman viime viikon selaushistoriasi perusteella. Tiedot pysyvät laitteellasi.</translation>

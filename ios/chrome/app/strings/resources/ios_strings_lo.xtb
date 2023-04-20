@@ -149,6 +149,7 @@
 <translation id="1952172573699511566">ເວັບໄຊຈະສະແດງຂໍ້ຄວາມໃນພາສາທີ່ທ່ານເລືອກ ເມື່ອເປັນໄປໄດ້.</translation>
 <translation id="1959679933317802873">ກຳລັງລໍຖ້າເນື້ອຫາ</translation>
 <translation id="1965935827552890526">ສຳເລັດສິ່ງທີ່ທ່ານກຳລັງເຮັດໃນໜ້າຈໍອື່ນຂອງ Chrome ທີ່ີເປີດຢູ່.</translation>
+<translation id="1967461193809857427">{count,plural, =1{ເລືອກເອົາແຖບທີ່ທ່ານປະໄວ້ຢູ່ Android ບໍ່?}other{ເລືອກເອົາແຖບທີ່ທ່ານປະໄວ້ຢູ່ Android ບໍ່?}}</translation>
 <translation id="1973912524893600642">ຮັກສາຂໍ້ມູນໄວ້</translation>
 <translation id="1974060860693918893">ຂັ້ນສູງ</translation>
 <translation id="1980417445547898121">{count,plural, =1{ຮັບເອົາ {count} ແຖບການເຄື່ອນໄຫວຫຼ້າສຸດຂອງທ່ານຈາກອຸປະກອນອື່ນຂອງທ່ານຢູ່ iPhone ນີ້}other{ຮັບເອົາ {count} ແຖບການເຄື່ອນໄຫວຫຼ້າສຸດຂອງທ່ານຈາກອຸປະກອນອື່ນຂອງທ່ານຢູ່ iPhone ນີ້}}</translation>
@@ -225,6 +226,7 @@
 <translation id="2500374554657206846">ຕົວເລືອກເພື່ອບັນທຶກລະຫັດຜ່ານ</translation>
 <translation id="2523363575747517183">ເວັບໄຊກຳລັງພະຍາຍາມເປີດແອັບພລິເຄຊັນອື່ນຊໍ້າໄປມາຫຼາຍເທື່ອ.</translation>
 <translation id="2529021024822217800">ເປີດທັງຫມົດ</translation>
+<translation id="2536991091671391962">ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຢູ່ອຸປະກອນໃດກໍໄດ້. ພວກມັນຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google ສຳລັບ <ph name="EMAIL" /> ແລ້ວ.</translation>
 <translation id="2547458583188611426">ຊິ້ງບໍ່ເຮັດວຽກ. ເພື່ອເລີ່ມຊິ້ງຂໍ້ມູນ, ໃຫ້ໃສ່ລະຫັດຜ່ານຂອງທ່ານ.</translation>
 <translation id="2551153019974022505">ບັນຊີຜິດພາດ</translation>
 <translation id="2556092377360758201">ບໍ່ມີການປົກປ້ອງ (ບໍ່ແນະນຳ)</translation>
@@ -358,7 +360,6 @@
 <translation id="3305294846493618482">ເພີ່ມເຕີມ</translation>
 <translation id="3311748811247479259">ປິດ</translation>
 <translation id="3324193307694657476">ທີ່ຢູ່ 2</translation>
-<translation id="3328459813621383194">ຍ້າຍແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້</translation>
 <translation id="3328801116991980348">ຂໍ້​ມູນ​ເວັບ​ໄຊທ໌</translation>
 <translation id="3344485292736684439">{count,plural, =1{ບັນທຶກບຸກມາກໃສ່ "{title}" ໃນບັນຊີຂອງທ່ານ, {email}}other{ບັນທຶກບຸກມາກໃສ່ "{title}" ໃນບັນຊີຂອງທ່ານ, {email}}}</translation>
 <translation id="3371831930909698441">ມີບໍລິການແປພາສາ. ມີຕົວເລືອກໃຫ້ນຳໃຊ້ຢູ່ໃກ້ລຸ່ມສຸດຂອງໜ້າຈໍ.</translation>
@@ -499,6 +500,7 @@
 <translation id="4343046787186034850">ອະນຸຍາດສິດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນແລ້ວ</translation>
 <translation id="4359125752503270327">ໜ້ານີ້ຈະເປີດໃນແອັບພລິເຄຊັນອື່ນ.</translation>
 <translation id="4371526908359194219">ການແຈ້ງເຕືອນອີເມວ</translation>
+<translation id="4371591986692297148">ບໍ່ໄດ້ນຳໃຊ້</translation>
 <translation id="4375040482473363939">ການຊອກຫາລະຫັດ QR</translation>
 <translation id="4378154925671717803">ໂທລະ​ສັບ</translation>
 <translation id="4389019817280890563">ແຕະເພື່ອປ່ຽນພາສາ.</translation>
@@ -629,7 +631,6 @@
 <translation id="5168414296986405587">ສ້າງມາສຳລັບ iPadOS</translation>
 <translation id="5173088371991956744">ການຊິ້ງຂໍ້ມູນຕ້ອງການຢັ້ງຢືນວ່າແມ່ນທ່ານແທ້</translation>
 <translation id="5176312250994681348">ຮັກສາລະຫັດຜ່ານຫຼ້າສຸດໄວ້</translation>
-<translation id="51802232683641391">{count,plural, =1{ເອົາແຖບທີ່ທ່ານຄ້າງໄວ້ຈາກ Android ບໍ່?}other{ເອົາແຖບທີ່ທ່ານຄ້າງໄວ້ຈາກ Android ບໍ່?}}</translation>
 <translation id="5181140330217080051">ກໍາລັງດາວ​ໂຫຼດ</translation>
 <translation id="5184329579814168207">ເປີດ​ຢູ່ໃນ Chrome</translation>
 <translation id="5186185447130319458">ສ່ວນຕົວ</translation>
@@ -640,6 +641,7 @@
 <translation id="5211488077761630279">ອະນຸຍາດໃຫ້ "<ph name="SITE_NAME" />" ໃຊ້ <ph name="PERMISSION" /> ຂອງທ່ານບໍ?</translation>
 <translation id="5219295696240154694">ຊ່ວຍປັບປຸງຄວາມປອດໄພຢູ່ເວັັບສຳລັບທຸກຄົນ</translation>
 <translation id="5221339005270097309">ກຳລັງກວດສອບລະຫັດຜ່ານ…</translation>
+<translation id="5226568866393490213">ປິດຄຳເຕືອນໄວ້</translation>
 <translation id="5228579091201413441">ເປີດໃຊ້ງານຊິງຄ໌</translation>
 <translation id="5232485538978018676">ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີທີ່ມີການຈັດການ</translation>
 <translation id="5234764350956374838">ປ່ອຍໄປ</translation>
@@ -793,6 +795,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6229318421047648685">ຮ້ອງຂໍເວັບໄຊເດັສທັອບ</translation>
 <translation id="6231782223312638214">ແນະ​ນໍາແລ້ວ</translation>
 <translation id="6232329973559504466">ການຊອກຫາແບບບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
+<translation id="6236952928980352967">ກູ້ຄຳເຕືອນຄືນ</translation>
 <translation id="6247557882553405851">ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="6254066287920239840">ເປີດລິ້ງຕ່າງໆໃນແອັບແທນໂປຣແກຣມທ່ອງເວັບ.</translation>
 <translation id="625491139841322297">{count,plural, =1{ກວດສອບແຖບ}other{ກວດສອບແຖບທັງໝົດ}}</translation>
@@ -907,7 +910,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6807889908376551050">ສະ​ແດງ​ທັງ​ຫມົດ...</translation>
 <translation id="681368974849482173">ສ້າງ​ລາຍ​ການ​ຂຶ້ນ​ແລ້ວ</translation>
 <translation id="6822587385560699678">ເມື່ອເປີດໄວ້, ລະຫັດຜ່ານຈະຖືກບັນທຶກໄວ້ໃນ <ph name="ACCOUNT" />. ເມື່ອປິດໄວ້, ລະຫັດຜ່ານຈະຖືກບັນທຶກໄປໃສ່ອຸປະກອນນີ້ເທົ່ານັ້ນ.</translation>
-<translation id="683022620450280906">ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ແລ້ວນີ້ຢູ່ອຸປະກອນໃດກໍໄດ້. ພວກມັນຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານຂອງ Google ສຳລັບ <ph name="EMAIL" /> ແລ້ວ</translation>
 <translation id="6831043979455480757">ແປພາສາ</translation>
 <translation id="6842136130964845393">ເພື່ອກວດສອບວ່າທ່ານຈະສາມາດເຂົ້າເຖິງລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ສະເໝີ, ກະລຸນາຢັ້ງຢືນວ່າແມ່ນທ່ານແທ້ກ່ອນ</translation>
 <translation id="6851516051005285358">ຮ້ອງຂໍເວັບໄຊເດັສທັອບ</translation>
@@ -1264,6 +1266,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="948048872540558976">ສ້າງແຖບໃໝ່</translation>
 <translation id="952704832371081537">ຍົກເລີກ</translation>
 <translation id="953008885340860025">ອອກຈາກລະບົບ Chrome ແລ້ວ</translation>
+<translation id="953673009604363306">ຄຳເຕືອນສາມາດພົບໄດ້ອີກຄັ້ງໃນພາຍຫຼັງພາຍໃຕ້ຄຳເຕືອນທີ່ຖືກປິດໄວ້ຢູ່ໃນພາກສ່ວນລະຫັດຜ່ານທີ່ຖືກລະເມີດ.</translation>
 <translation id="959066944189734975">ທ່ານກຳລັງຕິດຕາມ <ph name="CHANNEL_NAME" /> ຢູ່</translation>
 <translation id="973493300226275298">ຕິດຕາມລາຄາຜະລິດຕະພັນໃນທົ່ວຮ້ານຄ້າອອນລາຍ. ທ່ານຈະໄດ້ຮັບແຈ້ງເຕືອນເມື່ອລາຄາຫຼຸດລົງ.</translation>
 <translation id="981498610235328462">ອົງການຂອງທ່ານອະນຸຍາດໃຫ້ທ່ານເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີບາງຢ່າງເທົ່ານັ້ນ. ບັນຊີທີ່ບໍ່ໄດ້ຮັບອະນຸຍາດແມ່ນຖືກເຊື່ອງໄວ້.</translation>

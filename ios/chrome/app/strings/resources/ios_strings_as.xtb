@@ -134,6 +134,7 @@
 <translation id="1820259098641718022">পঢ়িবলগীয়া তালিকাত যোগ কৰা হ'ল</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{হেক কৰা পাছৱৰ্ড}=1{{COUNT} টা হেক কৰা পাছৱৰ্ড}one{{COUNT} টা হেক কৰা পাছৱৰ্ড}other{{COUNT} টা হেক কৰা পাছৱৰ্ড}}</translation>
 <translation id="1832848789136765277">আপোনাৰ ছিংক ডেটা সদায়ে এক্সেছ কৰিব পৰাটো নিশ্চিত কৰিবলৈ, এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰক</translation>
+<translation id="1836891464494477513">{count,plural, =1{আপোনাৰ Google একাউণ্টত ছেভ কৰি থোৱা বুকমাৰ্ক, {email}}one{আপোনাৰ Google একাউণ্টত ছেভ কৰি থোৱা বুকমাৰ্কসমূহ, {email}}other{আপোনাৰ Google একাউণ্টত ছেভ কৰি থোৱা বুকমাৰ্ক, {email}}}</translation>
 <translation id="1870148520156231997">পাছৱর্ড দেখুৱাওক</translation>
 <translation id="1872096359983322073">টৰ্চ</translation>
 <translation id="1883255238294161206">সূচী সংকোচন কৰক</translation>
@@ -357,7 +358,6 @@
 <translation id="3305294846493618482">অধিক</translation>
 <translation id="3311748811247479259">অফ আছে</translation>
 <translation id="3324193307694657476">ঠিকনা ২</translation>
-<translation id="3328459813621383194">নিষ্ক্ৰিয় টেবসমূহ স্থানান্তৰ কৰক</translation>
 <translation id="3328801116991980348">ছাইটৰ তথ্য</translation>
 <translation id="3344485292736684439">{count,plural, =1{আপোনাৰ একাউণ্টত "{title}"ত বুকমাৰ্ক ছেভ কৰা হৈছে, {email}}one{আপোনাৰ একাউণ্টত "{title}"ত বুকমাৰ্কসমূহ ছেভ কৰা হৈছে, {email}}other{আপোনাৰ একাউণ্টত "{title}"ত বুকমাৰ্কসমূহ ছেভ কৰা হৈছে, {email}}}</translation>
 <translation id="3371831930909698441">অনুবাদ কৰিব পাৰি। স্ক্ৰীনৰ একেবাৰে তলৰ অংশৰ কাষত থকা বিকল্পসমূহ।</translation>
@@ -498,6 +498,7 @@
 <translation id="4343046787186034850">কেমেৰা আৰু মাইক্ৰ’ফ’ন এক্সেছৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="4359125752503270327">এই পৃষ্ঠাটো অন্য এটা এপ্লিকেশ্বনত খুলিব।</translation>
 <translation id="4371526908359194219">ইমেইলৰ জাননী</translation>
+<translation id="4371591986692297148">নিষ্ক্ৰিয় হৈ আছে</translation>
 <translation id="4375040482473363939">কিউআৰ ক’ড স্কেন কৰক</translation>
 <translation id="4378154925671717803">ফ'ন</translation>
 <translation id="4389019817280890563">ভাষা সলনি কৰিবলৈ টিপক।</translation>
@@ -628,7 +629,6 @@
 <translation id="5168414296986405587">iPadOSৰ বাবে প্ৰস্তুত কৰা</translation>
 <translation id="5173088371991956744">ছিংক কৰিবলৈ এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰিব লাগে</translation>
 <translation id="5176312250994681348">শেহতীয়া পাছৱৰ্ড ৰাখক</translation>
-<translation id="51802232683641391">{count,plural, =1{আপুনি Androidত এৰি অহা টেবটোলৈ যাব বিচাৰেনে?}one{আপুনি Androidত এৰি অহা টেবসমূহলৈ যাব বিচাৰেনে?}other{আপুনি Androidত এৰি অহা টেবসমূহলৈ যাব বিচাৰেনে?}}</translation>
 <translation id="5181140330217080051">ডাউনল’ড হৈ আছে</translation>
 <translation id="5184329579814168207">Chromeত খোলক</translation>
 <translation id="5186185447130319458">ব্যক্তিগত</translation>
@@ -906,7 +906,6 @@
 <translation id="6807889908376551050">সকলো দেখুৱাওক...</translation>
 <translation id="681368974849482173">বস্তু সৃষ্টি কৰা হ’ল</translation>
 <translation id="6822587385560699678">অন থাকিলে, পাছৱৰ্ডসমূহ <ph name="ACCOUNT" />ত ছেভ কৰা হয়। অফ থাকিলে, পাছৱৰ্ডসমূহ কেৱল এই ডিভাইচটোত ছেভ কৰা হয়।</translation>
-<translation id="683022620450280906">আপুনি ছেভ হৈ থকা পাছৱৰ্ড যিকোনো ডিভাইচত ব্যৱহাৰ কৰিব পাৰে। সেইসমূহ <ph name="EMAIL" />ৰ Google পাছৱৰ্ড পৰিচালকত ছেভ কৰা হয়</translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6842136130964845393">আপুনি নিজৰ ছেভ কৰি ৰখা পাছৱৰ্ডসমূহ যিকোনো সময়তে এক্সেছ কৰিব পৰাটো নিশ্চিত কৰিবলৈ, এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰক</translation>
 <translation id="6851516051005285358">ডেস্কটপ ছাইটৰ বাবে অনুৰোধ কৰক</translation>
@@ -1044,6 +1043,7 @@
 <translation id="7845466610722898">পঢ়াৰ সূচী দেখুৱাওক</translation>
 <translation id="784551991304901159">সমল চাবলৈ মেনুখনৰ পৰা অন কৰক বাছনি কৰক</translation>
 <translation id="7846158885638438868">{count,plural, =1{"{title}"ত বুকমাৰ্ক কৰা হৈছে}one{"{title}"ত বুকমাৰ্ক কৰা হৈছে}other{"{title}"ত বুকমাৰ্ক কৰা হৈছে}}</translation>
+<translation id="7852017611907717397">আনডু কৰক</translation>
 <translation id="7853202427316060426">কাৰ্যকলাপ</translation>
 <translation id="7856733331829174190">ডাউনল'ড কৰিব পৰা নগ'ল</translation>
 <translation id="785938070103630874">পাছৱৰ্ড, পৰিশোধ পদ্ধতি অথবা ঠিকনা আৰু অধিক খোলক</translation>

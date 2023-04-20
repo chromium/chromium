@@ -850,6 +850,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5626134646977739690">Navn:</translation>
 <translation id="5628604359369369630">Ulæst – Tilgængelig offline</translation>
 <translation id="5639724618331995626">Tillad alle websites</translation>
+<translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Søgehistorikken<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />andre former for aktivitet<ph name="END_LINK2" /> gemmes muligvis på din Google-konto</translation>
 <translation id="5648166631817621825">De seneste syv dage</translation>
 <translation id="5655963694829536461">Søg i dine downloads</translation>
 <translation id="5659593005791499971">Mail</translation>

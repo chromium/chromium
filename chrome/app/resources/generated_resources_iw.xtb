@@ -500,6 +500,7 @@
             <ph name="LINE_BREAKS" />
            סימניות, היסטוריה וסיסמאות שמורות לא יושפעו.</translation>
 <translation id="1425040197660226913">‏לא ניתן להעלות את הקובץ. גודל התמונה צריך להיות פחות מ-20MB.</translation>
+<translation id="1425282319410216613">לא להציג כשההורדות מסתיימות</translation>
 <translation id="1426410128494586442">כן</translation>
 <translation id="142655739075382478">האפליקציה <ph name="APP_NAME" /> חסומה</translation>
 <translation id="1426870617281699524">יש ללחוץ על 'ניסיון נוסף' ולאשר את הבקשה במחשב.</translation>
@@ -1916,6 +1917,7 @@
 <translation id="25899519884572181">יציאה ממצב קורא</translation>
 <translation id="2593499352046705383">‏לפני שמתחילים, צריך לוודא שיש גיבוי של הנתונים. התקנת <ph name="DEVICE_OS" /> תחליף את כל הנתונים שבכונן הקשיח שלך. מידע נוסף זמין בכתובת g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">זה המקום לחפש את מה שמעניין או להקליד כתובת של אתר ספציפי</translation>
+<translation id="2598710988533271874">‏יש גרסה חדשה זמינה של Chrome</translation>
 <translation id="2599048253926156421">שם המשתמש הועתק ללוח</translation>
 <translation id="2602501489742255173">יש להחליק כלפי מעלה כדי להתחיל</translation>
 <translation id="2603115962224169880">ניקוי המחשב</translation>
@@ -3682,6 +3684,7 @@
 <translation id="4144468798716165316">פקודות מהירות</translation>
 <translation id="4146026355784316281">פתיחה תמיד באמצעות מציג המערכת</translation>
 <translation id="4146785383423576110">איפוס וניקוי</translation>
+<translation id="4147099377280085053">בחירת טבלת ברייל</translation>
 <translation id="4147911968024186208">אפשר לנסות שוב. אם השגיאה הזאת ממשיכה להופיע, ניתן לפנות לנציג התמיכה.</translation>
 <translation id="4150201353443180367">תצוגה</translation>
 <translation id="4150569944729499860">הקשר מסך</translation>
@@ -3903,6 +3906,7 @@
 <translation id="4366138410738374926">ההדפסה החלה</translation>
 <translation id="4367513928820380646">בדיקת ההרשאות שהוסרו</translation>
 <translation id="4369215744064167350">הבקשה לגבי האתר אושרה</translation>
+<translation id="436926121798828366">תמיד אפשר לשנות את זה ב<ph name="SETTINGS_LINK" />.</translation>
 <translation id="4369735607080757018">רק סוגים מסוימים של נתונים ישותפו בין אתרים כדי למדוד את ביצועי המודעות שלהם. למשל, השעה ביום שבה הוצגה לך מודעה מסוימת.</translation>
 <translation id="4370975561335139969">כתובת האימייל והסיסמה שהזנת אינן תואמות</translation>
 <translation id="4374805630006466253">שימוש בטלפון או בטאבלט אחר</translation>
@@ -4668,7 +4672,6 @@
 <translation id="5063480226653192405">שימוש</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">‏ניהול DNS מאובטח בהגדרות ChromeOS</translation>
-<translation id="5066160542186949327">העברה לתיקייה אחרת</translation>
 <translation id="5067399438976153555">תמיד פועל</translation>
 <translation id="5067867186035333991">לשאול אותי אם <ph name="HOST" /> רוצה לגשת למיקרופון שלך</translation>
 <translation id="5068553687099139861">להציג את הסיסמאות</translation>
@@ -5238,6 +5241,7 @@
 <translation id="558170650521898289">‏אימות מנהל התקן חומרה של Microsoft Windows </translation>
 <translation id="5581876958763461074">כל ההערות</translation>
 <translation id="5581972110672966454">לא ניתן לצרף את המכשיר אל הדומיין. יש לנסות שוב, או לפנות לבעלים או למנהל של המכשיר. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
+<translation id="5582634344048669777">8 נקודות</translation>
 <translation id="5582839680698949063">תפריט ראשי</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">לשמור את שם המשתמש?</translation>
@@ -5894,6 +5898,7 @@
 <translation id="6164832038898943453">הוספת שפות שיתורגמו באופן אוטומטי</translation>
 <translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6166185671393271715">‏ייבוא סיסמאות אל Chrome</translation>
+<translation id="6166659775803431">בעגלת הקניות</translation>
 <translation id="6169040057125497443">יש לבדוק את המיקרופון.</translation>
 <translation id="6169967265765719844">‏אפשר לנהל את ההרשאות למשחקים ולאפליקציות שהותקנו דרך Steam <ph name="LINK_BEGIN" />בהגדרות של אפליקציית Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">כריך</translation>
@@ -6795,6 +6800,7 @@
 <translation id="6968288415730398122">יש להזין את הסיסמה כדי להגדיר את נעילת המסך</translation>
 <translation id="6969047215179982698">כיבוי של 'שיתוף בקרבת מקום'</translation>
 <translation id="6969216690072714773">הזנת פרטים חדשים או עדכון פרטים קיימים שישויכו למכשיר הזה.</translation>
+<translation id="696942486482903620">‏כששומרים סיסמאות בחשבון Google, אפשר להשתמש בהן במכשיר הזה ובכל מכשיר אחר שבו נכנסים לחשבון</translation>
 <translation id="6970480684834282392">סוג הפעלה</translation>
 <translation id="6970543303783413625">לא ניתן לייבא את הסיסמאות. ניתן לייבא רק עד <ph name="COUNT" /> סיסמאות בכל פעם.</translation>
 <translation id="6970856801391541997">הדפסת דפים ספציפיים</translation>
@@ -7059,6 +7065,7 @@
 <translation id="7222204278952406003">‏Chrome הוא דפדפן ברירת המחדל</translation>
 <translation id="7222232353993864120">כתובת אימייל</translation>
 <translation id="7222235798733126207">הגבלה על השיתוף בין אתרים</translation>
+<translation id="7222335051802562841">סיום העדכון</translation>
 <translation id="722408235435815623">{MEMBERS,plural, =1{אתר אחד בקבוצה של <ph name="FPS_OWNER" />}one{{MEMBERS} אתרים בקבוצה של <ph name="FPS_OWNER" />}two{{MEMBERS} אתרים בקבוצה של <ph name="FPS_OWNER" />}other{{MEMBERS} אתרים בקבוצה של <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">‏שימוש ב-Windows Hello בזמן מילוי סיסמאות</translation>
 <translation id="7225179976675429563">חסר סוג רשת</translation>
@@ -7250,6 +7257,7 @@
 <translation id="7400447915166857470">לשנות חזרה אל <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">הגדרת החיבור בטלפון <ph name="PHONE_NAME" /></translation>
 <translation id="7401778920660465883">סגירת ההודעה</translation>
+<translation id="7402198013420237102">‏להעביר את הסיסמאות השמורות לחשבון Google שלך?</translation>
 <translation id="7403642243184989645">מתבצעת הורדת משאבים</translation>
 <translation id="7404065585741198296">‏בטלפון עם כבל USB</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{בדיקת הבטיחות פעלה לפני שעה}one{בדיקת הבטיחות פעלה לפני {NUM_HOURS} שעות}two{בדיקת הבטיחות פעלה לפני {NUM_HOURS} שעות}other{בדיקת הבטיחות פעלה לפני {NUM_HOURS} שעות}}</translation>
@@ -9386,6 +9394,7 @@
 <translation id="952471655966876828">כשהמכשיר מופעל ובשימוש, הוא יחובר באופן אוטומטי</translation>
 <translation id="953434574221655299">יש הרשאה לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
 <translation id="956500788634395331">המערכת מגינה עליך מפני תוספים שעשויים להיות מזיקים</translation>
+<translation id="957179356621191750">6 נקודות</translation>
 <translation id="957960681186851048">האתר הזה ניסה להוריד קבצים מרובים באופן אוטומטי</translation>
 <translation id="960987915827980018">נותרה בערך שעה אחת</translation>
 <translation id="962802172452141067">עץ תיקיות של סימניות</translation>

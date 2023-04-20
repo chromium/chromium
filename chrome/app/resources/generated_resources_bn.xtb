@@ -499,6 +499,7 @@
             <ph name="LINE_BREAKS" />
            বুকমার্ক, ইতিহাস ও সেভ করে রাখা পাসওয়ার্ডে প্রভাব পড়বে না।</translation>
 <translation id="1425040197660226913">আপলোড করা যায়নি। ২০ এমবির থেকে ছোট সাইজের কোনও ছবি ব্যবহার করুন।</translation>
+<translation id="1425282319410216613">ডাউনলোড সম্পূর্ণ হলে দেখাবেন না</translation>
 <translation id="1426410128494586442">হ্যাঁ</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> ব্লক করা আছে</translation>
 <translation id="1426870617281699524">'আবার চেষ্টা করুন' এ ক্লিক করে কম্পিউটার স্ক্রিনে দেখানো প্রম্পটে যা করতে বলা হবে তাই করুন</translation>
@@ -1918,6 +1919,7 @@
 <translation id="25899519884572181">রিডার মোড থেকে বেরিয়ে আসুন</translation>
 <translation id="2593499352046705383">চালু করার আগে, আপনার ডেটার ব্যাক-আপ নেওয়া আছে কিনা তা নিশ্চিত করুন। <ph name="DEVICE_OS" /> ইনস্টল করলে আপনার হার্ড ড্রাইভে থাকা সব ডেটা মুছে যাবে। g.co/flex/InstallGuide থেকে আরও জানুন।</translation>
 <translation id="2594999711683503743">Google এ খুঁজুন বা URL টাইপ করুন</translation>
+<translation id="2598710988533271874">নতুন Chrome উপলভ্য</translation>
 <translation id="2599048253926156421">ব্যবহারকারীর নাম ক্লিপবোর্ডে কপি করা হয়েছে</translation>
 <translation id="2602501489742255173">শুরু করতে স্ক্রিনের উপরের দিকে সোয়াইপ করুন</translation>
 <translation id="2603115962224169880">কম্পিউটার সাফ করুন</translation>
@@ -2226,6 +2228,7 @@
 <translation id="2852385257476173980">আপনি ওয়েব ব্রাউজ করার সাথে সাথে আপনার ভিজিট করা সাইটগুলির একটি তালিকা এখানে দেখা যেতে পারে</translation>
 <translation id="285241945869362924">অডিও এবং ভিডিওর জন্য ইংরেজিতে ক্যাপশন অটোমেটিক তৈরি হয়। অডিও এবং ক্যাপশন আপনার ডিভাইসেই থাকে।</translation>
 <translation id="2856776373509145513">নতুন একটি কন্টেনার তৈরি করুন</translation>
+<translation id="2859741939921354763"><ph name="BRAND" />-এ গুরুত্বপূর্ণ পাসওয়ার্ড ইমপোর্ট করুন</translation>
 <translation id="2861301611394761800">সিস্টেম আপডেট সম্পূর্ণ৷ দয়া করে সিস্টেমটি পুনরায় শুরু করুন৷</translation>
 <translation id="2861941300086904918">নেটিভ ক্লায়েন্ট সুরক্ষা পরিচালক</translation>
 <translation id="2862815659905780618">Linux ডেভেলপ করার বিকল্প সরান</translation>
@@ -3683,6 +3686,7 @@
 <translation id="4144468798716165316">দ্রুত কমান্ড</translation>
 <translation id="4146026355784316281">সর্বদা সিস্টেম নিরীক্ষকের সাথে খুলুন</translation>
 <translation id="4146785383423576110">রিসেট এবং সাফ করুন</translation>
+<translation id="4147099377280085053">ব্রেইল সারণী বেছে নিন</translation>
 <translation id="4147911968024186208">আবার চেষ্টা করুন। সমস্যাটি আবার হলে, কাস্টমার সাপোর্টের সাথে যোগাযোগ করুন।</translation>
 <translation id="4150201353443180367">প্রদর্শন</translation>
 <translation id="4150569944729499860">স্ক্রিনের তথ্য</translation>
@@ -3904,6 +3908,7 @@
 <translation id="4366138410738374926">প্রিন্ট করার প্রক্রিয়া শুরু করা হয়েছে</translation>
 <translation id="4367513928820380646">সরিয়ে দেওয়া অনুমতি পর্যালোচনা করুন</translation>
 <translation id="4369215744064167350">ওয়েবসাইট অ্যাক্সেস করার অনুমতি দেওয়া হয়েছে</translation>
+<translation id="436926121798828366">যেকোনও সময় <ph name="SETTINGS_LINK" /> থেকে আপনি এটি পরিবর্তন করতে পারবেন</translation>
 <translation id="4369735607080757018">সাইটের বিজ্ঞাপনের পারফর্ম্যান্স পরিমাপ করার জন্য সীমিত ধরনের ডেটা শেয়ার করা হয়, যেমন দিনের সময় আপনাকে বিজ্ঞাপন দেখানো হয়েছিল</translation>
 <translation id="4370975561335139969">আপনার লেখা ইমেল আইডি এবং পাসওয়ার্ড মিলছে না</translation>
 <translation id="4374805630006466253">অন্য একটি ফোন বা ট্যাবলেট ব্যবহার করুন</translation>
@@ -4306,6 +4311,7 @@
 <translation id="47158868804223727">গ্রুপের নাম বড় করার বা আড়াল করার জন্য তাতে ক্লিক করুন</translation>
 <translation id="4716483597559580346">অতিরিক্ত নিরাপত্তার জন্য পাওয়ারওয়াশ</translation>
 <translation id="471759229191973607">থিম পরিবর্তন করুন</translation>
+<translation id="4718046540206070045">ব্রাউজারের থেকেও অনেক বেশি কিছু</translation>
 <translation id="4718564115458102525">কোনও কীবোর্ড শনাক্ত করা হয়নি</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" />-এর পাসওয়ার্ড</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> আপনার স্ক্রিন ভাগ করছে৷</translation>
@@ -4670,7 +4676,6 @@
 <translation id="5063480226653192405">ব্যবহার</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS সেটিংসে নিরাপদ ডিএনএস ম্যানেজ করুন</translation>
-<translation id="5066160542186949327">অন্য ফোল্ডারে সরান</translation>
 <translation id="5067399438976153555">সর্বদা চালু</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> আপনার মাইক্রোফোন অ্যাক্সেস করতে চায় কিনা জিজ্ঞাসা করুন</translation>
 <translation id="5068553687099139861">পাসওয়ার্ড দেখুন</translation>
@@ -5240,6 +5245,7 @@
 <translation id="558170650521898289">Microsoft Windows Hardware Driver Verification </translation>
 <translation id="5581876958763461074">সব নোট</translation>
 <translation id="5581972110672966454">ডোমেনে ডিভাইসটি যোগ করা যাচ্ছে না। আবার চেষ্টা করুন অথবা আপনার ডিভাইসের মালিক বা অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" /></translation>
+<translation id="5582634344048669777">৮-ডট</translation>
 <translation id="5582839680698949063">প্রধান মেনু</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">ব্যবহারকারীর নাম সেভ করবেন?</translation>
@@ -5453,6 +5459,7 @@
 <translation id="5787146423283493983">কী চুক্তি</translation>
 <translation id="5787420647064736989">ডিভাইসের নাম</translation>
 <translation id="5788367137662787332">দুঃখিত, <ph name="DEVICE_LABEL" /> ডিভাইসটির কমপক্ষে একটি ভাগ আটকানো যায়নি৷</translation>
+<translation id="5789581866075720267">এই ডিভাইসে <ph name="BRAND" />-এ পাসওয়ার্ড ইমপোর্ট করতে, একটি CSV ফাইল বেছে নিন।</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">সফল</translation>
 <translation id="5790651917470750848">পোর্ট ফরওয়ার্ড করার সুবিধা আগে থেকেই রয়েছে</translation>
@@ -5697,6 +5704,7 @@
 <translation id="5984222099446776634">সাম্প্রতিককালে দেখা</translation>
 <translation id="5985458664595100876">ইউআরএল ফর্ম্যাটটি সঠিক নয়। সমর্থিত ফর্ম্য়াটগুলি হল \\server\share এবং smb://server/share।</translation>
 <translation id="598810097218913399">অ্যাকশনের জন্য অ্যাসাইন করা সুইচ সরিয়ে দিন</translation>
+<translation id="5989629029899728491">কুকি ছাড়াও আরও অনেক কিছু</translation>
 <translation id="5990266201903445068">শুধুমাত্র ওয়াই-ফাই ব্যবহার করা হবে</translation>
 <translation id="5990386583461751448">অনূদিত</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{আপনি যাতে ওয়েব ব্রাউজ করা চালিয়ে যেতে পারেন তার জন্য অ্যাডমিনিস্ট্রেটরকে এই অ্যাপ্লিকেশনটি সরিয়ে দিতে বলুন।}one{আপনি যাতে ওয়েব ব্রাউজ করা চালিয়ে যেতে পারেন তার জন্য অ্যাডমিনিস্ট্রেটরকে এই অ্যাপ্লিকেশনগুলি সরিয়ে দিতে বলুন।}other{আপনি যাতে ওয়েব ব্রাউজ করা চালিয়ে যেতে পারেন তার জন্য অ্যাডমিনিস্ট্রেটরকে এই অ্যাপ্লিকেশনগুলি সরিয়ে দিতে বলুন।}}</translation>
@@ -5807,6 +5815,7 @@
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - অজানা গ্রুপের অংশ</translation>
 <translation id="6085886413119427067">কোনও সুরক্ষিত কানেকশনের মাধ্যমে ওয়েবসাইটগুলিতে কীভাবে কানেক্ট করবেন তা নির্ধারণ করে</translation>
 <translation id="6086004606538989567">আপনার যাচাই করা অ্যাকাউন্টের সাহায্যে এই ডিভাইস অ্যাক্সেস করার অনুমতি নেই।</translation>
+<translation id="6086347269144967242">অ্যাটাচ করা ডিভাইসের তথ্য এবং ডেটা পড়ুন</translation>
 <translation id="6086846494333236931">আপনার প্রশাসক দ্বারা ইনস্টল করা হয়েছে</translation>
 <translation id="6087746524533454243">ব্রাউজার সম্পর্কিত পৃষ্ঠা খুঁজছেন? দেখুন</translation>
 <translation id="6087960857463881712">দুর্দান্ত চেহারা</translation>
@@ -5898,6 +5907,7 @@
 <translation id="6164832038898943453">অটোমেটিক অনুবাদের জন্য ভাষা যোগ করুন</translation>
 <translation id="6165508094623778733">আরও জানুন</translation>
 <translation id="6166185671393271715">Chrome এ পাসওয়ার্ড আমদানি করুন</translation>
+<translation id="6166659775803431">আপনার কার্টে</translation>
 <translation id="6169040057125497443">অনুগ্রহ করে আপনার মাইক্রোফোন ভাল করে দেখে নিন।</translation>
 <translation id="6169967265765719844">Steam-এর মাধ্যমে ইনস্টল করা গেম এবং অ্যাপের অনুমতি <ph name="LINK_BEGIN" />Steam অ্যাপ সেটিংস<ph name="LINK_END" /> বিভাগে ম্যানেজ করা যেতে পারে।</translation>
 <translation id="6170470584681422115">স্যান্ডউইচ</translation>
@@ -6797,6 +6807,7 @@
 <translation id="6968288415730398122">স্ক্রিন লক কনফিগার করতে আপনার পাসওয়ার্ড লিখুন</translation>
 <translation id="6969047215179982698">'নিয়ারবাই শেয়ার' ফিচারটি বন্ধ করুন</translation>
 <translation id="6969216690072714773">নতুন তথ্য লিখুন বা এই ডিভাইসের জন্য যুক্ত আগে থেকে থাকা তথ্য আপডেট করুন।</translation>
+<translation id="696942486482903620">আপনি যদি আপনার Google অ্যাকাউন্টে পাসওয়ার্ড সেভ করেন, তাহলে আপনি সেগুলিকে এই ডিভাইসে এবং আপনি সাইন-ইন করেছেন এমন সব ডিভাইসে ব্যবহার করতে পারবেন</translation>
 <translation id="6970480684834282392">প্রারম্ভিক প্রকার</translation>
 <translation id="6970543303783413625">পাসওয়ার্ড ইমপোর্ট করা যাচ্ছে না। আপনি একবারে সর্বাধিক <ph name="COUNT" />টি পাসওয়ার্ড ইমপোর্ট করতে পারবেন।</translation>
 <translation id="6970856801391541997">প্রিন্ট স্পেসিফিক পৃষ্ঠাসমূহ</translation>
@@ -7061,6 +7072,7 @@
 <translation id="7222204278952406003">আপনার ডিফল্ট ব্রাউজার হল Chrome</translation>
 <translation id="7222232353993864120">ইমেল আইডি</translation>
 <translation id="7222235798733126207">সাইটের মধ্যে শেয়ারিং সীমিত</translation>
+<translation id="7222335051802562841">আপডেট শেষ করুন</translation>
 <translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" />-এর গ্রুপে ১টি সাইট}one{<ph name="FPS_OWNER" />-এর গ্রুপে {MEMBERS}টি সাইট}other{<ph name="FPS_OWNER" />-এর গ্রুপে {MEMBERS}টি সাইট}}</translation>
 <translation id="7225082563376899794">পাসওয়ার্ড পূরণ করার সময় Windows Hello ব্যবহার করুন</translation>
 <translation id="7225179976675429563">নেটওয়ার্কের প্রকার হারিয়ে গেছে</translation>
@@ -7252,6 +7264,7 @@
 <translation id="7400447915166857470">পরিবর্তন করে <ph name="OLD_SEARCH_PROVIDER" />-এ আবার ফিরে যেতে চান?</translation>
 <translation id="7400839060291901923">আপনার <ph name="PHONE_NAME" /> এ সংযোগ সেট-আপ করুন</translation>
 <translation id="7401778920660465883">এই মেসেজ বাতিল করুন</translation>
+<translation id="7402198013420237102">আপনার Google অ্যাকাউন্টে সেভ করা পাসওয়ার্ডগুলি সরাবেন?</translation>
 <translation id="7403642243184989645">রিসোর্স ডাউনলোড করা হচ্ছে</translation>
 <translation id="7404065585741198296">ইউএসবি কেবেল দিয়ে আপনার ফোন কানেক্ট করুন</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{১ ঘণ্টা আগে নিরাপত্তা সংক্রান্ত পরীক্ষা চালানো হয়েছে}one{{NUM_HOURS} ঘণ্টা আগে নিরাপত্তা সংক্রান্ত পরীক্ষা চালানো হয়েছে}other{{NUM_HOURS} ঘণ্টা আগে নিরাপত্তা সংক্রান্ত পরীক্ষা চালানো হয়েছে}}</translation>
@@ -8374,6 +8387,7 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">আপনি এই ডিভাইসে আগেই রেজিস্টার করেছেন। আপনাকে আর এটি রেজিস্টার করতে হবে না।</translation>
 <translation id="8357388086258943206">Linux ইনস্টল করার সময় সমস্যা হচ্ছে</translation>
+<translation id="8357591920094529889">আপনি Chrome ব্যবহার করেন বলে, এই গাইড আপনাকে গুরুত্বপূর্ণ বিকল্প বুঝতে সাহায্য করে। আপনি ঠিক যেভাবে চান Chrome যাতে সেইভাবে কাজ করে তার জন্য এটি আপনাকে সেইসব বিকল্প বেছে নিতে সাহায্য করে।</translation>
 <translation id="8358685469073206162">পৃষ্ঠাগুলি পুনরুদ্ধার করবেন?</translation>
 <translation id="8358912028636606457">এই ডিভাইসে ট্যাব থেকে অডিও কাস্ট করার সুবিধা নেই।</translation>
 <translation id="835951711479681002">আপনার Google অ্যাকাউন্টে সেভ করুন</translation>
@@ -8427,6 +8441,7 @@
 <translation id="8398877366907290961">যাইহোক এগিয়ে যান</translation>
 <translation id="8399282673057829204">পাসওয়ার্ড দেখুন</translation>
 <translation id="8401432541486058167">আপনার স্মার্ট কার্ডের পিন নম্বরটি দিন।</translation>
+<translation id="8403618281196981152">Chrome-এ আপনার ডেটা</translation>
 <translation id="8403807918453631441">আপনি পাসওয়ার্ড সেভ করলে <ph name="BRAND" /> সেটি চেক করতে পারবে</translation>
 <translation id="8405046151008197676">লেটেস্ট আপডেটের হাইলাইটগুলি দেখুন</translation>
 <translation id="8407199357649073301">লগ লেভেল:</translation>
@@ -8486,6 +8501,7 @@
 <translation id="8460932807646981183">সার্চ ইঞ্জিন এবং সাইট সার্চ করা ম্যানেজ করুন</translation>
 <translation id="84613761564611563">নেটওয়ার্ক কনফিগার UI এর অনুরোধ করা হয়েছে, দয়া করে অপেক্ষা করুন...</translation>
 <translation id="8461914792118322307">প্রক্সি</translation>
+<translation id="8461973047386722744">কোনও পাসওয়ার্ড খুঁজে পাওয়া যায়নি</translation>
 <translation id="8463001014623882202">অনুমোদন পাওয়া যায়নি</translation>
 <translation id="846374874681391779">ডাউনলোড বার</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> অক্ষম করা হয়েছে।</translation>
@@ -8544,6 +8560,7 @@
 <translation id="8512476990829870887">প্রক্রিয়া সমাপ্ত করুন</translation>
 <translation id="851263357009351303">ছবিগুলি দেখানোর জন্য সর্বদা <ph name="HOST" />-কে অনুমতি দিন </translation>
 <translation id="8513108775083588393">অটো রোটেট</translation>
+<translation id="8513357934662532537"><ph name="USER_EMAIL" />-এর জন্য <ph name="BRAND" />-এ পাসওয়ার্ড ইমপোর্ট করতে, একটি CSV ফাইল বেছে নিন।</translation>
 <translation id="8514746246728959655">অন্য একটি নিরাপত্তা কী ব্যবহার করে দেখুন</translation>
 <translation id="8514955299594277296">সাইটগুলিকে আপনার ডিভাইসে ডেটা সেভ করার অনুমতি দেবেন না (প্রস্তাবিত নয়)</translation>
 <translation id="8517759303731677493">এডিট করুন…</translation>
@@ -9385,6 +9402,7 @@
 <translation id="952471655966876828">ডিভাইসটি চালু হলে এবং ব্যবহার করা হলে অটোমেটিক ডিসকানেক্ট হয়ে যাবে</translation>
 <translation id="953434574221655299">আপনি কখন ডিভাইস সক্রিয়ভাবে ব্যবহার করেন তা জানতে দেয়</translation>
 <translation id="956500788634395331">আপনি সম্ভাব্য ক্ষতিকারক এক্সটেনশনগুলি থেকে নিরাপদে আছেন</translation>
+<translation id="957179356621191750">৬-ডট</translation>
 <translation id="957960681186851048">এই সাইটটি নিজে থেকে একাধিক ফাইল ডাউনলোড করার চেষ্টা করেছে</translation>
 <translation id="960987915827980018">প্রায় 1 ঘণ্টা বাকি</translation>
 <translation id="962802172452141067">বুকমার্ক ফোল্ডার ট্রি</translation>

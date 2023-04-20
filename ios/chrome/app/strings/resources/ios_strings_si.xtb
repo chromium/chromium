@@ -346,6 +346,7 @@
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">ඔබේ වෙනස සුරැකිය නොහැකි විය.</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" />කින් <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
+<translation id="3260117527409269737">මෙම ලිපිනය Chrome වෙත පමණක් සුරැකෙයි. එය Google නිෂ්පාදන පුරා භාවිත කිරීමට, එය ඔබේ Google ගිණුම, <ph name="USER_EMAIL" /> තුළ සුරකින්න.</translation>
 <translation id="3264775633254836593">මුරපද ස්වයං පුරවන්න</translation>
 <translation id="3268451620468152448">ටැබ විවෘත කරන්න</translation>
 <translation id="3272527697863656322">අවලංගු කරන්න</translation>
@@ -356,7 +357,6 @@
 <translation id="3305294846493618482">තවත්</translation>
 <translation id="3311748811247479259">අක්‍රිය</translation>
 <translation id="3324193307694657476">ලිපිනය 2</translation>
-<translation id="3328459813621383194">අක්‍රිය පටිති ගෙන යන්න</translation>
 <translation id="3328801116991980348">අඩවි තොරතුරු</translation>
 <translation id="3344485292736684439">{count,plural, =1{පිටුසන ඔබේ ගිණුමේ, {email} "{title}" වෙත සුරකින ලදි}one{පිටුසන් ඔබේ ගිණුමේ, {email} "{title}" වෙත සුරකින ලදි}other{පිටුසන් ඔබේ ගිණුමේ, {email} "{title}" වෙත සුරකින ලදි}}</translation>
 <translation id="3371831930909698441">පරිවර්තනය ලැබේ. තිරයේ පහළට ආසන්නව විකල්ප ලබා ගත හැක.</translation>
@@ -497,6 +497,7 @@
 <translation id="4343046787186034850">කැමරා සහ මයික්‍රෆෝන ප්‍රවේශයට ඉඩ දෙන ලදී</translation>
 <translation id="4359125752503270327">මෙම පිටුව වෙනත් යෙදුමක විවෘත වනු ඇත.</translation>
 <translation id="4371526908359194219">ඉ-තැපැල් දැනුම්දීම</translation>
+<translation id="4371591986692297148">අක්‍රිය</translation>
 <translation id="4375040482473363939">QR කේතය සෙවීම</translation>
 <translation id="4378154925671717803">දුරකථනය</translation>
 <translation id="4389019817280890563">භාෂාව මාරු කිරීමට තට්ටු කරන්න.</translation>
@@ -627,7 +628,6 @@
 <translation id="5168414296986405587">iPadOS සඳහා තනා ඇත</translation>
 <translation id="5173088371991956744">ඒ ඔබ බව සත්‍යාපනය කිරීමට සමමුහුර්තයට අවශ්‍යයි</translation>
 <translation id="5176312250994681348">මෑතකාලීන මුරපද තබා ගන්න</translation>
-<translation id="51802232683641391">{count,plural, =1{ඔබ Android වෙතින් අත්හැර දැමූ පටිත්ත ගන්න ද?}one{ඔබ Android වෙතින් අත්හැර දැමූ පටිති ගන්න ද?}other{ඔබ Android වෙතින් අත්හැර දැමූ පටිති ගන්න ද?}}</translation>
 <translation id="5181140330217080051">බාගනිමින්</translation>
 <translation id="5184329579814168207">Chrome තුළ විවෘත කරන්න</translation>
 <translation id="5186185447130319458">රහසිගත</translation>
@@ -905,7 +905,6 @@
 <translation id="6807889908376551050">සියල්ල පෙන්වන්න...</translation>
 <translation id="681368974849482173">අයිතමය සාදන ලදි</translation>
 <translation id="6822587385560699678">ක්‍රියාත්මක වූ විට, මුරපද <ph name="ACCOUNT" /> තුළ සුරකිනු ලැබේ. ක්‍රියාවිරහිත වූ විට, මුරපද සුරැකෙන්නේ මෙම උපාංගයට පමණි.</translation>
-<translation id="683022620450280906">ඔබට ඕනෑම උපාංගයක සුරැකි මුරපද භාවිත කළ හැකිය. ඒවා <ph name="EMAIL" /> සඳහා වන Google මුරපද කළමනාකරු තුළ සුරැකේ</translation>
 <translation id="6831043979455480757">පරිවර්තනය කරන්න</translation>
 <translation id="6842136130964845393">ඔබට ඔබගේ සුරකින ලද මුරපදවලට සැම විට ප්‍රවේශ විය හැකි බවට සහතික කර ගැනීමට, ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="6851516051005285358">ඩෙක්ස්ටොප් අඩවිය ඉල්ලන්න</translation>

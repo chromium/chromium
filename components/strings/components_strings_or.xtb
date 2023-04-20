@@ -307,6 +307,7 @@
 <translation id="1658918301167915956">ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="1662550410081243962">ଠିକଣାଗୁଡ଼ିକ ସେଭ୍ କରି ପୂରଣ କରନ୍ତୁ</translation>
 <translation id="1663943134801823270">କାର୍ଡ ଓ ଠିକଣାଗୁଡ଼ିକ ଆପଣଙ୍କର Chromeରୁ ଆସିଛି। ଆପଣ ସେଗୁଡ଼ିକୁ <ph name="BEGIN_LINK" />ସେଟିଂସ୍‍<ph name="END_LINK" />ରେ ପରିଚାଳନ କରିପାରିବେ।</translation>
+<translation id="1668071460721346172">ଏକ ଇମେଲ ପାଆନ୍ତୁ</translation>
 <translation id="1671391448414634642">ଏବେ ଠାରୁ <ph name="SOURCE_LANGUAGE" />ର ପୃଷ୍ଠାଗୁଡ଼ିକୁ <ph name="TARGET_LANGUAGE" />ରେ ଅନୁବାଦ କରାଯିବ।</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ରୁ <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">ପ୍ରଥମେ ଛୋଟ ଏଡଜ୍</translation>
@@ -367,6 +368,7 @@
 <translation id="1806174020048213474">ଏହି ଆପ ୱାଇ-ଫାଇ କ୍ରେଡେନସିଆଲଗୁଡ଼ିକ ଇନଷ୍ଟଲ କରିବାକୁ ଅନୁମତି ପାଇଁ ଅନୁରୋଧ କରୁଛି। ସେଟଅପ ପରେ, ଆପଣଙ୍କ <ph name="DEVICE_TYPE" /> ସ୍ୱତଃ ଅଂଶଗ୍ରହଣକାରୀ ୱାଇ-ଫାଇ ନେଟୱାର୍କଗୁଡ଼ିକ ସହ କନେକ୍ଟ ହେବ। ଏହି କ୍ରେଡେନସିଆଲଗୁଡ଼ିକୁ କାଢ଼ି ଦେବା ପାଇଁ ଆପକୁ ଅନଇନଷ୍ଟଲ କରନ୍ତୁ।</translation>
 <translation id="1807246157184219062">ଫିକା</translation>
 <translation id="1807528111851433570">ଆରମ୍ଭର ସିଟ୍</translation>
+<translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">ଆପଣଙ୍କର CVC ଆପଣଙ୍କ କାର୍ଡର ପଛପଟେ ଅଛି। ଏହା ଆପଣଙ୍କ କାର୍ଡ ନମ୍ବର ଉପରେ ଶୀର୍ଷ ଡାହାଣରେ ଥିବା ଶେଷ 3 ଅଙ୍କ ଅଟେ।</translation>
 <translation id="181000283860817563">ଏକାଧିକ ସାଇଟରେ ମୂଲ୍ୟ ଟ୍ରାକ କରନ୍ତୁ</translation>
 <translation id="1810391395243432441">ଆପଣଙ୍କ ସ୍କ୍ରିନ ଲକ ସହ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ କରନ୍ତୁ</translation>
@@ -510,6 +512,7 @@
 <translation id="2166049586286450108">ସମ୍ପୂର୍ଣ୍ଣ ବ୍ୟବସ୍ଥାପକ ଆକ୍ସେସ୍</translation>
 <translation id="2166378884831602661">ଏହି ସାଇଟ୍ ଏକ ସୁରକ୍ଷିତ ସଂଯୋଗ ପ୍ରଦାନ କରିପାରିବ ନାହିଁ</translation>
 <translation id="2168151236314517198">ଏହି ବିଷୟବସ୍ତୁକୁ ପ୍ରିଣ୍ଟ କରିବା ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ନୀତି ଦ୍ୱାରା ବ୍ଲକ୍ କରାଯାଇଛି</translation>
+<translation id="2176974405772725904">ଆକାଉଣ୍ଟରେ ଠିକଣା ସେଭ କରନ୍ତୁ</translation>
 <translation id="2181821976797666341">ନୀତି</translation>
 <translation id="2183608646556468874">ଫୋନ୍ ନମ୍ବର</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1ଟି ଠିକଣା}other{#ଟି ଠିକଣା}}</translation>
@@ -523,7 +526,6 @@
 <translation id="2204482073374652408">ଅପଡେଟ କରିବା ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି!</translation>
 <translation id="22081806969704220">ଟ୍ରେ 3</translation>
 <translation id="2210794033760923560">ରିପୋର୍ଟ ଅପଲୋଡ କରନ୍ତୁ</translation>
-<translation id="2212579473415663542">ଏହି ଠିକଣାକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ (<ph name="ACCOUNT" />)ରେ ସେଭ କରାଯାଏ। ଆପଣ ଯେ କୌଣସି ଡିଭାଇସରେ ଥିବା ସମଗ୍ର Google ପ୍ରଡକ୍ଟରେ ଠିକଣା ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="2212735316055980242">ନୀତି ମିଳିଲା ନାହିଁ</translation>
 <translation id="2213606439339815911">ପ୍ରବିଷ୍ଟଗୁଡ଼ିକୁ ଅଣାଯାଉଛି...</translation>
 <translation id="2213612003795704869">ପୃଷ୍ଠା ପ୍ରିଣ୍ଟ କରାଯାଇଛି</translation>
@@ -1584,6 +1586,7 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{କିଛି ନାହିଁ}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="4879491255372875719">ସ୍ୱଚାଳିତ (ଡିଫଲ୍ଟ)</translation>
+<translation id="4879723019639546076">ଏହି ଠିକଣାକୁ କେବଳ Chromeରେ ସେଭ କରାଯାଏ। ଏହାକୁ ସମଗ୍ର Google ପ୍ରଡକ୍ଟରେ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, (<ph name="ACCOUNT" />)ରେ ସେଭ କରନ୍ତୁ।</translation>
 <translation id="4880827082731008257">ସନ୍ଧାନ ଇତିହାସ</translation>
 <translation id="4881695831933465202">ଖୋଲନ୍ତୁ</translation>
 <translation id="4881808915112408168">24 x 31.5 ଇଞ୍ଚ</translation>
@@ -1734,6 +1737,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">ଖାରଜ କରନ୍ତୁ</translation>
+<translation id="5238301240406177137">ଆକାଉଣ୍ଟରେ ସେଭ କରନ୍ତୁ</translation>
 <translation id="5239623327352565343">ଲୋକେସନକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="5242889659037569123">ଲଗେଜ ଏବଂ ଭ୍ରମଣ ଆକସେସୋରୀଗୁଡ଼ିକ</translation>
 <translation id="5244732203286792411">ଲୋଡ ହେଉଛି...
@@ -2140,6 +2144,7 @@
 <translation id="6279183038361895380">ଆପଣଙ୍କର କର୍ସର୍‌ ଦେଖାଇବାକୁ |<ph name="ACCELERATOR" />| ଦବାନ୍ତୁ</translation>
 <translation id="6280223929691119688">ଏହି ଠିକଣାକୁ ପହଞ୍ଚାଇପାରିବ ନାହିଁ। ଏକ ଭିନ୍ନ ଠିକଣା ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="6284292079994426700">26 x 38 ଇଞ୍ଚ</translation>
+<translation id="6284517535531159884">ଭେରିଏସନ ସିଡ ପ୍ରକାର</translation>
 <translation id="6285507000506177184">"Chromeରେ ଡାଉନଲୋଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ" ବଟନ, Chromeରେ ଆପଣ ଡାଉନଲୋଡ କରିଥିବା ଫାଇଲଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="6289939620939689042">ପୃଷ୍ଠାର ରଙ୍ଗ</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2249,6 +2254,7 @@
 <translation id="6545864417968258051">ବ୍ଲୁଟୁଥ୍ ସ୍କାନିଂ</translation>
 <translation id="6547208576736763147">ବାମ ପଟରେ ଦୁଇଟି ପଞ୍ଚ୍</translation>
 <translation id="6549443526281184652">ବେଶ ପୋଷାକ</translation>
+<translation id="6551873053534932690">ଆକାଉଣ୍ଟରେ ଠିକଣା ସେଭ କରିବେ?</translation>
 <translation id="6554732001434021288">ଗତ ଥର <ph name="NUM_DAYS" /> ଦିନ ପୂର୍ବେ ଭିଜିଟ୍ କରାଯାଇଛି</translation>
 <translation id="6556866813142980365">ରି-ଡୁ କରନ୍ତୁ</translation>
 <translation id="6557715786897013164">14 x 17 ଇଞ୍ଚ</translation>
@@ -2313,6 +2319,7 @@
 <translation id="6716672519412350405"><ph name="URL" /> ଆପଣଙ୍କ ପରିପାର୍ଶ୍ୱର ଏକ 3D ମ୍ୟାପ୍ ତିଆରି କରିବା ଏବଂ କ୍ୟାମେରା ସ୍ଥିତି ଟ୍ରାକ୍ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="6718612893943028815">କ୍ୟାମେରା ବ୍ୟବହାର କରିବେ?</translation>
 <translation id="6721678857435001674">ଆପଣଙ୍କ ସୁରକ୍ଷା କୀ'ର ନିର୍ମାତାଙ୍କ ନାମ ଏବଂ ମଡେଲ୍ ନମ୍ବର ଦେଖନ୍ତୁ</translation>
+<translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">କ୍ୟାମେରା</translation>
 <translation id="6738516213925468394">ଆପଣଙ୍କର ଡାଟା <ph name="TIME" />ଟାରେ ଆପଣଙ୍କ <ph name="BEGIN_LINK" />ସିଙ୍କ୍ ପାସ୍‌ଫ୍ରେଜ୍<ph name="END_LINK" /> ମାଧ୍ୟମରେ ଏନ୍‌କ୍ରିପ୍ଟ କରାଯାଇଥିଲା। ସିଙ୍କ୍ ଆରମ୍ଭ କରିବାକୁ ଏହାକୁ ଲେଖନ୍ତୁ।</translation>

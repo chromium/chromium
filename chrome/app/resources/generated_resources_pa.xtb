@@ -2228,6 +2228,7 @@
 <translation id="2852385257476173980">ਵੈੱਬ 'ਤੇ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਜਿਨ੍ਹਾਂ ਸਾਈਟਾਂ 'ਤੇ ਤੁਸੀਂ ਜਾਂਦੇ ਹੋ, ਉਨ੍ਹਾਂ ਦੀ ਸੂਚੀ ਤੁਹਾਨੂੰ ਇੱਥੇ ਦਿਸ ਸਕਦੀ ਹੈ</translation>
 <translation id="285241945869362924">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਆਡੀਓ ਅਤੇ ਵੀਡੀਓ ਲਈ ਸੁਰਖੀਆਂ ਬਣਾਉਂਦੀ ਹੈ। ਆਡੀਓ ਅਤੇ ਸੁਰਖੀਆਂ ਨੂੰ ਕਦੇ ਵੀ ਡੀਵਾਈਸ ਤੋਂ ਬਾਹਰ ਨਹੀਂ ਲਿਜਾਇਆ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="2856776373509145513">ਨਵਾਂ ਕੰਟੇਨਰ ਬਣਾਓ</translation>
+<translation id="2859741939921354763">ਪਾਸਵਰਡਾਂ ਨੂੰ <ph name="BRAND" /> ਵਿੱਚ ਆਯਾਤ ਕਰੋ</translation>
 <translation id="2861301611394761800">ਸਿਸਟਮ ਅੱਪਡੇਟ ਪੂਰਾ। ਕਿਰਪਾ ਕਰਕੇ ਸਿਸਟਮ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ।</translation>
 <translation id="2861941300086904918">ਨੇਟਿਵ ਕਲਾਇੰਟ ਸੁਰੱਖਿਆ ਪ੍ਰਬੰਧਕ</translation>
 <translation id="2862815659905780618">Linux ਵਿਕਾਸ ਵਾਤਾਵਰਨ ਨੂੰ ਹਟਾਓ</translation>
@@ -4308,6 +4309,7 @@
 <translation id="47158868804223727">ਇਸ ਦਾ ਵਿਸਤਾਰ ਕਰਨ ਜਾਂ ਸਮੇਟਣ ਲਈ ਗਰੁੱਪ ਦੇ ਨਾਮ 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="4716483597559580346">ਵਾਧੂ ਸੁਰੱਖਿਆ ਲਈ ਪਾਵਰਵਾਸ਼</translation>
 <translation id="471759229191973607">ਥੀਮ ਬਦਲੋ</translation>
+<translation id="4718046540206070045">ਬ੍ਰਾਊਜ਼ਰ ਤੋਂ ਜ਼ਿਆਦਾ ਸੁਵਿਧਾਵਾਂ</translation>
 <translation id="4718564115458102525">ਕਿਸੇ ਵੀ ਕੀ-ਬੋਰਡ ਦਾ ਪਤਾ ਨਹੀਂ ਲੱਗਿਆ</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> ਦਾ ਪਾਸਵਰਡ</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਸ਼ੇਅਰ ਕਰ ਰਿਹਾ ਹੈ।</translation>
@@ -4672,7 +4674,6 @@
 <translation id="5063480226653192405">ਵਰਤੋਂ</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸੁਰੱਖਿਅਤ DNS ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
-<translation id="5066160542186949327">ਕਿਸੇ ਹੋਰ ਫੋਲਡਰ 'ਤੇ ਲਿਜਾਓ</translation>
 <translation id="5067399438976153555">ਹਮੇਸ਼ਾਂ ਚਾਲੂ</translation>
 <translation id="5067867186035333991">ਪੁੱਛੋ ਕਿ <ph name="HOST" /> ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫੋਨ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ</translation>
 <translation id="5068553687099139861">ਪਾਸਵਰਡ ਦਿਖਾਓ</translation>
@@ -5455,6 +5456,7 @@
 <translation id="5787146423283493983">ਕੁੰਜੀ ਇਕਰਾਰਨਾਮਾ</translation>
 <translation id="5787420647064736989">ਡੀਵਾਈਸ ਦਾ ਨਾਮ</translation>
 <translation id="5788367137662787332">ਮਾਫ਼ ਕਰਨਾ, ਡੀਵਾਈਸ <ph name="DEVICE_LABEL" /> 'ਤੇ ਘੱਟੋ-ਘੱਟ ਇੱਕ ਭਾਗ ਮਾਉਂਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
+<translation id="5789581866075720267">ਇਸ ਡੀਵਾਈਸ 'ਤੇ <ph name="BRAND" /> ਵਿੱਚ ਪਾਸਵਰਡ ਆਯਾਤ ਕਰਨ ਲਈ, CSV ਫ਼ਾਈਲ ਚੁਣੋ।</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">ਸਫਲਤਾ</translation>
 <translation id="5790651917470750848">ਪੋਰਟ ਫਾਰਵਰਡ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
@@ -5699,6 +5701,7 @@
 <translation id="5984222099446776634">ਹਾਲੀਆ ਵਿਜਿਟ ਕੀਤੇ</translation>
 <translation id="5985458664595100876">ਅਵੈਧ URL ਫਾਰਮੈਟ। \\server\share ਅਤੇ smb://server/share ਸਮਰਥਿਤ ਫਾਰਮੈਟ ਹਨ।</translation>
 <translation id="598810097218913399">ਜ਼ਿੰਮੇ ਲਗਾਏ ਗਏ ਸਵਿੱਚ ਨੂੰ ਹਟਾਓ</translation>
+<translation id="5989629029899728491">ਕੁਕੀਜ਼ ਤੋਂ ਇਲਾਵਾ</translation>
 <translation id="5990266201903445068">ਸਿਰਫ਼ ਵਾਈ-ਫਾਈ</translation>
 <translation id="5990386583461751448">ਅਨੁਵਾਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{ਇਹ ਪੱਕਾ ਕਰਨ ਲਈ ਕਿ ਤੁਸੀਂ ਵੈੱਬ ਬ੍ਰਾਊਜ਼ ਕਰਨਾ ਜਾਰੀ ਰੱਖ ਸਕਦੇ ਹੋ, ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਇਹ ਐਪਲੀਕੇਸ਼ਨ ਹਟਾਉਣ ਲਈ ਕਹੋ।}one{ਇਹ ਪੱਕਾ ਕਰਨ ਲਈ ਕਿ ਤੁਸੀਂ ਵੈੱਬ ਬ੍ਰਾਊਜ਼ ਕਰਨਾ ਜਾਰੀ ਰੱਖ ਸਕਦੇ ਹੋ, ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਇਹ ਐਪਲੀਕੇਸ਼ਨ ਹਟਾਉਣ ਲਈ ਕਹੋ।}other{ਇਹ ਪੱਕਾ ਕਰਨ ਲਈ ਕਿ ਤੁਸੀਂ ਵੈੱਬ ਬ੍ਰਾਊਜ਼ ਕਰਨਾ ਜਾਰੀ ਰੱਖ ਸਕਦੇ ਹੋ, ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਇਹ ਐਪਲੀਕੇਸ਼ਨਾਂ ਹਟਾਉਣ ਲਈ ਕਹੋ।}}</translation>
@@ -5809,6 +5812,7 @@
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - ਬੇਨਾਮ ਗਰੁੱਪ ਦਾ ਹਿੱਸਾ</translation>
 <translation id="6085886413119427067">ਨਿਰਧਾਰਤ ਕਰਦਾ ਹੈ ਕਿ ਕਿਸੇ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ 'ਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕਿਵੇਂ ਕਨੈਕਟ ਕਰਨਾ ਹੈ</translation>
 <translation id="6086004606538989567">ਤੁਹਾਡਾ ਪੁਸ਼ਟੀਕਿਰਤ ਖਾਤਾ ਇਸ ਡੀਵਾਈਸ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਅਧਿਕਾਰਤ ਨਹੀਂ ਹੈ।</translation>
+<translation id="6086347269144967242">ਨੱਥੀ ਕੀਤੀ ਡੀਵਾਈਸ ਜਾਣਕਾਰੀ ਅਤੇ ਡਾਟੇ ਨੂੰ ਪੜ੍ਹੋ</translation>
 <translation id="6086846494333236931">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਸਥਾਪਿਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6087746524533454243">ਕੀ ਪੰਨੇ ਸੰਬੰਧੀ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ ਲੱਭ ਰਹੇ ਹੋ? ਇੱਥੇ ਜਾਓ</translation>
 <translation id="6087960857463881712">ਸੁੰਦਰ ਚਿਹਰਾ</translation>
@@ -8379,6 +8383,7 @@
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਰਜਿਸਟਰ ਕਰ ਚੁੱਕੇ ਹੋ। ਤੁਹਾਨੂੰ ਇਸ ਨੂੰ ਦੁਬਾਰਾ ਰਜਿਸਟਰ ਕਰਨ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ।</translation>
 <translation id="8357388086258943206">Linux ਸਥਾਪਤ ਕਰਨ ਵੇਲੇ ਗੜਬੜ ਹੋਈ</translation>
+<translation id="8357591920094529889">ਇਹ ਗਾਈਡ ਤੁਹਾਡੇ ਵੱਲੋਂ Chrome ਦੀ ਵਰਤੋਂ ਕਰਨ ਵੇਲੇ ਤੁਹਾਡੇ ਕੋਲ ਮੌਜੂਦ ਮਹੱਤਵਪੂਰਨ ਵਿਕਲਪਾਂ ਨੂੰ ਸਮਝਣ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰਦੀ ਹੈ। ਅਤੇ ਇਹ ਉਨ੍ਹਾਂ ਵਿਕਲਪਾਂ ਨੂੰ ਚੁਣਨ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰਦੀ ਹੈ, ਤਾਂ ਜੋ Chrome ਉਸ ਤਰੀਕੇ ਨਾਲ ਕੰਮ ਕਰੇ ਜਿਸ ਤਰ੍ਹਾਂ ਤੁਸੀਂ ਚਾਹੁੰਦੇ ਹੋ।</translation>
 <translation id="8358685469073206162">ਕੀ ਸਫ਼ੇ ਰੀਸਟੋਰ ਕਰਨੇ ਹਨ?</translation>
 <translation id="8358912028636606457">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਟੈਬ ਆਡੀਓ ਨੂੰ ਕਾਸਟ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨਹੀਂ ਹੈ।</translation>
 <translation id="835951711479681002">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -8432,6 +8437,7 @@
 <translation id="8398877366907290961">ਫੇਰ ਵੀ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="8399282673057829204">ਪਾਸਵਰਡ ਦੇਖੋ</translation>
 <translation id="8401432541486058167">ਆਪਣੇ ਸਮਾਰਟ ਕਾਰਡ ਨਾਲ ਸੰਬੰਧਿਤ ਪਿੰਨ ਮੁਹੱਈਆ ਕਰਵਾਓ</translation>
+<translation id="8403618281196981152">Chrome ਵਿੱਚ ਤੁਹਾਡਾ ਡਾਟਾ</translation>
 <translation id="8403807918453631441">ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨ 'ਤੇ <ph name="BRAND" /> ਉਨ੍ਹਾਂ ਦੀ ਜਾਂਚ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="8405046151008197676">ਨਵੀਨਤਮ ਅੱਪਡੇਟ ਤੋਂ ਝਲਕੀਆਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="8407199357649073301">ਲੌਗ ਪੱਧਰ:</translation>
@@ -8491,6 +8497,7 @@
 <translation id="8460932807646981183">ਖੋਜ ਇੰਜਣਾਂ ਅਤੇ ਸਾਈਟ ਖੋਜ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="84613761564611563">ਨੈੱਟਵਰਕ ਸੰਰੂਪਣ UI ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਗਈ ਹੈ, ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ...</translation>
 <translation id="8461914792118322307">ਪ੍ਰੌਕਸੀ</translation>
+<translation id="8461973047386722744">ਕੋਈ ਪਾਸਵਰਡ ਨਹੀਂ ਮਿਲਿਆ</translation>
 <translation id="8463001014623882202">ਇਖਤਿਆਰੀਕਰਨ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="846374874681391779">ਡਾਊਨਲੋਡ ਬਾਰ</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> ਨੂੰ ਅਯੋਗ ਬਣਾਇਆ ਗਿਆ।</translation>
@@ -8549,6 +8556,7 @@
 <translation id="8512476990829870887">ਪ੍ਰਕਿਰਿਆ ਖ਼ਤਮ ਕਰੋ</translation>
 <translation id="851263357009351303"><ph name="HOST" /> ਨੂੰ ਹਮੇਸ਼ਾਂ ਚਿੱਤਰ ਦਿਖਾਉਣ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="8513108775083588393">ਸਵੈ-ਘੁੰਮਾਓ</translation>
+<translation id="8513357934662532537"><ph name="USER_EMAIL" /> ਤੋਂ <ph name="BRAND" /> ਵਿੱਚ ਪਾਸਵਰਡ ਆਯਾਤ ਕਰਨ ਲਈ, CSV ਫ਼ਾਈਲ ਚੁਣੋ।</translation>
 <translation id="8514746246728959655">ਕੋਈ ਵੱਖਰੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਵਰਤ ਕੇ ਦੇਖੋ</translation>
 <translation id="8514955299594277296">ਸਾਈਟਾਂ ਨੂੰ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਡਾਟਾ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਆਗਿਆ ਨਾ ਦਿਓ (ਸਿਫ਼ਾਰਸ਼ੀ ਨਹੀਂ)</translation>
 <translation id="8517759303731677493">ਸੰਪਾਦਨ ਕਰੋ…</translation>

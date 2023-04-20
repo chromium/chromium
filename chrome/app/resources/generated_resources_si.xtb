@@ -2216,6 +2216,7 @@
 <translation id="2852385257476173980">ඔබ වෙබය බ්‍රවුස් කරන විට ඔබ පිවිසෙන අඩවි ලැයිස්තුවක් මෙහි දිස් විය හැකිය</translation>
 <translation id="285241945869362924">ශ්‍රව්‍ය සහ වීඩියෝ සඳහා ස්වයංක්‍රියව සිරස්තල තනයි. ශ්‍රව්‍ය සහ සිරස්තල කිසි විටක ඔබගේ උපාංගය හැර නොයනු ඇත.</translation>
 <translation id="2856776373509145513">නව බහාලුමක් තනන්න</translation>
+<translation id="2859741939921354763"><ph name="BRAND" /> වෙත මුරපද ආයාත කරන්න</translation>
 <translation id="2861301611394761800">පද්ධති යාවත්කාලය සම්පූර්ණයි. කරුණාකර පරිගණකය නැවත අරඹන්න.</translation>
 <translation id="2861941300086904918">සහජ සේවාලාභී ආරක්ෂක කළමනාකරු</translation>
 <translation id="2862815659905780618">Linux සංවර්ධන පරිසරය ඉවත් කරන්න</translation>
@@ -4297,6 +4298,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="47158868804223727">එය දිග හැරීමට හෝ හැකිළීමට සමූහ නම ක්ලික් කරන්න</translation>
 <translation id="4716483597559580346">අමතර ආරක්ෂාව සඳහා Powerwash</translation>
 <translation id="471759229191973607">තේමාව වෙනස් කරන්න</translation>
+<translation id="4718046540206070045">බ්‍රව්සරයකට වඩා</translation>
 <translation id="4718564115458102525">යතුරු පුවරුවක් හඳුනා ගෙන නොමැත</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> සඳහා මුරපදය</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> ඔබේ තිරය හුවමාරු කරමින් සිටී.</translation>
@@ -4661,7 +4663,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5063480226653192405">භාවිතය</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS සැකසීම් තුළ සුරක්ෂිත DNS කළමනාකරණය කරන්න</translation>
-<translation id="5066160542186949327">වෙනත් ෆෝල්ඩරයකට ගෙන යන්න</translation>
 <translation id="5067399438976153555">සෑමවිට ක්‍රියාත්මකයි</translation>
 <translation id="5067867186035333991">ඔබේ මයික්‍රොෙෆා්නයට ප්‍රෙව්ශ වීමට අවශ්‍යදැයි<ph name="HOST" /> ගෙන් අසන්න</translation>
 <translation id="5068553687099139861">මුරපද පෙන්වන්න</translation>
@@ -5445,6 +5446,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5787146423283493983">ප්‍රධාන ගිවිසුම</translation>
 <translation id="5787420647064736989">උපාංග නම</translation>
 <translation id="5788367137662787332">සමාවන්න, අඩුවශයෙන් <ph name="DEVICE_LABEL" /> උපාංගය මත එක් කොටසක්වත් නැංවිය නොහැක.</translation>
+<translation id="5789581866075720267">මෙම උපාංගයෙහි <ph name="BRAND" /> වෙත මුරපද ආයාත කිරීම සඳහා, CSV ගොනුවක් තෝරන්න.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">සාර්ථකයි</translation>
 <translation id="5790651917470750848">පෝර්ට් ඉදිරියට ගෙන යාම දැනටමත් පවතී</translation>
@@ -5689,6 +5691,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5984222099446776634">මෑතදී පිවිසි</translation>
 <translation id="5985458664595100876">අවලංගු URL ආකෘතිය. සහය දැක්වෙන ආකෘති \\server\share සහ smb://server/share වේ.</translation>
 <translation id="598810097218913399">පැවරුම ඉවත් කරන්න</translation>
+<translation id="5989629029899728491">කුකීස්වලින් ඔබ්බට</translation>
 <translation id="5990266201903445068">Wi-Fi පමණි</translation>
 <translation id="5990386583461751448">පරිවර්තිතයි</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{ඔබට දිගටම වෙබය පිරික්සීමට හැකි බව සහතික කිරීම සඳහා, මෙම යෙදුම ඉවත් කිරීමට ඔබේ පරිපාලකගෙන් විමසන්න.}one{ඔබට දිගටම වෙබය පිරික්සීමට හැකි බව සහතික කිරීම සඳහා, මෙම යෙදුම් ඉවත් කිරීමට ඔබේ පරිපාලකගෙන් විමසන්න.}other{ඔබට දිගටම වෙබය පිරික්සීමට හැකි බව සහතික කිරීම සඳහා, මෙම යෙදුම් ඉවත් කිරීමට ඔබේ පරිපාලකගෙන් විමසන්න.}}</translation>
@@ -5799,6 +5802,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - නම් නොකළ කණ්ඩායමක කොටසකි</translation>
 <translation id="6085886413119427067">සුරක්‍ෂිත සම්බන්ධතාවක් හරහා වෙබ් අඩවිවලට සම්බන්ධ කරන ආකාරය තීරණ කරයි</translation>
 <translation id="6086004606538989567">ඔබ සත්‍යාපනය කළ ගිණුමට මෙම උපාංගයට ප්‍රවේශ වීමට අවසර නැත.</translation>
+<translation id="6086347269144967242">අමුණා ඇති උපාංග තොරතුරු සහ දත්ත කියවන්න</translation>
 <translation id="6086846494333236931">ඔබේ පරිපාලක විසින් ස්ථාපනය කරන ලදී</translation>
 <translation id="6087746524533454243">පිටුව ගැන බ්‍රවුසරය සඳහා සොයන්නේද? පිවිසෙන්න</translation>
 <translation id="6087960857463881712">නියම මුහුණ</translation>
@@ -8366,6 +8370,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">ඔබ දැනටමත් මෙම උපාංගය ලියාපදිංචි කර ඇත. ඔබ නැවතත් එය ලියාපදිංචි කළ යුතු නැත.</translation>
 <translation id="8357388086258943206">Linux ස්ථාපනය කිරීමේ දෝෂයයි</translation>
+<translation id="8357591920094529889">ඔබ Chrome භාවිතා කරන විට ඔබට ඇති වැදගත් තේරීම් වටහා ගැනීමට මෙම මාර්ගෝපදේශය ඔබට උදවු කරයි. තව ද එය ඔබට එම තේරීම් කිරීමට උදවු කරන බැවින්, Chrome ඔබට අවශ්‍ය ආකාරයට ක්‍රියා කරයි.</translation>
 <translation id="8358685469073206162">පිටු යළි පිහිටුවන්නද?</translation>
 <translation id="8358912028636606457">පටිති ශ්‍රව්‍ය විකාශය මෙම උපාංගයෙහි සහාය නොදක්වයි.</translation>
 <translation id="835951711479681002">ඔබේ Google ගිණුම තුළ සුරකින්න</translation>
@@ -8419,6 +8424,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8398877366907290961">කෙසේ හෝ කරගෙන යන්න</translation>
 <translation id="8399282673057829204">මුරපදය බලන්න</translation>
 <translation id="8401432541486058167">ඔබේ ස්මාර්ට් කාඩ්පත හා සම්බන්ධ රහස් අංකය ලබා දෙන්න.</translation>
+<translation id="8403618281196981152">Chrome තුළ ඔබේ දත්ත</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> හට ඔබ ඔබේ මුරපද සුරකින විට ඒවා පරීක්ෂා කළ හැක</translation>
 <translation id="8405046151008197676">නවතම යාවත්කාලීනයෙන් උද්දීපන ලබා ගන්න</translation>
 <translation id="8407199357649073301">ලොග මට්ටම:</translation>
@@ -8478,6 +8484,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8460932807646981183">සෙවීම් යන්ත්‍ර සහ අඩවි සෙවීම කළමනාකරණය කරන්න</translation>
 <translation id="84613761564611563">ජාල වින්‍යාස UI ඉල්ලා සිටින ලදී, කරුණාකර රැදී සිටින්න...</translation>
 <translation id="8461914792118322307">ප්‍රොක්සි</translation>
+<translation id="8461973047386722744">මුරපද හමු නොවුණි</translation>
 <translation id="8463001014623882202">අනුමැතිය දීම අසාර්ථක විය</translation>
 <translation id="846374874681391779">බාගැනීම් තීරුව</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> අබලයි.</translation>
@@ -8536,6 +8543,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8512476990829870887">ක්‍රියාවලිය අවසන් කරන්න</translation>
 <translation id="851263357009351303">සැමවිට <ph name="HOST" /> ට රූප පෙන්වීමට ඉඩ දෙන්න</translation>
 <translation id="8513108775083588393">ස්වයංක්‍රීය කරකැවීම</translation>
+<translation id="8513357934662532537"><ph name="USER_EMAIL" /> සඳහා <ph name="BRAND" /> වෙත මුරපද ආයාත කිරීමට, CSV ගොනුවක් තෝරන්න.</translation>
 <translation id="8514746246728959655">වෙනත් ආරක්‍ෂක යතුරක් උත්සාහ කරන්න</translation>
 <translation id="8514955299594277296">ඔබේ උපාංගයෙහි දත්ත සුරැකීමට අඩවිවලට ඉඩ නොදෙන්න (නිර්දේශිත නොවේ)</translation>
 <translation id="8517759303731677493">සංස්කරණය කරන්න…</translation>

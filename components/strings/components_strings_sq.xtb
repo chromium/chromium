@@ -307,6 +307,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1658918301167915956">Pajisjet me Bluetooth</translation>
 <translation id="1662550410081243962">Ruaj dhe plotëso mënyrat e pagesës</translation>
 <translation id="1663943134801823270">Kartat dhe adresat janë nga Chrome. Ato mund t'i menaxhosh te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
+<translation id="1668071460721346172">Merr një email</translation>
 <translation id="1671391448414634642">Faqet në <ph name="SOURCE_LANGUAGE" /> do të përkthehen në <ph name="TARGET_LANGUAGE" /> nga tani e në vazhdim.</translation>
 <translation id="1674504678466460478">Nga <ph name="SOURCE_LANGUAGE" /> në <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Ana e shkurtër në fillim</translation>
@@ -367,6 +368,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1806174020048213474">Ky aplikacion po kërkon leje për të instaluar kredencialet e Wi-Fi. Pas konfigurimit, pajisja jote <ph name="DEVICE_TYPE" /> do të lidhet automatikisht me rrjetet pjesëmarrëse Wi-Fi. Për t'i hequr këto kredenciale, çinstalo aplikacionin.</translation>
 <translation id="1807246157184219062">I lehtë</translation>
 <translation id="1807528111851433570">Fleta e fillimit</translation>
+<translation id="180757923930449935">(me imitimin për 64 bitë)</translation>
 <translation id="180991881384371158">Numri CVC është në pjesën e pasme të kartës sate. Ai përfshin 3 shifrat e fundit në krye djathtas të kutisë së nënshkrimit.</translation>
 <translation id="181000283860817563">Monitoro çmimet nëpër disa sajte</translation>
 <translation id="1810391395243432441">Mbroji fjalëkalimet me kyçjen e ekranit</translation>
@@ -510,6 +512,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2166049586286450108">Qasja e plotë e administratorit</translation>
 <translation id="2166378884831602661">Ky sajt nuk mund të ofrojë një lidhje të sigurt</translation>
 <translation id="2168151236314517198">Printimi i kësaj përmbajtjeje është bllokuar nga politika e administratorit</translation>
+<translation id="2176974405772725904">Ruaje adresën te llogaria</translation>
 <translation id="2181821976797666341">Politikat</translation>
 <translation id="2183608646556468874">Numri i telefonit</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresë}other{# adresa}}</translation>
@@ -523,7 +526,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2204482073374652408">Përditësimi përfundoi!</translation>
 <translation id="22081806969704220">Tabakaja 3</translation>
 <translation id="2210794033760923560">Ngarko raportin</translation>
-<translation id="2212579473415663542">Kjo adresë është ruajtur në "Llogarinë tënde të Google" (<ph name="ACCOUNT" />). Mund ta përdorësh adresën nëpër produktet e Google në çdo pajisje.</translation>
 <translation id="2212735316055980242">Politika nuk u gjet</translation>
 <translation id="2213606439339815911">Po merr hyrjet...</translation>
 <translation id="2213612003795704869">Faqja u printua</translation>
@@ -1586,6 +1588,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4877083676943085827">{COUNT,plural, =0{Asnjë}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Kërko për <ph name="TEXT" /></translation>
 <translation id="4879491255372875719">Automatike (e parazgjedhur)</translation>
+<translation id="4879723019639546076">Kjo adresë ruhet vetëm në Chrome. Për ta përdorur atë nëpër produktet e Google, ruaje atë në "Llogarinë tënde të Google" (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">Historiku i kërkimeve</translation>
 <translation id="4881695831933465202">Hap</translation>
 <translation id="4881808915112408168">24 x 31,5 inç</translation>
@@ -1736,6 +1739,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Hiq</translation>
+<translation id="5238301240406177137">Ruaje te llogaria</translation>
 <translation id="5239623327352565343">Vendndodhja lejohet</translation>
 <translation id="5242889659037569123">Aksesorët për bagazhe dhe udhëtime</translation>
 <translation id="5244732203286792411">Po ngarkohet...
@@ -2142,6 +2146,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6279183038361895380">Shtyp |<ph name="ACCELERATOR" />| për të shfaqur kursorin</translation>
 <translation id="6280223929691119688">Nuk mund të dorëzohet në këtë adresë. Zgjidh një adresë tjetër.</translation>
 <translation id="6284292079994426700">26 x 38 inç</translation>
+<translation id="6284517535531159884">Lloji i burimit të varianteve</translation>
 <translation id="6285507000506177184">Butoni "Menaxho shkarkimet në Chrome". Shtyp "Enter" për të menaxhuar skedarët që ke shkarkuar në Chrome</translation>
 <translation id="6289939620939689042">Ngjyra e faqes</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2251,6 +2256,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6545864417968258051">Skanimi për Bluetooth</translation>
 <translation id="6547208576736763147">Dy shpime majtas</translation>
 <translation id="6549443526281184652">Kostumet</translation>
+<translation id="6551873053534932690">Të ruhet adresa te llogaria?</translation>
 <translation id="6554732001434021288">Vizituar së fundi <ph name="NUM_DAYS" /> ditë më parë</translation>
 <translation id="6556866813142980365">Ribëje</translation>
 <translation id="6557715786897013164">14 x 17 inç</translation>
@@ -2315,6 +2321,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6716672519412350405"><ph name="URL" /> kërkon të krijojë një hartë 3D të ambientit tënd rrethues dhe të gjurmojë pozicionin e kamerës</translation>
 <translation id="6718612893943028815">Të përdoret kamera?</translation>
 <translation id="6721678857435001674">Shikojë markën dhe modelin e çelësit tënd të sigurisë</translation>
+<translation id="6726832600570791992">(me imitimin për 32 bitë)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6738516213925468394">Të dhënat e tua u enkriptuan me <ph name="BEGIN_LINK" />frazën e kalimit për sinkronizimin<ph name="END_LINK" /> më <ph name="TIME" />. Fute atë për të nisur sinkronizmin.</translation>

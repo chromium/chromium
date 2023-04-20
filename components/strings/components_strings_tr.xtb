@@ -512,6 +512,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2166049586286450108">Tam Yönetici Erişimi</translation>
 <translation id="2166378884831602661">Bu site güvenli bağlantı sağlayamıyor</translation>
 <translation id="2168151236314517198">Bu içeriğin yazdırılması yönetici politikası tarafından engellendi</translation>
+<translation id="2176974405772725904">Adresi Hesaba Kaydedin</translation>
 <translation id="2181821976797666341">Politikalar</translation>
 <translation id="2183608646556468874">Telefon Numarası</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adres}other{# adres}}</translation>
@@ -525,7 +526,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2204482073374652408">Güncelleme tamamlandı!</translation>
 <translation id="22081806969704220">Tepsi 3</translation>
 <translation id="2210794033760923560">Rapor yükle</translation>
-<translation id="2212579473415663542">Bu adres Google Hesabınıza (<ph name="ACCOUNT" />) kaydedildi. Herhangi bir cihazdaki Google ürünlerinde bu adresi kullanabilirsiniz.</translation>
 <translation id="2212735316055980242">Politika bulunamadı</translation>
 <translation id="2213606439339815911">Girişler getiriliyor...</translation>
 <translation id="2213612003795704869">Sayfa yazdırıldı</translation>
@@ -1739,6 +1739,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Kapat</translation>
+<translation id="5238301240406177137">Hesaba Kaydet</translation>
 <translation id="5239623327352565343">Konuma izin veriliyor</translation>
 <translation id="5242889659037569123">Bavul ve seyahat aksesuarları</translation>
 <translation id="5244732203286792411">Yükleniyor...
@@ -2256,6 +2257,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6545864417968258051">Bluetooth taraması</translation>
 <translation id="6547208576736763147">Solda ikili delik</translation>
 <translation id="6549443526281184652">Kostümler</translation>
+<translation id="6551873053534932690">Adres, Hesaba Kaydedilsin mi?</translation>
 <translation id="6554732001434021288">En son <ph name="NUM_DAYS" /> gün önce ziyaret edildi</translation>
 <translation id="6556866813142980365">Yeniden Yap</translation>
 <translation id="6557715786897013164">14 x 17 inç</translation>
@@ -3015,7 +3017,7 @@ Ek ayrıntılar:
 <translation id="836616551641291797">Tarayıcınızın nasıl yönetildiği hakkında daha fazla bilgi</translation>
 <translation id="8368001212524806591">Fiyatı takip et</translation>
 <translation id="8368027906805972958">Bilinmeyen veya desteklenmeyen cihaz (<ph name="DEVICE_ID" />)</translation>
-<translation id="8368476060205742148">Google Play hizmetleri</translation>
+<translation id="8368476060205742148">Google Play Hizmetleri</translation>
 <translation id="8369073279043109617">Yeni kod al</translation>
 <translation id="8371889962595521444">Özel kök sertifikalar</translation>
 <translation id="8374636051559112948">Değişkenlik gösterir</translation>

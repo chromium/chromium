@@ -307,6 +307,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1658918301167915956">perangkat bluetooth</translation>
 <translation id="1662550410081243962">Simpan dan isi metode pembayaran</translation>
 <translation id="1663943134801823270">Kartu dan alamat berasal dari Chrome. Anda dapat mengelolanya di <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" />.</translation>
+<translation id="1668071460721346172">Dapatkan email</translation>
 <translation id="1671391448414634642">Mulai sekarang, halaman dalam bahasa <ph name="SOURCE_LANGUAGE" /> akan diterjemahkan ke dalam bahasa <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ke <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Tepi pendek lebih dulu</translation>
@@ -367,6 +368,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1806174020048213474">Aplikasi ini meminta izin untuk menginstal kredensial Wi-Fi. Setelah penyiapan, <ph name="DEVICE_TYPE" /> akan otomatis terhubung ke jaringan Wi-Fi yang berpartisipasi. Untuk menghapus kredensial ini, uninstal aplikasi.</translation>
 <translation id="1807246157184219062">Terang</translation>
 <translation id="1807528111851433570">Lembar mulai</translation>
+<translation id="180757923930449935">(64-bit diemulasikan)</translation>
 <translation id="180991881384371158">CVC Anda terletak di bagian belakang kartu. CVC adalah 3 digit terakhir di kanan atas kotak tanda tangan.</translation>
 <translation id="181000283860817563">Pantau harga di beberapa situs</translation>
 <translation id="1810391395243432441">Lindungi sandi dengan kunci layar</translation>
@@ -524,7 +526,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2204482073374652408">Update selesai!</translation>
 <translation id="22081806969704220">Baki 3</translation>
 <translation id="2210794033760923560">Upload Laporan</translation>
-<translation id="2212579473415663542">Alamat ini disimpan di Akun Google Anda (<ph name="ACCOUNT" />). Anda dapat menggunakan alamat di seluruh produk Google di perangkat mana pun.</translation>
 <translation id="2212735316055980242">Kebijakan tidak ditemukan</translation>
 <translation id="2213606439339815911">Mengambil entri...</translation>
 <translation id="2213612003795704869">Halaman dicetak</translation>
@@ -1224,6 +1225,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4031179711345676612">Mikrofon diizinkan</translation>
 <translation id="4040350669425716613">Perguruan tinggi &amp; universitas</translation>
 <translation id="4047351652147966654">18 x 24 inci (45 x 60 cm)</translation>
+<translation id="4047620889508350431">Anda sekarang dapat menggunakan alamat dari Akun Google Anda.</translation>
 <translation id="405399507749852140">Dapatkan notifikasi jika ada diskon di situs mana pun</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Izinkan Google membantu Anda menemukan diskon untuk keranjang Anda</translation>
@@ -1586,6 +1588,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4877083676943085827">{COUNT,plural, =0{Tidak ada}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Penelusuran <ph name="TEXT" /></translation>
 <translation id="4879491255372875719">Otomatis (default)</translation>
+<translation id="4879723019639546076">Alamat ini hanya disimpan ke Chrome. Untuk menggunakannya di seluruh produk Google, simpan di Akun Google Anda, (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">Telusuri histori</translation>
 <translation id="4881695831933465202">Buka</translation>
 <translation id="4881808915112408168">24 x 31,5 inci (60 x 80 cm)</translation>
@@ -2144,6 +2147,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6279183038361895380">Tekan |<ph name="ACCELERATOR" />| untuk menampilkan kursor</translation>
 <translation id="6280223929691119688">Tidak dapat mengirim ke alamat ini. Pilih alamat lain.</translation>
 <translation id="6284292079994426700">26 x 38 inci (66 x 96 cm)</translation>
+<translation id="6284517535531159884">Jenis Seed Variasi</translation>
 <translation id="6285507000506177184">Tombol Kelola download di Chrome, tekan Enter untuk mengelola file yang telah Anda download di Chrome</translation>
 <translation id="6289939620939689042">Warna Halaman</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2318,6 +2322,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6716672519412350405"><ph name="URL" /> ingin membuat peta 3D untuk area di sekeliling Anda dan melacak posisi kamera</translation>
 <translation id="6718612893943028815">Gunakan kamera?</translation>
 <translation id="6721678857435001674">Lihat merek dan model Kunci Keamanan Anda</translation>
+<translation id="6726832600570791992">(32-bit diemulasikan)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6738516213925468394">Data Anda dienkripsi dengan <ph name="BEGIN_LINK" />frasa sandi sinkronisasi<ph name="END_LINK" /> pada tanggal <ph name="TIME" />. Masukkan frasa sandi untuk memulai sinkronisasi.</translation>

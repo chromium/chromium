@@ -34,6 +34,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1148499908455722006">Obre el quadre de diàleg d'informació per a <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Calendari</translation>
 <translation id="1153356358378277386">Dispositius vinculats</translation>
+<translation id="1160215328209699296">activat i en ús</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">És possible que el teu cable USB-C no es connecti correctament a les pantalles.</translation>
 <translation id="1175572348579024023">Desplaça</translation>
@@ -241,6 +242,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2049240716062114887">El nom de l'escriptori s'ha canviat a <ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">La previsualització de la càmera està activada</translation>
 <translation id="2067602449040652523">Brillantor del teclat</translation>
+<translation id="2075520525463668108">Commuta <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> està <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2078034614700056995">Fes lliscar quatre dits cap a la dreta per canviar a l'escriptori següent</translation>
 <translation id="2079545284768500474">Desfés</translation>
 <translation id="2083190527011054446">Bona nit, <ph name="GIVEN_NAME" />,</translation>
@@ -325,6 +327,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2487915095798731898">Vull entrar-hi</translation>
 <translation id="2501920221385095727">Tecles permanents</translation>
 <translation id="2509468283778169019">BLOQ MAJ està activat.</translation>
+<translation id="2514415433888497495">Atura <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> està <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Desbloqueja les finestres</translation>
 <translation id="2530896289327917474">Activa o desactiva la navegació amb cursor de text</translation>
@@ -1517,6 +1520,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8051716679295756675">La plantilla anomenada <ph name="DESK_TEMPLATE_NAME" /> ja existeix</translation>
 <translation id="8052898407431791827">S'ha copiat al porta-retalls</translation>
 <translation id="8054466585765276473">S'està calculant el temps de la bateria.</translation>
+<translation id="8079538659226626406">Compartició de pantalla</translation>
 <translation id="8083540854303889870">Desat per a més tard</translation>
 <translation id="8091153018031979607">Inici: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Actualitzacions automàtiques</translation>

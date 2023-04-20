@@ -225,6 +225,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1978498689038657292">Teksta ievade</translation>
 <translation id="1980808257969311265">Pievienoties pasākumam <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Rādīt iepriekšējo nedēļu</translation>
+<translation id="1986150224850161328">Gādājiet, lai tālrunis un Chromebook dators būtu pievienoti vienam tīklam, un pēc tam mēģiniet vēlreiz. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Nevar izveidot satura ekrānuzņēmumu</translation>
 <translation id="1990046457226896323">Automātisko subtitru faili ir lejupielādēti.</translation>
 <translation id="1993072747612765854">Uzzināt vairāk par pēdējo <ph name="SYSTEM_APP_NAME" /> atjauninājumu</translation>
@@ -373,6 +374,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2761723519669354964">Atvērt plauktā izcelto vienumu</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Iziet no uzņemšanas režīma</translation>
+<translation id="2785499565474703580">Pievienota viena ierīce.</translation>
 <translation id="2791421900609674576">Tā kā tiks rādīti ieteikumi, varēsiet turpināt no vietas, kur beidzāt darbu. Lai noņemtu ieteikumus, varat pieskarties un turēt.</translation>
 <translation id="2792498699870441125">Alt+Meklēt</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1277,6 +1279,7 @@ Jauna instalācija</translation>
 <translation id="6941333068993625698">Iesniegt atsauksmes</translation>
 <translation id="6942518653766415536">Ierakstīšanas formāta izvēlne</translation>
 <translation id="6945221475159498467">Atlasīt</translation>
+<translation id="6945922087561257829">Jūsu tālrunī tiek izmantots mobilais tīkls. Gādājiet, lai tālrunis un Chromebook dators būtu pievienoti vienam Wi-Fi tīklam, un pēc tam mēģiniet vēlreiz. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Nav aktivizēts. Sazinieties ar mobilo sakaru operatoru.</translation>
 <translation id="6961121602502368900">Darba profilā tālruņa skaņu nevar izslēgt.</translation>
 <translation id="6961840794482373852">Šie īsinājumtaustiņi ir mainījušies: Alt + augšupvērstais bulttaustiņš. Lai izmantotu augšupšķiršanas taustiņu, nospiediet šos taustiņus: <ph name="LAUNCHER_KEY_NAME" /> + augšupvērstais bulttaustiņš.</translation>
@@ -1331,6 +1334,7 @@ Jauna instalācija</translation>
 <translation id="7188494361780961876">Izvēlne pārvietota uz ekrāna augšējo kreiso malu.</translation>
 <translation id="7189412385142492784">Cik tālu atrodas Venera?</translation>
 <translation id="7198435252016571249">Kamera pārnesta uz labo apakšējo stūri. Konflikts ar sistēmas virsmu.</translation>
+<translation id="7219573373513695352">Nav pievienota neviena ierīce</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Šis Chromebook dators ir jārestartē, lai lietotu atjauninājumu. Tas var ilgt aptuveni 1 minūti.</translation>
 <translation id="7256634071279256947">Aizmugurējais mikrofons</translation>
 <translation id="7258828758145722155">Rediģēts vakar</translation>
@@ -1481,6 +1485,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7902625623987030061">Pieskarieties pirksta nospieduma sensoram</translation>
 <translation id="7904094684485781019">Šī konta administrators nav atļāvis vairākkārtēju pierakstīšanos.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422">Pievienotas <ph name="DEVICECOUNT" /> ierīces</translation>
 <translation id="7930731167419639574">Runa tiek apstrādāta lokāli, un diktēšana darbojas bezsaistē.</translation>
 <translation id="7932451802722951285">Atvērt Google kalendārā</translation>
 <translation id="7933084174919150729">Google asistents ir pieejams tikai galvenajam profilam.</translation>

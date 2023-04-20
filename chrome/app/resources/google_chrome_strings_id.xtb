@@ -22,7 +22,9 @@
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Komputer ini telah memiliki versi Google Chrome yang lebih anyar. Jika software tidak bekerja, uninstal Google Chrome dan coba lagi.</translation>
 <translation id="139993653570221430">Anda dapat mengubahnya kapan saja di setelan Chrome. Uji coba berlangsung bersamaan dengan penayangan iklan saat ini, jadi Anda tidak akan langsung melihat perubahan.</translation>
+<translation id="1425903838053942728">{COUNT,plural, =0{Chrome selesai diupdate. Anda dapat menggunakan versi terbaru segera setelah diluncurkan kembali. Setelah itu, tab saat ini akan dibuka kembali.}=1{Chrome selesai diupdate. Anda dapat menggunakan versi terbaru segera setelah diluncurkan kembali. Setelah itu, tab saat ini akan dibuka kembali. Jendela Samaran Anda tidak akan dibuka kembali.}other{Chrome selesai diupdate. Anda dapat menggunakan versi terbaru segera setelah diluncurkan kembali. Setelah itu, tab saat ini akan dibuka kembali. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
 <translation id="1434626383986940139">Aplikasi Chrome Canary</translation>
+<translation id="1492280395845991349">Luncurkan kembali untuk menyelesaikan update Chrome</translation>
 <translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome tidak terhubung ke perangkat HID}=1{Google Chrome terhubung ke perangkat HID}other{Google Chrome terhubung ke perangkat HID}}</translation>
 <translation id="1507198376417198979">Sesuaikan profil Chrome baru Anda</translation>
 <translation id="1516530951338665275">Google Chrome memerlukan akses Bluetooth untuk melanjutkan 
@@ -93,6 +95,7 @@
 <translation id="2652691236519827073">Buka Link di &amp;tab Chrome Baru</translation>
 <translation id="2665296953892887393">Bantu Google Chrome jadi lebih baik dengan mengirim laporan kerusakan dan <ph name="UMA_LINK" /> ke Google</translation>
 <translation id="2689103672227170538">Ekstensi ini telah mengubah apa yang ditampilkan oleh halaman saat Anda memulai Chrome.</translation>
+<translation id="2712234843277364121">Luncurkan kembali untuk mengupdate - tab Anda akan dibuka kembali</translation>
 <translation id="2742320827292110288">Peringatan: Google Chrome tidak dapat mencegah ekstensi merekam histori penjelajahan Anda. Untuk menonaktifkan ekstensi ini dalam mode Samaran, batalkan pilihan opsi ini.</translation>
 <translation id="2765403129283291972">Chrome memerlukan izin akses ke mikrofon untuk situs ini</translation>
 <translation id="2770231113462710648">Ubah browser default ke:</translation>
@@ -275,6 +278,7 @@
 <translation id="6365489425007284765">{COUNT,plural, =1{Administrator akan otomatis menghapus data penjelajahan saat browser tidak digunakan selama 1 menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab yang ada akan tetap aktif.}other{Administrator akan otomatis menghapus data penjelajahan saat browser tidak digunakan selama # menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab yang ada akan tetap aktif.}}</translation>
 <translation id="6412673304250309937">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chrome. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
 <translation id="6418662306461808273">Beralih ke profil Chrome yang sudah ada?</translation>
+<translation id="648319183876919572">Safe Browsing yang Disempurnakan melakukan lebih banyak hal untuk melindungi Anda dari situs dan download berbahaya</translation>
 <translation id="6493527311031785448">Google Chrome sedang mencoba <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome memerlukan izin kamera untuk membuat peta 3D area sekitar Anda</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
@@ -405,6 +409,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="8989968390305463310">Histori penjelajahan Anda memengaruhi iklan yang Anda lihat dan minat yang diperkirakan di bawah. Untuk melindungi privasi Anda, Chrome otomatis menghapus minat Anda secara berkala setiap bulan. Minat dapat diperbarui kecuali jika Anda menghapusnya.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Update Chrome tersedia}=1{Update Chrome tersedia}other{Update Chrome telah tersedia selama # hari}}</translation>
 <translation id="9053892488859122171">Sistem ChromeOS Flex</translation>
+<translation id="9054037008353851982">Luncurkan kembali untuk Mengupdate - Tab Anda akan dibuka kembali</translation>
 <translation id="911206726377975832">Hapus juga data browsing Anda?</translation>
 <translation id="9138603949443464873">Untuk menerapkan perubahan, luncurkan ulang Chrome</translation>
 <translation id="9195993889682885387">Chrome dapat memperkirakan minat Anda berdasarkan histori penjelajahan Anda dari beberapa minggu terakhir. Informasi ini disimpan di perangkat Anda.</translation>

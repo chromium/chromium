@@ -307,6 +307,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1658918301167915956">dispositivos Bluetooth</translation>
 <translation id="1662550410081243962">Guardar y autocompletar métodos de pago</translation>
 <translation id="1663943134801823270">Las tarjetas y las direcciones proceden de Chrome. Puedes gestionarlas en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
+<translation id="1668071460721346172">Recibir correo</translation>
 <translation id="1671391448414634642">A partir de ahora, las páginas en <ph name="SOURCE_LANGUAGE" /> se traducirán al <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Borde corto primero</translation>
@@ -367,6 +368,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1806174020048213474">Esta aplicación solicita permiso para instalar credenciales de Wi‐Fi. Después, tu <ph name="DEVICE_TYPE" /> se conectará automáticamente a las redes Wi-Fi configuradas. Para quitar estas credenciales, desinstala la aplicación.</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1807528111851433570">Hoja de inicio</translation>
+<translation id="180757923930449935">(emulación de 64 bits)</translation>
 <translation id="180991881384371158">El CVC se encuentra en el reverso de tu tarjeta. Son los últimos 3 dígitos situados en la parte superior derecha del recuadro de la firma.</translation>
 <translation id="181000283860817563">Hace un seguimiento de los precios en varios sitios</translation>
 <translation id="1810391395243432441">Protege tus contraseñas con el bloqueo de pantalla</translation>
@@ -510,6 +512,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2166049586286450108">Acceso de administrador completo</translation>
 <translation id="2166378884831602661">Este sitio web no puede proporcionar una conexión segura</translation>
 <translation id="2168151236314517198">La política del administrador ha bloqueado la opción de imprimir este contenido</translation>
+<translation id="2176974405772725904">Guardar dirección en la cuenta</translation>
 <translation id="2181821976797666341">Políticas</translation>
 <translation id="2183608646556468874">N.º de teléfono</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{Una dirección}other{# direcciones}}</translation>
@@ -523,7 +526,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2204482073374652408">La actualización ha finalizado.</translation>
 <translation id="22081806969704220">Bandeja 3</translation>
 <translation id="2210794033760923560">Subir informe</translation>
-<translation id="2212579473415663542">Esta dirección se ha guardado en tu cuenta de Google (<ph name="ACCOUNT" />). Puedes usarla en todos los productos de Google en cualquier dispositivo.</translation>
 <translation id="2212735316055980242">Política no encontrada</translation>
 <translation id="2213606439339815911">Recuperando entradas...</translation>
 <translation id="2213612003795704869">La página se ha imprimido</translation>
@@ -1586,6 +1588,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4877083676943085827">{COUNT,plural, =0{No hay}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" /> y <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Búsqueda de <ph name="TEXT" /></translation>
 <translation id="4879491255372875719">Automático (predeterminado)</translation>
+<translation id="4879723019639546076">Esta dirección solo se guarda en Chrome. Para usarla en los productos de Google, guárdala en tu cuenta de Google (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">Buscar en el historial</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4881808915112408168">24 x 31,5 pulgadas</translation>
@@ -1736,6 +1739,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Cerrar</translation>
+<translation id="5238301240406177137">Guardar en la cuenta</translation>
 <translation id="5239623327352565343">Ubicación permitida</translation>
 <translation id="5242889659037569123">Maletas y accesorios de viaje</translation>
 <translation id="5244732203286792411">Cargando...
@@ -2143,6 +2147,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6279183038361895380">Pulsa |<ph name="ACCELERATOR" />| para mostrar el cursor</translation>
 <translation id="6280223929691119688">Los pedidos no se pueden entregar en esta dirección. Selecciona otra.</translation>
 <translation id="6284292079994426700">26x38 pulgadas</translation>
+<translation id="6284517535531159884">Tipo de origen de las variaciones</translation>
 <translation id="6285507000506177184">Botón Gestionar las descargas en Chrome: pulsa Intro para gestionar los archivos que has descargado en Chrome</translation>
 <translation id="6289939620939689042">Color de la página</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2252,6 +2257,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6545864417968258051">Búsqueda de dispositivos Bluetooth</translation>
 <translation id="6547208576736763147">Perforado doble en la parte izquierda</translation>
 <translation id="6549443526281184652">Disfraces</translation>
+<translation id="6551873053534932690">¿Guardar dirección en la cuenta?</translation>
 <translation id="6554732001434021288">Última visita: hace <ph name="NUM_DAYS" /> días</translation>
 <translation id="6556866813142980365">Rehacer</translation>
 <translation id="6557715786897013164">14x17 pulgadas</translation>
@@ -2316,6 +2322,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6716672519412350405"><ph name="URL" /> quiere crear un mapa 3D de tu entorno y hacer un seguimiento de la posición de la cámara</translation>
 <translation id="6718612893943028815">¿Usar la cámara?</translation>
 <translation id="6721678857435001674">Ver la marca y el modelo de tu llave de seguridad</translation>
+<translation id="6726832600570791992">(emulación de 32 bits)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">cámara</translation>
 <translation id="6738516213925468394">Tus datos están cifrados con tu <ph name="BEGIN_LINK" />frase de contraseña de sincronización<ph name="END_LINK" /> desde el <ph name="TIME" />. Introdúcela para iniciar la sincronización.</translation>

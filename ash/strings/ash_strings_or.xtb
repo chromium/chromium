@@ -225,6 +225,7 @@
 <translation id="1978498689038657292">ଟେକ୍ସଟ୍ ଇନ୍‌ପୁଟ୍</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" />ରେ ଯୋଗ ଦିଅନ୍ତୁ</translation>
 <translation id="1982717156487272186">ଗତ ସପ୍ତାହର ଇଭେଣ୍ଟ ଦେଖାନ୍ତୁ</translation>
+<translation id="1986150224850161328">ଆପଣଙ୍କ ଫୋନ ଓ Chromebook ସମାନ ନେଟୱାର୍କରେ ଥିବା ସୁନିଶ୍ଚିତ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ। <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">ବିଷୟବସ୍ତୁକୁ କ୍ୟାପଚର୍ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="1990046457226896323">ସ୍ପିଚ୍ ଫାଇଲଗୁଡ଼ିକ ଡାଉନଲୋଡ୍ କରାଯାଇଛି</translation>
 <translation id="1993072747612765854">ନବୀନତମ <ph name="SYSTEM_APP_NAME" /> ଅପ୍‌ଡେଟ୍ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
@@ -373,6 +374,7 @@
 <translation id="2761723519669354964">ସେଲ୍ଫରୁ ହାଇଲାଇଟ କରାଯାଇଥିବା ଆଇଟମ ଖୋଲନ୍ତୁ</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="2782591952652094792">କ୍ୟାପଚର୍ ମୋଡରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
+<translation id="2785499565474703580">1ଟି ଡିଭାଇସ କନେକ୍ଟ କରାଯାଇଛି</translation>
 <translation id="2791421900609674576">ଆପଣ ଯେଉଁଠାରେ ଛାଡ଼ିଥିଲେ ସେଠାରୁ ଜାରି ରଖିବା ପାଇଁ ସୁପାରିଶଗୁଡ଼ିକ ଦେଖିବେ। ଆପଣ ସୁପାରିଶଗୁଡ଼ିକୁ କାଢ଼ି ଦେବା ପାଇଁ ସ୍ପର୍ଶ କରି ଧରି ରଖିପାରିବେ।</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">ସେଲ୍ଫ ପାର୍ଟି</translation>
@@ -1276,6 +1278,7 @@
 <translation id="6941333068993625698">ମତାମତ ଦାଖଲ କରନ୍ତୁ</translation>
 <translation id="6942518653766415536">ରେକର୍ଡିଂ ଫର୍ମାଟ ମେନୁ</translation>
 <translation id="6945221475159498467">ଚୟନ କରନ୍ତୁ</translation>
+<translation id="6945922087561257829">ଆପଣଙ୍କ ଫୋନ ଏକ ମୋବାଇଲ ନେଟୱାର୍କ ବ୍ୟବହାର କରୁଛି। ଆପଣଙ୍କ ଫୋନ ଏବଂ Chromebook ସମାନ ୱାଇ-ଫାଇ ନେଟୱାର୍କରେ ଥିବା ସୁନିଶ୍ଚିତ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ। <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">ସକ୍ରିୟ କରାଯାଇନାହିଁ। ଆପଣଙ୍କ କ୍ୟାରିଅର୍ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="6961121602502368900">ୱାର୍କ ପ୍ରୋଫାଇଲରେ ସାଇଲେନ୍ସ ଫୋନ୍ ଫିଚର୍ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="6961840794482373852">Alt + ଉପର ତୀର କୀବୋର୍ଡ ସର୍ଟକଟ୍ ବଦଳି ଯାଇଛି। Page Up କୀକୁ ବ୍ୟବହାର କରିବା ପାଇଁ, <ph name="LAUNCHER_KEY_NAME" /> କୀ + ଉପର ତୀର କୀ ଦବାନ୍ତୁ।</translation>
@@ -1330,6 +1333,7 @@
 <translation id="7188494361780961876">ସ୍କ୍ରିନର ଶୀର୍ଷ-ବାମ କୋଣକୁ ମେନୁ ମୁଭ୍ କରାଯାଇଛି।</translation>
 <translation id="7189412385142492784">ଶୁକ୍ର ଗ୍ରହ କେତେ ଦୂରରେ ଅବସ୍ଥିତ</translation>
 <translation id="7198435252016571249">କ୍ୟାମେରାକୁ ନିମ୍ନ ଡାହାଣପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି। ସିଷ୍ଟମ ସର୍ଫେସ ସହ ବିବାଦ।</translation>
+<translation id="7219573373513695352">କୌଣସି ଡିଭାଇସ କନେକ୍ଟ କରାଯାଇନାହିଁ</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। ଏକ ଅପଡେଟ୍ ଲାଗୁ କରିବା ନିମନ୍ତେ ଏହି Chromebook ରିଷ୍ଟାର୍ଟ କରିବା ଦରକାର। ଏହା ପାଖାପାଖି 1 ମିନିଟ୍ ସମୟ ନେଇପାରେ।</translation>
 <translation id="7256634071279256947">ପଛପଟର ମାଇକ୍ରୋଫୋନ୍</translation>
 <translation id="7258828758145722155">ଗତକାଲି ଏଡିଟ କରାଯାଇଛି</translation>
@@ -1480,6 +1484,7 @@
 <translation id="7902625623987030061">ଟିପଚିହ୍ନ ସେନ୍ସରକୁ ଛୁଅଁନ୍ତୁ</translation>
 <translation id="7904094684485781019">ଏହି ଆକାଉଣ୍ଟର ବ୍ୟବସ୍ଥାପକ ଏକାଧିକ ସାଇନ୍‌ ଇନ୍‌ ପାଇଁ ଅନୁମତି ଦେଇନାହାନ୍ତି।</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" />ଟି ଡିଭାଇସ କନେକ୍ଟ କରାଯାଇଛି</translation>
 <translation id="7930731167419639574">ସ୍ପିଚ୍ ବର୍ତ୍ତମାନ ସ୍ଥାନୀୟ ଭାବେ ପ୍ରକ୍ରିୟାନ୍ୱିତ ହେଉଛି ଏବଂ ଏହାର ଡିକ୍ଟେସନ୍ ଅଫଲାଇନରେ କାମ କରେ</translation>
 <translation id="7932451802722951285">Google Calendarରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="7933084174919150729">Google Assistant କେବଳ ପ୍ରାଥମିକ ପ୍ରୋଫାଇଲ୍ ପାଇଁ ଉପଲବ୍ଧ ଅଟେ।</translation>

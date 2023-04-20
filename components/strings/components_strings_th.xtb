@@ -307,6 +307,7 @@
 <translation id="1658918301167915956">อุปกรณ์บลูทูธ</translation>
 <translation id="1662550410081243962">บันทึกและกรอกวิธีการชำระเงิน</translation>
 <translation id="1663943134801823270">ข้อมูลบัตรและที่อยู่มาจาก Chrome คุณสามารถจัดการข้อมูลเหล่านี้ใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
+<translation id="1668071460721346172">รับอีเมล</translation>
 <translation id="1671391448414634642">จากนี้ไประบบจะแปลหน้าภาษา<ph name="SOURCE_LANGUAGE" />เป็นภาษา<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />เป็น<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">ด้านขอบสั้นก่อน</translation>
@@ -367,6 +368,7 @@
 <translation id="1806174020048213474">แอปนี้กำลังขอสิทธิ์ในการติดตั้งข้อมูลเข้าสู่ระบบ Wi-Fi หลังตั้งค่าแล้ว <ph name="DEVICE_TYPE" /> จะเชื่อมต่อกับเครือข่าย Wi-Fi ที่เข้าร่วมโดยอัตโนมัติ หากต้องการนำข้อมูลเข้าสู่ระบบเหล่านี้ออก ให้ถอนการติดตั้งแอป</translation>
 <translation id="1807246157184219062">สว่าง</translation>
 <translation id="1807528111851433570">แผ่นงานเริ่มต้น</translation>
+<translation id="180757923930449935">(จำลอง 64 บิต)</translation>
 <translation id="180991881384371158">CVC จะแสดงอยู่บนด้านหลังของบัตร โดยเป็นตัวเลข 3 หลักสุดท้ายที่ด้านขวาบนของช่องลายเซ็น</translation>
 <translation id="181000283860817563">ติดตามราคาจากหลายเว็บไซต์</translation>
 <translation id="1810391395243432441">ปกป้องรหัสผ่านด้วยการล็อกหน้าจอ</translation>
@@ -524,7 +526,6 @@
 <translation id="2204482073374652408">อัปเดตเสร็จเรียบร้อย</translation>
 <translation id="22081806969704220">ถาด 3</translation>
 <translation id="2210794033760923560">อัปโหลดรายงาน</translation>
-<translation id="2212579473415663542">บันทึกที่อยู่นี้ไว้ในบัญชี Google (<ph name="ACCOUNT" />) แล้ว คุณสามารถใช้ที่อยู่กับผลิตภัณฑ์ต่างๆ ของ Google ในอุปกรณ์ใดก็ได้</translation>
 <translation id="2212735316055980242">ไม่พบนโยบาย</translation>
 <translation id="2213606439339815911">กำลังดึงรายการ...</translation>
 <translation id="2213612003795704869">พิมพ์หน้าแล้ว</translation>
@@ -1587,6 +1588,7 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{ไม่มี}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">การค้นหา <ph name="TEXT" /></translation>
 <translation id="4879491255372875719">อัตโนมัติ (ค่าเริ่มต้น)</translation>
+<translation id="4879723019639546076">ที่อยู่นี้จะบันทึกไว้ใน Chrome เท่านั้น หากต้องการใช้ในผลิตภัณฑ์ต่างๆ ของ Google ให้บันทึกไว้ในบัญชี Google ของคุณ (<ph name="ACCOUNT" />)</translation>
 <translation id="4880827082731008257">ค้นประวัติการเข้าชม</translation>
 <translation id="4881695831933465202">เปิด</translation>
 <translation id="4881808915112408168">24 x 31.5 นิ้ว</translation>
@@ -2145,6 +2147,7 @@
 <translation id="6279183038361895380">กด |<ph name="ACCELERATOR" />| เพื่อแสดงเคอร์เซอร์ของคุณ</translation>
 <translation id="6280223929691119688">ไม่สามารถนำส่งสินค้าไปยังที่อยู่นี้ โปรดเลือกที่อยู่อื่น</translation>
 <translation id="6284292079994426700">26 x 38 นิ้ว</translation>
+<translation id="6284517535531159884">ประเภท Seed ของรูปแบบ</translation>
 <translation id="6285507000506177184">ปุ่มจัดการการดาวน์โหลดใน Chrome กด Enter เพื่อจัดการไฟล์ที่คุณดาวน์โหลดใน Chrome</translation>
 <translation id="6289939620939689042">สีของหน้าเว็บ</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2319,6 +2322,7 @@
 <translation id="6716672519412350405"><ph name="URL" /> ต้องการสร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณและติดตามตำแหน่งของกล้อง</translation>
 <translation id="6718612893943028815">ใช้กล้องถ่ายรูปไหม</translation>
 <translation id="6721678857435001674">ดูยี่ห้อและรุ่นของคีย์ความปลอดภัย</translation>
+<translation id="6726832600570791992">(จำลอง 32 บิต)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">กล้อง</translation>
 <translation id="6738516213925468394">ข้อมูลของคุณเข้ารหัสลับไว้ด้วย<ph name="BEGIN_LINK" />รหัสผ่านการซิงค์<ph name="END_LINK" />เมื่อ <ph name="TIME" /> ป้อนรหัสผ่านเพื่อเริ่มซิงค์</translation>

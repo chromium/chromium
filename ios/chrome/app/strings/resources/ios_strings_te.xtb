@@ -134,6 +134,7 @@
 <translation id="1820259098641718022">పఠన లిస్ట్‌కు జోడించబడింది</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{చోరీకి గురైన పాస్‌వర్డ్‌లు}=1{{COUNT} చోరీకి గురైన పాస్‌వర్డ్}other{{COUNT} చోరీకి గురైన పాస్‌వర్డ్‌లు}}</translation>
 <translation id="1832848789136765277">మీ సింక్ చేసిన డేటాను మీరు ఎల్లప్పుడూ యాక్సెస్ చేయగలరని నిర్ధారించుకోవడానికి, అది మీరేనని వెరిఫై చేయండి</translation>
+<translation id="1836891464494477513">{count,plural, =1{బుక్‌మార్క్ మీ Google ఖాతా, {email}‌లో సేవ్ చేయబడింది}other{బుక్‌మార్క్‌లు మీ Google ఖాతా, {email}‌లో సేవ్ చేయబడ్డాయి}}</translation>
 <translation id="1870148520156231997">పాస్‌వర్డ్‌ను చూపండి</translation>
 <translation id="1872096359983322073">టార్చ్</translation>
 <translation id="1883255238294161206">లిస్ట్‌ను కుదించు</translation>
@@ -357,7 +358,6 @@
 <translation id="3305294846493618482">మరిన్ని</translation>
 <translation id="3311748811247479259">ఆఫ్ చేయబడి ఉంది</translation>
 <translation id="3324193307694657476">అడ్రస్‌ 2</translation>
-<translation id="3328459813621383194">ఇన్‌యాక్టివ్ ట్యాబ్‌లను తరలించండి</translation>
 <translation id="3328801116991980348">సైట్ సమాచారం</translation>
 <translation id="3344485292736684439">{count,plural, =1{బుక్‌మార్క్ మీ {email} ఖాతాలోని "{title}"‌లో సేవ్ అయ్యింది}other{బుక్‌మార్క్‌లు మీ {email} ఖాతాలోని "{title}"‌లో సేవ్ అయ్యాయి}}</translation>
 <translation id="3371831930909698441">అనువాదం అందుబాటులో ఉంది. స్క్రీన్ దిగువ భాగానికి సమీపంలో ఎంపికలు అందుబాటులో ఉంటాయి.</translation>
@@ -498,6 +498,7 @@
 <translation id="4343046787186034850">కెమెరా, మైక్రోఫోన్ యాక్సెస్ అనుమతించబడ్డాయి</translation>
 <translation id="4359125752503270327">ఈ పేజీ మరొక అప్లికేషన్‌లో తెరవబడుతుంది.</translation>
 <translation id="4371526908359194219">ఈమెయిల్ నోటిఫికేషన్‌లు</translation>
+<translation id="4371591986692297148">ఇన్‌యాక్టివ్</translation>
 <translation id="4375040482473363939">QR కోడ్ శోధన</translation>
 <translation id="4378154925671717803">ఫోన్</translation>
 <translation id="4389019817280890563">భాషను మార్చడానికి నొక్కండి.</translation>
@@ -628,7 +629,6 @@
 <translation id="5168414296986405587">iPadOS కోసం బిల్డ్ చేయబడింది</translation>
 <translation id="5173088371991956744">ఇది మీరేనని సింక్ వెరిఫై చేయాలి</translation>
 <translation id="5176312250994681348">ఇటీవలి పాస్‌వర్డ్‌ను ఉంచండి</translation>
-<translation id="51802232683641391">{count,plural, =1{Androidలో మీరు చివరిగా ఉపయోగించిన ట్యాబ్‌ను తెరవాలనుకుంటున్నారా?}other{Androidలో మీరు చివరిగా ఉపయోగించిన ట్యాబ్‌లను తెరవాలనుకుంటున్నారా?}}</translation>
 <translation id="5181140330217080051">డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="5184329579814168207">Chromeలో తెరువు</translation>
 <translation id="5186185447130319458">ప్రైవేట్</translation>
@@ -906,7 +906,6 @@
 <translation id="6807889908376551050">అన్నీ చూపు...</translation>
 <translation id="681368974849482173">అంశం క్రియేట్ చేయబడింది</translation>
 <translation id="6822587385560699678">ఆన్‌లో ఉన్నప్పుడు, పాస్‌వర్డ్‌లు <ph name="ACCOUNT" />‌లో సేవ్ చేయబడతాయి. ఆఫ్‌లో ఉన్నప్పుడు, పాస్‌వర్డ్‌లు ఈ పరికరంలో మాత్రమే సేవ్ చేయబడతాయి.</translation>
-<translation id="683022620450280906">మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లను ఏ పరికరంలోనైనా ఉపయోగించవచ్చు. <ph name="EMAIL" /> కోసం అవి Google Password Managerలో సేవ్ చేయబడతాయి</translation>
 <translation id="6831043979455480757">అనువదించు</translation>
 <translation id="6842136130964845393">మీరు మీ సేవ్ చేయబడిన పాస్‌వర్డ్‌లను ఎల్లప్పుడూ యాక్సెస్ చేయగలరని నిర్ధారించుకోవడానికి, అది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="6851516051005285358">డెస్క్‌టాప్ సైట్‌ను రిక్వెస్ట్ చేయండి</translation>
@@ -1044,6 +1043,7 @@
 <translation id="7845466610722898">చదవాల్సిన లిస్ట్‌ను చూడండి</translation>
 <translation id="784551991304901159">కంటెంట్‌ను చూడటానికి, మెనూ నుండి 'ఆన్ చేయండి'ని ఎంచుకోండి</translation>
 <translation id="7846158885638438868">{count,plural, =1{"{title}"‌లో బుక్‌మార్క్ అయ్యింది}other{"{title}"‌లో బుక్‌మార్క్ అయ్యింది}}</translation>
+<translation id="7852017611907717397">చర్యరద్దు చేయి</translation>
 <translation id="7853202427316060426">కార్యాచరణ</translation>
 <translation id="7856733331829174190">డౌన్‌లోడ్ సాధ్యపడలేదు</translation>
 <translation id="785938070103630874">పాస్‌వర్డ్‌లు, పేమెంట్ ఆప్షన్‌లు, లేదా అడ్రస్‌, ఇంకా మరిన్నింటిని తెరవండి</translation>

@@ -70,6 +70,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1375321115329958930">Sparade lösenord</translation>
 <translation id="1377255359165588604">Synkronisering har slutat fungera.</translation>
 <translation id="1377321085342047638">Kortnummer</translation>
+<translation id="1377508275003315939">Lösenord</translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="138618066238211776">Fortsätt som <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Senaste fyra veckorna</translation>
@@ -123,6 +124,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1750238553597293878">Fortsätt använda lösenorden i Google-kontot</translation>
 <translation id="1752547299766512813">Spara lösenord</translation>
 <translation id="1753905327828125965">Mest besökta</translation>
+<translation id="1757699834933698436">{count,plural, =1{{count} svagt lösenord}other{{count} svaga lösenord}}</translation>
 <translation id="1767766085187034454">Google Översätt</translation>
 <translation id="1789803444939621101">Välkommen tillbaka, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Namn på kortinnehavare</translation>
@@ -229,6 +231,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2576499762020411840">Använd och spara lösenord i Google-kontot</translation>
 <translation id="2578571896248130439">Skicka webbsida</translation>
 <translation id="2584132361465095047">Lägg till konto …</translation>
+<translation id="2587010742985678408">{count,plural, =0{Inga utsatta lösenord}=1{{count} utsatt lösenord}other{{count} utsatta lösenord}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{Öppna flikar som inte har använts på minst en dag flyttas till Inaktiva flikar så att du enkelt hittar de flikar du använder mest. Du kan när som helst ändra detta i inställningarna.}other{Öppna flikar som inte har använts på minst {COUNT} dagar flyttas till Inaktiva flikar så att du enkelt hittar de flikar du använder mest. Du kan när som helst ändra detta i inställningarna.}}</translation>
 <translation id="2600682495497606169">Rensa cookies från webbplatsen</translation>
 <translation id="2609008503159898744">Vill du stänga alla flikar?</translation>
@@ -272,6 +275,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="2797029671965852011">Visa historik</translation>
 <translation id="2800683595868705743">Stäng funktionen för flikbyte</translation>
 <translation id="2815198996063984598">2. Tryck på Standardwebbläsarapp</translation>
+<translation id="2818821771744632548">Du har loggats ut från ditt konto, <ph name="USER_NAME" />, som en del av återställningen av din iPhone. Tryck på Fortsätt nedan om du vill logga in igen.</translation>
 <translation id="2822917246944009066">Fliken har fästs</translation>
 <translation id="2830972654601096923">Hantera adresser …</translation>
 <translation id="2834399722155632105">3. Tryck på Lösenordsalternativ</translation>
@@ -342,6 +346,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Det gick inte att spara ändringen.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> av <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3260117527409269737">Adressen sparas bara i Chrome. Om du vill använda den i olika produkter från Google sparar du den i Google-kontot, <ph name="USER_EMAIL" />.</translation>
 <translation id="3264775633254836593">Fyll i lösenord automatiskt</translation>
 <translation id="3268451620468152448">Öppna flikar</translation>
 <translation id="3272527697863656322">Avbryt</translation>
@@ -352,7 +357,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3305294846493618482">mer</translation>
 <translation id="3311748811247479259">Av</translation>
 <translation id="3324193307694657476">Adressrad 2</translation>
-<translation id="3328459813621383194">Flytta inaktiva flikar</translation>
 <translation id="3328801116991980348">Platsinformation</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bokmärket har sparats i {title} i ditt konto, {email}}other{Bokmärkena har sparats i {title} i ditt konto, {email}}}</translation>
 <translation id="3371831930909698441">Översättning finns. Alternativ visas nära skärmens nedre kant.</translation>
@@ -493,6 +497,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4343046787186034850">Kamera- och mikrofonåtkomst har tillåtits</translation>
 <translation id="4359125752503270327">Sidan öppnas i en annan app.</translation>
 <translation id="4371526908359194219">E-postaviseringar</translation>
+<translation id="4371591986692297148">Inaktiv</translation>
 <translation id="4375040482473363939">Sök med QR-koder</translation>
 <translation id="4378154925671717803">Mobil</translation>
 <translation id="4389019817280890563">Tryck för att byta språk.</translation>
@@ -531,6 +536,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4620246317052452550">Sidor du har läst</translation>
 <translation id="4620888520263267479">Visa förhandsgranskning av länkar</translation>
 <translation id="4630540211544979320">Översätt sidor</translation>
+<translation id="4631335160486397366"><ph name="COUNT" /> återanvända lösenord</translation>
 <translation id="4634124774493850572">Använd lösenordet</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4642472735733036929">Prisbevakning har avslutats</translation>
@@ -622,7 +628,6 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="5168414296986405587">Gjord för iPadOS</translation>
 <translation id="5173088371991956744">Verifiera din identitet för synkronisering</translation>
 <translation id="5176312250994681348">Behåll det senaste lösenordet</translation>
-<translation id="51802232683641391">{count,plural, =1{Vill du fortsätta med fliken du nyligen använde på Android?}other{Vill du fortsätta med flikarna du nyligen använde på Android?}}</translation>
 <translation id="5181140330217080051">Nedladdning</translation>
 <translation id="5184329579814168207">Öppna i Chrome</translation>
 <translation id="5186185447130319458">Privat</translation>
@@ -665,6 +670,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="5520466080178053306">Tryck på Lösenordshantering och sedan på Lägg till</translation>
 <translation id="5525095647255982834">Om du vill skicka den här fliken till en annan enhet loggar du in i Chrome på den enheten.</translation>
 <translation id="5525269841082836315">Skapa lösenfras</translation>
+<translation id="553151287733286479">{COUNT,plural, =1{{COUNT} svagt lösenord}other{{COUNT} svaga lösenord}}</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> hittades</translation>
 <translation id="5548760955356983418">Med Handoff kan du börja visa en webbplats på den här enheten och sedan enkelt fortsätta på din Mac. Den aktuella öppna webbplatsen visas i Dock på din Mac.
 
@@ -795,6 +801,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6293101329759844770">Öppna <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" /> och tryck på Säker webbsökning om du vill aktivera det.</translation>
 <translation id="6321526113093607004">Lägg till i bokmärken</translation>
 <translation id="6324669097367352121">Inloggningsinställn.</translation>
+<translation id="6331180460633101391"><ph name="COUNT" /> återanvända lösenord</translation>
 <translation id="6337234675334993532">Kryptering</translation>
 <translation id="633809752005859102">Någonting gick fel. Vi jobbar på det.</translation>
 <translation id="6340285871011301182">Delvis översättning är inte tillgänglig.</translation>
@@ -898,7 +905,6 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6807889908376551050">Visa alla ...</translation>
 <translation id="681368974849482173">Bokmärket har skapats</translation>
 <translation id="6822587385560699678">När funktionen är aktiverad sparas lösenord i <ph name="ACCOUNT" />. När funktionen är inaktiverad sparas lösenorden endast på den här enheten.</translation>
-<translation id="683022620450280906">Du kan använda sparade lösenord på vilken enhet som helst. De sparas med Google Lösenordshantering för <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Översätt</translation>
 <translation id="6842136130964845393">Verifiera din identitet så att du alltid får åtkomst till dina sparade lösenord</translation>
 <translation id="6851516051005285358">Använd skrivbordsversion</translation>
@@ -1106,6 +1112,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8261506727792406068">Radera</translation>
 <translation id="8264966119170358612">Vissa av dina lösenord har läckts i samband med ett dataintrång utanför Google. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8265018477030547118">Bara på den här enheten</translation>
+<translation id="826614135184049678">Du har loggats ut från ditt konto, <ph name="USER_NAME" />, som en del av återställningen av din iPad. Tryck på Fortsätt nedan om du vill logga in igen.</translation>
 <translation id="8271720166617117963">Godkänn och logga in</translation>
 <translation id="8278938988428169257">Ange ett ord eller en fras</translation>
 <translation id="8281781826761538115">Standard – <ph name="DEFAULT_LOCALE" /></translation>
@@ -1154,6 +1161,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8620640915598389714">Redigera</translation>
 <translation id="8626393685701737946">Du kan ändra till datorvyn som standardvy för webbplatsen under Inställningar &gt; Innehållsinställningar</translation>
 <translation id="8636825310635137004">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter.</translation>
+<translation id="8638151046944329622">{COUNT,plural, =0{Inga utsatta lösenord}=1{{COUNT} utsatt lösenord}other{{COUNT} utsatta lösenord}}</translation>
 <translation id="8654802032646794042">Avbryt</translation>
 <translation id="8663764600409216912">Du använder lösenord som verkar svåra att lista ut</translation>
 <translation id="8668210798914567634">Den här sidan har sparats i läslistan.</translation>

@@ -307,6 +307,7 @@
 <translation id="1658918301167915956">устройства с Bluetooth</translation>
 <translation id="1662550410081243962">Запазване и попълване на начини на плащане</translation>
 <translation id="1663943134801823270">Картите и адресите са от Chrome. Можете да ги управлявате от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
+<translation id="1668071460721346172">Получаване на имейл</translation>
 <translation id="1671391448414634642">От сега нататък страниците на <ph name="SOURCE_LANGUAGE" /> ще се превеждат на <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Късата страна напред</translation>
@@ -367,6 +368,7 @@
 <translation id="1806174020048213474">Това приложение иска разрешение да инсталира идентификационните данни за Wi-Fi. След настройването устройството ви <ph name="DEVICE_TYPE" /> ще се свързва автоматично с участващите Wi-Fi мрежи. За да премахнете тези идентификационни данни, деинсталирайте приложението.</translation>
 <translation id="1807246157184219062">Светло</translation>
 <translation id="1807528111851433570">Първи лист</translation>
+<translation id="180757923930449935">(64-битова емулация)</translation>
 <translation id="180991881384371158">Кодът за проверка се намира на гърба на картата ви. Това са последните 3 цифри горе вдясно на полето за подпис.</translation>
 <translation id="181000283860817563">Проследяване на цените в няколко сайта</translation>
 <translation id="1810391395243432441">Защита на паролите с опцията ви за заключване на екрана</translation>
@@ -510,6 +512,7 @@
 <translation id="2166049586286450108">Пълен администраторски достъп</translation>
 <translation id="2166378884831602661">Този сайт не може да осигури защитена връзка</translation>
 <translation id="2168151236314517198">Отпечатването на това съдържание е блокирано чрез администраторско правило</translation>
+<translation id="2176974405772725904">Запазване на адреса в профила</translation>
 <translation id="2181821976797666341">Правила</translation>
 <translation id="2183608646556468874">Телефонен номер</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 адрес}other{# адреса}}</translation>
@@ -523,7 +526,6 @@
 <translation id="2204482073374652408">Актуализирането завърши!</translation>
 <translation id="22081806969704220">Тава 3</translation>
 <translation id="2210794033760923560">Качване на отчет</translation>
-<translation id="2212579473415663542">Този адрес е запазен в профила ви в Google (<ph name="ACCOUNT" />). Можете да го използвате в продуктите ни на всяко устройство.</translation>
 <translation id="2212735316055980242">Правилото не е намерено</translation>
 <translation id="2213606439339815911">Записите се извличат...</translation>
 <translation id="2213612003795704869">Страницата е отпечатана</translation>
@@ -1224,6 +1226,7 @@
 <translation id="4031179711345676612">Достъпът до микрофона е разрешен</translation>
 <translation id="4040350669425716613">Колежи и университети</translation>
 <translation id="4047351652147966654">18 x 24 инча</translation>
+<translation id="4047620889508350431">Вече можете да използвате адреси от профила си в Google.</translation>
 <translation id="405399507749852140">Получаване на сигнали при понижение на цената в който и да е сайт</translation>
 <translation id="4056223980640387499">Сепия</translation>
 <translation id="4063063121357725926">Позволете на Google да ви помага да намирате отстъпки за кошниците си</translation>
@@ -1586,6 +1589,7 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{Няма}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Търсене на „<ph name="TEXT" />“</translation>
 <translation id="4879491255372875719">Автоматично (стандартно)</translation>
+<translation id="4879723019639546076">Този адрес е запазен само в Chrome. За да го използвате в продуктите ни, запазете го в профила си в Google (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">Търсене в историята</translation>
 <translation id="4881695831933465202">Отваряне</translation>
 <translation id="4881808915112408168">24 x 31,5 инча</translation>
@@ -1736,6 +1740,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Отхвърляне</translation>
+<translation id="5238301240406177137">Запазване в профила</translation>
 <translation id="5239623327352565343">Достъпът до местоположението е разрешен</translation>
 <translation id="5242889659037569123">Багаж и пътнически принадлежности</translation>
 <translation id="5244732203286792411">Зарежда се...
@@ -2143,6 +2148,7 @@
 <translation id="6279183038361895380">Натиснете |<ph name="ACCELERATOR" />|, за да се покаже курсорът</translation>
 <translation id="6280223929691119688">Този адрес за бърза доставка не се поддържа. Изберете друг.</translation>
 <translation id="6284292079994426700">26 x 38 инча</translation>
+<translation id="6284517535531159884">Тип на началното число за вариантите</translation>
 <translation id="6285507000506177184">Бутон „Управление на изтеглянията с Chrome“. Натиснете Enter, за да управлявате файловете, които сте изтеглили с Chrome</translation>
 <translation id="6289939620939689042">Цвят на страницата</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2252,6 +2258,7 @@
 <translation id="6545864417968258051">Сканиране за устройства с Bluetooth</translation>
 <translation id="6547208576736763147">Двойно перфориране отляво</translation>
 <translation id="6549443526281184652">Костюми</translation>
+<translation id="6551873053534932690">Адресът да се запази ли в профила?</translation>
 <translation id="6554732001434021288">Последно посещение: преди <ph name="NUM_DAYS" /> дни</translation>
 <translation id="6556866813142980365">Възстановяване</translation>
 <translation id="6557715786897013164">14 x 17 инча</translation>
@@ -2316,6 +2323,7 @@
 <translation id="6716672519412350405"><ph name="URL" /> иска да създаде триизмерна карта на заобикалящата ви среда и да следи позицията на камерата</translation>
 <translation id="6718612893943028815">Да се използва ли камерата?</translation>
 <translation id="6721678857435001674">Преглед на марката и модела на ключа ви за сигурност</translation>
+<translation id="6726832600570791992">(32-битова емулация)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6738516213925468394">На <ph name="TIME" /> данните ви бяха шифровани с <ph name="BEGIN_LINK" />пропуска ви за синхронизиране<ph name="END_LINK" />. Въведете го, за да стартирате синхронизирането.</translation>

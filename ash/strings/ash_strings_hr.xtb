@@ -34,6 +34,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1148499908455722006">Otvorite dijaloški okvir s podacima o računu <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalendar</translation>
 <translation id="1153356358378277386">Upareni uređaji</translation>
+<translation id="1160215328209699296">uključeno i u upotrebi</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Vaš kabel USB-C možda nije ispravno povezan sa zaslonima</translation>
 <translation id="1175572348579024023">Pomicanje</translation>
@@ -225,6 +226,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1978498689038657292">Unos teksta</translation>
 <translation id="1980808257969311265">Pridruži se događaju:<ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Prikaz prethodnog tjedna</translation>
+<translation id="1986150224850161328">Provjerite jesu li telefon i Chromebook na istoj mreži, a zatim pokušajte ponovno. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Snimanje sadržaja nije moguće</translation>
 <translation id="1990046457226896323">Govorne datoteke su preuzete</translation>
 <translation id="1993072747612765854">Saznajte više o najnovijem ažuriranju za <ph name="SYSTEM_APP_NAME" /></translation>
@@ -240,6 +242,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2049240716062114887">Naziv radne površine promijenjen je u <ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">Pregled kamere uključen</translation>
 <translation id="2067602449040652523">Svjetlina tipkovnice</translation>
+<translation id="2075520525463668108">Uključite ili isključite značajku <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2078034614700056995">Za prelazak na sljedeću radnu površinu prijeđite s četiri prsta udesno</translation>
 <translation id="2079545284768500474">Poništi</translation>
 <translation id="2083190527011054446">Laku noć, <ph name="GIVEN_NAME" /></translation>
@@ -324,6 +327,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2487915095798731898">Pridruži se</translation>
 <translation id="2501920221385095727">Ljepljive tipke</translation>
 <translation id="2509468283778169019">Opcija CAPS LOCK uključena</translation>
+<translation id="2514415433888497495">Zaustavi značajku <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Otključajte prozore</translation>
 <translation id="2530896289327917474">Uključivanje ili isključivanje pregledavanja kursorom</translation>
@@ -373,6 +377,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2761723519669354964">Otvaranje istaknute stavke na traci</translation>
 <translation id="2778650143428714839">Uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Izlaz iz načina snimanja</translation>
+<translation id="2785499565474703580">Povezan je 1 uređaj</translation>
 <translation id="2791421900609674576">Primat ćete preporuke kako biste mogli nastaviti tamo gdje ste stali. Preporuke možete ukloniti tako da ih dodirnete i zadržite.</translation>
 <translation id="2792498699870441125">Alt + Pretraživanje</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1276,6 +1281,7 @@ Novo instaliranje</translation>
 <translation id="6941333068993625698">Slanje povratnih informacija</translation>
 <translation id="6942518653766415536">Izbornik formata snimke</translation>
 <translation id="6945221475159498467">Odaberi</translation>
+<translation id="6945922087561257829">Vaš telefon upotrebljava mobilnu mrežu. Provjerite jesu li telefon i Chromebook na istoj Wi-Fi mreži, a zatim pokušajte ponovno. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Nije aktivirano. Obratite se mobilnom operateru.</translation>
 <translation id="6961121602502368900">Utišavanje telefona nije dostupno na poslovnom profilu</translation>
 <translation id="6961840794482373852">Promijenjen je tipkovni prečac Alt + strelica prema gore. Da biste upotrijebili tipku stranica prema gore, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + strelicu prema gore.</translation>
@@ -1330,6 +1336,7 @@ Novo instaliranje</translation>
 <translation id="7188494361780961876">Izbornik je premješten u gornji lijevi kut zaslona.</translation>
 <translation id="7189412385142492784">Kolika je udaljenost do Venere</translation>
 <translation id="7198435252016571249">Kamera je poravnata s donjim desnim kutom. Došlo je do sukoba s površinom sustava.</translation>
+<translation id="7219573373513695352">Nije povezan nijedan uređaj</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ovaj se Chromebook treba pokrenuti ponovo da bi se primijenilo ažuriranje. To može potrajati minutu.</translation>
 <translation id="7256634071279256947">Stražnji mikrofon</translation>
 <translation id="7258828758145722155">Uređeno jučer</translation>
@@ -1480,6 +1487,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="7902625623987030061">Dodirnite senzor otiska prsta</translation>
 <translation id="7904094684485781019">Administrator ovog računa onemogućio je višestruku prijavu.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422">Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" /></translation>
 <translation id="7930731167419639574">Govor se sada obrađuje lokalno, a diktiranje funkcionira offline.</translation>
 <translation id="7932451802722951285">Otvori u Google kalendaru</translation>
 <translation id="7933084174919150729">Google asistent dostupan je samo za primarni profil.</translation>
@@ -1514,6 +1522,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8051716679295756675">Već postoji predložak s nazivom <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kopirano u međuspremnik</translation>
 <translation id="8054466585765276473">Izračun vremena baterije.</translation>
+<translation id="8079538659226626406">Dijeljenje zaslona</translation>
 <translation id="8083540854303889870">Spremljeno za kasnije</translation>
 <translation id="8091153018031979607">Počinje u <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatska ažuriranja</translation>

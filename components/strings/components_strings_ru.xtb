@@ -307,6 +307,7 @@
 <translation id="1658918301167915956">устройства Bluetooth</translation>
 <translation id="1662550410081243962">Сохранять и автоматически подставлять платежные данные</translation>
 <translation id="1663943134801823270">Это карты и адреса, указанные в Chrome. Вы можете изменить их на странице <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" />.</translation>
+<translation id="1668071460721346172">Получить по электронной почте</translation>
 <translation id="1671391448414634642">Страницы на этом языке (<ph name="SOURCE_LANGUAGE" />) будут автоматически переводиться на <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Начиная с короткого края</translation>
@@ -367,6 +368,7 @@
 <translation id="1806174020048213474">Приложение запрашивает разрешение на установку учетных данных Wi-Fi. Это позволит устройству <ph name="DEVICE_TYPE" /> автоматически подключаться к связанным сетям Wi-Fi. Чтобы стереть эти учетные данные, удалите приложение.</translation>
 <translation id="1807246157184219062">Светлая</translation>
 <translation id="1807528111851433570">Первый лист</translation>
+<translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">CVC-код находится на обратной стороне вашей карты. Это 3 цифры в правом верхнем углу поля для подписи.</translation>
 <translation id="181000283860817563">Отслеживать цены на нескольких сайтах</translation>
 <translation id="1810391395243432441">Защитите пароли при помощи блокировки экрана</translation>
@@ -510,6 +512,7 @@
 <translation id="2166049586286450108">Доступ администратора ко всем данным</translation>
 <translation id="2166378884831602661">Этот сайт не может обеспечить безопасное соединение</translation>
 <translation id="2168151236314517198">Администратор запретил печатать этот контент.</translation>
+<translation id="2176974405772725904">Сохранение адреса в аккаунте</translation>
 <translation id="2181821976797666341">Правила</translation>
 <translation id="2183608646556468874">Номер телефона</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 адрес}one{# адрес}few{# адреса}many{# адресов}other{# адреса}}</translation>
@@ -523,7 +526,6 @@
 <translation id="2204482073374652408">Обновлено</translation>
 <translation id="22081806969704220">Лоток 3</translation>
 <translation id="2210794033760923560">Загрузить отчет</translation>
-<translation id="2212579473415663542">Адрес сохранен в вашем аккаунте Google (<ph name="ACCOUNT" />) и может быть использован в продуктах Google на других устройствах.</translation>
 <translation id="2212735316055980242">Политика для устройства не найдена</translation>
 <translation id="2213606439339815911">Извлечение записей…</translation>
 <translation id="2213612003795704869">Страница напечатана.</translation>
@@ -1585,6 +1587,7 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{Нет}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" /> и <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}few{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}many{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Поиск по запросу "<ph name="TEXT" />"</translation>
 <translation id="4879491255372875719">Автоматически (по умолчанию)</translation>
+<translation id="4879723019639546076">Этот адрес сохранен только в Chrome. Чтобы использовать адрес в других продуктах Google, добавьте его в аккаунт Google (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">Искать в истории</translation>
 <translation id="4881695831933465202">Открыть</translation>
 <translation id="4881808915112408168">24 x 31,5 дюйма</translation>
@@ -1735,6 +1738,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Закрыть</translation>
+<translation id="5238301240406177137">Сохранить в аккаунте</translation>
 <translation id="5239623327352565343">Доступ к данным о местоположении разрешен</translation>
 <translation id="5242889659037569123">Багаж и туристические аксессуары</translation>
 <translation id="5244732203286792411">Загрузка…
@@ -2142,6 +2146,7 @@
 <translation id="6279183038361895380">Чтобы показать курсор, нажмите |<ph name="ACCELERATOR" />|</translation>
 <translation id="6280223929691119688">Невозможно доставить заказ по этому адресу. Выберите другой вариант.</translation>
 <translation id="6284292079994426700">26 x 38 дюймов</translation>
+<translation id="6284517535531159884">Тип файла конфигурации для модификации</translation>
 <translation id="6285507000506177184">Кнопка "Управлять скачанными файлами в Chrome". Нажмите Ввод, чтобы управлять скачанными файлами в Chrome.</translation>
 <translation id="6289939620939689042">Цвет страницы</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2251,6 +2256,7 @@
 <translation id="6545864417968258051">Поиск Bluetooth-устройств</translation>
 <translation id="6547208576736763147">Два отверстия слева</translation>
 <translation id="6549443526281184652">Костюмы</translation>
+<translation id="6551873053534932690">Сохранить адрес в аккаунте?</translation>
 <translation id="6554732001434021288">Последнее посещение: <ph name="NUM_DAYS" /> дн. назад</translation>
 <translation id="6556866813142980365">Повторить</translation>
 <translation id="6557715786897013164">14 x 17 дюймов</translation>
@@ -2315,6 +2321,7 @@
 <translation id="6716672519412350405">Сайт <ph name="URL" /> запрашивает разрешение на создание 3D-карты места, в котором вы находитесь, и отслеживание положения камеры.</translation>
 <translation id="6718612893943028815">Использовать камеру?</translation>
 <translation id="6721678857435001674">Просмотр производителя и модели Электронного ключа</translation>
+<translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6738516213925468394">Данные были зашифрованы <ph name="TIME" /> с помощью <ph name="BEGIN_LINK" />кодовой фразы<ph name="END_LINK" />. Введите ее, чтобы начать синхронизацию.</translation>

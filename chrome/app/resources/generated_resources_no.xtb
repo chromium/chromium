@@ -4667,7 +4667,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5063480226653192405">Bruk</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Administrer sikker DNS i ChromeOS-innstillingene</translation>
-<translation id="5066160542186949327">Flytt til en annen mappe</translation>
 <translation id="5067399438976153555">Alltid på</translation>
 <translation id="5067867186035333991">Spør om <ph name="HOST" /> vil bruke mikrofonen din</translation>
 <translation id="5068553687099139861">vise passord</translation>
@@ -9046,7 +9045,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="8951256747718668828">Kunne ikke fullføre gjenopprettingen på grunn av en feil</translation>
 <translation id="8951465597020890363">Vil du avslutte gjestemodus likevel?</translation>
 <translation id="8952831374766033534">Konfigurasjonsalternativet støttes ikke: <ph name="ERROR_LINE" /></translation>
-<translation id="8953476467359856141">Når enheten lades</translation>
+<translation id="8953476467359856141">Når enheten lader</translation>
 <translation id="895347679606913382">Starter...</translation>
 <translation id="8957757410289731985">Tilpass profil</translation>
 <translation id="8959144235813727886">Nettsteder og apper</translation>

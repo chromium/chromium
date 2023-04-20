@@ -307,6 +307,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1658918301167915956">Bluetooth-enheter</translation>
 <translation id="1662550410081243962">Spara och fyll i betalningsmetoder</translation>
 <translation id="1663943134801823270">Kort och adresser har hämtats från Chrome. Du hanterar dessa under <ph name="BEGIN_LINK" />Inställningar<ph name="END_LINK" />.</translation>
+<translation id="1668071460721346172">Få ett e-postmeddelande</translation>
 <translation id="1671391448414634642">Sidor på <ph name="SOURCE_LANGUAGE" /> översätts till <ph name="TARGET_LANGUAGE" /> från och med nu.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> till <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Kortsidan först</translation>
@@ -367,6 +368,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1806174020048213474">Den här appen begär behörighet att installera wifi-användaruppgifter. Efter konfigureringen ansluter <ph name="DEVICE_TYPE" /> automatiskt till deltagande wifi-nätverk. Avinstallera appen om du vill ta bort dessa användaruppgifter.</translation>
 <translation id="1807246157184219062">Ljus</translation>
 <translation id="1807528111851433570">Första ark</translation>
+<translation id="180757923930449935">(64-bitars emulerad)</translation>
 <translation id="180991881384371158">CVC-koden finns på baksidan av kortet. Det är de sista tre siffrorna uppe till höger i signaturrutan.</translation>
 <translation id="181000283860817563">Bevaka priser på flera webbplatser</translation>
 <translation id="1810391395243432441">Skydda dina lösenord med skärmlåset</translation>
@@ -510,6 +512,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2166049586286450108">Fullständig administrativ åtkomst</translation>
 <translation id="2166378884831602661">Webbplatsen kan inte tillhandahålla en säker anslutning</translation>
 <translation id="2168151236314517198">Utskrift av detta innehåll blockeras av en administratörspolicy</translation>
+<translation id="2176974405772725904">Spara adressen i kontot</translation>
 <translation id="2181821976797666341">Policyer</translation>
 <translation id="2183608646556468874">Telefonnummer</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adress}other{# adresser}}</translation>
@@ -523,7 +526,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2204482073374652408">Uppdateringen är slutförd.</translation>
 <translation id="22081806969704220">Fack 3</translation>
 <translation id="2210794033760923560">Ladda upp rapport</translation>
-<translation id="2212579473415663542">Adressen har sparats i ditt Google-konto (<ph name="ACCOUNT" />). Du kan använda adressen i alla Googles produkter på alla enheter.</translation>
 <translation id="2212735316055980242">Policyn hittades inte</translation>
 <translation id="2213606439339815911">Hämtar poster …</translation>
 <translation id="2213612003795704869">Sidan skrivs ut</translation>
@@ -1586,6 +1588,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4877083676943085827">{COUNT,plural, =0{Inga}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Sök på <ph name="TEXT" /></translation>
 <translation id="4879491255372875719">Automatiskt (standard)</translation>
+<translation id="4879723019639546076">Adressen sparas bara i Chrome. Om du vill använda den i olika produkter från Google sparar du den i Google-kontot (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">Sök i historiken</translation>
 <translation id="4881695831933465202">Öppna</translation>
 <translation id="4881808915112408168">24 x 31,5 tum</translation>
@@ -1736,6 +1739,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Stäng</translation>
+<translation id="5238301240406177137">Spara i kontot</translation>
 <translation id="5239623327352565343">Plats tillåts</translation>
 <translation id="5242889659037569123">Väskor och resetillbehör</translation>
 <translation id="5244732203286792411">Läser in …
@@ -2143,6 +2147,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6279183038361895380">Tryck på |<ph name="ACCELERATOR" />| om du vill visa markören</translation>
 <translation id="6280223929691119688">Det går inte att leverera till den här adressen. Välj en annan adress.</translation>
 <translation id="6284292079994426700">26 x 38 tum</translation>
+<translation id="6284517535531159884">Typ av variantkälla</translation>
 <translation id="6285507000506177184">Knappen Hantera nedladdningar i Chrome: tryck på Retur om du vill hantera filer du har laddat ned i Chrome</translation>
 <translation id="6289939620939689042">Sidfärg</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2252,6 +2257,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6545864417968258051">Bluetooth-sökning</translation>
 <translation id="6547208576736763147">Två hål till vänster</translation>
 <translation id="6549443526281184652">Utklädningskläder och teaterkostymer</translation>
+<translation id="6551873053534932690">Vill du spara adressen i kontot?</translation>
 <translation id="6554732001434021288">Besöktes senast för <ph name="NUM_DAYS" /> dagar sedan</translation>
 <translation id="6556866813142980365">Upprepa</translation>
 <translation id="6557715786897013164">14 x 17 tum</translation>
@@ -2316,6 +2322,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6716672519412350405"><ph name="URL" /> skapa en 3D-karta över dina omgivningar och registrera kamerans position</translation>
 <translation id="6718612893943028815">Vill du använda kameran?</translation>
 <translation id="6721678857435001674">Visa säkerhetsnyckelns märke och modell</translation>
+<translation id="6726832600570791992">(32-bitars emulerad)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6738516213925468394">Din data krypterades med din <ph name="BEGIN_LINK" />lösenfras för synkronisering<ph name="END_LINK" /> den <ph name="TIME" />. Ange den om du vill starta synkroniseringen.</translation>

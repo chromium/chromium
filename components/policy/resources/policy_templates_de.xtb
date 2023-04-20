@@ -323,7 +323,6 @@ Wenn die Richtlinie nicht konfiguriert ist, wird die Richtlinie <ph name="ASK_WI
 
 Dies ersetzt die eingestellte Richtlinie <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" />.</translation>
 <translation id="129206366270737897">Dadurch werden alle asynchronen Methoden von <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> deaktiviert.</translation>
-<translation id="129392056654547767">Das von der VM verwendete UEFI-Firmware-Image. Dieses stellt eine vorübergehende Lösung dar, während wir ein ChromeOS-DLC-Paket erstellen.</translation>
 <translation id="1294263471858445589">Aktiviert die passive Authentifizierung für Inkognito- und reguläre Sitzungen.</translation>
 <translation id="1295737447968372331">Hiermit wird die Funktion "Spracheingabe" auf dem Anmeldebildschirm aktiviert</translation>
 <translation id="1297182715641689552">PAC-Proxy-Skript verwenden</translation>
@@ -577,7 +576,6 @@ Wenn du diese Richtlinie deaktivierst, wird das Scrollen zu bestimmten Textfragm
       Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die durch die Chrome-Verwaltung über die Cloud verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="1530812829012954197">Immer die folgenden URL-Muster im Host-Browser darstellen</translation>
 <translation id="1542491165152947087">Nutzer dürfen die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für Anzeigenthemen auf ihrem Gerät aktivieren oder deaktivieren.</translation>
-<translation id="1547424904796464052">Hexadezimalcodierter SHA‑256-Hash des Firmware-Images.</translation>
 <translation id="1550295162561011575">Mit dieser Richtlinie können Administratoren eine Automatisierung für das Starten von Apps auf <ph name="PRODUCT_NAME" />-Geräten konfigurieren. Diese Apps können bei der Nutzeranmeldung oder gemeinsam von Nutzern über den Launcher gestartet werden.</translation>
 <translation id="1552418937045050762">Wenn diese Einstellung aktiviert ist, können Nutzer der Verwendung von Nearby Share zustimmen und Dateien mit Personen austauschen, die sich in der Nähe befinden.
 
@@ -2273,6 +2271,17 @@ Diese Richtlinie ist vorübergehend und wird zukünftig entfernt.</translation>
 <translation id="3125472566440502628">„Vorlesen“ deaktivieren</translation>
 <translation id="3126748868885248792">Rechte Taste als primäre Maustaste festlegen</translation>
 <translation id="3128072319047570212">Keygen-Einstellungen</translation>
+<translation id="3129155711165832367">Mit X.509-Zertifikaten können Einschränkungen wie Namensbeschränkungen in Erweiterungen in das Zertifikat codiert werden. RFC 5280 gibt an, dass die Durchsetzung solcher Einschränkungen für Trust-Anchor-Zertifikate optional ist. Ab <ph name="PRODUCT_NAME" /> 112 werden solche Einschränkungen in Zertifikaten, die aus dem Shop für Plattformzertifikate geladen werden, erzwungen.
+
+Diese Richtlinie lässt sich vorübergehend deaktivieren, falls Unternehmen Probleme mit den in ihre privaten Root-Zertifikate codierten Einschränkungen haben. In diesem Fall kann diese Richtlinie verwendet werden, um die Erzwingung der Einschränkungen vorübergehend zu deaktivieren und die Probleme mit dem Zertifikat zu beheben.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, erzwingt <ph name="PRODUCT_NAME" /> Einschränkungen, die in aus dem vertrauenswürdigen Shop der Plattform geladenen Trust-Anchors codiert sind.
+
+Wenn diese Richtlinie deaktiviert ist, erzwingt <ph name="PRODUCT_NAME" /> keine Einschränkungen, die in aus dem vertrauenswürdigen Shop der Plattform geladenen Trust-Anchors codiert sind.
+
+In Version 112 von <ph name="PRODUCT_NAME" /> hat diese Richtlinie keine Auswirkungen, wenn die Richtlinie <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> deaktiviert ist.
+
+Diese Richtlinie wird voraussichtlich in Version 115 von <ph name="PRODUCT_NAME" /> entfernt.</translation>
 <translation id="3131703464330936425">Mobilfunk-Roaming nicht zulassen</translation>
 <translation id="3135820765957090754">Wenn diese Einstellung aktiviert ist, können Nutzer WLAN-Konfigurationen zwischen <ph name="PRODUCT_OS_NAME" />-Gerät(en) und einem verbundenen Android-Smartphone synchronisieren. Damit die WLAN-Konfigurationen synchronisiert werden können, muss diese Funktion durch Nutzer eingerichtet und explizit freigeschaltet werden.
 
@@ -7536,7 +7545,6 @@ Wenn man <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> oder <ph name="LACROS_
 <translation id="802776363472387903">SHA-256-Hash des <ph name="PLUGIN_VM_NAME" />-Image.</translation>
 <translation id="8028814157747157754">Den Standardsuchanbieter aktivieren und zulassen, dass Nutzer die Liste der Suchanbieter ändern</translation>
 <translation id="8029201909194194377">Maximal zulässige Sitzungsdauer für Verbindungen per Remotezugriff</translation>
-<translation id="8033908599068513676">URL des herunterzuladenden Firmware-Images.</translation>
 <translation id="8035570672225663428">Adaptives Lademodell aktivieren, um den Ladevorgang anzuhalten und die Akkulaufzeit zu verlängern</translation>
 <translation id="8044493735196713914">Startmodus von Geräten melden</translation>
 <translation id="8044720778481009876"><ph name="CLOUD_PRINT_NAME" />- und „In Google Drive speichern“-Ziele (eingestellt)</translation>

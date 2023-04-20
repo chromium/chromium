@@ -134,6 +134,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="1820259098641718022">Dodano u listu za čitanje</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Ugrožene lozinke}=1{{COUNT} ugrožena lozinka}one{{COUNT} ugrožena lozinka}few{{COUNT} ugrožene lozinke}other{{COUNT} ugroženih lozinki}}</translation>
 <translation id="1832848789136765277">Potvrdite svoj identitet da uvijek možete pristupati sinhroniziranim podacima</translation>
+<translation id="1836891464494477513">{count,plural, =1{Oznaka je sačuvana na Google računu {email}}one{Oznake su sačuvane na Google računu {email}}few{Oznake su sačuvane na Google računu {email}}other{Oznake su sačuvane na Google računu {email}}}</translation>
 <translation id="1870148520156231997">Otkrij lozinku</translation>
 <translation id="1872096359983322073">Svjetiljka</translation>
 <translation id="1883255238294161206">Suzi spisak</translation>
@@ -357,7 +358,6 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3305294846493618482">više</translation>
 <translation id="3311748811247479259">Isključeno</translation>
 <translation id="3324193307694657476">2. red za adresu</translation>
-<translation id="3328459813621383194">Premještanje neaktivnih kartica</translation>
 <translation id="3328801116991980348">Informacije o web lokaciji</translation>
 <translation id="3344485292736684439">{count,plural, =1{Oznaka je sačuvana u folder "{title}" na računu {email}}one{Oznake su sačuvane u folder "{title}" na računu {email}}few{Oznake su sačuvane u folder "{title}" na računu {email}}other{Oznake su sačuvane u folder "{title}" na računu {email}}}</translation>
 <translation id="3371831930909698441">Dostupan je Prevodilac. Opcije su dostupne pri dnu ekrana.</translation>
@@ -498,6 +498,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4343046787186034850">Pristup kameri i mikrofonu je dozvoljen</translation>
 <translation id="4359125752503270327">Ova stranica će se otvoriti u drugoj aplikaciji.</translation>
 <translation id="4371526908359194219">Obavještenja putem e-pošte</translation>
+<translation id="4371591986692297148">Neaktivno</translation>
 <translation id="4375040482473363939">Pretraživanje putem QR koda</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Dodirnite da promijenite jezik.</translation>
@@ -628,7 +629,6 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />poništite sinhronizaciju<p
 <translation id="5168414296986405587">Napravljeno za iPadOS</translation>
 <translation id="5173088371991956744">Sinhronizacija mora potvrditi da ste to vi</translation>
 <translation id="5176312250994681348">Zadrži nedavnu lozinku</translation>
-<translation id="51802232683641391">{count,plural, =1{Nastaviti s karticom koju ste napustili s Androida?}one{Nastaviti s karticama koje ste napustili s Androida?}few{Nastaviti s karticama koje ste napustili s Androida?}other{Nastaviti s karticama koje ste napustili s Androida?}}</translation>
 <translation id="5181140330217080051">Preuzimanje</translation>
 <translation id="5184329579814168207">Otvori u Chromeu</translation>
 <translation id="5186185447130319458">Privatno</translation>
@@ -906,7 +906,6 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="6807889908376551050">Prikaži sve…</translation>
 <translation id="681368974849482173">Stavka je kreirana</translation>
 <translation id="6822587385560699678">Kada je uključeno, lozinke se pohranjuju na računu <ph name="ACCOUNT" />. Kada je isključeno, lozinke se pohranjuju samo na ovom uređaju.</translation>
-<translation id="683022620450280906">Sačuvane lozinke možete koristiti na bilo kojem uređaju. Pohranjuju se u Googleovom Upravitelju lozinki za račun <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6842136130964845393">Potvrdite svoj identitet da uvijek možete pristupati sačuvanim lozinkama</translation>
 <translation id="6851516051005285358">Zatraži web lokaciju za radnu površinu</translation>
@@ -1044,6 +1043,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7845466610722898">Prikaz Liste za čitanje</translation>
 <translation id="784551991304901159">Da prikažete sadržaj, u meniju odaberite Uključi</translation>
 <translation id="7846158885638438868">{count,plural, =1{Oznaka je sačuvana u folder "{title}"}one{Oznake su sačuvane u folder "{title}"}few{Oznake su sačuvane u folder "{title}"}other{Oznake su sačuvane u folder "{title}"}}</translation>
+<translation id="7852017611907717397">OPOZOVI</translation>
 <translation id="7853202427316060426">Aktivnost</translation>
 <translation id="7856733331829174190">Preuzimanje nije uspjelo</translation>
 <translation id="785938070103630874">Otvorite lozinke, načine plaćanja ili adresu i još mnogo toga</translation>

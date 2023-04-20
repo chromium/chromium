@@ -21,7 +21,9 @@
 <translation id="137466361146087520">Google Chrome ベータ版</translation>
 <translation id="1399397803214730675">新しいバージョンの Google Chrome が既にインストールされています。ソフトウェアが動作しない場合は、Google Chrome をアンインストールしてからもう一度お試しください。</translation>
 <translation id="139993653570221430">この設定は Chrome の設定でいつでも変更できます。テストは、現在の方法での広告配信と並行して実施されるため、すぐに変化が現れるわけではありません。</translation>
+<translation id="1425903838053942728">{COUNT,plural, =0{Chrome の更新が完了しました。再起動すると最新バージョンをすぐに使用できます。その後、現在のタブが再度開きます。}=1{Chrome の更新が完了しました。再起動すると最新バージョンをすぐに使用できます。その後、現在のタブが再度開きます。シークレット ウィンドウは、再起動後は自動的には開きません。}other{Chrome の更新が完了しました。再起動すると最新バージョンをすぐに使用できます。その後、現在のタブが再度開きます。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="1434626383986940139">Chrome Canary アプリ</translation>
+<translation id="1492280395845991349">Chrome の更新を完了するには再起動してください</translation>
 <translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome は HID デバイスに接続されていました}=1{Google Chrome は HID デバイスに接続されています}other{Google Chrome は HID デバイスに接続されています}}</translation>
 <translation id="1507198376417198979">新しい Chrome プロフィールをカスタマイズ</translation>
 <translation id="1516530951338665275">Google Chrome でペアリングを続行するには、Bluetooth へのアクセスが必要です。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -91,6 +93,7 @@
 <translation id="2652691236519827073">新しい Chrome タブでリンクを開く(&amp;T)</translation>
 <translation id="2665296953892887393">障害レポートと<ph name="UMA_LINK" />を Google に自動送信して Google Chrome の機能向上に役立てる</translation>
 <translation id="2689103672227170538">この拡張機能により、Chrome の起動時に表示されるページが変更されました。</translation>
+<translation id="2712234843277364121">再起動して更新 - タブは再度開きます</translation>
 <translation id="2742320827292110288">警告: 拡張機能による閲覧履歴の記録を Google Chrome で停止することはできません。シークレット モードでこの拡張機能を無効にするには、このオプションの選択を解除してください。</translation>
 <translation id="2765403129283291972">このサイトを利用するには、Chrome でマイクの使用を許可する必要があります</translation>
 <translation id="2770231113462710648">既定のブラウザを変更:</translation>
@@ -273,6 +276,7 @@
 <translation id="6365489425007284765">{COUNT,plural, =1{1 分間使用しなかった場合、管理者は閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。既存のタブは開いたままになります。}other{# 分間使用しなかった場合、管理者は閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。既存のタブは開いたままになります。}}</translation>
 <translation id="6412673304250309937">Chrome に保存されている安全でないサイトのリストと URL を照合します。サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります。</translation>
 <translation id="6418662306461808273">既存の Chrome プロファイルに切り替えますか？</translation>
+<translation id="648319183876919572">セーフ ブラウジング保護強化機能では、危険なウェブサイトやダウンロードから高いセキュリティ強度で保護されます</translation>
 <translation id="6493527311031785448">Google Chrome が <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">周囲の 3D マップを作成するには、Chrome にカメラの使用を許可する必要があります</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
@@ -403,6 +407,7 @@
 <translation id="8989968390305463310">閲覧履歴は、表示される広告と以下の推定された興味 / 関心に影響します。プライバシーを保護するために、Chrome ではユーザーの興味 / 関心が毎月順番に自動削除されます。ユーザーが削除しない限り、興味 / 関心は更新される可能性があります。</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome のアップデートが利用可能です}=1{Chrome のアップデートが利用可能です}other{Chrome のアップデートが利用可能になってから # 日経過しています}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex システム</translation>
+<translation id="9054037008353851982">再起動して更新 - タブは再度開きます</translation>
 <translation id="911206726377975832">閲覧データも削除しますか？</translation>
 <translation id="9138603949443464873">変更を適用するには Chrome を再起動してください</translation>
 <translation id="9195993889682885387">Chrome は、過去数週間の閲覧履歴に基づいてユーザーの興味 / 関心を推定する場合があります。この情報はユーザーのデバイスに保存されます。</translation>

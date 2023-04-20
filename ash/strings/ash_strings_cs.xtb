@@ -226,6 +226,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1978498689038657292">Zadávání textu</translation>
 <translation id="1980808257969311265">Připojit se k události <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Zobrazit předchozí týden</translation>
+<translation id="1986150224850161328">Zkontrolujte, zda jsou telefon a Chromebook připojeny ke stejné síti, a zkuste to znovu. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Obsah se nepodařilo zaznamenat</translation>
 <translation id="1990046457226896323">Stažené řečové soubory</translation>
 <translation id="1993072747612765854">Další informace o nejnovější aktualizaci systému <ph name="SYSTEM_APP_NAME" /></translation>
@@ -376,6 +377,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2761723519669354964">Otevřít zvýrazněnou položku na poličce</translation>
 <translation id="2778650143428714839">Zařízení <ph name="DEVICE_TYPE" /> spravované doménou <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Ukončit režim nahrávání</translation>
+<translation id="2785499565474703580">Připojené zařízení: 1</translation>
 <translation id="2791421900609674576">Budou se zobrazovat doporučení, abyste mohli pokračovat od místa, kde jste skončili. Doporučení můžete odstranit podržením.</translation>
 <translation id="2792498699870441125">Alt + Vyhledávání</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1280,6 +1282,7 @@ Nová instalace</translation>
 <translation id="6941333068993625698">Odeslat zpětnou vazbu</translation>
 <translation id="6942518653766415536">Nabídka formátu záznamu</translation>
 <translation id="6945221475159498467">Vybrat</translation>
+<translation id="6945922087561257829">Telefon používá mobilní síť. Zkontrolujte, zda jsou telefon a Chromebook připojeny ke stejné síti Wi-Fi, a zkuste to znovu. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Není aktivováno. Kontaktujte svého operátora.</translation>
 <translation id="6961121602502368900">Ztlumení telefonu v pracovním profilu není k dispozici</translation>
 <translation id="6961840794482373852">Klávesová zkratka Alt + šipka nahoru se změnila. Pokud chcete použít klávesu Page Up, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + šipku nahoru.</translation>
@@ -1334,6 +1337,7 @@ Nová instalace</translation>
 <translation id="7188494361780961876">Nabídka byla přesunuta do levého horního rohu obrazovky.</translation>
 <translation id="7189412385142492784">Jak daleko je Venuše</translation>
 <translation id="7198435252016571249">Kamera byla připnuta do pravého dolního rohu. Konflikt s platformou systému.</translation>
+<translation id="7219573373513695352">Žádná připojená zařízení</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Kvůli použití aktualizace je třeba Chromebook restartovat. Může to trvat až minutu.</translation>
 <translation id="7256634071279256947">Zadní mikrofon</translation>
 <translation id="7258828758145722155">Upraveno včera</translation>
@@ -1484,6 +1488,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7902625623987030061">Dotkněte se snímače otisků prstů</translation>
 <translation id="7904094684485781019">Správce tohoto účtu zakázal vícenásobné přihlášení.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422">Připojená zařízení: <ph name="DEVICECOUNT" /></translation>
 <translation id="7930731167419639574">Řeč se teď zpracovává místně a diktování funguje offline.</translation>
 <translation id="7932451802722951285">Otevřít v Kalendáři Google</translation>
 <translation id="7933084174919150729">Asistent Google je k dispozici pouze pro primární profil.</translation>

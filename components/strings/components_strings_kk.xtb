@@ -307,6 +307,7 @@
 <translation id="1658918301167915956">Bluetooth құрылғылары</translation>
 <translation id="1662550410081243962">Төлеу әдістерін сақтау және толтыру</translation>
 <translation id="1663943134801823270">Карталар мен мекенжайлар Chrome браузерінен алынған. Оларды <ph name="BEGIN_LINK" />Параметрлер<ph name="END_LINK" /> бөлімінде басқара аласыз.</translation>
+<translation id="1668071460721346172">Электрондық хат алу</translation>
 <translation id="1671391448414634642"><ph name="SOURCE_LANGUAGE" /> тіліндегі беттер <ph name="TARGET_LANGUAGE" /> тіліне аударылатын болады.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> тілінен <ph name="TARGET_LANGUAGE" /> тіліне</translation>
 <translation id="1682696192498422849">Алдымен қысқа беті</translation>
@@ -367,6 +368,7 @@
 <translation id="1806174020048213474">Бұл қолданба Wi-Fi тіркелу деректерін орнату рұқсатын сұрауда. Реттеуден кейін, <ph name="DEVICE_TYPE" /> құрылғысы қатысатын Wi-Fi желілеріне автоматты түрде қосылады. Осы тіркелу деректерін өшіру үшін қолданбаны жойыңыз.</translation>
 <translation id="1807246157184219062">Ашық</translation>
 <translation id="1807528111851433570">Бастапқы парақ</translation>
+<translation id="180757923930449935">(64 биттік эмуляция)</translation>
 <translation id="180991881384371158">CVC коды картаңыздың артқы жағында. Бұл – қолтаңба ұясының жоғарғы оң жағындағы соңғы 3 цифр.</translation>
 <translation id="181000283860817563">Бағаны бірнеше сайтта қадағалай аласыз.</translation>
 <translation id="1810391395243432441">Құпия сөздерді экран құлпы арқылы қорғау</translation>
@@ -510,6 +512,7 @@
 <translation id="2166049586286450108">Әкімшінің бүкіл дерекке кіру рұқсаты</translation>
 <translation id="2166378884831602661">Бұл сайт қауіпсіз байланысты ұсына алмайды</translation>
 <translation id="2168151236314517198">Әкімші саясаты бұл контентті басып шығару процесін бөгеді.</translation>
+<translation id="2176974405772725904">Мекенжайды аккаунтта сақтау</translation>
 <translation id="2181821976797666341">Саясаттар</translation>
 <translation id="2183608646556468874">Телефон нөмірі</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 мекенжай}other{# мекенжай}}</translation>
@@ -523,7 +526,6 @@
 <translation id="2204482073374652408">Жаңарту аяқталды!</translation>
 <translation id="22081806969704220">3-науа</translation>
 <translation id="2210794033760923560">Есепті жүктеп салу</translation>
-<translation id="2212579473415663542">Бұл мекенжай Google аккаунтыңызда (<ph name="ACCOUNT" />) сақталады. Мекенжайды кез келген құрылғы арқылы түрлі Google өнімдерінде пайдалана аласыз.</translation>
 <translation id="2212735316055980242">Саясат табылмады</translation>
 <translation id="2213606439339815911">Жазбалар алынуда…</translation>
 <translation id="2213612003795704869">Бет басып шығарылды.</translation>
@@ -1223,6 +1225,7 @@
 <translation id="4031179711345676612">Микрофонды пайдалануға рұқсат берілген</translation>
 <translation id="4040350669425716613">Колледждер мен университеттер</translation>
 <translation id="4047351652147966654">18 x 24 дюйм</translation>
+<translation id="4047620889508350431">Енді Google аккаунтыңыздағы мекенжайларды пайдалана аласыз.</translation>
 <translation id="405399507749852140">Қандай да бір сайтта баға төмендесе, сізге хабарланады.</translation>
 <translation id="4056223980640387499">Сепия</translation>
 <translation id="4063063121357725926">Google-дың себеттеріңізге жеңілдіктер тауып беруіне көмектесіңіз</translation>
@@ -1585,6 +1588,7 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{Жоқ}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> іздеу</translation>
 <translation id="4879491255372875719">Автоматты (әдепкі)</translation>
+<translation id="4879723019639546076">Бұл мекенжай тек Chrome браузерінде сақталады. Оны Google өнімдерінде пайдалану үшін оны Google аккаунтыңызда (<ph name="ACCOUNT" />) сақтаңыз.</translation>
 <translation id="4880827082731008257">Тарихтан іздеу</translation>
 <translation id="4881695831933465202">Ашу</translation>
 <translation id="4881808915112408168">24 x 31,5 дюйм</translation>
@@ -1735,6 +1739,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Жабу</translation>
+<translation id="5238301240406177137">Аккаунтта сақтау</translation>
 <translation id="5239623327352565343">Локацияны пайдалануға рұқсат берілді.</translation>
 <translation id="5242889659037569123">Багаж және саяхат керек-жарақтары</translation>
 <translation id="5244732203286792411">Жүктелуде…
@@ -2142,6 +2147,7 @@
 <translation id="6279183038361895380">Курсорды көрсету үшін |<ph name="ACCELERATOR" />| басыңыз</translation>
 <translation id="6280223929691119688">Бұл мекенжайға жеткізілмейді. Басқа мекенжайды таңдаңыз.</translation>
 <translation id="6284292079994426700">26 x 38 дюйм</translation>
+<translation id="6284517535531159884">Вариациялар дереккөзінің түрі</translation>
 <translation id="6285507000506177184">"Chrome браузерінде жүктеп алынған файлдарды басқару" түймесі. Chrome браузерінде жүктеп алған файлдарыңызды басқару үшін Enter пернесін басыңыз.</translation>
 <translation id="6289939620939689042">Бет түсі</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2251,6 +2257,7 @@
 <translation id="6545864417968258051">Bluetooth құрылғыларын іздеу</translation>
 <translation id="6547208576736763147">Сол жағын екі рет тесу</translation>
 <translation id="6549443526281184652">Костюмдер</translation>
+<translation id="6551873053534932690">Мекенжайды аккаунтта сақтау керек пе?</translation>
 <translation id="6554732001434021288">Соңғы кіру: <ph name="NUM_DAYS" /> күн бұрын</translation>
 <translation id="6556866813142980365">Қайта орындау</translation>
 <translation id="6557715786897013164">14 x 17 дюйм</translation>
@@ -2315,6 +2322,7 @@
 <translation id="6716672519412350405"><ph name="URL" /> айналаңыздың 3D картасын жасағысы және камера орнын бақылағысы келеді.</translation>
 <translation id="6718612893943028815">Камера пайдаланылсын ба?</translation>
 <translation id="6721678857435001674">Security Key құрылғысының маркасы мен үлгісін көру</translation>
+<translation id="6726832600570791992">(32 биттік эмуляция)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6738516213925468394">Деректеріңіз <ph name="TIME" /> күні <ph name="BEGIN_LINK" />синхрондаудың құпия фразасымен<ph name="END_LINK" /> шифрланған. Синхрондау үшін оны енгізіңіз.</translation>

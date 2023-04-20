@@ -17,11 +17,14 @@
 <translation id="1278833599417554002">Atkārtoti palaist, lai atjauninātu &amp;Chrome</translation>
 <translation id="1302523850133262269">Lūdzu, uzgaidiet, kamēr Chrome instalē jaunākos sistēmas atjauninājumus.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> pieprasa, lai pirms šīs ierīces lietošanas jūs izlasītu tālāk izklāstītos pakalpojumu sniegšanas noteikumus un piekristu tiem. Šie noteikumi nepaplašina, nepārveido un neierobežo operētājsistēmas Google Chrome OS Flex noteikumus.</translation>
+<translation id="1341711321000856656">Varat pārslēgties, lai skatītu paroles no cita Chrome profila.</translation>
 <translation id="1363996462118479832">Chrome OS nevarēja sinhronizēt jūsu datus pierakstīšanās kļūdas dēļ.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Šim datoram jau ir instalēta jaunākā Google Chrome versija. Ja programmatūra nedarbojas, atinstalējiet Google Chrome un mēģiniet vēlreiz.</translation>
 <translation id="139993653570221430">Ja pārdomāsiet, jebkurā laikā varēsiet atbilstoši mainīt Chrome iestatījumus. Izmēģinājuma laikā reklāmu rādīšanai tiek izmantotas arī pašreizējās metodes, tāpēc izmaiņas nebūs pamanāmas uzreiz.</translation>
+<translation id="1425903838053942728">{COUNT,plural, =0{Chrome atjaunināšana ir pabeigta. Varēsiet izmantot jaunāko versiju, tiklīdz atkārtoti palaidīsiet pārlūku. Pēc tam tiks atkārtoti atvērtas pašreizējās cilnes.}=1{Chrome atjaunināšana ir pabeigta. Varēsiet izmantot jaunāko versiju, tiklīdz atkārtoti palaidīsiet pārlūku. Pēc tam tiks atkārtoti atvērtas pašreizējās cilnes. Jūsu inkognito režīma logs netiks atkārtoti atvērts.}zero{Chrome atjaunināšana ir pabeigta. Varēsiet izmantot jaunāko versiju, tiklīdz atkārtoti palaidīsiet pārlūku. Pēc tam tiks atkārtoti atvērtas pašreizējās cilnes. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}one{Chrome atjaunināšana ir pabeigta. Varēsiet izmantot jaunāko versiju, tiklīdz atkārtoti palaidīsiet pārlūku. Pēc tam tiks atkārtoti atvērtas pašreizējās cilnes. # jūsu inkognito režīma logs netiks atkārtoti atvērts.}other{Chrome atjaunināšana ir pabeigta. Varēsiet izmantot jaunāko versiju, tiklīdz atkārtoti palaidīsiet pārlūku. Pēc tam tiks atkārtoti atvērtas pašreizējās cilnes. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}}</translation>
 <translation id="1434626383986940139">Chrome Canary lietotnes</translation>
+<translation id="1492280395845991349">Atkārtota palaišana, lai pabeigtu Chrome atjaunināšanu</translation>
 <translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Pārlūkā Google Chrome nav izveidots savienojums ne ar vienu HID ierīci}=1{Pārlūkā Google Chrome ir izveidots savienojums ar HID ierīci}zero{Pārlūkā Google Chrome ir izveidots savienojums ar HID ierīcēm}one{Pārlūkā Google Chrome ir izveidots savienojums ar HID ierīcēm}other{Pārlūkā Google Chrome ir izveidots savienojums ar HID ierīcēm}}</translation>
 <translation id="1507198376417198979">Pielāgojiet savu jauno Chrome profilu.</translation>
 <translation id="1516530951338665275">Pārlūkam Google Chrome ir nepieciešama Bluetooth piekļuve, lai turpinātu savienošanu pārī. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -93,6 +96,7 @@
 <translation id="2652691236519827073">Atvērt saiti jaunā Chrome &amp;cilnē</translation>
 <translation id="2665296953892887393">Palīdzēt uzlabot pārlūku Google Chrome, nosūtot Google serveriem avāriju pārskatus un <ph name="UMA_LINK" /></translation>
 <translation id="2689103672227170538">Šis paplašinājums mainīja iestatījumu, kura lapa tiek parādīta, palaižot pārlūku Chrome.</translation>
+<translation id="2712234843277364121">Palaist atkārtoti, lai atjauninātu; jūsu cilnes tiks atvērtas atkārtoti</translation>
 <translation id="2742320827292110288">Brīdinājums! Google Chrome nevar novērst to, ka paplašinājumi ieraksta jūsu pārlūkošanas vēsturi. Lai atspējotu šo paplašinājumu inkognito režīmā, noņemiet šīs opcijas atlasi.</translation>
 <translation id="2765403129283291972">Pārlūkam Chrome ir nepieciešama atļauja piekļūt jūsu mikrofonam šajā vietnē.</translation>
 <translation id="2770231113462710648">Mainīt noklusējuma pārlūkprogrammu uz:</translation>
@@ -277,6 +281,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6365489425007284765">{COUNT,plural, =1{Jūsu administrators automātiski dzēš pārlūkošanas datus, ja pārlūks nav izmantots vienu minūti. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes. Jūsu esošās cilnes paliks atvērtas.}zero{Jūsu administrators automātiski dzēš pārlūkošanas datus, ja pārlūks nav izmantots # minūtes. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes. Jūsu esošās cilnes paliks atvērtas.}one{Jūsu administrators automātiski dzēš pārlūkošanas datus, ja pārlūks nav izmantots # minūti. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes. Jūsu esošās cilnes paliks atvērtas.}other{Jūsu administrators automātiski dzēš pārlūkošanas datus, ja pārlūks nav izmantots # minūtes. Tie var ietvert vēsturi, automātiskās aizpildes datus un lejupielādes. Jūsu esošās cilnes paliks atvērtas.}}</translation>
 <translation id="6412673304250309937">Vietrāži URL tiek pārbaudīti, salīdzinot ar nedrošu vietņu sarakstu, kas glabājas pārlūkprogrammā Chrome. Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, Chrome var nosūtīt attiecīgo URL un lapas satura fragmentus uz funkciju Droša pārlūkošana.</translation>
 <translation id="6418662306461808273">Vai pāriet uz esošo Chrome profilu?</translation>
+<translation id="648319183876919572">Droša pārlūkošana ar papildu aizsardzību nodrošina efektīvāku aizsardzību pret bīstamām vietnēm un lejupielādēm</translation>
 <translation id="6493527311031785448">Google Chrome mēģina <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Pārlūkam Chrome ir nepieciešama atļauja izmantot kameru, lai varētu izveidot jūsu apkārtnes 3D karti.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> — Google Chrome izstrādātāju versija</translation>
@@ -407,6 +412,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="8989968390305463310">Pārlūkošanas vēsture ietekmē to, kādas reklāmas jums tiek rādītas, un tālāk redzamās aptuveni noteiktās intereses. Lai aizsargātu jūsu konfidencialitāti, Chrome automātiski katru mēnesi pakāpeniski dzēš jūsu intereses. Intereses var tikt atjaunotas, ja vien nenoņemat tās.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ir pieejams Chrome atjauninājums}=1{Ir pieejams Chrome atjauninājums}zero{Chrome atjauninājums ir pieejams jau # dienu}one{Chrome atjauninājums ir pieejams jau # dienu}other{Chrome atjauninājums ir pieejams jau # dienas}}</translation>
 <translation id="9053892488859122171">Chrome OS Flex sistēma</translation>
+<translation id="9054037008353851982">Palaist atkārtoti, lai atjauninātu; jūsu cilnes tiks atvērtas atkārtoti</translation>
 <translation id="911206726377975832">Vai dzēst arī pārlūkošanas datus?</translation>
 <translation id="9138603949443464873">Lai ieviestu veiktās izmaiņas, atkārtoti palaidiet pārlūku Chrome.</translation>
 <translation id="9195993889682885387">Chrome var aptuveni noteikt jūsu intereses, balstoties uz jūsu pēdējo nedēļu pārlūkošanas vēsturi. Šī informācija tiek glabāta jūsu ierīcē.</translation>

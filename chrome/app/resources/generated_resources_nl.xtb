@@ -802,6 +802,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1666232093776384142">Beveiliging voor gegevenstoegang voor randapparaten uitzetten</translation>
 <translation id="1667842670298352129">Laat specifieke tekst voorlezen. Selecteer eerst het icoon 'Selecteer om voor te lezen' onderaan het scherm en markeer daarna de tekst. Je kunt ook een sneltoets gebruiken: markeer tekst en druk dan op Zoeken + S.</translation>
 <translation id="1668435968811469751">Handmatig inschrijven</translation>
+<translation id="1668804837842452164">Opslaan in <ph name="BRAND" /> voor <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Meer informatie over suggesties</translation>
 <translation id="1670399744444387456">Basis</translation>
 <translation id="1673137583248014546"><ph name="URL" /> wil het merk en het model van je beveiligingssleutel bekijken</translation>
@@ -1567,6 +1568,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <ph name="BR" />
 <ph name="BEGIN_BOLD" />Opmerking:<ph name="END_BOLD" /> Het systeem wordt opnieuw opgestart tijdens het proces.</translation>
 <translation id="23030561267973084">De extensie '<ph name="EXTENSION_NAME" />' heeft gevraagd om extra rechten.</translation>
+<translation id="2306794767168143227">Opslaan in <ph name="BRAND" /> op dit apparaat</translation>
 <translation id="2307462900900812319">Netwerk configureren</translation>
 <translation id="2307553512430195144">Als je akkoord gaat, wacht de Google Assistent in stand-bymodus om te luisteren of er 'Hey Google' wordt gezegd en kan deze met Voice Match de stem van <ph name="SUPERVISED_USER_NAME" /> herkennen.
     <ph name="BR" />
@@ -4051,6 +4053,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="450552327874992444">Woord al toegevoegd</translation>
 <translation id="4507128560633489176">Gegevens zijn gewist.</translation>
 <translation id="4507373251891673233">Je hebt alle extensies van <ph name="HOST" /> geblokkeerd</translation>
+<translation id="4508032221004253235">Hierdoor kunnen apps en websites met locatierechten en ChromeOS de locatie gebruiken die wordt bepaald door je wifi of mobiele netwerken. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="450867954911715010">Toegankelijkheidsinstellingen</translation>
 <translation id="4508765956121923607">Br&amp;on bekijken</translation>
 <translation id="4509421746503122514">Opnieuw starten om te updaten</translation>
@@ -4656,7 +4659,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5063480226653192405">Gebruik</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Beveiligde DNS beheren in de instellingen van Chrome OS</translation>
-<translation id="5066160542186949327">Naar een andere map verplaatsen</translation>
 <translation id="5067399438976153555">Altijd aan</translation>
 <translation id="5067867186035333991">Vragen of <ph name="HOST" /> toegang wil tot je microfoon</translation>
 <translation id="5068553687099139861">wachtwoorden tonen</translation>
@@ -4842,6 +4844,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5235750401727657667">De pagina vervangen die je ziet als je een nieuw tabblad opent</translation>
 <translation id="5236374273162681467">Je kunt ze naar je Google-account verplaatsen zodat je ze makkelijk kunt gebruiken op al je apparaten</translation>
 <translation id="523862956770478816">Siterechten</translation>
+<translation id="5239752869099890912">Laad deze pagina opnieuw om je geüpdatete instellingen voor deze extensies toe te passen op deze site</translation>
 <translation id="5242724311594467048"><ph name="EXTENSION_NAME" /> aanzetten?</translation>
 <translation id="5243522832766285132">Probeer het over enige tijd opnieuw</translation>
 <translation id="5244474230056479698">Synchroniseren met <ph name="EMAIL" /></translation>
@@ -8108,6 +8111,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8138997515734480534"><ph name="VM_NAME" />-status</translation>
 <translation id="8139447493436036221">Google Drive-bestanden</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
+<translation id="8141260936970642964">Toestaan dat apps en websites en de tijdzone van het systeem de locatie gebruiken die wordt bepaald door Google-locatieservices. Als locatietoegang uitstaat, is je locatie misschien nog steeds zichtbaar via je IP-adres.</translation>
 <translation id="8141418916163800697">Je kunt meer functies instellen in de Telefoonhub-instellingen</translation>
 <translation id="8141584439523427891">Wordt nu geopend in een alternatieve browser</translation>
 <translation id="8141725884565838206">Je wachtwoorden beheren</translation>
@@ -8180,6 +8184,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8195737548602430447">Ondertiteling automatisch vertalen naar een doeltaal.</translation>
 <translation id="8197673340773315084">Voeg een naam of label toe, zoals Werk of Persoonlijk</translation>
 <translation id="8198456017687137612">Tabblad casten</translation>
+<translation id="8198511718495409170">Laad deze pagina opnieuw om je geüpdatete instellingen voor <ph name="EXTENSION_NAME" /> toe te passen op deze site</translation>
 <translation id="8199300056570174101">Eigenschappen van netwerk (service) en apparaat</translation>
 <translation id="8200772114523450471">Doorgaan</translation>
 <translation id="8200789660596905522">Accepteer het castverzoek op je <ph name="DEVICE_NAME" />.</translation>

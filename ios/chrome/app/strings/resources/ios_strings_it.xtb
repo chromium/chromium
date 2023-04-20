@@ -357,7 +357,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3305294846493618482">altro</translation>
 <translation id="3311748811247479259">Off</translation>
 <translation id="3324193307694657476">Indirizzo 2</translation>
-<translation id="3328459813621383194">Sposta schede non attive</translation>
 <translation id="3328801116991980348">Informazioni sito</translation>
 <translation id="3344485292736684439">{count,plural, =1{Preferito salvato nella cartella "{title}" nel tuo account {email}}other{Preferiti salvati nella cartella "{title}" nel tuo account {email}}}</translation>
 <translation id="3371831930909698441">Traduttore disponibile. Opzioni disponibili nella parte inferiore dello schermo.</translation>
@@ -498,6 +497,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4343046787186034850">Accesso a fotocamera e microfono consentito</translation>
 <translation id="4359125752503270327">Questa pagina verrà aperta con un'altra applicazione.</translation>
 <translation id="4371526908359194219">Notifiche email</translation>
+<translation id="4371591986692297148">non attivo</translation>
 <translation id="4375040482473363939">Ricerca di codici QR</translation>
 <translation id="4378154925671717803">Telefono</translation>
 <translation id="4389019817280890563">Tocca per modificare la lingua.</translation>
@@ -628,7 +628,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5168414296986405587">Realizzato per iPadOS</translation>
 <translation id="5173088371991956744">La sincronizzazione deve verificare la tua identità</translation>
 <translation id="5176312250994681348">Conserva la password recente</translation>
-<translation id="51802232683641391">{count,plural, =1{Vuoi riprendere la scheda da dove l'avevi lasciata su Android?}other{Vuoi riprendere le schede da dove le avevi lasciate su Android?}}</translation>
 <translation id="5181140330217080051">Download in corso</translation>
 <translation id="5184329579814168207">Apri in Chrome</translation>
 <translation id="5186185447130319458">Privata</translation>
@@ -906,7 +905,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="6807889908376551050">Mostra tutte...</translation>
 <translation id="681368974849482173">Elemento creato</translation>
 <translation id="6822587385560699678">Quando l'opzione è attiva, le password vengono salvate nell'account <ph name="ACCOUNT" />. Quando l'opzione non è attiva, le password vengono salvate soltanto su questo dispositivo.</translation>
-<translation id="683022620450280906">Puoi usare le password salvate su qualsiasi dispositivo. Sono salvate in Gestore delle password di Google per <ph name="EMAIL" />.</translation>
 <translation id="6831043979455480757">Traduci</translation>
 <translation id="6842136130964845393">Per assicurarti di poter accedere alle tue password salvate in qualsiasi momento, verifica la tua identità</translation>
 <translation id="6851516051005285358">Richiedi sito desktop</translation>

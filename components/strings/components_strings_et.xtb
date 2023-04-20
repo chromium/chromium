@@ -512,6 +512,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2166049586286450108">Täielik administraatorijuurdepääs</translation>
 <translation id="2166378884831602661">See sait ei saa turvalist ühendust luua</translation>
 <translation id="2168151236314517198">Selle sisu printimine on administraatori eeskirjadega blokeeritud</translation>
+<translation id="2176974405772725904">Kas salvestada aadress kontole?</translation>
 <translation id="2181821976797666341">Reeglid</translation>
 <translation id="2183608646556468874">Telefoninumber</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 aadress}other{# aadressi}}</translation>
@@ -525,7 +526,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2204482073374652408">Värskendamine lõpetatud!</translation>
 <translation id="22081806969704220">Salv 3</translation>
 <translation id="2210794033760923560">Laadi aruanne üles</translation>
-<translation id="2212579473415663542">See aadress salvestatakse teie Google'i kontole (<ph name="ACCOUNT" />). Saate aadressi kasutada Google'i teenustes mis tahes seadmes.</translation>
 <translation id="2212735316055980242">Reeglit ei leitud</translation>
 <translation id="2213606439339815911">Kirjete toomine ...</translation>
 <translation id="2213612003795704869">Leht prinditakse</translation>
@@ -1740,6 +1740,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 ekstra</translation>
 <translation id="5234764350956374838">Loobu</translation>
+<translation id="5238301240406177137">Salvesta kontole</translation>
 <translation id="5239623327352565343">Asukoht on lubatud</translation>
 <translation id="5242889659037569123">Pagas ja reisitarvikud</translation>
 <translation id="5244732203286792411">Laadimine …
@@ -2257,6 +2258,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6545864417968258051">Bluetoothi otsimine</translation>
 <translation id="6547208576736763147">Kaks auku vasakul</translation>
 <translation id="6549443526281184652">Kostüümid</translation>
+<translation id="6551873053534932690">Kas salvestada aadress kontole?</translation>
 <translation id="6554732001434021288">Viimati külastati <ph name="NUM_DAYS" /> päeva tagasi</translation>
 <translation id="6556866813142980365">Tee uuesti</translation>
 <translation id="6557715786897013164">14 × 17 tolli</translation>

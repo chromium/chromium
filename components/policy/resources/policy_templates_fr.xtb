@@ -244,6 +244,15 @@ Si cette règle est désactivée, la protection contre l'hameçonnage côté cli
       La valeur par défaut est RollbackDisabled.</translation>
 <translation id="1221359380862872747">Charger les URL spécifiées lors de la connexion à la démonstration</translation>
 <translation id="1221955019309484560">Activer les mises à jour pour tous les composants</translation>
+<translation id="1222694988453895594">Permet d'établir la liste des protocoles (et pour chacun d'eux, une liste associée de formats d'origines autorisées) qui peuvent lancer une appli externe sans afficher d'invite. Lorsqu'un protocole est répertorié, le séparateur de fin ne doit pas être inclus. Par exemple, il convient de garder "skype" et non "skype:" ou "skype://".
+
+Si cette règle est configurée, un protocole n'est autorisé à lancer une application externe sans afficher d'invite que si ce protocole est répertorié dans la liste établie, et si l'origine du site qui essaie de lancer le protocole correspond à l'un des formats d'origines figurant dans la liste des origines autorisées de ce protocole. Si l'une des deux conditions est fausse, la règle n'omet pas l'invite de lancement du protocole externe.
+
+Si cette règle n'est pas configurée, aucun protocole ne peut être lancé sans invite par défaut. Les utilisateurs peuvent désactiver les invites selon le protocole ou le site, sauf si la règle <ph name="EXTERNAL_PROTOCOL_DIALOG_SHOW_ALWAYS_OPEN_CHECKBOX_POLICY_NAME" /> est désactivée. Cette règle n'a aucune incidence sur les exceptions définies par les utilisateurs concernant les invites selon le protocole ou le site.
+
+Les formats correspondant à l'origine dans la liste sont semblables à ceux de la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> décrite sur https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Toutefois, dans le cadre de cette règle, ces formats ne doivent pas inclure les éléments "/path" ni "@query". Tout format qui inclut l'élément "/path" ou "@query" est ignoré.</translation>
 <translation id="1223789468190631420">Navigation sécurisée activée pour les sources fiables</translation>
 <translation id="123018742985150697">Exiger que le nom de l'utilisateur local corresponde à celui du propriétaire de l'hôte d'accès à distance</translation>
 <translation id="123081309365616809">Activer la diffusion de contenus sur l'appareil</translation>
@@ -314,7 +323,6 @@ Si cette règle n'est pas définie, la règle <ph name="ASK_WINDOW_MANAGEMENT_PO
 
 Cette règle remplace la règle <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" />, obsolète.</translation>
 <translation id="129206366270737897">Désactive les méthodes asynchrones de <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />.</translation>
-<translation id="129392056654547767">Image du micrologiciel UEFI utilisé par la VM. Cette mesure est temporaire, le temps d'empaqueter le micrologiciel en tant que contenu téléchargeable ChromeOS.</translation>
 <translation id="1294263471858445589">Activer l'authentification ambiante pour les sessions standards et de navigation privée.</translation>
 <translation id="1295737447968372331">Activer la dictée sur l'écran de connexion</translation>
 <translation id="1297182715641689552">Utiliser un script de proxy .pac</translation>
@@ -570,7 +578,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que pour les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sur Windows 10 Pro ou qui bénéficient de la gestion cloud du navigateur Chrome. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="1530812829012954197">Toujours rendre les formats d'URL suivants dans le navigateur hôte</translation>
 <translation id="1542491165152947087">Autorisez les utilisateurs à activer ou désactiver le paramètre des thèmes publicitaires de <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.</translation>
-<translation id="1547424904796464052">Hachage SHA-256 de l'image du micrologiciel, encodé en hexadécimal.</translation>
 <translation id="1550295162561011575">Cette règle permet aux administrateurs de configurer l'automatisation pour le lancement des applis sur les appareils <ph name="PRODUCT_NAME" />. Ces applis peuvent être lancées dès que l'utilisateur se connecte. L'utilisateur peut aussi les lancer depuis le lanceur d'applis.</translation>
 <translation id="1552418937045050762">Si ce paramètre est activé, les utilisateurs sont autorisés à activer le Partage à proximité, qui leur permet d'envoyer des fichiers aux personnes à proximité et inversement, de recevoir des fichiers de ces personnes.
 
@@ -3957,6 +3964,7 @@ Si cette règle n'est pas configurée, les utilisateurs peuvent modifier la list
 <translation id="4693779768620889402">Destinations basées sur des extensions</translation>
 <translation id="4694138212536142867">Activer les rapports sur l'état du matériel de l'appareil</translation>
 <translation id="4697581738794063407">Contrôler la fonctionnalité de filtrage des paramètres d'URL</translation>
+<translation id="4698895924806859508">Ne pas signaler les événements réseau</translation>
 <translation id="4699172675775169585">Images et fichiers en cache</translation>
 <translation id="4699592681017489215">Cette règle configure un interrupteur local pouvant être utilisé pour désactiver les contrôles d'interception des requêtes DNS. Ces contrôles ont pour but de déterminer si le navigateur est situé derrière un proxy qui redirige les noms d'hôte inconnus.
 
@@ -6638,6 +6646,13 @@ Si cette règle est définie, la liste de valeurs par défaut est complétée pa
 
       Si elle est désactivée ou n'est pas configurée, WebDriver ne sera pas autorisé à ignorer les règles non compatibles.</translation>
 <translation id="7145335384492396213">Mode d'impression par code défini par défaut</translation>
+<translation id="7145764791559889135">Cette règle permet de bloquer ou non la copie de données dans le presse-papiers sur des URL précises.
+
+Les listes de formats d'URL <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> et <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> déterminent quels sites sont autorisés ou non à écrire dans le presse-papiers. L'écriture dans le presse-papiers est bloquée si le format d'URL concerné figure dans la liste "enable" et pas dans la liste "disable". La copie n'est pas bloquée si le format d'URL n'est dans aucune liste.
+
+Les formats correspondant à l'origine dans la liste sont semblables à ceux de la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> décrite sur https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Le champ <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indique la quantité minimale de données en octets à partir de laquelle le format est vérifié. Autrement dit, l'écriture dans le presse-papiers sur une URL bloquée serait autorisée si la taille des données copiées est inférieure à la valeur indiquée dans ce champ. Si ce champ n'est pas renseigné, la valeur par défaut est de 100 octets.</translation>
 <translation id="7146198347561863646">Si cette règle est activée ou qu'elle n'est pas configurée, les wakelocks sont autorisés pour la gestion de l'alimentation. Des extensions peuvent demander des wakelocks par le biais de l'API d'extension de gestion de l'alimentation et par les applications ARC.
 
       Si cette règle est désactivée, les demandes de wakelocks sont ignorées.</translation>
@@ -6935,6 +6950,7 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
       Remarque : Dans ce cas, <ph name="PRODUCT_OS_NAME" /> peut être configuré séparément pour verrouiller ou non l'écran avant l'arrêt provisoire.</translation>
 <translation id="7477149584454865826">Flag booléen spécifiant si IPP Everywhere doit être utilisé ou non pour configurer l'imprimante.</translation>
 <translation id="7477231245051133709">Activer la fonctionnalité d'accessibilité d'audio mono</translation>
+<translation id="7479408102162550711">Signaler les événements réseau</translation>
 <translation id="7480826412572122600">Liste des paramètres des services des connecteurs Chrome Enterprise à appliquer au connecteur Enterprise <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" />, qui se déclenche lorsqu'un fichier est téléchargé dans Chrome.
 
       Les champs "<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />" et "<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />" permettent de déterminer si le connecteur doit envoyer un fichier en vue d'une analyse lorsque celui-ci est téléchargé à partir d'une page spécifique, ainsi que les tags à inclure dans la demande d'analyse de ce fichier. Un tag correspondant à un format "enable" sera inclus dans la demande d'analyse si l'URL de la page suit un format associé à ce tag, à condition qu'aucun format "disable" associé à ce même tag ne corresponde à l'URL de la page. L'analyse a lieu si au moins un tag doit être inclus dans la demande.
@@ -7305,6 +7321,10 @@ Dans le cas contraire, le moteur de rendu par défaut sera utilisé pour tous le
       Si cette règle est définie sur "False" ou si elle n'est pas configurée, les contenus <ph name="FLASH_PLUGIN_NAME" /> de provenance différente ou de petite taille peuvent être bloqués.
 
       Remarque : pour contrôler les sites autorisés à exécuter <ph name="FLASH_PLUGIN_NAME" />, reportez-vous aux règles <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" /> et <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7804859754080118507">Signalez les événements liés à la connexion réseau et la puissance du signal sur les appareils enregistrés.
+
+      Si la règle est définie sur "False" ou si elle n'est pas configurée, ces informations ne seront pas transmises.
+      Si elle est définie sur "True", les événements réseau de l'appareil seront signalés.</translation>
 <translation id="780629758750905699">Autoriser l'ajout de comptes Family Link à l'appareil</translation>
 <translation id="7807120658089613760">Configurer l'appareil photo, les paramètres du navigateur et de l'OS, la fonction de scanner, ainsi que les fonctionnalités Dessin, Web Store, Explorer et Crosh à désactiver</translation>
 <translation id="7807139251387225825">Liste des types à exclure de la synchronisation</translation>
@@ -7548,7 +7568,6 @@ Nous vous recommandons d'utiliser "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE"
 <translation id="802776363472387903">Hachage SHA-256 de l'image <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Activer le moteur de recherche par défaut et autoriser les utilisateurs à modifier la liste des moteurs de recherche</translation>
 <translation id="8029201909194194377">Durée maximale des sessions autorisée pour les connexions d'accès à distance</translation>
-<translation id="8033908599068513676">URL de l'image du micrologiciel à télécharger.</translation>
 <translation id="8035570672225663428">Activez le modèle de recharge adaptative pour suspendre le processus de charge et allonger la durée de vie de la batterie.</translation>
 <translation id="8044493735196713914">Indiquer le mode de démarrage de l'appareil</translation>
 <translation id="8044720778481009876">Destinations <ph name="CLOUD_PRINT_NAME" /> et "Enregistrer dans Google Drive" (obsolète)</translation>

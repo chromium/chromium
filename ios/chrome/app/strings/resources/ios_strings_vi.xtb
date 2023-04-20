@@ -357,7 +357,6 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xoá nh�
 <translation id="3305294846493618482">xem thêm</translation>
 <translation id="3311748811247479259">Đang tắt</translation>
 <translation id="3324193307694657476">Địa chỉ 2</translation>
-<translation id="3328459813621383194">Di chuyển thẻ không hoạt động</translation>
 <translation id="3328801116991980348">Thông tin về trang web</translation>
 <translation id="3344485292736684439">{count,plural, =1{Đã lưu dấu trang vào "{title}" trong tài khoản {email} của bạn}other{Đã lưu dấu trang vào "{title}" trong tài khoản {email} của bạn}}</translation>
 <translation id="3371831930909698441">Có tính năng dịch. Các tùy chọn nằm ở gần cuối màn hình.</translation>
@@ -498,6 +497,7 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xoá nh�
 <translation id="4343046787186034850">Đã cho phép truy cập máy ảnh và micrô</translation>
 <translation id="4359125752503270327">Trang này sẽ mở trong ứng dụng khác.</translation>
 <translation id="4371526908359194219">Thông báo qua email</translation>
+<translation id="4371591986692297148">Không hoạt động</translation>
 <translation id="4375040482473363939">Tìm kiếm mã QR</translation>
 <translation id="4378154925671717803">Điện thoại</translation>
 <translation id="4389019817280890563">Nhấn để thay đổi ngôn ngữ.</translation>
@@ -628,7 +628,6 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5168414296986405587">Thiết kế cho iPadOS</translation>
 <translation id="5173088371991956744">Tính năng đồng bộ hóa cần xác minh danh tính của bạn</translation>
 <translation id="5176312250994681348">Giữ lại mật khẩu gần đây</translation>
-<translation id="51802232683641391">{count,plural, =1{Xem tiếp thẻ bạn đang xem dở trên Android?}other{Xem tiếp các thẻ bạn đang xem dở trên Android?}}</translation>
 <translation id="5181140330217080051">Đang tải xuống</translation>
 <translation id="5184329579814168207">Mở trong Chrome</translation>
 <translation id="5186185447130319458">Riêng tư</translation>
@@ -906,7 +905,6 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="6807889908376551050">Hiển thị tất cả...</translation>
 <translation id="681368974849482173">Đã tạo mục</translation>
 <translation id="6822587385560699678">Khi tính năng này bật, mật khẩu sẽ được lưu trong <ph name="ACCOUNT" />. Khi tính năng này tắt, mật khẩu chỉ được lưu trên thiết bị này.</translation>
-<translation id="683022620450280906">Bạn có thể dùng mật khẩu đã lưu trên mọi thiết bị. Những mật khẩu này được lưu vào Trình quản lý mật khẩu của Google cho <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Dịch</translation>
 <translation id="6842136130964845393">Hãy xác minh danh tính của bạn để đảm bảo bạn luôn có thể truy cập mật khẩu đã lưu</translation>
 <translation id="6851516051005285358">Yêu cầu trang web cho máy tính</translation>

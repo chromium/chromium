@@ -323,7 +323,6 @@ Se a política for deixada sem definição, a <ph name="ASK_WINDOW_MANAGEMENT_PO
 
 Isso substitui a política <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> descontinuada.</translation>
 <translation id="129206366270737897">Desativa qualquer método assíncrono de <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />.</translation>
-<translation id="129392056654547767">Imagem de firmware do UEFI usada pela VM. Essa é uma medida temporária enquanto o empacotamos como um conteúdo transferido por download do ChromeOS.</translation>
 <translation id="1294263471858445589">Ativar a autenticação pelo SO em sessões normais e anônimas.</translation>
 <translation id="1295737447968372331">Ativa o ditado na tela de login</translation>
 <translation id="1297182715641689552">Usar um script de proxy .pac</translation>
@@ -579,7 +578,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no Gerenciamento de nuvem do navegador Chrome. No <ph name="MAC_OS_NAME" />, ela está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="1530812829012954197">Sempre renderizar os seguintes padrões de URL no navegador do host</translation>
 <translation id="1542491165152947087">Permitir que os usuários ativem ou desativem a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para temas de anúncios no dispositivo.</translation>
-<translation id="1547424904796464052">Hash SHA-256 codificado em hexadecimal da imagem do firmware.</translation>
 <translation id="1550295162561011575">Se a política for definida, os administradores poderão configurar a automação para iniciar apps em dispositivos <ph name="PRODUCT_NAME" />. Esses apps podem ser iniciados no login ou pelo usuário na tela de início.</translation>
 <translation id="1552418937045050762">Se esta configuração estiver ativada, os usuários poderão usar o recurso "Compartilhar por proximidade", que permite que eles enviem e recebam arquivos de pessoas próximas.
 
@@ -7759,7 +7757,6 @@ também é seguro.</translation>
 <translation id="802776363472387903">Hash SHA-256 da imagem do <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Ativar o provedor de pesquisa padrão e permitir que os usuários modifiquem a lista de provedores de pesquisa</translation>
 <translation id="8029201909194194377">Duração máxima da seção permitida por conexões de acesso remoto</translation>
-<translation id="8033908599068513676">URL da imagem de firmware para download.</translation>
 <translation id="8035570672225663428">Permitir que o modelo de carregamento adaptável controle o processo de carregamento para prolongar a duração da bateria</translation>
 <translation id="8044493735196713914">Informar modo de inicialização do dispositivo</translation>
 <translation id="8044720778481009876">Destinos do <ph name="CLOUD_PRINT_NAME" /> e "Salvar no Google Drive" (descontinuados)</translation>

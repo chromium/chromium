@@ -512,6 +512,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2166049586286450108">Accés administratiu complet</translation>
 <translation id="2166378884831602661">Aquest lloc web no pot proporcionar una connexió segura</translation>
 <translation id="2168151236314517198">La política de l'administrador ha bloquejat l'opció d'imprimir aquest contingut</translation>
+<translation id="2176974405772725904">Desa l'adreça al compte</translation>
 <translation id="2181821976797666341">Polítiques</translation>
 <translation id="2183608646556468874">Número de telèfon</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adreça}other{# adreces}}</translation>
@@ -525,7 +526,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2204482073374652408">S'ha acabat d'actualitzar</translation>
 <translation id="22081806969704220">Safata 3</translation>
 <translation id="2210794033760923560">Penja l'informe</translation>
-<translation id="2212579473415663542">Aquesta adreça està desada al teu Compte de Google (<ph name="ACCOUNT" />). Pots utilitzar-la en tots els productes de Google en qualsevol dispositiu.</translation>
 <translation id="2212735316055980242">No es troba la política</translation>
 <translation id="2213606439339815911">S'estan recuperant les entrades...</translation>
 <translation id="2213612003795704869">La pàgina està impresa</translation>
@@ -1226,6 +1226,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4031179711345676612">El micròfon es pot utilitzar</translation>
 <translation id="4040350669425716613">Universitats i facultats</translation>
 <translation id="4047351652147966654">18 x 24 polzades</translation>
+<translation id="4047620889508350431">Ara pots utilitzar les adreces del teu Compte de Google.</translation>
 <translation id="405399507749852140">Si el preu baixa en qualsevol lloc web, rebràs una alerta</translation>
 <translation id="4056223980640387499">Sèpia</translation>
 <translation id="4063063121357725926">Deixa que Google t'ajudi a trobar descomptes per als teus carretons</translation>
@@ -1739,6 +1740,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Ignora</translation>
+<translation id="5238301240406177137">Desa al compte</translation>
 <translation id="5239623327352565343">Està permès utilitzar la ubicació</translation>
 <translation id="5242889659037569123">Equipatge i accessoris de viatge</translation>
 <translation id="5244732203286792411">S'està carregant...
@@ -2256,6 +2258,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6545864417968258051">Cerca de dispositius Bluetooth</translation>
 <translation id="6547208576736763147">Encunyació doble a l'esquerra</translation>
 <translation id="6549443526281184652">Disfresses</translation>
+<translation id="6551873053534932690">Vols desar l'adreça al compte?</translation>
 <translation id="6554732001434021288">Darrera visita: fa <ph name="NUM_DAYS" /> dies</translation>
 <translation id="6556866813142980365">Refés</translation>
 <translation id="6557715786897013164">14 x 17 polzades</translation>

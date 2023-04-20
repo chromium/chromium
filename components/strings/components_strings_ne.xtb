@@ -307,6 +307,7 @@
 <translation id="1658918301167915956">ब्लुटुथ डिभाइसहरू</translation>
 <translation id="1662550410081243962">क्रेडिट कार्डसम्बन्धी जानकारी सुरक्षित गरी फारमहरू भर्नुहोस्</translation>
 <translation id="1663943134801823270">कार्ड र ठेगानाहरू Chrome बाट प्राप्त भएका हुन्। तपाईं <ph name="BEGIN_LINK" />सेटिङहरू<ph name="END_LINK" />मा गई तिनीहरूलाई व्यवस्थित गर्न सक्नुहुन्छ।</translation>
+<translation id="1668071460721346172">इमेल प्राप्त गर्नुहोस्</translation>
 <translation id="1671391448414634642">अब उप्रान्त <ph name="SOURCE_LANGUAGE" /> भाषाका पृष्ठहरूलाई <ph name="TARGET_LANGUAGE" /> भाषामा अनुवाद गरिने छ।</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> बाट <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">पहिले छोटो किनारा</translation>
@@ -367,6 +368,7 @@
 <translation id="1806174020048213474">यो एपले Wi-Fi क्रिडेन्सियलहरू इन्स्टल गर्ने अनुमति माग्दै छ। सेटअप गर्ने प्रक्रिया पूरा भएपछि तपाईंको <ph name="DEVICE_TYPE" /> उपलब्ध Wi-Fi नेटवर्कहरूमा स्वतः कनेक्ट हुने छ। यी क्रिडेन्सियलहरू हटाउन यो एप अनइन्स्टल गर्नुहोस्।</translation>
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1807528111851433570">सुरुवाती पाना</translation>
+<translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">तपाईंको CVC तपाईंको कार्डको पछाडिको भागमा छ। यो सिग्नेचर बक्सको सिरानको दायाँतिर रहेको पछिल्ला ३ अङ्कको कोड हो।</translation>
 <translation id="181000283860817563">एकभन्दा बढी साइटहरूमार्फत मूल्य ट्र्याक गर्नुहोस्</translation>
 <translation id="1810391395243432441">स्क्रिन लकका सहायताले पासवर्डहरू सुरक्षित राख्नुहोस्</translation>
@@ -524,7 +526,6 @@
 <translation id="2204482073374652408">अपडेट गर्ने कार्य सम्पन्न भयो!</translation>
 <translation id="22081806969704220">ट्रे ३</translation>
 <translation id="2210794033760923560">रिपोर्ट अपलोड गर्नुहोस्</translation>
-<translation id="2212579473415663542">यो ठेगाना तपाईंको Google खाता (<ph name="ACCOUNT" />) मा सेभ गरिएको छ। तपाईं जुनसुकै डिभाइसमा रहेका Google का सबै उत्पादनहरूमा यो ठेगाना प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="2212735316055980242">नीति फेला परेन</translation>
 <translation id="2213606439339815911">प्रविष्टिहरू ल्याउँदै...</translation>
 <translation id="2213612003795704869">पेज प्रिन्ट गरिएको छ</translation>
@@ -1222,6 +1223,7 @@
 <translation id="4031179711345676612">माइक्रोफोन प्रयोग गर्ने अनुमति छ</translation>
 <translation id="4040350669425716613">कलेज तथा विश्वविद्यालयहरू</translation>
 <translation id="4047351652147966654">१८ x २४ इन्च</translation>
+<translation id="4047620889508350431">तपाईं अब आफ्नो Google खातामा भएका ठेगानाहरू प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="405399507749852140">कुनै साइटमा मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्</translation>
 <translation id="4056223980640387499">सेपिया</translation>
 <translation id="4063063121357725926">Google लाई तपाईंका कार्टहरूका हकमा छुट खोज्ने अनुमति दिनुहोस्</translation>
@@ -1584,6 +1586,7 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{कुनै पनि होइन}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> को खोज</translation>
 <translation id="4879491255372875719">स्वचालित (डिफल्ट)</translation>
+<translation id="4879723019639546076">यो ठेगाना Chrome मा मात्र सेभ गरिएको छ। तपाईं यो ठेगाना Google का सबै उत्पादनहरूमा प्रयोग गर्न चाहनुहुन्छ भने यसलाई आफ्नो Google खाता (<ph name="ACCOUNT" />) मा सेभ गर्नुहोस्।</translation>
 <translation id="4880827082731008257">खोज इतिहास</translation>
 <translation id="4881695831933465202">खोल्नुहोस्</translation>
 <translation id="4881808915112408168">२४ x ३१.५ इन्च</translation>
@@ -2142,6 +2145,7 @@
 <translation id="6279183038361895380">तपाईंको कर्सर देखाउन |<ph name="ACCELERATOR" />| लाई थिच्नुहोस्</translation>
 <translation id="6280223929691119688">यो ठेगानामा डेलिभर गर्न सकिँदैन। कुनै अर्को ठेगाना चयन गर्नुहोस्।</translation>
 <translation id="6284292079994426700">२६ x ३८ इन्च</translation>
+<translation id="6284517535531159884">भेरिएसन सिडको प्रकार</translation>
 <translation id="6285507000506177184">Chrome मा डाउनलोडहरू व्यवस्थापन गर्नुहोस्, तपाईं आफूले Chrome मा डाउनलोड गरेका फाइल व्यवस्थापन गर्न चाहनुहुन्छ भने Enter थिच्नुहोस्</translation>
 <translation id="6289939620939689042">पृष्ठको रङ</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2316,6 +2320,7 @@
 <translation id="6716672519412350405"><ph name="URL" /> ले तपाईं वरपरको ठाउँको 3D नक्सा बनाउन र क्यामेराको अवस्था पत्ता लगाउन चाहन्छ</translation>
 <translation id="6718612893943028815">क्यामेरा प्रयोग गर्ने हो?</translation>
 <translation id="6721678857435001674">आफ्नो सुरक्षा साँचोको ब्रान्डको नाम र मोडेल हेर्नुहोस्</translation>
+<translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">क्यामेरा</translation>
 <translation id="6738516213925468394">तपाईंको डेटा तपाईंको <ph name="BEGIN_LINK" />पासफ्रेज सिंक गर्नुहोस्<ph name="END_LINK" /> मार्फत <ph name="TIME" /> मा इन्क्रिप्ट गरियो। सिंक प्रक्रिया सुरु गर्न उक्स पासफ्रेज प्रविष्टि गर्नुहोस्।</translation>

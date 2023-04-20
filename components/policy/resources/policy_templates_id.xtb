@@ -327,7 +327,6 @@ Jika kebijakan ini tidak disetel, kebijakan<ph name="ASK_WINDOW_MANAGEMENT_POLIC
 
 Tindakan ini akan menggantikan kebijakan <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> yang sudah tidak digunakan lagi.</translation>
 <translation id="129206366270737897">Menonaktifkan semua metode <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> asinkron.</translation>
-<translation id="129392056654547767">Image firmware UEFI yang digunakan oleh VM. Hal ini merupakan tindakan sementara selagi kami mengemasnya sebagai DLC ChromeOS.</translation>
 <translation id="1294263471858445589">Mengaktifkan autentikasi pasif di sesi samaran dan reguler.</translation>
 <translation id="1295737447968372331">Mengaktifkan dikte di layar login</translation>
 <translation id="1297182715641689552">Gunakan skrip proxy .pac</translation>
@@ -582,7 +581,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di Pengelolaan Cloud Browser Chrome. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="1530812829012954197">Selalu urai pola URL berikut di browser host</translation>
 <translation id="1542491165152947087">Izinkan pengguna mengaktifkan atau menonaktifkan setelan Topik iklan <ph name="PRIVACY_SANDBOX_NAME" /> di perangkat mereka.</translation>
-<translation id="1547424904796464052">Hash SHA-256 dengan enkode heksadesimal pada image firmware.</translation>
 <translation id="1550295162561011575">Menyetel kebijakan ini memungkinkan administrator mengonfigurasi otomatisasi untuk meluncurkan aplikasi di perangkat <ph name="PRODUCT_NAME" />. Aplikasi ini dapat diluncurkan saat login pengguna, atau pengguna dapat meluncurkannya bersama dari peluncur.</translation>
 <translation id="1552418937045050762">Jika setelan ini diaktifkan, pengguna akan diizinkan memilih untuk menggunakan Berbagi Langsung yang memungkinkan mereka mengirim dan menerima file dari pengguna terdekat.
 
@@ -2310,6 +2308,33 @@ Kebijakan ini bersifat sementara dan akan dihapus pada masa mendatang.</translat
 <translation id="3125472566440502628">Nonaktifkan Klik untuk Diucapkan</translation>
 <translation id="3126748868885248792">Tombol kanan menjadi tombol utama</translation>
 <translation id="3128072319047570212">Setelan keygen</translation>
+<translation id="3129155711165832367">Sertifikat X.509 dapat mengenkode batasan, seperti Batasan Nama,
+di ekstensi dalam sertifikat. RFC 5280 menetapkan bahwa menerapkan
+batasan tersebut pada sertifikat trust anchor bersifat opsional. Mulai
+<ph name="PRODUCT_NAME" /> 112, batasan
+dalam sertifikat tersebut yang dimuat dari penyimpanan sertifikat platform kini akan
+diterapkan.
+
+Kebijakan ini dibuat sebagai penghentian sementara jika perusahaan mengalami
+masalah dengan batasan yang dienkode di root pribadinya. Dalam hal ini,
+kebijakan ini dapat digunakan untuk menonaktifkan sementara penerapan batasan
+saat mengatasi masalah sertifikat.
+
+Jika kebijakan ini tidak disetel atau disetel ke aktif,
+<ph name="PRODUCT_NAME" /> akan menerapkan
+batasan yang dienkode ke trust anchor yang dimuat dari trust store platform.
+
+Jika kebijakan ini disetel ke nonaktif,
+<ph name="PRODUCT_NAME" /> tidak akan menerapkan
+batasan yang dienkode ke trust anchor yang dimuat dari trust store platform.
+
+Pada <ph name="PRODUCT_NAME" /> versi 112,
+kebijakan ini tidak akan berpengaruh jika
+kebijakan
+<ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> dinonaktifkan.
+
+Kebijakan ini akan dihapus dari
+<ph name="PRODUCT_NAME" /> versi 115.</translation>
 <translation id="3131703464330936425">Jangan izinkan roaming data seluler</translation>
 <translation id="3135820765957090754">Jika setelan ini diaktifkan, pengguna akan diizinkan untuk menyinkronkan konfigurasi jaringan Wi-Fi antara perangkat <ph name="PRODUCT_OS_NAME" /> dan ponsel Android yang terhubung. Sebelum konfigurasi jaringan Wi-Fi dapat disinkronkan, pengguna harus secara eksplisit memilih untuk menggunakan fitur ini dengan menyelesaikan alur penyiapan.
 
@@ -4039,6 +4064,7 @@ Jika kebijakan tidak disetel, pengguna akan diizinkan mengubah daftar aplikasi t
 <translation id="4693779768620889402">Tujuan berbasis ekstensi</translation>
 <translation id="4694138212536142867">Aktifkan pelaporan status hardware perangkat</translation>
 <translation id="4697581738794063407">Mengontrol fitur filter parameter URL</translation>
+<translation id="4698895924806859508">Jangan laporkan peristiwa jaringan</translation>
 <translation id="4699172675775169585">Gambar dan file dalam cache</translation>
 <translation id="4699592681017489215">Kebijakan ini mengonfigurasi tombol lokal yang dapat digunakan untuk menonaktifkan pemeriksaan intersepsi DNS. Pemeriksaan ini berupaya mencari tahu apakah browser berada di balik proxy yang mengalihkan nama host tidak dikenal.
 
@@ -7095,6 +7121,7 @@ Perilaku ini akan menggantikan kebijakan <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_
       Catatan: Jika tindakan yang diambil adalah Penangguhan, <ph name="PRODUCT_OS_NAME" /> dapat disiapkan secara terpisah untuk mengunci atau tidak mengunci layar sebelum ditangguhkan.</translation>
 <translation id="7477149584454865826">Tanda boolean menunjukkan apakah IPP Everywhere harus digunakan untuk menyiapkan printer.</translation>
 <translation id="7477231245051133709">Mengaktifkan fitur aksesibilitas audio mono</translation>
+<translation id="7479408102162550711">Laporkan peristiwa jaringan</translation>
 <translation id="7480826412572122600">Daftar setelan layanan Chrome Enterprise Connectors yang akan diterapkan ke <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> Enterprise Connector, yang aktif saat file didownload di Chrome.
 
       Kolom <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> digunakan untuk menentukan apakah konektor perlu mengirimkan file untuk dianalisis saat didownload dari halaman tertentu, dan jenis tag yang perlu disertakan dalam permintaan analisis untuk file tersebut. Tag yang sesuai dengan pola 'enable' akan disertakan dalam permintaan analisis jika URL halaman cocok dengan pola yang terkait dengan tag tersebut, selama tidak ada pola 'disable' ber-tag sama yang cocok dengan URL halaman. Analisis dilakukan jika terdapat minimal 1 tag yang disertakan dalam permintaan.
@@ -7494,6 +7521,10 @@ kebijakan ini saat browser berjalan.</translation>
       Menyetel kebijakan ke Salah (False) atau membiarkannya tidak disetel dapat memblokir konten <ph name="FLASH_PLUGIN_NAME" /> dari asal lain atau konten kecil.
 
       Catatan: untuk mengontrol situs mana yang dapat menjalankan <ph name="FLASH_PLUGIN_NAME" />, lihat kebijakan ini: <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, <ph name="PLUGINS_ALLOWED_FOR_URLS_POLICY_NAME" />, dan <ph name="PLUGINS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7804859754080118507">Melaporkan peristiwa koneksi jaringan dan kekuatan sinyal pada perangkat terdaftar.
+
+      Jika kebijakan disetel ke salah (false) atau tidak disetel, informasi tidak akan dilaporkan.
+      Jika kebijakan disetel ke benar (true), peristiwa jaringan perangkat akan dilaporkan.</translation>
 <translation id="780629758750905699">Mengizinkan penambahan akun Family Link ke perangkat</translation>
 <translation id="7807120658089613760">Mengonfigurasi kamera, setelan browser, setelan OS, pemindaian, web store, canvas, jelajahi, dan fitur-fitur crosh untuk dinonaktifkan</translation>
 <translation id="7807139251387225825">Daftar jenis yang harus dikecualikan dari sinkronisasi</translation>
@@ -7744,7 +7775,6 @@ juga aman.</translation>
 <translation id="802776363472387903">Hash SHA-256 gambar <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Aktifkan penyedia penelusuran default dan izinkan pengguna mengubah daftar penyedia penelusuran</translation>
 <translation id="8029201909194194377">Durasi sesi maksimum yang diizinkan untuk koneksi akses jarak jauh</translation>
-<translation id="8033908599068513676">URL image firmware untuk didownload.</translation>
 <translation id="8035570672225663428">Aktifkan model pengisian daya adaptif untuk menunda proses pengisian daya guna memperpanjang masa pakai baterai</translation>
 <translation id="8044493735196713914">Laporkan mode boot perangkat</translation>
 <translation id="8044720778481009876">Tujuan <ph name="CLOUD_PRINT_NAME" /> dan 'Simpan ke Google Drive' (Tidak digunakan lagi)</translation>

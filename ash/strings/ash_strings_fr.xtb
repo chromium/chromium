@@ -225,6 +225,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1978498689038657292">Saisie de texte</translation>
 <translation id="1980808257969311265">Rejoindre <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Afficher la semaine précédente</translation>
+<translation id="1986150224850161328">Assurez-vous que votre téléphone et votre Chromebook sont connectés au même réseau, puis réessayez. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Impossible de capturer des contenus</translation>
 <translation id="1990046457226896323">Fichiers vocaux téléchargés</translation>
 <translation id="1993072747612765854">En savoir plus sur la dernière mise à jour <ph name="SYSTEM_APP_NAME" /></translation>
@@ -373,6 +374,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2761723519669354964">Ouvrir l'élément sélectionné depuis l'étagère</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> géré par <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Quitter le mode de capture</translation>
+<translation id="2785499565474703580">1 appareil connecté</translation>
 <translation id="2791421900609674576">Des recommandations s'affichent pour vous proposer de reprendre où vous avez arrêté. Vous pouvez appuyer dessus de manière prolongée pour les supprimer.</translation>
 <translation id="2792498699870441125">Alt + Recherche</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1276,6 +1278,7 @@ Nouvelle installation</translation>
 <translation id="6941333068993625698">Envoyer des commentaires</translation>
 <translation id="6942518653766415536">Menu du format d'enregistrement</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
+<translation id="6945922087561257829">Votre téléphone utilise un réseau mobile. Assurez-vous que votre téléphone et votre Chromebook sont connectés au même réseau Wi-Fi, puis réessayez. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Désactivé. Contactez votre opérateur.</translation>
 <translation id="6961121602502368900">Couper le son du téléphone n'est pas disponible dans le profil professionnel</translation>
 <translation id="6961840794482373852">Le raccourci clavier Alt+Flèche vers le haut a été modifié. Pour utiliser la touche Page précédente, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Flèche vers le haut.</translation>
@@ -1330,6 +1333,7 @@ Nouvelle installation</translation>
 <translation id="7188494361780961876">Le menu a été déplacé dans l'angle supérieur gauche de l'écran.</translation>
 <translation id="7189412385142492784">À quelle distance se trouve Vénus</translation>
 <translation id="7198435252016571249">Appareil photo aligné sur l'angle inférieur droit. Conflit avec la surface du système.</translation>
+<translation id="7219573373513695352">Aucun appareil connecté</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ce Chromebook doit redémarrer pour installer une mise à jour. Ceci peut prendre jusqu'à une minute.</translation>
 <translation id="7256634071279256947">Micro arrière</translation>
 <translation id="7258828758145722155">Modifié hier</translation>
@@ -1480,6 +1484,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7902625623987030061">Appuyez sur le lecteur d'empreinte</translation>
 <translation id="7904094684485781019">L'administrateur de ce compte a désactivé la connexion multicompte.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> appareils connectés</translation>
 <translation id="7930731167419639574">Les paroles sont maintenant traitées localement et la dictée fonctionne hors connexion.</translation>
 <translation id="7932451802722951285">Ouvrir dans Google Agenda</translation>
 <translation id="7933084174919150729">L'Assistant Google n'est disponible que pour le profil principal.</translation>

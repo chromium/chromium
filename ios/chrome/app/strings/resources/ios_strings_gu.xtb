@@ -134,6 +134,7 @@
 <translation id="1820259098641718022">વાંચન સૂચિમાં ઉમેર્યું</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{ચેડાં કરાયેલા પાસવર્ડ}=1{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}one{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}other{ચેડાં કરાયેલા {COUNT} પાસવર્ડ}}</translation>
 <translation id="1832848789136765277">તમે તમારો સિંક કરેલો ડેટા ગમે ત્યારે ઍક્સેસ કરી શકો છો, એની ખાતરી કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
+<translation id="1836891464494477513">{count,plural, =1{તમારા Google એકાઉન્ટ {email}માં બુકમાર્ક સાચવવામાં આવ્યું}one{તમારા Google એકાઉન્ટ {email}માં બુકમાર્ક સાચવવામાં આવ્યું}other{તમારા Google એકાઉન્ટ {email}માં બુકમાર્ક સાચવવામાં આવ્યા}}</translation>
 <translation id="1870148520156231997">પાસવર્ડ જણાવો</translation>
 <translation id="1872096359983322073">ટોર્ચ</translation>
 <translation id="1883255238294161206">સૂચિ સંકુચિત કરો</translation>
@@ -357,7 +358,6 @@
 <translation id="3305294846493618482">વધુ</translation>
 <translation id="3311748811247479259">બંધ</translation>
 <translation id="3324193307694657476">સરનામાં 2</translation>
-<translation id="3328459813621383194">નિષ્ક્રિય ટૅબ ખસેડો</translation>
 <translation id="3328801116991980348">સાઇટ માહિતી</translation>
 <translation id="3344485292736684439">{count,plural, =1{તમારા એકાઉન્ટ {email}માં "{title}" બુકમાર્ક સાચવવામાં આવ્યું}one{તમારા એકાઉન્ટ {email}માં "{title}" બુકમાર્ક સાચવવામાં આવ્યું}other{તમારા એકાઉન્ટ {email}માં "{title}" બુકમાર્ક સાચવવામાં આવ્યા}}</translation>
 <translation id="3371831930909698441">અનુવાદ ઉપલબ્ધ છે. વિકલ્પો સ્ક્રીનની નીચેની બાજુએ ઉપલબ્ધ રહે છે.</translation>
@@ -498,6 +498,7 @@
 <translation id="4343046787186034850">કૅમેરા અને માઇક્રોફોનના ઍક્સેસની મંજૂરી આપવામાં આવી છે</translation>
 <translation id="4359125752503270327">આ પેજ બીજી અ‍ૅપ્લિકેશનમાં ખુલશે.</translation>
 <translation id="4371526908359194219">ઇમેઇલ નોટિફિકેશન</translation>
+<translation id="4371591986692297148">નિષ્ક્રિય</translation>
 <translation id="4375040482473363939">QR કોડ શોધો</translation>
 <translation id="4378154925671717803">ફોન</translation>
 <translation id="4389019817280890563">ભાષા બદલવા માટે ટૅપ કરો.</translation>
@@ -628,7 +629,6 @@
 <translation id="5168414296986405587">iPadOS માટે બનાવવામાં આવેલું</translation>
 <translation id="5173088371991956744">સિંકને તમારી ઓળખની ચકાસણી કરવાની જરૂર પડે છે</translation>
 <translation id="5176312250994681348">તાજેતરનો પાસવર્ડ રાખો</translation>
-<translation id="51802232683641391">{count,plural, =1{Android પરથી તમે છોડેલા ટૅબને અહીં લાવીએ?}one{Android પરથી તમે છોડેલા ટૅબને અહીં લાવીએ?}other{Android પરથી તમે છોડેલા ટૅબને અહીં લાવીએ?}}</translation>
 <translation id="5181140330217080051">ડાઉનલોડ કરી રહ્યું છે</translation>
 <translation id="5184329579814168207">Chrome માં ખોલો</translation>
 <translation id="5186185447130319458">ખાનગી</translation>
@@ -906,7 +906,6 @@
 <translation id="6807889908376551050">બધું બતાવો...</translation>
 <translation id="681368974849482173">આઇટમ બનાવી</translation>
 <translation id="6822587385560699678">જ્યારે આ ચાલુ હોય, ત્યારે પાસવર્ડ <ph name="ACCOUNT" />માં સાચવવામાં આવે છે. જ્યારે આ બંધ હોય, ત્યારે પાસવર્ડ માત્ર આ ડિવાઇસ પર સાચવવામાં આવે છે.</translation>
-<translation id="683022620450280906">સાચવેલા પાસવર્ડનો ઉપયોગ તમે કોઈપણ ડિવાઇસ પર કરી શકો છો. તેમને <ph name="EMAIL" /> માટેના Google પાસવર્ડ મેનેજરમાં સાચવવામાં આવે છે</translation>
 <translation id="6831043979455480757">અનુવાદ કરો</translation>
 <translation id="6842136130964845393">તમે તમારા સાચવેલા પાસવર્ડ ગમે ત્યારે ઍક્સેસ કરી શકો છો, એની ખાતરી કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="6851516051005285358">ડેસ્કટૉપ સાઇટની વિનંતી કરો</translation>
@@ -1044,6 +1043,7 @@
 <translation id="7845466610722898">વાંચન સૂચિ બતાવો</translation>
 <translation id="784551991304901159">કન્ટેન્ટ જોવા માટે, મેનૂમાંથી 'ચાલુ કરો' પસંદ કરો</translation>
 <translation id="7846158885638438868">{count,plural, =1{"{title}"માં બુકમાર્ક કર્યું}one{"{title}"માં બુકમાર્ક કર્યું}other{"{title}"માં બુકમાર્ક કર્યા}}</translation>
+<translation id="7852017611907717397">છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="7853202427316060426">પ્રવૃત્તિ</translation>
 <translation id="7856733331829174190">ડાઉનલોડ ન કરી શક્યાં</translation>
 <translation id="785938070103630874">પાસવર્ડ, ચુકવણી પદ્ધતિઓ અથવા સરનામું વગેરે ખોલો</translation>

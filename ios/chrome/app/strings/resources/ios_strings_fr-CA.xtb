@@ -342,6 +342,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Votre modification n'a pas pu être enregistrée.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3260117527409269737">Cette adresse est enregistrée uniquement dans Chrome. Pour l'utiliser dans tous les produits Google, enregistrez-le dans votre compte Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="3264775633254836593">Remplissage automatique des mots de passe</translation>
 <translation id="3268451620468152448">Onglets ouverts</translation>
 <translation id="3272527697863656322">Annuler</translation>
@@ -352,7 +353,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3305294846493618482">plus</translation>
 <translation id="3311748811247479259">Désactivé</translation>
 <translation id="3324193307694657476">Ligne adresse 2</translation>
-<translation id="3328459813621383194">Déplacer les onglets inactifs</translation>
 <translation id="3328801116991980348">Information sur le site</translation>
 <translation id="3344485292736684439">{count,plural, =1{Favori enregistré dans « {title} » dans votre compte, {email}}one{Favoris enregistrés dans « {title} » dans votre compte, {email}}other{Favoris enregistrés dans « {title} » dans votre compte, {email}}}</translation>
 <translation id="3371831930909698441">La traduction est disponible. Vous trouverez les options vers le bas de l'écran.</translation>
@@ -493,6 +493,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4343046787186034850">Accès à l'appareil photo et au microphone autorisé</translation>
 <translation id="4359125752503270327">Cette page s'ouvrira dans une autre application.</translation>
 <translation id="4371526908359194219">Notifications par courriel</translation>
+<translation id="4371591986692297148">Inactif</translation>
 <translation id="4375040482473363939">Recherche de code QR</translation>
 <translation id="4378154925671717803">Numéro de téléphone</translation>
 <translation id="4389019817280890563">Toucher pour changer la langue.</translation>
@@ -622,7 +623,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5168414296986405587">Conçu pour iPadOS</translation>
 <translation id="5173088371991956744">La synchronisation doit vérifier qu'il s'agit bien de vous</translation>
 <translation id="5176312250994681348">Conserver le mot de passe récent</translation>
-<translation id="51802232683641391">{count,plural, =1{Reprendre l'onglet que vous avez laissé sur Android?}one{Reprendre l'onglet que vous avez laissé sur Android?}other{Reprendre les onglets que vous avez laissés sur Android?}}</translation>
 <translation id="5181140330217080051">Téléchargement en cours...</translation>
 <translation id="5184329579814168207">Ouvrir dans Chrome</translation>
 <translation id="5186185447130319458">Privé</translation>
@@ -898,7 +898,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6807889908376551050">Tout afficher…</translation>
 <translation id="681368974849482173">Élément créé</translation>
 <translation id="6822587385560699678">Lorsque cette option est activée, les mots de passe sont enregistrés dans <ph name="ACCOUNT" />. Si cette option est désactivée, les mots de passe sont enregistrés uniquement sur cet appareil.</translation>
-<translation id="683022620450280906">Vous pouvez utiliser des mots de passe enregistrés sur n'importe quel appareil. Ils sont enregistrés dans le gestionnaire de mots de passe Google de ce compte : <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Traduire</translation>
 <translation id="6842136130964845393">Pour vous assurer de toujours pouvoir accéder à vos mots de passe enregistrés, vérifiez qu'il s'agit bien de vous</translation>
 <translation id="6851516051005285358">Voir la version pour ordinateur</translation>

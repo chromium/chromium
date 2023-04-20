@@ -307,6 +307,7 @@
 <translation id="1658918301167915956">Bluetooth デバイス</translation>
 <translation id="1662550410081243962">お支払い方法の保存と入力</translation>
 <translation id="1663943134801823270">Chrome に保存されているクレジット カードと住所です。[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で管理できます。</translation>
+<translation id="1668071460721346172">メールを送信</translation>
 <translation id="1671391448414634642">今後、<ph name="SOURCE_LANGUAGE" />のページは<ph name="TARGET_LANGUAGE" />に翻訳されます。</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />から<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">短辺から</translation>
@@ -367,6 +368,7 @@
 <translation id="1806174020048213474">このアプリは Wi-Fi 認証情報のインストール権限をリクエストしています。セットアップが完了すると、<ph name="DEVICE_TYPE" /> は登録されている Wi-Fi ネットワークに自動的に接続します。これらの認証情報を削除するには、アプリをアンインストールします。</translation>
 <translation id="1807246157184219062">明</translation>
 <translation id="1807528111851433570">開始シート</translation>
+<translation id="180757923930449935">（64 ビット エミュレーション）</translation>
 <translation id="180991881384371158">CVC コードはカードの裏面に記載されています。署名ボックスの右上にある末尾 3 桁のコードです。</translation>
 <translation id="181000283860817563">複数のサイトで価格をトラッキングする</translation>
 <translation id="1810391395243432441">画面ロックを使用したパスワードの保護</translation>
@@ -523,7 +525,6 @@
 <translation id="2204482073374652408">更新が完了しました。</translation>
 <translation id="22081806969704220">トレイ 3</translation>
 <translation id="2210794033760923560">レポートをアップロード</translation>
-<translation id="2212579473415663542">この住所は Google アカウント（<ph name="ACCOUNT" />）に保存されました。住所はすべてのデバイスの各種 Google サービスで使用できます。</translation>
 <translation id="2212735316055980242">ポリシーが見つかりません</translation>
 <translation id="2213606439339815911">エントリを取得しています...</translation>
 <translation id="2213612003795704869">ページが印刷されました</translation>
@@ -1224,6 +1225,7 @@
 <translation id="4031179711345676612">マイクを使用できます</translation>
 <translation id="4040350669425716613">大学</translation>
 <translation id="4047351652147966654">18x24 インチ</translation>
+<translation id="4047620889508350431">Google アカウントのアドレスを使用できるようになりました。</translation>
 <translation id="405399507749852140">値下げしたサイトがある場合に通知します</translation>
 <translation id="4056223980640387499">セピア</translation>
 <translation id="4063063121357725926">Google でカートの割引情報を検索</translation>
@@ -1586,6 +1588,7 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{なし}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" />、<ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> を検索</translation>
 <translation id="4879491255372875719">自動（デフォルト）</translation>
+<translation id="4879723019639546076">この住所は Chrome にのみ保存されます。Google の各種サービスで使用するには、Google アカウント（<ph name="ACCOUNT" />）に保存してください。</translation>
 <translation id="4880827082731008257">履歴を検索</translation>
 <translation id="4881695831933465202">開く</translation>
 <translation id="4881808915112408168">24x31.5 インチ</translation>
@@ -2143,6 +2146,7 @@
 <translation id="6279183038361895380">カーソルを表示するには |<ph name="ACCELERATOR" />| を押します</translation>
 <translation id="6280223929691119688">この住所には配達できません。別の住所を選択してください。</translation>
 <translation id="6284292079994426700">26x38 インチ</translation>
+<translation id="6284517535531159884">バリエーション シードタイプ</translation>
 <translation id="6285507000506177184">[Chrome でのダウンロードを管理] ボタンです。Enter キーを押すと、Chrome でダウンロードしたファイルを管理できます</translation>
 <translation id="6289939620939689042">ページの色</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2316,6 +2320,7 @@
 <translation id="6716672519412350405"><ph name="URL" /> が周囲の 3D マップの作成とカメラ位置の追跡を求めています</translation>
 <translation id="6718612893943028815">カメラを使用しますか？</translation>
 <translation id="6721678857435001674">セキュリティ キーのメーカーとモデルの読み取り</translation>
+<translation id="6726832600570791992">（32 ビット エミュレーション）</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">カメラ</translation>
 <translation id="6738516213925468394">データは <ph name="TIME" />に<ph name="BEGIN_LINK" />同期パスフレーズ<ph name="END_LINK" />で暗号化されました。同期を開始するには、同期パスフレーズを入力してください。</translation>

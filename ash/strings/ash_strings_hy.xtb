@@ -225,6 +225,7 @@
 <translation id="1978498689038657292">Տեքսի մուտքագրում</translation>
 <translation id="1980808257969311265">Միանալ «<ph name="EVENT_SUMMARY" />» միջոցառմանը</translation>
 <translation id="1982717156487272186">Ցուցադրել նախորդ շաբաթը</translation>
+<translation id="1986150224850161328">Համոզվեք, որ ձեր հեռախոսն ու Chromebook-ը միացած են նույն ցանցին, և նորից փորձեք։ <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Հնարավոր չէ տեսագրել բովանդակությունը</translation>
 <translation id="1990046457226896323">Ենթագրերի ֆայլերը ներբեռնվել են</translation>
 <translation id="1993072747612765854">Իմացեք ավելին <ph name="SYSTEM_APP_NAME" /> հավելվածի վերջին թարմացման մասին</translation>
@@ -373,6 +374,7 @@
 <translation id="2761723519669354964">Բացել առանձնացված տարրը դարակից</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից</translation>
 <translation id="2782591952652094792">Դուրս գալ տեսագրման ռեժիմից</translation>
+<translation id="2785499565474703580">Միացած է 1 սարք</translation>
 <translation id="2791421900609674576">Դուք առաջարկություններ կտեսնեք և կկարողանաք շարունակել այն պահից, որտեղ կանգ էիք առել։ Առաջարկությունները հեռացնելու համար հպեք և պահեք։</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1276,6 +1278,7 @@
 <translation id="6941333068993625698">Կարծիք հայտնել</translation>
 <translation id="6942518653766415536">Տեսագրման ձևաչափի ընտրացանկ</translation>
 <translation id="6945221475159498467">Ընտրել</translation>
+<translation id="6945922087561257829">Ձեր հեռախոսը բջջային ցանց է օգտագործում։ Համոզվեք, որ ձեր հեռախոսն ու Chromebook-ը միացած են նույն Wi-Fi ցանցին, և նորից փորձեք։ <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Ակտիվացված չէ։ Դիմեք ձեր կապի օպերատորին։</translation>
 <translation id="6961121602502368900">«Ծանուցումների անջատում հեռախոսում» գործառույթը հասանելի չէ աշխատանքային պրոֆիլում</translation>
 <translation id="6961840794482373852">«Alt + վեր սլաք» ստեղնային դյուրանցումը փոփոխվել է։ Page Up ստեղնի գործողություններն օգտագործելու համար սեղմեք «<ph name="LAUNCHER_KEY_NAME" /> + վեր սլաք» ստեղնային դյուրանցումը։</translation>
@@ -1330,6 +1333,7 @@
 <translation id="7188494361780961876">Ընտրացանկը տեղափոխվեց էկրանի վերևի ձախ անկյուն։</translation>
 <translation id="7189412385142492784">Որքան հեռու է Վեներան</translation>
 <translation id="7198435252016571249">Տեսախցիկի պատկերն ամրացված է ներքևի աջ անկյունում, քանի որ ծածկում էր համակարգի միջերեսի տարրերը։</translation>
+<translation id="7219573373513695352">Կապված սարքեր չկան</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />։ Այս Chromebook-ը պետք է վերագործարկվի՝ թարմացումը կիրառելու համար։ Դա կարող է տևել մինչև 1 րոպե։</translation>
 <translation id="7256634071279256947">Հետևի խոսափող</translation>
 <translation id="7258828758145722155">Երեկ փոփոխել եք</translation>
@@ -1479,6 +1483,7 @@
 <translation id="7902625623987030061">Հպեք մատնահետքի սկաներին</translation>
 <translation id="7904094684485781019">Այս հաշվի ադմինիստրատորը բազմակի մուտք չի թույլատրել:</translation>
 <translation id="7911118814695487383">Լինուքս</translation>
+<translation id="7917760201509801422">Միացած է <ph name="DEVICECOUNT" /> սարք</translation>
 <translation id="7930731167419639574">Խոսքն այժմ մշակվում է այս սարքում, և թելադրումն աշխատում է առանց ինտերնետի։</translation>
 <translation id="7932451802722951285">Բացել Google Օրացույցում</translation>
 <translation id="7933084174919150729">Google Օգնականը հասանելի է միայն հիմնական պրոֆիլում։</translation>

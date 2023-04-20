@@ -358,7 +358,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3305294846493618482">mais</translation>
 <translation id="3311748811247479259">Desativado</translation>
 <translation id="3324193307694657476">Morada 2</translation>
-<translation id="3328459813621383194">Mover separadores inativos</translation>
 <translation id="3328801116991980348">Informações do site</translation>
 <translation id="3344485292736684439">{count,plural, =1{Marcador guardado em "{title}" na sua conta, {email}}other{Marcadores guardados em "{title}" na sua conta, {email}}}</translation>
 <translation id="3371831930909698441">A tradução está disponível. Opções disponíveis junto à parte inferior do ecrã.</translation>
@@ -499,6 +498,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4343046787186034850">Acesso à câmara e ao microfone permitido</translation>
 <translation id="4359125752503270327">Esta página abre noutra aplicação.</translation>
 <translation id="4371526908359194219">Notificações por email</translation>
+<translation id="4371591986692297148">Inativo</translation>
 <translation id="4375040482473363939">Pesquisa de códigos QR</translation>
 <translation id="4378154925671717803">Telemóvel</translation>
 <translation id="4389019817280890563">Toque para alterar o idioma.</translation>
@@ -629,7 +629,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5168414296986405587">Criado para o iPadOS</translation>
 <translation id="5173088371991956744">A sincronização precisa de validar a sua identidade</translation>
 <translation id="5176312250994681348">Manter palavra-passe recente</translation>
-<translation id="51802232683641391">{count,plural, =1{Retomar o separador que deixou no Android?}other{Retomar os separadores que deixou no Android?}}</translation>
 <translation id="5181140330217080051">A transferir</translation>
 <translation id="5184329579814168207">Abrir no Chrome</translation>
 <translation id="5186185447130319458">Privado</translation>
@@ -907,7 +906,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6807889908376551050">Mostrar todos...</translation>
 <translation id="681368974849482173">Item criado</translation>
 <translation id="6822587385560699678">Quando esta opção está ativada, as palavras-passe são guardadas na conta <ph name="ACCOUNT" />. Quando esta opção está desativada, as palavras-passe são guardadas apenas neste dispositivo.</translation>
-<translation id="683022620450280906">Pode utilizar palavras-passe guardadas em qualquer dispositivo. São guardadas no Gestor de palavras-passe da Google de <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="6842136130964845393">Para se certificar de que pode sempre aceder às suas palavras-passe guardadas, valide a sua identidade</translation>
 <translation id="6851516051005285358">Pedir site para computador</translation>

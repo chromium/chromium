@@ -850,6 +850,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5626134646977739690">Nimi:</translation>
 <translation id="5628604359369369630">Lukematon – luettavissa ilman verkkoyhteyttä</translation>
 <translation id="5639724618331995626">Salli kaikki sivustot</translation>
+<translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Hakuhistoriaa<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />muita toimintoja<ph name="END_LINK2" /> voidaan tallentaa Google-tilillesi.</translation>
 <translation id="5648166631817621825">Viimeiset seitsemän päivää</translation>
 <translation id="5655963694829536461">Hae omista latauksistasi</translation>
 <translation id="5659593005791499971">Sähköposti</translation>

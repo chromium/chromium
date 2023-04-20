@@ -1832,6 +1832,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2508428939232952663">Google Play Store Account</translation>
 <translation id="2509495747794740764">Scale amount must be a number between 10 and 200.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2510332280791537533">You're getting standard security protection for this Chrome profile</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (selected)</translation>
 <translation id="2513396635448525189">Login image</translation>
 <translation id="2514326558286966059">Unlock faster with your fingerprint</translation>
@@ -4676,7 +4677,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5063480226653192405">Usage</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Manage Secure DNS in Chrome OS settings</translation>
-<translation id="5066160542186949327">Move to another folder</translation>
 <translation id="5067399438976153555">Always on</translation>
 <translation id="5067867186035333991">Ask if <ph name="HOST" /> wants to access your microphone</translation>
 <translation id="5068553687099139861">show passwords</translation>
@@ -4929,6 +4929,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5294097441441645251">Must start with a lowercase character or underscore</translation>
 <translation id="5294618183559481278">Your <ph name="DEVICE_TYPE" /> uses a built-in sensor to detect people in front of your device. All data is processed on your device immediately and then deleted. Sensor data is never sent to Google. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="5296350763804564124">Hear spoken feedback so that you can use your device without looking at the screen. Braille feedback is available with a connected device.</translation>
+<translation id="5296536303670088158">You have Chrome's strongest security against harmful websites</translation>
 <translation id="5297005732522718715">Refresh tethering configuration</translation>
 <translation id="5297082477358294722">Password saved. View and manage saved passwords in your <ph name="SAVED_PASSWORDS_STORE" />.</translation>
 <translation id="5297946558563358707">When someone else looks at your screen, show the privacy eye icon on the bottom right of your screen</translation>

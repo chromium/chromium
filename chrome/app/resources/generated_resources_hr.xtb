@@ -498,6 +498,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
             <ph name="LINE_BREAKS" />
            To neće utjecati na oznake, povijest i spremljene zaporke.</translation>
 <translation id="1425040197660226913">Prijenos nije moguć. Upotrijebite sliku manju od 20 MB.</translation>
+<translation id="1425282319410216613">Ne prikazuj kad preuzimanja završe</translation>
 <translation id="1426410128494586442">Da</translation>
 <translation id="142655739075382478">Aplikacija <ph name="APP_NAME" /> je blokirana</translation>
 <translation id="1426870617281699524">Kliknite Pokušaj ponovo i prihvatite obavijest na računalu</translation>
@@ -803,6 +804,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1666232093776384142">Onemogućivanje zaštite pristupa podacima za periferne uređaje</translation>
 <translation id="1667842670298352129">Poslušajte naglas pročitani tekst. Prvo odaberite ikonu Odabira za govor pri dnu zaslona, a zatim istaknite tekst. Možete koristiti i tipkovni prečac: istaknite tekst, a zatim pritisnite Pretraživanje + S.</translation>
 <translation id="1668435968811469751">Prijavite se ručno</translation>
+<translation id="1668804837842452164">Spremi u <ph name="BRAND" /> za <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Saznajte više o prijedlozima</translation>
 <translation id="1670399744444387456">Osnovne</translation>
 <translation id="1673137583248014546"><ph name="URL" /> želi vidjeti marku i model vašeg sigurnosnog ključa</translation>
@@ -1569,6 +1571,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Napomena<ph name="END_BOLD" />: sustav će se ponovo pokrenuti tijekom postupka.</translation>
 <translation id="23030561267973084">Proširenje "<ph name="EXTENSION_NAME" />" zatražilo je dodatne dozvole.</translation>
+<translation id="2306794767168143227">Spremi u <ph name="BRAND" /> na ovom uređaju</translation>
 <translation id="2307462900900812319">Konfiguriraj mrežu</translation>
 <translation id="2307553512430195144">Ako prihvatite, Google asistent čekat će u stanju mirovanja da bi detektirao "Hey Google" i pomoću Voice Matcha može prepoznati da govori <ph name="SUPERVISED_USER_NAME" />.
     <ph name="BR" />
@@ -1905,6 +1908,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="25899519884572181">Zatvori način čitača</translation>
 <translation id="2593499352046705383">Prije nego što počnete, izradite sigurnosnu kopiju podataka. Instaliranjem OS-a <ph name="DEVICE_OS" /> prebrisat će se vaš tvrdi disk. Saznajte više na stranici g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Pretražite na Googleu ili unesite URL</translation>
+<translation id="2598710988533271874">Dostupan je novi Chrome</translation>
 <translation id="2599048253926156421">Korisničko ime kopirano je u međuspremnik</translation>
 <translation id="2602501489742255173">Prijeđite prstom prema gore za početak</translation>
 <translation id="2603115962224169880">Očistite računalo</translation>
@@ -3671,6 +3675,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4144468798716165316">Brze naredbe</translation>
 <translation id="4146026355784316281">Uvijek otvori u pregledniku sustava</translation>
 <translation id="4146785383423576110">Vrati na zadano i očisti</translation>
+<translation id="4147099377280085053">Odaberite tablicu brajice</translation>
 <translation id="4147911968024186208">Pokušajte ponovo. Ako se pogreška ponovi, obratite se predstavniku podrške.</translation>
 <translation id="4150201353443180367">Zaslon</translation>
 <translation id="4150569944729499860">Kontekst na zaslonu</translation>
@@ -3892,6 +3897,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4366138410738374926">Ispis je započeo</translation>
 <translation id="4367513928820380646">Pregledajte uklonjena dopuštenja</translation>
 <translation id="4369215744064167350">Zahtjev za web-lokaciju odobren</translation>
+<translation id="436926121798828366">To uvijek možete promijeniti u dijelu <ph name="SETTINGS_LINK" /></translation>
 <translation id="4369735607080757018">Ograničene vrste podataka dijele se između web-lokacija radi mjerenja izvedbe oglasa, kao što je doba dana kad vam se oglas prikazao</translation>
 <translation id="4370975561335139969">Unijeli ste e-adresu i zaporku koje se ne podudaraju</translation>
 <translation id="4374805630006466253">Upotrijebite drugi telefon ili tablet</translation>
@@ -4658,7 +4664,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5063480226653192405">Upotreba</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Upravljanje sigurnim DNS-om u postavkama Chrome OS-a</translation>
-<translation id="5066160542186949327">Premjestite u drugu mapu</translation>
 <translation id="5067399438976153555">Uvijek uključeno</translation>
 <translation id="5067867186035333991">Pitaj ako <ph name="HOST" /> želi pristupiti mikrofonu</translation>
 <translation id="5068553687099139861">prikazati zaporke</translation>
@@ -5229,6 +5234,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="558170650521898289">Potvrda hardverskog upravljačkog programa sustava Microsoft Windows</translation>
 <translation id="5581876958763461074">Sve bilješke</translation>
 <translation id="5581972110672966454">Pridruživanje uređaja domeni nije uspjelo. Pokušajte ponovo ili se obratite vlasniku ili administratoru uređaja. Kôd pogreške: <ph name="ERROR_CODE" />.</translation>
+<translation id="5582634344048669777">8 točaka</translation>
 <translation id="5582839680698949063">Glavni izbornik</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">Želite li spremiti korisničko ime?</translation>
@@ -5885,6 +5891,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6164832038898943453">Dodajte jezike koji će se automatski prevoditi</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6166185671393271715">Uvoz zaporki u Chrome</translation>
+<translation id="6166659775803431">U vašoj košarici</translation>
 <translation id="6169040057125497443">Provjerite mikrofon.</translation>
 <translation id="6169967265765719844">Dopuštenjima za igre i aplikacije instalirane putem Steama može se upravljati u <ph name="LINK_BEGIN" />postavkama aplikacije Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Sendvič</translation>
@@ -6786,6 +6793,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6968288415730398122">Unesite zaporku da biste konfigurirali zaključavanje zaslona</translation>
 <translation id="6969047215179982698">Isključi dijeljenje u blizini</translation>
 <translation id="6969216690072714773">Dodajte nove ili ažurirajte postojeće informacije koje će biti povezane s ovim uređajem.</translation>
+<translation id="696942486482903620">Kad spremite zaporke na Google račun, možete ih koristiti na ovom i svim drugim uređajima na kojima ste prijavljeni</translation>
 <translation id="6970480684834282392">Vrsta pokretanja</translation>
 <translation id="6970543303783413625">Zaporke se ne mogu uvesti jer ih ne možete uvesti više od <ph name="COUNT" /> istodobno.</translation>
 <translation id="6970856801391541997">Ispis određenih stranica</translation>
@@ -7050,6 +7058,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7222204278952406003">Chrome je vaš zadani preglednik</translation>
 <translation id="7222232353993864120">Adresa e-pošte</translation>
 <translation id="7222235798733126207">Ograničeno dijeljenje između web-lokacija</translation>
+<translation id="7222335051802562841">Dovrši ažuriranje</translation>
 <translation id="722408235435815623">{MEMBERS,plural, =1{1 web-lokacija u grupi domene <ph name="FPS_OWNER" />}one{{MEMBERS} web-lokacija u grupi domene <ph name="FPS_OWNER" />}few{{MEMBERS} web-lokacije u grupi domene <ph name="FPS_OWNER" />}other{{MEMBERS} web-lokacija u grupi domene <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Upotrijebi značajku Windows Hello prilikom popunjavanja zaporki</translation>
 <translation id="7225179976675429563">Nedostaje vrsta mreže</translation>
@@ -7241,6 +7250,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7400447915166857470">Želite li se vratiti na <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Postavite vezu na telefonu <ph name="PHONE_NAME" /></translation>
 <translation id="7401778920660465883">Odbacite ovu poruku</translation>
+<translation id="7402198013420237102">Želite li premjestiti spremljene zaporke na Google račun?</translation>
 <translation id="7403642243184989645">Preuzimanje resursa</translation>
 <translation id="7404065585741198296">Telefonom povezanim USB kabelom</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Sigurnosna provjera izvršena je prije sat vremena}one{Sigurnosna provjera izvršena je prije {NUM_HOURS} sata}few{Sigurnosna provjera izvršena je prije {NUM_HOURS} sata}other{Sigurnosna provjera izvršena je prije {NUM_HOURS} sati}}</translation>
@@ -9382,6 +9392,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="952471655966876828">Uređaj će se povezati automatski kad se uključi i upotrebljava</translation>
 <translation id="953434574221655299">Web-lokacije kojima je dopušteno znati kad aktivno koristite uređaj</translation>
 <translation id="956500788634395331">Zaštićeni ste od potencijalno štetnih proširenja</translation>
+<translation id="957179356621191750">6 točaka</translation>
 <translation id="957960681186851048">Ta je web-lokacija pokušala automatski preuzeti više datoteka</translation>
 <translation id="960987915827980018">Još otprilike 1 sat</translation>
 <translation id="962802172452141067">Stablo mape oznaka</translation>

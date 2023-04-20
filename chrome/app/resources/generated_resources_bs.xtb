@@ -807,6 +807,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1666232093776384142">Onemogućite zaštitu pristupa podacima za periferne uređaje</translation>
 <translation id="1667842670298352129">Slušajte određeni tekst koji se čita naglas. Najprije odaberite ikonu Odaberite za govor na dnu ekrana, a zatim istaknite tekst. Možete koristiti i prečicu na tastaturi: Istaknite tekst, a zatim pritisnite tipku za pretraživanje + S.</translation>
 <translation id="1668435968811469751">Prijavi se ručno</translation>
+<translation id="1668804837842452164">Spremi u <ph name="BRAND" /> za <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Saznajte više o prijedlozima</translation>
 <translation id="1670399744444387456">Osnovni</translation>
 <translation id="1673137583248014546"><ph name="URL" /> želi vidjeti proizvođača i model vašeg sigurnosnog ključa</translation>
@@ -1581,6 +1582,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" />  sistem će se ponovo pokrenuti za vrijeme ovog postupka.</translation>
 <translation id="23030561267973084">Ekstenzija "<ph name="EXTENSION_NAME" />" je zatražila dodatna odobrenja.</translation>
+<translation id="2306794767168143227">Spremi u <ph name="BRAND" /> na ovom uređaju</translation>
 <translation id="2307462900900812319">Konfiguriraj mrežu</translation>
 <translation id="2307553512430195144">Ako pristanete, Google Asistent će čekati u načinu rada mirovanja dok ne otkrije frazu "Ok Google" i ne prepozna da <ph name="SUPERVISED_USER_NAME" /> govori pomoću Voice Matcha.
     <ph name="BR" />
@@ -4067,7 +4069,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="450552327874992444">Riječ je već dodana</translation>
 <translation id="4507128560633489176">Podaci su obrisani.</translation>
 <translation id="4507373251891673233">Blokirali ste sve ekstenzije web lokacije <ph name="HOST" /></translation>
-<translation id="4508032221004253235">To aplikacijama i web-lokacijama s dopuštenjem za lokaciju te ChromeOS-u omogućuje upotrebu lokacije određene vašom Wi-Fi ili mobilnom mrežom. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
+<translation id="4508032221004253235">Ovo omogućava aplikacijama i web lokacijama s odobrenjem za lokaciju te ChromeOS-u da koriste lokaciju koju utvrde WiFi i mobilne mreže. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="450867954911715010">Postavke pristupačnosti</translation>
 <translation id="4508765956121923607">Prikaži &amp;izvor</translation>
 <translation id="4509421746503122514">Ponovo pokrenite za ažuriranje</translation>
@@ -4674,7 +4676,6 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5063480226653192405">Korištenje</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Upravljajte sigurnim DNS-om u postavkama ChromeOS-a</translation>
-<translation id="5066160542186949327">Premjestite u drugi folder</translation>
 <translation id="5067399438976153555">Uvijek uključeno</translation>
 <translation id="5067867186035333991">Pitajte me ako <ph name="HOST" /> želi pristupiti mom mikrofonu</translation>
 <translation id="5068553687099139861">prikazati lozinke</translation>
@@ -4860,7 +4861,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5235750401727657667">Zamijeniti stranicu koja se prikazuje kad otvorite novu karticu</translation>
 <translation id="5236374273162681467">Da ih jednostavno koristite na svim svojim uređajima, možete ih premjestiti na Google račun</translation>
 <translation id="523862956770478816">Odobrenja za web lokaciju</translation>
-<translation id="5239752869099890912">Da biste na ovu web-lokaciju primijenili ažurirane postavke za ova proširenja, ponovno učitajte ovu stranicu</translation>
+<translation id="5239752869099890912">Da primijenite ažurirane postavke na ovoj web lokaciji za ove ekstenzije, ponovo učitajte stranicu</translation>
 <translation id="5242724311594467048">Omogućiti "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Pokušajte ponovo za nekoliko trenutaka</translation>
 <translation id="5244474230056479698">Sinhroniziranje s korisničkim računom <ph name="EMAIL" /></translation>
@@ -8139,7 +8140,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8138997515734480534">Status: <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">Fajlovi Google Diska</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
-<translation id="8141260936970642964">Aplikacijama i web-lokacijama te vremenskoj zoni sustava dopusti upotrebu lokacije određene Googleovim uslugama lociranja. Ako je pristup lokaciji isključen, vaša lokacija i dalje može biti vidljiva putem vaše IP adrese.</translation>
+<translation id="8141260936970642964">Dozvoli aplikacijama i web lokacijama te vremenskoj zoni sistema da koriste lokaciju koju utvrdi Googleova usluga lokacije. Ako je pristup lokaciji isključen, lokacija i dalje može biti vidljiva putem IP adrese.</translation>
 <translation id="8141418916163800697">Možete postaviti više funkcija u postavkama Phone Huba</translation>
 <translation id="8141584439523427891">Otvaranje u alternativnom pregledniku</translation>
 <translation id="8141725884565838206">Upravljanje lozinkama</translation>
@@ -8212,7 +8213,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8195737548602430447">Automatski prevedite titlove na ciljni jezik.</translation>
 <translation id="8197673340773315084">Dodajte naziv ili oznaku, kao što je Posao ili Lično</translation>
 <translation id="8198456017687137612">Emitiranje kartice</translation>
-<translation id="8198511718495409170">Da biste na ovu web-lokaciju primijenili ažurirane postavke za <ph name="EXTENSION_NAME" />, ponovno učitajte ovu stranicu</translation>
+<translation id="8198511718495409170">Da primijenite ažurirane postavke za ekstenziju "<ph name="EXTENSION_NAME" />" na ovoj web lokaciji, ponovo učitajte stranicu</translation>
 <translation id="8199300056570174101">Svojstva mreže (usluge) i uređaja</translation>
 <translation id="8200772114523450471">Nastavi</translation>
 <translation id="8200789660596905522">Obavezno prihvatite zahtjev za emitiranje na uređaju <ph name="DEVICE_NAME" />.</translation>

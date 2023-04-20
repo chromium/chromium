@@ -225,6 +225,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1978498689038657292">Hyrjet e tekstit</translation>
 <translation id="1980808257969311265">Bashkohu në <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Shfaq javën e mëparshme</translation>
+<translation id="1986150224850161328">Sigurohu që telefoni yt dhe Chromebook të jenë në të njëjtin rrjet dhe më pas provo përsëri. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Përmbajtja nuk mund të regjistrohet</translation>
 <translation id="1990046457226896323">Skedarët e ligjërimit u shkarkuan</translation>
 <translation id="1993072747612765854">Mëso më shumë rreth përditësimit të fundit të <ph name="SYSTEM_APP_NAME" /></translation>
@@ -373,6 +374,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2761723519669354964">Hap artikullin e theksuar nga rafti</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Dil nga modaliteti i regjistrimit</translation>
+<translation id="2785499565474703580">1 pajisje e lidhur</translation>
 <translation id="2791421900609674576">Do të shohësh rekomandime, në mënyrë që të vazhdosh aty ku e ke lënë. Mund të prekësh dhe të mbash shtypur për të hequr rekomandimet.</translation>
 <translation id="2792498699870441125">Alt+Kërko</translation>
 <translation id="2797741504905337289">Grupi i rafteve</translation>
@@ -1277,6 +1279,7 @@ Instalim i ri</translation>
 <translation id="6941333068993625698">Dërgo komentet</translation>
 <translation id="6942518653766415536">Menyja e formatit të regjistrimit</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
+<translation id="6945922087561257829">Telefoni yt po përdor rrjetin celular. Sigurohu që telefoni yt dhe Chromebook të jenë në të njëjtin rrjet Wi-Fi dhe më pas provo përsëri. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Nuk është aktivizuar. Kontakto me operatorin celular.</translation>
 <translation id="6961121602502368900">"Vendose telefonin në heshtje" nuk ofrohet në profilin e punës</translation>
 <translation id="6961840794482373852">Shkurtorja e tastierës për Alt + Shigjeta lart është ndryshuar. Për të përdorur tastin Page Up, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + Shigjeta lart.</translation>
@@ -1331,6 +1334,7 @@ Instalim i ri</translation>
 <translation id="7188494361780961876">Menyja u zhvendos në këndin lart majtas të ekranit.</translation>
 <translation id="7189412385142492784">Sa larg është Afërdita</translation>
 <translation id="7198435252016571249">Pamja paraprake e kamerës ka kaluar në këndin e poshtëm djathtas. Në konflikt me sipërfaqen e sistemit.</translation>
+<translation id="7219573373513695352">Nuk ka pajisje të lidhura</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Kjo pajisje Chromebook duhet të riniset për të zbatuar një përditësim. Kjo mund të zgjasë deri në 1 minutë.</translation>
 <translation id="7256634071279256947">Mikrofoni i pasmë</translation>
 <translation id="7258828758145722155">Modifikuar dje</translation>
@@ -1481,6 +1485,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7902625623987030061">Prek sensorin e gjurmës së gishtit</translation>
 <translation id="7904094684485781019">Administratori për këtë faqe ka ndaluar identifikimin e shumëfishtë.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> pajisje të lidhura</translation>
 <translation id="7930731167419639574">Ligjërimi përpunohet tani lokalisht dhe "Diktimi" punon jashtë linje</translation>
 <translation id="7932451802722951285">Hap në "Kalendarin e Google"</translation>
 <translation id="7933084174919150729">"Asistenti i Google" ofrohet vetëm për profilin kryesor.</translation>

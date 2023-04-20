@@ -134,6 +134,7 @@
 <translation id="1820259098641718022">به فهرست خواندن اضافه شد</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{گذرواژه‌های لورفته}=1{{COUNT} گذرواژه لورفته}one{{COUNT} گذرواژه لورفته}other{{COUNT} گذرواژه لورفته}}</translation>
 <translation id="1832848789136765277">برای اینکه مطمئن شوید همیشه می‌توانید به داده‌های همگام‌سازی دسترسی داشته باشید، هویتتان را به‌تأیید برسانید</translation>
+<translation id="1836891464494477513">{count,plural, =1{‏نشانک در «حساب Google» شما ({email}) ذخیره شد}one{‏نشانک در «حساب Google» شما ({email}) ذخیره شد}other{‏نشانک‌ها در «حساب Google» شما ({email}) ذخیره شدند}}</translation>
 <translation id="1870148520156231997">نشان دادن گذرواژه</translation>
 <translation id="1872096359983322073">چراغ‌قوه</translation>
 <translation id="1883255238294161206">کوچک کردن فهرست</translation>
@@ -357,7 +358,6 @@
 <translation id="3305294846493618482">بیشتر</translation>
 <translation id="3311748811247479259">خاموش</translation>
 <translation id="3324193307694657476">آدرس ۲</translation>
-<translation id="3328459813621383194">انتقال برگه‌های غیرفعال</translation>
 <translation id="3328801116991980348">اطلاعات سایت</translation>
 <translation id="3344485292736684439">{count,plural, =1{نشانک در «{title}» در حساب شما ({email}) ذخیره شد}one{نشانک در «{title}» در حساب شما ({email}) ذخیره شد}other{نشانک‌ها در «{title}» در حساب شما ({email}) ذخیره شد}}</translation>
 <translation id="3371831930909698441">‏«ترجمه Google» دردسترس است. گزینه‌ها در نزدیک پایین صفحه نمایش در دسترس هستند.</translation>
@@ -498,6 +498,7 @@
 <translation id="4343046787186034850">دسترسی به دوربین و میکروفون مجاز است</translation>
 <translation id="4359125752503270327">این صفحه در برنامه دیگری باز می‌شود.</translation>
 <translation id="4371526908359194219">اعلان‌های ایمیلی</translation>
+<translation id="4371591986692297148">غیرفعال</translation>
 <translation id="4375040482473363939">جستجوی رمزینه پاسخ‌سریع</translation>
 <translation id="4378154925671717803">تلفن</translation>
 <translation id="4389019817280890563">برای تغییر زبان، ضربه بزنید.</translation>
@@ -628,7 +629,6 @@
 <translation id="5168414296986405587">‏ساخته‌شده برای iPadOS</translation>
 <translation id="5173088371991956744">همگام‌سازی باید هویتتان را تأیید کند</translation>
 <translation id="5176312250994681348">حفظ گذرواژه اخیر</translation>
-<translation id="51802232683641391">{count,plural, =1{‏می‌خواهید ادامه کار ناتمامتان در برگه‌ای از Android را انجام دهید؟}one{‏می‌خواهید ادامه کار ناتمامتان در برگه‌ای از Android را انجام دهید؟}other{‏می‌خواهید ادامه کار ناتمامتان در برگه‌ای از Android را انجام دهید؟}}</translation>
 <translation id="5181140330217080051">در حال بارگیری</translation>
 <translation id="5184329579814168207">‏باز کردن در Chrome</translation>
 <translation id="5186185447130319458">خصوصی</translation>
@@ -906,7 +906,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6807889908376551050">نمایش همه...</translation>
 <translation id="681368974849482173">مورد ایجاد شد</translation>
 <translation id="6822587385560699678">وقتی روشن باشد، گذرواژه‌ها در <ph name="ACCOUNT" /> ذخیره می‌شوند. وقتی خاموش باشد، گذرواژه‌ها فقط در این دستگاه ذخیره می‌شوند.</translation>
-<translation id="683022620450280906">‏می‌توانید از گذرواژه‌های ذخیره‌شده در هر دستگاهی استفاده کنید. این گذرواژه‌ها در «مدیر گذرواژه Google» برای <ph name="EMAIL" /> ذخیره می‌شود</translation>
 <translation id="6831043979455480757">ترجمه</translation>
 <translation id="6842136130964845393">برای اینکه مطمئن شوید همیشه می‌توانید به گذرواژه‌های ذخیره‌شده دسترسی داشته باشید، هویتتان را به‌تأیید برسانید</translation>
 <translation id="6851516051005285358">درخواست سایت میزکار</translation>
@@ -1044,6 +1043,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7845466610722898">نمایش فهرست خواندن</translation>
 <translation id="784551991304901159">برای دیدن محتوا، «روشن کردن» را از منو انتخاب کنید</translation>
 <translation id="7846158885638438868">{count,plural, =1{در «{title}» نشانک‌گذاری شد}one{در «{title}» نشانک‌گذاری شد}other{در «{title}» نشانک‌گذاری شد}}</translation>
+<translation id="7852017611907717397">واگرد</translation>
 <translation id="7853202427316060426">فعالیت</translation>
 <translation id="7856733331829174190">بارگیری نشد</translation>
 <translation id="785938070103630874">گذرواژه‌ها، روش‌های پرداخت، نشانی‌ها، و دیگر موارد ذخیره‌شده را باز کنید</translation>

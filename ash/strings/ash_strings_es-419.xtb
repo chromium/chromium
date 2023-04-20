@@ -225,6 +225,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1978498689038657292">Ingreso de texto</translation>
 <translation id="1980808257969311265">Unirse a <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Mostrar la semana pasada</translation>
+<translation id="1986150224850161328">Asegúrate de que el teléfono y la Chromebook estén conectados a la misma red y vuelve a intentarlo. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">No se puede capturar contenido</translation>
 <translation id="1990046457226896323">Se descargaron los archivos de Subtitulado instantáneo</translation>
 <translation id="1993072747612765854">Más información sobre la actualización más reciente de <ph name="SYSTEM_APP_NAME" /></translation>
@@ -373,6 +374,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2761723519669354964">Abrir el elemento destacado de la barra</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> administra <ph name="DEVICE_TYPE" /></translation>
 <translation id="2782591952652094792">Salir del modo de captura</translation>
+<translation id="2785499565474703580">1 dispositivo conectado</translation>
 <translation id="2791421900609674576">Verás recomendaciones para continuar desde donde dejaste. Para quitarlas, manténlas presionadas.</translation>
 <translation id="2792498699870441125">Alt+tecla de búsqueda</translation>
 <translation id="2797741504905337289">Grupo de barras</translation>
@@ -1278,6 +1280,7 @@ Nueva instalación</translation>
 <translation id="6941333068993625698">Enviar comentarios</translation>
 <translation id="6942518653766415536">Menú de formato de grabación</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
+<translation id="6945922087561257829">El teléfono está usando una red móvil. Asegúrate de que el teléfono y la Chromebook estén conectados a la misma red Wi-Fi y vuelve a intentarlo. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">No está activada. Comunícate con tu proveedor.</translation>
 <translation id="6961121602502368900">La opción Silenciar teléfono no está disponible en los perfiles de trabajo</translation>
 <translation id="6961840794482373852">Se modificó la combinación de teclas Alt + flecha hacia arriba. Para usar la tecla Re Pág, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + flecha hacia arriba.</translation>
@@ -1332,6 +1335,7 @@ Nueva instalación</translation>
 <translation id="7188494361780961876">El menú se movió a la esquina superior izquierda de la pantalla.</translation>
 <translation id="7189412385142492784">A qué distancia está Venus</translation>
 <translation id="7198435252016571249">Se ajustó la cámara a la esquina inferior derecha. Entra en conflicto con la superficie del sistema.</translation>
+<translation id="7219573373513695352">No hay dispositivos conectados</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Debes reiniciar esta Chromebook para aplicar una actualización. Este proceso puede tardar 1 minuto.</translation>
 <translation id="7256634071279256947">Micrófono posterior</translation>
 <translation id="7258828758145722155">Se editó ayer</translation>
@@ -1482,6 +1486,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7902625623987030061">Toca el sensor de huellas dactilares</translation>
 <translation id="7904094684485781019">El administrador de esta cuenta inhabilitó el acceso múltiple.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> dispositivos conectados</translation>
 <translation id="7930731167419639574">Ahora la voz se procesa de manera local y el dictado funciona sin conexión</translation>
 <translation id="7932451802722951285">Abrir en el Calendario de Google</translation>
 <translation id="7933084174919150729">El Asistente de Google solo está disponible para el perfil principal.</translation>

@@ -801,6 +801,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1666232093776384142">Onemogućite zaštitu pristupa podacima za periferne uređaje</translation>
 <translation id="1667842670298352129">Slušajte čitanje određenog teksta naglas. Prvo izaberite ikonu Izaberite za govor u dnu ekrana, pa istaknite tekst. Možete da koristite i tasterske prečice: istaknite tekst, pa pritisnite taster za pretragu + S.</translation>
 <translation id="1668435968811469751">Registrujte se ručno</translation>
+<translation id="1668804837842452164">Sačuvaj u <ph name="BRAND" /> za <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Saznajte više o predlozima</translation>
 <translation id="1670399744444387456">Osnovna</translation>
 <translation id="1673137583248014546"><ph name="URL" /> želi da vidi proizvođača i model bezbednosnog ključa</translation>
@@ -1566,6 +1567,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" /> Sistem će se restartovati tokom ovog procesa.</translation>
 <translation id="23030561267973084">Dodatak „<ph name="EXTENSION_NAME" />“ je zatražio dodatne dozvole.</translation>
+<translation id="2306794767168143227">Sačuvaj u <ph name="BRAND" /> na ovom uređaju</translation>
 <translation id="2307462900900812319">Konfiguriši mrežu</translation>
 <translation id="2307553512430195144">Ako prihvatite, Google će čekati u režimu mirovanja da bi otkrio frazu „Hej Google“ i da bi pomoću Voice Match-a mogao da prepozna da <ph name="SUPERVISED_USER_NAME" /> govori.
     <ph name="BR" />
@@ -4658,7 +4660,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5063480226653192405">Korišćenje</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Upravljajte bezbednim DNS-om u podešavanjima Chrome OS-a</translation>
-<translation id="5066160542186949327">Premesti u drugi folder</translation>
 <translation id="5067399438976153555">Uvek uključeno</translation>
 <translation id="5067867186035333991">Pitaj me ako <ph name="HOST" /> želi da pristupi mikrofonu</translation>
 <translation id="5068553687099139861">prikaže lozinke</translation>

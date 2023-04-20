@@ -357,7 +357,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3305294846493618482">gehiago</translation>
 <translation id="3311748811247479259">Desaktibatuta</translation>
 <translation id="3324193307694657476">Helbidea (2)</translation>
-<translation id="3328459813621383194">Mugitu fitxa inaktiboak</translation>
 <translation id="3328801116991980348">Webgunearen informazioa</translation>
 <translation id="3344485292736684439">{count,plural, =1{Gorde da laster-marka zure kontuko ({email}) "{title}" karpetan}other{Gorde dira laster-markak zure kontuko ({email}) "{title}" karpetan}}</translation>
 <translation id="3371831930909698441">Translate zerbitzua erabilgarri dago. Pantailaren behealdean agertzen dira dauden aukerak.</translation>
@@ -498,6 +497,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4343046787186034850">Kamerarako eta mikrofonorako sarbideak gaituta daude</translation>
 <translation id="4359125752503270327">Beste aplikazio batean irekiko da orri hau.</translation>
 <translation id="4371526908359194219">Posta elektroniko bidezko jakinarazpenak</translation>
+<translation id="4371591986692297148">Inaktibo</translation>
 <translation id="4375040482473363939">QR kode bidezko bilaketa</translation>
 <translation id="4378154925671717803">Telefonoa</translation>
 <translation id="4389019817280890563">Sakatu hau hizkuntza aldatzeko.</translation>
@@ -628,7 +628,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5168414296986405587">iPadOS-erako sortua</translation>
 <translation id="5173088371991956744">Sinkronizazioak zure identitatea egiaztatu behar du</translation>
 <translation id="5176312250994681348">Gorde azken pasahitza</translation>
-<translation id="51802232683641391">{count,plural, =1{Android-en utzi duzun fitxa ireki nahi duzu?}other{Android-en utzi dituzun fitxak ireki nahi dituzu?}}</translation>
 <translation id="5181140330217080051">Deskargatzen</translation>
 <translation id="5184329579814168207">Ireki Chrome-n</translation>
 <translation id="5186185447130319458">Pribatua</translation>
@@ -906,7 +905,6 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="6807889908376551050">Erakutsi guztiak…</translation>
 <translation id="681368974849482173">Elementua sortu da</translation>
 <translation id="6822587385560699678">Aktibatuta badago, pasahitzak <ph name="ACCOUNT" /> kontuan gordetzen dira. Desaktibatuta badago, pasahitzak gailu honetan soilik gordetzen dira.</translation>
-<translation id="683022620450280906">Gordetako pasahitzak edozein gailutan erabil ditzakezu. <ph name="EMAIL" /> kontuko Google-ren Pasahitz-kudeatzailea zerbitzuan dauzkazu gordeta.</translation>
 <translation id="6831043979455480757">Itzuli</translation>
 <translation id="6842136130964845393">Gordetako pasahitzak edonoiz atzitu ahal izango dituzula ziurtatzeko, egiaztatu zeu zarela</translation>
 <translation id="6851516051005285358">Eskatu ordenagailuetarako webgunea</translation>

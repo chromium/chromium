@@ -323,7 +323,6 @@ Khi bạn không đặt chính sách này, chính sách <ph name="ASK_WINDOW_MAN
 
 Chính sách này sẽ thay thế chính sách <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> đã ngừng hoạt động.</translation>
 <translation id="129206366270737897">Vô hiệu hoá mọi phương thức <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> không đồng bộ.</translation>
-<translation id="129392056654547767">Hình ảnh chương trình cơ sở UEFI mà máy ảo sử dụng. Đây chỉ là một biện pháp tạm thời trong khi chúng tôi đóng gói hình ảnh này dưới dạng nội dung tải xuống được (DLC) của ChromeOS.</translation>
 <translation id="1294263471858445589">Bật tùy chọn xác thực môi trường xung quanh cho các phiên thông thường và phiên ẩn danh.</translation>
 <translation id="1295737447968372331">Bật tính năng đọc chính tả trên màn hình đăng nhập</translation>
 <translation id="1297182715641689552">Sử dụng tập lệnh proxy .pac</translation>
@@ -579,7 +578,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
       Trên <ph name="MS_WIN_NAME" />, chức năng này chỉ có ở những phiên bản liên kết với một miền <ph name="MS_AD_NAME" />, chạy trên Windows 10 Pro, hoặc đã đăng ký tuỳ chọn Quản lý trình duyệt Chrome qua đám mây. Trên <ph name="MAC_OS_NAME" />, chức năng này chỉ có ở những phiên bản được quản lý qua MDM hoặc liên kết với một miền qua MCX.</translation>
 <translation id="1530812829012954197">Luôn hiển thị các mẫu URL sau đây trong trình duyệt chính</translation>
 <translation id="1542491165152947087">Cho phép người dùng bật hoặc tắt chế độ cài đặt Chủ đề quảng cáo của <ph name="PRIVACY_SANDBOX_NAME" /> trên thiết bị của họ.</translation>
-<translation id="1547424904796464052">Hàm băm SHA-256 được mã hoá thập lục phân của hình ảnh chương trình cơ sở.</translation>
 <translation id="1550295162561011575">Nếu bạn đặt chính sách này, quản trị viên có thể định cấu hình tự động khởi chạy ứng dụng trên các thiết bị <ph name="PRODUCT_NAME" />. Các ứng dụng này có thể khởi chạy khi người dùng đăng nhập hoặc người dùng có thể khởi chạy các ứng dụng cùng nhau từ trình chạy.</translation>
 <translation id="1552418937045050762">Nếu bạn bật tùy chọn cài đặt này, người dùng sẽ được phép chọn sử dụng tính năng Chia sẻ lân cận. Tính năng này cho phép họ gửi và nhận tệp từ những người ở gần.
 
@@ -7666,7 +7664,6 @@ Việc sử dụng <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> hoặc <ph n
 <translation id="802776363472387903">Hàm băm SHA-256 của hình ảnh <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Bật nhà cung cấp dịch vụ tìm kiếm mặc định và cho phép người dùng sửa đổi danh sách nhà cung cấp dịch vụ tìm kiếm</translation>
 <translation id="8029201909194194377">Thời lượng phiên tối đa được phép cho các kết nối truy cập từ xa</translation>
-<translation id="8033908599068513676">URL của hình ảnh chương trình cơ sở sẽ tải xuống.</translation>
 <translation id="8035570672225663428">Bật mô hình sạc thích ứng để giữ quá trình sạc nhằm kéo dài thời lượng pin</translation>
 <translation id="8044493735196713914">Báo cáo chế độ khởi động thiết bị</translation>
 <translation id="8044720778481009876">Đích đến <ph name="CLOUD_PRINT_NAME" /> và "Lưu vào Google Drive" (Không dùng nữa)</translation>

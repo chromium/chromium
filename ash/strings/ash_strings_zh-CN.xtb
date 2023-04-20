@@ -225,6 +225,7 @@
 <translation id="1978498689038657292">文字输入</translation>
 <translation id="1980808257969311265">加入<ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">显示上一周的活动</translation>
+<translation id="1986150224850161328">请确保您的手机和 Chromebook 已连接到同一网络，然后重试。<ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">无法截取/录制内容</translation>
 <translation id="1990046457226896323">实时字幕文件已下载完毕</translation>
 <translation id="1993072747612765854">详细了解最新的 <ph name="SYSTEM_APP_NAME" />更新</translation>
@@ -373,6 +374,7 @@
 <translation id="2761723519669354964">打开任务栏中的突出显示项</translation>
 <translation id="2778650143428714839">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理</translation>
 <translation id="2782591952652094792">退出截屏/录屏模式</translation>
+<translation id="2785499565474703580">已连接 1 部设备</translation>
 <translation id="2791421900609674576">系统会显示建议项目，以便您继续使用上次打开的内容。您可以通过轻触并按住建议项目将其移除。</translation>
 <translation id="2792498699870441125">Alt + 搜索键</translation>
 <translation id="2797741504905337289">Shelf Party 模式</translation>
@@ -1277,6 +1279,7 @@
 <translation id="6941333068993625698">提交反馈</translation>
 <translation id="6942518653766415536">录制格式菜单</translation>
 <translation id="6945221475159498467">选择</translation>
+<translation id="6945922087561257829">手机使用的是移动网络。请确保您的手机和 Chromebook 已连接到同一 Wi-Fi 网络，然后重试。<ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">未激活。请联系您的运营商。</translation>
 <translation id="6961121602502368900">工作资料不支持“将手机设为静音”功能</translation>
 <translation id="6961840794482373852">键盘快捷键“Alt + 向上键”已更改。若要使用 Page Up 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向上键。</translation>
@@ -1331,6 +1334,7 @@
 <translation id="7188494361780961876">菜单已移至屏幕的左上角。</translation>
 <translation id="7189412385142492784">金星有多远</translation>
 <translation id="7198435252016571249">相机已对准右下角。与系统界面冲突。</translation>
+<translation id="7219573373513695352">未连接任何设备</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />。此 Chromebook 需要重新启动才能让更新生效。此过程最多可能需要 1 分钟的时间。</translation>
 <translation id="7256634071279256947">后置麦克风</translation>
 <translation id="7258828758145722155">昨天修改过</translation>
@@ -1478,6 +1482,7 @@
 <translation id="7902625623987030061">请轻触指纹传感器</translation>
 <translation id="7904094684485781019">此帐号的管理员已停用多帐号登录。</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422">已连接 <ph name="DEVICECOUNT" /> 部设备</translation>
 <translation id="7930731167419639574">现在，语音均在本地处理，语音输入内容可离线使用</translation>
 <translation id="7932451802722951285">在 Google 日历中打开</translation>
 <translation id="7933084174919150729">Google 助理仅适用于主要个人资料。</translation>

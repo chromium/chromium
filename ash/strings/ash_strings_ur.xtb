@@ -225,6 +225,7 @@
 <translation id="1978498689038657292">متن ان پٹ</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" /> میں شامل ہوں</translation>
 <translation id="1982717156487272186">پچھلا ہفتہ دکھائیں</translation>
+<translation id="1986150224850161328">‏یقینی بنائیں کہ آپ کا فون اور Chromebook ایک ہی نیٹ ورک پر ہیں اور پھر دوبارہ کوشش کریں۔ <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">مواد کیپچر نہیں کیا جا سکتا</translation>
 <translation id="1990046457226896323">اسپیچ فائلز ڈاؤن لوڈ ہو گئیں</translation>
 <translation id="1993072747612765854">تازہ ترین <ph name="SYSTEM_APP_NAME" /> اپ ڈیٹ کے بارے میں مزید جانیں</translation>
@@ -373,6 +374,7 @@
 <translation id="2761723519669354964">شیلف سے نمایاں کردہ آئٹم کھولیں</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے</translation>
 <translation id="2782591952652094792">کیپچر وضع سے باہر نکلیں</translation>
+<translation id="2785499565474703580">1 آلہ منسلک ہے</translation>
 <translation id="2791421900609674576">آپ کو تجاویز نظر آئیں گی تاکہ آپ نے جہاں چھوڑا تھا وہاں سے جاری رکھ سکیں۔ آپ تجاویز کو ہٹانے کے لیے  ٹچ کر کے دبائے رکھ سکتے ہیں۔</translation>
 <translation id="2792498699870441125">‏Alt+تلاش</translation>
 <translation id="2797741504905337289">شیلف پارٹی</translation>
@@ -1276,6 +1278,7 @@
 <translation id="6941333068993625698">تاثرات جمع کرائیں</translation>
 <translation id="6942518653766415536">ریکارڈنگ فارمیٹ مینیو</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
+<translation id="6945922087561257829">‏آپ کا فون موبائل نیٹ ورک استعمال کر رہا ہے۔ یقینی بنائیں کہ آپ کا فون اور Chromebook ایک ہی Wi-Fi نیٹ ورک پر ہیں اور پھر دوبارہ کوشش کریں۔ <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">فعال نہیں ہے۔ اپنے کیریئر سے رابطہ کریں۔</translation>
 <translation id="6961121602502368900">دفتری پروفائل پر فون کو خاموش کرنے کی خصوصیت دستیاب نہیں ہے</translation>
 <translation id="6961840794482373852">‏Alt + 'اوپر تیر کا نشان' کی بورڈ شارٹ کٹ تبدیل ہو گیا۔ Page Up کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + 'اوپر تیر کا نشان' کو دبائیں۔</translation>
@@ -1330,6 +1333,7 @@
 <translation id="7188494361780961876">مینیو کو اسکرین کے اوپر بائیں کونے میں منتقل کر دیا گیا۔</translation>
 <translation id="7189412385142492784">‏Venus کتنا دور ہے</translation>
 <translation id="7198435252016571249">کیمرا نیچے دائیں کونے میں اسنیپ کیا گیا ہے۔ سسٹم کی سطح سے متصادم ہے۔</translation>
+<translation id="7219573373513695352">کوئی آلات منسلک نہیں</translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />۔ اپ ڈیٹ کو لاگو کرنے کے لیے Chromebook کو ری سٹارٹ کرنے کی ضرورت ہے۔ اس میں 1 منٹ تک لگ سکتا ہے۔</translation>
 <translation id="7256634071279256947">پیچھے کا مائیکروفون</translation>
 <translation id="7258828758145722155">کل ترمیم کیا گیا</translation>
@@ -1480,6 +1484,7 @@
 <translation id="7902625623987030061">فنگر پرنٹ سینسر کو ٹچ کریں</translation>
 <translation id="7904094684485781019">اس اکاؤنٹ کے منتظم نے متعدد سائن ان کی اجازت ختم کر دی ہے۔</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> آلات منسلک ہیں</translation>
 <translation id="7930731167419639574">اسپیچ اب مقامی طور پر پروسیس کی جاتی ہے اور ڈکٹیشن آف لائن کام کرتا ہے</translation>
 <translation id="7932451802722951285">‏Google کیلنڈر میں کھولیں</translation>
 <translation id="7933084174919150729">‏Google اسسٹنٹ صرف بنیادی پروفائل کے لیے دستیاب ہے۔</translation>

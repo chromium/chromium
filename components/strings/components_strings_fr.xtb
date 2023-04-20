@@ -307,6 +307,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1658918301167915956">Appareils Bluetooth</translation>
 <translation id="1662550410081243962">Enregistrer et saisir les modes de paiement</translation>
 <translation id="1663943134801823270">Les cartes et les adresses proviennent de Chrome. Vous pouvez les gérer dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
+<translation id="1668071460721346172">Recevoir un e-mail</translation>
 <translation id="1671391448414634642">Les pages en <ph name="SOURCE_LANGUAGE" /> seront désormais traduites en <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> vers <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Bord court en premier</translation>
@@ -367,6 +368,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1806174020048213474">Cette appli demande l'autorisation d'installer des identifiants Wi-Fi. Après la configuration, votre <ph name="DEVICE_TYPE" /> se connectera automatiquement aux réseaux Wi-Fi participants. Pour supprimer ces identifiants, désinstallez l'appli.</translation>
 <translation id="1807246157184219062">Clair</translation>
 <translation id="1807528111851433570">Feuille de début</translation>
+<translation id="180757923930449935">(émulation 64 bits)</translation>
 <translation id="180991881384371158">Votre code CVC figure au verso de votre carte. Il s'agit des trois derniers chiffres en haut à droite de la zone de signature.</translation>
 <translation id="181000283860817563">Suivre les prix sur plusieurs sites</translation>
 <translation id="1810391395243432441">Protéger les mots de passe avec le verrouillage de l'écran</translation>
@@ -510,6 +512,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2166049586286450108">Accès administrateur complet</translation>
 <translation id="2166378884831602661">Ce site ne peut pas fournir de connexion sécurisée</translation>
 <translation id="2168151236314517198">Une règle de l'administrateur a bloqué l'impression de ce contenu</translation>
+<translation id="2176974405772725904">Enregistrer l'adresse dans le compte</translation>
 <translation id="2181821976797666341">Règles</translation>
 <translation id="2183608646556468874">Numéro de téléphone</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresse}one{# adresse}other{# adresses}}</translation>
@@ -523,7 +526,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2204482073374652408">Mise à jour terminée.</translation>
 <translation id="22081806969704220">Bac 3</translation>
 <translation id="2210794033760923560">Importer le rapport</translation>
-<translation id="2212579473415663542">Cette adresse est enregistrée dans votre compte Google (<ph name="ACCOUNT" />). Vous pouvez l'utiliser dans l'ensemble des produits Google sur n'importe quel appareil.</translation>
 <translation id="2212735316055980242">Règle introuvable.</translation>
 <translation id="2213606439339815911">Obtention des entrées en cours…</translation>
 <translation id="2213612003795704869">La page est imprimée</translation>
@@ -1586,6 +1588,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4877083676943085827">{COUNT,plural, =0{Aucun}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Recherche sur "<ph name="TEXT" />"</translation>
 <translation id="4879491255372875719">Automatique (par défaut)</translation>
+<translation id="4879723019639546076">Cette adresse n'est enregistrée que dans Chrome. Pour l'utiliser avec d'autres produits Google, enregistrez-la dans votre compte Google (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">Rechercher dans l'historique</translation>
 <translation id="4881695831933465202">Ouvrir</translation>
 <translation id="4881808915112408168">24 x 31,5 pouces</translation>
@@ -1736,6 +1739,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Ignorer</translation>
+<translation id="5238301240406177137">Enregistrer dans le compte</translation>
 <translation id="5239623327352565343">Position autorisée</translation>
 <translation id="5242889659037569123">Bagages et accessoires de voyage</translation>
 <translation id="5244732203286792411">Chargement…
@@ -2143,6 +2147,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6279183038361895380">Appuyez sur |<ph name="ACCELERATOR" />| pour afficher le curseur.</translation>
 <translation id="6280223929691119688">Impossible de livrer à cette adresse. Sélectionnez-en une autre.</translation>
 <translation id="6284292079994426700">26 x 38 pouces</translation>
+<translation id="6284517535531159884">Type de valeur source des variantes</translation>
 <translation id="6285507000506177184">Bouton "Gérer les téléchargements dans Chrome", puis Entrée pour gérer les fichiers que vous avez téléchargés dans Chrome</translation>
 <translation id="6289939620939689042">Couleur de la page</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2252,6 +2257,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6545864417968258051">Recherche Bluetooth</translation>
 <translation id="6547208576736763147">Double perforation à gauche</translation>
 <translation id="6549443526281184652">Costumes</translation>
+<translation id="6551873053534932690">Enregistrer l'adresse dans le compte ?</translation>
 <translation id="6554732001434021288">Dernière visite : il y a <ph name="NUM_DAYS" /> jours</translation>
 <translation id="6556866813142980365">Rétablir</translation>
 <translation id="6557715786897013164">14 x 17 pouces</translation>
@@ -2316,6 +2322,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6716672519412350405"><ph name="URL" /> cherche à créer un plan 3D de votre environnement et à suivre la position de la caméra</translation>
 <translation id="6718612893943028815">Utiliser la caméra ?</translation>
 <translation id="6721678857435001674">Voir la marque et le modèle de votre clé de sécurité</translation>
+<translation id="6726832600570791992">(émulation 32 bits)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">appareil photo</translation>
 <translation id="6738516213925468394">Vos données ont été chiffrées avec votre <ph name="BEGIN_LINK" />phrase secrète de synchronisation<ph name="END_LINK" /> le <ph name="TIME" />. Saisissez-la pour lancer la synchronisation.</translation>

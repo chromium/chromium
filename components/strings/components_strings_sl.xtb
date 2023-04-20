@@ -307,6 +307,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1658918301167915956">naprave Bluetooth</translation>
 <translation id="1662550410081243962">Shranjevanje in izpolnjevanje podatkov o plačilnih sredstvih</translation>
 <translation id="1663943134801823270">Kartice in naslovi so iz Chroma. Upravljate jih lahko v <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" />.</translation>
+<translation id="1668071460721346172">Prejem e-poštnega sporočila</translation>
 <translation id="1671391448414634642">Strani v jeziku <ph name="SOURCE_LANGUAGE" /> bodo odslej prevedene v jezik <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478">Iz jezika <ph name="SOURCE_LANGUAGE" /> v jezik <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Najprej kratki rob</translation>
@@ -367,6 +368,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1806174020048213474">Ta aplikacija zahteva dovoljenje za namestitev poverilnic za Wi-Fi. Po nastavitvi se bo naprava <ph name="DEVICE_TYPE" /> samodejno povezala z vključenimi omrežji Wi-Fi. Če želite odstraniti te poverilnice, odmestite aplikacijo.</translation>
 <translation id="1807246157184219062">Svetlo</translation>
 <translation id="1807528111851433570">Začetni list</translation>
+<translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">CVC je na hrbtni strani kartice. To so zadnje tri številke v zgornjem desnem kotu polja s podpisom.</translation>
 <translation id="181000283860817563">Sledenje cenam na več spletnih mestih.</translation>
 <translation id="1810391395243432441">Zaščita gesel z zaklepanjem zaslona</translation>
@@ -510,6 +512,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2166049586286450108">Polni skrbniški dostop</translation>
 <translation id="2166378884831602661">To spletno mesto ne more zagotoviti varne povezave</translation>
 <translation id="2168151236314517198">Tiskanje te vsebine je blokiral pravilnik skrbnika.</translation>
+<translation id="2176974405772725904">Shranite naslov v račun</translation>
 <translation id="2181821976797666341">Pravilniki</translation>
 <translation id="2183608646556468874">Telefonska številka</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 naslov}one{# naslov}two{# naslova}few{# naslovi}other{# naslovov}}</translation>
@@ -523,7 +526,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2204482073374652408">Posodabljanje je končano.</translation>
 <translation id="22081806969704220">Pladenj 3</translation>
 <translation id="2210794033760923560">Naloži poročilo</translation>
-<translation id="2212579473415663542">Ta naslov je shranjen v računu Google (<ph name="ACCOUNT" />). Naslov je mogoče uporabljati v Googlovih izdelkih v kateri koli napravi.</translation>
 <translation id="2212735316055980242">Pravilnika ni mogoče najti</translation>
 <translation id="2213606439339815911">Prenos vnosov ...</translation>
 <translation id="2213612003795704869">Stran je natisnjena</translation>
@@ -1586,6 +1588,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4877083676943085827">{COUNT,plural, =0{Nič}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}two{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}few{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Iskanje poizvedbe <ph name="TEXT" /></translation>
 <translation id="4879491255372875719">Samodejno (privzeto)</translation>
+<translation id="4879723019639546076">Ta naslov je shranjen samo v Chromu. Če ga želite uporabiti v Googlovih izdelkih, ga shranite v računu Google (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">Zgodovina iskanja</translation>
 <translation id="4881695831933465202">Odpri</translation>
 <translation id="4881808915112408168">24 x 31,5 palcev</translation>
@@ -1736,6 +1739,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Opusti</translation>
+<translation id="5238301240406177137">Shrani v račun</translation>
 <translation id="5239623327352565343">Lokacija je dovoljena</translation>
 <translation id="5242889659037569123">Potovalni kovčki in dodatna oprema</translation>
 <translation id="5244732203286792411">Nalaganje …
@@ -2144,6 +2148,7 @@ Poleg tega lahko v nastavitvah Chroma kadar koli blokirate, da bi spletno mesto 
 <translation id="6279183038361895380">Pritisnite |<ph name="ACCELERATOR" />| za prikaz kazalca</translation>
 <translation id="6280223929691119688">Dostava na ta naslov ni mogoča. Izberite drugega.</translation>
 <translation id="6284292079994426700">26 x 38 palcev</translation>
+<translation id="6284517535531159884">Vrsta semen podrazličic</translation>
 <translation id="6285507000506177184">Gumb za upravljanje prenosov v Chromu, pritisnite Enter, če želite upravljati datoteke, ki ste jih prenesli v Chromu.</translation>
 <translation id="6289939620939689042">Barva strani</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2253,6 +2258,7 @@ Poleg tega lahko v nastavitvah Chroma kadar koli blokirate, da bi spletno mesto 
 <translation id="6545864417968258051">Iskanje naprav Bluetooth</translation>
 <translation id="6547208576736763147">Dvojno luknjanje na levi</translation>
 <translation id="6549443526281184652">Kostumi</translation>
+<translation id="6551873053534932690">Želite shraniti naslov v račun?</translation>
 <translation id="6554732001434021288">Nazadnje obiskano pred toliko dnevi: <ph name="NUM_DAYS" /></translation>
 <translation id="6556866813142980365">Uveljavi</translation>
 <translation id="6557715786897013164">14 x 17 palcev</translation>
@@ -2317,6 +2323,7 @@ Poleg tega lahko v nastavitvah Chroma kadar koli blokirate, da bi spletno mesto 
 <translation id="6716672519412350405"><ph name="URL" /> želi ustvariti 3D-zemljevid vaše okolice in spremljati položaj kamere</translation>
 <translation id="6718612893943028815">Želite uporabiti kamero?</translation>
 <translation id="6721678857435001674">Ogled znamke in modela varnostnega ključa</translation>
+<translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">fotoaparat</translation>
 <translation id="6738516213925468394">Podatki so bili šifrirani (<ph name="TIME" />) z vašim <ph name="BEGIN_LINK" />geslom za sinhronizacijo<ph name="END_LINK" />. Vnesite ga, če želite začeti sinhronizacijo.</translation>

@@ -512,6 +512,7 @@
 <translation id="2166049586286450108">الوصول الكامل للمشرف</translation>
 <translation id="2166378884831602661">لا يمكن لهذا الموقع الإلكتروني توفير اتصال آمن</translation>
 <translation id="2168151236314517198">تحظر سياسة المشرف إمكانية طباعة هذا المحتوى.</translation>
+<translation id="2176974405772725904">حفظ العنوان في الحساب</translation>
 <translation id="2181821976797666341">السياسات</translation>
 <translation id="2183608646556468874">رقم الهاتف</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{عنوان واحد}zero{# عنوان}two{عنوانان (#)}few{# عناوين}many{# عنوانًا}other{# عنوان}}</translation>
@@ -525,7 +526,6 @@
 <translation id="2204482073374652408">تم الانتهاء من التحديث</translation>
 <translation id="22081806969704220">الدُرج 3</translation>
 <translation id="2210794033760923560">تحميل التقرير</translation>
-<translation id="2212579473415663542">‏تم حفظ هذا العنوان في حسابك على Google (<ph name="ACCOUNT" />)، ويمكنك استخدامه في منتجات Google على أي جهاز.</translation>
 <translation id="2212735316055980242">تعذر العثور على السياسة</translation>
 <translation id="2213606439339815911">جارٍ جلب الإدخالات...</translation>
 <translation id="2213612003795704869">تمت طباعة الصفحة.</translation>
@@ -1228,6 +1228,7 @@
 <translation id="4031179711345676612">تم السماح باستخدام الميكروفون</translation>
 <translation id="4040350669425716613">كليات وجامعات</translation>
 <translation id="4047351652147966654">18 × 24 بوصة</translation>
+<translation id="4047620889508350431">‏يمكنك الآن استخدام العناوين المحفوظة في حسابك على Google.</translation>
 <translation id="405399507749852140">يمكنك الحصول على تنبيهات في حال انخفاض السعر على أي موقع إلكتروني</translation>
 <translation id="4056223980640387499">بني داكن</translation>
 <translation id="4063063121357725926">‏السماح لشركة Google بمساعدتك في البحث عن الخصومات لتظهر في سلّات التسوّق</translation>
@@ -1743,6 +1744,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">تجاهل</translation>
+<translation id="5238301240406177137">الحفظ في الحساب</translation>
 <translation id="5239623327352565343">تمت الموافقة على طلب الوصول إلى الموقع الجغرافي.</translation>
 <translation id="5242889659037569123">أمتعة ولوازم السفر</translation>
 <translation id="5244732203286792411">جارٍ التحميل...
@@ -2260,6 +2262,7 @@
 <translation id="6545864417968258051">البحث عن بلوتوث</translation>
 <translation id="6547208576736763147">عمل ثقبَين يسارًا</translation>
 <translation id="6549443526281184652">أزياء تنكرية</translation>
+<translation id="6551873053534932690">هل تريد حفظ العنوان في الحساب؟</translation>
 <translation id="6554732001434021288">تمّت زيارة الموقع الإلكتروني آخر مرّة قبل <ph name="NUM_DAYS" /> يوم.</translation>
 <translation id="6556866813142980365">إعادة</translation>
 <translation id="6557715786897013164">14 × 17 بوصة</translation>

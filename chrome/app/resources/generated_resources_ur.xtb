@@ -496,6 +496,7 @@
             <ph name="LINE_BREAKS" />
            بک مارکس، سرگزشت اور محفوظ کردہ پاس ورڈز متاثر نہیں ہوں گے۔</translation>
 <translation id="1425040197660226913">‏اپ لوڈ نہیں کر سکتے۔ 20MB سے چھوٹی تصویر استعمال کریں۔</translation>
+<translation id="1425282319410216613">ڈاؤن لوڈ مکمل ہونے پر نہ دکھائیں</translation>
 <translation id="1426410128494586442">ہاں</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> مسدود ہے</translation>
 <translation id="1426870617281699524">'دوبارہ کوشش کریں' پر کلک کریں، اور اپنے کمپیوٹر پر پرامپٹ قبول کریں</translation>
@@ -1904,6 +1905,7 @@
 <translation id="25899519884572181">ریڈر وضع سے باہر نکلیں</translation>
 <translation id="2593499352046705383">‏شروع کرنے سے پہلے ، یقینی بنائیں کہ آپ کے پاس اپنے ڈیٹا کا بیک اپ ہے۔ <ph name="DEVICE_OS" /> کو انسٹال کرنے سے آپ کی ہارڈ ڈرائیو اوور رائٹ ہو جائے گی۔ g.co/flex/InstallGuide پر مزید جانیں۔</translation>
 <translation id="2594999711683503743">‏Google پر تلاش کریں یا URL ٹائپ کریں</translation>
+<translation id="2598710988533271874">‏نیا Chrome دستیاب ہے</translation>
 <translation id="2599048253926156421">صارف کا نام کلپ بورڈ پر کاپی ہو گیا</translation>
 <translation id="2602501489742255173">شروع کرنے کیلئے اوپر سوائپ کریں</translation>
 <translation id="2603115962224169880">کمپیوٹر صاف کریں</translation>
@@ -3670,6 +3672,7 @@
 <translation id="4144468798716165316">فوری ہدایات</translation>
 <translation id="4146026355784316281">ہمیشہ سسٹم ناظر کے ساتھ کھولیں</translation>
 <translation id="4146785383423576110">ری سیٹ کریں اور صاف کریں</translation>
+<translation id="4147099377280085053">بریل ٹیبل کا انتخاب کریں</translation>
 <translation id="4147911968024186208">براہ کرم دوبارہ کوشش کریں۔ اگر یہ خرابی دوبارہ پیش آتی ہے تو براہ کرم اپنے سپورٹ کے نمائندے سے رابطہ کریں۔</translation>
 <translation id="4150201353443180367">ڈسپلے</translation>
 <translation id="4150569944729499860">اسکرین کا سیاق و سباق</translation>
@@ -3891,6 +3894,7 @@
 <translation id="4366138410738374926">پرنٹنگ شروع ہو گئی ہے</translation>
 <translation id="4367513928820380646">ہٹائی گئی اجازتوں کا جائزہ لیں</translation>
 <translation id="4369215744064167350">ویب سائٹ کی درخواست منظور ہو گئی</translation>
+<translation id="436926121798828366">آپ اسے <ph name="SETTINGS_LINK" /> میں کسی بھی وقت تبدیل کر سکتے ہیں</translation>
 <translation id="4369735607080757018">ڈیٹا کی محدود اقسام کا اشتراک ان کے اشتہارات کی کارکردگی کی پیمائش کرنے کے لیے کیا جاتا ہے، جیسے کہ دن کا وہ وقت جب آپ کو اشتہار دکھایا گیا تھا۔</translation>
 <translation id="4370975561335139969">آپ کی جانب سے درج کردہ ای میل اور پاس ورڈ مماثل نہیں ہیں</translation>
 <translation id="4374805630006466253">مختلف فون یا ٹیبلیٹ استعمال کریں</translation>
@@ -4656,7 +4660,6 @@
 <translation id="5063480226653192405">استعمال</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">‏ChromeOS ترتیبات میں محفوظ DNS کا نظم کریں</translation>
-<translation id="5066160542186949327">دوسرے فولڈر پر جائیں</translation>
 <translation id="5067399438976153555">ہمیشہ آن رکھیں</translation>
 <translation id="5067867186035333991">پوچھیں کہ آیا <ph name="HOST" /> آپ کے مائیکروفون تک رسائی حاصل کرنا چاہتا ہے</translation>
 <translation id="5068553687099139861">پاس ورڈز دکھائیں</translation>
@@ -5225,6 +5228,7 @@
 <translation id="558170650521898289">‏Microsoft Windows ہارڈ ویئر ڈرائیور کی توثیق</translation>
 <translation id="5581876958763461074">سبھی نوٹس</translation>
 <translation id="5581972110672966454">ڈومین میں آلہ کو شامل نہیں کیا جا سکا۔ براہ کرم دوبارہ کوشش کریں یا اپنے آلہ کے مالک یا منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
+<translation id="5582634344048669777">8 نقطہ</translation>
 <translation id="5582839680698949063">اصل مینیو</translation>
 <translation id="5583640892426849032">بیک اسپیس</translation>
 <translation id="5584088138253955452">صارف نام کو محفوظ کریں؟</translation>
@@ -5884,6 +5888,7 @@
 <translation id="6164832038898943453">خودکار طور پر ترجمہ کرنے کے لیے زبانیں شامل کریں</translation>
 <translation id="6165508094623778733">مزید جانیں</translation>
 <translation id="6166185671393271715">‏Chrome پر پاس ورڈز درآمد کریں</translation>
+<translation id="6166659775803431">آپ کے کارٹ میں</translation>
 <translation id="6169040057125497443">براہ کرم اپنا مائیکروفون چیک کریں۔</translation>
 <translation id="6169967265765719844">‏Steam کے ذریعے انسٹال کردہ گیمز اور ایپس کی اجازتوں کا نظم <ph name="LINK_BEGIN" />Steam ایپ کی ترتیبات<ph name="LINK_END" /> میں کیا جا سکتا ہے۔</translation>
 <translation id="6170470584681422115">سینڈوچ</translation>
@@ -6781,6 +6786,7 @@
 <translation id="6968288415730398122">اسکرین لاک کنفیگر کرنے کیلئے اپنا پاس ورڈ درج کریں</translation>
 <translation id="6969047215179982698">قریبی آلات کے ساتھ اشتراک آف کریں</translation>
 <translation id="6969216690072714773">اس آلے سے وابستہ کرنے کیلئے نئی معلومات داخل کریں یا موجودہ معلومات اپ ڈيٹ کریں۔</translation>
+<translation id="696942486482903620">‏جب آپ اپنے Google اکاؤنٹ میں پاس ورڈز محفوظ کرتے ہیں تو آپ انہیں اس آلے اور کسی بھی دوسرے آلے پر استعمال کر سکتے ہیں جہاں آپ سائن ان ہیں</translation>
 <translation id="6970480684834282392">شروعات کی قسم</translation>
 <translation id="6970543303783413625">پاس ورڈز درآمد نہیں کر سکتے۔ آپ ایک وقت میں صرف <ph name="COUNT" /> پاس ورڈز تک ہی درآمد کر سکتے ہیں۔</translation>
 <translation id="6970856801391541997">مخصوص صفحات کو پرنٹ کریں</translation>
@@ -7045,6 +7051,7 @@
 <translation id="7222204278952406003">‏Chrome آپ کا ڈیفالٹ براؤزر ہے</translation>
 <translation id="7222232353993864120">ای میل پتہ</translation>
 <translation id="7222235798733126207">سائٹس کے درمیان محدود اشتراک</translation>
+<translation id="7222335051802562841">اپڈیٹ مکمل کریں</translation>
 <translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" /> کے گروپ میں موجود 1 سائٹ}other{<ph name="FPS_OWNER" /> کے گروپ میں موجود {MEMBERS} سائٹس}}</translation>
 <translation id="7225082563376899794">‏پاس ورڈز بھرتے وقت Windows Hello کا استعمال کریں</translation>
 <translation id="7225179976675429563">نیٹ ورک کی قسم غائب ہے</translation>
@@ -7236,6 +7243,7 @@
 <translation id="7400447915166857470">واپس <ph name="OLD_SEARCH_PROVIDER" /> میں تبدیل کریں؟</translation>
 <translation id="7400839060291901923">اپنے <ph name="PHONE_NAME" /> پر کنکشن سیٹ اپ کریں</translation>
 <translation id="7401778920660465883">یہ پیغام خارج کریں</translation>
+<translation id="7402198013420237102">‏محفوظ کردہ پاس ورڈز کو اپنے Google اکاؤنٹ میں منتقل کریں؟</translation>
 <translation id="7403642243184989645">وسائل ڈاؤن لوڈ ہو رہے ہیں</translation>
 <translation id="7404065585741198296">‏آپ کا فون USB کیبل سے منسلک ہے</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{سیفٹی چیک 1 گھنٹہ پہلے کیا گیا}other{سیفٹی چیک {NUM_HOURS} گھنٹے پہلے کیا گیا}}</translation>
@@ -9372,6 +9380,7 @@
 <translation id="952471655966876828">آلہ کے آن ہونے اور استعمال ہونے پر یہ خودکار طور پر منسلک ہو جائے گا</translation>
 <translation id="953434574221655299">آپ اپنے آلے کا فعال طور پر استعمال کب کر رہے ہیں یہ جاننے کی اجازت ہے</translation>
 <translation id="956500788634395331">آپ ممکنہ طور پر نقصان دہ ایکسٹینشنز سے محفوظ ہیں</translation>
+<translation id="957179356621191750">6 نقطہ</translation>
 <translation id="957960681186851048">اس سائٹ نے متعدد فائلز کو خودکار طور پر ڈاؤن لوڈ کرنے کی کوشش کی ہے</translation>
 <translation id="960987915827980018">قریب 1 گھنٹہ باقی ہے</translation>
 <translation id="962802172452141067">بُک مارک فولڈر کا درخت</translation>

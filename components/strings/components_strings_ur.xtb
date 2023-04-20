@@ -308,6 +308,7 @@
 <translation id="1658918301167915956">بلوٹوتھ آلات</translation>
 <translation id="1662550410081243962">ادائیگی کے طریقوں کو محفوظ کریں اور بھریں</translation>
 <translation id="1663943134801823270">‏کارڈز اور پتے Chrome کی جانب سے ہیں۔ آپ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں ان کا نظم کر سکتے ہیں۔</translation>
+<translation id="1668071460721346172">ایک ای میل موصول کریں</translation>
 <translation id="1671391448414634642">آئندہ سے <ph name="SOURCE_LANGUAGE" /> کے صفحات کا <ph name="TARGET_LANGUAGE" /> میں ترجمہ کیا جائے گا۔</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> سے <ph name="TARGET_LANGUAGE" /> میں</translation>
 <translation id="1682696192498422849">چھوٹا کنارہ پہلے</translation>
@@ -368,6 +369,7 @@
 <translation id="1806174020048213474">‏یہ ایپ Wi-Fi اسناد کو انسٹال کرنے کی اجازت کی درخواست کر رہی ہے۔ سیٹ اپ کے بعد، آپ کا <ph name="DEVICE_TYPE" /> خودکار طور پر شرکت کرنے والے WiFi نیٹ ورکس سے منسلک ہو جائے گا۔ ان اسناد کو ہٹانے کے لیے، ایپ کو اَن انسٹال کریں۔</translation>
 <translation id="1807246157184219062">روشنی</translation>
 <translation id="1807528111851433570">ابتدائی شیٹ</translation>
+<translation id="180757923930449935">(64 بٹ ایمولیٹڈ)</translation>
 <translation id="180991881384371158">‏آپ کا CVC آپ کے کارڈ کی پشت پر موجود ہے۔ یہ دستخظ کے باکس کے اوپر دائیں جانب آخری 3 ہندسے ہیں۔</translation>
 <translation id="181000283860817563">متعدد سائٹس پر قیمتوں کو ٹریک کریں</translation>
 <translation id="1810391395243432441">اپنے اسکرین لاک سے پاس ورڈز کی حفاظت کریں</translation>
@@ -525,7 +527,6 @@
 <translation id="2204482073374652408">اپ ڈیٹ مکمل ہو گئی!</translation>
 <translation id="22081806969704220">ٹرے 3</translation>
 <translation id="2210794033760923560">رپورٹ اپ لوڈ کریں</translation>
-<translation id="2212579473415663542">‏يہ پتہ آپ کے Google اکاؤنٹ (<ph name="ACCOUNT" />) میں محفوظ ہے۔ آپ کسی بھی آلہ پر Google کے سبھی پروڈکٹس پر یہ پتہ استعمال کر سکتے ہیں۔</translation>
 <translation id="2212735316055980242">پالیسی نہیں ملی</translation>
 <translation id="2213606439339815911">اندراجات کی بازیافت کی جا رہی ہے…</translation>
 <translation id="2213612003795704869">صفحہ پرنٹ کردہ ہے</translation>
@@ -1589,6 +1590,7 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{کوئی نہیں}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />، <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />، <ph name="EXAMPLE_DOMAIN_2" />، <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> تلاش کریں</translation>
 <translation id="4879491255372875719">خودکار (ڈیفالٹ)</translation>
+<translation id="4879723019639546076">‏یہ پتہ صرف Chrome میں محفوظ ہے۔ اسے تمام Google پروڈکٹس پر استعمال کرنے کے لیے، اسے اپنے Google اکاؤنٹ میں محفوظ کریں، (<ph name="ACCOUNT" />)۔</translation>
 <translation id="4880827082731008257">تلاش کی سرگزشت</translation>
 <translation id="4881695831933465202">کھولیں</translation>
 <translation id="4881808915112408168">‏‎24 x 31.5 انچ</translation>
@@ -2148,6 +2150,7 @@
 <translation id="6279183038361895380">اپنا کرسر دکھانے کیلئے |<ph name="ACCELERATOR" />| کو دبائیں</translation>
 <translation id="6280223929691119688">اس پتے پر ڈیلیوری نہیں ہو سکتی۔ کوئی مختلف پتہ منتخب کریں۔</translation>
 <translation id="6284292079994426700">‏‎26 x 38 انچ</translation>
+<translation id="6284517535531159884">تغیرات سیڈ کی قسم</translation>
 <translation id="6285507000506177184">‏Chrome بٹن میں ڈاؤن لوڈز کا نظم کریں، Chrome میں ڈاؤن لوڈ کردہ اپنی فائلز کا نظم کرنے کے لیے اینٹر دبائیں</translation>
 <translation id="6289939620939689042">صفحے کا رنگ</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2322,6 +2325,7 @@
 <translation id="6716672519412350405">‏<ph name="URL" /> آپ کے اطراف کا 3D نقشہ تخلیق اور کیمرے کی پوزیشن ٹریک کرنا چاہتا ہے</translation>
 <translation id="6718612893943028815">کیمرا استعمال کریں؟</translation>
 <translation id="6721678857435001674">اپنی سیکیورٹی کلید کا برانڈ اور ماڈل دیکھیں</translation>
+<translation id="6726832600570791992">(32 بٹ ایمولیٹڈ)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">کیمرا</translation>
 <translation id="6738516213925468394">آپ کے ڈیٹا کی آپ کے <ph name="BEGIN_LINK" />مطابقت پذیر پاس فریز<ph name="END_LINK" /> کے ساتھ <ph name="TIME" /> کو مرموز کاری کی گئی تھی۔ مطابقت پذیری شروع کرنے کیلئے اسے درج کریں۔</translation>

@@ -307,6 +307,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1658918301167915956">Bluetooth uređaji</translation>
 <translation id="1662550410081243962">Spremi i popuni načine plaćanja</translation>
 <translation id="1663943134801823270">Kartice i adrese dolaze iz Chromea. Njima možete upravljati u <ph name="BEGIN_LINK" />Postavkama<ph name="END_LINK" />.</translation>
+<translation id="1668071460721346172">Primanje e-poruke</translation>
 <translation id="1671391448414634642">Odsad će se <ph name="SOURCE_LANGUAGE" /> prevoditi na <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Najprije kratki rub</translation>
@@ -367,6 +368,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1806174020048213474">Aplikacija zahtijeva dopuštenje za instaliranje vjerodajnica za Wi-Fi. Nakon postavljanja <ph name="DEVICE_TYPE" /> će se automatski povezati s obuhvaćenim Wi-Fi mrežama. Da biste uklonili te vjerodajnice, deinstalirajte aplikaciju.</translation>
 <translation id="1807246157184219062">Svijetlo</translation>
 <translation id="1807528111851433570">Prvi list</translation>
+<translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">CVC možete pronaći na poleđini kartice. To su posljednje tri znamenke u gornjem desnom kutu okvira za potpis.</translation>
 <translation id="181000283860817563">Praćenje cijena na više web-lokacija</translation>
 <translation id="1810391395243432441">Zaštita zaporki zaključavanjem zaslona</translation>
@@ -524,7 +526,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2204482073374652408">Ažuriranje je dovršeno!</translation>
 <translation id="22081806969704220">Ladica 3</translation>
 <translation id="2210794033760923560">Prijenos izvješća</translation>
-<translation id="2212579473415663542">Ta je adresa spremljena na vašem Google računu (<ph name="ACCOUNT" />). Adresu možete upotrebljavati na svim Googleovim proizvodima na svim uređajima.</translation>
 <translation id="2212735316055980242">Pravilo nije pronađeno</translation>
 <translation id="2213606439339815911">Dohvaćanje unosa...</translation>
 <translation id="2213612003795704869">Stranica je ispisana</translation>
@@ -1587,6 +1588,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4877083676943085827">{COUNT,plural, =0{Ništa}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}few{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Pretraživanje <ph name="TEXT" /></translation>
 <translation id="4879491255372875719">Automatski (zadano)</translation>
+<translation id="4879723019639546076">Ta je adresa spremljena samo u Chromeu. Da biste je upotrebljavali na Googleovim proizvodima, spremite je na svoj Google račun (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">Pretraži povijest</translation>
 <translation id="4881695831933465202">Otvori</translation>
 <translation id="4881808915112408168">24 x 31,5 in</translation>
@@ -2145,6 +2147,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6279183038361895380">Pritisnite |<ph name="ACCELERATOR" />| da bi se prikazao pokazivač</translation>
 <translation id="6280223929691119688">Dostava na tu adresu nije moguća. Odaberite drugu adresu.</translation>
 <translation id="6284292079994426700">26 x 38 inča</translation>
+<translation id="6284517535531159884">Vrsta izvora varijacije</translation>
 <translation id="6285507000506177184">Gumb Upravljaj preuzimanjima u Chromeu, pritisnite Enter da biste upravljali datotekama koje ste preuzeli u Chromeu</translation>
 <translation id="6289939620939689042">Boja stranice</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2319,6 +2322,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6716672519412350405"><ph name="URL" /> želi izraditi 3D kartu vašeg okruženja i pratiti položaj kamere</translation>
 <translation id="6718612893943028815">Koristiti kameru?</translation>
 <translation id="6721678857435001674">Pogledajte izradu i model sigurnosnog ključa</translation>
+<translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6738516213925468394">Vaši su podaci kriptirani vašom <ph name="BEGIN_LINK" />šifrom za sinkronizaciju<ph name="END_LINK" /> <ph name="TIME" />. Unesite je da biste pokrenuli sinkronizaciju.</translation>

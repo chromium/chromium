@@ -34,6 +34,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1148499908455722006">Infodialog für <ph name="USER_NAME" /> öffnen</translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Gekoppelte Geräte</translation>
+<translation id="1160215328209699296">eingeschaltet und wird verwendet</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Dein USB-C-Kabel ist nicht zum Verbinden von Bildschirmen geeignet</translation>
 <translation id="1175572348579024023">Scrollen</translation>
@@ -241,6 +242,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2049240716062114887">Der Name des Desktops wurde zu "<ph name="DESK_NAME" />" geändert</translation>
 <translation id="2064048859448024834">Kameravorschau wird angezeigt</translation>
 <translation id="2067602449040652523">Tastaturhelligkeit</translation>
+<translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> ein-/ausschalten. <ph name="CAPTURE_MEDIUM" /> ist <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2078034614700056995">Wische mit vier Fingern nach rechts, um zum nächsten Desktop zu wechseln</translation>
 <translation id="2079545284768500474">Rückgängig machen</translation>
 <translation id="2083190527011054446">Gute Nacht <ph name="GIVEN_NAME" />,</translation>
@@ -325,6 +327,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2487915095798731898">Übernehmen</translation>
 <translation id="2501920221385095727">Sticky Keys</translation>
 <translation id="2509468283778169019">Feststelltaste aktiviert</translation>
+<translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> beenden. <ph name="CAPTURE_MEDIUM" /> ist <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Fenster entsperren</translation>
 <translation id="2530896289327917474">Tastaturnavigation aktivieren oder deaktivieren</translation>
@@ -1519,6 +1522,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8051716679295756675">Eine Vorlage namens „<ph name="DESK_TEMPLATE_NAME" />“ ist bereits vorhanden</translation>
 <translation id="8052898407431791827">In Zwischenablage kopiert</translation>
 <translation id="8054466585765276473">Akku-Laufzeit wird berechnet.</translation>
+<translation id="8079538659226626406">Bildschirmfreigabe</translation>
 <translation id="8083540854303889870">Für später gespeichert</translation>
 <translation id="8091153018031979607">Beginnt um <ph name="START_TIME" /> Uhr <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatische Updates</translation>

@@ -225,6 +225,7 @@
 <translation id="1978498689038657292">Ввести текст</translation>
 <translation id="1980808257969311265">Приєднатися до події "<ph name="EVENT_SUMMARY" />"</translation>
 <translation id="1982717156487272186">Показати попередній тиждень</translation>
+<translation id="1986150224850161328">Переконайтеся, що телефон та Chromebook підключено до однієї мережі, і повторіть спробу. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Не вдається записати контент</translation>
 <translation id="1990046457226896323">Файли живих субтитрів завантажено</translation>
 <translation id="1993072747612765854">Докладніше про останнє оновлення <ph name="SYSTEM_APP_NAME" /></translation>
@@ -373,6 +374,7 @@
 <translation id="2761723519669354964">Відкрити виділений елемент на панелі запуску</translation>
 <translation id="2778650143428714839">Пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Вийти з режиму зйомки</translation>
+<translation id="2785499565474703580">Підключено 1 пристрій</translation>
 <translation id="2791421900609674576">Ви побачите рекомендації, тож зможете продовжити з місця зупинки. Натисність і втримуйте, щоб видалити їх.</translation>
 <translation id="2792498699870441125">Alt+клавіша пошуку</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1277,6 +1279,7 @@
 <translation id="6941333068993625698">Надіслати відгук</translation>
 <translation id="6942518653766415536">Меню форматів запису</translation>
 <translation id="6945221475159498467">Вибрати</translation>
+<translation id="6945922087561257829">Телефон підключено до мобільної мережі. Переконайтеся, що телефон та Chromebook підключено до однієї мережі Wi-Fi, і повторіть спробу. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Не активовано. Зв’яжіться з оператором.</translation>
 <translation id="6961121602502368900">Звук телефона не можна вимкнути в робочому профілі</translation>
 <translation id="6961840794482373852">Комбінацію клавіш Alt + стрілка вгору змінено. Щоб скористатися клавішею Page Up, натисніть клавішу <ph name="LAUNCHER_KEY_NAME" /> + стрілку вгору.</translation>
@@ -1331,6 +1334,7 @@
 <translation id="7188494361780961876">Меню переміщено у верхній лівий кут екрана.</translation>
 <translation id="7189412385142492784">Яка відстань від Землі до Венери</translation>
 <translation id="7198435252016571249">Зображення з камери закріплено в нижньому правому куті, що конфліктує із системною платформою.</translation>
+<translation id="7219573373513695352">Немає підключених пристроїв</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Щоб оновлення почали діяти, Chromebook потрібно перезапустити. Це може зайняти до 1 хвилини.</translation>
 <translation id="7256634071279256947">Мікрофон на задній панелі</translation>
 <translation id="7258828758145722155">Змінено вчора</translation>
@@ -1481,6 +1485,7 @@
 <translation id="7902625623987030061">Торкніться сканера відбитків пальців</translation>
 <translation id="7904094684485781019">Адміністратор цього облікового запису заборонив паралельний вхід.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422">Підключено пристроїв: <ph name="DEVICECOUNT" /></translation>
 <translation id="7930731167419639574">Мовлення тепер обробляється лише на пристрої, а функція диктування працює в режимі офлайн</translation>
 <translation id="7932451802722951285">Відкрити в Google Календарі</translation>
 <translation id="7933084174919150729">Google Асистент доступний лише в основному профілі.</translation>

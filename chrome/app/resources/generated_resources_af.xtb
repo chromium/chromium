@@ -4068,6 +4068,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="450552327874992444">Woord reeds bygevoeg</translation>
 <translation id="4507128560633489176">Data is uitgevee.</translation>
 <translation id="4507373251891673233">Jy het alle uitbreidings van <ph name="HOST" /> af geblokkeer</translation>
+<translation id="4508032221004253235">Dit maak dit vir apps en webwerwe met die liggingtoestemming en ChromeOS moontlik om die ligging te gebruik wat deur jou wi-fi- of selnetwerke bepaal is. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="450867954911715010">Toeganklikheidsinstellings</translation>
 <translation id="4508765956121923607">Bekyk bron</translation>
 <translation id="4509421746503122514">Herbegin om op te dateer</translation>
@@ -4674,7 +4675,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5063480226653192405">Gebruik</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Bestuur Veilige DNS in Chrome-bedryfstelselinstellings</translation>
-<translation id="5066160542186949327">Skuif na ander vouer</translation>
 <translation id="5067399438976153555">Altyd aan</translation>
 <translation id="5067867186035333991">Vra of <ph name="HOST" /> by jou mikrofoon wil ingaan</translation>
 <translation id="5068553687099139861">wys wagwoorde</translation>
@@ -4860,6 +4860,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5235750401727657667">Vervang die bladsy wat jy sien wanneer jy 'n nuwe oortjie oopmaak</translation>
 <translation id="5236374273162681467">Jy kan hulle na jou Google-rekening toe skuif om hulle maklik op al jou toestelle te gebruik</translation>
 <translation id="523862956770478816">Werftoestemmings</translation>
+<translation id="5239752869099890912">Herlaai hierdie bladsy om jou opgedateerde instellings op hierdie werf vir hierdie uitbreidings toe te pas</translation>
 <translation id="5242724311594467048">Aktiveer "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Probeer asseblief oor 'n paar oomblikke weer</translation>
 <translation id="5244474230056479698">Sinkroniseer tans na <ph name="EMAIL" /></translation>
@@ -8134,6 +8135,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8138997515734480534"><ph name="VM_NAME" />-status</translation>
 <translation id="8139447493436036221">Google Drive-lêers</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
+<translation id="8141260936970642964">Laat apps en webwerwe en die stelseltydsone toe om die ligging te gebruik wat deur Google Liggingdienste bepaal is. As jou liggingtoegang afgeskakel is, sal jou ligging dalk steeds deur jou IP-adres sigbaar wees.</translation>
 <translation id="8141418916163800697">Jy kan meer kenmerke in Foonsentrum-instellings opstel</translation>
 <translation id="8141584439523427891">Maak tans in alternatiewe blaaier oop</translation>
 <translation id="8141725884565838206">Bestuur jou wagwoorde</translation>
@@ -8206,6 +8208,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8195737548602430447">Vertaal onderskrifte outomaties in ’n teikentaal.</translation>
 <translation id="8197673340773315084">Voeg ’n naam of etiket by, soos Werk of Persoonlik</translation>
 <translation id="8198456017687137612">Saai tans oortjie uit</translation>
+<translation id="8198511718495409170">Herlaai hierdie bladsy om jou opgedateerde instellings vir “<ph name="EXTENSION_NAME" />” op hierdie werf toe te pas</translation>
 <translation id="8199300056570174101">Netwerk- (diens-) en toesteleienskappe</translation>
 <translation id="8200772114523450471">Hervat</translation>
 <translation id="8200789660596905522">Aanvaar die uitsaaiversoek op jou <ph name="DEVICE_NAME" />.</translation>

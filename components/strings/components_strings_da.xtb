@@ -307,6 +307,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1658918301167915956">Bluetooth-enheder</translation>
 <translation id="1662550410081243962">Gem og udfyld betalingsmetoder</translation>
 <translation id="1663943134801823270">Kort og adresser stammer fra Chrome. Du kan administrere dem i <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" />.</translation>
+<translation id="1668071460721346172">Få en mail</translation>
 <translation id="1671391448414634642">Sider på <ph name="SOURCE_LANGUAGE" /> oversættes fremover til <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> til <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Kort kant først</translation>
@@ -367,6 +368,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1806174020048213474">Denne app anmoder om tilladelse til at installere loginoplysninger til Wi-Fi. Efter konfigurationen opretter din <ph name="DEVICE_TYPE" /> automatisk forbindelse til deltagende Wi-Fi-netværk. Afinstaller appen for at fjerne disse loginoplysninger.</translation>
 <translation id="1807246157184219062">Lys</translation>
 <translation id="1807528111851433570">Startark</translation>
+<translation id="180757923930449935">(64-bit emuleret)</translation>
 <translation id="180991881384371158">Din CVC er på bagsiden af dit kort. Det er de sidste 3 cifre øverst til højre i signaturfeltet.</translation>
 <translation id="181000283860817563">Hold øje med priser på flere websites</translation>
 <translation id="1810391395243432441">Beskyt adgangskoder med din skærmlås</translation>
@@ -524,7 +526,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2204482073374652408">Opdateringen er fuldført.</translation>
 <translation id="22081806969704220">Bakke 3</translation>
 <translation id="2210794033760923560">Upload rapport</translation>
-<translation id="2212579473415663542">Denne adresse er gemt på din Google-konto (<ph name="ACCOUNT" />). Du kan bruge adressen i Google-produkter på enhver enhed.</translation>
 <translation id="2212735316055980242">Politikken blev ikke fundet</translation>
 <translation id="2213606439339815911">Indlæg hentes...</translation>
 <translation id="2213612003795704869">Siden er udskrevet</translation>
@@ -1225,6 +1226,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4031179711345676612">Der er givet adgang til mikrofonen</translation>
 <translation id="4040350669425716613">Gymnasier og universiteter</translation>
 <translation id="4047351652147966654">18 x 24 tommer</translation>
+<translation id="4047620889508350431">Du kan nu bruge adresser fra din Google-konto.</translation>
 <translation id="405399507749852140">Få besked, hvis prisen falder på et website</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Giv Google tilladelse til at hjælpe dig med at finde rabatter til din kurv</translation>
@@ -1587,6 +1589,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4877083676943085827">{COUNT,plural, =0{Ingen}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" />-søgning</translation>
 <translation id="4879491255372875719">Automatisk (standard)</translation>
+<translation id="4879723019639546076">Denne adresse gemmes kun i Chrome. Hvis du vil bruge den i Google-produkter, skal du gemme den på din Google-konto (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">Søg i historikken</translation>
 <translation id="4881695831933465202">Åbn</translation>
 <translation id="4881808915112408168">24 x 31,5 tommer</translation>
@@ -2145,6 +2148,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6279183038361895380">Tryk på |<ph name="ACCELERATOR" />| at se markøren</translation>
 <translation id="6280223929691119688">Der kan ikke leveres til denne adresse. Vælg en anden adresse.</translation>
 <translation id="6284292079994426700">26 x 38 tommer</translation>
+<translation id="6284517535531159884">Varianter af seedtype</translation>
 <translation id="6285507000506177184">Knappen "Administrer downloads i Chrome" – tryk på Enter for at administrere de filer, du har downloadet i Chrome</translation>
 <translation id="6289939620939689042">Farve på side</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2319,6 +2323,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6716672519412350405"><ph name="URL" /> vil oprette et 3D-kort over dine omgivelser og registrere kamerapositionen</translation>
 <translation id="6718612893943028815">Vil du bruge kameraet?</translation>
 <translation id="6721678857435001674">Se din sikkerhedsnøgles fabrikat og model</translation>
+<translation id="6726832600570791992">(32-bit emuleret)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6738516213925468394">Dine data blev krypteret med din <ph name="BEGIN_LINK" />adgangssætning til synkronisering<ph name="END_LINK" /> <ph name="TIME" />. Indtast adgangssætningen for at starte synkroniseringen.</translation>

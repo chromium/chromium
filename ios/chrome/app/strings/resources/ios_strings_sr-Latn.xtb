@@ -358,7 +358,6 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3305294846493618482">još</translation>
 <translation id="3311748811247479259">Isključeno</translation>
 <translation id="3324193307694657476">2. red za adresu</translation>
-<translation id="3328459813621383194">Premesti neaktivne kartice</translation>
 <translation id="3328801116991980348">Informacije o sajtu</translation>
 <translation id="3344485292736684439">{count,plural, =1{Obeleživač je sačuvan u folderu {title} na nalogu, {email}}one{Obeleživači su sačuvani u folderu {title} na nalogu, {email}}few{Obeleživači su sačuvani u folderu {title} na nalogu, {email}}other{Obeleživači su sačuvani u folderu {title} na nalogu, {email}}}</translation>
 <translation id="3371831930909698441">Prevodilac je dostupan. Opcije su dostupne u dnu ekrana.</translation>
@@ -499,6 +498,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4343046787186034850">Pristup kameri i mikrofonu je dozvoljen</translation>
 <translation id="4359125752503270327">Ova stranica će se otvoriti u drugoj aplikaciji.</translation>
 <translation id="4371526908359194219">Obaveštenja imejlom</translation>
+<translation id="4371591986692297148">Neaktivno</translation>
 <translation id="4375040482473363939">Pretraga QR kodova</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Dodirnite da biste promenili jezik</translation>
@@ -629,7 +629,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5168414296986405587">Napravljeno za iPadOS</translation>
 <translation id="5173088371991956744">Sinhronizacija mora da potvrdi da ste to vi</translation>
 <translation id="5176312250994681348">Zadrži nedavnu lozinku</translation>
-<translation id="51802232683641391">{count,plural, =1{Želite li da nastavite na kartici na kojoj ste stali na Android-u?}one{Želite li da nastavite na karticama na kojima ste stali na Android-u?}few{Želite li da nastavite na karticama na kojima ste stali na Android-u?}other{Želite li da nastavite na karticama na kojima ste stali na Android-u?}}</translation>
 <translation id="5181140330217080051">Preuzimanje</translation>
 <translation id="5184329579814168207">Otvori u Chrome-u</translation>
 <translation id="5186185447130319458">Privatno</translation>
@@ -907,7 +906,6 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="6807889908376551050">Prikaži sve...</translation>
 <translation id="681368974849482173">Stavka je napravljena</translation>
 <translation id="6822587385560699678">Kada je uključeno, lozinke se čuvaju na nalogu <ph name="ACCOUNT" />. Kada je isključeno, lozinke se čuvaju samo na ovom uređaju.</translation>
-<translation id="683022620450280906">Možete da koristite sačuvane lozinke na bilo kom uređaju. Čuvaju se u Google menadžeru lozinki za <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6842136130964845393">Da biste bili sigurni da uvek možete da pristupate sačuvanim lozinkama, potvrdite da ste to vi</translation>
 <translation id="6851516051005285358">Zahtevaj sajt za računar</translation>

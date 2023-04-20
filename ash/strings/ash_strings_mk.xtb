@@ -226,6 +226,7 @@
 <translation id="1978498689038657292">Внесување текст</translation>
 <translation id="1980808257969311265">Придружете се на <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Прикажи ја претходната седмица</translation>
+<translation id="1986150224850161328">Проверете дали телефонот и Chromebook се на истата мрежа, па обидете се повторно. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Не може да се снимаат содржините</translation>
 <translation id="1990046457226896323">Датотеките за говор се преземени</translation>
 <translation id="1993072747612765854">Дознајте повеќе за најновото ажурирање на <ph name="SYSTEM_APP_NAME" /></translation>
@@ -376,6 +377,7 @@
 <translation id="2761723519669354964">Отворете нагласена ставка од полицата</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> управува со <ph name="DEVICE_TYPE" /></translation>
 <translation id="2782591952652094792">Излези од режимот на снимање</translation>
+<translation id="2785499565474703580">Поврзан е 1 уред</translation>
 <translation id="2791421900609674576">Ќе видите препораки за да можете да продолжите каде што сте застанале. Може да допрете и задржите за да ги отстраните препораките.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">Група на полица</translation>
@@ -1281,6 +1283,7 @@
 <translation id="6941333068993625698">Испраќа повратни информации</translation>
 <translation id="6942518653766415536">Мени за формат на снимање</translation>
 <translation id="6945221475159498467">Избери</translation>
+<translation id="6945922087561257829">Вашиот телефон користи мобилна мрежа. Проверете дали телефонот и Chromebook се на истата Wi-Fi мрежа, па обидете се повторно. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Не е активирана. Контактирајте со вашиот оператор.</translation>
 <translation id="6961121602502368900">Стишувањето на телефонот не е достапно на работен профил</translation>
 <translation id="6961840794482373852">Кратенката од тастатура Alt + Стрелка нагоре се промени. За да го користите копчето Page Up, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Стрелка нагоре.</translation>
@@ -1335,6 +1338,7 @@
 <translation id="7188494361780961876">Менито е преместено во горниот лев агол на екранот.</translation>
 <translation id="7189412385142492784">Колку е оддалечена Венера</translation>
 <translation id="7198435252016571249">Камерата е поставена во долниот десен агол. Конфликт со површината на системот.</translation>
+<translation id="7219573373513695352">Не се поврзани уреди</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Треба да го рестартирате овој Chromebook за да се примени ажурирањето. Ова може да потрае 1 минута.</translation>
 <translation id="7256634071279256947">Заден микрофон</translation>
 <translation id="7258828758145722155">Изменето вчера</translation>
@@ -1485,6 +1489,7 @@
 <translation id="7902625623987030061">Допрете го сензорот за отпечатоци</translation>
 <translation id="7904094684485781019">Администраторот за оваа сметка не дозволува повеќекратно пријавување.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422">Поврзани се <ph name="DEVICECOUNT" /> уреди</translation>
 <translation id="7930731167419639574">Говорот сега се обработува локално и „Диктирањето“ функционира офлајн</translation>
 <translation id="7932451802722951285">Отворете во „Календар на Google“</translation>
 <translation id="7933084174919150729">„Помошникот на Google“ е достапен само за примарниот профил.</translation>

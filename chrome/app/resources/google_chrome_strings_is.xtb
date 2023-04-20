@@ -19,11 +19,14 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1278833599417554002">Endurræstu til að uppfæra &amp;Chrome</translation>
 <translation id="1302523850133262269">Bíddu á meðan Chrome setur upp nýjustu kerfisuppfærslurnar.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> krefst þess að þú lesir og samþykkir eftirfarandi þjónustuskilmála áður en þú notar þetta tæki. Þessir skilmálar auka ekki við, breyta eða takmarka skilmála Google ChromeOS Flex.</translation>
+<translation id="1341711321000856656">Þú getur skipt um prófíl til að sjá aðgangsorð frá öðrum Chrome-prófíl</translation>
 <translation id="1363996462118479832">ChromeOS gat ekki samstillt gögnin þín vegna innskráningarvillu.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Þessi tölva er þegar búin nýrri útgáfu af Google Chrome. Ef hugbúnaðurinn virkar ekki skaltu fjarlægja Google Chrome og reyna aftur.</translation>
 <translation id="139993653570221430">Þú getur skipt um skoðun hvenær sem er í stillingum Chrome. Prófanirnar eru keyrðar meðfram núverandi birtingu auglýsinga, og því sérðu breytingar ekki um leið.</translation>
+<translation id="1425903838053942728">{COUNT,plural, =0{Chrome-uppfærslu er lokið. Þú getur notað nýju útgáfuna um leið og þú hefur endurræst. Núverandi flipar opnast aftur þegar endurræsingu er lokið.}=1{Chrome-uppfærslu er lokið. Þú getur notað nýju útgáfuna um leið og þú hefur endurræst. Núverandi flipar opnast aftur þegar endurræsingu er lokið. Huliðsglugginn opnast ekki aftur.}one{Chrome-uppfærslu er lokið. Þú getur notað nýju útgáfuna um leið og þú hefur endurræst. Núverandi flipar opnast aftur þegar endurræsingu er lokið. # huliðsgluggi opnast ekki aftur.}other{Chrome-uppfærslu er lokið. Þú getur notað nýju útgáfuna um leið og þú hefur endurræst. Núverandi flipar opnast aftur þegar endurræsingu er lokið. # huliðsgluggar opnast ekki aftur.}}</translation>
 <translation id="1434626383986940139">Chrome Canary forrit</translation>
+<translation id="1492280395845991349">Endurræstu til að ljúka Chrome-uppfærslu</translation>
 <translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome var tengt við HID-tæki}=1{Google Chrome er tengt við HID-tæki}one{Google Chrome er tengt við HID-tæki}other{Google Chrome er tengt við HID-tæki}}</translation>
 <translation id="1507198376417198979">Sérsníða nýja Chrome prófílinn</translation>
 <translation id="1516530951338665275">Google Chrome þarf Bluetooth-aðgang til að halda pörun áfram. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -95,6 +98,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2652691236519827073">Opna tengil í nýjum &amp;flipa í Chrome</translation>
 <translation id="2665296953892887393">Hjálpaðu til við að bæta Google Chrome með því að senda tilkynningar um hrun og <ph name="UMA_LINK" /> til Google.</translation>
 <translation id="2689103672227170538">Þessi viðbót hefur breytt því hvaða síða birtist þegar þú ræsir Chrome.</translation>
+<translation id="2712234843277364121">Endurræstu til að uppfæra – fliparnir þínir opnast aftur</translation>
 <translation id="2742320827292110288">Viðvörun: Google Chrome getur ekki komið í veg fyrir að viðbætur skrái vafraferilinn þinn. Afturkallaðu þennan valkost til að gera þessa viðbót óvirka í huliðsstillingu.</translation>
 <translation id="2765403129283291972">Chrome þarf leyfi til að nota hljóðnemann á þessu vefsvæði</translation>
 <translation id="2770231113462710648">Breyta sjálfgefnum vafra í:</translation>
@@ -281,6 +285,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6365489425007284765">{COUNT,plural, =1{Stjórnandinn eyðir vefskoðunargögnum sjálfkrafa eftir aðgerðaleysi í 1 mínútu. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal. Fyrirliggjandi flipar verða áfram opnir.}one{Stjórnandinn eyðir vefskoðunargögnum sjálfkrafa eftir aðgerðaleysi í # mínútu. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal. Fyrirliggjandi flipar verða áfram opnir.}other{Stjórnandinn eyðir vefskoðunargögnum sjálfkrafa eftir aðgerðaleysi í # mínútur. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal. Fyrirliggjandi flipar verða áfram opnir.}}</translation>
 <translation id="6412673304250309937">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chrome. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chrome einnig sent vefslóðir í Örugga vefskoðun, þar á meðal hluta af innihaldi síðna.</translation>
 <translation id="6418662306461808273">Skipta yfir í Chrome prófíl sem er til?</translation>
+<translation id="648319183876919572">Enn öruggari vefskoðun gerir viðbótarráðstafanir til að vernda þig gegn skaðlegum vefsvæðum og niðurhali</translation>
 <translation id="6493527311031785448">Google Chrome er að reyna að <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome verður að fá leyfi fyrir myndavél til að búa til þrívíddarkort af umhverfi þínu</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
@@ -411,6 +416,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8989968390305463310">Vafraferillinn þinn hefur áhrif á auglýsingarnar sem þú sérð og áhugasviðin sem eru áætluð hér fyrir neðan. Til að gæta persónuverndar þinnar eyðir Chrome áhugamálunum þínum sjálfkrafa mánaðarlega. Áhugasvið verða hugsanlega endurnýjuð nema þú fjarlægir þau.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Uppfærsla er í boði fyrir Chrome}=1{Uppfærsla er í boði fyrir Chrome}one{Uppfærsla hefur verið í boði fyrir Chrome í # dag}other{Uppfærsla hefur verið í boði fyrir Chrome í # daga}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex kerfi</translation>
+<translation id="9054037008353851982">Endurræstu til að uppfæra – fliparnir þínir opnast aftur</translation>
 <translation id="911206726377975832">Eyða líka vafragögnum?</translation>
 <translation id="9138603949443464873">Endurræstu Chrome til að breytingarnar taki gildi</translation>
 <translation id="9195993889682885387">Chrome getur áætlað áhugasvið þín í samræmi við vafraferil síðustu vikna. Þessi gögn eru aðeins geymd í tækinu.</translation>

@@ -225,6 +225,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1978498689038657292">Tekstinsyöttö</translation>
 <translation id="1980808257969311265">Liity: <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Näytä edellinen viikko</translation>
+<translation id="1986150224850161328">Varmista, että puhelin ja Chromebook ovat samassa verkossa, ja yritä sitten uudelleen. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Sisältöä ei voi tallentaa</translation>
 <translation id="1990046457226896323">Puhetiedostot ladattu</translation>
 <translation id="1993072747612765854">Lue lisää uusimmasta <ph name="SYSTEM_APP_NAME" /> ‑päivityksestä.</translation>
@@ -373,6 +374,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2761723519669354964">Avaa korostettu kohde hyllystä</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />: ylläpitäjä on <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Sulje tallennustila</translation>
+<translation id="2785499565474703580">1 laite yhdistetty</translation>
 <translation id="2791421900609674576">Näet suosituksia, joten voit jatkaa siitä, mihin jäit. Suosituksia voi poistaa koskettamalla pitkään.</translation>
 <translation id="2792498699870441125">Alt + haku</translation>
 <translation id="2797741504905337289">Hyllyryhmä</translation>
@@ -1277,6 +1279,7 @@ Uusi asennus</translation>
 <translation id="6941333068993625698">Lähettää palautetta</translation>
 <translation id="6942518653766415536">Kuvataan muotovalikkoa</translation>
 <translation id="6945221475159498467">Valitse</translation>
+<translation id="6945922087561257829">Puhelin käyttää mobiiliverkkoa. Varmista, että puhelin ja Chromebook ovat samassa Wi-Fi-verkossa, ja yritä sitten uudelleen. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Ei aktivoitu. Ota yhteyttä operaattoriin.</translation>
 <translation id="6961121602502368900">Puhelimen hiljentäminen ei ole käytettävissä työprofiililla</translation>
 <translation id="6961840794482373852">Pikanäppäinyhdistelmä Alt + ylänuoli on muuttunut. Jos haluat käyttää Page Up ‑näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + ylänuoli.</translation>
@@ -1331,6 +1334,7 @@ Uusi asennus</translation>
 <translation id="7188494361780961876">Valikko siirretty näytön vasempaan ylänurkkaan</translation>
 <translation id="7189412385142492784">Kuinka kaukana Venus on</translation>
 <translation id="7198435252016571249">Kamera kohdistettu oikeaan alakulmaan. Ristiriita järjestelmän alustan kanssa.</translation>
+<translation id="7219573373513695352">Ei liitettyjä laitteita</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Tämä Chromebook on käynnistettävä uudelleen, jotta päivitys voidaan ottaa käyttöön. Tämä voi kestää enintään minuutin.</translation>
 <translation id="7256634071279256947">Takamikrofoni</translation>
 <translation id="7258828758145722155">Muokattu eilen</translation>
@@ -1481,6 +1485,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7902625623987030061">Kosketa sormenjälkitunnistinta</translation>
 <translation id="7904094684485781019">Tämän tilin järjestelmänvalvoja on estänyt useisiin tileihin kirjautumisen.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> laitetta yhdistetty</translation>
 <translation id="7930731167419639574">Puhe käsitellään nyt paikallisesti, ja sanelu toimii ilman verkkoyhteyttä</translation>
 <translation id="7932451802722951285">Avaa Google Kalenteri</translation>
 <translation id="7933084174919150729">Google Assistant on käytettävissä vain ensisijaisella profiililla.</translation>

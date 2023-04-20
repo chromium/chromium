@@ -804,6 +804,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1666232093776384142">Wyłącz zabezpieczenie przed dostępem do danych przez urządzenia peryferyjne</translation>
 <translation id="1667842670298352129">Umożliwia odsłuchanie określonego tekstu. Najpierw kliknij ikonę Przeczytaj na głos u dołu ekranu, a potem zaznacz tekst. Możesz też użyć skrótu klawiszowego: zaznaczyć tekst, a następnie nacisnąć klawisz wyszukiwania + S.</translation>
 <translation id="1668435968811469751">Zarejestruj się samodzielnie</translation>
+<translation id="1668804837842452164">Zapisz w usłudze <ph name="BRAND" /> dla konta <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Więcej informacji o sugestiach</translation>
 <translation id="1670399744444387456">Podstawowe</translation>
 <translation id="1673137583248014546"><ph name="URL" /> chce odczytać markę i model Twojego klucza bezpieczeństwa</translation>
@@ -1554,6 +1555,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <ph name="LIST_ITEM" />ustawić własne hasła użytkowników dev i root, aby móc ręcznie zalogować się przez SSH na urządzeniu.
 <ph name="END_LIST" /><ph name="BR" />Po włączeniu większość funkcji debugowania pozostanie włączona nawet po wykonaniu procedury Powerwash lub wyczyszczeniu danych na urządzeniu zarządzanym przez firmę. Aby całkowicie wyłączyć wszystkie funkcje debugowania, przejdź proces odzyskiwania Chrome OS (https://support.google.com/chromebook/answer/1080595).<ph name="BR" /><ph name="BR" />Więcej informacji o funkcjach debugowania:<ph name="BR" />https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features<ph name="BR" /><ph name="BR" /><ph name="BEGIN_BOLD" />Uwaga:<ph name="END_BOLD" /> podczas tego procesu system uruchomi się ponownie.</translation>
 <translation id="23030561267973084">„<ph name="EXTENSION_NAME" />” żąda dodatkowych pozwoleń.</translation>
+<translation id="2306794767168143227">Zapisz w usłudze <ph name="BRAND" /> na tym urządzeniu</translation>
 <translation id="2307462900900812319">Skonfiguruj sieć</translation>
 <translation id="2307553512430195144">Jeśli wyrazisz zgodę, Asystent Google będzie czekać w trybie gotowości na wykrycie „OK Google” i za pomocą funkcji Voice Match rozpozna, że mówi <ph name="SUPERVISED_USER_NAME" />.
     <ph name="BR" />
@@ -4646,7 +4648,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5063480226653192405">Wykorzystanie</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Zarządzaj bezpiecznym serwerem DNS w ustawieniach Chrome OS</translation>
-<translation id="5066160542186949327">Przenieś do innego folderu</translation>
 <translation id="5067399438976153555">Zawsze włączony</translation>
 <translation id="5067867186035333991">Pytaj, gdy witryna <ph name="HOST" /> chce mieć dostęp do mikrofonu</translation>
 <translation id="5068553687099139861">pokazać hasła</translation>

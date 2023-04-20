@@ -34,6 +34,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1148499908455722006">Vula ibhokisi lolwazi lwe-<ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Ikhalenda</translation>
 <translation id="1153356358378277386">Amadivaysi abhanqene</translation>
+<translation id="1160215328209699296">ivuliwe futhi iyasetshenziswa</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Ikhebuli lakho le-USB-C lingase lingaxhumi kahle kwizibonisi</translation>
 <translation id="1175572348579024023">Skrola</translation>
@@ -241,6 +242,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2049240716062114887">Igama letafula lishintshelwe ku-<ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">Ukuhlola kuqala kwekhamera kuvuliwe</translation>
 <translation id="2067602449040652523">Ukukhanya kwekhibhodi</translation>
+<translation id="2075520525463668108">Guqula i-<ph name="CAPTURE_MEDIUM" />. I-<ph name="CAPTURE_MEDIUM" /> yi-<ph name="CAPTURE_STATE" /></translation>
 <translation id="2078034614700056995">Swayiphela ngakwesokudla ngeminwe emine ukuze ushintshele kudeski elilandelayo</translation>
 <translation id="2079545284768500474">Hlehlisa</translation>
 <translation id="2083190527011054446">Ulale kahle <ph name="GIVEN_NAME" />,</translation>
@@ -325,6 +327,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2487915095798731898">Joyina</translation>
 <translation id="2501920221385095727">Okhiye abanamathelayo</translation>
 <translation id="2509468283778169019">I-CAPS LOCK ivuliwe</translation>
+<translation id="2514415433888497495">Misa i-<ph name="CAPTURE_MEDIUM" />. I-<ph name="CAPTURE_MEDIUM" /> yi-<ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">I-Alt</translation>
 <translation id="2526581474998477112">Vula amawindi</translation>
 <translation id="2530896289327917474">Vula noma uvale ukuphequlula kwe-caret</translation>
@@ -1520,6 +1523,7 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="8051716679295756675">Isifanekiso esiqanjwe ngokuthi <ph name="DESK_TEMPLATE_NAME" /> sesikhona kakade</translation>
 <translation id="8052898407431791827">Kukopishelwe kuklibhodi</translation>
 <translation id="8054466585765276473">Ibala isikhathi sebhethri</translation>
+<translation id="8079538659226626406">Ukwabelana Isikrini</translation>
 <translation id="8083540854303889870">Kulondolozelwe kamuva</translation>
 <translation id="8091153018031979607">Iqala ngo-<ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Ukubuyekezwa okuzenzekelayo</translation>

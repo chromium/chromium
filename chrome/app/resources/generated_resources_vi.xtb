@@ -805,6 +805,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1666232093776384142">Tắt chế độ ngăn thiết bị ngoại vi truy cập vào dữ liệu</translation>
 <translation id="1667842670298352129">Nghe văn bản cụ thể được đọc thành tiếng. Trước tiên, hãy chọn biểu tượng Chọn để nói ở cuối màn hình, sau đó bôi đen phần văn bản bạn muốn nghe. Bạn cũng có thể dùng phím tắt: Bôi đen văn bản rồi nhấn tổ hợp phím Tìm kiếm + S.</translation>
 <translation id="1668435968811469751">Đăng ký theo cách thủ công</translation>
+<translation id="1668804837842452164">Lưu vào <ph name="BRAND" /> cho <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Tìm hiểu về các đề xuất</translation>
 <translation id="1670399744444387456">Cơ bản</translation>
 <translation id="1673137583248014546"><ph name="URL" /> muốn xem nhãn hiệu và kiểu Khóa bảo mật của bạn</translation>
@@ -1582,6 +1583,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Lưu ý:<ph name="END_BOLD" />  Hệ thống sẽ khởi động lại trong quá trình này.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" đã yêu cầu thêm quyền.</translation>
+<translation id="2306794767168143227">Lưu vào <ph name="BRAND" /> trên thiết bị này</translation>
 <translation id="2307462900900812319">Định cấu hình mạng</translation>
 <translation id="2307553512430195144">Nếu bạn đồng ý, thì Trợ lý Google sẽ đợi ở chế độ chờ để phát hiện câu lệnh “Ok Google” và có thể nhận ra đó là giọng nói của <ph name="SUPERVISED_USER_NAME" /> bằng tính năng Voice Match.
     <ph name="BR" />
@@ -4068,6 +4070,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="450552327874992444">Từ đã được thêm</translation>
 <translation id="4507128560633489176">Đã xóa dữ liệu.</translation>
 <translation id="4507373251891673233">Bạn đã chặn tất cả tiện ích từ <ph name="HOST" /></translation>
+<translation id="4508032221004253235">Việc này cho phép các ứng dụng và trang web có quyền truy cập thông tin vị trí và ChromeOS sử dụng vị trí do mạng Wi-Fi hoặc mạng di động của bạn xác định. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="450867954911715010">Cài đặt trợ năng</translation>
 <translation id="4508765956121923607">Xem &amp;Nguồn</translation>
 <translation id="4509421746503122514">Chạy lại để cập nhật</translation>
@@ -4674,7 +4677,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5063480226653192405">Mức sử dụng</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Quản lý tính năng DNS bảo mật trong phần cài đặt ChromeOS</translation>
-<translation id="5066160542186949327">Chuyển đến một thư mục khác</translation>
 <translation id="5067399438976153555">Luôn bật</translation>
 <translation id="5067867186035333991">Hỏi nếu <ph name="HOST" /> muốn truy cập micrô của bạn</translation>
 <translation id="5068553687099139861">hiển thị mật khẩu</translation>
@@ -4860,6 +4862,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5235750401727657667">Thay thế trang bạn sẽ nhìn thấy khi mở thẻ mới</translation>
 <translation id="5236374273162681467">Để dễ dàng sử dụng các mật khẩu trên mọi thiết bị, bạn có thể di chuyển mật khẩu sang Tài khoản Google của mình</translation>
 <translation id="523862956770478816">Quyền cho trang web</translation>
+<translation id="5239752869099890912">Để áp dụng chế độ cài đặt đã cập nhật cho các tiện ích vào trang web này, hãy tải lại trang</translation>
 <translation id="5242724311594467048">Cho phép "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Vui lòng thử lại sau giây lát</translation>
 <translation id="5244474230056479698">Đang đồng bộ hóa với <ph name="EMAIL" /></translation>
@@ -8134,6 +8137,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8138997515734480534">Trạng thái của <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">Tệp trên Google Drive</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
+<translation id="8141260936970642964">Cho phép các ứng dụng và trang web cũng như múi giờ hệ thống sử dụng thông tin vị trí do Dịch vụ vị trí của Google xác định. Nếu quyền truy cập thông tin vị trí bị tắt, vị trí của bạn vẫn có thể hiển thị qua địa chỉ IP.</translation>
 <translation id="8141418916163800697">Bạn có thể thiết lập thêm các tính năng khác trong phần cài đặt của Trung tâm điều khiển điện thoại</translation>
 <translation id="8141584439523427891">Đang mở trong trình duyệt thay thế</translation>
 <translation id="8141725884565838206">Quản lý mật khẩu của bạn</translation>
@@ -8206,6 +8210,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8195737548602430447">Tự động dịch phụ đề sang ngôn ngữ đích.</translation>
 <translation id="8197673340773315084">Thêm tên hoặc nhãn như "Công việc" hoặc "Cá nhân"</translation>
 <translation id="8198456017687137612">Đang truyền thẻ</translation>
+<translation id="8198511718495409170">Để áp dụng chế độ cài đặt đã cập nhật cho "<ph name="EXTENSION_NAME" />" vào trang web này, hãy tải lại trang</translation>
 <translation id="8199300056570174101">Thuộc tính của thiết bị và mạng (dịch vụ)</translation>
 <translation id="8200772114523450471">Tiếp tục</translation>
 <translation id="8200789660596905522">Bạn cần chấp nhận yêu cầu Truyền trên <ph name="DEVICE_NAME" />.</translation>

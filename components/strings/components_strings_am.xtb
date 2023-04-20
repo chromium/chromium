@@ -512,6 +512,7 @@
 <translation id="2166049586286450108">ሙሉ የአስተዳደር መድረሻ</translation>
 <translation id="2166378884831602661">ይህ ጣቢያ ደህንነቱ አስተማማኝ የሆነ ግንኙነት ማቅረብ አይችልም</translation>
 <translation id="2168151236314517198">ይህን ይዘት ማተም በአስተዳዳሪ መመሪያ ታግዷል</translation>
+<translation id="2176974405772725904">አድራሻ በመለያ ውስጥ ያስቀምጡ</translation>
 <translation id="2181821976797666341">መምሪያዎች</translation>
 <translation id="2183608646556468874">ስልክ ቁጥር</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 አድራሻ}one{# አድራሻዎች}other{# አድራሻዎች}}</translation>
@@ -525,7 +526,6 @@
 <translation id="2204482073374652408">ማዘመን ጨርሷል!</translation>
 <translation id="22081806969704220">መሳቢያ 3</translation>
 <translation id="2210794033760923560">ሪፖርት ስቀል</translation>
-<translation id="2212579473415663542">ይህ አድራሻ የተቀመጠው በGoogle መለያዎ (<ph name="ACCOUNT" />) ውስጥ ነው። አድራሻን በመላው Google ምርቶች ላይ በማንኛውም መሣሪያ ላይ መጠቀም ይችላሉ።</translation>
 <translation id="2212735316055980242">መመሪያ አልተገኘም</translation>
 <translation id="2213606439339815911">ግቤቶችን በማምጣት ላይ...</translation>
 <translation id="2213612003795704869">ገፅ ታትሟል</translation>
@@ -1738,6 +1738,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">አሰናብት</translation>
+<translation id="5238301240406177137">በመለያ ውስጥ አስቀምጥ</translation>
 <translation id="5239623327352565343">አካባቢ ይፈቀዳል</translation>
 <translation id="5242889659037569123">ሻንጣዎች እና የጉዞ መለዋወጫዎች</translation>
 <translation id="5244732203286792411">በመጫን ላይ...
@@ -2255,6 +2256,7 @@
 <translation id="6545864417968258051">የብሉቱዝ ቅኝት</translation>
 <translation id="6547208576736763147">በግራ በኩል ብሳ</translation>
 <translation id="6549443526281184652">ልዩ ልብሶች</translation>
+<translation id="6551873053534932690">አድራሻ በመለያ ውስጥ ይቀመጥ?</translation>
 <translation id="6554732001434021288">ለመጨረሻ ጊዜ የተጎበኘው ከ<ph name="NUM_DAYS" /> ቀናት በፊት ነው</translation>
 <translation id="6556866813142980365">ድገም</translation>
 <translation id="6557715786897013164">14 x 17 ኢንች</translation>

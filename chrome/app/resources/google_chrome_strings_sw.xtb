@@ -19,11 +19,14 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1278833599417554002">Fungua tena ili usasishe &amp;Chrome</translation>
 <translation id="1302523850133262269">Tafadhali subiri Chrome inaposakinisha sasisho mpya za mfumo.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> inahitaji usome na ukubali Sheria na Masharti yafuatayo kabla ya kutumia kifaa hiki. Masharti haya hayapanui, hayarekebishi wala hayapunguzi Sheria na Masharti ya Google ChromeOS Flex.</translation>
+<translation id="1341711321000856656">Unaweza kubadilisha ili uone manenosiri kwenye wasifu mwingine wa Chrome</translation>
 <translation id="1363996462118479832">Mfumo wa Uendeshaji wa Chrome haukusawazisha data yako kutokana na hitilafu wakati wa kuingia katika akaunti.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Kompyuta hii tayari ina toleo jipya zaidi la Google Chrome. Ikiwa programu haifanyi kazi, tafadhali ondoa Google Chrome kisha ujaribu tena.</translation>
 <translation id="139993653570221430">Unaweza kubadilisha mawazo yako wakati wowote kwenye mipangilio ya Chrome. Vipindi vya kujaribu vinatekelezwa pamoja na jinsi matangazo yanavyoonyeshwa kwa sasa, hivyo hutaona mabadiliko papo hapo.</translation>
+<translation id="1425903838053942728">{COUNT,plural, =0{Chrome imemaliza kusasisha. Unaweza kutumia toleo jipya zaidi mara tu utakapofungua tena. Baada ya hapo, vichupo vya sasa vitafunguka upya.}=1{Chrome imemaliza kusasisha. Unaweza kutumia toleo jipya zaidi mara tu utakapofungua tena. Baada ya hapo, vichupo vya sasa vitafunguka upya. Dirisha lako fiche halitafunguka upya.}other{Chrome imemaliza kusasisha. Unaweza kutumia toleo jipya zaidi mara tu utakapofungua tena. Baada ya hapo, vichupo vya sasa vitafunguka upya. Madirisha fiche yako # hayatafunguka upya.}}</translation>
 <translation id="1434626383986940139">Programu za Chrome Canary</translation>
+<translation id="1492280395845991349">Fungua tena ili umalize kusasisha Chrome</translation>
 <translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome iliunganishwa kwenye kifaa cha HID}=1{Google Chrome imeunganishwa kwenye kifaa cha HID}other{Google Chrome imeunganishwa kwenye vifaa vya HID}}</translation>
 <translation id="1507198376417198979">Weka wasifu wako mpya wa Chrome uwe upendavyo</translation>
 <translation id="1516530951338665275">Google Chrome inahitaji ruhusa ya kufikia Bluetooth ili iendelee 
@@ -96,6 +99,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2652691236519827073">Fungua Kiungo katika kichupo kipya cha Chrome</translation>
 <translation id="2665296953892887393">Saidia kuboresha Google Chrome kwa kutuma ripoti za kuacha kufanya kazi na <ph name="UMA_LINK" /> kwenda Google</translation>
 <translation id="2689103672227170538">Kiendelezi hiki kimebadilisha ukurasa unaoonyeshwa unapoanzisha Chrome.</translation>
+<translation id="2712234843277364121">Fungua tena ili usasishe - vichupo vyako vitafunguka upya</translation>
 <translation id="2742320827292110288">Onyo: Google Chrome haiwezi kuzuia viendelezi kurekodi historia yako ya kuvinjari. Ili uzime kiendelezi hiki katika Hali fiche, usiteue chaguo hili.</translation>
 <translation id="2765403129283291972">Chrome inahitaji ruhusa ya kufikia maikrofoni yako katika tovuti hii</translation>
 <translation id="2770231113462710648">Badilisha kivinjari chaguomsingi kiwe:</translation>
@@ -282,6 +286,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6365489425007284765">{COUNT,plural, =1{Msimamizi wako hufuta data ya kuvinjari kiotomatiki, usipotumia Chromium kwa dakika 1. Data hii inaweza kujumuisha historia, maelezo yaliyojazwa kiotomatiki na vipakuliwa. Vichupo vyako vilivyopo havitafungwa.}other{Msimamizi wako hufuta data ya kuvinjari kiotomatiki, usipotumia Chromium kwa dakika #. Data hii inaweza kujumuisha historia, maelezo yaliyojazwa kiotomatiki na vipakuliwa. Vichupo vyako vilivyopo havitafungwa.}}</translation>
 <translation id="6412673304250309937">Hukagua URL zilizo na orodha ya tovuti zisizo salama zinazohifadhiwa kwenye Chrome. Iwapo tovuti inajaribu kuiba nenosiri lako au unapopakua faili hatari, Chrome inaweza pia kutuma URL, ikiwa ni pamoja na sehemu za maudhui ya ukurasa, kwenye kipengele cha Kuvinjari Salama.</translation>
 <translation id="6418662306461808273">Ungependa kutumia wasifu uliopo wa Chrome?</translation>
+<translation id="648319183876919572">Kipengele cha Kuvinjari Salama Kilichoboreshwa hufanya mengi zaidi ili kukulinda dhidi ya tovuti na vipakuliwa hatarishi.</translation>
 <translation id="6493527311031785448">Google Chrome inajaribu <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome inahitaji ruhusa ya kufikia kamera ili iunde ramani ya 3D ya mazingira yako</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome ya Wasanidi Programu</translation>
@@ -412,6 +417,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="8989968390305463310">Historia yako ya kuvinjari huathiri matangazo unayoyaona na mambo yanayokuvutia kama inavyokadiriwa hapa chini. Ili kulinda faragha yako, Chrome hufuta kiotomatiki mambo yanayokuvutia kadiri unavyoendelea kutumia kila mwezi. Mambo yanayokuvutia yanaweza kuonyeshwa upya isipokuwa ukiyaondoa.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Sasisho la Chrome linapatikana}=1{Sasisho la Chrome linapatikana}other{Sasisho la Chrome limekuwepo kwa siku #}}</translation>
 <translation id="9053892488859122171">Mfumo wa ChromeOS Flex</translation>
+<translation id="9054037008353851982">Fungua tena ili Usasishe - Vichupo vyako vitafunguka upya</translation>
 <translation id="911206726377975832">Futa historia yako ya kuvinjari pia?</translation>
 <translation id="9138603949443464873">Ili utumie mabadiliko uliyofanya, fungua Chrome upya</translation>
 <translation id="9195993889682885387">Chrome inaweza kukadiria mambo yanayokuvutia kulingana na historia ya kuvinjari kwako katika wiki chache zilizopita. Taarifa hizi zinahifadhiwa kwenye kifaa chako.</translation>

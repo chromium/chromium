@@ -225,6 +225,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1978498689038657292">Introdución de texto</translation>
 <translation id="1980808257969311265">Unirse a <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Mostrar semana anterior</translation>
+<translation id="1986150224850161328">Asegúrate de que o teléfono e o Chromebook estean conectados á mesma rede e téntao de novo. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Non se puido realizar unha captura do contido</translation>
 <translation id="1990046457226896323">Descargáronse os ficheiros de voz</translation>
 <translation id="1993072747612765854">Máis información sobre a última actualización de <ph name="SYSTEM_APP_NAME" /></translation>
@@ -373,6 +374,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2761723519669354964">Abre o elemento destacado do andel</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> xestiona este dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="2782591952652094792">Saír do modo de captura</translation>
+<translation id="2785499565474703580">1 dispositivo conectado</translation>
 <translation id="2791421900609674576">Recibirás recomendacións para poder continuar coas túas actividades desde onde as deixaches. Podes manter premidas as recomendacións para quitalas.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">Grupo de andeis</translation>
@@ -1278,6 +1280,7 @@ Nova instalación</translation>
 <translation id="6941333068993625698">Envía comentarios</translation>
 <translation id="6942518653766415536">Menú de formato da gravación</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
+<translation id="6945922087561257829">O teléfono está usando unha rede de telefonía móbil. Asegúrate de que o teléfono e o Chromebook estean conectados á mesma rede wifi e téntao de novo. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Non activada. Contacta co teu operador.</translation>
 <translation id="6961121602502368900">A opción Silenciar teléfono non está dispoñible no perfil de traballo</translation>
 <translation id="6961840794482373852">O atallo Alt + Frecha arriba cambiou. Para usar a tecla Retroceder páxina, preme <ph name="LAUNCHER_KEY_NAME" /> + Frecha arriba.</translation>
@@ -1332,6 +1335,7 @@ Nova instalación</translation>
 <translation id="7188494361780961876">O menú moveuse á esquina superior esquerda da pantalla.</translation>
 <translation id="7189412385142492784">A que distancia está Venus?</translation>
 <translation id="7198435252016571249">Cámara axustada á esquina inferior dereita. Conflito coa plataforma do sistema.</translation>
+<translation id="7219573373513695352">Non hai ningún dispositivo conectado</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Tes que reiniciar este Chromebook para aplicar unha actualización. Esta acción pode tardar 1 minuto.</translation>
 <translation id="7256634071279256947">Micrófono traseiro</translation>
 <translation id="7258828758145722155">Editouse onte</translation>
@@ -1482,6 +1486,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7902625623987030061">Toca o sensor de impresión dixital</translation>
 <translation id="7904094684485781019">O administrador desta conta non permitiu o inicio de sesión múltiple.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> dispositivos conectados</translation>
 <translation id="7930731167419639574">O que se diga procésase de xeito local e o ditado funciona sen conexión</translation>
 <translation id="7932451802722951285">Abrir en Google Calendar</translation>
 <translation id="7933084174919150729">O Asistente de Google só está dispoñible para o perfil principal.</translation>

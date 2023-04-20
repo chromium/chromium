@@ -34,6 +34,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1148499908455722006">Opna upplýsingaglugga fyrir <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Dagatal</translation>
 <translation id="1153356358378277386">Pöruð tæki</translation>
+<translation id="1160215328209699296">kveikt og í notkun</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Ekki er víst að USB-C-snúran tengist skjáum á réttan hátt</translation>
 <translation id="1175572348579024023">Fletta</translation>
@@ -225,6 +226,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1978498689038657292">Textainnsláttur</translation>
 <translation id="1980808257969311265">Tengjast <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Sýna fyrri viku</translation>
+<translation id="1986150224850161328">Gakktu úr skugga um að síminn og Chromebook-tölvan séu tengd sama neti og reyndu síðan aftur. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Ekki er hægt að taka skjámynd af efni</translation>
 <translation id="1990046457226896323">Talskrár sóttar</translation>
 <translation id="1993072747612765854">Frekari upplýsingar um nýjustu uppfærslu <ph name="SYSTEM_APP_NAME" /></translation>
@@ -240,6 +242,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2049240716062114887">Skrifborðsheiti var breytt í <ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">Kveikt á forskoðun myndavélar</translation>
 <translation id="2067602449040652523">Birtustig lyklaborðs</translation>
+<translation id="2075520525463668108">Kveikja/slökkva á <ph name="CAPTURE_MEDIUM" />. Staða „<ph name="CAPTURE_MEDIUM" />“ er: <ph name="CAPTURE_STATE" /></translation>
 <translation id="2078034614700056995">Strjúktu til hægri með fjórum fingrum til að skipta yfir í næsta skrifborð</translation>
 <translation id="2079545284768500474">Afturkalla</translation>
 <translation id="2083190527011054446">Góða nótt <ph name="GIVEN_NAME" />,</translation>
@@ -324,6 +327,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2487915095798731898">Tengjast</translation>
 <translation id="2501920221385095727">Festilyklar</translation>
 <translation id="2509468283778169019">Hástafalás er á</translation>
+<translation id="2514415433888497495">Stöðva <ph name="CAPTURE_MEDIUM" />. Staða „<ph name="CAPTURE_MEDIUM" />“ er: <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Taka glugga úr lás</translation>
 <translation id="2530896289327917474">Kveikja eða slökkva á skoðun með textabendli</translation>
@@ -373,6 +377,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2761723519669354964">Opna auðkennt atriði á hillu</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> hefur umsjón með <ph name="DEVICE_TYPE" /></translation>
 <translation id="2782591952652094792">Loka tökustillingu</translation>
+<translation id="2785499565474703580">1 tæki tengt</translation>
 <translation id="2791421900609674576">Þú sérð tillögur svo þú getir haldið áfram þar sem frá var horfið. Þú getur haldið inni til að fjarlægja tillögur.</translation>
 <translation id="2792498699870441125">Alt+leitarhnappur</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1277,6 +1282,7 @@ Ný uppsetning</translation>
 <translation id="6941333068993625698">Senda inn ábendingu</translation>
 <translation id="6942518653766415536">Valmynd upptökusniðs</translation>
 <translation id="6945221475159498467">Velja</translation>
+<translation id="6945922087561257829">Síminn þinn notar farsímakerfi. Gakktu úr skugga um að síminn og Chromebook-tölvan séu tengd sama neti og reyndu síðan aftur. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Ekki virkt. Hafðu samband við símafyrirtækið.</translation>
 <translation id="6961121602502368900">Ekki er hægt að slökkva á hljóði símans í vinnusniði</translation>
 <translation id="6961840794482373852">Flýtilyklinum „Alt + ör upp“ hefur verið breytt. Ýttu á <ph name="LAUNCHER_KEY_NAME" />-lykilinn + ör upp til að nota Page Up-lykilinn.</translation>
@@ -1331,6 +1337,7 @@ Ný uppsetning</translation>
 <translation id="7188494361780961876">Valmynd færð efst í vinstra horn skjásins.</translation>
 <translation id="7189412385142492784">Hvað er Venus langt í burtu?</translation>
 <translation id="7198435252016571249">Myndavél fest við neðra horn hægra megin. Skörun við vettvang kerfis.</translation>
+<translation id="7219573373513695352">Engin tæki eru tengd</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Endurræsa þarf Chromebook til að setja upp uppfærslu. Þetta getur tekið allt að mínútu.</translation>
 <translation id="7256634071279256947">Aftari hljóðnemi</translation>
 <translation id="7258828758145722155">Breytt í gær</translation>
@@ -1481,6 +1488,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7902625623987030061">Snertu fingrafaralesarann</translation>
 <translation id="7904094684485781019">Stjórnandi þessa reiknings hefur gert innskráningu á marga reikninga óvirka.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> tæki tengd</translation>
 <translation id="7930731167419639574">Úrvinnsla á tali fer núna fram í tækinu og raddinnsláttur virkar án nettengingar</translation>
 <translation id="7932451802722951285">Opna í Google dagatali</translation>
 <translation id="7933084174919150729">Google hjálparinn er aðeins í boði fyrir aðalprófíl.</translation>
@@ -1515,6 +1523,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8051716679295756675">Sniðmát sem heitir <ph name="DESK_TEMPLATE_NAME" /> er þegar til</translation>
 <translation id="8052898407431791827">Afritað á klippiborð</translation>
 <translation id="8054466585765276473">Reiknar rafhlöðuendingu.</translation>
+<translation id="8079538659226626406">Deila skjá</translation>
 <translation id="8083540854303889870">Vistað til síðari nota</translation>
 <translation id="8091153018031979607">Hefst kl. <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Sjálfvirkar uppfærslur</translation>

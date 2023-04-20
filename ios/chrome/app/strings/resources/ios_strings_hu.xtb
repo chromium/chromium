@@ -357,7 +357,6 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="3305294846493618482">több</translation>
 <translation id="3311748811247479259">Ki</translation>
 <translation id="3324193307694657476">Cím 2. sora</translation>
-<translation id="3328459813621383194">Inaktív lapok áthelyezése</translation>
 <translation id="3328801116991980348">Webhelyadatok</translation>
 <translation id="3344485292736684439">{count,plural, =1{A könyvjelzőt {email} fiókja következő mappájába mentettük: „{title}”}other{A könyvjelzőket {email} fiókja következő mappájába mentettük: „{title}”}}</translation>
 <translation id="3371831930909698441">Rendelkezésre áll fordítás. A beállítások a képernyő alsó részén találhatók.</translation>
@@ -498,6 +497,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="4343046787186034850">Kamera- és mikrofon-hozzáférés engedélyezve</translation>
 <translation id="4359125752503270327">Az oldal egy másik alkalmazásban nyílik meg.</translation>
 <translation id="4371526908359194219">E-mail-értesítések</translation>
+<translation id="4371591986692297148">Inaktív</translation>
 <translation id="4375040482473363939">QR-kód keresése</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Koppintson a nyelv módosításához.</translation>
@@ -628,7 +628,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5168414296986405587">Az iPadOS-re tervezve</translation>
 <translation id="5173088371991956744">A szinkronizálás ellenőrizni szeretné az Ön személyazonosságát</translation>
 <translation id="5176312250994681348">Legutóbbi jelszó megtartása</translation>
-<translation id="51802232683641391">{count,plural, =1{Folytatja az androidos eszköze legutóbb aktív lapjával?}other{Folytatja az androidos eszköze legutóbb aktív lapjaival?}}</translation>
 <translation id="5181140330217080051">Letöltés</translation>
 <translation id="5184329579814168207">Megnyitás Chrome-ban</translation>
 <translation id="5186185447130319458">Privát</translation>
@@ -906,7 +905,6 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="6807889908376551050">Összes megjelenítése...</translation>
 <translation id="681368974849482173">Elem létrehozva</translation>
 <translation id="6822587385560699678">Ha be van kapcsolva, a jelszavakat a rendszer a következő fiókba menti: <ph name="ACCOUNT" />. Ha ki van kapcsolva, a rendszer csak ezen az eszközön menti a jelszavakat.</translation>
-<translation id="683022620450280906">A mentett jelszavakat bármelyik eszközön használhatja. A jelszavakat elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Google Jelszókezelőbe.</translation>
 <translation id="6831043979455480757">Fordítás</translation>
 <translation id="6842136130964845393">Igazolja személyazonosságát, hogy mindig hozzá tudjon férni mentett jelszavaihoz</translation>
 <translation id="6851516051005285358">Asztali webhely kérése</translation>

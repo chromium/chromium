@@ -801,6 +801,7 @@
 <translation id="1666232093776384142">Онемогућите заштиту приступа подацима за периферне уређаје</translation>
 <translation id="1667842670298352129">Слушајте читање одређеног текста наглас. Прво изаберите икону Изаберите за говор у дну екрана, па истакните текст. Можете да користите и тастерске пречице: истакните текст, па притисните тастер за претрагу + S.</translation>
 <translation id="1668435968811469751">Региструјте се ручно</translation>
+<translation id="1668804837842452164">Сачувај у <ph name="BRAND" /> за <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Сазнајте више о предлозима</translation>
 <translation id="1670399744444387456">Основна</translation>
 <translation id="1673137583248014546"><ph name="URL" /> жели да види произвођача и модел безбедносног кључа</translation>
@@ -1566,6 +1567,7 @@
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Напомена:<ph name="END_BOLD" /> Систем ће се рестартовати током овог процеса.</translation>
 <translation id="23030561267973084">Додатак „<ph name="EXTENSION_NAME" />“ је затражио додатне дозволе.</translation>
+<translation id="2306794767168143227">Сачувај у <ph name="BRAND" /> на овом уређају</translation>
 <translation id="2307462900900812319">Конфигуриши мрежу</translation>
 <translation id="2307553512430195144">Ако прихватите, Google ће чекати у режиму мировања да би открио фразу „Хеј Google“ и да би помоћу Voice Match-а могао да препозна да <ph name="SUPERVISED_USER_NAME" /> говори.
     <ph name="BR" />
@@ -4658,7 +4660,6 @@
 <translation id="5063480226653192405">Коришћење</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Управљајте безбедним DNS-ом у подешавањима Chrome ОС-а</translation>
-<translation id="5066160542186949327">Премести у други фолдер</translation>
 <translation id="5067399438976153555">Увек укључено</translation>
 <translation id="5067867186035333991">Питај ме ако <ph name="HOST" /> жели да приступи микрофону</translation>
 <translation id="5068553687099139861">прикаже лозинке</translation>

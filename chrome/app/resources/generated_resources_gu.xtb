@@ -4050,6 +4050,7 @@
 <translation id="450552327874992444">શબ્દ પહેલેથી ઉમેરાઈ ગયો છે</translation>
 <translation id="4507128560633489176">ડેટા સાફ કરવામાં આવ્યો.</translation>
 <translation id="4507373251891673233">તમે <ph name="HOST" />ના તમામ એક્સ્ટેન્શન બ્લૉક કર્યા છે</translation>
+<translation id="4508032221004253235">લોકેશનની પરવાનગી ધરાવતી ઍપ અને વેબસાઇટ તથા ChromeOSને આ તમારા વાઇ-ફાઇ અથવા મોબાઇલ નેટવર્ક દ્વારા નિર્ધારિત લોકેશનનો ઉપયોગ કરવાની મંજૂરી આપે છે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="450867954911715010">ઍક્સેસિબિલિટી સેટિંગ્સ</translation>
 <translation id="4508765956121923607">&amp;સ્રોત જુઓ</translation>
 <translation id="4509421746503122514">અપડેટ કરવા માટે ફરીથી લૉન્ચ કરો</translation>
@@ -4656,7 +4657,6 @@
 <translation id="5063480226653192405">ઉપયોગ</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS સેટિંગમાં સુરક્ષિત DNSને મેનેજ કરો</translation>
-<translation id="5066160542186949327">કોઈ અન્ય ફોલ્ડર પર ખસેડો</translation>
 <translation id="5067399438976153555">હંમેશાં ચાલુ</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> તમારા માઇક્રોફોનને ઍક્સેસ કરવા માંગે છે કે કેમ તે પૂછો</translation>
 <translation id="5068553687099139861">પાસવર્ડ બતાવો</translation>
@@ -4842,6 +4842,7 @@
 <translation id="5235750401727657667">નવું ટૅબ ખોલતી વખતે તમને દેખાય છે તે પેજને બદલો</translation>
 <translation id="5236374273162681467">તમારા બધા ડિવાઇસ પર તેમનો સરળતાથી ઉપયોગ કરવા માટે, તમે તેમને તમારા Google એકાઉન્ટમાં ખસેડી શકો છો</translation>
 <translation id="523862956770478816">સાઇટની પરવાનગીઓ</translation>
+<translation id="5239752869099890912">આ એક્સ્ટેન્શન માટે આ સાઇટ પર તમારા અપડેટ કરેલા સેટિંગ લાગુ પાડવા માટે, આ પેજને ફરીથી લોડ કરો</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />"ને ચાલુ કરીએ?</translation>
 <translation id="5243522832766285132">કૃપા કરીને થોડીવારમાં ફરી પ્રયાસ કરો</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> પર સમન્વયિત કરી રહ્યાં છે</translation>
@@ -8114,6 +8115,7 @@ USB ડિવાઇસ</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> સ્ટેટસ</translation>
 <translation id="8139447493436036221">Google Drive ફાઇલો</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
+<translation id="8141260936970642964">ઍપ અને વેબસાઇટ અને સિસ્ટમના સમય ઝોનને Googleની લોકેશન સેવા દ્વારા નિર્ધારિત લોકેશનનો ઉપયોગ કરવાની મંજૂરી આપો. જો લોકેશન ઍક્સેસ બંધ હોય, તો તમારું લોકેશન હજી પણ તમારા IP ઍડ્રેસ દ્વારા દૃશ્યક્ષમ હોઈ શકે છે.</translation>
 <translation id="8141418916163800697">ફોન હબના સેટિંગમાં તમે વધુ સુવિધાઓનું સેટઅપ કરી શકો છો</translation>
 <translation id="8141584439523427891">હવે વૈકલ્પિક બ્રાઉઝરમાં ખોલી રહ્યાં છીએ</translation>
 <translation id="8141725884565838206">તમારા પાસવર્ડ્સનું સંચાલન કરો</translation>
@@ -8186,6 +8188,7 @@ USB ડિવાઇસ</translation>
 <translation id="8195737548602430447">લક્ષિત ભાષામાં કૅપ્શનનો ઑટોમૅટિક રીતે અનુવાદ કરો.</translation>
 <translation id="8197673340773315084">ઑફિસ કે વ્યક્તિગત જેવું નામ કે લેબલ ઉમેરો</translation>
 <translation id="8198456017687137612">ટૅબ કાસ્ટ કરી રહ્યાં છીએ</translation>
+<translation id="8198511718495409170">"<ph name="EXTENSION_NAME" />" માટે આ સાઇટ પર તમારા અપડેટ કરેલા સેટિંગ લાગુ પાડવા માટે, આ પેજને ફરીથી લોડ કરો</translation>
 <translation id="8199300056570174101">નેટવર્ક (સેવા) અને ઉપકરણના ગુણધર્મો</translation>
 <translation id="8200772114523450471">રિઝ્યુમે</translation>
 <translation id="8200789660596905522">તમારા <ph name="DEVICE_NAME" /> પર કાસ્ટની વિનંતી સ્વીકારવાની ખાતરી કરો.</translation>

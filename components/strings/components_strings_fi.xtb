@@ -307,6 +307,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1658918301167915956">Bluetooth-laitteet</translation>
 <translation id="1662550410081243962">Tallenna ja täytä maksutavat</translation>
 <translation id="1663943134801823270">Kortit ja osoitteet ovat peräisin Chromesta. Voit hallinnoida niitä <ph name="BEGIN_LINK" />asetuksissa<ph name="END_LINK" />.</translation>
+<translation id="1668071460721346172">Lähetä sähköpostia</translation>
 <translation id="1671391448414634642">Kielellä <ph name="SOURCE_LANGUAGE" /> kirjoitetut sivut käännetään tästä lähtien kielelle <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Lyhyt reuna ensin</translation>
@@ -367,6 +368,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1806174020048213474">Sovellus pyytää lupaa asentaa Wi-Fi-verkon kirjautumistietoja. Käyttöönoton jälkeen <ph name="DEVICE_TYPE" /> muodostaa yhteyden käyttöönotettuihin Wi-Fi-verkkoihin automaattisesti. Voit poistaa kirjautumistiedot poistamalla sovelluksen.</translation>
 <translation id="1807246157184219062">Vaalea</translation>
 <translation id="1807528111851433570">Aloitussivu</translation>
+<translation id="180757923930449935">(64-bittinen emuloitu)</translation>
 <translation id="180991881384371158">CVC on kortin takaosassa. Koodi on allekirjoituskentän oikeassa yläkulmassa olevat kolme viimeistä numeroa.</translation>
 <translation id="181000283860817563">Seuraa hintoja useilla sivustoilla</translation>
 <translation id="1810391395243432441">Suojaa salasanoja näytön lukituksella</translation>
@@ -510,6 +512,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2166049586286450108">Järjestelmänvalvojan täydet käyttöoikeudet</translation>
 <translation id="2166378884831602661">Tämä sivusto ei voi tarjota suojattua yhteyttä</translation>
 <translation id="2168151236314517198">Järjestelmänvalvojakäytäntö on estänyt tämän sisällön tulostamisen</translation>
+<translation id="2176974405772725904">Tallenna osoite tilille</translation>
 <translation id="2181821976797666341">Käytännöt</translation>
 <translation id="2183608646556468874">Puhelinnumero</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 osoite}other{# osoitetta}}</translation>
@@ -523,7 +526,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2204482073374652408">Päivitys valmis!</translation>
 <translation id="22081806969704220">Lokero 3</translation>
 <translation id="2210794033760923560">Lataa raportti</translation>
-<translation id="2212579473415663542">Tämä osoite on tallennettu Google-tilillesi (<ph name="ACCOUNT" />). Voit käyttää osoitetta kaikissa Googlen tuotteissa millä tahansa laitteella.</translation>
 <translation id="2212735316055980242">Käytäntöä ei löydy</translation>
 <translation id="2213606439339815911">Noudetaan merkintöjä…</translation>
 <translation id="2213612003795704869">Sivu on tulostettu</translation>
@@ -1225,6 +1227,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4031179711345676612">Mikrofoni sallittu</translation>
 <translation id="4040350669425716613">Colleget ja yliopistot</translation>
 <translation id="4047351652147966654">18 x 24 tuumaa</translation>
+<translation id="4047620889508350431">Voit nyt käyttää Google-tililläsi olevia osoitteita.</translation>
 <translation id="405399507749852140">Voit saada ilmoituksen, jos hinta laskee jollakin sivustolla</translation>
 <translation id="4056223980640387499">Seepia</translation>
 <translation id="4063063121357725926">Google voi auttaa sinua löytämään tarjouksia ostoskoriin lisäämistäsi tuotteista</translation>
@@ -1587,6 +1590,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4877083676943085827">{COUNT,plural, =0{Ei mitään}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Haku <ph name="TEXT" /></translation>
 <translation id="4879491255372875719">Automaattinen (oletus)</translation>
+<translation id="4879723019639546076">Tämä osoite tallennetaan vain Chromeen. Jos haluat käyttää sitä Googlen tuotteissa, tallenna se Google-tilillesi (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">Haku historiasta</translation>
 <translation id="4881695831933465202">Avaa</translation>
 <translation id="4881808915112408168">24 x 31,5 tuumaa</translation>
@@ -1737,6 +1741,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5230815978613972521">B8</translation>
 <translation id="523149107733989821">A4-ekstra</translation>
 <translation id="5234764350956374838">Hylkää</translation>
+<translation id="5238301240406177137">Tallenna tilille</translation>
 <translation id="5239623327352565343">Sijainti sallittu</translation>
 <translation id="5242889659037569123">Matkalaukut ja matkustustarvikkeet</translation>
 <translation id="5244732203286792411">Ladataan…
@@ -2144,6 +2149,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6279183038361895380">Näytä kursori painamalla |<ph name="ACCELERATOR" />|.</translation>
 <translation id="6280223929691119688">Toimitus ei onnistu tähän osoitteeseen. Valitse eri osoite.</translation>
 <translation id="6284292079994426700">26 x 38 tuumaa</translation>
+<translation id="6284517535531159884">Muunnelmien lähdetyyppi</translation>
 <translation id="6285507000506177184">Ylläpidä latauksia Chromessa ‑painike, ylläpidä Chromessa lataamiasi tiedostoja painamalla Enter</translation>
 <translation id="6289939620939689042">Sivun väri</translation>
 <translation id="6293309776179964942">JIS B5 (182 mm x 257 mm)</translation>
@@ -2253,6 +2259,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6545864417968258051">Bluetooth-haku</translation>
 <translation id="6547208576736763147">Kaksi reikää vasemmalla</translation>
 <translation id="6549443526281184652">Naamiaisasut</translation>
+<translation id="6551873053534932690">Tallennetaanko osoite tilille?</translation>
 <translation id="6554732001434021288">Viimeksi avattu <ph name="NUM_DAYS" /> päivää sitten</translation>
 <translation id="6556866813142980365">Tee uudelleen</translation>
 <translation id="6557715786897013164">14 x 17 tuumaa</translation>
@@ -2317,6 +2324,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6716672519412350405"><ph name="URL" /> pyytää lupaa luoda 3D-kartan ympäristöstäsi ja seurata kameran asentoa</translation>
 <translation id="6718612893943028815">Käytetäänkö kameraa?</translation>
 <translation id="6721678857435001674">nähdä suojausavaimesi merkin ja mallin</translation>
+<translation id="6726832600570791992">(32-bittinen emuloitu)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6738516213925468394">Datasi salattiin <ph name="BEGIN_LINK" />synkronoinnin tunnuslauseella<ph name="END_LINK" /> <ph name="TIME" />. Aloita synkronointi antamalla tunnuslause.</translation>

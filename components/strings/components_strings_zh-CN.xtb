@@ -307,6 +307,7 @@
 <translation id="1658918301167915956">蓝牙设备</translation>
 <translation id="1662550410081243962">保存并填写付款方式</translation>
 <translation id="1663943134801823270">信用卡选项和地址选项均来自 Chrome。您可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中管理这些选项。</translation>
+<translation id="1668071460721346172">接收电子邮件</translation>
 <translation id="1671391448414634642">从现在开始，<ph name="SOURCE_LANGUAGE" />网页一律会被翻译成<ph name="TARGET_LANGUAGE" />。</translation>
 <translation id="1674504678466460478">从<ph name="SOURCE_LANGUAGE" />到<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">短边先入</translation>
@@ -367,6 +368,7 @@
 <translation id="1806174020048213474">此应用请求您授权安装 Wi-Fi 凭据。设置完毕后，您的<ph name="DEVICE_TYPE" />将会自动连接到参与的 Wi-Fi 网络。如需移除这些凭据，请卸载该应用。</translation>
 <translation id="1807246157184219062">浅色调</translation>
 <translation id="1807528111851433570">起始工作表</translation>
+<translation id="180757923930449935">(64-bit emulated)</translation>
 <translation id="180991881384371158">您的银行卡验证码 (CVC) 位于银行卡的背面，即签名框右上角的最后 3 位数字。</translation>
 <translation id="181000283860817563">跟踪多个网站上的价格</translation>
 <translation id="1810391395243432441">使用屏幕锁定功能保护密码</translation>
@@ -524,7 +526,6 @@
 <translation id="2204482073374652408">更新已完成！</translation>
 <translation id="22081806969704220">纸匣 3</translation>
 <translation id="2210794033760923560">上传报告</translation>
-<translation id="2212579473415663542">此地址已保存到您的 Google 帐号 (<ph name="ACCOUNT" />)。无论您在哪部设备上登录，都能在各种 Google 产品中使用此地址。</translation>
 <translation id="2212735316055980242">找不到策略</translation>
 <translation id="2213606439339815911">正在获取条目…</translation>
 <translation id="2213612003795704869">页面已打印</translation>
@@ -1583,6 +1584,7 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{无}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">搜索<ph name="TEXT" /></translation>
 <translation id="4879491255372875719">自动（默认）</translation>
+<translation id="4879723019639546076">此地址只会保存到 Chrome。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 帐号 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="4880827082731008257">搜索历史记录</translation>
 <translation id="4881695831933465202">打开</translation>
 <translation id="4881808915112408168">24 x 31.5 英寸</translation>
@@ -2140,6 +2142,7 @@
 <translation id="6279183038361895380">按 |<ph name="ACCELERATOR" />| 可显示鼠标光标</translation>
 <translation id="6280223929691119688">无法递送到此地址。请另选一个地址。</translation>
 <translation id="6284292079994426700">26 x 38 英寸</translation>
+<translation id="6284517535531159884">变体版本种子类型</translation>
 <translation id="6285507000506177184">“管理 Chrome 中的下载内容”按钮，按 Enter 键即可管理您已在 Chrome 中下载的文件</translation>
 <translation id="6289939620939689042">页面颜色</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -2314,6 +2317,7 @@
 <translation id="6716672519412350405"><ph name="URL" /> 想为您的周边环境创建 3D 地图并跟踪摄像头位置</translation>
 <translation id="6718612893943028815">使用摄像头？</translation>
 <translation id="6721678857435001674">查看您的安全密钥的品牌和型号</translation>
+<translation id="6726832600570791992">(32-bit emulated)</translation>
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">摄像头</translation>
 <translation id="6738516213925468394">您的数据已于 <ph name="TIME" />使用您的<ph name="BEGIN_LINK" />同步密码<ph name="END_LINK" />加密。输入该密码即可开始同步。</translation>

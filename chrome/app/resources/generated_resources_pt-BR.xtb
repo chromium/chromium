@@ -806,6 +806,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1666232093776384142">Desativar proteção de acesso a dados para periféricos</translation>
 <translation id="1667842670298352129">Ouvir um texto específico lido em voz alta. Primeiro, selecione o ícone do recurso "Selecionar para ouvir" na parte de baixo da tela e depois destaque o texto. Você também pode usar um atalho do teclado, destacando texto e depois pressionando as teclas Pesquisa + S.</translation>
 <translation id="1668435968811469751">Registrar manualmente</translation>
+<translation id="1668804837842452164">Salvar no <ph name="BRAND" /> da conta <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Saiba mais sobre sugestões</translation>
 <translation id="1670399744444387456">Básico</translation>
 <translation id="1673137583248014546"><ph name="URL" /> quer ver a marca e o modelo da sua chave de segurança</translation>
@@ -1583,6 +1584,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Observação<ph name="END_BOLD" />: o sistema será reinicializado durante o processo.</translation>
 <translation id="23030561267973084">A extensão "<ph name="EXTENSION_NAME" />" solicitou permissões adicionais.</translation>
+<translation id="2306794767168143227">Salvar no <ph name="BRAND" /> deste dispositivo</translation>
 <translation id="2307462900900812319">Configurar rede</translation>
 <translation id="2307553512430195144">Se você permitir, o Google Assistente entrará no modo de espera para detectar o "Ok Google" e poderá usar o Voice Match para reconhecer a voz de <ph name="SUPERVISED_USER_NAME" />.
     <ph name="BR" />
@@ -4677,7 +4679,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5063480226653192405">Uso</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Gerenciar o DNS seguro nas configurações do ChromeOS</translation>
-<translation id="5066160542186949327">Mover para outra pasta</translation>
 <translation id="5067399438976153555">Sempre ativado</translation>
 <translation id="5067867186035333991">Perguntar se <ph name="HOST" /> deseja acessar seu microfone</translation>
 <translation id="5068553687099139861">mostrar as senhas</translation>

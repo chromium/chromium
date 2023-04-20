@@ -225,6 +225,7 @@
 <translation id="1978498689038657292">टेक्स्ट इनपुट</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" /> में शामिल हों</translation>
 <translation id="1982717156487272186">पिछले हफ़्ते के इवेंट दिखाएं</translation>
+<translation id="1986150224850161328">यह देख लें कि आपका फ़ोन और Chromebook एक ही नेटवर्क से कनेक्ट हों. इसके बाद, फिर से कोशिश करें. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">कॉन्टेंट को कैप्चर नहीं किया जा सकता</translation>
 <translation id="1990046457226896323">स्पीच फ़ाइलें डाउनलोड हो गईं</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> के नए अपडेट के बारे में ज़्यादा जानें</translation>
@@ -373,6 +374,7 @@
 <translation id="2761723519669354964">शेल्फ़ से हाइलाइट किया गया आइटम खोलने के लिए</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> मैनेज करता है</translation>
 <translation id="2782591952652094792">कैप्चर मोड बंद करें</translation>
+<translation id="2785499565474703580">1 डिवाइस कनेक्ट है</translation>
 <translation id="2791421900609674576">जहां पिछली बार छोड़ा था वहीं से इस्तेमाल शुरू करने के लिए, आपको सुझाव दिखेंगे.  दबाकर रखने से, इन सुझावों को बंद किया जा सकता है.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">शेल्फ़ पार्टी मोड</translation>
@@ -1278,6 +1280,7 @@
 <translation id="6941333068993625698">फ़ीडबैक सबमिट करें</translation>
 <translation id="6942518653766415536">रिकॉर्डिंग के फ़ॉर्मैट का मेन्यू</translation>
 <translation id="6945221475159498467">चुनें</translation>
+<translation id="6945922087561257829">आपका फ़ोन, मोबाइल नेटवर्क से कनेक्ट है. पक्का करें कि आपका फ़ोन और Chromebook एक ही वाई-फ़ाई नेटवर्क से कनेक्ट हों. इसके बाद, फिर से कोशिश करें. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">यह चालू नहीं है. मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करें.</translation>
 <translation id="6961121602502368900">वर्क प्रोफ़ाइल में, फ़ोन को साइलेंट रखने की सुविधा उपलब्ध नहीं है</translation>
 <translation id="6961840794482373852">Alt + अप ऐरो कीबोर्ड शॉर्टकट बदल गया है. Page Up बटन का इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + अप ऐरो दबाएं.</translation>
@@ -1332,10 +1335,11 @@
 <translation id="7188494361780961876">मेन्यू, स्क्रीन के सबसे ऊपर बाएं कोने में चला गया है.</translation>
 <translation id="7189412385142492784">धरती से शुक्र ग्रह कितना दूर है</translation>
 <translation id="7198435252016571249">कैमरा इनपुट की झलक, अब नीचे दाएं कोने में दिखेगी. ऐसा, सिस्टम पर दूसरे ऐप्लिकेशन के साथ ओवरलैप होने की वजह से किया गया है.</translation>
+<translation id="7219573373513695352">कोई डिवाइस कनेक्ट नहीं है</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. किसी अपडेट को लागू करने के लिए इस Chromebook को रीस्टार्ट करना ज़रूरी है. इसमें एक मिनट तक लग सकता है.</translation>
 <translation id="7256634071279256947">पीछे वाला माइक्रोफ़ोन</translation>
 <translation id="7258828758145722155">इसमें, कल बदलाव किया गया था</translation>
-<translation id="726276584504105859">दो स्क्रीन का इस्तेमाल करने के लिए यहां खींचें और छोडें</translation>
+<translation id="726276584504105859">दो स्क्रीन का इस्तेमाल करने के लिए यहां खींचें और छोड़ें</translation>
 <translation id="7262906531272962081">रिमाइंडर लगाएं</translation>
 <translation id="7297440678881127227"><ph name="START_TIME" /> से
         <ph name="END_TIME" />,
@@ -1482,6 +1486,7 @@
 <translation id="7902625623987030061">फ़िंगरप्रिंट सेंसर को छुएं</translation>
 <translation id="7904094684485781019">इस खाते के एडमिन ने एक से ज़्यादा साइन-इन को अस्वीकार कर दिया है.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> डिवाइस कनेक्ट हैं</translation>
 <translation id="7930731167419639574">स्पीच को स्थानीय तौर पर प्रोसेस किया जाता है और लिखवाने की सुविधा ऑफ़लाइन काम करती है</translation>
 <translation id="7932451802722951285">Google Calendar में खोलें</translation>
 <translation id="7933084174919150729">Google Assistant सिर्फ़ प्राथमिक प्रोफ़ाइल के लिए उपलब्ध है.</translation>

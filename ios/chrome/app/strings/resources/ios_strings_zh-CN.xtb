@@ -70,6 +70,7 @@
 <translation id="1375321115329958930">已保存的密码</translation>
 <translation id="1377255359165588604">同步功能已停止工作。</translation>
 <translation id="1377321085342047638">卡号</translation>
+<translation id="1377508275003315939">密码</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="138618066238211776">继续以<ph name="USER_NAME" />的身份登录</translation>
 <translation id="1400642268715879018">过去 4 周</translation>
@@ -123,6 +124,7 @@
 <translation id="1750238553597293878">请继续使用您的 Google 帐号的密码</translation>
 <translation id="1752547299766512813">保存密码</translation>
 <translation id="1753905327828125965">常去网站</translation>
+<translation id="1757699834933698436">{count,plural, =1{有 {count} 个安全系数低的密码}other{有 {count} 个安全系数低的密码}}</translation>
 <translation id="1767766085187034454">Google 翻译</translation>
 <translation id="1789803444939621101">欢迎回来，<ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">持卡人姓名</translation>
@@ -229,6 +231,7 @@
 <translation id="2576499762020411840">将密码保存到您的 Google 帐号并自动填充</translation>
 <translation id="2578571896248130439">发送网页</translation>
 <translation id="2584132361465095047">添加帐号…</translation>
+<translation id="2587010742985678408">{count,plural, =0{没有任何已泄露的密码}=1{有 {count} 个已泄露的密码}other{有 {count} 个已泄露的密码}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{如果打开的标签页未使用的时间达到或超过 1 天，则会移至“闲置标签页”部分，以便您能轻松地专注于最常使用的标签页。您随时可以在“设置”中更改此设置。}other{如果打开的标签页未使用的时间达到或超过 {COUNT} 天，则会移至“闲置标签页”部分，以便您能轻松地专注于最常使用的标签页。您随时可以在“设置”中更改此设置。}}</translation>
 <translation id="2600682495497606169">清除网站 Cookie</translation>
 <translation id="2609008503159898744">关闭所有标签页？</translation>
@@ -272,6 +275,7 @@
 <translation id="2797029671965852011">显示历史记录</translation>
 <translation id="2800683595868705743">离开标签页切换器</translation>
 <translation id="2815198996063984598">2. 点按“默认浏览器应用”</translation>
+<translation id="2818821771744632548">您在 iPhone 重置过程中退出了帐号 <ph name="USER_NAME" />。如需重新登录，请点按下方的“继续”。</translation>
 <translation id="2822917246944009066">已固定此标签页</translation>
 <translation id="2830972654601096923">管理地址…</translation>
 <translation id="2834399722155632105">3. 点按“密码选项”</translation>
@@ -353,7 +357,6 @@
 <translation id="3305294846493618482">更多</translation>
 <translation id="3311748811247479259">已关闭</translation>
 <translation id="3324193307694657476">地址第2行</translation>
-<translation id="3328459813621383194">移动闲置标签页</translation>
 <translation id="3328801116991980348">网站信息</translation>
 <translation id="3344485292736684439">{count,plural, =1{已将书签保存到帐号 {email} 中的“{title}”}other{已将书签保存到帐号 {email} 中的“{title}”}}</translation>
 <translation id="3371831930909698441">可以翻译。选项位于屏幕底部附近。</translation>
@@ -494,6 +497,7 @@
 <translation id="4343046787186034850">已启用摄像头和麦克风使用权限</translation>
 <translation id="4359125752503270327">此页面将在其他应用中打开。</translation>
 <translation id="4371526908359194219">电子邮件通知</translation>
+<translation id="4371591986692297148">已停用</translation>
 <translation id="4375040482473363939">QR 码搜索</translation>
 <translation id="4378154925671717803">电话机</translation>
 <translation id="4389019817280890563">点按此行即可更改语言。</translation>
@@ -532,6 +536,7 @@
 <translation id="4620246317052452550">您浏览过的网页</translation>
 <translation id="4620888520263267479">显示链接预览</translation>
 <translation id="4630540211544979320">翻译网页</translation>
+<translation id="4631335160486397366">有 <ph name="COUNT" /> 个重复使用的密码</translation>
 <translation id="4634124774493850572">使用密码</translation>
 <translation id="4636930964841734540">信息</translation>
 <translation id="4642472735733036929">已停止跟踪价格</translation>
@@ -623,7 +628,6 @@
 <translation id="5168414296986405587">专为 iPadOS 打造</translation>
 <translation id="5173088371991956744">同步功能需要验证您的身份</translation>
 <translation id="5176312250994681348">保留最新的密码</translation>
-<translation id="51802232683641391">{count,plural, =1{要继续使用之前在 Android 设备上打开的标签页吗？}other{要继续使用之前在 Android 设备上打开的标签页吗？}}</translation>
 <translation id="5181140330217080051">正在下载</translation>
 <translation id="5184329579814168207">在 Chrome 中打开</translation>
 <translation id="5186185447130319458">不公开</translation>
@@ -666,6 +670,7 @@
 <translation id="5520466080178053306">点按“密码管理工具”，然后点按“添加”</translation>
 <translation id="5525095647255982834">若要将此标签页发送到另一设备，请在该设备上登录 Chrome。</translation>
 <translation id="5525269841082836315">创建密码</translation>
+<translation id="553151287733286479">{COUNT,plural, =1{有 {COUNT} 个安全系数低的密码}other{有 {COUNT} 个安全系数低的密码}}</translation>
 <translation id="5542540507657872337">找到了 <ph name="COUNT" /> 个</translation>
 <translation id="5548760955356983418">借助 Handoff 功能，您在此设备上浏览网站时，可轻松改用 Mac 继续浏览。当前打开的网站将显示在 Mac 的 Dock 中。
 
@@ -796,6 +801,7 @@
 <translation id="6293101329759844770">如需开启“安全浏览”功能，请打开 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />，然后点按“安全浏览”。</translation>
 <translation id="6321526113093607004">添加到书签</translation>
 <translation id="6324669097367352121">登录设置</translation>
+<translation id="6331180460633101391">有 <ph name="COUNT" /> 个重复使用的密码</translation>
 <translation id="6337234675334993532">加密</translation>
 <translation id="633809752005859102">出错了，我们马上处理。</translation>
 <translation id="6340285871011301182">无法进行局部翻译。</translation>
@@ -899,7 +905,6 @@
 <translation id="6807889908376551050">全部显示...</translation>
 <translation id="681368974849482173">书签已创建</translation>
 <translation id="6822587385560699678">当此设置处于开启状态时，密码会保存到 <ph name="ACCOUNT" /> 中。当此设置处于关闭状态时，密码只会保存在此设备上。</translation>
-<translation id="683022620450280906">您可在任意设备上使用已存密码。系统会将密码保存到 <ph name="EMAIL" /> 的 Google 密码管理器中</translation>
 <translation id="6831043979455480757">翻译</translation>
 <translation id="6842136130964845393">若要确保您能随时访问自己的已保存密码，请验证是您本人在操作</translation>
 <translation id="6851516051005285358">请求切换到桌面版网站</translation>
@@ -1107,6 +1112,7 @@
 <translation id="8261506727792406068">删除</translation>
 <translation id="8264966119170358612">您保存的密码中有一些已在非 Google 数据泄露事件中外泄。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8265018477030547118">仅在该设备上</translation>
+<translation id="826614135184049678">您在 iPad 重置过程中退出了帐号 <ph name="USER_NAME" />。如需重新登录，请点按下方的“继续”。</translation>
 <translation id="8271720166617117963">接受并登录</translation>
 <translation id="8278938988428169257">输入字词或词组</translation>
 <translation id="8281781826761538115">默认语言区域 - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1155,6 +1161,7 @@
 <translation id="8620640915598389714">编辑</translation>
 <translation id="8626393685701737946">您可在“设置”&gt;“内容设置”中将默认网站视图改为桌面版</translation>
 <translation id="8636825310635137004">要访问您在其他设备上的标签页，请开启同步功能。</translation>
+<translation id="8638151046944329622">{COUNT,plural, =0{没有任何已泄露的密码}=1{有 {COUNT} 个已泄露的密码}other{有 {COUNT} 个已泄露的密码}}</translation>
 <translation id="8654802032646794042">取消</translation>
 <translation id="8663764600409216912">您使用的密码不易猜中</translation>
 <translation id="8668210798914567634">此页面已保存到您的阅读列表。</translation>

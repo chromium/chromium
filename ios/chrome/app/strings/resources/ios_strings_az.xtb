@@ -346,6 +346,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Dəyişiklik yaddaşda saxlanmadı.</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" /> təklifdən <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
+<translation id="3260117527409269737">Bu ünvan yalnız Chrome-da yadda saxlanır. Google məhsullarında istifadə etmək üçün Google Hesabında (<ph name="USER_EMAIL" />) yadda saxlayın.</translation>
 <translation id="3264775633254836593">Parolları avtomatik doldurun</translation>
 <translation id="3268451620468152448">Panelləri Açın</translation>
 <translation id="3272527697863656322">Ləğv edin</translation>
@@ -356,7 +357,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3305294846493618482">ardı</translation>
 <translation id="3311748811247479259">Deaktiv</translation>
 <translation id="3324193307694657476">Ünvan 2</translation>
-<translation id="3328459813621383194">Fəaliyyətsiz tabları köçürün</translation>
 <translation id="3328801116991980348">Sayt haqqında</translation>
 <translation id="3344485292736684439">{count,plural, =1{Əlfəcin hesabda ({email}) "{title}" bölməsində saxlandı}other{Əlfəcinlər hesabda ({email}) "{title}" bölməsində saxlandı}}</translation>
 <translation id="3371831930909698441">Tərcümə əlçatandır. Seçimlər ekranın aşağı hissəsində əlçatandır.</translation>
@@ -497,6 +497,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4343046787186034850">Kamera və Mikrofona giriş icazəsi verilib</translation>
 <translation id="4359125752503270327">Bu səhifə başqa tətbiqdə açılacaq.</translation>
 <translation id="4371526908359194219">E-poçt bildirişləri</translation>
+<translation id="4371591986692297148">Fəaliyyətsiz</translation>
 <translation id="4375040482473363939">QR kod Axtarışı</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Dili dəyişmək üçün toxunun.</translation>
@@ -627,7 +628,6 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="5168414296986405587">iPadOS üçün hazırlanıb</translation>
 <translation id="5173088371991956744">Sinxronizasiya kimliyinizi təsdiqləməlidir</translation>
 <translation id="5176312250994681348">Son parolu saxlayın</translation>
-<translation id="51802232683641391">{count,plural, =1{Android-də qaldığınız tabdan davam edilsin?}other{Android-də qaldığınız tablardan davam edilsin?}}</translation>
 <translation id="5181140330217080051">Endirilir</translation>
 <translation id="5184329579814168207">Chrome'da açın</translation>
 <translation id="5186185447130319458">Şəxsi</translation>
@@ -905,7 +905,6 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6807889908376551050">Hamısını göstərin...</translation>
 <translation id="681368974849482173">Element yaradılmışdır</translation>
 <translation id="6822587385560699678">Aktiv olduqda parollar <ph name="ACCOUNT" /> hesabında yadda saxlanır. Deaktiv olduqda parollar yalnız bu cihazda yadda saxlanır.</translation>
-<translation id="683022620450280906">İstənilən cihazda saxlanmış parollarınızı istifadə edə bilərsiniz. Onlar <ph name="EMAIL" /> üçün Google Parol Menecerində saxlanacaq</translation>
 <translation id="6831043979455480757">Tərcümə et</translation>
 <translation id="6842136130964845393">Həmişə yadda saxlanmış parollarınıza girişinizin olduğuna əmin olmaq üçün kimliyinizi doğrulayın</translation>
 <translation id="6851516051005285358">Masaüstü Saytı tələb edin</translation>

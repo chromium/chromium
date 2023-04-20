@@ -800,6 +800,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1666232093776384142">Tashqi qurilmalar uchun maʼlumotlarga kirish cheklovi olib tashlansinmi?</translation>
 <translation id="1667842670298352129">Kerakli matnni oʻqib eshittirish. Avval ekranning quyi qismidagi Teginib tinglash belgisini bosing va keyin matnni belgilang. Shuningdek, tezkor tugma ishlatish mumkin: Matnni belgilab, Search+S tugmalarini bosing.</translation>
 <translation id="1668435968811469751">Mustaqil qayd qilish</translation>
+<translation id="1668804837842452164"><ph name="EMAIL" /> parollarini <ph name="BRAND" />ga saqlash</translation>
 <translation id="1668979692599483141">Tavsiya haqida batafsil</translation>
 <translation id="1670399744444387456">Asosiy sozlamalar</translation>
 <translation id="1673137583248014546"><ph name="URL" /> elektron kalitingiz modeli va markasini ko‘rmoqchi</translation>
@@ -1569,6 +1570,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Eslatma:<ph name="END_BOLD" />  sozlash paytida tizim qayta ishga tushiriladi.</translation>
 <translation id="23030561267973084">“<ph name="EXTENSION_NAME" />” kengaytmasi qo‘shimcha ruxsatnomalar so‘radi.</translation>
+<translation id="2306794767168143227">Qurilmadagi parollarni <ph name="BRAND" />ga saqlash</translation>
 <translation id="2307462900900812319">Tarmoqni sozlash</translation>
 <translation id="2307553512430195144">Rozi boʻlsangiz, Google Assistent kutish rejimida ishlaydi va <ph name="SUPERVISED_USER_NAME" /> “Ok Google” deyishini aniqlaydi va Voice Match yordamida uning ovozini taniy oladi.
     <ph name="BR" />
@@ -4661,7 +4663,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5063480226653192405">Sarfi</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Xavfsiz DNS parametrlarini ChromeOS sozlamalaridan boshqaring</translation>
-<translation id="5066160542186949327">Boshqa jildga olish</translation>
 <translation id="5067399438976153555">Har doim yoniq</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> mikrofonga kirmoqchi bo‘lsa, ruxsat so‘ralsin</translation>
 <translation id="5068553687099139861">parollarni ochish</translation>

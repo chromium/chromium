@@ -225,6 +225,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1978498689038657292">Textinmatning</translation>
 <translation id="1980808257969311265">Gå med i <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Visa föregående vecka</translation>
+<translation id="1986150224850161328">Kontrollera att telefonen och Chromebook-enheten är anslutna till samma nätverk och försök igen. <ph name="LEARN_MORE" /></translation>
 <translation id="1989113344093894667">Det gick inte att ta en skärmbild/skärminspelning på innehållet</translation>
 <translation id="1990046457226896323">Röstfilerna har laddats ned</translation>
 <translation id="1993072747612765854">Läs mer om den senaste uppdateringen av <ph name="SYSTEM_APP_NAME" /></translation>
@@ -373,6 +374,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2761723519669354964">Öppna det markerade objektet från hyllan</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Stäng läget för skärmbild/skärminspelning</translation>
+<translation id="2785499565474703580">1 enhet är ansluten</translation>
 <translation id="2791421900609674576">Rekommendationer visas så att du kan fortsätta där du slutade. Du kan ta bort rekommendationer genom att trycka länge.</translation>
 <translation id="2792498699870441125">Alt + Sök</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
@@ -1277,6 +1279,7 @@ Nyligen installerad</translation>
 <translation id="6941333068993625698">Skicka feedback</translation>
 <translation id="6942518653766415536">Meny för inspelningsformat</translation>
 <translation id="6945221475159498467">Välj</translation>
+<translation id="6945922087561257829">Telefonen använder ett mobilnätverk. Kontrollera att telefonen och Chromebook-enheten är anslutna till samma wifi-nätverk och försök igen. <ph name="LEARN_MORE" /></translation>
 <translation id="6960565108681981554">Inte aktiverat. Kontakta operatören.</translation>
 <translation id="6961121602502368900">Funktionen Inga telefonljud är inte tillgänglig i jobbprofilen</translation>
 <translation id="6961840794482373852">Kortkommandot Alt + uppåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + uppåtpil för att använda Page Up-tangenten.</translation>
@@ -1331,6 +1334,7 @@ Nyligen installerad</translation>
 <translation id="7188494361780961876">Menyn har flyttats till skärmens övre vänstra hörn.</translation>
 <translation id="7189412385142492784">Hår långt är det till Venus</translation>
 <translation id="7198435252016571249">Kameran har fästs i det nedre högra hörnet. Konflikt med systemyta.</translation>
+<translation id="7219573373513695352">Inga enheter har anslutits</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Denna Chromebook behöver startas om så att en uppdatering tillämpas. Det kan ta upp till en minut.</translation>
 <translation id="7256634071279256947">Mikrofonen på baksidan</translation>
 <translation id="7258828758145722155">Redigerades i går</translation>
@@ -1481,6 +1485,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7902625623987030061">Tryck på fingeravtryckssensorn</translation>
 <translation id="7904094684485781019">Administratören för kontot tillåter inte multiinloggning.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7917760201509801422"><ph name="DEVICECOUNT" /> enheter är anslutna</translation>
 <translation id="7930731167419639574">Nu bearbetas tal lokalt och diktering kan användas offline.</translation>
 <translation id="7932451802722951285">Öppna i Google Kalender</translation>
 <translation id="7933084174919150729">Endast den primära profilen har tillgång till Google Assistent.</translation>

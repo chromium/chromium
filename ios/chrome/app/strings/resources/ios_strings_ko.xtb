@@ -70,6 +70,7 @@
 <translation id="1375321115329958930">저장된 비밀번호</translation>
 <translation id="1377255359165588604">동기화가 중지되었습니다.</translation>
 <translation id="1377321085342047638">카드 번호</translation>
+<translation id="1377508275003315939">비밀번호</translation>
 <translation id="1383876407941801731">검색</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" />(으)로 계속</translation>
 <translation id="1400642268715879018">지난 4주</translation>
@@ -123,6 +124,7 @@
 <translation id="1750238553597293878">Google 계정의 비밀번호를 계속 사용하세요.</translation>
 <translation id="1752547299766512813">비밀번호 저장</translation>
 <translation id="1753905327828125965">자주 방문한 페이지</translation>
+<translation id="1757699834933698436">{count,plural, =1{취약한 비밀번호 {count}개}other{취약한 비밀번호 {count}개}}</translation>
 <translation id="1767766085187034454">Google 번역</translation>
 <translation id="1789803444939621101"><ph name="USER_NAME" />님, 다시 방문해 주셔서 감사합니다</translation>
 <translation id="1803264062614276815">카드 소유자 이름</translation>
@@ -132,6 +134,7 @@
 <translation id="1820259098641718022">읽기 목록에 추가됨</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{유출된 비밀번호}=1{유출된 비밀번호 {COUNT}개}other{유출된 비밀번호 {COUNT}개}}</translation>
 <translation id="1832848789136765277">동기화 데이터에 항상 액세스하려면 본인 확인 절차를 거치세요.</translation>
+<translation id="1836891464494477513">{count,plural, =1{북마크가 Google 계정({email})에 저장되었습니다.}other{북마크가 Google 계정({email})에 저장되었습니다.}}</translation>
 <translation id="1870148520156231997">비밀번호 표시</translation>
 <translation id="1872096359983322073">토치</translation>
 <translation id="1883255238294161206">접기 목록</translation>
@@ -229,6 +232,7 @@
 <translation id="2576499762020411840">내 Google 계정에서 비밀번호 사용 및 저장</translation>
 <translation id="2578571896248130439">웹페이지 보내기</translation>
 <translation id="2584132361465095047">계정 추가...</translation>
+<translation id="2587010742985678408">{count,plural, =0{유출된 비밀번호 없음}=1{유출된 비밀번호 {count}개}other{유출된 비밀번호 {count}개}}</translation>
 <translation id="2595587704210555261">{COUNT,plural, =1{1일 이상 사용하지 않는 열린 탭이 비활성 탭으로 이동하므로 가장 많이 사용하는 탭에 쉽게 집중할 수 있습니다. 언제든지 설정에서 변경할 수 있습니다.}other{{COUNT}일 이상 사용하지 않는 열린 탭이 비활성 탭으로 이동하므로 가장 많이 사용하는 탭에 쉽게 집중할 수 있습니다. 언제든지 설정에서 변경할 수 있습니다.}}</translation>
 <translation id="2600682495497606169">사이트 쿠키 삭제</translation>
 <translation id="2609008503159898744">모든 탭을 닫을까요?</translation>
@@ -272,6 +276,7 @@
 <translation id="2797029671965852011">방문 기록 표시</translation>
 <translation id="2800683595868705743">탭 전환 종료</translation>
 <translation id="2815198996063984598">2. 기본 브라우저 앱 탭하기</translation>
+<translation id="2818821771744632548">iPhone 재설정 중 <ph name="USER_NAME" /> 계정에서 로그아웃되었습니다. 다시 로그인하려면 아래에서 '계속'을 탭하세요.</translation>
 <translation id="2822917246944009066">탭 고정됨</translation>
 <translation id="2830972654601096923">주소 관리...</translation>
 <translation id="2834399722155632105">3. 비밀번호 옵션 탭하기</translation>
@@ -342,6 +347,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">변경사항을 저장할 수 없습니다.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" />/<ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3260117527409269737">이 주소는 Chrome에만 저장됩니다. Google 제품에서 사용하려면 Google 계정(<ph name="USER_EMAIL" />)에 저장하세요.</translation>
 <translation id="3264775633254836593">비밀번호 자동 완성</translation>
 <translation id="3268451620468152448">열린 탭</translation>
 <translation id="3272527697863656322">취소</translation>
@@ -352,7 +358,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3305294846493618482">더보기</translation>
 <translation id="3311748811247479259">사용 안함</translation>
 <translation id="3324193307694657476">주소 2</translation>
-<translation id="3328459813621383194">비활성 탭 이동</translation>
 <translation id="3328801116991980348">사이트 정보</translation>
 <translation id="3344485292736684439">{count,plural, =1{{email} 계정의 "{title}"에 북마크가 저장됨}other{{email} 계정의 "{title}"에 북마크가 저장됨}}</translation>
 <translation id="3371831930909698441">번역을 사용할 수 있습니다. 화면 하단에서 옵션을 선택할 수 있습니다.</translation>
@@ -493,6 +498,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4343046787186034850">카메라 및 마이크 액세스 허용됨</translation>
 <translation id="4359125752503270327">이 페이지는 다른 애플리케이션에서 열립니다.</translation>
 <translation id="4371526908359194219">이메일 알림</translation>
+<translation id="4371591986692297148">비활성</translation>
 <translation id="4375040482473363939">QR 코드 검색</translation>
 <translation id="4378154925671717803">전화기</translation>
 <translation id="4389019817280890563">언어를 변경하려면 탭하세요.</translation>
@@ -531,6 +537,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4620246317052452550">내가 읽은 페이지</translation>
 <translation id="4620888520263267479">링크 미리보기 표시</translation>
 <translation id="4630540211544979320">페이지 번역</translation>
+<translation id="4631335160486397366">재사용된 비밀번호 <ph name="COUNT" />개</translation>
 <translation id="4634124774493850572">비밀번호 사용</translation>
 <translation id="4636930964841734540">정보</translation>
 <translation id="4642472735733036929">가격 추적이 중지됨</translation>
@@ -622,7 +629,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5168414296986405587">iPadOS 최적화</translation>
 <translation id="5173088371991956744">동기화를 위해 본인 인증 필요</translation>
 <translation id="5176312250994681348">최근 비밀번호 유지</translation>
-<translation id="51802232683641391">{count,plural, =1{Android에서 중단한 탭을 다시 시작하시겠습니까?}other{Android에서 중단한 탭을 다시 시작하시겠습니까?}}</translation>
 <translation id="5181140330217080051">다운로드 중</translation>
 <translation id="5184329579814168207">Chrome에서 열기</translation>
 <translation id="5186185447130319458">비공개</translation>
@@ -665,6 +671,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5520466080178053306">비밀번호 관리자를 탭한 후 추가를 탭합니다.</translation>
 <translation id="5525095647255982834">이 탭을 다른 기기로 보내려면 해당 기기에서 Chrome에 로그인하세요.</translation>
 <translation id="5525269841082836315">암호 만들기</translation>
+<translation id="553151287733286479">{COUNT,plural, =1{취약한 비밀번호 {COUNT}개}other{취약한 비밀번호 {COUNT}개}}</translation>
 <translation id="5542540507657872337"><ph name="COUNT" />개 탭 검색됨</translation>
 <translation id="5548760955356983418">Handoff를 이용하면 이 기기에서 웹사이트를 탐색하다가 Mac에서 간편하게 보던 페이지부터 계속할 수 있습니다. 현재 열어놓은 웹사이트가 Mac의 Dock에 표시됩니다.
 
@@ -795,6 +802,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6293101329759844770">세이프 브라우징을 사용 설정하려면 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />를 열고 세이프 브라우징을 탭하세요.</translation>
 <translation id="6321526113093607004">북마크에 추가</translation>
 <translation id="6324669097367352121">로그인 설정</translation>
+<translation id="6331180460633101391">재사용된 비밀번호 <ph name="COUNT" />개</translation>
 <translation id="6337234675334993532">암호화</translation>
 <translation id="633809752005859102">문제가 발생했습니다. 조사해 보겠습니다.</translation>
 <translation id="6340285871011301182">부분 번역을 사용할 수 없습니다.</translation>
@@ -898,7 +906,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6807889908376551050">모두 표시...</translation>
 <translation id="681368974849482173">북마크가 생성되었습니다.</translation>
 <translation id="6822587385560699678">사용 설정하면 비밀번호가 <ph name="ACCOUNT" />에 저장됩니다. 사용 중지하면 비밀번호가 이 기기에만 저장됩니다</translation>
-<translation id="683022620450280906">어느 기기에서든 저장된 비밀번호를 사용할 수 있습니다. <ph name="EMAIL" />의 Google 비밀번호 관리자에 비밀번호가 저장됩니다.</translation>
 <translation id="6831043979455480757">번역</translation>
 <translation id="6842136130964845393">저장된 비밀번호에 항상 액세스하려면 본인 확인 절차를 거치세요.</translation>
 <translation id="6851516051005285358">데스크톱 사이트로 보기</translation>
@@ -1036,6 +1043,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7845466610722898">읽기 목록 표시</translation>
 <translation id="784551991304901159">콘텐츠를 보려면 메뉴에서 사용을 선택하세요</translation>
 <translation id="7846158885638438868">{count,plural, =1{"{title}"에 북마크됨}other{"{title}"에 북마크됨}}</translation>
+<translation id="7852017611907717397">실행취소</translation>
 <translation id="7853202427316060426">활동</translation>
 <translation id="7856733331829174190">다운로드할 수 없음</translation>
 <translation id="785938070103630874">비밀번호, 결제 수단, 주소 등 열기</translation>
@@ -1106,6 +1114,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8261506727792406068">삭제</translation>
 <translation id="8264966119170358612">저장된 비밀번호 중 일부가 서드 파티의 정보 유출로 인해 노출되었습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8265018477030547118">이 기기에서만</translation>
+<translation id="826614135184049678">iPad 재설정 중 <ph name="USER_NAME" /> 계정에서 로그아웃되었습니다. 다시 로그인하려면 아래에서 '계속'을 탭하세요.</translation>
 <translation id="8271720166617117963">수락 및 로그인</translation>
 <translation id="8278938988428169257">단어 또는 구문 입력</translation>
 <translation id="8281781826761538115">기본값 - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1154,6 +1163,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8620640915598389714">수정</translation>
 <translation id="8626393685701737946">설정 &gt; 콘텐츠 설정에서 기본 사이트 보기를 데스크톱으로 변경할 수 있습니다.</translation>
 <translation id="8636825310635137004">다른 기기에서 탭을 가져오려면 동기화를 사용 설정하세요.</translation>
+<translation id="8638151046944329622">{COUNT,plural, =0{유출된 비밀번호 없음}=1{유출된 비밀번호 {COUNT}개}other{유출된 비밀번호 {COUNT}개}}</translation>
 <translation id="8654802032646794042">취소</translation>
 <translation id="8663764600409216912">추측하기 어려운 비밀번호를 사용 중입니다</translation>
 <translation id="8668210798914567634">읽기 목록에 저장된 페이지입니다.</translation>
