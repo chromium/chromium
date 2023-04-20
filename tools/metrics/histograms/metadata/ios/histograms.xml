@@ -1832,6 +1832,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PushNotification.ChimePreferenceRegistration"
+    enum="BooleanSuccess" expires_after="2024-04-21">
+  <owner>ajuma@google.com</owner>
+  <owner>danieltwhite@google.com</owner>
+  <summary>
+    Logs whether the user's push notification permissions for each push
+    notification enable feature in Chrome were successfully applied to the Chime
+    server during the device registration process.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PushNotification.EnabledPermisisons"
     enum="PushNotificationPermissionPromptStatus" expires_after="2023-12-12">
   <owner>ajuma@google.com</owner>
