@@ -7457,6 +7457,9 @@
       'lacros_skylab_tests': {
         'variants': [
           'CROS_EVE_PUBLIC_LKGM',
+          'CROS_EVE_PUBLIC_DEV',
+          'CROS_EVE_PUBLIC_BETA',
+          'CROS_EVE_PUBLIC_STABLE',
         ]
       },
     },
