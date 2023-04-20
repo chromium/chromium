@@ -174,9 +174,6 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, nullptr},
     {ContentSettingsType::FEDERATED_IDENTITY_IDENTITY_PROVIDER_SIGNIN_STATUS,
      nullptr},
-    // PPAPI_BROKER has been deprecated. The content setting is not used or
-    // called from UI, so we don't need a representation JS string.
-    {ContentSettingsType::DEPRECATED_PPAPI_BROKER, nullptr},
     {ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, nullptr},
     {ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, nullptr},
     // TODO(crbug.com/1408520): Update JavaScript string representation when
