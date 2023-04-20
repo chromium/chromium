@@ -33,11 +33,12 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
     std::unique_ptr<extensions::Event> event;
     switch (info->which()) {
       case crosapi::mojom::internal::TelemetryEventInfo_Data::
-          TelemetryEventInfo_Tag::kDefaultType:
+          TelemetryEventInfo_Tag::kDefaultType: {
         LOG(WARNING) << "Got unknown event category";
         return;
+      }
       case crosapi::mojom::internal::TelemetryEventInfo_Data::
-          TelemetryEventInfo_Tag::kAudioJackEventInfo:
+          TelemetryEventInfo_Tag::kAudioJackEventInfo: {
         base::Value::List args;
         args.Append(
             converters::ConvertEventPtr<api::os_events::AudioJackEventInfo>(
@@ -47,6 +48,8 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
             extensions::events::OS_EVENTS_ON_AUDIO_JACK_EVENT,
             api::os_events::OnAudioJackEvent::kEventName, std::move(args),
             browser_context_);
+        break;
+      }
     }
 
     extensions::EventRouter::Get(browser_context_)
