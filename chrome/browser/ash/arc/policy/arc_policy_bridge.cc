@@ -14,11 +14,11 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
@@ -537,7 +537,7 @@ ArcPolicyBridge::ArcPolicyBridge(content::BrowserContext* context,
     : context_(context),
       arc_bridge_service_(bridge_service),
       policy_service_(policy_service),
-      instance_guid_(base::GenerateGUID()) {
+      instance_guid_(base::Uuid::GenerateRandomV4().AsLowercaseString()) {
   VLOG(2) << "ArcPolicyBridge::ArcPolicyBridge";
   arc_bridge_service_->policy()->SetHost(this);
   arc_bridge_service_->policy()->AddObserver(this);
