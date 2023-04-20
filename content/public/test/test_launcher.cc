@@ -404,6 +404,8 @@ int LaunchTestsInternal(TestLauncherDelegate* launcher_delegate,
   base::AtExitManager at_exit;
   testing::InitGoogleTest(&argc, argv);
 
+  base::TimeTicks start_time(base::TimeTicks::Now());
+
   // The main test process has this initialized by the base::TestSuite. But
   // this process is just sharding the test off to each main test process, and
   // doesn't have a TestSuite, so must initialize this explicitly as the
@@ -432,6 +434,9 @@ int LaunchTestsInternal(TestLauncherDelegate* launcher_delegate,
   base::TestLauncher launcher(&delegate, parallel_jobs);
   const int result = launcher.Run() ? 0 : 1;
   launcher_delegate->OnDoneRunningTests();
+  fprintf(stdout, "Tests took %" PRId64 " seconds.\n",
+          (base::TimeTicks::Now() - start_time).InSeconds());
+  fflush(stdout);
   return result;
 }
 
