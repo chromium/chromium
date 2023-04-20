@@ -245,7 +245,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   bool HasNotificationBadge();
 
-  void FireMouseDragTimerForTest();
+  bool FireMouseDragTimerForTest();
 
   bool FireTouchDragTimerForTest();
 

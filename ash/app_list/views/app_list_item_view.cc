@@ -1210,6 +1210,9 @@ void AppListItemView::OnMouseReleased(const ui::MouseEvent& event) {
   }
 
   if (app_list_features::IsDragAndDropRefactorEnabled()) {
+    // Cancel drag timer set when the mouse was pressed, to prevent the app
+    // item from entering dragged state.
+    mouse_drag_timer_.Stop();
     return;
   }
 
@@ -1482,8 +1485,13 @@ bool AppListItemView::HasNotificationBadge() {
   return item_weak_->has_notification_badge();
 }
 
-void AppListItemView::FireMouseDragTimerForTest() {
+bool AppListItemView::FireMouseDragTimerForTest() {
+  if (!mouse_drag_timer_.IsRunning()) {
+    return false;
+  }
+
   mouse_drag_timer_.FireNow();
+  return true;
 }
 
 bool AppListItemView::FireTouchDragTimerForTest() {

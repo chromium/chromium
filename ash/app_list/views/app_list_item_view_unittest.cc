@@ -20,6 +20,7 @@
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -58,6 +59,13 @@ class AppListItemViewTest : public AshTestBase,
     AppListItem* item =
         GetAppListTestHelper()->model()->CreateAndAddItem(name + "_id");
     item->SetName(name);
+    return item;
+  }
+
+  AppListItem* CreateFolderItem(const int num_apps) {
+    AppListItem* item =
+        GetAppListTestHelper()->model()->CreateAndPopulateFolderWithApps(
+            num_apps);
     return item;
   }
 
@@ -340,6 +348,36 @@ TEST_P(AppListItemViewTestWithDragDropController,
   EXPECT_EQ(view_model->view_size(), 1u);
   EXPECT_FALSE(GetAppListTestHelper()->model()->FindItem(kDraggedItemId));
   MaybeCheckDragStartedOnControllerCount(1);
+}
+
+TEST_P(AppListItemViewTestWithDragDropController,
+       AppListFolderLabelShowsAfterMouseClick) {
+  CreateFolderItem(2);
+
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  auto* apps_grid_view = helper->GetScrollableAppsGridView();
+  AppListItemView* view = apps_grid_view->GetItemViewAt(0);
+  EXPECT_TRUE(view->title()->GetVisible());
+
+  auto* generator = GetEventGenerator();
+
+  // Press folder icon to open.
+  gfx::Point folder_center = view->GetBoundsInScreen().CenterPoint();
+  generator->MoveMouseTo(folder_center);
+  generator->ClickLeftButton();
+  EXPECT_TRUE(helper->IsInFolderView());
+
+  // Attempt to fire the mouse drag timer. The view should've stopped after
+  // releasing the click.
+  EXPECT_FALSE(view->FireMouseDragTimerForTest());
+
+  // Press ESC key to close the folder grid.
+  generator->PressKey(ui::VKEY_ESCAPE, 0);
+  EXPECT_FALSE(helper->IsInFolderView());
+
+  EXPECT_TRUE(view->title()->GetVisible());
 }
 
 }  // namespace ash
