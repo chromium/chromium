@@ -2010,6 +2010,10 @@
       settable_from_internals: true,
     },
     {
+      name: "LayoutDisableBrokenFloatInvalidation",
+      status: "stable",
+    },
+    {
       name: "LayoutDisableBrokenIntrinsicSize",
       status: "stable",
     },

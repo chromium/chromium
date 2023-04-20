@@ -1566,12 +1566,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   ShapeOutsideInfo* GetShapeOutsideInfo() const;
 
-  void MarkShapeOutsideDependentsForLayout() {
-    NOT_DESTROYED();
-    if (IsFloating())
-      RemoveFloatingOrPositionedChildFromBlockLists();
-  }
-
   bool CanRenderBorderImage() const;
 
   // For snap areas, returns the snap container that owns us.

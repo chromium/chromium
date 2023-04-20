@@ -95,8 +95,16 @@ LayoutObject* LayoutObjectChildList::RemoveChildNode(
   DCHECK_EQ(old_child->Parent(), owner);
   DCHECK_EQ(this, owner->VirtualChildren());
 
-  if (old_child->IsFloatingOrOutOfFlowPositioned())
-    To<LayoutBox>(old_child)->RemoveFloatingOrPositionedChildFromBlockLists();
+  if (RuntimeEnabledFeatures::LayoutDisableBrokenFloatInvalidationEnabled()) {
+    if (!owner->DocumentBeingDestroyed() &&
+        old_child->IsOutOfFlowPositioned()) {
+      LayoutBlock::RemovePositionedObject(To<LayoutBox>(old_child));
+    }
+  } else {
+    if (old_child->IsFloatingOrOutOfFlowPositioned()) {
+      To<LayoutBox>(old_child)->RemoveFloatingOrPositionedChildFromBlockLists();
+    }
+  }
 
   if (!owner->DocumentBeingDestroyed()) {
     // So that we'll get the appropriate dirty bit set (either that a normal
