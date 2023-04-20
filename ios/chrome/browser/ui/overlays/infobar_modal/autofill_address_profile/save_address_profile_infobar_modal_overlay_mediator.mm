@@ -7,6 +7,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_responses.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -23,6 +24,7 @@
 using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
 using save_address_profile_infobar_modal_responses::CancelViewAction;
+using save_address_profile_infobar_modal_responses::EditedProfileSaveAction;
 using save_address_profile_infobar_modal_responses::
     LegacyEditedProfileSaveAction;
 using save_address_profile_infobar_modal_responses::NoThanksViewAction;
@@ -111,6 +113,11 @@ using save_address_profile_infobar_modal_responses::NoThanksViewAction;
   [self.saveAddressProfileMediatorDelegate showEditView];
 }
 
+- (void)noThanksButtonWasPressed {
+  [self dispatchResponse:OverlayResponse::CreateWithInfo<NoThanksViewAction>()];
+  [self dismissOverlay];
+}
+
 #pragma mark - InfobarEditAddressProfileModalDelegate
 
 - (void)saveEditedProfileWithData:(NSDictionary*)profileData {
@@ -120,16 +127,29 @@ using save_address_profile_infobar_modal_responses::NoThanksViewAction;
 }
 
 - (void)dismissInfobarModal:(id)infobarModal {
-  [self dispatchResponse:OverlayResponse::CreateWithInfo<CancelViewAction>(
-                             self.currentViewIsEditView)];
   base::RecordAction(base::UserMetricsAction(kInfobarModalCancelButtonTapped));
-  [self dismissOverlay];
+
+  // For migration prompt, the cancel from the edit view would result in removal
+  // of the modal.
+  if (self.config && self.config->is_migration_to_account() &&
+      self.currentViewIsEditView) {
+    [self noThanksButtonWasPressed];
+    self.currentViewIsEditView = NO;
+    return;
+  }
 
   self.currentViewIsEditView = NO;
+  [self dispatchResponse:OverlayResponse::CreateWithInfo<CancelViewAction>(
+                             self.currentViewIsEditView)];
+  [self dismissOverlay];
 }
 
-- (void)noThanksButtonWasPressed {
-  [self dispatchResponse:OverlayResponse::CreateWithInfo<NoThanksViewAction>()];
+#pragma mark - Public
+
+- (void)saveEditedProfileWithProfileData:(autofill::AutofillProfile*)profile {
+  [self
+      dispatchResponse:OverlayResponse::CreateWithInfo<EditedProfileSaveAction>(
+                           profile)];
   [self dismissOverlay];
 }
 

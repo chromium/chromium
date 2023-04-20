@@ -20,6 +20,9 @@
 // Notifies the class that conforms this delegate to update the profile.
 - (void)didEditAutofillProfile;
 
+// Notifies the class that conforms this delegate to save the profile.
+- (void)didSaveProfileFromModal;
+
 // Returns true if the field value is empty.
 - (BOOL)fieldValueEmptyOnProfileLoadForType:
     (autofill::ServerFieldType)serverFieldType;

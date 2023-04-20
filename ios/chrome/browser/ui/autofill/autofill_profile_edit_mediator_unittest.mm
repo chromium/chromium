@@ -89,6 +89,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
     (AutofillProfileEditMediator*)mediator {
 }
 
+- (void)didSaveProfile {
+}
+
 @end
 
 class AutofillProfileEditMediatorTest : public PlatformTest {
