@@ -40,12 +40,27 @@ foreach(guid, branding_only_placeholder_guids) {
 }
 uuid5_guids = string_join(",", uuid5_guids)
 
+action("generate_user_system_idl") {
+  script = "generate_user_system_idl.py"
+  inputs = [ script ]
+  output_file = "$root_gen_dir/chrome/updater/updater_idl.template"
+  args = [
+    "--idl_template_file",
+    rebase_path("updater_idl.template", root_build_dir),
+    "--idl_output_file",
+    rebase_path(output_file, root_build_dir),
+  ]
+  outputs = [ output_file ]
+}
+
 midl("updater_idl_idl") {
   dynamic_guids = "ignore_proxy_stub," + uuid5_guids
 
-  sources = [ "updater_idl.template" ]
+  sources = [ "$root_gen_dir/chrome/updater/updater_idl.template" ]
 
   writes_tlb = true
+
+  deps = [ ":generate_user_system_idl" ]
 }
 
 # These GUIDs must depend on branding and version.

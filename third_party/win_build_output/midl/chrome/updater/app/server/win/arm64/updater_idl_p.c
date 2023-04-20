@@ -343,6 +343,12 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 	/* Procedure get_statusCode */
 
 
+	/* Procedure get_statusCode */
+
+
+	/* Procedure get_statusCode */
+
+
 	/* Procedure get_state */
 
 			0x33,		/* FC_AUTO_HANDLE */
@@ -365,6 +371,12 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 /* 28 */	0x81,		/* 129 */
 			0x0,		/* 0 */
 
+	/* Parameter __MIDL__ICompleteStatusSystem0000 */
+
+
+	/* Parameter __MIDL__ICompleteStatusUser0000 */
+
+
 	/* Parameter __MIDL__ICompleteStatus0000 */
 
 
@@ -380,10 +392,22 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 
 	/* Return value */
 
+
+	/* Return value */
+
+
+	/* Return value */
+
 /* 36 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
 /* 38 */	NdrFcShort( 0x10 ),	/* ARM64 Stack size/offset = 16 */
 /* 40 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
+
+	/* Procedure get_statusMessage */
+
+
+	/* Procedure get_statusMessage */
+
 
 	/* Procedure get_statusMessage */
 
@@ -410,6 +434,12 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 /* 70 */	0x81,		/* 129 */
 			0x0,		/* 0 */
 
+	/* Parameter __MIDL__ICompleteStatusSystem0001 */
+
+
+	/* Parameter __MIDL__ICompleteStatusUser0001 */
+
+
 	/* Parameter __MIDL__ICompleteStatus0001 */
 
 
@@ -418,6 +448,12 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 /* 72 */	NdrFcShort( 0x2113 ),	/* Flags:  must size, must free, out, simple ref, srv alloc size=8 */
 /* 74 */	NdrFcShort( 0x8 ),	/* ARM64 Stack size/offset = 8 */
 /* 76 */	NdrFcShort( 0x24 ),	/* Type Offset=36 */
+
+	/* Return value */
+
+
+	/* Return value */
+
 
 	/* Return value */
 
@@ -3066,8 +3102,7 @@ const CInterfaceStubVtbl _ICompleteStatusStubVtbl =
 static const unsigned short ICompleteStatusUser_FormatStringOffsetTable[] =
     {
     0,
-    42,
-    0
+    42
     };
 
 static const MIDL_STUBLESS_PROXY_INFO ICompleteStatusUser_ProxyInfo =
@@ -3093,29 +3128,22 @@ static const MIDL_SERVER_INFO ICompleteStatusUser_ServerInfo =
     0};
 CINTERFACE_PROXY_VTABLE(5) _ICompleteStatusUserProxyVtbl = 
 {
-    0,
+    &ICompleteStatusUser_ProxyInfo,
     &IID_ICompleteStatusUser,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    0 /* forced delegation ICompleteStatus::get_statusCode */ ,
-    0 /* forced delegation ICompleteStatus::get_statusMessage */
+    (void *) (INT_PTR) -1 /* ICompleteStatusUser::get_statusCode */ ,
+    (void *) (INT_PTR) -1 /* ICompleteStatusUser::get_statusMessage */
 };
 
-
-EXTERN_C DECLSPEC_SELECTANY const PRPC_STUB_FUNCTION ICompleteStatusUser_table[] =
-{
-    NdrStubCall2,
-    NdrStubCall2
-};
-
-CInterfaceStubVtbl _ICompleteStatusUserStubVtbl =
+const CInterfaceStubVtbl _ICompleteStatusUserStubVtbl =
 {
     &IID_ICompleteStatusUser,
     &ICompleteStatusUser_ServerInfo,
     5,
-    &ICompleteStatusUser_table[-3],
-    CStdStubBuffer_DELEGATING_METHODS
+    0, /* pure interpreted */
+    CStdStubBuffer_METHODS
 };
 
 
@@ -3126,8 +3154,7 @@ CInterfaceStubVtbl _ICompleteStatusUserStubVtbl =
 static const unsigned short ICompleteStatusSystem_FormatStringOffsetTable[] =
     {
     0,
-    42,
-    0
+    42
     };
 
 static const MIDL_STUBLESS_PROXY_INFO ICompleteStatusSystem_ProxyInfo =
@@ -3153,29 +3180,22 @@ static const MIDL_SERVER_INFO ICompleteStatusSystem_ServerInfo =
     0};
 CINTERFACE_PROXY_VTABLE(5) _ICompleteStatusSystemProxyVtbl = 
 {
-    0,
+    &ICompleteStatusSystem_ProxyInfo,
     &IID_ICompleteStatusSystem,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    0 /* forced delegation ICompleteStatus::get_statusCode */ ,
-    0 /* forced delegation ICompleteStatus::get_statusMessage */
+    (void *) (INT_PTR) -1 /* ICompleteStatusSystem::get_statusCode */ ,
+    (void *) (INT_PTR) -1 /* ICompleteStatusSystem::get_statusMessage */
 };
 
-
-EXTERN_C DECLSPEC_SELECTANY const PRPC_STUB_FUNCTION ICompleteStatusSystem_table[] =
-{
-    NdrStubCall2,
-    NdrStubCall2
-};
-
-CInterfaceStubVtbl _ICompleteStatusSystemStubVtbl =
+const CInterfaceStubVtbl _ICompleteStatusSystemStubVtbl =
 {
     &IID_ICompleteStatusSystem,
     &ICompleteStatusSystem_ServerInfo,
     5,
-    &ICompleteStatusSystem_table[-3],
-    CStdStubBuffer_DELEGATING_METHODS
+    0, /* pure interpreted */
+    CStdStubBuffer_METHODS
 };
 
 
@@ -3798,9 +3818,9 @@ const IID *  const _updater_idl_BaseIIDList[] =
     0,
     0,
     &IID_IUpdaterCallback,   /* forced */
-    &IID_ICompleteStatus,   /* forced */
     0,
-    &IID_ICompleteStatus,   /* forced */
+    0,
+    0,
     0,
     &IID_IUpdaterCallback,   /* forced */
     &IID_IUpdateState,   /* forced */

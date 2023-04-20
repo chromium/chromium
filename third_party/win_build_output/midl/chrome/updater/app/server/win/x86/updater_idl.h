@@ -217,13 +217,6 @@ typedef interface IUpdateStateSystem IUpdateStateSystem;
 #endif 	/* __IUpdateStateSystem_FWD_DEFINED__ */
 
 
-#ifndef __ICompleteStatus_FWD_DEFINED__
-#define __ICompleteStatus_FWD_DEFINED__
-typedef interface ICompleteStatus ICompleteStatus;
-
-#endif 	/* __ICompleteStatus_FWD_DEFINED__ */
-
-
 #ifndef __ICompleteStatusUser_FWD_DEFINED__
 #define __ICompleteStatusUser_FWD_DEFINED__
 typedef interface ICompleteStatusUser ICompleteStatusUser;
@@ -804,7 +797,7 @@ EXTERN_C const IID IID_IUpdateStateSystem;
 #define __ICompleteStatus_INTERFACE_DEFINED__
 
 /* interface ICompleteStatus */
-/* [object][unique][helpstring][uuid] */ 
+/* [object][unique][oleautomation][uuid] */ 
 
 
 EXTERN_C const IID IID_ICompleteStatus;
@@ -899,7 +892,7 @@ EXTERN_C const IID IID_ICompleteStatus;
 #define __ICompleteStatusUser_INTERFACE_DEFINED__
 
 /* interface ICompleteStatusUser */
-/* [unique][helpstring][uuid][dual][object] */ 
+/* [object][unique][oleautomation][uuid] */ 
 
 
 EXTERN_C const IID IID_ICompleteStatusUser;
@@ -907,9 +900,15 @@ EXTERN_C const IID IID_ICompleteStatusUser;
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
     MIDL_INTERFACE("9AD1A645-5A4B-4D36-BC21-F0059482E6EA")
-    ICompleteStatusUser : public ICompleteStatus
+    ICompleteStatusUser : public IUnknown
     {
     public:
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_statusCode( 
+            /* [retval][out] */ LONG *__MIDL__ICompleteStatusUser0000) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_statusMessage( 
+            /* [retval][out] */ BSTR *__MIDL__ICompleteStatusUser0001) = 0;
+        
     };
     
     
@@ -934,15 +933,15 @@ EXTERN_C const IID IID_ICompleteStatusUser;
         ULONG ( STDMETHODCALLTYPE *Release )( 
             ICompleteStatusUser * This);
         
-        DECLSPEC_XFGVIRT(ICompleteStatus, get_statusCode)
+        DECLSPEC_XFGVIRT(ICompleteStatusUser, get_statusCode)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_statusCode )( 
             ICompleteStatusUser * This,
-            /* [retval][out] */ LONG *__MIDL__ICompleteStatus0000);
+            /* [retval][out] */ LONG *__MIDL__ICompleteStatusUser0000);
         
-        DECLSPEC_XFGVIRT(ICompleteStatus, get_statusMessage)
+        DECLSPEC_XFGVIRT(ICompleteStatusUser, get_statusMessage)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_statusMessage )( 
             ICompleteStatusUser * This,
-            /* [retval][out] */ BSTR *__MIDL__ICompleteStatus0001);
+            /* [retval][out] */ BSTR *__MIDL__ICompleteStatusUser0001);
         
         END_INTERFACE
     } ICompleteStatusUserVtbl;
@@ -967,12 +966,11 @@ EXTERN_C const IID IID_ICompleteStatusUser;
     ( (This)->lpVtbl -> Release(This) ) 
 
 
-#define ICompleteStatusUser_get_statusCode(This,__MIDL__ICompleteStatus0000)	\
-    ( (This)->lpVtbl -> get_statusCode(This,__MIDL__ICompleteStatus0000) ) 
+#define ICompleteStatusUser_get_statusCode(This,__MIDL__ICompleteStatusUser0000)	\
+    ( (This)->lpVtbl -> get_statusCode(This,__MIDL__ICompleteStatusUser0000) ) 
 
-#define ICompleteStatusUser_get_statusMessage(This,__MIDL__ICompleteStatus0001)	\
-    ( (This)->lpVtbl -> get_statusMessage(This,__MIDL__ICompleteStatus0001) ) 
-
+#define ICompleteStatusUser_get_statusMessage(This,__MIDL__ICompleteStatusUser0001)	\
+    ( (This)->lpVtbl -> get_statusMessage(This,__MIDL__ICompleteStatusUser0001) ) 
 
 #endif /* COBJMACROS */
 
@@ -989,7 +987,7 @@ EXTERN_C const IID IID_ICompleteStatusUser;
 #define __ICompleteStatusSystem_INTERFACE_DEFINED__
 
 /* interface ICompleteStatusSystem */
-/* [unique][helpstring][uuid][dual][object] */ 
+/* [object][unique][oleautomation][uuid] */ 
 
 
 EXTERN_C const IID IID_ICompleteStatusSystem;
@@ -997,9 +995,15 @@ EXTERN_C const IID IID_ICompleteStatusSystem;
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
     MIDL_INTERFACE("E2BD9A6B-0A19-4C89-AE8B-B7E9E51D9A07")
-    ICompleteStatusSystem : public ICompleteStatus
+    ICompleteStatusSystem : public IUnknown
     {
     public:
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_statusCode( 
+            /* [retval][out] */ LONG *__MIDL__ICompleteStatusSystem0000) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_statusMessage( 
+            /* [retval][out] */ BSTR *__MIDL__ICompleteStatusSystem0001) = 0;
+        
     };
     
     
@@ -1024,15 +1028,15 @@ EXTERN_C const IID IID_ICompleteStatusSystem;
         ULONG ( STDMETHODCALLTYPE *Release )( 
             ICompleteStatusSystem * This);
         
-        DECLSPEC_XFGVIRT(ICompleteStatus, get_statusCode)
+        DECLSPEC_XFGVIRT(ICompleteStatusSystem, get_statusCode)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_statusCode )( 
             ICompleteStatusSystem * This,
-            /* [retval][out] */ LONG *__MIDL__ICompleteStatus0000);
+            /* [retval][out] */ LONG *__MIDL__ICompleteStatusSystem0000);
         
-        DECLSPEC_XFGVIRT(ICompleteStatus, get_statusMessage)
+        DECLSPEC_XFGVIRT(ICompleteStatusSystem, get_statusMessage)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_statusMessage )( 
             ICompleteStatusSystem * This,
-            /* [retval][out] */ BSTR *__MIDL__ICompleteStatus0001);
+            /* [retval][out] */ BSTR *__MIDL__ICompleteStatusSystem0001);
         
         END_INTERFACE
     } ICompleteStatusSystemVtbl;
@@ -1057,12 +1061,11 @@ EXTERN_C const IID IID_ICompleteStatusSystem;
     ( (This)->lpVtbl -> Release(This) ) 
 
 
-#define ICompleteStatusSystem_get_statusCode(This,__MIDL__ICompleteStatus0000)	\
-    ( (This)->lpVtbl -> get_statusCode(This,__MIDL__ICompleteStatus0000) ) 
+#define ICompleteStatusSystem_get_statusCode(This,__MIDL__ICompleteStatusSystem0000)	\
+    ( (This)->lpVtbl -> get_statusCode(This,__MIDL__ICompleteStatusSystem0000) ) 
 
-#define ICompleteStatusSystem_get_statusMessage(This,__MIDL__ICompleteStatus0001)	\
-    ( (This)->lpVtbl -> get_statusMessage(This,__MIDL__ICompleteStatus0001) ) 
-
+#define ICompleteStatusSystem_get_statusMessage(This,__MIDL__ICompleteStatusSystem0001)	\
+    ( (This)->lpVtbl -> get_statusMessage(This,__MIDL__ICompleteStatusSystem0001) ) 
 
 #endif /* COBJMACROS */
 

@@ -48,35 +48,30 @@ interface IUpdateStateUser : IUpdateState {
 interface IUpdateStateSystem : IUpdateState {
 };
 
+BEGIN_INTERFACE(
+  {
+    "user": {
+      "PLACEHOLDER-GUID-2FCD14AF-B645-4351-8359-E80A0E202A0B":
+          "PLACEHOLDER-GUID-9AD1A645-5A4B-4D36-BC21-F0059482E6EA",
+      "ICompleteStatus":"ICompleteStatusUser"
+    },
+    "system": {
+      "PLACEHOLDER-GUID-2FCD14AF-B645-4351-8359-E80A0E202A0B":
+          "PLACEHOLDER-GUID-E2BD9A6B-0A19-4C89-AE8B-B7E9E51D9A07",
+      "ICompleteStatus":"ICompleteStatusSystem"
+    }
+  }
+)
 [
   uuid(PLACEHOLDER-GUID-2FCD14AF-B645-4351-8359-E80A0E202A0B),
-  helpstring("ICompleteStatus Interface"),
+  oleautomation,
   pointer_default(unique)
 ]
 interface ICompleteStatus : IUnknown {
   [propget] HRESULT statusCode([out, retval] LONG*);
   [propget] HRESULT statusMessage([out, retval] BSTR*);
 };
-
-[
-  object,
-  dual,
-  uuid(PLACEHOLDER-GUID-9AD1A645-5A4B-4D36-BC21-F0059482E6EA),
-  helpstring("ICompleteStatusUser Interface"),
-  pointer_default(unique)
-]
-interface ICompleteStatusUser : ICompleteStatus {
-};
-
-[
-  object,
-  dual,
-  uuid(PLACEHOLDER-GUID-E2BD9A6B-0A19-4C89-AE8B-B7E9E51D9A07),
-  helpstring("ICompleteStatusSystem Interface"),
-  pointer_default(unique)
-]
-interface ICompleteStatusSystem : ICompleteStatus {
-};
+END_INTERFACE
 
 [
   uuid(PLACEHOLDER-GUID-7B416CFD-4216-4FD6-BD83-7C586054676E),
