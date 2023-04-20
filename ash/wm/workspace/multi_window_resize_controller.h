@@ -214,6 +214,10 @@ class ASH_EXPORT MultiWindowResizeController
   // Called when the lock button is pressed to create a snap group.
   void OnLockButtonPressed();
 
+  // Returns true if a lock wiget should be considered i.e. when two windows are
+  // both snapped and the feature flag `kSnapGroup` is enabled.
+  bool ShouldConsiderLockWidget() const;
+
   // Windows and direction to resize.
   ResizeWindows windows_;
 

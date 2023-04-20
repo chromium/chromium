@@ -37,6 +37,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "ui/aura/test/test_window_delegate.h"
+#include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -117,6 +119,13 @@ void SwitchToTabletMode() {
   test_api.EnterTabletMode();
 }
 
+void WaitForSeconds(int seconds) {
+  base::RunLoop loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, loop.QuitClosure(), base::Seconds(seconds));
+  loop.Run();
+}
+
 }  // namespace
 
 class SnapGroupTest : public AshTestBase {
@@ -155,6 +164,38 @@ class SnapGroupTest : public AshTestBase {
     EXPECT_EQ(state_type, window_state->GetStateType());
   }
 
+  // Verifies that the given two windows can be locked properly and the tooltip
+  // is updated accordingly.
+  void ToggleLockWidgetToLockTwoWindows(aura::Window* window1,
+                                        aura::Window* window2) {
+    auto* snap_group_controller = Shell::Get()->snap_group_controller();
+    ASSERT_TRUE(snap_group_controller);
+    EXPECT_TRUE(snap_group_controller->snap_groups_for_testing().empty());
+    EXPECT_TRUE(
+        snap_group_controller->window_to_snap_group_map_for_testing().empty());
+    EXPECT_FALSE(
+        snap_group_controller->AreWindowsInSnapGroup(window1, window2));
+
+    auto* event_generator = GetEventGenerator();
+    auto hover_location = window1->bounds().right_center();
+    event_generator->MoveMouseTo(hover_location);
+    auto* timer = GetShowTimer();
+    EXPECT_TRUE(timer->IsRunning());
+    EXPECT_TRUE(IsShowing());
+    timer->FireNow();
+    EXPECT_TRUE(GetLockWidget());
+    VerifyLockButton(/*locked=*/false,
+                     resize_controller()->lock_button_for_testing());
+
+    gfx::Rect lock_widget_bounds(GetLockWidget()->GetWindowBoundsInScreen());
+    hover_location = lock_widget_bounds.CenterPoint();
+    event_generator->MoveMouseTo(hover_location);
+    EXPECT_TRUE(GetLockWidget());
+    event_generator->ClickLeftButton();
+    EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(window1, window2));
+    EXPECT_TRUE(split_view_controller()->split_view_divider());
+  }
+
   views::Widget* GetLockWidget() const {
     DCHECK(resize_controller_);
     return resize_controller_->lock_widget_.get();
@@ -180,6 +221,28 @@ class SnapGroupTest : public AshTestBase {
   }
 
  private:
+  // Verifies that the icon image and the tooltip of the lock button gets
+  // updated correctly based on the `locked` state.
+  void VerifyLockButton(bool locked, SnapGroupLockOrUnlockButton* lock_button) {
+    const SkColor color =
+        lock_button->GetColorProvider()->GetColor(kColorAshIconColorPrimary);
+    const gfx::ImageSkia locked_icon_image =
+        gfx::CreateVectorIcon(kLockScreenEasyUnlockCloseIcon, color);
+    const gfx::ImageSkia unlocked_icon_image =
+        gfx::CreateVectorIcon(kLockScreenEasyUnlockOpenIcon, color);
+    const SkBitmap* expected_icon =
+        locked ? unlocked_icon_image.bitmap() : locked_icon_image.bitmap();
+    const SkBitmap* actual_icon =
+        lock_button->GetImage(views::ImageButton::ButtonState::STATE_NORMAL)
+            .bitmap();
+    EXPECT_TRUE(gfx::test::AreBitmapsEqual(*actual_icon, *expected_icon));
+
+    const auto expected_tooltip_string = l10n_util::GetStringUTF16(
+        locked ? IDS_ASH_SNAP_GROUP_CLICK_TO_UNLOCK_WINDOWS
+               : IDS_ASH_SNAP_GROUP_CLICK_TO_LOCK_WINDOWS);
+    EXPECT_EQ(lock_button->GetTooltipText(), expected_tooltip_string);
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   MultiWindowResizeController* resize_controller_;
 };
@@ -723,14 +786,31 @@ TEST_F(SnapGroupEntryPointArm1Test, UpdateWindowButtonTest) {
 }
 
 // Tests that the two windows if locked in a snap group will be unlocked
-// successfully together with bounds update with the unlock button in the
-// expanded menu.
-TEST_F(SnapGroupEntryPointArm1Test, UnlockWindowsButtonTest) {
+// together with bounds update by pressing on the unlock button in the expanded
+// menu. The lock button will then show on the shared edge of the two unlocked
+// windows on mouse hover. Two windows will be locked again by pressing on the
+// lock button.
+TEST_F(SnapGroupEntryPointArm1Test, UnlockAndRelockWindowsTest) {
   std::unique_ptr<aura::Window> w1(CreateTestWindow());
   std::unique_ptr<aura::Window> w2(CreateTestWindow());
   SnapTwoTestWindowsInArm1(w1.get(), w2.get(), /*horizontal=*/true);
   ClickKebabButtonToShowExpandedMenu();
   ClickUnlockButtonAndVerify();
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(w1->GetBoundsInScreen().right_center());
+  auto* timer = GetShowTimer();
+  EXPECT_TRUE(timer);
+  EXPECT_TRUE(timer->IsRunning());
+  timer->FireNow();
+  EXPECT_TRUE(GetResizeWidget());
+  EXPECT_TRUE(GetLockWidget());
+  event_generator->MoveMouseTo(w1->GetBoundsInScreen().origin());
+  // Wait until multi-window resizer hides.
+  // TODO(michelefan): Add test APIs for multi-window resizer to wait until
+  // resizer widget hides.
+  WaitForSeconds(1);
+  ToggleLockWidgetToLockTwoWindows(w1.get(), w2.get());
 }
 
 // Tests that the windows bounds in the snap group are updated correctly with
@@ -744,6 +824,38 @@ TEST_F(SnapGroupEntryPointArm1Test, SwapWindowsAndUnlockTest) {
   ClickSwapWindowsButtonAndVerify();
   ClickKebabButtonToShowExpandedMenu();
   ClickUnlockButtonAndVerify();
+}
+
+// Tests that the lock widget will not show on the shared edge of two unsnapped
+// windows.
+TEST_F(SnapGroupEntryPointArm1Test,
+       MultiWindowResizeControllerWithTwoUnsnappedWindows) {
+  UpdateDisplay("800x700");
+
+  // Create two unsnapped windows with shared edge, see the layout below:
+  // _________________
+  // |        |       |
+  // |   w1   |  w2   |
+  // |________|_______|
+  aura::test::TestWindowDelegate delegate1;
+  std::unique_ptr<aura::Window> w1(CreateTestWindowInShellWithDelegate(
+      &delegate1, -1, gfx::Rect(0, 0, 100, 100)));
+  delegate1.set_window_component(HTRIGHT);
+  aura::test::TestWindowDelegate delegate2;
+  std::unique_ptr<aura::Window> w2(CreateTestWindowInShellWithDelegate(
+      &delegate2, -2, gfx::Rect(100, 0, 100, 100)));
+  delegate2.set_window_component(HTRIGHT);
+
+  // Move mouse to the shared edge of two windows, the resize widget will show
+  // but the lock widget will not show.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(w1->bounds().CenterPoint());
+  auto* timer = GetShowTimer();
+  EXPECT_TRUE(timer);
+  EXPECT_TRUE(timer->IsRunning());
+  timer->FireNow();
+  EXPECT_TRUE(GetResizeWidget());
+  EXPECT_FALSE(GetLockWidget());
 }
 
 // Tests that the swap window source histogram is recorded correctly.
@@ -819,62 +931,6 @@ class SnapGroupEntryPointArm2Test : public SnapGroupTest {
 
     // TODO(b/276992238): add the snap ratio check back after the calculation is
     // fixed.
-  }
-
-  // Verifies that the given two windows can be locked properly and the tooltip
-  // is updated accordingly.
-  void ToggleLockWidgetToLockTwoWindows(aura::Window* window1,
-                                        aura::Window* window2) {
-    auto* snap_group_controller = Shell::Get()->snap_group_controller();
-    ASSERT_TRUE(snap_group_controller);
-    EXPECT_TRUE(snap_group_controller->snap_groups_for_testing().empty());
-    EXPECT_TRUE(
-        snap_group_controller->window_to_snap_group_map_for_testing().empty());
-    EXPECT_FALSE(
-        snap_group_controller->AreWindowsInSnapGroup(window1, window2));
-
-    auto* event_generator = GetEventGenerator();
-    auto hover_location = window1->bounds().right_center();
-    event_generator->MoveMouseTo(hover_location);
-    auto* timer = GetShowTimer();
-    EXPECT_TRUE(timer->IsRunning());
-    EXPECT_TRUE(IsShowing());
-    timer->FireNow();
-    EXPECT_TRUE(GetLockWidget());
-    VerifyLockButton(/*locked=*/false,
-                     resize_controller()->lock_button_for_testing());
-
-    gfx::Rect lock_widget_bounds(GetLockWidget()->GetWindowBoundsInScreen());
-    hover_location = lock_widget_bounds.CenterPoint();
-    event_generator->MoveMouseTo(hover_location);
-    EXPECT_TRUE(GetLockWidget());
-    event_generator->PressLeftButton();
-    event_generator->ReleaseLeftButton();
-    EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(window1, window2));
-    EXPECT_TRUE(split_view_controller()->split_view_divider());
-  }
-
- private:
-  // Verifies that the icon image and the tooltip of the lock button gets
-  // updated correctly based on the `locked` state.
-  void VerifyLockButton(bool locked, SnapGroupLockOrUnlockButton* lock_button) {
-    const SkColor color =
-        lock_button->GetColorProvider()->GetColor(kColorAshIconColorPrimary);
-    const gfx::ImageSkia locked_icon_image =
-        gfx::CreateVectorIcon(kLockScreenEasyUnlockCloseIcon, color);
-    const gfx::ImageSkia unlocked_icon_image =
-        gfx::CreateVectorIcon(kLockScreenEasyUnlockOpenIcon, color);
-    const SkBitmap* expected_icon =
-        locked ? unlocked_icon_image.bitmap() : locked_icon_image.bitmap();
-    const SkBitmap* actual_icon =
-        lock_button->GetImage(views::ImageButton::ButtonState::STATE_NORMAL)
-            .bitmap();
-    EXPECT_TRUE(gfx::test::AreBitmapsEqual(*actual_icon, *expected_icon));
-
-    const auto expected_tooltip_string = l10n_util::GetStringUTF16(
-        locked ? IDS_ASH_SNAP_GROUP_CLICK_TO_UNLOCK_WINDOWS
-               : IDS_ASH_SNAP_GROUP_CLICK_TO_LOCK_WINDOWS);
-    EXPECT_EQ(lock_button->GetTooltipText(), expected_tooltip_string);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

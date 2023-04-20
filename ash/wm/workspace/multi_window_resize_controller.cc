@@ -235,7 +235,7 @@ class MultiWindowResizeController::ResizeMouseWatcherHost
   bool Contains(const gfx::Point& point_in_screen, EventType type) override {
     return (type == EventType::kPress)
                ? host_->IsOverResizeWidget(point_in_screen) ||
-                     (IsSnapGroupEnabledInClamshellMode() &&
+                     (host_->ShouldConsiderLockWidget() &&
                       host_->IsOverLockWidget(point_in_screen))
                : host_->IsOverWindows(point_in_screen);
   }
@@ -770,8 +770,7 @@ bool MultiWindowResizeController::IsOverWindows(
     return true;
   }
 
-  if (IsSnapGroupEnabledInClamshellMode() &&
-      IsOverLockWidget(location_in_screen)) {
+  if (ShouldConsiderLockWidget() && IsOverLockWidget(location_in_screen)) {
     return true;
   }
 
@@ -822,6 +821,12 @@ void MultiWindowResizeController::OnLockButtonPressed() {
   CHECK(!snap_group_controller->AreWindowsInSnapGroup(window1, window2));
   snap_group_controller->AddSnapGroup(window1, window2);
   ResetResizer();
+}
+
+bool MultiWindowResizeController::ShouldConsiderLockWidget() const {
+  return WindowState::Get(windows_.window1)->IsSnapped() &&
+         WindowState::Get(windows_.window2)->IsSnapped() &&
+         IsSnapGroupEnabledInClamshellMode();
 }
 
 }  // namespace ash
