@@ -122,18 +122,17 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
+  void SetUpOnMainThread() override {
+    LaunchService();
+    InProcessBrowserTest::SetUpOnMainThread();
+  }
+
   void TearDown() override {
     // Call base class teardown before local teardown, to be in opposite order
     // of `SetUp`.
     InProcessBrowserTest::TearDown();
     PrintingContext::SetPrintingContextFactoryForTest(/*factory=*/nullptr);
     PrintBackend::SetPrintBackendForTesting(/*print_backend=*/nullptr);
-  }
-
-  // Initialize and load the backend service with some test print drivers.
-  void LaunchService() {
-    print_backend_service_ = PrintBackendServiceTestImpl::LaunchForTesting(
-        remote_, test_print_backend_, /*sandboxed=*/true);
   }
 
   // Load the test backend with a default printer driver.
@@ -397,6 +396,12 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     std::string printer_name_;
   };
 
+  // Initialize and load the backend service with some test print drivers.
+  void LaunchService() {
+    print_backend_service_ = PrintBackendServiceTestImpl::LaunchForTesting(
+        remote_, test_print_backend_, /*sandboxed=*/true);
+  }
+
   bool received_message_ = false;
   base::OnceClosure quit_callback_;
 
@@ -409,7 +414,6 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, EnumeratePrinters) {
-  LaunchService();
   AddDefaultPrinter();
   AddAnotherPrinter();
 
@@ -429,7 +433,6 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, EnumeratePrinters) {
 }
 
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, GetDefaultPrinterName) {
-  LaunchService();
   AddDefaultPrinter();
 
   mojom::DefaultPrinterNameResultPtr default_printer_name;
@@ -448,7 +451,6 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, GetDefaultPrinterName) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest,
                        GetPrinterSemanticCapsAndDefaults) {
-  LaunchService();
   AddDefaultPrinter();
 
   mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps;
@@ -477,7 +479,6 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest,
                        GetPrinterSemanticCapsAndDefaultsAccessDenied) {
-  LaunchService();
   AddAccessDeniedPrinter();
 
   mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps;
@@ -498,7 +499,6 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FetchCapabilities) {
-  LaunchService();
   AddDefaultPrinter();
 
   mojom::PrinterCapsAndInfoResultPtr caps_and_info;
@@ -525,7 +525,6 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FetchCapabilities) {
 }
 
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FetchCapabilitiesAccessDenied) {
-  LaunchService();
   AddAccessDeniedPrinter();
 
   mojom::PrinterCapsAndInfoResultPtr caps_and_info;
@@ -542,7 +541,6 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FetchCapabilitiesAccessDenied) {
 }
 
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UseDefaultSettings) {
-  LaunchService();
   AddDefaultPrinter();
   SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
 
@@ -566,7 +564,6 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UseDefaultSettings) {
 
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, AskUserForSettings) {
-  LaunchService();
   AddDefaultPrinter();
   SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
 
@@ -592,7 +589,6 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, AskUserForSettings) {
 #endif  // BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UpdatePrintSettings) {
-  LaunchService();
   AddDefaultPrinter();
   SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
 
@@ -630,7 +626,6 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UpdatePrintSettings) {
 }
 
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, StartPrinting) {
-  LaunchService();
   AddDefaultPrinter();
   SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
 
@@ -646,7 +641,6 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, StartPrinting) {
 
 #if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, RenderPrintedPage) {
-  LaunchService();
   AddDefaultPrinter();
   SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
 
@@ -668,7 +662,6 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, RenderPrintedPage) {
 // pipeline is enabled.
 #if !BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, RenderPrintedDocument) {
-  LaunchService();
   AddDefaultPrinter();
   SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
 
@@ -687,7 +680,6 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, RenderPrintedDocument) {
 #endif  // !BUILDFLAG(IS_WIN)
 
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, DocumentDone) {
-  LaunchService();
   AddDefaultPrinter();
   SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
 
@@ -713,7 +705,6 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, DocumentDone) {
 }
 
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, Cancel) {
-  LaunchService();
   AddDefaultPrinter();
   SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
 
