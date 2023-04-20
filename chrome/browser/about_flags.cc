@@ -3165,21 +3165,6 @@ const FeatureEntry::Choice kPrintingPpdChannelChoices[] = {
      ash::switches::kPrintingPpdChannelLocalhost}};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kDesktopSharePreviewVariant16{
-    "variant", share::kDesktopSharePreviewVariant16};
-const FeatureEntry::FeatureParam kDesktopSharePreviewVariant40{
-    "variant", share::kDesktopSharePreviewVariant40};
-const FeatureEntry::FeatureParam kDesktopSharePreviewVariant72{
-    "variant", share::kDesktopSharePreviewVariant72};
-
-const FeatureEntry::FeatureVariation kDesktopSharePreviewVariations[] = {
-    {"16pt preview", &kDesktopSharePreviewVariant16, 1, nullptr},
-    {"40pt preview", &kDesktopSharePreviewVariant40, 1, nullptr},
-    {"72pt preview", &kDesktopSharePreviewVariant72, 1, nullptr},
-};
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if !BUILDFLAG(IS_CHROMEOS)
 const FeatureEntry::FeatureParam kDmTokenDeletionParam[] = {{"forced", "true"}};
 const FeatureEntry::FeatureVariation kDmTokenDeletionVariation[] = {
@@ -6877,12 +6862,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSharingDesktopScreenshotsName,
      flag_descriptions::kSharingDesktopScreenshotsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(sharing_hub::kDesktopScreenshots)},
-    {"sharing-desktop-share-preview",
-     flag_descriptions::kSharingDesktopSharePreviewName,
-     flag_descriptions::kSharingDesktopSharePreviewDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(share::kDesktopSharePreview,
-                                    kDesktopSharePreviewVariations,
-                                    "DesktopSharePreview")},
     {"sharing-desktop-share-to-google-collections",
      flag_descriptions::kSharingDesktopShareToGoogleCollectionsName,
      flag_descriptions::kSharingDesktopShareToGoogleCollectionsDescription,

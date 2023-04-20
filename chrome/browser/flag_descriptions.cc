@@ -4670,11 +4670,6 @@ const char kSettingsEnableGetTheMostOutOfChromeDescription[] =
     "will be available.";
 #endif
 
-const char kSharingDesktopSharePreviewName[] = "Desktop share hub preview";
-const char kSharingDesktopSharePreviewDescription[] =
-    "Adds a preview section to the desktop sharing hub to make it clearer what "
-    "is about to be shared.";
-
 const char kSharingDesktopShareToGoogleCollectionsName[] =
     "Share to Google Collections";
 const char kSharingDesktopShareToGoogleCollectionsDescription[] =

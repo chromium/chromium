@@ -143,8 +143,7 @@ void SharingHubBubbleViewImpl::Init() {
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kInterItemPadding));
   if (controller_->ShouldUsePreview()) {
-    auto* preview = AddChildView(std::make_unique<PreviewView>(
-        attempt_, share::GetDesktopSharePreviewVariant()));
+    auto* preview = AddChildView(std::make_unique<PreviewView>(attempt_));
     preview->TakeCallbackSubscription(
         controller_->RegisterPreviewImageChangedCallback(base::BindRepeating(
             &PreviewView::OnImageChanged, base::Unretained(preview))));

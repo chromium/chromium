@@ -77,9 +77,8 @@ constexpr net::NetworkTrafficAnnotationTag kPreviewImageNetworkAnnotationTag =
   )");
 
 bool ShouldUseHQPreviewImage() {
-  auto variant = share::GetDesktopSharePreviewVariant();
-  return variant != share::DesktopSharePreviewVariant::kDisabled &&
-         variant != share::DesktopSharePreviewVariant::kEnabled16;
+  // TODO(https://crbug.com/1427551): Remove this method and its callers.
+  return false;
 }
 
 }  // namespace
@@ -150,8 +149,10 @@ SharingHubBubbleControllerDesktopImpl::GetFirstPartyActions() {
 }
 
 bool SharingHubBubbleControllerDesktopImpl::ShouldUsePreview() {
-  return share::GetDesktopSharePreviewVariant() !=
-         share::DesktopSharePreviewVariant::kDisabled;
+  // TODO(https://crbug.com/1427551): Remove this method and its callers, and
+  // remove all the async behavior and preview-image-changed logic from this
+  // class.
+  return true;  // XXX
 }
 
 base::CallbackListSubscription

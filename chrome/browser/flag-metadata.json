@@ -6797,11 +6797,6 @@
     "expiry_milestone": 114
   },
   {
-    "name": "sharing-desktop-share-preview",
-    "owners": ["ellyjones", "chrome-with-friends-robots@google.com"],
-    "expiry_milestone": 114
-  },
-  {
     "name": "sharing-desktop-share-to-google-collections",
     "owners": ["mhatem", "chrome-with-friends-robots@google.com"],
     "expiry_milestone": 108

@@ -31,8 +31,7 @@ namespace sharing_hub {
 // trial.
 class PreviewView : public views::View {
  public:
-  PreviewView(share::ShareAttempt attempt,
-              share::DesktopSharePreviewVariant variant);
+  explicit PreviewView(share::ShareAttempt attempt);
   ~PreviewView() override;
 
   // This seemingly-odd method allows for PreviewView to be uncoupled from the
@@ -48,8 +47,6 @@ class PreviewView : public views::View {
 
  private:
   base::CallbackListSubscription subscription_;
-
-  const share::DesktopSharePreviewVariant feature_variant_;
 
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::Label> url_ = nullptr;

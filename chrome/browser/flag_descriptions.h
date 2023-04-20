@@ -2688,9 +2688,6 @@ extern const char kSettingsEnableGetTheMostOutOfChromeName[];
 extern const char kSettingsEnableGetTheMostOutOfChromeDescription[];
 #endif
 
-extern const char kSharingDesktopSharePreviewName[];
-extern const char kSharingDesktopSharePreviewDescription[];
-
 extern const char kSharingDesktopShareToGoogleCollectionsName[];
 extern const char kSharingDesktopShareToGoogleCollectionsDescription[];
 
