@@ -346,17 +346,6 @@ chromium-metrics-reviews@google.com.
   <summary>Android: Loading of Zine was artifically delayed</summary>
 </histogram>
 
-<histogram name="NewTabPage.ContentSuggestions.BackgroundFetchTrigger"
-    enum="BackgroundFetchTrigger" expires_after="2021-12-26">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The type of trigger that caused a background fetch of NTP content
-    suggestions from a suggestion server. Every background fetch is recorded.
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.ContentSuggestions.CountOnNtpOpenedIfVisible"
     units="units" expires_after="2021-06-20">
   <owner>carlosk@chromium.org</owner>
@@ -537,76 +526,6 @@ chromium-metrics-reviews@google.com.
     within [1,10]. For instance, the discrete value 1 represents score values
     from (0.0, 0.1]. The discrete value 11 is the overflow bucket for
     unexpectedly high scores.
-  </summary>
-</histogram>
-
-<histogram base="true"
-    name="NewTabPage.ContentSuggestions.TimeUntilFirstShownTrigger" units="ms"
-    expires_after="2021-12-26">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The time since the last fetch, recorded upon the first on-shown
-    fetch trigger. The first on-shown trigger does not necessarily cause a fetch
-    (if it comes before the end of the respective scheduling interval). This
-    metric is recorded at most once after each fetch (and additionaly at most
-    once after each startup of Chrome before the next fetch). This is used to
-    understand how changing scheduling intervals will impact traffic of
-    background fetches.
-  </summary>
-</histogram>
-
-<histogram base="true"
-    name="NewTabPage.ContentSuggestions.TimeUntilFirstStartupTrigger"
-    units="ms" expires_after="2021-08-22">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The time since the last fetch, recorded upon the first startup
-    fetch trigger. The first startup trigger does not necessarily cause a fetch
-    (if it comes before the end of the respective scheduling interval). This
-    metric is recorded at most once after each fetch (and additionaly at most
-    once after each startup of Chrome before the next fetch). This is used to
-    understand how changing scheduling intervals will impact traffic of
-    background fetches.
-  </summary>
-</histogram>
-
-<histogram base="true"
-    name="NewTabPage.ContentSuggestions.TimeUntilPersistentFetch" units="ms"
-    expires_after="M90">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The time since the last fetch, recorded upon a persistent fetch.
-    This is used to understand what are the real persistent fetching intervals
-    in the wild.
-  </summary>
-</histogram>
-
-<histogram base="true" name="NewTabPage.ContentSuggestions.TimeUntilSoftFetch"
-    units="ms" expires_after="M90">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The time since the last fetch, recorded upon a soft fetch. This is
-    used to understand what are the real soft fetching intervals in the wild.
-  </summary>
-</histogram>
-
-<histogram base="true"
-    name="NewTabPage.ContentSuggestions.TimeUntilStartupFetch" units="ms"
-    expires_after="M90">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The time since the last fetch, recorded upon a startup fetch. This
-    is used to understand what are the real soft fetching intervals in the wild.
   </summary>
 </histogram>
 

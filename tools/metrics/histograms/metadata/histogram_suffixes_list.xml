@@ -5818,21 +5818,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Setup.Install.LzmaUnPackStatus"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="UserClasses" separator=".">
-  <suffix name="ActiveNTPUser" label="Active NTP user"/>
-  <suffix name="ActiveSuggestionsConsumer" label="Active suggestions consumer"/>
-  <suffix name="RareNTPUser" label="Rare NTP user"/>
-  <affected-histogram
-      name="NewTabPage.ContentSuggestions.TimeUntilFirstShownTrigger"/>
-  <affected-histogram
-      name="NewTabPage.ContentSuggestions.TimeUntilFirstStartupTrigger"/>
-  <affected-histogram
-      name="NewTabPage.ContentSuggestions.TimeUntilPersistentFetch"/>
-  <affected-histogram name="NewTabPage.ContentSuggestions.TimeUntilSoftFetch"/>
-  <affected-histogram
-      name="NewTabPage.ContentSuggestions.TimeUntilStartupFetch"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="UserScriptRunLocation" separator=".">
   <suffix name="DocumentEnd" label="Scripts with run_at: document_end."/>
   <suffix name="DocumentIdle" label="Scripts with run_at: document_idle."/>

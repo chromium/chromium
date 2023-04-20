@@ -10462,13 +10462,6 @@ others/histograms.xml -->
   <int value="3" label="Cannot dispatch the event"/>
 </enum>
 
-<enum name="BackgroundFetchTrigger">
-  <int value="0" label="Wake-up of the persistent scheduler"/>
-  <int value="1" label="Suggestions surface opened"/>
-  <int value="2" label="Browser foregrounded"/>
-  <int value="3" label="Cold start of the browser"/>
-</enum>
-
 <enum name="BackgroundHostCreatedForExtensionValues">
   <int value="0" label="Other extension"/>
   <int value="1"
