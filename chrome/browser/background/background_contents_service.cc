@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -143,65 +142,6 @@ class CrashNotificationDelegate : public message_center::NotificationDelegate {
   std::string extension_id_;
 };
 
-void NotificationImageReady(const std::string extension_name,
-                            const std::string extension_id,
-                            const std::u16string message,
-                            scoped_refptr<CrashNotificationDelegate> delegate,
-                            Profile* profile,
-                            const gfx::Image& icon) {
-  if (g_browser_process->IsShuttingDown())
-    return;
-
-  gfx::Image notification_icon(icon);
-  if (notification_icon.IsEmpty()) {
-    ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-    notification_icon = rb.GetImageNamed(IDR_EXTENSION_DEFAULT_ICON);
-  }
-
-  // Origin URL must be different from the crashed extension to avoid the
-  // conflict. NotificationSystemObserver will cancel all notifications from
-  // the same origin when OnExtensionUnloaded() is called.
-  std::string id = kCrashedNotificationPrefix + extension_id;
-  message_center::Notification notification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, id, std::u16string(), message,
-      ui::ImageModel::FromImage(notification_icon), std::u16string(),
-      GURL("chrome://extension-crash"),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      message_center::NotifierId(
-          message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
-          ash::NotificationCatalogName::kBackgroundCrash),
-#else
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierId),
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-      {}, delegate);
-  NotificationDisplayService::GetForProfile(profile)->Display(
-      NotificationHandler::Type::TRANSIENT, notification, /*metadata=*/nullptr);
-}
-
-// Show a popup notification balloon with a crash message for a given app/
-// extension.
-void ShowBalloon(const Extension* extension, Profile* profile) {
-  const std::u16string message = l10n_util::GetStringFUTF16(
-      extension->is_app() ? IDS_BACKGROUND_CRASHED_APP_BALLOON_MESSAGE
-                          : IDS_BACKGROUND_CRASHED_EXTENSION_BALLOON_MESSAGE,
-      base::UTF8ToUTF16(extension->name()));
-  extension_misc::ExtensionIcons size(extension_misc::EXTENSION_ICON_LARGE);
-  extensions::ExtensionResource resource =
-      extensions::IconsInfo::GetIconResource(extension, size,
-                                             ExtensionIconSet::MATCH_SMALLER);
-  // We can't just load the image in the Observe method below because, despite
-  // what this method is called, it may call the callback synchronously.
-  // However, it's possible that the extension went away during the interim,
-  // so we'll bind all the pertinent data here.
-  extensions::ImageLoader::Get(profile)->LoadImageAsync(
-      extension, resource, gfx::Size(size, size),
-      base::BindOnce(
-          &NotificationImageReady, extension->name(), extension->id(), message,
-          base::MakeRefCounted<CrashNotificationDelegate>(profile, extension),
-          base::UnsafeDanglingUntriaged(profile)));
-}
-
 void ReloadExtension(const std::string& extension_id, Profile* profile) {
   if (g_browser_process->IsShuttingDown() ||
       !g_browser_process->profile_manager()->IsValidProfile(profile)) {
@@ -257,9 +197,7 @@ const net::BackoffEntry::Policy kExtensionReloadBackoffPolicy = {
 
 int BackgroundContentsService::restart_delay_in_ms_ = 3000;  // 3 seconds.
 
-BackgroundContentsService::BackgroundContentsService(
-    Profile* profile,
-    const base::CommandLine* command_line)
+BackgroundContentsService::BackgroundContentsService(Profile* profile)
     : profile_(profile) {
   // Don't load/store preferences if the parent profile is incognito.
   if (!profile->IsOffTheRecord())
@@ -290,16 +228,14 @@ BackgroundContentsService::GetNotificationDelegateIdForExtensionForTesting(
 }
 
 // static
-void BackgroundContentsService::ShowBalloonForTesting(
-    const extensions::Extension* extension,
-    Profile* profile) {
-  ShowBalloon(extension, profile);
-}
-
-// static
 void BackgroundContentsService::DisableCloseBalloonForTesting(
     bool disable_close_balloon_for_testing) {
   g_disable_close_balloon_for_testing = disable_close_balloon_for_testing;
+}
+
+void BackgroundContentsService::ShowBalloonForTesting(
+    const extensions::Extension* extension) {
+  ShowBalloon(extension);
 }
 
 std::vector<BackgroundContents*>
@@ -792,11 +728,77 @@ void BackgroundContentsService::HandleExtensionCrashed(
       extensions::Manifest::IsComponentLocation(extension->location()) ||
       extensions::Manifest::IsPolicyLocation(extension->location());
   if (!force_installed) {
-    ShowBalloon(extension, profile_);
+    ShowBalloon(extension);
   } else {
     // Restart the extension.
     RestartForceInstalledExtensionOnCrash(extension);
   }
+}
+
+void BackgroundContentsService::NotificationImageReady(
+    const std::string extension_name,
+    const std::string extension_id,
+    const std::u16string message,
+    scoped_refptr<message_center::NotificationDelegate> delegate,
+    const gfx::Image& icon) {
+  NotificationDisplayService* notification_service =
+      NotificationDisplayService::GetForProfile(profile_);
+  CHECK(notification_service);
+
+  if (g_browser_process->IsShuttingDown()) {
+    return;
+  }
+
+  gfx::Image notification_icon(icon);
+  if (notification_icon.IsEmpty()) {
+    ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+    notification_icon = rb.GetImageNamed(IDR_EXTENSION_DEFAULT_ICON);
+  }
+
+  // Origin URL must be different from the crashed extension to avoid the
+  // conflict. NotificationSystemObserver will cancel all notifications from
+  // the same origin when OnExtensionUnloaded() is called.
+  std::string id = kCrashedNotificationPrefix + extension_id;
+  message_center::Notification notification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, id, std::u16string(), message,
+      ui::ImageModel::FromImage(notification_icon), std::u16string(),
+      GURL("chrome://extension-crash"),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      message_center::NotifierId(
+          message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
+          ash::NotificationCatalogName::kBackgroundCrash),
+#else
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kNotifierId),
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+      {}, delegate);
+  notification_service->Display(NotificationHandler::Type::TRANSIENT,
+                                notification,
+                                /*metadata=*/nullptr);
+}
+
+// Show a popup notification balloon with a crash message for a given app/
+// extension.
+void BackgroundContentsService::ShowBalloon(const Extension* extension) {
+  const std::u16string message = l10n_util::GetStringFUTF16(
+      extension->is_app() ? IDS_BACKGROUND_CRASHED_APP_BALLOON_MESSAGE
+                          : IDS_BACKGROUND_CRASHED_EXTENSION_BALLOON_MESSAGE,
+      base::UTF8ToUTF16(extension->name()));
+  extension_misc::ExtensionIcons size(extension_misc::EXTENSION_ICON_LARGE);
+  extensions::ExtensionResource resource =
+      extensions::IconsInfo::GetIconResource(extension, size,
+                                             ExtensionIconSet::MATCH_SMALLER);
+  // We can't just load the image in the Observe method below because, despite
+  // what this method is called, it may call the callback synchronously.
+  // However, it's possible that the extension went away during the interim,
+  // so we'll bind all the pertinent data here.
+  extensions::ImageLoader::Get(profile_)->LoadImageAsync(
+      extension, resource, gfx::Size(size, size),
+      base::BindOnce(&BackgroundContentsService::NotificationImageReady,
+                     weak_ptr_factory_.GetWeakPtr(), extension->name(),
+                     extension->id(), message,
+                     base::MakeRefCounted<CrashNotificationDelegate>(
+                         profile_, extension)));
 }
 
 BackgroundContentsService::BackgroundContentsInfo::BackgroundContentsInfo() =

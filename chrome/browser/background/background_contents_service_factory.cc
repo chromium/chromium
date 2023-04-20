@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -34,14 +35,14 @@ BackgroundContentsServiceFactory::BackgroundContentsServiceFactory()
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
   DependsOn(extensions::ExtensionSystemFactory::GetInstance());
   DependsOn(extensions::ExtensionHostRegistry::GetFactory());
+  DependsOn(NotificationDisplayServiceFactory::GetInstance());
 }
 
 BackgroundContentsServiceFactory::~BackgroundContentsServiceFactory() {}
 
 KeyedService* BackgroundContentsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {
-  return new BackgroundContentsService(static_cast<Profile*>(profile),
-                                       base::CommandLine::ForCurrentProcess());
+  return new BackgroundContentsService(static_cast<Profile*>(profile));
 }
 
 void BackgroundContentsServiceFactory::RegisterProfilePrefs(

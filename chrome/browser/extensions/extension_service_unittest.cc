@@ -8312,7 +8312,8 @@ TEST_F(ExtensionServiceTest, ReloadingExtensionFromNotification) {
   display_service.SetNotificationAddedClosure(run_loop.QuitClosure());
   std::string notification_id = BackgroundContentsService::
       GetNotificationDelegateIdForExtensionForTesting(extension->id());
-  BackgroundContentsService::ShowBalloonForTesting(extension, profile());
+  BackgroundContentsService background_service(profile());
+  background_service.ShowBalloonForTesting(extension);
   run_loop.Run();
 
   // Click on the "Extension crashed" notification and expect the extension to
