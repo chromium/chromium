@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,7 +58,6 @@ class ArchiveManagerTest : public testing::Test {
   ArchiveManager::StorageStats last_storage_sizes() const {
     return last_storage_sizes_;
   }
-  base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
 
  private:
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
@@ -73,7 +71,6 @@ class ArchiveManagerTest : public testing::Test {
   CallbackStatus callback_status_;
   std::set<base::FilePath> last_archive_paths_;
   ArchiveManager::StorageStats last_storage_sizes_;
-  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 ArchiveManagerTest::ArchiveManagerTest()
@@ -88,7 +85,6 @@ void ArchiveManagerTest::SetUp() {
   ASSERT_TRUE(public_archive_dir_.CreateUniqueTempDir());
   ResetManager(temporary_dir_.GetPath(), private_archive_dir_.GetPath(),
                public_archive_dir_.GetPath());
-  histogram_tester_ = std::make_unique<base::HistogramTester>();
 }
 
 void ArchiveManagerTest::PumpLoop() {
@@ -136,13 +132,6 @@ TEST_F(ArchiveManagerTest, EnsureArchivesDirCreated) {
   EXPECT_EQ(CallbackStatus::CALLED_TRUE, callback_status());
   EXPECT_TRUE(base::PathExists(temporary_archive_dir));
   EXPECT_TRUE(base::PathExists(private_archive_dir));
-  // The public dir does not get created by us, so we don't test its creation.
-  histogram_tester()->ExpectUniqueSample(
-      "OfflinePages.ArchiveManager.ArchiveDirsCreationResult2.Persistent",
-      -base::File::Error::FILE_OK, 1);
-  histogram_tester()->ExpectUniqueSample(
-      "OfflinePages.ArchiveManager.ArchiveDirsCreationResult2.Temporary",
-      -base::File::Error::FILE_OK, 1);
 
   // Try again when the file already exists.
   ResetResults();
@@ -152,10 +141,6 @@ TEST_F(ArchiveManagerTest, EnsureArchivesDirCreated) {
   EXPECT_EQ(CallbackStatus::CALLED_TRUE, callback_status());
   EXPECT_TRUE(base::PathExists(temporary_archive_dir));
   EXPECT_TRUE(base::PathExists(private_archive_dir));
-  histogram_tester()->ExpectTotalCount(
-      "OfflinePages.ArchiveManager.ArchiveDirsCreationResult2.Persistent", 1);
-  histogram_tester()->ExpectTotalCount(
-      "OfflinePages.ArchiveManager.ArchiveDirsCreationResult2.Temporary", 1);
 }
 
 TEST_F(ArchiveManagerTest, GetStorageStats) {

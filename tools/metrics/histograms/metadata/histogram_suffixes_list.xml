@@ -3147,6 +3147,9 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="OfflinePagesArchiveDirectoryType" separator=".">
+  <obsolete>
+    Histogram was removed in April 2023.
+  </obsolete>
   <suffix name="Persistent" label="Persistent archive directory"/>
   <suffix name="Temporary" label="Temporary archive directory"/>
   <affected-histogram
