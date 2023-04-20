@@ -146,7 +146,9 @@
                 {
                     "name": "ControlWithActivityTabProvider_20230404",
                     "enable_features": [
-                        "BackGestureActivityTabProvider",
+                        "BackGestureActivityTabProvider"
+                    ],
+                    "disable_features": [
                         "BackGestureRefactorAndroid"
                     ]
                 }
