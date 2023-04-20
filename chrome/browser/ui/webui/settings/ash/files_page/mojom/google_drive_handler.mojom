@@ -38,6 +38,10 @@ interface PageHandler {
   // Starts calculating the required space, updates will get sent via the `Page`
   // method exposed below.
   CalculateRequiredSpace();
+
+  // Returns the current size used by all the pinned files for DriveFS as a
+  // string. This string includes the units, e.g. 500 MB.
+  GetTotalPinnedSize() => (string? size);
 };
 
 // Interface for the Google drive settings page. Implemented in Javascript and

@@ -82,12 +82,11 @@
     </settings-drive-confirmation-dialog>
   </template>
 
-  <div class="settings-box two-line">
+  <div class="settings-box two-line" id="drive-offline-storage-row">
     <div class="start">
       $i18n{googleDriveOfflineClearTitle}
       <div class="secondary">
-        <!-- TODO(b/273399125): storage being used by offline files -->
-        $i18n{googleDriveOfflineClearSubtitle}
+        [[totalPinnedSize_]]
       </div>
     </div>
     <cr-button role="button">

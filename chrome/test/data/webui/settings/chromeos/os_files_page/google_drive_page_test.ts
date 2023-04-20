@@ -26,7 +26,7 @@ class GoogleDriveTestBrowserProxy extends TestBrowserProxy implements
   observerRemote: GoogleDrivePageRemote;
 
   constructor() {
-    super(['calculateRequiredSpace']);
+    super(['calculateRequiredSpace', 'getTotalPinnedSize']);
     this.handler = TestMock.fromClass(GoogleDrivePageHandlerRemote);
     this.observer = new GoogleDrivePageCallbackRouter();
     this.observerRemote = this.observer.$.bindNewPipeAndPassRemote();
@@ -48,6 +48,7 @@ suite('<settings-google-drive-subpage>', function() {
   let connectDisconnectButton: CrButtonElement;
   let testBrowserProxy: GoogleDriveTestBrowserProxy;
   let bulkPinningToggle: SettingsToggleButtonElement;
+  let offlineStorageSubtitle: HTMLDivElement;
 
   /**
    * Helper to ensure a confirmation dialog is showing, retrieve a button in the
@@ -97,6 +98,9 @@ suite('<settings-google-drive-subpage>', function() {
     bulkPinningToggle =
         querySelectorShadow(page.shadowRoot!, ['#driveBulkPinning']) as
         SettingsToggleButtonElement;
+
+    offlineStorageSubtitle = page.shadowRoot!.querySelector<HTMLDivElement>(
+        '#drive-offline-storage-row .secondary')!;
   });
 
   teardown(function() {
@@ -336,4 +340,24 @@ suite('<settings-google-drive-subpage>', function() {
         assertFalse(
             bulkPinningToggle.checked, 'Pinning toggle should not be toggled');
       });
+
+  test('free space shows the offline value returned', async function() {
+    // Send back a normal pinned size result.
+    testBrowserProxy.handler.setResultFor(
+        'getTotalPinnedSize', {size: '100 MB'});
+    page.onNavigated();
+    await assertAsync(() => offlineStorageSubtitle.innerText === '100 MB');
+
+    // Mock a missing pinned size (empty object).
+    testBrowserProxy.handler.setResultFor('getTotalPinnedSize', {});
+    page.onNavigated();
+
+    await assertAsync(() => offlineStorageSubtitle.innerText === 'Unknown');
+
+    // Mock an empty pinned size (size is there but an empty string).
+    testBrowserProxy.handler.setResultFor('getTotalPinnedSize', {size: ''});
+    page.onNavigated();
+
+    await assertAsync(() => offlineStorageSubtitle.innerText === 'Unknown');
+  });
 });

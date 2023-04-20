@@ -73,6 +73,12 @@ export class SettingsGoogleDriveSubpageElement extends
         type: Object,
         value: () => new Set<Setting>([Setting.kGoogleDriveConnection]),
       },
+
+      /**
+       * Ensures the data binding is updated on the UI when `totalPinnedSize_`
+       * is updated.
+       */
+      totalPinnedSize_: String,
     };
   }
 
@@ -113,6 +119,11 @@ export class SettingsGoogleDriveSubpageElement extends
   private dialogType_: ConfirmationDialogType = ConfirmationDialogType.NONE;
 
   /**
+   * Keeps track of the last requested total pinned size.
+   */
+  private totalPinnedSize_: string|null = null;
+
+  /**
    * Returns the browser proxy page handler (to invoke functions).
    */
   get pageHandler() {
@@ -140,6 +151,14 @@ export class SettingsGoogleDriveSubpageElement extends
    */
   get remainingSpace() {
     return this.bulkPinningStatus_?.remainingSpace || -1;
+  }
+
+  /**
+   * Returns the total pinned size stored.
+   * Used for testing.
+   */
+  get totalPinnedSize() {
+    return this.totalPinnedSize_;
   }
 
   /**
@@ -176,6 +195,24 @@ export class SettingsGoogleDriveSubpageElement extends
   }
 
   /**
+   * Retrieves the total pinned size of items in Drive and stores the total.
+   */
+  private async updateTotalPinnedSize_() {
+    try {
+      this.totalPinnedSize_ =
+          this.i18n('googleDriveOfflineClearCalculatingSubtitle');
+      const {size} = await this.pageHandler.getTotalPinnedSize();
+      if (size) {
+        this.totalPinnedSize_ = size;
+        return;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    this.totalPinnedSize_ = this.i18n('googleDriveOfflineClearErrorSubtitle');
+  }
+
+  /**
    * Invoked when the `prefs.gdata.disabled` preference changes value.
    */
   private updateDriveDisabled_() {
@@ -189,8 +226,16 @@ export class SettingsGoogleDriveSubpageElement extends
       return;
     }
 
+    this.onNavigated();
+  }
+
+  /**
+   * Invokes methods when the route is navigated to.
+   */
+  onNavigated() {
     this.attemptDeepLink();
     this.pageHandler.calculateRequiredSpace();
+    this.updateTotalPinnedSize_();
   }
 
   /**

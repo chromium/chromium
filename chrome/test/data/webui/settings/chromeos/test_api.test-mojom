@@ -134,6 +134,10 @@ interface GoogleDriveSettings {
   // the supplied values.
   AssertBulkPinningSpace(string required_space,
       string remaining_space) => ();
+
+  // Asserts the values returned from the Google drive PageHandler match the
+  // values returned on the JS element.
+  AssertBulkPinningPinnedSize(string pinned_size) => ();
 };
 
 // An interface that allows clients to manipulate the os settings ui. Served by

@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/base/text/bytes_formatting.h"
 
+using base::test::RunOnceCallback;
 using testing::_;
 using testing::DoAll;
 using testing::Return;
@@ -137,6 +138,10 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
   SetUpSearchResultExpectations();
   fake_search_query_.SetSearchResults({});
 
+  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
+  EXPECT_CALL(*fake_drivefs, GetOfflineFilesSpaceUsage(_))
+      .WillOnce(RunOnceCallback<0>(drive::FILE_ERROR_OK, 1));
+
   // Expect the free space to be 1 GB (1,073,741,824 bytes), the required space
   // to be 0 KB (0 items).
   int64_t free_space = 1024 * 1024 * 1024;
@@ -155,6 +160,10 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
                        OnlyUnpinnedResultsUpdateTheSpaceRequirements) {
   SetUpSearchResultExpectations();
 
+  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
+  EXPECT_CALL(*fake_drivefs, GetOfflineFilesSpaceUsage(_))
+      .WillOnce(RunOnceCallback<0>(drive::FILE_ERROR_OK, 1));
+
   // Each item is 125 MB in size, total required space should be 500 MB.
   int64_t file_size = 125 * 1024 * 1024;
   fake_search_query_.SetSearchResults(
@@ -170,6 +179,42 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
   ash::FakeSpacedClient::Get()->set_free_disk_space(free_space);
   auto google_drive_settings = OpenGoogleDriveSettings();
   google_drive_settings.AssertBulkPinningSpace(required_space, remaining_space);
+}
+
+IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
+                       TotalPinnedSizeUpdatesValueOnElement) {
+  SetUpSearchResultExpectations();
+
+  // Mock no search results are returned (this avoids the call to
+  // `CalculateRequiredSpace` from being ran here).
+  fake_search_query_.SetSearchResults({});
+  ash::FakeSpacedClient::Get()->set_free_disk_space(1024 * 1024 * 1024);
+
+  int64_t pinned_size = 1024 * 1024;
+  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
+  EXPECT_CALL(*fake_drivefs, GetOfflineFilesSpaceUsage(_))
+      .WillOnce(RunOnceCallback<0>(drive::FILE_ERROR_OK, pinned_size));
+
+  auto google_drive_settings = OpenGoogleDriveSettings();
+  google_drive_settings.AssertBulkPinningPinnedSize(
+      FormatBytesToString(pinned_size));
+}
+
+IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
+                       InvalidSizeUpdatesRemainingSizeToUnknown) {
+  SetUpSearchResultExpectations();
+
+  // Mock no search results are returned (this avoids the call to
+  // `CalculateRequiredSpace` from being ran here).
+  fake_search_query_.SetSearchResults({});
+  ash::FakeSpacedClient::Get()->set_free_disk_space(1024 * 1024 * 1024);
+
+  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
+  EXPECT_CALL(*fake_drivefs, GetOfflineFilesSpaceUsage(_))
+      .WillOnce(RunOnceCallback<0>(drive::FILE_ERROR_OK, -1));
+
+  auto google_drive_settings = OpenGoogleDriveSettings();
+  google_drive_settings.AssertBulkPinningPinnedSize("Unknown");
 }
 
 }  // namespace

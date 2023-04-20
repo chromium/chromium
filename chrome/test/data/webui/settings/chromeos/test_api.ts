@@ -772,6 +772,11 @@ export class GoogleDriveSettings implements GoogleDriveSettingsInterface {
     this.assertRequiredSpace(requiredSpace);
     this.assertRemainingSpace(remainingSpace);
   }
+
+  async assertBulkPinningPinnedSize(expectedPinnedSize: string): Promise<void> {
+    assertTrue(
+        this.googleDriveSubpage_?.totalPinnedSize === expectedPinnedSize);
+  }
 }
 
 class OsSettingsDriver implements OSSettingsDriverInterface {
