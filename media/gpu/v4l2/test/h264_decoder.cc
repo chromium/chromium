@@ -650,7 +650,8 @@ VideoDecoder::Result H264Decoder::FinishFrame(
   struct v4l2_ext_controls ext_ctrls = {
       .count = (sizeof(ctrls) / sizeof(ctrls[0])), .controls = ctrls};
 
-  v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls, is_OUTPUT_queue_new);
+  v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls,
+                           is_OUTPUT_queue_new && cur_val_is_supported_);
 
   // Picture is a reference picture.
   // H.264 section 8.2.4.
