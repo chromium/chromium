@@ -61,11 +61,10 @@ class RemoteDesktopPortalInjector : public EiEventWatcherGlib::EiEventHandler {
   void HandleEiEvent(struct ei_event* event) override;
 
   void SetupLibei(base::OnceCallback<void(bool)> OnLibeiDone);
+  void Shutdown();
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
-
-  void Cleanup();
 
   static void ValidateGDPBusProxyResult(GObject* proxy,
                                         GAsyncResult* result,
@@ -93,20 +92,28 @@ class RemoteDesktopPortalInjector : public EiEventWatcherGlib::EiEventHandler {
   std::string session_handle_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // EI related fields.
-  raw_ptr<ei> ei_ = nullptr;
-  raw_ptr<struct ei_seat> ei_seat_ = nullptr;
-  raw_ptr<ei_device> ei_pointer_ = nullptr;
-  raw_ptr<ei_device> ei_keyboard_ = nullptr;
-  raw_ptr<ei_device> ei_absolute_pointer_ = nullptr;
-  bool ei_pointer_enabled_ = false;
-  bool ei_absolute_pointer_enabled_ = false;
-  bool ei_keyboard_enabled_ = false;
-  bool use_ei_ = false;
-  std::unique_ptr<EiEventWatcherGlib> ei_event_watcher_;
-  int ei_fd_ = -1;
-  int device_serial_ = 1;
-  std::vector<DeviceRegion> device_regions_{};
-  base::OnceCallback<void(bool)> on_libei_setup_done_;
+  raw_ptr<ei> ei_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
+  raw_ptr<struct ei_seat> ei_seat_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      nullptr;
+  raw_ptr<ei_device> ei_pointer_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      nullptr;
+  raw_ptr<ei_device> ei_keyboard_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      nullptr;
+  raw_ptr<ei_device> ei_absolute_pointer_
+      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
+  bool ei_pointer_enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool ei_absolute_pointer_enabled_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
+  bool ei_keyboard_enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool use_ei_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  std::unique_ptr<EiEventWatcherGlib> ei_event_watcher_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  int ei_fd_ GUARDED_BY_CONTEXT(sequence_checker_) = -1;
+  int device_serial_ GUARDED_BY_CONTEXT(sequence_checker_) = 1;
+  std::vector<DeviceRegion> device_regions_
+      GUARDED_BY_CONTEXT(sequence_checker_) = {};
+  base::OnceCallback<void(bool)> on_libei_setup_done_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace remoting::xdg_portal

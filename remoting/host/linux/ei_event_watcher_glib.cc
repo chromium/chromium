@@ -4,6 +4,8 @@
 
 #include "remoting/host/linux/ei_event_watcher_glib.h"
 
+#include <unistd.h>
+
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/libei/include/libei.h"
@@ -44,14 +46,15 @@ void EiEventWatcherGlib::StartProcessingEvents() {
 }
 
 void EiEventWatcherGlib::StopProcessingEvents() {
-  if (ei_) {
-    ei_unref(ei_);
-    ei_ = nullptr;
-  }
   if (ei_source_) {
+    close(fd_);
     g_source_destroy(ei_source_);
     g_source_unref(ei_source_);
     ei_source_ = nullptr;
+  }
+  if (ei_) {
+    ei_unref(ei_);
+    ei_ = nullptr;
   }
 }
 
