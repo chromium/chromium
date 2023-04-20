@@ -72,6 +72,12 @@ extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 // set before the view is loaded.
 @property(nonatomic, assign) CGFloat customSpacingAfterImage;
 
+// Sets the custom spacing of the stackview. Values for
+// `customSpacingBeforeImageIfNoNavigationBar` and `customSpacingAfterImage` are
+// honored around the image, so this applies to all the other items of the
+// stackview. Must be set before the view is loaded.
+@property(nonatomic, assign) CGFloat customSpacing;
+
 // When YES, the content is attached to the top of the view instead of being
 // centered.
 @property(nonatomic) BOOL topAlignedLayout;

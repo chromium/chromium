@@ -92,6 +92,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _customSpacingAfterImage = kStackViewSpacingAfterIllustration;
+    _customSpacing = kStackViewSpacing;
     _showsVerticalScrollIndicator = YES;
     _showDismissBarButton = YES;
     _dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
@@ -657,7 +658,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
   stackView.axis = UILayoutConstraintAxisVertical;
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
-  stackView.spacing = kStackViewSpacing;
+  stackView.spacing = self.customSpacing;
   return stackView;
 }
 

@@ -8,8 +8,9 @@ import ios_chrome_common_ui_colors_swift
 /// The button displaying info about the current inactive tabs.
 struct InactiveTabsButton: View {
   private enum Dimensions {
-    static let verticalPadding: CGFloat = 8
+    static let verticalPadding: CGFloat = 10
     static let horizontalPadding: CGFloat = 16
+    static let spacing: CGFloat = 3
     static let cornerRadius: CGFloat = 10
   }
   class State: ObservableObject {
@@ -81,7 +82,7 @@ struct InactiveTabsButton: View {
           messageId: IDS_IOS_INACTIVE_TABS_BUTTON_SUBTITLE,
           argument: String(daysThreshold))
       )
-      .font(.caption2)
+      .font(.footnote)
       .foregroundColor(.textSecondary)
     }
   }
@@ -117,7 +118,7 @@ struct InactiveTabsButton: View {
   /// when displayed on multiple lines.
   @ViewBuilder
   private func leadingTextVStack(@ViewBuilder content: () -> some View) -> some View {
-    VStack(alignment: .leading) {
+    VStack(alignment: .leading, spacing: Dimensions.spacing) {
       content()
     }
     .multilineTextAlignment(.leading)
