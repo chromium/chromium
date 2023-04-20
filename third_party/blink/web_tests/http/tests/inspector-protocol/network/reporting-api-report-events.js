@@ -16,6 +16,7 @@
     if (count === 2) testRunner.completeTest();
   });
 
-  await page.navigate(testRunner.url('resources/generate-report.php'));
+  await page.navigate(testRunner.url(
+      'http://localhost:8080/inspector-protocol/network/resources/generate-report.php'));
   await dp.Network.enableReportingApi({enable: true});
 })
