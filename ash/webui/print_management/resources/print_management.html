@@ -1,8 +1,4 @@
 <style include="cr-shared-style print-management-shared print-management-fonts">
-  html {
-    background-color: var(--cros-bg-color);
-  }
-
   .column-headers {
     color: var(--print-management-header-text-color);
     font-family: var(--print-management-header-font-family);
@@ -116,66 +112,68 @@
     </print-job-clear-history-dialog>
   </template>
 
-  <div class="column-headers flex-center"
-      aria-labeledby="fileNameColumn printerNameColumn dateColumn statusColumn">
-    <div id="fileNameColumn" class="file-name-header-column overflow-ellipsis"
-        aria-hidden="true">
-      [[i18n('fileNameColumn')]]
-    </div>
-    <div id="printerNameColumn"
-        class="printer-name-column overflow-ellipsis padded-left"
-        aria-hidden="true">
-      [[i18n('printerNameColumn')]]
-    </div>
-    <div id="dateColumn" class="date-column overflow-ellipsis padded-left"
-        aria-hidden="true">
-      [[i18n('dateColumn')]]
-    </div>
-    <div id="statusColumn" class="status-column overflow-ellipsis padded-left"
-        aria-hidden="true">
-      [[i18n('statusColumn')]]
-    </div>
-  </div>
-
-  <template is="dom-if" if="[[ongoingPrintJobs.length]]" restamp>
-    <iron-list id="ongoingList" items="[[ongoingPrintJobs]]" role="grid">
-      <template>
-        <print-job-entry job-entry="[[item]]" tabindex$="[[tabIndex]]"
-            last-focused="{{lastFocused}}" list-blurred="{{listBlurred}}"
-            focus-row-index="[[index]]" iron-list-tab-index="[[tabIndex]]">
-        </print-job-entry>
-      </template>
-    </iron-list>
-  </template>
-
-  <div id="ongoingEmptyState" hidden="[[ongoingPrintJobs.length]]">
-    [[i18n('noPrintJobInProgress')]]
-  </div>
-
-  <template is="dom-if" if="[[printJobs.length]]" restamp>
-    <div id="historyHeaderContainer" class="column-headers flex-center">
-      <div aria-label$="[[printJobHistoryExpirationPeriod]]">
-        [[i18n('historyHeader')]]
-      </div>
-      <iron-icon id="infoIcon" icon="cr:info-outline" aria-hidden="true"
-          hidden="[[isPolicyControlled]]">
-      </iron-icon>
-      <iron-icon id="enterpriseIcon" icon="print-management:enterprise-icon"
-          aria-hidden="true" hidden="[[!isPolicyControlled]]">
-      </iron-icon>
-      <paper-tooltip for="[[activeHistoryInfoIcon]]" fit-to-visible-bounds
+  <div class="data-container">
+    <div class="column-headers flex-center"
+        aria-labeledby="fileNameColumn printerNameColumn dateColumn statusColumn">
+      <div id="fileNameColumn" class="file-name-header-column overflow-ellipsis"
           aria-hidden="true">
-        [[printJobHistoryExpirationPeriod]]
-      </paper-tooltip>
+        [[i18n('fileNameColumn')]]
+      </div>
+      <div id="printerNameColumn"
+          class="printer-name-column overflow-ellipsis padded-left"
+          aria-hidden="true">
+        [[i18n('printerNameColumn')]]
+      </div>
+      <div id="dateColumn" class="date-column overflow-ellipsis padded-left"
+          aria-hidden="true">
+        [[i18n('dateColumn')]]
+      </div>
+      <div id="statusColumn" class="status-column overflow-ellipsis padded-left"
+          aria-hidden="true">
+        [[i18n('statusColumn')]]
+      </div>
     </div>
 
-    <iron-list id="entryList" items="[[printJobs]]" role="grid">
-      <template>
-        <print-job-entry job-entry="[[item]]" tabindex$="[[tabIndex]]"
-            last-focused="{{lastFocused}}" list-blurred="{{listBlurred}}"
-            focus-row-index="[[index]]" iron-list-tab-index="[[tabIndex]]">
-        </print-job-entry>
-      </template>
-    </iron-list>
-  </template>
+    <template is="dom-if" if="[[ongoingPrintJobs.length]]" restamp>
+      <iron-list id="ongoingList" items="[[ongoingPrintJobs]]" role="grid">
+        <template>
+          <print-job-entry job-entry="[[item]]" tabindex$="[[tabIndex]]"
+              last-focused="{{lastFocused}}" list-blurred="{{listBlurred}}"
+              focus-row-index="[[index]]" iron-list-tab-index="[[tabIndex]]">
+          </print-job-entry>
+        </template>
+      </iron-list>
+    </template>
+
+    <div id="ongoingEmptyState" hidden="[[ongoingPrintJobs.length]]">
+      [[i18n('noPrintJobInProgress')]]
+    </div>
+
+    <template is="dom-if" if="[[printJobs.length]]" restamp>
+      <div id="historyHeaderContainer" class="column-headers flex-center">
+        <div aria-label$="[[printJobHistoryExpirationPeriod]]">
+          [[i18n('historyHeader')]]
+        </div>
+        <iron-icon id="infoIcon" icon="cr:info-outline" aria-hidden="true"
+            hidden="[[isPolicyControlled]]">
+        </iron-icon>
+        <iron-icon id="enterpriseIcon" icon="print-management:enterprise-icon"
+            aria-hidden="true" hidden="[[!isPolicyControlled]]">
+        </iron-icon>
+        <paper-tooltip for="[[activeHistoryInfoIcon]]" fit-to-visible-bounds
+            aria-hidden="true">
+          [[printJobHistoryExpirationPeriod]]
+        </paper-tooltip>
+      </div>
+
+      <iron-list id="entryList" items="[[printJobs]]" role="grid">
+        <template>
+          <print-job-entry job-entry="[[item]]" tabindex$="[[tabIndex]]"
+              last-focused="{{lastFocused}}" list-blurred="{{listBlurred}}"
+              focus-row-index="[[index]]" iron-list-tab-index="[[tabIndex]]">
+          </print-job-entry>
+        </template>
+      </iron-list>
+    </template>
+  </div>
 </div>

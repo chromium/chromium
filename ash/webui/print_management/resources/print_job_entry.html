@@ -6,6 +6,29 @@
     font-weight: var(--print-management-default-font-weight);
   }
 
+  /* TODO(b/276493795): Replace default colors with jelly colors once jelly
+                        experiment launched. */
+  :host-context(body.jelly-enabled) {
+    --cr-icon-button-focus-outline-color: var(--cros-sys-focus_ring);
+  }
+
+  :host-context(body.jelly-enabled) .list-item:focus-within {
+    background-color: var(--cros-sys-hover_on_subtle);
+  }
+
+  :host-context(body.jelly-enabled) #numericalProgress {
+    color: var(--cros-sys-on_progress_container);
+  }
+
+  :host-context(body.jelly-enabled) #rowWrapper:active {
+    background-color: var(--cros-sys-hover_on_subtle);
+  }
+
+  :host-context(body.jelly-enabled) paper-progress {
+    --paper-progress-active-color: var(--cros-sys-on_progress_container);
+    --paper-progress-container-color: var(--cros-sys-progress_container);
+  }
+
   .collapsed-status {
     color: var(--cros-color-prominent);
     font-family: var(--print-management-header-font-family);

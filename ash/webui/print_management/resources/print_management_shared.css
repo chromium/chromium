@@ -6,11 +6,21 @@
  * #type=style
  * #import=chrome://resources/cr_elements/cr_shared_style.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
- * #include=cr-shared-style
+ * #import=chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js
+ * #include=cr-shared-style cros-color-overrides
  * #css_wrapper_metadata_end */
 
-html {
-  background-color: var(--cros-bg-color);
+:host-context(body.jelly-enabled) .data-container {
+  background-color: var(--cros-sys-app_base);
+  border-radius: 8px;
+}
+
+:host-context(body.jelly-enabled) #activeStatusContainer:hover {
+  background-color: var(--cros-sys-hover_on_subtle);
+}
+
+:host-context(body.jelly-enabled) #headerContainer {
+  border-bottom: none;
 }
 
 .flex-center {
@@ -66,7 +76,23 @@ html {
   white-space: nowrap;
 }
 
+#activeStatusContainer:hover {
+  background-color: rgba(var(--google-blue-600-rgb), 0.06);
+}
+
 @media (min-width: 600px) and (max-width: 767px) {
+  :host-context(body.jelly-enabled) #headerContainer {
+    margin: 0 20px;
+  }
+
+  :host-context(body.jelly-enabled) .data-container {
+    padding: 0 20px;
+  }
+
+  :host-context(body.jelly-enabled) .margin-border {
+    margin: 0 20px;
+  }
+
   .date-column {
     width: 56px;
   }
@@ -96,7 +122,6 @@ html {
   }
 
   #activeStatusContainer:hover {
-    background-color: rgba(var(--google-blue-600-rgb), 0.06);
     border-radius: 16px;
     margin-inline-start: 16px;
     padding-left: 16px;
@@ -104,6 +129,18 @@ html {
 }
 
 @media (min-width: 768px) and (max-width: 959px) {
+  :host-context(body.jelly-enabled) #headerContainer {
+    margin: 0 20px;
+  }
+
+  :host-context(body.jelly-enabled) .data-container {
+    padding: 0 20px;
+  }
+
+  :host-context(body.jelly-enabled) .margin-border {
+    margin: 0 20px;
+  }
+
   .date-column {
     width: 82px;
   }
@@ -133,7 +170,6 @@ html {
   }
 
   #activeStatusContainer:hover {
-    background-color: rgba(var(--google-blue-600-rgb), 0.06);
     border-radius: 16px;
     margin-inline-start: 16px;
     padding-left: 16px;
@@ -141,6 +177,18 @@ html {
 }
 
 @media (min-width: 960px) and (max-width: 1279px) {
+  :host-context(body.jelly-enabled) #headerContainer {
+    margin: 0 32px;
+  }
+
+  :host-context(body.jelly-enabled) .data-container {
+    padding: 0 32px;
+  }
+
+  :host-context(body.jelly-enabled) .margin-border {
+    margin: 0 32px;
+  }
+
   .date-column {
     width: 82px;
   }
@@ -170,7 +218,6 @@ html {
   }
 
   #activeStatusContainer:hover {
-    background-color: rgba(var(--google-blue-600-rgb), 0.06);
     border-radius: 16px;
     margin-inline-start: 16px;
     padding-left: 16px;
@@ -178,6 +225,18 @@ html {
 }
 
 @media (min-width: 1280px) {
+  :host-context(body.jelly-enabled) #headerContainer {
+    margin: 0 72px;
+  }
+
+  :host-context(body.jelly-enabled) .data-container {
+    padding: 0 72px;
+  }
+
+  :host-context(body.jelly-enabled) .margin-border {
+    margin: 0 72px;
+  }
+
   .date-column {
     width: 144px;
   }
@@ -207,7 +266,6 @@ html {
   }
 
   #activeStatusContainer:hover {
-    background-color: rgba(var(--google-blue-600-rgb), 0.06);
     border-radius: 16px;
     margin-inline-start: 16px;
     padding-left: 16px;
