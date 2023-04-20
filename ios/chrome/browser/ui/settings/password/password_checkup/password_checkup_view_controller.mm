@@ -381,7 +381,7 @@ void SetUpTrailingIconAndAccessoryType(
   // If state is PasswordCheckupHomepageStateDisabled, it means that there is no
   // saved password to check, so we return to the Password Manager.
   if (state == PasswordCheckupHomepageStateDisabled) {
-    [self.handler dismissPasswordCheckupViewController];
+    [self.handler dismissAfterAllPasswordsGone];
   }
 
   _passwordCheckupState = state;

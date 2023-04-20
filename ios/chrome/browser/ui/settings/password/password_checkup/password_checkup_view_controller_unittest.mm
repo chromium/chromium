@@ -609,3 +609,13 @@ TEST_F(PasswordCheckupViewControllerTest, TestTapWeakPasswordsNotifiesHandler) {
 
   EXPECT_OCMOCK_VERIFY((id)handler_);
 }
+
+// Verifies that deleting all saved passwords through Password Checkup triggers
+// a dismissal in the handler.
+TEST_F(PasswordCheckupViewControllerTest, TestDismissAfterPasswordsGone) {
+  OCMExpect([handler_ dismissAfterAllPasswordsGone]);
+
+  ChangePasswordCheckupHomepageState(PasswordCheckupHomepageStateDisabled);
+
+  EXPECT_OCMOCK_VERIFY((id)handler_);
+}

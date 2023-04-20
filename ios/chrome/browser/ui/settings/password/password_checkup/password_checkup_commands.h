@@ -20,8 +20,17 @@ enum class WarningType;
 // credentials.
 - (void)showPasswordIssuesWithWarningType:
     (password_manager::WarningType)warningType;
+
 // Navigates to the URL.
 - (void)dismissAndOpenURL:(CrURL*)URL;
+
+// Called when the user deleted their last saved password through Password
+// Checkup. When that happens, the user should be brought back to the Password
+// Manager page where the view for an empty password store will be presented.
+// Calling this method brings the user back to the Password Manager page by
+// dismissing the PasswordCheckupViewController and any other view controller
+// presented by a child coordinator of PasswordCheckupCoordinator.
+- (void)dismissAfterAllPasswordsGone;
 
 @end
 

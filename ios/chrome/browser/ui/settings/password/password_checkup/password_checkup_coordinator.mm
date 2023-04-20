@@ -100,6 +100,32 @@
   [_passwordIssuesCoordinator start];
 }
 
+- (void)dismissAndOpenURL:(CrURL*)URL {
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:URL.gurl];
+  [self.dispatcher closeSettingsUIAndOpenURL:command];
+}
+
+- (void)dismissAfterAllPasswordsGone {
+  NSArray<UIViewController*>* viewControllers =
+      self.baseNavigationController.viewControllers;
+  NSInteger viewControllerIndex =
+      [viewControllers indexOfObject:self.viewController];
+
+  // Nothing to do if the view controller was already removed from the
+  // navigation stack.
+  if (viewControllerIndex == NSNotFound) {
+    return;
+  }
+
+  CHECK_GT(viewControllerIndex, 0);
+
+  // Go to the previous view controller in the navigation stack.
+  [self.baseNavigationController
+      popToViewController:viewControllers[viewControllerIndex - 1]
+                 animated:YES];
+}
+
 #pragma mark - PasswordIssuesCoordinatorDelegate
 
 - (void)passwordIssuesCoordinatorDidRemove:
@@ -114,12 +140,6 @@
   [_passwordIssuesCoordinator stop];
   _passwordIssuesCoordinator.delegate = nil;
   _passwordIssuesCoordinator = nil;
-}
-
-- (void)dismissAndOpenURL:(CrURL*)URL {
-  OpenNewTabCommand* command =
-      [OpenNewTabCommand commandWithURLFromChrome:URL.gurl];
-  [self.dispatcher closeSettingsUIAndOpenURL:command];
 }
 
 @end
