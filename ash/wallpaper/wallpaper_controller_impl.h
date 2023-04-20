@@ -227,6 +227,7 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // A wrapper of |ReadAndDecodeWallpaper| used in |SetWallpaperFromPath|.
   void StartDecodeFromPath(const AccountId& account_id,
+                           const user_manager::UserType user_type,
                            const WallpaperInfo& info,
                            bool show_wallpaper,
                            const base::FilePath& wallpaper_path);
@@ -297,7 +298,7 @@ class ASH_EXPORT WallpaperControllerImpl
                                     WallpaperLayout layout) override;
   void ShowUserWallpaper(const AccountId& account_id) override;
   void ShowUserWallpaper(const AccountId& account_id,
-                         user_manager::UserType user_type) override;
+                         const user_manager::UserType user_type) override;
   void ShowSigninWallpaper() override;
   void ShowOneShotWallpaper(const gfx::ImageSkia& image) override;
   void ShowOverrideWallpaper(const base::FilePath& image_path,

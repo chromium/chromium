@@ -823,14 +823,14 @@ void WallpaperControllerImpl::AddFirstWallpaperAnimationEndCallback(
 
 void WallpaperControllerImpl::StartDecodeFromPath(
     const AccountId& account_id,
+    const user_manager::UserType user_type,
     const WallpaperInfo& info,
     bool show_wallpaper,
     const base::FilePath& wallpaper_path) {
   if (wallpaper_path.empty()) {
     // Fallback to default if the path is empty.
     wallpaper_cache_map_.erase(account_id);
-    SetDefaultWallpaperImpl(GetUserType(account_id), show_wallpaper,
-                            base::DoNothing());
+    SetDefaultWallpaperImpl(user_type, show_wallpaper, base::DoNothing());
     return;
   }
 
@@ -1307,7 +1307,7 @@ void WallpaperControllerImpl::ShowUserWallpaper(const AccountId& account_id) {
 
 void WallpaperControllerImpl::ShowUserWallpaper(
     const AccountId& account_id,
-    user_manager::UserType user_type) {
+    const user_manager::UserType user_type) {
   current_user_ = account_id;
   if (user_type == user_manager::USER_TYPE_KIOSK_APP ||
       user_type == user_manager::USER_TYPE_ARC_KIOSK_APP) {
@@ -1384,7 +1384,7 @@ void WallpaperControllerImpl::ShowUserWallpaper(
       FROM_HERE,
       base::BindOnce(&PathWithFallback, account_id, info, wallpaper_path),
       base::BindOnce(&WallpaperControllerImpl::StartDecodeFromPath,
-                     weak_factory_.GetWeakPtr(), account_id, info,
+                     weak_factory_.GetWeakPtr(), account_id, user_type, info,
                      /*show_wallpaper=*/true));
 }
 

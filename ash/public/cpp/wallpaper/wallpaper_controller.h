@@ -239,7 +239,7 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // wallpaper if necessary. This is intendend for use where users are not
   // yet logged in (i.e. login screen).
   virtual void ShowUserWallpaper(const AccountId& account_id,
-                                 user_manager::UserType user_type) = 0;
+                                 const user_manager::UserType user_type) = 0;
 
   // Used by the gaia-signin UI. Signin wallpaper is considered either as the
   // device policy wallpaper or the default wallpaper.
