@@ -363,10 +363,10 @@ TEST_F(HistoryClustersModuleServiceTest, NoClusters) {
       "NewTabPage.HistoryClusters.NumClusterCandidates", 0, 1);
 }
 
-class HistoryClustersPageHandlerCartTest
+class HistoryClustersModuleServiceCartTest
     : public HistoryClustersModuleServiceTest {
  public:
-  HistoryClustersPageHandlerCartTest() {
+  HistoryClustersModuleServiceCartTest() {
     features_.InitAndEnableFeature(ntp_features::kNtpChromeCartModule);
   }
 
@@ -374,7 +374,7 @@ class HistoryClustersPageHandlerCartTest
   base::test::ScopedFeatureList features_;
 };
 
-TEST_F(HistoryClustersPageHandlerCartTest, CheckClusterHasCart) {
+TEST_F(HistoryClustersModuleServiceCartTest, CheckClusterHasCart) {
   base::HistogramTester histogram_tester;
   std::string kSampleLabel = "LabelOne";
   const GURL url_A = GURL("https://www.foo.com");
@@ -414,9 +414,6 @@ TEST_F(HistoryClustersPageHandlerCartTest, CheckClusterHasCart) {
     std::move(callbacks[i]).Run(false);
   }
 
-  for (size_t i = 0; i < urls.size(); i++) {
-    EXPECT_EQ(urls[i], cluster.visits[i].normalized_url);
-  }
   histogram_tester.ExpectBucketCount(
       "NewTabPage.HistoryClusters.HasCartForTopCluster", true, 1);
 
@@ -436,9 +433,6 @@ TEST_F(HistoryClustersPageHandlerCartTest, CheckClusterHasCart) {
     std::move(callbacks[i]).Run(false);
   }
 
-  for (size_t i = 0; i < urls.size(); i++) {
-    EXPECT_EQ(urls[i], cluster.visits[i].normalized_url);
-  }
   histogram_tester.ExpectBucketCount(
       "NewTabPage.HistoryClusters.HasCartForTopCluster", false, 1);
   histogram_tester.ExpectTotalCount(

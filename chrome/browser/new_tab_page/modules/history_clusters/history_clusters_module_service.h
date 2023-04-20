@@ -22,6 +22,7 @@ struct QueryClustersContinuationParams;
 }  // namespace history_clusters
 
 class CartService;
+class HistoryClustersModuleRanker;
 class TemplateURLService;
 
 // Handles requests to get clusters for the History Clusters Module.
@@ -45,11 +46,16 @@ class HistoryClustersModuleService : public KeyedService {
   GetClusters(GetClustersCallback callback);
 
  private:
-  // Callback invoked when `history_clusters_service_` returns queried clusters.
-  void OnGetClusters(
+  // Callback invoked when `history_clusters_service_` returns filtered
+  // clusters.
+  void OnGetFilteredClusters(
       GetClustersCallback callback,
       std::vector<history::Cluster> clusters,
       history_clusters::QueryClustersContinuationParams continuation_params);
+
+  // Callback invoked when `module_ranker_` returns ranked clusters.
+  void OnGetRankedClusters(GetClustersCallback callback,
+                           std::vector<history::Cluster> clusters);
 
   // The filtering parameters to use for all calls to fetch clusters.
   history_clusters::QueryClustersFilterParams filter_params_;
@@ -57,6 +63,7 @@ class HistoryClustersModuleService : public KeyedService {
   raw_ptr<history_clusters::HistoryClustersService> history_clusters_service_;
   raw_ptr<CartService> cart_service_;
   raw_ptr<TemplateURLService> template_url_service_;
+  std::unique_ptr<HistoryClustersModuleRanker> module_ranker_;
 
   // Weak pointers issued from this factory never get invalidated before the
   // service is destroyed.

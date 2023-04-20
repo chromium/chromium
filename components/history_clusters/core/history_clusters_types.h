@@ -62,17 +62,6 @@ struct QueryClustersFilterParams {
 
   // Whether the returned clusters will be shown on prominent UI surfaces.
   bool is_shown_on_prominent_ui_surfaces = false;
-
-  // Parameters related to ranking clusters after minimum-required filtering
-  // performed.
-
-  // The maximum number of clusters to return. If equal to 0, no max will be
-  // applied. If set to a positive value, the returned clusters will be returned
-  // based on likelihood of subsequent user engagement.
-  size_t max_clusters = 0;
-
-  // The category IDs that boost a cluster's likelihood of being included.
-  base::flat_set<std::string> categories_boostlist;
 };
 
 struct QueryClustersContinuationParams {

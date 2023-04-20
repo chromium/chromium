@@ -3889,6 +3889,8 @@ static_library("browser") {
       "new_tab_page/modules/feed/feed_handler.h",
       "new_tab_page/modules/history_clusters/cart/cart_processor.cc",
       "new_tab_page/modules/history_clusters/cart/cart_processor.h",
+      "new_tab_page/modules/history_clusters/history_clusters_module_ranker.cc",
+      "new_tab_page/modules/history_clusters/history_clusters_module_ranker.h",
       "new_tab_page/modules/history_clusters/history_clusters_module_service.cc",
       "new_tab_page/modules/history_clusters/history_clusters_module_service.h",
       "new_tab_page/modules/history_clusters/history_clusters_module_service_factory.cc",

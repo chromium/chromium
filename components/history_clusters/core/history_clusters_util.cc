@@ -388,4 +388,33 @@ bool IsUIRequestSource(ClusteringRequestSource source) {
   }
 }
 
+bool IsShownVisitCandidate(const history::ClusterVisit& visit) {
+  return visit.score > 0.0f && !visit.annotated_visit.url_row.title().empty();
+}
+
+bool IsVisitInCategories(const history::ClusterVisit& visit,
+                         const base::flat_set<std::string>& categories) {
+  for (const auto& visit_category :
+       visit.annotated_visit.content_annotations.model_annotations.categories) {
+    if (categories.contains(visit_category.id)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool IsClusterInCategories(const history::Cluster& cluster,
+                           const base::flat_set<std::string>& categories) {
+  for (const auto& visit : cluster.visits) {
+    if (!IsShownVisitCandidate(visit)) {
+      continue;
+    }
+
+    if (IsVisitInCategories(visit, categories)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace history_clusters

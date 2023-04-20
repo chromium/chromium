@@ -9,7 +9,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/cart/cart_service.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_ranker.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/history_clusters_service_task.h"
 #include "components/history_clusters/core/history_clusters_types.h"
@@ -98,9 +100,6 @@ history_clusters::QueryClustersFilterParams GetFilterParamsFromFeatureFlags() {
   filter_params.is_search_initiated = true;
   filter_params.has_related_searches = true;
   filter_params.is_shown_on_prominent_ui_surfaces = true;
-  filter_params.max_clusters = GetMaxClusters();
-  filter_params.categories_boostlist = GetCategories(
-      ntp_features::kNtpHistoryClustersModuleCategoriesBoostlistParam);
   return filter_params;
 }
 
@@ -124,7 +123,12 @@ HistoryClustersModuleService::HistoryClustersModuleService(
     : filter_params_(GetFilterParamsFromFeatureFlags()),
       history_clusters_service_(history_clusters_service),
       cart_service_(cart_service),
-      template_url_service_(template_url_service) {}
+      template_url_service_(template_url_service),
+      module_ranker_(std::make_unique<HistoryClustersModuleRanker>(
+          GetMaxClusters(),
+          GetCategories(
+              ntp_features::
+                  kNtpHistoryClustersModuleCategoriesBoostlistParam))) {}
 HistoryClustersModuleService::~HistoryClustersModuleService() = default;
 
 std::unique_ptr<history_clusters::HistoryClustersServiceTask>
@@ -135,14 +139,23 @@ HistoryClustersModuleService::GetClusters(GetClustersCallback callback) {
       history_clusters::ClusteringRequestSource::kNewTabPage, filter_params_,
       GetBeginTime(), continuation_params,
       /*recluster=*/false,
-      base::BindOnce(&HistoryClustersModuleService::OnGetClusters,
+      base::BindOnce(&HistoryClustersModuleService::OnGetFilteredClusters,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void HistoryClustersModuleService::OnGetClusters(
+void HistoryClustersModuleService::OnGetFilteredClusters(
     GetClustersCallback callback,
     std::vector<history::Cluster> clusters,
     history_clusters::QueryClustersContinuationParams continuation_params) {
+  module_ranker_->RankClusters(
+      std::move(clusters),
+      base::BindOnce(&HistoryClustersModuleService::OnGetRankedClusters,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void HistoryClustersModuleService::OnGetRankedClusters(
+    GetClustersCallback callback,
+    std::vector<history::Cluster> clusters) {
   if (!template_url_service_) {
     std::move(callback).Run({});
     return;

@@ -5,7 +5,7 @@
 #include "components/history_clusters/core/ranking_cluster_finalizer.h"
 
 #include "base/containers/adapters.h"
-#include "components/history_clusters/core/on_device_clustering_util.h"
+#include "components/history_clusters/core/history_clusters_util.h"
 
 namespace history_clusters {
 

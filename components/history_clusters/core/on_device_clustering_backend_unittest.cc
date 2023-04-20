@@ -410,16 +410,13 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
 }
 
 TEST_F(OnDeviceClusteringWithoutContentBackendTest,
-       GetClustersForUIMaxFilterApplied) {
+       GetClustersForUIFilterApplied) {
   std::vector<history::Cluster> clusters;
 
   QueryClustersFilterParams params;
-  params.max_clusters = 1;
+  params.has_related_searches = true;
 
   // Cluster processors and finalizers should be run.
-
-  // The below clusters contain the exact same visit so should be merged and
-  // then deduped.
 
   history::Cluster cluster1;
   cluster1.visits.emplace_back(
@@ -442,9 +439,7 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
   std::vector<history::Cluster> result_clusters =
       GetClustersForUI(ClusteringRequestSource::kJourneysPage,
                        std::move(params), std::move(clusters));
-  EXPECT_THAT(testing::ToVisitResults(result_clusters),
-              ElementsAre(ElementsAre(testing::VisitResult(3, 1.0))));
-  EXPECT_FALSE(result_clusters[0].label->empty());
+  EXPECT_TRUE(result_clusters.empty());
 }
 
 TEST_F(OnDeviceClusteringWithoutContentBackendTest,
