@@ -218,14 +218,21 @@ source_set("eg2_tests") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "reading_list_egtest.mm" ]
+  sources = [
+    "reading_list_account_storage_egtest.mm",
+    "reading_list_egtest.mm",
+  ]
   deps = [
     ":eg_test_support+eg2",
     ":reading_list_constants",
     "//base",
     "//base/test:test_support",
+    "//components/reading_list/features:flags",
+    "//components/signin/public/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/table_view:constants",
+    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
@@ -268,9 +275,14 @@ source_set("eg_test_support+eg2") {
   sources = [
     "reading_list_app_interface.h",
     "reading_list_app_interface_stub.mm",
+    "reading_list_earl_grey_ui.h",
+    "reading_list_earl_grey_ui.mm",
   ]
   deps = [
+    ":reading_list_constants",
     "//base",
+    "//base/test:test_support",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
 }
