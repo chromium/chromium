@@ -6493,6 +6493,9 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   </message>
 
   <!-- Strings for multi-capture -->
+  <message name="IDS_MULTI_CAPTURE_NOTIFICATION_TITLE" desc="This is the title of the notification when an application starts capturing multiple surfaces.">
+    <ph name="APP_ORIGIN">$1</ph> is recording your screen
+  </message>
   <message name="IDS_MULTI_CAPTURE_NOTIFICATION_MESSAGE" desc="This is the message of the notification when an application starts capturing multiple surfaces.">
     Your system administrator has allowed <ph name="APP_ORIGIN">$1</ph> to record your screen
   </message>

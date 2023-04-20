@@ -74,7 +74,7 @@ class MultiCaptureNotificationTest : public BrowserWithTestWindowTest {
     absl::optional<message_center::Notification> notification =
         GetNotification(base::UTF16ToUTF8(origin));
     ASSERT_TRUE(notification);
-    EXPECT_EQ(u"", notification->title());
+    EXPECT_EQ(origin + u" is recording your screen", notification->title());
     EXPECT_EQ(u"Your system administrator has allowed " + origin +
                   u" to record your screen",
               notification->message());
