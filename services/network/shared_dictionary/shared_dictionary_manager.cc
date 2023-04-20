@@ -19,24 +19,20 @@ SharedDictionaryManager::SharedDictionaryManager() = default;
 SharedDictionaryManager::~SharedDictionaryManager() = default;
 
 scoped_refptr<SharedDictionaryStorage> SharedDictionaryManager::GetStorage(
-    const net::NetworkIsolationKey& network_isolation_key) {
-  if (network_isolation_key.IsTransient()) {
-    return nullptr;
-  }
-  auto it = storages_.find(network_isolation_key);
+    const SharedDictionaryStorageIsolationKey& isolation_key) {
+  auto it = storages_.find(isolation_key);
   if (it != storages_.end()) {
     DCHECK(it->second);
     return it->second.get();
   }
-  scoped_refptr<SharedDictionaryStorage> storage =
-      CreateStorage(network_isolation_key);
-  storages_.emplace(network_isolation_key, storage.get());
+  scoped_refptr<SharedDictionaryStorage> storage = CreateStorage(isolation_key);
+  storages_.emplace(isolation_key, storage.get());
   return storage;
 }
 
 void SharedDictionaryManager::OnStorageDeleted(
-    const net::NetworkIsolationKey& network_isolation_key) {
-  size_t removed_count = storages_.erase(network_isolation_key);
+    const SharedDictionaryStorageIsolationKey& isolation_key) {
+  size_t removed_count = storages_.erase(isolation_key);
   DCHECK_EQ(1U, removed_count);
 }
 

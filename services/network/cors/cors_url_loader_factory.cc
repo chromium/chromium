@@ -30,6 +30,7 @@
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
+#include "services/network/shared_dictionary/shared_dictionary_storage_isolation_key.h"
 #include "services/network/url_loader.h"
 #include "services/network/url_loader_factory.h"
 #include "services/network/web_bundle/web_bundle_url_loader_factory.h"
@@ -187,12 +188,7 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
               : CrossOriginEmbedderPolicy()),
       coep_reporter_(std::move(params->coep_reporter)),
       client_security_state_(params->client_security_state.Clone()),
-      origin_access_list_(origin_access_list),
-      shared_dictionary_storage_(
-          context_->GetSharedDictionaryManager()
-              ? context_->GetSharedDictionaryManager()->GetStorage(
-                    params->isolation_info.network_isolation_key())
-              : nullptr) {
+      origin_access_list_(origin_access_list) {
   DCHECK(context_);
   DCHECK(origin_access_list_);
   DCHECK_NE(mojom::kInvalidProcessId, process_id_);
@@ -203,6 +199,18 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
     // Only the browser process is currently permitted to use automatically
     // assigned IsolationInfo, to prevent cross-site information leaks.
     DCHECK_EQ(mojom::kBrowserProcessId, process_id_);
+  }
+
+  if (context_->GetSharedDictionaryManager() &&
+      params->isolation_info.frame_origin()) {
+    absl::optional<SharedDictionaryStorageIsolationKey> isolation_key =
+        SharedDictionaryStorageIsolationKey::MaybeCreate(
+            *params->isolation_info.frame_origin(),
+            params->isolation_info.network_isolation_key());
+    if (isolation_key) {
+      shared_dictionary_storage_ =
+          context_->GetSharedDictionaryManager()->GetStorage(*isolation_key);
+    }
   }
 
   auto factory_override = std::move(params->factory_override);

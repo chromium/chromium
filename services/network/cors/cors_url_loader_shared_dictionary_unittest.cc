@@ -90,9 +90,15 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
   void CheckDictionaryInStorage(
       bool expect_exists,
       const GURL& dictionary_url = GURL("https://origin.test/test")) {
+    ASSERT_TRUE(isolation_info_.frame_origin());
+    absl::optional<SharedDictionaryStorageIsolationKey> isolation_key =
+        SharedDictionaryStorageIsolationKey::MaybeCreate(
+            *isolation_info_.frame_origin(),
+            isolation_info_.network_isolation_key());
+    ASSERT_TRUE(isolation_key);
     scoped_refptr<SharedDictionaryStorage> storage =
         network_context()->GetSharedDictionaryManager()->GetStorage(
-            isolation_info_.network_isolation_key());
+            *isolation_key);
     const auto& dictionary_map = GetInMemoryDictionaryMap(storage.get());
     if (!expect_exists) {
       EXPECT_TRUE(dictionary_map.empty());
