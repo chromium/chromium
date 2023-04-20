@@ -29,7 +29,8 @@ This file specifies browser resources for developer-facing chrome:// pages
       <include name="IDR_MEMORY_INTERNALS_HTML" file="resources\memory_internals\memory_internals.html" type="BINDATA" />
       <include name="IDR_MEMORY_INTERNALS_JS" file="${root_gen_dir}\chrome\browser\resources\memory_internals\tsc\memory_internals.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_PREDICTORS_AUTOCOMPLETE_ACTION_PREDICTOR_JS" file="${root_gen_dir}\chrome\browser\resources\predictors\autocomplete_action_predictor.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_PREDICTORS_HTML" file="resources\predictors\predictors.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
+      <include name="IDR_PREDICTORS_CSS" file="resources\predictors\predictors.css" type="BINDATA" />
+      <include name="IDR_PREDICTORS_HTML" file="resources\predictors\predictors.html" type="BINDATA" />
       <include name="IDR_PREDICTORS_JS" file="${root_gen_dir}\chrome\browser\resources\predictors\predictors.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_PREDICTORS_RESOURCE_PREFETCH_PREDICTOR_JS" file="${root_gen_dir}\chrome\browser\resources\predictors\resource_prefetch_predictor.js" use_base_dir="false" type="BINDATA" />
 
