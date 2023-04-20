@@ -975,12 +975,13 @@ def _ParseCommandArguments():
       '-p',
       '--profdata-file',
       type=str,
-      action='append'
+      action='append',
       required=False,
-      help='Path(s) to profdata file(s) to use for generating code coverage reports. '
-       'This can be useful if you generated the profdata file seperately in '
-       'your own test harness. This option is ignored if run command(s) are '
-       'already provided above using -c/--command option.')
+      help=
+      'Path(s) to profdata file(s) to use for generating code coverage reports. '
+      'This can be useful if you generated the profdata file seperately in '
+      'your own test harness. This option is ignored if run command(s) are '
+      'already provided above using -c/--command option.')
 
   arg_parser.add_argument(
       '-f',
