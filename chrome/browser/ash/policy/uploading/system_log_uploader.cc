@@ -100,10 +100,12 @@ std::string ZipFiles(
   if (!zip::Zip(/*src_dir=*/temp_dir.GetPath(), /*dest_file=*/zip_file,
                 /*include_hidden_files=*/false)) {
     SYSLOG(ERROR) << "Failed to zip system logs";
+    base::DeleteFile(zip_file);
     return compressed_logs;
   }
   if (!base::ReadFileToString(zip_file, &compressed_logs)) {
     PLOG(ERROR) << "Failed to read zipped system logs";
+    base::DeleteFile(zip_file);
     return compressed_logs;
   }
   base::DeleteFile(zip_file);
