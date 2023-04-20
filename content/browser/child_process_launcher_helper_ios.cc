@@ -77,8 +77,7 @@ bool ChildProcessLauncherHelper::TerminateProcess(const base::Process& process,
                                                   int exit_code) {
   // TODO(https://crbug.com/818244): Determine whether we should also call
   // EnsureProcessTerminated() to make sure of process-exit, and reap it.
-  // return process.Terminate(exit_code, false);
-  return false;
+  return process.Terminate(exit_code, false);
 }
 
 // static
@@ -87,8 +86,8 @@ void ChildProcessLauncherHelper::ForceNormalProcessTerminationSync(
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
   // Client has gone away, so just kill the process.  Using exit code 0 means
   // that UMA won't treat this as a crash.
-  //  process.process.Terminate(RESULT_CODE_NORMAL_EXIT, false);
-  //  base::EnsureProcessTerminated(std::move(process.process));
+  process.process.Terminate(RESULT_CODE_NORMAL_EXIT, false);
+  base::EnsureProcessTerminated(std::move(process.process));
 }
 
 void ChildProcessLauncherHelper::SetProcessBackgroundedOnLauncherThread(
