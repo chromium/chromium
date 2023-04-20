@@ -12397,11 +12397,8 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigCache) {
   const char kUserAgentId[] = "spoon";
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      // enabled_features
-      {features::kPartitionConnectionsByNetworkIsolationKey},
-      // disabled_features
-      {features::kPartitionHttpServerPropertiesByNetworkIsolationKey});
+  feature_list.InitAndDisableFeature(
+      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
 
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const auto kNetworkAnonymizationKey1 =

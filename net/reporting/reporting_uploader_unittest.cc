@@ -625,11 +625,11 @@ TEST_F(ReportingUploaderTest, DontCacheResponse) {
 // with a different one, and make sure only the requests with the same
 // NetworkAnonymizationKey share a socket.
 TEST_F(ReportingUploaderTest, RespectsNetworkAnonymizationKey) {
-  // While features::kPartitionConnectionsByNetworkIsolationKey is not needed
-  // for reporting code to respect NetworkAnonymizationKey, this test works by
-  // ensuring that Reporting's NetworkAnonymizationKey makes it to the socket
-  // pool layer and is respected there, so this test needs to enable
-  // kPartitionConnectionsByNetworkIsolationKey.
+  // While network state partitioning is not needed for reporting code to
+  // respect NetworkAnonymizationKey, this test works by ensuring that
+  // Reporting's NetworkAnonymizationKey makes it to the socket pool layer and
+  // is respected there, so this test needs to enable
+  // network state partitioning.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);

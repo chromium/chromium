@@ -912,6 +912,9 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
   // it if not already overridden by command line, field trial etc.
   net::HttpCache::SplitCacheFeatureEnableByDefault();
 
+  // Similarly, enable network state partitioning by default.
+  net::NetworkAnonymizationKey::PartitionByDefault();
+
 #if BUILDFLAG(IS_CHROMEOS)
   // Threading features.
   base::PlatformThread::InitFeaturesPostFieldTrial();

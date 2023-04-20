@@ -102,9 +102,8 @@ class NET_EXPORT_PRIVATE SpdySessionKey {
   PrivacyMode privacy_mode_ = PRIVACY_MODE_DISABLED;
   IsProxySession is_proxy_session_;
   SocketTag socket_tag_;
-  // Used to separate requests made in different contexts. If
-  // `kPartitionConnectionsByNetworkIsolationKey` is disabled this will be set
-  // to an empty key.
+  // Used to separate requests made in different contexts. If network state
+  // partitioning is disabled this will be set to an empty key.
   NetworkAnonymizationKey network_anonymization_key_;
   SecureDnsPolicy secure_dns_policy_;
 };

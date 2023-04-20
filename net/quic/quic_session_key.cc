@@ -52,8 +52,7 @@ QuicSessionKey::QuicSessionKey(
     : server_id_(server_id),
       socket_tag_(socket_tag),
       network_anonymization_key_(
-          base::FeatureList::IsEnabled(
-              features::kPartitionConnectionsByNetworkIsolationKey)
+          NetworkAnonymizationKey::IsPartitioningEnabled()
               ? network_anonymization_key
               : NetworkAnonymizationKey()),
       secure_dns_policy_(secure_dns_policy),

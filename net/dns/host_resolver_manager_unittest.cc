@@ -4274,8 +4274,8 @@ TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyReadFromHostCache) {
   };
 
   // Add entries to cache for the empty NIK, NIK1, and NIK2. Only the
-  // HostResolverManager obeys features::kSplitHostCacheByNetworkIsolationKey,
-  // so this is fine to do regardless of the feature value.
+  // HostResolverManager obeys network state partitioning, so this is fine to do
+  // regardless of the feature value.
   for (const auto& cache_entry : kCacheEntries) {
     HostCache::Key key("just.testing", DnsQueryType::UNSPECIFIED, 0,
                        HostResolverSource::ANY,
@@ -4347,7 +4347,7 @@ TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyReadFromHostCache) {
 }
 
 // Test that two requests made with different NetworkAnonymizationKeys are not
-// merged if |features::kSplitHostCacheByNetworkIsolationKey| is enabled.
+// merged if network state partitioning is enabled.
 TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyTwoRequestsAtOnce) {
   const SchemefulSite kSite1(GURL("https://origin1.test/"));
   const SchemefulSite kSite2(GURL("https://origin2.test/"));

@@ -632,8 +632,7 @@ class HostResolverManager::RequestImpl
       : source_net_log_(std::move(source_net_log)),
         request_host_(std::move(request_host)),
         network_anonymization_key_(
-            base::FeatureList::IsEnabled(
-                features::kSplitHostCacheByNetworkIsolationKey)
+            NetworkAnonymizationKey::IsPartitioningEnabled()
                 ? std::move(network_anonymization_key)
                 : NetworkAnonymizationKey()),
         parameters_(optional_parameters ? std::move(optional_parameters).value()

@@ -2550,14 +2550,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   // corresponding value in the URLRequestContext to true at the URLRequest
   // layer if all those features are set to respect NIK.
   if (require_network_isolation_key_ &&
-      base::FeatureList::IsEnabled(
-          net::features::kPartitionConnectionsByNetworkIsolationKey) &&
-      base::FeatureList::IsEnabled(
-          net::features::kPartitionHttpServerPropertiesByNetworkIsolationKey) &&
-      base::FeatureList::IsEnabled(
-          net::features::kPartitionNelAndReportingByNetworkIsolationKey) &&
-      base::FeatureList::IsEnabled(
-          net::features::kPartitionSSLSessionsByNetworkIsolationKey) &&
+      net::NetworkAnonymizationKey::IsPartitioningEnabled() &&
       base::FeatureList::IsEnabled(
           domain_reliability::features::
               kPartitionDomainReliabilityByNetworkIsolationKey)) {

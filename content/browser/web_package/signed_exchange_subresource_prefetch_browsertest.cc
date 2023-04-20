@@ -760,8 +760,6 @@ class SignedExchangeSubresourcePrefetchBrowserTest
     // Needed for reporting test. Doesn't significantly impact other tests.
     enable_features.push_back(
         net::features::kPartitionNelAndReportingByNetworkIsolationKey);
-    // These last two are not strictly necessary, but make this test more robust
-    // against enabling NetworkIsolationKeys everywhere.
     enable_features.push_back(
         net::features::kPartitionConnectionsByNetworkIsolationKey);
     enable_features.push_back(
