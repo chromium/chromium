@@ -278,6 +278,18 @@ public class ImeAdapterImpl
             return;
         }
         mOngoingGestures.put(request.getId(), request);
+
+        // Offset the gesture rectangles to convert from screen coordinates to window coordinates.
+        int[] screenLocation = new int[2];
+        mWebContents.getViewAndroidDelegate().getContainerView().getLocationOnScreen(
+                screenLocation);
+        request.getGestureData().startRect.x -= screenLocation[0];
+        request.getGestureData().startRect.y -= screenLocation[1];
+        if (request.getGestureData().endRect != null) {
+            request.getGestureData().endRect.x -= screenLocation[0];
+            request.getGestureData().endRect.y -= screenLocation[1];
+        }
+
         getStylusWritingImeCallback().handleStylusWritingGestureAction(
                 request.getId(), request.getGestureData());
     }
