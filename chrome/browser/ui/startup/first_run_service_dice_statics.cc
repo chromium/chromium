@@ -52,10 +52,9 @@ std::string PickTrialGroupWithoutActivation(base::FieldTrial& trial,
       default_percent = 0;
       break;
     case version_info::Channel::STABLE:
-      // Disabled on stable pending approval. http://launch/4200918
-      enabled_percent = 0;
-      disabled_percent = 0;
-      default_percent = 100;
+      enabled_percent = 1;
+      disabled_percent = 1;
+      default_percent = 98;
       break;
   }
   DCHECK_EQ(kTotalProbability,
