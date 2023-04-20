@@ -250,19 +250,15 @@ public class CustomTabIntentDataProviderTest {
     @Test
     @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
     public void isAllowedThirdParty_noDefaultPolicy() {
-        Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 50);
-        CustomTabIntentDataProvider provider =
-                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         CustomTabIntentDataProvider.DENYLIST_ENTRIES.setForTesting(
                 "com.dc.joker|com.marvel.thanos");
         // If no default-policy is present, it defaults to use-denylist.
         assertFalse("Entry in denylist should be rejected",
-                provider.isAllowedThirdParty("com.dc.joker"));
+                CustomTabIntentDataProvider.isAllowedThirdParty("com.dc.joker"));
         assertFalse("Entry in denylist should be rejected",
-                provider.isAllowedThirdParty("com.marvel.thanos"));
+                CustomTabIntentDataProvider.isAllowedThirdParty("com.marvel.thanos"));
         assertTrue("Entry NOT in denylist should be accepted",
-                provider.isAllowedThirdParty("com.dc.batman"));
+                CustomTabIntentDataProvider.isAllowedThirdParty("com.dc.batman"));
     }
 
     @Test
@@ -273,19 +269,15 @@ public class CustomTabIntentDataProviderTest {
                     + "/denylist_entries/com.dc.joker|com.marvel.thanos"})
     public void
     isAllowedThirdParty_denylist() {
-        Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 50);
-        CustomTabIntentDataProvider provider =
-                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY.setForTesting("use-denylist");
         CustomTabIntentDataProvider.DENYLIST_ENTRIES.setForTesting(
                 "com.dc.joker|com.marvel.thanos");
         assertFalse("Entry in denylist should be rejected",
-                provider.isAllowedThirdParty("com.dc.joker"));
+                CustomTabIntentDataProvider.isAllowedThirdParty("com.dc.joker"));
         assertFalse("Entry in denylist should be rejected",
-                provider.isAllowedThirdParty("com.marvel.thanos"));
+                CustomTabIntentDataProvider.isAllowedThirdParty("com.marvel.thanos"));
         assertTrue("Entry NOT in denylist should be accepted",
-                provider.isAllowedThirdParty("com.dc.batman"));
+                CustomTabIntentDataProvider.isAllowedThirdParty("com.dc.batman"));
     }
 
     @Test
@@ -296,19 +288,15 @@ public class CustomTabIntentDataProviderTest {
                     + "/allowlist_entries/com.pixar.woody|com.disney.ariel"})
     public void
     isAllowedThirdParty_allowlist() {
-        Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 50);
-        CustomTabIntentDataProvider provider =
-                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY.setForTesting("use-allowlist");
         CustomTabIntentDataProvider.ALLOWLIST_ENTRIES.setForTesting(
                 "com.pixar.woody|com.disney.ariel");
         assertTrue("Entry in allowlist should be accepted",
-                provider.isAllowedThirdParty("com.pixar.woody"));
+                CustomTabIntentDataProvider.isAllowedThirdParty("com.pixar.woody"));
         assertTrue("Entry in allowlist should be accepted",
-                provider.isAllowedThirdParty("com.disney.ariel"));
+                CustomTabIntentDataProvider.isAllowedThirdParty("com.disney.ariel"));
         assertFalse("Entry NOT in allowlist should be rejected",
-                provider.isAllowedThirdParty("com.pixar.syndrome"));
+                CustomTabIntentDataProvider.isAllowedThirdParty("com.pixar.syndrome"));
     }
 
     @Test

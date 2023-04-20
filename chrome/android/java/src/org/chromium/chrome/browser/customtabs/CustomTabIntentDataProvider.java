@@ -433,15 +433,39 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     public static void configureIntentForResizableCustomTab(Context context, Intent intent) {
-        if (getInitialActivityHeightFromIntent(intent) == 0
-                && (!ChromeFeatureList.sCctResizableSideSheet.isEnabled()
-                        || getInitialActivityWidthFromIntent(intent) == 0)) {
+        CustomTabsSessionToken session = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        boolean isTrustedCustomTab = isTrustedCustomTab(intent, session);
+        String packageName = getClientPackageNameFromSessionOrCallingActivity(intent, session);
+        @Px
+        int initialActivityHeight = getInitialActivityHeight(
+                isTrustedCustomTab, getInitialActivityHeightFromIntent(intent), packageName);
+        @Px
+        int initialActivityWidth = getInitialActivityWidth(
+                isTrustedCustomTab, getInitialActivityWidthFromIntent(intent), packageName);
+        if (initialActivityHeight <= 0 && initialActivityWidth <= 0) {
             // fallback to normal Custom Tab.
             return;
         }
         intent.setClassName(context, TranslucentCustomTabActivity.class.getName());
         // When scrolling up the web content, we don't want to hide the URL bar.
         intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, false);
+    }
+
+    private static @Px int getInitialActivityHeight(
+            boolean isTrustedIntent, @Px int initialActivityHeight, String packageName) {
+        boolean enabledDueToThirdParty = ChromeFeatureList.sCctResizableForThirdParties.isEnabled()
+                && isAllowedThirdParty(packageName);
+        return (isTrustedIntent || enabledDueToThirdParty) ? initialActivityHeight : 0;
+    }
+
+    private static @Px int getInitialActivityWidth(
+            boolean isTrustedIntent, @Px int initialActivityWidth, String packageName) {
+        if (!ChromeFeatureList.sCctResizableSideSheet.isEnabled()) return 0;
+
+        boolean enabledDueToThirdParty =
+                ChromeFeatureList.sCctResizableSideSheetForThirdParties.isEnabled()
+                && isAllowedThirdParty(packageName);
+        return (isTrustedIntent || enabledDueToThirdParty) ? initialActivityWidth : 0;
     }
 
     /** Returns the initial activity height in px. */
@@ -1287,19 +1311,14 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public @Px int getInitialActivityHeight() {
-        boolean enabledDueToThirdParty = ChromeFeatureList.sCctResizableForThirdParties.isEnabled()
-                && isAllowedThirdParty(getClientPackageName());
-        return (mIsTrustedIntent || enabledDueToThirdParty) ? mInitialActivityHeight : 0;
+        return getInitialActivityHeight(
+                mIsTrustedIntent, mInitialActivityHeight, getClientPackageName());
     }
 
     @Override
     public @Px int getInitialActivityWidth() {
-        if (!ChromeFeatureList.sCctResizableSideSheet.isEnabled()) return 0;
-
-        boolean enabledDueToThirdParty =
-                ChromeFeatureList.sCctResizableSideSheetForThirdParties.isEnabled()
-                && isAllowedThirdParty(getClientPackageName());
-        return (mIsTrustedIntent || enabledDueToThirdParty) ? mInitialActivityWidth : 0;
+        return getInitialActivityWidth(
+                mIsTrustedIntent, mInitialActivityWidth, getClientPackageName());
     }
 
     @Override
@@ -1307,7 +1326,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return mBreakPointDp;
     }
 
-    boolean isAllowedThirdParty(String packageName) {
+    static boolean isAllowedThirdParty(String packageName) {
         if (packageName == null) return false;
         String defaultPolicy = THIRD_PARTIES_DEFAULT_POLICY.getValue();
         if (defaultPolicy.equals(DEFAULT_POLICY_USE_ALLOWLIST)) {
