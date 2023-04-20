@@ -6717,9 +6717,6 @@ crbug.com/1379180 fast/events/event-hit-testing-fallback-to-iframe.html [ Failur
 crbug.com/1394041 [ Mac11-arm64 ] virtual/gpu-rasterization/images/2-dht.html [ Failure Pass ]
 crbug.com/1394151 virtual/gpu/fast/canvas/OffscreenCanvasImageRenderingPixelatedWorker.html [ Failure Pass ]
 
-# Temporarily disable test to land devtools-frontend change crrev/c/4057666
-crbug.com/1385379 http/tests/devtools/elements/styles-4/styles-invalid-color-values.js [ Failure Pass ]
-
 # Sheriff 2022-11-29
 crbug.com/1394524 external/wpt/html/semantics/forms/the-selectmenu-element/selectmenu-form-state-restore.tentative.html [ Failure Pass Timeout ]
 
