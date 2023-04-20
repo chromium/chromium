@@ -12,6 +12,7 @@
 
 #include "base/component_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/ime/autocorrect_info.h"
 #include "ui/base/ime/grammar_fragment.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_mode.h"
@@ -35,11 +36,6 @@ class VirtualKeyboardController;
 // GNU/Linux and likes.
 class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContext {
  public:
-  struct AutocorrectInfo {
-    gfx::Range range;
-    gfx::Rect bounds;
-  };
-
   virtual ~LinuxInputMethodContext() = default;
 
   // Dispatches the key event to an underlying IME.  Returns true if the key

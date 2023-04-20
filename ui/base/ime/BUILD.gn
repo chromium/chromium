@@ -17,6 +17,7 @@ source_set("text_input_types") {
 component("ime_types") {
   output_name = "ui_base_ime_types"
   sources = [
+    "autocorrect_info.h",
     "candidate_window.cc",
     "candidate_window.h",
     "composition_text.cc",
@@ -33,6 +34,7 @@ component("ime_types") {
 
   deps = [
     "//base",
+    "//ui/gfx/geometry",
     "//ui/gfx/range",
   ]
 

@@ -765,8 +765,7 @@ TEST_P(WaylandInputMethodContextTest,
 
   input_method_context_->SetSurroundingText(
       text, gfx::Range(0, 50), range, absl::nullopt,
-      LinuxInputMethodContext::AutocorrectInfo{gfx::Range(15, 18),
-                                               gfx::Rect(10, 20)});
+      AutocorrectInfo{gfx::Range(15, 18), gfx::Rect(10, 20)});
   EXPECT_EQ(
       input_method_context_->predicted_state_for_testing().surrounding_text,
       text);

@@ -393,10 +393,10 @@ void InputMethodAuraLinux::OnCaretBoundsChanged(const TextInputClient* client) {
       client->GetTextFromRange(text_range, &text) &&
       client->GetEditableSelectionRange(&selection_range)) {
     absl::optional<GrammarFragment> fragment;
-    absl::optional<LinuxInputMethodContext::AutocorrectInfo> autocorrect;
+    absl::optional<AutocorrectInfo> autocorrect;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     fragment = client->GetGrammarFragmentAtCursor();
-    autocorrect = LinuxInputMethodContext::AutocorrectInfo{
+    autocorrect = AutocorrectInfo{
         client->GetAutocorrectRange(),
         client->GetAutocorrectCharacterBounds(),
     };

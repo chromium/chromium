@@ -13,6 +13,7 @@
 #include "components/exo/seat_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/autocorrect_info.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/surrounding_text_tracker.h"
 #include "ui/base/ime/text_input_client.h"
@@ -319,19 +320,14 @@ class TextInput : public ui::TextInputClient,
   absl::optional<ui::GrammarFragment> grammar_fragment_at_cursor_utf8_;
   absl::optional<ui::GrammarFragment> grammar_fragment_at_cursor_utf16_;
 
-  struct AutocorrectInfo {
-    gfx::Range range;
-    gfx::Rect bounds;
-  };
-
   // Latest autocorrect information that was sent from the Wayland client.
   // along with the last surrounding text change.
-  AutocorrectInfo autocorrect_info_;
+  ui::AutocorrectInfo autocorrect_info_;
 
   // Latest autocorrect information that was received without a receiving a
   // corresponding surrounding text. Once this class receives a surrounding text
   // update, `autocorrect_info_` will take on this pending value, if it exists.
-  absl::optional<AutocorrectInfo> pending_autocorrect_info_;
+  absl::optional<ui::AutocorrectInfo> pending_autocorrect_info_;
 
   // True when client has made virtual keyboard related requests but haven't
   // sent the virtual keyboard finalize request.

@@ -45,7 +45,7 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
       const gfx::Range& text_range,
       const gfx::Range& selection_range,
       const absl::optional<ui::GrammarFragment>& fragment,
-      const absl::optional<AutocorrectInfo>& autocorrect) override;
+      const absl::optional<ui::AutocorrectInfo>& autocorrect) override;
   void SetContentType(ui::TextInputType type,
                       ui::TextInputMode mode,
                       uint32_t flags,
