@@ -81,7 +81,7 @@ BASE_FEATURE(kSyncTrustedVaultVerifyDeviceRegistration,
 
 BASE_FEATURE(kUseSyncInvalidations,
              "UseSyncInvalidations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncPersistInvalidations,
              "SyncPersistInvalidations",
@@ -89,7 +89,7 @@ BASE_FEATURE(kSyncPersistInvalidations,
 
 BASE_FEATURE(kUseSyncInvalidationsForWalletAndOffer,
              "UseSyncInvalidationsForWalletAndOffer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSkipInvalidationOptimizationsWhenDeviceInfoUpdated,
              "SkipInvalidationOptimizationsWhenDeviceInfoUpdated",

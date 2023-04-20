@@ -331,12 +331,13 @@ class SyncEngineImplTest : public testing::Test {
   base::WeakPtrFactory<SyncEngineImplTest> weak_ptr_factory_{this};
 };
 
+// TODO(crbug.com/1404927): remove the test once feature toogles are cleaned up.
 class SyncEngineImplWithSyncInvalidationsTest : public SyncEngineImplTest {
  public:
   SyncEngineImplWithSyncInvalidationsTest() {
     override_features_.InitWithFeatures(
         /*enabled_features=*/{kUseSyncInvalidations},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{kUseSyncInvalidationsForWalletAndOffer});
   }
 
  protected:
@@ -596,8 +597,13 @@ TEST_F(SyncEngineImplTest, ModelTypeConnectorValidDuringShutdown) {
   backend_.reset();
 }
 
+// TODO(crbug.com/1404927): remove the test once old invalidations are not used
+// in sync anymore.
 TEST_F(SyncEngineImplTest,
        NoisyDataTypesInvalidationAreDiscardedByDefaultOnAndroid) {
+  base::test::ScopedFeatureList feature_overrides;
+  feature_overrides.InitAndDisableFeature(syncer::kUseSyncInvalidations);
+
   // Making sure that the noisy types we're interested in are in the
   // |enabled_types_|.
   enabled_types_.Put(SESSIONS);
@@ -624,7 +630,12 @@ TEST_F(SyncEngineImplTest,
   ShutdownBackend(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
 }
 
+// TODO(crbug.com/1404927): remove the test once old invalidations are not used
+// in sync anymore.
 TEST_F(SyncEngineImplTest, WhenEnabledTypesStayDisabled) {
+  base::test::ScopedFeatureList feature_overrides;
+  feature_overrides.InitAndDisableFeature(syncer::kUseSyncInvalidations);
+
   // Tests that noisy types aren't used for registration if they're disabled,
   // hence removing noisy datatypes from |enabled_types_|.
   enabled_types_.Remove(SESSIONS);
@@ -642,8 +653,13 @@ TEST_F(SyncEngineImplTest, WhenEnabledTypesStayDisabled) {
   ShutdownBackend(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
 }
 
+// TODO(crbug.com/1404927): remove the test once old invalidations are not used
+// in sync anymore.
 TEST_F(SyncEngineImplTest,
        EnabledTypesChangesWhenSetInvalidationsForSessionsCalled) {
+  base::test::ScopedFeatureList feature_overrides;
+  feature_overrides.InitAndDisableFeature(syncer::kUseSyncInvalidations);
+
   // Making sure that the noisy types we're interested in are in the
   // |enabled_types_|.
   enabled_types_.Put(SESSIONS);
@@ -672,7 +688,7 @@ TEST_F(SyncEngineImplTest,
   ShutdownBackend(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
 }
 
-TEST_F(SyncEngineImplWithSyncInvalidationsTest,
+TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
        ShouldInvalidateDataTypesOnIncomingInvalidation) {
   enabled_types_.PutAll({syncer::BOOKMARKS, syncer::PREFERENCES});
 
@@ -698,7 +714,7 @@ TEST_F(SyncEngineImplWithSyncInvalidationsTest,
   EXPECT_EQ(1, fake_manager_->GetInvalidationCount(ModelType::PREFERENCES));
 }
 
-TEST_F(SyncEngineImplWithSyncInvalidationsTest,
+TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
        ShouldInvalidateOnlyEnabledDataTypes) {
   enabled_types_.Remove(syncer::BOOKMARKS);
   enabled_types_.Put(syncer::PREFERENCES);
