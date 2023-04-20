@@ -56,27 +56,6 @@ bool CheckChildProcessSecurityPolicyForURL(content::RenderFrameHost* frame,
   return true;
 }
 
-bool CheckChildProcessSecurityPolicy(content::RenderFrameHost* frame,
-                                     const PasswordForm& password_form,
-                                     BadMessageReason reason) {
-  return CheckChildProcessSecurityPolicyForURL(frame, password_form.url,
-                                               reason) &&
-         CheckChildProcessSecurityPolicyForURL(
-             frame, GURL(password_form.signon_realm), reason) &&
-         CheckChildProcessSecurityPolicyForURL(
-             frame, password_form.form_data.url, reason);
-}
-
-bool CheckChildProcessSecurityPolicy(content::RenderFrameHost* frame,
-                                     const std::vector<PasswordForm>& forms,
-                                     BadMessageReason reason) {
-  for (const auto& form : forms) {
-    if (!bad_message::CheckChildProcessSecurityPolicy(frame, form, reason))
-      return false;
-  }
-  return true;
-}
-
 bool CheckChildProcessSecurityPolicy(
     content::RenderFrameHost* frame,
     const std::vector<autofill::FormData>& forms_data,
