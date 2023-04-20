@@ -3,14 +3,13 @@
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
-import("//ios/web/public/js_messaging/compile_ts.gni")
-import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("context_menu") {
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
-    ":all_frames_context_menu_js",
-    ":main_frame_context_menu_js",
+    ":context_menu_all_frames_ts",
+    ":context_menu_main_frame_ts",
     "//base",
     "//components/url_formatter",
     "//ios/web/common",
@@ -30,24 +29,29 @@ source_set("context_menu") {
   ]
 }
 
-optimize_js("all_frames_context_menu_js") {
-  visibility = [ ":context_menu" ]
-
-  primary_script = "resources/all_frames_context_menu.js"
-  sources = [ "resources/all_frames_context_menu.js" ]
-  deps = [ ":surrounding_text_js" ]
+compile_ts("compile_surrounding_text_ts") {
+  sources = [ "resources/surrounding_text.ts" ]
+  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
 }
 
-optimize_js("main_frame_context_menu_js") {
+optimize_ts("context_menu_all_frames_ts") {
   visibility = [ ":context_menu" ]
 
-  primary_script = "resources/main_frame_context_menu.js"
-  sources = [ "resources/main_frame_context_menu.js" ]
+  sources = [ "resources/all_frames_context_menu.ts" ]
+
+  deps = [
+    ":compile_surrounding_text_ts",
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }
 
-compile_ts("surrounding_text_js") {
-  allow_js = true
-  sources = [ "resources/surrounding_text.js" ]
+optimize_ts("context_menu_main_frame_ts") {
+  visibility = [ ":context_menu" ]
+
+  sources = [ "resources/main_frame_context_menu.ts" ]
+
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }
 
 source_set("unittests") {
@@ -64,6 +68,7 @@ source_set("unittests") {
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:java_script_feature",
     "//ios/web/public/test",
+    "//ios/web/public/test:javascript_test",
     "//ios/web/public/test:test_fixture",
     "//ios/web/test/fakes",
     "//testing/gtest",

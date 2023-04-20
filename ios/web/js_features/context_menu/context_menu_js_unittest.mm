@@ -16,11 +16,12 @@
 #import "ios/web/common/web_view_creation_util.h"
 #import "ios/web/js_features/context_menu/context_menu_constants.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
+#import "ios/web/public/test/javascript_test.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/test/fakes/crw_fake_script_message_handler.h"
 #import "net/base/mac/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
-#import "testing/platform_test.h"
+#import "testing/gtest_mac.h"
 #import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -194,43 +195,31 @@ namespace web {
 
 // Test fixture to test __gCrWeb.findElementAtPoint function defined in
 // context_menu.js.
-class ContextMenuJsFindElementAtPointTest : public PlatformTest {
+class ContextMenuJsFindElementAtPointTest : public web::JavascriptTest {
  public:
   ContextMenuJsFindElementAtPointTest()
-      : script_message_handler_([[CRWFakeScriptMessageHandler alloc] init]),
-        web_view_([[WKWebView alloc]
-            initWithFrame:CGRectMake(0.0, 0.0, 100.0, 100.0)]) {
-    [web_view_.configuration.userContentController
+      : script_message_handler_([[CRWFakeScriptMessageHandler alloc] init]) {
+    web_view().frame = CGRectMake(0.0, 0.0, 100.0, 100.0);
+    [web_view().configuration.userContentController
         addScriptMessageHandler:script_message_handler_
                            name:@"FindElementResultHandler"];
+  }
 
-    WKUserScript* shared_scripts = [[WKUserScript alloc]
-          initWithSource:web::test::GetSharedScripts()
-           injectionTime:WKUserScriptInjectionTimeAtDocumentStart
-        forMainFrameOnly:NO];
-    [web_view_.configuration.userContentController
-        addUserScript:shared_scripts];
+  void SetUp() override {
+    web::JavascriptTest::SetUp();
 
-    WKUserScript* all_frames_script = [[WKUserScript alloc]
-          initWithSource:test::GetPageScript(@"all_frames_context_menu")
-           injectionTime:WKUserScriptInjectionTimeAtDocumentStart
-        forMainFrameOnly:NO];
-    [web_view_.configuration.userContentController
-        addUserScript:all_frames_script];
-
-    WKUserScript* main_frame_script = [[WKUserScript alloc]
-          initWithSource:test::GetPageScript(@"main_frame_context_menu")
-           injectionTime:WKUserScriptInjectionTimeAtDocumentStart
-        forMainFrameOnly:YES];
-    [web_view_.configuration.userContentController
-        addUserScript:main_frame_script];
+    AddGCrWebScript();
+    AddCommonScript();
+    AddMessageScript();
+    AddUserScript(@"all_frames_context_menu");
+    AddUserScript(@"main_frame_context_menu");
   }
 
  protected:
   // Returns details of the DOM element at the given `point` in the web view
   // viewport's coordinate space.
   base::Value FindElementAtPoint(CGPoint point, BOOL surroundingTextEnabled) {
-    bool gCrWeb_injected = web::test::WaitForInjectedScripts(web_view_);
+    bool gCrWeb_injected = web::test::WaitForInjectedScripts(web_view());
     if (!gCrWeb_injected) {
       // This EXPECT_TRUE call will always fail. However, add the conditional to
       // also return null and prevent further execution of this method.
@@ -239,7 +228,7 @@ class ContextMenuJsFindElementAtPointTest : public PlatformTest {
     }
 
     // Force layout
-    web::test::ExecuteJavaScript(web_view_,
+    web::test::ExecuteJavaScript(web_view(),
                                  @"document.getElementsByTagName('p')");
 
     // Clear previous script message response.
@@ -297,7 +286,11 @@ class ContextMenuJsFindElementAtPointTest : public PlatformTest {
   }
 
   // Returns web view's content size from the current web state.
-  CGSize GetWebViewContentSize() { return web_view_.scrollView.contentSize; }
+  CGSize GetWebViewContentSize() { return web_view().scrollView.contentSize; }
+
+  bool LoadHtml(NSString* html) {
+    return web::test::LoadHtml(web_view(), html, GetTestURL());
+  }
 
   // Returns the test page URL.
   NSURL* GetTestURL() { return net::NSURLWithGURL(GURL(kTestUrl)); }
@@ -310,19 +303,16 @@ class ContextMenuJsFindElementAtPointTest : public PlatformTest {
     const char* enableSurroundingText =
         surroundingTextEnabled ? "true" : "false";
     NSString* script =
-        [NSString stringWithFormat:
-                      @"__gCrWeb.findElementAtPoint('%s', %g, %g, %g, %g, %s)",
-                      kRequestId, point.x, point.y, size.width, size.height,
-                      enableSurroundingText];
+        [NSString stringWithFormat:@"__gCrWeb.contextMenu.findElementAtPoint('%"
+                                   @"s', %g, %g, %g, %g, %s)",
+                                   kRequestId, point.x, point.y, size.width,
+                                   size.height, enableSurroundingText];
 
-    return web::test::ExecuteJavaScript(web_view_, script);
+    return web::test::ExecuteJavaScript(web_view(), script);
   }
 
-  // Handles script message responses sent from `web_view_`.
+  // Handles script message responses sent from `web_view()`.
   CRWFakeScriptMessageHandler* script_message_handler_;
-
-  // The web view used for testing.
-  WKWebView* web_view_;
 };
 
 #pragma mark - Long press with Surrounding text enabled
@@ -337,7 +327,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FetchSurroundingTextEnabled) {
        "omnis esse et debitis labore et Quis consequatur.</p>"
        "</body></html>";
 
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
@@ -345,8 +335,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FetchSurroundingTextEnabled) {
   expected_value.SetStringKey(
       kContextMenuElementSurroundingText,
       "This is the address's first line Lorem ipsum dolor sit amet. 49 WEST "
-      "27TH STREET reprehenderit sed cumque magni ut omnis sint est deserunt "
-      "e");
+      "27TH STREET reprehenderit sed cumque magni ut omnis sint est deserunt");
 
   std::vector<const char*> ignored_keys;
   ignored_keys.push_back(kContextMenuElementInnerText);
@@ -368,7 +357,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FetchSurroundingTextDisabled) {
        "omnis esse et debitis labore et Quis consequatur.</p>"
        "</body></html>";
 
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
@@ -382,12 +371,40 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FetchSurroundingTextDisabled) {
                      false);
 }
 
+#pragma mark - Surrounding text
+
+TEST_F(ContextMenuJsFindElementAtPointTest, ExtractSurroundingText) {
+  NSString* elementId = @"parc";
+  NSString* html = [NSString
+      stringWithFormat:
+          @"<html><body>X<p id=\"%@\">10 Rue du Parc</p>Y</body></html>",
+          elementId];
+  ASSERT_TRUE(LoadHtml(html));
+
+  NSString* script = [NSString
+      stringWithFormat:
+          @"(function (){\n"
+          @"var range = document.createRange();\n"
+          @"var node = document.getElementById('%@').childNodes[0];\n"
+          @"range.setStart(node, 0);\n"
+          @"range.setEnd(node, 0);\n"
+          @"return __gCrWeb.contextMenuAllFrames.getSurroundingText(range);\n"
+          @"})();",
+          elementId];
+
+  NSDictionary* body = web::test::ExecuteJavaScript(web_view(), script);
+  ASSERT_TRUE(body);
+  ASSERT_TRUE([body isKindOfClass:[NSDictionary class]]);
+  EXPECT_NSEQ(@"X 10 Rue du Parc Y", body[@"text"]);
+  EXPECT_EQ(2, [body[@"position"] floatValue]);
+}
+
 #pragma mark - Image without link
 
 // Tests that the correct src and referrer are found for an image.
 TEST_F(ContextMenuJsFindElementAtPointTest, FindImageElementAtPoint) {
   NSString* html = GetHtmlForPage(/*head=*/nil, GetHtmlForImage());
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
@@ -409,7 +426,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
                        @"srcset='%s'>%@</picture>",
                        kImageSizeStyle, kImageSource, backing_image_html];
   NSString* html = GetHtmlForPage(/*head=*/nil, html_for_picture);
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
@@ -428,7 +445,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
       [NSString stringWithFormat:@"<div style='background-image:url(%s);%s' />",
                                  kImageSource, kBackgroundDivStyle];
   NSString* html = GetHtmlForPage(/*head=*/nil, html_for_div);
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
@@ -448,7 +465,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
       [NSString stringWithFormat:@"%@<div style='%sopacity:0;' />",
                                  html_for_img, kOverlayDivStyle];
   NSString* html = GetHtmlForPage(/*head=*/nil, html_for_div);
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
@@ -469,7 +486,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
       [NSString stringWithFormat:@"%@<div style='%sopacity:1;' />",
                                  html_for_img, kOverlayDivStyle];
   NSString* html = GetHtmlForPage(/*head=*/nil, html_for_div);
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   // Check that the paragraph was caught instead.
   base::Value expected_value(base::Value::Type::DICT);
@@ -489,7 +506,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindImageElementWithTitleAtPoint) {
       /*head=*/nil,
       GetHtmlForImage(kImageSource, kImageAlt, image_title, /*style=*/nullptr));
 
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
@@ -506,7 +523,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindImageElementWithTitleAtPoint) {
 TEST_F(ContextMenuJsFindElementAtPointTest,
        FindImageElementWithNaturalSizeAtPoint) {
   NSString* html = GetHtmlForPage(/*head=*/nil, GetHtmlForImage());
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
@@ -523,7 +540,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
 TEST_F(ContextMenuJsFindElementAtPointTest,
        FindImageElementAtPointOutsideDocument) {
   NSString* html = GetHtmlForPage(/*head=*/nil, GetHtmlForImage());
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
@@ -535,7 +552,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
 TEST_F(ContextMenuJsFindElementAtPointTest,
        FindImageElementAtPointOutsideElement) {
   NSString* html = GetHtmlForPage(/*head=*/nil, GetHtmlForImage());
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
@@ -551,7 +568,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindLinkImageAtPointForFileUrl) {
   const char image_link[] = "file:///linky";
   NSString* html = GetHtmlForPage(
       /*head=*/nil, GetHtmlForLink(image_link, GetHtmlForImage()));
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
@@ -571,7 +588,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
   const char image_link[] = "file:///linky";
   NSString* html = GetHtmlForPage(
       /*head=*/nil, GetHtmlForLink(image_link, GetHtmlForImage()));
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
@@ -586,7 +603,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
   const char image_link[] = "file:///linky";
   NSString* html = GetHtmlForPage(
       /*head=*/nil, GetHtmlForLink(image_link, GetHtmlForImage()));
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
@@ -603,7 +620,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
   NSString* html = GetHtmlForPage(
       /*head=*/nil,
       GetHtmlForLink(image_link, ImageHtmlWithSource(relative_image_path)));
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   std::string image_source =
       base::StringPrintf("%s%s", kTestUrl, relative_image_path);
@@ -629,7 +646,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindImageLinkedToJavaScript) {
       GetHtmlForLink(image_link, ImageHtmlWithSource(relative_image_path)));
 
   // A page with a link with some JavaScript that does not result in a NOP.
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   std::string image_source =
       base::StringPrintf("%s%s", kTestUrl, relative_image_path);
@@ -655,7 +672,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
       /*head=*/nil,
       GetHtmlForLink(image_link, ImageHtmlWithSource(relative_image_path)));
 
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   std::string image_source =
       base::StringPrintf("%s%s", kTestUrl, relative_image_path);
@@ -680,7 +697,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
   NSString* html = GetHtmlForPage(
       /*head=*/nil,
       GetHtmlForLink(image_link, ImageHtmlWithSource(relative_image_path)));
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   std::string image_source =
       base::StringPrintf("%s%s", kTestUrl, relative_image_path);
@@ -703,7 +720,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
   const char image_link[] = "javascript:void(0);  void(0); void(0)";
   NSString* html = GetHtmlForPage(
       /*head=*/nil, GetHtmlForLink(image_link, GetHtmlForImage()));
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
@@ -726,7 +743,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfImageWithCalloutNone) {
   NSString* html =
       GetHtmlForPage(/*head=*/nil, GetHtmlForLink(image_link, image_html));
 
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
@@ -745,7 +762,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfImageWithCalloutNone) {
 TEST_F(ContextMenuJsFindElementAtPointTest, FindSvgLinkAtPoint) {
   const char link[] = "file:///linky";
   NSString* html = GetHtmlForPage(/*head=*/nil, GetHtmlForSvgLink(link));
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
@@ -760,7 +777,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindSvgLinkAtPoint) {
 TEST_F(ContextMenuJsFindElementAtPointTest, FindSvgXlinkAtPoint) {
   const char link[] = "file:///linky";
   NSString* html = GetHtmlForPage(/*head=*/nil, GetHtmlForSvgXlink(link));
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
@@ -776,7 +793,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindSvgXlinkAtPoint) {
 TEST_F(ContextMenuJsFindElementAtPointTest, FindSvgLinkAtPointOutsideElement) {
   const char link[] = "file:///linky";
   NSString* html = GetHtmlForPage(/*head=*/nil, GetHtmlForSvgXlink(link));
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   // Check that the paragraph was caught instead.
   base::Value expected_value(base::Value::Type::DICT);
@@ -802,8 +819,8 @@ TEST_F(ContextMenuJsFindElementAtPointTest, TextAreaStopsProximity) {
                        kImageSizeStyle];
   body = [body stringByAppendingString:text_area];
 
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, GetHtmlForPage(/*head=*/nil, body),
-                                  GetTestURL()));
+  ASSERT_TRUE(web::test::LoadHtml(
+      web_view(), GetHtmlForPage(/*head=*/nil, body), GetTestURL()));
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
@@ -819,7 +836,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, UnsupportedReferrerPolicy) {
       @"<meta name=\"referrer\" content=\"unsupported-value\">";
   NSString* html = GetHtmlForPage(head, GetHtmlForImage());
 
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   base::Value result = FindElementAtPoint(kPointOnImage, false);
   ASSERT_TRUE(result.is_dict());
@@ -841,12 +858,12 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextFromTallPage) {
   NSString* body = @"<div style='height:4000px'></div>";
   body = [body stringByAppendingString:GetHtmlForLink(link, @"link")];
 
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, GetHtmlForPage(/*head=*/nil, body),
-                                  GetTestURL()));
+  ASSERT_TRUE(web::test::LoadHtml(
+      web_view(), GetHtmlForPage(/*head=*/nil, body), GetTestURL()));
 
   // Force layout to ensure `content_height` below is correct.
-  EXPECT_TRUE(web::test::WaitForInjectedScripts(web_view_));
-  web::test::ExecuteJavaScript(web_view_,
+  EXPECT_TRUE(web::test::WaitForInjectedScripts(web_view()));
+  web::test::ExecuteJavaScript(web_view(),
                                @"document.getElementsByTagName('p')");
 
   // Scroll the webView to the bottom to make the link accessible.
@@ -854,9 +871,9 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextFromTallPage) {
   // Fail the test with a clear error if the content height can not be fetched.
   ASSERT_GT(content_height, 0.0);
 
-  CGFloat scroll_view_height = CGRectGetHeight(web_view_.scrollView.frame);
+  CGFloat scroll_view_height = CGRectGetHeight(web_view().scrollView.frame);
   CGFloat offset = content_height - scroll_view_height;
-  web_view_.scrollView.contentOffset = CGPointMake(0.0, offset);
+  web_view().scrollView.contentOffset = CGPointMake(0.0, offset);
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
@@ -875,7 +892,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextFromTallPage) {
 TEST_F(ContextMenuJsFindElementAtPointTest, ShadowDomLink) {
   const char link[] = "http://destination/";
   ASSERT_TRUE(web::test::LoadHtml(
-      web_view_,
+      web_view(),
       GetHtmlForPage(/*head=*/nil, GetHtmlForShadowDomLink(link, @"link")),
       GetTestURL()));
 
@@ -894,7 +911,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, ShadowDomLink) {
 TEST_F(ContextMenuJsFindElementAtPointTest, PointOutsideShadowDomLink) {
   const char link[] = "http://destination/";
   ASSERT_TRUE(web::test::LoadHtml(
-      web_view_,
+      web_view(),
       GetHtmlForPage(/*head=*/nil, GetHtmlForShadowDomLink(link, @"link")),
       GetTestURL()));
 
@@ -917,7 +934,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithoutCalloutProperty) {
   const char link[] = "http://destination/";
   NSString* html = GetHtmlForPage(/*head=*/nil, GetHtmlForLink(link, @"link"));
 
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
@@ -938,7 +955,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithCalloutDefault) {
   NSString* html =
       GetHtmlForPage(/*head=*/nil, GetHtmlForLink(link, "link", link_style));
 
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
@@ -959,7 +976,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithCalloutNone) {
   NSString* html =
       GetHtmlForPage(/*head=*/nil, GetHtmlForLink(link, "link", link_style));
 
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   // Check that the paragraph was caught instead.
   base::Value expected_value(base::Value::Type::DICT);
@@ -981,7 +998,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithCalloutFromAncester) {
   const char link[] = "http://destination/";
   NSString* html = GetHtmlForPage(head, GetHtmlForLink(link, @"link"));
 
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   // Check that the paragraph was caught instead.
   base::Value expected_value(base::Value::Type::DICT);
@@ -1005,7 +1022,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithCalloutOverride) {
   NSString* html =
       GetHtmlForPage(head, GetHtmlForLink(link, "link", link_style));
 
-  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+  ASSERT_TRUE(LoadHtml(html));
 
   base::Value expected_value(base::Value::Type::DICT);
   expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
