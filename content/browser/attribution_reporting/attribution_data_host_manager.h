@@ -63,11 +63,25 @@ class AttributionDataHostManager
       const blink::AttributionSrcToken& attribution_src_token,
       AttributionInputEvent input_event) = 0;
 
+  // Notifies the manager that a navigation has started for a given data host.
+  // This may arrive before or after the attribution configuration is available
+  // for a given data host. Passes the topmost ancestor of the initiator render
+  // frame for obtaining the page access report.
+  virtual void NotifyNavigationRegistrationStarted(
+      const blink::AttributionSrcToken& attribution_src_token,
+      const attribution_reporting::SuitableOrigin& source_origin,
+      blink::mojom::AttributionNavigationType nav_type,
+      bool is_within_fenced_frame,
+      GlobalRenderFrameHostId render_frame_id,
+      int64_t navigation_id) = 0;
+
   // Notifies the manager that an attribution-enabled navigation has sent a
   // response. May be called multiple times for the same navigation.
   // Important: `headers` is untrusted. Passes the topmost ancestor of the
   // initiator render frame for obtaining the page access report.
-  virtual void NotifyNavigationRedirectRegistration(
+  // `is_final_response` indicates whether this is a redirect or a final
+  // response.
+  virtual void NotifyNavigationRegistrationData(
       const blink::AttributionSrcToken& attribution_src_token,
       const net::HttpResponseHeaders* headers,
       attribution_reporting::SuitableOrigin reporting_origin,
@@ -76,25 +90,8 @@ class AttributionDataHostManager
       blink::mojom::AttributionNavigationType nav_type,
       bool is_within_fenced_frame,
       GlobalRenderFrameHostId render_frame_id,
-      int64_t navigation_id) = 0;
-
-  // Notifies the manager that we have received a navigation has started for a
-  // given data host. This may arrive before or after the attribution
-  // configuration is available for a given data host. Passes the topmost
-  // ancestor of the initiator render frame for obtaining the page access
-  // report.
-  virtual void NotifyNavigationStartedForDataHost(
-      const blink::AttributionSrcToken& attribution_src_token,
-      const attribution_reporting::SuitableOrigin& source_origin,
-      blink::mojom::AttributionNavigationType nav_type,
-      bool is_within_fenced_frame,
-      GlobalRenderFrameHostId render_frame_id,
-      int64_t navigation_id) = 0;
-
-  // Notifies the manager that a navigation associated with
-  // `attribution_src_token` finished and should no longer be tracked.
-  virtual void NotifyNavigationFinished(
-      const blink::AttributionSrcToken& attribution_src_token) = 0;
+      int64_t navigation_id,
+      bool is_final_response) = 0;
 
   // Notifies the manager that a fenced frame reporting beacon was initiated
   // for reportEvent or for an automatic beacon and should be tracked.

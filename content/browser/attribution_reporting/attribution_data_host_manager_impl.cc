@@ -207,7 +207,7 @@ struct AttributionDataHostManagerImpl::NavigationDataHost {
 
 class AttributionDataHostManagerImpl::SourceRegistrations {
  public:
-  struct NavigationRedirect {
+  struct ForegroundNavigation {
     blink::AttributionSrcToken attribution_src_token;
 
     // Will not change over the course of the redirect chain.
@@ -220,7 +220,7 @@ class AttributionDataHostManagerImpl::SourceRegistrations {
     absl::optional<int64_t> navigation_id;
   };
 
-  using Data = absl::variant<NavigationRedirect, Beacon>;
+  using Data = absl::variant<ForegroundNavigation, Beacon>;
 
   SourceRegistrations(SuitableOrigin source_origin,
                       bool is_within_fenced_frame,
@@ -257,8 +257,8 @@ class AttributionDataHostManagerImpl::SourceRegistrations {
   absl::optional<int64_t> navigation_id() const {
     return absl::visit(
         base::Overloaded{
-            [](const NavigationRedirect& redirect) {
-              return absl::make_optional(redirect.navigation_id);
+            [](const ForegroundNavigation& navigation) {
+              return absl::make_optional(navigation.navigation_id);
             },
             [](const Beacon& beacon) { return beacon.navigation_id; }},
         data_);
@@ -310,8 +310,8 @@ class AttributionDataHostManagerImpl::SourceRegistrations {
   SourceRegistrationsId Id() const {
     return absl::visit(
         base::Overloaded{
-            [](const NavigationRedirect& redirect) {
-              return SourceRegistrationsId(redirect.attribution_src_token);
+            [](const ForegroundNavigation& navigation) {
+              return SourceRegistrationsId(navigation.attribution_src_token);
             },
             [](const Beacon& beacon) {
               return SourceRegistrationsId(beacon.id);
@@ -454,37 +454,6 @@ bool AttributionDataHostManagerImpl::RegisterNavigationDataHost(
   return true;
 }
 
-void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
-    const blink::AttributionSrcToken& attribution_src_token,
-    const net::HttpResponseHeaders* headers,
-    SuitableOrigin reporting_origin,
-    const SuitableOrigin& source_origin,
-    AttributionInputEvent input_event,
-    AttributionNavigationType nav_type,
-    bool is_within_fenced_frame,
-    GlobalRenderFrameHostId render_frame_id,
-    int64_t navigation_id) {
-  auto attribution_header = RegistrarAndHeader::Get(headers);
-  if (!attribution_header) {
-    return;
-  }
-
-  auto [it, inserted] =
-      registrations_.emplace(source_origin, is_within_fenced_frame,
-                             std::move(input_event), render_frame_id,
-                             SourceRegistrations::NavigationRedirect{
-                                 .attribution_src_token = attribution_src_token,
-                                 .nav_type = nav_type,
-                                 .navigation_id = navigation_id,
-                             });
-  DCHECK(!it->registrations_complete());
-
-  // We defer trigger registrations until source parsing completes.
-  MaybeSetupDeferredReceivers(navigation_id);
-
-  ParseSource(it, std::move(reporting_origin), std::move(*attribution_header));
-}
-
 void AttributionDataHostManagerImpl::ParseSource(
     base::flat_set<SourceRegistrations>::iterator it,
     SuitableOrigin reporting_origin,
@@ -547,7 +516,7 @@ void AttributionDataHostManagerImpl::HandleNextOsDecode(
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-void AttributionDataHostManagerImpl::NotifyNavigationStartedForDataHost(
+void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
     const blink::AttributionSrcToken& attribution_src_token,
     const SuitableOrigin& source_origin,
     AttributionNavigationType nav_type,
@@ -581,26 +550,53 @@ void AttributionDataHostManagerImpl::NotifyNavigationStartedForDataHost(
   }
 }
 
-void AttributionDataHostManagerImpl::NotifyNavigationFinished(
-    const blink::AttributionSrcToken& attribution_src_token) {
-  // The eligible data host should have been bound in
-  // `NotifyNavigationStartedForDataHost()`.
-  // For non-top level navigation and same document navigation,
-  // `AttributionHost::RegisterNavigationDataHost()` will be called but not
-  // `NotifyNavigationStartedForDataHost()`, therefore these navigations would
-  // still be tracked.
-  if (auto it = navigation_data_host_map_.find(attribution_src_token);
-      it != navigation_data_host_map_.end()) {
-    navigation_data_host_map_.erase(it);
-    RecordNavigationDataHostStatus(NavigationDataHostStatus::kIneligible);
+void AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
+    const blink::AttributionSrcToken& attribution_src_token,
+    const net::HttpResponseHeaders* headers,
+    SuitableOrigin reporting_origin,
+    const SuitableOrigin& source_origin,
+    AttributionInputEvent input_event,
+    AttributionNavigationType nav_type,
+    bool is_within_fenced_frame,
+    GlobalRenderFrameHostId render_frame_id,
+    int64_t navigation_id,
+    bool is_final_response) {
+  if (auto header = RegistrarAndHeader::Get(headers)) {
+    auto [it, inserted] = registrations_.emplace(
+        source_origin, is_within_fenced_frame, std::move(input_event),
+        render_frame_id,
+        SourceRegistrations::ForegroundNavigation{
+            .attribution_src_token = attribution_src_token,
+            .nav_type = nav_type,
+            .navigation_id = navigation_id,
+        });
+    DCHECK(!it->registrations_complete());
+
+    // We defer trigger registrations until source parsing completes.
+    MaybeSetupDeferredReceivers(navigation_id);
+    ParseSource(it, std::move(reporting_origin), std::move(*header));
   }
 
-  // We are not guaranteed to be processing redirect registrations for a given
-  // navigation.
-  if (auto it = registrations_.find(attribution_src_token);
-      it != registrations_.end()) {
-    it->CompleteRegistrations();
-    MaybeOnRegistrationsFinished(it);
+  if (is_final_response) {
+    // The eligible data host should have been bound in
+    // `NotifyNavigationStartedForDataHost()`.
+    // For non-top level navigation and same document navigation,
+    // `AttributionHost::RegisterNavigationDataHost()` will be called but not
+    // `NotifyNavigationStartedForDataHost()`, therefore these navigations would
+    // still be tracked.
+    if (auto it = navigation_data_host_map_.find(attribution_src_token);
+        it != navigation_data_host_map_.end()) {
+      navigation_data_host_map_.erase(it);
+      RecordNavigationDataHostStatus(NavigationDataHostStatus::kIneligible);
+    }
+
+    // We are not guaranteed to be processing registrations for a given
+    // navigation.
+    if (auto it = registrations_.find(attribution_src_token);
+        it != registrations_.end()) {
+      it->CompleteRegistrations();
+      MaybeOnRegistrationsFinished(it);
+    }
   }
 }
 
@@ -819,12 +815,12 @@ void AttributionDataHostManagerImpl::OnWebSourceParsed(
       attribution_manager_->HandleSource(std::move(*source),
                                          registrations->render_frame_id());
 
-      if (const auto* redirect =
-              absl::get_if<SourceRegistrations::NavigationRedirect>(
+      if (const auto* navigation =
+              absl::get_if<SourceRegistrations::ForegroundNavigation>(
                   &registrations->data())) {
         base::UmaHistogramEnumeration(
             "Conversions.SourceRegistration.NavigationType.Foreground",
-            redirect->nav_type);
+            navigation->nav_type);
       }
     } else {
       attribution_manager_->NotifyFailedSourceRegistration(

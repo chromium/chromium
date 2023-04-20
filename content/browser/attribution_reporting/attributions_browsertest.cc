@@ -530,6 +530,48 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+                       ImpressionsRegisteredOnNavigation_ReportSent) {
+  // Expected reports must be registered before the server starts.
+  ExpectedReportWaiter expected_report(
+      GURL("https://c.test/.well-known/attribution-reporting/"
+           "report-event-attribution"),
+      /*attribution_destination=*/"https://c.test",
+      /*source_event_id=*/"1", /*source_type=*/"navigation",
+      /*trigger_data=*/"7", https_server());
+  ASSERT_TRUE(https_server()->Start());
+
+  // 1 - Navigate on a page that can register a source
+  GURL impression_url = https_server()->GetURL(
+      "b.test", "/attribution_reporting/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
+
+  // 2 - Create an anchor tag with impression attributes and click the link.
+  GURL register_source_url = https_server()->GetURL(
+      "c.test",
+      "/attribution_reporting/"
+      "page_with_source_registration_and_conversion.html");
+  EXPECT_TRUE(ExecJs(web_contents(), JsReplace(R"(
+    createAttributionSrcAnchor({id: 'link',
+                        url: $1,
+                        attributionsrc: ''});)",
+                                               register_source_url)));
+
+  TestNavigationObserver observer(web_contents());
+  EXPECT_TRUE(ExecJs(web_contents(), "simulateClick('link');"));
+
+  // Wait for navigation to complete.
+  observer.Wait();
+
+  // 3 - On the landing page and destination origin, register a trigger that
+  // should match the navigation-source.
+  GURL register_trigger_url = https_server()->GetURL(
+      "c.test", "/attribution_reporting/register_trigger_headers.html");
+  EXPECT_TRUE(ExecJs(web_contents(), JsReplace("createAttributionSrcImg($1);",
+                                               register_trigger_url)));
+  expected_report.WaitForReport();
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
                        AttributionEligibleNavigation_SetsEligibleHeader) {
   auto register_response1 =
       std::make_unique<net::test_server::ControllableHttpResponse>(

@@ -86,7 +86,15 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
       const blink::AttributionSrcToken& attribution_src_token,
       AttributionInputEvent input_event) override;
-  void NotifyNavigationRedirectRegistration(
+
+  void NotifyNavigationRegistrationStarted(
+      const blink::AttributionSrcToken& attribution_src_token,
+      const attribution_reporting::SuitableOrigin& source_origin,
+      blink::mojom::AttributionNavigationType nav_type,
+      bool is_within_fenced_frame,
+      GlobalRenderFrameHostId render_frame_id,
+      int64_t navigation_id) override;
+  void NotifyNavigationRegistrationData(
       const blink::AttributionSrcToken& attribution_src_token,
       const net::HttpResponseHeaders* headers,
       attribution_reporting::SuitableOrigin reporting_origin,
@@ -95,16 +103,9 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       blink::mojom::AttributionNavigationType nav_type,
       bool is_within_fenced_frame,
       GlobalRenderFrameHostId render_frame_id,
-      int64_t navigation_id) override;
-  void NotifyNavigationStartedForDataHost(
-      const blink::AttributionSrcToken& attribution_src_token,
-      const attribution_reporting::SuitableOrigin& source_origin,
-      blink::mojom::AttributionNavigationType nav_type,
-      bool is_within_fenced_frame,
-      GlobalRenderFrameHostId render_frame_id,
-      int64_t navigation_id) override;
-  void NotifyNavigationFinished(
-      const blink::AttributionSrcToken& attribution_src_token) override;
+      int64_t navigation_id,
+      bool is_final_response) override;
+
   void NotifyFencedFrameReportingBeaconStarted(
       BeaconId beacon_id,
       absl::optional<int64_t> navigation_id,
@@ -201,9 +202,9 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   //
   // Navigation-linked source registrations can happen via 3 channels:
   //
-  // 1. Foreground: in the main navigation request, upon receiving a
-  //    redirection, `NotifyNavigationRedirectRegistration`, if it contains
-  //    attribution headers, the source is parsed asynchronously by the
+  // 1. Foreground: in the main navigation request, upon receiving a redirection
+  //    or the final response via `NotifyNavigationRegistrationData`, if it
+  //    contains attribution headers, the source is parsed asynchronously by the
   //    DataDecoder.
   // 2. Background: an attribution-specific request can be sent, when the
   //    navigation starts. It can resolve before or after the navigation ends.
