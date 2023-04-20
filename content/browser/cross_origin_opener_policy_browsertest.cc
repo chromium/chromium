@@ -1566,18 +1566,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   }
 }
 
-// Reproducer test for https://crbug.com/1264104.
-// TODO(crbug.com/1331287): flaky on Linux Tsan.
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
-#define MAYBE_BackNavigationCoiToNonCoiAfterCrash \
-  DISABLED_BackNavigationCoiToNonCoiAfterCrash
-#else
-#define MAYBE_BackNavigationCoiToNonCoiAfterCrash \
-  BackNavigationCoiToNonCoiAfterCrash
-#endif
+// This test is a reproducer for https://crbug.com/1264104.
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
-                       MAYBE_BackNavigationCoiToNonCoiAfterCrash) {
-  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+                       BackNavigationCoiToNonCoiAfterCrashReproducer) {
   GURL isolated_page(
       https_server()->GetURL("a.test",
                              "/set-header?"
@@ -1601,13 +1592,6 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
       current_frame_host()->GetSiteInstance());
   EXPECT_TRUE(isolated_site_instance->IsCrossOriginIsolated());
 
-  // Confirm that the page is cached in back/forward cache if available.
-  if (IsBackForwardCacheEnabled()) {
-    EXPECT_TRUE(non_isolated_rfh->IsInBackForwardCache());
-  } else {
-    EXPECT_FALSE(non_isolated_rfh->IsInBackForwardCache());
-  }
-
   // Simulate the renderer process crashing.
   RenderProcessHost* process = isolated_site_instance->GetProcess();
   ASSERT_TRUE(process);
@@ -1618,30 +1602,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   crash_observer->Wait();
   crash_observer.reset();
 
-  if (IsBackForwardCacheEnabled()) {
-    // Navigate back. Isolated into non-isolated.
-    // The page is cached in back/forward cache.
-    TestNavigationObserver navigation_observer(shell()->web_contents());
-    web_contents()->GetController().GoBack();
-    navigation_observer.WaitForNavigationFinished();
-    EXPECT_EQ(current_frame_host(), non_isolated_rfh.get());
-    EXPECT_FALSE(non_isolated_rfh.IsRenderFrameDeleted());
-  } else {
-    if (features::GetBrowsingContextMode() ==
-        features::BrowsingContextStateImplementationType::
-            kLegacyOneToOneWithFrameTreeNode) {
-      // TODO(https://crbug.com/1264104): Navigate back. Isolated into
-      // non-isolated. Add a simple load wait when the bug is fixed.
-      return;
-    } else {
-      // Swapping BrowsingContextState on cross-origin navigations resolves
-      // https://crbug.com/1264104, as we store proxies for isolated pages
-      // separately. The death check therefore fails, and the load wait
-      // succeeds.
-      web_contents()->GetController().GoBack();
-      EXPECT_TRUE(WaitForLoadStop(web_contents()));
-    }
-  }
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
