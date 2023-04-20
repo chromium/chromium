@@ -436,11 +436,6 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_ALWAYS_INLINE static PartitionRoot* FromAddrInFirstSuperpage(
       uintptr_t address);
 
-  PA_ALWAYS_INLINE void DecreaseTotalSizeOfAllocatedBytes(SlotSpan* slot_span)
-      PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  PA_ALWAYS_INLINE void IncreaseTotalSizeOfAllocatedBytes(SlotSpan* slot_span,
-                                                          size_t raw_size)
-      PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
   PA_ALWAYS_INLINE void DecreaseTotalSizeOfAllocatedBytes(uintptr_t addr,
                                                           size_t len)
       PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
@@ -1155,7 +1150,8 @@ PartitionRoot<thread_safe>::AllocFromBucket(Bucket* bucket,
     *usable_size = slot_span->GetUsableSize(this);
   }
   PA_DCHECK(slot_span->GetUtilizedSlotSize() <= slot_span->bucket->slot_size);
-  IncreaseTotalSizeOfAllocatedBytes(slot_span, raw_size);
+  IncreaseTotalSizeOfAllocatedBytes(
+      slot_start, slot_span->GetSlotSizeForBookkeeping(), raw_size);
 
 #if BUILDFLAG(USE_FREESLOT_BITMAP)
   if (!slot_span->bucket->is_direct_mapped()) {
@@ -1424,12 +1420,15 @@ template <bool thread_safe>
 PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeInSlotSpan(
     uintptr_t slot_start,
     SlotSpan* slot_span) {
-  DecreaseTotalSizeOfAllocatedBytes(slot_span);
+  DecreaseTotalSizeOfAllocatedBytes(slot_start,
+                                    slot_span->GetSlotSizeForBookkeeping());
+
 #if BUILDFLAG(USE_FREESLOT_BITMAP)
   if (!slot_span->bucket->is_direct_mapped()) {
     internal::FreeSlotBitmapMarkSlotAsFree(slot_start);
   }
 #endif
+
   return slot_span->Free(slot_start);
 }
 
@@ -1508,7 +1507,11 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeBatch(
   // corresponding pages were faulted in (without acquiring the lock). So there
   // is no need to touch pages manually here before the lock.
   ::partition_alloc::internal::ScopedGuard guard{lock_};
-  DecreaseTotalSizeOfAllocatedBytes(slot_span);
+  // TODO(thiabaud): Fix the accounting here. The size is correct, but the
+  // pointer is not. This only affects local tools that record each allocation,
+  // not our metrics.
+  DecreaseTotalSizeOfAllocatedBytes(
+      0u, slot_span->GetSlotSizeForBookkeeping() * size);
   slot_span->AppendFreeList(head, tail, size);
 }
 
@@ -1592,24 +1595,6 @@ PartitionRoot<thread_safe>::FromAddrInFirstSuperpage(uintptr_t address) {
   uintptr_t super_page = address & internal::kSuperPageBaseMask;
   PA_DCHECK(internal::IsReservationStart(super_page));
   return FromFirstSuperPage(super_page);
-}
-
-template <bool thread_safe>
-PA_ALWAYS_INLINE void
-PartitionRoot<thread_safe>::IncreaseTotalSizeOfAllocatedBytes(
-    SlotSpan* slot_span,
-    size_t raw_size) {
-  IncreaseTotalSizeOfAllocatedBytes(reinterpret_cast<uintptr_t>(slot_span),
-                                    slot_span->GetSlotSizeForBookkeeping(),
-                                    raw_size);
-}
-
-template <bool thread_safe>
-PA_ALWAYS_INLINE void
-PartitionRoot<thread_safe>::DecreaseTotalSizeOfAllocatedBytes(
-    SlotSpan* slot_span) {
-  DecreaseTotalSizeOfAllocatedBytes(reinterpret_cast<uintptr_t>(slot_span),
-                                    slot_span->GetSlotSizeForBookkeeping());
 }
 
 template <bool thread_safe>
