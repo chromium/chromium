@@ -192,7 +192,7 @@ const base::FeatureParam<int> kLargeFaviconFromGoogleSizeInDip{
 // See https://bit.ly/chromium-startup-no-guest-profile.
 BASE_FEATURE(kObserverBasedPostProfileInit,
              "ObserverBasedPostProfileInit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the static key pinning list can be updated via component
 // updater.
