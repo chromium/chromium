@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/scoped_policy.h"
 #include "components/services/quarantine/quarantine.h"
 
 #import <ApplicationServices/ApplicationServices.h>
@@ -12,9 +11,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/mac/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -23,6 +22,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "url/gurl.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace quarantine {
 namespace {
@@ -45,8 +48,7 @@ class QuarantineMacTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(
         base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &test_file_));
-    file_url_.reset(base::mac::FilePathToNSURL(test_file_),
-                    base::scoped_policy::RETAIN);
+    file_url_ = base::mac::FilePathToNSURL(test_file_);
 
     NSDictionary* properties = @{
       static_cast<NSString*>(kLSQuarantineAgentBundleIdentifierKey) :
@@ -67,7 +69,7 @@ class QuarantineMacTest : public testing::Test {
   base::FilePath test_file_;
   const GURL source_url_;
   const GURL referrer_url_;
-  base::scoped_nsobject<NSURL> file_url_;
+  __strong NSURL* file_url_;
 };
 
 TEST_F(QuarantineMacTest, CheckMetadataSetCorrectly) {
@@ -141,17 +143,18 @@ TEST_F(QuarantineMacTest, IsFileQuarantined_AgentBundleIdentifier) {
       base::BindOnce(&CheckQuarantineResult, QuarantineFileResult::OK));
   base::RunLoop().RunUntilIdle();
 
-  base::scoped_nsobject<NSMutableDictionary> properties;
-  bool success = GetQuarantineProperties(test_file_, &properties);
-  ASSERT_TRUE(success);
+  NSDictionary* properties = GetQuarantineProperties(test_file_);
   ASSERT_TRUE(properties);
 
-  [properties removeObjectForKey:static_cast<NSString*>(
-                                     kLSQuarantineAgentBundleIdentifierKey)];
+  NSMutableDictionary* mutable_properties = [properties mutableCopy];
+
+  [mutable_properties
+      removeObjectForKey:static_cast<NSString*>(
+                             kLSQuarantineAgentBundleIdentifierKey)];
   NSError* error = nullptr;
-  success = [file_url_ setResourceValue:properties
-                                 forKey:NSURLQuarantinePropertiesKey
-                                  error:&error];
+  BOOL success = [file_url_ setResourceValue:mutable_properties
+                                      forKey:NSURLQuarantinePropertiesKey
+                                       error:&error];
   ASSERT_TRUE(success) << error.localizedDescription;
 
   EXPECT_FALSE(IsFileQuarantined(test_file_, source_url_, referrer_url_));
@@ -166,7 +169,7 @@ TEST_F(QuarantineMacTest, NoWhereFromsKeyIfNoURLs) {
   NSString* file_path = base::mac::FilePathToNSString(test_file_);
   ASSERT_NE(nullptr, file_path);
   base::ScopedCFTypeRef<MDItemRef> md_item(
-      MDItemCreate(kCFAllocatorDefault, base::mac::NSToCFCast(file_path)));
+      MDItemCreate(kCFAllocatorDefault, base::mac::NSToCFPtrCast(file_path)));
   if (!md_item) {
     // The quarantine code ignores it if adding origin metadata fails. If for
     // some reason MDItemCreate fails (which it seems to do on the bots, not
