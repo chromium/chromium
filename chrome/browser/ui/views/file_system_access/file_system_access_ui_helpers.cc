@@ -7,15 +7,16 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "components/url_formatter/elide_url.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/url_identity.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -29,21 +30,37 @@ base::FilePath GetPathForDisplayAsPath(const base::FilePath& path) {
   return path.BaseName();
 }
 
+// Expected URL types for `UrlIdentity::CreateFromUrl()`.
+constexpr UrlIdentity::TypeSet kUrlIdentityAllowedTypes = {
+    UrlIdentity::Type::kDefault, UrlIdentity::Type::kFile,
+    UrlIdentity::Type::kIsolatedWebApp, UrlIdentity::Type::kChromeExtension};
+
+constexpr UrlIdentity::FormatOptions kUrlIdentityOptions{
+    .default_options = {
+        UrlIdentity::DefaultFormatOptions::kOmitCryptographicScheme}};
+
 }  // namespace
 
 namespace file_system_access_ui_helper {
 
-std::unique_ptr<views::View> CreateOriginLabel(Browser* browser,
-                                               int message_id,
-                                               const url::Origin& origin,
-                                               int text_context,
-                                               bool show_emphasis) {
-  std::u16string origin_or_short_name =
-      GetFormattedOriginOrAppShortName(browser, origin);
+std::unique_ptr<views::View> CreateOriginLabel(
+    content::WebContents* web_contents,
+    int message_id,
+    const url::Origin& origin,
+    int text_context,
+    bool show_emphasis) {
+  Profile* profile =
+      web_contents
+          ? Profile::FromBrowserContext(web_contents->GetBrowserContext())
+          : nullptr;
+  std::u16string origin_identity_name =
+      file_system_access_ui_helper::GetUrlIdentityName(profile,
+                                                       origin.GetURL());
+
   size_t offset;
   auto label = std::make_unique<views::StyledLabel>();
   label->SetText(
-      l10n_util::GetStringFUTF16(message_id, origin_or_short_name, &offset));
+      l10n_util::GetStringFUTF16(message_id, origin_identity_name, &offset));
   label->SetTextContext(text_context);
   label->SetDefaultTextStyle(show_emphasis ? views::style::STYLE_SECONDARY
                                            : views::style::STYLE_PRIMARY);
@@ -53,24 +70,32 @@ std::unique_ptr<views::View> CreateOriginLabel(Browser* browser,
     views::StyledLabel::RangeStyleInfo origin_style;
     origin_style.text_style = views::style::STYLE_EMPHASIZED;
     label->AddStyleRange(
-        gfx::Range(offset, offset + origin_or_short_name.length()),
+        gfx::Range(offset, offset + origin_identity_name.length()),
         origin_style);
   }
   return label;
 }
 
-std::unique_ptr<views::View> CreateOriginPathLabel(Browser* browser,
-                                                   int message_id,
-                                                   const url::Origin& origin,
-                                                   const base::FilePath& path,
-                                                   int text_context,
-                                                   bool show_emphasis) {
+std::unique_ptr<views::View> CreateOriginPathLabel(
+    content::WebContents* web_contents,
+    int message_id,
+    const url::Origin& origin,
+    const base::FilePath& path,
+    int text_context,
+    bool show_emphasis) {
   std::u16string formatted_path = GetPathForDisplayAsParagraph(path);
-  std::u16string origin_or_short_name =
-      GetFormattedOriginOrAppShortName(browser, origin);
+
+  Profile* profile =
+      web_contents
+          ? Profile::FromBrowserContext(web_contents->GetBrowserContext())
+          : nullptr;
+  std::u16string origin_identity_name =
+      file_system_access_ui_helper::GetUrlIdentityName(profile,
+                                                       origin.GetURL());
+
   std::vector<size_t> offsets;
   auto label = std::make_unique<views::StyledLabel>();
-  label->SetText(l10n_util::GetStringFUTF16(message_id, origin_or_short_name,
+  label->SetText(l10n_util::GetStringFUTF16(message_id, origin_identity_name,
                                             formatted_path, &offsets));
   DCHECK_GE(offsets.size(), 2u);
 
@@ -85,7 +110,7 @@ std::unique_ptr<views::View> CreateOriginPathLabel(Browser* browser,
     // All but the last offset should be the origin.
     for (size_t i = 0; i < offsets.size() - 1; ++i) {
       label->AddStyleRange(
-          gfx::Range(offsets[i], offsets[i] + origin_or_short_name.length()),
+          gfx::Range(offsets[i], offsets[i] + origin_identity_name.length()),
           origin_style);
     }
   }
@@ -133,14 +158,10 @@ std::u16string GetPathForDisplayAsParagraph(const base::FilePath& path) {
   return GetPathForDisplayAsPath(path).LossyDisplayName();
 }
 
-std::u16string GetFormattedOriginOrAppShortName(Browser* browser,
-                                                const url::Origin& origin) {
-  bool is_isolated_web_app = browser && browser->app_controller() &&
-                             browser->app_controller()->IsIsolatedWebApp();
-  return is_isolated_web_app
-             ? browser->app_controller()->GetAppShortName()
-             : url_formatter::FormatOriginForSecurityDisplay(
-                   origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+std::u16string GetUrlIdentityName(Profile* profile, const GURL& url) {
+  return UrlIdentity::CreateFromUrl(profile, url, kUrlIdentityAllowedTypes,
+                                    kUrlIdentityOptions)
+      .name;
 }
 
 }  // namespace file_system_access_ui_helper

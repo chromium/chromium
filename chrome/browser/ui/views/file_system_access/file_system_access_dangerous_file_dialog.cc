@@ -5,10 +5,11 @@
 #include "chrome/browser/ui/views/file_system_access/file_system_access_dangerous_file_dialog.h"
 
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
@@ -19,7 +20,7 @@ using DangerousFileResult =
     content::FileSystemAccessPermissionContext::SensitiveEntryResult;
 
 std::unique_ptr<ui::DialogModel> CreateFileSystemAccessDangerousFileDialog(
-    Browser* const browser,
+    content::WebContents* web_contents,
     const url::Origin& origin,
     const base::FilePath& path,
     base::OnceCallback<
@@ -33,9 +34,13 @@ std::unique_ptr<ui::DialogModel> CreateFileSystemAccessDangerousFileDialog(
   auto cancel_callbacks = base::SplitOnceCallback(base::BindOnce(
       std::move(split_callback.second), DangerousFileResult::kAbort));
 
-  std::u16string origin_or_short_name =
-      file_system_access_ui_helper::GetFormattedOriginOrAppShortName(browser,
-                                                                     origin);
+  Profile* profile =
+      web_contents
+          ? Profile::FromBrowserContext(web_contents->GetBrowserContext())
+          : nullptr;
+  std::u16string origin_identity_name =
+      file_system_access_ui_helper::GetUrlIdentityName(profile,
+                                                       origin.GetURL());
 
   ui::DialogModel::Builder dialog_builder;
   dialog_builder
@@ -44,7 +49,7 @@ std::unique_ptr<ui::DialogModel> CreateFileSystemAccessDangerousFileDialog(
           file_system_access_ui_helper::GetElidedPathForDisplayAsTitle(path)))
       .AddParagraph(ui::DialogModelLabel::CreateWithReplacement(
           IDS_FILE_SYSTEM_ACCESS_DANGEROUS_FILE_TEXT,
-          ui::DialogModelLabel::CreateEmphasizedText(origin_or_short_name)))
+          ui::DialogModelLabel::CreateEmphasizedText(origin_identity_name)))
       .AddOkButton(
           std::move(accept_callback),
           ui::DialogModelButton::Params().SetLabel(l10n_util::GetStringUTF16(
@@ -67,9 +72,8 @@ void ShowFileSystemAccessDangerousFileDialog(
         void(content::FileSystemAccessPermissionContext::SensitiveEntryResult)>
         callback,
     content::WebContents* web_contents) {
-  auto* browser = chrome::FindBrowserWithWebContents(web_contents);
   constrained_window::ShowWebModal(
-      CreateFileSystemAccessDangerousFileDialog(browser, origin, path,
+      CreateFileSystemAccessDangerousFileDialog(web_contents, origin, path,
                                                 std::move(callback)),
       web_contents);
 }
@@ -81,6 +85,6 @@ CreateFileSystemAccessDangerousFileDialogForTesting(  // IN-TEST
     base::OnceCallback<
         void(content::FileSystemAccessPermissionContext::SensitiveEntryResult)>
         callback) {
-  return CreateFileSystemAccessDangerousFileDialog(/*browser=*/nullptr, origin,
-                                                   path, std::move(callback));
+  return CreateFileSystemAccessDangerousFileDialog(
+      /*web_contents=*/nullptr, origin, path, std::move(callback));
 }

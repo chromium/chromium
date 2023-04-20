@@ -7,11 +7,12 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/permissions/permission_util.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -104,7 +105,7 @@ std::u16string GetWindowTitle(const RequestData& request) {
 }
 
 std::unique_ptr<ui::DialogModel> CreateFileSystemAccessPermissionDialog(
-    Browser* const browser,
+    content::WebContents* web_contents,
     const RequestData& request,
     base::OnceCallback<void(permissions::PermissionAction result)> callback) {
   auto split_callback = base::SplitOnceCallback(std::move(callback));
@@ -115,16 +116,19 @@ std::unique_ptr<ui::DialogModel> CreateFileSystemAccessPermissionDialog(
   auto cancel_callbacks = base::SplitOnceCallback(
       base::BindOnce(std::move(split_callback.second),
                      permissions::PermissionAction::DISMISSED));
-
-  auto origin_or_short_name =
-      file_system_access_ui_helper::GetFormattedOriginOrAppShortName(
-          browser, request.origin);
+  Profile* profile =
+      web_contents
+          ? Profile::FromBrowserContext(web_contents->GetBrowserContext())
+          : nullptr;
+  std::u16string origin_identity_name =
+      file_system_access_ui_helper::GetUrlIdentityName(profile,
+                                                       request.origin.GetURL());
 
   ui::DialogModel::Builder dialog_builder;
   dialog_builder.SetTitle(GetWindowTitle(request))
       .AddParagraph(ui::DialogModelLabel::CreateWithReplacements(
           GetMessageText(request),
-          {ui::DialogModelLabel::CreateEmphasizedText(origin_or_short_name),
+          {ui::DialogModelLabel::CreateEmphasizedText(origin_identity_name),
            ui::DialogModelLabel::CreateEmphasizedText(
                file_system_access_ui_helper::GetPathForDisplayAsParagraph(
                    request.path))}))
@@ -144,16 +148,16 @@ void ShowFileSystemAccessPermissionDialog(
     const RequestData& request,
     base::OnceCallback<void(permissions::PermissionAction result)> callback,
     content::WebContents* web_contents) {
-  auto* browser = chrome::FindBrowserWithWebContents(web_contents);
-  constrained_window::ShowWebModal(CreateFileSystemAccessPermissionDialog(
-                                       browser, request, std::move(callback)),
-                                   web_contents);
+  constrained_window::ShowWebModal(
+      CreateFileSystemAccessPermissionDialog(web_contents, request,
+                                             std::move(callback)),
+      web_contents);
 }
 
 std::unique_ptr<ui::DialogModel>
 CreateFileSystemAccessPermissionDialogForTesting(  // IN-TEST
     const RequestData& request,
     base::OnceCallback<void(permissions::PermissionAction result)> callback) {
-  return CreateFileSystemAccessPermissionDialog(/*browser=*/nullptr, request,
-                                                std::move(callback));
+  return CreateFileSystemAccessPermissionDialog(/*web_contents=*/nullptr,
+                                                request, std::move(callback));
 }
