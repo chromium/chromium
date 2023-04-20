@@ -2490,20 +2490,16 @@ static const CSSValue& ComputeRegisteredPropertyValue(
       return *CSSPrimitiveValue::CreateFromLength(length, 1);
     }
 
-    // If we encounter a calculated number that was not resolved during
-    // parsing, it means that a calc()-expression was allowed in place of
-    // an integer. Such calc()-for-integers must be rounded at computed value
-    // time.
+    // Clamp/round calc() values according to the permitted range.
+    //
     // https://drafts.csswg.org/css-values-4/#calc-type-checking
-    if (primitive_value->IsCalculated()) {
+    if (primitive_value->IsNumber() && primitive_value->IsCalculated()) {
       const CSSMathFunctionValue& math_value =
           To<CSSMathFunctionValue>(*primitive_value);
-      if (math_value.IsNumber()) {
-        double double_value = math_value.GetDoubleValue();
-        auto unit_type = CSSPrimitiveValue::UnitType::kInteger;
-        return *CSSNumericLiteralValue::Create(std::round(double_value),
-                                               unit_type);
-      }
+      // Note that GetDoubleValue automatically clamps according to the
+      // permitted range.
+      return *CSSNumericLiteralValue::Create(
+          math_value.GetDoubleValue(), CSSPrimitiveValue::UnitType::kNumber);
     }
 
     if (primitive_value->IsAngle()) {

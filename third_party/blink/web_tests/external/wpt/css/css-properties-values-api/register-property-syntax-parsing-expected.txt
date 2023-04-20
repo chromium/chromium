@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 205 tests; 204 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 206 tests; 205 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS syntax:'*', initialValue:'a' is valid
 PASS syntax:' * ', initialValue:'b' is valid
 PASS syntax:'<length>', initialValue:'2px' is valid
@@ -35,6 +35,7 @@ PASS syntax:'<length>', initialValue:'10vmin' is valid
 PASS syntax:'<percentage> | <length>+', initialValue:'calc(100vh - 10px) 30px' is valid
 PASS syntax:'<number>', initialValue:'-109' is valid
 PASS syntax:'<number>', initialValue:'2.3e4' is valid
+PASS syntax:'<number>', initialValue:'calc(1 / 2)' is valid
 PASS syntax:'<integer>', initialValue:'-109' is valid
 PASS syntax:'<integer>', initialValue:'19' is valid
 PASS syntax:'<integer>', initialValue:'calc(1)' is valid
