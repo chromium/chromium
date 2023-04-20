@@ -1377,6 +1377,12 @@ mojom("mojom") {
     }
   }
 
+  if (is_linux) {
+    # TODO(crbug.com/1431866): Remove this once is_linux in the mojom IDL does
+    # not include lacros.
+    enabled_features += [ "use_network_interface_change_listener" ]
+  }
+
   # Typemaps which apply to both Blink and non-Blink bindings.
   shared_cpp_typemaps = []
 

@@ -54,6 +54,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/features.h"
+#include "net/base/network_change_notifier.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "net/log/net_log_util.h"
 #include "sandbox/policy/features.h"
@@ -80,6 +81,12 @@
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "content/browser/system_dns_resolution/system_dns_resolver.h"
 #include "services/network/public/mojom/system_dns_resolution.mojom-forward.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+#include "net/base/address_map_linux.h"
+#include "net/base/address_tracker_linux.h"
+#include "services/network/public/mojom/network_interface_change_listener.mojom.h"
 #endif
 
 namespace content {
@@ -373,6 +380,19 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
       g_client->BindURLLoaderNetworkServiceObserver();
   network_service_params->first_party_sets_enabled =
       GetContentClient()->browser()->IsFirstPartySetsEnabled();
+
+#if BUILDFLAG(IS_LINUX)
+  if (base::FeatureList::IsEnabled(
+          net::features::kAddressTrackerLinuxIsProxied) &&
+      IsOutOfProcessNetworkService()) {
+    auto address_map =
+        net::NetworkChangeNotifier::GetAddressMapOwner()->GetAddressMap();
+    auto online_links =
+        net::NetworkChangeNotifier::GetAddressMapOwner()->GetOnlineLinks();
+    network_service_params->initial_address_map =
+        network::mojom::InitialAddressMap::New(address_map, online_links);
+  }
+#endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_POSIX)
   // Send Kerberos environment variables to the network service.

@@ -1577,6 +1577,10 @@ test("content_browsertests") {
     "../test/url_loader_interceptor_browsertest.cc",
   ]
 
+  if (is_linux) {
+    sources += [ "../browser/network/address_map_linux_browsertest.cc" ]
+  }
+
   if (is_mac) {
     sources +=
         [ "../app_shim_remote_cocoa/window_occlusion_browsertest_mac.mm" ]

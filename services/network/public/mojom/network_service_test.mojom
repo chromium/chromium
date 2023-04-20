@@ -11,6 +11,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/address_list.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/network_change_manager.mojom";
+import "services/network/public/mojom/network_interface_change_listener.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
 import "services/network/public/mojom/http_cache_backend_file_operations.mojom";
@@ -247,4 +248,8 @@ interface NetworkServiceTest {
   // Resolves the machine's own hostname with net::HostResolverSystemTask.
   ResolveOwnHostnameWithSystemDns()
       => (network.mojom.AddressList addr_list, int32 os_error, int32 net_error);
+
+  [Sync, EnableIf=use_network_interface_change_listener]
+  GetAddressMapCacheLinux()
+      => (network.mojom.AddressMap addr_map, network.mojom.OnlineLinks links);
 };

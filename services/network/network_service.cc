@@ -40,6 +40,7 @@
 #include "net/base/features.h"
 #include "net/base/logging_network_change_observer.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/network_change_notifier_passive.h"
 #include "net/base/port_util.h"
 #include "net/cert/cert_database.h"
 #include "net/cert/ct_log_response_parser.h"
@@ -331,8 +332,7 @@ NetworkService::NetworkService(
   DCHECK(!g_network_service);
   g_network_service = this;
 
-  // |registry_| is nullptr when an in-process NetworkService is
-  // created directly, like in most unit tests.
+  // |registry_| is nullptr when a NetworkService is out-of-process.
   if (registry_) {
     mojo::SetDefaultProcessErrorHandler(base::BindRepeating(&HandleBadMessage));
 #if BUILDFLAG(IS_LINUX)
@@ -382,13 +382,36 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
   if (params->system_dns_resolver)
     SetSystemDnsResolver(std::move(params->system_dns_resolver));
 
-  network_change_manager_ = std::make_unique<NetworkChangeManager>(
+  std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier =
       CreateNetworkChangeNotifierIfNeeded(
           net::NetworkChangeNotifier::ConnectionType(
               params->initial_connection_type),
           net::NetworkChangeNotifier::ConnectionSubtype(
               params->initial_connection_subtype),
-          mock_network_change_notifier));
+          mock_network_change_notifier);
+
+#if BUILDFLAG(IS_LINUX)
+  if (params->initial_address_map) {
+    // The NetworkChangeNotifierPassive should only be included if it's
+    // necessary to instantiate an AddressMapCacheLinux rather than an
+    // AddressTrackerLinux.
+    DCHECK(base::FeatureList::IsEnabled(
+        net::features::kAddressTrackerLinuxIsProxied));
+    // There should be a factory that creates NetworkChangeNotifierPassives.
+    DCHECK(net::NetworkChangeNotifier::GetFactory());
+    // Network service should be out of process or it's unsandboxed and can just
+    // use AddressTrackerLinux.
+    DCHECK(registry_);
+    static_cast<net::NetworkChangeNotifierPassive*>(
+        network_change_notifier.get())
+        ->InitializeAddressMapCache(
+            std::move(params->initial_address_map->address_map),
+            std::move(params->initial_address_map->online_links));
+  }
+#endif  // BUILDFLAG(IS_LINUX)
+
+  network_change_manager_ = std::make_unique<NetworkChangeManager>(
+      std::move(network_change_notifier));
 
   trace_net_log_observer_.WatchForTraceStart(net_log_);
 

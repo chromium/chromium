@@ -32,7 +32,9 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/address_family.h"
 #include "net/base/address_list.h"
+#include "net/base/address_map_linux.h"
 #include "net/base/ip_address.h"
+#include "net/base/network_change_notifier.h"
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/disk_cache/disk_cache.h"
@@ -755,6 +757,16 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
             std::move(callback), net::AddressList(), 0, net::ERR_ABORTED));
     system_task_ptr->Start(std::move(results_cb));
   }
+
+#if BUILDFLAG(IS_LINUX)
+  void GetAddressMapCacheLinux(
+      GetAddressMapCacheLinuxCallback callback) override {
+    const net::AddressMapOwnerLinux* address_map_owner =
+        net::NetworkChangeNotifier::GetAddressMapOwner();
+    std::move(callback).Run(address_map_owner->GetAddressMap(),
+                            address_map_owner->GetOnlineLinks());
+  }
+#endif  // BUILDFLAG(IS_LINUX)
 
  private:
   void OnMemoryPressure(

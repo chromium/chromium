@@ -33,3 +33,13 @@ struct OnlineLinks {
   // Mapped to an std::unordered_set<int>.
   array<int32> online_links;
 };
+
+// This data is necessary to initialize AddressMapCacheLinux, for example in the
+// sandboxed network service where AddressTrackerLinux can't be used instead.
+[EnableIf=use_network_interface_change_listener]
+struct InitialAddressMap {
+  // The initial AddressMap.
+  AddressMap address_map;
+  // The initial online interfaces.
+  OnlineLinks online_links;
+};

@@ -13,6 +13,10 @@
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "net/base/address_map_cache_linux.h"
+#endif
+
 namespace net {
 
 // A NetworkChangeNotifier that needs to be told about network changes by some
@@ -41,6 +45,20 @@ class NET_EXPORT NetworkChangeNotifierPassive : public NetworkChangeNotifier {
       NetworkChangeNotifier::ConnectionType connection_type,
       NetworkChangeNotifier::ConnectionSubtype connection_subtype);
 
+#if BUILDFLAG(IS_LINUX)
+  // Sets the initial AddressMap and set of online links that
+  // `address_map_cache_` caches. Must be called before address_map_cache() and
+  // GetAddressMapOwnerInternal().
+  void InitializeAddressMapCache(
+      AddressMapOwnerLinux::AddressMap initial_address_map,
+      std::unordered_set<int> initial_online_links);
+
+  AddressMapCacheLinux* address_map_cache() {
+    DCHECK(address_map_cache_.has_value());
+    return &address_map_cache_.value();
+  }
+#endif
+
  protected:
   // NetworkChangeNotifier overrides.
   NetworkChangeNotifier::ConnectionType GetCurrentConnectionType()
@@ -48,6 +66,9 @@ class NET_EXPORT NetworkChangeNotifierPassive : public NetworkChangeNotifier {
   void GetCurrentMaxBandwidthAndConnectionType(
       double* max_bandwidth_mbps,
       ConnectionType* connection_type) const override;
+#if BUILDFLAG(IS_LINUX)
+  const AddressMapOwnerLinux* GetAddressMapOwnerInternal() const override;
+#endif
 
  private:
   friend class NetworkChangeNotifierPassiveTest;
@@ -66,6 +87,10 @@ class NET_EXPORT NetworkChangeNotifierPassive : public NetworkChangeNotifier {
   NetworkChangeCalculatorParamsPassive();
 
   THREAD_CHECKER(thread_checker_);
+
+#if BUILDFLAG(IS_LINUX)
+  absl::optional<AddressMapCacheLinux> address_map_cache_;
+#endif
 
   mutable base::Lock lock_;
   NetworkChangeNotifier::ConnectionType
