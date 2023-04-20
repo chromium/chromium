@@ -136,13 +136,27 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Waits for the matcher to return an element that is sufficiently visible.
 - (void)waitForSufficientlyVisibleElementWithMatcher:(id<GREYMatcher>)matcher;
 
+// Waits for the matcher to return an element that is not sufficiently visible
+// (or nil).
+- (void)waitForNotSufficientlyVisibleElementWithMatcher:
+    (id<GREYMatcher>)matcher;
+
 // Waits for the matcher to return an element.
 - (void)waitForUIElementToAppearWithMatcher:(id<GREYMatcher>)matcher;
+
+// Waits for the matcher to return an element. Returns whether the element did
+// appear in the delay.
+- (BOOL)testUIElementAppearanceWithMatcher:(id<GREYMatcher>)matcher;
 
 // Waits for the matcher to return an element. If the condition is not met
 // within the given `timeout` a GREYAssert is induced.
 - (void)waitForUIElementToAppearWithMatcher:(id<GREYMatcher>)matcher
                                     timeout:(base::TimeDelta)timeout;
+
+// Waits for the matcher to return an element. Returns wheher the condition is
+// met within the given `timeout`.
+- (BOOL)testUIElementAppearanceWithMatcher:(id<GREYMatcher>)matcher
+                                   timeout:(base::TimeDelta)timeout;
 
 // Waits for the matcher to not return any elements.
 - (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher;
