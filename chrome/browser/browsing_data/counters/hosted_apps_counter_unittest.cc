@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
@@ -43,20 +43,22 @@ class HostedAppsCounterTest : public testing::Test {
   // Adding and removing apps and extensions. ----------------------------------
 
   std::string AddExtension() {
-    return AddItem(base::GenerateGUID(), /*app_manifest=*/absl::nullopt);
+    return AddItem(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                   /*app_manifest=*/absl::nullopt);
   }
 
   std::string AddPackagedApp() {
     return AddItem(
-        base::GenerateGUID(),
+        base::Uuid::GenerateRandomV4().AsLowercaseString(),
         DictionaryBuilder()
-            .Set("launch", DictionaryBuilder().Set(
-                "local_path", "index.html").Build())
+            .Set("launch",
+                 DictionaryBuilder().Set("local_path", "index.html").Build())
             .Build());
   }
 
   std::string AddHostedApp() {
-    return AddHostedAppWithName(base::GenerateGUID());
+    return AddHostedAppWithName(
+        base::Uuid::GenerateRandomV4().AsLowercaseString());
   }
 
   std::string AddHostedAppWithName(const std::string& name) {

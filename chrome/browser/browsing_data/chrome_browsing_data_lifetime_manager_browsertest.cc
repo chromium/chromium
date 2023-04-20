@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
