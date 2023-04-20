@@ -669,29 +669,25 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
   const base::Time kLastModifiedTime = base::Time::Now() - base::Days(100);
 
   SessionSyncTestHelper helper;
-
-  sync_pb::EntitySpecifics tab1;
-  *tab1.mutable_session() =
+  sync_pb::SessionSpecifics tab1 =
       helper.BuildTabSpecifics(kForeignSessionTag, kWindowId, kTabId1);
-
-  sync_pb::EntitySpecifics tab2;
-  *tab2.mutable_session() =
+  sync_pb::SessionSpecifics tab2 =
       helper.BuildTabSpecifics(kForeignSessionTag, kWindowId, kTabId2);
 
   // |tab2| is orphan, i.e. not referenced by the header. We do this to verify
   // that such tabs are also subject to garbage collection.
-  sync_pb::EntitySpecifics header;
-  SessionSyncTestHelper::BuildSessionSpecifics(kForeignSessionTag,
-                                               header.mutable_session());
-  SessionSyncTestHelper::AddWindowSpecifics(kWindowId, {kTabId1},
-                                            header.mutable_session());
+  sync_pb::SessionSpecifics header =
+      SessionSyncTestHelper::BuildHeaderSpecificsWithoutWindows(
+          kForeignSessionTag);
+  SessionSyncTestHelper::AddWindowSpecifics(kWindowId, {kTabId1}, &header);
 
-  for (const sync_pb::EntitySpecifics& specifics : {tab1, tab2, header}) {
+  for (const sync_pb::SessionSpecifics& specifics : {tab1, tab2, header}) {
+    sync_pb::EntitySpecifics entity;
+    *entity.mutable_session() = specifics;
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
             /*non_unique_name=*/"",
-            sync_sessions::SessionStore::GetClientTag(specifics.session()),
-            specifics,
+            sync_sessions::SessionStore::GetClientTag(entity.session()), entity,
             /*creation_time=*/syncer::TimeToProtoTime(kLastModifiedTime),
             /*last_modified_time=*/syncer::TimeToProtoTime(kLastModifiedTime)));
   }
@@ -724,7 +720,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
   SessionSyncTestHelper helper;
 
   // There are two orphan tab entities without a header entity.
-
   sync_pb::EntitySpecifics tab1;
   *tab1.mutable_session() =
       helper.BuildTabSpecifics(kForeignSessionTag, kWindowId, kTabId1);
@@ -943,20 +938,19 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTestWithFaviconTestServer,
 
   // Inject fake data on the server.
   SessionSyncTestHelper helper;
-  sync_pb::EntitySpecifics tab;
-  *tab.mutable_session() =
+  sync_pb::SessionSpecifics tab =
       helper.BuildTabSpecifics(kForeignSessionTag, kWindowId, kTabId);
-  sync_pb::EntitySpecifics header;
-  SessionSyncTestHelper::BuildSessionSpecifics(kForeignSessionTag,
-                                               header.mutable_session());
-  SessionSyncTestHelper::AddWindowSpecifics(kWindowId, {kTabId},
-                                            header.mutable_session());
-  for (const sync_pb::EntitySpecifics& specifics : {tab, header}) {
+  sync_pb::SessionSpecifics header =
+      SessionSyncTestHelper::BuildHeaderSpecificsWithoutWindows(
+          kForeignSessionTag);
+  SessionSyncTestHelper::AddWindowSpecifics(kWindowId, {kTabId}, &header);
+  for (const sync_pb::SessionSpecifics& specifics : {tab, header}) {
+    sync_pb::EntitySpecifics entity;
+    *entity.mutable_session() = specifics;
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
             "somename",
-            sync_sessions::SessionStore::GetClientTag(specifics.session()),
-            specifics,
+            sync_sessions::SessionStore::GetClientTag(entity.session()), entity,
             /*creation_time=*/syncer::TimeToProtoTime(kLastModifiedTime),
             /*last_modified_time=*/syncer::TimeToProtoTime(kLastModifiedTime)));
   }

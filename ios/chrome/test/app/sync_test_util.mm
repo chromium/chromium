@@ -25,6 +25,7 @@
 #import "components/sync/driver/sync_service_impl.h"
 #import "components/sync/engine/loopback_server/loopback_server_entity.h"
 #import "components/sync/protocol/device_info_specifics.pb.h"
+#import "components/sync/protocol/session_specifics.pb.h"
 #import "components/sync/protocol/sync_enums.pb.h"
 #import "components/sync/test/entity_builder_factory.h"
 #import "components/sync/test/fake_server.h"
@@ -37,11 +38,15 @@
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "components/sync_device_info/device_info_util.h"
 #import "components/sync_device_info/local_device_info_provider.h"
+#import "components/sync_sessions/session_store.h"
+#import "components/sync_sessions/session_sync_test_helper.h"
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/sync/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/synced_sessions/distant_session.h"
+#import "ios/chrome/browser/synced_sessions/distant_tab.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
@@ -164,6 +169,62 @@ void AddLegacyBookmarkToFakeSyncServer(std::string url,
           .SetGeneration(fake_server::BookmarkEntityBuilder::
                              BookmarkGeneration::kWithoutTitleInSpecifics)
           .BuildBookmark(GURL(url)));
+}
+
+void AddSessionToFakeSyncServer(
+    const synced_sessions::DistantSession* session) {
+  std::vector<sync_pb::SessionSpecifics> specifics_list;
+  SessionID window_id = SessionID::FromSerializedValue(1);
+  // Tab specifics.
+  std::vector<SessionID> tab_list;
+  sync_sessions::SessionSyncTestHelper helper;
+  for (const std::unique_ptr<synced_sessions::DistantTab>& distant_tab :
+       session->tabs) {
+    sync_pb::SessionSpecifics tab = helper.BuildTabSpecifics(
+        session->tag, base::UTF16ToUTF8(distant_tab->title),
+        distant_tab->virtual_url.spec(), window_id, distant_tab->tab_id);
+    specifics_list.push_back(tab);
+    tab_list.push_back(distant_tab->tab_id);
+  }
+  // Compute device type.
+  // TODO(crbug.com/1434959): This is a temporary workaround. Remove the switch
+  // statement and use `session->form_factor` after
+  // `BuildHeaderSpecificsWithoutWindows` is updated.
+  sync_pb::SyncEnums_DeviceType device_type =
+      sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_UNSET;
+  switch (session->form_factor) {
+    case syncer::DeviceInfo::FormFactor::kDesktop:
+      device_type =
+          sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_MAC;
+      break;
+    case syncer::DeviceInfo::FormFactor::kPhone:
+      device_type = sync_pb::SyncEnums_DeviceType_TYPE_PHONE;
+      break;
+    case syncer::DeviceInfo::FormFactor::kTablet:
+      device_type = sync_pb::SyncEnums_DeviceType_TYPE_TABLET;
+      break;
+    case syncer::DeviceInfo::FormFactor::kUnknown:
+      break;
+  }
+  // Header specifics.
+  sync_pb::SessionSpecifics header =
+      sync_sessions::SessionSyncTestHelper::BuildHeaderSpecificsWithoutWindows(
+          session->tag, device_type);
+  sync_sessions::SessionSyncTestHelper::AddWindowSpecifics(window_id, tab_list,
+                                                           &header);
+  specifics_list.push_back(header);
+  // Add entities to fake server.
+  for (const sync_pb::SessionSpecifics& specifics : specifics_list) {
+    sync_pb::EntitySpecifics entity;
+    *entity.mutable_session() = specifics;
+    gSyncFakeServer->InjectEntity(
+        syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+            /*non_unique_name=*/"",
+            sync_sessions::SessionStore::GetClientTag(entity.session()), entity,
+            /*creation_time=*/syncer::TimeToProtoTime(session->modified_time),
+            /*last_modified_time=*/
+            syncer::TimeToProtoTime(session->modified_time)));
+  }
 }
 
 bool IsSyncEngineInitialized() {
