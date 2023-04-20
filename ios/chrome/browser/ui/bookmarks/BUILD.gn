@@ -5,8 +5,6 @@
 source_set("bookmarks") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "bookmark_promo_controller.h",
-    "bookmark_promo_controller.mm",
     "bookmarks_coordinator.h",
     "bookmarks_coordinator.mm",
     "bookmarks_coordinator_delegate.h",
@@ -24,7 +22,7 @@ source_set("bookmarks") {
     "//base",
     "//components/bookmarks/browser",
     "//components/prefs",
-    "//components/signin/public/identity_manager/objc",
+    "//components/signin/public/identity_manager",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
@@ -176,10 +174,8 @@ source_set("eg2_tests") {
   sources = [
     "bookmarks_accessibility_egtest.mm",
     "bookmarks_account_storage_egtest.mm",
-    "bookmarks_account_storage_promo_egtest.mm",
     "bookmarks_egtest.mm",
     "bookmarks_entries_egtest.mm",
-    "bookmarks_promo_egtest.mm",
     "bookmarks_search_egtest.mm",
     "managed_bookmarks_egtest.mm",
   ]

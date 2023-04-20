@@ -46,6 +46,7 @@ chrome_ios_eg2_test("ios_chrome_bookmarks_eg2tests_module") {
   deps = [
     "//ios/chrome/browser/ui/bookmarks:eg2_tests",
     "//ios/chrome/browser/ui/bookmarks/folder_chooser:eg2_tests",
+    "//ios/chrome/browser/ui/bookmarks/home:eg2_tests",
   ]
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
