@@ -101,6 +101,12 @@ constexpr char kRegisterSourceJson[] =
 constexpr char kNavigationDataHostStatusHistogram[] =
     "Conversions.NavigationDataHostStatus3";
 
+constexpr char kRegisterDataHostOutcomeHistogram[] =
+    "Conversions.RegisterDataHostOutcome";
+
+constexpr char kProcessRegisterDataHostDelayHistogram[] =
+    "Conversions.ProcessRegisterDataHostDelay";
+
 const GlobalRenderFrameHostId kFrameId = {0, 1};
 
 constexpr BeaconId kBeaconId(123);
@@ -664,7 +670,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 // is registered but disconnects before registering a source or trigger.
 TEST_F(AttributionDataHostManagerImplTest, NoSourceOrTrigger) {
   base::HistogramTester histograms;
-
   auto page_origin = *SuitableOrigin::Deserialize("https://page.example");
 
   {
@@ -678,6 +683,8 @@ TEST_F(AttributionDataHostManagerImplTest, NoSourceOrTrigger) {
 
   histograms.ExpectTotalCount("Conversions.RegisteredSourcesPerDataHost", 0);
   histograms.ExpectTotalCount("Conversions.RegisteredTriggersPerDataHost", 0);
+  // kImmediately = 0
+  histograms.ExpectUniqueSample(kRegisterDataHostOutcomeHistogram, 0, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -688,6 +695,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   };
 
   for (auto registration_type : kTestCases) {
+    base::HistogramTester histograms;
     EXPECT_CALL(mock_manager_, HandleTrigger).Times(1);
 
     RemoteDataHost source_data_host_remote{.task_environment =
@@ -715,6 +723,9 @@ TEST_F(AttributionDataHostManagerImplTest,
         TriggerRegistration(), /*attestation=*/absl::nullopt);
 
     task_environment_.FastForwardBy(base::TimeDelta());
+
+    // kImmediately = 0
+    histograms.ExpectUniqueSample(kRegisterDataHostOutcomeHistogram, 0, 2);
   }
 }
 
@@ -747,6 +758,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
 TEST_F(AttributionDataHostManagerImplTest,
        NavigationSourceReceiverConnected_TriggerDelayed) {
+  base::HistogramTester histograms;
   Checkpoint checkpoint;
   {
     InSequence seq;
@@ -785,11 +797,15 @@ TEST_F(AttributionDataHostManagerImplTest,
   checkpoint.Call(1);
   source_data_host_remote.reset();
   task_environment_.FastForwardBy(base::Microseconds(1));
+
+  // kDeferred = 1
+  histograms.ExpectUniqueSample(kRegisterDataHostOutcomeHistogram, 1, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
        NavigationSourceReceiverConnected_TriggerDroppedDueToLimitReached) {
   constexpr size_t kMaxDeferredReceiversPerNavigation = 30;
+  base::HistogramTester histograms;
 
   Checkpoint checkpoint;
   {
@@ -834,10 +850,15 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   source_data_host_remote.reset();
   task_environment_.FastForwardBy(base::TimeDelta());
+  // kDeferred = 1, kDropped = 2
+  histograms.ExpectBucketCount(kRegisterDataHostOutcomeHistogram, 1,
+                               kMaxDeferredReceiversPerNavigation);
+  histograms.ExpectBucketCount(kRegisterDataHostOutcomeHistogram, 2, 2);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
        NavigationSourceReceiverConnectedAndRedirect_TriggerDelayed) {
+  base::HistogramTester histograms;
   Checkpoint checkpoint;
   {
     InSequence seq;
@@ -891,10 +912,14 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   // 5 - Parsing completes, the trigger gets handled.
   task_environment_.RunUntilIdle();
+
+  // kDeferred = 1
+  histograms.ExpectUniqueSample(kRegisterDataHostOutcomeHistogram, 1, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
        NavigationSourceReceiverConnected_TriggerDelayedUntilTimeout) {
+  base::HistogramTester histograms;
   Checkpoint checkpoint;
   {
     InSequence seq;
@@ -931,10 +956,16 @@ TEST_F(AttributionDataHostManagerImplTest,
   checkpoint.Call(1);
   task_environment_.FastForwardBy(base::Seconds(10));
   task_environment_.RunUntilIdle();
+
+  histograms.ExpectUniqueSample(
+      "Conversions.DeferedDataHostProcessedAfterTimeout", true, 1);
+  // kDeferred = 1
+  histograms.ExpectUniqueSample(kRegisterDataHostOutcomeHistogram, 1, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
        NavigationSourceReceiverConnected_MultipleTriggersDelayedUntilTimeout) {
+  base::HistogramTester histograms;
   Checkpoint checkpoint;
   {
     InSequence seq;
@@ -1020,6 +1051,17 @@ TEST_F(AttributionDataHostManagerImplTest,
   checkpoint.Call(2);
 
   task_environment_.FastForwardBy(base::Seconds(5));
+
+  histograms.ExpectBucketCount(
+      "Conversions.DeferedDataHostProcessedAfterTimeout", true, 2);
+  histograms.ExpectBucketCount(
+      "Conversions.DeferedDataHostProcessedAfterTimeout", false, 1);
+  // kDeferred = 1
+  histograms.ExpectUniqueSample(kRegisterDataHostOutcomeHistogram, 1, 3);
+  histograms.ExpectTimeBucketCount(kProcessRegisterDataHostDelayHistogram,
+                                   base::Seconds(5), 1);
+  histograms.ExpectTimeBucketCount(kProcessRegisterDataHostDelayHistogram,
+                                   base::Seconds(10), 2);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -1628,6 +1670,8 @@ TEST_F(AttributionDataHostManagerImplTest,
   // kRegistered = 0, kNavigationFailed = 2.
   histograms.ExpectBucketCount(kNavigationDataHostStatusHistogram, 0, 1);
   histograms.ExpectBucketCount(kNavigationDataHostStatusHistogram, 2, 1);
+  // kImmediately = 0
+  histograms.ExpectUniqueSample(kRegisterDataHostOutcomeHistogram, 0, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -1689,6 +1733,9 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   source_data_host_remote.reset();
   trigger_data_host_remote.FlushForTesting();
+
+  // kDeferred = 1
+  histograms.ExpectUniqueSample(kRegisterDataHostOutcomeHistogram, 1, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -2242,6 +2289,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   checkpoint.Call(1);
 
+  task_environment_.FastForwardBy(base::Seconds(2));
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
       /*beacon_id=*/kBeaconId,
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
@@ -2250,6 +2298,11 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
+
+  // kDeferred = 1
+  histograms.ExpectUniqueSample(kRegisterDataHostOutcomeHistogram, 1, 1);
+  histograms.ExpectTimeBucketCount(kProcessRegisterDataHostDelayHistogram,
+                                   base::Seconds(2), 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -2317,6 +2370,11 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   task_environment_.FastForwardBy(base::TimeDelta());
   task_environment_.RunUntilIdle();
+
+  // kDeferred = 1
+  histograms.ExpectUniqueSample(kRegisterDataHostOutcomeHistogram, 1, 1);
+  histograms.ExpectTimeBucketCount(kProcessRegisterDataHostDelayHistogram,
+                                   base::Microseconds(0), 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -2453,6 +2511,12 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   task_environment_.FastForwardBy(base::Seconds(10));
   task_environment_.RunUntilIdle();
+
+  histograms.ExpectUniqueSample(
+      "Conversions.DeferedDataHostProcessedAfterTimeout", true, 1);
+
+  histograms.ExpectTimeBucketCount(kProcessRegisterDataHostDelayHistogram,
+                                   base::Seconds(10), 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,

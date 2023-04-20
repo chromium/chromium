@@ -93,6 +93,19 @@ void RecordNavigationDataHostStatus(NavigationDataHostStatus event) {
   base::UmaHistogramEnumeration("Conversions.NavigationDataHostStatus3", event);
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class RegisterDataHostOutcome {
+  kProcessedImmediately = 0,
+  kDeferred = 1,
+  kDropped = 2,
+  kMaxValue = kDropped,
+};
+
+void RecordRegisterDataHostHostOutcome(RegisterDataHostOutcome status) {
+  base::UmaHistogramEnumeration("Conversions.RegisterDataHostOutcome", status);
+}
+
 enum class Registrar {
   kWeb,
   kOs,
@@ -215,6 +228,7 @@ struct AttributionDataHostManagerImpl::DeferredReceiverTimeout {
 struct AttributionDataHostManagerImpl::DeferredReceiver {
   mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host;
   ReceiverContext context;
+  base::TimeTicks initial_registration_time = base::TimeTicks::Now();
 };
 
 struct AttributionDataHostManagerImpl::NavigationDataHost {
@@ -437,10 +451,13 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
         // We limit the number of deferred receivers to prevent excessive memory
         // usage. In case the limit is reached, we drop the receiver.
         if (receivers_it->second.size() < kMaxDeferredReceiversPerNavigation) {
+          RecordRegisterDataHostHostOutcome(RegisterDataHostOutcome::kDeferred);
           receivers_it->second.emplace_back(DeferredReceiver{
               .data_host = std::move(data_host),
               .context = std::move(receiver_context),
           });
+        } else {
+          RecordRegisterDataHostHostOutcome(RegisterDataHostOutcome::kDropped);
         }
         return;
       }
@@ -448,9 +465,9 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
     case RegistrationType::kSource:
       break;
   }
-  // TODO(https://crbugs.com/1430833): Add a metric for register data host
-  // events status: immediately, deferred or dropped.
 
+  RecordRegisterDataHostHostOutcome(
+      RegisterDataHostOutcome::kProcessedImmediately);
   receivers_.Add(this, std::move(data_host), std::move(receiver_context));
 }
 
@@ -991,12 +1008,12 @@ void AttributionDataHostManagerImpl::MaybeBindDeferredReceivers(
 
   if (auto it = deferred_receivers_.find(navigation_id);
       it != deferred_receivers_.end()) {
-    // TODO(https://crbugs.com/1430835): Add a metric to record the delay
-    // between the time the receiver requested to register and when it was
-    // registered.
-    // TODO(https://crbugs.com/1431206): Add a metric to record if the receiver
-    // was bound due to a timeout or not.
+    base::UmaHistogramBoolean(
+        "Conversions.DeferedDataHostProcessedAfterTimeout", due_to_timeout);
     for (auto& deferred_receiver : it->second) {
+      base::UmaHistogramMediumTimes(
+          "Conversions.ProcessRegisterDataHostDelay",
+          base::TimeTicks::Now() - deferred_receiver.initial_registration_time);
       receivers_.Add(this, std::move(deferred_receiver.data_host),
                      std::move(deferred_receiver.context));
     }

@@ -3657,6 +3657,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.DeferedDataHostProcessedAfterTimeout"
+    enum="Boolean" expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    When registering an attribution data host, its registration will be deferred
+    if it can register triggers and there are pending navigation-source
+    registrations from the page that navigated to that page. Receivers are
+    deferred until the pending navigation-source registrations complete or a
+    timeout is reached.
+
+    When processing a deferred attribution data host registration, this metric
+    records if it's due to a timeout.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.EnqueueEventAllowed" enum="BooleanAllowed"
     expires_after="2023-10-08">
   <owner>apaseltiner@chromium.org</owner>
@@ -3781,14 +3797,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.RegisteredSourcesPerDataHost" units="sources"
-    expires_after="2023-10-08">
-  <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
+<histogram name="Conversions.ProcessRegisterDataHostDelay" units="ms"
+    expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
-    Measures the number of sources registered per data host. Recorded when the
-    data host is disconnected or when the data host manager is destroyed.
+    Records the delay between a data host registration being deferred by the
+    AttributionDataHostManagerImpl and it being processed. Only recorded for
+    data host that are deferred rather than processed immediately or dropped.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.RegisterDataHostOutcome"
+    enum="ConversionRegisterDataHostOutcome" expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the status of a data host registraton. Its status is influenced by
+    trigger buffering.
   </summary>
 </histogram>
 
@@ -3799,6 +3825,17 @@ chromium-metrics-reviews@google.com.
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Measures the number of triggers registered per data host. Recorded when the
+    data host is disconnected or when the data host manager is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.RegistrationsPerRedirectChain"
+    units="registrations" expires_after="2023-10-08">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the number of sources registered per data host. Recorded when the
     data host is disconnected or when the data host manager is destroyed.
   </summary>
 </histogram>

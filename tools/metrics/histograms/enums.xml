@@ -19646,6 +19646,12 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Processed"/>
 </enum>
 
+<enum name="ConversionRegisterDataHostOutcome">
+  <int value="0" label="Processed immediately"/>
+  <int value="1" label="Deferred"/>
+  <int value="2" label="Dropped"/>
+</enum>
+
 <enum name="ConversionReportSendOutcome">
   <int value="0" label="Sent"/>
   <int value="1" label="Failed due to error"/>
