@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "chrome/test/chromedriver/chrome/device_metrics.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/devtools_http_client.h"
@@ -17,17 +16,17 @@ ChromeRemoteImpl::ChromeRemoteImpl(
     std::unique_ptr<DevToolsClient> websocket_client,
     std::vector<std::unique_ptr<DevToolsEventListener>>
         devtools_event_listeners,
-    std::unique_ptr<DeviceMetrics> device_metrics,
+    absl::optional<MobileDevice> mobile_device,
     SyncWebSocketFactory socket_factory,
     std::string page_load_strategy)
     : ChromeImpl(std::move(http_client),
                  std::move(websocket_client),
                  std::move(devtools_event_listeners),
-                 std::move(device_metrics),
+                 std::move(mobile_device),
                  std::move(socket_factory),
                  page_load_strategy) {}
 
-ChromeRemoteImpl::~ChromeRemoteImpl() {}
+ChromeRemoteImpl::~ChromeRemoteImpl() = default;
 
 Status ChromeRemoteImpl::GetAsDesktop(ChromeDesktopImpl** desktop) {
   return Status(kUnknownError,

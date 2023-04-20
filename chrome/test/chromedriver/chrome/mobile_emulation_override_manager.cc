@@ -10,15 +10,14 @@
 
 MobileEmulationOverrideManager::MobileEmulationOverrideManager(
     DevToolsClient* client,
-    const DeviceMetrics* device_metrics)
-    : client_(client),
-      overridden_device_metrics_(device_metrics) {
-  if (overridden_device_metrics_)
+    absl::optional<MobileDevice> mobile_device)
+    : client_(client), mobile_device_(mobile_device) {
+  if (mobile_device_) {
     client_->AddListener(this);
+  }
 }
 
-MobileEmulationOverrideManager::~MobileEmulationOverrideManager() {
-}
+MobileEmulationOverrideManager::~MobileEmulationOverrideManager() = default;
 
 Status MobileEmulationOverrideManager::OnConnected(DevToolsClient* client) {
   return ApplyOverrideIfNeeded();
@@ -36,11 +35,12 @@ Status MobileEmulationOverrideManager::OnEvent(
 }
 
 bool MobileEmulationOverrideManager::IsEmulatingTouch() const {
-  return overridden_device_metrics_ && overridden_device_metrics_->touch;
+  return HasOverrideMetrics() && mobile_device_->device_metrics->touch;
 }
 
 bool MobileEmulationOverrideManager::HasOverrideMetrics() const {
-  return overridden_device_metrics_;
+  return mobile_device_.has_value() &&
+         mobile_device_->device_metrics.has_value();
 }
 
 Status MobileEmulationOverrideManager::RestoreOverrideMetrics() {
@@ -48,27 +48,32 @@ Status MobileEmulationOverrideManager::RestoreOverrideMetrics() {
 }
 
 const DeviceMetrics* MobileEmulationOverrideManager::GetDeviceMetrics() const {
-  return overridden_device_metrics_;
+  if (!HasOverrideMetrics()) {
+    return nullptr;
+  }
+  return &mobile_device_->device_metrics.value();
 }
 
 Status MobileEmulationOverrideManager::ApplyOverrideIfNeeded() {
-  if (!overridden_device_metrics_)
+  if (!HasOverrideMetrics()) {
     return Status(kOk);
+  }
 
   base::Value::Dict params;
-  params.Set("width", overridden_device_metrics_->width);
-  params.Set("height", overridden_device_metrics_->height);
+  params.Set("width", mobile_device_->device_metrics->width);
+  params.Set("height", mobile_device_->device_metrics->height);
   params.Set("deviceScaleFactor",
-             overridden_device_metrics_->device_scale_factor);
-  params.Set("mobile", overridden_device_metrics_->mobile);
-  params.Set("fitWindow", overridden_device_metrics_->fit_window);
-  params.Set("textAutosizing", overridden_device_metrics_->text_autosizing);
-  params.Set("fontScaleFactor", overridden_device_metrics_->font_scale_factor);
+             mobile_device_->device_metrics->device_scale_factor);
+  params.Set("mobile", mobile_device_->device_metrics->mobile);
+  params.Set("fitWindow", mobile_device_->device_metrics->fit_window);
+  params.Set("textAutosizing", mobile_device_->device_metrics->text_autosizing);
+  params.Set("fontScaleFactor",
+             mobile_device_->device_metrics->font_scale_factor);
   Status status = client_->SendCommand("Page.setDeviceMetricsOverride", params);
   if (status.IsError())
     return status;
 
-  if (overridden_device_metrics_->touch) {
+  if (mobile_device_->device_metrics->touch) {
     base::Value::Dict emulate_touch_params;
     emulate_touch_params.Set("enabled", true);
     status = client_->SendCommand("Emulation.setTouchEmulationEnabled",

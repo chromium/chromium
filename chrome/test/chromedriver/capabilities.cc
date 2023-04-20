@@ -119,7 +119,7 @@ Status ParseLogPath(const base::Value& option, Capabilities* capabilities) {
 
 Status ParseDeviceName(const std::string& device_name,
                        Capabilities* capabilities) {
-  std::unique_ptr<MobileDevice> device;
+  MobileDevice device;
   Status status = FindMobileDevice(device_name, &device);
 
   if (status.IsError()) {
@@ -127,10 +127,11 @@ Status ParseDeviceName(const std::string& device_name,
                   "'" + device_name + "' must be a valid device", status);
   }
 
-  capabilities->device_metrics = std::move(device->device_metrics);
+  capabilities->mobile_device = std::move(device);
   // Don't override the user agent if blank (like for notebooks).
-  if (!device->user_agent.empty())
-    capabilities->switches.SetSwitch("user-agent", device->user_agent);
+  if (!device.user_agent.empty()) {
+    capabilities->switches.SetSwitch("user-agent", device.user_agent);
+  }
 
   return Status(kOk);
 }
@@ -152,6 +153,8 @@ Status ParseMobileEmulation(const base::Value& option,
 
     return ParseDeviceName(*device_name, capabilities);
   }
+
+  MobileDevice mobile_device;
 
   if (mobile_emulation->Find("deviceMetrics")) {
     const base::Value::Dict* metrics =
@@ -184,11 +187,10 @@ Status ParseMobileEmulation(const base::Value& option,
     if (metrics->Find("mobile") && !mobile.has_value())
       return Status(kInvalidArgument, "'mobile' must be a boolean");
 
-    DeviceMetrics* device_metrics =
-        new DeviceMetrics(width, height, maybe_device_scale_factor.value_or(0),
-                          touch.value_or(true), mobile.value_or(true));
-    capabilities->device_metrics =
-        std::unique_ptr<DeviceMetrics>(device_metrics);
+    DeviceMetrics device_metrics{width, height,
+                                 maybe_device_scale_factor.value_or(0),
+                                 touch.value_or(true), mobile.value_or(true)};
+    mobile_device.device_metrics = std::move(device_metrics);
   }
 
   if (mobile_emulation->Find("userAgent")) {
@@ -196,8 +198,11 @@ Status ParseMobileEmulation(const base::Value& option,
     if (!user_agent)
       return Status(kInvalidArgument, "'userAgent' must be a string");
 
+    mobile_device.user_agent = *user_agent;
     capabilities->switches.SetSwitch("user-agent", *user_agent);
   }
+
+  capabilities->mobile_device = std::move(mobile_device);
 
   return Status(kOk);
 }

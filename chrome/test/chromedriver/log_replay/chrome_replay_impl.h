@@ -11,7 +11,6 @@
 class DevToolsClient;
 class DevToolsHttpClient;
 class Status;
-struct DeviceMetrics;
 
 // Same as ChromeDesktopImpl except that it completely ignores the existence
 // of the |process| passed into the constructor. This allows running Chrome
@@ -23,7 +22,7 @@ class ChromeReplayImpl : public ChromeDesktopImpl {
                    std::unique_ptr<DevToolsClient> websocket_client,
                    std::vector<std::unique_ptr<DevToolsEventListener>>
                        devtools_event_listeners,
-                   std::unique_ptr<DeviceMetrics> device_metrics,
+                   absl::optional<MobileDevice> mobile_device,
                    SyncWebSocketFactory socket_factory,
                    std::string page_load_strategy,
                    base::Process process,

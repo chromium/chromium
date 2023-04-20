@@ -9,17 +9,19 @@
 #include <string>
 
 #include "chrome/test/chromedriver/chrome/device_metrics.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Status;
 
 struct MobileDevice {
   MobileDevice();
+  MobileDevice(const MobileDevice&);
   ~MobileDevice();
-  std::unique_ptr<DeviceMetrics> device_metrics;
+  MobileDevice& operator=(const MobileDevice&);
+  absl::optional<DeviceMetrics> device_metrics;
   std::string user_agent;
 };
 
-Status FindMobileDevice(std::string device_name,
-                        std::unique_ptr<MobileDevice>* mobile_device);
+Status FindMobileDevice(std::string device_name, MobileDevice* mobile_device);
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_MOBILE_DEVICE_H_

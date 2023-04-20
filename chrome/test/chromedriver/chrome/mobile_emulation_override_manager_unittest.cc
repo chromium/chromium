@@ -41,7 +41,9 @@ void AssertDeviceMetricsCommand(const Command& command,
 TEST(MobileEmulationOverrideManager, SendsCommandWithTouchOnConnect) {
   RecorderDevToolsClient client;
   DeviceMetrics device_metrics(1, 2, 3.0, true, true);
-  MobileEmulationOverrideManager manager(&client, &device_metrics);
+  MobileDevice mobile_device;
+  mobile_device.device_metrics = device_metrics;
+  MobileEmulationOverrideManager manager(&client, std::move(mobile_device));
   ASSERT_EQ(0u, client.commands_.size());
   ASSERT_EQ(kOk, manager.OnConnected(&client).code());
 
@@ -55,7 +57,9 @@ TEST(MobileEmulationOverrideManager, SendsCommandWithTouchOnConnect) {
 TEST(MobileEmulationOverrideManager, SendsCommandWithoutTouchOnConnect) {
   RecorderDevToolsClient client;
   DeviceMetrics device_metrics(1, 2, 3.0, false, true);
-  MobileEmulationOverrideManager manager(&client, &device_metrics);
+  MobileDevice mobile_device;
+  mobile_device.device_metrics = device_metrics;
+  MobileEmulationOverrideManager manager(&client, std::move(mobile_device));
   ASSERT_EQ(0u, client.commands_.size());
   ASSERT_EQ(kOk, manager.OnConnected(&client).code());
 
@@ -69,7 +73,9 @@ TEST(MobileEmulationOverrideManager, SendsCommandWithoutTouchOnConnect) {
 TEST(MobileEmulationOverrideManager, SendsCommandOnNavigation) {
   RecorderDevToolsClient client;
   DeviceMetrics device_metrics(1, 2, 3.0, true, true);
-  MobileEmulationOverrideManager manager(&client, &device_metrics);
+  MobileDevice mobile_device;
+  mobile_device.device_metrics = device_metrics;
+  MobileEmulationOverrideManager manager(&client, std::move(mobile_device));
   base::Value::Dict main_frame_params;
   ASSERT_EQ(kOk,
             manager.OnEvent(&client, "Page.frameNavigated", main_frame_params)

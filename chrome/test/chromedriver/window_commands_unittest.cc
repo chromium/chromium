@@ -966,9 +966,10 @@ constexpr double device_scale_factor = 0.3;
 
 class StoreScreenshotParamsWebView : public StubWebView {
  public:
-  explicit StoreScreenshotParamsWebView(DevToolsClient* dtc = nullptr,
-                                        DeviceMetrics* dm = nullptr)
-      : StubWebView("1"), meom_(new MobileEmulationOverrideManager(dtc, dm)) {}
+  explicit StoreScreenshotParamsWebView(
+      DevToolsClient* dtc = nullptr,
+      absl::optional<MobileDevice> md = absl::nullopt)
+      : StubWebView("1"), meom_(new MobileEmulationOverrideManager(dtc, md)) {}
   ~StoreScreenshotParamsWebView() override = default;
 
   Status SendCommandAndGetResult(const std::string& cmd,
@@ -1046,8 +1047,10 @@ TEST(WindowCommandsTest, ExecuteFullPageScreenCapture) {
 
 TEST(WindowCommandsTest, ExecuteMobileFullPageScreenCapture) {
   StubDevToolsClient sdtc;
-  DeviceMetrics dm(0, 0, device_scale_factor, false, mobile);
-  StoreScreenshotParamsWebView webview(&sdtc, &dm);
+  MobileDevice mobile_device;
+  mobile_device.device_metrics =
+      DeviceMetrics(0, 0, device_scale_factor, false, mobile);
+  StoreScreenshotParamsWebView webview(&sdtc, std::move(mobile_device));
   ASSERT_EQ(webview.GetMobileEmulationOverrideManager()->HasOverrideMetrics(),
             true);
   base::Value::Dict params;

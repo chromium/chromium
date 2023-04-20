@@ -23,7 +23,6 @@ class DevToolsClient;
 class DevToolsHttpClient;
 class Status;
 class WebView;
-struct DeviceMetrics;
 
 class ChromeDesktopImpl : public ChromeImpl {
  public:
@@ -31,7 +30,7 @@ class ChromeDesktopImpl : public ChromeImpl {
                     std::unique_ptr<DevToolsClient> websocket_client,
                     std::vector<std::unique_ptr<DevToolsEventListener>>
                         devtools_event_listeners,
-                    std::unique_ptr<DeviceMetrics> device_metrics,
+                    absl::optional<MobileDevice> mobile_device,
                     SyncWebSocketFactory socket_factory,
                     std::string page_load_strategy,
                     base::Process process,

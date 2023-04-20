@@ -391,15 +391,9 @@ Status LaunchRemoteChromeSession(
                  << status.message();
   }
 
-  std::unique_ptr<DeviceMetrics> device_metrics;
-  if (capabilities.device_metrics) {
-    device_metrics =
-        std::make_unique<DeviceMetrics>(*capabilities.device_metrics);
-  }
-
   *chrome = std::make_unique<ChromeRemoteImpl>(
       std::move(devtools_http_client), std::move(devtools_websocket_client),
-      std::move(devtools_event_listeners), std::move(device_metrics),
+      std::move(devtools_event_listeners), capabilities.mobile_device,
       socket_factory, capabilities.page_load_strategy);
   return Status(kOk);
 }
@@ -656,16 +650,10 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
                  << status.message();
   }
 
-  std::unique_ptr<DeviceMetrics> device_metrics;
-  if (capabilities.device_metrics) {
-    device_metrics =
-        std::make_unique<DeviceMetrics>(*capabilities.device_metrics);
-  }
-
   std::unique_ptr<ChromeDesktopImpl> chrome_desktop =
       std::make_unique<ChromeDesktopImpl>(
           std::move(devtools_http_client), std::move(devtools_websocket_client),
-          std::move(devtools_event_listeners), std::move(device_metrics),
+          std::move(devtools_event_listeners), capabilities.mobile_device,
           socket_factory, capabilities.page_load_strategy, std::move(process),
           command, &user_data_dir_temp_dir, &extension_dir,
           capabilities.network_emulation_enabled);
@@ -750,15 +738,9 @@ Status LaunchAndroidChrome(network::mojom::URLLoaderFactory* factory,
                  << status.message();
   }
 
-  std::unique_ptr<DeviceMetrics> device_metrics;
-  if (capabilities.device_metrics) {
-    device_metrics =
-        std::make_unique<DeviceMetrics>(*capabilities.device_metrics);
-  }
-
   *chrome = std::make_unique<ChromeAndroidImpl>(
       std::move(devtools_http_client), std::move(devtools_websocket_client),
-      std::move(devtools_event_listeners), std::move(device_metrics),
+      std::move(devtools_event_listeners), capabilities.mobile_device,
       socket_factory, capabilities.page_load_strategy, std::move(device));
   return Status(kOk);
 }
@@ -808,17 +790,11 @@ Status LaunchReplayChrome(network::mojom::URLLoaderFactory* factory,
                  << status.message();
   }
 
-  std::unique_ptr<DeviceMetrics> device_metrics;
-  if (capabilities.device_metrics) {
-    device_metrics =
-        std::make_unique<DeviceMetrics>(*capabilities.device_metrics);
-  }
-
   base::Process dummy_process;
   std::unique_ptr<ChromeDesktopImpl> chrome_impl =
       std::make_unique<ChromeReplayImpl>(
           std::move(devtools_http_client), std::move(devtools_websocket_client),
-          std::move(devtools_event_listeners), std::move(device_metrics),
+          std::move(devtools_event_listeners), capabilities.mobile_device,
           socket_factory, capabilities.page_load_strategy,
           std::move(dummy_process), command, &user_data_dir_temp_dir,
           &extension_dir, capabilities.network_emulation_enabled);

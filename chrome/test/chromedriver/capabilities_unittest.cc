@@ -582,9 +582,10 @@ TEST(ParseCapabilities, MobileEmulationDeviceMetrics) {
   Status status = capabilities.Parse(caps);
   ASSERT_TRUE(status.IsOk());
 
-  ASSERT_EQ(360, capabilities.device_metrics->width);
-  ASSERT_EQ(640, capabilities.device_metrics->height);
-  ASSERT_EQ(3.0, capabilities.device_metrics->device_scale_factor);
+  ASSERT_EQ(360, capabilities.mobile_device->device_metrics->width);
+  ASSERT_EQ(640, capabilities.mobile_device->device_metrics->height);
+  ASSERT_EQ(3.0,
+            capabilities.mobile_device->device_metrics->device_scale_factor);
 }
 
 TEST(ParseCapabilities, MobileEmulationDeviceName) {
@@ -605,9 +606,10 @@ TEST(ParseCapabilities, MobileEmulationDeviceName) {
       "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/*.*.*.* Mobile "
       "Safari/537.36"));
 
-  ASSERT_EQ(360, capabilities.device_metrics->width);
-  ASSERT_EQ(640, capabilities.device_metrics->height);
-  ASSERT_EQ(3.0, capabilities.device_metrics->device_scale_factor);
+  ASSERT_EQ(360, capabilities.mobile_device->device_metrics->width);
+  ASSERT_EQ(640, capabilities.mobile_device->device_metrics->height);
+  ASSERT_EQ(3.0,
+            capabilities.mobile_device->device_metrics->device_scale_factor);
 }
 
 TEST(ParseCapabilities, MobileEmulationNotDict) {

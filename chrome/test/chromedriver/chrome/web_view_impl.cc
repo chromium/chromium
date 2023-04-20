@@ -313,7 +313,7 @@ WebViewImpl::WebViewImpl(const std::string& id,
                          const WebViewImpl* parent,
                          const BrowserInfo* browser_info,
                          std::unique_ptr<DevToolsClient> client,
-                         const DeviceMetrics* device_metrics,
+                         absl::optional<MobileDevice> mobile_device,
                          std::string page_load_strategy)
     : id_(id),
       w3c_compliant_(w3c_compliant),
@@ -325,7 +325,8 @@ WebViewImpl::WebViewImpl(const std::string& id,
       frame_tracker_(new FrameTracker(client_.get(), this, browser_info)),
       dialog_manager_(new JavaScriptDialogManager(client_.get(), browser_info)),
       mobile_emulation_override_manager_(
-          new MobileEmulationOverrideManager(client_.get(), device_metrics)),
+          new MobileEmulationOverrideManager(client_.get(),
+                                             std::move(mobile_device))),
       geolocation_override_manager_(
           new GeolocationOverrideManager(client_.get())),
       network_conditions_override_manager_(
@@ -372,7 +373,7 @@ WebViewImpl* WebViewImpl::CreateChild(const std::string& session_id,
       std::make_unique<DevToolsClientImpl>(session_id, session_id);
   WebViewImpl* child = new WebViewImpl(
       target_id, w3c_compliant_, this, browser_info_, std::move(child_client),
-      nullptr,
+      absl::nullopt,
       IsNonBlocking() ? PageLoadStrategy::kNone : PageLoadStrategy::kNormal);
   if (!IsNonBlocking()) {
     // Find Navigation Tracker for the top of the WebViewImpl hierarchy

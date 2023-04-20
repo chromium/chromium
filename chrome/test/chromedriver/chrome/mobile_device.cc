@@ -14,11 +14,12 @@
 #include "chrome/test/chromedriver/chrome/mobile_device_list.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 
-MobileDevice::MobileDevice() {}
-MobileDevice::~MobileDevice() {}
+MobileDevice::MobileDevice() = default;
+MobileDevice::MobileDevice(const MobileDevice&) = default;
+MobileDevice::~MobileDevice() = default;
+MobileDevice& MobileDevice::operator=(const MobileDevice&) = default;
 
-Status FindMobileDevice(std::string device_name,
-                        std::unique_ptr<MobileDevice>* mobile_device) {
+Status FindMobileDevice(std::string device_name, MobileDevice* mobile_device) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
       kMobileDevices, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!parsed_json.has_value())
@@ -34,13 +35,13 @@ Status FindMobileDevice(std::string device_name,
   if (!device)
     return Status(kUnknownError, "must be a valid device");
 
-  std::unique_ptr<MobileDevice> tmp_mobile_device(new MobileDevice());
+  MobileDevice tmp_mobile_device;
   const std::string* maybe_ua = device->FindString("userAgent");
   if (!maybe_ua) {
     return Status(kUnknownError,
                   "malformed device user agent: should be a string");
   }
-  tmp_mobile_device->user_agent = *maybe_ua;
+  tmp_mobile_device.user_agent = *maybe_ua;
 
   absl::optional<int> maybe_width = device->FindInt("width");
   absl::optional<int> maybe_height = device->FindInt("height");
@@ -67,10 +68,9 @@ Status FindMobileDevice(std::string device_name,
   if (!mobile) {
     return Status(kUnknownError, "malformed mobile: should be a bool");
   }
-  tmp_mobile_device->device_metrics = std::make_unique<DeviceMetrics>(
+  tmp_mobile_device.device_metrics = DeviceMetrics(
       *maybe_width, *maybe_height, *maybe_device_scale_factor, *touch, *mobile);
 
   *mobile_device = std::move(tmp_mobile_device);
   return Status(kOk);
-
 }
