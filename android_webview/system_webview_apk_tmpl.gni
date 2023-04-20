@@ -107,13 +107,11 @@ template("system_webview_apk_or_module_tmpl") {
                                  "weblayer_in_split",
                                  "webview_framework_dep",
                                  "webview_product_config_java_package",
-                                 "webview_includes_weblayer",
                                  "webview_devui_show_icon",
                                  "use_stable_package_name_for_trichrome",
                                ])
 
     _is_bundle_module = _target_type == "android_app_bundle_module"
-    _webview_includes_weblayer = invoker.webview_includes_weblayer
     _exclude_weblayer_java =
         defined(invoker.exclude_weblayer_java) && invoker.exclude_weblayer_java
     _omit_dex = defined(invoker.omit_dex) && invoker.omit_dex
@@ -138,7 +136,7 @@ template("system_webview_apk_or_module_tmpl") {
       deps += [ "//android_webview:android_webview_no_weblayer_java" ]
     } else {
       if (_is_bundle_module && invoker.weblayer_in_split &&
-          _webview_includes_weblayer) {
+          webview_includes_weblayer) {
         deps += [
           # TODO(crbug.com/1105096): WebLayer resources are added to the base
           # module for now because of bugs with shared resources in splits.
@@ -166,7 +164,7 @@ template("system_webview_apk_or_module_tmpl") {
       }
     }
 
-    if (_webview_includes_weblayer) {
+    if (webview_includes_weblayer) {
       if (_is_bundle_module) {
         deps += [ "//weblayer:bundle_locale_pak_assets" ]
       } else {
@@ -244,9 +242,9 @@ template("system_webview_apk_or_module_tmpl") {
       }
     }
 
-    _include_arcore = _webview_includes_weblayer && enable_arcore &&
-                      !_exclude_weblayer_java &&
-                      (_include_secondary_support || _include_primary_support)
+    _include_arcore =
+        webview_includes_weblayer && enable_arcore && !_exclude_weblayer_java &&
+        (_include_secondary_support || _include_primary_support)
 
     if (_include_arcore) {
       # Do not add manifest entries because embedders are the ones that will need to add them.
@@ -262,7 +260,7 @@ template("system_webview_apk_or_module_tmpl") {
         "//third_party/crashpad/crashpad/handler:crashpad_handler_trampoline",
       ]
       loadable_modules = [ "$root_out_dir/libcrashpad_handler_trampoline.so" ]
-      if (_webview_includes_weblayer) {
+      if (webview_includes_weblayer) {
         deps += [ "//base/android/linker:chromium_android_linker" ]
         loadable_modules +=
             [ "$root_out_dir/libchromium_android_linker$shlib_extension" ]
@@ -281,7 +279,7 @@ template("system_webview_apk_or_module_tmpl") {
       _secondary_out_dir = get_label_info(_trampoline, "root_out_dir")
       secondary_abi_loadable_modules =
           [ "$_secondary_out_dir/libcrashpad_handler_trampoline.so" ]
-      if (_webview_includes_weblayer) {
+      if (webview_includes_weblayer) {
         deps += [ "//base/android/linker:chromium_android_linker($android_secondary_abi_toolchain)" ]
         secondary_abi_loadable_modules +=
             [ "$_secondary_out_dir/libchromium_android_linker$shlib_extension" ]
@@ -297,7 +295,7 @@ template("system_webview_apk_or_module_tmpl") {
     resource_exclusion_regex = common_resource_exclusion_regex
     resource_exclusion_exceptions = common_resource_exclusion_exceptions
 
-    if (_webview_includes_weblayer) {
+    if (webview_includes_weblayer) {
       resource_values_filter_rules = weblayer_resource_values_filter_rules
       resource_exclusion_exceptions += weblayer_resource_exclusion_exceptions
 
