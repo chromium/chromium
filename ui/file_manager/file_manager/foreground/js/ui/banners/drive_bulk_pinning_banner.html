@@ -1,6 +1,13 @@
 <style>
   educational-banner {
-    --feature-icon-bg: url(/foreground/images/files/ui/drive_logo.svg);
+    --feature-icon-src: url(/foreground/images/files/ui/drive_logo.svg);
+  }
+
+  /* action-button's hover effect is handled by hoverBackground. */
+  :host-context([theme='refresh23'])
+      cr-button.action-button:hover::part(hoverBackground) {
+    background-color: var(--cros-sys-hover_on_prominent);
+    display: block;
   }
 </style>
 <educational-banner>

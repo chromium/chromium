@@ -18,22 +18,62 @@
     flex-wrap: nowrap;
   }
 
-  .warning-icon {
-    background-image: var(--icon-src,
-      url(/foreground/images/files/ui/warning_banner_icon.svg));
-    background-size: 32px 32px;
-    flex: none;
+  :host-context([theme='legacy']) .warning-icon-holder {
+    align-items: center;
+    background-color: var(--icon-holder-bg, var(--cros-highlight-color-yellow));
+    border-radius: 16px;
+    display: flex;
     height: 32px;
+    justify-content: center;
     margin-inline-end: 20px;
     margin-inline-start: 16px;
     width: 32px;
   }
 
-  .warning-message {
+  :host-context([theme='refresh23']) .warning-icon-holder {
+    align-items: center;
+    background-color: var(--icon-holder-bg, var(--cros-sys-warning_container));
+    border-radius: 16px;
+    display: flex;
+    height: 32px;
+    justify-content: center;
+    margin-inline-end: 20px;
+    margin-inline-start: 16px;
+    width: 32px;
+  }
+
+  :host-context([theme='legacy']) .warning-icon {
+    -webkit-mask-image: var(--icon-src,
+        url(/foreground/images/files/ui/warning_banner_icon.svg));
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    background-color: var(--icon-bg, var(--cros-color-warning));
+    flex: none;
+    height: 20px;
+    width: 20px;
+  }
+
+  :host-context([theme='refresh23']) .warning-icon {
+    -webkit-mask-image: var(--icon-src,
+        url(/foreground/images/files/ui/warning_banner_icon.svg));
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    background-color: var(--icon-bg, var(--cros-sys-warning));
+    flex: none;
+    height: 20px;
+    width: 20px;
+  }
+
+  :host-context([theme='legacy']) .warning-message {
     color: var(--cros-text-color-primary);
   }
 
-  .button-group {
+  :host-context([theme='refresh23']) .warning-message {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-body-2-font);
+  }
+
+  :host-context([theme='legacy']) .button-group {
     align-items: center;
     display: flex;
     flex: 0 0 auto;
@@ -42,7 +82,17 @@
     padding-inline-start: 40px;
   }
 
-  ::slotted(cr-button) {
+  :host-context([theme='refresh23']) .button-group {
+    align-items: center;
+    display: flex;
+    flex: 0 0 auto;
+    height: 32px;
+    margin-inline-start: auto;
+    padding-inline-start: 32px;
+  }
+
+  :host-context([theme='legacy']) ::slotted(cr-button),
+  :host-context([theme='legacy']) #dismiss-button {
     --active-bg: var(--cros-button-background-color-secondary-hover);
     --hover-bg-color: var(--cros-button-background-color-secondary-hover);
     --ink-color: rgba(var(--cros-button-ripple-color-secondary-rgb), var(--cros-button-secondary-ripple-opacity));
@@ -56,14 +106,44 @@
     position: relative;
   }
 
-  :host-context(.focus-outline-visible) ::slotted(cr-button:focus) {
+  :host-context([theme='refresh23']) ::slotted(cr-button),
+  :host-context([theme='refresh23']) #dismiss-button {
+    --active-bg: none;
+    --hover-bg-color: var(--cros-sys-hover_on_subtle);
+    --ink-color: var(--cros-sys-ripple_neutral_on_subtle);
+    --paper-ripple-opacity: 100%;
+    --text-color: var(--cros-sys-primary);
+    border: none;
+    border-radius: 18px;
+    box-shadow: none;
+    font: var(--cros-button-2-font);
+    height: 36px;
+    margin-inline: 4px;
+    padding-inline: 16px;
+    position: relative;
+  }
+
+  :host-context([theme='legacy']):host-context(.focus-outline-visible)
+      ::slotted(cr-button:focus),
+  :host-context([theme='legacy']):host-context(.focus-outline-visible)
+      #dismiss-button:focus {
     outline: 2px solid var(--cros-focus-ring-color);
+    outline-offset: 2px;
+  }
+
+  :host-context([theme='refresh23']):host-context(.focus-outline-visible)
+      ::slotted(cr-button:focus),
+  :host-context([theme='refresh23']):host-context(.focus-outline-visible)
+      #dismiss-button:focus {
+    outline: 2px solid var(--cros-sys-focus_ring);
     outline-offset: 2px;
   }
 </style>
 <div class="warning-banner">
   <div id="warning-text-group">
-    <div class="warning-icon"></div>
+    <div class="warning-icon-holder">
+      <div class="warning-icon"></div>
+    </div>
     <div class="warning-message body2-primary">
       <slot name="text"></slot>
     </div>

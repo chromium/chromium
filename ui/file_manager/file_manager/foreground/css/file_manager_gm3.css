@@ -342,7 +342,6 @@ html.col-resize .jelly-splitter:not(.splitter-active):hover {
 .dialog-header {
   align-items: center;
   background: none;
-  border-bottom: 1px solid var(--cros-separator-color);
   box-sizing: border-box;
   color: var(--cros-text-color-secondary);
   display: flex;
@@ -2403,21 +2402,18 @@ files-tooltip:not(:defined) {
 }
 
 #banners > *:not([hidden]) {
-  background-color: var(--cros-bg-color-elevation-1);
+  background-color: var(--cros-sys-app_base_shaded);
   border-radius: 8px;
-  box-shadow: var(--cros-elevation-1-shadow);
   height: auto;
-  margin-bottom: 4px;
   margin-inline-end: 16px;
-  margin-inline-start: 0;
-  margin-top: 16px;
+  margin-inline-start: 16px;
   max-height: 300px;
   min-height: 46px;
   opacity: 1;
-  padding-bottom: 12px;
+  padding-bottom: 13px;
   padding-inline-end: 8px;
   padding-inline-start: 0;
-  padding-top: 12px;
+  padding-top: 13px;
   visibility: visible;
 }
 

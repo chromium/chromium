@@ -26,9 +26,11 @@
     flex-wrap: nowrap;
   }
 
-  .feature-icon {
-    background-image: var(--feature-icon-bg, none);
-    background-size: 32px 32px;
+  :host-context([theme='legacy']) .feature-icon {
+    -webkit-mask-image: var(--feature-icon-src, none);
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    background-color: var(--feature-icon-bg, var(--cros-color-prominent));
     flex: none;
     height: 32px;
     margin-inline-end: 20px;
@@ -36,7 +38,24 @@
     width: 32px;
   }
 
-  .title {
+  :host-context([theme='refresh23']) .feature-icon {
+    -webkit-mask-image: var(--feature-icon-src, none);
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    background-color: var(--feature-icon-bg, var(--cros-sys-primary));
+    flex: none;
+    height: 32px;
+    margin-inline-end: 20px;
+    margin-inline-start: 16px;
+    width: 32px;
+  }
+
+  ::slotted([slot='illustration']) {
+    height: 32px;
+    width: 32px;
+  }
+
+  :host-context([theme='legacy']) .title {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     color: var(--cros-text-color-primary);
@@ -49,14 +68,29 @@
     text-overflow: ellipsis;
   }
 
-  .subtitle {
+  :host-context([theme='refresh23']) .title {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    color: var(--cros-sys-on_surface);
+    display: -webkit-box;
+    font: var(--cros-headline-1-font);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  :host-context([theme='legacy']) .subtitle {
     color: var(--cros-text-color-secondary);
     font-family: Roboto;
     font-size: 13px;
     line-height: 20px;
   }
 
-  .button-group {
+  :host-context([theme='refresh23']) .subtitle {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-body-2-font);
+  }
+
+  :host-context([theme='legacy']) .button-group {
     align-items: center;
     display: flex;
     flex: 0 0 auto;
@@ -65,8 +99,18 @@
     padding-inline-start: 40px;
   }
 
-  ::slotted(cr-button),
-  #dismiss-button {
+  :host-context([theme='refresh23']) .button-group {
+    align-items: center;
+    display: flex;
+    flex: 0 0 auto;
+    height: 32px;
+    margin-inline-start: auto;
+    padding-inline-start: 40px;
+    padding-inline-start: 32px;
+  }
+
+  :host-context([theme='legacy']) ::slotted(cr-button),
+  :host-context([theme='legacy']) #dismiss-button {
     --active-bg: var(--cros-button-background-color-secondary-hover);
     --hover-bg-color: var(--cros-button-background-color-secondary-hover);
     --ink-color: rgba(var(--cros-button-ripple-color-secondary-rgb), var(--cros-button-secondary-ripple-opacity));
@@ -80,15 +124,53 @@
     position: relative;
   }
 
-  :host-context(.focus-outline-visible) ::slotted(cr-button:focus),
-  :host-context(.focus-outline-visible) #dismiss-button:focus {
+  :host-context([theme='refresh23']) ::slotted(cr-button),
+  :host-context([theme='refresh23']) #dismiss-button {
+    --active-bg: none;
+    --bg-action: var(--cros-sys-primary);
+    /* Use the default bg color as hover color because we
+       rely on hoverBackground layer below.  */
+    --hover-bg-action: var(--cros-sys-primary);
+    --hover-bg-color: var(--cros-sys-hover_on_subtle);
+    --ink-color: var(--cros-sys-ripple_neutral_on_subtle);
+    --ink-color-action: var(--cros-sys-ripple_primary);
+    --paper-ripple-opacity: 100%;
+    --text-color-action: var(--cros-sys-on_primary);
+    --text-color: var(--cros-sys-primary);
+    border: none;
+    border-radius: 18px;
+    box-shadow: none;
+    font: var(--cros-button-2-font);
+    height: 36px;
+    margin-inline: 4px;
+    padding-inline: 16px;
+    position: relative;
+  }
+
+  :host-context([theme='legacy']):host-context(.focus-outline-visible)
+      ::slotted(cr-button:focus),
+  :host-context([theme='legacy']):host-context(.focus-outline-visible)
+      #dismiss-button:focus {
     outline: 2px solid var(--cros-focus-ring-color);
+    outline-offset: 2px;
+  }
+
+  :host-context([theme='refresh23']):host-context(.focus-outline-visible)
+      ::slotted(cr-button:focus),
+  :host-context([theme='refresh23']):host-context(.focus-outline-visible)
+      #dismiss-button:focus {
+    outline: 2px solid var(--cros-sys-focus_ring);
     outline-offset: 2px;
   }
 </style>
 <div class="educational-banner">
   <div class="educational-text-icon">
-    <div class="feature-icon"></div>
+    <!-- Use feature-icon to pass a monotone color SVG, use slot illustration
+         to pass multiple colored SVG, when slot illustration is used, remember
+         to set --feature-icon-src to none. -->
+    <div class="feature-icon">
+      <slot name="illustration"></slot>
+    </div>
     <div id="educational-text-group">
       <div class="title headline2">
         <slot name="title"></slot>
