@@ -41,6 +41,10 @@ class TabSearchButton : public NewTabButton {
  protected:
   // NewTabButton:
   void PaintIcon(gfx::Canvas* canvas) override;
+  int GetCornerRadius() const override;
+  SkPath GetBorderPath(const gfx::Point& origin,
+                       float scale,
+                       bool extend_to_top) const override;
 
  private:
   std::unique_ptr<TabSearchBubbleHost> tab_search_bubble_host_;

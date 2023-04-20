@@ -129,6 +129,8 @@
   E_CPONLY(kColorMediaRouterIconActive) \
   E_CPONLY(kColorMediaRouterIconWarning) \
   /* New tab button colors. */ \
+  E_CPONLY(kColorNewTabButtonForegroundFrameActive) \
+  E_CPONLY(kColorNewTabButtonForegroundFrameInactive) \
   E_CPONLY(kColorNewTabButtonBackgroundFrameActive) \
   E_CPONLY(kColorNewTabButtonBackgroundFrameInactive) \
   E_CPONLY(kColorNewTabButtonFocusRing) \

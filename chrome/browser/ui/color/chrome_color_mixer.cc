@@ -325,19 +325,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       PickGoogleColor(ui::kColorAccent, kColorToolbar,
                       color_utils::kMinimumVisibleContrastRatio);
   mixer[kColorMediaRouterIconWarning] = {ui::kColorAlertMediumSeverityIcon};
-  mixer[kColorNewTabButtonBackgroundFrameActive] = {
-      kColorTabBackgroundInactiveFrameActive};
-  mixer[kColorNewTabButtonBackgroundFrameInactive] = {
-      kColorTabBackgroundInactiveFrameInactive};
-  mixer[kColorNewTabButtonFocusRing] = ui::PickGoogleColorTwoBackgrounds(
-      ui::kColorFocusableBorderFocused,
-      ui::GetResultingPaintColor(kColorNewTabButtonBackgroundFrameActive,
-                                 ui::kColorFrameActive),
-      ui::kColorFrameActive, color_utils::kMinimumVisibleContrastRatio);
-  mixer[kColorNewTabButtonInkDropFrameActive] =
-      ui::GetColorWithMaxContrast(kColorNewTabButtonBackgroundFrameActive);
-  mixer[kColorNewTabButtonInkDropFrameInactive] =
-      ui::GetColorWithMaxContrast(kColorNewTabButtonBackgroundFrameInactive);
   mixer[kColorOmniboxAnswerIconBackground] = {
       ui::kColorButtonBackgroundProminent};
   mixer[kColorOmniboxAnswerIconForeground] = {

@@ -23,6 +23,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -113,7 +114,41 @@ void NewTabButton::RemoveLayerFromRegions(ui::Layer* old_layer) {
 }
 
 SkColor NewTabButton::GetForegroundColor() const {
+  if (features::IsChromeRefresh2023()) {
+    return GetColorProvider()->GetColor(
+        tab_strip_->ShouldPaintAsActiveFrame()
+            ? kColorNewTabButtonForegroundFrameActive
+            : kColorNewTabButtonForegroundFrameInactive);
+  }
   return tab_strip_->GetTabForegroundColor(TabActive::kInactive);
+}
+
+int NewTabButton::GetCornerRadius() const {
+  return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kMaximum, GetContentsBounds().size());
+}
+
+SkPath NewTabButton::GetBorderPath(const gfx::Point& origin,
+                                   float scale,
+                                   bool extend_to_top) const {
+  gfx::PointF scaled_origin(origin);
+  scaled_origin.Scale(scale);
+  const float radius = GetCornerRadius() * scale;
+
+  SkPath path;
+  if (extend_to_top) {
+    path.moveTo(scaled_origin.x(), 0);
+    const float diameter = radius * 2;
+    path.rLineTo(diameter, 0);
+    path.rLineTo(0, scaled_origin.y() + radius);
+    path.rArcTo(radius, radius, 0, SkPath::kSmall_ArcSize, SkPathDirection::kCW,
+                -diameter, 0);
+    path.close();
+  } else {
+    path.addCircle(scaled_origin.x() + radius, scaled_origin.y() + radius,
+                   radius);
+  }
+  return path;
 }
 
 void NewTabButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
@@ -196,11 +231,6 @@ bool NewTabButton::GetHitTestMask(SkPath* mask) const {
   return true;
 }
 
-int NewTabButton::GetCornerRadius() const {
-  return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kMaximum, GetContentsBounds().size());
-}
-
 void NewTabButton::PaintFill(gfx::Canvas* canvas) const {
   gfx::ScopedCanvas scoped_canvas(canvas);
   canvas->UndoDeviceScaleFactor();
@@ -261,29 +291,6 @@ void NewTabButton::PaintIcon(gfx::Canvas* canvas) {
 
   // Vertical stroke.
   canvas->DrawLine(gfx::PointF(center, start), gfx::PointF(center, end), flags);
-}
-
-SkPath NewTabButton::GetBorderPath(const gfx::Point& origin,
-                                   float scale,
-                                   bool extend_to_top) const {
-  gfx::PointF scaled_origin(origin);
-  scaled_origin.Scale(scale);
-  const float radius = GetCornerRadius() * scale;
-
-  SkPath path;
-  if (extend_to_top) {
-    path.moveTo(scaled_origin.x(), 0);
-    const float diameter = radius * 2;
-    path.rLineTo(diameter, 0);
-    path.rLineTo(0, scaled_origin.y() + radius);
-    path.rArcTo(radius, radius, 0, SkPath::kSmall_ArcSize, SkPathDirection::kCW,
-                -diameter, 0);
-    path.close();
-  } else {
-    path.addCircle(scaled_origin.x() + radius, scaled_origin.y() + radius,
-                   radius);
-  }
-  return path;
 }
 
 BEGIN_METADATA(NewTabButton, views::ImageButton)

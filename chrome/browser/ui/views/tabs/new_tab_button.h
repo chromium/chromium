@@ -57,6 +57,15 @@ class NewTabButton : public views::ImageButton,
 
   SkColor GetForegroundColor() const;
 
+  // Returns the radius to use for the button corners.
+  virtual int GetCornerRadius() const;
+
+  // Returns the path for the given |origin| and |scale|.  If |extend_to_top| is
+  // true, the path is extended vertically to y = 0.
+  virtual SkPath GetBorderPath(const gfx::Point& origin,
+                               float scale,
+                               bool extend_to_top) const;
+
   // views::ImageButton:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void AddedToWidget() override;
@@ -78,17 +87,8 @@ class NewTabButton : public views::ImageButton,
   // views::MaskedTargeterDelegate:
   bool GetHitTestMask(SkPath* mask) const override;
 
-  // Returns the radius to use for the button corners.
-  int GetCornerRadius() const;
-
   // Paints the fill region of the button into |canvas|.
   void PaintFill(gfx::Canvas* canvas) const;
-
-  // Returns the path for the given |origin| and |scale|.  If |extend_to_top| is
-  // true, the path is extended vertically to y = 0.
-  SkPath GetBorderPath(const gfx::Point& origin,
-                       float scale,
-                       bool extend_to_top) const;
 
   // Tab strip that contains this button.
   raw_ptr<TabStrip, DanglingUntriaged> tab_strip_;

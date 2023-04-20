@@ -133,9 +133,27 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
 
   // Fallbacks for ChromeRefresh2023, these colors dont exist in the
   // GM2TabStyleViews version of the tabstrip.
-  mixer[kColorTabBackgroundHoverFrameActive] = {ui::kColorSysStateHeaderHover};
-  mixer[kColorTabBackgroundHoverFrameInactive] = {
-      ui::kColorSysStateHoverOnSubtle};
+  mixer[kColorTabBackgroundHoverFrameActive] = {ui::SetAlpha(
+      kColorTabBackgroundActiveFrameActive, /* 50% opacity */ 0.5 * 255)};
+  mixer[kColorTabBackgroundHoverFrameInactive] = {ui::SetAlpha(
+      kColorTabBackgroundActiveFrameInactive, /* 50% opacity */ 0.5 * 255)};
+
+  // TODO (crbug.com/1399942): update to respect original values once theming is
+  // correctly supported.
+  mixer[kColorNewTabButtonForegroundFrameActive] = {kColorToolbarButtonIcon};
+  mixer[kColorNewTabButtonForegroundFrameInactive] = {
+      kColorToolbarButtonIconInactive};
+  mixer[kColorNewTabButtonBackgroundFrameActive] = {kColorToolbar};
+  mixer[kColorNewTabButtonBackgroundFrameInactive] = {kColorToolbar};
+  mixer[kColorNewTabButtonFocusRing] = ui::PickGoogleColorTwoBackgrounds(
+      ui::kColorFocusableBorderFocused,
+      ui::GetResultingPaintColor(kColorNewTabButtonBackgroundFrameActive,
+                                 ui::kColorFrameActive),
+      ui::kColorFrameActive, color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorNewTabButtonInkDropFrameActive] =
+      ui::GetColorWithMaxContrast(kColorNewTabButtonBackgroundFrameActive);
+  mixer[kColorNewTabButtonInkDropFrameInactive] =
+      ui::GetColorWithMaxContrast(kColorNewTabButtonBackgroundFrameInactive);
 
   /* WebUI Tab Strip colors. */
   // TODO(https://crbug.com/1060398): Update the tab strip color to respond
