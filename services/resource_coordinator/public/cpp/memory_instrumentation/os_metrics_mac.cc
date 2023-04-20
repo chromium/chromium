@@ -4,10 +4,7 @@
 
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/os_metrics.h"
 
-#include <libproc.h>
 #include <mach/mach.h>
-#include <mach/mach_vm.h>
-#include <mach/shared_region.h>
 #include <sys/param.h>
 
 #include <mach-o/dyld_images.h>
@@ -18,6 +15,14 @@
 #include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+
+#if BUILDFLAG(IS_IOS)
+#include "base/ios/sim_header_shims.h"
+#else
+#include <libproc.h>
+#include <mach/mach_vm.h>
+#include <mach/shared_region.h>
+#endif
 
 namespace memory_instrumentation {
 
@@ -54,8 +59,14 @@ static_assert(ChromeTaskVMInfoCount <= MAX_MIG_SIZE_FOR_1014,
 using VMRegion = mojom::VmRegion;
 
 bool IsAddressInSharedRegion(uint64_t address) {
+#if BUILDFLAG(IS_IOS)
+  return address >= SHARED_REGION_BASE_ARM64 &&
+         address < (SHARED_REGION_BASE_ARM64 + SHARED_REGION_SIZE_ARM64);
+#else
+  // TODO: Need to fix this for ARM64 Mac.
   return address >= SHARED_REGION_BASE_X86_64 &&
          address < (SHARED_REGION_BASE_X86_64 + SHARED_REGION_SIZE_X86_64);
+#endif
 }
 
 bool IsRegionContainedInRegion(const VMRegion& containee,
@@ -315,6 +326,7 @@ std::vector<mojom::VmRegionPtr> OSMetrics::GetProcessMemoryMaps(
   return maps;
 }
 
+#if !BUILDFLAG(IS_IOS)
 std::vector<mojom::VmRegionPtr> OSMetrics::GetProcessModules(
     base::ProcessId pid) {
   std::vector<mojom::VmRegionPtr> maps;
@@ -329,5 +341,6 @@ std::vector<mojom::VmRegionPtr> OSMetrics::GetProcessModules(
 
   return maps;
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace memory_instrumentation

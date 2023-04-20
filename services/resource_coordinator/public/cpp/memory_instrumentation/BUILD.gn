@@ -21,12 +21,8 @@ component("memory_instrumentation") {
     "tracing_observer_traced_value.h",
   ]
 
-  if (is_mac) {
+  if (is_apple) {
     sources += [ "os_metrics_mac.cc" ]
-  }
-
-  if (is_ios) {
-    sources += [ "os_metrics_ios.cc" ]
   }
 
   if (is_win) {
