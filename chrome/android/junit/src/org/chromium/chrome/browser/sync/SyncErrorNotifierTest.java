@@ -5,6 +5,7 @@ package org.chromium.chrome.browser.sync;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -70,6 +71,7 @@ public class SyncErrorNotifierTest {
         notifier.syncStateChanged();
 
         verify(mNotificationManagerProxy, Mockito.times(0)).notify(any());
+        verify(mNotificationManagerProxy, Mockito.times(0)).cancel(anyInt());
     }
 
     @Test
@@ -96,6 +98,20 @@ public class SyncErrorNotifierTest {
                 mContext.getString(R.string.sync_error_card_title));
         assertEquals(notificationExtras.getCharSequence(Notification.EXTRA_TEXT),
                 mContext.getString(R.string.hint_passphrase_required));
+
+        // Spurious syncStateChanged()...
+        notifier.syncStateChanged();
+
+        // ...must cause no additional notify() calls.
+        verify(mNotificationManagerProxy).notify(any());
+        verify(mNotificationManagerProxy, Mockito.times(0)).cancel(anyInt());
+
+        // Resolve the error.
+        when(mSyncService.isPassphraseRequiredForPreferredDataTypes()).thenReturn(false);
+        notifier.syncStateChanged();
+
+        // Notification must be cleared.
+        verify(mNotificationManagerProxy).cancel(anyInt());
     }
 
     @Test
@@ -115,6 +131,7 @@ public class SyncErrorNotifierTest {
                 new SyncErrorNotifier(mNotificationManagerProxy, mSyncService, mTrustedVaultClient);
         notifier.syncStateChanged();
 
+        verify(mNotificationManagerProxy, Mockito.times(0)).cancel(anyInt());
         verify(mNotificationManagerProxy, Mockito.times(0)).notify(any());
     }
 
@@ -159,6 +176,21 @@ public class SyncErrorNotifierTest {
                 mContext.getString(R.string.password_sync_error_summary));
         assertEquals(notificationExtras.getCharSequence(Notification.EXTRA_TEXT),
                 mContext.getString(R.string.hint_sync_retrieve_keys_for_passwords));
+
+        // Spurious syncStateChanged()...
+        notifier.syncStateChanged();
+
+        // ...must be a no-op, i.e. no additional notify() / createKeyRetrievalIntent() calls.
+        verify(mNotificationManagerProxy).notify(any());
+        verify(mTrustedVaultClient).createKeyRetrievalIntent(any());
+        verify(mNotificationManagerProxy, Mockito.times(0)).cancel(anyInt());
+
+        // Resolve the error.
+        when(mSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()).thenReturn(false);
+        notifier.syncStateChanged();
+
+        // Notification must be cleared.
+        verify(mNotificationManagerProxy).cancel(anyInt());
     }
 
     @Test
@@ -181,11 +213,38 @@ public class SyncErrorNotifierTest {
         notifier.syncStateChanged();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
+        // Strings must be different from testTrustedVaultNotificationForPasswords()
+        verify(mNotificationManagerProxy, Mockito.times(0)).cancel(anyInt());
         verify(mNotificationManagerProxy).notify(mNotificationWrapperCaptor.capture());
         Bundle notificationExtras = mNotificationWrapperCaptor.getValue().getNotification().extras;
         assertEquals(notificationExtras.getCharSequence(Notification.EXTRA_TITLE),
                 mContext.getString(R.string.sync_error_card_title));
         assertEquals(notificationExtras.getCharSequence(Notification.EXTRA_TEXT),
                 mContext.getString(R.string.hint_sync_retrieve_keys_for_everything));
+    }
+
+    @Test
+    @SmallTest
+    public void testTrustedVaultIntentCreationFails() {
+        when(mSyncService.getAccountInfo())
+                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId("a@b.com", "gaiaId"));
+        when(mSyncService.isSyncFeatureEnabled()).thenReturn(true);
+        when(mSyncService.isEngineInitialized()).thenReturn(true);
+        when(mSyncService.isEncryptEverythingEnabled()).thenReturn(true);
+        when(mSyncService.isPassphraseRequiredForPreferredDataTypes()).thenReturn(false);
+        when(mSyncService.isPassphrasePromptMutedForCurrentProductVersion()).thenReturn(false);
+        when(mSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()).thenReturn(true);
+        when(mSyncService.getPassphraseType()).thenReturn(PassphraseType.TRUSTED_VAULT_PASSPHRASE);
+        when(mTrustedVaultClient.createKeyRetrievalIntent(any())).thenReturn(Promise.rejected());
+
+        SyncErrorNotifier notifier =
+                new SyncErrorNotifier(mNotificationManagerProxy, mSyncService, mTrustedVaultClient);
+        notifier.syncStateChanged();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        // There must've been no notify() calls - because the intent creation failed - and no
+        // cancel() calls either - because there were no ongoing notifications to cancel.
+        verify(mNotificationManagerProxy, Mockito.times(0)).notify(any());
+        verify(mNotificationManagerProxy, Mockito.times(0)).cancel(anyInt());
     }
 }
