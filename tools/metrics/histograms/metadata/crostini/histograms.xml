@@ -364,7 +364,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.RestarterResult.MultiContainerCreation"
-    enum="CrostiniResult" expires_after="2023-05-01">
+    enum="CrostiniResult" expires_after="2024-05-01">
   <owner>timloh@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -601,13 +601,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.UninstallResult.Reason" enum="CrostiniResult"
-    expires_after="2023-05-01">
+    expires_after="2024-05-01">
   <owner>timloh@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
     The result of a completed Crostini uninstallation. This is recorded when an
-    uninstall that the user triggered via the Crostini uninstaller dialog
-    finishes, either successfully or unsuccessful.
+    uninstall completes either successfully or unsuccessfully, including both
+    those manually triggered via the Crostini uninstaller, and those triggered
+    internally by cancelling a Crostini installation.
   </summary>
 </histogram>
 
