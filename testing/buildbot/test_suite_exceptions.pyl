@@ -3645,7 +3645,7 @@
       },
       'Mac12 Tests (dbg)':{
         'swarming': {
-          'shards': 2,
+          'shards': 3,
         }
       },
       'ToTLinuxTSan': {
