@@ -15,6 +15,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 
 namespace autofill {
 
@@ -54,15 +55,13 @@ void PersonalDataManagerCleaner::CleanupDataAndNotifyPersonalDataObservers() {
     return;
   }
 
-  // If sync is enabled for addresses, defer running cleanups until address
-  // sync has started; otherwise, do it now.
-  if (!personal_data_manager_->IsSyncEnabledFor(syncer::AUTOFILL_PROFILE))
+  // If sync is enabled for autofill, defer running cleanups until address
+  // sync and card sync have started; otherwise, do it now.
+  if (!personal_data_manager_->IsSyncEnabledFor(
+          syncer::UserSelectableType::kAutofill)) {
     ApplyAddressFixesAndCleanups();
-
-  // If sync is enabled for credit cards, defer running cleanups until card
-  // sync has started; otherwise, do it now.
-  if (!personal_data_manager_->IsSyncEnabledFor(syncer::AUTOFILL_WALLET_DATA))
     ApplyCardFixesAndCleanups();
+  }
 
   // Log address, credit card, offer, IBAN, and usage data startup metrics.
   personal_data_manager_->LogStoredDataMetrics();

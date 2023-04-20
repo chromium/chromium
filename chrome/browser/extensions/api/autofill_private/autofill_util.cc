@@ -27,6 +27,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -340,7 +341,7 @@ absl::optional<api::autofill_private::AccountInfo> GetAccountInfo(
   api::autofill_private::AccountInfo api_account;
   api_account.email = account->email;
   api_account.is_sync_enabled_for_autofill_profiles =
-      personal_data.IsSyncEnabledFor(syncer::ModelType::AUTOFILL_PROFILE);
+      personal_data.IsSyncEnabledFor(syncer::UserSelectableType::kAutofill);
   api_account.is_eligible_for_address_account_storage =
       personal_data.IsEligibleForAddressAccountStorage();
   return std::move(api_account);

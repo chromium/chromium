@@ -30,6 +30,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -214,7 +215,7 @@ std::u16string SaveUpdateAddressProfileBubbleControllerImpl::GetBodyText()
         GetPrimaryAccountInfoFromBrowserContext(
             web_contents()->GetBrowserContext());
 
-    int string_id = pdm->IsSyncEnabledFor(syncer::ModelType::AUTOFILL_PROFILE)
+    int string_id = pdm->IsSyncEnabledFor(syncer::UserSelectableType::kAutofill)
                         ? IDS_AUTOFILL_SYNCABLE_PROFILE_MIGRATION_PROMPT_NOTICE
                         : IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE;
 

@@ -48,6 +48,7 @@
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -589,8 +590,8 @@ class PersonalDataManager : public KeyedService,
   // updates. Does nothing if the strike database is not available.
   void RemoveStrikesToBlockProfileUpdate(const std::string& guid);
 
-  // Returns true if Sync is enabled for `model_type`.
-  bool IsSyncEnabledFor(syncer::ModelType model_type) const;
+  // Returns true if Sync is enabled for `data_type`.
+  bool IsSyncEnabledFor(syncer::UserSelectableType data_type) const;
 
   // Returns true if payments mandatory re-auth is enabled.
   bool IsAutofillPaymentMethodsMandatoryReauthEnabled();
