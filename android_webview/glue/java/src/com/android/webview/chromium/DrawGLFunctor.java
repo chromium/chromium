@@ -10,7 +10,6 @@ import android.webkit.WebViewDelegate;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.base.annotations.JniIgnoreNatives;
-import org.chromium.build.annotations.UsedByReflection;
 
 /**
  * Simple Java abstraction and wrapper for the native DrawGLFunctor flow.
@@ -71,13 +70,9 @@ class DrawGLFunctor implements AwContents.NativeDrawGLFunctor {
         nativeSetChromiumAwDrawGLFunction(functionPointer);
     }
 
-    // The Android framework performs manual JNI registration on these methods, so the method
-    // signatures cannot change without updating the framework. We use @UsedByReflection, while not
-    // technically true, as a way to preserve these methods and their names.
-    @UsedByReflection("Android framework manual registration")
+    // The Android framework performs manual JNI registration on these methods,
+    // so the method signatures cannot change without updating the framework.
     private static native long nativeCreateGLFunctor(long viewContext);
-    @UsedByReflection("Android framework manual registration")
     private static native void nativeDestroyGLFunctor(long functor);
-    @UsedByReflection("Android framework manual registration")
     private static native void nativeSetChromiumAwDrawGLFunction(long functionPointer);
 }

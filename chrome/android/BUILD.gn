@@ -2389,11 +2389,6 @@ if (current_toolchain == default_toolchain) {
       }
 
       shared_libraries = [ ":libchrome" ]
-      if (!is_java_debug) {
-        proguard_configs = [
-          "//base/android/jni_generator/manual_jni_registration_proguard.flags",
-        ]
-      }
 
       version_name = chrome_version_name
     }
