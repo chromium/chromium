@@ -150,8 +150,15 @@ void StackSampler::RecordStackFrames(StackBuffer* stack_buffer,
   if ((++stack_size_histogram_sampling_counter_ %
        kUMAHistogramDownsampleAmount) == 0) {
     // Record the size of the stack to tune kLargeStackSize.
-    UmaHistogramMemoryKB("Memory.StackSamplingProfiler.StackSampleSize",
-                         saturated_cast<int>(stack_size / kBytesPerKilobyte));
+    // UmaHistogramMemoryKB has a min of 1000, which isn't useful for our
+    // purposes, so call UmaHistogramCustomCounts directly.
+    // Min is 4KB, since that's the normal pagesize and setting kLargeStackSize
+    // smaller than that would be pointless. Max is 8MB since that's the
+    // current ChromeOS stack size; we shouldn't be able to get a number
+    // larger than that.
+    UmaHistogramCustomCounts(
+        "Memory.StackSamplingProfiler.StackSampleSize2",
+        saturated_cast<int>(stack_size / kBytesPerKilobyte), 4, 8 * 1024, 50);
   }
 
   // We expect to very rarely see stacks larger than kLargeStackSize. If we see

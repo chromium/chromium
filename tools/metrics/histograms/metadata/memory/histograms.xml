@@ -2446,12 +2446,27 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Memory.StackSamplingProfiler.StackSampleSize" units="KB"
     expires_after="M119">
+  <obsolete>
+    Replaced by Memory.StackSamplingProfiler.StackSampleSize2. Min bucket size
+    was too large to be useful. Replaced April 2023.
+  </obsolete>
   <owner>iby@chromium.org</owner>
   <owner>cros-telemetry@google.com</owner>
   <summary>
     The size of the stack copied during a stack-sampled metric capture. One
     sample per 199 stack captures. Only recorded by clients in the stack-sampled
     metrics experiment. ChromeOS only.
+  </summary>
+</histogram>
+
+<histogram name="Memory.StackSamplingProfiler.StackSampleSize2" units="KB"
+    expires_after="M121">
+  <owner>iby@chromium.org</owner>
+  <owner>cros-telemetry@google.com</owner>
+  <summary>
+    The size of the stack copied during a stack profiler capture. One sample per
+    199 stack captures. Only recorded by clients in the stack-sampled metrics
+    experiment or recording a Chrometto trace. ChromeOS only.
   </summary>
 </histogram>
 
