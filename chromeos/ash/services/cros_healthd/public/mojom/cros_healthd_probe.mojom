@@ -570,14 +570,17 @@ struct CpuVirtualizationInfo {
 
 // Information related to a particular logical CPU.
 //
-// NextMinVersion: 1, NextIndex: 7
+// NextMinVersion: 2, NextIndex: 8
 [Stable]
 struct LogicalCpuInfo {
-  // The max CPU clock speed in kHz.
+  // The max CPU clock speed in kHz. The value will be 0 on devices that don't
+  // support CPU frequency scaling.
   uint32 max_clock_speed_khz@0;
-  // Maximum frequency the CPU is allowed to run at, by policy.
+  // Maximum frequency the CPU is allowed to run at, by policy. The value will
+  // be 0 on devices that don't support CPU frequency scaling.
   uint32 scaling_max_frequency_khz@1;
-  // Current frequency the CPU is running at.
+  // Current frequency the CPU is running at. The value will be 0 on devices
+  // that don't support CPU frequency scaling.
   uint32 scaling_current_frequency_khz@2;
   // Time spent in user mode since last boot. USER_HZ can be converted to
   // seconds with the conversion factor given by sysconf(_SC_CLK_TCK).
@@ -590,6 +593,8 @@ struct LogicalCpuInfo {
   uint64 idle_time_user_hz@5;
   // Information about the logical CPU's time in various C-states.
   array<CpuCStateInfo> c_states@6;
+  // The core number this logical CPU corresponds to.
+  [MinVersion=1] uint32 core_id@7;
 };
 
 // Information about a CPU's C-states.
