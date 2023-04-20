@@ -44,6 +44,8 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsShowingInOverviewKey, false)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kShouldHaveHighlightBorderOverlay, false)
 
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSupportsFloatedStateKey, true)
+
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowManagerManagesOpacityKey, false)
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string,

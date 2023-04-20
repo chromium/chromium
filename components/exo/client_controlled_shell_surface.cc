@@ -343,9 +343,11 @@ ClientControlledShellSurface::ClientControlledShellSurface(
     Surface* surface,
     bool can_minimize,
     int container,
-    bool default_scale_cancellation)
+    bool default_scale_cancellation,
+    bool supports_floated_state)
     : ShellSurfaceBase(surface, gfx::Point(), can_minimize, container),
-      use_default_scale_cancellation_(default_scale_cancellation) {
+      use_default_scale_cancellation_(default_scale_cancellation),
+      supports_floated_state_(supports_floated_state) {
   server_side_resize_ = true;
 }
 
@@ -1137,6 +1139,9 @@ void ClientControlledShellSurface::InitializeWindowState(
 
   auto* window = widget_->GetNativeWindow();
   GrantPermissionToActivateIndefinitely(window);
+
+  window->SetProperty(chromeos::kSupportsFloatedStateKey,
+                      supports_floated_state_);
 }
 
 float ClientControlledShellSurface::GetScale() const {

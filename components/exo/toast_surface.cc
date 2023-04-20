@@ -20,7 +20,8 @@ ToastSurface::ToastSurface(ToastSurfaceManager* manager,
     : ClientControlledShellSurface(surface,
                                    false /* can_minimize */,
                                    ash::kShellWindowId_OverlayContainer,
-                                   default_scale_cancellation),
+                                   default_scale_cancellation,
+                                   /*supports_floated_state=*/false),
       manager_(manager) {
   SetActivatable(false);
   DisableMovement();

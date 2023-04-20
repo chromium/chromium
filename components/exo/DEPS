@@ -30,6 +30,7 @@ specific_include_rules = {
   ],
   ".*test.*\.cc": [
     "+chromeos/ash/components/test",
+    "+chromeos/ui/wm",
     "+components/viz/service/frame_sinks",
     "+components/viz/service/surfaces",
   ],

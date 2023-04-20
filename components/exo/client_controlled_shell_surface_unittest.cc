@@ -31,6 +31,7 @@
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/header_view.h"
+#include "chromeos/ui/wm/window_util.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
@@ -2544,6 +2545,24 @@ TEST_P(ClientControlledShellSurfaceTest,
   auto* permission = window->GetProperty(kPermissionKey);
 
   EXPECT_TRUE(permission->Check(Permission::Capability::kActivate));
+}
+
+TEST_P(ClientControlledShellSurfaceTest, SupportsFloatedState) {
+  // Test disabling support.
+  {
+    auto shell_surface = exo::test::ShellSurfaceBuilder()
+                             .DisableSupportsFloatedState()
+                             .BuildClientControlledShellSurface();
+    auto* const window = shell_surface->GetWidget()->GetNativeWindow();
+    EXPECT_FALSE(chromeos::wm::CanFloatWindow(window));
+  }
+  // Test enabling (default) support.
+  {
+    auto shell_surface =
+        exo::test::ShellSurfaceBuilder().BuildClientControlledShellSurface();
+    auto* const window = shell_surface->GetWidget()->GetNativeWindow();
+    EXPECT_TRUE(chromeos::wm::CanFloatWindow(window));
+  }
 }
 
 }  // namespace exo

@@ -66,6 +66,7 @@ class ShellSurfaceBuilder {
   ShellSurfaceBuilder& EnableDefaultScaleCancellation();
   ShellSurfaceBuilder& SetDelegate(
       std::unique_ptr<ClientControlledShellSurface::Delegate> delegate);
+  ShellSurfaceBuilder& DisableSupportsFloatedState();
 
   // Must be called only once for either of the below and the object cannot
   // be used to create multiple windows.
@@ -113,6 +114,7 @@ class ShellSurfaceBuilder {
   absl::optional<chromeos::WindowStateType> window_state_;
   bool default_scale_cancellation_ = false;
   std::unique_ptr<ClientControlledShellSurface::Delegate> delegate_;
+  bool supports_floated_state_ = true;
 };
 
 }  // namespace test

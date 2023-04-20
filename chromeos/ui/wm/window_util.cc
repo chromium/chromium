@@ -7,6 +7,7 @@
 #include "ash/constants/app_types.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/tablet_state.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/constants.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
@@ -102,6 +103,10 @@ bool CanFloatWindow(aura::Window* window) {
   // be lacros, so this check is not needed.
   if (window->GetProperty(aura::client::kAppType) ==
       static_cast<int>(ash::AppType::NON_APP)) {
+    return false;
+  }
+
+  if (!window->GetProperty(kSupportsFloatedStateKey)) {
     return false;
   }
 #endif

@@ -62,7 +62,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   ClientControlledShellSurface(Surface* surface,
                                bool can_minimize,
                                int container,
-                               bool default_scale_cancellation);
+                               bool default_scale_cancellation,
+                               bool supports_floated_state);
 
   ClientControlledShellSurface(const ClientControlledShellSurface&) = delete;
   ClientControlledShellSurface& operator=(const ClientControlledShellSurface&) =
@@ -368,6 +369,9 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
 
   ash::ArcResizeLockType pending_resize_lock_type_ =
       ash::ArcResizeLockType::NONE;
+
+  // True if the window supports the floated state.
+  const bool supports_floated_state_;
 };
 
 }  // namespace exo

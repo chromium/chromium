@@ -27,7 +27,8 @@ InputMethodSurface::InputMethodSurface(InputMethodSurfaceManager* manager,
           surface,
           true /* can_minimize */,
           ash::kShellWindowId_ArcVirtualKeyboardContainer,
-          default_scale_cancellation),
+          default_scale_cancellation,
+          /*supports_floated_state=*/false),
       manager_(manager),
       input_method_bounds_() {
   host_window()->SetName("ExoInputMethodSurface");

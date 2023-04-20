@@ -101,6 +101,13 @@ extern const ui::ClassProperty<bool>* const kIsShowingInOverviewKey;
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const ui::ClassProperty<bool>* const kShouldHaveHighlightBorderOverlay;
 
+// A property key to indicate if the window supports
+// `WindowStateType::kFloated`. Even if true, it doesn't always mean we _can_
+// float the window. See `chromeos::wm::CanFloatWindow` for details. True by
+// default.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const ui::ClassProperty<bool>* const kSupportsFloatedStateKey;
+
 // A property key to tell if the window's opacity should be managed by WM.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const ui::ClassProperty<bool>* const kWindowManagerManagesOpacityKey;

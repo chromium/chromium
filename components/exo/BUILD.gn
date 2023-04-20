@@ -310,6 +310,7 @@ source_set("unit_tests") {
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/ui/base",
     "//chromeos/ui/frame",
+    "//chromeos/ui/wm",
     "//components/fullscreen_control",
     "//components/user_manager",
     "//components/viz/service",

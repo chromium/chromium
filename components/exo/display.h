@@ -87,7 +87,8 @@ class Display {
   CreateOrGetClientControlledShellSurface(Surface* surface,
                                           int container,
                                           double default_device_scale_factor,
-                                          bool default_scale_cancellation);
+                                          bool default_scale_cancellation,
+                                          bool supports_floated_state);
 
   // Creates a notification surface for a surface and notification id.
   std::unique_ptr<NotificationSurface> CreateNotificationSurface(

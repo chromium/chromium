@@ -156,7 +156,8 @@ Display::CreateOrGetClientControlledShellSurface(
     Surface* surface,
     int container,
     double default_device_scale_factor,
-    bool default_scale_cancellation) {
+    bool default_scale_cancellation,
+    bool supports_floated_state) {
   TRACE_EVENT2("exo", "Display::CreateRemoteShellSurface", "surface",
                surface->AsTracedValue(), "container", container);
 
@@ -187,13 +188,15 @@ Display::CreateOrGetClientControlledShellSurface(
                                      default_scale_cancellation);
   } else {
     shell_surface = std::make_unique<ClientControlledShellSurface>(
-        surface, can_minimize, container, default_scale_cancellation);
+        surface, can_minimize, container, default_scale_cancellation,
+        supports_floated_state);
   }
 
   if (default_scale_cancellation) {
     shell_surface->SetScale(default_device_scale_factor);
     shell_surface->CommitPendingScale();
   }
+
   return shell_surface;
 }
 

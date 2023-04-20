@@ -265,6 +265,12 @@ ShellSurfaceBuilder& ShellSurfaceBuilder::SetDelegate(
   return *this;
 }
 
+ShellSurfaceBuilder& ShellSurfaceBuilder::DisableSupportsFloatedState() {
+  DCHECK(!built_);
+  supports_floated_state_ = false;
+  return *this;
+}
+
 // static
 void ShellSurfaceBuilder::DestroyRootSurface(ShellSurfaceBase* shell_surface) {
   Holder* holder =
@@ -316,7 +322,7 @@ ShellSurfaceBuilder::BuildClientControlledShellSurface() {
   holder->AddRootSurface(root_buffer_size_, root_buffer_format_);
   auto shell_surface = Display().CreateOrGetClientControlledShellSurface(
       holder->root_surface, GetContainer(), GetDefaultDeviceScaleFactor(),
-      default_scale_cancellation_);
+      default_scale_cancellation_, supports_floated_state_);
   shell_surface->host_window()->SetProperty(kBuilderResourceHolderKey,
                                             std::move(holder));
 
