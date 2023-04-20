@@ -258,18 +258,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Webapp.AmbientBadge.Messages.DismissReason"
-    enum="MessageDismissReason" expires_after="2023-12-01">
-  <owner>eirage@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    On mobile, an install ambient badge may automatically shows to promote an
-    application related to the current website when the site meets all install
-    criteria. When a message UI style ambient badge was dismissed for any
-    reason, record the dismiss reason.
-  </summary>
-</histogram>
-
 <histogram name="Webapp.AmbientBadge.Terminate"
     enum="InstallableAmbientBadgeState" expires_after="2023-12-01">
   <owner>eirage@chromium.org</owner>
