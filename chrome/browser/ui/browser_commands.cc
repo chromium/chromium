@@ -539,7 +539,13 @@ Browser* OpenEmptyWindow(Profile* profile,
       Browser::CreateParams(Browser::TYPE_NORMAL, profile, true);
   params.should_trigger_session_restore = should_trigger_session_restore;
   Browser* browser = Browser::Create(params);
-  AddTabAt(browser, GURL(), -1, true);
+
+  // Startup tabs could be created during browser creation. Add an empty tab
+  // only if no tabs are created.
+  if (browser->tab_strip_model()->empty()) {
+    AddTabAt(browser, GURL(), -1, true);
+  }
+
   browser->window()->Show();
   return browser;
 }
