@@ -95,11 +95,17 @@ MediaStreamComponent* MediaStreamTrackGenerator::MakeMediaStreamComponent(
           /*enabled=*/true);
       break;
     case MediaStreamSource::StreamType::kTypeAudio:
+      // If running on a dedicated worker, use the worker thread to deliver
+      // audio, but use a different thread if running on Window to avoid
+      // introducing jank.
       // TODO(https://crbug.com/1168281): use a different thread than the IO
       // thread to deliver Audio.
       platform_source = std::make_unique<PushableMediaStreamAudioSource>(
           execution_context->GetTaskRunner(TaskType::kInternalMediaRealTime),
-          Platform::Current()->GetIOTaskRunner());
+          execution_context->IsDedicatedWorkerGlobalScope()
+              ? execution_context->GetTaskRunner(
+                    TaskType::kInternalMediaRealTime)
+              : Platform::Current()->GetIOTaskRunner());
       platform_track =
           std::make_unique<MediaStreamAudioTrack>(/*is_local_track=*/true);
       break;
