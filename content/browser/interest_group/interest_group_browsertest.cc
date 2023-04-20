@@ -5012,6 +5012,48 @@ IN_PROC_BROWSER_TEST_F(
   WaitForAccessObserved({});
 }
 
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionAuctionReportBuyersIncompleteDictionary) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Failed to "
+      "read the 'auctionReportBuyers' property from 'AuctionAdConfig': Failed "
+      "to read the 'scale' property from 'AuctionReportBuyersConfig': Required "
+      "member is undefined.",
+      RunAuctionAndWait(JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    auctionReportBuyerKeys: [1n],
+    auctionReportBuyers: {
+      bidCount: { bucket: 0n },
+    }
+                         })",
+          url::Origin::Create(test_url),
+          https_server_->GetURL("a.test",
+                                "/interest_group/decision_logic.js"))));
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Failed to "
+      "read the 'auctionReportBuyers' property from 'AuctionAdConfig': Failed "
+      "to read the 'bucket' property from 'AuctionReportBuyersConfig': "
+      "Required member is undefined.",
+      RunAuctionAndWait(JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    auctionReportBuyerKeys: [1n],
+    auctionReportBuyers: {
+      bidCount: { scale: 1 },
+    }
+                         })",
+          url::Origin::Create(test_url),
+          https_server_->GetURL("a.test",
+                                "/interest_group/decision_logic.js"))));
+}
+
 IN_PROC_BROWSER_TEST_F(
     InterestGroupBrowserTest,
     RunAdAuctionAuctionInvalidRequiredSellerCapabilitiesIgnored) {

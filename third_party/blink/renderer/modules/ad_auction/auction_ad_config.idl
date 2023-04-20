@@ -10,8 +10,8 @@
 // See https://github.com/whatwg/webidl/issues/893
 
 dictionary AuctionReportBuyersConfig {
-  bigint bucket;
-  double scale;
+  required bigint bucket;
+  required double scale;
 };
 
 dictionary AuctionAdConfig {
