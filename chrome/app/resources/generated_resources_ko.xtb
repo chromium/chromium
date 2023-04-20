@@ -1941,7 +1941,7 @@
 <translation id="2628770867680720336">ADB 디버깅을 사용 설정하려면 이 Chromebook을 초기화해야 합니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Android 앱 개발</translation>
 <translation id="2629437048544561682">캔버스 지우기</translation>
-<translation id="2631498379019108537">실행기에 입력 옵션 표시</translation>
+<translation id="2631498379019108537">앱 표시줄에 입력 옵션 표시</translation>
 <translation id="2633212996805280240">'<ph name="EXTENSION_NAME" />'을(를) 삭제하시겠습니까?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" />에서 설치를 완료하지 못했지만 디스크 이미지에서 계속 실행됩니다.</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -2414,7 +2414,7 @@
 <translation id="3027296729579831126">Nearby Share 사용 설정</translation>
 <translation id="3027644380269727216">사이트 내 활동을 기반으로 추천됩니다. 설정이 사용 설정되어 있습니다.</translation>
 <translation id="3029276696788198026">미리 로드 안함</translation>
-<translation id="3029466929721441205">실행기에 스타일러스 도구 표시</translation>
+<translation id="3029466929721441205">앱 표시줄에 스타일러스 도구 표시</translation>
 <translation id="3029808567601324798">잠금 시간</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" />에서 오늘 업데이트를 다운로드할 것을 요청합니다. 인터넷에 연결되면 업데이트가 자동으로 다운로드됩니다.}other{<ph name="MANAGER" />에서 기한 전에 업데이트를 다운로드할 것을 요청합니다. 인터넷에 연결되면 업데이트가 자동으로 다운로드됩니다.}}</translation>
 <translation id="3030967311408872958">화면 밝기 자동 설정</translation>
@@ -3053,7 +3053,7 @@
 <translation id="3629631988386925734">비밀번호를 입력하여 Smart Lock을 사용 설정하세요. 다음번에는 휴대전화를 통해 <ph name="DEVICE_TYPE" />이(가) 잠금 해제됩니다. 설정에서 Smart Lock을 사용 중지할 수 있습니다.</translation>
 <translation id="3629664892718440872">이 선택사항 저장</translation>
 <translation id="3630132874740063857">휴대전화</translation>
-<translation id="3630995161997703415">이 사이트를 언제든지 사용할 수 있도록 실행기에 추가합니다</translation>
+<translation id="3630995161997703415">이 사이트를 언제든지 사용할 수 있도록 앱 표시줄에 추가합니다</translation>
 <translation id="3634652306074934350">권한 요청 만료됨</translation>
 <translation id="3635199270495525546">신뢰할 수 있는 플랫폼 모듈(TPM) 감지됨</translation>
 <translation id="3635353578505343390">Google에 의견 보내기</translation>
@@ -5525,7 +5525,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5860254591544742609">제목 표시줄 표시</translation>
 <translation id="5860491529813859533">사용</translation>
 <translation id="5860494867054883682">기기를 <ph name="CHANNEL_NAME" /> 채널로 업데이트 중(<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="5862109781435984885">실행기에 스타일러스 도구 표시</translation>
+<translation id="5862109781435984885">앱 표시줄에 스타일러스 도구 표시</translation>
 <translation id="5862319196656206789">연결된 기기 설정</translation>
 <translation id="5862731021271217234">다른 기기에서 탭을 가져오려면 동기화를 사용 설정하세요.</translation>
 <translation id="5863445608433396414">디버깅 기능 사용</translation>
@@ -7391,7 +7391,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7549434883223124329">기기 언어를 전환하시겠습니까?</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" />을(를) 다운로드하지 못함</translation>
-<translation id="7551643184018910560">실행기에 고정</translation>
+<translation id="7551643184018910560">앱 표시줄에 고정</translation>
 <translation id="7552846755917812628">다음 도움말을 확인해 보세요.</translation>
 <translation id="7553012839257224005">Linux 컨테이너 확인 중</translation>
 <translation id="7553242001898162573">비밀번호를 입력해 주세요.</translation>
@@ -8310,7 +8310,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8331822764922665615">그룹 이름을 지정하고 색상을 선택한 후 Esc 키를 누르세요.</translation>
 <translation id="833256022891467078">Crostini 공유 폴더</translation>
 <translation id="833262891116910667">강조표시</translation>
-<translation id="8335587457941836791">실행기에서 고정 해제</translation>
+<translation id="8335587457941836791">앱 표시줄에서 고정 해제</translation>
 <translation id="8336407002559723354"><ph name="MONTH_AND_YEAR" />에 업데이트 종료</translation>
 <translation id="8336463659890584292">사이트에서 페이지에 있는 링크를 비공개로 미리 로드해 달라고 요청하면 Chrome은 Google 서버를 사용합니다. 이렇게 하면 미리 로드된 사이트에서 사용자의 신원을 숨길 수 있지만 Google은 어떤 사이트가 미리 로드되는지 학습합니다.</translation>
 <translation id="8336739000755212683">기기 계정 이미지 변경</translation>

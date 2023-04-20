@@ -257,7 +257,7 @@
 <translation id="2497852260688568942">Шайкештирүү функциясын администраторуңуз өчүрүп койгон</translation>
 <translation id="250020030759455918">Chrome'до <ph name="SITE_NAME" /> сайтына кирүү статусуңузду, серептөө дайындарын жана сайттын маалыматын көрөсүз</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> орнотулууда…</translation>
-<translation id="2513403576141822879">Купуялыкка, коопсуздукка жана дайындарды чогултууга байланыштуу дагы башка жөндөөлөрдү көрүү үчүн <ph name="BEGIN_LINK" />Шайкештирүү жана Google кызматтары<ph name="END_LINK" /> бөлүмүнө өтүңүз</translation>
+<translation id="2513403576141822879">Купуялыкка, коопсуздукка жана дайындарды чогултууга байланыштуу дагы башка параметрлерди көрүү үчүн <ph name="BEGIN_LINK" />Шайкештирүү жана Google кызматтары<ph name="END_LINK" /> бөлүмүнө өтүңүз</translation>
 <translation id="2517472476991765520">Скандоо</translation>
 <translation id="2523184218357549926">Баш баккан барактарыңыздын URL'дерин Google'га жөнөтөт</translation>
 <translation id="2527209463677295330">Барактагы көбүрөөк текст камтылса, жакшыраак натыйжалар көрсөтүлүшү мүмкүн</translation>
@@ -304,7 +304,7 @@
 <translation id="2760989362628427051">Түзмөгүңүз кубатты үнөмдөө режиминде иштегенде, Батареяны үнөмдөгүчтү күйгүзүңүз</translation>
 <translation id="2762000892062317888">жаңы эле</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> катары кирди.</translation>
-<translation id="2776236159752647997">Купуялыкка, коопсуздукка жана дайындарды чогултууга байланыштуу дагы башка жөндөөлөрдү көрүү үчүн <ph name="BEGIN_LINK" />Google кызматтары<ph name="END_LINK" /> бөлүмүнө өтүңүз</translation>
+<translation id="2776236159752647997">Купуялыкка, коопсуздукка жана дайындарды чогултууга байланыштуу дагы башка параметрлерди көрүү үчүн <ph name="BEGIN_LINK" />Google кызматтары<ph name="END_LINK" /> бөлүмүнө өтүңүз</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> сек. калды</translation>
 <translation id="2779651927720337254">ката</translation>
 <translation id="2781151931089541271">1 сек. калды</translation>
@@ -574,7 +574,7 @@
 <translation id="4202218894997543208">Сиз бөгөттөгөн темалар</translation>
 <translation id="4214315110991671325">Cookie файлдарына уруксат берсеңиз, Chrome аларды алдын ала жүктөө үчүн колдонушу мүмкүн.</translation>
 <translation id="4225895483398857530">Куралдар тилкесинин ыкчам баскычы</translation>
-<translation id="4242533952199664413">Жөндөөлөрдү ачуу</translation>
+<translation id="4242533952199664413">Параметрлерди ачуу</translation>
 <translation id="4248098802131000011">Сырсөздөрүңүздү коопсуз сактаңыз</translation>
 <translation id="424864128008805179">Chrome каттоо эсебинен чыгасызбы?</translation>
 <translation id="4249955472157341256">Акыркылар боюнча иреттөө</translation>
@@ -1025,8 +1025,8 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6621391692573306628">Бул өтмөктү башка түзмөккө жөнөтүү үчүн эки түзмөктөн тең Chrome'го кириңиз</translation>
 <translation id="6627583120233659107">Куржунду түзөтүү</translation>
 <translation id="6633067410344541938">Жашыруун режимдин кулпусун ачуу</translation>
-<translation id="6636623428211296678">Төмөндө көбүрөөк жөндөөлөрдү изилдеңиз же азыр бүтүрүңүз</translation>
-<translation id="663674369910034433">Купуялыкка, коопсуздукка жана дайындарды чогултууга байланыштуу дагы башка жөндөөлөрдү көрүү үчүн <ph name="BEGIN_LINK1" />Шайкештирү<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Google кызматтары<ph name="END_LINK2" /> бөлүмүнө өтүңүз.</translation>
+<translation id="6636623428211296678">Төмөндө көбүрөөк параметрлерди изилдеңиз же азыр бүтүрүңүз</translation>
+<translation id="663674369910034433">Купуялыкка, коопсуздукка жана дайындарды чогултууга байланыштуу дагы башка параметрлерди көрүү үчүн <ph name="BEGIN_LINK1" />Шайкештирү<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Google кызматтары<ph name="END_LINK2" /> бөлүмүнө өтүңүз.</translation>
 <translation id="6637100877383020115">Колдонмону жакшыртууга жардам берүү үчүн Chrome колдонулушу жана ката тууралуу маалыматты Google'га жөнөтөт. <ph name="BEGIN_UMA_LINK" />Башкаруу<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Ар дайым бөгөттөө</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> өчүрүү</translation>
@@ -1127,8 +1127,8 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7138678301420049075">Башка</translation>
 <translation id="7146622961999026732">Бул сайттар менен колдонмолор сиз үчүн маанилүү окшойт:</translation>
 <translation id="7149893636342594995">Акыркы 24 саат</translation>
-<translation id="7155317020660659215">QR кодун скандоо үчүн жөндөөлөрдү өзгөртүп, Chrome'го камераңызды колдонууга уруксат бериңиз</translation>
-<translation id="7173114856073700355">Жөндөөлөрдү ачуу</translation>
+<translation id="7155317020660659215">QR кодун скандоо үчүн параметрлерди өзгөртүп, Chrome'го камераңызды колдонууга уруксат бериңиз</translation>
+<translation id="7173114856073700355">Параметрлерди ачуу</translation>
 <translation id="7177466738963138057">Муну кийинчерээк Жөндөөлөрдөн өзгөртсөңүз болот</translation>
 <translation id="7177873915659574692">QR коду түзүлгөн жок. URL дареги <ph name="CHARACTER_LIMIT" /> символдон ашып кетти.</translation>
 <translation id="7177959540995930968">Бул функциялар тууралуу кеңири маалымат алуу үчүн Chrome параметрлерине өтүңүз.</translation>
