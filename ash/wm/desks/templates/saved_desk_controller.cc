@@ -42,7 +42,7 @@ constexpr char kPlaceholderJson[] = R"json(
 // Creates a placeholder template that will be used during development.
 std::unique_ptr<DeskTemplate> CreatePlaceholderTemplate() {
   auto desk_template = std::make_unique<DeskTemplate>(
-      base::GUID::ParseLowercase(kPlaceholderUuid), DeskTemplateSource::kPolicy,
+      base::Uuid::ParseLowercase(kPlaceholderUuid), DeskTemplateSource::kPolicy,
       kPlaceholderName, base::Time::Now(), DeskTemplateType::kTemplate);
 
   // Create restore data from json.
@@ -101,11 +101,11 @@ SavedDeskController* SavedDeskController::Get() {
 std::vector<AdminTemplateMetadata>
 SavedDeskController::GetAdminTemplateMetadata() const {
   return {AdminTemplateMetadata{
-      .uuid = base::GUID::ParseLowercase(kPlaceholderUuid),
+      .uuid = base::Uuid::ParseLowercase(kPlaceholderUuid),
       .name = base::UTF8ToUTF16(base::StringPiece(kPlaceholderName))}};
 }
 
-bool SavedDeskController::LaunchAdminTemplate(const base::GUID& template_uuid,
+bool SavedDeskController::LaunchAdminTemplate(const base::Uuid& template_uuid,
                                               int64_t default_display_id) {
   auto admin_template = GetAdminTemplate(template_uuid);
   if (!admin_template) {
@@ -127,7 +127,7 @@ bool SavedDeskController::LaunchAdminTemplate(const base::GUID& template_uuid,
 }
 
 std::unique_ptr<DeskTemplate> SavedDeskController::GetAdminTemplate(
-    const base::GUID& template_uuid) const {
+    const base::Uuid& template_uuid) const {
   if (admin_template_for_testing_ &&
       admin_template_for_testing_->uuid() == template_uuid) {
     return admin_template_for_testing_->Clone();

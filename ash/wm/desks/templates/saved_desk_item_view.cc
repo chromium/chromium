@@ -326,7 +326,7 @@ void SavedDeskItemView::SetDisplayName(const std::u16string& saved_desk_name) {
 }
 
 void SavedDeskItemView::MaybeShowReplaceDialog(DeskTemplateType type,
-                                               const base::GUID& uuid) {
+                                               const base::Uuid& uuid) {
   // Show replace saved desk dialog. If accepted, replace old saved desk item
   // and commit name change.
   auto* controller = saved_desk_util::GetSavedDeskDialogController();
@@ -342,7 +342,7 @@ void SavedDeskItemView::MaybeShowReplaceDialog(DeskTemplateType type,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void SavedDeskItemView::ReplaceSavedDesk(const base::GUID& uuid) {
+void SavedDeskItemView::ReplaceSavedDesk(const base::Uuid& uuid) {
   // Make sure we delete the saved desk we are replacing first, so that we don't
   // get saved desk name collisions. Passing `nullopt` as `record_for_type`
   // since we only record the delete operation when the user specifically

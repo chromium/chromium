@@ -11,7 +11,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_restore/window_restore_util.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
@@ -146,14 +146,14 @@ void RestoreDataCollector::SendDeskTemplate(uint32_t serial) {
   DCHECK(call_it != calls_.end());
   Call& call = call_it->second;
 
-  base::GUID desk_template_guid =
+  base::Uuid desk_template_uuid =
       call.template_type == DeskTemplateType::kFloatingWorkspace
-          ? base::GUID::ParseLowercase(desks_storage::desk_template_util::
+          ? base::Uuid::ParseLowercase(desks_storage::desk_template_util::
                                            kFloatingWorkspaceTemplateUuid)
-          : base::GUID::GenerateRandomV4();
+          : base::Uuid::GenerateRandomV4();
 
   auto desk_template = std::make_unique<DeskTemplate>(
-      std::move(desk_template_guid), DeskTemplateSource::kUser,
+      std::move(desk_template_uuid), DeskTemplateSource::kUser,
       call.template_name, base::Time::Now(), call.template_type);
   desk_template->set_desk_restore_data(std::move(call.data));
 

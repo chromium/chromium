@@ -12,7 +12,7 @@
 #include "ash/wm/desks/templates/saved_desk_icon_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "ui/views/controls/scroll_view.h"
 
 namespace views {
@@ -107,7 +107,7 @@ class SavedDeskItemViewTestApi {
 
   const PillButton* launch_button() const { return item_view_->launch_button_; }
 
-  const base::GUID uuid() const { return item_view_->saved_desk_->uuid(); }
+  const base::Uuid uuid() const { return item_view_->saved_desk_->uuid(); }
 
   const views::View* hover_container() const {
     return item_view_->hover_container_;

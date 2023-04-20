@@ -78,7 +78,7 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
 
   const DeskTemplate& saved_desk() const { return *saved_desk_; }
   SavedDeskNameView* name_view() const { return name_view_; }
-  const base::GUID& uuid() const { return saved_desk_->uuid(); }
+  const base::Uuid& uuid() const { return saved_desk_->uuid(); }
 
   // Updates the visibility state of the delete and launch buttons depending on
   // the current mouse or touch event location, or if switch access is enabled.
@@ -97,10 +97,10 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
 
   // Show replace dialog when found a name duplication.
   void MaybeShowReplaceDialog(ash::DeskTemplateType type,
-                              const base::GUID& uuid);
+                              const base::Uuid& uuid);
   // Rename current saved desk with new name, delete old saved desk with same
   // name by uuid. Used for callback functions for Replace Dialog.
-  void ReplaceSavedDesk(const base::GUID& uuid);
+  void ReplaceSavedDesk(const base::Uuid& uuid);
   void RevertSavedDeskName();
 
   // This allows us to update an existing saved desk view. Currently, this

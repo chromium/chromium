@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
@@ -48,7 +48,7 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   const std::vector<SavedDeskGridView*>& grid_views() { return grid_views_; }
 
   // Retrieves the item view for a given saved desk, or nullptr.
-  SavedDeskItemView* GetItemForUUID(const base::GUID& uuid);
+  SavedDeskItemView* GetItemForUUID(const base::Uuid& uuid);
 
   // Updates existing saved desks and adds new saved desks to the grid. Also
   // sorts entries in alphabetical order. If `order_first_uuid` is valid, the
@@ -56,19 +56,19 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   // their final positions if `animate` is true. Currently only allows a maximum
   // of 6 saved desks to be shown in the grid.
   void AddOrUpdateEntries(const std::vector<const DeskTemplate*>& entries,
-                          const base::GUID& order_first_uuid,
+                          const base::Uuid& order_first_uuid,
                           bool animate);
 
   // Deletes all entries identified by `uuids`. If `delete_animation` is false,
   // then the respective item views will just disappear instead of fading out.
-  void DeleteEntries(const std::vector<base::GUID>& uuids,
+  void DeleteEntries(const std::vector<base::Uuid>& uuids,
                      bool delete_animation);
 
   // This performs the launch animation for Save & Recall. The `DeskItemView`
   // identified by `uuid` is animated up into the position of the desk preview
   // housed in `mini_view`. It then crossfades into the desk preview. The
   // `DeskItemView` is also removed from the grid.
-  void AnimateDeskLaunch(const base::GUID& uuid, DeskMiniView* mini_view);
+  void AnimateDeskLaunch(const base::Uuid& uuid, DeskMiniView* mini_view);
 
  private:
   friend class SavedDeskLibraryEventHandler;

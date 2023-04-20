@@ -57,7 +57,6 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -65,6 +64,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "cc/test/pixel_comparator.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
@@ -98,7 +98,7 @@ class SavedDeskTest : public OverviewTestBase {
 
   // Adds an entry to the desks model directly without capturing a desk. Allows
   // for testing the names and times of the UI directly.
-  void AddEntry(const base::GUID& uuid,
+  void AddEntry(const base::Uuid& uuid,
                 const std::string& name,
                 base::Time created_time,
                 DeskTemplateType type) {
@@ -106,7 +106,7 @@ class SavedDeskTest : public OverviewTestBase {
              std::make_unique<app_restore::RestoreData>());
   }
 
-  void AddEntry(const base::GUID& uuid,
+  void AddEntry(const base::Uuid& uuid,
                 const std::string& name,
                 base::Time created_time,
                 DeskTemplateSource source,
@@ -174,7 +174,7 @@ class SavedDeskTest : public OverviewTestBase {
 
   // Deletes an entry to the desks model directly without interacting with the
   // UI.
-  void DeleteEntry(const base::GUID& uuid) {
+  void DeleteEntry(const base::Uuid& uuid) {
     base::RunLoop loop;
     desk_model()->DeleteEntry(
         uuid, base::BindLambdaForTesting(
@@ -255,7 +255,7 @@ class SavedDeskTest : public OverviewTestBase {
   // uuid. Also checks if the grid item count is as expected before deleting.
   // This function assumes we are already in overview mode and viewing the saved
   // desk grid.
-  void DeleteSavedDeskItem(const base::GUID uuid,
+  void DeleteSavedDeskItem(const base::Uuid uuid,
                            const size_t expected_current_item_count,
                            bool expect_saved_desk_item_exists = true) {
     const auto& grid_list = GetOverviewGridList();
@@ -461,7 +461,7 @@ class SavedDeskTest : public OverviewTestBase {
 // Tests the helpers `AddEntry()` and `DeleteEntry()`, which will be used in
 // different tests.
 TEST_F(SavedDeskTest, AddDeleteEntry) {
-  const base::GUID expected_uuid = base::GUID::GenerateRandomV4();
+  const base::Uuid expected_uuid = base::Uuid::GenerateRandomV4();
   const std::string expected_name = "desk name";
   base::Time expected_time = base::Time::Now();
   AddEntry(expected_uuid, expected_name, expected_time,
@@ -507,8 +507,8 @@ TEST_F(SavedDeskTest, LibraryButtonsVisibilityClamshell) {
 
   // Exit overview and add an entry.
   ToggleOverview();
-  const base::GUID guid = base::GUID::GenerateRandomV4();
-  AddEntry(guid, "template", base::Time::Now(), DeskTemplateType::kTemplate);
+  const base::Uuid uuid = base::Uuid::GenerateRandomV4();
+  AddEntry(uuid, "template", base::Time::Now(), DeskTemplateType::kTemplate);
 
   // Reenter overview and verify the zero state library button is visible since
   // there is one entry to view.
@@ -536,7 +536,7 @@ TEST_F(SavedDeskTest, LibraryButtonsVisibilityClamshell) {
 
   // Exit overview and delete the entry.
   ToggleOverview();
-  DeleteEntry(guid);
+  DeleteEntry(uuid);
 
   // Reenter overview and verify neither of the buttons are shown.
   ToggleOverview();
@@ -550,7 +550,7 @@ TEST_F(SavedDeskTest, NoWindowsLabelOnSavedDeskGridShow) {
   UpdateDisplay("400x300,400x300");
 
   // At least one entry is required for the saved desk grid to be shown.
-  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   // Start overview mode. The no windows widget should be visible.
@@ -615,7 +615,7 @@ TEST_F(SavedDeskTest, NoAppSplitScreenLabelOnSavedDeskGridShow) {
   auto test_window = CreateAppWindow();
 
   // At least one entry is required for the saved desk grid to be shown.
-  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   // Start overview mode.
@@ -655,7 +655,7 @@ TEST_F(SavedDeskTest, InvokeAccessibilityAlertOnEnterDeskTemplates) {
   TestAccessibilityControllerClient client;
 
   // At least one entry is required for the saved desk grid to be shown.
-  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   // Start overview mode.
@@ -677,7 +677,7 @@ TEST_F(SavedDeskTest, InvokeAccessibilityAlertOnEnterDeskTemplates) {
 TEST_F(SavedDeskTest, HideOverviewItemsOnSavedDeskGridShow) {
   UpdateDisplay("800x600,800x600");
 
-  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   auto test_window = CreateAppWindow();
@@ -700,7 +700,7 @@ TEST_F(SavedDeskTest, HideOverviewItemsOnSavedDeskGridShow) {
 // entering the saved desk library and finally exiting overview. Regression test
 // for http://b/260001863.
 TEST_F(SavedDeskTest, HideMinimizedWindowOverviewItemsOnSavedDeskGridShow) {
-  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   auto test_window = CreateAppWindow();
@@ -721,7 +721,7 @@ TEST_F(SavedDeskTest, HideMinimizedWindowOverviewItemsOnSavedDeskGridShow) {
 // Tests that when the saved desk grid is shown and the active desk is closed,
 // overview items stay hidden.
 TEST_F(SavedDeskTest, OverviewItemsStayHiddenInSavedDeskGridOnDeskClose) {
-  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   // Create a test window in the current desk.
@@ -820,12 +820,12 @@ TEST_F(SavedDeskTest, DialogSystemModal) {
 TEST_F(SavedDeskTest, SavedDeskGridItems) {
   UpdateDisplay("800x600,800x600");
 
-  const base::GUID uuid_1 = base::GUID::GenerateRandomV4();
+  const base::Uuid uuid_1 = base::Uuid::GenerateRandomV4();
   const std::string name_1 = "template_1";
   base::Time time_1 = base::Time::Now();
   AddEntry(uuid_1, name_1, time_1, DeskTemplateType::kTemplate);
 
-  const base::GUID uuid_2 = base::GUID::GenerateRandomV4();
+  const base::Uuid uuid_2 = base::Uuid::GenerateRandomV4();
   const std::string name_2 = "template_2";
   base::Time time_2 = time_1 + base::Hours(13);
   AddEntry(uuid_2, name_2, time_2, DeskTemplateType::kTemplate);
@@ -843,7 +843,7 @@ TEST_F(SavedDeskTest, SavedDeskGridItems) {
     // The grid item order is currently not guaranteed, so need to
     // verify that each item exists by looking them up by their
     // UUID.
-    auto verify_saved_desk_grid_item = [&grid_items](const base::GUID& uuid,
+    auto verify_saved_desk_grid_item = [&grid_items](const base::Uuid& uuid,
                                                      const std::string& name) {
       auto iter =
           base::ranges::find(grid_items, uuid, [](const SavedDeskItemView* v) {
@@ -867,11 +867,11 @@ TEST_F(SavedDeskTest, DeleteTemplate) {
   UpdateDisplay("800x600,800x600");
 
   // Populate with several entries.
-  const base::GUID uuid_1 = base::GUID::GenerateRandomV4();
+  const base::Uuid uuid_1 = base::Uuid::GenerateRandomV4();
   AddEntry(uuid_1, "template_1", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
-  const base::GUID uuid_2 = base::GUID::GenerateRandomV4();
+  const base::Uuid uuid_2 = base::Uuid::GenerateRandomV4();
   AddEntry(uuid_2, "template_2", base::Time::Now() + base::Hours(13),
            DeskTemplateType::kTemplate);
 
@@ -997,7 +997,7 @@ TEST_F(SavedDeskTest, SaveDeskButtonsEnabledDisabled) {
     // Add 6 `kTemplate` entries.
     for (size_t i = 1; i <= 6; i++) {
       const std::string desk_name = "desk_template " + base::NumberToString(i);
-      AddEntry(base::GUID::GenerateRandomV4(), desk_name, base::Time::Now(),
+      AddEntry(base::Uuid::GenerateRandomV4(), desk_name, base::Time::Now(),
                DeskTemplateType::kTemplate);
     }
 
@@ -1041,7 +1041,7 @@ TEST_F(SavedDeskTest, SaveDeskButtonsEnabledDisabled) {
     // Add 6 `kSaveAndRecall` entries.
     for (size_t i = 1; i <= 6; i++) {
       const std::string desk_name = "saved_desk " + base::NumberToString(i);
-      AddEntry(base::GUID::GenerateRandomV4(), desk_name, base::Time::Now(),
+      AddEntry(base::Uuid::GenerateRandomV4(), desk_name, base::Time::Now(),
                DeskTemplateType::kSaveAndRecall);
     }
 
@@ -1218,9 +1218,9 @@ TEST_F(SavedDeskTest, DesksBarLoadsBeforeSaveDeskButtons) {
 // Tests that saving a template nudges the correct name view.
 TEST_F(SavedDeskTest, SaveTemplateNudgesNameView) {
   // Other templates were added earlier.
-  AddEntry(base::GUID::GenerateRandomV4(), "template1", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template1", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "template2", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template2", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   DesksController* desks_controller = DesksController::Get();
@@ -1288,7 +1288,7 @@ TEST_F(SavedDeskTest, LaunchTemplate) {
 // name view.
 TEST_F(SavedDeskTest, LaunchTemplateNudgesNewDeskName) {
   // Save an entry in the templates grid.
-  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   DesksController* desks_controller = DesksController::Get();
@@ -1322,7 +1322,7 @@ TEST_F(SavedDeskTest, LaunchTemplateNudgesNewDeskName) {
 // Tests that the order of SavedDeskItemView is in order.
 TEST_F(SavedDeskTest, IconsOrder) {
   // Create a `DeskTemplate` using which has 5 apps and each app has 1 window.
-  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
            DeskTemplateSource::kUser, DeskTemplateType::kTemplate,
            CreateRestoreData(std::vector<int>(5, 1)));
 
@@ -1385,7 +1385,7 @@ TEST_F(SavedDeskTest, NumIconsForBrowser) {
   restore_data->ModifyWindowInfo(kAppId1, kWindowId1, window_info);
   restore_data->ModifyWindowInfo(kAppId2, kWindowId2, window_info);
 
-  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateSource::kUser, DeskTemplateType::kTemplate,
            std::move(restore_data));
 
@@ -1438,7 +1438,7 @@ TEST_F(SavedDeskTest, IconsOrderWithInactiveTabs) {
   window_info_2.activation_index = absl::make_optional<int32_t>(kWindowId2);
   restore_data->ModifyWindowInfo(kAppId2, kWindowId2, window_info_2);
 
-  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
            DeskTemplateSource::kUser, DeskTemplateType::kTemplate,
            std::move(restore_data));
 
@@ -1488,7 +1488,7 @@ TEST_F(SavedDeskTest, IdenticalURL) {
   window_info.activation_index = absl::make_optional<int32_t>(kWindowId);
   restore_data->ModifyWindowInfo(kAppId, kWindowId, window_info);
 
-  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateSource::kUser, DeskTemplateType::kTemplate,
            std::move(restore_data));
 
@@ -1522,7 +1522,7 @@ TEST_F(SavedDeskTest, OverflowIconView) {
   const int kNumOverflowApps = 1;
   std::vector<int> window_info(
       kNumOverflowApps + SavedDeskIconContainer::kMaxIcons, 1);
-  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
            DeskTemplateSource::kUser, DeskTemplateType::kTemplate,
            CreateRestoreData(window_info));
 
@@ -1565,7 +1565,7 @@ TEST_F(SavedDeskTest, OverflowIconViewIncrementsForHiddenIcons) {
   const int kNumOverflowApps = 3;
   std::vector<int> window_info(
       kNumOverflowApps + SavedDeskIconContainer::kMaxIcons, 2);
-  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
            DeskTemplateSource::kUser, DeskTemplateType::kTemplate,
            CreateRestoreData(window_info));
 
@@ -1636,7 +1636,7 @@ TEST_F(SavedDeskTest, OverflowIconViewIncrementsForHiddenIcons) {
 TEST_F(SavedDeskTest, IconViewMultipleWindows) {
   // Create a `DeskTemplate` that contains some apps with multiple windows and
   // more than kMaxIcons windows. The grid should appear like the above diagram.
-  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
            DeskTemplateSource::kUser, DeskTemplateType::kTemplate,
            CreateRestoreData(std::vector<int>{1, 1, 2, 2, 3}));
 
@@ -1694,7 +1694,7 @@ TEST_F(SavedDeskTest, IconViewMultipleWindows) {
 // "+99".
 TEST_F(SavedDeskTest, IconViewMoreThan99Windows) {
   // Create a `DeskTemplate` using which has 1 app with 101 windows.
-  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
            DeskTemplateSource::kUser, DeskTemplateType::kTemplate,
            CreateRestoreData(std::vector<int>{101}));
 
@@ -1727,7 +1727,7 @@ TEST_F(SavedDeskTest, OverflowIconViewHiddenOnNoOverflow) {
   // Create a `DeskTemplate` using which has
   // `SavedDeskIconContainer::kMaxIcons` apps and each app has 1 window.
   std::vector<int> window_info(SavedDeskIconContainer::kMaxIcons, 1);
-  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
            DeskTemplateSource::kUser, DeskTemplateType::kTemplate,
            CreateRestoreData(window_info));
 
@@ -1752,7 +1752,7 @@ TEST_F(SavedDeskTest, OverflowUnavailableLessThan5Icons) {
   // Create a `DeskTemplate` which has 4 apps and each app has 1 window. Set 2
   // of those app ids to be unavailable.
   std::vector<int> window_info(4, 1);
-  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateSource::kUser, DeskTemplateType::kTemplate,
            CreateRestoreData(window_info));
 
@@ -1784,7 +1784,7 @@ TEST_F(SavedDeskTest, OverflowUnavailableMoreThan5Icons) {
   // Create a `DeskTemplate` which has 8 apps and each app has 1 window. Set 2
   // of those app ids to be unavailable.
   std::vector<int> window_info(8, 1);
-  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateSource::kUser, DeskTemplateType::kTemplate,
            CreateRestoreData(window_info));
 
@@ -1820,7 +1820,7 @@ TEST_F(SavedDeskTest, OverflowUnavailableMoreThan5Icons) {
 TEST_F(SavedDeskTest, OverflowUnavailableAllUnavailableIcons) {
   // Create a `DeskTemplate` which has 10 apps and each app has 1 window.
   std::vector<int> window_info(10, 1);
-  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateSource::kUser, DeskTemplateType::kTemplate,
            CreateRestoreData(window_info));
 
@@ -1856,7 +1856,7 @@ TEST_F(SavedDeskTest, EnteringInTabletMode) {
   // Create a window and add a test entry. Otherwise the templates UI wouldn't
   // show up in clamshell mode either.
   auto test_window_1 = CreateAppWindow();
-  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   EnterTabletMode();
@@ -1878,7 +1878,7 @@ TEST_F(SavedDeskTest, ClamshellToTabletMode) {
   // Create a window and add a test entry. Otherwise the templates UI wouldn't
   // show up.
   auto test_window_1 = CreateAppWindow();
-  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   // Test that on entering overview, the zero state desks templates button and
@@ -1908,7 +1908,7 @@ TEST_F(SavedDeskTest, ShowingSavedDeskLibraryToTabletMode) {
   // Create a window and add a test entry. Otherwise the templates UI wouldn't
   // show up.
   auto test_window_1 = CreateAppWindow();
-  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -1962,9 +1962,9 @@ TEST_F(SavedDeskTest, TabletModeActivationIssues) {
 
 TEST_F(SavedDeskTest, OverviewTabbing) {
   auto test_window = CreateAppWindow();
-  AddEntry(base::GUID::GenerateRandomV4(), "template1", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template1", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "template2", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template2", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -2010,7 +2010,7 @@ TEST_F(SavedDeskTest, TabbingInvisibleTemplatesButton) {
   ASSERT_FALSE(InOverviewSession());
 
   // Add an entry to delete later.
-  const base::GUID uuid = base::GUID::GenerateRandomV4();
+  const base::Uuid uuid = base::Uuid::GenerateRandomV4();
   AddEntry(uuid, "template", base::Time::Now(), DeskTemplateType::kTemplate);
   OpenOverviewAndShowSavedDeskGrid();
 
@@ -2034,7 +2034,7 @@ TEST_F(SavedDeskTest, TabbingInvisibleTemplatesButton) {
 // desk is deleted while viewing the saved desk grid.
 TEST_F(SavedDeskTest, DesksBarDoesNotReturnToZeroState) {
   DesksController::Get()->NewDesk(DesksCreationRemovalSource::kKeyboard);
-  const base::GUID uuid = base::GUID::GenerateRandomV4();
+  const base::Uuid uuid = base::Uuid::GenerateRandomV4();
   AddEntry(uuid, "template", base::Time::Now(), DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -2179,9 +2179,9 @@ TEST_F(SavedDeskTest, AddRemoveUnsupportedWindows) {
 // Tests the mouse and touch hover behavior on the saved desk item view.
 TEST_F(SavedDeskTest, HoverOnTemplateItemView) {
   auto test_window = CreateAppWindow();
-  AddEntry(base::GUID::GenerateRandomV4(), "template1", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template1", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "template2", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template2", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -2301,15 +2301,15 @@ TEST_F(SavedDeskTest, LaunchTemplateAfterClosingActiveDesk) {
 TEST_F(SavedDeskTest, ShowTemplatesInAlphabeticalOrder) {
   // Create a window and add three test entry in different names.
   auto test_window = CreateAppWindow();
-  AddEntry(base::GUID::GenerateRandomV4(), "B_template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "B_template", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "1_template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "1_template", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "A_template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "A_template", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "a_template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "a_template", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "b_template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "b_template", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -2331,7 +2331,7 @@ TEST_F(SavedDeskTest, ShowTemplatesInAlphabeticalOrder) {
 // Regression test for https://crbug.com/1265003.
 TEST_F(SavedDeskTest, DesksTemplatesButtonFocusColor) {
   DesksController::Get()->NewDesk(DesksCreationRemovalSource::kKeyboard);
-  AddEntry(base::GUID::GenerateRandomV4(), "name", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "name", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   const ui::ColorId active_color_id = kColorAshCurrentDeskColor;
@@ -2391,7 +2391,7 @@ TEST_F(SavedDeskTest, WindowActivatableAfterSaveAndDeleteTemplate) {
 }
 
 TEST_F(SavedDeskTest, TemplateNameBounds) {
-  AddEntry(base::GUID::GenerateRandomV4(), "template name", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template name", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -2427,7 +2427,7 @@ TEST_F(SavedDeskTest, EditSavedDeskName) {
   auto test_window = CreateAppWindow();
 
   const std::string template_name = "desk name";
-  AddEntry(base::GUID::GenerateRandomV4(), template_name, base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), template_name, base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -2499,7 +2499,7 @@ TEST_F(SavedDeskTest, SavedDeskNameChangeAborted) {
   auto test_window = CreateAppWindow();
 
   const std::string template_name = "desk name";
-  AddEntry(base::GUID::GenerateRandomV4(), template_name, base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), template_name, base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -2539,7 +2539,7 @@ TEST_F(SavedDeskTest, TemplateNameTestSpaces) {
   auto test_window = CreateAppWindow();
 
   const std::string template_name = "desk name";
-  AddEntry(base::GUID::GenerateRandomV4(), template_name, base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), template_name, base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -2576,9 +2576,9 @@ TEST_F(SavedDeskTest, TemplateNameTestSpaces) {
 // Tests that there is no crash after we use the keyboard to change the name of
 // a template. Regression test for https://crbug.com/1279649.
 TEST_F(SavedDeskTest, EditTemplateNameWithKeyboardNoCrash) {
-  AddEntry(base::GUID::GenerateRandomV4(), "a", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "a", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "b", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "b", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -2607,9 +2607,9 @@ TEST_F(SavedDeskTest, EditSavedDeskNameShutdownNoCrash) {
   animation_scale_ = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  AddEntry(base::GUID::GenerateRandomV4(), "a", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "a", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "b", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "b", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -2636,7 +2636,7 @@ TEST_F(SavedDeskTest, TemplatesNameHitTest) {
     SCOPED_TRACE(is_rtl ? "rtl" : "ltr");
     base::i18n::SetRTLForTesting(is_rtl);
 
-    AddEntry(base::GUID::GenerateRandomV4(), "a", base::Time::Now(),
+    AddEntry(base::Uuid::GenerateRandomV4(), "a", base::Time::Now(),
              DeskTemplateType::kTemplate);
 
     OpenOverviewAndShowSavedDeskGrid();
@@ -2662,7 +2662,7 @@ TEST_F(SavedDeskTest, TemplatesNameHitTest) {
 // active status on clicking library button when we stay in saved desk grid.
 TEST_F(SavedDeskTest, UnFocusNameChangeOnClickingLibrary) {
   // Save an entry in the templates grid.
-  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -2743,7 +2743,7 @@ TEST_F(SavedDeskTest, AccessibilityFocusAnnotatorInOverview) {
 TEST_F(SavedDeskTest, AccessibilityFocusAnnotatorInLibrary) {
   auto window = CreateTestWindow(gfx::Rect(100, 100));
 
-  AddEntry(base::GUID::GenerateRandomV4(), "test_template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "test_template", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -2768,7 +2768,7 @@ TEST_F(SavedDeskTest, AccessibilityFocusAnnotatorInLibrary) {
 // Tests that accessibility overrides are set as expected after entering
 // templates view when no window opens.
 TEST_F(SavedDeskTest, AccessibilityFocusAnnotatorWhenNoWindowOpen) {
-  AddEntry(base::GUID::GenerateRandomV4(), "test_template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "test_template", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -2795,13 +2795,13 @@ TEST_F(SavedDeskTest, AccessibilityFocusAnnotatorWhenNoWindowOpen) {
 TEST_F(SavedDeskTest, AccessibilityGridItemTraversalOrder) {
   auto window = CreateTestWindow(gfx::Rect(100, 100));
 
-  AddEntry(base::GUID::GenerateRandomV4(), "template_4", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_4", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "template_3", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_3", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "template_2", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_2", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -2827,13 +2827,13 @@ TEST_F(SavedDeskTest, LayoutItemsInLandscape) {
 
   // Create a window and add four test entries.
   auto test_window = CreateAppWindow();
-  AddEntry(base::GUID::GenerateRandomV4(), "A_template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "A_template", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "B_template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "B_template", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "C_template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "C_template", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "D_template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "D_template", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -2855,13 +2855,13 @@ TEST_F(SavedDeskTest, LayoutItemsInPortrait) {
 
   // Create a window and add four test entries.
   auto test_window = CreateAppWindow();
-  AddEntry(base::GUID::GenerateRandomV4(), "A_template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "A_template", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "B_template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "B_template", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "C_template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "C_template", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "D_template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "D_template", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -2886,7 +2886,7 @@ TEST_F(SavedDeskTest, ItemsDoNotOverlapShelf) {
 
   // Create 6 entries to max out the grid.
   for (const std::string& name : {"A", "B", "C", "D", "E", "F"}) {
-    AddEntry(base::GUID::GenerateRandomV4(), name, base::Time::Now(),
+    AddEntry(base::Uuid::GenerateRandomV4(), name, base::Time::Now(),
              DeskTemplateType::kTemplate);
   }
 
@@ -2910,7 +2910,7 @@ TEST_F(SavedDeskTest, RecordDesksTemplateGridShowMetric) {
   base::HistogramTester histogram_tester;
 
   // Entry needed so that overview is accessible
-  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -2927,7 +2927,7 @@ TEST_F(SavedDeskTest, DeleteTemplateRecordsMetric) {
   UpdateDisplay("800x600,800x600");
 
   // Populate with several entries.
-  const base::GUID uuid_1 = base::GUID::GenerateRandomV4();
+  const base::Uuid uuid_1 = base::Uuid::GenerateRandomV4();
   AddEntry(uuid_1, "template_1", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
@@ -3100,7 +3100,7 @@ TEST_F(SavedDeskTest, SaveDeskRecordsWindowAndTabCountMetrics) {
   restore_data->ModifyWindowInfo(kAppId2, kWindowId2, window_info_2);
 
   auto desk_template = std::make_unique<DeskTemplate>(
-      base::GUID::GenerateRandomV4(), DeskTemplateSource::kUser, "template_1",
+      base::Uuid::GenerateRandomV4(), DeskTemplateSource::kUser, "template_1",
       base::Time::Now(), DeskTemplateType::kTemplate);
   desk_template->set_desk_restore_data(std::move(restore_data));
 
@@ -3171,9 +3171,9 @@ TEST_F(SavedDeskTest, UserTemplateCountRecordsMetricCorrectly) {
 TEST_F(SavedDeskTest, ReplaceTemplateAndExitOverview) {
   UpdateDisplay("800x600");
 
-  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "template_2", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_2", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -3208,11 +3208,11 @@ TEST_F(SavedDeskTest, ReplaceTemplateMetric) {
 
   UpdateDisplay("800x600,800x600");
 
-  const base::GUID uuid_1 = base::GUID::GenerateRandomV4();
+  const base::Uuid uuid_1 = base::Uuid::GenerateRandomV4();
   const std::string name_1 = "template_1";
   AddEntry(uuid_1, name_1, base::Time::Now(), DeskTemplateType::kTemplate);
 
-  const base::GUID uuid_2 = base::GUID::GenerateRandomV4();
+  const base::Uuid uuid_2 = base::Uuid::GenerateRandomV4();
   const std::string name_2 = "template_2";
   AddEntry(uuid_2, name_2, base::Time::Now(), DeskTemplateType::kTemplate);
 
@@ -3265,7 +3265,7 @@ TEST_F(SavedDeskTest, ReplaceTemplateMetric) {
 // Tests that there is no animation when removing a desk with windows while the
 // grid is shown. Regression test for https://crbug.com/1291770.
 TEST_F(SavedDeskTest, NoAnimationWhenRemovingDesk) {
-  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   // Create and a new desk, and create a test window on the active desk.
@@ -3299,7 +3299,7 @@ TEST_F(SavedDeskTest, NoAnimationWhenRemovingDesk) {
 // Tests that windows have their opacity reset after being hidden and then going
 // to a different desk. Regression test for https://crbug.com/1292174.
 TEST_F(SavedDeskTest, WindowOpacityResetAfterImmediateExit) {
-  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   // Create and a new desk, and create a couple of test windows on the active
@@ -3335,7 +3335,7 @@ TEST_F(SavedDeskTest, WindowOpacityResetAfterImmediateExit) {
 // Tests that windows have their opacity reset after being hidden and then
 // leaving overview. Regression test for https://crbug.com/1292773.
 TEST_F(SavedDeskTest, WindowOpacityResetAfterLeavingOverview) {
-  const base::GUID uuid = base::GUID::GenerateRandomV4();
+  const base::Uuid uuid = base::Uuid::GenerateRandomV4();
   AddEntry(uuid, "template", base::Time::Now(), DeskTemplateType::kTemplate);
 
   // Create and a new desk, and create a couple of test windows on the active
@@ -3381,7 +3381,7 @@ TEST_F(SavedDeskTest, WindowOpacityResetAfterLeavingOverview) {
 // Tests that the saved desk name view can accept touch events and get
 // focused. Regression test for https://crbug.com/1291769.
 TEST_F(SavedDeskTest, TouchForNameView) {
-  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -3435,10 +3435,10 @@ TEST_F(SavedDeskTest, TimeStrFormat) {
   ASSERT_TRUE(
       base::Time::FromLocalExploded(exploded_yesterday, &time_yesterday));
 
-  const std::vector<base::GUID> uuid = {
-      base::GUID::GenerateRandomV4(),
-      base::GUID::GenerateRandomV4(),
-      base::GUID::GenerateRandomV4(),
+  const std::vector<base::Uuid> uuid = {
+      base::Uuid::GenerateRandomV4(),
+      base::Uuid::GenerateRandomV4(),
+      base::Uuid::GenerateRandomV4(),
   };
   const std::vector<std::string> name = {
       "template_1",
@@ -3510,7 +3510,7 @@ TEST_F(SavedDeskTest, CapTemplateItemsShown) {
   constexpr unsigned long kMaxItemCount = 6;
   // Create more than the maximum number of templates allowable.
   for (unsigned long i = 1; i < kMaxItemCount + 20; i++) {
-    AddEntry(base::GUID::GenerateRandomV4(),
+    AddEntry(base::Uuid::GenerateRandomV4(),
              "template " + base::NumberToString(i), base::Time::Now(),
              DeskTemplateType::kTemplate);
   }
@@ -3526,11 +3526,11 @@ TEST_F(SavedDeskTest, CapTemplateItemsShown) {
 // Tests that click or tap could exit grid view and commit name change when
 // appropriate. Regression test for https://crbug.com/1290568.
 TEST_F(SavedDeskTest, ClickOrTapToExitGridView) {
-  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "template_2", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_2", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "template_3", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_3", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   // Test mouse click.
@@ -3589,9 +3589,9 @@ TEST_F(SavedDeskTest, ClickOrTapToExitGridView) {
 
 // Tests that long pressing on the library view to commit name changes.
 TEST_F(SavedDeskTest, LongPressToCommitNameChanges) {
-  AddEntry(base::GUID::GenerateRandomV4(), "template1", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template1", base::Time::Now(),
            DeskTemplateType::kTemplate);
-  AddEntry(base::GUID::GenerateRandomV4(), "template2", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template2", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -3650,7 +3650,7 @@ TEST_F(SavedDeskTest, LongPressToCommitNameChanges) {
 // Tests that right clicking on the wallpaper while showing the saved desks grid
 // does not exit overview.
 TEST_F(SavedDeskTest, RightClickOnWallpaperStaysInOverview) {
-  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   OpenOverviewAndShowSavedDeskGrid();
@@ -3688,7 +3688,7 @@ TEST_F(SavedDeskTest, VisibleOnAllDesksWindowShownProperly) {
   auto* controller = DesksController::Get();
   ASSERT_EQ(1, controller->GetNumberOfDesks());
 
-  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   // Create a window which is shown on all desks.
@@ -3773,7 +3773,7 @@ TEST_F(SavedDeskTest, NoDuplicateDisplayedName) {
   SavedDeskItemView* second_item = GetItemViewFromSavedDeskGrid(1);
   auto new_desk_template = second_item->saved_desk().Clone();
   new_desk_template->set_template_name(u"Desk 2");
-  const base::GUID uuid = new_desk_template->uuid();
+  const base::Uuid uuid = new_desk_template->uuid();
 
   base::RunLoop loop;
   desk_model()->AddOrUpdateEntry(
@@ -3821,7 +3821,7 @@ TEST_F(SavedDeskTest, NoDuplicateDisplayedName) {
 TEST_F(SavedDeskTest, SelectAllAfterSavingDuplicateTemplate) {
   // First add a template that has the same name as the active desk.
   ASSERT_EQ(u"Desk 1", DesksController::Get()->active_desk()->name());
-  AddEntry(base::GUID::GenerateRandomV4(), "Desk 1", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "Desk 1", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   auto test_window = CreateAppWindow();
@@ -3850,7 +3850,7 @@ TEST_F(SavedDeskTest, NoSortBeforeNameConfirmed) {
 
   // Add an entry with a low lexiconic value for the template name to test that
   // the new saved template is always preceding this one.
-  AddEntry(base::GUID::GenerateRandomV4(), "aaaa", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "aaaa", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   // Enter overview and save the same desk again.
@@ -3942,7 +3942,7 @@ TEST_F(SavedDeskTest, SaveDeskButtonContainerVisibleAfterSwipeToClose) {
 }
 
 TEST_F(SavedDeskTest, AdminTemplate) {
-  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateSource::kPolicy, DeskTemplateType::kTemplate,
            std::make_unique<app_restore::RestoreData>());
 
@@ -3978,19 +3978,19 @@ TEST_F(SavedDeskTest, ScrollBarVisibility) {
   // 3 templates and 3 save-and-recall desks would not show the scroll bar.
   {
     // Add 3 `kTemplate` entries.
-    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 1",
+    AddEntry(base::Uuid::GenerateRandomV4(), "desk_template 1",
              base::Time::Now(), DeskTemplateType::kTemplate);
-    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 2",
+    AddEntry(base::Uuid::GenerateRandomV4(), "desk_template 2",
              base::Time::Now(), DeskTemplateType::kTemplate);
-    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 3",
+    AddEntry(base::Uuid::GenerateRandomV4(), "desk_template 3",
              base::Time::Now(), DeskTemplateType::kTemplate);
 
     // Add 3 `kSaveAndRecall` entries.
-    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 1",
+    AddEntry(base::Uuid::GenerateRandomV4(), "desk_template 1",
              base::Time::Now(), DeskTemplateType::kSaveAndRecall);
-    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 2",
+    AddEntry(base::Uuid::GenerateRandomV4(), "desk_template 2",
              base::Time::Now(), DeskTemplateType::kSaveAndRecall);
-    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 3",
+    AddEntry(base::Uuid::GenerateRandomV4(), "desk_template 3",
              base::Time::Now(), DeskTemplateType::kSaveAndRecall);
 
     OpenOverviewAndShowSavedDeskGrid();
@@ -4006,19 +4006,19 @@ TEST_F(SavedDeskTest, ScrollBarVisibility) {
   // 6 templates and 6 save-and-recall desks would show the scroll bar.
   {
     // Add 3 more `kTemplate` entries.
-    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 4",
+    AddEntry(base::Uuid::GenerateRandomV4(), "desk_template 4",
              base::Time::Now(), DeskTemplateType::kTemplate);
-    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 5",
+    AddEntry(base::Uuid::GenerateRandomV4(), "desk_template 5",
              base::Time::Now(), DeskTemplateType::kTemplate);
-    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 6",
+    AddEntry(base::Uuid::GenerateRandomV4(), "desk_template 6",
              base::Time::Now(), DeskTemplateType::kTemplate);
 
     // Add 3 more `kSaveAndRecall` entries.
-    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 4",
+    AddEntry(base::Uuid::GenerateRandomV4(), "desk_template 4",
              base::Time::Now(), DeskTemplateType::kSaveAndRecall);
-    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 5",
+    AddEntry(base::Uuid::GenerateRandomV4(), "desk_template 5",
              base::Time::Now(), DeskTemplateType::kSaveAndRecall);
-    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 6",
+    AddEntry(base::Uuid::GenerateRandomV4(), "desk_template 6",
              base::Time::Now(), DeskTemplateType::kSaveAndRecall);
 
     OpenOverviewAndShowSavedDeskGrid();
@@ -4037,10 +4037,10 @@ TEST_F(SavedDeskTest, ScrollBarVisibility) {
 TEST_F(SavedDeskTest, ScrollWithHighlightChange) {
   // Add 6 `kTemplate` entries and 6 `kSaveAndRecall` entries.
   for (size_t i = 1; i <= 6; i++) {
-    AddEntry(base::GUID::GenerateRandomV4(),
+    AddEntry(base::Uuid::GenerateRandomV4(),
              "desk_template " + base::NumberToString(i), base::Time::Now(),
              DeskTemplateType::kTemplate);
-    AddEntry(base::GUID::GenerateRandomV4(),
+    AddEntry(base::Uuid::GenerateRandomV4(),
              "saved_desk " + base::NumberToString(i), base::Time::Now(),
              DeskTemplateType::kSaveAndRecall);
   }
@@ -4068,10 +4068,10 @@ TEST_F(SavedDeskTest, ScrollWithHighlightChange) {
 TEST_F(SavedDeskTest, ScrollWithKeyboard) {
   // Add 6 `kTemplate` entries and 6 `kSaveAndRecall` entries.
   for (size_t i = 1; i <= 6; i++) {
-    AddEntry(base::GUID::GenerateRandomV4(),
+    AddEntry(base::Uuid::GenerateRandomV4(),
              "desk_template " + base::NumberToString(i), base::Time::Now(),
              DeskTemplateType::kTemplate);
-    AddEntry(base::GUID::GenerateRandomV4(),
+    AddEntry(base::Uuid::GenerateRandomV4(),
              "saved_desk " + base::NumberToString(i), base::Time::Now(),
              DeskTemplateType::kSaveAndRecall);
   }
@@ -4104,7 +4104,7 @@ TEST_F(SavedDeskTest, FocusedDeskItemFullyVisible) {
 
   // Add 6 `kTemplate` entries.
   for (size_t i = 1; i <= 6; i++) {
-    AddEntry(base::GUID::GenerateRandomV4(),
+    AddEntry(base::Uuid::GenerateRandomV4(),
              "desk_template " + base::NumberToString(i), base::Time::Now(),
              DeskTemplateType::kTemplate);
   }
@@ -4181,7 +4181,7 @@ TEST_F(SavedDeskTest,
 // Tests that there are no overview item windows on theme change.
 TEST_F(SavedDeskTest, NoOverviewItemWindowOnThemeChange) {
   // Add a saved desk entry.
-  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
            DeskTemplateType::kTemplate);
 
   // Create a test window.
@@ -4385,7 +4385,7 @@ TEST_F(DeskSaveAndRecallTest, DeleteSaveAndRecallRecordsMetric) {
 
   UpdateDisplay("800x600");
 
-  const base::GUID uuid = base::GUID::GenerateRandomV4();
+  const base::Uuid uuid = base::Uuid::GenerateRandomV4();
   AddEntry(uuid, "saved_desk", base::Time::Now(),
            DeskTemplateType::kSaveAndRecall);
 
@@ -4473,7 +4473,7 @@ TEST_F(DeskSaveAndRecallTest, ExitOverviewDeskItemFocusCrash) {
   EXPECT_TRUE(accessibility_controller->spoken_feedback().enabled());
 
   // Ensure we have a desk saved so we can go into the library.
-  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
+  AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
            DeskTemplateType::kSaveAndRecall);
 
   // Check that we can enter overview, and that there are no windows present.
