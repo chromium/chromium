@@ -9480,6 +9480,22 @@
             ]
         }
     ],
+    "PartialCustomTabsSideSheet": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230419",
+                    "enable_features": [
+                        "CCTResizableSideSheet",
+                        "CCTResizableSideSheetDiscoverFeedSettings"
+                    ]
+                }
+            ]
+        }
+    ],
     "PartitionAllocBackupRefPtr": [
         {
             "platforms": [
