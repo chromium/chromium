@@ -475,11 +475,6 @@ void PageInfo::RecordPageInfoAction(PageInfoAction action) {
         .Record(ukm::UkmRecorder::Get());
   }
 
-  base::UmaHistogramEnumeration(
-      security_state::GetSafetyTipHistogramName(
-          "Security.SafetyTips.PageInfo.Action", safety_tip_info_.status),
-      action);
-
   auto* settings = GetPageSpecificContentSettings();
   if (!settings)
     return;

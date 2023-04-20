@@ -1528,15 +1528,12 @@ TEST_F(PageInfoTest, AdPersonalization) {
 TEST_F(PageInfoTest, MAYBE_SafetyTipMetrics) {
   struct TestCase {
     const security_state::SafetyTipInfo safety_tip_info;
-    const std::string histogram_name;
   };
   const char kGenericHistogram[] = "WebsiteSettings.Action";
 
   const TestCase kTestCases[] = {
-      {{security_state::SafetyTipStatus::kNone, GURL()},
-       "Security.SafetyTips.PageInfo.Action.SafetyTip_None"},
-      {{security_state::SafetyTipStatus::kLookalike, GURL()},
-       "Security.SafetyTips.PageInfo.Action.SafetyTip_Lookalike"},
+      {{security_state::SafetyTipStatus::kNone, GURL()}},
+      {{security_state::SafetyTipStatus::kLookalike, GURL()}},
   };
 
   for (const auto& test : kTestCases) {
@@ -1548,7 +1545,6 @@ TEST_F(PageInfoTest, MAYBE_SafetyTipMetrics) {
     SetDefaultUIExpectations(mock_ui());
 
     histograms.ExpectTotalCount(kGenericHistogram, 0);
-    histograms.ExpectTotalCount(test.histogram_name, 0);
 
     page_info()->RecordPageInfoAction(PageInfo::PAGE_INFO_OPENED);
 
@@ -1558,10 +1554,6 @@ TEST_F(PageInfoTest, MAYBE_SafetyTipMetrics) {
     histograms.ExpectTotalCount(kGenericHistogram, 2);
     histograms.ExpectBucketCount(kGenericHistogram, PageInfo::PAGE_INFO_OPENED,
                                  2);
-
-    histograms.ExpectTotalCount(test.histogram_name, 2);
-    histograms.ExpectBucketCount(test.histogram_name,
-                                 PageInfo::PAGE_INFO_OPENED, 2);
   }
 }
 
