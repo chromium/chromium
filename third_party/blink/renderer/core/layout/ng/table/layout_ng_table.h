@@ -177,7 +177,7 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGBlock {
 
   LayoutUnit PaddingRight() const override;
 
-  LayoutRectOutsets BorderBoxOutsets() const override;
+  NGPhysicalBoxStrut BorderBoxOutsets() const override;
 
   // TODO(1151101)
   // ClientLeft/Top are incorrect for tables, but cannot be fixed

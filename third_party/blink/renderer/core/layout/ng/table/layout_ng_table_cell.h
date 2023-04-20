@@ -58,7 +58,7 @@ class CORE_EXPORT LayoutNGTableCell : public LayoutNGBlockFlow {
 
   LayoutUnit BorderRight() const override;
 
-  LayoutRectOutsets BorderBoxOutsets() const override;
+  NGPhysicalBoxStrut BorderBoxOutsets() const override;
 
   LayoutNGTableCell* NextCell() const;
   LayoutNGTableCell* PreviousCell() const;

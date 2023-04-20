@@ -129,8 +129,8 @@ class BackgroundImageGeometry {
   void ComputeDestRectAdjustments(const FillLayer&,
                                   const PhysicalRect&,
                                   bool,
-                                  LayoutRectOutsets&,
-                                  LayoutRectOutsets&) const;
+                                  NGPhysicalBoxStrut&,
+                                  NGPhysicalBoxStrut&) const;
 
   // Positioning area adjustments modify the size of the
   // positioning area to snap values and apply the
@@ -138,8 +138,8 @@ class BackgroundImageGeometry {
   void ComputePositioningAreaAdjustments(const FillLayer&,
                                          const PhysicalRect&,
                                          bool,
-                                         LayoutRectOutsets&,
-                                         LayoutRectOutsets&) const;
+                                         NGPhysicalBoxStrut&,
+                                         NGPhysicalBoxStrut&) const;
 
   void ComputePositioningArea(const PaintInfo&,
                               const FillLayer&,

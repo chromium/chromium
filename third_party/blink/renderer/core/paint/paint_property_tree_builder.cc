@@ -2074,7 +2074,7 @@ static void AdjustRoundedClipForOverflowClipMargin(
 
   // The default rects map to the inner border-radius which is the padding-box.
   // First apply a margin for the reference-box.
-  LayoutRectOutsets outsets;
+  NGPhysicalBoxStrut outsets;
   switch (overflow_clip_margin->GetReferenceBox()) {
     case StyleOverflowClipMargin::ReferenceBox::kBorderBox:
       outsets = box.BorderBoxOutsets();
@@ -2082,11 +2082,11 @@ static void AdjustRoundedClipForOverflowClipMargin(
     case StyleOverflowClipMargin::ReferenceBox::kPaddingBox:
       break;
     case StyleOverflowClipMargin::ReferenceBox::kContentBox:
-      outsets = -box.PaddingOutsets().ToLayoutRectOutsets();
+      outsets = -box.PaddingOutsets();
       break;
   }
 
-  outsets += overflow_clip_margin->GetMargin();
+  outsets.Inflate(overflow_clip_margin->GetMargin());
   layout_clip_rect.Outset(gfx::OutsetsF(outsets));
   paint_clip_rect.OutsetForMarginOrShadow(gfx::OutsetsF(outsets));
 }

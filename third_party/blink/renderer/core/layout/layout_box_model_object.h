@@ -319,10 +319,9 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return BorderTop() + BorderBottom();
   }
 
-  virtual LayoutRectOutsets BorderBoxOutsets() const {
+  virtual NGPhysicalBoxStrut BorderBoxOutsets() const {
     NOT_DESTROYED();
-    return LayoutRectOutsets(BorderTop(), BorderRight(), BorderBottom(),
-                             BorderLeft());
+    return {BorderTop(), BorderRight(), BorderBottom(), BorderLeft()};
   }
 
   NGPhysicalBoxStrut PaddingOutsets() const {

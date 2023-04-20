@@ -5809,9 +5809,9 @@ LayoutRect LayoutBox::LogicalLayoutOverflowRectForPropagation(
 LayoutRectOutsets LayoutBox::BorderBoxOutsetsForClipping() const {
   auto padding_box = -BorderBoxOutsets();
   if (!ShouldApplyOverflowClipMargin())
-    return padding_box;
+    return padding_box.ToLayoutRectOutsets();
 
-  LayoutRectOutsets overflow_clip_margin;
+  NGPhysicalBoxStrut overflow_clip_margin;
   switch (StyleRef().OverflowClipMargin()->GetReferenceBox()) {
     case StyleOverflowClipMargin::ReferenceBox::kBorderBox:
       break;
@@ -5823,7 +5823,9 @@ LayoutRectOutsets LayoutBox::BorderBoxOutsetsForClipping() const {
       break;
   }
 
-  return overflow_clip_margin + StyleRef().OverflowClipMargin()->GetMargin();
+  return overflow_clip_margin
+      .Inflate(StyleRef().OverflowClipMargin()->GetMargin())
+      .ToLayoutRectOutsets();
 }
 
 DISABLE_CFI_PERF

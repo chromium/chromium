@@ -200,6 +200,14 @@ struct CORE_EXPORT NGPhysicalBoxStrut {
     return LayoutRectOutsets(top, right, bottom, left);
   }
 
+  NGPhysicalBoxStrut& Inflate(LayoutUnit diff) {
+    top += diff;
+    right += diff;
+    bottom += diff;
+    left += diff;
+    return *this;
+  }
+
   NGPhysicalBoxStrut& operator+=(const NGPhysicalBoxStrut& other) {
     top += other.top;
     right += other.right;
@@ -222,9 +230,23 @@ struct CORE_EXPORT NGPhysicalBoxStrut {
     return result;
   }
 
+  NGPhysicalBoxStrut operator-(const NGPhysicalBoxStrut& other) const {
+    NGPhysicalBoxStrut result(*this);
+    result -= other;
+    return result;
+  }
+
   bool operator==(const NGPhysicalBoxStrut& other) const {
     return top == other.top && right == other.right && bottom == other.bottom &&
            left == other.left;
+  }
+
+  explicit operator gfx::OutsetsF() const {
+    return gfx::OutsetsF()
+        .set_left(left.ToFloat())
+        .set_right(right.ToFloat())
+        .set_top(top.ToFloat())
+        .set_bottom(bottom.ToFloat());
   }
 
   bool IsZero() const { return !top && !right && !bottom && !left; }
@@ -261,14 +283,13 @@ inline NGPhysicalBoxStrut NGBoxStrut::ConvertToPhysical(
   }
 }
 
+inline NGPhysicalBoxStrut operator-(const NGPhysicalBoxStrut& a) {
+  return {-a.top, -a.right, -a.bottom, -a.left};
+}
+
 inline LayoutRectOutsets operator+(const LayoutRectOutsets& a,
                                    const NGPhysicalBoxStrut& b) {
   return a + b.ToLayoutRectOutsets();
-}
-
-inline LayoutRectOutsets operator-(const LayoutRectOutsets& a,
-                                   const NGPhysicalBoxStrut& b) {
-  return a - b.ToLayoutRectOutsets();
 }
 
 }  // namespace blink

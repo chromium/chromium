@@ -1808,8 +1808,8 @@ PhysicalRect NGBoxFragmentPainter::AdjustRectForScrolledContent(
   return scrolled_paint_rect;
 }
 
-LayoutRectOutsets NGBoxFragmentPainter::ComputeBorders() const {
-  return PhysicalFragment().Borders().ToLayoutRectOutsets();
+NGPhysicalBoxStrut NGBoxFragmentPainter::ComputeBorders() const {
+  return PhysicalFragment().Borders();
 }
 
 NGPhysicalBoxStrut NGBoxFragmentPainter::ComputePadding() const {

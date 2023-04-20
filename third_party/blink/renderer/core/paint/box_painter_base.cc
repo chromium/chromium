@@ -1030,10 +1030,10 @@ bool ShouldApplyBlendOperation(const BoxPainterBase::FillLayerInfo& info,
 }  // anonymous namespace
 
 LayoutRectOutsets BoxPainterBase::ComputeSnappedBorders() const {
-  const LayoutRectOutsets border_widths = ComputeBorders();
+  const NGPhysicalBoxStrut border_widths = ComputeBorders();
   return LayoutRectOutsets(
-      border_widths.Top().ToInt(), border_widths.Right().ToInt(),
-      border_widths.Bottom().ToInt(), border_widths.Left().ToInt());
+      border_widths.top.ToInt(), border_widths.right.ToInt(),
+      border_widths.bottom.ToInt(), border_widths.left.ToInt());
 }
 
 LayoutRectOutsets BoxPainterBase::AdjustedBorderOutsets(

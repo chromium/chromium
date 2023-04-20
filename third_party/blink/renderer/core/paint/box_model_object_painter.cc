@@ -80,7 +80,7 @@ PhysicalRect BoxModelObjectPainter::AdjustRectForScrolledContent(
   return scrolled_paint_rect;
 }
 
-LayoutRectOutsets BoxModelObjectPainter::ComputeBorders() const {
+NGPhysicalBoxStrut BoxModelObjectPainter::ComputeBorders() const {
   return box_model_.BorderBoxOutsets();
 }
 
