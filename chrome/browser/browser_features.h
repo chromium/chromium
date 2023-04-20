@@ -83,6 +83,42 @@ BASE_DECLARE_FEATURE(kFedCmWithoutThirdPartyCookies);
 
 BASE_DECLARE_FEATURE(kIncomingCallNotifications);
 
+// This flag is used for enabling Omnibox triggered prerendering. See
+// crbug.com/1166085 for more details of Omnibox triggered prerendering.
+BASE_DECLARE_FEATURE(kOmniboxTriggerForPrerender2);
+
+// This flag is used for enabling Bookmark triggered prerendering. See
+// crbug.com/1422819 for more details of Bookmark triggered prerendering.
+BASE_DECLARE_FEATURE(kBookmarkTriggerForPrerender2);
+
+// This flag controls whether to trigger prerendering when the default search
+// engine suggests to prerender a search result. It also enables
+// Prerender2-related features on the blink side. This flag takes effect only
+// when blink::features::Prerender2 is enabled.
+BASE_DECLARE_FEATURE(kSupportSearchSuggestionForPrerender2);
+enum class SearchSuggestionPrerenderImplementationType {
+  kUsePrefetch,
+  kIgnorePrefetch,
+};
+extern const base::FeatureParam<SearchSuggestionPrerenderImplementationType>
+    kSearchSuggestionPrerenderImplementationTypeParam;
+// Indicates whether to make search prefetch response shareable to prerender.
+// When allowing this, prerender can only copy the cache but cannot take over
+// the ownership.
+enum class SearchPreloadShareableCacheType {
+  kEnabled,
+  kDisabled,
+};
+
+extern const base::FeatureParam<SearchPreloadShareableCacheType>
+    kSearchPreloadShareableCacheTypeParam;
+
+// This is used to enable an experiment for modifying confidence cutoff of
+// prerender and preconnect for autocomplete action predictor.
+BASE_DECLARE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff);
+
+BASE_DECLARE_FEATURE(kOmniboxTriggerForNoStatePrefetch);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_BROWSER_FEATURES_H_

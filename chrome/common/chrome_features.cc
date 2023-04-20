@@ -1524,54 +1524,6 @@ bool IsParentAccessCodeForOnlineLoginEnabled() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Enables omnibox trigger prerendering.
-BASE_FEATURE(kOmniboxTriggerForPrerender2,
-             "OmniboxTriggerForPrerender2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables bookmark trigger prerendering.
-BASE_FEATURE(kBookmarkTriggerForPrerender2,
-             "BookmarkTriggerForPrerender2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSupportSearchSuggestionForPrerender2,
-             "SupportSearchSuggestionForPrerender2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<SearchSuggestionPrerenderImplementationType>::Option
-    search_suggestion_implementation_types[] = {
-        {SearchSuggestionPrerenderImplementationType::kUsePrefetch,
-         "use_prefetch"},
-        {SearchSuggestionPrerenderImplementationType::kIgnorePrefetch,
-         "ignore_prefetch"}};
-const base::FeatureParam<SearchSuggestionPrerenderImplementationType>
-    kSearchSuggestionPrerenderImplementationTypeParam{
-        &kSupportSearchSuggestionForPrerender2, "implementation_type",
-        SearchSuggestionPrerenderImplementationType::kIgnorePrefetch,
-        &search_suggestion_implementation_types};
-
-const base::FeatureParam<SearchPreloadShareableCacheType>::Option
-    search_preload_shareable_cache_types[] = {
-        {SearchPreloadShareableCacheType::kEnabled, "enabled"},
-        {SearchPreloadShareableCacheType::kDisabled, "disabled"}};
-const base::FeatureParam<SearchPreloadShareableCacheType>
-    kSearchPreloadShareableCacheTypeParam{
-        &kSupportSearchSuggestionForPrerender2, "shareable_cache",
-        SearchPreloadShareableCacheType::kEnabled,
-        &search_preload_shareable_cache_types};
-
-BASE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff,
-             "AutocompleteActionPredictorConfidenceCutoff",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables omnibox trigger no state prefetch. Only one of
-// kOmniboxTriggerForPrerender2 or kOmniboxTriggerForNoStatePrefetch can be
-// enabled in the experiment. If both are enabled, only
-// kOmniboxTriggerForPrerender2 takes effect.
-// TODO(crbug.com/1267731): Remove this flag once the experiments are completed.
-BASE_FEATURE(kOmniboxTriggerForNoStatePrefetch,
-             "OmniboxTriggerForNoStatePrefetch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // A feature to indicate whether setting wake time >24hours away is supported by
 // the platform's RTC.

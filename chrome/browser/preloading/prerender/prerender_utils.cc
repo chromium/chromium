@@ -4,7 +4,7 @@
 
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/browser_features.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 
