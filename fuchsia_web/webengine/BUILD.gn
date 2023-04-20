@@ -596,6 +596,7 @@ test("web_engine_browsertests") {
     "//content/test:test_support",
     "//fuchsia_web/common",
     "//fuchsia_web/common/test:test_support",
+    "//media/fuchsia/codec:test_support",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",

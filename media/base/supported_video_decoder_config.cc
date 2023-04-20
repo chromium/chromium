@@ -50,6 +50,10 @@ bool SupportedVideoDecoderConfig::Matches(
   return true;
 }
 
+bool SupportedVideoDecoderConfig::Matches(const VideoType& type) const {
+  return profile_min <= type.profile && type.profile <= profile_max;
+}
+
 // static
 bool IsVideoDecoderConfigSupported(
     const SupportedVideoDecoderConfigs& supported_configs,
@@ -57,6 +61,16 @@ bool IsVideoDecoderConfigSupported(
   for (const auto& c : supported_configs) {
     if (c.Matches(config))
       return true;
+  }
+  return false;
+}
+
+bool IsVideoTypeSupported(const SupportedVideoDecoderConfigs& supported_configs,
+                          const VideoType& type) {
+  for (const auto& c : supported_configs) {
+    if (c.Matches(type)) {
+      return true;
+    }
   }
   return false;
 }

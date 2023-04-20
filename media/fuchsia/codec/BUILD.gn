@@ -1,0 +1,18 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+source_set("test_support") {
+  testonly = true
+  deps = [ "//testing/gtest" ]
+  public_deps = [
+    "//base",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec:fuchsia.mediacodec_hlcpp",
+  ]
+  sources = [
+    "fake_codec_factory.cc",
+    "fake_codec_factory.h",
+  ]
+}
