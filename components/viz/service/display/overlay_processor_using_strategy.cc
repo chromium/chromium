@@ -351,9 +351,9 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
   // contents.
   if (render_pass->copy_requests.empty() && !disable_overlay()) {
     success = AttemptWithStrategies(
-        output_color_matrix, render_pass_backdrop_filters, resource_provider,
-        render_passes, &surface_damage_rect_list, output_surface_plane,
-        candidates, content_bounds, damage_rect);
+        output_color_matrix, render_pass_filters, render_pass_backdrop_filters,
+        resource_provider, render_passes, &surface_damage_rect_list,
+        output_surface_plane, candidates, content_bounds, damage_rect);
   }
   LogCheckOverlaySupportMetrics();
 
@@ -728,6 +728,7 @@ void OverlayProcessorUsingStrategy::SortProposedOverlayCandidates(
 
 bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
     const SkM44& output_color_matrix,
+    const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
@@ -740,9 +741,9 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
   last_successful_strategy_ = nullptr;
   std::vector<OverlayProposedCandidate> proposed_candidates;
   for (const auto& strategy : strategies_) {
-    strategy->Propose(output_color_matrix, render_pass_backdrop_filters,
-                      resource_provider, render_pass_list,
-                      surface_damage_rect_list, primary_plane,
+    strategy->Propose(output_color_matrix, render_pass_filters,
+                      render_pass_backdrop_filters, resource_provider,
+                      render_pass_list, surface_damage_rect_list, primary_plane,
                       &proposed_candidates, content_bounds);
   }
 
@@ -779,9 +780,9 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
     }
 
     bool used_overlay = candidate.strategy->Attempt(
-        output_color_matrix, render_pass_backdrop_filters, resource_provider,
-        render_pass_list, surface_damage_rect_list, primary_plane, candidates,
-        content_bounds, candidate);
+        output_color_matrix, render_pass_filters, render_pass_backdrop_filters,
+        resource_provider, render_pass_list, surface_damage_rect_list,
+        primary_plane, candidates, content_bounds, candidate);
     if (!used_overlay && candidate.candidate.requires_overlay) {
       // Check if we likely failed due to scaling capabilities, and if so, try
       // to adjust things to make it work. We do this by tracking what scale
@@ -809,9 +810,10 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
           ScaleCandidateSrcRect(org_src_rect, zoom_scale, &candidate.candidate);
           attempted_scaling_required_overlays = true;
           if (candidate.strategy->Attempt(
-                  output_color_matrix, render_pass_backdrop_filters,
-                  resource_provider, render_pass_list, surface_damage_rect_list,
-                  primary_plane, candidates, content_bounds, candidate)) {
+                  output_color_matrix, render_pass_filters,
+                  render_pass_backdrop_filters, resource_provider,
+                  render_pass_list, surface_damage_rect_list, primary_plane,
+                  candidates, content_bounds, candidate)) {
             used_overlay = true;
             break;
           } else {

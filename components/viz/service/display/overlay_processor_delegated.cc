@@ -122,6 +122,7 @@ DBG_FLAG_FBOOL("candidate.enable.clip_rect", enable_clip_rect)
 
 bool OverlayProcessorDelegated::AttemptWithStrategies(
     const SkM44& output_color_matrix,
+    const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
@@ -159,7 +160,8 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,
       &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane),
-      is_delegated_context, supports_clip_rect_ && enable_clip_rect());
+      &render_pass_filters, is_delegated_context,
+      supports_clip_rect_ && enable_clip_rect());
 
   const auto kExtraCandiates = needs_background_image_ ? 1 : 0;
   candidates->reserve(quad_list->size() + kExtraCandiates);
@@ -277,9 +279,9 @@ void OverlayProcessorDelegated::ProcessForOverlays(
   }
 
   success = AttemptWithStrategies(
-      output_color_matrix, render_pass_backdrop_filters, resource_provider,
-      render_passes, &surface_damage_rect_list, output_surface_plane,
-      candidates, content_bounds);
+      output_color_matrix, render_pass_filters, render_pass_backdrop_filters,
+      resource_provider, render_passes, &surface_damage_rect_list,
+      output_surface_plane, candidates, content_bounds);
 
   DCHECK(candidates->empty() || success);
 

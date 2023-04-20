@@ -79,6 +79,7 @@ OverlayStrategySingleOnTop::~OverlayStrategySingleOnTop() = default;
 
 void OverlayStrategySingleOnTop::Propose(
     const SkM44& output_color_matrix,
+    const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
@@ -93,6 +94,7 @@ void OverlayStrategySingleOnTop::Propose(
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,
       &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane),
+      &render_pass_filters,
       /*is_delegated_context=*/false, /*supports_clip_rect=*/false,
       /*supports_arbitrary_transform=*/false,
       /*supports_rounded_display_masks=*/true);
@@ -157,6 +159,7 @@ void OverlayStrategySingleOnTop::Propose(
 
 bool OverlayStrategySingleOnTop::Attempt(
     const SkM44& output_color_matrix,
+    const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
