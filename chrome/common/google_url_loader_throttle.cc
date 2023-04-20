@@ -110,12 +110,16 @@ void GoogleURLLoaderThrottle::WillStartRequest(
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (request->SendsCookies() &&
       ShouldDeferRequestForBoundSession(request->url)) {
-    *defer = true;
-    CHECK(bound_session_request_throttled_listener_);
-    bound_session_request_throttled_listener_->OnRequestBlockedOnCookie(
-        base::BindOnce(
-            &GoogleURLLoaderThrottle::OnDeferRequestForBoundSessionCompleted,
-            weak_factory_.GetWeakPtr()));
+    // TODO(b/263264391): `bound_session_request_throttled_listener_` should
+    // always be set if `BoundSessionParams` are set. Switch to a check once the
+    // renderer `BoundSessionRequestThrottledListener` is set.
+    if (bound_session_request_throttled_listener_) {
+      *defer = true;
+      bound_session_request_throttled_listener_->OnRequestBlockedOnCookie(
+          base::BindOnce(
+              &GoogleURLLoaderThrottle::OnDeferRequestForBoundSessionCompleted,
+              weak_factory_.GetWeakPtr()));
+    }
   }
 #endif
 }
@@ -160,12 +164,16 @@ void GoogleURLLoaderThrottle::WillRedirectRequest(
 #endif
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (ShouldDeferRequestForBoundSession(redirect_info->new_url)) {
-    *defer = true;
-    CHECK(bound_session_request_throttled_listener_);
-    bound_session_request_throttled_listener_->OnRequestBlockedOnCookie(
-        base::BindOnce(
-            &GoogleURLLoaderThrottle::OnDeferRequestForBoundSessionCompleted,
-            weak_factory_.GetWeakPtr()));
+    // TODO(b/263264391): `bound_session_request_throttled_listener_` should
+    // always be set if `BoundSessionParams` are set. Switch to a check once the
+    // renderer `BoundSessionRequestThrottledListener` is set.
+    if (bound_session_request_throttled_listener_) {
+      *defer = true;
+      bound_session_request_throttled_listener_->OnRequestBlockedOnCookie(
+          base::BindOnce(
+              &GoogleURLLoaderThrottle::OnDeferRequestForBoundSessionCompleted,
+              weak_factory_.GetWeakPtr()));
+    }
   }
 #endif
 }

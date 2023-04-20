@@ -18,6 +18,8 @@
 // - Preemptively refreshes bound session cookies
 class BoundSessionCookieRefreshService : public KeyedService {
  public:
+  using RendererBoundSessionParamsUpdaterDelegate = base::RepeatingClosure;
+
   BoundSessionCookieRefreshService() = default;
 
   BoundSessionCookieRefreshService(const BoundSessionCookieRefreshService&) =
@@ -43,6 +45,14 @@ class BoundSessionCookieRefreshService : public KeyedService {
       base::OnceClosure resume_blocked_request) = 0;
 
   virtual base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() = 0;
+
+ private:
+  friend class RendererUpdater;
+
+  // `RendererUpdater` class that is responsible for pushing updates to all
+  // renderers calls this setter to subscribe for bound session params updates.
+  virtual void SetRendererBoundSessionParamsUpdaterDelegate(
+      RendererBoundSessionParamsUpdaterDelegate renderer_updater) = 0;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_REFRESH_SERVICE_H_

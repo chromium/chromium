@@ -10,6 +10,7 @@
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
@@ -22,6 +23,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using signin::ConsentLevel;
@@ -67,6 +69,7 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
   base::OnceCallback<void()> on_destroy_callback_;
   base::OnceClosure resume_blocked_request_;
 };
+
 }  // namespace
 
 class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
@@ -110,6 +113,20 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
     return cookie_refresh_service_.get();
   }
 
+  void SetRendererUpdater(
+      BoundSessionCookieRefreshService::
+          RendererBoundSessionParamsUpdaterDelegate renderer_updater) {
+    CHECK(cookie_refresh_service_);
+    cookie_refresh_service_->SetRendererBoundSessionParamsUpdaterDelegate(
+        renderer_updater);
+  }
+
+  void ResetRendererUpdater() {
+    CHECK(cookie_refresh_service_);
+    cookie_refresh_service_->SetRendererBoundSessionParamsUpdaterDelegate(
+        base::RepeatingClosure());
+  }
+
   void ResetCookieRefreshService() { cookie_refresh_service_.reset(); }
 
   signin::IdentityManager* identity_manager() {
@@ -124,18 +141,24 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
     return cookie_controller_;
   }
 
+  void SetupPreConditionForBoundSession() {
+    identity_test_env_.MakePrimaryAccountAvailable(kEmail,
+                                                   ConsentLevel::kSignin);
+  }
+
+  void TerminateBoundSession() { identity_test_env_.ClearPrimaryAccount(); }
+
  private:
   base::test::TaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<BoundSessionCookieRefreshServiceImpl> cookie_refresh_service_;
-  raw_ptr<FakeBoundSessionCookieController> cookie_controller_;
+  raw_ptr<FakeBoundSessionCookieController> cookie_controller_ = nullptr;
 };
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest, VerifyControllerParams) {
-  identity_test_env()->MakePrimaryAccountAvailable(kEmail,
-                                                   ConsentLevel::kSignin);
+  SetupPreConditionForBoundSession();
   BoundSessionCookieRefreshServiceImpl* service =
       CreateCookieRefreshServiceImpl();
   EXPECT_TRUE(service->IsBoundSession());
@@ -156,8 +179,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
        VerifyBoundSessionParamsBoundSession) {
-  identity_test_env()->MakePrimaryAccountAvailable(kEmail,
-                                                   ConsentLevel::kSignin);
+  SetupPreConditionForBoundSession();
   BoundSessionCookieRefreshServiceImpl* service =
       CreateCookieRefreshServiceImpl();
   EXPECT_TRUE(service->IsBoundSession());
@@ -170,8 +192,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
        RefreshBoundSessionCookieBoundSession) {
-  identity_test_env()->MakePrimaryAccountAvailable(kEmail,
-                                                   ConsentLevel::kSignin);
+  SetupPreConditionForBoundSession();
   BoundSessionCookieRefreshServiceImpl* service =
       CreateCookieRefreshServiceImpl();
   EXPECT_TRUE(service->IsBoundSession());
@@ -197,7 +218,56 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
-       IsBoundSession_NoPrimaryAccount) {
+       UpdateAllRenderersOnBoundSessionStarted) {
+  BoundSessionCookieRefreshServiceImpl* service =
+      CreateCookieRefreshServiceImpl();
+  EXPECT_FALSE(service->IsBoundSession());
+  base::MockRepeatingCallback<void()> renderer_updater;
+  EXPECT_CALL(renderer_updater, Run()).Times(0);
+  SetRendererUpdater(renderer_updater.Get());
+  testing::Mock::VerifyAndClearExpectations(&renderer_updater);
+
+  // Create bound session.
+  EXPECT_CALL(renderer_updater, Run());
+  SetupPreConditionForBoundSession();
+  EXPECT_TRUE(service->IsBoundSession());
+  testing::Mock::VerifyAndClearExpectations(&renderer_updater);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       UpdateAllRenderersOnCookieExpirationDateChanged) {
+  base::MockRepeatingCallback<void()> renderer_updater;
+  EXPECT_CALL(renderer_updater, Run()).Times(0);
+  SetupPreConditionForBoundSession();
+  BoundSessionCookieRefreshServiceImpl* service =
+      CreateCookieRefreshServiceImpl();
+  EXPECT_TRUE(service->IsBoundSession());
+  SetRendererUpdater(renderer_updater.Get());
+  testing::Mock::VerifyAndClearExpectations(&renderer_updater);
+
+  EXPECT_CALL(renderer_updater, Run());
+  cookie_controller()->SimulateOnCookieExpirationDateChanged(base::Time::Now());
+  testing::Mock::VerifyAndClearExpectations(&renderer_updater);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       UpdateAllRenderersOnBoundSessionTerminated) {
+  base::MockRepeatingCallback<void()> renderer_updater;
+  EXPECT_CALL(renderer_updater, Run()).Times(0);
+  SetupPreConditionForBoundSession();
+  BoundSessionCookieRefreshServiceImpl* service =
+      CreateCookieRefreshServiceImpl();
+  EXPECT_TRUE(service->IsBoundSession());
+  SetRendererUpdater(renderer_updater.Get());
+  testing::Mock::VerifyAndClearExpectations(&renderer_updater);
+
+  EXPECT_CALL(renderer_updater, Run());
+  TerminateBoundSession();
+  testing::Mock::VerifyAndClearExpectations(&renderer_updater);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       IsBoundSessionNoPrimaryAccount) {
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
   BoundSessionCookieRefreshServiceImpl* service =
       CreateCookieRefreshServiceImpl();
@@ -206,8 +276,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
        IsBoundSessionSigninPrimaryAccount) {
-  identity_test_env()->MakePrimaryAccountAvailable(kEmail,
-                                                   ConsentLevel::kSignin);
+  SetupPreConditionForBoundSession();
   EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
   BoundSessionCookieRefreshServiceImpl* service =
       CreateCookieRefreshServiceImpl();
@@ -219,8 +288,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
        IsBoundSessionAccountsNotLoadedYet) {
-  identity_test_env()->MakePrimaryAccountAvailable(kEmail,
-                                                   ConsentLevel::kSignin);
+  SetupPreConditionForBoundSession();
   EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
   identity_test_env()->ResetToAccountsNotYetLoadedFromDiskState();
   BoundSessionCookieRefreshServiceImpl* service =
@@ -231,8 +299,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
        IsBoundSessionRefreshTokenInPersistentErrorState) {
-  identity_test_env()->MakePrimaryAccountAvailable(kEmail,
-                                                   ConsentLevel::kSignin);
+  SetupPreConditionForBoundSession();
   EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
   BoundSessionCookieRefreshServiceImpl* service =
       CreateCookieRefreshServiceImpl();
@@ -277,15 +344,14 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   EXPECT_TRUE(service->IsBoundSession());
   EXPECT_TRUE(cookie_controller());
 
-  identity_test_env()->ClearPrimaryAccount();
+  TerminateBoundSession();
   EXPECT_FALSE(service->IsBoundSession());
   EXPECT_FALSE(cookie_controller());
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
        IsBoundSessionEmptyGaiaAccounts) {
-  identity_test_env()->MakePrimaryAccountAvailable(kEmail,
-                                                   ConsentLevel::kSignin);
+  SetupPreConditionForBoundSession();
   EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
   BoundSessionCookieRefreshServiceImpl* service =
       CreateCookieRefreshServiceImpl();

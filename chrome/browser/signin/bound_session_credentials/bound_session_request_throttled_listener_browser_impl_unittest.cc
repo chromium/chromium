@@ -28,6 +28,9 @@ class FakeBoundSessionCookieRefreshService
     return chrome::mojom::BoundSessionParams::New();
   }
 
+  void SetRendererBoundSessionParamsUpdaterDelegate(
+      RendererBoundSessionParamsUpdaterDelegate renderer_updater) override {}
+
   void OnRequestBlockedOnCookie(
       base::OnceClosure resume_blocked_request) override {
     resume_blocked_request_ = std::move(resume_blocked_request);

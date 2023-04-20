@@ -24,20 +24,13 @@ class BoundSessionCookieRefreshServiceImpl
   explicit BoundSessionCookieRefreshServiceImpl(
       SigninClient* client,
       signin::IdentityManager* identity_manager);
+
   ~BoundSessionCookieRefreshServiceImpl() override;
 
+  // BoundSessionCookieRefreshService:
   void Initialize() override;
-
-  // Returns true if session is bound.
   bool IsBoundSession() const override;
-
   chrome::mojom::BoundSessionParamsPtr GetBoundSessionParams() const override;
-
-  // Called when a network request requires a fresh SIDTS cookie. This function
-  // is intended to be called by network requests throttlers.
-  // The callback will be called once the cookie is fresh or the session is
-  // terminated. Note: The callback might be called synchronously if the
-  // previous conditions apply.
   void OnRequestBlockedOnCookie(
       base::OnceClosure resume_blocked_request) override;
 
@@ -54,6 +47,10 @@ class BoundSessionCookieRefreshServiceImpl
           const GURL& url,
           const std::string& cookie_name,
           Delegate* delegate)>;
+
+  // BoundSessionCookieRefreshService:
+  void SetRendererBoundSessionParamsUpdaterDelegate(
+      RendererBoundSessionParamsUpdaterDelegate renderer_updater) override;
 
   void set_controller_factory_for_testing(
       const BoundSessionCookieControllerFactoryForTesting&
@@ -76,6 +73,7 @@ class BoundSessionCookieRefreshServiceImpl
   const raw_ptr<SigninClient> client_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
   BoundSessionCookieControllerFactoryForTesting controller_factory_for_testing_;
+  RendererBoundSessionParamsUpdaterDelegate renderer_updater_;
 
   std::unique_ptr<BoundSessionStateTracker> bound_session_tracker_;
   std::unique_ptr<BoundSessionCookieController> cookie_controller_;

@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.h"
 #include <memory>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -198,6 +199,12 @@ BoundSessionCookieRefreshServiceImpl::GetBoundSessionParams() const {
       cookie_controller_->cookie_expiration_time());
 }
 
+void BoundSessionCookieRefreshServiceImpl::
+    SetRendererBoundSessionParamsUpdaterDelegate(
+        RendererBoundSessionParamsUpdaterDelegate renderer_updater) {
+  renderer_updater_ = renderer_updater;
+}
+
 void BoundSessionCookieRefreshServiceImpl::OnRequestBlockedOnCookie(
     base::OnceClosure resume_blocked_request) {
   if (!IsBoundSession()) {
@@ -252,5 +259,7 @@ void BoundSessionCookieRefreshServiceImpl::OnBoundSessionUpdated() {
 }
 
 void BoundSessionCookieRefreshServiceImpl::UpdateAllRenderers() {
-  NOTIMPLEMENTED();
+  if (renderer_updater_) {
+    renderer_updater_.Run();
+  }
 }
