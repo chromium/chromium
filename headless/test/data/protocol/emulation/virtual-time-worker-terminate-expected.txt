@@ -1,0 +1,5 @@
+Tests virtual time is unpaused when a worker is terminated before start.
+Request to http://test.com/index.html, type: Document
+Request to http://test.com/worker.js, type: Other
+timer fired
+PASSED: virtual time budget expired
