@@ -1812,7 +1812,7 @@
       // assume that screen dimensions match window.innerWidth/innerHeight while
       // a page is fullscreen, but that is not always true. crbug.com/1367416
       name: "FullscreenScreenSizeMatchesDisplay",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "GamepadButtonAxisEvents",
