@@ -1404,13 +1404,13 @@ Your Google account may have other forms of browsing history like searches and a
 
       <!-- Privacy Guide -->
       <message name="IDS_PRIVACY_GUIDE_PREF_TITLE" desc="The title of the privacy guide menu item. The text between the BEGIN_NEW and END_NEW tokens is a chip shown on the menu item, informing users that this is a new feature.">
-        Privacy guide <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
+        Privacy Guide <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
       </message>
       <message name="IDS_PRIVACY_GUIDE_PREF_SUMMARY" desc="The summary of the privacy menu item.">
         Review key privacy and security controls
       </message>
       <message name="IDS_PRIVACY_GUIDE_FRAGMENT_TITLE" desc="The title of all privacy guide fragments.">
-        Privacy guide
+        Privacy Guide
       </message>
       <message name="IDS_PRIVACY_GUIDE_WELCOME_TITLE" desc="Title on the welcome page of the privacy guide.">
         A guide of your privacy choices
