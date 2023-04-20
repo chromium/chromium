@@ -8,11 +8,13 @@
 #include <utility>
 
 #include "content/browser/devtools/devtools_agent_host_impl.h"
+#include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/prefetch_service_delegate.h"
 
 namespace content::protocol {
 
@@ -332,6 +334,7 @@ void PreloadHandler::DidUpdatePrerenderStatus(
 Response PreloadHandler::Enable() {
   enabled_ = true;
   RetrievePrerenderActivationFromWebContents();
+  SendInitialPreloadEnabledState();
   return Response::FallThrough();
 }
 
@@ -375,6 +378,44 @@ void PreloadHandler::RetrievePrerenderActivationFromWebContents() {
         host_->GetLastCommittedURL().spec(),
         Preload::PrerenderFinalStatusEnum::Activated);
     last_activated_prerender_initiator_devtools_navigation_token_.reset();
+  }
+}
+
+void PreloadHandler::SendInitialPreloadEnabledState() {
+  if (!host_) {
+    return;
+  }
+
+  WebContentsImpl* web_contents =
+      WebContentsImpl::FromRenderFrameHostImpl(host_);
+  PrefetchService* prefetch_service = PrefetchService::GetFromFrameTreeNodeId(
+      web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId());
+
+  Preload::PreloadEnabledState state =
+      Preload::PreloadEnabledStateEnum::NotSupported;
+  if (prefetch_service && prefetch_service->GetPrefetchServiceDelegate()) {
+    // TODO(https://crbug.com/1384419): Add more grainularity to
+    // PreloadingEligibility to distinguish PreloadHoldback and
+    // DisabledByPreference for PreloadingEligibility::kPreloadingDisabled.
+    // Use more general method to check status of Preloading instead of
+    // relying on PrefetchService.
+    switch (prefetch_service->GetPrefetchServiceDelegate()
+                ->IsSomePreloadingEnabled()) {
+      case PreloadingEligibility::kDataSaverEnabled:
+        state = Preload::PreloadEnabledStateEnum::DisabledByDataSaver;
+        break;
+      case PreloadingEligibility::kBatterySaverEnabled:
+        state = Preload::PreloadEnabledStateEnum::DisabledByBatterySaver;
+        break;
+      case PreloadingEligibility::kPreloadingDisabled:
+        state = Preload::PreloadEnabledStateEnum::DisabledByPreference;
+        break;
+      default:
+        state = Preload::PreloadEnabledStateEnum::Enabled;
+        break;
+    }
+
+    frontend_->PreloadEnabledStateUpdated(state);
   }
 }
 

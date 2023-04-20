@@ -18,11 +18,13 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
+#include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -37,6 +39,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/process_manager.h"
@@ -213,6 +216,20 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   SendCommandSync("Input.dispatchKeyEvent", std::move(params));
 
   EXPECT_EQ(nullptr, DevToolsWindow::FindDevToolsWindow(agent_host_.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CheckReportedPreloadingState) {
+  Attach();
+  SendCommandSync("Runtime.enable");
+
+  prefetch::SetPreloadPagesState(browser()->profile()->GetPrefs(),
+                                 prefetch::PreloadPagesState::kNoPreloading);
+
+  SendCommandAsync("Preload.enable");
+  const base::Value::Dict result =
+      WaitForNotification("Preload.preloadEnabledStateUpdated", true);
+
+  EXPECT_THAT(*result.FindString("state"), "DisabledByPreference");
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -728,6 +745,68 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest,
   }
   auto detached = WaitForNotification("Target.detachedFromTarget", true);
   EXPECT_THAT(*detached.FindString("sessionId"), Eq("sessionId"));
+}
+
+class PrerenderDataSaverProtocolTest : public DevToolsProtocolTest {
+ public:
+  PrerenderDataSaverProtocolTest()
+      : prerender_helper_(base::BindRepeating(
+            &PrerenderDataSaverProtocolTest::GetActiveWebContents,
+            base::Unretained(this))) {}
+
+ protected:
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    data_saver::OverrideIsDataSaverEnabledForTesting(true);
+    DevToolsProtocolTest::SetUp();
+  }
+
+  content::test::PrerenderTestHelper* prerender_helper() {
+    return &prerender_helper_;
+  }
+
+  void TearDown() override {
+    data_saver::ResetIsDataSaverEnabledForTesting();
+    InProcessBrowserTest::TearDown();
+  }
+
+  content::WebContents* GetActiveWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrerenderDataSaverProtocolTest,
+                       CheckReportedDisabledByDataSaverPreloadingState) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  Attach();
+  SendCommandSync("Runtime.enable");
+
+  const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  const GURL prerendering_url =
+      embedded_test_server()->GetURL("/empty.html?prerender");
+
+  content::test::PrerenderHostRegistryObserver observer(
+      *GetActiveWebContents());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  prerender_helper()->AddPrerenderAsync(prerendering_url);
+  observer.WaitForTrigger(prerendering_url);
+
+  int host_id = prerender_helper()->GetHostForUrl(prerendering_url);
+  EXPECT_EQ(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  SendCommandAsync("Preload.enable");
+  const base::Value::Dict result =
+      WaitForNotification("Preload.preloadEnabledStateUpdated", true);
+
+  EXPECT_THAT(*result.FindString("state"), "DisabledByDataSaver");
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      /*PrerenderFinalStatus::kDataSaverEnabled=*/38, 1);
 }
 
 }  // namespace

@@ -80,7 +80,7 @@
             {
                 "domain": "Preload",
                 "include": ["enable", "disable"],
-                "include_events": ["prerenderAttemptCompleted", "prefetchStatusUpdated", "prerenderStatusUpdated"]
+                "include_events": ["prerenderAttemptCompleted", "prefetchStatusUpdated", "prerenderStatusUpdated", "preloadEnabledStateUpdated"]
             },
             {
                 "domain": "Runtime",

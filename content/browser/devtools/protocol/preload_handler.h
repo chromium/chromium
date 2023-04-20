@@ -64,6 +64,7 @@ class PreloadHandler : public DevToolsDomainHandler, public Preload::Backend {
                    RenderFrameHostImpl* frame_host) override;
 
   void RetrievePrerenderActivationFromWebContents();
+  void SendInitialPreloadEnabledState();
 
   RenderFrameHostImpl* host_ = nullptr;
 
