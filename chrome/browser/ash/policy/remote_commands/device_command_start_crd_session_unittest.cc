@@ -1067,12 +1067,13 @@ TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
-       ShouldAllowRequestIfManagedVpnNetworkIsAvailable) {
+       ShouldRejectRequestIfManagedNetworkIsVpn) {
   fake_cros_network_config().SetActiveNetworks({
       CreateNetwork(NetworkType::kVPN).SetOncSource(OncSource::kDevicePolicy),
   });
 
-  EXPECT_SUCCESS(RunJobAndWaitForResult(RemoteAccessPayload()));
+  EXPECT_ERROR(RunJobAndWaitForResult(RemoteAccessPayload()),
+               ResultCode::FAILURE_UNMANAGED_ENVIRONMENT);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
