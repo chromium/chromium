@@ -2182,9 +2182,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.NewlySavedPasswordHasEmptyUsername.{PasswordType}"
-    enum="Boolean" expires_after="2023-04-23">
+    enum="Boolean" expires_after="2023-10-23">
   <owner>khamutov@google.com</owner>
   <owner>kolos@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Whether a newly saved password has an empty username. Recorded right before
     a new credential is commited to the store.
