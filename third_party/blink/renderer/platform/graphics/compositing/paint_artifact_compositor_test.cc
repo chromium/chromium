@@ -1500,9 +1500,9 @@ TEST_P(PaintArtifactCompositorTest, MergeOpacity) {
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
     // Transform is applied to this PaintChunk.
+    Color semi_transparent_black = Color::FromSkColor4f({0, 0, 0, opacity});
     rects_with_color.push_back(
-        RectWithColor(gfx::RectF(0, 0, 100, 100),
-                      Color(Color::kBlack).CombineWithAlpha(opacity)));
+        RectWithColor(gfx::RectF(0, 0, 100, 100), semi_transparent_black));
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 
@@ -1532,9 +1532,9 @@ TEST_P(PaintArtifactCompositorTest, MergeOpacityWithAlias) {
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
     // Transform is applied to this PaintChunk.
+    Color semi_transparent_black = Color::FromSkColor4f({0, 0, 0, opacity});
     rects_with_color.push_back(
-        RectWithColor(gfx::RectF(0, 0, 100, 100),
-                      Color(Color::kBlack).CombineWithAlpha(opacity)));
+        RectWithColor(gfx::RectF(0, 0, 100, 100), semi_transparent_black));
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 
@@ -1572,9 +1572,9 @@ TEST_P(PaintArtifactCompositorTest, MergeNestedWithAlias) {
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
     // Transform is applied to this PaintChunk.
+    Color semi_transparent_black = Color::FromSkColor4f({0, 0, 0, opacity});
     rects_with_color.push_back(
-        RectWithColor(gfx::RectF(60, 70, 50, 60),
-                      Color(Color::kBlack).CombineWithAlpha(opacity)));
+        RectWithColor(gfx::RectF(60, 70, 50, 60), semi_transparent_black));
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 
@@ -1649,9 +1649,9 @@ TEST_P(PaintArtifactCompositorTest, EffectPushedUp) {
     Vector<RectWithColor> rects_with_color;
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
+    Color semi_transparent_black = Color::FromSkColor4f({0, 0, 0, opacity});
     rects_with_color.push_back(
-        RectWithColor(gfx::RectF(0, 0, 300, 400),
-                      Color(Color::kBlack).CombineWithAlpha(opacity)));
+        RectWithColor(gfx::RectF(0, 0, 300, 400), semi_transparent_black));
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 
@@ -1690,9 +1690,9 @@ TEST_P(PaintArtifactCompositorTest, EffectAndClipPushedUp) {
         RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
     // The clip is under |transform| but not |transform2|, so only an adjustment
     // of (20, 25) occurs.
+    Color semi_transparent_black = Color::FromSkColor4f({0, 0, 0, opacity});
     rects_with_color.push_back(
-        RectWithColor(gfx::RectF(30, 45, 50, 60),
-                      Color(Color::kBlack).CombineWithAlpha(opacity)));
+        RectWithColor(gfx::RectF(30, 45, 50, 60), semi_transparent_black));
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 
@@ -1723,9 +1723,9 @@ TEST_P(PaintArtifactCompositorTest, ClipAndEffectNoTransform) {
     Vector<RectWithColor> rects_with_color;
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
+    Color semi_transparent_black = Color::FromSkColor4f({0, 0, 0, opacity});
     rects_with_color.push_back(
-        RectWithColor(gfx::RectF(10, 20, 50, 60),
-                      Color(Color::kBlack).CombineWithAlpha(opacity)));
+        RectWithColor(gfx::RectF(10, 20, 50, 60), semi_transparent_black));
     rects_with_color.push_back(
         RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 

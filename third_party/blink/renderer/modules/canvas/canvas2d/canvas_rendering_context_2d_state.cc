@@ -349,9 +349,9 @@ void CanvasRenderingContext2DState::UpdateStrokeStyle() const {
 
   DCHECK(stroke_style_);
   stroke_style_->ApplyToFlags(stroke_flags_);
-  Color stroke_flag_color = stroke_style_->PaintColor();
-  stroke_flags_.setColor(
-      stroke_flag_color.CombineWithAlpha(global_alpha_).toSkColor4f());
+  Color stroke_color = stroke_style_->PaintColor();
+  stroke_color.SetAlpha(stroke_color.FloatAlpha() * global_alpha_);
+  stroke_flags_.setColor(stroke_color.toSkColor4f());
   stroke_style_dirty_ = false;
 }
 
@@ -361,9 +361,9 @@ void CanvasRenderingContext2DState::UpdateFillStyle() const {
 
   DCHECK(fill_style_);
   fill_style_->ApplyToFlags(fill_flags_);
-  Color fill_flag_color = fill_style_->PaintColor();
-  fill_flags_.setColor(
-      fill_flag_color.CombineWithAlpha(global_alpha_).toSkColor4f());
+  Color fill_color = fill_style_->PaintColor();
+  fill_color.SetAlpha(fill_color.FloatAlpha() * global_alpha_);
+  fill_flags_.setColor(fill_color.toSkColor4f());
   fill_style_dirty_ = false;
 }
 

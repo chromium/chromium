@@ -273,6 +273,8 @@ class PLATFORM_EXPORT Color {
   float Param2() const { return param2_; }
   float FloatAlpha() const { return alpha_; }
 
+  void SetAlpha(float alpha) { alpha_ = alpha; }
+
   // Access the color as though it were created using rgba syntax. This will
   // clamp all colors to an 8-bit sRGB representation. All callers of these
   // functions should be audited. The function Rgb(), despite the name, does
@@ -296,17 +298,6 @@ class PLATFORM_EXPORT Color {
 
   Color Light() const;
   Color Dark() const;
-
-  Color CombineWithAlpha(float other_alpha) const& {
-    Color color = *this;
-    color.alpha_ *= other_alpha;
-    return color;
-  }
-
-  Color&& CombineWithAlpha(float other_alpha) && {
-    alpha_ *= other_alpha;
-    return std::move(*this);
-  }
 
   // This is an implementation of Porter-Duff's "source-over" equation
   // TODO(https://crbug.com/1333988): Implement CSS Color level 4 blending,
