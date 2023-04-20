@@ -257,10 +257,6 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
     if (!child) {
       LayoutListMarkerImage* image =
           LayoutListMarkerImage::CreateAnonymous(&marker.GetDocument());
-      // TODO(1229581): The IsLayoutNGObjectForListMarkerImage should no longer
-      // be necessary. It can be assumed to always be true.
-      if (marker.IsLayoutNGListMarker())
-        image->SetIsLayoutNGObjectForListMarkerImage(true);
       scoped_refptr<const ComputedStyle> image_style =
           marker.GetDocument()
               .GetStyleResolver()

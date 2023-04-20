@@ -19,7 +19,7 @@ class CORE_EXPORT LayoutListMarkerImage final : public LayoutImage {
 
   bool IsLayoutNGObject() const override {
     NOT_DESTROYED();
-    return IsLayoutNGObjectForListMarkerImage();
+    return true;
   }
   gfx::SizeF DefaultSize() const;
 

@@ -5343,8 +5343,9 @@ AXObject* AXObject::ContainerWidget() const {
 AXObject* AXObject::ContainerListMarkerIncludingIgnored() const {
   AXObject* ancestor = ParentObject();
   while (ancestor && (!ancestor->GetLayoutObject() ||
-                      !ancestor->GetLayoutObject()->IsListMarkerIncludingAll()))
+                      !ancestor->GetLayoutObject()->IsListMarker())) {
     ancestor = ancestor->ParentObject();
+  }
 
   return ancestor;
 }

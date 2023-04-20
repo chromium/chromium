@@ -2805,16 +2805,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsLayoutNGOutsideListMarker();
   }
-  // Any kind of LayoutNG list marker.
-  bool IsLayoutNGListMarker() const {
+  // Any kind of list marker.
+  bool IsListMarker() const {
     NOT_DESTROYED();
     return IsLayoutNGInsideListMarker() || IsLayoutNGOutsideListMarker();
-  }
-  // Any kind of list marker.
-  // TODO(1229581): Remove this function.
-  bool IsListMarkerIncludingAll() const {
-    NOT_DESTROYED();
-    return IsLayoutNGListMarker();
   }
 
   // ImageResourceObserver override.
@@ -3437,17 +3431,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     node_ = document;
   }
 
-  bool IsLayoutNGObjectForListMarkerImage() const {
-    NOT_DESTROYED();
-    DCHECK(IsListMarkerImage());
-    return bitfields_.IsLayoutNGObjectForListMarkerImage();
-  }
-  void SetIsLayoutNGObjectForListMarkerImage(bool b) {
-    NOT_DESTROYED();
-    DCHECK(IsListMarkerImage());
-    bitfields_.SetIsLayoutNGObjectForListMarkerImage(b);
-  }
-
   bool IsLayoutNGObjectForFormattedText() const {
     NOT_DESTROYED();
     return bitfields_.IsLayoutNGObjectForFormattedText();
@@ -3937,7 +3920,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           is_html_legend_element_(false),
           has_non_collapsed_border_decoration_(false),
           being_destroyed_(false),
-          is_layout_ng_object_for_list_marker_image_(false),
           is_table_column_constraints_dirty_(false),
           is_grid_placement_dirty_(true),
           transform_affects_vector_effect_(false),
@@ -4228,10 +4210,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
     // True at start of |Destroy()| before calling |WillBeDestroyed()|.
     ADD_BOOLEAN_BITFIELD(being_destroyed_, BeingDestroyed);
-
-    // From LayoutListMarkerImage
-    ADD_BOOLEAN_BITFIELD(is_layout_ng_object_for_list_marker_image_,
-                         IsLayoutNGObjectForListMarkerImage);
 
     // Column constraints are cached on LayoutNGTable.
     // When this flag is set, any cached constraints are invalid.

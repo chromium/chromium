@@ -203,7 +203,7 @@ ax::mojom::blink::Role AXLayoutObject::RoleFromLayoutObjectOrNode() const {
     return ax::mojom::blink::Role::kListItem;
   }
 
-  if (layout_object_->IsListMarkerIncludingAll()) {
+  if (layout_object_->IsListMarker()) {
     Node* list_item = layout_object_->GeneratingNode();
     if (list_item && ShouldIgnoreListItem(list_item))
       return ax::mojom::blink::Role::kNone;
@@ -523,7 +523,7 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   if (alt_text)
     return alt_text->empty();
 
-  if (layout_object_->IsListMarkerIncludingAll()) {
+  if (layout_object_->IsListMarker()) {
     // Ignore TextAlternative of the list marker for SUMMARY because:
     //  - TextAlternatives for disclosure-* are triangle symbol characters used
     //    to visually indicate the expansion state.
@@ -1448,8 +1448,9 @@ AXObject* AXLayoutObject::HeaderObject() const {
 
 void AXLayoutObject::GetWordBoundaries(Vector<int>& word_starts,
                                        Vector<int>& word_ends) const {
-  if (!layout_object_ || !layout_object_->IsListMarkerIncludingAll())
+  if (!layout_object_ || !layout_object_->IsListMarker()) {
     return;
+  }
 
   String text_alternative;
   if (ListMarker* marker = ListMarker::Get(layout_object_)) {

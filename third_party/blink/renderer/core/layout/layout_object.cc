@@ -809,8 +809,9 @@ bool LayoutObject::IsRenderedLegendInternal() const {
 }
 
 bool LayoutObject::IsListMarkerForSummary() const {
-  if (!IsListMarkerIncludingAll())
+  if (!IsListMarker()) {
     return false;
+  }
   if (const auto* summary =
           DynamicTo<HTMLSummaryElement>(Parent()->GetNode())) {
     if (!summary->IsMainSummary())
@@ -828,7 +829,7 @@ bool LayoutObject::IsListMarkerForSummary() const {
 bool LayoutObject::IsInListMarker() const {
   // List markers are either leaf nodes (legacy LayoutListMarker), or have
   // exactly one leaf child. So there's no need to traverse ancestors.
-  return Parent() && Parent()->IsListMarkerIncludingAll();
+  return Parent() && Parent()->IsListMarker();
 }
 
 LayoutObject* LayoutObject::NonCulledParent() const {
