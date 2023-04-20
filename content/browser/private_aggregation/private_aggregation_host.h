@@ -13,8 +13,13 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 
+namespace base {
+class Time;
+class Uuid;
+}  // namespace base
 namespace url {
 class Origin;
 }  // namespace url
@@ -74,12 +79,24 @@ class CONTENT_EXPORT PrivateAggregationHost
   // blink::mojom::PrivateAggregationHost:
   void SendHistogramReport(
       std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
-          contributions,
+          contribution_ptrs,
       blink::mojom::AggregationServiceMode aggregation_mode,
       blink::mojom::DebugModeDetailsPtr debug_mode_details) override;
 
  private:
+  friend class PrivateAggregationReportGoldenLatestVersionTest;
+
   struct ReceiverContext;
+
+  static absl::optional<AggregatableReportRequest> GenerateReportRequest(
+      std::vector<blink::mojom::AggregatableReportHistogramContribution>
+          contributions,
+      blink::mojom::AggregationServiceMode aggregation_mode,
+      blink::mojom::DebugModeDetailsPtr debug_mode_details,
+      base::Time scheduled_report_time,
+      base::Uuid report_id,
+      const url::Origin& reporting_origin,
+      PrivateAggregationBudgetKey::Api api_for_budgeting);
 
   // Set iff the private aggregation developer mode is set.
   bool should_not_delay_reports_;

@@ -147,53 +147,27 @@ void PrivateAggregationHost::SendHistogramReport(
       [](const blink::mojom::AggregatableReportHistogramContributionPtr&
              contribution_ptr) { return std::move(*contribution_ptr); });
 
-  AggregationServicePayloadContents payload_contents(
-      AggregationServicePayloadContents::Operation::kHistogram,
-      std::move(contributions), aggregation_mode,
-      ::aggregation_service::mojom::AggregationCoordinator::kDefault);
-
   base::Time now = base::Time::Now();
 
-  AggregatableReportSharedInfo shared_info(
-      /*scheduled_report_time=*/should_not_delay_reports_
-          ? now
-          : GetScheduledReportTime(
-                /*report_issued_time=*/now),
-      /*report_id=*/base::Uuid::GenerateRandomV4(), reporting_origin,
-      debug_mode_details->is_enabled
-          ? AggregatableReportSharedInfo::DebugMode::kEnabled
-          : AggregatableReportSharedInfo::DebugMode::kDisabled,
-      /*additional_fields=*/base::Value::Dict(),
-      /*api_version=*/kApiReportVersion,
-      /*api_identifier=*/
-      private_aggregation::GetApiIdentifier(
-          receiver_set_.current_context().api_for_budgeting));
-
-  std::string reporting_path = private_aggregation::GetReportingPath(
-      receiver_set_.current_context().api_for_budgeting,
-      /*is_immediate_debug_report=*/false);
-
-  absl::optional<uint64_t> debug_key;
-  if (!debug_mode_details->debug_key.is_null()) {
-    if (!debug_mode_details->is_enabled) {
-      mojo::ReportBadMessage("Debug key present but debug mode is not enabled");
-      RecordSendHistogramReportResultHistogram(
-          SendHistogramReportResult::kDebugKeyPresentWithoutDebugMode);
-      return;
-    }
-    debug_key = debug_mode_details->debug_key->value;
-  }
-
   absl::optional<AggregatableReportRequest> report_request =
-      AggregatableReportRequest::Create(std::move(payload_contents),
-                                        std::move(shared_info),
-                                        std::move(reporting_path), debug_key);
+      GenerateReportRequest(
+          std::move(contributions), aggregation_mode,
+          std::move(debug_mode_details),
+          /*scheduled_report_time=*/
+          should_not_delay_reports_ ? now
+                                    : GetScheduledReportTime(
+                                          /*report_issued_time=*/now),
+          /*report_id=*/base::Uuid::GenerateRandomV4(), reporting_origin,
+          receiver_set_.current_context().api_for_budgeting);
+
   if (!report_request.has_value()) {
-    mojo::ReportBadMessage("Invalid report request parameters");
-    RecordSendHistogramReportResultHistogram(
-        SendHistogramReportResult::kReportRequestCreationFailed);
     return;
   }
+
+  RecordSendHistogramReportResultHistogram(
+      too_many_contributions ? SendHistogramReportResult::
+                                   kSuccessButTruncatedDueToTooManyContributions
+                             : SendHistogramReportResult::kSuccess);
 
   absl::optional<PrivateAggregationBudgetKey> budget_key =
       PrivateAggregationBudgetKey::Create(
@@ -205,11 +179,61 @@ void PrivateAggregationHost::SendHistogramReport(
 
   on_report_request_received_.Run(std::move(report_request.value()),
                                   std::move(budget_key.value()));
+}
 
-  RecordSendHistogramReportResultHistogram(
-      too_many_contributions ? SendHistogramReportResult::
-                                   kSuccessButTruncatedDueToTooManyContributions
-                             : SendHistogramReportResult::kSuccess);
+absl::optional<AggregatableReportRequest>
+PrivateAggregationHost::GenerateReportRequest(
+    std::vector<blink::mojom::AggregatableReportHistogramContribution>
+        contributions,
+    blink::mojom::AggregationServiceMode aggregation_mode,
+    blink::mojom::DebugModeDetailsPtr debug_mode_details,
+    base::Time scheduled_report_time,
+    base::Uuid report_id,
+    const url::Origin& reporting_origin,
+    PrivateAggregationBudgetKey::Api api_for_budgeting) {
+  AggregationServicePayloadContents payload_contents(
+      AggregationServicePayloadContents::Operation::kHistogram,
+      std::move(contributions), aggregation_mode,
+      ::aggregation_service::mojom::AggregationCoordinator::kDefault);
+
+  AggregatableReportSharedInfo shared_info(
+      scheduled_report_time, std::move(report_id), reporting_origin,
+      debug_mode_details->is_enabled
+          ? AggregatableReportSharedInfo::DebugMode::kEnabled
+          : AggregatableReportSharedInfo::DebugMode::kDisabled,
+      /*additional_fields=*/base::Value::Dict(),
+      /*api_version=*/kApiReportVersion,
+      /*api_identifier=*/
+      private_aggregation::GetApiIdentifier(api_for_budgeting));
+
+  std::string reporting_path = private_aggregation::GetReportingPath(
+      api_for_budgeting,
+      /*is_immediate_debug_report=*/false);
+
+  absl::optional<uint64_t> debug_key;
+  if (!debug_mode_details->debug_key.is_null()) {
+    if (!debug_mode_details->is_enabled) {
+      mojo::ReportBadMessage("Debug key present but debug mode is not enabled");
+      RecordSendHistogramReportResultHistogram(
+          SendHistogramReportResult::kDebugKeyPresentWithoutDebugMode);
+      return absl::nullopt;
+    }
+    debug_key = debug_mode_details->debug_key->value;
+  }
+
+  absl::optional<AggregatableReportRequest> report_request =
+      AggregatableReportRequest::Create(std::move(payload_contents),
+                                        std::move(shared_info),
+                                        std::move(reporting_path), debug_key);
+
+  if (!report_request.has_value()) {
+    mojo::ReportBadMessage("Invalid report request parameters");
+    RecordSendHistogramReportResultHistogram(
+        SendHistogramReportResult::kReportRequestCreationFailed);
+    return absl::nullopt;
+  }
+
+  return report_request;
 }
 
 }  // namespace content
