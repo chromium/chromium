@@ -3406,7 +3406,7 @@
     {
       "id": 354,
       "cr_bugs": [1126834],
-      "description": "AMD devices 98e4 and 15d8 with specific drivers can't use d3d11 video decoder",
+      "description": "AMD device 98e4 with specific drivers can't use d3d11 video decoder",
       "os": {
         "type": "win"
       },
