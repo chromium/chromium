@@ -42,18 +42,18 @@ IN_PROC_BROWSER_TEST_F(IFrameTest, InEmptyFrame) {
 // Test for https://crbug.com/621076. It ensures that file chooser triggered
 // by an iframe, which is destroyed before the chooser is closed, does not
 // result in a use-after-free condition.
-// Note: This test is disabled temporarily to track down a memory leak reported
-// by the ASan bots. It will be enabled once the root cause is found.
-IN_PROC_BROWSER_TEST_F(IFrameTest, DISABLED_FileChooserInDestroyedSubframe) {
+//
+// TODO(alexmos): Investigate if there's a way to get this test working in
+// Lacros. It seems that the crosapi::mojom::SelectFile interface used by
+// SelectFileDialogLacros is unavailable in tests.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_F(IFrameTest, FileChooserInDestroyedSubframe) {
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   GURL file_input_url(embedded_test_server()->GetURL("/file_input.html"));
 
   // Navigate to a page, which contains an iframe, and navigate the iframe
   // to a document containing a file input field.
-  // Note: For the bug to occur, the parent and child frame need to be in
-  // the same site, otherwise they would each get a RenderWidgetHost and
-  // existing code will properly clear the internal state.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/iframe.html")));
   NavigateIframeToURL(tab, "test", file_input_url);
@@ -73,3 +73,4 @@ IN_PROC_BROWSER_TEST_F(IFrameTest, DISABLED_FileChooserInDestroyedSubframe) {
   // On ASan bots, this test should succeed without reporting use-after-free
   // condition.
 }
+#endif
