@@ -94,6 +94,7 @@ android_library("javatests") {
     ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/android:chrome_java",
     "//chrome/browser/autofill/android:java",
     "//chrome/browser/autofill/test:test_support_java",

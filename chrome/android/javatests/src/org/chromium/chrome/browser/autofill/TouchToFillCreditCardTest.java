@@ -9,10 +9,10 @@ import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.base.test.util.Matchers.containsString;
 import static org.chromium.base.test.util.Matchers.is;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCard;
+import static org.chromium.chrome.test.R.id.card_name;
+import static org.chromium.chrome.test.R.id.card_number;
 import static org.chromium.chrome.test.R.id.description_line_2;
 import static org.chromium.chrome.test.R.id.sheet_item_list;
-import static org.chromium.chrome.test.R.id.touch_to_fill_card_name;
-import static org.chromium.chrome.test.R.id.touch_to_fill_card_number;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.view.View;
@@ -150,9 +150,8 @@ public class TouchToFillCreditCardTest {
     }
 
     private void verifyCardIsCorrectlyDisplayed(View cardItemLayout) {
-        TextView cardNameLayout = (TextView) cardItemLayout.findViewById(touch_to_fill_card_name);
-        TextView cardNumberLayout =
-                (TextView) cardItemLayout.findViewById(touch_to_fill_card_number);
+        TextView cardNameLayout = (TextView) cardItemLayout.findViewById(card_name);
+        TextView cardNumberLayout = (TextView) cardItemLayout.findViewById(card_number);
         TextView cardDescLayout = (TextView) cardItemLayout.findViewById(description_line_2);
         // Check that the card name is displayed
         checkThat(cardNameLayout.getText().toString(), is(CARD_NAME));

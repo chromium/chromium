@@ -68,6 +68,10 @@ public class TouchToFillCreditCardViewTest {
             /* number= */ "4111111111111111", /* month= */ "4", /* year= */ "2090",
             /* network= */ "Visa", /* iconId= */ 0, /* cardNameForAutofillDisplay= */ "Visa",
             /* obfuscatedLastFourDigits= */ "1111");
+    private static final CreditCard LONG_CARD_NAME_CARD =
+            createCreditCard("MJ", "4111111111111111", "5", "2050", false,
+                    "How much wood would a woodchuck chuck if a woodchuck could chuck wood",
+                    "• • • • 1111", 0, "visa");
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -232,8 +236,8 @@ public class TouchToFillCreditCardViewTest {
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        TextView cardName = mTouchToFillCreditCardView.getContentView().findViewById(
-                R.id.touch_to_fill_card_name);
+        TextView cardName =
+                mTouchToFillCreditCardView.getContentView().findViewById(R.id.card_name);
         assertTrue(cardName.getContentDescription().toString().equals("Best Card visa"));
     }
 
@@ -247,9 +251,29 @@ public class TouchToFillCreditCardViewTest {
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        TextView cardName = mTouchToFillCreditCardView.getContentView().findViewById(
-                R.id.touch_to_fill_card_name);
+        TextView cardName =
+                mTouchToFillCreditCardView.getContentView().findViewById(R.id.card_name);
         assertEquals(cardName.getContentDescription(), null);
+    }
+
+    @Test
+    @MediumTest
+    public void testCardNameTooLong_cardNameTruncated_lastFourDigitsAlwaysShown() {
+        runOnUiThreadBlocking(() -> {
+            mTouchToFillCreditCardModel.get(SHEET_ITEMS)
+                    .add(new ListItem(CREDIT_CARD, createCardModel(LONG_CARD_NAME_CARD)));
+            mTouchToFillCreditCardModel.set(VISIBLE, true);
+        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView cardName =
+                mTouchToFillCreditCardView.getContentView().findViewById(R.id.card_name);
+        TextView cardNumber =
+                mTouchToFillCreditCardView.getContentView().findViewById(R.id.card_number);
+        assertTrue(
+                cardName.getLayout().getEllipsisCount(cardName.getLayout().getLineCount() - 1) > 0);
+        assertThat(cardNumber.getLayout().getText().toString(),
+                is(LONG_CARD_NAME_CARD.getObfuscatedLastFourDigits()));
     }
 
     private RecyclerView getCreditCards() {
@@ -257,11 +281,11 @@ public class TouchToFillCreditCardViewTest {
     }
 
     private TextView getCreditCardNameAt(int index) {
-        return getCreditCards().getChildAt(index).findViewById(R.id.touch_to_fill_card_name);
+        return getCreditCards().getChildAt(index).findViewById(R.id.card_name);
     }
 
     private TextView getCreditCardNumberAt(int index) {
-        return getCreditCards().getChildAt(index).findViewById(R.id.touch_to_fill_card_number);
+        return getCreditCards().getChildAt(index).findViewById(R.id.card_number);
     }
 
     private TextView getCreditCardExpirationAt(int index) {
