@@ -371,7 +371,8 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
     case EFillBox::kContent:
       // If the PaddingOutsets are zero then this is equivalent to
       // kPadding and we should apply the snapping logic.
-      unsnapped_dest_adjust = positioning_box_->PaddingOutsets();
+      unsnapped_dest_adjust =
+          positioning_box_->PaddingOutsets().ToLayoutRectOutsets();
       if (!unsnapped_dest_adjust.IsZero()) {
         unsnapped_dest_adjust += positioning_box_->BorderBoxOutsets();
 
@@ -467,7 +468,8 @@ void BackgroundImageGeometry::ComputePositioningAreaAdjustments(
     case EFillBox::kContent:
       // If the PaddingOutsets are zero then this is equivalent to
       // kPadding and we should apply the snapping logic.
-      unsnapped_box_outset = positioning_box_->PaddingOutsets();
+      unsnapped_box_outset =
+          positioning_box_->PaddingOutsets().ToLayoutRectOutsets();
       if (!unsnapped_box_outset.IsZero()) {
         unsnapped_box_outset += positioning_box_->BorderBoxOutsets();
 

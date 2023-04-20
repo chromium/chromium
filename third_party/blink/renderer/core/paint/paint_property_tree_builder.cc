@@ -2082,7 +2082,7 @@ static void AdjustRoundedClipForOverflowClipMargin(
     case StyleOverflowClipMargin::ReferenceBox::kPaddingBox:
       break;
     case StyleOverflowClipMargin::ReferenceBox::kContentBox:
-      outsets = -box.PaddingOutsets();
+      outsets = -box.PaddingOutsets().ToLayoutRectOutsets();
       break;
   }
 

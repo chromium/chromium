@@ -1085,7 +1085,7 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
   }
 
   LayoutRectOutsets border = ComputeSnappedBorders();
-  LayoutRectOutsets padding = ComputePadding();
+  NGPhysicalBoxStrut padding = ComputePadding();
   LayoutRectOutsets border_padding_insets = -(border + padding);
   FloatRoundedRect border_rect = RoundedBorderRectForClip(
       style_, fill_layer_info, bg_layer, rect, object_has_multiple_boxes,
@@ -1131,8 +1131,8 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
       clip_rect.Contract(
           AdjustOutsetsForEdgeInclusion(border, fill_layer_info));
       if (bg_layer.Clip() == EFillBox::kContent) {
-        clip_rect.Contract(
-            AdjustOutsetsForEdgeInclusion(padding, fill_layer_info));
+        clip_rect.Contract(AdjustOutsetsForEdgeInclusion(
+            padding.ToLayoutRectOutsets(), fill_layer_info));
       }
       background_clip_state_saver.Save();
       context.Clip(ToPixelSnappedRect(clip_rect));

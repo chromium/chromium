@@ -261,6 +261,16 @@ inline NGPhysicalBoxStrut NGBoxStrut::ConvertToPhysical(
   }
 }
 
+inline LayoutRectOutsets operator+(const LayoutRectOutsets& a,
+                                   const NGPhysicalBoxStrut& b) {
+  return a + b.ToLayoutRectOutsets();
+}
+
+inline LayoutRectOutsets operator-(const LayoutRectOutsets& a,
+                                   const NGPhysicalBoxStrut& b) {
+  return a - b.ToLayoutRectOutsets();
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GEOMETRY_NG_BOX_STRUT_H_

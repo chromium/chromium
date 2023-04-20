@@ -325,17 +325,15 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
                              BorderLeft());
   }
 
-  LayoutRectOutsets PaddingOutsets() const {
+  NGPhysicalBoxStrut PaddingOutsets() const {
     NOT_DESTROYED();
-    return LayoutRectOutsets(PaddingTop(), PaddingRight(), PaddingBottom(),
-                             PaddingLeft());
+    return {PaddingTop(), PaddingRight(), PaddingBottom(), PaddingLeft()};
   }
 
   // Insets from the border box to the inside of the border.
-  LayoutRectOutsets BorderInsets() const {
+  NGPhysicalBoxStrut BorderInsets() const {
     NOT_DESTROYED();
-    return LayoutRectOutsets(-BorderTop(), -BorderRight(), -BorderBottom(),
-                             -BorderLeft());
+    return {-BorderTop(), -BorderRight(), -BorderBottom(), -BorderLeft()};
   }
 
   LayoutUnit BorderAndPaddingStart() const {

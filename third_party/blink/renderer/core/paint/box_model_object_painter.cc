@@ -84,7 +84,7 @@ LayoutRectOutsets BoxModelObjectPainter::ComputeBorders() const {
   return box_model_.BorderBoxOutsets();
 }
 
-LayoutRectOutsets BoxModelObjectPainter::ComputePadding() const {
+NGPhysicalBoxStrut BoxModelObjectPainter::ComputePadding() const {
   return box_model_.PaddingOutsets();
 }
 
