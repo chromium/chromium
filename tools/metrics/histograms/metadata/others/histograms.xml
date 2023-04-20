@@ -4059,16 +4059,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.TriggerAttestation.HasReportAttestation"
-    enum="Boolean" expires_after="M117">
-  <owner>anthonygarant@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records whether or not an aggregatable report is sent with an attestation or
-    not. Only recorded for reports if the Attestation feature is enabled.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.TriggerAttestation.ProcessAttestationStatus"
     enum="ConversionTriggerAttestationProcessAttestationStatus"
     expires_after="M117">
@@ -4078,6 +4068,16 @@ chromium-metrics-reviews@google.com.
     Records the status of the second part of an attestation operation which
     processes the private state issuer's signature to generate an attestation
     token.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.TriggerAttestation.ReportHasAttestation"
+    enum="Boolean" expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether or not an aggregatable report is sent with an attestation or
+    not. Only recorded for reports if the Attestation feature is enabled.
   </summary>
 </histogram>
 
