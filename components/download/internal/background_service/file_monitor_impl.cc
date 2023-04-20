@@ -11,6 +11,11 @@
 #include "base/stl_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include <grp.h>
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace download {
 
@@ -26,6 +31,27 @@ bool InitializeAndCreateDownloadDirectory(const base::FilePath& dir_path) {
     if (!success)
       stats::LogsFileDirectoryCreationError(error);
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  if (success) {
+    // System daemons on ChromeOS may run as a user different than the Chrome
+    // process but need to access files under the directory created here.
+    // Because of that, grant the execute permission on the created directory
+    // to group and other users. Also chronos-access group should have read
+    // access to the directory.
+    if (HANDLE_EINTR(chmod(dir_path.value().c_str(),
+                           S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH)) != 0) {
+      return false;
+    }
+    struct group grp, *result = nullptr;
+    std::vector<char> buffer(16384);
+    getgrnam_r("chronos-access", &grp, buffer.data(), buffer.size(), &result);
+    // Ignoring as the group might not exist in tests.
+    if (result) {
+      success =
+          HANDLE_EINTR(chown(dir_path.value().c_str(), -1, grp.gr_gid)) != 0;
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return success;
 }
 
