@@ -147,6 +147,8 @@ source_set("internal") {
     "config_dir_policy_loader.h",
     "configuration_policy_provider.cc",
     "configuration_policy_provider.h",
+    "device_local_account_type.cc",
+    "device_local_account_type.h",
     "external_data_fetcher.cc",
     "external_data_fetcher.h",
     "external_data_manager.h",
