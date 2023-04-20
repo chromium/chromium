@@ -70,6 +70,16 @@ public class DropdownItemBase implements DropdownItem {
     }
 
     @Override
+    public int getLabelFontSizeResId() {
+        return R.dimen.text_size_large;
+    }
+
+    @Override
+    public int getSublabelFontColorResId() {
+        return R.color.default_text_color_secondary_list_baseline;
+    }
+
+    @Override
     public int getSublabelFontSizeResId() {
         return R.dimen.text_size_small;
     }

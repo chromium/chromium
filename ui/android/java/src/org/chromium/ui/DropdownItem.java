@@ -76,6 +76,14 @@ public interface DropdownItem {
      */
     int getLabelFontColorResId();
     /**
+     * Returns resource ID of label's font size.
+     */
+    int getLabelFontSizeResId();
+    /**
+     * Returns resource ID of sublabel's font color.
+     */
+    int getSublabelFontColorResId();
+    /**
      * Returns resource ID of sublabel's font size.
      */
     int getSublabelFontSizeResId();
