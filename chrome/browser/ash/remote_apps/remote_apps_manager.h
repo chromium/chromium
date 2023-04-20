@@ -49,7 +49,7 @@ class RemoteAppsImpl;
 // KeyedService which manages the logic for |AppType::kRemote| in AppService.
 // This service is created for Managed Guest Sessions and Regular User Sessions.
 // The IDs of the added apps and folders are GUIDs generated using
-// |base::GenerateGUID()|.
+// |base::Uuid::GenerateRandomV4().AsLowercaseString()|.
 // See crbug.com/1101208 for more details on Remote Apps.
 class RemoteAppsManager
     : public KeyedService,
