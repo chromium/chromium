@@ -166,14 +166,11 @@ static void StartClientCertificateRequest(
   for (size_t n = 0; n < request->cert_request_info()->cert_key_types.size();
        ++n) {
     switch (request->cert_request_info()->cert_key_types[n]) {
-      case net::CLIENT_CERT_RSA_SIGN:
+      case net::SSLClientCertType::kRsaSign:
         key_types.push_back("RSA");
         break;
-      case net::CLIENT_CERT_ECDSA_SIGN:
+      case net::SSLClientCertType::kEcdsaSign:
         key_types.push_back("EC");
-        break;
-      default:
-        // Ignore unknown types.
         break;
     }
   }

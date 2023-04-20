@@ -178,14 +178,11 @@ void AwContentsClientBridge::SelectClientCertificate(
   std::vector<std::string> key_types;
   for (size_t i = 0; i < cert_request_info->cert_key_types.size(); ++i) {
     switch (cert_request_info->cert_key_types[i]) {
-      case net::CLIENT_CERT_RSA_SIGN:
+      case net::SSLClientCertType::kRsaSign:
         key_types.push_back("RSA");
         break;
-      case net::CLIENT_CERT_ECDSA_SIGN:
+      case net::SSLClientCertType::kEcdsaSign:
         key_types.push_back("ECDSA");
-        break;
-      default:
-        // Ignore unknown types.
         break;
     }
   }

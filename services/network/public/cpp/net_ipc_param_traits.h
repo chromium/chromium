@@ -278,7 +278,7 @@ IPC_ENUM_TRAITS_MAX_VALUE(net::ct::SCTVerifyStatus, net::ct::SCT_STATUS_MAX)
 IPC_ENUM_TRAITS_MAX_VALUE(net::RequestPriority, net::MAXIMUM_PRIORITY)
 
 IPC_ENUM_TRAITS_MAX_VALUE(net::SSLClientCertType,
-                          net::SSLClientCertType::CLIENT_CERT_INVALID_TYPE)
+                          net::SSLClientCertType::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(net::SSLInfo::HandshakeType,
                           net::SSLInfo::HANDSHAKE_FULL)

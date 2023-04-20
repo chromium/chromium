@@ -2733,8 +2733,8 @@ TEST_P(SSLClientSocketCertRequestInfoTest, CertKeyTypes) {
   } else {
     // BoringSSL always sends rsa_sign and ecdsa_sign.
     ASSERT_EQ(2u, request_info->cert_key_types.size());
-    EXPECT_EQ(CLIENT_CERT_RSA_SIGN, request_info->cert_key_types[0]);
-    EXPECT_EQ(CLIENT_CERT_ECDSA_SIGN, request_info->cert_key_types[1]);
+    EXPECT_EQ(SSLClientCertType::kRsaSign, request_info->cert_key_types[0]);
+    EXPECT_EQ(SSLClientCertType::kEcdsaSign, request_info->cert_key_types[1]);
   }
 }
 #endif  // !IS_IOS
