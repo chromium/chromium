@@ -15,7 +15,10 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/image_fetcher/core/image_fetcher.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_details.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
@@ -54,6 +57,14 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         })");
 
 constexpr char kImageFetcherUmaClient[] = "ShoppingList";
+
+constexpr base::TimeDelta kDelayPriceTrackingchip = base::Seconds(1);
+
+bool ShouldDelayChipUpdate() {
+  return static_cast<commerce::PriceTrackingChipExperimentVariation>(
+             commerce::kCommercePriceTrackingChipExperimentVariation.Get()) ==
+         commerce::PriceTrackingChipExperimentVariation::kDelayChip;
+}
 }  // namespace
 
 ShoppingListUiTabHelper::ShoppingListUiTabHelper(
@@ -101,6 +112,7 @@ void ShoppingListUiTabHelper::NavigationEntryCommitted(
   is_cluster_id_tracked_by_user_ = false;
   cluster_id_for_page_.reset();
   pending_tracking_state_.reset();
+  is_first_load_for_nav_finished_ = false;
 
   if (!shopping_service_ || !shopping_service_->IsShoppingListEligible())
     return;
@@ -108,12 +120,40 @@ void ShoppingListUiTabHelper::NavigationEntryCommitted(
   // Cancel any pending callbacks by invalidating any weak pointers.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
+  UpdatePriceTrackingIconView();
+
   shopping_service_->GetProductInfoForUrl(
       web_contents()->GetLastCommittedURL(),
       base::BindOnce(&ShoppingListUiTabHelper::HandleProductInfoResponse,
                      weak_ptr_factory_.GetWeakPtr()));
+}
 
-  UpdatePriceTrackingIconView();
+void ShoppingListUiTabHelper::DidStopLoading() {
+  if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame() ||
+      !ShouldDelayChipUpdate() || is_first_load_for_nav_finished_) {
+    return;
+  }
+  is_first_load_for_nav_finished_ = true;
+
+  TriggerUpdateForIconView();
+}
+
+void ShoppingListUiTabHelper::TriggerUpdateForIconView() {
+  if (!ShouldDelayChipUpdate()) {
+    UpdatePriceTrackingIconView();
+    return;
+  }
+
+  if (last_fetched_image_.IsEmpty() || !is_first_load_for_nav_finished_) {
+    return;
+  }
+
+  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+      ->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&ShoppingListUiTabHelper::UpdatePriceTrackingIconView,
+                         weak_ptr_factory_.GetWeakPtr()),
+          kDelayPriceTrackingchip);
 }
 
 void ShoppingListUiTabHelper::OnSubscribe(
@@ -149,8 +189,13 @@ void ShoppingListUiTabHelper::SetShoppingServiceForTesting(
 }
 
 bool ShoppingListUiTabHelper::ShouldShowPriceTrackingIconView() {
-  return shopping_service_ && shopping_service_->IsShoppingListEligible() &&
-         !last_fetched_image_.IsEmpty();
+  bool should_show = shopping_service_ &&
+                     shopping_service_->IsShoppingListEligible() &&
+                     !last_fetched_image_.IsEmpty();
+
+  return ShouldDelayChipUpdate()
+             ? should_show && is_first_load_for_nav_finished_
+             : should_show;
 }
 
 void ShoppingListUiTabHelper::HandleProductInfoResponse(
@@ -248,7 +293,7 @@ void ShoppingListUiTabHelper::HandleImageFetcherResponse(
   last_fetched_image_url_ = image_url;
   last_fetched_image_ = image;
 
-  UpdatePriceTrackingIconView();
+  TriggerUpdateForIconView();
 }
 
 const gfx::Image& ShoppingListUiTabHelper::GetProductImage() {

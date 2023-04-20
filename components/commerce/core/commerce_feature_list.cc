@@ -142,6 +142,11 @@ BASE_FEATURE(kCommerceMerchantViewerRegionLaunched,
 BASE_FEATURE(kCommercePriceTracking,
              "CommercePriceTracking",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCommercePriceTrackingChipExperiment,
+             "CommercePriceTrackingChipExperiment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kCommercePriceTrackingRegionLaunched,
              "CommercePriceTrackingRegionLaunched",
@@ -325,6 +330,13 @@ const char kRevertIconOnFailureParam[] =
     "shopping-list-revert-page-action-icon-on-failure";
 const base::FeatureParam<bool> kRevertIconOnFailure{
     &kShoppingList, kRevertIconOnFailureParam, false};
+
+// CommercePriceTrackingChipExperiment params.
+const char kCommercePriceTrackingChipExperimentVariationParam[] =
+    "price-tracking-chip-experiment-variation";
+const base::FeatureParam<int> kCommercePriceTrackingChipExperimentVariation{
+    &commerce::kCommercePriceTrackingChipExperiment,
+    kCommercePriceTrackingChipExperimentVariationParam, 0};
 
 bool IsPartnerMerchant(const GURL& url) {
   return commerce::IsCouponDiscountPartnerMerchant(url) ||

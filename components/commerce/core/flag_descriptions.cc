@@ -18,4 +18,9 @@ const char kChromeCartDomBasedHeuristicsName[] =
 const char kChromeCartDomBasedHeuristicsDescription[] =
     "Enable DOM-based heuristics for ChromeCart.";
 
+const char kPriceTrackingChipExperimentName[] =
+    "Price Tracking Chip Experiment";
+const char kPriceTrackingChipExperimentDescription[] =
+    "Enable price tracking chip experiment.";
+
 }  // namespace commerce::flag_descriptions
