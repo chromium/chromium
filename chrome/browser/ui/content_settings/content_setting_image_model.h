@@ -120,6 +120,8 @@ class ContentSettingImageModel {
 
   bool IsMacRestoreLocationPermissionExperimentActive();
 
+  const gfx::VectorIcon* get_icon_for_testing() const { return icon_; }
+
  protected:
   // Note: image_type_should_notify_accessibility by itself does not guarantee
   // the item will be read; it also needs a valid explanatory_text_id or

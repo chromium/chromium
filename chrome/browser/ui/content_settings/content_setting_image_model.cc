@@ -891,16 +891,28 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
 
   int id = IDS_CAMERA_BLOCKED;
   if (IsMicBlockedOnSiteLevel() || IsCameraBlockedOnSiteLevel()) {
-    set_icon(vector_icons::kVideocamIcon, vector_icons::kBlockedBadgeIcon);
     if (IsMicAccessed())
       id = IsCamAccessed() ? IDS_MICROPHONE_CAMERA_BLOCKED
                            : IDS_MICROPHONE_BLOCKED;
+
+    if (IsCamAccessed()) {
+      set_icon(vector_icons::kVideocamIcon, vector_icons::kBlockedBadgeIcon);
+    } else {
+      set_icon(vector_icons::kMicIcon, vector_icons::kBlockedBadgeIcon);
+    }
+
   } else {
     set_icon(vector_icons::kVideocamIcon, gfx::kNoneIcon);
     id = IDS_CAMERA_ACCESSED;
     if (IsMicAccessed())
       id = IsCamAccessed() ? IDS_MICROPHONE_CAMERA_ALLOWED
                            : IDS_MICROPHONE_ACCESSED;
+
+    if (IsCamAccessed()) {
+      set_icon(vector_icons::kVideocamIcon, gfx::kNoneIcon);
+    } else {
+      set_icon(vector_icons::kMicIcon, gfx::kNoneIcon);
+    }
   }
   set_tooltip(l10n_util::GetStringUTF16(id));
   set_accessibility_string_id(id);
