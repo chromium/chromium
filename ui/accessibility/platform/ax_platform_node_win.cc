@@ -6173,7 +6173,7 @@ int AXPlatformNodeWin::MSAARole() {
       return ROLE_SYSTEM_GRAPHIC;
 
     case ax::mojom::Role::kCaption:
-      return ROLE_SYSTEM_TEXT;
+      return ROLE_SYSTEM_GROUPING;
 
     case ax::mojom::Role::kCaret:
       return ROLE_SYSTEM_CARET;
@@ -6604,8 +6604,10 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kCode:
     case ax::mojom::Role::kEmphasis:
     case ax::mojom::Role::kStrong:
-    case ax::mojom::Role::kTime:
       return ROLE_SYSTEM_TEXT;
+
+    case ax::mojom::Role::kTime:
+      return ROLE_SYSTEM_GROUPING;
 
     case ax::mojom::Role::kTimer:
       return ROLE_SYSTEM_CLOCK;
