@@ -12,7 +12,9 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
@@ -125,6 +127,29 @@ TYPED_TEST(ReadStreamTest, Read) {
     EXPECT_EQ(9u, bytes_read);
     uint8_t expected[] = { 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 0 };
     EXPECT_EQ(0, memcmp(expected, buf, sizeof(expected)));
+  }
+}
+
+TYPED_TEST(ReadStreamTest, CopyStreamToFileTest) {
+  const size_t kStreamSize = 4242;
+  std::unique_ptr<ReadStream> stream =
+      ReadStreamTest<TypeParam>::CreateStream(kStreamSize);
+  base::FilePath temp_path;
+  base::File temp_file;
+  base::CreateTemporaryFile(&temp_path);
+  temp_file.Initialize(
+      temp_path, (base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
+                  base::File::FLAG_WRITE | base::File::FLAG_WIN_TEMPORARY |
+                  base::File::FLAG_DELETE_ON_CLOSE));
+  EXPECT_TRUE(CopyStreamToFile(stream.get(), temp_file));
+  EXPECT_EQ(kStreamSize, static_cast<size_t>(temp_file.GetLength()));
+  uint8_t file_buf[kStreamSize];
+  uint8_t expected[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
+  temp_file.ReadAndCheck(0, file_buf);
+  // Range is set to 1020 - 1035 to check the copying loop point of
+  // the CopyStreamToFile function which is 1024.
+  for (int i = 1020; i < 1035; i++) {
+    EXPECT_EQ(expected[i - 1020], file_buf[i]);
   }
 }
 

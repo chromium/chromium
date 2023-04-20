@@ -32,7 +32,7 @@ class DMGIterator {
   DMGIterator(const DMGIterator&) = delete;
   DMGIterator& operator=(const DMGIterator&) = delete;
 
-  ~DMGIterator();
+  virtual ~DMGIterator();
 
   // Opens the DMG file for iteration. This must be called before any other
   // method. If this returns false, it is illegal to call any other methods

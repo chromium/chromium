@@ -293,8 +293,9 @@ TEST_F(SandboxedDMGAnalyzerTest, CanDeleteDuringExecution) {
   base::RunLoop run_loop;
 
   FakeFileUtilService service(remote.InitWithNewPipeAndPassReceiver());
-  EXPECT_CALL(service.GetSafeArchiveAnalyzer(), AnalyzeDmgFile(_, _))
+  EXPECT_CALL(service.GetSafeArchiveAnalyzer(), AnalyzeDmgFile(_, _, _))
       .WillOnce([&](base::File dmg_file,
+                    mojo::PendingRemote<chrome::mojom::TemporaryFileGetter>,
                     chrome::mojom::SafeArchiveAnalyzer::AnalyzeDmgFileCallback
                         callback) {
         EXPECT_TRUE(base::DeleteFile(temp_path));
