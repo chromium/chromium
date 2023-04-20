@@ -1201,7 +1201,7 @@ TEST_F(SessionServiceTest, TabGroupMetadataSaved) {
       tab_groups::TabGroupVisualData(u"Bar",
                                      tab_groups::TabGroupColorId::kGreen)};
   const std::array<absl::optional<std::string>, kNumGroups> saved_guids = {
-      base::GUID::GenerateRandomV4().AsLowercaseString(), absl::nullopt};
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), absl::nullopt};
 
   // Create |kNumGroups| tab groups, each with one tab.
   for (int group_ndx = 0; group_ndx < kNumGroups; ++group_ndx) {
