@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
@@ -303,7 +304,7 @@ struct WebAppInstallInfo {
 
   // The app intends to have an extended scope containing URLs described by this
   // information.
-  std::vector<web_app::ScopeExtensionInfo> scope_extensions;
+  base::flat_set<web_app::ScopeExtensionInfo> scope_extensions;
 
   // URL within scope to launch on the lock screen for a "show on lock screen"
   // action. Valid iff this is considered a lock-screen-capable app.

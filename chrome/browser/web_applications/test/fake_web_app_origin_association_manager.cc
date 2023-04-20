@@ -28,7 +28,7 @@ void FakeWebAppOriginAssociationManager::GetWebAppOriginAssociations(
     for (const auto& scope_extension : scope_extensions) {
       auto it = data_.find(scope_extension);
       if (it != data_.end())
-        result.push_back(it->second);
+        result.insert(it->second);
     }
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

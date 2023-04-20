@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -1309,7 +1310,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
   web_app->SetUrlHandlers(std::move(url_handlers));
 
-  std::vector<ScopeExtensionInfo> scope_extensions;
+  base::flat_set<ScopeExtensionInfo> scope_extensions;
   for (const auto& scope_extension_proto : local_data.scope_extensions()) {
     ScopeExtensionInfo scope_extension;
 
@@ -1324,11 +1325,11 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     scope_extension.has_origin_wildcard =
         scope_extension_proto.has_origin_wildcard();
 
-    scope_extensions.push_back(std::move(scope_extension));
+    scope_extensions.insert(std::move(scope_extension));
   }
   web_app->SetScopeExtensions(std::move(scope_extensions));
 
-  std::vector<ScopeExtensionInfo> valid_scope_extensions;
+  base::flat_set<ScopeExtensionInfo> valid_scope_extensions;
   for (const auto& scope_extension_proto :
        local_data.scope_extensions_validated()) {
     ScopeExtensionInfo scope_extension;
@@ -1344,7 +1345,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     scope_extension.has_origin_wildcard =
         scope_extension_proto.has_origin_wildcard();
 
-    valid_scope_extensions.push_back(std::move(scope_extension));
+    valid_scope_extensions.insert(std::move(scope_extension));
   }
   web_app->SetValidatedScopeExtensions(std::move(valid_scope_extensions));
 

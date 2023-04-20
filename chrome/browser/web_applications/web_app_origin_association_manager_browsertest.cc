@@ -82,11 +82,11 @@ class WebAppOriginAssociationManagerTest : public WebAppControllerBrowserTest {
     callback_count_++;
     ASSERT_EQ(result.size(), 2u);
 
-    ScopeExtensionInfo valid_app_scope_extension(
-        valid_app_scope_extension_.origin);
-    ScopeExtensionInfo valid_and_invalid_app_scope_extension(
+    ScopeExtensionInfo valid_app_scope_extension{
+        valid_app_scope_extension_.origin};
+    ScopeExtensionInfo valid_and_invalid_app_scope_extension{
         valid_and_invalid_app_scope_extension_.origin,
-        valid_and_invalid_app_scope_extension_.has_origin_wildcard);
+        valid_and_invalid_app_scope_extension_.has_origin_wildcard};
 
     EXPECT_TRUE(base::Contains(result, std::move(valid_app_scope_extension)));
     EXPECT_TRUE(base::Contains(
@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest, OneValidApp) {
       GURL(kWebAppIdentity), std::move(scope_extensions), future.GetCallback());
   const ScopeExtensions result = future.Get<0>();
   ASSERT_TRUE(result.size() == 1);
-  auto scope_extension = std::move(result[0]);
+  auto scope_extension = std::move(*result.begin());
   EXPECT_EQ(scope_extension.origin, valid_app_scope_extension_.origin);
   EXPECT_EQ(scope_extension.has_origin_wildcard,
             valid_app_scope_extension_.has_origin_wildcard);

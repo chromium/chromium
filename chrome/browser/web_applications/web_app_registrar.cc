@@ -995,11 +995,11 @@ apps::UrlHandlers WebAppRegistrar::GetAppUrlHandlers(
                  : std::vector<apps::UrlHandlerInfo>();
 }
 
-std::vector<ScopeExtensionInfo> WebAppRegistrar::GetValidatedScopeExtensions(
+base::flat_set<ScopeExtensionInfo> WebAppRegistrar::GetValidatedScopeExtensions(
     const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
   return web_app ? web_app->validated_scope_extensions()
-                 : std::vector<ScopeExtensionInfo>();
+                 : base::flat_set<ScopeExtensionInfo>();
 }
 
 GURL WebAppRegistrar::GetAppManifestUrl(const AppId& app_id) const {

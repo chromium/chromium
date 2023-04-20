@@ -323,14 +323,17 @@ apps::UrlHandlers ToWebAppUrlHandlers(
   return apps_url_handlers;
 }
 
-std::vector<ScopeExtensionInfo> ToWebAppScopeExtensions(
+ScopeExtensions ToWebAppScopeExtensions(
     const std::vector<blink::mojom::ManifestScopeExtensionPtr>&
         scope_extensions) {
-  std::vector<ScopeExtensionInfo> apps_scope_extensions;
+  ScopeExtensions apps_scope_extensions;
   for (const auto& scope_extension : scope_extensions) {
     DCHECK(scope_extension);
-    apps_scope_extensions.emplace_back(scope_extension->origin,
-                                       scope_extension->has_origin_wildcard);
+    ScopeExtensionInfo new_scope_extension;
+    new_scope_extension.origin = scope_extension->origin;
+    new_scope_extension.has_origin_wildcard =
+        scope_extension->has_origin_wildcard;
+    apps_scope_extensions.insert(std::move(new_scope_extension));
   }
   return apps_scope_extensions;
 }

@@ -227,7 +227,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // app are returned. Other entries are removed. See
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
   // for association requirements.
-  std::vector<ScopeExtensionInfo> GetValidatedScopeExtensions(
+  base::flat_set<ScopeExtensionInfo> GetValidatedScopeExtensions(
       const AppId& app_id) const;
 
   GURL GetAppManifestUrl(const AppId& app_id) const;

@@ -454,12 +454,12 @@ void WebApp::SetUrlHandlers(apps::UrlHandlers url_handlers) {
 }
 
 void WebApp::SetScopeExtensions(
-    std::vector<ScopeExtensionInfo> scope_extensions) {
+    base::flat_set<ScopeExtensionInfo> scope_extensions) {
   scope_extensions_ = std::move(scope_extensions);
 }
 
 void WebApp::SetValidatedScopeExtensions(
-    std::vector<ScopeExtensionInfo> validated_scope_extensions) {
+    base::flat_set<ScopeExtensionInfo> validated_scope_extensions) {
   validated_scope_extensions_ = std::move(validated_scope_extensions);
 }
 
