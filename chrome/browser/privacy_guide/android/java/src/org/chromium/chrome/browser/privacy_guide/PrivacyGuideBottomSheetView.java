@@ -13,11 +13,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 /** Bottom sheet view for displaying privacy guide control explanations */
 public class PrivacyGuideBottomSheetView implements BottomSheetContent {
     private final View mContentView;
-    private final View mToolbarView;
 
-    PrivacyGuideBottomSheetView(View contentView, View toolbarView) {
+    PrivacyGuideBottomSheetView(View contentView) {
         mContentView = contentView;
-        mToolbarView = toolbarView;
     }
 
     @Override
@@ -28,12 +26,12 @@ public class PrivacyGuideBottomSheetView implements BottomSheetContent {
     @Nullable
     @Override
     public View getToolbarView() {
-        return mToolbarView;
+        return null;
     }
 
     @Override
     public int getVerticalScrollOffset() {
-        return mContentView.getScrollY();
+        return 0;
     }
 
     @Override

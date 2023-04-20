@@ -7,8 +7,7 @@ found in the LICENSE file.
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingTop="@dimen/sb_bottom_sheet_toolbar_height">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:id="@+id/sb_enhanced_sheet"
@@ -82,7 +81,7 @@ found in the LICENSE file.
         <!-- Extra empty space, necessary due to crbug.com/1287979. -->
         <View
             android:layout_width="match_parent"
-            android:layout_height="32dp"
+            android:layout_height="16dp"
             android:visibility="invisible" />
 
     </LinearLayout>

@@ -69,12 +69,10 @@ public class SafeBrowsingFragment extends Fragment
         LayoutInflater inflater = LayoutInflater.from(getView().getContext());
         if (clickedButtonId == mEnhancedProtection.getId()) {
             displayBottomSheet(
-                    inflater.inflate(R.layout.privacy_guide_sb_enhanced_explanation, null),
-                    inflater.inflate(R.layout.privacy_guide_sb_bottom_sheet_toolbar, null));
+                    inflater.inflate(R.layout.privacy_guide_sb_enhanced_explanation, null));
         } else if (clickedButtonId == mStandardProtection.getId()) {
             displayBottomSheet(
-                    inflater.inflate(R.layout.privacy_guide_sb_standard_explanation, null),
-                    inflater.inflate(R.layout.privacy_guide_sb_bottom_sheet_toolbar, null));
+                    inflater.inflate(R.layout.privacy_guide_sb_standard_explanation, null));
         } else {
             assert false : "Unknown Aux clickedButtonId " + clickedButtonId;
         }
@@ -95,9 +93,8 @@ public class SafeBrowsingFragment extends Fragment
         }
     }
 
-    private void displayBottomSheet(View sheetContent, View sheetToolbar) {
-        PrivacyGuideBottomSheetView bottomSheet =
-                new PrivacyGuideBottomSheetView(sheetContent, sheetToolbar);
+    private void displayBottomSheet(View sheetContent) {
+        PrivacyGuideBottomSheetView bottomSheet = new PrivacyGuideBottomSheetView(sheetContent);
         mBottomSheetController.requestShowContent(bottomSheet, /* animate= */ true);
     }
 
