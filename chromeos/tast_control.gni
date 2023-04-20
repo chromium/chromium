@@ -323,16 +323,6 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.VirtualKeyboardHandwriting.floating",
   "inputs.VirtualKeyboardTypingUserMode.incognito",
 
-  # https://crbug.com/1434601
-  "apps.LaunchHelpAppFromShortcut.stable_guest",
-  "apps.LaunchHelpLanguage",
-  "arc.GuestPlayStore",
-  "inputs.InputMethodManagement.guest",
-  "inputs.InputMethodShelfInputs",
-  "inputs.PhysicalKeyboardEmojiSuggestion.guest",
-  "inputs.VirtualKeyboardTypingOmnibox.guest",
-  "inputs.VirtualKeyboardTypingUserMode.guest",
-
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
