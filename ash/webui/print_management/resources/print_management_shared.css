@@ -15,6 +15,26 @@
   border-radius: 8px;
 }
 
+:host-context(body.jelly-enabled) .file-icon-blue {
+  --iron-icon-fill-color: var(--cros-sys-progress);
+}
+
+:host-context(body.jelly-enabled) .file-icon-gray {
+  --iron-icon-fill-color: var(--cros-sys-secondary);
+}
+
+:host-context(body.jelly-enabled) .file-icon-green {
+  --iron-icon-fill-color: var(--cros-sys-positive);
+}
+
+:host-context(body.jelly-enabled) .file-icon-red {
+  --iron-icon-fill-color: var(--cros-sys-error);
+}
+
+:host-context(body.jelly-enabled) .file-icon-yellow {
+  --iron-icon-fill-color: var(--cros-sys-warning);
+}
+
 :host-context(body.jelly-enabled) #activeStatusContainer:hover {
   background-color: var(--cros-sys-hover_on_subtle);
 }
@@ -49,6 +69,26 @@
 }
 
 @media (prefers-color-scheme: dark) {
+  :host-context(body.jelly-enabled) .file-icon-blue {
+    --iron-icon-fill-color: var(--cros-sys-progress);
+  }
+
+  :host-context(body.jelly-enabled) .file-icon-gray {
+    --iron-icon-fill-color: var(--cros-sys-secondary);
+  }
+
+  :host-context(body.jelly-enabled) .file-icon-green {
+    --iron-icon-fill-color: var(--cros-sys-positive);
+  }
+
+  :host-context(body.jelly-enabled) .file-icon-red {
+    --iron-icon-fill-color: var(--cros-sys-error);
+  }
+
+  :host-context(body.jelly-enabled) .file-icon-yellow {
+    --iron-icon-fill-color: var(--cros-sys-warning);
+  }
+
   .file-icon-blue {
     --iron-icon-fill-color: var(--google-blue-300);
   }
