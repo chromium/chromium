@@ -26,19 +26,5 @@ TEST(LineOrientationUtilsTest, LineOrientationLayoutRectOutsets_Vertical) {
       LineOrientationLayoutRectOutsets(outsets, WritingMode::kVerticalRl));
 }
 
-TEST(LineOrientationUtilsTest,
-     LineOrientationLayoutRectOutsetsWithFlippedLines) {
-  LayoutRectOutsets outsets(1, 2, 3, 4);
-  EXPECT_EQ(LayoutRectOutsets(1, 2, 3, 4),
-            LineOrientationLayoutRectOutsetsWithFlippedLines(
-                outsets, WritingMode::kHorizontalTb));
-  EXPECT_EQ(LayoutRectOutsets(2, 3, 4, 1),
-            LineOrientationLayoutRectOutsetsWithFlippedLines(
-                outsets, WritingMode::kVerticalLr));
-  EXPECT_EQ(LayoutRectOutsets(4, 3, 2, 1),
-            LineOrientationLayoutRectOutsetsWithFlippedLines(
-                outsets, WritingMode::kVerticalRl));
-}
-
 }  // namespace
 }  // namespace blink

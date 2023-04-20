@@ -20,11 +20,6 @@ namespace blink {
 CORE_EXPORT LayoutRectOutsets
 LineOrientationLayoutRectOutsets(const LayoutRectOutsets&, WritingMode);
 
-// The same as |logicalOutsets|, but also adjusting for flipped lines.
-CORE_EXPORT LayoutRectOutsets
-LineOrientationLayoutRectOutsetsWithFlippedLines(const LayoutRectOutsets&,
-                                                 WritingMode);
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LINE_LINE_ORIENTATION_UTILS_H_

@@ -16,16 +16,4 @@ LayoutRectOutsets LineOrientationLayoutRectOutsets(
   return outsets;
 }
 
-LayoutRectOutsets LineOrientationLayoutRectOutsetsWithFlippedLines(
-    const LayoutRectOutsets& original,
-    WritingMode writing_mode) {
-  LayoutRectOutsets outsets =
-      LineOrientationLayoutRectOutsets(original, writing_mode);
-  if (IsFlippedLinesWritingMode(writing_mode)) {
-    return LayoutRectOutsets(outsets.Bottom(), outsets.Right(), outsets.Top(),
-                             outsets.Left());
-  }
-  return outsets;
-}
-
 }  // namespace blink
