@@ -157,7 +157,8 @@ class InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled
         autofill::features::kAutofillAccountProfilesUnionView);
   }
 
-  ChromeTableViewController* InstantiateController() override {
+  InfobarEditAddressProfileTableViewController*
+  CreateInfobarEditAddressProfileTableViewController() {
     InfobarEditAddressProfileTableViewController* viewController =
         [[InfobarEditAddressProfileTableViewController alloc]
             initWithModalDelegate:delegate_modal_mock_];
@@ -171,8 +172,59 @@ class InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled
     return viewController;
   }
 
+  ChromeTableViewController* InstantiateController() override {
+    return CreateInfobarEditAddressProfileTableViewController();
+  }
+
   void CreateAccountProfile() {
     [autofill_profile_edit_table_view_controller_ setAccountProfile:YES];
+  }
+
+  void TestModelRowsAndButtons(TableViewModel* model,
+                               NSString* expectedFooterText,
+                               NSString* expectedButtonText) {
+    autofill::AutofillProfile profile = autofill::test::GetFullProfile2();
+    std::vector<std::pair<autofill::ServerFieldType, std::u16string>>
+        expected_values;
+
+    for (size_t i = 0; i < std::size(kProfileFieldsToDisplay); ++i) {
+      const AutofillProfileFieldDisplayInfo& field = kProfileFieldsToDisplay[i];
+      if (field.autofillType == autofill::NAME_HONORIFIC_PREFIX &&
+          !base::FeatureList::IsEnabled(
+              autofill::features::kAutofillEnableSupportForHonorificPrefixes)) {
+        continue;
+      }
+
+      expected_values.push_back(
+          {field.autofillType, profile.GetRawInfo(field.autofillType)});
+    }
+
+    EXPECT_EQ(1, [model numberOfSections]);
+    EXPECT_EQ(expected_values.size() + 2,
+              (size_t)[model numberOfItemsInSection:0]);
+
+    for (size_t row = 0; row < expected_values.size(); row++) {
+      if (expected_values[row].first == autofill::ADDRESS_HOME_COUNTRY) {
+        TableViewMultiDetailTextItem* countryCell =
+            static_cast<TableViewMultiDetailTextItem*>(
+                GetTableViewItem(0, row));
+        EXPECT_NSEQ(base::SysUTF16ToNSString(expected_values[row].second),
+                    countryCell.trailingDetailText);
+        continue;
+      }
+      TableViewTextEditItem* cell =
+          static_cast<TableViewTextEditItem*>(GetTableViewItem(0, row));
+      EXPECT_NSEQ(base::SysUTF16ToNSString(expected_values[row].second),
+                  cell.textFieldValue);
+    }
+
+    TableViewTextItem* footerCell = static_cast<TableViewTextItem*>(
+        GetTableViewItem(0, expected_values.size()));
+    EXPECT_NSEQ(footerCell.text, expectedFooterText);
+
+    TableViewTextButtonItem* buttonCell = static_cast<TableViewTextButtonItem*>(
+        GetTableViewItem(0, expected_values.size() + 1));
+    EXPECT_NSEQ(buttonCell.buttonText, expectedButtonText);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -186,54 +238,33 @@ TEST_F(InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled,
   // Reload the model so that the changes are propogated.
   [controller() loadModel];
 
-  TableViewModel* model = [controller() tableViewModel];
-
-  autofill::AutofillProfile profile = autofill::test::GetFullProfile2();
-  std::vector<std::pair<autofill::ServerFieldType, std::u16string>>
-      expected_values;
-
-  for (size_t i = 0; i < std::size(kProfileFieldsToDisplay); ++i) {
-    const AutofillProfileFieldDisplayInfo& field = kProfileFieldsToDisplay[i];
-    if (field.autofillType == autofill::NAME_HONORIFIC_PREFIX &&
-        !base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableSupportForHonorificPrefixes)) {
-      continue;
-    }
-
-    expected_values.push_back(
-        {field.autofillType, profile.GetRawInfo(field.autofillType)});
-  }
-
-  EXPECT_EQ(1, [model numberOfSections]);
-  EXPECT_EQ(expected_values.size() + 2,
-            (size_t)[model numberOfItemsInSection:0]);
-
-  for (size_t row = 0; row < expected_values.size(); row++) {
-    if (expected_values[row].first == autofill::ADDRESS_HOME_COUNTRY) {
-      TableViewMultiDetailTextItem* countryCell =
-          static_cast<TableViewMultiDetailTextItem*>(GetTableViewItem(0, row));
-      EXPECT_NSEQ(base::SysUTF16ToNSString(expected_values[row].second),
-                  countryCell.trailingDetailText);
-      continue;
-    }
-    TableViewTextEditItem* cell =
-        static_cast<TableViewTextEditItem*>(GetTableViewItem(0, row));
-    EXPECT_NSEQ(base::SysUTF16ToNSString(expected_values[row].second),
-                cell.textFieldValue);
-  }
-
-  TableViewTextItem* footerCell = static_cast<TableViewTextItem*>(
-      GetTableViewItem(0, expected_values.size()));
-  EXPECT_NSEQ(
-      footerCell.text,
-      l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER,
-                              kTestSyncingEmail));
-
-  TableViewTextButtonItem* buttonCell = static_cast<TableViewTextButtonItem*>(
-      GetTableViewItem(0, expected_values.size() + 1));
-  EXPECT_NSEQ(
-      buttonCell.buttonText,
+  NSString* expected_footer_text = l10n_util::GetNSStringF(
+      IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER, kTestSyncingEmail);
+  TestModelRowsAndButtons(
+      [controller() tableViewModel], expected_footer_text,
       l10n_util::GetNSString(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL));
+}
+
+class InfobarEditAddressProfileTableViewControllerMigrationPromptTest
+    : public InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled {
+ protected:
+  ChromeTableViewController* InstantiateController() override {
+    InfobarEditAddressProfileTableViewController* viewController =
+        CreateInfobarEditAddressProfileTableViewController();
+    [viewController setMigrationPrompt:YES];
+    return viewController;
+  }
+};
+
+// Tests the edit view initialisation for the migration prompt to account.
+TEST_F(InfobarEditAddressProfileTableViewControllerMigrationPromptTest,
+       TestMigrationPrompt) {
+  NSString* expected_footer_text = l10n_util::GetNSStringF(
+      IDS_IOS_AUTOFILL_ADDRESS_MIGRATE_IN_ACCOUNT_FOOTER, kTestSyncingEmail);
+  TestModelRowsAndButtons(
+      [controller() tableViewModel], expected_footer_text,
+      l10n_util::GetNSString(
+          IDS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_OK_BUTTON_LABEL));
 }
 
 }  // namespace

@@ -38,7 +38,8 @@
 
 // Called from the edit profile modal for adding the message and the Save/Update
 // button.
-- (void)loadMessageAndButtonForModalIfSaveOrUpdate:(BOOL)update;
+- (void)loadMessageAndButtonForModalIfSaveOrUpdate:(BOOL)update
+                                 orMigrationPrompt:(BOOL)migrationPrompt;
 
 // Called when the edit button is pressed.
 - (void)editButtonPressed;

@@ -16,6 +16,9 @@
 // Informs the consumer if the edit is done for updating the profile.
 - (void)setIsEditForUpdate:(BOOL)isEditForUpdate;
 
+// Informs the consumer that the edit is shown for the migration prompt.
+- (void)setMigrationPrompt:(BOOL)migrationPrompt;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_AUTOFILL_ADDRESS_PROFILE_INFOBAR_EDIT_ADDRESS_PROFILE_MODAL_CONSUMER_H_

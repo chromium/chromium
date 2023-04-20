@@ -31,6 +31,9 @@
 // Yes, if the edit is done for updating the profile.
 @property(nonatomic, assign) BOOL isEditForUpdate;
 
+// Yes, if the edit is shown for the migration prompt.
+@property(nonatomic, assign) BOOL migrationPrompt;
+
 @end
 
 @implementation InfobarEditAddressProfileTableViewController
@@ -64,9 +67,14 @@
 
   self.navigationItem.leftBarButtonItem = cancelButton;
   self.navigationController.navigationBar.prefersLargeTitles = NO;
-  self.navigationItem.title = l10n_util::GetNSString(
-      self.isEditForUpdate ? IDS_IOS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE
-                           : IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
+  if (self.migrationPrompt) {
+    self.navigationItem.title = l10n_util::GetNSString(
+        IDS_IOS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_TITLE);
+  } else {
+    self.navigationItem.title = l10n_util::GetNSString(
+        self.isEditForUpdate ? IDS_IOS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE
+                             : IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
+  }
 
   self.tableView.allowsSelectionDuringEditing = YES;
 
@@ -77,7 +85,8 @@
   [super loadModel];
   [self.handler loadModel];
   [self.handler
-      loadMessageAndButtonForModalIfSaveOrUpdate:self.isEditForUpdate];
+      loadMessageAndButtonForModalIfSaveOrUpdate:self.isEditForUpdate
+                               orMigrationPrompt:self.migrationPrompt];
 }
 
 #pragma mark - UITableViewDataSource

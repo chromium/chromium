@@ -92,6 +92,8 @@ using save_address_profile_infobar_modal_responses::NoThanksViewAction;
 
   [_editAddressConsumer setIsEditForUpdate:config->IsUpdateModal()];
 
+  [_editAddressConsumer setMigrationPrompt:config->is_migration_to_account()];
+
   [_editAddressConsumer
       setupModalViewControllerWithData:config->GetProfileInfo()];
 }

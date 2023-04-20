@@ -15,4 +15,8 @@
 
 - (void)setIsEditForUpdate:(BOOL)isEditForUpdate {
 }
+
+- (void)setMigrationPrompt:(BOOL)migrationPrompt {
+}
+
 @end

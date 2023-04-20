@@ -270,16 +270,19 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   }
 }
 
-- (void)loadMessageAndButtonForModalIfSaveOrUpdate:(BOOL)update {
+- (void)loadMessageAndButtonForModalIfSaveOrUpdate:(BOOL)update
+                                 orMigrationPrompt:(BOOL)migrationPrompt {
   CHECK(!self.settingsView);
   TableViewModel* model = self.controller.tableViewModel;
-  if (self.accountProfile) {
+  if (self.accountProfile || migrationPrompt) {
     DCHECK([_userEmail length] > 0);
-    [model addItem:[self footerItemForModalViewIfSaveOrUpdate:update]
+    [model addItem:[self footerItemForModalViewIfSaveOrUpdate:update
+                                            orMigrationPrompt:migrationPrompt]
         toSectionWithIdentifier:SectionIdentifierFields];
   }
 
-  [model addItem:[self saveButtonIfSaveOrUpdate:update]
+  [model addItem:[self saveButtonIfSaveOrUpdate:update
+                              orMigrationPrompt:migrationPrompt]
       toSectionWithIdentifier:SectionIdentifierFields];
 }
 
@@ -530,28 +533,43 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 }
 
 // Returns the footer element for the save/update prompts.
-- (TableViewTextItem*)footerItemForModalViewIfSaveOrUpdate:(BOOL)update {
+- (TableViewTextItem*)footerItemForModalViewIfSaveOrUpdate:(BOOL)update
+                                         orMigrationPrompt:
+                                             (BOOL)migrationPrompt {
   CHECK(!self.settingsView);
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:ItemTypeFooter];
-  item.text = l10n_util::GetNSStringF(
-      update ? IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT
-             : IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER,
-      base::SysNSStringToUTF16(_userEmail));
+  if (migrationPrompt) {
+    item.text = l10n_util::GetNSStringF(
+        IDS_IOS_AUTOFILL_ADDRESS_MIGRATE_IN_ACCOUNT_FOOTER,
+        base::SysNSStringToUTF16(_userEmail));
+  } else {
+    item.text = l10n_util::GetNSStringF(
+        update ? IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT
+               : IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER,
+        base::SysNSStringToUTF16(_userEmail));
+  }
   item.textFont = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   item.textColor = [UIColor colorNamed:kTextSecondaryColor];
   return item;
 }
 
 // Returns the button element for the save/update prompts.
-- (TableViewTextButtonItem*)saveButtonIfSaveOrUpdate:(BOOL)update {
+- (TableViewTextButtonItem*)saveButtonIfSaveOrUpdate:(BOOL)update
+                                   orMigrationPrompt:(BOOL)migrationPrompt {
   CHECK(!self.settingsView);
   self.modalSaveUpdateButton =
       [[TableViewTextButtonItem alloc] initWithType:ItemTypeSaveButton];
   self.modalSaveUpdateButton.textAlignment = NSTextAlignmentNatural;
-  self.modalSaveUpdateButton.buttonText = l10n_util::GetNSString(
-      update ? IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL
-             : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
+  if (migrationPrompt) {
+    self.modalSaveUpdateButton.buttonText = l10n_util::GetNSString(
+        IDS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_OK_BUTTON_LABEL);
+  } else {
+    self.modalSaveUpdateButton.buttonText = l10n_util::GetNSString(
+        update ? IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL
+               : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
+  }
+
   self.modalSaveUpdateButton.disableButtonIntrinsicWidth = YES;
 
   return self.modalSaveUpdateButton;

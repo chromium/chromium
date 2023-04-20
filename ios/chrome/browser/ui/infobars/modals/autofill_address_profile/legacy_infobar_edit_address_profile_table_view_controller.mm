@@ -188,6 +188,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _isEditForUpdate = isEditForUpdate;
 }
 
+- (void)setMigrationPrompt:(BOOL)migrationPrompt {
+}
+
 #pragma mark - UITableViewDelegate
 
 - (CGFloat)tableView:(UITableView*)tableView
