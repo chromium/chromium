@@ -12,9 +12,9 @@
 
 namespace blink {
 
-class AbstractInlineTextBoxTest : public RenderingTest {};
+class NGAbstractInlineTextBoxTest : public RenderingTest {};
 
-TEST_F(AbstractInlineTextBoxTest, GetTextWithCollapsedWhiteSpace) {
+TEST_F(NGAbstractInlineTextBoxTest, GetTextWithCollapsedWhiteSpace) {
   SetBodyInnerHTML(R"HTML(
     <style>* { font-size: 10px; }</style>
     <div id="target">abc </div>)HTML");
@@ -29,7 +29,7 @@ TEST_F(AbstractInlineTextBoxTest, GetTextWithCollapsedWhiteSpace) {
 }
 
 // For DumpAccessibilityTreeTest.AccessibilityInputTextValue/blink
-TEST_F(AbstractInlineTextBoxTest, GetTextWithLineBreakAtCollapsedWhiteSpace) {
+TEST_F(NGAbstractInlineTextBoxTest, GetTextWithLineBreakAtCollapsedWhiteSpace) {
   // Line break at space between <label> and <input>.
   SetBodyInnerHTML(R"HTML(
     <style>* { font-size: 10px; }</style>
@@ -45,7 +45,7 @@ TEST_F(AbstractInlineTextBoxTest, GetTextWithLineBreakAtCollapsedWhiteSpace) {
 }
 
 // For "web_tests/accessibility/inline-text-change-style.html"
-TEST_F(AbstractInlineTextBoxTest,
+TEST_F(NGAbstractInlineTextBoxTest,
        GetTextWithLineBreakAtMiddleCollapsedWhiteSpace) {
   // There should be a line break at the space after "012".
   SetBodyInnerHTML(R"HTML(
@@ -62,7 +62,7 @@ TEST_F(AbstractInlineTextBoxTest,
 }
 
 // DumpAccessibilityTreeTest.AccessibilitySpanLineBreak/blink
-TEST_F(AbstractInlineTextBoxTest,
+TEST_F(NGAbstractInlineTextBoxTest,
        GetTextWithLineBreakAtSpanCollapsedWhiteSpace) {
   // There should be a line break at the space in <span>.
   SetBodyInnerHTML(R"HTML(
@@ -87,7 +87,7 @@ TEST_F(AbstractInlineTextBoxTest,
 }
 
 // For DumpAccessibilityTreeTest.AccessibilityInputTypes/blink
-TEST_F(AbstractInlineTextBoxTest, GetTextWithLineBreakAtTrailingWhiteSpace) {
+TEST_F(NGAbstractInlineTextBoxTest, GetTextWithLineBreakAtTrailingWhiteSpace) {
   // There should be a line break at the space of "abc: ".
   SetBodyInnerHTML(R"HTML(
     <style>* { font-size: 10px; }</style>
@@ -102,7 +102,7 @@ TEST_F(AbstractInlineTextBoxTest, GetTextWithLineBreakAtTrailingWhiteSpace) {
   EXPECT_TRUE(inline_text_box->NeedsTrailingSpace());
 }
 
-TEST_F(AbstractInlineTextBoxTest, GetTextOffsetInFormattingContext) {
+TEST_F(NGAbstractInlineTextBoxTest, GetTextOffsetInFormattingContext) {
   // The span should not affect the offset in container of the following inline
   // text boxes in the paragraph.
   //
@@ -116,24 +116,24 @@ TEST_F(AbstractInlineTextBoxTest, GetTextOffsetInFormattingContext) {
   const Node& text_node = *paragraph.firstChild()->nextSibling();
   auto& layout_text = *To<LayoutText>(text_node.GetLayoutObject());
 
-  // The above "layout_text" should create five AbstractInlineTextBoxes:
+  // The above "layout_text" should create five NGAbstractInlineTextBoxes:
   // 1. "First sentence "
   // 2. "\n"
   // 3. "of the paragraph. Second sentence of "
   // 4." \n"
   // 5. "the paragraph."
   //
-  // The AbstractInlineTextBoxes are all children of the same text node and an
+  // The NGAbstractInlineTextBoxes are all children of the same text node and an
   // an offset calculated in the container node should always be the same for
   // both LayoutNG and Legacy, even though Legacy doesn't collapse the
-  // white spaces at the end of an AbstractInlineTextBox. White spaces at the
+  // white spaces at the end of an NGAbstractInlineTextBox. White spaces at the
   // beginning of the third and fifth inline text box should be collapsed.
   auto inline_text_box = layout_text.FirstAbstractInlineTextBox();
   String text = "First sentence";
   EXPECT_EQ(text, inline_text_box->GetText());
   EXPECT_EQ(6u, inline_text_box->TextOffsetInFormattingContext(0));
 
-  // We need to jump over the AbstractInlineTextBox with the line break.
+  // We need to jump over the NGAbstractInlineTextBox with the line break.
   inline_text_box = inline_text_box->NextInlineTextBox()->NextInlineTextBox();
   text = "of the paragraph. Second sentence of";
   EXPECT_EQ(text, inline_text_box->GetText());
@@ -153,7 +153,7 @@ TEST_F(AbstractInlineTextBoxTest, GetTextOffsetInFormattingContext) {
   EXPECT_EQ(0u, inline_text_box->TextOffsetInFormattingContext(0));
 }
 
-TEST_F(AbstractInlineTextBoxTest, CharacterWidths) {
+TEST_F(NGAbstractInlineTextBoxTest, CharacterWidths) {
   // There should be a line break at the space after "012".
   SetBodyInnerHTML(R"HTML(
     <style>* { font-size: 10px; }</style>
