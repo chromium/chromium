@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -58,7 +59,6 @@ public class CreatorTabSheetContent implements BottomSheetContent {
     private final Runnable mOpenNewTabCallback;
     private final Runnable mToolbarClickCallback;
     private final Runnable mCloseButtonCallback;
-    private final int mToolbarHeightPx;
     private final UnownedUserDataSupplier<ShareDelegate> mShareDelegateSupplier;
     private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
             new ObservableSupplierImpl<>();
@@ -90,11 +90,9 @@ public class CreatorTabSheetContent implements BottomSheetContent {
         mOpenNewTabCallback = openNewTabCallback;
         mToolbarClickCallback = toolbarClickCallback;
         mCloseButtonCallback = closeButtonCallback;
-        mToolbarHeightPx = mContext.getResources().getDimensionPixelSize(
-                R.dimen.creator_bottomsheet_toolbar_container_height);
 
-        createThinWebView((int) (maxViewHeight * FULL_HEIGHT_RATIO), intentRequestTracker);
-        createToolbarView();
+        createThinWebView(getMaxSheetHeight(maxViewHeight), intentRequestTracker);
+        createToolbarView(maxViewHeight);
 
         mBackPressStateChangedSupplier.set(true);
         mShareDelegateSupplier = shareDelegateSupplier;
@@ -132,14 +130,12 @@ public class CreatorTabSheetContent implements BottomSheetContent {
                 mContext, new ThinWebViewConstraints(), intentRequestTracker);
 
         mSheetContentView = new FrameLayout(mContext);
-        mThinWebView.getView().setLayoutParams(new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, maxSheetHeight - mToolbarHeightPx));
+        mThinWebView.getView().setLayoutParams(
+                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, maxSheetHeight));
         mSheetContentView.addView(mThinWebView.getView());
-
-        mSheetContentView.setPadding(0, mToolbarHeightPx, 0, 0);
     }
 
-    private void createToolbarView() {
+    private void createToolbarView(int maxViewHeight) {
         mToolbarView = (ViewGroup) LayoutInflater.from(mContext).inflate(
                 R.layout.creator_bottomsheet_toolbar, null);
         mShadow = mToolbarView.findViewById(R.id.shadow);
@@ -147,14 +143,25 @@ public class CreatorTabSheetContent implements BottomSheetContent {
         ImageView openInNewTabButton = mToolbarView.findViewById(R.id.open_in_new_tab);
         openInNewTabButton.setOnClickListener(view -> mOpenNewTabCallback.run());
 
-        View toolbar = mToolbarView.findViewById(R.id.toolbar);
-        toolbar.setOnClickListener(view -> mToolbarClickCallback.run());
+        mToolbarView.setOnClickListener(view -> mToolbarClickCallback.run());
 
         View closeButton = mToolbarView.findViewById(R.id.close);
         closeButton.setOnClickListener(view -> mCloseButtonCallback.run());
 
         mFaviconView = mToolbarView.findViewById(R.id.favicon);
         mCurrentFavicon = mFaviconView.getDrawable();
+
+        final ViewTreeObserver observer = mToolbarView.getViewTreeObserver();
+        observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                // Once the toolbar layout is completed, reflect the change in height
+                // to the content view.
+                mToolbarView.getViewTreeObserver().removeOnPreDrawListener(this);
+                updateContentHeight(maxViewHeight);
+                return true;
+            }
+        });
     }
 
     /**
@@ -163,13 +170,25 @@ public class CreatorTabSheetContent implements BottomSheetContent {
      */
     void updateContentHeight(int maxViewHeight) {
         if (maxViewHeight == 0) return;
-        ViewGroup.LayoutParams layoutParams = mThinWebView.getView().getLayoutParams();
 
-        // This should never be more than the tab height for it to function correctly.
+        ViewGroup.LayoutParams layoutParams = mThinWebView.getView().getLayoutParams();
+        int toolbarHeight = getToolbarHeight();
+        layoutParams.height = getMaxSheetHeight(maxViewHeight) - toolbarHeight;
+        mSheetContentView.setPadding(0, toolbarHeight, 0, 0);
+        ViewUtils.requestLayout(mSheetContentView, "EphemeralTabSheetContent.updateContentHeight");
+    }
+
+    private int getToolbarHeight() {
+        int shadowHeight =
+                mContext.getResources().getDimensionPixelSize(R.dimen.action_bar_shadow_height);
+        return mToolbarView.getHeight() - shadowHeight;
+    }
+
+    private int getMaxSheetHeight(int maxViewHeight) {
+        // This sheet should never be taller than the tab height for it to function correctly.
         // We scale it by |FULL_HEIGHT_RATIO| to make the size equal to that of
         // ThinWebView and so it can leave a portion of the page below it visible.
-        layoutParams.height = (int) (maxViewHeight * FULL_HEIGHT_RATIO) - mToolbarHeightPx;
-        ViewUtils.requestLayout(mSheetContentView, "CreatorTabSheetContent.updateContentHeight");
+        return (int) (maxViewHeight * FULL_HEIGHT_RATIO);
     }
 
     /** Method to be called to start the favicon anmiation. */
