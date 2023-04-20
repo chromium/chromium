@@ -406,13 +406,22 @@
       'android-perfetto-rel': 'perfetto_release_bot_reclient_android',
       # Keep in sync with android-arm64-rel
       'build-perf-android': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_reclient',
-      'build-perf-android-siso': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_siso',
+      'build-perf-android-siso': {
+        'builtin': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_siso',
+        'reproxy': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_reclient',
+      },
       # Keep in sync with linux-rel
       'build-perf-linux': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
-      'build-perf-linux-siso': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_siso',
+      'build-perf-linux-siso': {
+        'builtin': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_siso',
+        'reproxy': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
+      },
       # Keep in sync with win-rel
       'build-perf-windows': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
-      'build-perf-windows-siso': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_siso',
+      'build-perf-windows-siso': {
+        'builtin': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_siso',
+        'reproxy': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
+      },
       # TODO(crbug.com/1235218): remove after the migration.
       'chromeos-amd64-generic-rel (reclient compare)': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
       'chromeos-amd64-generic-rel (reclient)': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
