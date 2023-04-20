@@ -13,6 +13,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/worker_thread.h"
+#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_messages.h"
@@ -136,7 +137,9 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
   void SendOpenMessageChannel(ScriptContext* script_context,
                               const PortId& port_id,
                               const MessageTarget& target,
+                              ChannelType channel_type,
                               const std::string& channel_name) override {
+    // TODO(https://crbug.com/1430999): Use `channel_type` in the IPC message.
     content::RenderFrame* render_frame = script_context->GetRenderFrame();
     DCHECK(render_frame);
     PortContext frame_context =
@@ -383,7 +386,9 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
   void SendOpenMessageChannel(ScriptContext* script_context,
                               const PortId& port_id,
                               const MessageTarget& target,
+                              ChannelType channel_type,
                               const std::string& channel_name) override {
+    // TODO(https://crbug.com/1430999): Use `channel_type` in the IPC message.
     DCHECK(!script_context->GetRenderFrame());
     DCHECK(script_context->IsForServiceWorker());
     const Extension* extension = script_context->extension();

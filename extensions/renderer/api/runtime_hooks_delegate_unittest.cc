@@ -374,7 +374,8 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, ConnectNative) {
         MessageTarget::ForNativeApp(expected_app_name));
     EXPECT_CALL(*ipc_message_sender(),
                 SendOpenMessageChannel(script_context(), expected_port_id,
-                                       expected_target, kEmptyExpectedChannel));
+                                       expected_target, ChannelType::kNative,
+                                       kEmptyExpectedChannel));
 
     v8::Local<v8::Function> add_port = FunctionFromString(
         context, base::StringPrintf(kAddPortTemplate, args.c_str()));

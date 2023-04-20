@@ -82,9 +82,10 @@ void SendMessageTester::TestConnect(const std::string& args,
       "(function() { return chrome.%s.connect(%s); })";
   PortId expected_port_id(script_context_->context_id(), next_port_id_++, true,
                           SerializationFormat::kJson);
-  EXPECT_CALL(*ipc_sender_,
-              SendOpenMessageChannel(script_context_, expected_port_id,
-                                     expected_target, expected_channel));
+  EXPECT_CALL(
+      *ipc_sender_,
+      SendOpenMessageChannel(script_context_, expected_port_id, expected_target,
+                             ChannelType::kConnect, expected_channel));
   v8::Local<v8::Function> add_port = FunctionFromString(
       v8_context, base::StringPrintf(kAddPortTemplate, api_namespace_.c_str(),
                                      args.c_str()));
@@ -108,18 +109,22 @@ void SendMessageTester::TestSendMessageOrRequest(
       "(function() { return chrome.%s.%s(%s); })";
 
   std::string expected_channel;
+  ChannelType channel_type = ChannelType::kSendMessage;
   const char* method_name = nullptr;
   switch (method) {
     case SEND_MESSAGE:
       method_name = "sendMessage";
       expected_channel = messaging_util::kSendMessageChannel;
+      channel_type = ChannelType::kSendMessage;
       break;
     case SEND_REQUEST:
       method_name = "sendRequest";
       expected_channel = messaging_util::kSendRequestChannel;
+      channel_type = ChannelType::kSendRequest;
       break;
     case SEND_NATIVE_MESSAGE:
       method_name = "sendNativeMessage";
+      channel_type = ChannelType::kNative;
       // sendNativeMessage doesn't have name channels so we don't need to change
       // expected_channel from an empty string.
       break;
@@ -128,9 +133,10 @@ void SendMessageTester::TestSendMessageOrRequest(
   PortId expected_port_id(script_context_->context_id(), next_port_id_++, true,
                           SerializationFormat::kJson);
 
-  EXPECT_CALL(*ipc_sender_,
-              SendOpenMessageChannel(script_context_, expected_port_id,
-                                     expected_target, expected_channel));
+  EXPECT_CALL(
+      *ipc_sender_,
+      SendOpenMessageChannel(script_context_, expected_port_id, expected_target,
+                             channel_type, expected_channel));
   Message message(expected_message, SerializationFormat::kJson, false);
   EXPECT_CALL(*ipc_sender_, SendPostMessageToPort(expected_port_id, message));
 

@@ -5,6 +5,7 @@
 #include "chrome/renderer/extensions/api/extension_hooks_delegate.h"
 
 #include "content/public/renderer/v8_value_converter.h"
+#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -249,7 +250,7 @@ RequestResult ExtensionHooksDelegate::HandleSendRequest(
 
   messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForExtension(target_id),
-      messaging_util::kSendRequestChannel, *message, parse_result.async_type,
+      ChannelType::kSendRequest, *message, parse_result.async_type,
       response_callback);
 
   return RequestResult(RequestResult::HANDLED);

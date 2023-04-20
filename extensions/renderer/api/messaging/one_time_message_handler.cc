@@ -13,6 +13,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/supports_user_data.h"
 #include "content/public/renderer/render_frame.h"
+#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
@@ -155,7 +156,7 @@ v8::Local<v8::Promise> OneTimeMessageHandler::SendMessage(
     ScriptContext* script_context,
     const PortId& new_port_id,
     const MessageTarget& target,
-    const std::string& method_name,
+    ChannelType channel_type,
     const Message& message,
     binding::AsyncResponseType async_type,
     v8::Local<v8::Function> response_callback) {
@@ -193,8 +194,24 @@ v8::Local<v8::Promise> OneTimeMessageHandler::SendMessage(
   }
 
   IPCMessageSender* ipc_sender = bindings_system_->GetIPCMessageSender();
+  std::string channel_name;
+  switch (channel_type) {
+    case ChannelType::kSendRequest:
+      channel_name = messaging_util::kSendRequestChannel;
+      break;
+    case ChannelType::kSendMessage:
+      channel_name = messaging_util::kSendMessageChannel;
+      break;
+    case ChannelType::kNative:
+      // Native messaging doesn't use channel names.
+      break;
+    case ChannelType::kConnect:
+      // connect() calls aren't handled by the OneTimeMessageHandler.
+      NOTREACHED_NORETURN();
+  }
+
   ipc_sender->SendOpenMessageChannel(script_context, new_port_id, target,
-                                     method_name);
+                                     channel_type, channel_name);
   ipc_sender->SendPostMessageToPort(new_port_id, message);
 
   // If the sender doesn't provide a response callback, we can immediately

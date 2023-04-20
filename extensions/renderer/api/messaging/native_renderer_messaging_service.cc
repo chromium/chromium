@@ -17,6 +17,7 @@
 #include "content/public/common/content_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
+#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_id.h"
@@ -182,15 +183,18 @@ gin::Handle<GinPort> NativeRendererMessagingService::Connect(
                  PortId(script_context->context_id(), data->next_port_id++,
                         is_opener, format));
 
+  ChannelType channel_type = target.type == MessageTarget::NATIVE_APP
+                                 ? ChannelType::kNative
+                                 : ChannelType::kConnect;
   bindings_system_->GetIPCMessageSender()->SendOpenMessageChannel(
-      script_context, port->port_id(), target, channel_name);
+      script_context, port->port_id(), target, channel_type, channel_name);
   return port;
 }
 
 v8::Local<v8::Promise> NativeRendererMessagingService::SendOneTimeMessage(
     ScriptContext* script_context,
     const MessageTarget& target,
-    const std::string& method_name,
+    ChannelType channel_type,
     const Message& message,
     binding::AsyncResponseType async_type,
     v8::Local<v8::Function> response_callback) {
@@ -213,8 +217,8 @@ v8::Local<v8::Promise> NativeRendererMessagingService::SendOneTimeMessage(
                  message.format);
 
   return one_time_message_handler_.SendMessage(script_context, port_id, target,
-                                               method_name, message, async_type,
-                                               response_callback);
+                                               channel_type, message,
+                                               async_type, response_callback);
 }
 
 void NativeRendererMessagingService::PostMessageToPort(

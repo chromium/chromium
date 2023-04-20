@@ -22,6 +22,7 @@ class RenderFrame;
 }
 
 namespace extensions {
+enum class ChannelType;
 enum class SerializationFormat;
 class NativeExtensionBindingsSystem;
 class ScriptContextSetIterable;
@@ -119,7 +120,7 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   v8::Local<v8::Promise> SendOneTimeMessage(
       ScriptContext* script_context,
       const MessageTarget& target,
-      const std::string& channel_name,
+      ChannelType channel_type,
       const Message& message,
       binding::AsyncResponseType async_type,
       v8::Local<v8::Function> response_callback);

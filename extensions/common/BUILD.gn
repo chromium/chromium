@@ -210,6 +210,7 @@ static_library("common") {
     "api/declarative_net_request/dnr_manifest_handler.h",
     "api/extension_action/action_info.cc",
     "api/extension_action/action_info.h",
+    "api/messaging/channel_type.h",
     "api/messaging/message.h",
     "api/messaging/messaging_endpoint.cc",
     "api/messaging/messaging_endpoint.h",

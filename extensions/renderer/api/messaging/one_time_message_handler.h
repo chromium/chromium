@@ -24,6 +24,7 @@ class Arguments;
 }
 
 namespace extensions {
+enum class ChannelType;
 class NativeExtensionBindingsSystem;
 class ScriptContext;
 struct Message;
@@ -80,7 +81,7 @@ class OneTimeMessageHandler {
   v8::Local<v8::Promise> SendMessage(ScriptContext* script_context,
                                      const PortId& new_port_id,
                                      const MessageTarget& target_id,
-                                     const std::string& method_name,
+                                     ChannelType channel_type,
                                      const Message& message,
                                      binding::AsyncResponseType async_type,
                                      v8::Local<v8::Function> response_callback);
