@@ -445,6 +445,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Renderer.Layout.TextWrapBalance" units="ms"
+    expires_after="2023-10-20">
+  <owner>kojii@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>The time spent to balance lines of paragraphs.</summary>
+</histogram>
+
+<histogram name="Renderer.Layout.TextWrapBalance.Fail" units="ms"
+    expires_after="2023-10-20">
+  <owner>kojii@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    The time spent to try balancing lines of paragraphs but failed to balance.
+  </summary>
+</histogram>
+
 <histogram name="Renderer.PaintPreview.Capture.MainFrameBlinkCaptureDuration"
     units="ms" expires_after="2023-09-10">
   <owner>ckitagawa@chromium.org</owner>

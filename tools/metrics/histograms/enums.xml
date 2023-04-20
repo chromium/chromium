@@ -42095,6 +42095,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4541" label="SandboxViaFencedFrame"/>
   <int value="4542" label="VisibilityStateObserver"/>
   <int value="4543" label="V8CompileHintsMagicAll"/>
+  <int value="4544" label="TextWrapBalance"/>
+  <int value="4545" label="TextWrapBalanceFail"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
