@@ -771,4 +771,25 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   EXPECT_TRUE(connection()->handshake_initiated_);
 }
 
+TEST_F(TargetDeviceConnectionBrokerImplTest,
+       ConnectionIsAuthenticatedWithPinMethod) {
+  FinishFetchingBluetoothAdapter();
+  connection_broker_->StartAdvertising(&connection_lifecycle_listener_,
+                                       /* use_pin_authentication= */ true,
+                                       base::DoNothing());
+  EXPECT_FALSE(connection_lifecycle_listener_.qr_code_data_);
+  NearbyConnectionsManager::IncomingConnectionListener*
+      incoming_connection_listener =
+          fake_nearby_connections_manager_.GetAdvertisingListener();
+  ASSERT_TRUE(incoming_connection_listener);
+  incoming_connection_listener->OnIncomingConnectionInitiated(
+      kEndpointId, std::vector<uint8_t>());
+  incoming_connection_listener->OnIncomingConnectionAccepted(
+      kEndpointId, std::vector<uint8_t>(), &fake_nearby_connection_);
+
+  ASSERT_TRUE(connection());
+  EXPECT_TRUE(connection_lifecycle_listener_.connection_authenticated_);
+  EXPECT_NE(connection_lifecycle_listener_.authenticated_connection_, nullptr);
+}
+
 }  // namespace ash::quick_start
