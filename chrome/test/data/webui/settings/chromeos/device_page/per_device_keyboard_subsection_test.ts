@@ -209,7 +209,7 @@ suite('<settings-per-device-keyboard-subsection>', () => {
         0,
         Object.keys(subsection.get('keyboard.settings.modifierRemappings'))
             .length);
-    assertEquals('', remapKeysSubLabel.textContent!.trim());
+    assertEquals('No keys remapped', remapKeysSubLabel.textContent!.trim());
   });
 
   /**

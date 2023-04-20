@@ -203,14 +203,9 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
     const numRemappedModifierKeys =
         Object.keys(this.keyboard.settings.modifierRemappings).length;
 
-    // Only display the sub-label if the modifierRemappings map isn't empty.
-    if (numRemappedModifierKeys > 0) {
-      this.remapKeyboardKeysSublabel =
-          await PluralStringProxyImpl.getInstance().getPluralString(
-              'remapKeyboardKeysRowSubLabel', numRemappedModifierKeys);
-    } else {
-      this.remapKeyboardKeysSublabel = '';
-    }
+    this.remapKeyboardKeysSublabel =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'remapKeyboardKeysRowSubLabel', numRemappedModifierKeys);
   }
 
   private onRemapKeyboardKeysTap(): void {
