@@ -147,37 +147,9 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 }
 
 - (void)editButtonPressed {
+  DCHECK(self.settingsView);
   if (!self.controller.tableView.editing) {
-    TableViewModel* model = self.controller.tableViewModel;
-    NSInteger itemCount =
-        [model numberOfItemsInSection:
-                   [model sectionForSectionIdentifier:SectionIdentifierFields]];
-
-    // Reads the values from the fields and updates the local copy of the
-    // profile accordingly.
-    NSInteger section =
-        [model sectionForSectionIdentifier:SectionIdentifierFields];
-    for (NSInteger itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
-      NSIndexPath* path = [NSIndexPath indexPathForItem:itemIndex
-                                              inSection:section];
-      NSInteger itemType =
-          [self.controller.tableViewModel itemTypeForIndexPath:path];
-
-      if (itemType == ItemTypeCountry &&
-          self.autofillAccountProfilesUnionViewEnabled) {
-        [self.delegate
-            updateProfileMetadataWithValue:self.homeAddressCountry
-                         forAutofillUIType:
-                             AutofillUITypeProfileHomeAddressCountry];
-        continue;
-      }
-
-      AutofillEditItem* item = base::mac::ObjCCastStrict<AutofillEditItem>(
-          [model itemAtIndexPath:path]);
-      [self.delegate updateProfileMetadataWithValue:item.textFieldValue
-                                  forAutofillUIType:item.autofillUIType];
-    }
-
+    [self updateProfileData];
     [self.delegate didEditAutofillProfile];
   }
 
@@ -284,6 +256,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 }
 
 - (void)loadFooterForSettings {
+  DCHECK(self.settingsView);
   TableViewModel* model = self.controller.tableViewModel;
 
   if (self.autofillAccountProfilesUnionViewEnabled && self.accountProfile &&
@@ -359,7 +332,9 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 #pragma mark - Actions
 
 - (void)didTapSaveButton {
-  // TODO(crbug.com/1407666): Implement Save functionality.
+  DCHECK(!self.settingsView);
+  [self updateProfileData];
+  [self.delegate didSaveProfileFromModal];
 }
 
 #pragma mark - Conversion Helper Methods
@@ -776,6 +751,41 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       break;
   }
   return NO;
+}
+
+- (void)updateProfileData {
+  TableViewModel* model = self.controller.tableViewModel;
+  NSInteger itemCount =
+      [model numberOfItemsInSection:
+                 [model sectionForSectionIdentifier:SectionIdentifierFields]];
+
+  // Reads the values from the fields and updates the local copy of the
+  // profile accordingly.
+  NSInteger section =
+      [model sectionForSectionIdentifier:SectionIdentifierFields];
+  for (NSInteger itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
+    NSIndexPath* path = [NSIndexPath indexPathForItem:itemIndex
+                                            inSection:section];
+    NSInteger itemType =
+        [self.controller.tableViewModel itemTypeForIndexPath:path];
+
+    if (itemType == ItemTypeCountry) {
+      if (self.autofillAccountProfilesUnionViewEnabled) {
+        [self.delegate
+            updateProfileMetadataWithValue:self.homeAddressCountry
+                         forAutofillUIType:
+                             AutofillUITypeProfileHomeAddressCountry];
+        continue;
+      }
+    } else if (![self isItemTypeTextEditCell:itemType]) {
+      continue;
+    }
+
+    AutofillEditItem* item = base::mac::ObjCCastStrict<AutofillEditItem>(
+        [model itemAtIndexPath:path]);
+    [self.delegate updateProfileMetadataWithValue:item.textFieldValue
+                                forAutofillUIType:item.autofillUIType];
+  }
 }
 
 @end

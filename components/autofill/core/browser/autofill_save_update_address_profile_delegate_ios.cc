@@ -186,6 +186,11 @@ void AutofillSaveUpdateAddressProfileDelegateIOS::SetProfileInfo(
                                             VerificationStatus::kUserVerified);
 }
 
+void AutofillSaveUpdateAddressProfileDelegateIOS::SetProfile(
+    AutofillProfile* profile) {
+  profile_ = *profile;
+}
+
 bool AutofillSaveUpdateAddressProfileDelegateIOS::Accept() {
   user_decision_ =
       AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted;
