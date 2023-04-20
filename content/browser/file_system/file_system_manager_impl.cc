@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -250,11 +249,6 @@ void FileSystemManagerImpl::ContinueOpen(
     return;
   }
 
-  if (file_system_type == blink::mojom::FileSystemType::kTemporary) {
-    RecordAction(base::UserMetricsAction("OpenFileSystemTemporary"));
-  } else if (file_system_type == blink::mojom::FileSystemType::kPersistent) {
-    RecordAction(base::UserMetricsAction("OpenFileSystemPersistent"));
-  }
   context_->OpenFileSystem(
       storage_key, /*bucket=*/absl::nullopt,
       ToStorageFileSystemType(file_system_type),
