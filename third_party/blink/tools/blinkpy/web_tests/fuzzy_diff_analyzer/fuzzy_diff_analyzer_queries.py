@@ -38,8 +38,10 @@ WITH
           SELECT value
           FROM tr.tags
           WHERE key = "step_name") as step_names,
-    (SELECT value FROM tr.tags
-     WHERE key = "web_tests_test_type") as test_type,
+    ARRAY(
+          SELECT value
+          FROM tr.tags
+          WHERE key = "web_tests_test_type") as test_types,
     (SELECT value FROM tr.tags
      WHERE key = "web_tests_image_diff_max_difference") as image_diff_max_difference,
     (SELECT value FROM tr.tags
@@ -56,7 +58,7 @@ WITH
 SELECT *
 FROM failed_tests ft
 WHERE
-  test_type = "image" AND
+  'image' IN UNNEST(test_types) AND
   image_diff_max_difference IS NOT NULL AND
   image_diff_total_pixels IS NOT NULL
 """
