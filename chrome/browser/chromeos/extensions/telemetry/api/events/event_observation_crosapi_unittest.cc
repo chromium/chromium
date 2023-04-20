@@ -81,7 +81,8 @@ class TelemetryExtensionEventObservationCrosapiTest
   mojo::Remote<crosapi::mojom::TelemetryEventObserver> remote_;
 };
 
-TEST_F(TelemetryExtensionEventObservationCrosapiTest, CanObserveEvent) {
+TEST_F(TelemetryExtensionEventObservationCrosapiTest,
+       CanObserveAudioJackEvent) {
   Bind(GetEventRouter()->GetRemote());
 
   auto audio_info = crosapi::mojom::TelemetryAudioJackEventInfo::New();
