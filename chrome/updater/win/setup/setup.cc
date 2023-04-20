@@ -61,7 +61,6 @@ std::vector<base::FilePath> GetSetupFiles(const base::FilePath& source_dir) {
 
 }  // namespace
 
-// TODO(crbug.com/1069976): use specific return values for different code paths.
 int Setup(UpdaterScope scope) {
   VLOG(1) << __func__ << ", scope: " << scope;
   CHECK(!IsSystemInstall(scope) || ::IsUserAnAdmin());
@@ -72,31 +71,31 @@ int Setup(UpdaterScope scope) {
   base::FilePath temp_dir;
   if (!base::GetTempDir(&temp_dir)) {
     LOG(ERROR) << "GetTempDir failed.";
-    return -1;
+    return kErrorCreatingTempDir;
   }
   const absl::optional<base::FilePath> versioned_dir =
       GetVersionedInstallDirectory(scope);
   if (!versioned_dir) {
     LOG(ERROR) << "GetVersionedInstallDirectory failed.";
-    return -1;
+    return kErrorNoVersionedDirectory;
   }
   base::FilePath exe_path;
   if (!base::PathService::Get(base::FILE_EXE, &exe_path)) {
     LOG(ERROR) << "PathService failed.";
-    return -1;
+    return kErrorPathServiceFailed;
   }
 
   installer::SelfCleaningTempDir backup_dir;
   if (!backup_dir.Initialize(temp_dir, L"updater-backup")) {
     LOG(ERROR) << "Failed to initialize the backup dir.";
-    return -1;
+    return kErrorInitializingBackupDir;
   }
 
   const auto source_dir = exe_path.DirName();
   const auto setup_files = GetSetupFiles(source_dir);
   if (setup_files.empty()) {
     LOG(ERROR) << "No files to set up.";
-    return -1;
+    return kErrorFailedToGetSetupFiles;
   }
 
   // All source files are installed in a flat directory structure inside the
@@ -156,12 +155,12 @@ int Setup(UpdaterScope scope) {
     LOG(ERROR) << "Install failed, rolling back...";
     install_list->Rollback();
     LOG(ERROR) << "Rollback complete.";
-    return -1;
+    return kErrorFailedToRunInstallList;
   }
 
   VLOG(1) << "Setup succeeded.";
 
-  return 0;
+  return kErrorOk;
 }
 
 }  // namespace updater

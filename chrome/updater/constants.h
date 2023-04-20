@@ -388,11 +388,18 @@ inline constexpr int kErrorFailedToRemoveSystemdUnit = 41;
 // Running as the wrong user for the provided UpdaterScope.
 inline constexpr int kErrorWrongUser = 42;
 
+// Failed to get the setup files.
+inline constexpr int kErrorFailedToGetSetupFiles = 43;
+
+// Failed to run install list.
+inline constexpr int kErrorFailedToRunInstallList = 44;
+
 inline constexpr int kErrorTagParsing = 50;
 
 // Metainstaller errors.
 inline constexpr int kErrorCreatingTempDir = 60;
 inline constexpr int kErrorUnpackingResource = 61;
+inline constexpr int kErrorInitializingBackupDir = 62;
 
 // Launcher errors.
 constexpr int kErrorGettingUpdaterPath = 71;
