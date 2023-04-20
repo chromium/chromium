@@ -10,9 +10,6 @@
 // Feature to enable the new overflow menu.
 BASE_DECLARE_FEATURE(kNewOverflowMenu);
 
-// Feature to enable smart sorting the new overflow menu.
-BASE_DECLARE_FEATURE(kSmartSortingNewOverflowMenu);
-
 // Feature to add the Price Tracking destination (with Smart Sorting) to the new
 // overflow menu.
 BASE_DECLARE_FEATURE(kSmartSortingPriceTrackingDestination);
@@ -28,9 +25,6 @@ bool IsNewOverflowMenuEnabled();
 
 // Whether or not the NewOverflowMenuReorderSettings feature is enabled.
 bool IsNewOverflowMenuReorderSettingsEnabled();
-
-// Whether smart sorting the new overflow menu is enabled.
-bool IsSmartSortingNewOverflowMenuEnabled();
 
 // Whether the Price Tracking destination (with Smart Sorting) is added to the
 // new overflow menu.

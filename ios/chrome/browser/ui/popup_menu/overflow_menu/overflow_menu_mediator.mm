@@ -800,9 +800,7 @@ NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
   auto handlerWithMetrics = ^{
     overflow_menu::RecordUmaActionForDestination(destination);
 
-    if (IsSmartSortingNewOverflowMenuEnabled()) {
-      [weakSelf.destinationUsageHistory recordClickForDestination:destination];
-    }
+    [weakSelf.destinationUsageHistory recordClickForDestination:destination];
 
     handler();
   };
@@ -938,7 +936,7 @@ NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
 
   NSArray<OverflowMenuDestination*>* baseDestinations = [self baseDestinations];
 
-  if (self.destinationUsageHistory && IsSmartSortingNewOverflowMenuEnabled()) {
+  if (self.destinationUsageHistory) {
     baseDestinations = [self.destinationUsageHistory
         sortedDestinationsFromCarouselDestinations:baseDestinations];
   } else {

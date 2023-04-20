@@ -927,11 +927,6 @@ const char kShowInactiveTabsCountDescription[] =
     "When enabled, the count of Inactive Tabs is shown in the Inactive Tabs "
     "button that appears in the Tab Grid.";
 
-const char kSmartSortingNewOverflowMenuName[] =
-    "Smart Sorting the new Overflow Menu";
-const char kSmartSortingNewOverflowMenuDescription[] =
-    "Enables smart sorting the new overflow menu carousel by frecency.";
-
 const char kSmartSortingPriceTrackingDestinationName[] =
     "Price Tracking destination (with Smart Sorting)";
 const char kSmartSortingPriceTrackingDestinationDescription[] =
