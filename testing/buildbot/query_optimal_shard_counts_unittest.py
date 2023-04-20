@@ -166,20 +166,23 @@ class FormatQueryResults(unittest.TestCase):
         ['--output-file', self.output_file, '--verbose'])
     with open(self.output_file, 'r') as f:
       script_result = json.load(f)
-    expected_dict = {
-        'shards':
-        DEFAULT_DICT['optimal_shard_count'],
-        'current_shard_count':
-        DEFAULT_DICT['shard_count'],
-        'simulated_max_shard_duration':
-        DEFAULT_DICT['simulated_max_shard_duration'],
-        'current_percentile_duration_minutes':
-        DEFAULT_DICT['percentile_duration_minutes'],
+    expected_debug_dict = {
+        'debug': {
+            'prev_shard_count':
+            DEFAULT_DICT['shard_count'],
+            'simulated_max_shard_duration':
+            DEFAULT_DICT['simulated_max_shard_duration'],
+            'prev_percentile_duration_minutes':
+            DEFAULT_DICT['percentile_duration_minutes'],
+        },
     }
     dict_result = script_result['chromium.linux']['Linux Tests'][
         'browser_tests']
     self.assertTrue(
-        all(dict_result[key] == val for key, val in expected_dict.items()))
+        dict_result['shards'] == DEFAULT_DICT['optimal_shard_count'])
+    self.assertTrue(
+        all(dict_result['debug'][key] == val
+            for key, val in expected_debug_dict['debug'].items()))
 
   def testNoQueryResults(self):
     self._mock_check_output.return_value = json.dumps([])

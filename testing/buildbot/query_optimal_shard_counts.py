@@ -372,7 +372,6 @@ def main(args):
 
   data = {}
   new_data = {}
-  verbose_new_data = {}
   if not opts.overwrite_output_file and os.path.exists(opts.output_file):
     with open(opts.output_file, 'r') as existing_output_file:
       print('Output file already exists. Will merge query results with existing'
@@ -435,24 +434,19 @@ def main(args):
             'shards': r['optimal_shard_count'],
         },
     }
-    verbose_dict = shard_dict.copy()
     if opts.verbose:
-      suite_dict = verbose_dict[r['test_suite']]
-      suite_dict['current_shard_count'] = r['shard_count']
-      suite_dict['current_percentile_duration_minutes'] = r[
-          'percentile_duration_minutes']
-      suite_dict['simulated_max_shard_duration'] = r[
-          'simulated_max_shard_duration']
-      suite_dict['estimated_bot_hour_cost'] = r['estimated_bot_hour_cost']
-      suite_dict['try_builder'] = r['try_builder']
-      suite_dict['avg_num_builds_per_peak_hour'] = r[
-          'avg_num_builds_per_peak_hour']
-      suite_dict['avg_pending_time_sec'] = r['avg_pending_time_sec']
-      suite_dict['p50_pending_time_sec'] = r['p50_pending_time_sec']
-      suite_dict['p90_pending_time_sec'] = r['p90_pending_time_sec']
-      verbose_new_data.setdefault(builder_group,
-                                  {}).setdefault(builder_name,
-                                                 {}).update(shard_dict)
+      debug_dict = {
+          'avg_num_builds_per_peak_hour': r['avg_num_builds_per_peak_hour'],
+          'estimated_bot_hour_delta': r['estimated_bot_hour_cost'],
+          'prev_avg_pending_time_sec': r['avg_pending_time_sec'],
+          'prev_p50_pending_time_sec': r['p50_pending_time_sec'],
+          'prev_p90_pending_time_sec': r['p90_pending_time_sec'],
+          'prev_percentile_duration_minutes': r['percentile_duration_minutes'],
+          'prev_shard_count': r['shard_count'],
+          'simulated_max_shard_duration': r['simulated_max_shard_duration'],
+          'try_builder': r['try_builder'],
+      }
+      shard_dict[r['test_suite']]['debug'] = debug_dict
     data.setdefault(builder_group, {}).setdefault(builder_name,
                                                   {}).update(shard_dict)
     new_data.setdefault(builder_group, {}).setdefault(builder_name,
@@ -463,10 +457,7 @@ def main(args):
                            separators=(',', ': '),
                            sort_keys=True)
   print('Results from query:')
-  if opts.verbose:
-    print(json.dumps(verbose_new_data, indent=4, separators=(',', ': ')))
-  else:
-    print(json.dumps(new_data, indent=4, separators=(',', ': ')))
+  print(json.dumps(new_data, indent=4, separators=(',', ': ')))
 
   if opts.output_file:
     if opts.overwrite_output_file and os.path.exists(opts.output_file):
