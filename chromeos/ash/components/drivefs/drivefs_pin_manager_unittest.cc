@@ -2145,10 +2145,8 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   md.shortcut_details->target_lookup_status = LookupStatus::kOk;
   md.type = FileMetadata::Type::kFile;
   md.size = 10000;
-  md.available_offline = true;  // See b/278492340
   manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
   EXPECT_FALSE(md.shortcut_details);
-  EXPECT_FALSE(md.available_offline);  // See b/278492340
   EXPECT_EQ(Id(md.stable_id), target_id);
   EXPECT_EQ(manager.progress_.skipped_items, 0);
   EXPECT_EQ(manager.progress_.listed_shortcuts, 1);
@@ -2170,10 +2168,8 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   md.stable_id = static_cast<int64_t>(stable_id);
   md.type = FileMetadata::Type::kHosted;
   md.size = 0;
-  md.available_offline = true;  // See b/278492340
   manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
   EXPECT_FALSE(md.shortcut_details);
-  EXPECT_FALSE(md.available_offline);  // See b/278492340
   EXPECT_EQ(Id(md.stable_id), target_id);
   EXPECT_EQ(manager.progress_.skipped_items, 0);
   EXPECT_EQ(manager.progress_.listed_shortcuts, 1);

@@ -159,11 +159,15 @@ ostream& operator<<(ostream& out, Quoter<FileMetadata> q) {
     out << ", not pinnable";
   }
 
-  if (md.pinned) {
+  if (VLOG_IS_ON(2)) {
+    out << ", pinned: " << md.pinned;
+  } else if (md.pinned) {
     out << ", pinned";
   }
 
-  if (md.available_offline) {
+  if (VLOG_IS_ON(2)) {
+    out << ", available_offline: " << md.available_offline;
+  } else if (md.available_offline) {
     out << ", available offline";
   }
 
@@ -776,6 +780,8 @@ void PinManager::HandleQueryItem(Id dir_id,
   Id id = Id(md.stable_id);
   const Path& path = item.path;
 
+  VLOG(2) << "Listed " << id << " " << Quote(path) << ": " << Quote(md);
+
   if (!dir_path.IsParent(path)) {
     // This can happen when the parent folder was found by following a shortcut.
     VLOG(2) << Quote(md.type) << " " << id << " " << Quote(path)
@@ -819,10 +825,6 @@ void PinManager::HandleQueryItem(Id dir_id,
     md.stable_id = md.shortcut_details->target_stable_id;
     id = Id(md.stable_id);
     md.shortcut_details.reset();
-
-    // Shortcuts have the available_offline flag incorrectly set (b/278492340).
-    // Reset this flag for shortcuts.
-    md.available_offline = md.pinned;
   }
 
   // Deduplicate items.
