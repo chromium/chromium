@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_INSTALLER_IMPL_H_
 #define CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_INSTALLER_IMPL_H_
 
+#include <memory>
+
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
-#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -55,10 +57,10 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
 
   void InstallToolsDlc();
   void OnToolsDlcInstalled(
-      const ash::DlcserviceClient::InstallResult& install_result);
+      guest_os::GuestOsDlcInstallation::Result install_result);
   void InstallFirmwareDlc();
   void OnFirmwareDlcInstalled(
-      const ash::DlcserviceClient::InstallResult& install_result);
+      guest_os::GuestOsDlcInstallation::Result install_result);
   void DownloadBootDisk();
   void OnBootDiskDownloaded(const download::CompletionInfo& completion_info);
   void DownloadPflash();
@@ -92,6 +94,8 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
   base::FilePath pflash_path_;
   std::string disk_path_;
   std::unique_ptr<Fds> fds_;
+
+  std::unique_ptr<guest_os::GuestOsDlcInstallation> in_progress_dlc_;
 
   const base::raw_ptr<Profile> profile_;
 

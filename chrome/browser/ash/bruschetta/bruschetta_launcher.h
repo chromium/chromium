@@ -11,8 +11,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
-#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -43,12 +43,11 @@ class BruschettaLauncher {
                  absl::optional<vm_tools::concierge::StartVmResponse> response);
 
   void EnsureToolsDlcInstalled();
-  void OnMountToolsDlc(
-      const ash::DlcserviceClient::InstallResult& install_result);
+  void OnMountToolsDlc(guest_os::GuestOsDlcInstallation::Result install_result);
 
   void EnsureFirmwareDlcInstalled();
   void OnMountFirmwareDlc(
-      const ash::DlcserviceClient::InstallResult& install_result);
+      guest_os::GuestOsDlcInstallation::Result install_result);
 
   void OnContainerRunning(guest_os::GuestInfo info);
 
@@ -61,6 +60,8 @@ class BruschettaLauncher {
   // Callbacks to run once an in-progress launch finishes.
   base::OnceCallbackList<void(BruschettaResult)> callbacks_;
   absl::optional<base::CallbackListSubscription> subscription_;
+
+  std::unique_ptr<guest_os::GuestOsDlcInstallation> in_progress_dlc_;
 
   // Must be last.
   base::WeakPtrFactory<BruschettaLauncher> weak_factory_{this};

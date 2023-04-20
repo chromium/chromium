@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/download/background_download_service_factory.h"
@@ -145,25 +146,26 @@ void BruschettaInstallerImpl::InstallToolsDlc() {
   VLOG(2) << "Installing tools DLC";
   NotifyObserver(State::kToolsDlcInstall);
 
-  dlcservice::InstallRequest request;
-  request.set_id(kToolsDlc);
-  ash::DlcserviceClient::Get()->Install(
-      request,
+  in_progress_dlc_ = std::make_unique<guest_os::GuestOsDlcInstallation>(
+      kToolsDlc,
+      /*retry=*/false,
       base::BindOnce(&BruschettaInstallerImpl::OnToolsDlcInstalled,
                      weak_ptr_factory_.GetWeakPtr()),
       base::DoNothing());
 }
 
 void BruschettaInstallerImpl::OnToolsDlcInstalled(
-    const ash::DlcserviceClient::InstallResult& install_result) {
+    guest_os::GuestOsDlcInstallation::Result install_result) {
+  in_progress_dlc_.reset();
+
   if (MaybeClose()) {
     return;
   }
 
-  if (install_result.error != dlcservice::kErrorNone) {
+  if (!install_result.has_value()) {
     install_running_ = false;
     Error(BruschettaInstallResult::kToolsDlcInstallError);
-    LOG(ERROR) << "Failed to install tools dlc: " << install_result.error;
+    LOG(ERROR) << "Failed to install tools dlc: " << install_result.error();
     return;
   }
 
@@ -174,25 +176,24 @@ void BruschettaInstallerImpl::InstallFirmwareDlc() {
   VLOG(2) << "Installing firmware DLC";
   NotifyObserver(State::kFirmwareDlcInstall);
 
-  dlcservice::InstallRequest request;
-  request.set_id(kUefiDlc);
-  ash::DlcserviceClient::Get()->Install(
-      request,
+  in_progress_dlc_ = std::make_unique<guest_os::GuestOsDlcInstallation>(
+      kUefiDlc,
+      /*retry=*/false,
       base::BindOnce(&BruschettaInstallerImpl::OnFirmwareDlcInstalled,
                      weak_ptr_factory_.GetWeakPtr()),
       base::DoNothing());
 }
 
 void BruschettaInstallerImpl::OnFirmwareDlcInstalled(
-    const ash::DlcserviceClient::InstallResult& install_result) {
+    guest_os::GuestOsDlcInstallation::Result install_result) {
   if (MaybeClose()) {
     return;
   }
 
-  if (install_result.error != dlcservice::kErrorNone) {
+  if (!install_result.has_value()) {
     install_running_ = false;
     Error(BruschettaInstallResult::kFirmwareDlcInstallError);
-    LOG(ERROR) << "Failed to install firmware dlc: " << install_result.error;
+    LOG(ERROR) << "Failed to install firmware dlc: " << install_result.error();
     return;
   }
 

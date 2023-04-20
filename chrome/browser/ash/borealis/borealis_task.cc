@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/dbus/vm_launch/launch.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -102,10 +101,9 @@ MountDlc::~MountDlc() = default;
 void MountDlc::RunInternal(BorealisContext* context) {
   // TODO(b/172279567): Ensure the DLC is present before trying to install,
   // otherwise we will silently download borealis here.
-  dlcservice::InstallRequest install_request;
-  install_request.set_id(kBorealisDlcName);
-  ash::DlcserviceClient::Get()->Install(
-      install_request,
+  installation_ = std::make_unique<guest_os::GuestOsDlcInstallation>(
+      kBorealisDlcName,
+      /*retry=*/true,
       base::BindOnce(&MountDlc::OnMountDlc, weak_factory_.GetWeakPtr(),
                      context),
       base::DoNothing());
@@ -113,10 +111,11 @@ void MountDlc::RunInternal(BorealisContext* context) {
 
 void MountDlc::OnMountDlc(
     BorealisContext* context,
-    const ash::DlcserviceClient::InstallResult& install_result) {
-  if (install_result.error != dlcservice::kErrorNone) {
-    Complete(BorealisStartupResult::kMountFailed,
-             "Mounting the DLC for Borealis failed: " + install_result.error);
+    guest_os::GuestOsDlcInstallation::Result install_result) {
+  if (!install_result.has_value()) {
+    std::stringstream ss;
+    ss << "Mounting the DLC for Borealis failed: " << install_result.error();
+    Complete(BorealisStartupResult::kMountFailed, ss.str());
   } else {
     Complete(BorealisStartupResult::kSuccess, "");
   }

@@ -17,10 +17,6 @@ namespace borealis {
 
 class BorealisInstaller : public KeyedService {
  public:
-  // For certain kinds of dlc errors we retry the installation up-to this number
-  // of times.
-  static constexpr int kMaxDlcRetries = 3;
-
   enum class InstallingState {
     kInactive,
     kCheckingIfAllowed,

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager.h"
@@ -21,6 +22,7 @@
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
 using ::testing::_;
 using ::testing::StrNe;
@@ -269,6 +271,18 @@ TEST_F(BorealisTasksTest, SyncBorealisDiskSucceeds) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(BorealisTasksTest, DlcRetries) {
+  FakeDlcserviceClient()->set_install_error(dlcservice::kErrorInternal);
+  base::test::TestFuture<BorealisStartupResult, std::string> result;
+
+  MountDlc task;
+  task.Run(context_.get(), result.GetCallback());
+  task_environment_.RunUntilIdle();
+
+  // We won't have the result yet because we retry.
+  EXPECT_FALSE(result.IsReady());
+}
+
 class BorealisTasksTestDlc : public BorealisTasksTest,
                              public testing::WithParamInterface<std::string> {};
 
@@ -285,11 +299,10 @@ TEST_P(BorealisTasksTestDlc, MountDlcFailsAndCallbackRanWithResults) {
 
 INSTANTIATE_TEST_SUITE_P(BorealisTasksTestDlcErrors,
                          BorealisTasksTestDlc,
-                         testing::Values(dlcservice::kErrorInternal,
+                         testing::Values(dlcservice::kErrorNeedReboot,
                                          dlcservice::kErrorInvalidDlc,
-                                         dlcservice::kErrorBusy,
-                                         dlcservice::kErrorNeedReboot,
                                          dlcservice::kErrorAllocation,
+                                         dlcservice::kErrorNoImageFound,
                                          "unknown"));
 
 class BorealisTasksTestDiskImage

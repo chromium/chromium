@@ -307,17 +307,17 @@ TEST_F(BorealisInstallerTest, SucessfulInstallationRecordMetrics) {
 
 TEST_F(BorealisInstallerTest, IncompleteInstallationRecordMetrics) {
   // This error is arbitrarily chosen for simplicity.
-  FakeDlcserviceClient()->set_install_error(dlcservice::kErrorInternal);
+  FakeDlcserviceClient()->set_install_error(dlcservice::kErrorAllocation);
 
   EXPECT_CALL(*observer_,
-              OnInstallationEnded(BorealisInstallResult::kDlcInternalError,
+              OnInstallationEnded(BorealisInstallResult::kDlcNeedSpaceError,
                                   testing::Not("")));
   StartAndRunToCompletion();
 
   histogram_tester_.ExpectTotalCount(kBorealisInstallNumAttemptsHistogram, 1);
-  histogram_tester_.ExpectUniqueSample(kBorealisInstallResultHistogram,
-                                       BorealisInstallResult::kDlcInternalError,
-                                       1);
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisInstallResultHistogram,
+      BorealisInstallResult::kDlcNeedSpaceError, 1);
   histogram_tester_.ExpectTotalCount(kBorealisInstallOverallTimeHistogram, 0);
 }
 
@@ -362,20 +362,6 @@ TEST_F(BorealisInstallerTest, ReportsMainAppMissingAsError) {
   StartAndRunToCompletion();
 }
 
-TEST_F(BorealisInstallerTest, RetriesAfterInternalFailure) {
-  PrepareSuccessfulInstallation();
-  FakeDlcserviceClient()->set_install_errors({dlcservice::kErrorInternal,
-                                              dlcservice::kErrorInternal,
-                                              dlcservice::kErrorNone});
-
-  EXPECT_CALL(*observer_,
-              OnInstallationEnded(BorealisInstallResult::kSuccess, ""));
-  StartAndRunToCompletion();
-
-  histogram_tester_.ExpectTotalCount(kBorealisInstallRetriesHistogram, 1);
-  histogram_tester_.ExpectBucketCount(kBorealisInstallRetriesHistogram, 2, 1);
-}
-
 // Note that we don't check if the DLC has/hasn't been installed, since the
 // mocked DLC service will always succeed, so we only care about how the error
 // code returned by the service is handled by the installer.
@@ -394,14 +380,8 @@ INSTANTIATE_TEST_SUITE_P(
     BorealisInstallerTestDlcErrors,
     BorealisInstallerTestDlc,
     testing::Values(std::pair<std::string, BorealisInstallResult>(
-                        dlcservice::kErrorInternal,
-                        BorealisInstallResult::kDlcInternalError),
-                    std::pair<std::string, BorealisInstallResult>(
                         dlcservice::kErrorInvalidDlc,
                         BorealisInstallResult::kDlcUnsupportedError),
-                    std::pair<std::string, BorealisInstallResult>(
-                        dlcservice::kErrorBusy,
-                        BorealisInstallResult::kDlcBusyError),
                     std::pair<std::string, BorealisInstallResult>(
                         dlcservice::kErrorNeedReboot,
                         BorealisInstallResult::kDlcNeedRebootError),

@@ -18,17 +18,16 @@
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/infra/transition.h"
+#include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
-#include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
 namespace borealis {
 
@@ -88,16 +87,15 @@ class BorealisInstallerImpl::Installation
       return;
     }
     SetState(InstallingState::kInstallingDlc);
-    InstallDlc(/*attempt=*/0);
+    InstallDlc();
   }
 
-  void InstallDlc(int attempt) {
-    dlcservice::InstallRequest install_request;
-    install_request.set_id(kBorealisDlcName);
-    ash::DlcserviceClient::Get()->Install(
-        install_request,
+  void InstallDlc() {
+    dlc_installation_ = std::make_unique<guest_os::GuestOsDlcInstallation>(
+        kBorealisDlcName,
+        /*retry=*/true,
         base::BindOnce(&Installation::OnDlcInstallationCompleted,
-                       weak_factory_.GetWeakPtr(), attempt),
+                       weak_factory_.GetWeakPtr()),
         base::BindRepeating(&Installation::OnDlcInstallationProgressUpdated,
                             weak_factory_.GetWeakPtr()));
   }
@@ -108,55 +106,58 @@ class BorealisInstallerImpl::Installation
   }
 
   void OnDlcInstallationCompleted(
-      int attempts,
-      const ash::DlcserviceClient::InstallResult& install_result) {
+      guest_os::GuestOsDlcInstallation::Result install_result) {
     DCHECK_EQ(installing_state_, InstallingState::kInstallingDlc);
 
     // If success, continue to the next state.
-    if (install_result.error == dlcservice::kErrorNone) {
+    if (install_result.has_value()) {
       // We are in the callback of DLC completion, and the first thing startup
       // will do is try to mount the DLC, so we need to use a PostTask to avoid
       // deadlocking ourselves.
-      RecordBorealisInstallRetries(attempts);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&Installation::StartupBorealis,
                                     weak_factory_.GetWeakPtr()));
       return;
-    } else if (install_result.error == dlcservice::kErrorInternal &&
-               attempts < kMaxDlcRetries) {
-      InstallDlc(attempts + 1);
-      return;
     }
 
     // At this point, the Borealis DLC installation has failed.
-    RecordBorealisInstallRetries(attempts);
-    Fail(DescribeDlcFailure(install_result.error));
+    Fail(DescribeDlcFailure(install_result.error()));
   }
 
   Described<BorealisInstallResult> DescribeDlcFailure(
-      const std::string& error) {
-    if (error == dlcservice::kErrorInternal) {
-      return {BorealisInstallResult::kDlcInternalError,
-              "Something went wrong internally with DlcService"};
-    } else if (error == dlcservice::kErrorInvalidDlc) {
-      return {BorealisInstallResult::kDlcUnsupportedError,
-              "Borealis DLC is not supported, need to enable Borealis DLC"};
-    } else if (error == dlcservice::kErrorBusy) {
-      return {BorealisInstallResult::kDlcBusyError,
-              "Borealis DLC is not able to be installed as dlcservice is busy"};
-    } else if (error == dlcservice::kErrorNeedReboot) {
-      return {
-          BorealisInstallResult::kDlcNeedRebootError,
-          "Device has pending update and needs a reboot to use Borealis DLC"};
-    } else if (error == dlcservice::kErrorAllocation) {
-      return {BorealisInstallResult::kDlcNeedSpaceError,
-              "Device needs to free space to use Borealis DLC."};
-    } else if (error == dlcservice::kErrorNoImageFound) {
-      return {
-          BorealisInstallResult::kDlcNeedUpdateError,
-          "Omaha could not provide an image, device may need to be updated."};
+      guest_os::GuestOsDlcInstallation::Error error) {
+    switch (error) {
+      case guest_os::GuestOsDlcInstallation::Error::Cancelled:
+        return {BorealisInstallResult::kCancelled,
+                "Installation cancelled by user."};
+      case guest_os::GuestOsDlcInstallation::Error::Offline:
+        return {BorealisInstallResult::kOffline,
+                "Failed to download DLC while device is offline."};
+      case guest_os::GuestOsDlcInstallation::Error::NeedUpdate:
+        return {
+            BorealisInstallResult::kDlcNeedUpdateError,
+            "Omaha could not provide an image, device may need to be updated."};
+      case guest_os::GuestOsDlcInstallation::Error::NeedReboot:
+        return {BorealisInstallResult::kDlcNeedRebootError,
+                "Device has pending update and needs a reboot to use Borealis "
+                "DLC."};
+      case guest_os::GuestOsDlcInstallation::Error::DiskFull:
+        return {BorealisInstallResult::kDlcNeedSpaceError,
+                "Device needs to free space to use Borealis DLC."};
+      case guest_os::GuestOsDlcInstallation::Error::Busy:
+        return {
+            BorealisInstallResult::kDlcBusyError,
+            "Borealis DLC is not able to be installed as dlcservice is busy."};
+      case guest_os::GuestOsDlcInstallation::Error::Internal:
+        return {BorealisInstallResult::kDlcInternalError,
+                "Something went wrong internally with DlcService."};
+      case guest_os::GuestOsDlcInstallation::Error::Invalid:
+        return {BorealisInstallResult::kDlcUnsupportedError,
+                "Borealis DLC is not supported, need to enable Borealis DLC."};
+      case guest_os::GuestOsDlcInstallation::Error::UnknownFailure:
+        return {BorealisInstallResult::kDlcUnknownError,
+                "Unexpected DLC failure, please file feedback."};
     }
-    return {BorealisInstallResult::kDlcUnknownError, "DLC failure: " + error};
   }
 
   // As part of its installation we perform a dry run of borealis. This ensures
@@ -222,8 +223,9 @@ class BorealisInstallerImpl::Installation
   void MainAppFound(bool found) {
     // We use the presence of the install_info_ object to prevent races here, so
     // return if it has already been removed.
-    if (!install_info_)
+    if (!install_info_) {
       return;
+    }
     if (!found) {
       install_info_.reset();
       Fail({BorealisInstallResult::kMainAppNotPresent,
@@ -240,6 +242,7 @@ class BorealisInstallerImpl::Installation
   base::RepeatingCallback<void(double)> update_progress_callback_;
   base::RepeatingCallback<void(InstallingState)> update_state_callback_;
   std::unique_ptr<BorealisInstallerImpl::InstallInfo> install_info_;
+  std::unique_ptr<guest_os::GuestOsDlcInstallation> dlc_installation_;
   base::ScopedObservation<guest_os::GuestOsRegistryService,
                           guest_os::GuestOsRegistryService::Observer>
       apps_observation_;
@@ -378,8 +381,9 @@ void BorealisInstallerImpl::Start() {
 }
 
 void BorealisInstallerImpl::Cancel() {
-  if (in_progress_installation_)
+  if (in_progress_installation_) {
     in_progress_installation_->Cancel();
+  }
   for (auto& observer : observers_) {
     observer.OnCancelInitiated();
   }

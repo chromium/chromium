@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
@@ -63,19 +64,18 @@ void BruschettaLauncher::EnsureRunning(
 }
 
 void BruschettaLauncher::EnsureToolsDlcInstalled() {
-  dlcservice::InstallRequest request;
-  request.set_id(kToolsDlc);
-  ash::DlcserviceClient::Get()->Install(
-      request,
+  in_progress_dlc_ = std::make_unique<guest_os::GuestOsDlcInstallation>(
+      kToolsDlc, /*retry=*/false,
       base::BindOnce(&BruschettaLauncher::OnMountToolsDlc,
                      weak_factory_.GetWeakPtr()),
       base::DoNothing());
 }
 
 void BruschettaLauncher::OnMountToolsDlc(
-    const ash::DlcserviceClient::InstallResult& install_result) {
-  if (install_result.error != dlcservice::kErrorNone) {
-    LOG(ERROR) << "Error installing tools DLC: " << install_result.error;
+    guest_os::GuestOsDlcInstallation::Result install_result) {
+  in_progress_dlc_.reset();
+  if (!install_result.has_value()) {
+    LOG(ERROR) << "Error installing tools DLC: " << install_result.error();
     Finish(BruschettaResult::kDlcInstallError);
     return;
   }
@@ -84,19 +84,17 @@ void BruschettaLauncher::OnMountToolsDlc(
 }
 
 void BruschettaLauncher::EnsureFirmwareDlcInstalled() {
-  dlcservice::InstallRequest request;
-  request.set_id(kUefiDlc);
-  ash::DlcserviceClient::Get()->Install(
-      request,
+  in_progress_dlc_ = std::make_unique<guest_os::GuestOsDlcInstallation>(
+      kUefiDlc, /*retry=*/false,
       base::BindOnce(&BruschettaLauncher::OnMountFirmwareDlc,
                      weak_factory_.GetWeakPtr()),
       base::DoNothing());
 }
 
 void BruschettaLauncher::OnMountFirmwareDlc(
-    const ash::DlcserviceClient::InstallResult& install_result) {
-  if (install_result.error != dlcservice::kErrorNone) {
-    LOG(ERROR) << "Error installing firmware DLC: " << install_result.error;
+    guest_os::GuestOsDlcInstallation::Result install_result) {
+  if (!install_result.has_value()) {
+    LOG(ERROR) << "Error installing firmware DLC: " << install_result.error();
     Finish(BruschettaResult::kDlcInstallError);
     return;
   }

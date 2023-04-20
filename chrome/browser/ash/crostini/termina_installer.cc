@@ -9,6 +9,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -16,10 +17,10 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
-#include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -30,7 +31,10 @@ TerminaInstaller::TerminaInstaller() = default;
 TerminaInstaller::~TerminaInstaller() = default;
 
 void TerminaInstaller::CancelInstall() {
-  is_cancelled_ = true;
+  // TODO(b/277835995): Tests demand concurrent installations despite that they
+  // need to be mass cancelled here (which is probably unintended). Consider
+  // switching to CachedCallback or similar.
+  installations_.clear();
 }
 
 void TerminaInstaller::Install(base::OnceCallback<void(InstallResult)> callback,
@@ -46,72 +50,51 @@ void TerminaInstaller::Install(base::OnceCallback<void(InstallResult)> callback,
       [](std::unique_ptr<UninstallResult> ptr) {}, std::move(ptr));
   RemoveComponentIfPresent(std::move(remove_callback), uninstall_result_ptr);
 
-  InstallDlc(std::move(callback), is_initial_install);
-}
-
-void TerminaInstaller::InstallDlc(
-    base::OnceCallback<void(InstallResult)> callback,
-    bool is_initial_install) {
-  dlcservice::InstallRequest install_request;
-  install_request.set_id(kCrostiniDlcName);
-  ash::DlcserviceClient::Get()->Install(
-      install_request,
+  // Crostini should retry installation only if it is the first-time
+  // installation (with a cancel button).
+  bool retry = is_initial_install;
+  installations_.push_back(std::make_unique<guest_os::GuestOsDlcInstallation>(
+      kCrostiniDlcName, retry,
       base::BindOnce(&TerminaInstaller::OnInstallDlc,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     is_initial_install),
-      base::DoNothing());
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      base::DoNothing()));
 }
 
 void TerminaInstaller::OnInstallDlc(
     base::OnceCallback<void(InstallResult)> callback,
-    bool is_initial_install,
-    const ash::DlcserviceClient::InstallResult& result) {
-  CHECK(result.dlc_id == kCrostiniDlcName);
-  InstallResult response;
-  if (is_cancelled_) {
-    response = InstallResult::Cancelled;
-  } else if (result.error == dlcservice::kErrorNone) {
-    response = InstallResult::Success;
+    guest_os::GuestOsDlcInstallation::Result result) {
+  if (result.has_value()) {
     dlc_id_ = kCrostiniDlcName;
-    termina_location_ = base::FilePath(result.root_path);
-  } else if (is_initial_install && result.error == dlcservice::kErrorBusy) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&TerminaInstaller::RetryInstallDlc,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                       is_initial_install),
-        base::Seconds(5));
-    return;
-  } else if (result.error == dlcservice::kErrorNeedReboot ||
-             result.error == dlcservice::kErrorNoImageFound) {
-    LOG(ERROR)
-        << "Failed to install termina-dlc because the OS must be updated";
-    response = InstallResult::NeedUpdate;
-  } else {
-    if (content::GetNetworkConnectionTracker()->IsOffline()) {
-      LOG(ERROR) << "Failed to install termina-dlc while offline, assuming "
-                    "network issue: "
-                 << result.error;
-      response = InstallResult::Offline;
-    } else {
-      LOG(ERROR) << "Failed to install termina-dlc: " << result.error;
-      response = InstallResult::Failure;
-    }
+    termina_location_ = result.value();
   }
-
-  is_cancelled_ = false;
-  std::move(callback).Run(response);
-}
-
-void TerminaInstaller::RetryInstallDlc(
-    base::OnceCallback<void(InstallResult)> callback,
-    bool is_initial_install) {
-  if (is_cancelled_) {
-    is_cancelled_ = false;
-    std::move(callback).Run(InstallResult::Cancelled);
-    return;
-  }
-  InstallDlc(std::move(callback), is_initial_install);
+  InstallResult response =
+      result
+          .transform_error([](guest_os::GuestOsDlcInstallation::Error err) {
+            switch (err) {
+              case guest_os::GuestOsDlcInstallation::Error::Cancelled:
+                return InstallResult::Cancelled;
+              case guest_os::GuestOsDlcInstallation::Error::Offline:
+                LOG(ERROR)
+                    << "Failed to install termina-dlc while offline, assuming "
+                       "network issue.";
+                return InstallResult::Offline;
+              case guest_os::GuestOsDlcInstallation::Error::NeedUpdate:
+              case guest_os::GuestOsDlcInstallation::Error::NeedReboot:
+                LOG(ERROR) << "Failed to install termina-dlc because the OS "
+                              "must be updated";
+                return InstallResult::NeedUpdate;
+              case guest_os::GuestOsDlcInstallation::Error::DiskFull:
+              case guest_os::GuestOsDlcInstallation::Error::Busy:
+              case guest_os::GuestOsDlcInstallation::Error::Internal:
+              case guest_os::GuestOsDlcInstallation::Error::Invalid:
+              case guest_os::GuestOsDlcInstallation::Error::UnknownFailure:
+                LOG(ERROR) << "Failed to install termina-dlc: " << err;
+                return InstallResult::Failure;
+            }
+          })
+          .error_or(InstallResult::Success);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), response));
 }
 
 void TerminaInstaller::Uninstall(base::OnceCallback<void(bool)> callback) {
@@ -183,8 +166,9 @@ void TerminaInstaller::RemoveDlcIfPresent(base::OnceCallback<void()> callback,
          base::OnceCallback<void()> callback, UninstallResult* result,
          const std::string& err,
          const dlcservice::DlcsWithContent& dlcs_with_content) {
-        if (!weak_this)
+        if (!weak_this) {
           return;
+        }
 
         if (err != dlcservice::kErrorNone) {
           LOG(ERROR) << "Failed to list installed DLCs: " << err;

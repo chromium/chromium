@@ -156,6 +156,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Borealis.Install.Retries" units="retries"
     expires_after="2023-10-09">
+  <obsolete>
+    Code moved to GuestOs, no longer recorded.
+  </obsolete>
   <owner>hollingum@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>

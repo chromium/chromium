@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_BOREALIS_BOREALIS_TASK_H_
 #define CHROME_BROWSER_ASH_BOREALIS_BOREALIS_TASK_H_
 
+#include <memory>
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -13,9 +14,9 @@
 #include "chrome/browser/ash/borealis/borealis_launch_options.h"
 #include "chrome/browser/ash/borealis/borealis_launch_watcher.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
+#include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 
 namespace borealis {
 
@@ -84,7 +85,9 @@ class MountDlc : public BorealisTask {
 
  private:
   void OnMountDlc(BorealisContext* context,
-                  const ash::DlcserviceClient::InstallResult& install_result);
+                  guest_os::GuestOsDlcInstallation::Result install_result);
+
+  std::unique_ptr<guest_os::GuestOsDlcInstallation> installation_;
   base::WeakPtrFactory<MountDlc> weak_factory_{this};
 };
 
