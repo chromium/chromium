@@ -873,9 +873,8 @@ std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
     base::Value::List archived_binaries;
     for (const auto& archived_binary : cdr.archived_binary()) {
       base::Value::Dict dict_archived_binary;
-      if (archived_binary.has_file_basename()) {
-        dict_archived_binary.Set("file_basename",
-                                 archived_binary.file_basename());
+      if (archived_binary.has_file_path()) {
+        dict_archived_binary.Set("file_path", archived_binary.file_path());
       }
       if (archived_binary.has_download_type()) {
         dict_archived_binary.Set("download_type",

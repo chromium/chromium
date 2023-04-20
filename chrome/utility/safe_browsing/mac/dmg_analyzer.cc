@@ -194,7 +194,7 @@ void AnalyzeDMGFile(DMGIterator* iterator, ArchiveAnalyzerResults* results) {
     } else if (feature_extractor.IsMachO(stream.get())) {
       ClientDownloadRequest_ArchivedBinary* binary =
           results->archived_binary.Add();
-      binary->set_file_basename(path);
+      binary->set_file_path(path);
 
       if (feature_extractor.ExtractFeatures(stream.get(), binary)) {
         binary->set_download_type(

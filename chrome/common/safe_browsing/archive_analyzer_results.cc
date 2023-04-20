@@ -157,9 +157,9 @@ safe_browsing::DownloadFileType_InspectionType GetFileType(
 void SetNameForContainedFile(
     const base::FilePath& path,
     ClientDownloadRequest::ArchivedBinary* archived_binary) {
-  std::string file_basename(path.AsUTF8Unsafe());
-  if (base::StreamingUtf8Validator::Validate(file_basename)) {
-    archived_binary->set_file_basename(file_basename);
+  std::string file_path(path.AsUTF8Unsafe());
+  if (base::StreamingUtf8Validator::Validate(file_path)) {
+    archived_binary->set_file_path(file_path);
   }
 }
 

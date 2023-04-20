@@ -486,9 +486,9 @@ class DownloadProtectionServiceTestBase
 
   static const ClientDownloadRequest_ArchivedBinary* GetRequestArchivedBinary(
       const ClientDownloadRequest& request,
-      const std::string& file_basename) {
+      const std::string& file_path) {
     for (const auto& archived_binary : request.archived_binary()) {
-      if (archived_binary.file_basename() == file_basename) {
+      if (archived_binary.file_path() == file_path) {
         return &archived_binary;
       }
     }
@@ -1950,7 +1950,7 @@ TEST_F(DownloadProtectionServiceTest, DMGAnalysisEndToEnd) {
 
   ASSERT_EQ(2, request->archived_binary().size());
   for (const auto& binary : request->archived_binary()) {
-    EXPECT_FALSE(binary.file_basename().empty());
+    EXPECT_FALSE(binary.file_path().empty());
     EXPECT_EQ(ClientDownloadRequest_DownloadType_MAC_EXECUTABLE,
               binary.download_type());
     ASSERT_TRUE(binary.has_digests());

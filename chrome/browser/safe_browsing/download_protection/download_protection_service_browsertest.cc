@@ -84,12 +84,12 @@ IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest, VerifyZipHash) {
   ASSERT_EQ(1u, requests.size());
   ASSERT_EQ(2, requests[0]->archived_binary_size());
 
-  EXPECT_EQ("a.zip", requests[0]->archived_binary(0).file_basename());
+  EXPECT_EQ("a.zip", requests[0]->archived_binary(0).file_path());
   EXPECT_EQ(11, requests[0]->archived_binary(0).length());
   EXPECT_EQ(std::string(kAZipDigest, kAZipDigest + crypto::kSHA256Length),
             requests[0]->archived_binary(0).digests().sha256());
 
-  EXPECT_EQ("b.zip", requests[0]->archived_binary(1).file_basename());
+  EXPECT_EQ("b.zip", requests[0]->archived_binary(1).file_path());
   EXPECT_EQ(10, requests[0]->archived_binary(1).length());
   EXPECT_EQ(std::string(kBZipDigest, kBZipDigest + crypto::kSHA256Length),
             requests[0]->archived_binary(1).digests().sha256());
@@ -111,11 +111,11 @@ IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest, VerifyRarHash) {
   ASSERT_EQ(1u, requests.size());
   ASSERT_EQ(2, requests[0]->archived_binary_size());
 
-  EXPECT_EQ("a.zip", requests[0]->archived_binary(0).file_basename());
+  EXPECT_EQ("a.zip", requests[0]->archived_binary(0).file_path());
   EXPECT_EQ(std::string(kAZipDigest, kAZipDigest + crypto::kSHA256Length),
             requests[0]->archived_binary(0).digests().sha256());
 
-  EXPECT_EQ("b.zip", requests[0]->archived_binary(1).file_basename());
+  EXPECT_EQ("b.zip", requests[0]->archived_binary(1).file_path());
   EXPECT_EQ(std::string(kBZipDigest, kBZipDigest + crypto::kSHA256Length),
             requests[0]->archived_binary(1).digests().sha256());
 }
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest,
 
   ASSERT_EQ(1u, requests.size());
   ASSERT_EQ(1, requests[0]->archived_binary_size());
-  EXPECT_EQ("random.exe", requests[0]->archived_binary(0).file_basename());
+  EXPECT_EQ("random.exe", requests[0]->archived_binary(0).file_path());
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest,
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest,
 
   ASSERT_EQ(1u, requests.size());
   ASSERT_EQ(1, requests[0]->archived_binary_size());
-  EXPECT_EQ("random.exe", requests[0]->archived_binary(0).file_basename());
+  EXPECT_EQ("random.exe", requests[0]->archived_binary(0).file_path());
 }
 
 }  // namespace safe_browsing

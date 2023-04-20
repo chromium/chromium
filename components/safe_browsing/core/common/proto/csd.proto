@@ -793,7 +793,9 @@ message ClientDownloadRequest {
   // A binary or archive contained in an archive (e.g., a .exe in a .zip
   // archive, or a .zip inside a .zip).
   message ArchivedBinary {
-    optional string file_basename = 1;
+    // The path of the entry within the archive. For example, if a .zip contains
+    // a directory foo with a file bar.exe inside, this will be "foo/bar.exe"
+    optional string file_path = 1;
     optional DownloadType download_type = 2;
     optional Digests digests = 3;
     optional int64 length = 4;

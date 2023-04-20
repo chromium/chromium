@@ -35,13 +35,13 @@ std::string EscapeCertAttribute(const std::string& attribute) {
 
 int ArchiveEntryWeight(const ClientDownloadRequest::ArchivedBinary& entry) {
   return FileTypePolicies::GetInstance()
-      ->SettingsForFile(base::FilePath::FromUTF8Unsafe(entry.file_basename()),
+      ->SettingsForFile(base::FilePath::FromUTF8Unsafe(entry.file_path()),
                         GURL{}, nullptr)
       .file_weight();
 }
 
 size_t ArchiveEntryDepth(const ClientDownloadRequest::ArchivedBinary& entry) {
-  return base::FilePath::FromUTF8Unsafe(entry.file_basename())
+  return base::FilePath::FromUTF8Unsafe(entry.file_path())
       .GetComponents()
       .size();
 }

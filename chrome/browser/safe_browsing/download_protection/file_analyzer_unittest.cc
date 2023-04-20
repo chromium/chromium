@@ -1020,8 +1020,9 @@ TEST_F(FileAnalyzerTest, RarDirectoriesNotReported) {
   run_loop.Run();
 
   ASSERT_TRUE(has_result_);
+
   ASSERT_EQ(result_.archived_binaries.size(), 1);
-  EXPECT_EQ(result_.archived_binaries[0].file_basename(), "file.exe");
+  EXPECT_EQ(result_.archived_binaries[0].file_path(), "file.exe");
   EXPECT_EQ(result_.archived_binaries[0].length(), 24);
 }
 
@@ -1046,9 +1047,9 @@ TEST_F(FileAnalyzerTest, ZeroLengthSevenZipEntriesSupported) {
 
   ASSERT_TRUE(has_result_);
   ASSERT_EQ(result_.archived_binaries.size(), 2);
-  EXPECT_EQ(result_.archived_binaries[0].file_basename(), "large");
+  EXPECT_EQ(result_.archived_binaries[0].file_path(), "large");
   EXPECT_EQ(result_.archived_binaries[0].length(), 21);
-  EXPECT_EQ(result_.archived_binaries[1].file_basename(), "empty");
+  EXPECT_EQ(result_.archived_binaries[1].file_path(), "empty");
   EXPECT_EQ(result_.archived_binaries[1].length(), 0);
 }
 
