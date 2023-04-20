@@ -755,7 +755,16 @@ suite('PrivacySandboxDialogNoticeRestricted', function() {
         browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     testClickButton('#settingsButton', page);
     await verifyActionOccured(
-        browserProxy, PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
+        browserProxy,
+        PrivacySandboxPromptAction.RESTRICTED_NOTICE_OPEN_SETTINGS);
+  });
+
+  test('acknowledgeClicked', async function() {
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
+    testClickButton('#ackButton', page);
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.RESTRICTED_NOTICE_ACKNOWLEDGE);
   });
 });
 

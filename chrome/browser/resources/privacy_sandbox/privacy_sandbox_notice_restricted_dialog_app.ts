@@ -35,6 +35,16 @@ export class PrivacySandboxNoticeRestrictedDialogAppElement extends
       this.promptActionOccurred(PrivacySandboxPromptAction.NOTICE_SHOWN);
     });
   }
+
+  private onRestrictedNoticeAcknowledge() {
+    this.promptActionOccurred(
+        PrivacySandboxPromptAction.RESTRICTED_NOTICE_ACKNOWLEDGE);
+  }
+
+  private onRestrictedNoticeOpenSettings() {
+    this.promptActionOccurred(
+        PrivacySandboxPromptAction.RESTRICTED_NOTICE_OPEN_SETTINGS);
+  }
 }
 
 

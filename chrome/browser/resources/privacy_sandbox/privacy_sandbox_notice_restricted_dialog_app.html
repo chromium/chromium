@@ -20,12 +20,11 @@
       $i18n{m1NoticeRestrictedDescription3}
     </div>
     <div class="buttons-container">
-      <!-- TODO(b/277180678): re-evaluate reuse of the settings event. -->
-      <cr-button id="settingsButton" on-click="onNoticeOpenSettings">
+      <cr-button id="settingsButton" on-click="onRestrictedNoticeOpenSettings">
         $i18n{m1NoticeRestrictedSettingsButton}
       </cr-button>
-      <!-- TODO(b/277180678): handle acknowledgement event. -->
-      <cr-button id="ackButton" class="action-button">
+      <cr-button id="ackButton" class="action-button"
+          on-click="onRestrictedNoticeAcknowledge">
         $i18n{m1NoticeRestrictedAckButton}
       </cr-button>
     </div>
