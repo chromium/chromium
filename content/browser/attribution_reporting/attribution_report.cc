@@ -5,6 +5,7 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 
 #include <algorithm>
+#include <cmath>
 #include <string>
 #include <utility>
 
@@ -241,7 +242,12 @@ base::Value::Dict AttributionReport::ReportBody() const {
             dict.Set("report_id",
                      this->external_report_id().AsLowercaseString());
 
-            dict.Set("randomized_trigger_rate", data.randomized_trigger_rate);
+            // Round to 7 digits of precision, which allows us to express binary
+            // randomized response with epsilon = 14 without rounding to 0
+            // (0.00000166305 -> 0.0000017).
+            double rounded_rate =
+                round(data.randomized_trigger_rate * 10000000) / 10000000.0;
+            dict.Set("randomized_trigger_rate", rounded_rate);
 
             if (absl::optional<uint64_t> debug_key = source.debug_key()) {
               dict.Set("source_debug_key", base::NumberToString(*debug_key));

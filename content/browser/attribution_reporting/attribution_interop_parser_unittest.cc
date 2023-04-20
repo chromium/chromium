@@ -4,6 +4,7 @@
 
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
 
+#include <cmath>
 #include <ostream>
 #include <string>
 #include <tuple>
@@ -69,8 +70,7 @@ bool operator==(AttributionConfig::EventLevelLimit a,
   const auto tie = [](AttributionConfig::EventLevelLimit config) {
     return std::make_tuple(config.navigation_source_trigger_data_cardinality,
                            config.event_source_trigger_data_cardinality,
-                           config.navigation_source_randomized_response_rate,
-                           config.event_source_randomized_response_rate,
+                           config.randomized_response_epsilon,
                            config.max_reports_per_destination,
                            config.max_attributions_per_navigation_source,
                            config.max_attributions_per_event_source,
@@ -611,14 +611,10 @@ TEST(AttributionInteropParserTest, ValidConfig) {
       {R"json({"event_source_trigger_data_cardinality":"10"})json", false,
        AttributionConfig{
            .event_level_limit = {.event_source_trigger_data_cardinality = 10}}},
-      {R"json({"navigation_source_randomized_response_rate":0.2})json", false,
-       AttributionConfig{
-           .event_level_limit = {.navigation_source_randomized_response_rate =
-                                     0.2}}},
-      {R"json({"event_source_randomized_response_rate":0.2})json", false,
-       AttributionConfig{
-           .event_level_limit = {.event_source_randomized_response_rate =
-                                     0.2}}},
+      {R"json({"randomized_response_epsilon":"inf"})json", false,
+       AttributionConfig{.event_level_limit =
+                             {.randomized_response_epsilon =
+                                  std ::numeric_limits<double>::infinity()}}},
       {R"json({"max_event_level_reports_per_destination":"10"})json", false,
        AttributionConfig{
            .event_level_limit = {.max_reports_per_destination = 10}}},
@@ -648,8 +644,7 @@ TEST(AttributionInteropParserTest, ValidConfig) {
         "rate_limit_max_attributions":"10",
         "navigation_source_trigger_data_cardinality":"100",
         "event_source_trigger_data_cardinality":"10",
-        "navigation_source_randomized_response_rate":0.2,
-        "event_source_randomized_response_rate":0.1,
+        "randomized_response_epsilon":"0.2",
         "max_event_level_reports_per_destination":"10",
         "max_attributions_per_navigation_source":"5",
         "max_attributions_per_event_source":"1",
@@ -669,9 +664,7 @@ TEST(AttributionInteropParserTest, ValidConfig) {
            .event_level_limit = {.navigation_source_trigger_data_cardinality =
                                      100,
                                  .event_source_trigger_data_cardinality = 10,
-                                 .navigation_source_randomized_response_rate =
-                                     0.2,
-                                 .event_source_randomized_response_rate = 0.1,
+                                 .randomized_response_epsilon = 0.2,
                                  .max_reports_per_destination = 10,
                                  .max_attributions_per_navigation_source = 5,
                                  .max_attributions_per_event_source = 1},
@@ -784,43 +777,24 @@ TEST(AttributionInteropParserTest, InvalidConfigNonNegativeIntegers) {
   }
 }
 
-TEST(AttributionInteropParserTest, InvalidConfigRandomizedResponseRates) {
-  const char* const kFields[] = {
-      "navigation_source_randomized_response_rate",
-      "event_source_randomized_response_rate",
-  };
-
+TEST(AttributionInteropParserTest, InvalidConfigRandomizedResponseEpsilon) {
   {
     auto result = ParseAttributionConfig(base::Value::Dict());
     ASSERT_FALSE(result.has_value());
-
-    for (const char* field : kFields) {
-      EXPECT_THAT(
-          result.error(),
-          HasSubstr(base::StrCat(
-              {"[\"", field,
-               "\"]: must be a double between 0 and 1 formatted as string"})))
-          << field;
-    }
+    EXPECT_THAT(
+        result.error(),
+        HasSubstr("[\"randomized_response_epsilon\"]: must be \"inf\" or a "
+                  "non-negative double formated as a base-10 string"));
   }
-
   {
     AttributionConfig config;
     base::Value::Dict dict;
-    for (const char* field : kFields) {
-      dict.Set(field, "1.5");
-    }
-
+    dict.Set("randomized_response_epsilon", "-1.5");
     std::string error = MergeAttributionConfig(dict, config);
-
-    for (const char* field : kFields) {
-      EXPECT_THAT(
-          error,
-          HasSubstr(base::StrCat(
-              {"[\"", field,
-               "\"]: must be a double between 0 and 1 formatted as string"})))
-          << field;
-    }
+    EXPECT_THAT(
+        error,
+        HasSubstr("[\"randomized_response_epsilon\"]: must be \"inf\" or a "
+                  "non-negative double formated as a base-10 string"));
   }
 }
 

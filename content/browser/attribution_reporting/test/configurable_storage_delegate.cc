@@ -46,8 +46,8 @@ ConfigurableStorageDelegate::ConfigurableStorageDelegate()
                       std::numeric_limits<uint64_t>::max(),
                   .event_source_trigger_data_cardinality =
                       std::numeric_limits<uint64_t>::max(),
-                  .navigation_source_randomized_response_rate = 0,
-                  .event_source_randomized_response_rate = 0,
+                  .randomized_response_epsilon =
+                      std::numeric_limits<double>::infinity(),
                   .max_reports_per_destination =
                       std::numeric_limits<int>::max(),
                   .max_attributions_per_navigation_source =
@@ -216,13 +216,10 @@ void ConfigurableStorageDelegate::set_reverse_reports_on_shuffle(bool reverse) {
   reverse_reports_on_shuffle_ = reverse;
 }
 
-void ConfigurableStorageDelegate::set_randomized_response_rates(
-    double navigation,
-    double event) {
+void ConfigurableStorageDelegate::set_randomized_response_epsilon(
+    double epsilon) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  config_.event_level_limit.navigation_source_randomized_response_rate =
-      navigation;
-  config_.event_level_limit.event_source_randomized_response_rate = event;
+  config_.event_level_limit.randomized_response_epsilon = epsilon;
 }
 
 void ConfigurableStorageDelegate::set_randomized_response(

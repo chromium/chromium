@@ -4,6 +4,8 @@
 
 #include "content/browser/attribution_reporting/attribution_config.h"
 
+#include <cmath>
+
 #include "base/time/time.h"
 
 namespace content {
@@ -73,13 +75,8 @@ bool AttributionConfig::EventLevelLimit::Validate() const {
     return false;
   }
 
-  if (navigation_source_randomized_response_rate < 0 ||
-      navigation_source_randomized_response_rate > 1) {
-    return false;
-  }
-
-  if (event_source_randomized_response_rate < 0 ||
-      event_source_randomized_response_rate > 1) {
+  if (randomized_response_epsilon < 0 ||
+      std::isnan(randomized_response_epsilon)) {
     return false;
   }
 

@@ -64,9 +64,9 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   void set_reverse_reports_on_shuffle(bool reverse);
 
-  // Note that these rates are *not* used to produce a randomized response; that
+  // Note that this is *not* used to produce a randomized response; that
   // is controlled deterministically by `set_randomized_response()`.
-  void set_randomized_response_rates(double navigation, double event);
+  void set_randomized_response_epsilon(double epsilon);
 
   void set_randomized_response(RandomizedResponse);
 
