@@ -13,6 +13,10 @@ const NO_DECORATION_NODE_NAMES = new Set([
   'A', 'LABEL'
 ]);
 
+// Milliseconds delay between tap bubbling to top and checking for more DOM
+// mutations before triggering annotation event.
+const MS_DELAY_BEFORE_TRIGGER = 300;
+
 export {
-  NON_TEXT_NODE_NAMES, NO_DECORATION_NODE_NAMES,
+  MS_DELAY_BEFORE_TRIGGER, NON_TEXT_NODE_NAMES, NO_DECORATION_NODE_NAMES,
 }

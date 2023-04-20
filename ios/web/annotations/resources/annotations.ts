@@ -9,7 +9,7 @@
 
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js'
-import {NON_TEXT_NODE_NAMES, NO_DECORATION_NODE_NAMES}
+import {MS_DELAY_BEFORE_TRIGGER, NON_TEXT_NODE_NAMES, NO_DECORATION_NODE_NAMES}
     from '//ios/web/annotations/resources/annotations_constants.js';
 
 // Mark: Private properties
@@ -67,6 +67,7 @@ class Section {
 class MutationsDuringClickTracker {
   mutationCount = 0;
   mutationObserver: MutationObserver;
+  mutationExtendId = 0;
 
   // Constructs a new instance given an `initialEvent` and starts listening for
   // changes to the DOM.
@@ -79,14 +80,32 @@ class MutationsDuringClickTracker {
         document, {attributes: false, childList: true, subtree: true});
   }
 
-  // Returns true if event matches the event passed at construction, it wasn't
-  // prevented and no DOM mutations occurred.
+  // Returns true if event doesn't matches the event passed at construction,
+  // or it was prevented or if any DOM mutations occurred.
   hasPreventativeActivity(event: Event): boolean {
     return event !== this.initialEvent || event.defaultPrevented ||
-        this.mutationCount > 0;
+        this.hasMutations();
+  }
+
+  // Returns true if DOM mutations occurred.
+  hasMutations(): boolean {
+    return this.mutationCount > 0;
+  }
+
+  // Extends DOM observation by triggering `then` after de delay. This can be
+  // called multiple times if needed.
+  extendObservation(then: Function): void {
+    if (this.mutationExtendId) {
+      clearTimeout(this.mutationExtendId);
+    }
+    this.mutationExtendId = setTimeout(then, MS_DELAY_BEFORE_TRIGGER);
   }
 
   stopObserving(): void {
+    if (this.mutationExtendId) {
+      clearTimeout(this.mutationExtendId);
+    }
+    this.mutationExtendId = 0;
     this.mutationObserver?.disconnect();
   }
 }
@@ -379,7 +398,14 @@ let mutationDuringClickObserver: MutationsDuringClickTracker|null;
 // level tab handler (`handleTopTap`), where it will be decided if any action
 // bubbling to objc is required (i.e. no DOM change occurs).
 function handleTap(event: Event) {
+  cancelObserver();
   mutationDuringClickObserver = new MutationsDuringClickTracker(event);
+}
+
+// Stops observing DOM mutations.
+function cancelObserver(): void {
+  mutationDuringClickObserver?.stopObserving();
+  mutationDuringClickObserver = null;
 }
 
 // Monitors taps at the top, document level. This checks if it is tap
@@ -392,18 +418,22 @@ function handleTopTap(event: Event) {
       mutationDuringClickObserver &&
       !mutationDuringClickObserver.hasPreventativeActivity(event)) {
     const annotation = event.target;
-
-    highlightAnnotation(annotation);
-
-    sendWebKitMessage('annotations', {
-      command: 'annotations.onClick',
-      data: annotation.dataset['data'],
-      rect: rectFromElement(annotation),
-      text: annotation.dataset['annotation'],
+    mutationDuringClickObserver.extendObservation(() => {
+      if (mutationDuringClickObserver &&
+          !mutationDuringClickObserver.hasMutations()) {
+        highlightAnnotation(annotation);
+        sendWebKitMessage('annotations', {
+          command: 'annotations.onClick',
+          data: annotation.dataset['data'],
+          rect: rectFromElement(annotation),
+          text: annotation.dataset['annotation'],
+        });
+        cancelObserver();
+      }
     });
+  } else {
+    cancelObserver();
   }
-  mutationDuringClickObserver?.stopObserving();
-  mutationDuringClickObserver = null;
 }
 
 /**
