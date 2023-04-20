@@ -20,6 +20,7 @@ import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.base.GarbageCollectionTestUtils.canBeGarbageCollected;
 
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -34,6 +35,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.core.widget.ImageViewCompat;
 import androidx.test.filters.MediumTest;
 
 import com.google.protobuf.ByteString;
@@ -236,6 +238,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
+        getActivity().setTheme(R.style.Theme_BrowserUI_DayNight);
         MockitoAnnotations.initMocks(this);
         ViewGroup view = new LinearLayout(getActivity());
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
@@ -266,6 +269,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mGridModel = new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                                 .with(TabProperties.IS_INCOGNITO, false)
                                  .with(TabProperties.TAB_ID, TAB1_ID)
                                  .with(TabProperties.TAB_SELECTED_LISTENER, mMockSelectedListener)
                                  .with(TabProperties.TAB_CLOSED_LISTENER, mMockCloseListener)
@@ -296,7 +300,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
             PropertyModelChangeProcessor.create(mSelectableModel, mSelectableTabListView,
                     TabListViewBinder::bindSelectableListTab);
             PropertyModelChangeProcessor.create(
-                    mGridModel, mTabListView, TabListViewBinder::bindListTab);
+                    mGridModel, mTabListView, TabListViewBinder::bindClosableListTab);
         });
         mMocker.mock(LevelDBPersistedDataStorageJni.TEST_HOOKS, mLevelDBPersistedTabDataStorage);
         doNothing()
@@ -630,6 +634,38 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
 
         Assert.assertEquals(closeTabDescription, listActionButton.getContentDescription());
         Assert.assertEquals(closeTabDescription, gridActionButton.getContentDescription());
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
+    public void testCloseButtonColor() {
+        ImageView listActionButton = mTabListView.findViewById(R.id.end_button);
+        ImageView gridActionButton = mTabGridView.findViewById(R.id.action_button);
+
+        // This does not test all permutations as IS_INCOGNITO is a readable property key.
+        boolean isIncognito = mGridModel.get(TabProperties.IS_INCOGNITO);
+
+        boolean isSelected = false;
+        mGridModel.set(TabProperties.IS_SELECTED, isSelected);
+        ColorStateList unselectedColorStateList =
+                TabUiThemeProvider.getActionButtonTintList(getActivity(), isIncognito, isSelected);
+
+        Assert.assertEquals(
+                unselectedColorStateList, ImageViewCompat.getImageTintList(gridActionButton));
+        Assert.assertEquals(
+                unselectedColorStateList, ImageViewCompat.getImageTintList(listActionButton));
+
+        isSelected = true;
+        mGridModel.set(TabProperties.IS_SELECTED, isSelected);
+        ColorStateList selectedColorStateList =
+                TabUiThemeProvider.getActionButtonTintList(getActivity(), isIncognito, isSelected);
+        // The listActionButton does not highlight so use unselected always.
+        Assert.assertEquals(
+                selectedColorStateList, ImageViewCompat.getImageTintList(gridActionButton));
+        Assert.assertEquals(
+                unselectedColorStateList, ImageViewCompat.getImageTintList(listActionButton));
     }
 
     @Test

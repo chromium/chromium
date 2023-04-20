@@ -27,7 +27,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 class TabListViewBinder {
     // TODO(1023557): Merge with TabGridViewBinder for shared properties.
-    public static void bindListTab(
+    private static void bindListTab(
             PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {
         View fastView = view;
 
@@ -90,6 +90,26 @@ class TabListViewBinder {
         } else if (TabProperties.URL_DOMAIN == propertyKey) {
             String domain = model.get(TabProperties.URL_DOMAIN);
             ((TextView) fastView.findViewById(R.id.description)).setText(domain);
+        }
+    }
+
+    /**
+     * Bind a closable tab to view.
+     * @param model The model to bind.
+     * @param view The view to bind to.
+     * @param propertyKey The property that changed.
+     */
+    public static void bindClosableListTab(
+            PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {
+        bindListTab(model, view, propertyKey);
+
+        if (TabProperties.IS_INCOGNITO == propertyKey) {
+            boolean isIncognito = model.get(TabProperties.IS_INCOGNITO);
+            ImageView closeButton = (ImageView) view.findViewById(R.id.end_button);
+            // The selected row is only outlined not colored so it should use the unselected color.
+            ImageViewCompat.setImageTintList(closeButton,
+                    TabUiThemeProvider.getActionButtonTintList(
+                            view.getContext(), isIncognito, /*isSelected=*/false));
         }
     }
 

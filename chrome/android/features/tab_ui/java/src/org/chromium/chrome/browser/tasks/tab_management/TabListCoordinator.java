@@ -201,7 +201,7 @@ public class TabListCoordinator
                 actionButton.setImageBitmap(bitmap);
 
                 return group;
-            }, TabListViewBinder::bindListTab);
+            }, TabListViewBinder::bindClosableListTab);
 
             mAdapter.registerType(UiType.SELECTABLE, parent -> {
                 ViewGroup group = (ViewGroup) LayoutInflater.from(context).inflate(
