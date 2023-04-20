@@ -46,8 +46,17 @@ IN_PROC_BROWSER_TEST_F(IFrameTest, InEmptyFrame) {
 // TODO(alexmos): Investigate if there's a way to get this test working in
 // Lacros. It seems that the crosapi::mojom::SelectFile interface used by
 // SelectFileDialogLacros is unavailable in tests.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_F(IFrameTest, FileChooserInDestroyedSubframe) {
+// Note: This test is disabled temporarily to track down a memory leak reported
+// by the ASan bots. It will be enabled once the root cause is found.
+// TODO(crbug.com/1434874): Re-enable this test
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_FileChooserInDestroyedSubframe \
+  DISABLED_FileChooserInDestroyedSubframe
+#else
+#define MAYBE_FileChooserInDestroyedSubframe FileChooserInDestroyedSubframe
+#endif
+IN_PROC_BROWSER_TEST_F(IFrameTest, MAYBE_FileChooserInDestroyedSubframe) {
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   GURL file_input_url(embedded_test_server()->GetURL("/file_input.html"));
@@ -73,4 +82,3 @@ IN_PROC_BROWSER_TEST_F(IFrameTest, FileChooserInDestroyedSubframe) {
   // On ASan bots, this test should succeed without reporting use-after-free
   // condition.
 }
-#endif
