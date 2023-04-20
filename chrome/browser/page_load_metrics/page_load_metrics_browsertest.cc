@@ -73,7 +73,6 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -3271,20 +3270,15 @@ class PageLoadMetricsBrowserTestTerminatedPage
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_TYPED, false);
 
-    content::WindowedNotificationObserver load(
-        content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-        content::NotificationService::AllSources());
-
     content::WebContents* contents = browser()->OpenURL(page);
-
     std::unique_ptr<PageLoadMetricsTestWaiter> waiter =
         CreatePageLoadMetricsTestWaiter("lcp_waiter", contents);
-
     waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
                                    TimingField::kLargestContentfulPaint);
 
-    // This is to wait for the navigation entry to be committed.
-    load.Wait();
+    content::TestNavigationObserver observer(contents);
+    observer.set_expected_initial_url(page.url);
+    observer.Wait();
 
     // This is to wait for LCP to be observed on browser side.
     waiter->Wait();
