@@ -25962,6 +25962,7 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="6" label="Incognito reauthentication flow"/>
   <int value="7" label="Passwords in settings"/>
   <int value="8" label="Local card autofill reauthentication flow"/>
+  <int value="9" label="Device Lock page"/>
 </enum>
 
 <enum name="DeviceEnumerationResult">

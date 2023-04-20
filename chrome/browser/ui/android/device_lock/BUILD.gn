@@ -15,7 +15,9 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/device_reauth/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/device_reauth:device_reauth_java_enums",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]
@@ -60,11 +62,13 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/android:chrome_java",
+    "//chrome/browser/device_reauth/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//content/public/android:content_full_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",

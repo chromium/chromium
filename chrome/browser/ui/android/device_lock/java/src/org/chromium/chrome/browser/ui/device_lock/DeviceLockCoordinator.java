@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.ui.device_lock;
 import android.content.Context;
 import android.view.LayoutInflater;
 
+import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
@@ -28,11 +30,18 @@ public class DeviceLockCoordinator {
 
     private final DeviceLockMediator mMediator;
     private final DeviceLockView mView;
+    private final WindowAndroid mWindowAndroid;
+    private final ReauthenticatorBridge mDeviceLockAuthenticatorBridge;
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
-    public DeviceLockCoordinator(boolean inSignInFlow, Delegate delegate, Context context) {
+    protected DeviceLockCoordinator(boolean inSignInFlow, Delegate delegate,
+            WindowAndroid activityWindowAndroid, Context context,
+            ReauthenticatorBridge deviceLockAuthenticatorBridge) {
         mView = DeviceLockView.create(LayoutInflater.from(context));
-        mMediator = new DeviceLockMediator(inSignInFlow, delegate, context);
+        mWindowAndroid = activityWindowAndroid;
+        mDeviceLockAuthenticatorBridge = deviceLockAuthenticatorBridge;
+        mMediator = new DeviceLockMediator(
+                inSignInFlow, delegate, mWindowAndroid, mDeviceLockAuthenticatorBridge, context);
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mMediator.getModel(), mView, DeviceLockViewBinder::bind);
     }
