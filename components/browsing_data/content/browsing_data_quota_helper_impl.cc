@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/browsing_data/browsing_data_quota_helper_impl.h"
+#include "components/browsing_data/content/browsing_data_quota_helper_impl.h"
 
 #include <map>
 #include <set>
@@ -11,8 +11,6 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/common/url_constants.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -24,8 +22,8 @@
 #include "url/origin.h"
 
 using blink::mojom::StorageType;
-using content::BrowserThread;
 using content::BrowserContext;
+using content::BrowserThread;
 
 // static
 scoped_refptr<BrowsingDataQuotaHelper> BrowsingDataQuotaHelper::Create(
@@ -59,7 +57,7 @@ BrowsingDataQuotaHelperImpl::BrowsingDataQuotaHelperImpl(
   DCHECK(quota_manager);
 }
 
-BrowsingDataQuotaHelperImpl::~BrowsingDataQuotaHelperImpl() {}
+BrowsingDataQuotaHelperImpl::~BrowsingDataQuotaHelperImpl() = default;
 
 void BrowsingDataQuotaHelperImpl::FetchQuotaInfoOnIOThread(
     FetchResultCallback callback) {
@@ -99,8 +97,9 @@ void BrowsingDataQuotaHelperImpl::GotStorageKeys(
   auto storage_key_completion =
       base::BarrierClosure(storage_key_count, std::move(completion));
   for (const blink::StorageKey& storage_key : storage_keys) {
-    if (!browsing_data::IsWebScheme(storage_key.origin().scheme()))
+    if (!browsing_data::IsWebScheme(storage_key.origin().scheme())) {
       continue;  // Non-websafe state is not considered browsing data.
+    }
     quota_manager_->GetStorageKeyUsageWithBreakdown(
         storage_key, type,
         base::BindOnce(&BrowsingDataQuotaHelperImpl::GotStorageKeyUsage,
@@ -119,10 +118,10 @@ void BrowsingDataQuotaHelperImpl::GotStorageKeyUsage(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   switch (type) {
     case StorageType::kTemporary:
-      (*quota_info)[storage_key.origin().host()].temporary_usage += usage;
+      (*quota_info)[storage_key].temporary_usage += usage;
       break;
     case StorageType::kSyncable:
-      (*quota_info)[storage_key.origin().host()].syncable_usage += usage;
+      (*quota_info)[storage_key].syncable_usage += usage;
       break;
     default:
       NOTREACHED();
@@ -133,15 +132,15 @@ void BrowsingDataQuotaHelperImpl::OnGetHostsUsageComplete(
     FetchResultCallback callback,
     QuotaInfoMap* quota_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
   QuotaInfoArray result;
   for (auto& pair : *quota_info) {
     QuotaInfo& info = pair.second;
     // Skip unused entries
-    if (info.temporary_usage <= 0 && info.syncable_usage <= 0)
+    if (info.temporary_usage <= 0 && info.syncable_usage <= 0) {
       continue;
+    }
 
-    info.host = pair.first;
+    info.storage_key = pair.first;
     result.push_back(info);
   }
 

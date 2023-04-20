@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
+#include "components/browsing_data/core/features.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "net/cookies/canonical_cookie.h"
 
@@ -33,6 +34,27 @@ LocalDataContainer::CreateFromStoragePartition(
     content::StoragePartition* storage_partition,
     browsing_data::CookieHelper::IsDeletionDisabledCallback
         is_cookie_deletion_disabled_callback) {
+  // Deprecating CookiesTreeModel excludes all related helpers from local data
+  // container that are handled by the `BrowsingDataModel`.
+  // This works independently whether partitioned storage is enabled or not.
+  if (base::FeatureList::IsEnabled(
+          browsing_data::features::kDeprecateCookiesTreeModel)) {
+    return std::make_unique<LocalDataContainer>(
+        base::MakeRefCounted<browsing_data::CookieHelper>(
+            storage_partition, is_cookie_deletion_disabled_callback),
+        /*database_helper=*/nullptr,
+        base::MakeRefCounted<browsing_data::LocalStorageHelper>(
+            storage_partition),
+        /*session_storage_helper=*/nullptr,
+        /*indexed_db_helper=*/nullptr,
+        /*file_system_helper=*/nullptr,
+        /*quota_helper=*/nullptr,
+        /*service_worker_helper=*/nullptr,
+        base::MakeRefCounted<browsing_data::SharedWorkerHelper>(
+            storage_partition),
+        /*cache_storage_helper=*/nullptr);
+  }
+
   // If partitioned storage is enabled, the quota node is used to represent all
   // types of quota managed storage. If not, the quota node type is excluded as
   // it is represented by other types.

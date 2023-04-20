@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_BROWSING_DATA_MOCK_BROWSING_DATA_QUOTA_HELPER_H_
-#define CHROME_BROWSER_BROWSING_DATA_MOCK_BROWSING_DATA_QUOTA_HELPER_H_
+#ifndef COMPONENTS_BROWSING_DATA_CONTENT_MOCK_BROWSING_DATA_QUOTA_HELPER_H_
+#define COMPONENTS_BROWSING_DATA_CONTENT_MOCK_BROWSING_DATA_QUOTA_HELPER_H_
 
 #include <stdint.h>
 
 #include <list>
 #include <string>
 
-#include "chrome/browser/browsing_data/browsing_data_quota_helper.h"
+#include "components/browsing_data/content/browsing_data_quota_helper.h"
 
 class MockBrowsingDataQuotaHelper : public BrowsingDataQuotaHelper {
  public:
@@ -24,7 +24,7 @@ class MockBrowsingDataQuotaHelper : public BrowsingDataQuotaHelper {
   void DeleteHostData(const std::string& host,
                       blink::mojom::StorageType type) override;
 
-  void AddHost(const std::string& host,
+  void AddHost(const blink::StorageKey& storage_key,
                int64_t temporary_usage,
                int64_t syncable_usage);
   void AddQuotaSamples();
@@ -37,4 +37,4 @@ class MockBrowsingDataQuotaHelper : public BrowsingDataQuotaHelper {
   std::list<QuotaInfo> response_;
 };
 
-#endif  // CHROME_BROWSER_BROWSING_DATA_MOCK_BROWSING_DATA_QUOTA_HELPER_H_
+#endif  // COMPONENTS_BROWSING_DATA_CONTENT_MOCK_BROWSING_DATA_QUOTA_HELPER_H_

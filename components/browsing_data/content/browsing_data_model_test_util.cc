@@ -36,11 +36,30 @@ void ValidateBrowsingDataEntries(
     const std::vector<BrowsingDataEntry>& expected_entries) {
   std::vector<BrowsingDataEntry> model_entries;
 
-  for (const auto& entry : *model)
+  for (const auto& entry : *model) {
     model_entries.emplace_back(entry);
+  }
 
   EXPECT_THAT(expected_entries,
               testing::UnorderedElementsAreArray(model_entries));
 }
 
+void ValidateBrowsingDataEntriesIgnoreUsage(
+    BrowsingDataModel* model,
+    const std::vector<BrowsingDataEntry>& expected_entries) {
+  std::vector<BrowsingDataEntry> model_entries;
+  for (const auto& entry : *model) {
+    model_entries.emplace_back(entry);
+  }
+  EXPECT_EQ(model_entries.size(), expected_entries.size());
+
+  for (size_t i = 0; i < expected_entries.size(); i++) {
+    EXPECT_EQ(expected_entries[i].primary_host, model_entries[i].primary_host);
+    EXPECT_EQ(expected_entries[i].data_key, model_entries[i].data_key);
+    EXPECT_EQ(expected_entries[i].data_details.storage_types,
+              model_entries[i].data_details.storage_types);
+    EXPECT_EQ(expected_entries[i].data_details.cookie_count,
+              model_entries[i].data_details.cookie_count);
+  }
+}
 }  // namespace browsing_data_model_test_util

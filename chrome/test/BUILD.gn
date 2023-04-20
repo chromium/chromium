@@ -5472,7 +5472,6 @@ test("unit_tests") {
     "../browser/browsing_data/access_context_audit_service_unittest.cc",
     "../browser/browsing_data/browsing_data_history_observer_service_unittest.cc",
     "../browser/browsing_data/browsing_data_lifetime_policy_handler_unittest.cc",
-    "../browser/browsing_data/browsing_data_quota_helper_unittest.cc",
     "../browser/browsing_data/chrome_browsing_data_model_delegate_unittest.cc",
     "../browser/browsing_data/chrome_browsing_data_remover_delegate_unittest.cc",
     "../browser/browsing_data/cookies_tree_model_unittest.cc",

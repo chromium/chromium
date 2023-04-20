@@ -32,6 +32,12 @@ void ValidateBrowsingDataEntries(
     BrowsingDataModel* model,
     const std::vector<BrowsingDataEntry>& expected_entries);
 
+// Check that the entries returned by `model` are matching `expected_entries`,
+// i.e. lists are equal without considering storage size.
+void ValidateBrowsingDataEntriesIgnoreUsage(
+    BrowsingDataModel* model,
+    const std::vector<BrowsingDataEntry>& expected_entries);
+
 }  // namespace browsing_data_model_test_util
 
 #endif  // COMPONENTS_BROWSING_DATA_CONTENT_BROWSING_DATA_MODEL_TEST_UTIL_H_

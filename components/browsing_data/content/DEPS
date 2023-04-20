@@ -22,3 +22,9 @@ include_rules = [
   "+third_party/blink/public",
   "+services/network",
 ]
+
+specific_include_rules = {
+  ".*test\.(cc|h)$": [
+    "+extensions/buildflags",
+  ],
+}

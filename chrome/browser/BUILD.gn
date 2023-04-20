@@ -225,10 +225,6 @@ static_library("browser") {
     "browsing_data/browsing_data_important_sites_util.h",
     "browsing_data/browsing_data_lifetime_policy_handler.cc",
     "browsing_data/browsing_data_lifetime_policy_handler.h",
-    "browsing_data/browsing_data_quota_helper.cc",
-    "browsing_data/browsing_data_quota_helper.h",
-    "browsing_data/browsing_data_quota_helper_impl.cc",
-    "browsing_data/browsing_data_quota_helper_impl.h",
     "browsing_data/chrome_browsing_data_lifetime_manager.cc",
     "browsing_data/chrome_browsing_data_lifetime_manager.h",
     "browsing_data/chrome_browsing_data_lifetime_manager_factory.cc",
@@ -7926,8 +7922,6 @@ static_library("test_support") {
   ]
 
   sources = [
-    "browsing_data/mock_browsing_data_quota_helper.cc",
-    "browsing_data/mock_browsing_data_quota_helper.h",
     "consent_auditor/consent_auditor_test_utils.cc",
     "consent_auditor/consent_auditor_test_utils.h",
     "download/download_test_file_activity_observer.cc",

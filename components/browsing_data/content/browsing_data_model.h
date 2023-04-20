@@ -11,10 +11,12 @@
 #include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "components/browsing_data/content/browsing_data_quota_helper.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -37,8 +39,8 @@ class BrowsingDataModel {
     kSharedStorage = 2,
     kInterestGroup,
     kAttributionReporting,
-    kPartitionedQuotaStorage,    // Not fetched from disk or deleted.
-    kUnpartitionedQuotaStorage,  // Not fetched from disk or deleted.
+    kPartitionedQuotaStorage,  // Not fetched from disk or deleted.
+    kUnpartitionedQuotaStorage,
 
     kFirstType = kTrustTokens,
     kLastType = kUnpartitionedQuotaStorage,
@@ -243,6 +245,9 @@ class BrowsingDataModel {
   // TODO(crbug.com/1271155): More backends to come, they should all be broken
   // out from the browser context at the appropriate level.
   raw_ptr<content::StoragePartition> storage_partition_;
+
+  // Used to handle quota managed data on IO thread.
+  scoped_refptr<BrowsingDataQuotaHelper> quota_helper_;
 
   // Owning pointer to the delegate responsible for non components/ data
   // retrieval and removal.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/browsing_data/mock_browsing_data_quota_helper.h"
+#include "components/browsing_data/content/mock_browsing_data_quota_helper.h"
 
 #include "content/public/browser/browser_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -11,7 +11,7 @@ using content::BrowserThread;
 
 MockBrowsingDataQuotaHelper::MockBrowsingDataQuotaHelper() = default;
 
-MockBrowsingDataQuotaHelper::~MockBrowsingDataQuotaHelper() {}
+MockBrowsingDataQuotaHelper::~MockBrowsingDataQuotaHelper() = default;
 
 void MockBrowsingDataQuotaHelper::StartFetching(FetchResultCallback callback) {
   ASSERT_FALSE(callback.is_null());
@@ -23,15 +23,17 @@ void MockBrowsingDataQuotaHelper::DeleteHostData(
     const std::string& host,
     blink::mojom::StorageType type) {}
 
-void MockBrowsingDataQuotaHelper::AddHost(const std::string& host,
+void MockBrowsingDataQuotaHelper::AddHost(const blink::StorageKey& storage_key,
                                           int64_t temporary_usage,
                                           int64_t syncable_usage) {
-  response_.push_back(QuotaInfo(host, temporary_usage, syncable_usage));
+  response_.push_back(QuotaInfo(storage_key, temporary_usage, syncable_usage));
 }
 
 void MockBrowsingDataQuotaHelper::AddQuotaSamples() {
-  AddHost("quotahost1", 1, 1);
-  AddHost("quotahost2", 10, 10);
+  AddHost(blink::StorageKey::CreateFromStringForTesting("http://quotahost1"), 1,
+          1);
+  AddHost(blink::StorageKey::CreateFromStringForTesting("https://quotahost2"),
+          10, 10);
 }
 
 void MockBrowsingDataQuotaHelper::Notify() {

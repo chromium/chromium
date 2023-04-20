@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_QUOTA_HELPER_IMPL_H_
-#define CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_QUOTA_HELPER_IMPL_H_
+#ifndef COMPONENTS_BROWSING_DATA_CONTENT_BROWSING_DATA_QUOTA_HELPER_IMPL_H_
+#define COMPONENTS_BROWSING_DATA_CONTENT_BROWSING_DATA_QUOTA_HELPER_IMPL_H_
 
 #include <stdint.h>
 
@@ -16,7 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/browsing_data/browsing_data_quota_helper.h"
+#include "components/browsing_data/content/browsing_data_quota_helper.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
 
 namespace blink {
@@ -45,7 +45,7 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
  private:
   using PendingHosts =
       std::set<std::pair<std::string, blink::mojom::StorageType>>;
-  using QuotaInfoMap = std::map<std::string, QuotaInfo>;
+  using QuotaInfoMap = std::map<blink::StorageKey, QuotaInfo>;
 
   ~BrowsingDataQuotaHelperImpl() override;
 
@@ -75,7 +75,6 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
   scoped_refptr<storage::QuotaManager> quota_manager_;
 
   base::WeakPtrFactory<BrowsingDataQuotaHelperImpl> weak_factory_{this};
-
 };
 
-#endif  // CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_QUOTA_HELPER_IMPL_H_
+#endif  // COMPONENTS_BROWSING_DATA_CONTENT_BROWSING_DATA_QUOTA_HELPER_IMPL_H_

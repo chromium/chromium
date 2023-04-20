@@ -8,6 +8,8 @@
 #include "base/containers/enum_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/browsing_data/content/browsing_data_quota_helper.h"
+#include "components/browsing_data/core/features.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -102,10 +104,13 @@ std::string GetPrimaryHost::operator()<content::AttributionDataModel::DataKey>(
 struct StorageRemoverHelper {
   explicit StorageRemoverHelper(
       content::StoragePartition* storage_partition,
+      scoped_refptr<BrowsingDataQuotaHelper> quota_helper,
       BrowsingDataModel::Delegate* delegate
       // TODO(crbug.com/1271155): Inject other dependencies.
       )
-      : storage_partition_(storage_partition), delegate_(delegate) {}
+      : storage_partition_(storage_partition),
+        quota_helper_(quota_helper),
+        delegate_(delegate) {}
 
   void RemoveByPrimaryHost(
       const std::string& primary_host,
@@ -135,6 +140,7 @@ struct StorageRemoverHelper {
   size_t callbacks_seen_ = 0;
 
   raw_ptr<content::StoragePartition> storage_partition_;
+  scoped_refptr<BrowsingDataQuotaHelper> quota_helper_;
   raw_ptr<BrowsingDataModel::Delegate, DanglingUntriaged> delegate_;
   base::WeakPtrFactory<StorageRemoverHelper> weak_ptr_factory_{this};
 };
@@ -179,6 +185,8 @@ void StorageRemoverHelper::Visitor::operator()<url::Origin>(
 template <>
 void StorageRemoverHelper::Visitor::operator()<blink::StorageKey>(
     const blink::StorageKey& storage_key) {
+  bool is_cookies_tree_model_deprecated = base::FeatureList::IsEnabled(
+      browsing_data::features::kDeprecateCookiesTreeModel);
   if (types.Has(BrowsingDataModel::StorageType::kSharedStorage)) {
     helper->storage_partition_->GetSharedStorageManager()->Clear(
         storage_key.origin(),
@@ -188,6 +196,16 @@ void StorageRemoverHelper::Visitor::operator()<blink::StorageKey>(
               std::move(complete_callback).Run();
             },
             helper->GetCompleteCallback()));
+
+  } else if (is_cookies_tree_model_deprecated &&
+             types.Has(
+                 BrowsingDataModel::StorageType::kUnpartitionedQuotaStorage)) {
+    const blink::mojom::StorageType quota_types[] = {
+        blink::mojom::StorageType::kTemporary,
+        blink::mojom::StorageType::kSyncable};
+    for (auto type : quota_types) {
+      helper->quota_helper_->DeleteHostData(storage_key.origin().host(), type);
+    }
 
   } else {
     // TODO(crbug.com/1271155): Implement for quota managed storage.
@@ -290,6 +308,20 @@ void OnAttributionReportingLoaded(
     model->AddBrowsingData(
         data_key, BrowsingDataModel::StorageType::kAttributionReporting,
         kSmallAmountOfDataInBytes);
+  }
+  std::move(loaded_callback).Run();
+}
+
+void OnQuotaManagedDataLoaded(
+    BrowsingDataModel* model,
+    base::OnceClosure loaded_callback,
+    const std::list<BrowsingDataQuotaHelper::QuotaInfo>& quota_info) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  for (auto entry : quota_info) {
+    model->AddBrowsingData(
+        entry.storage_key,
+        BrowsingDataModel::StorageType::kUnpartitionedQuotaStorage,
+        entry.syncable_usage + entry.temporary_usage);
   }
   std::move(loaded_callback).Run();
 }
@@ -459,8 +491,8 @@ void BrowsingDataModel::RemoveBrowsingData(const std::string& primary_host,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Bind the lifetime of the helper to the lifetime of the callback.
-  auto helper = std::make_unique<StorageRemoverHelper>(storage_partition_,
-                                                       delegate_.get());
+  auto helper = std::make_unique<StorageRemoverHelper>(
+      storage_partition_, quota_helper_, delegate_.get());
   auto* helper_pointer = helper.get();
 
   base::OnceClosure wrapped_completed = base::BindOnce(
@@ -486,6 +518,8 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
       base::FeatureList::IsEnabled(blink::features::kAdInterestGroupAPI);
   bool is_attribution_reporting_enabled =
       base::FeatureList::IsEnabled(blink::features::kConversionMeasurement);
+  bool is_cookies_tree_model_deprecated = base::FeatureList::IsEnabled(
+      browsing_data::features::kDeprecateCookiesTreeModel);
 
   // TODO(crbug.com/1271155): Derive this from the StorageTypeSet directly.
   int storage_backend_count = 2;
@@ -499,6 +533,11 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   if (is_attribution_reporting_enabled) {
     storage_backend_count++;
   }
+
+  if (is_cookies_tree_model_deprecated) {
+    storage_backend_count++;
+  }
+
   base::RepeatingClosure completion =
       base::BarrierClosure(storage_backend_count, std::move(finished_callback));
 
@@ -528,6 +567,11 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
         base::BindOnce(&OnAttributionReportingLoaded, this, completion));
   }
 
+  if (is_cookies_tree_model_deprecated) {
+    quota_helper_->StartFetching(
+        base::BindOnce(&OnQuotaManagedDataLoaded, this, completion));
+  }
+
   // Data loaded from non-components storage types via the delegate.
   delegate_->GetAllDataKeys(
       base::BindOnce(&OnDelegateDataLoaded, this, completion));
@@ -536,4 +580,8 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
 BrowsingDataModel::BrowsingDataModel(
     content::StoragePartition* storage_partition,
     std::unique_ptr<Delegate> delegate)
-    : storage_partition_(storage_partition), delegate_(std::move(delegate)) {}
+    : storage_partition_(storage_partition), delegate_(std::move(delegate)) {
+  if (storage_partition_) {
+    quota_helper_ = BrowsingDataQuotaHelper::Create(storage_partition_);
+  }
+}

@@ -14,10 +14,12 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_data/content/browsing_data_model_test_util.h"
+#include "components/browsing_data/core/features.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
@@ -31,6 +33,7 @@
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/test/trust_token_request_handler.h"
@@ -38,6 +41,9 @@
 #include "services/network/test/trust_token_test_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
+
+using base::test::FeatureRef;
+using base::test::FeatureRefAndParams;
 
 namespace {
 
@@ -157,34 +163,58 @@ void WaitForModelUpdate(BrowsingDataModel* model, size_t expected_size) {
     run_loop.Run();
   }
 }
+
+// Calls the accessStorage javascript function and awaits its completion for
+// each frame in the active web contents for |browser|.
+void EnsurePageAccessedStorage(content::WebContents* web_contents) {
+  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      [](content::RenderFrameHost* frame) {
+        EXPECT_TRUE(
+            content::EvalJs(frame,
+                            "(async () => { return await accessStorage();})()")
+                .value.GetBool());
+      });
+}
 }  // namespace
 
 using browsing_data_model_test_util::ValidateBrowsingDataEntries;
+using browsing_data_model_test_util::ValidateBrowsingDataEntriesIgnoreUsage;
 using OperationResult = storage::SharedStorageDatabase::OperationResult;
 
-class BrowsingDataModelBrowserTest : public InProcessBrowserTest {
+class BrowsingDataModelBrowserTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   BrowsingDataModelBrowserTest() {
     auto& field_trial_param =
         network::features::kTrustTokenOperationsRequiringOriginTrial;
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{network::features::kPrivateStateTokens,
-          {{field_trial_param.name,
-            field_trial_param.GetName(
-                network::features::TrustTokenOriginTrialSpec::
-                    kOriginTrialNotRequired)}}},
-         {features::kPrivacySandboxAdsAPIsOverride, {}},
-         {features::kIsolatedWebApps, {}},
-         {features::kIsolatedWebAppDevMode, {}},
-         {blink::features::kSharedStorageAPI, {}},
-         {blink::features::kInterestGroupStorage, {}},
-         {blink::features::kAdInterestGroupAPI, {}},
-         {blink::features::kFledge, {}},
-         {blink::features::kFencedFrames, {}},
-         {blink::features::kBrowsingTopics, {}}},
-        /*disabled_features=*/
-        {});
+    std::vector<FeatureRefAndParams> enabled_features = {
+        {network::features::kPrivateStateTokens,
+         {{field_trial_param.name,
+           field_trial_param.GetName(
+               network::features::TrustTokenOriginTrialSpec::
+                   kOriginTrialNotRequired)}}},
+        {features::kPrivacySandboxAdsAPIsOverride, {}},
+        {features::kIsolatedWebApps, {}},
+        {features::kIsolatedWebAppDevMode, {}},
+        {blink::features::kSharedStorageAPI, {}},
+        {blink::features::kInterestGroupStorage, {}},
+        {blink::features::kAdInterestGroupAPI, {}},
+        {blink::features::kFledge, {}},
+        {blink::features::kFencedFrames, {}},
+        {blink::features::kBrowsingTopics, {}}};
+    std::vector<FeatureRef> disabled_features = {};
+
+    if (GetParam()) {
+      enabled_features.push_back(
+          {browsing_data::features::kDeprecateCookiesTreeModel, {}});
+    } else {
+      disabled_features.emplace_back(
+          browsing_data::features::kDeprecateCookiesTreeModel);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
   }
 
   ~BrowsingDataModelBrowserTest() override = default;
@@ -226,6 +256,23 @@ class BrowsingDataModelBrowserTest : public InProcessBrowserTest {
 
   GURL test_url() { return https_server_->GetURL(kTestHost, "/echo"); }
 
+  void AccessStorage() {
+    ASSERT_TRUE(content::NavigateToURL(
+        chrome_test_utils::GetActiveWebContents(this), storage_accessor_url()));
+    base::RunLoop().RunUntilIdle();
+    EnsurePageAccessedStorage(chrome_test_utils::GetActiveWebContents(this));
+  }
+
+  GURL storage_accessor_url() {
+    auto host_port_pair =
+        net::HostPortPair::FromURL(https_test_server()->GetURL(kTestHost, "/"));
+    base::StringPairs replacement_text = {
+        {"REPLACE_WITH_HOST_AND_PORT", host_port_pair.ToString()}};
+    auto replaced_path = net::test_server::GetFilePathWithReplacements(
+        "/browsing_data/storage_accessor.html", replacement_text);
+    return https_test_server()->GetURL(kTestHost, replaced_path);
+  }
+
   network::test::TrustTokenRequestHandler request_handler_;
 
  private:
@@ -233,7 +280,7 @@ class BrowsingDataModelBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
-IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
                        SharedStorageHandledCorrectly) {
   // Add origin shared storage.
   auto* shared_storage_manager =
@@ -278,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
 }
 
-IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
                        SharedStorageAccessReportedCorrectly) {
   // Navigate to test page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
@@ -312,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                                  /*storage_size=*/0, /*cookie_count=*/0}}});
 }
 
-IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest, TrustTokenIssuance) {
+IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest, TrustTokenIssuance) {
   // Setup the test server to be able to issue trust tokens, and have it issue
   // some to the profile.
   ProvideRequestHandlerKeyCommitmentsToNetworkService(
@@ -370,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest, TrustTokenIssuance) {
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
 }
 
-IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
                        InterestGroupsHandledCorrectly) {
   // Check that no interest groups are joined at the beginning of the test.
   std::unique_ptr<BrowsingDataModel> browsing_data_model =
@@ -411,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
 }
 
-IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
                        InterestGroupsAccessReportedCorrectly) {
   // Navigate to test page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
@@ -440,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                                  /*storage_size=*/0, /*cookie_count=*/0}}});
 }
 
-IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
                        AuctionWinReportedCorrectly) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
   JoinInterestGroup(web_contents(), https_test_server(), kTestHost);
@@ -474,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                                  /*storage_size=*/0, /*cookie_count=*/0}}});
 }
 
-IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
                        AttributionReportingAccessReportedCorrectly) {
   const GURL kTestCases[] = {
       https_test_server()->GetURL(
@@ -517,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
                        TopicsAccessReportedCorrectly) {
   // Navigate to test page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
@@ -561,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
 }
 
-IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
+IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
                        IsolatedWebAppUsageInDefaultStoragePartitionModel) {
   // Check that no IWAs are installed at the beginning of the test.
   std::unique_ptr<BrowsingDataModel> browsing_data_model =
@@ -600,3 +647,36 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
              ChromeBrowsingDataModelDelegate::StorageType::kIsolatedWebApp),
          /*storage_size=*/505, /*cookie_count=*/0}}});
 }
+
+IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+                       QuotaManagedDataHandledCorrectly) {
+  // Ensure that there isn't any data fetched.
+  std::unique_ptr<BrowsingDataModel> browsing_data_model =
+      BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+  ASSERT_EQ(browsing_data_model->size(), 0u);
+
+  AccessStorage();
+
+  // Ensure that quota data is fetched
+  browsing_data_model = BuildBrowsingDataModel();
+  bool is_cookies_tree_model_deprecated = GetParam();
+  if (is_cookies_tree_model_deprecated) {
+    // Validate that quota data is fetched to browsing data model.
+    url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+    auto data_key = blink::StorageKey::CreateFirstParty(testOrigin);
+    ValidateBrowsingDataEntriesIgnoreUsage(
+        browsing_data_model.get(),
+        {{kTestHost,
+          data_key,
+          {BrowsingDataModel::StorageType::kUnpartitionedQuotaStorage,
+           /*storage_size=*/0, /*cookie_count=*/0}}});
+
+    ASSERT_EQ(browsing_data_model->size(), 1u);
+  } else {
+    ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+    ASSERT_EQ(browsing_data_model->size(), 0u);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All, BrowsingDataModelBrowserTest, ::testing::Bool());

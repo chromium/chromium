@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_QUOTA_HELPER_H_
-#define CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_QUOTA_HELPER_H_
+#ifndef COMPONENTS_BROWSING_DATA_CONTENT_BROWSING_DATA_QUOTA_HELPER_H_
+#define COMPONENTS_BROWSING_DATA_CONTENT_BROWSING_DATA_QUOTA_HELPER_H_
 
 #include <stdint.h>
 
@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner_helpers.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 class BrowsingDataQuotaHelper;
@@ -38,12 +39,12 @@ class BrowsingDataQuotaHelper
     : public base::RefCountedThreadSafe<BrowsingDataQuotaHelper,
                                         BrowsingDataQuotaHelperDeleter> {
  public:
-  // QuotaInfo contains host-based quota and usage information for temporary
-  // storage.
+  // QuotaInfo contains StorageKey-based quota and usage information for
+  // temporary storage.
   struct QuotaInfo {
     QuotaInfo();
-    explicit QuotaInfo(const std::string& host);
-    QuotaInfo(const std::string& host,
+    explicit QuotaInfo(const blink::StorageKey& storage_key);
+    QuotaInfo(const blink::StorageKey& storage_key,
               int64_t temporary_usage,
               int64_t syncable_usage);
     ~QuotaInfo();
@@ -51,10 +52,10 @@ class BrowsingDataQuotaHelper
     // Certain versions of MSVC 2008 have bad implementations of ADL for nested
     // classes so they require these operators to be declared here instead of in
     // the global namespace.
-    bool operator <(const QuotaInfo& rhs) const;
-    bool operator ==(const QuotaInfo& rhs) const;
+    bool operator<(const QuotaInfo& rhs) const;
+    bool operator==(const QuotaInfo& rhs) const;
 
-    std::string host;
+    blink::StorageKey storage_key;
     int64_t temporary_usage = 0;
     int64_t syncable_usage = 0;
   };
@@ -82,4 +83,4 @@ class BrowsingDataQuotaHelper
   friend struct BrowsingDataQuotaHelperDeleter;
 };
 
-#endif  // CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_QUOTA_HELPER_H_
+#endif  // COMPONENTS_BROWSING_DATA_CONTENT_BROWSING_DATA_QUOTA_HELPER_H_

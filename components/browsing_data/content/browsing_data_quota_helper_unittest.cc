@@ -12,7 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/browsing_data/browsing_data_quota_helper_impl.h"
+#include "components/browsing_data/content/browsing_data_quota_helper_impl.h"
 #include "components/services/storage/public/cpp/buckets/bucket_init_params.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -72,13 +72,9 @@ class BrowsingDataQuotaHelperTest : public testing::Test {
   }
 
  protected:
-  const QuotaInfoArray& quota_info() const {
-    return quota_info_;
-  }
+  const QuotaInfoArray& quota_info() const { return quota_info_; }
 
-  bool fetching_completed() const {
-    return fetching_completed_;
-  }
+  bool fetching_completed() const { return fetching_completed_; }
 
   void StartFetching() {
     fetching_completed_ = false;
@@ -167,8 +163,15 @@ TEST_F(BrowsingDataQuotaHelperTest, FetchData) {
 
   std::set<QuotaInfo> expected, actual;
   actual.insert(quota_info().begin(), quota_info().end());
-  expected.insert(QuotaInfo("example.com", 11, 1));
-  expected.insert(QuotaInfo("example2.com", 1000, 0));
+  expected.insert(QuotaInfo(
+      blink::StorageKey::CreateFromStringForTesting("http://example.com"), 1,
+      0));
+  expected.insert(QuotaInfo(
+      blink::StorageKey::CreateFromStringForTesting("http://example2.com"),
+      1000, 0));
+  expected.insert(QuotaInfo(
+      blink::StorageKey::CreateFromStringForTesting("https://example.com"), 10,
+      1));
   EXPECT_TRUE(expected == actual);
 }
 
@@ -192,8 +195,15 @@ TEST_F(BrowsingDataQuotaHelperTest, IgnoreExtensionsAndDevTools) {
 
   std::set<QuotaInfo> expected, actual;
   actual.insert(quota_info().begin(), quota_info().end());
-  expected.insert(QuotaInfo("example.com", 11, 1));
-  expected.insert(QuotaInfo("example2.com", 1000, 0));
+  expected.insert(QuotaInfo(
+      blink::StorageKey::CreateFromStringForTesting("http://example.com"), 1,
+      0));
+  expected.insert(QuotaInfo(
+      blink::StorageKey::CreateFromStringForTesting("http://example2.com"),
+      1000, 0));
+  expected.insert(QuotaInfo(
+      blink::StorageKey::CreateFromStringForTesting("https://example.com"), 10,
+      1));
   EXPECT_TRUE(expected == actual);
 }
 
@@ -214,8 +224,15 @@ TEST_F(BrowsingDataQuotaHelperTest, DeleteHostData) {
 
   std::set<QuotaInfo> expected, actual;
   actual.insert(quota_info().begin(), quota_info().end());
-  expected.insert(QuotaInfo("example.com", 11, 0));
-  expected.insert(QuotaInfo("example2.com", 1000, 0));
+  expected.insert(QuotaInfo(
+      blink::StorageKey::CreateFromStringForTesting("http://example.com"), 1,
+      0));
+  expected.insert(QuotaInfo(
+      blink::StorageKey::CreateFromStringForTesting("http://example2.com"),
+      1000, 0));
+  expected.insert(QuotaInfo(
+      blink::StorageKey::CreateFromStringForTesting("https://example.com"), 10,
+      0));
   EXPECT_TRUE(expected == actual);
 
   DeleteHostData("example2.com", StorageType::kTemporary);
@@ -227,6 +244,11 @@ TEST_F(BrowsingDataQuotaHelperTest, DeleteHostData) {
   expected.clear();
   actual.clear();
   actual.insert(quota_info().begin(), quota_info().end());
-  expected.insert(QuotaInfo("example.com", 11, 0));
+  expected.insert(QuotaInfo(
+      blink::StorageKey::CreateFromStringForTesting("http://example.com"), 1,
+      0));
+  expected.insert(QuotaInfo(
+      blink::StorageKey::CreateFromStringForTesting("https://example.com"), 10,
+      0));
   EXPECT_TRUE(expected == actual);
 }

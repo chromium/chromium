@@ -15,12 +15,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browsing_data/mock_browsing_data_quota_helper.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/mock_settings_observer.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_data/content/cookie_helper.h"
+#include "components/browsing_data/content/mock_browsing_data_quota_helper.h"
 #include "components/browsing_data/content/mock_cache_storage_helper.h"
 #include "components/browsing_data/content/mock_cookie_helper.h"
 #include "components/browsing_data/content/mock_database_helper.h"
@@ -288,7 +288,8 @@ class CookiesTreeModelTest : public testing::Test {
                    .spec() +
                ",";
       case CookieTreeNode::DetailedInfo::TYPE_QUOTA:
-        return node->GetDetailedInfo().quota_info->host + ",";
+        return node->GetDetailedInfo().quota_info->storage_key.origin().host() +
+               ",";
       case CookieTreeNode::DetailedInfo::TYPE_SHARED_WORKER:
         return node->GetDetailedInfo().shared_worker_info->worker.spec() + ",";
       default:

@@ -26,11 +26,11 @@
 #include "chrome/browser/browsing_data/access_context_audit_service.h"
 #include "chrome/browser/browsing_data/access_context_audit_service_factory.h"
 #include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
-#include "chrome/browser/browsing_data/browsing_data_quota_helper.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/browsing_data/content/browsing_data_quota_helper.h"
 #include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/database_helper.h"
@@ -606,7 +606,8 @@ class CookieTreeQuotaNode : public CookieTreeNode {
   // CookieTreeQuotaNode is valid.
   explicit CookieTreeQuotaNode(
       std::list<BrowsingDataQuotaHelper::QuotaInfo>::iterator quota_info)
-      : CookieTreeNode(base::UTF8ToUTF16(quota_info->host)),
+      : CookieTreeNode(
+            base::UTF8ToUTF16(quota_info->storage_key.origin().host())),
         quota_info_(quota_info) {}
 
   CookieTreeQuotaNode(const CookieTreeQuotaNode&) = delete;
@@ -620,11 +621,13 @@ class CookieTreeQuotaNode : public CookieTreeNode {
     if (container) {
       if (quota_info_->temporary_usage > 0) {
         container->quota_helper_->DeleteHostData(
-            quota_info_->host, blink::mojom::StorageType::kTemporary);
+            quota_info_->storage_key.origin().host(),
+            blink::mojom::StorageType::kTemporary);
       }
       if (quota_info_->syncable_usage > 0) {
         container->quota_helper_->DeleteHostData(
-            quota_info_->host, blink::mojom::StorageType::kSyncable);
+            quota_info_->storage_key.origin().host(),
+            blink::mojom::StorageType::kSyncable);
       }
       container->quota_info_list_.erase(quota_info_);
     }
@@ -1681,10 +1684,11 @@ void CookiesTreeModel::PopulateQuotaInfoWithFilter(
   notifier->StartBatchUpdate();
   for (auto quota_info = container->quota_info_list_.begin();
        quota_info != container->quota_info_list_.end(); ++quota_info) {
-    if (filter.empty() || (base::UTF8ToUTF16(quota_info->host).find(filter) !=
-                           std::u16string::npos)) {
-      CookieTreeHostNode* host_node =
-          root->GetOrCreateHostNode(GURL("http://" + quota_info->host));
+    if (filter.empty() ||
+        (base::UTF8ToUTF16(quota_info->storage_key.origin().host())
+             .find(filter) != std::u16string::npos)) {
+      CookieTreeHostNode* host_node = root->GetOrCreateHostNode(
+          GURL("http://" + quota_info->storage_key.origin().host()));
       host_node->UpdateOrCreateQuotaNode(quota_info);
     }
   }
