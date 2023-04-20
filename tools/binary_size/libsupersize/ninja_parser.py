@@ -129,7 +129,7 @@ def Parse(output_directory, elf_path):
   elf_inputs = None
   while to_parse:
     path = os.path.join(output_directory, to_parse.pop())
-    with open(path) as obj:
+    with open(path, encoding='utf-8', errors='ignore') as obj:
       sub_ninjas, found_elf_inputs = _ParseOneFile(obj, dep_map, elf_path)
       if found_elf_inputs:
         assert not elf_inputs, 'Found multiple inputs for elf_path ' + elf_path
