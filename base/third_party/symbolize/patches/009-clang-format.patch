@@ -120,10 +120,10 @@ index 46869226024da..b935e3ec9cded 100644
 -#endif // GLOG_LOGGING_H
 +#endif  // GLOG_LOGGING_H
 diff --git a/base/third_party/symbolize/symbolize.cc b/base/third_party/symbolize/symbolize.cc
-index 20d4d4106d65b..5287e5bb11007 100644
+index b6ddc85d57185..a3b8399f411bf 100644
 --- a/base/third_party/symbolize/symbolize.cc
 +++ b/base/third_party/symbolize/symbolize.cc
-@@ -96,7 +96,7 @@ void InstallSymbolizeOpenObjectFileCallback(
+@@ -97,7 +97,7 @@ void InstallSymbolizeOpenObjectFileCallback(
  // where the input symbol is demangled in-place.
  // To keep stack consumption low, we would like this function to not
  // get inlined.
@@ -132,7 +132,7 @@ index 20d4d4106d65b..5287e5bb11007 100644
    char demangled[256];  // Big enough for sane demangled symbols.
    if (Demangle(out, demangled, sizeof(demangled))) {
      // Demangling succeeded. Copy to out if the space allows.
-@@ -120,17 +120,17 @@ _END_GOOGLE_NAMESPACE_
+@@ -121,17 +121,17 @@ _END_GOOGLE_NAMESPACE_
  #else
  #include <elf.h>
  #endif
@@ -155,7 +155,7 @@ index 20d4d4106d65b..5287e5bb11007 100644
  
  #include "symbolize.h"
  #include "config.h"
-@@ -152,7 +152,8 @@ ssize_t ReadFromOffset(const int fd,
+@@ -153,7 +153,8 @@ ssize_t ReadFromOffset(const int fd,
                         const size_t count,
                         const size_t offset) {
    SAFE_ASSERT(fd >= 0);
@@ -165,7 +165,7 @@ index 20d4d4106d65b..5287e5bb11007 100644
    char *buf0 = reinterpret_cast<char *>(buf);
    size_t num_bytes = 0;
    while (num_bytes < count) {
-@@ -175,8 +176,10 @@ ssize_t ReadFromOffset(const int fd,
+@@ -176,8 +177,10 @@ ssize_t ReadFromOffset(const int fd,
  // pointed by "fd" into the buffer starting at "buf" while handling
  // short reads and EINTR.  On success, return true. Otherwise, return
  // false.
@@ -178,7 +178,7 @@ index 20d4d4106d65b..5287e5bb11007 100644
    ssize_t len = ReadFromOffset(fd, buf, count, offset);
    return static_cast<size_t>(len) == count;
  }
-@@ -198,9 +201,11 @@ static int FileGetElfType(const int fd) {
+@@ -199,9 +202,11 @@ static int FileGetElfType(const int fd) {
  // and return true.  Otherwise, return false.
  // To keep stack consumption low, we would like this function to not get
  // inlined.
@@ -193,7 +193,7 @@ index 20d4d4106d65b..5287e5bb11007 100644
    // Read at most 16 section headers at a time to save read calls.
    ElfW(Shdr) buf[16];
    for (size_t i = 0; i < sh_num;) {
-@@ -247,8 +252,8 @@ bool GetSectionHeaderByName(int fd, const char *name, size_t name_len,
+@@ -248,8 +253,8 @@ bool GetSectionHeaderByName(int fd, const char *name, size_t name_len,
    }
  
    for (size_t i = 0; i < elf_header.e_shnum; ++i) {
@@ -204,7 +204,7 @@ index 20d4d4106d65b..5287e5bb11007 100644
      if (!ReadFromOffsetExact(fd, out, sizeof(*out), section_header_offset)) {
        return false;
      }
-@@ -280,10 +285,13 @@ bool GetSectionHeaderByName(int fd, const char *name, size_t name_len,
+@@ -281,10 +286,13 @@ bool GetSectionHeaderByName(int fd, const char *name, size_t name_len,
  // to out.  Otherwise, return false.
  // To keep stack consumption low, we would like this function to not get
  // inlined.
@@ -222,7 +222,7 @@ index 20d4d4106d65b..5287e5bb11007 100644
    if (symtab == NULL) {
      return false;
    }
-@@ -383,7 +391,7 @@ namespace {
+@@ -384,7 +392,7 @@ namespace {
  // and snprintf().
  class LineReader {
   public:
@@ -231,7 +231,7 @@ index 20d4d4106d65b..5287e5bb11007 100644
        : fd_(fd),
          buf_(buf),
          buf_len_(buf_len),
-@@ -448,11 +456,12 @@ class LineReader {
+@@ -449,11 +457,12 @@ class LineReader {
    }
  
   private:
@@ -246,7 +246,7 @@ index 20d4d4106d65b..5287e5bb11007 100644
    }
  
    bool BufferIsEmpty() {
-@@ -482,7 +491,8 @@ static char *GetHex(const char *start, const char *end, uint64_t *hex) {
+@@ -483,7 +492,8 @@ static char *GetHex(const char *start, const char *end, uint64_t *hex) {
      int ch = *p;
      if ((ch >= '0' && ch <= '9') ||
          (ch >= 'A' && ch <= 'F') || (ch >= 'a' && ch <= 'f')) {
@@ -256,7 +256,7 @@ index 20d4d4106d65b..5287e5bb11007 100644
      } else {  // Encountered the first non-hex character.
        break;
      }
-@@ -646,12 +656,11 @@ static int OpenObjectFileContainingPcAndGetStartAddressNoHook(
+@@ -647,12 +657,11 @@ static int OpenObjectFileContainingPcAndGetStartAddressNoHook(
    }
  }
  
@@ -274,7 +274,7 @@ index 20d4d4106d65b..5287e5bb11007 100644
    if (g_symbolize_open_object_file_callback) {
      return g_symbolize_open_object_file_callback(
          pc, start_address, base_address, out_file_name, out_file_name_size);
-@@ -667,7 +676,11 @@ int OpenObjectFileContainingPcAndGetStartAddress(
+@@ -668,7 +677,11 @@ int OpenObjectFileContainingPcAndGetStartAddress(
  // bytes. Output will be truncated as needed, and a NUL character is always
  // appended.
  // NOTE: code from sandbox/linux/seccomp-bpf/demo.cc.
@@ -287,7 +287,7 @@ index 20d4d4106d65b..5287e5bb11007 100644
    // Make sure we can write at least one NUL byte.
    size_t n = 1;
    if (n > sz) {
-@@ -744,7 +757,8 @@ static void SafeAppendHexNumber(uint64_t value, char* dest, size_t dest_size) {
+@@ -745,7 +758,8 @@ static void SafeAppendHexNumber(uint64_t value, char* dest, size_t dest_size) {
  // and "out" is used as its output.
  // To keep stack consumption low, we would like this function to not
  // get inlined.
@@ -297,7 +297,7 @@ index 20d4d4106d65b..5287e5bb11007 100644
                                                      size_t out_size) {
    uint64_t pc0 = reinterpret_cast<uintptr_t>(pc);
    uint64_t start_address = 0;
-@@ -821,14 +835,16 @@ static ATTRIBUTE_NOINLINE bool SymbolizeAndDemangle(void *pc, char *out,
+@@ -822,14 +836,16 @@ static ATTRIBUTE_NOINLINE bool SymbolizeAndDemangle(void *pc, char *out,
  
  _END_GOOGLE_NAMESPACE_
  
@@ -316,7 +316,7 @@ index 20d4d4106d65b..5287e5bb11007 100644
                                                      size_t out_size) {
    Dl_info info;
    if (dladdr(pc, &info)) {
-@@ -882,7 +898,8 @@ private:
+@@ -883,7 +899,8 @@ private:
    SymInitializer& operator=(const SymInitializer&);
  };
  
@@ -326,7 +326,7 @@ index 20d4d4106d65b..5287e5bb11007 100644
                                                      size_t out_size) {
    const static SymInitializer symInitializer;
    if (!symInitializer.ready) {
-@@ -917,7 +934,7 @@ _END_GOOGLE_NAMESPACE_
+@@ -918,7 +935,7 @@ _END_GOOGLE_NAMESPACE_
  
  _START_GOOGLE_NAMESPACE_
  
@@ -336,10 +336,10 @@ index 20d4d4106d65b..5287e5bb11007 100644
  }
  
 diff --git a/base/third_party/symbolize/symbolize.h b/base/third_party/symbolize/symbolize.h
-index 11b24fbd06f5c..2a55c688aedfb 100644
+index 64ff0509ce57d..987569fdde67f 100644
 --- a/base/third_party/symbolize/symbolize.h
 +++ b/base/third_party/symbolize/symbolize.h
-@@ -125,7 +125,7 @@ ATTRIBUTE_NOINLINE int OpenObjectFileContainingPcAndGetStartAddress(
+@@ -127,7 +127,7 @@ ATTRIBUTE_NOINLINE int OpenObjectFileContainingPcAndGetStartAddress(
  
  _END_GOOGLE_NAMESPACE_
  
@@ -348,7 +348,7 @@ index 11b24fbd06f5c..2a55c688aedfb 100644
  
  _START_GOOGLE_NAMESPACE_
  
-@@ -138,7 +138,7 @@ struct FileDescriptor {
+@@ -140,7 +140,7 @@ struct FileDescriptor {
    int get() { return fd_; }
  
   private:
