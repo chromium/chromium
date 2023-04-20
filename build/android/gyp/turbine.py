@@ -135,18 +135,11 @@ def main(argv):
 
     logging.debug('Command: %s', cmd)
     start = time.time()
-    try:
-      build_utils.CheckOutput(cmd,
-                              print_stdout=True,
-                              stdout_filter=process_javac_output_partial,
-                              stderr_filter=process_javac_output_partial,
-                              fail_on_output=options.warnings_as_errors)
-    except build_utils.CalledProcessError as e:
-      # Do not output stacktrace as it takes up space on gerrit UI, forcing
-      # you to click though to find the actual compilation error. It's never
-      # interesting to see the Python stacktrace for a Java compilation error.
-      sys.stderr.write(e.output)
-      sys.exit(1)
+    build_utils.CheckOutput(cmd,
+                            print_stdout=True,
+                            stdout_filter=process_javac_output_partial,
+                            stderr_filter=process_javac_output_partial,
+                            fail_on_output=options.warnings_as_errors)
     end = time.time() - start
     logging.info('Header compilation took %ss', end)
     if options.kotlin_jar_path:
