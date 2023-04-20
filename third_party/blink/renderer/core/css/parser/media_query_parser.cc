@@ -94,7 +94,9 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
            (feature == media_feature_names::kOverflowInlineMediaFeature &&
             RuntimeEnabledFeatures::CSSOverflowMediaFeaturesEnabled()) ||
            (feature == media_feature_names::kOverflowBlockMediaFeature &&
-            RuntimeEnabledFeatures::CSSOverflowMediaFeaturesEnabled());
+            RuntimeEnabledFeatures::CSSOverflowMediaFeaturesEnabled()) ||
+           (CSSVariableParser::IsValidVariableName(feature) &&
+            RuntimeEnabledFeatures::CSSStyleQueriesBooleanEnabled());
   }
 
   bool IsCaseSensitive(const String& feature) const override { return false; }

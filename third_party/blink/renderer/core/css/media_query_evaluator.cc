@@ -1540,18 +1540,18 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
 
   const MediaQueryExpBounds& bounds = feature.Bounds();
 
-  // Style features always have the form of "property(feature): value".
+  // Style features do not support the range syntax.
   DCHECK(!bounds.IsRange());
   DCHECK(bounds.right.op == MediaQueryOperator::kNone);
-  DCHECK(bounds.right.IsValid());
-  DCHECK(bounds.right.value.IsCSSValue());
 
   Element* container = media_values_->ContainerElement();
   DCHECK(container);
 
   AtomicString property_name(feature.Name());
-
-  const CSSValue& query_specified = bounds.right.value.GetCSSValue();
+  bool explicit_value = bounds.right.value.IsValid();
+  const CSSValue& query_specified = explicit_value
+                                        ? bounds.right.value.GetCSSValue()
+                                        : *CSSInitialValue::Create();
 
   if (query_specified.IsRevertValue() || query_specified.IsRevertLayerValue()) {
     return KleeneValue::kFalse;
@@ -1578,7 +1578,7 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
           .CSSValueFromComputedStyle(container->ComputedStyleRef(),
                                      nullptr /* layout_object */,
                                      false /* allow_visited_style */);
-  if (base::ValuesEquivalent(query_value, computed_value)) {
+  if (base::ValuesEquivalent(query_value, computed_value) == explicit_value) {
     return KleeneValue::kTrue;
   }
   return KleeneValue::kFalse;

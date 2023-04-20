@@ -94,7 +94,7 @@ class StyleFeatureSet : public MediaQueryParser::FeatureSet {
   }
   bool IsAllowedWithoutValue(const String& feature,
                              const ExecutionContext*) const override {
-    return false;
+    return true;
   }
   bool IsCaseSensitive(const String& feature) const override {
     // TODO(crbug.com/1302630): non-custom properties are case-insensitive.

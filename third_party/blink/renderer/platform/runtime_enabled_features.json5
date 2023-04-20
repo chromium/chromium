@@ -1092,6 +1092,11 @@
       base_feature: "none",
     },
     {
+      // Support style() queries that evaluate in a boolean context.
+      name: "CSSStyleQueriesBoolean",
+      status: "experimental",
+    },
+    {
       // TODO(https://crbug.com/1411581):
       // https://w3c.github.io/csswg-drafts/css-inline-3/#propdef-leading-trim
       name: "CSSTextBoxTrim",
