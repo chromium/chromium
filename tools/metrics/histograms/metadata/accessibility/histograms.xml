@@ -2145,6 +2145,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DomDistiller.Statistics.WordCount" units="words"
     expires_after="M85">
+  <obsolete>
+    Removed in April 2023.
+  </obsolete>
   <owner>nyquist@chromium.org</owner>
   <summary>
     Records the number of words in a distilled page. For articles with multiple
@@ -2182,6 +2185,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DomDistiller.Time.ArticleProcessing" units="ms"
     expires_after="M77">
+  <obsolete>
+    Removed in April 2023.
+  </obsolete>
   <owner>yfriedman@chromium.org</owner>
   <summary>
     Time spent in DomDistiller's identification of text content.
@@ -2190,11 +2196,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DomDistiller.Time.DistillationTotal" units="ms"
     expires_after="M85">
+  <obsolete>
+    Removed in April 2023.
+  </obsolete>
   <owner>yfriedman@chromium.org</owner>
   <summary>Complete time spent in DomDistiller's processing of a page.</summary>
 </histogram>
 
 <histogram name="DomDistiller.Time.DistillPage" units="ms" expires_after="M77">
+  <obsolete>
+    Removed in April 2023.
+  </obsolete>
   <owner>wychen@chromium.org</owner>
   <summary>
     Time spent in DistillPageImpl(), mostly ExecuteJavaScript(), including
@@ -2204,6 +2216,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DomDistiller.Time.DocumentConstruction" units="ms"
     expires_after="M77">
+  <obsolete>
+    Removed in April 2023.
+  </obsolete>
   <owner>yfriedman@chromium.org</owner>
   <summary>
     Time spent in creating DomDistiller's internal representation of the HTML
@@ -2212,6 +2227,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DomDistiller.Time.Formatting" units="ms" expires_after="M77">
+  <obsolete>
+    Removed in April 2023.
+  </obsolete>
   <owner>yfriedman@chromium.org</owner>
   <summary>
     Time spent in DomDistiller's final processing of article content/formatting.
@@ -2220,6 +2238,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DomDistiller.Time.MarkupParsing" units="ms"
     expires_after="M77">
+  <obsolete>
+    Removed in April 2023.
+  </obsolete>
   <owner>yfriedman@chromium.org</owner>
   <summary>
     Time spent in DomDistiller's processing of article metadata.

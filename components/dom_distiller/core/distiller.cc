@@ -191,47 +191,6 @@ void DistillerImpl::OnPageDistillationFinished(
     }
   }
 
-  if (distiller_result->has_timing_info()) {
-    const proto::TimingInfo& distiller_timing_info =
-        distiller_result->timing_info();
-    DistilledPageProto::TimingInfo timing_info;
-    if (distiller_timing_info.has_markup_parsing_time()) {
-      timing_info.set_name("markup_parsing");
-      timing_info.set_time(distiller_timing_info.markup_parsing_time());
-      *page_data->distilled_page_proto->data.add_timing_info() = timing_info;
-    }
-
-    if (distiller_timing_info.has_document_construction_time()) {
-      timing_info.set_name("document_construction");
-      timing_info.set_time(distiller_timing_info.document_construction_time());
-      *page_data->distilled_page_proto->data.add_timing_info() = timing_info;
-    }
-
-    if (distiller_timing_info.has_article_processing_time()) {
-      timing_info.set_name("article_processing");
-      timing_info.set_time(distiller_timing_info.article_processing_time());
-      *page_data->distilled_page_proto->data.add_timing_info() = timing_info;
-    }
-
-    if (distiller_timing_info.has_formatting_time()) {
-      timing_info.set_name("formatting");
-      timing_info.set_time(distiller_timing_info.formatting_time());
-      *page_data->distilled_page_proto->data.add_timing_info() = timing_info;
-    }
-
-    if (distiller_timing_info.has_total_time()) {
-      timing_info.set_name("total");
-      timing_info.set_time(distiller_timing_info.total_time());
-      *page_data->distilled_page_proto->data.add_timing_info() = timing_info;
-    }
-
-    for (int i = 0; i < distiller_timing_info.other_times_size(); i++) {
-      timing_info.set_name(distiller_timing_info.other_times(i).name());
-      timing_info.set_time(distiller_timing_info.other_times(i).time());
-      *page_data->distilled_page_proto->data.add_timing_info() = timing_info;
-    }
-  }
-
   if (distiller_result->has_debug_info() &&
       distiller_result->debug_info().has_log()) {
     page_data->distilled_page_proto->data.mutable_debug_info()->set_log(
