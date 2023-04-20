@@ -34,6 +34,10 @@ id<GREYAction> TapWebElement(ElementSelector* selector) {
   return [ChromeActionsAppInterface tapWebElement:selector];
 }
 
+id<GREYAction> TapWebElementUnverified(ElementSelector* selector) {
+  return [ChromeActionsAppInterface tapWebElementUnverified:selector];
+}
+
 id<GREYAction> TapWebElementWithId(const std::string& element_id) {
   return [ChromeActionsAppInterface
       tapWebElement:[ElementSelector selectorWithElementID:element_id]];

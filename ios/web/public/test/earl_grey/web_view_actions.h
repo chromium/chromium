@@ -32,7 +32,11 @@ id<GREYAction> WebViewLongPressElementForContextMenu(
     bool triggers_context_menu);
 
 // Taps on element selected by `selector` in the webview of `state`.
-id<GREYAction> WebViewTapElement(WebState* state, ElementSelector* selector);
+// If `verified` is true, checks that the tap as been received using some
+// JavaScript.
+id<GREYAction> WebViewTapElement(WebState* state,
+                                 ElementSelector* selector,
+                                 bool verified);
 
 // Scrolls the WebView so the element selected by `selector` is visible.
 id<GREYAction> WebViewScrollElementToVisible(WebState* state,
