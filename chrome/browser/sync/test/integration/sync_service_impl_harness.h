@@ -107,12 +107,13 @@ class SyncServiceImplHarness {
   // For example, this can be used to simulate a sign-in/sign-out or can be
   // useful to recover from a lost birthday.
   // To start from a clear slate, clear server data first, then call
-  // StopSyncServiceAndClearData() followed by StartSyncService().
+  // StopSyncServiceAndClearData() followed by EnableSyncFeature().
 
   // Stops the sync service and clears all local sync data.
   void StopSyncServiceAndClearData();
-  // Starts the sync service after a previous stop.
-  bool StartSyncService();
+  // Turns on sync-the-feature and waits until sync-the-feature is active.
+  // Returns true if and only if sync setup completed successfully.
+  bool EnableSyncFeature();
 
   // Calling this acts as a barrier and blocks the caller until |this| and
   // |partner| have both completed a sync cycle.  When calling this method,

@@ -333,7 +333,7 @@ void SyncServiceImplHarness::StopSyncServiceAndClearData() {
   service()->StopAndClear();
 }
 
-bool SyncServiceImplHarness::StartSyncService() {
+bool SyncServiceImplHarness::EnableSyncFeature() {
   std::unique_ptr<syncer::SyncSetupInProgressHandle> blocker =
       service()->GetSetupInProgressHandle();
   DVLOG(1) << "Requesting start for service";

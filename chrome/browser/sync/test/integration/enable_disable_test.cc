@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
 
   // Stop and restart Sync.
   GetClient(0)->StopSyncServiceAndClearData();
-  GetClient(0)->StartSyncService();
+  GetClient(0)->EnableSyncFeature();
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
 
   // Everything should have been redownloaded.
