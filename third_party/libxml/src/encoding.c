@@ -1340,7 +1340,7 @@ DECLARE_ISO_FUNCS(16)
   #define EMPTY_ICONV
 #endif
 
-#ifdef LIBXML_UCONV_ENABLED
+#ifdef LIBXML_ICU_ENABLED
   #define EMPTY_UCONV , NULL, NULL
 #else
   #define EMPTY_UCONV
