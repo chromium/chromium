@@ -82,6 +82,8 @@ class CastWebContentsScopes {
             // Enable display of current webContents.
             webContents.onShow();
             layout.addView(contentView, matchParent);
+            // Ensure that the foreground doesn't interfere with accessibility overlays.
+            layout.setForeground(null);
             contentView.setFocusable(true);
             contentView.requestFocus();
             contentView.setTag(VIEW_TAG_CONTENT_VIEW);
