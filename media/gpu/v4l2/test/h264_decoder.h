@@ -66,6 +66,10 @@ class H264DPB : public std::map<uint64_t, H264SliceMetadata> {
   // Updates each H264SliceMetadata object in DPB's frame num wrap
   // based on the max frame num.
   void UpdateFrameNumWrap(const int curr_frame_num, const int max_frame_num);
+
+  // Maximum number of elements in the DPB. This is utilized by the
+  // decoder for updating elements in the DPB.
+  size_t max_dpb_size_ = -1;
 };
 
 class H264Decoder : public VideoDecoder {
@@ -91,7 +95,8 @@ class H264Decoder : public VideoDecoder {
  private:
   H264Decoder(std::unique_ptr<H264Parser> parser,
               std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
-              gfx::Size display_resolution);
+              gfx::Size display_resolution,
+              int sps_id);
 
   // Processes NALU's until reaching the end of the current frame.  To
   // know the end of the current frame it may be necessary to start parsing
@@ -137,6 +142,10 @@ class H264Decoder : public VideoDecoder {
       const MmappedBuffer& buffer,
       std::set<uint32_t> queued_buffer_ids);
 
+  // Calculates decoding parameters based on SPS corresponding to sps_id.
+  // If decoding parameters change, this can result in flushing the DPB.
+  void ProcessSPS(const int sps_id);
+
   const std::unique_ptr<H264Parser> parser_;
 
   // Previous pic order counts from previous frame
@@ -145,6 +154,15 @@ class H264Decoder : public VideoDecoder {
   int global_pic_count_ = 0;
 
   H264DPB dpb_;
+
+  // Number of non-outputted pictures needed in DPB before a picture
+  // can be outputted.
+  size_t max_num_reorder_frames_;
+
+  // Decoding profile parameters
+  gfx::Size pic_size_;
+  VideoCodecProfile profile_;
+  uint8_t bit_depth_ = -1;
 
   std::unique_ptr<H264NALU> pending_nalu_;
   std::unique_ptr<H264SliceHeader> pending_slice_header_;

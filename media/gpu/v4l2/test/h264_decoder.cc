@@ -61,6 +61,40 @@ struct H264PicOrderCompare {
   }
 };
 
+// Extracts bit depth to |bit_depth| from the SPS. Returns true if is able
+// to successfully extract bit depth. Otherwise returns false.
+bool ParseBitDepth(const H264SPS& sps, uint8_t& bit_depth) {
+  // Spec 7.4.2.1.1
+  if (sps.bit_depth_luma_minus8 != sps.bit_depth_chroma_minus8) {
+    DVLOG(1) << "H264Decoder doesn't support different bit depths between luma"
+             << "and chroma, bit_depth_luma_minus8="
+             << sps.bit_depth_luma_minus8
+             << ", bit_depth_chroma_minus8=" << sps.bit_depth_chroma_minus8;
+    return false;
+  }
+  DCHECK_GE(sps.bit_depth_luma_minus8, 0);
+  DCHECK_LE(sps.bit_depth_luma_minus8, 6);
+  switch (sps.bit_depth_luma_minus8) {
+    case 0:
+      bit_depth = 8u;
+      break;
+    case 2:
+      bit_depth = 10u;
+      break;
+    case 4:
+      bit_depth = 12u;
+      break;
+    case 6:
+      bit_depth = 14u;
+      break;
+    default:
+      DVLOG(1) << "Invalid bit depth: "
+               << base::checked_cast<int>(sps.bit_depth_luma_minus8 + 8);
+      return false;
+  }
+  return true;
+}
+
 // Translates SPS into h264 sps ctrl structure.
 v4l2_ctrl_h264_sps SetupSPSCtrl(const H264SPS* sps) {
   struct v4l2_ctrl_h264_sps v4l2_sps = {};
@@ -271,6 +305,48 @@ bool IsNewFrame(H264SliceHeader* prev_slice,
   return (nalu_size_error || slice_changed || slice_pic_order_changed);
 }
 
+// Returns the maximum DPB Macro Block Size (MBS) per level specified.
+// Based on spec table A-2.
+uint32_t GetMaxDPBMBS(uint8_t level) {
+  switch (level) {
+    case H264SPS::kLevelIDC1p0:
+      return 396;  // Level 1.0
+    case H264SPS::kLevelIDC1B:
+      return 396;  // Level 1b
+    case H264SPS::kLevelIDC1p1:
+      return 900;  // Level 1.1
+    case H264SPS::kLevelIDC1p2:
+      return 2376;  // Level 1.2
+    case H264SPS::kLevelIDC1p3:
+      return 2376;  // Level 1.3
+    case H264SPS::kLevelIDC2p0:
+      return 2376;  // Level 2.0
+    case H264SPS::kLevelIDC2p1:
+      return 4752;  // Level 2.1
+    case H264SPS::kLevelIDC2p2:
+      return 8100;  // Level 2.2
+    case H264SPS::kLevelIDC3p0:
+      return 8100;  // Level 3.0
+    case H264SPS::kLevelIDC3p1:
+      return 18000;  // Level 3.1
+    case H264SPS::kLevelIDC3p2:
+      return 20480;  // Level 3.2
+    case H264SPS::kLevelIDC4p0:
+      return 32768;  // Level 4.0
+    case H264SPS::kLevelIDC4p1:
+      return 32768;  // Level 4.1
+    case H264SPS::kLevelIDC4p2:
+      return 34816;  // Level 4.2
+    case H264SPS::kLevelIDC5p0:
+      return 110400;  // Level 5.0
+    case H264SPS::kLevelIDC5p1:
+      return 184320;  // Level 5.1
+    case H264SPS::kLevelIDC5p2:
+    default:
+      return 0;
+  }
+}
+
 }  // namespace
 
 int H264DPB::CountRefPics() {
@@ -344,6 +420,70 @@ void H264DPB::UpdateFrameNumWrap(const int curr_frame_num,
     } else {
       i.second.frame_num_wrap = i.second.frame_num;
     }
+  }
+}
+
+void H264Decoder::ProcessSPS(const int sps_id) {
+  const H264SPS* sps = parser_->GetSPS(sps_id);
+  gfx::Size new_pic_size = sps->GetCodedSize().value_or(gfx::Size());
+
+  int width_mb = new_pic_size.width() / 16;
+  int height_mb = new_pic_size.height() / 16;
+
+  // Spec A.3.1 and A.3.2
+  // For Baseline, Constrained Baseline and Main profile, the indicated level is
+  // Level 1b if level_idc is equal to 11 and constraint_set3_flag is equal to 1
+  uint8_t level = base::checked_cast<uint8_t>(sps->level_idc);
+  if ((sps->profile_idc == H264SPS::kProfileIDCBaseline ||
+       sps->profile_idc == H264SPS::kProfileIDCConstrainedBaseline ||
+       sps->profile_idc == H264SPS::kProfileIDCMain) &&
+      level == 11 && sps->constraint_set3_flag) {
+    level = 9;  // Level 1b
+  }
+  int max_dpb_mbs = base::checked_cast<int>(GetMaxDPBMBS(level));
+
+  // MaxDpbFrames from level limits per spec.
+  size_t max_dpb_frames = std::min(max_dpb_mbs / (width_mb * height_mb), 16);
+
+  size_t max_dpb_size =
+      std::max(static_cast<int>(max_dpb_frames),
+               std::max(sps->max_num_ref_frames, sps->max_dec_frame_buffering));
+
+  VideoCodecProfile new_profile =
+      H264Parser::ProfileIDCToVideoCodecProfile(sps->profile_idc);
+  uint8_t new_bit_depth = 0;
+  ParseBitDepth(*sps, new_bit_depth);
+
+  if (sps->vui_parameters_present_flag && sps->bitstream_restriction_flag) {
+    max_num_reorder_frames_ =
+        base::checked_cast<size_t>(sps->max_num_reorder_frames);
+  } else if (sps->constraint_set3_flag) {
+    // max_num_reorder_frames not present, infer from profile/constraints
+    // (see VUI semantics in spec).
+    switch (sps->profile_idc) {
+      case 44:
+      case 86:
+      case 100:
+      case 110:
+      case 122:
+      case 244:
+        max_num_reorder_frames_ = 0;
+        break;
+      default:
+        max_num_reorder_frames_ = max_dpb_size;
+        break;
+    }
+  } else {
+    max_num_reorder_frames_ = max_dpb_size;
+  }
+
+  if (pic_size_ != new_pic_size || dpb_.max_dpb_size_ != max_dpb_size ||
+      profile_ != new_profile || bit_depth_ != new_bit_depth) {
+    // TODO(b/234752983): Flush the DPB Here
+    profile_ = new_profile;
+    bit_depth_ = new_bit_depth;
+    pic_size_ = new_pic_size;
+    dpb_.max_dpb_size_ = max_dpb_size;
   }
 }
 
@@ -578,6 +718,7 @@ H264Parser::Result H264Decoder::ProcessNextFrame(
         if (parser_->ParseSPS(&sps_id) != H264Parser::kOk)
           return H264Parser::kInvalidStream;
 
+        ProcessSPS(sps_id);
         // H.264 specification 7.4 designates a SPS as a frame boundary.
         // If |slice_metadata| is set, then there is a pending frame that
         // needs to be finished.
@@ -685,16 +826,19 @@ VideoDecoder::Result H264Decoder::FinishFrame(
   std::sort(transmittable_slices.begin(), transmittable_slices.end(),
             H264PicOrderCompare());
 
+  // TODO(b/234752983): Update with calculated |max_num_reorder_frames_| and
+  // a slice ready queue.
   const int sps_id =
       parser_->GetPPS(curr_slice.pic_parameter_set_id)->seq_parameter_set_id;
   const H264SPS* sps = parser_->GetSPS(sps_id);
+  const size_t max_num_reorder_frames = sps->max_num_reorder_frames;
 
   // Tries to output as many pictures as we can. A picture can be output,
   // if the number of decoded and not yet outputted pictures that would remain
   // in DPB afterwards would at least be equal to |max_num_reorder_frames|.
-  size_t max_num_reorder_frames = sps->max_num_reorder_frames;
   auto output_candidate = transmittable_slices.begin();
   size_t slices_remaining = transmittable_slices.size();
+
   while (slices_remaining > max_num_reorder_frames) {
     (*output_candidate)->outputted = true;
     std::vector<uint8_t> slice_data(
@@ -762,11 +906,11 @@ std::unique_ptr<H264Decoder> H264Decoder::Create(
       break;
   }
 
-  int id;
-  H264Parser::Result res = parser->ParseSPS(&id);
+  int sps_id;
+  H264Parser::Result res = parser->ParseSPS(&sps_id);
   CHECK(res == H264Parser::kOk);
 
-  const H264SPS* sps = parser->GetSPS(id);
+  const H264SPS* sps = parser->GetSPS(sps_id);
   CHECK(sps);
 
   absl::optional<gfx::Size> coded_size = sps->GetCodedSize();
@@ -782,14 +926,17 @@ std::unique_ptr<H264Decoder> H264Decoder::Create(
   }
 
   return base::WrapUnique(new H264Decoder(
-      std::move(parser), std::move(v4l2_ioctl), coded_size.value()));
+      std::move(parser), std::move(v4l2_ioctl), coded_size.value(), sps_id));
 }
 
 H264Decoder::H264Decoder(std::unique_ptr<H264Parser> parser,
                          std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
-                         gfx::Size display_resolution)
+                         gfx::Size display_resolution,
+                         int sps_id)
     : VideoDecoder::VideoDecoder(std::move(v4l2_ioctl), display_resolution),
-      parser_(std::move(parser)) {}
+      parser_(std::move(parser)) {
+  ProcessSPS(sps_id);
+}
 
 H264Decoder::~H264Decoder() = default;
 
