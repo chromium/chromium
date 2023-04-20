@@ -585,6 +585,7 @@ void EventRouter::Shutdown() {
       DriveIntegrationServiceFactory::FindForProfile(profile_);
   if (integration_service) {
     integration_service->RemoveObserver(this);
+    integration_service->RemoveObserver(drivefs_event_router_.get());
     integration_service->GetDriveFsHost()->RemoveObserver(
         drivefs_event_router_.get());
     integration_service->GetDriveFsHost()->set_dialog_handler({});
@@ -651,6 +652,7 @@ void EventRouter::ObserveEvents() {
       DriveIntegrationServiceFactory::FindForProfile(profile_);
   if (integration_service) {
     integration_service->AddObserver(this);
+    integration_service->AddObserver(drivefs_event_router_.get());
     integration_service->GetDriveFsHost()->AddObserver(
         drivefs_event_router_.get());
     integration_service->GetDriveFsHost()->set_dialog_handler(

@@ -33955,6 +33955,7 @@ Called by update_extension_histograms.py.-->
       label="ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_KEYS_PRESSED_CHANGED"/>
   <int value="510"
       label="ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_MOUSE_CHANGED"/>
+  <int value="511" label="FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">

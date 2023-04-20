@@ -1810,3 +1810,8 @@ chrome.fileManagerPrivate.onIOTaskProgressStatus;
  * @type {!ChromeEvent}
  */
 chrome.fileManagerPrivate.onMountableGuestsChanged;
+
+/**
+ * @type {!ChromeEvent}
+ */
+chrome.fileManagerPrivate.onBulkPinProgress;

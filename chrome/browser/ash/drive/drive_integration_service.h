@@ -94,6 +94,9 @@ class DriveIntegrationServiceObserver : public base::CheckedObserver {
 
   // Triggered when the mirroring functionality is disabled.
   virtual void OnMirroringDisabled() {}
+
+  // Triggered when the bulk pinning manager reports progress.
+  virtual void OnBulkPinProgress(const drivefs::pinning::Progress& progress) {}
 };
 
 // DriveIntegrationService is used to integrate Drive to Chrome. This class
@@ -105,7 +108,8 @@ class DriveIntegrationServiceObserver : public base::CheckedObserver {
 // that are used to integrate Drive to Chrome. The object of this class is
 // created per-profile.
 class DriveIntegrationService : public KeyedService,
-                                public drivefs::DriveFsHost::MountObserver {
+                                public drivefs::DriveFsHost::MountObserver,
+                                public drivefs::pinning::PinManager::Observer {
  public:
   class PreferenceWatcher;
   class BulkPinningPrefUpdater;
@@ -172,6 +176,9 @@ class DriveIntegrationService : public KeyedService,
   void OnUnmounted(absl::optional<base::TimeDelta> remount_delay) override;
   void OnMountFailed(MountFailure failure,
                      absl::optional<base::TimeDelta> remount_delay) override;
+
+  // PinManager::Observer implementation
+  void OnProgress(const drivefs::pinning::Progress& progress) override;
 
   EventLogger* event_logger() { return logger_.get(); }
 

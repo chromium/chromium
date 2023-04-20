@@ -1986,5 +1986,7 @@ interface Events {
   // Event broadcast when the list of Guest OSs that support Guest->Host file
   // sharing changes.
   static void onMountableGuestsChanged(MountableGuest[] guests);
+
+  static void onBulkPinProgress(BulkPinProgress progress);
 };
 };

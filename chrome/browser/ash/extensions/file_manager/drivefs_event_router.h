@@ -12,8 +12,10 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/values.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
+#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "extensions/browser/extension_event_histogram_value.h"
@@ -40,7 +42,8 @@ using IndividualFileTransferStatus =
     extensions::api::file_manager_private::SyncState;
 
 // Files app's event router handling DriveFS-related events.
-class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
+class DriveFsEventRouter : public drivefs::DriveFsHostObserver,
+                           public drive::DriveIntegrationServiceObserver {
  public:
   explicit DriveFsEventRouter(SystemNotificationManager* notification_manager);
   DriveFsEventRouter(const DriveFsEventRouter&) = delete;
@@ -93,6 +96,9 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
   void OnFilesChanged(
       const std::vector<drivefs::mojom::FileChange>& changes) override;
   void OnError(const drivefs::mojom::DriveError& error) override;
+
+  // DriveIntegrationServiceObserver:
+  void OnBulkPinProgress(const drivefs::pinning::Progress& progress) override;
 
   virtual std::set<GURL> GetEventListenerURLs(
       const std::string& event_name) = 0;

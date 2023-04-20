@@ -1097,6 +1097,7 @@ void DriveIntegrationService::RemoveDriveMountPoint() {
 
   if (pin_manager_) {
     pin_manager_->Stop();
+    pin_manager_->RemoveObserver(this);
     if (bulk_pinning_pref_updater_) {
       pin_manager_->RemoveObserver(bulk_pinning_pref_updater_.get());
       bulk_pinning_pref_updater_.reset();
@@ -1186,6 +1187,7 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
     DCHECK(!pin_manager_);
     pin_manager_ = std::make_unique<PinManager>(profile_->GetPath(),
                                                 GetDriveFsInterface());
+    pin_manager_->AddObserver(this);
     DCHECK(!bulk_pinning_pref_updater_);
     bulk_pinning_pref_updater_ =
         std::make_unique<BulkPinningPrefUpdater>(GetPrefs());
@@ -1221,6 +1223,13 @@ void DriveIntegrationService::OnMountFailed(
     // We don't record mount time until we mount successfully at least once.
   }
   MaybeRemountFileSystem(remount_delay, true);
+}
+
+void DriveIntegrationService::OnProgress(
+    const drivefs::pinning::Progress& progress) {
+  for (auto& observer : observers_) {
+    observer.OnBulkPinProgress(progress);
+  }
 }
 
 void DriveIntegrationService::Initialize() {
