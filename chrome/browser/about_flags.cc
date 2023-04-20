@@ -3215,6 +3215,30 @@ const FeatureEntry::FeatureVariation
          std::size(kServiceWorkerSkipIgnorableFetchHandler_SkipEmpty), nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kServiceWorkerBypassFetchHandler_MainResource[] = {
+        {"bypass_for", "main_resource"},
+        {"strategy", "optin"}};
+const FeatureEntry::FeatureParam
+    kServiceWorkerBypassFetchHandler_RaceNetworkRequest[] = {
+        {"bypass_for", "all_with_race_network_request"},
+        {"strategy", "optin"}};
+const FeatureEntry::FeatureParam
+    kServiceWorkerBypassFetchHandler_Subresource[] = {
+        {"bypass_for", "sub_resource"},
+        {"strategy", "optin"}};
+const FeatureEntry::FeatureVariation
+    kServiceWorkerBypassFetchHandlerVariations[] = {
+        {"Main Resource", kServiceWorkerBypassFetchHandler_MainResource,
+         std::size(kServiceWorkerBypassFetchHandler_MainResource), nullptr},
+        {"Subesource", kServiceWorkerBypassFetchHandler_Subresource,
+         std::size(kServiceWorkerBypassFetchHandler_Subresource), nullptr},
+        {"Race Network Request and Fetch Handler",
+         kServiceWorkerBypassFetchHandler_RaceNetworkRequest,
+         std::size(kServiceWorkerBypassFetchHandler_RaceNetworkRequest),
+         nullptr},
+};
+
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kHeuristicMemorySaverAggressive[] = {
     {"threshold_percent", "30"},
@@ -9769,6 +9793,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"storage-buckets", flag_descriptions::kStorageBucketsName,
      flag_descriptions::kStorageBucketsDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kStorageBuckets)},
+
+    {"service-worker-bypass-fetch-handler",
+     flag_descriptions::kServiceWorkerBypassFetchHandlerName,
+     flag_descriptions::kServiceWorkerBypassFetchHandlerDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kServiceWorkerBypassFetchHandler,
+                                    kServiceWorkerBypassFetchHandlerVariations,
+                                    "ServiceWorkerBypassFetchHandler")},
 
     {"service-worker-bypass-fetch-handler-for-main-resource",
      flag_descriptions::kServiceWorkerBypassFetchHandlerForMainResourceName,

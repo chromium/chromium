@@ -396,6 +396,9 @@ extern const char kBorealisStorageBallooningDescription[];
 extern const char kBypassAppBannerEngagementChecksName[];
 extern const char kBypassAppBannerEngagementChecksDescription[];
 
+extern const char kServiceWorkerBypassFetchHandlerName[];
+extern const char kServiceWorkerBypassFetchHandlerDescription[];
+
 extern const char kServiceWorkerBypassFetchHandlerForMainResourceName[];
 extern const char kServiceWorkerBypassFetchHandlerForMainResourceDescription[];
 
