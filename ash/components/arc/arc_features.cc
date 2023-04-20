@@ -101,6 +101,12 @@ BASE_FEATURE(kEnableVirtioBlkForData,
              "ArcEnableVirtioBlkForData",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether to allow Android apps to access external storage devices
+// like USB flash drives and SD cards.
+BASE_FEATURE(kExternalStorageAccess,
+             "ArcExternalStorageAccess",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether to pop up ghost window for ARC app before fixup finishes.
 BASE_FEATURE(kFixupWindowFeature,
              "ArcFixupWindowFeature",
