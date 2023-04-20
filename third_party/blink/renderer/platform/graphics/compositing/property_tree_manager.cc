@@ -261,14 +261,6 @@ bool PropertyTreeManager::UsesCompositedScrolling(
   return cc_scroll->is_composited;
 }
 
-void PropertyTreeManager::EnsureCompositorScrollTranslationNodes(
-    const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes) {
-  DCHECK(base::FeatureList::IsEnabled(features::kScrollUnification));
-
-  for (auto* node : scroll_translation_nodes)
-    EnsureCompositorScrollAndTransformNode(*node);
-}
-
 void PropertyTreeManager::SetupRootTransformNode() {
   // cc is hardcoded to use transform node index 1 for device scale and
   // transform.
