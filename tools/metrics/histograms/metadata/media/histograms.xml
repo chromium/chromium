@@ -4562,14 +4562,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RTCVideoDecoderError" enum="MediaStatusCode"
-    expires_after="2023-04-16">
+    expires_after="2024-04-20">
   <owner>posciak@chromium.org</owner>
   <owner>liberato@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
     Counts of video decode errors reported to RTCVideoDecoder, recorded when an
     error is reportd to RTCVideoDecoder. Also used for DecoderStream. Expired in
-    M83 and re-added in M92.
+    M83 and re-added in M92. Warning: this histogram was expired between
+    2023-04-16 to 2023-04-20; data may be missing.
   </summary>
 </histogram>
 
@@ -4622,14 +4623,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RTCVideoDecoderMaxInFlightDecodes" units="frames"
-    expires_after="2022-08-14">
+    expires_after="2024-04-20">
   <owner>liberato@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
     Max number of frames sent for video decode via the DecoderStream adapter,
     that have not also returned a decoded video frame. The metric is emitted
     once per RTCVideoDecoderStreamAdapter instance, as the max observed value
-    over that instance's lifetime.
+    over that instance's lifetime. Warning: this histogram was expired between
+    2023-08-14 to 2023-04-20; data may be missing.
   </summary>
 </histogram>
 
@@ -4958,12 +4960,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VaapiWrapper.VADisplayStateInitializeSuccess"
-    enum="BooleanSuccess" expires_after="2023-02-12">
+    enum="BooleanSuccess" expires_after="2024-04-20">
   <owner>mcasas@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Whether the call to VaapiWrapper's VADisplayState::Initialize() succeeded or
-    not.
+    not. Warning: this histogram was expired between 2023-02-12 to 2023-04-20;
+    data may be missing.
   </summary>
 </histogram>
 
