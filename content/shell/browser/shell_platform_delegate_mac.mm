@@ -4,6 +4,8 @@
 
 #include "content/shell/browser/shell_platform_delegate.h"
 
+#import <Cocoa/Cocoa.h>
+
 #include <algorithm>
 
 #include "base/containers/contains.h"
@@ -20,7 +22,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/shell/app/resource.h"
 #include "content/shell/browser/shell.h"
-#import "ui/base/cocoa/underlay_opengl_hosting_window.h"
 #include "url/gurl.h"
 
 // Receives notification that the window is closing so that it can start the
@@ -30,7 +31,7 @@
   raw_ptr<content::Shell> _shell;
 }
 - (id)initWithShell:(content::Shell*)shell;
-- (content::Shell*)shell;
+- (void)showDevTools:(id)sender;
 @end
 
 @implementation ContentShellWindowDelegate
@@ -40,12 +41,6 @@
     _shell = shell;
   }
   return self;
-}
-
-// Called by CrShellWindow so that it doesn't need to hold
-// raw_ptr<content::Shell>.
-- (content::Shell*)shell {
-  return _shell;
 }
 
 // Called when the window is about to close. Perform the self-destruction
@@ -72,21 +67,8 @@
   _shell->URLEntered(base::SysNSStringToUTF8([sender stringValue]));
 }
 
-@end
-
-@interface CrShellWindow : UnderlayOpenGLHostingWindow
-- (void)showDevTools:(id)sender;
-@end
-
-@implementation CrShellWindow
-
 - (void)showDevTools:(id)sender {
-  // This is prefered as holding a raw_ptr<content::Shell> because the delegate
-  // is responsible for destroying the shell on `windowShouldClose` event which
-  // would lead the raw_ptr to dangle.
-  ContentShellWindowDelegate* delegate =
-      base::mac::ObjCCastStrict<ContentShellWindowDelegate>(self.delegate);
-  delegate.shell->ShowDevTools();
+  _shell->ShowDevTools();
 }
 
 @end
@@ -107,7 +89,7 @@ void MakeShellButton(NSRect* rect,
                      NSString* title,
                      NSView* parent,
                      int control,
-                     NSView* target,
+                     id target,
                      NSString* key,
                      NSUInteger modifier) {
   base::scoped_nsobject<NSButton> button(
@@ -158,11 +140,11 @@ void ShellPlatformDelegate::CreatePlatformWindow(
   NSUInteger style_mask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
                           NSWindowStyleMaskMiniaturizable |
                           NSWindowStyleMaskResizable;
-  CrShellWindow* window =
-      [[CrShellWindow alloc] initWithContentRect:content_rect
-                                       styleMask:style_mask
-                                         backing:NSBackingStoreBuffered
-                                           defer:NO];
+  NSWindow* window =
+      [[NSWindow alloc] initWithContentRect:content_rect
+                                  styleMask:style_mask
+                                    backing:NSBackingStoreBuffered
+                                      defer:NO];
   [window setTitle:kWindowTitle];
   NSView* content = [window contentView];
 
@@ -195,14 +177,14 @@ void ShellPlatformDelegate::CreatePlatformWindow(
         NSMakeRect(0, NSMaxY(initial_window_bounds) - kURLBarHeight,
                    kButtonWidth, kURLBarHeight);
 
-    MakeShellButton(&button_frame, @"Back", content, IDC_NAV_BACK,
-                    (NSView*)delegate, @"[", NSEventModifierFlagCommand);
+    MakeShellButton(&button_frame, @"Back", content, IDC_NAV_BACK, delegate,
+                    @"[", NSEventModifierFlagCommand);
     MakeShellButton(&button_frame, @"Forward", content, IDC_NAV_FORWARD,
-                    (NSView*)delegate, @"]", NSEventModifierFlagCommand);
-    MakeShellButton(&button_frame, @"Reload", content, IDC_NAV_RELOAD,
-                    (NSView*)delegate, @"r", NSEventModifierFlagCommand);
-    MakeShellButton(&button_frame, @"Stop", content, IDC_NAV_STOP,
-                    (NSView*)delegate, @".", NSEventModifierFlagCommand);
+                    delegate, @"]", NSEventModifierFlagCommand);
+    MakeShellButton(&button_frame, @"Reload", content, IDC_NAV_RELOAD, delegate,
+                    @"r", NSEventModifierFlagCommand);
+    MakeShellButton(&button_frame, @"Stop", content, IDC_NAV_STOP, delegate,
+                    @".", NSEventModifierFlagCommand);
 
     button_frame.size.width =
         NSWidth(initial_window_bounds) - NSMinX(button_frame);

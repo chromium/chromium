@@ -39,7 +39,7 @@ ShellNativeAppWindowMac::ShellNativeAppWindowMac(
       params.GetInitialWindowBounds(gfx::Insets()));
 
   // TODO(yoz): Do we need to handle commands (keyboard shortcuts)?
-  // Do we need need ChromeEventProcessingWindow or UnderlayOpenGLHostingWindow?
+  // Do we need need ChromeEventProcessingWindow?
   shell_window.reset([[NSWindow alloc]
       initWithContentRect:cocoa_bounds
                 styleMask:style_mask
