@@ -1043,8 +1043,8 @@ void ChromeRefresh2023TabStyleViews::PaintBackgroundHover(gfx::Canvas* canvas,
       cp->GetColor(tab()->controller()->ShouldPaintAsActiveFrame()
                        ? kColorTabBackgroundHoverFrameActive
                        : kColorTabBackgroundHoverFrameInactive);
-  const SkColor4f color_with_alpha_animation =
-      SkColor4f::FromColor(SkColorSetA(color, GetHoverAnimationValue() * 255));
+  const SkColor4f color_with_alpha_animation = SkColor4f::FromColor(
+      SkColorSetA(color, GetHoverAnimationValue() * SkColorGetA(color)));
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);

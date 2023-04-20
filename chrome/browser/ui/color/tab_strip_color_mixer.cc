@@ -138,6 +138,9 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabBackgroundHoverFrameInactive] = {ui::SetAlpha(
       kColorTabBackgroundActiveFrameInactive, /* 50% opacity */ 0.5 * 255)};
 
+  mixer[kColorTabDividerFrameActive] = {kColorToolbar};
+  mixer[kColorTabDividerFrameInactive] = {kColorToolbar};
+
   // TODO (crbug.com/1399942): update to respect original values once theming is
   // correctly supported.
   mixer[kColorNewTabButtonForegroundFrameActive] = {kColorToolbarButtonIcon};
