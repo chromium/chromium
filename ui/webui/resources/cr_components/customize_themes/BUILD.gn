@@ -4,7 +4,6 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
-import("//ui/webui/webui_features.gni")
 
 assert(!is_android && !is_ios)
 
@@ -50,6 +49,4 @@ build_webui("build") {
   ]
   generate_grdp = true
   grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
-
-  optimize = optimize_webui
 }
