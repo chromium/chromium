@@ -126,7 +126,8 @@ class ExtensionsMenuModel : public ui::SimpleMenuModel {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kVisitChromeWebStoreMenuItem);
 
   ExtensionsMenuModel(ui::SimpleMenuModel::Delegate* delegate,
-                      Browser* browser);
+                      Browser* browser,
+                      AppMenuIconController* app_menu_icon_controller);
 
   ExtensionsMenuModel(const ExtensionsMenuModel&) = delete;
   ExtensionsMenuModel& operator=(const ExtensionsMenuModel&) = delete;
@@ -135,6 +136,8 @@ class ExtensionsMenuModel : public ui::SimpleMenuModel {
 
  private:
   void Build(Browser* browser);
+
+  raw_ptr<AppMenuIconController> app_menu_icon_controller_ = nullptr;
 };
 
 class FindAndEditSubMenuModel : public ui::SimpleMenuModel {

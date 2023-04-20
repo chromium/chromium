@@ -258,7 +258,8 @@ void ToolsMenuModel::Build(Browser* browser) {
 
   AddSeparator(ui::NORMAL_SEPARATOR);
   AddItemWithStringId(IDC_CLEAR_BROWSING_DATA, IDS_CLEAR_BROWSING_DATA);
-  if (!base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu)) {
+  if (!base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) &&
+      !features::IsChromeRefresh2023()) {
     AddItemWithStringId(IDC_MANAGE_EXTENSIONS, IDS_SHOW_EXTENSIONS);
   }
   AddItemWithStringId(IDC_PERFORMANCE, IDS_SHOW_PERFORMANCE);
@@ -283,8 +284,10 @@ void ToolsMenuModel::Build(Browser* browser) {
 
 ExtensionsMenuModel::ExtensionsMenuModel(
     ui::SimpleMenuModel::Delegate* delegate,
-    Browser* browser)
-    : SimpleMenuModel(delegate) {
+    Browser* browser,
+    AppMenuIconController* app_menu_icon_controller)
+    : SimpleMenuModel(delegate),
+      app_menu_icon_controller_(app_menu_icon_controller) {
   Build(browser);
 }
 
@@ -306,6 +309,22 @@ void ExtensionsMenuModel::Build(Browser* browser) {
       GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE)
           .value(),
       kVisitChromeWebStoreMenuItem);
+  if (features::IsChromeRefresh2023()) {
+    const int kIconSize = 16;
+    SetIcon(
+        GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS).value(),
+        ui::ImageModel::FromVectorIcon(
+            vector_icons::kExtensionChromeRefreshIcon,
+            app_menu_icon_controller_->GetIconColor(absl::nullopt), kIconSize));
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    SetIcon(
+        GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE)
+            .value(),
+        ui::ImageModel::FromVectorIcon(
+            vector_icons::kGoogleChromeWebstoreIcon,
+            app_menu_icon_controller_->GetIconColor(absl::nullopt), kIconSize));
+#endif
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -557,7 +576,8 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       break;
     // Extensions menu.
     case IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS:
-      CHECK(base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu));
+      CHECK(base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) ||
+            features::IsChromeRefresh2023());
       // Logging the original histograms for experiment comparison purposes.
       if (!uma_action_recorded_) {
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ManageExtensions",
@@ -566,7 +586,8 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       LogMenuAction(MENU_ACTION_MANAGE_EXTENSIONS);
       break;
     case IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE:
-      CHECK(base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu));
+      CHECK(base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) ||
+            features::IsChromeRefresh2023());
       if (!uma_action_recorded_) {
         UMA_HISTOGRAM_MEDIUM_TIMES(
             "WrenchMenu.TimeToAction.VisitChromeWebStore", delta);
@@ -995,13 +1016,23 @@ void AppMenuModel::Build() {
                            kPasswordManagerMenuItem);
   }
 
-  if (base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu)) {
+  if (base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) ||
+      features::IsChromeRefresh2023()) {
     // Extensions sub menu.
-    sub_menus_.push_back(std::make_unique<ExtensionsMenuModel>(this, browser_));
+    sub_menus_.push_back(std::make_unique<ExtensionsMenuModel>(
+        this, browser_, app_menu_icon_controller_));
     AddSubMenuWithStringId(IDC_EXTENSIONS_SUBMENU, IDS_EXTENSIONS_SUBMENU,
                            sub_menus_.back().get());
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU).value(),
                            kExtensionsMenuItem);
+    if (features::IsChromeRefresh2023()) {
+      constexpr int kIconSize = 16;
+      SetIcon(GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU).value(),
+              ui::ImageModel::FromVectorIcon(
+                  vector_icons::kExtensionChromeRefreshIcon,
+                  app_menu_icon_controller_->GetIconColor(absl::nullopt),
+                  kIconSize));
+    }
   }
 
   AddSeparator(features::IsChromeRefresh2023() ? ui::NORMAL_SEPARATOR

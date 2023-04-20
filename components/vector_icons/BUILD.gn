@@ -150,6 +150,7 @@ aggregate_vector_icons("components_vector_icons") {
     sources += [
       "google_chrome/assistant.icon",
       "google_chrome/google_calendar.icon",
+      "google_chrome/google_chrome_webstore.icon",
       "google_chrome/google_docs.icon",
       "google_chrome/google_drive.icon",
       "google_chrome/google_g_logo.icon",
