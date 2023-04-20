@@ -184,4 +184,5 @@ build_webui("build") {
   }
 
   grit_output_dir = "$root_gen_dir/ash/webui"
+  enable_source_maps = enable_webui_inline_sourcemaps
 }
