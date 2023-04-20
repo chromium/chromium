@@ -192,7 +192,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuModelInteractiveTest,
       SelectMenuItem(AppMenuModel::kExtensionsMenuItem),
       SelectMenuItem(ExtensionsMenuModel::kVisitChromeWebStoreMenuItem),
       WaitForWebContentsNavigation(kPrimaryTabPageElementId,
-                                   extension_urls::GetWebstoreLaunchURL()));
+                                   extension_urls::AppendUtmSource(
+                                       extension_urls::GetWebstoreLaunchURL(),
+                                       extension_urls::kAppMenuUtmSource)));
 
   histograms.ExpectTotalCount("WrenchMenu.TimeToAction.VisitChromeWebStore", 1);
   histograms.ExpectTotalCount("WrenchMenu.TimeToAction.ManageExtensions", 0);

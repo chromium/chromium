@@ -805,7 +805,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE:
       CHECK(base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) ||
             features::IsChromeRefresh2023());
-      ShowWebStore(browser_);
+      ShowWebStoreFromAppMenu(browser_);
       break;
     case IDC_PERFORMANCE:
       ShowSettingsSubPage(browser_->GetBrowserForOpeningWebUi(),
