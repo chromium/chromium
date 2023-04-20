@@ -6,8 +6,8 @@ from telemetry import story
 from page_sets import press_story
 
 
-class SpeedometerStory(press_story.PressStory):
-  URL='http://browserbench.org/Speedometer/'
+class Speedometer1Story(press_story.PressStory):
+  URL = 'http://browserbench.org/Speedometer/'
 
   enabled_suites = [
       'VanillaJS-TodoMVC',
@@ -16,7 +16,7 @@ class SpeedometerStory(press_story.PressStory):
       'jQuery-TodoMVC',
       'AngularJS-TodoMVC',
       'React-TodoMVC',
-      'FlightJS-TodoMVC'
+      'FlightJS-TodoMVC',
   ]
 
   def ExecuteTest(self, action_runner):
@@ -37,7 +37,7 @@ class SpeedometerStory(press_story.PressStory):
         benchmarkClient.iterationCount = {{ count }};
         startTest();
         """,
-        count=iterationCount)
+                                    count=iterationCount)
     action_runner.WaitForJavaScriptCondition(
         'benchmarkClient._finishedTestCount == benchmarkClient.testsCount',
         timeout=600)
@@ -50,9 +50,9 @@ class SpeedometerStory(press_story.PressStory):
 
     # Extract the timings for each suite
     for suite_name in self.enabled_suites:
-      self.AddJavaScriptMeasurement(
-          suite_name, 'ms',
-          """
+      self.AddJavaScriptMeasurement(suite_name,
+                                    'ms',
+                                    """
           var suite_times = [];
           for(var i = 0; i < benchmarkClient.iterationCount; i++) {
             suite_times.push(
@@ -60,13 +60,13 @@ class SpeedometerStory(press_story.PressStory):
           };
           suite_times;
           """,
-          key=suite_name)
+                                    key=suite_name)
 
 
-class SpeedometerStorySet(story.StorySet):
+class Speedometer1StorySet(story.StorySet):
   def __init__(self):
-    super(SpeedometerStorySet, self).__init__(
-        archive_data_file='data/speedometer.json',
-        cloud_storage_bucket=story.PUBLIC_BUCKET)
+    super(Speedometer1StorySet,
+          self).__init__(archive_data_file='data/speedometer.json',
+                         cloud_storage_bucket=story.PUBLIC_BUCKET)
 
-    self.AddStory(SpeedometerStory(self))
+    self.AddStory(Speedometer1Story(self))
