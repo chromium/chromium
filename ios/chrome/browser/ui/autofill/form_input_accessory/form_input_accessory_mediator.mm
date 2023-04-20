@@ -536,6 +536,10 @@ using base::UmaHistogramEnumeration;
     if (provider.type == SuggestionProviderTypeAutofill) {
       LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
     }
+
+    if (suggestions.firstObject.featureForIPH.length > 0) {
+      [self.handler showAutofillSuggestionIPHIfNeeded];
+    }
   }
 }
 
@@ -557,6 +561,12 @@ using base::UmaHistogramEnumeration;
     }
     if (strongSelf.currentProvider.type == SuggestionProviderTypePassword) {
       LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
+    }
+    if (formSuggestion.featureForIPH.length) {
+      // The IPH is only shown if the suggestion was the first one. It doesn't
+      // matter if the IPH was shown for this suggestion as we don't want to
+      // show more IPH's to the user.
+      [self.handler notifyAutofillSuggestionWithIPHSelected];
     }
     [strongSelf.currentProvider didSelectSuggestion:formSuggestion];
   };

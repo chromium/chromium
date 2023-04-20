@@ -31,6 +31,9 @@
 // If specified, this text will be announced when this suggestion is accepted.
 @property(copy, readonly, nonatomic) NSString* acceptanceA11yAnnouncement;
 
+// If specified, shows in-product help for the suggestion.
+@property(copy, nonatomic) NSString* featureForIPH;
+
 // Returns FormSuggestion (immutable) with given values.
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
                     displayDescription:(NSString*)displayDescription

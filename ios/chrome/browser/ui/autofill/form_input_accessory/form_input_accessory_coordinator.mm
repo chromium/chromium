@@ -17,6 +17,7 @@
 #import "base/time/time.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
@@ -25,17 +26,21 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/address_coordinator.h"
@@ -45,6 +50,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_all_password_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_coordinator.h"
+#import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
@@ -56,6 +62,21 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+// Delay between the time the view is shown, and the time the suggestion label
+// is highlighted.
+constexpr base::TimeDelta kAutofillSuggestionHighlightDelay = base::Seconds(1);
+
+// Delay between the time the suggestion label is highlighted, and the time the
+// autofill suggestion tip is shown.
+constexpr base::TimeDelta kAutofillSuggestionTipDelay = base::Seconds(0.5);
+
+// Additional vertical offset for the IPH, so that it doesn't appear below the
+// Autofill strip at the top of the keyboard.
+const CGFloat kIPHVerticalOffset = -5;
+
+}  // namespace
 
 @interface FormInputAccessoryCoordinator () <
     AddressCoordinatorDelegate,
@@ -94,6 +115,17 @@
 // (thus the returned value must be checked for null).
 @property(nonatomic, readonly) ChromeBrowserState* browserState;
 
+// Bubble view controller presenter for autofill suggestion tip.
+@property(nonatomic, strong) BubbleViewControllerPresenter* bubblePresenter;
+
+// UI tap recognizer used to dismiss bubble presenter.
+@property(nonatomic, strong)
+    UITapGestureRecognizer* formInputAccessoryTapRecognizer;
+
+// The layout guide installed in the base view controller on which to anchor the
+// potential IPH bubble.
+@property(nonatomic, strong) UILayoutGuide* layoutGuide;
+
 @end
 
 @implementation FormInputAccessoryCoordinator
@@ -112,6 +144,10 @@
           initWithWebStateList:browser->GetWebStateList()
           securityAlertHandler:securityAlertHandler
         reauthenticationModule:_reauthenticationModule];
+    _formInputAccessoryTapRecognizer = [[UITapGestureRecognizer alloc]
+        initWithTarget:self
+                action:@selector(tapInsideRecognized:)];
+    _formInputAccessoryTapRecognizer.cancelsTouchesInView = NO;
   }
   return self;
 }
@@ -120,6 +156,10 @@
   self.formInputAccessoryViewController =
       [[FormInputAccessoryViewController alloc]
           initWithManualFillAccessoryViewControllerDelegate:self];
+
+  LayoutGuideCenter* layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
+  self.formInputAccessoryViewController.layoutGuideCenter = layoutGuideCenter;
 
   DCHECK(self.browserState);
   auto profilePasswordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
@@ -149,10 +189,18 @@
       self.formInputAccessoryMediator;
   self.formInputAccessoryViewController.brandingViewControllerDelegate =
       self.formInputAccessoryMediator;
+  [self.formInputAccessoryViewController.view
+      addGestureRecognizer:self.formInputAccessoryTapRecognizer];
+
+  self.layoutGuide =
+      [layoutGuideCenter makeLayoutGuideNamed:kAutofillFirstSuggestionGuide];
+  [self.baseViewController.view addLayoutGuide:self.layoutGuide];
 }
 
 - (void)stop {
   [self stopChildren];
+  [self.formInputAccessoryTapRecognizer.view
+      removeGestureRecognizer:self.formInputAccessoryTapRecognizer];
   self.formInputAccessoryViewController = nil;
   self.formInputViewController = nil;
   [GetFirstResponder() reloadInputViews];
@@ -162,6 +210,8 @@
 
   [self.allPasswordCoordinator stop];
   self.allPasswordCoordinator = nil;
+  [self.layoutGuide.owningView removeLayoutGuide:self.layoutGuide];
+  self.layoutGuide = nil;
 }
 
 - (void)reset {
@@ -242,6 +292,31 @@
 
 - (void)resetFormInputView {
   [self reset];
+}
+
+- (void)notifyAutofillSuggestionWithIPHSelected {
+  // The engagement tracker can change during testing (in feature engagement app
+  // interface), therefore we retrive it here instead of storing it in the
+  // mediator.
+  feature_engagement::Tracker* tracker = self.featureEngagementTracker;
+  if (tracker) {
+    tracker->NotifyEvent(
+        "autofill_external_account_profile_suggestion_accepted");
+  }
+}
+
+- (void)showAutofillSuggestionIPHIfNeeded {
+  if (self.bubblePresenter) {
+    // Already showing a bubble.
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf tryPresentingBubble];
+      }),
+      kAutofillSuggestionHighlightDelay);
 }
 
 #pragma mark - ManualFillAccessoryViewControllerDelegate
@@ -413,10 +488,28 @@
   return nil;
 }
 
+#pragma mark - Actions
+
+- (void)tapInsideRecognized:(id)sender {
+  [self.bubblePresenter dismissAnimated:YES];
+  self.bubblePresenter = nil;
+}
+
 #pragma mark - Private
 
 - (ChromeBrowserState*)browserState {
   return self.browser ? self.browser->GetBrowserState() : nullptr;
+}
+
+- (feature_engagement::Tracker*)featureEngagementTracker {
+  ChromeBrowserState* browserState = self.browserState;
+  if (!browserState) {
+    return nullptr;
+  }
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+  CHECK(tracker);
+  return tracker;
 }
 
 // Shows confirmation dialog before opening Other passwords.
@@ -468,6 +561,87 @@
                          browser:self.browser
                 injectionHandler:self.injectionHandler];
   [self.allPasswordCoordinator start];
+}
+
+// Returns a new bubble view controller presenter for password suggestion tip.
+- (BubbleViewControllerPresenter*)newBubbleViewControllerPresenter {
+  // Prepare the main arguments for the BubbleViewControllerPresenter
+  // initializer.
+  NSString* text = l10n_util::GetNSString(
+      IDS_AUTOFILL_IPH_EXTERNAL_ACCOUNT_PROFILE_SUGGESTION);
+  BubbleViewType bubbleType = BubbleViewTypeDefault;
+
+  // Prepare the dismissal callback.
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlockWithSnoozeAction dismissalCallback =
+      ^(feature_engagement::Tracker::SnoozeAction snoozeAction) {
+        [weakSelf IPHDidDismissWithSnoozeAction:snoozeAction];
+      };
+
+  // Create the BubbleViewControllerPresenter.
+  BubbleViewControllerPresenter* bubbleViewControllerPresenter =
+      [[BubbleViewControllerPresenter alloc]
+               initWithText:text
+                      title:nil
+                      image:nil
+             arrowDirection:BubbleArrowDirectionDown
+                  alignment:BubbleAlignmentLeading
+                 bubbleType:bubbleType
+          dismissalCallback:dismissalCallback];
+  return bubbleViewControllerPresenter;
+}
+
+// Checks if the bubble should be presented and acts on it.
+- (void)tryPresentingBubble {
+  BubbleViewControllerPresenter* bubblePresenter =
+      [self newBubbleViewControllerPresenter];
+
+  // Get the anchor point for the bubble.
+  CGRect anchorFrame = self.layoutGuide.layoutFrame;
+  CGPoint anchorPoint =
+      CGPointMake(CGRectGetMidX(anchorFrame),
+                  CGRectGetMinY(anchorFrame) + kIPHVerticalOffset);
+
+  // Discard if it doesn't fit in the view as it is currently shown.
+  if (![bubblePresenter canPresentInView:self.baseViewController.view
+                             anchorPoint:anchorPoint]) {
+    return;
+  }
+
+  // Early return if the engagement tracker won't display the IPH.
+  feature_engagement::Tracker* tracker = self.featureEngagementTracker;
+  const base::Feature& feature =
+      feature_engagement::kIPHAutofillExternalAccountProfileSuggestionFeature;
+  if (!tracker || !tracker->ShouldTriggerHelpUI(feature)) {
+    return;
+  }
+
+  // Present the bubble after the delay.
+  self.bubblePresenter = bubblePresenter;
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf presentBubbleAtAnchorPoint:anchorPoint];
+      }),
+      kAutofillSuggestionTipDelay);
+}
+
+- (void)IPHDidDismissWithSnoozeAction:
+    (feature_engagement::Tracker::SnoozeAction)snoozeAction {
+  feature_engagement::Tracker* tracker = self.featureEngagementTracker;
+  if (tracker) {
+    const base::Feature& feature =
+        feature_engagement::kIPHAutofillExternalAccountProfileSuggestionFeature;
+    tracker->DismissedWithSnooze(feature, snoozeAction);
+  }
+  self.bubblePresenter = nil;
+}
+
+// Actually presents the bubble.
+- (void)presentBubbleAtAnchorPoint:(CGPoint)anchorPoint {
+  [self.bubblePresenter presentInViewController:self.baseViewController
+                                           view:self.baseViewController.view
+                                    anchorPoint:anchorPoint];
 }
 
 @end

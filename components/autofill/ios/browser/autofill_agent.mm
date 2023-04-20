@@ -670,6 +670,11 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
                              requiresReauth:NO
                  acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
 
+    if (!popup_suggestion.feature_for_iph.empty()) {
+      suggestion.featureForIPH =
+          base::SysUTF8ToNSString(popup_suggestion.feature_for_iph);
+    }
+
     // Put "clear form" entry at the front of the suggestions.
     if (popup_suggestion.frontend_id == autofill::POPUP_ITEM_ID_CLEAR_FORM) {
       [suggestions insertObject:suggestion atIndex:0];
