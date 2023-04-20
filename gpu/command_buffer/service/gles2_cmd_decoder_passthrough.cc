@@ -1090,7 +1090,7 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
       "GL_OES_EGL_image",
       "GL_OES_EGL_image_external",
       "GL_OES_EGL_image_external_essl3",
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
       "GL_ANGLE_texture_rectangle",
 #endif
       "GL_ANGLE_vulkan_image",
