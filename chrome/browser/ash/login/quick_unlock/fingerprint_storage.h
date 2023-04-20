@@ -8,7 +8,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_power_button_race_detector.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
+#include "chrome/browser/ui/ash/auth/legacy_fingerprint_engine.h"
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -137,6 +139,10 @@ class FingerprintStorage final
 
   std::unique_ptr<FingerprintPowerButtonRaceDetector>
       fingerprint_power_button_race_detector_;
+
+  AuthPerformer auth_performer_;
+
+  LegacyFingerprintEngine legacy_fingerprint_engine_;
 
   base::WeakPtrFactory<FingerprintStorage> weak_factory_{this};
 };

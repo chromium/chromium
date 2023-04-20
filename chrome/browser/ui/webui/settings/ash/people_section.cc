@@ -41,6 +41,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/account_manager_core/pref_names.h"
@@ -487,7 +488,9 @@ PeopleSection::PeopleSection(Profile* profile,
                              PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
       identity_manager_(identity_manager),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      auth_performer_(UserDataAuthClient::Get()),
+      fp_engine_(&auth_performer_) {
   // No search tags are registered if in guest mode.
   if (IsGuestModeActive())
     return;
@@ -749,8 +752,8 @@ void PeopleSection::UpdateAccountManagerSearchTags(
 }
 
 bool PeopleSection::AreFingerprintSettingsAllowed() {
-  return quick_unlock::IsFingerprintEnabled(profile(),
-                                            quick_unlock::Purpose::kAny);
+  return fp_engine_.IsFingerprintEnabled(
+      *profile()->GetPrefs(), LegacyFingerprintEngine::Purpose::kAny);
 }
 
 }  // namespace ash::settings

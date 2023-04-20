@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -41,6 +42,7 @@ class FingerprintStorageUnitTest : public testing::Test {
   void SetUp() override {
     test_api_ = std::make_unique<TestApi>(/*override_quick_unlock=*/true);
     test_api_->EnableFingerprintByPolicy(Purpose::kAny);
+    UserDataAuthClient::InitializeFake();
   }
 
   void SetRecords(int records_number) {

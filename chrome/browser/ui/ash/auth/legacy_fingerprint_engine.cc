@@ -4,8 +4,14 @@
 
 #include "chrome/browser/ui/ash/auth/legacy_fingerprint_engine.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
+#include "base/notreached.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
@@ -50,17 +56,6 @@ bool IsFingerprintDisabledByPolicySinglePurpose(
   return !enabled;
 }
 
-bool IsFingerprintDisabledByPolicy(const PrefService& pref_service,
-                                   LegacyFingerprintEngine::Purpose purpose) {
-  if (purpose == LegacyFingerprintEngine::Purpose::kAny) {
-    return IsFingerprintDisabledByPolicySinglePurpose(
-               pref_service, LegacyFingerprintEngine::Purpose::kUnlock) &&
-           IsFingerprintDisabledByPolicySinglePurpose(
-               pref_service, LegacyFingerprintEngine::Purpose::kWebAuthn);
-  }
-  return IsFingerprintDisabledByPolicySinglePurpose(pref_service, purpose);
-}
-
 bool HasRecord(const PrefService& pref_service) {
   return pref_service.GetInteger(prefs::kQuickUnlockFingerprintRecord) != 0;
 }
@@ -71,6 +66,78 @@ LegacyFingerprintEngine::LegacyFingerprintEngine(AuthPerformer* auth_performer)
     : auth_performer_(auth_performer) {}
 
 LegacyFingerprintEngine::~LegacyFingerprintEngine() = default;
+
+LegacyFingerprintEngine::Purpose
+LegacyFingerprintEngine::FromQuickUnlockPurpose(
+    quick_unlock::Purpose purpose) const {
+  switch (purpose) {
+    case quick_unlock::Purpose::kAny:
+      return LegacyFingerprintEngine::Purpose::kAny;
+    case quick_unlock::Purpose::kUnlock:
+      return LegacyFingerprintEngine::Purpose::kUnlock;
+    case quick_unlock::Purpose::kWebAuthn:
+      return LegacyFingerprintEngine::Purpose::kWebAuthn;
+    case quick_unlock::Purpose::kNumOfPurposes:
+      NOTREACHED();
+  }
+  NOTREACHED();
+  return LegacyFingerprintEngine::Purpose::kAny;
+}
+
+quick_unlock::Purpose LegacyFingerprintEngine::ToQuickUnlockPurpose(
+    LegacyFingerprintEngine::Purpose purpose) const {
+  switch (purpose) {
+    case LegacyFingerprintEngine::Purpose::kAny:
+      return quick_unlock::Purpose::kAny;
+    case LegacyFingerprintEngine::Purpose::kUnlock:
+      return quick_unlock::Purpose::kUnlock;
+    case LegacyFingerprintEngine::Purpose::kWebAuthn:
+      return quick_unlock::Purpose::kWebAuthn;
+  }
+  NOTREACHED();
+  return quick_unlock::Purpose::kAny;
+}
+
+bool LegacyFingerprintEngine::IsFingerprintDisabledByPolicy(
+    const PrefService& pref_service,
+    LegacyFingerprintEngine::Purpose purpose) const {
+  // TODO(b/274087315): Create a TestApi for this class.
+  if (auto* test_api = quick_unlock::TestApi::Get();
+      test_api && test_api->IsQuickUnlockOverridden()) {
+    return !test_api->IsFingerprintEnabledByPolicy(
+        ToQuickUnlockPurpose(purpose));
+  }
+
+  if (purpose == LegacyFingerprintEngine::Purpose::kAny) {
+    return IsFingerprintDisabledByPolicySinglePurpose(
+               pref_service, LegacyFingerprintEngine::Purpose::kUnlock) &&
+           IsFingerprintDisabledByPolicySinglePurpose(
+               pref_service, LegacyFingerprintEngine::Purpose::kWebAuthn);
+  }
+  return IsFingerprintDisabledByPolicySinglePurpose(pref_service, purpose);
+}
+
+bool IsFingerprintSupported() {
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  return base::FeatureList::IsEnabled(features::kQuickUnlockFingerprint) &&
+         command_line->HasSwitch(switches::kFingerprintSensorLocation);
+}
+
+bool LegacyFingerprintEngine::IsFingerprintEnabled(
+    const PrefService& pref_service,
+    LegacyFingerprintEngine::Purpose purpose) const {
+  // TODO(b/274087315): Create a TestApi for this class.
+  if (auto* test_api = quick_unlock::TestApi::Get();
+      test_api && test_api->IsQuickUnlockOverridden()) {
+    // When we override behavior for test we don't need to check
+    // `IsFingerprintSupported`
+    return !IsFingerprintDisabledByPolicy(pref_service, purpose);
+  }
+
+  return !IsFingerprintDisabledByPolicy(pref_service, purpose) &&
+         IsFingerprintSupported();
+}
 
 bool LegacyFingerprintEngine::IsFingerprintAvailable(
     Purpose purpose,

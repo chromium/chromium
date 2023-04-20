@@ -8,7 +8,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
+#include "chrome/browser/ui/ash/auth/legacy_fingerprint_engine.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
+#include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
@@ -88,6 +90,9 @@ class PeopleSection : public OsSettingsSection,
   base::ScopedObservation<account_manager::AccountManagerFacade,
                           account_manager::AccountManagerFacade::Observer>
       account_manager_facade_observation_{this};
+
+  AuthPerformer auth_performer_;
+  LegacyFingerprintEngine fp_engine_;
 
   base::WeakPtrFactory<PeopleSection> weak_factory_{this};
 };
