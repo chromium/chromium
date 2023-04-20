@@ -138,6 +138,10 @@ interface GoogleDriveSettings {
   // Asserts the values returned from the Google drive PageHandler match the
   // values returned on the JS element.
   AssertBulkPinningPinnedSize(string pinned_size) => ();
+
+  // Click the clear offline files button and then wait until the new size has
+  // updated correctly.
+  ClickClearOfflineFilesAndAssertNewSize(string new_size) => ();
 };
 
 // An interface that allows clients to manipulate the os settings ui. Served by

@@ -305,6 +305,8 @@ class DriveIntegrationService : public KeyedService,
   // files.
   void GetTotalPinnedSize(base::OnceCallback<void(int64_t)> callback);
 
+  void ClearOfflineFiles(base::OnceCallback<void(drive::FileError)> callback);
+
   // Called by lacros to register a bridge that this service can call into when
   // DriveFS wants to initiate a connection to an extension in lacros.
   void RegisterDriveFsNativeMessageHostBridge(

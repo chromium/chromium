@@ -46,6 +46,7 @@ export enum ConfirmationDialogType {
   BULK_PINNING_DISABLE = 'bulk-pinning-disable',
   BULK_PINNING_NOT_ENOUGH_SPACE = 'bulk-pinning-not-enough-space',
   BULK_PINNING_UNEXPECTED_ERROR = 'bulk-pinning-unexpected-error',
+  BULK_PINNING_CLEAR_FILES = 'bulk-pinning-clear-files',
   NONE = 'none',
 }
 
@@ -265,7 +266,7 @@ export class SettingsGoogleDriveSubpageElement extends
    * pressed, all remaining actions (e.g. Cancel, ESC) should not update the
    * preference.
    */
-  private onDriveConfirmationDialogClose_(e: CustomEvent) {
+  private async onDriveConfirmationDialogClose_(e: CustomEvent) {
     const closedDialogType = this.dialogType_;
     this.dialogType_ = ConfirmationDialogType.NONE;
     if (!e.detail.accept) {
@@ -278,6 +279,10 @@ export class SettingsGoogleDriveSubpageElement extends
         break;
       case ConfirmationDialogType.BULK_PINNING_DISABLE:
         this.setPrefValue(GOOGLE_DRIVE_BULK_PINNING_PREF, false);
+        break;
+      case ConfirmationDialogType.BULK_PINNING_CLEAR_FILES:
+        await this.proxy_.handler.clearPinnedFiles();
+        this.updateTotalPinnedSize_();
         break;
       default:
         // All other dialogs currently do not require any action (only a
@@ -349,6 +354,30 @@ export class SettingsGoogleDriveSubpageElement extends
     }
 
     this.setPrefValue(GOOGLE_DRIVE_BULK_PINNING_PREF, true);
+  }
+
+  /**
+   * Returns true if the bulk pinning preference is disabled.
+   */
+  private shouldEnableClearOfflineButton_() {
+    return this.getPref(GOOGLE_DRIVE_BULK_PINNING_PREF).value;
+  }
+
+  /**
+   * Returns the string used in the confirmation dialog when clearing the users
+   * offline storage, this includes the total GB used by offline files.
+   */
+  private getClearOfflineStorageConfirmationBody_() {
+    return this.i18n(
+        'googleDriveOfflineClearDialogBody', this.totalPinnedSize_!);
+  }
+
+  /**
+   * When the "Clear offline storage" button is clicked, should not clear
+   * immediately but show the confirmation dialog first.
+   */
+  private async onClearPinnedFiles_() {
+    this.dialogType_ = ConfirmationDialogType.BULK_PINNING_CLEAR_FILES;
   }
 }
 

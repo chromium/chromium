@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ui/webui/settings/ash/files_page/mojom/google_drive_handler.mojom.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/text/bytes_formatting.h"
 
@@ -115,6 +116,27 @@ void GoogleDrivePageHandler::OnGetTotalPinnedSize(
     return;
   }
   std::move(callback).Run(base::UTF16ToUTF8(ui::FormatBytes(size)));
+}
+
+void GoogleDrivePageHandler::ClearPinnedFiles(
+    ClearPinnedFilesCallback callback) {
+  if (!GetDriveService()) {
+    std::move(callback).Run();
+    page_->OnServiceUnavailable();
+    return;
+  }
+
+  auto on_clear_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      base::BindOnce(&GoogleDrivePageHandler::OnClearPinnedFiles,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      drive::FILE_ERROR_ABORT);
+  GetDriveService()->ClearOfflineFiles(std::move(on_clear_callback));
+}
+
+void GoogleDrivePageHandler::OnClearPinnedFiles(
+    ClearPinnedFilesCallback callback,
+    drive::FileError error) {
+  std::move(callback).Run();
 }
 
 }  // namespace ash::settings

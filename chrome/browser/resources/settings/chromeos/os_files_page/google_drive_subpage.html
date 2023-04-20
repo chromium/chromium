@@ -84,15 +84,30 @@
 
   <div class="settings-box two-line" id="drive-offline-storage-row">
     <div class="start">
-      $i18n{googleDriveOfflineClearTitle}
+      $i18n{googleDriveOfflineStorageTitle}
       <div class="secondary">
         [[totalPinnedSize_]]
       </div>
     </div>
-    <cr-button role="button">
+    <cr-button role="button"
+        on-click="onClearPinnedFiles_"
+        disabled="[[shouldEnableClearOfflineButton_(bulkPinningStatus_)]]">
       $i18n{googleDriveOfflineClearAction}
     </cr-button>
   </div>
+
+  <template is="dom-if"
+      if="[[shouldShowConfirmationDialog_(dialogType_, 'bulk-pinning-clear-files')]]"
+      restamp>
+    <settings-drive-confirmation-dialog
+        id="drive-bulk-pinning-clear-files-confirmation-dialog"
+        cancel-button-text="$i18n{cancel}"
+        action-button-text="$i18n{googleDriveOfflineClearAction}"
+        title-text="$i18n{googleDriveOfflineClearDialogTitle}"
+        body-text="[[getClearOfflineStorageConfirmationBody_()]]"
+        on-close="onDriveConfirmationDialogClose_">
+    </settings-drive-confirmation-dialog>
+  </template>
 
   <div class="hr"></div>
 </template>

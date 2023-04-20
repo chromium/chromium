@@ -217,5 +217,26 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
   google_drive_settings.AssertBulkPinningPinnedSize("Unknown");
 }
 
+IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
+                       ClearingOfflineFilesCallsProperMethods) {
+  SetUpSearchResultExpectations();
+
+  // Mock no search results are returned (this avoids the call to
+  // `CalculateRequiredSpace` from being ran here).
+  fake_search_query_.SetSearchResults({});
+  ash::FakeSpacedClient::Get()->set_free_disk_space(1024 * 1024 * 1024);
+
+  int64_t pinned_size = 1024 * 1024;
+  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
+  EXPECT_CALL(*fake_drivefs, GetOfflineFilesSpaceUsage(_))
+      .Times(2)
+      .WillOnce(RunOnceCallback<0>(drive::FILE_ERROR_OK, pinned_size))
+      .WillOnce(RunOnceCallback<0>(drive::FILE_ERROR_OK, 0));
+
+  auto google_drive_settings = OpenGoogleDriveSettings();
+  google_drive_settings.ClickClearOfflineFilesAndAssertNewSize(
+      FormatBytesToString(0));
+}
+
 }  // namespace
 }  // namespace ash::settings

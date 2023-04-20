@@ -42,6 +42,10 @@ interface PageHandler {
   // Returns the current size used by all the pinned files for DriveFS as a
   // string. This string includes the units, e.g. 500 MB.
   GetTotalPinnedSize() => (string? size);
+
+  // Unpins all files then force evicts them from the Drive cache (does not
+  // force evict hosted documents).
+  ClearPinnedFiles() => ();
 };
 
 // Interface for the Google drive settings page. Implemented in Javascript and

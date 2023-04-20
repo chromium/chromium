@@ -777,6 +777,29 @@ export class GoogleDriveSettings implements GoogleDriveSettingsInterface {
     assertTrue(
         this.googleDriveSubpage_?.totalPinnedSize === expectedPinnedSize);
   }
+
+  async clickClearOfflineFilesAndAssertNewSize(newSize: string): Promise<void> {
+    const offlineStorageButton =
+        this.googleDriveSubpage_.shadowRoot!.querySelector<CrButtonElement>(
+            '#drive-offline-storage-row cr-button')!;
+    offlineStorageButton.click();
+
+    // Click the confirm button on the confirmation dialog.
+    const getConfirmationButton = () =>
+        querySelectorShadow(
+            this.googleDriveSubpage_.shadowRoot!,
+            [
+              'settings-drive-confirmation-dialog',
+              '.action-button',
+            ])! as CrButtonElement |
+        null;
+    await assertAsync(() => getConfirmationButton() !== null, 10000000);
+    getConfirmationButton()!.click();
+
+    // Wait for the total pinned size to be updated.
+    await assertAsync(
+        () => this.googleDriveSubpage_?.totalPinnedSize === newSize);
+  }
 }
 
 class OsSettingsDriver implements OSSettingsDriverInterface {

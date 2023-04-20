@@ -1348,6 +1348,17 @@ void DriveIntegrationService::GetTotalPinnedSize(
       std::move(callback)));
 }
 
+void DriveIntegrationService::ClearOfflineFiles(
+    base::OnceCallback<void(drive::FileError)> callback) {
+  if (!ash::features::IsDriveFsBulkPinningEnabled() || !IsMounted() ||
+      !GetDriveFsInterface()) {
+    std::move(callback).Run(drive::FILE_ERROR_SERVICE_UNAVAILABLE);
+    return;
+  }
+
+  GetDriveFsInterface()->ClearOfflineFiles(std::move(callback));
+}
+
 void DriveIntegrationService::GetQuickAccessItems(
     int max_number,
     GetQuickAccessItemsCallback callback) {
