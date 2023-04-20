@@ -7,7 +7,7 @@ import {addEntries, ENTRIES, EntryType, getCaller, getDateWithDayDiff, pending, 
 import {testcase} from '../testcase.js';
 
 import {mountCrostini, navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady} from './background.js';
-import {BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, NESTED_ENTRY_SET} from './test_data.js';
+import {BASIC_ANDROID_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, NESTED_ENTRY_SET} from './test_data.js';
 
 /**
  * @param {string} appId The ID that identifies the files app.
@@ -766,6 +766,11 @@ testcase.searchHierarchy = async () => {
     targetPath: 'drive-hello.txt',
     nameText: 'drive-hello.txt',
   });
+  // hello file stored in playfiles.
+  const playfilesHello = ENTRIES.hello.cloneWith({
+    targetPath: 'Documents/playfile-hello.txt',
+    nameText: 'playfile-hello.txt',
+  });
 
   // Set up the app. This creates entries in My files and Drive.
   const appId = await setupAndWaitUntilReady(
@@ -778,11 +783,13 @@ testcase.searchHierarchy = async () => {
   // Add Linux files.
   await mountCrostini(appId);
 
-  // Add custom hello files to Linux, and USB.
+  // Add custom hello files to Linux, USB, and PlayFiles.
+  await addEntries(['android_files'], BASIC_ANDROID_ENTRY_SET.concat([
+    ENTRIES.directoryDocuments,
+    playfilesHello,
+  ]));
   await addEntries(['usb'], [usbHello]);
   await addEntries(['crostini'], [linuxHello]);
-
-  // TODO(b:273843598): Add Play Files
 
   // Move to a nested directory under My files.
   await navigateWithDirectoryTree(appId, '/My files/Downloads/photos');
@@ -804,6 +811,7 @@ testcase.searchHierarchy = async () => {
         myFilesHello,
         photosHello,
         linuxHello,
+        playfilesHello,
       ]),
       {ignoreLastModifiedTime: true});
 
@@ -818,6 +826,7 @@ testcase.searchHierarchy = async () => {
         myFilesHello,
         photosHello,
         linuxHello,
+        playfilesHello,
         driveHello,
         usbHello,
       ]),
