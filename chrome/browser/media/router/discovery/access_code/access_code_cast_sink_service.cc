@@ -10,7 +10,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater_impl.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_media_sink_util.h"
 #include "chrome/browser/media/router/discovery/discovery_network_monitor.h"
 #include "chrome/browser/media/router/discovery/mdns/media_sink_util.h"
@@ -127,7 +128,9 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(
   // We don't need to post this task per the DiscoveryNetworkMonitor's
   // promise: "All observers will be notified of network changes on the thread
   // from which they registered."
-  pref_updater_ = std::make_unique<AccessCodeCastPrefUpdater>(prefs_);
+
+  pref_updater_ = std::make_unique<AccessCodeCastPrefUpdaterImpl>(prefs_);
+
   network_monitor_->AddObserver(this);
   InitAllStoredDevices();
   user_prefs_registrar_ = std::make_unique<PrefChangeRegistrar>();

@@ -12,7 +12,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_discovery_interface.h"
-#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
@@ -29,6 +28,8 @@ namespace media_router {
 
 using ChannelOpenedCallback = base::OnceCallback<void(bool)>;
 using AddSinkResultCode = access_code_cast::mojom::AddSinkResultCode;
+
+class AccessCodeCastPrefUpdater;
 
 bool IsAccessCodeCastEnabled();
 

@@ -2,26 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "base/values.h"
-#include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
-#include "components/media_router/common/discovery/media_sink_internal.h"
-#include "components/media_router/common/media_sink.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/scoped_user_pref_update.h"
-
-class PrefService;
-
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_ACCESS_CODE_ACCESS_CODE_CAST_PREF_UPDATER_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_ACCESS_CODE_ACCESS_CODE_CAST_PREF_UPDATER_H_
 
+#include "base/time/time.h"
+#include "base/values.h"
+#include "components/media_router/common/discovery/media_sink_internal.h"
+#include "components/media_router/common/media_sink.h"
+
 namespace media_router {
 
-// Pref updater for AccessCodeCasting.
+// An interface used by both LaCros and other desktop platforms for pref
+// updating in AccessCodeCasting.
 class AccessCodeCastPrefUpdater {
  public:
-  explicit AccessCodeCastPrefUpdater(PrefService* service);
-
+  AccessCodeCastPrefUpdater() = default;
   AccessCodeCastPrefUpdater(const AccessCodeCastPrefUpdater&) = delete;
   AccessCodeCastPrefUpdater& operator=(const AccessCodeCastPrefUpdater&) =
       delete;
@@ -32,19 +27,19 @@ class AccessCodeCastPrefUpdater {
   // function will overwrite a sink id if it already exists. If ip_endpoints
   // already exist with the given |sink| id, those entries will be removed from
   // the pref service.
-  void UpdateDevicesDict(const MediaSinkInternal& sink);
+  virtual void UpdateDevicesDict(const MediaSinkInternal& sink) = 0;
 
   // Sets the key for the |sink_id| with the time it is added. This is
   // calculated at the time of the functions calling. If the |sink_id| already
   // exist, then update the value of that |sink_id| with a new time.
-  void UpdateDeviceAddedTimeDict(const MediaSink::Id sink_id);
+  virtual void UpdateDeviceAddedTimeDict(const MediaSink::Id sink_id) = 0;
 
   // Returns a the device dictionary from the pref service.
-  const base::Value::Dict& GetDevicesDict();
+  virtual const base::Value::Dict& GetDevicesDict() = 0;
 
   // Returns a nullptr if the device Added dictionary does not exist in the
   // pref service for some reason.
-  const base::Value::Dict& GetDeviceAddedTimeDict();
+  virtual const base::Value::Dict& GetDeviceAddedTimeDict() = 0;
 
   // Gets a list of all sink ids currently stored in the pref service.
   const base::Value::List GetSinkIdsFromDevicesDict();
@@ -60,12 +55,13 @@ class AccessCodeCastPrefUpdater {
   // Removes the given |sink_id| from all instances in the devices dictionary
   // stored in the pref service. Nothing occurs if the |sink_id| was not there
   // in the first place.
-  void RemoveSinkIdFromDevicesDict(const MediaSink::Id sink_id);
+  virtual void RemoveSinkIdFromDevicesDict(const MediaSink::Id sink_id) = 0;
 
   // Removes the given |sink_id| from all instances in the device Added
   // dictionary stored in the pref service. Nothing occurs if the |sink_id| was
   // not there in the first place.
-  void RemoveSinkIdFromDeviceAddedTimeDict(const MediaSink::Id sink_id);
+  virtual void RemoveSinkIdFromDeviceAddedTimeDict(
+      const MediaSink::Id sink_id) = 0;
 
   // Returns a list of media sink id's of stored media sinks whose ip endpoints
   // are identical to the given ip_endpoint. If no existing ip endpoints are
@@ -73,19 +69,12 @@ class AccessCodeCastPrefUpdater {
   std::vector<MediaSink::Id> GetMatchingIPEndPoints(
       net::IPEndPoint ip_endpoint);
 
-  void ClearDevicesDict();
-  void ClearDeviceAddedTimeDict();
+  virtual void ClearDevicesDict() = 0;
+  virtual void ClearDeviceAddedTimeDict() = 0;
 
   // Sets the key for the given |sink| id with the actual |sink| itself. This
   // function will overwrite a sink id if it already exists.
-  void UpdateDevicesDictForTest(const MediaSinkInternal& sink);
-
-  base::WeakPtr<AccessCodeCastPrefUpdater> GetWeakPtr();
-
- private:
-  raw_ptr<PrefService> pref_service_;
-
-  base::WeakPtrFactory<AccessCodeCastPrefUpdater> weak_ptr_factory_{this};
+  virtual void UpdateDevicesDictForTest(const MediaSinkInternal& sink) = 0;
 };
 
 }  // namespace media_router

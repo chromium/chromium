@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater_impl.h"
 
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
@@ -27,15 +27,15 @@
 
 namespace media_router {
 
-class AccessCodeCastPrefUpdaterTest : public testing::Test {
+class AccessCodeCastPrefUpdaterImplTest : public testing::Test {
  public:
-  AccessCodeCastPrefUpdaterTest()
+  AccessCodeCastPrefUpdaterImplTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     RegisterAccessCodeProfilePrefs(prefs_.registry());
   }
 
   void SetUp() override {
-    pref_updater_ = std::make_unique<AccessCodeCastPrefUpdater>(prefs());
+    pref_updater_ = std::make_unique<AccessCodeCastPrefUpdaterImpl>(prefs());
   }
 
   sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
@@ -52,7 +52,7 @@ class AccessCodeCastPrefUpdaterTest : public testing::Test {
   std::unique_ptr<AccessCodeCastPrefUpdater> pref_updater_;
 };
 
-TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDevicesDictRecorded) {
+TEST_F(AccessCodeCastPrefUpdaterImplTest, TestUpdateDevicesDictRecorded) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
   pref_updater()->UpdateDevicesDict(cast_sink);
   auto& dict = prefs()->GetDict(prefs::kAccessCodeCastDevices);
@@ -60,7 +60,7 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDevicesDictRecorded) {
   EXPECT_EQ(*sink_id_dict, CreateValueDictFromMediaSinkInternal(cast_sink));
 }
 
-TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDevicesDictOverwrite) {
+TEST_F(AccessCodeCastPrefUpdaterImplTest, TestUpdateDevicesDictOverwrite) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
 
   // Store cast_sink.
@@ -82,7 +82,7 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDevicesDictOverwrite) {
   EXPECT_EQ(*sink_id_dict, CreateValueDictFromMediaSinkInternal(cast_sink1));
 }
 
-TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDeviceAddedTimeDict) {
+TEST_F(AccessCodeCastPrefUpdaterImplTest, TestUpdateDeviceAddedTimeDict) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
 
   pref_updater()->UpdateDeviceAddedTimeDict(cast_sink.id());
@@ -91,7 +91,8 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDeviceAddedTimeDict) {
   EXPECT_TRUE(time_of_addition);
 }
 
-TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDeviceAddedTimeDictOverwrite) {
+TEST_F(AccessCodeCastPrefUpdaterImplTest,
+       TestUpdateDeviceAddedTimeDictOverwrite) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
 
   pref_updater()->UpdateDeviceAddedTimeDict(cast_sink.id());
@@ -109,7 +110,8 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDeviceAddedTimeDictOverwrite) {
   EXPECT_GE(final_time_of_addition, initial_time_of_addition);
 }
 
-TEST_F(AccessCodeCastPrefUpdaterTest, TestGetMediaSinkInternalValueBySinkId) {
+TEST_F(AccessCodeCastPrefUpdaterImplTest,
+       TestGetMediaSinkInternalValueBySinkId) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
   MediaSinkInternal cast_sink2 = CreateCastSink(2);
 
@@ -121,7 +123,7 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestGetMediaSinkInternalValueBySinkId) {
       pref_updater()->GetMediaSinkInternalValueBySinkId(cast_sink2.id()));
 }
 
-TEST_F(AccessCodeCastPrefUpdaterTest, TestRemoveSinkIdFromDevicesDict) {
+TEST_F(AccessCodeCastPrefUpdaterImplTest, TestRemoveSinkIdFromDevicesDict) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
   MediaSinkInternal cast_sink2 = CreateCastSink(2);
 
@@ -133,7 +135,8 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestRemoveSinkIdFromDevicesDict) {
   pref_updater()->RemoveSinkIdFromDevicesDict(cast_sink2.id());
 }
 
-TEST_F(AccessCodeCastPrefUpdaterTest, TestRemoveSinkIdFromDeviceAddedTimeDict) {
+TEST_F(AccessCodeCastPrefUpdaterImplTest,
+       TestRemoveSinkIdFromDeviceAddedTimeDict) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
   MediaSinkInternal cast_sink2 = CreateCastSink(2);
 
@@ -146,7 +149,7 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestRemoveSinkIdFromDeviceAddedTimeDict) {
   pref_updater()->RemoveSinkIdFromDeviceAddedTimeDict(cast_sink2.id());
 }
 
-TEST_F(AccessCodeCastPrefUpdaterTest, TestGetDeviceAddedTime) {
+TEST_F(AccessCodeCastPrefUpdaterImplTest, TestGetDeviceAddedTime) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
   MediaSinkInternal cast_sink2 = CreateCastSink(2);
 
@@ -156,7 +159,7 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestGetDeviceAddedTime) {
   EXPECT_FALSE(pref_updater()->GetDeviceAddedTime(cast_sink2.id()));
 }
 
-TEST_F(AccessCodeCastPrefUpdaterTest, TestGetSinkIdsFromDevicesDict) {
+TEST_F(AccessCodeCastPrefUpdaterImplTest, TestGetSinkIdsFromDevicesDict) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
   MediaSinkInternal cast_sink2 = CreateCastSink(2);
 
@@ -170,7 +173,7 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestGetSinkIdsFromDevicesDict) {
   EXPECT_EQ(pref_updater()->GetSinkIdsFromDevicesDict(), expected_sink_ids);
 }
 
-TEST_F(AccessCodeCastPrefUpdaterTest, TestClearDevicesDict) {
+TEST_F(AccessCodeCastPrefUpdaterImplTest, TestClearDevicesDict) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
   MediaSinkInternal cast_sink2 = CreateCastSink(2);
 
@@ -184,7 +187,7 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestClearDevicesDict) {
   EXPECT_TRUE(pref_updater()->GetDevicesDict().empty());
 }
 
-TEST_F(AccessCodeCastPrefUpdaterTest, TestClearDeviceAddedTimeDict) {
+TEST_F(AccessCodeCastPrefUpdaterImplTest, TestClearDeviceAddedTimeDict) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
   MediaSinkInternal cast_sink2 = CreateCastSink(2);
 
@@ -198,7 +201,7 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestClearDeviceAddedTimeDict) {
   EXPECT_TRUE(pref_updater()->GetDeviceAddedTimeDict().empty());
 }
 
-TEST_F(AccessCodeCastPrefUpdaterTest, TestGetMatchingIPEndPoints) {
+TEST_F(AccessCodeCastPrefUpdaterImplTest, TestGetMatchingIPEndPoints) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
   MediaSinkInternal cast_sink2 = CreateCastSink(2);
   MediaSinkInternal cast_sink3 = CreateCastSink(3);
@@ -218,7 +221,8 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestGetMatchingIPEndPoints) {
             cast_sink.sink().id());
 }
 
-TEST_F(AccessCodeCastPrefUpdaterTest, TestGetMatchingIPEndPointsIdenticalIPs) {
+TEST_F(AccessCodeCastPrefUpdaterImplTest,
+       TestGetMatchingIPEndPointsIdenticalIPs) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
   MediaSinkInternal cast_sink2 = CreateCastSink(2);
   MediaSinkInternal cast_sink3 = CreateCastSink(3);
@@ -242,7 +246,7 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestGetMatchingIPEndPointsIdenticalIPs) {
       expected_vector);
 }
 
-TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDevicesDictIdenticalIPs) {
+TEST_F(AccessCodeCastPrefUpdaterImplTest, TestUpdateDevicesDictIdenticalIPs) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
   MediaSinkInternal cast_sink2 = CreateCastSink(2);
   MediaSinkInternal cast_sink3 = CreateCastSink(3);
@@ -268,7 +272,7 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDevicesDictIdenticalIPs) {
   EXPECT_EQ(pref_updater()->GetSinkIdsFromDevicesDict(), expected_sink_ids);
 }
 
-TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDevicesDictDifferentIPs) {
+TEST_F(AccessCodeCastPrefUpdaterImplTest, TestUpdateDevicesDictDifferentIPs) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
   MediaSinkInternal cast_sink2 = CreateCastSink(2);
   MediaSinkInternal cast_sink3 = CreateCastSink(3);

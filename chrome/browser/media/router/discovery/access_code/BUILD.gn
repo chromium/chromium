@@ -36,6 +36,8 @@ if (!is_android) {
       "access_code_cast_discovery_interface.h",
       "access_code_cast_pref_updater.cc",
       "access_code_cast_pref_updater.h",
+      "access_code_cast_pref_updater_impl.cc",
+      "access_code_cast_pref_updater_impl.h",
       "access_code_cast_sink_service.cc",
       "access_code_cast_sink_service.h",
       "access_code_cast_sink_service_factory.cc",
