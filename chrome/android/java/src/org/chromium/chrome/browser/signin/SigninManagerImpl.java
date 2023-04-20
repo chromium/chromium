@@ -321,7 +321,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
                 mSignInState.shouldTurnSyncOn() ? ConsentLevel.SYNC : ConsentLevel.SIGNIN;
         @PrimaryAccountError
         int primaryAccountError = mIdentityMutator.setPrimaryAccount(
-                mSignInState.mCoreAccountInfo.getId(), consentLevel);
+                mSignInState.mCoreAccountInfo.getId(), consentLevel, mSignInState.getAccessPoint());
         if (primaryAccountError != PrimaryAccountError.NO_ERROR) {
             Log.w(TAG, "SetPrimaryAccountError in IdentityManager: %d, aborting signin",
                     primaryAccountError);

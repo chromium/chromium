@@ -161,7 +161,7 @@ public class SigninManagerImplTest {
 
     @Test
     public void signinAndTurnSyncOn() {
-        when(mIdentityMutator.setPrimaryAccount(any(), anyInt()))
+        when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt()))
                 .thenReturn(PrimaryAccountError.NO_ERROR);
         when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.BOOKMARKS));
 
@@ -184,7 +184,9 @@ public class SigninManagerImplTest {
         assertFalse(mSigninManager.isSignOutAllowed());
 
         mSigninManager.finishSignInAfterPolicyEnforced();
-        verify(mIdentityMutator).setPrimaryAccount(ACCOUNT_INFO.getId(), ConsentLevel.SYNC);
+        verify(mIdentityMutator)
+                .setPrimaryAccount(
+                        ACCOUNT_INFO.getId(), ConsentLevel.SYNC, SigninAccessPoint.START_PAGE);
         verify(mSyncService).setSyncRequested();
         // Signin should be complete and callback should be invoked.
         verify(callback).onSignInComplete();
@@ -203,7 +205,7 @@ public class SigninManagerImplTest {
 
     @Test
     public void signinNoTurnSyncOn() {
-        when(mIdentityMutator.setPrimaryAccount(any(), anyInt()))
+        when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt()))
                 .thenReturn(PrimaryAccountError.NO_ERROR);
 
         assertTrue(mSigninManager.isSigninAllowed());
@@ -211,15 +213,16 @@ public class SigninManagerImplTest {
 
         SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
         mSigninManager.signin(AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()),
-                SigninAccessPoint.UNKNOWN, callback);
+                SigninAccessPoint.START_PAGE, callback);
 
         // Signin without turning on sync shouldn't apply policies.
         verify(mNativeMock, never()).fetchAndApplyCloudPolicy(anyLong(), any(), any());
-
-        verify(mIdentityMutator).setPrimaryAccount(ACCOUNT_INFO.getId(), ConsentLevel.SIGNIN);
+        verify(mIdentityMutator)
+                .setPrimaryAccount(
+                        ACCOUNT_INFO.getId(), ConsentLevel.SIGNIN, SigninAccessPoint.START_PAGE);
 
         verify(mSyncService, never()).setSyncRequested();
-        // Signin should be complete and callback should be invoked.
+        // Signin should be complete qand callback should be invoked.
         verify(callback).onSignInComplete();
         verify(callback, never()).onSignInAborted();
 
@@ -454,7 +457,8 @@ public class SigninManagerImplTest {
         };
         doAnswer(setPrimaryAccountAnswer)
                 .when(mIdentityMutator)
-                .setPrimaryAccount(ACCOUNT_INFO.getId(), ConsentLevel.SYNC);
+                .setPrimaryAccount(
+                        ACCOUNT_INFO.getId(), ConsentLevel.SYNC, SigninAccessPoint.UNKNOWN);
 
         mSigninManager.signinAndEnableSync(
                 AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()),
@@ -489,7 +493,8 @@ public class SigninManagerImplTest {
         };
         doAnswer(setPrimaryAccountAnswer)
                 .when(mIdentityMutator)
-                .setPrimaryAccount(ACCOUNT_INFO.getId(), ConsentLevel.SYNC);
+                .setPrimaryAccount(
+                        ACCOUNT_INFO.getId(), ConsentLevel.SYNC, SigninAccessPoint.START_PAGE);
 
         mSigninManager.signinAndEnableSync(
                 AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()),

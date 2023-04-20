@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.signin.base.CoreAccountId;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutDelete;
 import org.chromium.components.signin.metrics.SignoutReason;
 
@@ -44,10 +45,10 @@ public class IdentityMutator {
      *   - the account username is allowed by policy,
      *   - there is not already a primary account set.
      */
-    public @PrimaryAccountError int setPrimaryAccount(
-            CoreAccountId accountId, @ConsentLevel int consentLevel) {
+    public @PrimaryAccountError int setPrimaryAccount(CoreAccountId accountId,
+            @ConsentLevel int consentLevel, @SigninAccessPoint int accessPoint) {
         return IdentityMutatorJni.get().setPrimaryAccount(
-                mNativeIdentityMutator, accountId, consentLevel);
+                mNativeIdentityMutator, accountId, consentLevel, accessPoint);
     }
 
     /**
@@ -81,7 +82,8 @@ public class IdentityMutator {
     @NativeMethods
     interface Natives {
         public @PrimaryAccountError int setPrimaryAccount(long nativeJniIdentityMutator,
-                CoreAccountId accountId, @ConsentLevel int consentLevel);
+                CoreAccountId accountId, @ConsentLevel int consentLevel,
+                @SigninAccessPoint int accessPoint);
         public boolean clearPrimaryAccount(long nativeJniIdentityMutator,
                 @SignoutReason int sourceMetric, @SignoutDelete int deleteMetric);
         public void revokeSyncConsent(long nativeJniIdentityMutator,

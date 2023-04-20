@@ -26,7 +26,8 @@ JniIdentityMutator::JniIdentityMutator(IdentityMutator* identity_mutator)
 jint JniIdentityMutator::SetPrimaryAccount(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& primary_account_id,
-    jint j_consent_level) {
+    jint j_consent_level,
+    jint j_access_point) {
   PrimaryAccountMutator* primary_account_mutator =
       identity_mutator_->GetPrimaryAccountMutator();
   DCHECK(primary_account_mutator);
@@ -34,7 +35,8 @@ jint JniIdentityMutator::SetPrimaryAccount(
   PrimaryAccountMutator::PrimaryAccountError error =
       primary_account_mutator->SetPrimaryAccount(
           ConvertFromJavaCoreAccountId(env, primary_account_id),
-          static_cast<ConsentLevel>(j_consent_level));
+          static_cast<ConsentLevel>(j_consent_level),
+          static_cast<signin_metrics::AccessPoint>(j_access_point));
   return static_cast<jint>(error);
 }
 
