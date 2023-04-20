@@ -102,6 +102,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
     config.Set(prefs::kPolicyEnabledKey,
                static_cast<int>(prefs::PolicyEnabledState::INSTALL_ALLOWED));
     config.Set(prefs::kPolicyImageKey, image.Clone());
+    config.Set(prefs::kPolicyUefiKey, image.Clone());
     prefs_installable_no_pflash_.Set(kVmConfigId, config.Clone());
 
     config.Set(prefs::kPolicyPflashKey, image.Clone());

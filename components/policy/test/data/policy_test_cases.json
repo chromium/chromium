@@ -11689,6 +11689,10 @@
               "uefi_pflash_x86_64": {
                 "url": "https://example.com/uefi_pflash",
                 "hash": "4d9a81e8feb96abb6da0d92642996a26edea6e94345da12a19999470c57bb0a6"
+              },
+              "uefi_image_x86_64": {
+                "url": "https://example.com/uefi_image",
+                "hash": "5dcf78750da3326fb02b89051135ac563eb9509ec1587769ef36e86c260ab86d"
               }
             }
           }
@@ -11719,6 +11723,10 @@
               "installer_image_x86_64": {
                 "url": "https://example.com/installer_image",
                 "hash": "761b22509ee7bd3e1a3da9eb9e37c6443acfc582670b733601ca5a1de44b99de"
+              },
+              "uefi_image_x86_64": {
+                "url": "https://example.com/uefi_image",
+                "hash": "5dcf78750da3326fb02b89051135ac563eb9509ec1587769ef36e86c260ab86d"
               }
             }
           }
@@ -11733,6 +11741,44 @@
                   "url": "https://example.com/installer_image",
                   "hash": "761b22509ee7bd3e1a3da9eb9e37c6443acfc582670b733601ca5a1de44b99de"
                 },
+                "uefi_image": {
+                  "url": "https://example.com/uefi_image",
+                  "hash": "5dcf78750da3326fb02b89051135ac563eb9509ec1587769ef36e86c260ab86d"
+                },
+                "vtpm": {
+                  "enabled": false,
+                  "policy_update_action": 1
+                },
+                "oem_strings": []
+              }
+            }
+          }
+        }
+      },
+      {
+        "note": "INSTALL_ALLOWED is downgraded if no uefi_image is set",
+        "policies": {
+          "BruschettaVMConfiguration": {
+            "vm-type": {
+              "name": "Standard Virtual Machine",
+              "enabled_state": "INSTALL_ALLOWED",
+              "installer_image_x86_64": {
+                "url": "https://example.com/installer_image",
+                "hash": "761b22509ee7bd3e1a3da9eb9e37c6443acfc582670b733601ca5a1de44b99de"
+              },
+              "uefi_pflash_x86_64": {
+                "url": "https://example.com/uefi_pflash",
+                "hash": "4d9a81e8feb96abb6da0d92642996a26edea6e94345da12a19999470c57bb0a6"
+              }
+            }
+          }
+        },
+        "prefs": {
+          "bruschetta.vm_configuration": {
+            "value": {
+              "vm-type": {
+                "name": "Standard Virtual Machine",
+                "enabled_state": 1,
                 "vtpm": {
                   "enabled": false,
                   "policy_update_action": 1
@@ -11755,6 +11801,9 @@
               },
               "uefi_pflash_x86_64": {
                 "hash": "4d9a81e8feb96abb6da0d92642996a26edea6e94345da12a19999470c57bb0a6"
+              },
+              "uefi_image_x86_64": {
+                "hash": "5dcf78750da3326fb02b89051135ac563eb9509ec1587769ef36e86c260ab86d"
               }
             }
           }
@@ -11779,6 +11828,10 @@
               "uefi_pflash_x86_64": {
                 "url": "invalid url",
                 "hash": "4d9a81e8feb96abb6da0d92642996a26edea6e94345da12a19999470c57bb0a6"
+              },
+              "uefi_image_x86_64": {
+                "url": "invalid url",
+                "hash": "5dcf78750da3326fb02b89051135ac563eb9509ec1587769ef36e86c260ab86d"
               }
             }
           }
@@ -11811,6 +11864,9 @@
               },
               "uefi_pflash_x86_64": {
                 "url": "https://example.com/uefi_pflash"
+              },
+              "uefi_image_x86_64": {
+                "url": "https://example.com/uefi_image"
               }
             }
           }
@@ -11834,6 +11890,10 @@
               },
               "uefi_pflash_x86_64": {
                 "url": "https://example.com/uefi_pflash",
+                "hash": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+              },
+              "uefi_image_x86_64": {
+                "url": "https://example.com/uefi_image",
                 "hash": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
               }
             }
@@ -11869,6 +11929,10 @@
               "uefi_pflash_x86_64": {
                 "url": "https://example.com/uefi_pflash",
                 "hash": "4d9a81e8feb96abb6da0d92642996a26edea6e9434"
+              },
+              "uefi_image_x86_64": {
+                "url": "https://example.com/uefi_image",
+                "hash": "5dcf78750da3326fb02b89051135ac563eb9509ec1"
               }
             }
           }
@@ -11904,6 +11968,10 @@
                 "url": "https://example.com/uefi_pflash",
                 "hash": "4d9a81e8feb96abb6da0d92642996a26edea6e94345da12a19999470c57bb0a6"
               },
+              "uefi_image_x86_64": {
+                "url": "https://example.com/uefi_image",
+                "hash": "5dcf78750da3326fb02b89051135ac563eb9509ec1587769ef36e86c260ab86d"
+              },
               "vtpm": {
                 "enabled": true
               }
@@ -11918,6 +11986,10 @@
               "uefi_pflash_x86_64": {
                 "url": "https://example.com/uefi_pflash_2",
                 "hash": "0923a3ddb53b9f1be54e0486322c8315e25a678a64941e15276d17ad2c63ee82"
+              },
+              "uefi_image_x86_64": {
+                "url": "https://example.com/uefi_image_2",
+                "hash": "01b243b310908d7d54c275db05c411151bc3e3c331340e83eab5c8322819c2d9"
               },
               "vtpm": {
                 "enabled": false,
@@ -11941,6 +12013,10 @@
               "uefi_pflash_x86_64": {
                 "url": "https://example.com/uefi_pflash_2",
                 "hash": "0923a3ddb53b9f1be54e0486322c8315e25a678a64941e15276d17ad2c63ee82"
+              },
+              "uefi_image_x86_64": {
+                "url": "https://example.com/uefi_image_2",
+                "hash": "01b243b310908d7d54c275db05c411151bc3e3c331340e83eab5c8322819c2d9"
               }
             },
             "vulnerable-vm-type": {
@@ -11963,6 +12039,10 @@
                   "url": "https://example.com/uefi_pflash",
                   "hash": "4d9a81e8feb96abb6da0d92642996a26edea6e94345da12a19999470c57bb0a6"
                 },
+                "uefi_image": {
+                  "url": "https://example.com/uefi_image",
+                  "hash": "5dcf78750da3326fb02b89051135ac563eb9509ec1587769ef36e86c260ab86d"
+                },
                 "vtpm": {
                   "enabled": true,
                   "policy_update_action": 1
@@ -11979,6 +12059,10 @@
                 "uefi_pflash": {
                   "url": "https://example.com/uefi_pflash_2",
                   "hash": "0923a3ddb53b9f1be54e0486322c8315e25a678a64941e15276d17ad2c63ee82"
+                },
+                "uefi_image": {
+                  "url": "https://example.com/uefi_image_2",
+                  "hash": "01b243b310908d7d54c275db05c411151bc3e3c331340e83eab5c8322819c2d9"
                 },
                 "vtpm": {
                   "enabled": false,
