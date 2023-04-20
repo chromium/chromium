@@ -1610,8 +1610,6 @@ crbug.com/1335893 external/wpt/css/css-content/content-none-table.html [ Failure
 crbug.com/1335893 external/wpt/css/css-content/content-none-select-2.html [ Failure ]
 crbug.com/1335893 external/wpt/css/css-content/content-none-span.html [ Failure ]
 
-crbug.com/995106 external/wpt/css/css-lists/inline-block-list.html [ Failure ]
-crbug.com/995106 external/wpt/css/css-lists/inline-block-list-marker.html [ Failure ]
 crbug.com/995106 external/wpt/css/css-lists/inline-list.html [ Failure ]
 crbug.com/995106 external/wpt/css/css-lists/inline-list-marker.html [ Failure ]
 
