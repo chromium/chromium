@@ -30,6 +30,19 @@ public class OmniboxFeatures {
                     ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
                     "modernize_visual_update_small_bottom_margin", false);
 
+    public static final BooleanCachedFieldTrialParameter MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
+                    "modernize_visual_update_smaller_margins", false);
+
+    public static final BooleanCachedFieldTrialParameter MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
+                    "modernize_visual_update_smallest_margins", false);
+
+    public static final BooleanCachedFieldTrialParameter
+            MODERNIZE_VISUAL_UPDATE_MERGE_CLIPBOARD_ON_NTP = new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
+                    "modernize_visual_update_merge_clipboard_on_ntp", false);
+
     private static final MutableFlagWithSafeDefault sOmniboxConsumesImeInsets =
             new MutableFlagWithSafeDefault(ChromeFeatureList.OMNIBOX_CONSUMERS_IME_INSETS, false);
     private static final MutableFlagWithSafeDefault sShouldAdaptToNarrowTabletWindows =
@@ -79,11 +92,33 @@ public class OmniboxFeatures {
     }
 
     /**
-     * @return Whether to show an active color for Omnibox which has a different background color
-     *         than toolbar.
+     * Returns whether the margin between groups should be "small" in the visual update.
      */
     public static boolean shouldShowSmallBottomMargin() {
         return MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN.getValue();
+    }
+
+    /**
+     * Returns whether smaller vertical and horizontal margins should be used in the visual update.
+     */
+    public static boolean shouldShowSmallerMargins() {
+        return MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS.getValue();
+    }
+
+    /**
+     * Returns whether even smaller vertical and horizontal margins should be used in the visual
+     * update.
+     */
+    public static boolean shouldShowSmallestMargins() {
+        return MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.getValue();
+    }
+
+    /**
+     * Returns whether the clipboard suggestion should be grouped with other zero suggest items on
+     * the NTP or start surface in the visual update.
+     * */
+    public static boolean shouldMergeClipboardOnNtp() {
+        return MODERNIZE_VISUAL_UPDATE_MERGE_CLIPBOARD_ON_NTP.getValue();
     }
 
     /** Returns whether the omnibox should directly consume IME (keyboard) insets. */
