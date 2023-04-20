@@ -49,7 +49,7 @@ class GpuArcVideoEncodeAccelerator
   void BitstreamBufferReady(
       int32_t bitstream_buffer_id,
       const media::BitstreamBufferMetadata& metadata) override;
-  void NotifyError(Error error) override;
+  void NotifyErrorStatus(const media::EncoderStatus& status) override;
 
   // ::arc::mojom::VideoEncodeAccelerator implementation.
   void GetSupportedProfiles(GetSupportedProfilesCallback callback) override;

@@ -85,10 +85,14 @@ void GpuArcVideoEncodeAccelerator::BitstreamBufferReady(
   use_bitstream_cbs_.erase(iter);
 }
 
-void GpuArcVideoEncodeAccelerator::NotifyError(Error error) {
-  DVLOGF(2) << "error=" << error;
+void GpuArcVideoEncodeAccelerator::NotifyErrorStatus(
+    const media::EncoderStatus& status) {
+  LOG(ERROR) << "NotifyErrorStatus() is called, code="
+             << static_cast<int32_t>(status.code())
+             << ", message=" << status.message();
   DCHECK(client_);
-  client_->NotifyError(error);
+  client_->NotifyError(
+      media::VideoEncodeAccelerator::Error::kPlatformFailureError);
 }
 
 // ::arc::mojom::VideoEncodeAccelerator implementation.
