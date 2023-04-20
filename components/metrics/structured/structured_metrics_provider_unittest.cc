@@ -346,37 +346,6 @@ class StructuredMetricsProviderTest : public testing::Test {
   TestRecorder recorder_;
 };
 
-// Test with kDelayUploadUntilHwid feature enabled.
-class StructuredMetricsProviderHwidTest : public StructuredMetricsProviderTest {
- protected:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        metrics::structured::kDelayUploadUntilHwid);
-
-    StructuredMetricsProviderTest::SetUp();
-  }
-
-  bool events_retrieved() { return events_retrieved_; }
-
-  std::unique_ptr<ChromeUserMetricsExtension> GetUmaProto() {
-    auto uma_proto = std::make_unique<ChromeUserMetricsExtension>();
-
-    // Copy events from disk to proto.
-    if (provider_->HasIndependentMetrics()) {
-      provider_->ProvideIndependentMetrics(
-          base::BindLambdaForTesting(
-              [this](bool success) { events_retrieved_ = success; }),
-          uma_proto.get(), nullptr);
-      Wait();
-    }
-
-    return uma_proto;
-  }
-
- private:
-  bool events_retrieved_ = false;
-};
-
 // Simple test to ensure initialization works correctly in the case of a
 // first-time run.
 TEST_F(StructuredMetricsProviderTest, ProviderInitializesFromBlankSlate) {
@@ -1053,31 +1022,6 @@ TEST_F(StructuredMetricsProviderTest, LastKeyRotation) {
   // past, ie. the rotation period for this project.
   ASSERT_TRUE(last_rotation.has_value());
   EXPECT_GE(last_rotation, today - 90);
-}
-
-TEST_F(StructuredMetricsProviderHwidTest,
-       EventsNotSentIfSystemProfileNotInitialized) {
-  Init();
-
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(2).Record();
-
-  std::unique_ptr<ChromeUserMetricsExtension> uma_proto = GetUmaProto();
-
-  // HWID has not been set. Events should still persist in files.
-  EXPECT_EQ(uma_proto->structured_data().events_size(), 0);
-
-  InitializeSystemProfile();
-
-  // Call again to fetch the new proto with new events.
-  uma_proto = GetUmaProto();
-
-  // HWID has been set. Events should be ready to upload.
-  EXPECT_EQ(uma_proto->system_profile().hardware().full_hardware_class(),
-            kHwid);
-  EXPECT_EQ(uma_proto->structured_data().events_size(), 2);
-
-  ExpectNoErrors();
 }
 
 // Ensures that events part of event sequence are recorded properly.

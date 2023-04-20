@@ -209,9 +209,7 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   std::unique_ptr<KeyData> profile_key_data_;
   std::unique_ptr<KeyData> device_key_data_;
 
-  // todo(andrewbreggr): investigate removing this field, it is used
-  //                     when feature kDelayUploadUntilHwid is enabled
-  // SystemProfile is loaded to populate independent metric uploads.
+  // Whether the system profile has been initialized.
   bool system_profile_initialized_ = false;
 
   // File path where device keys will be persisted.

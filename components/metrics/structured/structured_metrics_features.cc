@@ -25,10 +25,6 @@ BASE_FEATURE(kFastPairMetrics,
              "FastPairMetrics",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDelayUploadUntilHwid,
-             "DelayUploadUntilHwid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 constexpr base::FeatureParam<int> kLimitFilesPerScanParam{&kStructuredMetrics,
                                                           "file_limit", 50};
 constexpr base::FeatureParam<int> kFileSizeByteLimitParam{
