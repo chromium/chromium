@@ -281,6 +281,8 @@ TEST_F(PasswordIssuesMediatorTest, TestPasswordIssuesFilteredByWarningType) {
   // Reused.
   MakeTestPasswordIssue(kExampleCom2, kUsername, kPassword,
                         InsecureType::kReused);
+  MakeTestPasswordIssue(kExampleCom3, kUsername2, kPassword,
+                        InsecureType::kReused);
   // Dismissed Compromised
   MakeTestPasswordIssue(kExampleCom3, kUsername, kPassword,
                         InsecureType::kLeaked, /*muted=*/true);
@@ -309,6 +311,8 @@ TEST_F(PasswordIssuesMediatorTest, TestPasswordIssuesFilteredByWarningType) {
   CreateMediator(WarningType::kReusedPasswordsWarning);
 
   CheckIssue(/*group=*/0, /*index=*/0, /*expected_website=*/kExample2String);
+  CheckIssue(/*group=*/0, /*index=*/1, /*expected_website=*/kExample3String,
+             /*expected_username=*/GetUsername2());
 
   EXPECT_FALSE(consumer().dismissedWarningsButtonText);
 

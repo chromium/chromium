@@ -81,6 +81,7 @@ InsecurePasswordCounts CountInsecurePasswordsPerInsecureType(
     const std::vector<password_manager::CredentialUIEntry>&
         insecure_credentials) {
   InsecurePasswordCounts counts{};
+  std::map<std::u16string, int> reused_passwords;
   for (const auto& credential : insecure_credentials) {
     // If a compromised credential is muted, we don't want to take it into
     // account in the compromised count.
@@ -90,12 +91,21 @@ InsecurePasswordCounts CountInsecurePasswordsPerInsecureType(
       counts.compromised_count++;
     }
     if (credential.IsReused()) {
-      counts.reused_count++;
+      reused_passwords[credential.password]++;
     }
     if (credential.IsWeak()) {
       counts.weak_count++;
     }
   }
+
+  // TODO(crbug.com/1434343): This is a temporary solution to filter out the
+  // reused password groups with only one remaining password.
+  for (const auto& password : reused_passwords) {
+    if (password.second > 1) {
+      counts.reused_count += password.second;
+    }
+  }
+
   return counts;
 }
 
@@ -169,11 +179,24 @@ std::vector<CredentialUIEntry> GetPasswordsForWarningType(
                             std::back_inserter(filtered_credentials),
                             std::mem_fn(&CredentialUIEntry::IsWeak));
       break;
-    case WarningType::kReusedPasswordsWarning:
-      base::ranges::copy_if(insecure_credentials,
-                            std::back_inserter(filtered_credentials),
-                            std::mem_fn(&CredentialUIEntry::IsReused));
+    case WarningType::kReusedPasswordsWarning: {
+      // TODO(crbug.com/1434343): This is a temporary solution to filter out the
+      // reused password groups with only one remaining password.
+      std::map<std::u16string, std::vector<CredentialUIEntry>> reused_passwords;
+      for (const auto& credential : insecure_credentials) {
+        if (credential.IsReused()) {
+          reused_passwords[credential.password].push_back(credential);
+        }
+      }
+      for (const auto& password : reused_passwords) {
+        if (password.second.size() > 1) {
+          filtered_credentials.insert(filtered_credentials.end(),
+                                      password.second.begin(),
+                                      password.second.end());
+        }
+      }
       break;
+    }
     case WarningType::kDismissedWarningsWarning:
       base::ranges::copy_if(insecure_credentials,
                             std::back_inserter(filtered_credentials),

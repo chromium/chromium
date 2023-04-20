@@ -139,7 +139,7 @@ TEST_F(PasswordCheckupMediatorTest,
 // Tests that the consumer is correctly notified when the saved insecure
 // passwords changed.
 TEST_F(PasswordCheckupMediatorTest, NotifiesConsumerOnInsecurePasswordChange) {
-  InsecurePasswordCounts counts = {1, 0, 1, 1};
+  InsecurePasswordCounts counts = {1, 0, 0, 1};
 
   OCMExpect([consumer()
          setPasswordCheckupHomepageState:PasswordCheckupHomepageState::
@@ -156,7 +156,6 @@ TEST_F(PasswordCheckupMediatorTest, NotifiesConsumerOnInsecurePasswordChange) {
 
   PasswordForm form = CreatePasswordForm();
   AddIssueToForm(&form, InsecureType::kLeaked);
-  AddIssueToForm(&form, InsecureType::kReused);
   AddIssueToForm(&form, InsecureType::kWeak);
   GetTestStore().AddLogin(form);
   RunUntilIdle();
