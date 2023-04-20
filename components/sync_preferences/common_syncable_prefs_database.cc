@@ -226,9 +226,13 @@ const auto& SyncablePreferences() {
          {syncable_prefs_ids::kCookieControlsMode, syncer::PREFERENCES}},
         {prefs::kSafeBrowsingEnabled,
          {syncable_prefs_ids::kSafeBrowsingEnabled, syncer::PREFERENCES}},
+// TODO(crbug.com/1434910): Maybe move to chrome_syncable_prefs_database.cc,
+// see bug.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
         {prefs::kSyncedDefaultSearchProviderGUID,
          {syncable_prefs_ids::kSyncedDefaultSearchProviderGUID,
           syncer::PREFERENCES}},
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
         {translate::TranslatePrefs::kPrefForceTriggerTranslateCount,
          {syncable_prefs_ids::kPrefForceTriggerTranslateCount,
           syncer::PREFERENCES}},
