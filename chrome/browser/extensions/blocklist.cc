@@ -182,7 +182,8 @@ Blocklist::Observer::~Observer() {
   blocklist_->RemoveObserver(this);
 }
 
-Blocklist::Blocklist(ExtensionPrefs* prefs) {
+Blocklist::Blocklist(PrefService* profile_prefs)
+    : profile_prefs_(profile_prefs) {
   auto& lazy_database_manager = g_database_manager.Get();
   // Using base::Unretained is safe because when this object goes away, the
   // subscription will automatically be destroyed.
@@ -203,8 +204,9 @@ Blocklist* Blocklist::Get(content::BrowserContext* context) {
 void Blocklist::GetBlocklistedIDs(const std::set<std::string>& ids,
                                   GetBlocklistedIDsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (ids.empty() || !GetDatabaseManager().get()) {
+  if (ids.empty() || !GetDatabaseManager().get() ||
+      !safe_browsing::IsSafeBrowsingExtensionProtectionAllowed(
+          *profile_prefs_)) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), BlocklistStateMap()));
     return;

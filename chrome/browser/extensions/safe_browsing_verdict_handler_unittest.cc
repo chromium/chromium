@@ -503,6 +503,39 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest,
   task_environment()->RunUntilIdle();
 }
 
+// Tests that blocklisted extensions should be reloaded/blocked if blocklist
+// policy is changed.
+TEST_F(SafeBrowsingVerdictHandlerUnitTest,
+       ReloadBlocklistedExtensionWhenPolicyDisabled) {
+  TestBlocklist test_blocklist;
+
+  // A profile with 3 extensions installed: good0, good1, and good2.
+  InitializeGoodInstalledExtensionService();
+  test_blocklist.Attach(service()->blocklist_);
+  service()->Init();
+  test_blocklist.SetBlocklistState(kGood1, BLOCKLISTED_MALWARE, true);
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(1u, registry()->blocklisted_extensions().size());
+  EXPECT_EQ(2u, registry()->enabled_extensions().size());
+
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy, false);
+
+  // Since policy is disabled, all extensions should be unblocklisted.
+  test_blocklist.NotifyUpdate();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(0u, registry()->blocklisted_extensions().size());
+  EXPECT_EQ(3u, registry()->enabled_extensions().size());
+
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy, true);
+
+  // Since policy is enabled, good1 should be blocked again.
+  test_blocklist.NotifyUpdate();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(1u, registry()->blocklisted_extensions().size());
+  EXPECT_EQ(2u, registry()->enabled_extensions().size());
+}
 #endif  // defined(ENABLE_BLOCKLIST_TESTS)
 
 }  // namespace extensions

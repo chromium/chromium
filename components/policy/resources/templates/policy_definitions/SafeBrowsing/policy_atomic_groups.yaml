@@ -13,3 +13,4 @@ SafeBrowsing:
   - SafeBrowsingAllowlistDomains
   - RealTimeDownloadProtectionRequestAllowed
   - ClientSidePhishingProtectionAllowed
+  - SafeBrowsingExtensionProtectionAllowed

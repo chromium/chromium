@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/extensions/test_blocklist.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/disable_reason.h"
@@ -269,6 +270,35 @@ TEST_F(OmahaAttributesHandlerUnitTest, ExtensionUninstalledBeforeNotified) {
   // kTestExtensionId is already uninstalled. Performing action on it should
   // not crash. Regression test for https://crbug.com/1305490.
   service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
+}
+
+// Tests that an extension that was disabled through Omaha won't be re-enabled
+// if Safe Browsing blocklist policy is disabled.
+TEST_F(OmahaAttributesHandlerUnitTest,
+       NoUnsetBlocklistWhenSBBlocklistPolicyDisabled) {
+  TestBlocklist test_blocklist;
+
+  InitializeGoodInstalledExtensionService();
+  test_blocklist.Attach(service()->blocklist_);
+  service()->Init();
+
+  ExtensionStateTester state_tester(profile());
+  EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
+
+  base::Value attributes(base::Value::Type::DICT);
+  attributes.SetKey("_malware", base::Value(true));
+  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
+  EXPECT_TRUE(state_tester.ExpectBlocklisted(kTestExtensionId));
+
+  // Disable SB blocklist by policy and refresh blocklist.
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy, false);
+  test_blocklist.NotifyUpdate();
+  task_environment()->RunUntilIdle();
+
+  // Disabling SB blocklist by policy should not impact extensions blocked by
+  // Omaha.
+  EXPECT_TRUE(state_tester.ExpectBlocklisted(kTestExtensionId));
 }
 
 }  // namespace extensions

@@ -1720,6 +1720,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kKioskTroubleshootingToolsEnabled,
     prefs::kKioskTroubleshootingToolsEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kSafeBrowsingExtensionProtectionAllowed,
+    prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)

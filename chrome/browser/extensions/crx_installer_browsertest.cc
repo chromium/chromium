@@ -43,6 +43,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/render_view_host.h"
@@ -664,6 +665,25 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, Blocklist) {
             installation_failure.failure_reason);
   EXPECT_EQ(CrxInstallErrorDetail::EXTENSION_IS_BLOCKLISTED,
             installation_failure.install_error_detail);
+}
+
+// TODO(alexwchen): Update this test to use a non-theme crx
+IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, BlocklistPolicyDisabled) {
+  // Disable policy which should prevent blocklist from blocking installation of
+  // unsafe Crx
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy, false);
+
+  scoped_refptr<FakeSafeBrowsingDatabaseManager> blocklist_db(
+      base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>(true));
+  ScopedDatabaseManagerForTest scoped_blocklist_db(blocklist_db);
+
+  const std::string extension_id = "gllekhaobjnhgeagipipnkpmmmpchacm";
+  blocklist_db->SetUnsafe(extension_id);
+
+  base::FilePath crx_path = test_data_dir_.AppendASCII("theme_hidpi_crx")
+                                .AppendASCII("theme_hidpi.crx");
+  EXPECT_TRUE(InstallExtension(crx_path, 1));
 }
 #endif
 
