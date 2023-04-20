@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
 }
 
 IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
-                       DoesNotRedownloadAfterKeepData) {
+                       DoesNotRedownloadAfterSyncUnpaused) {
   ASSERT_TRUE(SetupClients());
   ASSERT_FALSE(bookmarks_helper::GetBookmarkModel(0)->IsBookmarked(
       GURL(kSyncedBookmarkURL)));

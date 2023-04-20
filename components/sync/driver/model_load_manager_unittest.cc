@@ -447,8 +447,12 @@ TEST_F(SyncModelLoadManagerTest,
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
   ASSERT_EQ(GetController(APPS)->state(), DataTypeController::NOT_RUNNING);
-  // When switching modes, the metadata should get cleared.
+
+  // When switching modes, the metadata should get cleared for all datatypes,
+  // including datatypes that started in transport mode (BOOKMARKS) and
+  // datatypes that were excluded (APPS).
   EXPECT_EQ(1, GetController(APPS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
 }
 
 TEST_F(SyncModelLoadManagerTest,
@@ -493,8 +497,11 @@ TEST_F(SyncModelLoadManagerTest,
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
   ASSERT_EQ(GetController(APPS)->state(), DataTypeController::NOT_RUNNING);
-  // The metadata for the now-disabled type should get cleared.
+  // The metadata for all types should get cleared.
   EXPECT_EQ(1, GetController(APPS)
+                   ->model(SyncMode::kTransportOnly)
+                   ->clear_metadata_call_count());
+  EXPECT_EQ(1, GetController(BOOKMARKS)
                    ->model(SyncMode::kTransportOnly)
                    ->clear_metadata_call_count());
 }
