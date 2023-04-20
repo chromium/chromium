@@ -98,7 +98,7 @@
     height: 20px;
     line-height: 20px;
     margin-inline-start: 16px;
-    max-width: calc(100% - 32px);
+    max-width: calc(100% - 138px);
     white-space: initial;
   }
 
@@ -117,9 +117,9 @@
 
   #titleAnnotation {
     align-items: center;
-    background: var(--color-new-tab-page-chip-background);
+    background: var(--color-sys-tonal-container);
     border-radius: 4px;
-    color: var(--color-new-tab-page-chip-foreground);
+    color: var(--color-sys-on-tonal-container);
     display: flex;
     font-size: 9px;
     font-weight: 500;
@@ -192,7 +192,7 @@
         </img>
       </template>
       <template is="dom-if" if="[[!cart.productImageUrls.length]]" restamp>
-        <page-favicon id ="fallbackImage" url="[[cart.cartUrl.url]]"
+        <page-favicon id ="fallbackImage" url="[[cart.cartUrl]]"
             is-known-to-sync="true" size="24">
         </page-favicon>
       </template>
@@ -220,7 +220,7 @@
       </div>
     </div>
     <div id="infoContainer">
-      <page-favicon id="icon" url="[[cart.cartUrl.url]]"
+      <page-favicon id="icon" url="[[cart.cartUrl]]"
           is-known-to-sync="true">
       </page-favicon>
       <div id="domain" class="truncate">[[cart.domain]]</div>
