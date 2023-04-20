@@ -52,6 +52,29 @@ struct COLOR_SPACE_EXPORT ColorVolumeMetadata {
   }
 };
 
+// HDR metadata for extended range color spaces.
+struct COLOR_SPACE_EXPORT ExtendedRangeBrightness {
+  // The current hdr/sdr ratio of the current buffer. For example if the buffer
+  // was rendered with a target SDR whitepoint of 100 nits and a max display
+  // brightness of 200 nits, this should be set to 2.0f.
+  float current_buffer_ratio = 1.0f;
+
+  // The desired hdr/sdr ratio. This can be used to communicate the max desired
+  // brightness range. This is similar to the "max luminance" value in other HDR
+  // metadata formats, but represented as a ratio of the target SDR whitepoint
+  // to the max display brightness.
+  float desired_ratio = 1.0f;
+
+  bool operator==(const ExtendedRangeBrightness& rhs) const {
+    return (current_buffer_ratio == rhs.current_buffer_ratio &&
+            desired_ratio == rhs.desired_ratio);
+  }
+
+  bool operator!=(const ExtendedRangeBrightness& rhs) const {
+    return !(*this == rhs);
+  }
+};
+
 // HDR metadata common for HDR10 and WebM/VP9-based HDR formats.
 struct COLOR_SPACE_EXPORT HDRMetadata {
   ColorVolumeMetadata color_volume_metadata;
@@ -61,6 +84,10 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
   // Max frame-average light level (FALL), i.e. maximum average brightness of
   // the brightest frame in the stream), in nits.
   unsigned max_frame_average_light_level = 0;
+
+  // Brightness points for extended range color spaces.
+  // NOTE: Is not serialized over IPC.
+  absl::optional<ExtendedRangeBrightness> extended_range_brightness;
 
   HDRMetadata();
   HDRMetadata(const ColorVolumeMetadata& color_volume_metadata,
@@ -72,7 +99,8 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
   bool IsValid() const {
     return !((max_content_light_level == 0) &&
              (max_frame_average_light_level == 0) &&
-             (color_volume_metadata == ColorVolumeMetadata()));
+             (color_volume_metadata == ColorVolumeMetadata()) &&
+             !extended_range_brightness);
   }
 
   // Return a copy of `hdr_metadata` with its `color_volume_metadata` fully
@@ -90,7 +118,8 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
     return (
         (max_content_light_level == rhs.max_content_light_level) &&
         (max_frame_average_light_level == rhs.max_frame_average_light_level) &&
-        (color_volume_metadata == rhs.color_volume_metadata));
+        (color_volume_metadata == rhs.color_volume_metadata) &&
+        (extended_range_brightness == rhs.extended_range_brightness));
   }
 
   bool operator!=(const HDRMetadata& rhs) const { return !(*this == rhs); }

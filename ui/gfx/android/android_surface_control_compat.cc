@@ -107,6 +107,11 @@ using pASurfaceTransaction_setHdrMetadata_smpte2086 =
     void (*)(ASurfaceTransaction* transaction,
              ASurfaceControl* surface,
              struct AHdrMetadata_smpte2086* metadata);
+using pASurfaceTransaction_setExtendedRangeBrightness =
+    void (*)(ASurfaceTransaction* transaction,
+             ASurfaceControl* surface_control,
+             float currentBufferRatio,
+             float desiredRatio);
 using pASurfaceTransaction_setFrameRate =
     void (*)(ASurfaceTransaction* transaction,
              ASurfaceControl* surface_control,
@@ -249,6 +254,8 @@ struct SurfaceControlMethods {
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setBufferDataSpace);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setHdrMetadata_cta861_3);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setHdrMetadata_smpte2086);
+    LOAD_FUNCTION_MAYBE(main_dl_handle,
+                        ASurfaceTransaction_setExtendedRangeBrightness);
     LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setFrameRate);
     LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setFrameTimeline);
 
@@ -295,6 +302,9 @@ struct SurfaceControlMethods {
       ASurfaceTransaction_setHdrMetadata_cta861_3Fn;
   pASurfaceTransaction_setHdrMetadata_smpte2086
       ASurfaceTransaction_setHdrMetadata_smpte2086Fn;
+  pASurfaceTransaction_setExtendedRangeBrightness
+      ASurfaceTransaction_setExtendedRangeBrightnessFn;
+
   pASurfaceTransaction_setFrameRate ASurfaceTransaction_setFrameRateFn;
   pASurfaceTransaction_setFrameTimeline ASurfaceTransaction_setFrameTimelineFn;
   pASurfaceTransaction_setEnableBackPressure
@@ -359,6 +369,8 @@ enum DataSpace : uint64_t {
   // Ranges;
   RANGE_FULL = 1 << 27,
   RANGE_LIMITED = 2 << 27,
+  RANGE_EXTENDED = 3 << 27,
+  RANGE_MASK = 7 << 27,
 
   ADATASPACE_DCI_P3 = 155844608
 };
@@ -422,6 +434,11 @@ uint64_t ColorSpaceToADataSpace(const gfx::ColorSpace& color_space) {
 
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_S) {
+    if (color_space == gfx::ColorSpace::CreateExtendedSRGB()) {
+      return DataSpace::STANDARD_BT709 | DataSpace::TRANSFER_SRGB |
+             DataSpace::RANGE_EXTENDED;
+    }
+
     auto standard = GetDataSpaceStandard(color_space);
     auto transfer = GetDataSpaceTransfer(color_space);
     auto range = GetDataSpaceRange(color_space);
@@ -793,7 +810,11 @@ void SurfaceControl::Transaction::SetDamageRect(const Surface& surface,
 
 void SurfaceControl::Transaction::SetColorSpace(
     const Surface& surface,
-    const gfx::ColorSpace& color_space) {
+    const gfx::ColorSpace& color_space,
+    const absl::optional<HDRMetadata>& metadata) {
+  // Metadata shouldn't exist for SDR color spaces.
+  DCHECK(!metadata || color_space.IsHDR());
+
   auto data_space = ColorSpaceToADataSpace(color_space);
 
   // Log the data space in crash keys for debugging crbug.com/997592.
@@ -805,13 +826,12 @@ void SurfaceControl::Transaction::SetColorSpace(
 
   SurfaceControlMethods::Get().ASurfaceTransaction_setBufferDataSpaceFn(
       transaction_, surface.surface(), data_space);
-}
 
-void SurfaceControl::Transaction::SetHDRMetadata(
+  const bool extended_range =
+      (data_space & DataSpace::RANGE_MASK) == DataSpace::RANGE_EXTENDED;
 
-    const Surface& surface,
-    const absl::optional<HDRMetadata>& metadata) {
-  if (metadata) {
+  // Set the HDR metadata for not extended SRGB case.
+  if (metadata && !extended_range) {
     AHdrMetadata_cta861_3 cta861_3 = {
         .maxContentLightLevel =
             static_cast<float>(metadata->max_content_light_level),
@@ -836,6 +856,28 @@ void SurfaceControl::Transaction::SetHDRMetadata(
         transaction_, surface.surface(), nullptr);
     SurfaceControlMethods::Get().ASurfaceTransaction_setHdrMetadata_smpte2086Fn(
         transaction_, surface.surface(), nullptr);
+  }
+
+  // Set brightness points for extended range.
+  if (extended_range) {
+    CHECK(metadata);
+    CHECK(metadata->extended_range_brightness);
+    CHECK(SurfaceControlMethods::Get()
+              .ASurfaceTransaction_setExtendedRangeBrightnessFn);
+    SurfaceControlMethods::Get()
+        .ASurfaceTransaction_setExtendedRangeBrightnessFn(
+            transaction_, surface.surface(),
+            metadata->extended_range_brightness->current_buffer_ratio,
+            metadata->extended_range_brightness->desired_ratio);
+  } else {
+    // If extended range brightness is supported, we need reset it to default
+    // values.
+    if (SurfaceControlMethods::Get()
+            .ASurfaceTransaction_setExtendedRangeBrightnessFn) {
+      SurfaceControlMethods::Get()
+          .ASurfaceTransaction_setExtendedRangeBrightnessFn(
+              transaction_, surface.surface(), 1.0f, 1.0f);
+    }
   }
 }
 
