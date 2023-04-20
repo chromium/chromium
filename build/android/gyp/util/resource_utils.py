@@ -42,7 +42,7 @@ _ANDROID_TO_CHROMIUM_LANGUAGE_MAP = {
     'no': 'nb',  # 'no' is not a real language. http://crbug.com/920960
 }
 
-_ALL_RESOURCE_TYPES = {
+ALL_RESOURCE_TYPES = {
     'anim', 'animator', 'array', 'attr', 'bool', 'color', 'dimen', 'drawable',
     'font', 'fraction', 'id', 'integer', 'interpolator', 'layout', 'macro',
     'menu', 'mipmap', 'plurals', 'raw', 'string', 'style', 'styleable',
@@ -589,8 +589,8 @@ def CreateRJavaFiles(srcjar_dir,
       else:
         all_resources[entry_key] = entry
         all_resources_by_type[entry.resource_type].append(entry)
-        assert entry.resource_type in _ALL_RESOURCE_TYPES, (
-            'Unknown resource type: %s, add to _ALL_RESOURCE_TYPES!' %
+        assert entry.resource_type in ALL_RESOURCE_TYPES, (
+            'Unknown resource type: %s, add to ALL_RESOURCE_TYPES!' %
             entry.resource_type)
 
   if custom_root_package_name:
@@ -666,7 +666,7 @@ public final class R {
 
   return template.render(
       package=package,
-      resource_types=sorted(_ALL_RESOURCE_TYPES),
+      resource_types=sorted(ALL_RESOURCE_TYPES),
       root_package=root_r_java_package,
       has_on_resources_loaded=rjava_build_options.has_on_resources_loaded)
 
@@ -778,7 +778,7 @@ packageIdTransform);
                       lstrip_blocks=True)
   return template.render(
       package=package,
-      resource_types=sorted(_ALL_RESOURCE_TYPES),
+      resource_types=sorted(ALL_RESOURCE_TYPES),
       has_on_resources_loaded=rjava_build_options.has_on_resources_loaded,
       fake_on_resources_loaded=rjava_build_options.fake_on_resources_loaded,
       final_resources=final_resources_by_type,
