@@ -103,7 +103,7 @@ std::unique_ptr<power_bookmarks::Power> MakePower(const std::string& guid,
       sync_pb::NoteEntity::TARGET_TYPE_PAGE);
   auto result =
       std::make_unique<power_bookmarks::Power>(std::move(power_entity));
-  result->set_guid(base::GUID::ParseLowercase(guid));
+  result->set_guid(base::Uuid::ParseLowercase(guid));
   result->set_power_type(sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE);
   if (is_create)
     result->set_time_added(base::Time::Now());
@@ -222,7 +222,7 @@ void UserNotesPageHandler::NewNoteFinished(const std::string& text,
     std::move(callback).Run(false);
     return;
   }
-  std::string guid = base::GUID::GenerateRandomV4().AsLowercaseString();
+  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   service_->CreatePower(
       MakePower(guid, text, current_tab_url_, /*is_create=*/true),
       base::BindOnce([](NewNoteFinishedCallback callback,
@@ -248,7 +248,7 @@ void UserNotesPageHandler::UpdateNote(const std::string& guid,
 void UserNotesPageHandler::DeleteNote(const std::string& guid,
                                       DeleteNoteCallback callback) {
   service_->DeletePower(
-      base::GUID::ParseLowercase(guid),
+      base::Uuid::ParseLowercase(guid),
       base::BindOnce([](DeleteNoteCallback callback,
                         bool success) { std::move(callback).Run(success); },
                      std::move(callback)));
