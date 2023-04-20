@@ -491,6 +491,7 @@ crbug.com/1276186 [ mac amd-0x67ef angle-opengl ] conformance/rendering/clear-de
 # crbug.com/735483 [ mac amd release ] conformance/rendering/texture-switch-performance.html [ Failure ]
 
 crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
+crbug.com/1435021 [ mac amd-0x67ef angle-metal ] conformance/textures/misc/texture-active-bind.html [ Failure ]
 
 ## Mac Retina NVidia failures / flakes ##
 

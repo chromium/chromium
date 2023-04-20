@@ -386,6 +386,7 @@ crbug.com/1316389 [ amd-0x67ef angle-metal passthrough ventura ] deqp/functional
 crbug.com/1316389 [ amd-0x67ef angle-metal passthrough ventura ] deqp/functional/gles3/transformfeedback/point_size.html [ Failure ]
 crbug.com/1316389 [ amd-0x67ef angle-metal passthrough ventura ] deqp/functional/gles3/transformfeedback/random_interleaved_points.html [ Failure ]
 crbug.com/1316389 [ amd-0x67ef angle-metal passthrough ventura ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
+crbug.com/1435021 [ mac amd-0x67ef angle-metal ] conformance/canvas/draw-webgl-to-canvas-test.html [ RetryOnFailure ]
 
 ## Metal Intel ##
 
