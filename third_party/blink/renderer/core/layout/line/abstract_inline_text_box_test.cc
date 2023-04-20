@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_abstract_inline_text_box.h"
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#include "third_party/blink/renderer/core/layout/line/abstract_inline_text_box.h"
-
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -22,8 +21,7 @@ TEST_F(AbstractInlineTextBoxTest, GetTextWithCollapsedWhiteSpace) {
 
   const Element& target = *GetDocument().getElementById("target");
   auto& layout_text = *To<LayoutText>(target.firstChild()->GetLayoutObject());
-  scoped_refptr<AbstractInlineTextBox> inline_text_box =
-      layout_text.FirstAbstractInlineTextBox();
+  auto inline_text_box = layout_text.FirstAbstractInlineTextBox();
 
   EXPECT_EQ("abc", inline_text_box->GetText());
   EXPECT_EQ(3u, inline_text_box->Len());
@@ -39,8 +37,7 @@ TEST_F(AbstractInlineTextBoxTest, GetTextWithLineBreakAtCollapsedWhiteSpace) {
 
   const Element& label = *GetDocument().getElementById("label");
   auto& layout_text = *To<LayoutText>(label.firstChild()->GetLayoutObject());
-  scoped_refptr<AbstractInlineTextBox> inline_text_box =
-      layout_text.FirstAbstractInlineTextBox();
+  auto inline_text_box = layout_text.FirstAbstractInlineTextBox();
 
   EXPECT_EQ("abc:", inline_text_box->GetText());
   EXPECT_EQ(4u, inline_text_box->Len());
@@ -57,8 +54,7 @@ TEST_F(AbstractInlineTextBoxTest,
 
   const Element& target = *GetDocument().getElementById("target");
   auto& layout_text = *To<LayoutText>(target.firstChild()->GetLayoutObject());
-  scoped_refptr<AbstractInlineTextBox> inline_text_box =
-      layout_text.FirstAbstractInlineTextBox();
+  auto inline_text_box = layout_text.FirstAbstractInlineTextBox();
 
   EXPECT_EQ("012 ", inline_text_box->GetText());
   EXPECT_EQ(4u, inline_text_box->Len());
@@ -75,8 +71,7 @@ TEST_F(AbstractInlineTextBoxTest,
 
   const Element& target1 = *GetDocument().getElementById("t1");
   auto& layout_text1 = *To<LayoutText>(target1.firstChild()->GetLayoutObject());
-  scoped_refptr<AbstractInlineTextBox> inline_text_box1 =
-      layout_text1.FirstAbstractInlineTextBox();
+  auto inline_text_box1 = layout_text1.FirstAbstractInlineTextBox();
 
   EXPECT_EQ("012", inline_text_box1->GetText());
   EXPECT_EQ(3u, inline_text_box1->Len());
@@ -84,8 +79,7 @@ TEST_F(AbstractInlineTextBoxTest,
 
   const Element& target2 = *GetDocument().getElementById("t2");
   auto& layout_text2 = *To<LayoutText>(target2.firstChild()->GetLayoutObject());
-  scoped_refptr<AbstractInlineTextBox> inline_text_box2 =
-      layout_text2.FirstAbstractInlineTextBox();
+  auto inline_text_box2 = layout_text2.FirstAbstractInlineTextBox();
 
   EXPECT_EQ(nullptr, inline_text_box2)
       << "We don't have inline box when <span> "
@@ -101,8 +95,7 @@ TEST_F(AbstractInlineTextBoxTest, GetTextWithLineBreakAtTrailingWhiteSpace) {
 
   const Element& label = *GetDocument().getElementById("label");
   auto& layout_text = *To<LayoutText>(label.firstChild()->GetLayoutObject());
-  scoped_refptr<AbstractInlineTextBox> inline_text_box =
-      layout_text.FirstAbstractInlineTextBox();
+  auto inline_text_box = layout_text.FirstAbstractInlineTextBox();
 
   EXPECT_EQ("abc: ", inline_text_box->GetText());
   EXPECT_EQ(5u, inline_text_box->Len());
@@ -135,8 +128,7 @@ TEST_F(AbstractInlineTextBoxTest, GetTextOffsetInFormattingContext) {
   // both LayoutNG and Legacy, even though Legacy doesn't collapse the
   // white spaces at the end of an AbstractInlineTextBox. White spaces at the
   // beginning of the third and fifth inline text box should be collapsed.
-  scoped_refptr<AbstractInlineTextBox> inline_text_box =
-      layout_text.FirstAbstractInlineTextBox();
+  auto inline_text_box = layout_text.FirstAbstractInlineTextBox();
   String text = "First sentence";
   EXPECT_EQ(text, inline_text_box->GetText());
   EXPECT_EQ(6u, inline_text_box->TextOffsetInFormattingContext(0));
@@ -169,8 +161,7 @@ TEST_F(AbstractInlineTextBoxTest, CharacterWidths) {
 
   const Element& div = *GetDocument().getElementById("div");
   auto& layout_text = *To<LayoutText>(div.firstChild()->GetLayoutObject());
-  scoped_refptr<AbstractInlineTextBox> inline_text_box =
-      layout_text.FirstAbstractInlineTextBox();
+  auto inline_text_box = layout_text.FirstAbstractInlineTextBox();
 
   Vector<float> widths;
   inline_text_box->CharacterWidths(widths);

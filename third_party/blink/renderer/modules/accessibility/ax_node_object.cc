@@ -112,6 +112,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_abstract_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
@@ -4086,9 +4087,8 @@ void AXNodeObject::AddInlineTextBoxChildren(bool force) {
   }
 
   auto* layout_text = To<LayoutText>(GetLayoutObject());
-  for (scoped_refptr<AbstractInlineTextBox> box =
-           layout_text->FirstAbstractInlineTextBox();
-       box.get(); box = box->NextInlineTextBox()) {
+  for (auto box = layout_text->FirstAbstractInlineTextBox(); box.get();
+       box = box->NextInlineTextBox()) {
     AXObject* ax_box = AXObjectCache().GetOrCreate(box.get(), this);
     if (!ax_box)
       continue;

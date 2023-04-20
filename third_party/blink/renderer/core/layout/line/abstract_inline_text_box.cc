@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_abstract_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
@@ -59,7 +60,7 @@ LayoutText* AbstractInlineTextBox::GetFirstLetterPseudoLayoutText() const {
 void AbstractInlineTextBox::Detach() {
   DCHECK(layout_text_);
   if (AXObjectCache* cache = ExistingAXObjectCache())
-    cache->Remove(this);
+    cache->Remove(static_cast<NGAbstractInlineTextBox*>(this));
 
   layout_text_ = nullptr;
 }

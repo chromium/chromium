@@ -20,7 +20,7 @@ namespace {
 
 class NGAbstractInlineTextBoxCache final {
  public:
-  static scoped_refptr<AbstractInlineTextBox> GetOrCreate(
+  static scoped_refptr<NGAbstractInlineTextBox> GetOrCreate(
       const NGInlineCursor& cursor) {
     if (!s_instance_)
       s_instance_ = new NGAbstractInlineTextBoxCache();
@@ -34,7 +34,7 @@ class NGAbstractInlineTextBoxCache final {
   }
 
  private:
-  scoped_refptr<AbstractInlineTextBox> GetOrCreateInternal(
+  scoped_refptr<NGAbstractInlineTextBox> GetOrCreateInternal(
       const NGInlineCursor& cursor) {
     const NGFragmentItem& fragment = *cursor.CurrentItem();
     DCHECK(&fragment);
@@ -44,7 +44,7 @@ class NGAbstractInlineTextBoxCache final {
       CHECK(layout_text->HasAbstractInlineTextBox());
       return it->value;
     }
-    scoped_refptr<AbstractInlineTextBox> obj =
+    scoped_refptr<NGAbstractInlineTextBox> obj =
         base::AdoptRef(new NGAbstractInlineTextBox(cursor));
     map_.Set(&fragment, obj);
     layout_text->SetHasAbstractInlineTextBox();
@@ -61,7 +61,7 @@ class NGAbstractInlineTextBoxCache final {
 
   static NGAbstractInlineTextBoxCache* s_instance_;
 
-  HashMap<const NGFragmentItem*, scoped_refptr<AbstractInlineTextBox>> map_;
+  HashMap<const NGFragmentItem*, scoped_refptr<NGAbstractInlineTextBox>> map_;
 };
 
 NGAbstractInlineTextBoxCache* NGAbstractInlineTextBoxCache::s_instance_ =
@@ -69,7 +69,7 @@ NGAbstractInlineTextBoxCache* NGAbstractInlineTextBoxCache::s_instance_ =
 
 }  // namespace
 
-scoped_refptr<AbstractInlineTextBox> NGAbstractInlineTextBox::GetOrCreate(
+scoped_refptr<NGAbstractInlineTextBox> NGAbstractInlineTextBox::GetOrCreate(
     const NGInlineCursor& cursor) {
   if (!cursor)
     return nullptr;
@@ -174,7 +174,7 @@ bool NGAbstractInlineTextBox::NeedsTrailingSpace() const {
   return mapping_unit.GetLayoutObject() == layout_object;
 }
 
-scoped_refptr<AbstractInlineTextBox>
+scoped_refptr<NGAbstractInlineTextBox>
 NGAbstractInlineTextBox::NextInlineTextBox() const {
   NGInlineCursor next = GetCursor();
   if (!next)
@@ -289,7 +289,7 @@ bool NGAbstractInlineTextBox::IsLast() const {
   return !cursor;
 }
 
-scoped_refptr<AbstractInlineTextBox> NGAbstractInlineTextBox::NextOnLine()
+scoped_refptr<NGAbstractInlineTextBox> NGAbstractInlineTextBox::NextOnLine()
     const {
   NGInlineCursor cursor = GetCursorOnLine();
   if (!cursor)
@@ -301,7 +301,7 @@ scoped_refptr<AbstractInlineTextBox> NGAbstractInlineTextBox::NextOnLine()
   return nullptr;
 }
 
-scoped_refptr<AbstractInlineTextBox> NGAbstractInlineTextBox::PreviousOnLine()
+scoped_refptr<NGAbstractInlineTextBox> NGAbstractInlineTextBox::PreviousOnLine()
     const {
   NGInlineCursor cursor = GetCursorOnLine();
   if (!cursor)

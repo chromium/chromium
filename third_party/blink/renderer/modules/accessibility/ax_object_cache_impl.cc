@@ -77,7 +77,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/line/abstract_inline_text_box.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_abstract_inline_text_box.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -967,7 +967,7 @@ AXObject* AXObjectCacheImpl::Get(const Node* node) {
                  /* allow_layout_object_relevance_check */ true);
 }
 
-AXObject* AXObjectCacheImpl::Get(AbstractInlineTextBox* inline_text_box) {
+AXObject* AXObjectCacheImpl::Get(NGAbstractInlineTextBox* inline_text_box) {
   if (!inline_text_box)
     return nullptr;
 
@@ -1226,7 +1226,7 @@ AXObject* AXObjectCacheImpl::CreateFromNode(Node* node) {
 }
 
 AXObject* AXObjectCacheImpl::CreateFromInlineTextBox(
-    AbstractInlineTextBox* inline_text_box) {
+    NGAbstractInlineTextBox* inline_text_box) {
   return MakeGarbageCollected<AXInlineTextBox>(inline_text_box, *this);
 }
 
@@ -1396,8 +1396,9 @@ AXObject* AXObjectCacheImpl::GetOrCreate(LayoutObject* layout_object,
                        parent_if_known);
 }
 
-AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
-                                         AXObject* parent) {
+AXObject* AXObjectCacheImpl::GetOrCreate(
+    NGAbstractInlineTextBox* inline_text_box,
+    AXObject* parent) {
   if (!inline_text_box)
     return nullptr;
 
@@ -1631,11 +1632,11 @@ void AXObjectCacheImpl::Remove(Document* document) {
 }
 
 // This is safe to call even if there isn't a current mapping.
-void AXObjectCacheImpl::Remove(AbstractInlineTextBox* inline_text_box) {
+void AXObjectCacheImpl::Remove(NGAbstractInlineTextBox* inline_text_box) {
   Remove(inline_text_box, /* notify_parent */ true);
 }
 
-void AXObjectCacheImpl::Remove(AbstractInlineTextBox* inline_text_box,
+void AXObjectCacheImpl::Remove(NGAbstractInlineTextBox* inline_text_box,
                                bool notify_parent) {
   if (!inline_text_box)
     return;

@@ -49,7 +49,6 @@
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/line/abstract_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_abstract_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
@@ -1306,7 +1305,8 @@ void LayoutText::MomentarilyRevealLastTypedCharacter(
   secure_text_timer->RestartWithNewText(last_typed_character_offset);
 }
 
-scoped_refptr<AbstractInlineTextBox> LayoutText::FirstAbstractInlineTextBox() {
+scoped_refptr<NGAbstractInlineTextBox>
+LayoutText::FirstAbstractInlineTextBox() {
   NOT_DESTROYED();
   DCHECK(IsInLayoutNGInlineFormattingContext());
   NGInlineCursor cursor;

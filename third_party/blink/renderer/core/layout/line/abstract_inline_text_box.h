@@ -59,7 +59,7 @@ class CORE_EXPORT AbstractInlineTextBox
   virtual ~AbstractInlineTextBox() { DCHECK(!layout_text_); }
 
   virtual void Detach();
-  virtual scoped_refptr<AbstractInlineTextBox> NextInlineTextBox() const = 0;
+  virtual scoped_refptr<NGAbstractInlineTextBox> NextInlineTextBox() const = 0;
   virtual LayoutRect LocalBounds() const = 0;
   virtual unsigned Len() const = 0;
   // Given a text offset in this inline text box, returns the equivalent text
@@ -77,8 +77,8 @@ class CORE_EXPORT AbstractInlineTextBox
   virtual String GetText() const = 0;
   virtual bool IsFirst() const = 0;
   virtual bool IsLast() const = 0;
-  virtual scoped_refptr<AbstractInlineTextBox> NextOnLine() const = 0;
-  virtual scoped_refptr<AbstractInlineTextBox> PreviousOnLine() const = 0;
+  virtual scoped_refptr<NGAbstractInlineTextBox> NextOnLine() const = 0;
+  virtual scoped_refptr<NGAbstractInlineTextBox> PreviousOnLine() const = 0;
   virtual bool IsLineBreak() const = 0;
   virtual bool NeedsTrailingSpace() const = 0;
 

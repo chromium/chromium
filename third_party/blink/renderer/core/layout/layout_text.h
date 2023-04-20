@@ -40,8 +40,8 @@
 
 namespace blink {
 
-class AbstractInlineTextBox;
 class ContentCaptureManager;
+class NGAbstractInlineTextBox;
 struct NGInlineItemsData;
 struct NGInlineItemSpan;
 class NGOffsetMapping;
@@ -255,7 +255,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   void RemoveAndDestroyTextBoxes();
 
-  scoped_refptr<AbstractInlineTextBox> FirstAbstractInlineTextBox();
+  scoped_refptr<NGAbstractInlineTextBox> FirstAbstractInlineTextBox();
 
   bool HasAbstractInlineTextBox() const {
     NOT_DESTROYED();

@@ -1458,8 +1458,9 @@ void AXLayoutObject::GetWordBoundaries(Vector<int>& word_starts,
   if (text_alternative.ContainsOnlyWhitespaceOrEmpty())
     return;
 
-  Vector<AbstractInlineTextBox::WordBoundaries> boundaries;
-  AbstractInlineTextBox::GetWordBoundariesForText(boundaries, text_alternative);
+  Vector<NGAbstractInlineTextBox::WordBoundaries> boundaries;
+  NGAbstractInlineTextBox::GetWordBoundariesForText(boundaries,
+                                                    text_alternative);
   word_starts.reserve(boundaries.size());
   word_ends.reserve(boundaries.size());
   for (const auto& boundary : boundaries) {

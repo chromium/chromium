@@ -19,7 +19,7 @@ class CORE_EXPORT NGAbstractInlineTextBox final : public AbstractInlineTextBox {
  private:
   // Returns existing or newly created |NGAbstractInlineTextBox|.
   // * |cursor| should be attached to a text item.
-  static scoped_refptr<AbstractInlineTextBox> GetOrCreate(
+  static scoped_refptr<NGAbstractInlineTextBox> GetOrCreate(
       const NGInlineCursor& cursor);
   static void WillDestroy(const NGInlineCursor& cursor);
 
@@ -29,14 +29,9 @@ class CORE_EXPORT NGAbstractInlineTextBox final : public AbstractInlineTextBox {
   explicit NGAbstractInlineTextBox(const NGInlineCursor& cursor);
   ~NGAbstractInlineTextBox() final;
 
- private:
-  NGInlineCursor GetCursor() const;
-  NGInlineCursor GetCursorOnLine() const;
-  String GetTextContent() const;
-
   // Implementations of AbstractInlineTextBox member functions.
   void Detach() final;
-  scoped_refptr<AbstractInlineTextBox> NextInlineTextBox() const final;
+  scoped_refptr<NGAbstractInlineTextBox> NextInlineTextBox() const final;
   LayoutRect LocalBounds() const final;
   unsigned Len() const final;
   unsigned TextOffsetInFormattingContext(unsigned offset) const final;
@@ -45,10 +40,15 @@ class CORE_EXPORT NGAbstractInlineTextBox final : public AbstractInlineTextBox {
   String GetText() const final;
   bool IsFirst() const final;
   bool IsLast() const final;
-  scoped_refptr<AbstractInlineTextBox> NextOnLine() const final;
-  scoped_refptr<AbstractInlineTextBox> PreviousOnLine() const final;
+  scoped_refptr<NGAbstractInlineTextBox> NextOnLine() const final;
+  scoped_refptr<NGAbstractInlineTextBox> PreviousOnLine() const final;
   bool IsLineBreak() const final;
   bool NeedsTrailingSpace() const final;
+
+ private:
+  NGInlineCursor GetCursor() const;
+  NGInlineCursor GetCursorOnLine() const;
+  String GetTextContent() const;
 
   const NGFragmentItem* fragment_item_;
   // |root_box_fragment_| owns |fragment_item_|. Persistent is used here to keep
