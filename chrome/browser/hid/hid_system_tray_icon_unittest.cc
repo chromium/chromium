@@ -65,12 +65,12 @@ std::u16string HidSystemTrayIconTestBase::GetExpectedButtonTitleForProfile(
       base::StringPrintf("Manage HID devices for %s", profile_name.c_str()));
 }
 
-std::u16string HidSystemTrayIconTestBase::GetExpectedIconTooltip(
+std::u16string HidSystemTrayIconTestBase::GetExpectedTitle(
     size_t num_connections) {
-  // It might be either "Chromium is connected to a HID device" or "Google
-  // Chrome is connected to a HID device" depending is_chrome_branded in the
-  // build config file, hence using l10n_util to get the expected string.
-  return l10n_util::GetPluralStringFUTF16(IDS_WEBHID_SYSTEM_TRAY_ICON_TOOLTIP,
+  // It might be either ""Chromium is accessing a HID device" or "Google Chrome
+  // is accessing a HID device" depending is_chrome_branded in the build config
+  // file, hence using l10n_util to get the expected string.
+  return l10n_util::GetPluralStringFUTF16(IDS_WEBHID_SYSTEM_TRAY_ICON_TITLE,
                                           static_cast<int>(num_connections));
 }
 

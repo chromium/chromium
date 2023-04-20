@@ -1002,11 +1002,11 @@ Permissions you've already given to websites and apps may apply to this account.
 
       <if expr="not is_android">
         <!-- WebHID system tray icon -->
-        <message name="IDS_WEBHID_SYSTEM_TRAY_ICON_TOOLTIP" desc="Tooltip for the WebHID system tray icon when one or more HID devices are being accessed.">
+        <message name="IDS_WEBHID_SYSTEM_TRAY_ICON_TITLE" desc="Title for the WebHID system tray icon when one or more HID devices are being accessed.">
             {NUM_DEVICES, plural,
-            =0 {Chromium was connected to a HID device}
-            =1 {Chromium is connected to a HID device}
-            other {Chromium is connected to HID devices}}
+            =0 {Chromium was accessing a HID device}
+            =1 {Chromium is accessing a HID device}
+            other {Chromium is accessing HID devices}}
         </message>
       </if>
 

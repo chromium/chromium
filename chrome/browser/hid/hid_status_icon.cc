@@ -5,16 +5,72 @@
 #include "chrome/browser/hid/hid_status_icon.h"
 
 #include <string>
+#include <vector>
 
+#include "base/functional/bind.h"
+#include "base/i18n/message_formatter.h"
+#include "base/memory/weak_ptr.h"
+#include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/hid/hid_connection_tracker.h"
 #include "chrome/browser/hid/hid_connection_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/status_icons/status_tray.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/grit/generated_resources.h"
 #include "extensions/buildflags/buildflags.h"
+#include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/constants.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+namespace {
+
+HidConnectionTracker* GetConnectionTracker(base::WeakPtr<Profile> profile) {
+  if (!profile) {
+    return nullptr;
+  }
+  return HidConnectionTrackerFactory::GetForProfile(profile.get(),
+                                                    /*create=*/false);
+}
+
+// Returns a label for about HID device button.
+std::u16string GetAboutDeviceLabel() {
+  return l10n_util::GetStringUTF16(
+      IDS_WEBHID_SYSTEM_TRAY_ICON_ABOUT_HID_DEVICE);
+}
+
+// Returns a label that displays the number of active connections for the
+// specified origin.
+std::u16string GetOriginConnectionCountLabel(Profile* profile,
+                                             const url::Origin& origin,
+                                             int connection_count) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (origin.scheme() == extensions::kExtensionScheme) {
+    const auto* extension_registry =
+        extensions::ExtensionRegistry::Get(profile);
+    DCHECK(extension_registry);
+    const extensions::Extension* extension =
+        extension_registry->GetExtensionById(
+            origin.host(), extensions::ExtensionRegistry::EVERYTHING);
+    // The extension must be installed if we are generating this label.
+    DCHECK(extension);
+    return base::i18n::MessageFormatter::FormatWithNumberedArgs(
+        l10n_util::GetStringUTF16(IDS_DEVICE_CONNECTED_BY_EXTENSION),
+        connection_count, base::UTF8ToUTF16(extension->name()));
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  NOTREACHED_NORETURN();
+}
+
+}  // namespace
 
 HidStatusIcon::HidStatusIcon() = default;
 
@@ -35,29 +91,47 @@ void HidStatusIcon::ProfileRemoved(Profile* profile) {
 }
 
 void HidStatusIcon::NotifyConnectionCountUpdated(Profile* profile) {
-  DCHECK(status_icon_);
-  status_icon_->SetToolTip(GetTooltipLabel(GetTotalConnectionCount()));
+  RefreshIcon();
 }
 
 void HidStatusIcon::ExecuteCommand(int command_id, int event_flags) {
-  DCHECK_GE(command_id, IDC_MANAGE_HID_DEVICES_FIRST);
-  DCHECK_LE(command_id, IDC_MANAGE_HID_DEVICES_LAST);
-  size_t profile_idx = command_id - IDC_MANAGE_HID_DEVICES_FIRST;
-  if (profile_idx < visible_profiles_.size()) {
-    // |profiles_[profile_idx]|'s HidConnectionTracker guarantees the entry in
-    // |profiles_| is removed when the profile is destroyed.
-    auto* hid_connection_tracker = HidConnectionTrackerFactory::GetForProfile(
-        visible_profiles_[profile_idx], /*create=*/false);
-    DCHECK(hid_connection_tracker);
-    hid_connection_tracker->ShowContentSettingsExceptions();
+  CHECK_GE(command_id, IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST);
+  CHECK_LE(command_id, IDC_DEVICE_SYSTEM_TRAY_ICON_LAST);
+  size_t command_idx = command_id - IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST;
+  if (command_idx < command_id_callbacks_.size()) {
+    command_id_callbacks_[command_idx].Run();
+  }
+}
+
+// static
+void HidStatusIcon::ShowHelpCenterUrl() {
+  auto* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
+  CHECK(profile);
+  chrome::ShowHelpForProfile(profile, chrome::HELP_SOURCE_WEBHID);
+}
+
+// static
+void HidStatusIcon::ShowContentSettings(base::WeakPtr<Profile> profile) {
+  auto* connection_tracker = GetConnectionTracker(profile);
+  if (connection_tracker) {
+    connection_tracker->ShowContentSettingsExceptions();
+  }
+}
+
+// static
+void HidStatusIcon::ShowSiteSettings(base::WeakPtr<Profile> profile,
+                                     const url::Origin& origin) {
+  auto* connection_tracker = GetConnectionTracker(profile);
+  if (connection_tracker) {
+    connection_tracker->ShowSiteSettings(origin);
   }
 }
 
 size_t HidStatusIcon::GetTotalConnectionCount() {
   size_t total_connection_count = 0;
-  for (auto item : profiles_) {
-    auto* hid_connection_tracker = HidConnectionTrackerFactory::GetForProfile(
-        item.first, /*create=*/false);
+  for (const auto& [profile, staging] : profiles_) {
+    auto* hid_connection_tracker =
+        HidConnectionTrackerFactory::GetForProfile(profile, /*create=*/false);
     DCHECK(hid_connection_tracker);
     total_connection_count += hid_connection_tracker->total_connection_count();
   }
@@ -65,36 +139,77 @@ size_t HidStatusIcon::GetTotalConnectionCount() {
 }
 
 void HidStatusIcon::RefreshIcon() {
-  visible_profiles_.clear();
+  command_id_callbacks_.clear();
   auto* status_tray = g_browser_process->status_tray();
   DCHECK(status_tray);
   if (profiles_.empty()) {
-    DCHECK(status_icon_);
-    status_tray->RemoveStatusIcon(status_icon_);
-    status_icon_ = nullptr;
+    if (status_icon_) {
+      status_tray->RemoveStatusIcon(status_icon_);
+      status_icon_ = nullptr;
+    }
     return;
   }
 
+  // This tries to construct this:
+  // ------------------------------------------------
+  // |Google Chrome is accessing HID device(s)      |
+  // |About HID device                              |
+  // |---------------Separator----------------------|
+  // |Profile1 section (see below profile for loop) |
+  // |...                                           |
+  // |---------------Separator----------------------|
+  // |ProfileN section                              |
+  auto title_label = GetTitleLabel(GetTotalConnectionCount());
   auto menu = std::make_unique<StatusIconMenuModel>(this);
-  int command_id = IDC_MANAGE_HID_DEVICES_FIRST;
+  menu->AddTitle(title_label);
+  AddItem(menu.get(), GetAboutDeviceLabel(),
+          base::BindRepeating(&HidStatusIcon::ShowHelpCenterUrl));
   for (const auto& [profile, staging] : profiles_) {
-    if (command_id > IDC_MANAGE_HID_DEVICES_LAST) {
-      // This case should be fairly rare, but if we have more profiles than
-      // pre-defined command ids, we don't put those in the status icon menu.
-      // TODO(crbug.com/1360981): Add a metric to capture this.
-      break;
+    // Each profile section looks like this:
+    // |---------------Separator---------------|
+    // |profile name                           |
+    // |HID settings                           |
+    // |origin 1 is connecting to x device(s)  |
+    // |...                                    |
+    // |origin n is connecting to y device(s)  |
+    menu->AddSeparator(ui::NORMAL_SEPARATOR);
+    menu->AddTitle(base::UTF8ToUTF16(profile->GetProfileUserName()));
+    AddItem(menu.get(), GetContentSettingsLabel(),
+            base::BindRepeating(&HidStatusIcon::ShowContentSettings,
+                                profile->GetWeakPtr()));
+
+    auto* connection_tracker =
+        HidConnectionTrackerFactory::GetForProfile(profile, /*create=*/false);
+    CHECK(connection_tracker);
+    for (const auto& [origin, connection_count] :
+         connection_tracker->origins()) {
+      AddItem(menu.get(),
+              GetOriginConnectionCountLabel(profile, origin, connection_count),
+              base::BindRepeating(&HidStatusIcon::ShowSiteSettings,
+                                  profile->GetWeakPtr(), origin));
     }
-    menu->AddItem(command_id, GetManageHidDeviceButtonLabel(profile));
-    visible_profiles_.push_back(profile);
-    command_id++;
   }
-  auto tooltip_label = GetTooltipLabel(GetTotalConnectionCount());
 
   if (!status_icon_) {
     status_icon_ = status_tray->CreateStatusIcon(
-        StatusTray::OTHER_ICON, GetStatusTrayIcon(), tooltip_label);
+        StatusTray::OTHER_ICON, GetStatusTrayIcon(), title_label);
   } else {
-    status_icon_->SetToolTip(tooltip_label);
+    status_icon_->SetToolTip(title_label);
   }
   status_icon_->SetContextMenu(std::move(menu));
+}
+
+void HidStatusIcon::AddItem(StatusIconMenuModel* menu,
+                            std::u16string label,
+                            base::RepeatingClosure callback) {
+  size_t index =
+      command_id_callbacks_.size() + IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST;
+  if (index > IDC_DEVICE_SYSTEM_TRAY_ICON_LAST) {
+    // This case should be fairly rare, but if we have more items than
+    // pre-defined command ids, we don't put those in the status icon menu.
+    // TODO(crbug.com/1433378): Add a metric to capture this.
+    return;
+  }
+  menu->AddItem(index, label);
+  command_id_callbacks_.push_back(std::move(callback));
 }

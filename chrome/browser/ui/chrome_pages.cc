@@ -151,6 +151,9 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
     case HELP_SOURCE_MENU:
       url = GURL(kChromeHelpViaMenuURL);
       break;
+    case HELP_SOURCE_WEBHID:
+      url = GURL(kChooserHidOverviewUrl);
+      break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case HELP_SOURCE_WEBUI:
       url = GURL(kChromeHelpViaWebUIURL);

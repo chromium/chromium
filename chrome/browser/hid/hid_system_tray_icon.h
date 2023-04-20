@@ -54,8 +54,11 @@ class HidSystemTrayIcon {
   // system tray icon.
   static std::u16string GetManageHidDeviceButtonLabel(Profile* profile);
 
-  // Get the label of the tooltip of the HID system tray icon.
-  static std::u16string GetTooltipLabel(size_t num_connections);
+  // Get the label of the title of the HID system tray icon.
+  static std::u16string GetTitleLabel(size_t num_connections);
+
+  // Returns a label for HID settings button.
+  static std::u16string GetContentSettingsLabel();
 
   // This map stores profiles being tracked, along with their staging status.
   base::flat_map<Profile*, bool> profiles_;

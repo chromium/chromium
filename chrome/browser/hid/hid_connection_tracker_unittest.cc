@@ -129,7 +129,7 @@ class HidConnectionTrackerTest : public BrowserWithTestWindowTest {
     }
     hid_connection_tracker().IncrementConnectionCount(origin1);
     EXPECT_EQ(hid_connection_tracker().total_connection_count(), 1);
-    EXPECT_THAT(hid_connection_tracker().GetOriginsForTesting(),
+    EXPECT_THAT(hid_connection_tracker().origins(),
                 UnorderedElementsAre(Pair(origin1, 1)));
 
     // Connections from two origins come and go.
@@ -140,19 +140,19 @@ class HidConnectionTrackerTest : public BrowserWithTestWindowTest {
     }
     hid_connection_tracker().IncrementConnectionCount(origin1);
     EXPECT_EQ(hid_connection_tracker().total_connection_count(), 2);
-    EXPECT_THAT(hid_connection_tracker().GetOriginsForTesting(),
+    EXPECT_THAT(hid_connection_tracker().origins(),
                 UnorderedElementsAre(Pair(origin1, 2)));
     hid_connection_tracker().IncrementConnectionCount(origin2);
     EXPECT_EQ(hid_connection_tracker().total_connection_count(), 3);
-    EXPECT_THAT(hid_connection_tracker().GetOriginsForTesting(),
+    EXPECT_THAT(hid_connection_tracker().origins(),
                 UnorderedElementsAre(Pair(origin1, 2), Pair(origin2, 1)));
     hid_connection_tracker().DecrementConnectionCount(origin1);
     EXPECT_EQ(hid_connection_tracker().total_connection_count(), 2);
-    EXPECT_THAT(hid_connection_tracker().GetOriginsForTesting(),
+    EXPECT_THAT(hid_connection_tracker().origins(),
                 UnorderedElementsAre(Pair(origin1, 1), Pair(origin2, 1)));
     hid_connection_tracker().DecrementConnectionCount(origin1);
     EXPECT_EQ(hid_connection_tracker().total_connection_count(), 1);
-    EXPECT_THAT(hid_connection_tracker().GetOriginsForTesting(),
+    EXPECT_THAT(hid_connection_tracker().origins(),
                 UnorderedElementsAre(Pair(origin2, 1)));
 
     // The last connection that will unstage the profile.
@@ -162,7 +162,7 @@ class HidConnectionTrackerTest : public BrowserWithTestWindowTest {
     }
     hid_connection_tracker().DecrementConnectionCount(origin2);
     EXPECT_EQ(hid_connection_tracker().total_connection_count(), 0);
-    EXPECT_TRUE(hid_connection_tracker().GetOriginsForTesting().empty());
+    EXPECT_TRUE(hid_connection_tracker().origins().empty());
   }
 
  private:
@@ -191,14 +191,14 @@ TEST_F(HidConnectionTrackerTest, ProfileDestroyed) {
   EXPECT_CALL(hid_system_tray_icon(), StageProfile(profile_to_be_destroyed));
   connection_tracker->IncrementConnectionCount(origin);
   EXPECT_EQ(connection_tracker->total_connection_count(), 1);
-  EXPECT_THAT(connection_tracker->GetOriginsForTesting(),
+  EXPECT_THAT(connection_tracker->origins(),
               UnorderedElementsAre(Pair(origin, 1)));
 
   EXPECT_CALL(hid_system_tray_icon(),
               NotifyConnectionCountUpdated(profile_to_be_destroyed));
   connection_tracker->IncrementConnectionCount(origin);
   EXPECT_EQ(connection_tracker->total_connection_count(), 2);
-  EXPECT_THAT(connection_tracker->GetOriginsForTesting(),
+  EXPECT_THAT(connection_tracker->origins(),
               UnorderedElementsAre(Pair(origin, 2)));
 
   // ContainProfile should be called twice, once from

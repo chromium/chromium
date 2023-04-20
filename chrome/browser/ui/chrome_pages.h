@@ -53,6 +53,9 @@ enum HelpSource {
   // Menus (e.g. app menu or Chrome OS system menu).
   HELP_SOURCE_MENU,
 
+  // WebHID help center article.
+  HELP_SOURCE_WEBHID,
+
   // WebUI (the "About" page).
   HELP_SOURCE_WEBUI,
 

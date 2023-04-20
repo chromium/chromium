@@ -32,9 +32,7 @@ class HidConnectionTracker : public KeyedService {
   int total_connection_count() { return total_connection_count_; }
   Profile* profile() { return profile_; }
 
-  const base::flat_map<url::Origin, int>& GetOriginsForTesting() {
-    return origins_;
-  }
+  const base::flat_map<url::Origin, int>& origins() { return origins_; }
 
  private:
   int total_connection_count_ = 0;

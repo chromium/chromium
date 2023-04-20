@@ -38,9 +38,14 @@ std::u16string HidSystemTrayIcon::GetManageHidDeviceButtonLabel(
 }
 
 // static
-std::u16string HidSystemTrayIcon::GetTooltipLabel(size_t num_connections) {
-  return l10n_util::GetPluralStringFUTF16(IDS_WEBHID_SYSTEM_TRAY_ICON_TOOLTIP,
+std::u16string HidSystemTrayIcon::GetTitleLabel(size_t num_connections) {
+  return l10n_util::GetPluralStringFUTF16(IDS_WEBHID_SYSTEM_TRAY_ICON_TITLE,
                                           static_cast<int>(num_connections));
+}
+
+// static
+std::u16string HidSystemTrayIcon::GetContentSettingsLabel() {
+  return l10n_util::GetStringUTF16(IDS_WEBHID_SYSTEM_TRAY_ICON_HID_SETTINGS);
 }
 
 HidSystemTrayIcon::HidSystemTrayIcon() = default;

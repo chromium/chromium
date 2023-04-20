@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_HID_HID_STATUS_ICON_H_
 #define CHROME_BROWSER_HID_HID_STATUS_ICON_H_
 
+#include <memory>
+#include <string>
 #include <vector>
 
 #include "chrome/browser/hid/hid_system_tray_icon.h"
@@ -33,6 +35,17 @@ class HidStatusIcon : public HidSystemTrayIcon,
   // StatusIconMenuModel::Delegate
   void ExecuteCommand(int command_id, int event_flags) override;
 
+  static void ShowContentSettings(base::WeakPtr<Profile> profile);
+  static void ShowHelpCenterUrl();
+  static void ShowSiteSettings(base::WeakPtr<Profile> profile,
+                               const url::Origin& origin);
+
+  // Add a new menu item with the label |label| and the click handler |callback|
+  // to the |menu|.
+  void AddItem(StatusIconMenuModel* menu,
+               std::u16string label,
+               base::RepeatingClosure callback);
+
   // To refresh the system tray icon when there is a button (for a profile)
   // added/removed.
   void RefreshIcon();
@@ -40,8 +53,8 @@ class HidStatusIcon : public HidSystemTrayIcon,
   // Reference to our status icon (if any) - owned by the StatusTray.
   raw_ptr<StatusIcon, DanglingUntriaged> status_icon_ = nullptr;
 
-  // A list of profiles currently shown on the status icon.
-  std::vector<Profile*> visible_profiles_;
+  // The mapping of clickable system tray icon items to their click handlers
+  std::vector<base::RepeatingClosure> command_id_callbacks_;
 };
 
 #endif  // CHROME_BROWSER_HID_HID_STATUS_ICON_H_

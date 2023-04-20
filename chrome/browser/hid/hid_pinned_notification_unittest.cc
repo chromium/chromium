@@ -36,9 +36,7 @@ class HidPinnedNotificationTest : public HidSystemTrayIconTestBase {
                      .empty());
 
     // Check each button label and behavior of clicking the button.
-    for (const auto& profile_item : profile_connection_counts) {
-      Profile* profile = profile_item.first;
-      const auto& origin_items = profile_item.second;
+    for (const auto& [profile, origin_items] : profile_connection_counts) {
       size_t total_connection_count = 0;
       for (const auto& [origin, connection_count] : origin_items) {
         total_connection_count += connection_count;
@@ -52,7 +50,7 @@ class HidPinnedNotificationTest : public HidSystemTrayIconTestBase {
           HidPinnedNotification::GetNotificationId(profile));
       ASSERT_TRUE(maybe_notification);
       EXPECT_EQ(maybe_notification->title(),
-                GetExpectedIconTooltip(total_connection_count));
+                GetExpectedTitle(total_connection_count));
 
       EXPECT_EQ(maybe_notification->rich_notification_data().buttons.size(),
                 1u);

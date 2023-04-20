@@ -54,7 +54,7 @@ HidPinnedNotification::CreateNotification(Profile* profile) {
   DCHECK(hid_connection_tracker);
   auto notification = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
-      GetTooltipLabel(hid_connection_tracker->total_connection_count()),
+      GetTitleLabel(hid_connection_tracker->total_connection_count()),
       /*message=*/std::u16string(), /*icon=*/ui::ImageModel(),
       /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
 #if BUILDFLAG(IS_CHROMEOS_ASH)

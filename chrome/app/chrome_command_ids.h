@@ -495,8 +495,8 @@
 #define IDC_LIVE_CAPTION 53251
 
 // Device API system tray icon
-#define IDC_MANAGE_HID_DEVICES_FIRST 53260
-#define IDC_MANAGE_HID_DEVICES_LAST 53269
+#define IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST 53260
+#define IDC_DEVICE_SYSTEM_TRAY_ICON_LAST 53299
 
 // NOTE: The last valid command value is 57343 (0xDFFF)
 // See http://msdn.microsoft.com/en-us/library/t2zechd4(VS.71).aspx

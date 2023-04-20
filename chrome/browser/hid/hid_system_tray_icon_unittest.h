@@ -18,6 +18,7 @@ class MockHidConnectionTracker : public HidConnectionTracker {
   explicit MockHidConnectionTracker(Profile* profile);
   ~MockHidConnectionTracker() override;
   MOCK_METHOD(void, ShowContentSettingsExceptions, (), (override));
+  MOCK_METHOD(void, ShowSiteSettings, (const url::Origin&), (override));
 };
 
 class HidSystemTrayIconTestBase : public BrowserWithTestWindowTest {
@@ -40,7 +41,7 @@ class HidSystemTrayIconTestBase : public BrowserWithTestWindowTest {
   virtual void CheckIconHidden() = 0;
 
   std::u16string GetExpectedButtonTitleForProfile(Profile* profile);
-  std::u16string GetExpectedIconTooltip(size_t num_devices);
+  std::u16string GetExpectedTitle(size_t num_connections);
 
   // This is used to inject MockHidConnectionTracker.
   BrowserContextKeyedServiceFactory::TestingFactory
