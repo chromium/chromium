@@ -854,31 +854,38 @@ void FloatController::FloatForTablet(aura::Window* window,
 
   FloatImpl(window);
 
-  if (!chromeos::IsSnappedWindowStateType(old_state_type)) {
+  // Update the magnetism if we are coming from a state that can restore to
+  // float state, or from snap state. The bounds will be updated later based on
+  // the magnetism and account for work area.
+  absl::optional<MagnetismCorner> magnetism_corner;
+  if (chromeos::IsMinimizedWindowStateType(old_state_type)) {
+    magnetism_corner = GetMagnetismCornerForBounds(window->GetBoundsInScreen());
+  } else if (chromeos::IsSnappedWindowStateType(old_state_type)) {
+    // Update magnetism so that the float window is roughly in the same
+    // location as it was when it was snapped.
+    const bool left_or_top =
+        old_state_type == chromeos::WindowStateType::kPrimarySnapped;
+    const bool landscape = IsCurrentScreenOrientationLandscape();
+    if (!left_or_top) {
+      // Bottom or right snapped.
+      magnetism_corner = MagnetismCorner::kBottomRight;
+    } else if (landscape) {
+      // Left snapped.
+      magnetism_corner = MagnetismCorner::kBottomLeft;
+    } else {
+      CHECK(left_or_top && !landscape);
+      // Top snapped.
+      magnetism_corner = MagnetismCorner::kTopRight;
+    }
+  }
+
+  if (!magnetism_corner) {
     return;
   }
 
-  // Update magnetism so that the float window is roughly in the same
-  // location as it was when it was snapped.
-  const bool left_or_top =
-      old_state_type == chromeos::WindowStateType::kPrimarySnapped;
-  const bool landscape = IsCurrentScreenOrientationLandscape();
-  MagnetismCorner magnetism_corner;
-  if (!left_or_top) {
-    // Bottom or right snapped.
-    magnetism_corner = MagnetismCorner::kBottomRight;
-  } else if (landscape) {
-    // Left snapped.
-    magnetism_corner = MagnetismCorner::kBottomLeft;
-  } else {
-    DCHECK(left_or_top && !landscape);
-    // Top snapped.
-    magnetism_corner = MagnetismCorner::kTopRight;
-  }
-
   auto* floated_window_info = MaybeGetFloatedWindowInfo(window);
-  DCHECK(floated_window_info);
-  floated_window_info->set_magnetism_corner(magnetism_corner);
+  CHECK(floated_window_info);
+  floated_window_info->set_magnetism_corner(*magnetism_corner);
 }
 
 void FloatController::FloatImpl(aura::Window* window) {

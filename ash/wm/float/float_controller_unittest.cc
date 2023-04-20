@@ -706,7 +706,7 @@ TEST_F(WindowFloatTest, FloatWindowWorkAreaConsiderations) {
 
 // Tests that if we unminimize a window that was floated and another window has
 // since been floated, unminimizing the window would not float it.
-TEST_F(WindowFloatTest, UnminimzeWithFloatedWindow) {
+TEST_F(WindowFloatTest, UnminimizeWithFloatedWindow) {
   // Create two windows and float the second one and then minimize it.
   auto window1 = CreateAppWindow();
   auto window2 = CreateFloatedWindow();
@@ -1330,16 +1330,19 @@ TEST_F(TabletWindowFloatTest, ImmersiveMode) {
   EXPECT_FALSE(immersive_controller->IsEnabled());
 }
 
-// Tests that if we minimize a floated window, it is floated upon unminimizing.
+// Tests that if we minimize a floated window, it is floated upon unminimizing,
+// and magnetized in the same corner as before.
 TEST_F(TabletWindowFloatTest, UnminimizeFloatWindow) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   std::unique_ptr<aura::Window> window = CreateFloatedWindow();
-  auto* window_state = WindowState::Get(window.get());
+  MagnetizeWindow(window.get(), FloatController::MagnetismCorner::kTopLeft);
 
+  auto* window_state = WindowState::Get(window.get());
   window_state->Minimize();
   window_state->Unminimize();
   EXPECT_TRUE(window_state->IsFloated());
+  CheckMagnetized(window.get(), FloatController::MagnetismCorner::kTopLeft);
 }
 
 TEST_F(TabletWindowFloatTest, Rotation) {
@@ -1581,8 +1584,7 @@ TEST_F(TabletWindowFloatTest, UntuckedWindowVisibility) {
   views::Widget* tuck_handle_widget =
       float_controller->GetTuckHandleWidget(window.get());
   ASSERT_TRUE(tuck_handle_widget);
-  GetEventGenerator()->GestureTapAt(
-      tuck_handle_widget->GetWindowBoundsInScreen().CenterPoint());
+  GestureTapOn(tuck_handle_widget->GetContentsView());
   ASSERT_TRUE(window->IsVisible());
   EXPECT_FALSE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
 }
@@ -1609,8 +1611,7 @@ TEST_F(TabletWindowFloatTest, WindowActivationAfterTuckingUntucking) {
   views::Widget* tuck_handle_widget =
       float_controller->GetTuckHandleWidget(float_window.get());
   ASSERT_TRUE(tuck_handle_widget);
-  GetEventGenerator()->GestureTapAt(
-      tuck_handle_widget->GetWindowBoundsInScreen().CenterPoint());
+  GestureTapOn(tuck_handle_widget->GetContentsView());
   ASSERT_FALSE(
       float_controller->IsFloatedWindowTuckedForTablet(float_window.get()));
   ASSERT_EQ(float_window.get(), window_util::GetActiveWindow());
@@ -1625,8 +1626,7 @@ TEST_F(TabletWindowFloatTest, WindowActivationAfterTuckingUntucking) {
   tuck_handle_widget =
       float_controller->GetTuckHandleWidget(float_window.get());
   ASSERT_TRUE(tuck_handle_widget);
-  GetEventGenerator()->GestureTapAt(
-      tuck_handle_widget->GetWindowBoundsInScreen().CenterPoint());
+  GestureTapOn(tuck_handle_widget->GetContentsView());
   ASSERT_FALSE(
       float_controller->IsFloatedWindowTuckedForTablet(float_window.get()));
   WindowState::Get(window2.get())->Minimize();
