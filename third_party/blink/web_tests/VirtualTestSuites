@@ -134,17 +134,19 @@
   },
 
   {
-    "prefix": "composite-scroll-after-paint",
+    "prefix": "disable-composite-scroll-after-paint",
     "platforms": ["Linux"],
     "bases": ["compositing/overflow",
               "fast/scrolling",
               "paint/invalidation/overflow",
+              "paint/invalidation/scroll",
               "scrollbars",
               "external/wpt/css/css-scroll-snap",
               "external/wpt/scroll-animations",
               "external/wpt/css/css-overflow",
+              "scrollingcoordinator",
               "http/tests/devtools/layers"],
-    "args": ["--enable-features=CompositeScrollAfterPaint"],
+    "args": ["--disable-features=CompositeScrollAfterPaint"],
     "expires": "Sep 1, 2023"
   },
   {

@@ -16,7 +16,8 @@ scroll me
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='overlay'",
       "position": [10, 8],
-      "bounds": [400, 204]
+      "bounds": [400, 204],
+      "backgroundColor": "#FFFF0080"
     }
   ],
   "transforms": [
