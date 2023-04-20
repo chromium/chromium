@@ -49,6 +49,11 @@
   systemIdentityManager->AddIdentity(fakeIdentity);
 }
 
++ (void)addFakeIdentityForSSOAuthAddAccountFlow:
+    (FakeSystemIdentity*)fakeIdentity {
+  FakeSystemIdentityInteractionManager.identity = fakeIdentity;
+}
+
 + (void)setCapabilities:(ios::CapabilitiesDict*)capabilities
             forIdentity:(FakeSystemIdentity*)fakeIdentity {
   using CapabilityResult = SystemIdentityCapabilityResult;
