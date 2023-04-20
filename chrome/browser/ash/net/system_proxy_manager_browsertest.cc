@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_tags.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/notifications/request_system_proxy_credentials_view.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
@@ -731,6 +732,8 @@ class SystemProxyCredentialsReuseBrowserTest
 
 // Verifies that the policy provided credentials are not used for regular users.
 IN_PROC_BROWSER_TEST_F(SystemProxyCredentialsReuseBrowserTest, RegularUser) {
+  base::AddTagToTestResult("feature_id",
+                             "screenplay-04b4c463-f720-4cd4-9e50-7ee009d9a241");
   SetManagedProxy();
   SetPolicyCredentials(kProxyUsername, kProxyPassword);
   LoginWithDialog(kProxyUsername16, kProxyPassword16);
