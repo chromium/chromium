@@ -178,6 +178,22 @@ bool AreStoresEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       &password_manager::AffiliatedGroup::GetCredentials);
 }
 
+template <typename T>
+bool AreIssuesEqual(const T& lhs, const T& rhs) {
+  return base::ranges::equal(
+      lhs, rhs, {}, &password_manager::CredentialUIEntry::password_issues,
+      &password_manager::CredentialUIEntry::password_issues);
+}
+
+bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
+                    const std::vector<password_manager::AffiliatedGroup>& rhs) {
+  return base::ranges::equal(
+      lhs, rhs,
+      AreIssuesEqual<base::span<const password_manager::CredentialUIEntry>>,
+      &password_manager::AffiliatedGroup::GetCredentials,
+      &password_manager::AffiliatedGroup::GetCredentials);
+}
+
 }  // namespace
 
 @interface PasswordManagerViewController () <
@@ -847,6 +863,7 @@ bool AreStoresEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     // UI should be updated so that any changes to just notes are visible.
     if (_passwords == passwords && _blockedSites == blockedSites &&
         AreStoresEqual(_passwords, passwords) &&
+        AreIssuesEqual(_passwords, passwords) &&
         AreNotesEqual(_passwords, passwords)) {
       return;
     }
@@ -885,6 +902,7 @@ bool AreStoresEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     if (_affiliatedGroups == affiliatedGroups &&
         _blockedSites == blockedSites &&
         AreStoresEqual(_affiliatedGroups, affiliatedGroups) &&
+        AreIssuesEqual(_affiliatedGroups, affiliatedGroups) &&
         AreNotesEqual(_affiliatedGroups, affiliatedGroups)) {
       return;
     }
