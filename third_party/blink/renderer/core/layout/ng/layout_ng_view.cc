@@ -44,10 +44,15 @@ void LayoutNGView::UpdateBlockLayout(bool relayout_children) {
         .InvalidateSVGRootsWithRelativeLengthDescendents();
   }
 
-  NGConstraintSpace constraint_space =
-      NGConstraintSpace::CreateFromLayoutObject(*this);
+  const auto& style = StyleRef();
+  NGConstraintSpaceBuilder builder(
+      style.GetWritingMode(), style.GetWritingDirection(),
+      /* is_new_fc */ true, /* adjust_inline_size_if_needed */ false);
+  builder.SetAvailableSize(InitialContainingBlockSize());
+  builder.SetIsFixedInlineSize(true);
+  builder.SetIsFixedBlockSize(true);
 
-  NGBlockNode(this).Layout(constraint_space);
+  NGBlockNode(this).Layout(builder.ToConstraintSpace());
 }
 
 MinMaxSizes LayoutNGView::ComputeIntrinsicLogicalWidths() const {
