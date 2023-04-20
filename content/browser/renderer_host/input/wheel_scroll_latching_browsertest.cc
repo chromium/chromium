@@ -120,9 +120,6 @@ class WheelScrollLatchingBrowserTest : public ContentBrowserTest {
   double ExecuteScriptAndExtractDouble(const std::string& script) {
     return EvalJs(shell(), script).ExtractDouble();
   }
-  std::string ExecuteScriptAndExtractString(const std::string& script) {
-    return EvalJs(shell(), script).ExtractString();
-  }
 };
 
 // Start scrolling by mouse wheel on the document: the wheel event will be sent
@@ -372,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest,
   // Run until we get the callback, then check the target.
   EXPECT_EQ(blink::mojom::InputEventResultState::kConsumed,
             wheel_msg_watcher->WaitForAck());
-  EXPECT_EQ("blueDiv", ExecuteScriptAndExtractString("domTarget"));
+  EXPECT_EQ("blueDiv", EvalJs(shell(), "domTarget"));
 
   // Send the second wheel event.
   wheel_msg_watcher = std::make_unique<InputMsgWatcher>(
@@ -384,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest,
   // Run until we get the callback, then check the target.
   EXPECT_EQ(blink::mojom::InputEventResultState::kNotConsumed,
             wheel_msg_watcher->WaitForAck());
-  EXPECT_EQ("redDiv", ExecuteScriptAndExtractString("domTarget"));
+  EXPECT_EQ("redDiv", EvalJs(shell(), "domTarget"));
 }
 
 }  // namespace content

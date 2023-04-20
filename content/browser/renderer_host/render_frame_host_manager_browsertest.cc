@@ -931,10 +931,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_TRUE(new_shell);
 
   // The window.name for the new popup should be "foo".
-  std::string name;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      new_shell, "window.domAutomationController.send(window.name);", &name));
-  EXPECT_EQ("foo", name);
+  EXPECT_EQ("foo", EvalJs(new_shell, "window.name;"));
 
   // Now navigate the new tab to a different site.
   GURL foo_url(embedded_test_server()->GetURL("foo.com", "/title2.html"));
@@ -944,10 +941,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_NE(orig_site_instance->GetProcess(), new_site_instance->GetProcess());
 
   // window.name should still be "foo".
-  name = "";
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      new_shell, "window.domAutomationController.send(window.name);", &name));
-  EXPECT_EQ("foo", name);
+  EXPECT_EQ("foo", EvalJs(new_shell, "window.name;"));
 
   // Open another popup from the 'foo' popup and navigate it cross-site.
   Shell* new_shell2 = OpenPopup(new_shell, GURL(url::kAboutBlankURL), "bar");
@@ -2979,13 +2973,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
   // Also, extract the file from the renderer process to ensure that the
   // response made it over successfully and the proper filename is set.
-  std::string file_name;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      new_root->child_at(0),
-      "window.domAutomationController.send("
-      "document.getElementById('fileinput').files[0].name);",
-      &file_name));
-  EXPECT_EQ("bar", file_name);
+  EXPECT_EQ("bar",
+            EvalJs(new_root->child_at(0),
+                   "document.getElementById('fileinput').files[0].name;"));
 
   // Navigate to a same site page to trigger a PageState update and ensure the
   // renderer is not killed.
@@ -3235,12 +3225,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   back_nav_load_observer.Wait();
 
   // Check that the location.href window attribute is accessible and is correct.
-  std::string result;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      shell(),
-      "window.domAutomationController.send(getLastOpenedWindowLocation());",
-      &result));
-  EXPECT_EQ(expected_url.spec(), result);
+  EXPECT_EQ(expected_url.spec(),
+            EvalJs(shell(), "getLastOpenedWindowLocation();"));
 }
 
 // Tests that going back to the same SiteInstance as a pending RenderFrameHost
@@ -3599,10 +3585,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
     // Check that the popup is sandboxed by checking its self.origin, which
     // should be unique.
-    std::string origin;
-    EXPECT_TRUE(ExecuteScriptAndExtractString(
-        new_shell, "domAutomationController.send(self.origin)", &origin));
-    EXPECT_EQ("null", origin);
+    EXPECT_EQ("null", EvalJs(new_shell, "self.origin"));
   };
 
   click_link_and_verify_popup("clickNoOpenerTargetBlankLink()");
@@ -3654,17 +3637,15 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_EQ(shell()->web_contents()->GetSiteInstance(),
             new_shell->web_contents()->GetSiteInstance());
 
-  std::string result;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      shell(),
-      "window.domAutomationController.send((function() {\n"
-      "  try {\n"
-      "    return getLastOpenedWindowLocation();\n"
-      "  } catch (e) {\n"
-      "    return e.toString();\n"
-      "  }\n"
-      "})())",
-      &result));
+  std::string result = EvalJs(shell(),
+                              "(function() {\n"
+                              "  try {\n"
+                              "    return getLastOpenedWindowLocation();\n"
+                              "  } catch (e) {\n"
+                              "    return e.toString();\n"
+                              "  }\n"
+                              "})()")
+                           .ExtractString();
   EXPECT_THAT(result, ::testing::MatchesRegex("http://a.com:\\d+/title1.html"));
 }
 
@@ -4202,13 +4183,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // window.open will end up creating a new tab rather than returning the old
   // |tab2| tab).
   WebContentsAddedObserver new_contents_observer;
-  std::string location_of_opened_window;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      tab1,
-      "var w = window.open('', 'tab2');\n"
-      "window.domAutomationController.send(w.location.href);",
-      &location_of_opened_window));
-  EXPECT_EQ(url::kAboutBlankURL, location_of_opened_window);
+  EXPECT_EQ(url::kAboutBlankURL, EvalJs(tab1,
+                                        "var w = window.open('', 'tab2');\n"
+                                        "w.location.href;"));
   EXPECT_TRUE(new_contents_observer.GetWebContents());
 }
 
@@ -5282,10 +5259,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   reload_observer.Wait();
   EXPECT_TRUE(reload_observer.last_navigation_succeeded());
 
-  std::string result;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      shell(), "window.domAutomationController.send(location.href);", &result));
-  EXPECT_EQ(error_url.spec(), result);
+  EXPECT_EQ(error_url.spec(), EvalJs(shell(), "location.href;"));
 }
 
 // Test to verify that navigation to existing history entry, which results in
@@ -5962,10 +5936,14 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
   FrameTreeNode* child = root->child_at(0);
 
   // Add an onmessage listener in the main frame.
-  EXPECT_TRUE(ExecuteScript(root, R"(
-      window.addEventListener('message', function(e) {
-        domAutomationController.send(e.data);
-      });)"));
+  EXPECT_TRUE(ExecJs(root, R"(
+    function waitForMessage() {
+      return new Promise(resolve => {
+        window.addEventListener('message', function(e) {
+            resolve(e.data);
+        });
+      });
+    })"));
 
   // Add an unload handler in the child frame to send a postMessage to the
   // parent frame.
@@ -5974,25 +5952,24 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
 
   // Navigate the subframe cross-site to c.com and wait for the message.
   GURL c_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
-  std::string message;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      root,
-      base::StringPrintf("document.querySelector('iframe').src = '%s';",
-                         c_url.spec().c_str()),
-      &message));
-  EXPECT_EQ("foo", message);
+  EXPECT_EQ("foo",
+            EvalJs(root, base::StringPrintf(
+                             "var p = waitForMessage();"
+                             "document.querySelector('iframe').src = '%s';"
+                             "p;",
+                             c_url.spec().c_str())));
 
   // Now repeat the test with a remote-to-local navigation that brings the
   // subframe back to a.com.
   AddUnloadEventHandler(child->current_frame_host(), "unload", "window",
                         "parent.postMessage('bar', '*')");
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title2.html"));
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      root,
-      base::StringPrintf("document.querySelector('iframe').src = '%s';",
-                         a_url.spec().c_str()),
-      &message));
-  EXPECT_EQ("bar", message);
+  EXPECT_EQ("bar",
+            EvalJs(root, base::StringPrintf(
+                             "var p = waitForMessage();"
+                             "document.querySelector('iframe').src = '%s';"
+                             "p;",
+                             a_url.spec().c_str())));
 }
 
 // Ensure that when a pending delete RenderFrameHost's process dies, the
