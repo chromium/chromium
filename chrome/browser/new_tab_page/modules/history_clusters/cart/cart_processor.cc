@@ -41,6 +41,7 @@ ntp::history_clusters::cart::mojom::CartPtr GenerateSampleCart(int imageCount) {
   cart_mojom->merchant = "Google Store";
   cart_mojom->cart_url = GURL("https://store.google.com/cart");
   cart_mojom->relative_date = "2 days ago";
+  cart_mojom->discount_text = "15% off";
   const std::string image_url =
       "https://lh3.googleusercontent.com/"
       "uGKKV2OSGGGu51DDu5qByS-EmYzTpH2sqoRzY7vG4sco_"

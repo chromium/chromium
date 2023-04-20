@@ -36,7 +36,7 @@ suite('NewTabPageModulesHistoryClustersModuleCartTileTest', () => {
           url: 'https://foo.com/image' + i,
         };
       }),
-      discountText: '',
+      discountText: '5% off',
       relativeDate: '6 mins ago',
     };
     const tileElement = await initializeModule(cart);
@@ -58,6 +58,8 @@ suite('NewTabPageModulesHistoryClustersModuleCartTileTest', () => {
     assertFalse(isVisible($$(tileElement, '#fallbackImage')!));
     assertEquals($$(tileElement, '#domain')!.textContent!, 'foo.com');
     assertEquals($$(tileElement, '#date')!.textContent!, '6 mins ago');
+    assertTrue(isVisible($$(tileElement, '#discountChip')!));
+    assertEquals($$(tileElement, '#discountChip')!.textContent!, '5% off');
   });
 
   test(
@@ -162,4 +164,23 @@ suite('NewTabPageModulesHistoryClustersModuleCartTileTest', () => {
     assertEquals($$(tileElement, '#domain')!.textContent!, 'foo.com');
     assertEquals($$(tileElement, '#date')!.textContent!, '6 mins ago');
   });
+
+  test(
+      'Tile does not render discount chip when discount is unavailable',
+      async () => {
+        // Arrange.
+        const cart = {
+          domain: 'foo.com',
+          merchant: 'Foo',
+          cartUrl: {url: 'https://foo.com'},
+          productImageUrls: [],
+          discountText: '',
+          relativeDate: '6 mins ago',
+        };
+        const tileElement = await initializeModule(cart);
+
+        // Assert.
+        assertTrue(!!tileElement);
+        assertTrue(!$$(tileElement, '#discountChip'));
+      });
 });

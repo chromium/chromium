@@ -162,6 +162,25 @@
   #textContainer {
     flex-direction: column;
   }
+
+  #annotationContainer {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
+
+  #discountChip {
+    background: var(--color-sys-tertiary-container);
+    border-radius: 4px;
+    color: var(--color-sys-on-tertiary-container);
+    font-size: 9px;
+    height: 17px;
+    line-height: 17px;
+    margin-inline-start: 10px;
+    min-width: 40px;
+    text-align: center;
+    width: 40px;
+  }
 </style>
 
 <a id="content" href="[[cart.cartUrl.url]]">
@@ -193,7 +212,12 @@
   <div id="textContainer">
     <div id="titleContainer">
       <div id="title" class="truncate">[[cart.merchant]]</div>
-      <div id="titleAnnotation">$i18n{modulesJourneysCartAnnotation}</div>
+      <div id="annotationContainer">
+        <div id="titleAnnotation">$i18n{modulesJourneysCartAnnotation}</div>
+        <template is="dom-if" if="[[cart.discountText]]" restamp>
+          <div id="discountChip">[[cart.discountText]]</div>
+        </template>
+      </div>
     </div>
     <div id="infoContainer">
       <page-favicon id="icon" url="[[cart.cartUrl.url]]"
