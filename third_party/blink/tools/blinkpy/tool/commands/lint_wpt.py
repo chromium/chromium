@@ -207,6 +207,17 @@ class MetadataUnknownPropValue(MetadataRule):
     """
 
 
+class MetadataSingleElementList(MetadataRule):
+    name = 'META-SINGLE-ELEM-LIST'
+    description = (
+        '%(section_type)s%(heading)s key %(key)r has a single-element list '
+        'that should be unwrapped to %(value)r')
+    to_fix = """
+    The list form should be replaced by the unwrapped value, which is
+    semantically equivalent.
+    """
+
+
 LintError = Tuple[str, str, str, Optional[int]]
 ValueNode = Union[wptnode.ValueNode, wptnode.AtomNode, wptnode.ListNode]
 Condition = Optional[wptnode.Node]
@@ -477,12 +488,14 @@ class MetadataLinter(Compiler):
     def visit_ListNode(self,
                        node: wptnode.ListNode) -> Tuple[Union[bool, str]]:
         key = self.context['key']
-        # TODO(crbug.com/1406669): Recommend unwrapping one-entry lists for
-        # `fuzzy`, `expected`, and `bug`.
         if key == 'implementation-status':
             self._error(MetadataBadValue, value=_format_node(node))
-        else:
-            return tuple(self.visit(child) for child in node.children)
+            # Skip checking the children when the type needs to be fixed first.
+            return ()
+        if key in {'bug', 'expected', 'fuzzy'} and len(node.children) == 1:
+            self._error(MetadataSingleElementList,
+                        value=_format_node(node.children[0]))
+        return tuple(self.visit(child) for child in node.children)
 
     def visit_ValueNode(self, node: wptnode.ValueNode) -> str:
         assert node.data is not None

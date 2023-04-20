@@ -553,3 +553,30 @@ class LintWPTTest(LoggingTestCase):
         self.assertEqual(
             description, "Subtest '[subtest]' key 'expected' "
             "always resolves to an implied 'PASS' and should be removed")
+
+    def test_metadata_single_element_lists(self):
+        unwrap_fuzzy, unwrap_bug, unwrap_exp = self._check_metadata("""\
+            fuzzy: [0;1]
+            [reftest.html]
+              bug: [crbug.com/123]
+              expected:
+                if os == "mac": [FAIL]
+            """)
+        name, description, path, _ = unwrap_fuzzy
+        self.assertEqual(name, 'META-SINGLE-ELEM-LIST')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(
+            description, "Root key 'fuzzy' has a single-element list "
+            "that should be unwrapped to '0;1'")
+        name, description, path, _ = unwrap_bug
+        self.assertEqual(name, 'META-SINGLE-ELEM-LIST')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(
+            description, "Test '[reftest.html]' key 'bug' has a "
+            "single-element list that should be unwrapped to 'crbug.com/123'")
+        name, description, path, _ = unwrap_exp
+        self.assertEqual(name, 'META-SINGLE-ELEM-LIST')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(
+            description, "Test '[reftest.html]' key 'expected' has "
+            "a single-element list that should be unwrapped to 'FAIL'")
