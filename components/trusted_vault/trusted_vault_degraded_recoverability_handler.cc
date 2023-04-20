@@ -13,7 +13,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/driver/trusted_vault_histograms.h"
-#include "components/sync/protocol/local_trusted_vault.pb.h"
+#include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 
 namespace syncer {
@@ -34,11 +34,11 @@ base::TimeDelta ComputeTimeUntilNextRefresh(
   return refresh_period - elapsed_time;
 }
 
-sync_pb::LocalTrustedVaultDegradedRecoverabilityState
+trusted_vault_pb::LocalTrustedVaultDegradedRecoverabilityState
 MakeDegradedRecoverabilityState(
-    sync_pb::DegradedRecoverabilityValue degraded_recoverability_value,
+    trusted_vault_pb::DegradedRecoverabilityValue degraded_recoverability_value,
     const base::Time& last_refresh_time) {
-  sync_pb::LocalTrustedVaultDegradedRecoverabilityState
+  trusted_vault_pb::LocalTrustedVaultDegradedRecoverabilityState
       degraded_recoverability_state;
   degraded_recoverability_state.set_degraded_recoverability_value(
       degraded_recoverability_value);
@@ -54,7 +54,7 @@ TrustedVaultDegradedRecoverabilityHandler::
         TrustedVaultConnection* connection,
         Delegate* delegate,
         const CoreAccountInfo& account_info,
-        const sync_pb::LocalTrustedVaultDegradedRecoverabilityState&
+        const trusted_vault_pb::LocalTrustedVaultDegradedRecoverabilityState&
             degraded_recoverability_state)
     : connection_(connection),
       delegate_(delegate),
@@ -97,7 +97,7 @@ void TrustedVaultDegradedRecoverabilityHandler::GetIsRecoverabilityDegraded(
     pending_get_is_recoverability_degraded_callback_ = std::move(cb);
   } else {
     std::move(cb).Run(degraded_recoverability_value_ ==
-                      sync_pb::DegradedRecoverabilityValue::kDegraded);
+                      trusted_vault_pb::DegradedRecoverabilityValue::kDegraded);
   }
   if (!next_refresh_timer_.IsRunning()) {
     Start();
@@ -106,7 +106,7 @@ void TrustedVaultDegradedRecoverabilityHandler::GetIsRecoverabilityDegraded(
 
 void TrustedVaultDegradedRecoverabilityHandler::UpdateCurrentRefreshPeriod() {
   if (degraded_recoverability_value_ ==
-      sync_pb::DegradedRecoverabilityValue::kDegraded) {
+      trusted_vault_pb::DegradedRecoverabilityValue::kDegraded) {
     current_refresh_period_ = short_degraded_recoverability_refresh_period_;
     return;
   }
@@ -114,9 +114,10 @@ void TrustedVaultDegradedRecoverabilityHandler::UpdateCurrentRefreshPeriod() {
 }
 
 void TrustedVaultDegradedRecoverabilityHandler::Start() {
-  base::UmaHistogramExactLinear("Sync.TrustedVaultDegradedRecoverabilityValue2",
-                                degraded_recoverability_value_,
-                                sync_pb::DegradedRecoverabilityValue_ARRAYSIZE);
+  base::UmaHistogramExactLinear(
+      "Sync.TrustedVaultDegradedRecoverabilityValue2",
+      degraded_recoverability_value_,
+      trusted_vault_pb::DegradedRecoverabilityValue_ARRAYSIZE);
   next_refresh_timer_.Start(
       FROM_HERE,
       ComputeTimeUntilNextRefresh(current_refresh_period_, last_refresh_time_),
@@ -139,16 +140,16 @@ void TrustedVaultDegradedRecoverabilityHandler::
         TrustedVaultRecoverabilityStatus status) {
   base::UmaHistogramEnumeration(
       "Sync.TrustedVaultRecoverabilityStatusOnRequestCompletion", status);
-  sync_pb::DegradedRecoverabilityValue old_degraded_recoverability_value =
-      degraded_recoverability_value_;
+  trusted_vault_pb::DegradedRecoverabilityValue
+      old_degraded_recoverability_value = degraded_recoverability_value_;
   switch (status) {
     case TrustedVaultRecoverabilityStatus::kDegraded:
       degraded_recoverability_value_ =
-          sync_pb::DegradedRecoverabilityValue::kDegraded;
+          trusted_vault_pb::DegradedRecoverabilityValue::kDegraded;
       break;
     case TrustedVaultRecoverabilityStatus::kNotDegraded:
       degraded_recoverability_value_ =
-          sync_pb::DegradedRecoverabilityValue::kNotDegraded;
+          trusted_vault_pb::DegradedRecoverabilityValue::kNotDegraded;
       break;
     case TrustedVaultRecoverabilityStatus::kError:
       // TODO(crbug.com/1247990): To be handled.
@@ -157,7 +158,7 @@ void TrustedVaultDegradedRecoverabilityHandler::
   if (!pending_get_is_recoverability_degraded_callback_.is_null()) {
     std::move(pending_get_is_recoverability_degraded_callback_)
         .Run(degraded_recoverability_value_ ==
-             sync_pb::DegradedRecoverabilityValue::kDegraded);
+             trusted_vault_pb::DegradedRecoverabilityValue::kDegraded);
     pending_get_is_recoverability_degraded_callback_ = base::NullCallback();
   }
   if (degraded_recoverability_value_ != old_degraded_recoverability_value) {

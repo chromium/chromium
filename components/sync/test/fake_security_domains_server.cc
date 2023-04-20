@@ -29,8 +29,8 @@ std::unique_ptr<net::test_server::HttpResponse> CreateErrorResponse(
 
 std::unique_ptr<net::test_server::HttpResponse>
 CreateHttpResponseForSuccessfulJoinSecurityDomainsRequest(int current_epoch) {
-  sync_pb::JoinSecurityDomainsResponse response_proto;
-  sync_pb::SecurityDomain* security_domain =
+  trusted_vault_pb::JoinSecurityDomainsResponse response_proto;
+  trusted_vault_pb::SecurityDomain* security_domain =
       response_proto.mutable_security_domain();
   security_domain->set_name(kSyncSecurityDomainName);
   security_domain->set_current_epoch(current_epoch);
@@ -43,7 +43,7 @@ CreateHttpResponseForSuccessfulJoinSecurityDomainsRequest(int current_epoch) {
 
 // Returns whether |request| satisfies protocol expectations.
 bool ValidateJoinSecurityDomainsRequest(
-    const sync_pb::JoinSecurityDomainsRequest& request) {
+    const trusted_vault_pb::JoinSecurityDomainsRequest& request) {
   if (request.security_domain().name() != kSyncSecurityDomainName) {
     DVLOG(1)
         << "JoinSecurityDomains request has unexpected security domain name: "
@@ -51,7 +51,7 @@ bool ValidateJoinSecurityDomainsRequest(
     return false;
   }
 
-  const sync_pb::SecurityDomainMember& member =
+  const trusted_vault_pb::SecurityDomainMember& member =
       request.security_domain_member();
   if (member.public_key().empty()) {
     DVLOG(1) << "JoinSecurityDomains request has empty member public key";
@@ -80,7 +80,7 @@ bool ValidateJoinSecurityDomainsRequest(
     DVLOG(1) << "JoinSecurityDomains request has no shared keys";
     return false;
   }
-  for (const sync_pb::SharedMemberKey& shared_key :
+  for (const trusted_vault_pb::SharedMemberKey& shared_key :
        request.shared_member_key()) {
     if (shared_key.wrapped_key().empty()) {
       DVLOG(1) << "JoinSecurityDomains request has shared key with empty "
@@ -101,7 +101,7 @@ bool ValidateJoinSecurityDomainsRequest(
 // Verifies that shared keys passed as part of the |request| match
 // |trusted_vault_keys|.
 bool VerifySharedKeys(
-    const sync_pb::JoinSecurityDomainsRequest& request,
+    const trusted_vault_pb::JoinSecurityDomainsRequest& request,
     const std::vector<std::vector<uint8_t>>& trusted_vault_keys) {
   if (request.shared_member_key_size() !=
       static_cast<int>(trusted_vault_keys.size())) {
@@ -225,7 +225,7 @@ std::vector<uint8_t> FakeSecurityDomainsServer::RotateTrustedVaultKey(
         SecureBoxPublicKey::CreateByImport(ProtoStringToBytes(member));
     DCHECK(member_public_key);
 
-    sync_pb::SharedMemberKey new_shared_key;
+    trusted_vault_pb::SharedMemberKey new_shared_key;
     new_shared_key.set_epoch(state_.current_epoch);
     AssignBytesToProtoString(ComputeTrustedVaultWrappedKey(
                                  *member_public_key, new_trusted_vault_key),
@@ -235,7 +235,7 @@ std::vector<uint8_t> FakeSecurityDomainsServer::RotateTrustedVaultKey(
         new_shared_key.mutable_member_proof());
     shared_key.push_back(new_shared_key);
 
-    sync_pb::RotationProof rotation_proof;
+    trusted_vault_pb::RotationProof rotation_proof;
     rotation_proof.set_new_epoch(state_.current_epoch);
     AssignBytesToProtoString(
         ComputeRotationProofForTesting(
@@ -284,7 +284,7 @@ bool FakeSecurityDomainsServer::AllMembersHaveKey(
         SecureBoxPublicKey::CreateByImport(ProtoStringToBytes(public_key));
     DCHECK(member_public_key);
 
-    for (const sync_pb::SharedMemberKey& shared_key : shared_keys) {
+    for (const trusted_vault_pb::SharedMemberKey& shared_key : shared_keys) {
       // Member has |trusted_vault_key| if there is a member proof signed by
       // |trusted_vault_key|.
       if (VerifyMemberProof(*member_public_key, trusted_vault_key,
@@ -333,7 +333,7 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
   // TODO(crbug.com/1113599): consider verifying content type and access token
   // headers.
 
-  sync_pb::JoinSecurityDomainsRequest deserialized_content;
+  trusted_vault_pb::JoinSecurityDomainsRequest deserialized_content;
   if (!deserialized_content.ParseFromString(http_request.content)) {
     DVLOG(1) << "Failed to deserialize JoinSecurityDomains request content";
     state_.received_invalid_request = true;
@@ -345,7 +345,7 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
     return CreateErrorResponse(net::HTTP_BAD_REQUEST);
   }
 
-  const sync_pb::SecurityDomainMember& member =
+  const trusted_vault_pb::SecurityDomainMember& member =
       deserialized_content.security_domain_member();
   if (state_.public_key_to_shared_keys.count(member.public_key()) != 0) {
     // Member already exists.
@@ -376,7 +376,7 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
   }
 
   state_.public_key_to_shared_keys[member.public_key()] =
-      std::vector<sync_pb::SharedMemberKey>(
+      std::vector<trusted_vault_pb::SharedMemberKey>(
           deserialized_content.shared_member_key().begin(),
           deserialized_content.shared_member_key().end());
   return CreateHttpResponseForSuccessfulJoinSecurityDomainsRequest(
@@ -400,7 +400,7 @@ FakeSecurityDomainsServer::HandleGetSecurityDomainMemberRequest(
     DVLOG(1) << "Member requested in GetSecurityDomainMemberRequest not found";
     return CreateErrorResponse(net::HTTP_NOT_FOUND);
   }
-  sync_pb::SecurityDomainMember member;
+  trusted_vault_pb::SecurityDomainMember member;
 
   std::string encoded_public_key;
   base::Base64UrlEncode(member_public_key,
@@ -410,20 +410,20 @@ FakeSecurityDomainsServer::HandleGetSecurityDomainMemberRequest(
   member.set_name(kSecurityDomainMemberNamePrefix + encoded_public_key);
   member.set_public_key(member_public_key);
 
-  sync_pb::SecurityDomainMember::SecurityDomainMembership* membership =
+  trusted_vault_pb::SecurityDomainMember::SecurityDomainMembership* membership =
       member.add_memberships();
   membership->set_security_domain(kSyncSecurityDomainName);
-  for (const sync_pb::SharedMemberKey& shared_key :
+  for (const trusted_vault_pb::SharedMemberKey& shared_key :
        state_.public_key_to_shared_keys[member_public_key]) {
     *membership->add_keys() = shared_key;
   }
-  for (const sync_pb::RotationProof& rotation_proof :
+  for (const trusted_vault_pb::RotationProof& rotation_proof :
        state_.public_key_to_rotation_proofs[member_public_key]) {
     *membership->add_rotation_proofs() = rotation_proof;
   }
 
   member.set_member_type(
-      sync_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE);
+      trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE);
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->set_code(net::HTTP_OK);
   response->set_content(member.SerializeAsString());
@@ -433,7 +433,7 @@ FakeSecurityDomainsServer::HandleGetSecurityDomainMemberRequest(
 std::unique_ptr<net::test_server::HttpResponse>
 FakeSecurityDomainsServer::HandleGetSecurityDomainRequest(
     const net::test_server::HttpRequest& http_request) {
-  sync_pb::SecurityDomain security_domain;
+  trusted_vault_pb::SecurityDomain security_domain;
   security_domain.mutable_security_domain_details()
       ->mutable_sync_details()
       ->set_degraded_recoverability(IsRecoverabilityDegraded());

@@ -14,7 +14,7 @@
 #include "base/observer_list_threadsafe.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
-#include "components/sync/protocol/vault.pb.h"
+#include "components/trusted_vault/proto/vault.pb.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
@@ -23,6 +23,7 @@ namespace syncer {
 
 // Mimics behavior of the security domains server. This class is designed to be
 // used with EmbeddedTestServer via registration of HandleRequest() method.
+// TODO(crbug.com/1423343): move under components/trusted_vault.
 class FakeSecurityDomainsServer {
  public:
   class Observer : public base::CheckedObserver {
@@ -98,10 +99,10 @@ class FakeSecurityDomainsServer {
     bool received_invalid_request = false;
 
     // Maps members public key to shared keys that belong to this member.
-    std::map<std::string, std::vector<sync_pb::SharedMemberKey>>
+    std::map<std::string, std::vector<trusted_vault_pb::SharedMemberKey>>
         public_key_to_shared_keys;
     // Maps members public key to rotation proofs of members shared keys.
-    std::map<std::string, std::vector<sync_pb::RotationProof>>
+    std::map<std::string, std::vector<trusted_vault_pb::RotationProof>>
         public_key_to_rotation_proofs;
 
     // Zero epoch is used when there are no members in the security domain, once
