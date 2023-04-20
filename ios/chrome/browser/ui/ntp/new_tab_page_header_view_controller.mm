@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/ntp/logo_vendor.h"
+#import "ios/chrome/browser/ui/ntp/metrics/new_tab_page_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_controller_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_commands.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
@@ -437,8 +438,7 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 }
 
 - (void)openLens {
-  base::RecordAction(
-      UserMetricsAction("Mobile.LensIOS.NewTabPageEntrypointTapped"));
+  [self.NTPMetricsRecorder recordLensTapped];
   OpenLensInputSelectionCommand* command = [[OpenLensInputSelectionCommand
       alloc]
           initWithEntryPoint:LensEntrypoint::NewTabPage
@@ -449,7 +449,7 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 
 - (void)loadVoiceSearch:(id)sender {
   DCHECK(self.voiceSearchIsEnabled);
-  base::RecordAction(UserMetricsAction("MobileNTPMostVisitedVoiceSearch"));
+  [self.NTPMetricsRecorder recordVoiceSearchTapped];
   UIView* voiceSearchButton = base::mac::ObjCCastStrict<UIView>(sender);
   [self.layoutGuideCenter referenceView:voiceSearchButton
                               underName:kVoiceSearchButtonGuide];
@@ -465,12 +465,12 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 }
 
 - (void)fakeTapViewTapped {
-  base::RecordAction(base::UserMetricsAction("MobileFakeViewNTPTapped"));
+  [self.NTPMetricsRecorder recordFakeTapViewTapped];
   [self.commandHandler fakeboxTapped];
 }
 
 - (void)fakeboxTapped {
-  base::RecordAction(base::UserMetricsAction("MobileFakeboxNTPTapped"));
+  [self.NTPMetricsRecorder recordFakeOmniboxTapped];
   [self.commandHandler fakeboxTapped];
 }
 

@@ -350,7 +350,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   if ([self isFeedHeaderVisible]) {
     [self configureFeedAndHeader];
   }
-  [self configureheaderViewController];
+  [self configureHeaderViewController];
   [self configureContentSuggestionsCoordinator];
   [self configureNTPMediator];
   [self configureFeedMetricsRecorder];
@@ -667,9 +667,10 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 }
 
 // Configures `self.headerViewController`.
-- (void)configureheaderViewController {
+- (void)configureHeaderViewController {
   DCHECK(self.headerViewController);
   DCHECK(self.NTPMediator);
+  DCHECK(self.NTPMetricsRecorder);
 
   self.headerViewController.isGoogleDefaultSearchEngine =
       [self isGoogleDefaultSearchEngine];
@@ -685,6 +686,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
       LayoutGuideCenterForBrowser(self.browser);
   self.headerViewController.toolbarDelegate = self.toolbarDelegate;
   self.headerViewController.baseViewController = self.baseViewController;
+  self.headerViewController.NTPMetricsRecorder = self.NTPMetricsRecorder;
 }
 
 // Configures `self.contentSuggestionsCoordiantor`.
@@ -797,6 +799,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 }
 
 - (void)fakeboxTapped {
+  // TODO(crbug.com/1431193): Move these logs to the `NTPMetricsRecorder`.
   if (NewTabPageTabHelper::FromWebState(self.webState)
           ->ShouldShowStartSurface()) {
     UMA_HISTOGRAM_ENUMERATION("IOS.ContentSuggestions.ActionOnStartSurface",
@@ -809,7 +812,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 }
 
 - (void)identityDiscWasTapped {
-  base::RecordAction(base::UserMetricsAction("MobileNTPIdentityDiscTapped"));
+  [self.NTPMetricsRecorder recordIdentityDiscTapped];
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   BOOL isSignedIn =

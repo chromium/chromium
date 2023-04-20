@@ -18,6 +18,7 @@
 @protocol FakeboxFocuser;
 @protocol NewTabPageControllerDelegate;
 @protocol NewTabPageHeaderCommands;
+@class NewTabPageMetricsRecorder;
 @protocol OmniboxCommands;
 @protocol LensCommands;
 @class LayoutGuideCenter;
@@ -58,6 +59,14 @@
 
 // The layout guide center for the current scene.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
+
+// Metrics recorder for the new tab page.
+@property(nonatomic, weak) NewTabPageMetricsRecorder* NTPMetricsRecorder;
+
+// Identity disc shown in this ViewController.
+// TODO(crbug.com/1170995): Remove once the Feed header properly supports
+// ContentSuggestions.
+@property(nonatomic, strong, readonly) UIButton* identityDiscButton;
 
 // Animation to expand this header in response to focusing the omnibox to match
 // the fake omnibox with the omnibox's.
@@ -100,11 +109,6 @@
 
 // Update any dynamic constraints.
 - (void)updateConstraints;
-
-// Identity disc shown in this ViewController.
-// TODO(crbug.com/1170995): Remove once the Feed header properly supports
-// ContentSuggestions.
-@property(nonatomic, strong, readonly) UIButton* identityDiscButton;
 
 @end
 

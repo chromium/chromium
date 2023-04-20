@@ -35,6 +35,28 @@
   UMA_HISTOGRAM_ENUMERATION("IOS.NTP.OverscrollAction", type);
 }
 
+- (void)recordLensTapped {
+  base::RecordAction(
+      base::UserMetricsAction("Mobile.LensIOS.NewTabPageEntrypointTapped"));
+}
+
+- (void)recordVoiceSearchTapped {
+  base::RecordAction(
+      base::UserMetricsAction("MobileNTPMostVisitedVoiceSearch"));
+}
+
+- (void)recordFakeTapViewTapped {
+  base::RecordAction(base::UserMetricsAction("MobileFakeViewNTPTapped"));
+}
+
+- (void)recordFakeOmniboxTapped {
+  base::RecordAction(base::UserMetricsAction("MobileFakeboxNTPTapped"));
+}
+
+- (void)recordIdentityDiscTapped {
+  base::RecordAction(base::UserMetricsAction("MobileNTPIdentityDiscTapped"));
+}
+
 #pragma mark - Private
 
 // Records an NTP impression for the tile ablation retention feature.

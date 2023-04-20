@@ -41,6 +41,22 @@ enum class OverscrollActionType {
 // Logs a metric for an overscroll action on the NTP.
 - (void)recordOverscrollActionForType:(OverscrollActionType)type;
 
+// Logs a metric for the lens button being tapped in the fake omnibox.
+- (void)recordLensTapped;
+
+// Logs a metric for the voice search button being tapped in the NTP header.
+- (void)recordVoiceSearchTapped;
+
+// Logs a metric when the hidden tap view on top of the NTP is tapped to focus
+// the omnibox.
+- (void)recordFakeTapViewTapped;
+
+// Logs a metric for the fake omnibox being tapped in the NTP.
+- (void)recordFakeOmniboxTapped;
+
+// Logs a metric for the identity disc being tapped in the NTP.
+- (void)recordIdentityDiscTapped;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_METRICS_NEW_TAB_PAGE_METRICS_RECORDER_H_
