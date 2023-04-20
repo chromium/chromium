@@ -3497,16 +3497,16 @@
             ]
         }
     ],
-    "CrOSMglruARM": [
+    "CrOSMglruNoKVMOpt": [
         {
             "platforms": [
                 "chromeos"
             ],
             "experiments": [
                 {
-                    "name": "MglruBehavior_20220407",
+                    "name": "MglruBehavior_20230419",
                     "params": {
-                        "KstaledRatio": "1"
+                        "KstaledRatio": "7"
                     },
                     "enable_features": [
                         "KstaledSwap"
