@@ -59,24 +59,14 @@ def fyi_reclient_staging_builder(
             "chromium-cq-staging-builder@chops-service-accounts.iam.gserviceaccount.com"
         ),
         reclient_version = "staging",
-        reclient_scandeps_server = True,
         **kwargs):
     trusted_instance = reclient_instance % "trusted"
     unstrusted_instance = reclient_instance % "untrusted"
     reclient_bootstrap_env = kwargs.pop("reclient_bootstrap_env", {})
 
-    # Use goma deps cache with scan deps server
-    if not reclient_scandeps_server:
-        # TODO(b/233275188) remove once reproxy 0.83.0 is rolled out
-        reclient_bootstrap_env.update({
-            "RBE_experimental_goma_deps_cache": "True",
-            "RBE_ip_reset_min_delay": "-1s",
-            "RBE_deps_cache_mode": "reproxy",
-        })
-
     reclient_bootstrap_env.update({
         # TODO(b/258210757) remove once long term breakpad plans are dertermined
-        "GOMA_COMPILER_PROXY_ENABLE_CRASH_DUMP": "true" if reclient_scandeps_server else "false",
+        "GOMA_COMPILER_PROXY_ENABLE_CRASH_DUMP": "true",
     })
     return [
         ci.builder(
@@ -89,7 +79,7 @@ def fyi_reclient_staging_builder(
                 short_name = "rcs",
             ),
             reclient_bootstrap_env = reclient_bootstrap_env,
-            reclient_scandeps_server = reclient_scandeps_server,
+            reclient_scandeps_server = True,
             **kwargs
         ),
         ci.builder(
@@ -103,7 +93,7 @@ def fyi_reclient_staging_builder(
             ),
             service_account = untrusted_service_account,
             reclient_bootstrap_env = reclient_bootstrap_env,
-            reclient_scandeps_server = reclient_scandeps_server,
+            reclient_scandeps_server = True,
             **kwargs
         ),
     ]
@@ -277,7 +267,6 @@ fyi_reclient_staging_builder(
     ),
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
-    reclient_scandeps_server = False,
 )
 
 fyi_reclient_test_builder(
@@ -300,7 +289,6 @@ fyi_reclient_test_builder(
     ),
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
-    reclient_scandeps_server = False,
 )
 
 fyi_reclient_test_builder(
