@@ -44,6 +44,9 @@ static const ax::mojom::Role kRolesToSkip[]{
 // OneShotAccessibilityTreeSearch.
 void GetContentRootNodes(const ui::AXNode* root,
                          std::vector<const ui::AXNode*>* content_root_nodes) {
+  if (!root) {
+    return;
+  }
   std::queue<const ui::AXNode*> queue;
   queue.push(root);
   while (!queue.empty()) {
