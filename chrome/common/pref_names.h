@@ -254,6 +254,8 @@ extern const char kKeyPermissionsOneTimeMigrationDone[];
 extern const char kUnifiedDesktopEnabledByDefault[];
 extern const char kHatsBluetoothRevampCycleEndTs[];
 extern const char kHatsBluetoothRevampIsSelected[];
+extern const char kHatsBatteryLifeCycleEndTs[];
+extern const char kHatsBatteryLifeIsSelected[];
 extern const char kHatsLastInteractionTimestamp[];
 extern const char kHatsSurveyCycleEndTimestamp[];
 extern const char kHatsDeviceIsSelected[];

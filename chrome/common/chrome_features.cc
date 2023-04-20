@@ -547,6 +547,11 @@ BASE_FEATURE(kHappinessTrackingSystem,
 BASE_FEATURE(kHappinessTrackingSystemBluetoothRevamp,
              "HappinessTrackingSystemBluetoothRevamp",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables or disables the Happiness Tracking System for the Battery life
+// survey.
+BASE_FEATURE(kHappinessTrackingSystemBatteryLife,
+             "HappinessTrackingSystemBatteryLife",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables or disables the Happiness Tracking System for the Ent survey.
 BASE_FEATURE(kHappinessTrackingSystemEnt,
              "HappinessTrackingSystemEnt",
