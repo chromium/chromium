@@ -9,6 +9,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import java.util.function.Supplier;
+
 /**
  * Interface for Observable state.
  *
@@ -128,6 +130,45 @@ public abstract class Observable<T> {
     }
 
     /**
+     * Returns an Observable that accumulates this Observable's data into another Observable by
+     * invoking |acc| whenever data are added to this, and closing the Scope it returns whenever
+     * the data that added it is removed from this.
+     *
+     * The |factory| must create some object that extends Observable. Typically, this is a mutable
+     * object like Cell (used in the implementation of fold()). This mutable Observable is passed
+     * alongside the data from this Observable to the |acc| function, which can decide to mutate the
+     * mutable Observable with whatever transformation of the data it chooses. The |acc| function
+     * then returns a Scope which can defer another mutation operation until when the data are
+     * removed from this Observable.
+     *
+     * This has a number of use cases. The fold() operator uses this with Cell to aggregate all the
+     * simultaneous activations of the source into an Observable of a single value, which is useful
+     * for computing sums or counts of the data (which in turn is used by the not() operator).
+     *
+     * Another use case is taking the most recent activation from the source Observable and
+     * deduplicating equal activations.
+     *
+     *   Observable<Foo> source = ...;
+     *   // |deduped| will have only one activation at a time, will not drop those activations if
+     *   // the |source| revokes them, and will not deactivate and reactivate if |source| produces
+     *   // data that .equals() the most recent data that preceded it.
+     *   Observable<Foo> deduped = source.accumulate(() -> new Controller<Foo>(), (a, foo) -> {
+     *       a.set(foo);
+     *       return Scopes.NO_OP;
+     *   });
+     */
+    // NOTE: This is private for now to limit how many things use it until it has better test
+    // coverage, but it can be used by other operators.
+    final <U, A extends Observable<U>> Observable<U> accumulate(
+            Supplier<A> factory, BiFunction<A, T, ? extends Scope> acc) {
+        return make(observer -> {
+            A current = factory.get();
+            Subscription sub = subscribe(t -> acc.apply(current, t));
+            return sub.and(current.subscribe(observer));
+        });
+    }
+
+    /**
      * Returns an Observable that combines the state of all of this Observable's data into
      * a single activation of type A, where the state is combined by successively applying |acc|
      * when this Observable adds data, and |dim| when this Observable removes data.
@@ -146,13 +187,9 @@ public abstract class Observable<T> {
      * operations.
      */
     public final <A> Observable<A> fold(A start, BiFunction<A, T, A> acc, BiFunction<A, T, A> dim) {
-        return make(observer -> {
-            Cell<A> current = new Cell<>(start);
-            Subscription sub = subscribe(t -> {
-                current.mutate(a -> acc.apply(a, t));
-                return () -> current.mutate(a -> dim.apply(a, t));
-            });
-            return sub.and(current.subscribe(observer))::close;
+        return accumulate(() -> new Cell<A>(start), (current, t) -> {
+            current.mutate(a -> acc.apply(a, t));
+            return () -> current.mutate(a -> dim.apply(a, t));
         });
     }
 
@@ -221,7 +258,7 @@ public abstract class Observable<T> {
                 Scope debugClose =
                         () -> logger.accept(new StringBuilder("close ").append(data).toString());
                 return scope.and(debugClose);
-            })::close;
+            });
             Scope debugUnsubscribe = () -> logger.accept("unsubscribe");
             return subscription.and(debugUnsubscribe);
         });
