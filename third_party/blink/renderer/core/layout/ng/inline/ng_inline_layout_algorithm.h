@@ -113,10 +113,10 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
   void PlaceOutOfFlowObjects(const NGLineInfo&,
                              const FontHeight&,
                              NGLogicalLineItems* line_box);
-  void PlaceFloatingObjects(const NGLineInfo&,
-                            const FontHeight&,
+  void PlaceFloatingObjects(const FontHeight&,
                             const NGLineLayoutOpportunity&,
                             LayoutUnit ruby_block_start_adjust,
+                            NGLineInfo*,
                             NGLogicalLineItems* line_box);
   void PlaceRelativePositionedItems(NGLogicalLineItems* line_box);
   void PlaceListMarker(const NGInlineItem&,
