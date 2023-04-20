@@ -224,7 +224,10 @@ NSString* const kInactiveTabsUserEducationShownOnce =
 
 - (void)gridViewController:(GridViewController*)gridViewController
         didChangeItemCount:(NSUInteger)count {
-  // No op.
+  // Close the Inactive Tabs view when closing the last inactive tab.
+  if (count == 0) {
+    [_delegate inactiveTabsCoordinatorDidFinish:self];
+  }
 }
 
 - (void)gridViewController:(GridViewController*)gridViewController
