@@ -2692,7 +2692,8 @@
         "table-row-group", "table-header-group", "table-footer-group",
         "table-row", "table-column-group", "table-column", "table-cell",
         "table-caption", "-webkit-box", "-webkit-inline-box", "flex",
-        "inline-flex", "grid", "inline-grid", "contents", "flow-root", "none"
+        "inline-flex", "grid", "inline-grid", "contents", "flow-root", "none",
+        "flow", "math"
       ],
       typedom_types: ["Keyword"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
