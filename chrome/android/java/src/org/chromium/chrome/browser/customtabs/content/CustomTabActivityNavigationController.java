@@ -60,13 +60,16 @@ import dagger.Lazy;
  */
 @ActivityScope
 public class CustomTabActivityNavigationController implements StartStopWithNativeObserver {
-
-    @IntDef({USER_NAVIGATION, REPARENTING, OTHER})
+    @IntDef({FinishReason.USER_NAVIGATION, FinishReason.REPARENTING, FinishReason.OTHER,
+            FinishReason.OPEN_IN_BROWSER})
     @Retention(RetentionPolicy.SOURCE)
     public @interface FinishReason {
         int USER_NAVIGATION = 0;
+        // The web page is opened in the same browser by reparenting the tab into the browser.
         int REPARENTING = 1;
         int OTHER = 2;
+        // The web page is opened in the default browser by starting a new activity.
+        int OPEN_IN_BROWSER = 3;
     }
 
     /** A handler of back presses. */
@@ -313,13 +316,14 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
             // Remove observer to not trigger finishing in onAllTabsClosed() callback - we'll use
             // reparenting finish callback instead.
             mTabProvider.removeObserver(mTabObserver);
-            mTabController.detachAndStartReparenting(intent, startActivityOptions,
-                    () -> finish(REPARENTING));
+            mTabController.detachAndStartReparenting(
+                    intent, startActivityOptions, () -> finish(FinishReason.REPARENTING));
         } else {
             if (mIntentDataProvider.isInfoPage()) {
                 IntentHandler.startChromeLauncherActivityForTrustedIntent(intent);
             } else {
                 mActivity.startActivity(intent, startActivityOptions);
+                finish(FinishReason.OPEN_IN_BROWSER);
             }
         }
         return true;

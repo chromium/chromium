@@ -108,7 +108,10 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
     }
 
     void updateCloseCause() {
-        if (mNavigationController.getFinishReason() == FinishReason.USER_NAVIGATION) {
+        @FinishReason
+        int finishReason = mNavigationController.getFinishReason();
+        if (finishReason == FinishReason.USER_NAVIGATION || finishReason == FinishReason.REPARENTING
+                || finishReason == FinishReason.OPEN_IN_BROWSER) {
             mCloseCause = CloseCause.USER_ACTION_CHROME;
         }
     }

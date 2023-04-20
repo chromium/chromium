@@ -138,6 +138,7 @@ public class CustomTabActivityNavigationControllerTest {
         mNavigationController.openCurrentUrlInBrowser(false);
         verify(mTabController, never()).detachAndStartReparenting(any(), any(), any());
         verify(env.activity).startActivity(any(), any());
+        verify(mFinishHandler).onFinish(FinishReason.OPEN_IN_BROWSER);
     }
 
     @Test
