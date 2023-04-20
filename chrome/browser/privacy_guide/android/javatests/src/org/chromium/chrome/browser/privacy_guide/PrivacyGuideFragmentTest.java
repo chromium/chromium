@@ -10,11 +10,15 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.anyIntent;
+import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -29,8 +33,7 @@ import android.view.View;
 
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
-import androidx.test.filters.MediumTest;
-import androidx.test.filters.SmallTest;
+import androidx.test.filters.LargeTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -248,8 +251,14 @@ public class PrivacyGuideFragmentTest {
                 .getRootView();
     }
 
+    private void clickOnArrowNextToRadioButtonWithText(int textId) {
+        onView(allOf(withId(R.id.expand_arrow),
+                       withParent(hasSibling(withChild(withText(textId))))))
+                .perform(click());
+    }
+
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"RenderTest"})
     public void testRenderWelcomeCard() throws IOException {
         launchPrivacyGuide();
@@ -257,7 +266,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"RenderTest"})
     public void testRenderMSBBCard() throws IOException {
         launchPrivacyGuide();
@@ -266,7 +275,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"RenderTest"})
     public void testRenderHistorySyncCard() throws IOException {
         launchPrivacyGuide();
@@ -275,7 +284,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"RenderTest"})
     public void testRenderSBCard() throws IOException {
         launchPrivacyGuide();
@@ -284,7 +293,27 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testRenderSBEnhancedBottomSheet() throws IOException {
+        launchPrivacyGuide();
+        goToSafeBrowsingCard();
+        clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_enhanced_title);
+        mRenderTestRule.render(getRootView(), "privacy_guide_sb_enhanced_sheet");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testRenderSBStandardBottomSheet() throws IOException {
+        launchPrivacyGuide();
+        goToSafeBrowsingCard();
+        clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_standard_title);
+        mRenderTestRule.render(getRootView(), "privacy_guide_sb_standard_sheet");
+    }
+
+    @Test
+    @LargeTest
     @Feature({"RenderTest"})
     public void testRenderCookiesCard() throws IOException {
         launchPrivacyGuide();
@@ -293,7 +322,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"RenderTest"})
     public void testRenderCompletionCard() throws IOException {
         launchPrivacyGuide();
@@ -302,7 +331,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testForwardNavigation() {
         launchPrivacyGuide();
@@ -321,7 +350,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testWelcomeCard_nextClickWelcomeUserAction() {
         launchPrivacyGuide();
@@ -332,7 +361,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testWelcomeCard_nextNavigationHistogram() {
         launchPrivacyGuide();
@@ -346,7 +375,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testCompletionCard_nextClickCompletionUserAction() {
         launchPrivacyGuide();
@@ -362,7 +391,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testCompletionCard_nextNavigationHistogram() {
         launchPrivacyGuide();
@@ -378,7 +407,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
     @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
@@ -392,7 +421,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
@@ -405,7 +434,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testCompletionCard_AdPrivacyClickUserAction() {
         launchPrivacyGuide();
@@ -416,7 +445,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testCompletionCard_AdPrivacyClickHistogram() {
         launchPrivacyGuide();
@@ -431,7 +460,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testCompletionCard_WaaLinkNavigation() {
         launchPrivacyGuide();
@@ -445,7 +474,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testCompletionCard_WaaClickUserAction() {
         launchPrivacyGuide();
@@ -458,7 +487,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testCompletionCard_WaaClickHistogram() {
         launchPrivacyGuide();
@@ -473,7 +502,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testMSBBCard_nextClickMSBBUserAction() {
         launchPrivacyGuide();
@@ -483,7 +512,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testMSBBCard_nextNavigationHistogram() {
         launchPrivacyGuide();
@@ -498,7 +527,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testMSBBCard_offToOffSettingsStatesHistogram() {
         setMSBBState(false);
@@ -514,7 +543,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testMSBBCard_offToOnSettingsStatesHistogram() {
         setMSBBState(false);
@@ -531,7 +560,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testMSBBCard_onToOffSettingsStatesHistogram() {
         setMSBBState(true);
@@ -548,7 +577,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testMSBBCard_onToOnSettingsStatesHistogram() {
         setMSBBState(true);
@@ -564,7 +593,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testMSBBCard_nextButtonInitialMSBBStateIsSet() {
         launchPrivacyGuide();
@@ -579,7 +608,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testMSBBCard_backButtonInitialMSBBStateIsSet() {
         launchPrivacyGuide();
@@ -596,7 +625,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testHistorySyncCard_nextClickHistorySyncUserAction() {
         launchPrivacyGuide();
@@ -608,7 +637,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testHistorySyncCard_nextNavigationHistogram() {
         launchPrivacyGuide();
@@ -623,7 +652,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testHistorySyncCard_offToOffSettingsStatesHistogram() {
         setHistorySyncState(false);
@@ -639,7 +668,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testHistorySyncCard_offToOnSettingsStatesHistogram() {
         setHistorySyncState(false);
@@ -656,7 +685,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testHistorySyncCard_onToOffSettingsStatesHistogram() {
         setHistorySyncState(true);
@@ -673,7 +702,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testHistorySyncCard_onToOnSettingsStatesHistogram() {
         setHistorySyncState(true);
@@ -689,7 +718,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testHistorySyncCard_nextButtonInitialSyncStateIsSet() {
         launchPrivacyGuide();
@@ -704,7 +733,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testHistorySyncCard_backButtonInitialSyncStateIsSet() {
         launchPrivacyGuide();
@@ -721,7 +750,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testSafeBrowsingCard_nextClickSafeBrowsingUserAction() {
         launchPrivacyGuide();
@@ -732,7 +761,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testSafeBrowsingCard_nextNavigationHistogram() {
         launchPrivacyGuide();
@@ -747,7 +776,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testSafeBrowsingCard_standardToStandardSettingsStatesHistogram() {
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
@@ -763,7 +792,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testSafeBrowsingCard_standardToEnhancedSettingsStatesHistogram() {
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
@@ -780,7 +809,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testSafeBrowsingCard_enhancedToEnhancedSettingsStatesHistogram() {
         setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
@@ -796,7 +825,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testSafeBrowsingCard_enhancedToStandardSettingsStatesHistogram() {
         setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
@@ -813,7 +842,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testSafeBrowsingCard_nextButtonInitialSafeBrowsingStateIsSet() {
         launchPrivacyGuide();
@@ -828,7 +857,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testSafeBrowsingCard_backButtonInitialSafeBrowsingStateIsSet() {
         launchPrivacyGuide();
@@ -845,7 +874,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testCookiesCard_nextClickCookiesUserAction() {
         launchPrivacyGuide();
@@ -855,7 +884,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testCookiesCard_nextNavigationHistogram() {
         launchPrivacyGuide();
@@ -870,7 +899,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testCookiesCard_block3PIncognitoTo3PIncognitoSettingsStatesHistogram() {
         setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
@@ -886,7 +915,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testCookiesCard_block3PIncognitoTo3PSettingsStatesHistogram() {
         setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
@@ -903,7 +932,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testCookiesCard_block3PTo3PIncognitoSettingsStatesHistogram() {
         setCookieControlsMode(CookieControlsMode.BLOCK_THIRD_PARTY);
@@ -920,7 +949,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testCookiesCard_block3PTo3PSettingsStatesHistogram() {
         setCookieControlsMode(CookieControlsMode.BLOCK_THIRD_PARTY);
@@ -936,7 +965,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testCookiesCard_nextButtonInitialCookiesStateIsSet() {
         launchPrivacyGuide();
@@ -951,7 +980,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testHistorySyncCard_backClickHistorySyncUserAction() {
         launchPrivacyGuide();
@@ -966,7 +995,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testSafeBrowsingCard_backClickSafeBrowsingUserAction() {
         launchPrivacyGuide();
@@ -981,7 +1010,7 @@ public class PrivacyGuideFragmentTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Feature({"PrivacyGuide"})
     public void testCookiesCard_backClickCookiesUserAction() {
         launchPrivacyGuide();
