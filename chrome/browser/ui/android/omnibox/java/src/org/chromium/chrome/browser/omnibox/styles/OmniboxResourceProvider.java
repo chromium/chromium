@@ -80,6 +80,14 @@ public class OmniboxResourceProvider {
                         string, args);
     }
 
+    /**
+     * Clears the drawable cache to avoid, e.g. caching a now incorrectly colored drawable
+     * resource.
+     */
+    public static void invalidateDrawableCache() {
+        sDrawableCache.clear();
+    }
+
     @VisibleForTesting
     public static SparseArray<ConstantState> getDrawableCacheForTesting() {
         return sDrawableCache;
