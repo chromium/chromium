@@ -6,8 +6,8 @@
 
 #include "base/callback_list.h"
 #include "base/files/file_util.h"
-#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/uuid.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -41,7 +41,7 @@ constexpr char kWriteFileFailMetric[] =
 absl::optional<bool> g_is_managed_for_testing;
 
 std::string GenerateUserId() {
-  return base::GenerateGUID();
+  return base::Uuid::GenerateRandomV4().AsLowercaseString();
 }
 
 // Keep in sync with PerUserDaemonStoreFail enum.
