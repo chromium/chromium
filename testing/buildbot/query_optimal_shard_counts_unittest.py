@@ -31,6 +31,7 @@ DEFAULT_DICT = {
     'estimated_bot_hour_cost': 1.27,
     'percentile_duration_minutes': 20,
     'sample_size': 9508,
+    'most_used_shard_count': 10,
 }
 
 
@@ -234,6 +235,7 @@ class FormatQueryResults(unittest.TestCase):
             try_builder='linux-rel',
             test_suite='browser_tests',
             optimal_shard_count=16,
+            shard_count=15,
         ),
     ])
     existing_output_file_data = json.dumps({
@@ -316,6 +318,312 @@ class FormatQueryResults(unittest.TestCase):
     self.assertIsNone(script_result['chromium.linux']['Linux Tests'].get(
         'interactive_ui_tests'))
     self.assertIsNone(script_result.get('chromium.android'))
+
+  def testReduceShardsAlreadyAutosharded(self):
+    self._mock_check_output.return_value = json.dumps([
+        query_response_test_suite_dict(waterfall_builder_group='chromium.linux',
+                                       waterfall_builder_name='Linux Tests',
+                                       try_builder='linux-rel',
+                                       test_suite='browser_tests',
+                                       optimal_shard_count=14,
+                                       shard_count=15),
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.android',
+            waterfall_builder_name='android-12-x64-rel',
+            try_builder='android-12-x64-rel',
+            test_suite='other_fake_test',
+            optimal_shard_count=10,
+            shard_count=20,
+        ),
+    ])
+    existing_output_file_data = json.dumps({
+        'chromium.linux': {
+            'Linux Tests': {
+                'browser_tests': {
+                    'shards': 15,
+                },
+                'interactive_ui_tests': {
+                    'shards': 3,
+                }
+            },
+        },
+        'chromium.android': {
+            'android-12-x64-rel': {
+                'webview_instrumentation_test_apk': {
+                    'shards': 11,
+                }
+            }
+        }
+    })
+    with open(self.output_file, 'w') as f:
+      f.write(existing_output_file_data)
+
+    query_optimal_shard_counts.main(['--output-file', self.output_file])
+    with open(self.output_file, 'r') as f:
+      script_result = json.load(f)
+    self.assertEqual(
+        script_result['chromium.linux']['Linux Tests']['browser_tests'],
+        {'shards': 14},
+    )
+    self.assertEqual(
+        script_result['chromium.linux']['Linux Tests']['interactive_ui_tests'],
+        {'shards': 3},
+    )
+    self.assertIsNone(script_result['chromium.android']
+                      ['android-12-x64-rel'].get('other_fake_test'))
+
+  def testMultipleShardValuesFromQueryAlreadyAutoshardedNoChange(self):
+    # Most used shard count is still the old 20 value, because it was recently
+    # autosharded to 10
+    self._mock_check_output.return_value = json.dumps([
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.android',
+            waterfall_builder_name='android-12-x64-rel',
+            try_builder='android-12-x64-rel',
+            test_suite='webview_instrumentation_test_apk',
+            optimal_shard_count=10,
+            shard_count=20,
+            most_used_shard_count=20,
+        ),
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.android',
+            waterfall_builder_name='android-12-x64-rel',
+            try_builder='android-12-x64-rel',
+            test_suite='webview_instrumentation_test_apk',
+            optimal_shard_count=10,
+            shard_count=10,
+            most_used_shard_count=20,
+        ),
+    ])
+    existing_output_file_data = json.dumps({
+        'chromium.android': {
+            'android-12-x64-rel': {
+                'webview_instrumentation_test_apk': {
+                    'shards': 10,
+                }
+            }
+        }
+    })
+    with open(self.output_file, 'w') as f:
+      f.write(existing_output_file_data)
+
+    query_optimal_shard_counts.main(['--output-file', self.output_file])
+    with open(self.output_file, 'r') as f:
+      script_result = json.load(f)
+
+    self.assertEqual(
+        script_result['chromium.android']['android-12-x64-rel']
+        ['webview_instrumentation_test_apk'],
+        {'shards': 10},
+    )
+
+  def testMultipleShardValuesFromQueryAlreadyAutoshardedDecrease(self):
+    # Most used shard count is still the old 20 value, because it was recently
+    # autosharded to 10
+    self._mock_check_output.return_value = json.dumps([
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.android',
+            waterfall_builder_name='android-12-x64-rel',
+            try_builder='android-12-x64-rel',
+            test_suite='webview_instrumentation_test_apk',
+            optimal_shard_count=10,
+            shard_count=20,
+            most_used_shard_count=20,
+        ),
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.android',
+            waterfall_builder_name='android-12-x64-rel',
+            try_builder='android-12-x64-rel',
+            test_suite='webview_instrumentation_test_apk',
+            optimal_shard_count=8,
+            shard_count=10,
+            most_used_shard_count=20,
+        ),
+    ])
+    existing_output_file_data = json.dumps({
+        'chromium.android': {
+            'android-12-x64-rel': {
+                'webview_instrumentation_test_apk': {
+                    'shards': 10,
+                }
+            }
+        }
+    })
+    with open(self.output_file, 'w') as f:
+      f.write(existing_output_file_data)
+
+    query_optimal_shard_counts.main(['--output-file', self.output_file])
+    with open(self.output_file, 'r') as f:
+      script_result = json.load(f)
+
+    self.assertEqual(
+        script_result['chromium.android']['android-12-x64-rel']
+        ['webview_instrumentation_test_apk'],
+        {'shards': 8},
+    )
+
+  def testMultipleShardValuesFromQueryAlreadyAutoshardedIncrease(self):
+    # Most used shard count is still the old 20 value, because it was recently
+    # autosharded to 10
+    self._mock_check_output.return_value = json.dumps([
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.android',
+            waterfall_builder_name='android-12-x64-rel',
+            try_builder='android-12-x64-rel',
+            test_suite='webview_instrumentation_test_apk',
+            optimal_shard_count=10,
+            shard_count=20,
+            most_used_shard_count=20,
+        ),
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.android',
+            waterfall_builder_name='android-12-x64-rel',
+            try_builder='android-12-x64-rel',
+            test_suite='webview_instrumentation_test_apk',
+            optimal_shard_count=12,
+            shard_count=10,
+            most_used_shard_count=20,
+        ),
+    ])
+    existing_output_file_data = json.dumps({
+        'chromium.android': {
+            'android-12-x64-rel': {
+                'webview_instrumentation_test_apk': {
+                    'shards': 10,
+                }
+            }
+        }
+    })
+    with open(self.output_file, 'w') as f:
+      f.write(existing_output_file_data)
+
+    query_optimal_shard_counts.main(['--output-file', self.output_file])
+    with open(self.output_file, 'r') as f:
+      script_result = json.load(f)
+
+    self.assertEqual(
+        script_result['chromium.android']['android-12-x64-rel']
+        ['webview_instrumentation_test_apk'],
+        {'shards': 12},
+    )
+
+  def testMultipleShardValuesFromQueryNotAutoshardedNoChange(self):
+    self._mock_check_output.return_value = json.dumps([
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.android',
+            waterfall_builder_name='android-12-x64-rel',
+            try_builder='android-12-x64-rel',
+            test_suite='webview_instrumentation_test_apk',
+            optimal_shard_count=10,
+            shard_count=20,
+            most_used_shard_count=10,
+        ),
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.android',
+            waterfall_builder_name='android-12-x64-rel',
+            try_builder='android-12-x64-rel',
+            test_suite='webview_instrumentation_test_apk',
+            optimal_shard_count=10,
+            shard_count=10,
+            most_used_shard_count=10,
+        ),
+    ])
+    existing_output_file_data = json.dumps({
+        'chromium.linux': {
+            'Linux Tests': {
+                'browser_tests': {
+                    'shards': 10,
+                }
+            }
+        }
+    })
+    with open(self.output_file, 'w') as f:
+      f.write(existing_output_file_data)
+    query_optimal_shard_counts.main(['--output-file', self.output_file])
+    with open(self.output_file, 'r') as f:
+      script_result = json.load(f)
+
+    self.assertIsNone(script_result.get('chromium.android'))
+
+  def testMultipleShardValuesFromQueryNotAutoshardedSuggestedDecrease(self):
+    self._mock_check_output.return_value = json.dumps([
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.android',
+            waterfall_builder_name='android-12-x64-rel',
+            try_builder='android-12-x64-rel',
+            test_suite='webview_instrumentation_test_apk',
+            optimal_shard_count=10,
+            shard_count=20,
+            most_used_shard_count=10,
+        ),
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.android',
+            waterfall_builder_name='android-12-x64-rel',
+            try_builder='android-12-x64-rel',
+            test_suite='webview_instrumentation_test_apk',
+            optimal_shard_count=9,
+            shard_count=10,
+            most_used_shard_count=10,
+        ),
+    ])
+    existing_output_file_data = json.dumps({
+        'chromium.linux': {
+            'Linux Tests': {
+                'browser_tests': {
+                    'shards': 10,
+                }
+            }
+        }
+    })
+    with open(self.output_file, 'w') as f:
+      f.write(existing_output_file_data)
+    query_optimal_shard_counts.main(['--output-file', self.output_file])
+    with open(self.output_file, 'r') as f:
+      script_result = json.load(f)
+
+    self.assertIsNone(script_result.get('chromium.android'))
+
+  def testMultipleShardValuesFromQueryNotAutoshardedIncrease(self):
+    self._mock_check_output.return_value = json.dumps([
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.android',
+            waterfall_builder_name='android-12-x64-rel',
+            try_builder='android-12-x64-rel',
+            test_suite='webview_instrumentation_test_apk',
+            optimal_shard_count=10,
+            shard_count=20,
+            most_used_shard_count=10,
+        ),
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.android',
+            waterfall_builder_name='android-12-x64-rel',
+            try_builder='android-12-x64-rel',
+            test_suite='webview_instrumentation_test_apk',
+            optimal_shard_count=11,
+            shard_count=10,
+            most_used_shard_count=10,
+        ),
+    ])
+    existing_output_file_data = json.dumps({
+        'chromium.linux': {
+            'Linux Tests': {
+                'browser_tests': {
+                    'shards': 10,
+                }
+            }
+        }
+    })
+    with open(self.output_file, 'w') as f:
+      f.write(existing_output_file_data)
+    query_optimal_shard_counts.main(['--output-file', self.output_file])
+    with open(self.output_file, 'r') as f:
+      script_result = json.load(f)
+
+    self.assertEqual(
+        script_result['chromium.android']['android-12-x64-rel']
+        ['webview_instrumentation_test_apk'],
+        {'shards': 11},
+    )
 
 
 if __name__ == '__main__':

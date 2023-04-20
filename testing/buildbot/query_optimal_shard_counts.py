@@ -181,9 +181,26 @@ QUERY = """
         try_builder,
         shard_count
       HAVING
-        percentile_duration_minutes > {desired_runtime_min}
+        # Filters out suites that obviously don't need to be sharded more
+        # and prevents optimal_shard_count from being 0, causing a division
+        # by 0 error.
+        percentile_duration_minutes > 5
         AND sample_size > {min_sample_size}
       ORDER BY sample_size DESC, percentile_duration_minutes DESC
+    ),
+    # If a suite had its shards updated within the past lookback_days, there
+    # will be multiple rows for multiple shard counts. To be able to know which
+    # one to use, we'll attach a "most_used_shard_count" to indicate what
+    # shard_count is currently being used (a best guess).
+    most_used_shard_counts AS (
+        SELECT
+        ARRAY_AGG(
+          shard_count ORDER BY sample_size DESC)[OFFSET(0)]
+          AS most_used_shard_count,
+        test_suite,
+        try_builder
+      FROM long_poles
+      GROUP BY test_suite, try_builder
     ),
     # Using the percentile and estimated test overhead durations from the
     # long_poles query above, calculate the optimal shard_count per suite and
@@ -207,7 +224,8 @@ QUERY = """
     # Return optimal_shard_counts with a simulated shard duration and estimated
     # bot hour cost.
     SELECT
-      *,
+      o.*,
+      m.most_used_shard_count,
       ROUND(
         percentile_duration_minutes * shard_count / optimal_shard_count, 2)
         AS simulated_max_shard_duration,
@@ -217,7 +235,10 @@ QUERY = """
         60 * avg_num_builds_per_peak_hour,
         2) estimated_bot_hour_cost
     FROM
-      optimal_shard_counts
+      optimal_shard_counts o
+      INNER JOIN most_used_shard_counts m
+      ON o.try_builder = m.try_builder AND
+      o.test_suite = m.test_suite
 """
 
 _BQ_SETUP_INSTRUCTION = """
@@ -299,9 +320,12 @@ def main(args):
                       default=15,
                       type=int,
                       help=('The desired max runtime minutes that all test '
-                            'suites should run at. Note that this is not the '
-                            'total shard duration, but the max shard runtime '
-                            'among all the shards for one triggered suite.'))
+                            'suites should run at, with a minimum of 5 '
+                            'minutes (query is set to filter for suites that '
+                            'take at least 5 minutes long. Note that this is '
+                            'not the total shard duration, but the max shard '
+                            'runtime among all the shards for one triggered '
+                            'suite.'))
   parser.add_argument('--percentile',
                       '-p',
                       default=80,
@@ -323,6 +347,9 @@ def main(args):
                       help=('Output more info like max shard duration, '
                             'overheads, estimated bot_cost, and more.'))
   opts = parser.parse_args(args)
+
+  if opts.desired_runtime < 5:
+    parser.error('Minimum --desired-runtime is 5 minutes.')
 
   if opts.lookback_start_date and opts.lookback_end_date:
     lookback_start_date = opts.lookback_start_date
@@ -355,8 +382,56 @@ def main(args):
   for r in results:
     builder_group = r['waterfall_builder_group']
     builder_name = r['waterfall_builder_name']
+    test_suite = r['test_suite']
+
+    current_autoshard_val = data.get(builder_group,
+                                     {}).get(builder_name,
+                                             {}).get(test_suite,
+                                                     {}).get('shards')
+
+    # No autosharding needed.
+    if int(r['optimal_shard_count']) == int(r['shard_count']):
+      continue
+
+    # Shard values may have changed over the lookback period, so the query
+    # results could have multiple rows for each builder+test_suite. Logic below
+    # skips the rows that are for outdated shard counts.
+
+    # First check if this suite has been autosharded before
+    # If it has been autosharded before, we should only look at the row
+    # containing a matching 'shard_count' with the current autoshard value.
+    if current_autoshard_val:
+      # If this row does not match, skip it. This row is for an old shard count
+      # that is no longer being used.
+      if int(current_autoshard_val) != int(r['shard_count']):
+        continue
+    else:
+      # If a suite is not already being auosharded, we don't know what shard
+      # it's actually using at this time if the shard count has been updated
+      # within the past lookback_days. So our best guess for which shard count
+      # is being used is 'most_usd_shard_count'.
+      # So, if it doesn't match, skip this row, which is for an old shard count
+      # that is no longer being used.
+      if int(r['shard_count']) != int(r['most_used_shard_count']):
+        continue
+
+      # Query suggests we should decrease shard count
+      if int(r['optimal_shard_count']) < int(r['shard_count']):
+        # Only use lower shard count value if the suite was previously
+        # autosharded.
+        # This is because the suite could have been previously autosharded with
+        # more shards due to a test regression. If the regression is fixed, that
+        # suite should have those extra shards removed.
+        # There's many existing suites that already run pretty fast from
+        # previous manual shardings. Those technically can have fewer shards as
+        # well, but let's leave those alone until we have a good reason to
+        # change a bunch of suites at once.
+        if not data.get(builder_group, {}).get(builder_name, {}).get(
+            test_suite, {}):
+          continue
+
     shard_dict = {
-        r['test_suite']: {
+        test_suite: {
             'shards': r['optimal_shard_count'],
         },
     }
