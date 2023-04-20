@@ -4512,9 +4512,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.TouchToFill.CreditCard.AutofillUsedAfterTouchToFillDismissal"
-    enum="Boolean" expires_after="2023-06-01">
-  <owner>atsvirhckova@google.com</owner>
-  <owner>izuzic@google.com</owner>
+    enum="Boolean" expires_after="2023-09-03">
+  <owner>mlerman@google.com</owner>
+  <owner>tchudakov@google.com</owner>
+  <owner>vykochko@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
     Records whether a user has still used autofill after dismissing the payments
@@ -4529,9 +4530,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.TouchToFill.CreditCard.FillingCorrectness"
-    enum="BooleanAutofillFillingCorrectness" expires_after="2023-06-01">
-  <owner>atsvirhckova@google.com</owner>
-  <owner>izuzic@google.com</owner>
+    enum="BooleanAutofillFillingCorrectness" expires_after="2023-09-03">
+  <owner>mlerman@google.com</owner>
+  <owner>tchudakov@google.com</owner>
+  <owner>vykochko@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
     For the Payments bottom sheet (Touch To Fill for credit cards), tracks
@@ -4541,9 +4543,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.TouchToFill.CreditCard.NumberOfCardsShown"
-    units="cards" expires_after="2023-06-01">
-  <owner>atsvirhckova@google.com</owner>
-  <owner>izuzic@google.com</owner>
+    units="cards" expires_after="2023-09-03">
+  <owner>mlerman@google.com</owner>
+  <owner>tchudakov@google.com</owner>
+  <owner>vykochko@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
     The number of credit cards shown in the Touch To Fill bottom sheet. Recorded
@@ -4553,8 +4556,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.TouchToFill.CreditCard.Outcome"
     enum="TouchToFill.CreditCard.Outcome" expires_after="2023-09-03">
-  <owner>atsvirhckova@google.com</owner>
-  <owner>izuzic@google.com</owner>
+  <owner>mlerman@google.com</owner>
+  <owner>tchudakov@google.com</owner>
+  <owner>vykochko@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
     Records the outcome with which the bottom sheet was closed: credit card
@@ -4573,8 +4577,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.TouchToFill.CreditCard.Outcome2"
     enum="TouchToFill.CreditCard.Outcome" expires_after="2023-09-03">
-  <owner>atsvirhckova@google.com</owner>
-  <owner>izuzic@google.com</owner>
+  <owner>mlerman@google.com</owner>
+  <owner>tchudakov@google.com</owner>
+  <owner>vykochko@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
     Records the outcome with which the bottom sheet was closed: credit card
@@ -4593,8 +4598,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.TouchToFill.CreditCard.PerfectFilling" enum="Boolean"
     expires_after="2023-09-03">
-  <owner>atsvirhckova@google.com</owner>
-  <owner>izuzic@google.com</owner>
+  <owner>mlerman@google.com</owner>
+  <owner>tchudakov@google.com</owner>
+  <owner>vykochko@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
     For the Payments bottom sheet (Touch To Fill for credit cards), logs at
@@ -4606,8 +4612,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.TouchToFill.CreditCard.SelectedIndex" units="index"
     expires_after="2023-09-10">
-  <owner>atsvirhckova@google.com</owner>
-  <owner>izuzic@google.com</owner>
+  <owner>mlerman@google.com</owner>
+  <owner>tchudakov@google.com</owner>
+  <owner>vykochko@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
     The index of the selected credit card in the Touch To Fill bottom sheet.
@@ -4617,8 +4624,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.TouchToFill.CreditCard.TriggerOutcome"
     enum="TouchToFill.CreditCard.TriggerOutcome" expires_after="2023-09-03">
-  <owner>atsvirhckova@google.com</owner>
-  <owner>izuzic@google.com</owner>
+  <owner>mlerman@google.com</owner>
+  <owner>tchudakov@google.com</owner>
+  <owner>vykochko@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
     Records the outcome of the attempt to trigger Touch To Fill for credit
