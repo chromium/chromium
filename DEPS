@@ -2003,7 +2003,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'dJyUqfqyJL-_UAlVOiOzadRkT0h68afA1HBMI5fG3_8C',
+        'version': 'WytduDTAhoJcKc5AqcQwatdElDaxkYs10xj82DSjKR4C',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
