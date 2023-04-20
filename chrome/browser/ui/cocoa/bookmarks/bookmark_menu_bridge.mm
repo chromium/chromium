@@ -353,7 +353,7 @@ void BookmarkMenuBridge::OnProfileWillBeDestroyed() {
   bookmark_nodes_.clear();
 }
 
-base::GUID BookmarkMenuBridge::TagToGUID(int64_t tag) const {
+base::Uuid BookmarkMenuBridge::TagToGUID(int64_t tag) const {
   const auto& it = tag_to_guid_.find(tag);
-  return it == tag_to_guid_.end() ? base::GUID() : it->second;
+  return it == tag_to_guid_.end() ? base::Uuid() : it->second;
 }

@@ -6,10 +6,10 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/guid.h"
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/uuid.h"
 #import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "chrome/browser/chrome_browser_application_mac.h"
@@ -35,14 +35,14 @@ using bookmarks::BookmarkNode;
 @end
 
 @implementation BookmarkNodeAppleScript {
-  base::GUID _bookmarkGUID;
+  base::Uuid _bookmarkGUID;
 }
 
 @synthesize tempTitle = _tempTitle;
 
 - (instancetype)init {
   if ((self = [super init])) {
-    _bookmarkGUID = base::GUID::GenerateRandomV4();
+    _bookmarkGUID = base::Uuid::GenerateRandomV4();
     self.uniqueID = [NSString
         stringWithFormat:@"%s", _bookmarkGUID.AsLowercaseString().c_str()];
     self.tempTitle = @"";
@@ -69,7 +69,7 @@ using bookmarks::BookmarkNode;
   [super dealloc];
 }
 
-- (base::GUID)bookmarkGUID {
+- (base::Uuid)bookmarkGUID {
   return _bookmarkGUID;
 }
 

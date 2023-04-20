@@ -107,7 +107,7 @@ class BookmarkMenuBridge : public bookmarks::BookmarkModelObserver {
 
   // Returns the GUID of the BookmarkNode for |tag|. If |tag| is not the tag of
   // an NSMenuItem in this menu, returns the invalid GUID.
-  base::GUID TagToGUID(int64_t tag) const;
+  base::Uuid TagToGUID(int64_t tag) const;
 
  private:
   friend class BookmarkMenuBridgeTest;
@@ -179,7 +179,7 @@ class BookmarkMenuBridge : public bookmarks::BookmarkModelObserver {
 
   // Tags are NSIntegers, so they're not necessarily large enough to hold a
   // GUID. Instead, map the tags to the corresponding GUIDs.
-  std::map<int64_t, base::GUID> tag_to_guid_;
+  std::map<int64_t, base::Uuid> tag_to_guid_;
 
   base::ScopedObservation<bookmarks::BookmarkModel,
                           bookmarks::BookmarkModelObserver>

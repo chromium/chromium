@@ -64,7 +64,7 @@ class BookmarkRestorer : public bookmarks::BookmarkModelObserver {
  public:
   BookmarkRestorer(Profile* profile,
                    WindowOpenDisposition disposition,
-                   base::GUID guid);
+                   base::Uuid guid);
   ~BookmarkRestorer() override = default;
 
   // bookmarks::BookmarkModelObserver:
@@ -99,12 +99,12 @@ class BookmarkRestorer : public bookmarks::BookmarkModelObserver {
       this};
   raw_ptr<Profile> profile_;
   WindowOpenDisposition disposition_;
-  base::GUID guid_;
+  base::Uuid guid_;
 };
 
 BookmarkRestorer::BookmarkRestorer(Profile* profile,
                                    WindowOpenDisposition disposition,
-                                   base::GUID guid)
+                                   base::Uuid guid)
     : profile_(profile), disposition_(disposition), guid_(guid) {
   observation_.Observe(BookmarkModelFactory::GetForBrowserContext(profile));
 }
@@ -126,7 +126,7 @@ void BookmarkRestorer::BookmarkModelLoaded(BookmarkModel* model,
 // Open the URL of the given BookmarkNode in the current tab. Waits for
 // BookmarkModelLoaded() if needed (e.g. for a freshly-loaded profile).
 void OpenBookmarkByGUID(WindowOpenDisposition disposition,
-                        base::GUID guid,
+                        base::Uuid guid,
                         Profile* profile) {
   if (!profile)
     return;  // Failed to load profile, ignore.
@@ -183,7 +183,7 @@ void OpenBookmarkByGUID(WindowOpenDisposition disposition,
   if (!profile)
     return;  // Unfortunately, we can't update a menu with a dead profile.
   const auto* model = BookmarkModelFactory::GetForBrowserContext(profile);
-  base::GUID guid = _bridge->TagToGUID([item tag]);
+  base::Uuid guid = _bridge->TagToGUID([item tag]);
   const auto* node = bookmarks::GetBookmarkNodeByUuid(model, guid);
   _bridge->UpdateMenu(menu, node, /*recurse=*/false);
 }
@@ -199,7 +199,7 @@ void OpenBookmarkByGUID(WindowOpenDisposition disposition,
 
 // Open the URL of the given BookmarkNode in the current tab. If the Profile
 // is not loaded in memory, load it first.
-- (void)openURLForGUID:(base::GUID)guid {
+- (void)openURLForGUID:(base::Uuid)guid {
   WindowOpenDisposition disposition =
       ui::WindowOpenDispositionFromNSEvent([NSApp currentEvent]);
   if (Profile* profile = _bridge->GetProfile()) {
@@ -217,13 +217,13 @@ void OpenBookmarkByGUID(WindowOpenDisposition disposition,
 
 // Return the GUID of the BookmarkNode that has the given id (called
 // "identifier" here to avoid conflict with objc's concept of "id").
-- (base::GUID)guidForIdentifier:(int)identifier {
+- (base::Uuid)guidForIdentifier:(int)identifier {
   return _bridge->TagToGUID(identifier);
 }
 
 - (IBAction)openBookmarkMenuItem:(id)sender {
   NSInteger tag = [sender tag];
-  base::GUID guid = [self guidForIdentifier:tag];
+  base::Uuid guid = [self guidForIdentifier:tag];
   [self openURLForGUID:std::move(guid)];
 }
 
