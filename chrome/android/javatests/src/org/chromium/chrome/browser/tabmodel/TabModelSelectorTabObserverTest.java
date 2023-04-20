@@ -15,6 +15,7 @@ import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -72,6 +73,7 @@ public class TabModelSelectorTabObserverTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1435130")
     public void testPreExistingTabs() {
         Tab normalTab1 = createTestTab(false);
         addTab(sTestRule.getNormalTabModel(), normalTab1);
@@ -92,6 +94,7 @@ public class TabModelSelectorTabObserverTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1435130")
     public void testDestroyRemovesObserver() {
         Tab normalTab1 = createTestTab(false);
         addTab(sTestRule.getNormalTabModel(), normalTab1);
