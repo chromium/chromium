@@ -1570,8 +1570,6 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithKioskUser) {
   user_manager->UserLoggedIn(public_account_id, user->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);
-  user_manager->AddReportingUser(
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
 
   EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
   EXPECT_FALSE(status_collector_->IsReportingUsers());
@@ -1601,8 +1599,6 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithAffiliatedUser) {
   user_manager->UserLoggedIn(account_id0, user->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);
-  user_manager->AddReportingUser(
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
 
   EXPECT_TRUE(status_collector_->IsReportingActivityTimes());
   EXPECT_TRUE(status_collector_->IsReportingUsers());
@@ -1846,11 +1842,6 @@ TEST_F(DeviceStatusCollectorTest, ReportUsers) {
   user_manager->UserLoggedIn(account_id5, user5->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);
-  user_manager->AddReportingUser(account_id0);
-  user_manager->AddReportingUser(account_id1);
-  user_manager->AddReportingUser(account_id2);
-  user_manager->AddReportingUser(account_id4);
-  user_manager->AddReportingUser(account_id5);
 
   // Verify that users are reported by default.
   GetStatus();

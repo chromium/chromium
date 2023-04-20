@@ -176,6 +176,9 @@ class FakeChromeUserManager : public ChromeUserManager {
   bool IsFullManagementDisclosureNeeded(
       policy::DeviceLocalAccountPolicyBroker* broker) const override;
 
+  void SetUserAffiliationForTesting(const AccountId& account_id,
+                                    bool is_affliated);
+
   void set_ephemeral_mode_config(EphemeralModeConfig ephemeral_mode_config) {
     fake_ephemeral_mode_config_ = std::move(ephemeral_mode_config);
   }

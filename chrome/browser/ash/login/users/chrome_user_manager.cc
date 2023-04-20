@@ -24,18 +24,13 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace ash {
-namespace {
-
-std::string FullyCanonicalize(const std::string& email) {
-  return gaia::CanonicalizeEmail(gaia::SanitizeEmail(email));
-}
-
-}  // namespace
 
 ChromeUserManager::ChromeUserManager(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : UserManagerBase(
           std::move(task_runner),
+          g_browser_process ? g_browser_process->local_state() : nullptr),
+      reporting_user_tracker_(
           g_browser_process ? g_browser_process->local_state() : nullptr) {}
 
 ChromeUserManager::~ChromeUserManager() = default;
@@ -140,29 +135,7 @@ ChromeUserManager* ChromeUserManager::Get() {
 }
 
 bool ChromeUserManager::ShouldReportUser(const std::string& user_id) const {
-  const base::Value::List& reporting_users =
-      GetLocalState()->GetList(::prefs::kReportingUsers);
-  base::Value user_id_value(FullyCanonicalize(user_id));
-  return base::Contains(reporting_users, user_id_value);
-}
-
-void ChromeUserManager::AddReportingUser(const AccountId& account_id) {
-  ScopedListPrefUpdate users_update(GetLocalState(), ::prefs::kReportingUsers);
-  base::Value email_value(account_id.GetUserEmail());
-  if (!base::Contains(users_update.Get(), email_value)) {
-    users_update->Append(std::move(email_value));
-  }
-}
-
-void ChromeUserManager::RemoveReportingUser(const AccountId& account_id) {
-  ScopedListPrefUpdate users_update(GetLocalState(), ::prefs::kReportingUsers);
-  base::Value::List& update_list = users_update.Get();
-  auto it = base::ranges::find(
-      update_list, base::Value(FullyCanonicalize(account_id.GetUserEmail())));
-  if (it == update_list.end()) {
-    return;
-  }
-  update_list.erase(it);
+  return reporting_user_tracker_.ShouldReportUser(user_id);
 }
 
 }  // namespace ash

@@ -10,12 +10,17 @@
 #include "chrome/browser/ash/login/users/affiliation.h"
 #include "chrome/browser/ash/login/users/user_manager_interface.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
+#include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager_base.h"
 
 class PrefRegistrySimple;
+
+namespace policy {
+class ReportingUserTrackerTest;
+}  // namespace policy
 
 namespace ash {
 
@@ -46,24 +51,18 @@ class ChromeUserManager : public user_manager::UserManagerBase,
   // yet initialized.
   static ChromeUserManager* Get();
 
+  // TODO(b/278643115): Consider to move following methods out from
+  // ChromeUserManager to a dedicated place.
+
   // Sets affiliation status for the user identified with `account_id`
   // judging by `user_affiliation_ids` and device affiliation IDs.
   virtual void SetUserAffiliation(
       const AccountId& account_id,
       const AffiliationIDSet& user_affiliation_ids) = 0;
 
-  // TODO(crbug.com/1411338): Consider to move following methods out from
-  // ChromeUserManager to a dedicated place.
-
   // Return whether the given user should be reported (see
   // policy::DeviceStatusCollector).
   bool ShouldReportUser(const std::string& user_id) const;
-
-  // Adds user to the list of the users who should be reported.
-  void AddReportingUser(const AccountId& account_id);
-
-  // Removes user from the list of the users who should be reported.
-  void RemoveReportingUser(const AccountId& account_id);
 
   // Checks whether full management disclosure is needed for the public/managed
   // session login screen UI. Full disclosure is needed if the session is
@@ -71,6 +70,11 @@ class ChromeUserManager : public user_manager::UserManagerBase,
   // through the policies.
   virtual bool IsFullManagementDisclosureNeeded(
       policy::DeviceLocalAccountPolicyBroker* broker) const = 0;
+
+ protected:
+  // TODO(b/267685577): Move this out to DeviceCloudPolicyManagerAsh.
+  friend policy::ReportingUserTrackerTest;
+  policy::ReportingUserTracker reporting_user_tracker_;
 
  private:
   LoginState::LoggedInUserType GetLoggedInUserType(

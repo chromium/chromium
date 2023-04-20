@@ -131,6 +131,9 @@ FakeChromeUserManager::AddUserWithAffiliationAndTypeAndProfile(
   if (profile) {
     ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
   }
+
+  reporting_user_tracker_.OnSetUserAffiliation(*user);
+
   return user;
 }
 
@@ -291,6 +294,11 @@ void FakeChromeUserManager::OnSessionStarted() {}
 
 void FakeChromeUserManager::RemoveUser(const AccountId& account_id,
                                        user_manager::UserRemovalReason reason) {
+  // TODO(b/278643115): Unify the implementation with the real one.
+  NotifyUserToBeRemoved(account_id);
+  RemoveUserFromList(account_id);
+  reporting_user_tracker_.OnUserRemoved(account_id);
+  NotifyUserRemoved(account_id, reason);
 }
 
 void FakeChromeUserManager::RemoveUserFromList(const AccountId& account_id) {
@@ -718,6 +726,17 @@ void FakeChromeUserManager::OnUserRemoved(const AccountId& account_id) {
 void FakeChromeUserManager::SetUserAffiliation(
     const AccountId& account_id,
     const AffiliationIDSet& user_affiliation_ids) {}
+
+void FakeChromeUserManager::SetUserAffiliationForTesting(
+    const AccountId& account_id,
+    bool is_affiliated) {
+  auto* user = FindUserAndModify(account_id);
+  if (!user) {
+    return;
+  }
+  user->SetAffiliation(is_affiliated);
+  reporting_user_tracker_.OnSetUserAffiliation(*user);
+}
 
 bool FakeChromeUserManager::IsFullManagementDisclosureNeeded(
     policy::DeviceLocalAccountPolicyBroker* broker) const {
