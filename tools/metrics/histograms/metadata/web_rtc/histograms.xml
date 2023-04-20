@@ -1766,23 +1766,31 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.ReceivedAudioTrackDuration" units="ms"
-    expires_after="2023-04-02">
-  <owner>perkj@chromium.org</owner>
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
+  <owner>handellm@chromium.org</owner>
+  <owner>hta@chromium.org</owner>
   <summary>
     Durations of audio tracks received over a PeerConnection. The stopwatch
     starts when the track first becomes connected, and ends when it is
-    disconnected or very soon thereafter.
+    disconnected or very soon thereafter. Warning: this histogram was expired
+    between 2023-04-02 to 2023-04-19; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="WebRTC.ReceivedVideoTrackDuration" units="ms"
-    expires_after="2023-04-02">
-  <owner>perkj@chromium.org</owner>
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
+  <owner>handellm@chromium.org</owner>
+  <owner>hta@chromium.org</owner>
   <summary>
     Durations of video tracks received over a PeerConnection. The stopwatch
     starts when the track first becomes connected, and ends when it is
     disconnected or very soon thereafter. Warning: this histogram was expired
-    from 2022-11-27 to 2022-12-10; data may be missing.
+    from 2022-11-27 to 2022-12-10 and from 2023-04-02 to 2023-04-19; data may be
+    missing.
   </summary>
 </histogram>
 
@@ -1918,8 +1926,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.SentAudioTrackDuration" units="ms"
-    expires_after="2023-08-20">
-  <owner>perkj@chromium.org</owner>
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
+  <owner>handellm@chromium.org</owner>
+  <owner>hta@chromium.org</owner>
   <summary>
     Durations of audio tracks sent over a PeerConnection. The stopwatch starts
     when the track first becomes connected, and ends when it is disconnected or
@@ -1928,8 +1939,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.SentVideoTrackDuration" units="ms"
-    expires_after="2023-10-08">
-  <owner>perkj@chromium.org</owner>
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
+  <owner>handellm@chromium.org</owner>
+  <owner>hta@chromium.org</owner>
   <summary>
     Durations of video tracks sent over a PeerConnection. The stopwatch starts
     when the track first becomes connected, and ends when it is disconnected or
