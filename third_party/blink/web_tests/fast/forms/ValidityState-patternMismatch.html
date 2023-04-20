@@ -1,23 +1,18 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
-<html>
-<head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<!DOCTYPE html>
 <script src="../../resources/js-test.js"></script>
-</head>
-<body>
 <p id="description"></p>
 <div id="console"></div>
 <div id=container>
 <input id="simple" pattern="[0-9][A-Z]{3}" value="0AAA"
-/><input id="no-pattern-and-no-value" 
-/><input id="ip-address" type="text" pattern="\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b" value="127.0.0.1" 
-/><input id="email-address" type="text" pattern="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?" value="someone@somewhere.com" 
-/><input id="wrong-email-address" type="text" pattern="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?" value="Wrong!"
-/><input id="match-1" type="text" pattern="\b(word1|word2|word3)(?:\W+\w+){1,6}?\W+(word1|word2|word3)\b" value="word1 near word2" 
-/><input id="match-2" type="text" pattern=".{5,}" value="12345" 
-/><input id="match-3" type="text" pattern=".{5,}" value="*(@$!" 
-/><input id="match-4" type="text" pattern=".{5,}" value="*(@^$!" 
-/><input id="match-5" type="text" pattern="0|1|2|3|4|5|6|7|8|" value="3" 
+/><input id="no-pattern-and-no-value"
+/><input id="ip-address" type="text" pattern="\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b" value="127.0.0.1"
+/><input id="email-address" type="text" pattern="[a-z0-9!#$%&'*+\/=?^_`\{\|\}~\-]+(?:\.[a-z0-9!#$%&'*+/=?^_`\{\|\}~\-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?" value="someone@somewhere.com"
+/><input id="wrong-email-address" type="text" pattern="[a-z0-9!#$%&'*+\/=?^_`\{\|\}~\-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`\{\|\}~\-]+)*@(?:[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?" value="Wrong!"
+/><input id="match-1" type="text" pattern="\b(word1|word2|word3)(?:\W+\w+){1,6}?\W+(word1|word2|word3)\b" value="word1 near word2"
+/><input id="match-2" type="text" pattern=".{5,}" value="12345"
+/><input id="match-3" type="text" pattern=".{5,}" value="*(@$!"
+/><input id="match-4" type="text" pattern=".{5,}" value="*(@^$!"
+/><input id="match-5" type="text" pattern="0|1|2|3|4|5|6|7|8|" value="3"
 /><input id="match-6" type="text" pattern="^(foo).*" value="foo"
 /><input id="match-7" type="text" pattern="^(foo).*" value="fooo"
 /><input id="match-8" type="text" pattern="\w" value="f"
@@ -41,10 +36,10 @@
 /><input id="mismatch-1" type="text" pattern="((4\.[0-3])|(2\.[0-3]))" value="Something 4.0"
 /><input id="mismatch-2" type="text" pattern="\w" value="*"
 /><input id="mismatch-3" type="email" pattern="[0-9]" value="something"
-/><input id="mismatch-4" type="text" pattern=".{5,}" value="1234" 
-/><input id="mismatch-5" type="text" pattern=".{5,}" value="*)$!" 
-/><input id="mismatch-6" type="text" pattern=".{5,}" value="(^$!" 
-/><input id="mismatch-7" type="text" pattern="0|1|2|3|4|5|6|7|8|" value="a" 
+/><input id="mismatch-4" type="text" pattern=".{5,}" value="1234"
+/><input id="mismatch-5" type="text" pattern=".{5,}" value="*)$!"
+/><input id="mismatch-6" type="text" pattern=".{5,}" value="(^$!"
+/><input id="mismatch-7" type="text" pattern="0|1|2|3|4|5|6|7|8|" value="a"
 /><input id="mismatch-8" type="text" pattern="^(foo).*" value="a foo"
 /><input id="mismatch-9" type="text" pattern="\w" value="134"
 /><input id="mismatch-10" type="text" pattern="\." value="\."
@@ -72,6 +67,7 @@
 
 <input id="unicode-invalid-01" pattern="\@" value="a">
 <input id="unicode-invalid-02" pattern="\p" value="o">
+<input id="unicode-invalid-03" pattern="[(]" value="o">
 <input id="unicode-match-01" pattern="." value="&#x1F418;">
 <input id="unicode-match-02" pattern="\u{1f418}" value="&#x1F418;">
 <input id="unicode-match-03" pattern="ele[\u{1f418}]" value="ele&#x1F418;">
@@ -79,7 +75,7 @@
 <input id="unicode-mismatch-01" pattern=".." value="&#x1F418;">
 
 </div>
-<script language="JavaScript" type="text/javascript">
+<script>
 function patternMismatchFor(id) {
     return document.getElementById(id).validity.patternMismatch;
 }
@@ -156,13 +152,12 @@ shouldBeFalse('patternMismatchFor("unicode-invalid-01")');
 // Intentionally check twice.  crbug.com/639324.
 shouldBeFalse('patternMismatchFor("unicode-invalid-02")');
 shouldBeFalse('patternMismatchFor("unicode-invalid-02")');
+shouldBeFalse('patternMismatchFor("unicode-invalid-03")');
 shouldBeFalse('patternMismatchFor("unicode-match-01")');
 shouldBeFalse('patternMismatchFor("unicode-match-02")');
 shouldBeFalse('patternMismatchFor("unicode-match-03")');
 shouldBeFalse('patternMismatchFor("unicode-match-04")');
 shouldBeTrue('patternMismatchFor("unicode-mismatch-01")');
 
-document.body.removeChild(document.getElementById('container'));
+document.getElementById('container').remove();
 </script>
-</body>
-</html>

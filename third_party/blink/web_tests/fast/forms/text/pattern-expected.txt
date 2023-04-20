@@ -1,13 +1,37 @@
-CONSOLE ERROR: Pattern attribute value \p{RGI_Emoji}+ is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /\p{RGI_Emoji}+/u: Invalid property name
-CONSOLE ERROR: Pattern attribute value [\p{ASCII_Hex_Digit}--[Ff]]+ is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[\p{ASCII_Hex_Digit}--[Ff]]+/u: Invalid character class
-CONSOLE ERROR: Pattern attribute value [_\q{a|bc|def}] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[_\q{a|bc|def}]/u: Invalid escape
+CONSOLE ERROR: Pattern attribute value [(] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[(]/v: Invalid character in character class
+CONSOLE ERROR: Pattern attribute value [)] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[)]/v: Invalid character in character class
+CONSOLE ERROR: Pattern attribute value [[] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[[]/v: Unterminated character class
+CONSOLE ERROR: Pattern attribute value [{] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[{]/v: Invalid character in character class
+CONSOLE ERROR: Pattern attribute value [}] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[}]/v: Invalid character in character class
+CONSOLE ERROR: Pattern attribute value [/] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[/]/v: Invalid character in character class
+CONSOLE ERROR: Pattern attribute value [-] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[-]/v: Invalid character in character class
+CONSOLE ERROR: Pattern attribute value [|] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[|]/v: Invalid character in character class
+CONSOLE ERROR: Pattern attribute value [&&] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[&&]/v: Invalid set operation in character class
+CONSOLE ERROR: Pattern attribute value [!!] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[!!]/v: Invalid set operation in character class
+CONSOLE ERROR: Pattern attribute value [##] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[##]/v: Invalid set operation in character class
+CONSOLE ERROR: Pattern attribute value [$$] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[$$]/v: Invalid set operation in character class
+CONSOLE ERROR: Pattern attribute value [%%] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[%%]/v: Invalid set operation in character class
+CONSOLE ERROR: Pattern attribute value [**] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[**]/v: Invalid set operation in character class
+CONSOLE ERROR: Pattern attribute value [++] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[++]/v: Invalid set operation in character class
+CONSOLE ERROR: Pattern attribute value [,,] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[,,]/v: Invalid set operation in character class
+CONSOLE ERROR: Pattern attribute value [..] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[..]/v: Invalid set operation in character class
+CONSOLE ERROR: Pattern attribute value [::] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[::]/v: Invalid set operation in character class
+CONSOLE ERROR: Pattern attribute value [;;] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[;;]/v: Invalid set operation in character class
+CONSOLE ERROR: Pattern attribute value [<<] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[<<]/v: Invalid set operation in character class
+CONSOLE ERROR: Pattern attribute value [==] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[==]/v: Invalid set operation in character class
+CONSOLE ERROR: Pattern attribute value [>>] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[>>]/v: Invalid set operation in character class
+CONSOLE ERROR: Pattern attribute value [??] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[??]/v: Invalid set operation in character class
+CONSOLE ERROR: Pattern attribute value [@@] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[@@]/v: Invalid set operation in character class
+CONSOLE ERROR: Pattern attribute value [``] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[``]/v: Invalid set operation in character class
+CONSOLE ERROR: Pattern attribute value [~~] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[~~]/v: Invalid set operation in character class
+CONSOLE ERROR: Pattern attribute value [_^^] is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[_^^]/v: Invalid set operation in character class
 This is a testharness.js-based test.
 PASS basic <input pattern> support
 PASS <input pattern> is Unicode code point-aware
 PASS <input pattern> supports Unicode property escape syntax
 PASS <input pattern> supports Unicode property escape syntax for properties of strings
-FAIL <input pattern> supports set difference syntax assert_false: expected false got true
-FAIL <input pattern> supports string literal syntax assert_false: expected false got true
-FAIL <input pattern> enables the RegExp v flag assert_true: <input pattern="[(]" value="foo"> should be valid expected true got false
+PASS <input pattern> supports set difference syntax
+PASS <input pattern> supports string literal syntax
+PASS <input pattern> enables the RegExp v flag
 Harness: the test ran to completion.
 

@@ -1915,7 +1915,8 @@
     },
     {
       // TODO(crbug.com/1412729): Enables the `v` flag for `pattern` RegExps.
-      name: "HTMLPatternRegExpUnicodeSets"
+      name: "HTMLPatternRegExpUnicodeSets",
+      status: "experimental",
     },
     {
       // TODO(crbug.com/1307772): Enables the Popover API.
