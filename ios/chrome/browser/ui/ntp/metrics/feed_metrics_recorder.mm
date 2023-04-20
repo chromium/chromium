@@ -799,15 +799,25 @@ using feed::FeedUserActionType;
   base::UmaHistogramEnumeration(kFeedSignInUI, type);
   switch (type) {
     case feed::FeedSignInUI::kShowSyncHalfSheet:
-      base::RecordAction(base::UserMetricsAction(kShowSyncHalfSheetFromFeed));
-      break;
+      return base::RecordAction(
+          base::UserMetricsAction(kShowSyncHalfSheetFromFeed));
     case feed::FeedSignInUI::kShowSignInOnlyFlow:
-      base::RecordAction(base::UserMetricsAction(kShowSignInOnlyFlowFromFeed));
-      break;
+      return base::RecordAction(
+          base::UserMetricsAction(kShowSignInOnlyFlowFromFeed));
     case feed::FeedSignInUI::kShowSignInDisableToast:
-      base::RecordAction(
+      return base::RecordAction(
           base::UserMetricsAction(kShowSignInDisableToastFromFeed));
-      break;
+  }
+}
+
+- (void)recordShowSyncnRelatedUIWithType:(feed::FeedSyncPromo)type {
+  base::UmaHistogramEnumeration(kFeedSyncPromo, type);
+  switch (type) {
+    case feed::FeedSyncPromo::kShowSyncFlow:
+      return base::RecordAction(base::UserMetricsAction(kShowSyncFlowFromFeed));
+    case feed::FeedSyncPromo::kShowDisableToast:
+      return base::RecordAction(
+          base::UserMetricsAction(kShowDisableToastFromFeed));
   }
 }
 

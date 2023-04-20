@@ -993,6 +993,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.FeedSyncPromo" enum="FeedSyncPromo"
+    expires_after="2023-10-10">
+  <owner>sczs@chromium.org</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Recorded when a user interacts with a Sync Promo inside the Feed, e.g.:
+    accepting the bottom sync promo, or closing the top Sync promos. iOS only.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.ImageFetchStatus"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-09-03">
   <owner>harringtond@chromium.org</owner>

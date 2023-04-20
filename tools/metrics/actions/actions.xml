@@ -7054,6 +7054,25 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContentSuggestions.Feed.Sync.ShowDisableToastFromFeed">
+  <owner>sczs@google.com</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user clicks the feed sync promo and triggered a service disabled message
+    to be shown.
+  </description>
+</action>
+
+<action name="ContentSuggestions.Feed.Sync.ShowSyncFlowFromFeed">
+  <owner>sczs@google.com</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user clicks the feed sync promo and triggered a sync flow to be shown.
+  </description>
+</action>
+
 <action name="ContentSuggestions.Feed.WebFeed.Selected">
   <owner>adamta@google.com</owner>
   <owner>sczs@chromium.org</owner>

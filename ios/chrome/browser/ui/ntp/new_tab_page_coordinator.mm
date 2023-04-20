@@ -1098,10 +1098,12 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   // Show a snackbar message if sign-in or sync is disabled.
   if (![self isSignInAllowed] || ![self isSyncAllowed]) {
     [self showSignInDisableMessage];
+    [self.feedMetricsRecorder recordShowSyncnRelatedUIWithType:
+                                  feed::FeedSyncPromo::kShowDisableToast];
     return;
   }
 
-  // Show sign-in and sync page for feed bottom sync promo.
+  // Show sync flow.
   const signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO;
   id<ApplicationCommands> handler = HandlerForProtocol(
@@ -1111,6 +1113,8 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
             accessPoint:access_point];
   signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
   [handler showSignin:command baseViewController:self.NTPViewController];
+  [self.feedMetricsRecorder
+      recordShowSyncnRelatedUIWithType:feed::FeedSyncPromo::kShowSyncFlow];
 }
 
 #pragma mark - FeedWrapperViewControllerDelegate

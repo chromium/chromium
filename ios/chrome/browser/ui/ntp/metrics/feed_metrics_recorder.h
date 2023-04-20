@@ -290,6 +290,12 @@ class Time;
 // controls.
 - (void)recordShowSignInRelatedUIWithType:(feed::FeedSignInUI)type;
 
+#pragma mark - Sync Promo
+
+// Record metrics for when a user triggered a sync related UI from Discover
+// feed sync promo entry point.
+- (void)recordShowSyncnRelatedUIWithType:(feed::FeedSyncPromo)type;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_METRICS_FEED_METRICS_RECORDER_H_
