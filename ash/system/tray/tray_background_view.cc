@@ -347,6 +347,10 @@ void TrayBackgroundView::SetRoundedCornerBehavior(
     RoundedCornerBehavior corner_behavior) {
   corner_behavior_ = corner_behavior;
   UpdateBackground();
+
+  // The ink drop doesn't automatically pick up on rounded corner changes, so
+  // we need to manually notify it here.
+  views::InkDrop::Get(this)->GetInkDrop()->HostSizeChanged(size());
 }
 
 gfx::RoundedCornersF TrayBackgroundView::GetRoundedCorners() {
