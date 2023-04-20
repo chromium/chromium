@@ -1327,8 +1327,10 @@ void AutocompleteController::NotifyChanged() {
 
   // `NotifyChanged()` is called a lot, so guard the copies so performance
   // differences between them are also measured.
-  if (DebouncingEnabled())
-    published_result_.CopyFrom(result_);
+  if (DebouncingEnabled()) {
+    published_result_.Swap(&result_);
+    result_.CopyFrom(published_result_);
+  }
 
   last_result_for_logging_ = result_.GetMatchDedupComparators();
 
