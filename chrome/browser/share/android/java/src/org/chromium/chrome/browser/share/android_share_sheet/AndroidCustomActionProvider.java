@@ -164,7 +164,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
     protected void maybeAddWebStyleNotesFirstPartyOption() {}
 
     @Override
-    protected void maybeAddCopyFirstPartyOption() {}
+    protected void maybeAddDownloadImageFirstPartyOption() {}
 
     private FirstPartyOption createShareHighlightTextWithLink() {
         return new FirstPartyOptionBuilder(ContentType.HIGHLIGHTED_TEXT)
