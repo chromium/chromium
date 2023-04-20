@@ -6863,3 +6863,6 @@ crbug.com/1432763 [ Linux ] external/wpt/fetch/metadata/generated/element-pictur
 # Sheriff 2023-04-19
 crbug.com/1434731 http/tests/devtools/elements/styles-4/styles-overriden-properties.js [ Failure Pass ]
 crbug.com/1434731 http/tests/devtools/elements/styles-2/parse-declaration-with-quote.js [ Failure Pass ]
+
+# Sheriff 2023-04-20
+crbug.com/1432703 [ Win10.20h2 ] external/wpt/long-animation-frame/tentative/loaf-blocking-duration.html [ Failure Pass ]
