@@ -5,9 +5,7 @@
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/autofill_address_profile/save_address_profile_infobar_modal_overlay_request_callback_installer.h"
 
 #import "base/check.h"
-#import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/autofill_address_profile/save_address_profile_infobar_modal_interaction_handler.h"
@@ -24,7 +22,6 @@
 using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
 using save_address_profile_infobar_modal_responses::CancelViewAction;
-using save_address_profile_infobar_modal_responses::EditedProfileSaveAction;
 using save_address_profile_infobar_modal_responses::
     LegacyEditedProfileSaveAction;
 using save_address_profile_infobar_modal_responses::NoThanksViewAction;
@@ -52,16 +49,9 @@ void SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAccountProfileStorage)) {
-    EditedProfileSaveAction* info =
-        response->GetInfo<EditedProfileSaveAction>();
-    interaction_handler_->SaveEditedProfile(infobar, info->profile_data());
-  } else {
-    LegacyEditedProfileSaveAction* info =
-        response->GetInfo<LegacyEditedProfileSaveAction>();
-    interaction_handler_->SaveEditedProfile(infobar, info->profile_data());
-  }
+  LegacyEditedProfileSaveAction* info =
+      response->GetInfo<LegacyEditedProfileSaveAction>();
+  interaction_handler_->SaveEditedProfile(infobar, info->profile_data());
 }
 
 void SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
@@ -110,13 +100,6 @@ void SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
   InfobarModalOverlayRequestCallbackInstaller::InstallCallbacksInternal(
       request);
   OverlayCallbackManager* manager = request->GetCallbackManager();
-
-  manager->AddDispatchCallback(OverlayDispatchCallback(
-      base::BindRepeating(
-          &SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller::
-              SaveEditedProfileDetailsCallback,
-          weak_factory_.GetWeakPtr(), request),
-      EditedProfileSaveAction::ResponseSupport()));
 
   manager->AddDispatchCallback(OverlayDispatchCallback(
       base::BindRepeating(

@@ -142,10 +142,6 @@
   self.isCountrySelectorPresented = YES;
 }
 
-- (void)didSaveProfile {
-  NOTREACHED();
-}
-
 #pragma mark - AutofillCountrySelectionTableViewControllerDelegate
 
 - (void)didSelectCountry:(CountryItem*)selectedCountry {

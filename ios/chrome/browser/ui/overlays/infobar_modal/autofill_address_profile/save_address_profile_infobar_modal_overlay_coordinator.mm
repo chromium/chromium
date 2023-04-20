@@ -41,11 +41,8 @@ using autofill_address_profile_infobar_overlays::
     SaveAddressProfileInfobarModalOverlayMediatorDelegate> {
   autofill::AutofillProfile _autofillProfile;
 }
-
 // Redefine ModalConfiguration properties as readwrite.
-@property(nonatomic, strong, readwrite)
-    SaveAddressProfileInfobarModalOverlayMediator* modalMediator;
-
+@property(nonatomic, strong, readwrite) OverlayRequestMediator* modalMediator;
 @property(nonatomic, strong, readwrite) UIViewController* modalViewController;
 
 // Mediator and view controller used to display the edit view.
@@ -167,10 +164,6 @@ using autofill_address_profile_infobar_overlays::
   [self.modalViewController.navigationController
       pushViewController:autofillCountrySelectionTableViewController
                 animated:YES];
-}
-
-- (void)didSaveProfile {
-  [self.modalMediator saveEditedProfileWithProfileData:&_autofillProfile];
 }
 
 #pragma mark - AutofillCountrySelectionTableViewControllerDelegate

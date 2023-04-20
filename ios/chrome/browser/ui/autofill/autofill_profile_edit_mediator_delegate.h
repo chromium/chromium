@@ -22,9 +22,6 @@
                                           countryList:(NSArray<CountryItem*>*)
                                                           allCountries;
 
-// Notifies the class that conforms this delegate to save the profile.
-- (void)didSaveProfile;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_PROFILE_EDIT_MEDIATOR_DELEGATE_H_

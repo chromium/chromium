@@ -20,16 +20,6 @@ LegacyEditedProfileSaveAction::LegacyEditedProfileSaveAction(
 
 LegacyEditedProfileSaveAction::~LegacyEditedProfileSaveAction() = default;
 
-#pragma mark - EditedProfileSaveAction
-
-OVERLAY_USER_DATA_SETUP_IMPL(EditedProfileSaveAction);
-
-EditedProfileSaveAction::EditedProfileSaveAction(
-    autofill::AutofillProfile* profileData)
-    : profile_data_(profileData) {}
-
-EditedProfileSaveAction::~EditedProfileSaveAction() = default;
-
 #pragma mark - CancelViewAction
 
 OVERLAY_USER_DATA_SETUP_IMPL(CancelViewAction);

@@ -115,10 +115,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self sendAutofillProfileDataToConsumer];
 }
 
-- (void)didSaveProfileFromModal {
-  [self.delegate didSaveProfile];
-}
-
 - (BOOL)fieldValueEmptyOnProfileLoadForType:
     (autofill::ServerFieldType)serverFieldType {
   return _autofillProfile

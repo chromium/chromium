@@ -15,7 +15,6 @@ source_set("autofill_address_profile") {
 
   deps = [
     "//base",
-    "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill",
