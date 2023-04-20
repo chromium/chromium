@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "google_apis/common/parser_util.h"
 #include "google_apis/common/time_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace google_apis::tasks {
 namespace {
@@ -25,6 +26,7 @@ using ::base::JSONValueConverter;
 constexpr char kTaskListsKind[] = "tasks#taskLists";
 constexpr char kTasksKind[] = "tasks#tasks";
 
+constexpr char kApiResponseDueKey[] = "due";
 constexpr char kApiResponseParentKey[] = "parent";
 constexpr char kApiResponseStatusKey[] = "status";
 constexpr char kApiResponseTitleKey[] = "title";
@@ -40,6 +42,16 @@ constexpr auto kTaskStatuses =
 bool ConvertTaskStatus(base::StringPiece input, Task::Status* output) {
   *output = kTaskStatuses.contains(input) ? kTaskStatuses.at(input)
                                           : Task::Status::kUnknown;
+  return true;
+}
+
+bool ConvertTaskDueDate(base::StringPiece input,
+                        absl::optional<base::Time>* output) {
+  base::Time due;
+  if (!util::GetTimeFromString(input, &due)) {
+    return false;
+  }
+  *output = due;
   return true;
 }
 
@@ -96,6 +108,8 @@ void Task::RegisterJSONConverter(JSONValueConverter<Task>* converter) {
   converter->RegisterCustomField<Status>(kApiResponseStatusKey, &Task::status_,
                                          &ConvertTaskStatus);
   converter->RegisterStringField(kApiResponseParentKey, &Task::parent_id_);
+  converter->RegisterCustomField<absl::optional<base::Time>>(
+      kApiResponseDueKey, &Task::due_, &ConvertTaskDueDate);
 }
 
 // static

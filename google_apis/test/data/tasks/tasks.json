@@ -10,7 +10,8 @@
     {
       "id": "asd",
       "title": "Parent task",
-      "status": "needsAction"
+      "status": "needsAction",
+      "due": "2023-04-19T00:00:00.000Z"
     }
   ]
 }

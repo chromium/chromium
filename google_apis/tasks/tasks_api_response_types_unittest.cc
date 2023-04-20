@@ -20,6 +20,7 @@ TEST(TasksApiResponseTypesTest, CreatesTaskListsFromResponse) {
   ASSERT_EQ(raw_task_lists->type(), base::Value::Type::DICT);
 
   const auto task_lists = TaskLists::CreateFrom(*raw_task_lists);
+  ASSERT_TRUE(task_lists);
   EXPECT_TRUE(task_lists->next_page_token().empty());
   EXPECT_EQ(task_lists->items().size(), 2u);
 
@@ -42,6 +43,7 @@ TEST(TasksApiResponseTypesTest, CreatesTaskListsWithNextPageTokenFromResponse) {
   raw_task_lists->SetStringKey("nextPageToken", "qwerty");
 
   const auto task_lists = TaskLists::CreateFrom(*raw_task_lists);
+  ASSERT_TRUE(task_lists);
   EXPECT_EQ(task_lists->next_page_token(), "qwerty");
 }
 
@@ -53,7 +55,7 @@ TEST(TasksApiResponseTypesTest, FailsToCreateTaskListsFromInvalidResponse) {
   raw_task_lists->SetStringKey(kApiResponseKindKey, "invalid_kind");
 
   const auto task_lists = TaskLists::CreateFrom(*raw_task_lists);
-  EXPECT_FALSE(task_lists);
+  ASSERT_FALSE(task_lists);
 }
 
 TEST(TasksApiResponseTypesTest, CreatesTasksFromResponse) {
@@ -62,6 +64,7 @@ TEST(TasksApiResponseTypesTest, CreatesTasksFromResponse) {
   ASSERT_EQ(raw_tasks->type(), base::Value::Type::DICT);
 
   const auto tasks = Tasks::CreateFrom(*raw_tasks);
+  ASSERT_TRUE(tasks);
   EXPECT_TRUE(tasks->next_page_token().empty());
   EXPECT_EQ(tasks->items().size(), 2u);
 
@@ -69,11 +72,14 @@ TEST(TasksApiResponseTypesTest, CreatesTasksFromResponse) {
   EXPECT_EQ(tasks->items()[0]->title(), "Completed child task");
   EXPECT_EQ(tasks->items()[0]->status(), Task::Status::kCompleted);
   EXPECT_EQ(tasks->items()[0]->parent_id(), "asd");
+  EXPECT_FALSE(tasks->items()[0]->due());
 
   EXPECT_EQ(tasks->items()[1]->id(), "asd");
   EXPECT_EQ(tasks->items()[1]->title(), "Parent task");
   EXPECT_EQ(tasks->items()[1]->status(), Task::Status::kNeedsAction);
   EXPECT_TRUE(tasks->items()[1]->parent_id().empty());
+  EXPECT_EQ(util::FormatTimeAsString(tasks->items()[1]->due().value()),
+            "2023-04-19T00:00:00.000Z");
 }
 
 TEST(TasksApiResponseTypesTest, CreatesTasksWithNextPageTokenFromResponse) {
@@ -84,6 +90,7 @@ TEST(TasksApiResponseTypesTest, CreatesTasksWithNextPageTokenFromResponse) {
   raw_tasks->SetStringKey("nextPageToken", "qwerty");
 
   const auto tasks = Tasks::CreateFrom(*raw_tasks);
+  ASSERT_TRUE(tasks);
   EXPECT_EQ(tasks->next_page_token(), "qwerty");
 }
 
@@ -100,7 +107,7 @@ TEST(TasksApiResponseTypesTest, FailsToCreateTasksFromInvalidResponse) {
   raw_tasks->SetStringKey(kApiResponseKindKey, "invalid_kind");
 
   const auto tasks = Tasks::CreateFrom(*raw_tasks);
-  EXPECT_FALSE(tasks);
+  ASSERT_FALSE(tasks);
 }
 
 }  // namespace google_apis::tasks
