@@ -8119,15 +8119,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MPArch.RPHCountPerLoad" units="units" expires_after="M77">
-  <owner>ppi@chromium.org</owner>
-  <summary>
-    The number of RenderProcessHosts (i.e. renderer processes) present when each
-    load completes. This is basically the average number of sub-processes over
-    time. See also Tabs.TabCountPerLoad.
-  </summary>
-</histogram>
-
 <histogram name="MPArch.RWH_RepaintDelta" units="units"
     expires_after="2018-08-30">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
@@ -14591,35 +14582,6 @@ regressions. -->
   <summary>
     Count of page loads in each of the 2 different environments (metro/desktop)
     on Windows 8.
-  </summary>
-</histogram>
-
-<histogram name="WindowManager.AppWindowCountPerLoad" units="units"
-    expires_after="M82">
-  <owner>kuscher@chromium.org</owner>
-  <summary>
-    The number of app windows open when a load completes. This includes windows
-    opened by an app shortcut, or apps opened in a popup. This only counts v1
-    apps.
-  </summary>
-</histogram>
-
-<histogram name="WindowManager.PopUpWindowCountPerLoad" units="units"
-    expires_after="M82">
-  <owner>kuscher@chromium.org</owner>
-  <summary>
-    The number of popup windows open when a load completes. Popup windows only
-    have one content area (no multiple tabs) and a stripped down toolbar
-    consisting only of a read-only address bar.
-  </summary>
-</histogram>
-
-<histogram name="WindowManager.TabbedWindowCountPerLoad" units="units"
-    expires_after="M82">
-  <owner>kuscher@chromium.org</owner>
-  <summary>
-    The number of tabbed windows open when a load completes. A tabbed window is
-    a normal browser window which can have one or more tabs.
   </summary>
 </histogram>
 

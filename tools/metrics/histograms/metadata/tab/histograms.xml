@@ -1826,9 +1826,6 @@ chromium-metrics-reviews@google.com.
     load completes.
 
     This is basically the average number of tabs over time.
-
-    See also MPArch.RPHCountPerLoad for the number of processes used by these
-    tabs.
   </summary>
 </histogram>
 
