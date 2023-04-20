@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.feed;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.Activity;
-import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -24,7 +23,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
@@ -49,8 +47,6 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
-import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
-import org.chromium.chrome.browser.xsurface.FeedUserInteractionReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
@@ -66,7 +62,6 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.feed.proto.FeedUiProto;
-import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
@@ -299,10 +294,8 @@ public class FeedStream implements Stream {
                     || disposition == WindowOpenDisposition.OFF_THE_RECORD);
 
             if (disposition != WindowOpenDisposition.NEW_BACKGROUND_TAB
-                    && mLaunchReliabilityLogger != null
-                    && mLaunchReliabilityLogger.isLaunchInProgress()) {
-                mLaunchReliabilityLogger.logLaunchFinished(SystemClock.elapsedRealtimeNanos(),
-                        DiscoverLaunchResult.CARD_TAPPED.getNumber());
+                    && mReliabilityLogger != null) {
+                mReliabilityLogger.onOpenCard();
             }
 
             LoadUrlParams params = new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK);
@@ -642,8 +635,7 @@ public class FeedStream implements Stream {
     private final Map<String, Object> mHandlersMap;
     private RotationObserver mRotationObserver;
     private FeedReliabilityLoggingBridge mReliabilityLoggingBridge;
-    private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
-    private FeedUserInteractionReliabilityLogger mFeedUserInteractionReliabilityLogger;
+    private @Nullable FeedReliabilityLogger mReliabilityLogger;
 
     // Things valid only when bound.
     private @Nullable RecyclerView mRecyclerView;
@@ -789,27 +781,21 @@ public class FeedStream implements Stream {
     @Override
     public void bind(RecyclerView rootView, FeedListContentManager manager,
             FeedScrollState savedInstanceState, SurfaceScope surfaceScope,
-            HybridListRenderer renderer, FeedLaunchReliabilityLogger launchReliabilityLogger,
+            HybridListRenderer renderer, @Nullable FeedReliabilityLogger reliabilityLogger,
             int headerCount) {
-        mLaunchReliabilityLogger = launchReliabilityLogger;
-        launchReliabilityLogger.sendPendingEvents(getStreamType(),
-                FeedStreamJni.get().getSurfaceId(mNativeFeedStream, FeedStream.this));
-        launchReliabilityLogger.logFeedReloading(System.nanoTime());
-        mReliabilityLoggingBridge.setLogger(launchReliabilityLogger);
-
-        if (FeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.FEED_USER_INTERACTION_RELIABILITY_REPORT)
-                && surfaceScope != null) {
-            mFeedUserInteractionReliabilityLogger =
-                    surfaceScope.getFeedUserInteractionReliabilityLogger();
+        mReliabilityLogger = reliabilityLogger;
+        if (mReliabilityLogger != null) {
+            mReliabilityLogger.onBindStream(getStreamType(),
+                    FeedStreamJni.get().getSurfaceId(mNativeFeedStream, FeedStream.this));
         }
+        mReliabilityLoggingBridge.setLogger(mReliabilityLogger);
 
         mScrollStateToRestore = savedInstanceState;
         manager.setHandlers(mHandlersMap);
         mSliceViewTracker = new FeedSliceViewTracker(rootView, mActivity, manager,
                 renderer.getListLayoutHelper(), /* watchForBarelyVisibleChange= */
-                (mFeedUserInteractionReliabilityLogger != null),
+                (mReliabilityLogger != null
+                        && mReliabilityLogger.getUserInteractionLogger() != null),
                 new FeedStream.ViewTrackerObserver());
         mSliceViewTracker.bind();
 
@@ -831,10 +817,6 @@ public class FeedStream implements Stream {
         }
 
         FeedStreamJni.get().surfaceOpened(mNativeFeedStream, FeedStream.this);
-
-        if (mFeedUserInteractionReliabilityLogger != null) {
-            mFeedUserInteractionReliabilityLogger.onStreamOpened(getStreamType());
-        }
     }
 
     @Override
@@ -854,6 +836,12 @@ public class FeedStream implements Stream {
 
     @Override
     public void unbind(boolean shouldPlaceSpacer) {
+        // This is the catch-all feed launch end event to ensure a complete flow is logged
+        // even if we don't know a more specific reason for the stream unbinding.
+        if (mReliabilityLogger != null) {
+            mReliabilityLogger.onUnbindStream();
+        }
+
         dismissSnackbars();
         mSnackbarControllers.clear();
         mWebFeedSnackbarController.dismissSnackbars();
@@ -1367,14 +1355,14 @@ public class FeedStream implements Stream {
         }
         @Override
         public void reportViewFirstBarelyVisible(View view) {
-            if (mFeedUserInteractionReliabilityLogger != null) {
-                mFeedUserInteractionReliabilityLogger.onViewFirstVisible(view);
+            if (mReliabilityLogger != null) {
+                mReliabilityLogger.onViewFirstVisible(view);
             }
         }
         @Override
         public void reportViewFirstRendered(View view) {
-            if (mFeedUserInteractionReliabilityLogger != null) {
-                mFeedUserInteractionReliabilityLogger.onViewFirstRendered(view);
+            if (mReliabilityLogger != null) {
+                mReliabilityLogger.onViewFirstRendered(view);
             }
         }
     }

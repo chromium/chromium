@@ -21,6 +21,9 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
+import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.StreamType;
+import org.chromium.chrome.browser.xsurface.FeedUserInteractionReliabilityLogger;
+import org.chromium.chrome.browser.xsurface.FeedUserInteractionReliabilityLogger.ClosedReason;
 import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
 
 /** Unit tests for {@link FeedReliabilityLogger}. */
@@ -29,13 +32,15 @@ import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverL
 public class FeedReliabilityLoggerTest {
     @Mock
     FeedLaunchReliabilityLogger mLaunchLogger;
+    @Mock
+    FeedUserInteractionReliabilityLogger mUserInteractionLogger;
 
     FeedReliabilityLogger mFeedReliabilityLogger;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mFeedReliabilityLogger = new FeedReliabilityLogger(mLaunchLogger);
+        mFeedReliabilityLogger = new FeedReliabilityLogger(mLaunchLogger, mUserInteractionLogger);
     }
 
     @Test
@@ -130,5 +135,43 @@ public class FeedReliabilityLoggerTest {
         verify(mLaunchLogger)
                 .logLaunchFinished(
                         anyLong(), eq(DiscoverLaunchResult.NAVIGATED_TO_ANOTHER_TAB.getNumber()));
+    }
+
+    @Test
+    public void testOnSwitchStream() {
+        when(mLaunchLogger.isLaunchInProgress()).thenReturn(true);
+        mFeedReliabilityLogger.onSwitchStream(StreamType.FOR_YOU);
+        verify(mLaunchLogger)
+                .logLaunchFinished(
+                        anyLong(), eq(DiscoverLaunchResult.SWITCHED_FEED_TABS.getNumber()));
+        verify(mLaunchLogger).logSwitchedFeeds(eq(StreamType.FOR_YOU), anyLong());
+        verify(mUserInteractionLogger).onStreamClosed(eq(ClosedReason.SWITCH_STREAM));
+    }
+
+    @Test
+    public void testOnBindStream() {
+        when(mLaunchLogger.isLaunchInProgress()).thenReturn(true);
+        mFeedReliabilityLogger.onBindStream(StreamType.FOR_YOU, 0);
+        verify(mLaunchLogger).logFeedReloading(anyLong());
+        verify(mUserInteractionLogger).onStreamOpened(anyInt());
+    }
+
+    @Test
+    public void testOnUnbindStream() {
+        when(mLaunchLogger.isLaunchInProgress()).thenReturn(true);
+        mFeedReliabilityLogger.onUnbindStream();
+        verify(mLaunchLogger)
+                .logLaunchFinished(
+                        anyLong(), eq(DiscoverLaunchResult.FRAGMENT_STOPPED.getNumber()));
+        verify(mUserInteractionLogger).onStreamClosed(eq(ClosedReason.LEAVE_FEED));
+    }
+
+    @Test
+    public void testOnOpenCard() {
+        when(mLaunchLogger.isLaunchInProgress()).thenReturn(true);
+        mFeedReliabilityLogger.onOpenCard();
+        verify(mLaunchLogger)
+                .logLaunchFinished(anyLong(), eq(DiscoverLaunchResult.CARD_TAPPED.getNumber()));
+        verify(mUserInteractionLogger).onStreamClosed(eq(ClosedReason.OPEN_CARD));
     }
 }

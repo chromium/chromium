@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
@@ -254,7 +253,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         }
 
         mStream.bind(mRecyclerView, mContentManager, /*FeedScrollState*/ null, mSurfaceScope,
-                mHybridListRenderer, new FeedLaunchReliabilityLogger() {}, mHeaderCount);
+                mHybridListRenderer, null, mHeaderCount);
     }
 
     private class StreamsMediatorImpl implements Stream.StreamsMediator {
