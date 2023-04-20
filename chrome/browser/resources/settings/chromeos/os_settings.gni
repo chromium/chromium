@@ -256,7 +256,6 @@ web_component_files = [
   "a11y_page/live_caption_section.ts",
   "controls/controlled_button.ts",
   "controls/controlled_radio_button.ts",
-  "controls/extension_controlled_indicator.ts",
   "controls/password_prompt_dialog.ts",
   "controls/settings_dropdown_menu.ts",
   "controls/settings_radio_group.ts",

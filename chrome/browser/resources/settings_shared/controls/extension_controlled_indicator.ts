@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_button/cr_button.js';
-import '../strings.m.js';
 // <if expr='chromeos_ash'>
 import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 
@@ -11,9 +10,10 @@ import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 
 import {assert} from '//resources/js/assert_ts.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {OpenWindowProxyImpl} from '//resources/js/open_window_proxy.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ExtensionControlBrowserProxyImpl} from '/shared/settings/extension_control_browser_proxy.js';
-import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
+
+import {ExtensionControlBrowserProxyImpl} from '../extension_control_browser_proxy.js';
 
 import {getTemplate} from './extension_controlled_indicator.html.js';
 

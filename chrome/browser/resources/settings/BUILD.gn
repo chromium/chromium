@@ -110,7 +110,6 @@ build_webui("build") {
     "clear_browsing_data_dialog/passwords_deletion_dialog.ts",
     "controls/controlled_button.ts",
     "controls/controlled_radio_button.ts",
-    "controls/extension_controlled_indicator.ts",
     "controls/settings_checkbox.ts",
     "controls/settings_dropdown_menu.ts",
     "controls/settings_radio_group.ts",
