@@ -45,11 +45,17 @@ class SidePanelService : public BrowserContextKeyedAPI,
   // BrowserContextKeyedAPI implementation.
   static BrowserContextKeyedAPIFactory<SidePanelService>* GetFactoryInstance();
 
-  // Get options for tab_id. Options are loaded in order first from service
+  // Get options for `tab_id`. Options are loaded in order first from service
   // storage, manifest, or an empty object will be returned, if they're unset.
   using TabId = int;
   api::side_panel::PanelOptions GetOptions(const Extension& extension,
                                            absl::optional<TabId> tab_id);
+
+  // Get options that were set for `tab_id`. If no options were specifically
+  // set, returns an empty object instead of falling back to default options.
+  api::side_panel::PanelOptions GetSpecificOptionsForTab(
+      const Extension& extension,
+      TabId tab_id);
 
   // Set options for tab_id if specified. Otherwise set default options.
   void SetOptions(const Extension& extension,

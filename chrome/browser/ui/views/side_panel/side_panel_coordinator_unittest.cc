@@ -1088,6 +1088,8 @@ TEST_F(SidePanelCoordinatorTest, RegisterExtensionEntries) {
   coordinator_->Show(extension_2_key);
   EXPECT_EQ(global_registry_->GetEntryForKey(extension_2_key),
             coordinator_->GetCurrentSidePanelEntryForTesting());
+  EXPECT_EQ(global_registry_->GetEntryForKey(extension_2_key),
+            global_registry_->active_entry());
 
   // Check that registering an entry on the active tab while the combobox
   // contains an item for the global entry still results in one item for an
@@ -1100,6 +1102,8 @@ TEST_F(SidePanelCoordinatorTest, RegisterExtensionEntries) {
   // right after registration.
   EXPECT_EQ(contextual_registries_[1]->GetEntryForKey(extension_2_key),
             coordinator_->GetCurrentSidePanelEntryForTesting());
+  EXPECT_EQ(contextual_registries_[1]->GetEntryForKey(extension_2_key),
+            contextual_registries_[1]->active_entry());
 }
 
 // Test that the combobox shows the correct number of extension entries when

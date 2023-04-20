@@ -89,6 +89,21 @@ api::side_panel::PanelOptions SidePanelService::GetOptions(
   return GetPanelOptionsFromManifest(extension);
 }
 
+api::side_panel::PanelOptions SidePanelService::GetSpecificOptionsForTab(
+    const Extension& extension,
+    TabId tab_id) {
+  auto extension_panel_options = panels_.find(extension.id());
+  if (extension_panel_options == panels_.end()) {
+    return api::side_panel::PanelOptions();
+  }
+
+  TabPanelOptions& tab_panel_options = extension_panel_options->second;
+  auto specific_tab_options = tab_panel_options.find(tab_id);
+  return specific_tab_options == tab_panel_options.end()
+             ? api::side_panel::PanelOptions()
+             : CloneOptions(specific_tab_options->second);
+}
+
 // Upsert to merge `panels_[extension_id][tab_id]` with `set_options`.
 void SidePanelService::SetOptions(const Extension& extension,
                                   api::side_panel::PanelOptions options) {

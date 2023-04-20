@@ -16,10 +16,12 @@
 #include "extensions/common/extension_id.h"
 
 class Browser;
+class Profile;
 class SidePanelRegistry;
 
 namespace content {
 class BrowserContext;
+class WebContents;
 }
 
 namespace extensions {
@@ -42,6 +44,10 @@ class ExtensionSidePanelManager : public SidePanelRegistryObserver,
 
   static ExtensionSidePanelManager* GetOrCreateForBrowser(Browser* browser);
 
+  static ExtensionSidePanelManager* GetOrCreateForWebContents(
+      Profile* profile,
+      content::WebContents* web_contents);
+
   ExtensionSidePanelCoordinator* GetExtensionCoordinatorForTesting(
       const ExtensionId& extension_id);
 
@@ -62,15 +68,31 @@ class ExtensionSidePanelManager : public SidePanelRegistryObserver,
   void OnRegistryDestroying(SidePanelRegistry* registry) override;
 
  private:
-  ExtensionSidePanelManager(Browser* browser,
-                            SidePanelRegistry* global_registry);
+  ExtensionSidePanelManager(Profile* profile,
+                            Browser* browser,
+                            content::WebContents* web_contents,
+                            SidePanelRegistry* registry);
 
   // Creates an ExtensionSidePanelCoordinator for `extension` and adds it to
   // `coordinators_` if the extension is capable of hosting side panel content.
   void MaybeCreateExtensionSidePanelCoordinator(const Extension* extension);
 
+  // The profile associated with either `browser_` or `web_contents_`.
+  raw_ptr<Profile> profile_;
+
+  // The browser that this class is associated with, through its user data. An
+  // instance of this class can only be associated with/in the user data of a
+  // single browser or WebContents, not both at once. Only one of `browser_` or
+  // `web_contents_` should be defined.
   raw_ptr<Browser> browser_;
-  raw_ptr<SidePanelRegistry> global_registry_;
+
+  // The tab-based WebContents that this class is associated with, through its
+  // user data.
+  raw_ptr<content::WebContents> web_contents_;
+
+  // The SidePanelRegistry that lives in the same user data that an instance of
+  // this class lives in. Owns all extension entries managed by `coordinators_`.
+  raw_ptr<SidePanelRegistry> registry_;
 
   base::flat_map<ExtensionId, std::unique_ptr<ExtensionSidePanelCoordinator>>
       coordinators_;

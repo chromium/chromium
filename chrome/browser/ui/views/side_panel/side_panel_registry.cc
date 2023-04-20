@@ -64,9 +64,12 @@ void SidePanelRegistry::RemoveObserver(SidePanelRegistryObserver* observer) {
 bool SidePanelRegistry::Register(std::unique_ptr<SidePanelEntry> entry) {
   if (GetEntryForKey(entry->key()))
     return false;
+  // It's important to add `this` as an observer to `entry` before notifying
+  // SidePanelRegistryObservers of the entry's registration because some
+  // registry observers can call SidePanelEntryObserver methods for `entry`.
+  entry->AddObserver(this);
   for (SidePanelRegistryObserver& observer : observers_)
     observer.OnEntryRegistered(this, entry.get());
-  entry->AddObserver(this);
   entries_.push_back(std::move(entry));
   return true;
 }
