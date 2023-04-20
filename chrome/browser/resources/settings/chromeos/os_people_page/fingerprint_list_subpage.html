@@ -1,17 +1,4 @@
 <style include="settings-shared">
-  .add-link {
-    background-color: transparent;
-    color: var(--cros-link-color);
-  }
-
-  .add-link[disabled] {
-    color: var(--cros-text-color-disabled);
-  }
-
-  .list-item {
-    background-color: var(--cros-bg-color-elevation-1);
-  }
-
   cr-input {
     --cr-input-error-display: none;
   }
@@ -67,7 +54,7 @@
     </template>
   </iron-list>
   <div class="continuation">
-    <cr-button id="addFingerprint" class="add-link action-button"
+    <cr-button id="addFingerprint" class="action-button"
         on-click="openAddFingerprintDialog_"
         deep-link-focus-id$="[[Setting.kAddFingerprintV2]]">
       $i18n{lockScreenAddFingerprint}
