@@ -1334,8 +1334,7 @@ void AutocompleteController::NotifyChanged() {
 
   for (Observer& obs : observers_)
     obs.OnResultChanged(this, notify_changed_default_match_);
-  notify_changed_debouncer_.CancelRequest();
-  notify_changed_default_match_ = false;
+  CancelDelayedNotifyChanged();
 }
 
 void AutocompleteController::DelayedNotifyChanged(bool notify_default_match) {
@@ -1348,6 +1347,11 @@ void AutocompleteController::DelayedNotifyChanged(bool notify_default_match) {
     notify_changed_debouncer_.RequestRun(base::BindOnce(
         &AutocompleteController::NotifyChanged, base::Unretained(this)));
   }
+}
+
+void AutocompleteController::CancelDelayedNotifyChanged() {
+  notify_changed_debouncer_.CancelRequest();
+  notify_changed_default_match_ = false;
 }
 
 void AutocompleteController::CheckIfDone() {
@@ -1402,10 +1406,13 @@ void AutocompleteController::StopHelper(bool clear_result,
   expire_timer_.Stop();
   stop_timer_.Stop();
   done_ = true;
-  if (clear_result && !result_.empty()) {
-    // Cancel the scoring model when updating `result_`.
-    CancelUrlScoringModel();
 
+  // Cancel any pending requests that may update the results. Otherwise, e.g.,
+  // the user's suggestion selection may be reset.
+  CancelDelayedNotifyChanged();
+  CancelUrlScoringModel();
+
+  if (clear_result && !result_.empty()) {
     result_.Reset();
 
     // Pass false to clear only the popup and not the edit. Passing true would,
