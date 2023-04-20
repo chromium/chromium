@@ -79,22 +79,24 @@ void SupervisedUserExtensionsDelegateImpl::RequestToAddExtensionOrShowError(
   DCHECK(!IsExtensionAllowedByParent(extension));
 
   done_callback_ = std::move(extension_approval_callback);
-  RequestExtensionApproval(extension, web_contents, icon);
+  RequestExtensionApproval(extension, web_contents->GetWeakPtr(), icon);
 }
 
 void SupervisedUserExtensionsDelegateImpl::RequestToEnableExtensionOrShowError(
     const Extension& extension,
     content::WebContents* web_contents,
     ExtensionApprovalDoneCallback extension_approval_callback) {
-  DCHECK(IsChild());
-  DCHECK(!IsExtensionAllowedByParent(extension));
+  CHECK(IsChild());
+  CHECK(!IsExtensionAllowedByParent(extension));
 
   done_callback_ = std::move(extension_approval_callback);
 
   // Fetch icon from local resources and then show enable flow.
   auto icon_callback = base::BindOnce(
       &SupervisedUserExtensionsDelegateImpl::RequestExtensionApproval,
-      base::Unretained(this), std::cref(extension), web_contents);
+      base::Unretained(this), std::cref(extension),
+      web_contents ? absl::make_optional(web_contents->GetWeakPtr())
+                   : absl::nullopt);
   icon_loader_ = std::make_unique<ExtensionIconLoader>();
   icon_loader_->Load(extension, context_, std::move(icon_callback));
 }
@@ -162,8 +164,23 @@ void SupervisedUserExtensionsDelegateImpl::
 
 void SupervisedUserExtensionsDelegateImpl::RequestExtensionApproval(
     const Extension& extension,
-    content::WebContents* contents,
+    absl::optional<base::WeakPtr<content::WebContents>> contents,
     const gfx::ImageSkia& icon) {
+  // Treat the request as canceled if web contents that the request originated
+  // in was destroyed (the web contents was originally passed, but weak ptr is
+  // not valid anymore).
+  content::WebContents* web_contents = nullptr;
+  if (contents) {
+    base::WeakPtr<content::WebContents> contents_weak_ptr = contents.value();
+    if (!contents_weak_ptr) {
+      std::move(done_callback_)
+          .Run(extensions::SupervisedUserExtensionsDelegate::
+                   ExtensionApprovalResult::kCanceled);
+      return;
+    }
+    web_contents = contents_weak_ptr.get();
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (supervised_user::IsLocalExtensionApprovalsV2Enabled()) {
     // Parent Access Dialog handles blocked use case in V2.
@@ -176,12 +193,12 @@ void SupervisedUserExtensionsDelegateImpl::RequestExtensionApproval(
 #endif
 
   if (CanInstallExtensions()) {
-    ShowParentPermissionDialogForExtension(extension, contents, icon);
+    ShowParentPermissionDialogForExtension(extension, web_contents, icon);
     return;
   }
 
   ShowInstallBlockedByParentDialogForExtension(
-      extension, contents,
+      extension, web_contents,
       ExtensionInstalledBlockedByParentDialogAction::kEnable);
 }
 
