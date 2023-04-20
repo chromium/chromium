@@ -242,11 +242,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.js'],
  ['CellularSetupDialog', 'cellular_setup_dialog_test.js'],
  [
-   'ChromeVoxSubpage',
-   'chromevox_subpage_tests.js',
-   {enabled: ['features::kAccessibilityChromeVoxPageMigration']},
- ],
- [
    'DictationChangeLanguageLocaleDialogTest',
    'change_dictation_locale_dialog_test.js',
  ],
@@ -430,6 +425,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  [
    'OsA11yPageAudioAndCaptionsPage',
    'os_a11y_page/audio_and_captions_page_test.js',
+ ],
+ [
+   'OsA11yPageChromeVoxSubpage',
+   'os_a11y_page/chromevox_subpage_test.js',
+   {enabled: ['features::kAccessibilityChromeVoxPageMigration']},
  ],
  [
    'OsA11yPageCursorAndTouchpadPage',

@@ -8,35 +8,34 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {ChromeVoxSubpageBrowserProxyImpl, CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {SettingsChromeVoxSubpageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {ChromeVoxSubpageBrowserProxyImpl, CrSettingsPrefs, SettingsDropdownMenuElement, SettingsPrefsElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestChromeVoxSubpageBrowserProxy} from './test_chromevox_subpage_browser_proxy.js';
 
 /**
  * Control types for pref-based settings.
- * @enum {string}
  */
-export const ControlType = {
-  DROPDOWN: 'dropdown',
-  TOGGLE: 'toggle',
-  INPUT: 'input',
-};
+const enum ControlType {
+  DROPDOWN = 'dropdown',
+  TOGGLE = 'toggle',
+  INPUT = 'input',
+}
 
-suite('ChromeVoxSubpageTests', function() {
-  /** @type {SettingsChromeVoxSubpageElement} */
-  let page = null;
-  let browserProxy = null;
+suite('<settings-chromevox-subpage>', () => {
+  let page: SettingsChromeVoxSubpageElement;
+  let browserProxy: TestChromeVoxSubpageBrowserProxy;
+  let prefElement: SettingsPrefsElement;
 
-  setup(async function() {
+  setup(async () => {
     browserProxy = new TestChromeVoxSubpageBrowserProxy();
     ChromeVoxSubpageBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
-    PolymerTest.clearBody();
-
-    const prefElement = document.createElement('settings-prefs');
+    prefElement = document.createElement('settings-prefs');
     document.body.appendChild(prefElement);
 
     await CrSettingsPrefs.initialized;
@@ -46,8 +45,9 @@ suite('ChromeVoxSubpageTests', function() {
     flush();
   });
 
-  teardown(function() {
+  teardown(() => {
     page.remove();
+    prefElement.remove();
   });
 
   const settingsControls = [
@@ -169,8 +169,8 @@ suite('ChromeVoxSubpageTests', function() {
 
     test(`ChromeVox ${type} ${id} syncs to Pref: ${prefKey}`, async () => {
       // Make sure control exists.
-      const control = page.shadowRoot.querySelector(`#${id}`);
-      assertTrue(!!control);
+      const control = page.shadowRoot!.querySelector<HTMLElement>(`#${id}`);
+      assert(control);
 
       // Make sure pref is set to the default value.
       let pref = page.getPref(prefKey);
@@ -180,8 +180,9 @@ suite('ChromeVoxSubpageTests', function() {
         case ControlType.TOGGLE:
           // Make sure toggle control is set to the default value.
           await waitAfterNextRender(control);
-          const crToggleElement = control.shadowRoot.querySelector('cr-toggle');
-          assertEquals(defaultValue, crToggleElement.checked);
+          const crToggleElement =
+              control.shadowRoot!.querySelector('cr-toggle');
+          assertEquals(defaultValue, crToggleElement!.checked);
           // Click toggle control to attempt updating to secondary value.
           control.click();
           break;
@@ -189,10 +190,11 @@ suite('ChromeVoxSubpageTests', function() {
         case ControlType.DROPDOWN:
           // Make sure dropdown is set to the default value.
           await waitAfterNextRender(control);
-          const selectElement = control.shadowRoot.querySelector('select');
+          const selectElement = control.shadowRoot!.querySelector('select');
+          assert(selectElement);
           assertEquals(String(defaultValue), selectElement.value);
           // Update dropdown to secondary value.
-          selectElement.value = secondaryValue;
+          selectElement.value = String(secondaryValue);
           selectElement.dispatchEvent(
               new CustomEvent('change', {bubbles: true, composed: true}));
           break;
@@ -200,11 +202,13 @@ suite('ChromeVoxSubpageTests', function() {
         case ControlType.INPUT:
           // Make sure input is set to the default value.
           await waitAfterNextRender(control);
-          const inputElement = control.shadowRoot.querySelector('input');
+          const inputElement = control.shadowRoot!.querySelector('input');
+          assert(inputElement);
           assertEquals(String(defaultValue), inputElement.value);
           // Make sure out-of-range values get updated to correct values.
+          assert(correctedValues);
           for (const [startValue, correctedValue] of correctedValues) {
-            inputElement.value = startValue;
+            inputElement.value = String(startValue);
             inputElement.dispatchEvent(
                 new CustomEvent('input', {bubbles: true, composed: true}));
             inputElement.dispatchEvent(
@@ -213,7 +217,7 @@ suite('ChromeVoxSubpageTests', function() {
             assertEquals(String(correctedValue), inputElement.value);
           }
           // Update input to secondary value.
-          inputElement.value = secondaryValue;
+          inputElement.value = String(secondaryValue);
           inputElement.dispatchEvent(
               new CustomEvent('input', {bubbles: true, composed: true}));
           break;
@@ -227,8 +231,9 @@ suite('ChromeVoxSubpageTests', function() {
 
   test('event stream filter toggles sync to prefs', async () => {
     // Enable event stream logging to allow enabling filter toggles.
-    const loggingToggle =
-        page.shadowRoot.querySelector('#enableEventStreamLoggingToggle');
+    const loggingToggle = page.shadowRoot!.querySelector<HTMLElement>(
+        '#enableEventStreamLoggingToggle');
+    assert(loggingToggle);
     loggingToggle.click();
     await waitAfterNextRender(loggingToggle);
 
@@ -236,11 +241,11 @@ suite('ChromeVoxSubpageTests', function() {
     let pref = page.getPref('settings.a11y.chromevox.event_stream_filters');
 
     // Toggle each filter, verify each pref is set.
-    page.eventStreamFilters_.forEach(filter => {
-      const toggle = page.shadowRoot.querySelector('#' + filter);
+    page.get('eventStreamFilters_').forEach((filter: string) => {
+      const toggle = page.shadowRoot!.querySelector<HTMLElement>('#' + filter);
 
       // Make sure toggle exists.
-      assertTrue(!!toggle);
+      assert(toggle);
 
       // Make sure pref filter state is false or undefined (key is not present).
       assertTrue([false, undefined].includes(pref.value[filter]));
@@ -254,10 +259,13 @@ suite('ChromeVoxSubpageTests', function() {
     });
   });
 
-  test('voices are ordered', async function() {
+  test('voices are ordered', () => {
     // Make sure voices are ordered with the system default voice first, then
     // Google voices, then eSpeak, then local, then remote.
-    const voiceDropdown = page.shadowRoot.querySelector('#voiceDropdown');
+    const voiceDropdown =
+        page.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+            '#voiceDropdown');
+    assert(voiceDropdown);
     const expectedMenuOptions = [
       {name: 'System Text-to-Speech voice', value: 'chromeos_system_voice'},
       {name: 'Chrome OS US English', value: 'Chrome OS US English'},

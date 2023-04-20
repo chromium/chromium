@@ -60,7 +60,7 @@ interface TtsHandlerVoice {
   extensionId: string;
 }
 
-interface SettingsChromeVoxSubpageElement {
+export interface SettingsChromeVoxSubpageElement {
   $: {
     capitalStrategyDropdown: SettingsDropdownMenuElement,
   };
@@ -69,7 +69,7 @@ interface SettingsChromeVoxSubpageElement {
 const SettingsChromeVoxSubpageElementBase = DeepLinkingMixin(RouteOriginMixin(
     PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
-class SettingsChromeVoxSubpageElement extends
+export class SettingsChromeVoxSubpageElement extends
     SettingsChromeVoxSubpageElementBase {
   static get is() {
     return 'settings-chromevox-subpage' as const;

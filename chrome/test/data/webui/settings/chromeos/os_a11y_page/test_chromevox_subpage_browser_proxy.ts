@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
+import {ChromeVoxSubpageBrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {ChromeVoxSubpageBrowserProxy} */
-export class TestChromeVoxSubpageBrowserProxy extends TestBrowserProxy {
+export class TestChromeVoxSubpageBrowserProxy extends TestBrowserProxy
+    implements ChromeVoxSubpageBrowserProxy {
   constructor() {
     super([
       'getAllTtsVoiceData',
@@ -21,10 +22,11 @@ export class TestChromeVoxSubpageBrowserProxy extends TestBrowserProxy {
       'removePairingListener',
       'startDiscovery',
       'stopDiscovery',
+      'updateBluetoothBrailleDisplayAddress',
     ]);
   }
 
-  getAllTtsVoiceData() {
+  getAllTtsVoiceData(): void {
     const voices = [
       {
         name: 'Chrome OS US English',
@@ -60,38 +62,41 @@ export class TestChromeVoxSubpageBrowserProxy extends TestBrowserProxy {
     webUIListenerCallback('all-voice-data-updated', voices);
   }
 
-  refreshTtsVoices() {
+  refreshTtsVoices(): void {
     this.methodCalled('refreshTtsVoices');
   }
 
-  addDeviceAddedListener() {
+  addDeviceAddedListener(): void {
     this.methodCalled('addDeviceAddedListener');
   }
-  removeDeviceAddedListener() {
+  removeDeviceAddedListener(): void {
     this.methodCalled('removeDeviceAddedListener');
   }
-  addDeviceChangedListener() {
+  addDeviceChangedListener(): void {
     this.methodCalled('addDeviceChangedListener');
   }
-  removeDeviceChangedListener() {
+  removeDeviceChangedListener(): void {
     this.methodCalled('removeDeviceChangedListener');
   }
-  addDeviceRemovedListener() {
+  addDeviceRemovedListener(): void {
     this.methodCalled('addDeviceRemovedListener');
   }
-  removeDeviceRemovedListener() {
+  removeDeviceRemovedListener(): void {
     this.methodCalled('removeDeviceRemovedListener');
   }
-  addPairingListener() {
+  addPairingListener(): void {
     this.methodCalled('addPairingListener');
   }
-  removePairingListener() {
+  removePairingListener(): void {
     this.methodCalled('removePairingListener');
   }
-  startDiscovery() {
+  startDiscovery(): void {
     this.methodCalled('startDiscovery');
   }
-  stopDiscovery() {
+  stopDiscovery(): void {
     this.methodCalled('stopDiscovery');
+  }
+  updateBluetoothBrailleDisplayAddress(): void {
+    this.methodCalled('updateBluetoothBrailleDisplayAddress');
   }
 }
