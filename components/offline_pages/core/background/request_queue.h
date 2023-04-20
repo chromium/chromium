@@ -133,7 +133,6 @@ class RequestQueue : public TaskQueue::Delegate {
       OfflinerPolicy* policy,
       PickRequestTask::RequestPickedCallback picked_callback,
       PickRequestTask::RequestNotPickedCallback not_picked_callback,
-      PickRequestTask::RequestCountCallback request_count_callback,
       DeviceConditions conditions,
       const std::set<int64_t>& disabled_requests,
       base::circular_deque<int64_t>* prioritized_requests);

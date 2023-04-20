@@ -147,55 +147,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OfflinePages.Background.EffectiveConnectionType.PauseRequests"
-    enum="NQEEffectiveConnectionType" expires_after="2021-06-25">
-  <owner>dougarnett@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Effective connection type when pausing one or more background loads is
-    requested.
-
-    This metric is recorded for RequestCoordinator::PauseRequests API calls.
-  </summary>
-</histogram>
-
-<histogram
-    name="OfflinePages.Background.EffectiveConnectionType.RemoveRequests"
-    enum="NQEEffectiveConnectionType" expires_after="2021-06-25">
-  <owner>dougarnett@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Effective connection type when removing one or more background loads is
-    requested.
-
-    This metric is recorded for RequestCoordinator::RemoveRequests API calls.
-  </summary>
-</histogram>
-
-<histogram
-    name="OfflinePages.Background.EffectiveConnectionType.ResumeRequests"
-    enum="NQEEffectiveConnectionType" expires_after="2021-06-25">
-  <owner>dougarnett@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Effective connection type when resuming one or more background loads is
-    requested.
-
-    This metric is recorded for RequestCoordinator::ResumeRequests API calls.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.Background.EffectiveConnectionType.SavePageLater"
-    enum="NQEEffectiveConnectionType" expires_after="2021-03-01">
-  <owner>dougarnett@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Effective connection type when a background load is requested.
-
-    This metric is recorded for RequestCoordinator::SavePageLater API calls.
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.Background.ImmediateStart.AvailableRequestCount"
     units="units" expires_after="2021-06-25">
   <owner>dougarnett@chromium.org</owner>
@@ -207,131 +158,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="OfflinePages.Background.ImmediateStart.UnavailableRequestCount"
-    units="units" expires_after="2021-06-25">
-  <owner>dougarnett@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Number of queued background load requests unavailable for processing when
-    processing starts immediately (vs. scheduled). This is for non-svelte
-    devices (where svelte is determined by base::SysInfo::IsLowEnd()).
-  </summary>
-</histogram>
-
-<histogram
-    name="OfflinePages.Background.ImmediateStart.UnavailableRequestCount.Svelte"
-    units="units" expires_after="2021-06-25">
-  <owner>dougarnett@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Number of queued background load requests unavailable for processing when
-    processing starts immediately (vs. scheduled). This is for svelte devices
-    (where svelte is determined by base::SysInfo::IsLowEnd()).
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.Background.LoadingErrorStatusCode"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-06-25">
   <owner>chili@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>
     The combined http and net error codes that caused a page load failure.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.Background.OfflinerRequestStatus"
-    enum="OfflinePagesBackgroundOfflinerRequestStatus"
-    expires_after="2021-03-01">
-  <owner>dougarnett@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Status code of background offlining (loading and saving) requests.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.Background.RequestFailure.StartedAttemptCount"
-    units="units" expires_after="2021-06-25">
-  <owner>dougarnett@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Number of started attempts by failed background load requests.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.Background.RequestSuccess.StartedAttemptCount"
-    units="units" expires_after="2021-06-25">
-  <owner>dougarnett@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Number of started attempts by successful background load requests.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.Background.SavePageFromCCT" units="units"
-    expires_after="2021-06-25">
-  <owner>chili@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>Whether the save page result came from chrome custom tabs.</summary>
-</histogram>
-
-<histogram
-    name="OfflinePages.Background.ScheduledStart.UnavailableRequestCount"
-    units="units" expires_after="2021-06-25">
-  <owner>dougarnett@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Number of queued background load requests unavailable for processing when
-    background scheduled processing starts. This is for non-svelte devices
-    (where svelte is determined by base::SysInfo::IsLowEnd()).
-  </summary>
-</histogram>
-
-<histogram
-    name="OfflinePages.Background.ScheduledStart.UnavailableRequestCount.Svelte"
-    units="units" expires_after="2021-06-25">
-  <owner>dougarnett@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Number of queued background load requests unavailable for processing when
-    background scheduled processing starts. This is for svelte devices (where
-    svelte is determined by base::SysInfo::IsLowEnd()).
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.Background.TimeToCanceled" units="seconds"
-    expires_after="2021-03-01">
-  <owner>dougarnett@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>Time from background request until it was canceled.</summary>
-</histogram>
-
-<histogram name="OfflinePages.Background.TimeToSaved" units="seconds"
-    expires_after="2021-03-01">
-  <owner>dougarnett@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Time from background request until it was successfully saved.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.Background.TimeToStart" units="ms"
-    expires_after="2021-03-01">
-  <owner>dougarnett@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Time from background request until processing it was first started. This is
-    for non-svelte devices.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.Background.TimeToStart.Svelte" units="ms"
-    expires_after="2021-03-01">
-  <owner>dougarnett@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Time from background request until processing it was first started on svelte
-    device. Svelte is determined by base::SysInfo::IsLowEnd().
   </summary>
 </histogram>
 
