@@ -862,8 +862,8 @@
     },
 
     'client.openscreen.chromium': {
-      'chromium_linux64_debug': 'debug_bot',
-      'chromium_mac_debug': 'debug_bot',
+      'chromium_linux64_debug': 'debug_bot_reclient',
+      'chromium_mac_debug': 'debug_bot_reclient',
     },
 
     'client.v8.chromium': {
