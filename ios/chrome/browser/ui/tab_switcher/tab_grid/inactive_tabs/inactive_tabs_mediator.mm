@@ -178,8 +178,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
     // Push the tabs to the consumer.
     PopulateConsumerItems(_consumer, _webStateList);
     // Push the info to the consumer.
-    NSInteger daysThreshold =
-        _prefService->GetInteger(prefs::kInactiveTabsTimeThreshold);
+    NSInteger daysThreshold = InactiveTabsTimeThreshold().InDays();
     [_consumer updateInactiveTabsDaysThreshold:daysThreshold];
 
     _snapshotCache = snapshotAgent->snapshot_cache();

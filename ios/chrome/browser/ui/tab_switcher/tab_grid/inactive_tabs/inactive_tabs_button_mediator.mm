@@ -73,8 +73,7 @@ using ScopedWebStateListObservation =
 
     // Push the info to the consumer.
     [_consumer updateInactiveTabsCount:_webStateList->count()];
-    NSInteger daysThreshold =
-        _prefService->GetInteger(prefs::kInactiveTabsTimeThreshold);
+    NSInteger daysThreshold = InactiveTabsTimeThreshold().InDays();
     [_consumer updateInactiveTabsDaysThreshold:daysThreshold];
   }
   return self;
