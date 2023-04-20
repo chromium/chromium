@@ -117,6 +117,9 @@ class COMPONENT_EXPORT(UI_BASE) TouchEditingControllerDeprecated {
 
   // Notifies the controller that the selection has changed.
   virtual void SelectionChanged() = 0;
+
+  // Toggles showing/hiding the quick menu.
+  virtual void ToggleQuickMenu() = 0;
 };
 
 class COMPONENT_EXPORT(UI_BASE) TouchEditingControllerFactory {

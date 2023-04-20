@@ -738,13 +738,18 @@ bool Textfield::OnKeyReleased(const ui::KeyEvent& event) {
 
 void Textfield::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
-    case ui::ET_GESTURE_TAP:
+    case ui::ET_GESTURE_TAP: {
       RequestFocusForGesture(event->details());
       if (controller_ && controller_->HandleGestureEvent(this, *event)) {
         selection_dragging_state_ = SelectionDraggingState::kNone;
         event->SetHandled();
         return;
       }
+
+      const size_t tap_pos =
+          GetRenderText()->FindCursorPosition(event->location()).caret_pos();
+      const bool should_toggle_menu = event->details().tap_count() == 1 &&
+                                      GetSelectedRange() == gfx::Range(tap_pos);
       if (selection_dragging_state_ != SelectionDraggingState::kNone) {
         // Selection has already been set in the preceding ET_GESTURE_TAP_DOWN
         // event, so handles should be shown without changing the selection.
@@ -770,8 +775,12 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
         OnAfterUserAction();
       }
       CreateTouchSelectionControllerAndNotifyIt();
+      if (touch_selection_controller_ && should_toggle_menu) {
+        touch_selection_controller_->ToggleQuickMenu();
+      }
       event->SetHandled();
       break;
+    }
     case ui::ET_GESTURE_TAP_DOWN: {
       if (::features::IsTouchTextEditingRedesignEnabled() && HasFocus()) {
         if (event->details().tap_down_count() == 2) {
