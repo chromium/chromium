@@ -20,7 +20,6 @@ namespace arc::input_overlay {
 
 class Action;
 class ActionEditButton;
-class DisplayOverlayController;
 
 // Represents the default label index. Default -1 means all the index.
 constexpr int kDefaultLabelIndex = -1;

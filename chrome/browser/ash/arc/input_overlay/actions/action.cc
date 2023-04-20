@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/position.h"
+#include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "ui/aura/window.h"
 #include "ui/events/base_event_utils.h"
