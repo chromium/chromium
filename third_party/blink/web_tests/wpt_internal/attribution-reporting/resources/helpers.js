@@ -22,8 +22,7 @@ const resetWptServerStash = () =>
           resetAttributionReports(aggregatableDebugReportsUrl),
           resetAttributionReports(verboseDebugReportsUrl),
           resetRegisteredSources(),
-        ])
-        .then(() => console.log('stash reset'));
+        ]);
 
 const eventLevelReportsUrl =
     '/.well-known/attribution-reporting/report-event-attribution';
@@ -231,7 +230,6 @@ const registerAttributionSrc = async (t, {
       }
       document.body.appendChild(a);
       await test_driver.click(a);
-      console.log('test driver click completed');
       return 'navigation';
     case 'open':
       await test_driver.bless('open window', () => {
@@ -243,7 +241,6 @@ const registerAttributionSrc = async (t, {
           open(url, '_blank', 'attributionsrc');
         }
       });
-      console.log('test driver open completed');
       return 'navigation';
     case 'fetch':
       const headers = {};
