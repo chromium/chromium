@@ -6,13 +6,11 @@
 
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/grit/ash_media_app_resources.h"
 #include "ash/webui/media_app_ui/buildflags.h"
 #include "ash/webui/media_app_ui/media_app_page_handler.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "ash/webui/web_applications/webui_test_prod_util.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -42,13 +40,7 @@ content::WebUIDataSource* CreateAndAddHostDataSource(
       browser_context, kChromeUIMediaAppHost);
 
   // Add resources from ash_media_app_resources.pak.
-  // TODO(b/218419680): Remove index_dark_light_html when the dark/light flag is
-  // no longer needed.
-  if (chromeos::features::IsDarkLightModeEnabled()) {
-    source->SetDefaultResource(IDR_MEDIA_APP_INDEX_DARK_LIGHT_HTML);
-  } else {
-    source->SetDefaultResource(IDR_MEDIA_APP_INDEX_HTML);
-  }
+  source->SetDefaultResource(IDR_MEDIA_APP_INDEX_DARK_LIGHT_HTML);
   source->AddResourcePath("launch.js", IDR_MEDIA_APP_LAUNCH_JS);
   source->AddResourcePath("viewpdfhost.html", IDR_MEDIA_APP_VIEWPDFHOST_HTML);
   source->AddResourcePath("viewpdfhost.js", IDR_MEDIA_APP_VIEWPDFHOST_JS);

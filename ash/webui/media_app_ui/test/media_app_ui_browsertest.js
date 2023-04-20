@@ -1479,16 +1479,8 @@ MediaAppUIBrowserTest.GuestHasFocus = async () => {
   assertEquals(document.activeElement, guest);
 };
 
-// Check the body element's background color when the DarkLightMode feature is
-// enabled.
-MediaAppUIBrowserTest.BodyHasCorrectBackgroundColorWithDarkLight = () => {
+// Check the body element's background color when it is light mode.
+MediaAppUIBrowserTest.BodyHasCorrectBackgroundColorInLightMode = () => {
   const actualBackgroundColor = getComputedStyle(document.body).backgroundColor;
   assertEquals(actualBackgroundColor, 'rgb(255, 255, 255)');  // White.
-};
-
-// Check the body element's background color when the DarkLightMode feature is
-// disabled.
-MediaAppUIBrowserTest.BodyHasCorrectBackgroundColorWithoutDarkLight = () => {
-  const actualBackgroundColor = getComputedStyle(document.body).backgroundColor;
-  assertEquals(actualBackgroundColor, 'rgb(32, 33, 36)');  // Grey 900.
 };

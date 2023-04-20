@@ -11,7 +11,6 @@ GEN('#include "ash/webui/help_app_ui/test/help_app_ui_browsertest.h"');
 
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "ash/public/cpp/style/dark_light_mode_controller.h"');
-GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 const HOST_ORIGIN = 'chrome://help-app';
@@ -46,36 +45,13 @@ var HelpAppUIGtestBrowserTest = class extends testing.Test {
 
 // js2gtest fixtures require var here (https://crbug.com/1033337).
 // eslint-disable-next-line no-var
-var HelpAppUIWithDarkLightModeGtestBrowserTest =
+var HelpAppUIWithDarkModeGtestBrowserTest =
     class extends HelpAppUIGtestBrowserTest {
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        ...super.featureList.enabled,
-        'chromeos::features::kDarkLightMode',
-      ],
-    };
-  }
-
   /** @override */
   get testGenPreamble() {
     return () => {
       // Switch to dark mode.
       GEN('ash::DarkLightModeController::Get()->SetDarkModeEnabledForTest(true);');
-    };
-  }
-};
-
-// js2gtest fixtures require var here (https://crbug.com/1033337).
-// eslint-disable-next-line no-var
-var HelpAppUIWithoutDarkLightModeGtestBrowserTest =
-    class extends HelpAppUIGtestBrowserTest {
-  /** @override */
-  get featureList() {
-    return {
-      enabled: super.featureList.enabled,
-      disabled: ['chromeos::features::kDarkLightMode'],
     };
   }
 };
@@ -135,10 +111,7 @@ TEST_F('HelpAppUIGtestBrowserTest', 'ConsistencyCheck', async () => {
     ...(/** @type {{testCaseBodies: Object}} */ (HelpAppUIGtestBrowserTest))
         .testCaseBodies,
     ...(/** @type {{testCaseBodies: Object}} */ (
-            HelpAppUIWithDarkLightModeGtestBrowserTest))
-        .testCaseBodies,
-    ...(/** @type {{testCaseBodies: Object}} */ (
-            HelpAppUIWithoutDarkLightModeGtestBrowserTest))
+            HelpAppUIWithDarkModeGtestBrowserTest))
         .testCaseBodies,
   };
   for (const f in HelpAppUIBrowserTest) {
@@ -162,15 +135,9 @@ TEST_F('HelpAppUIGtestBrowserTest', 'HasTitleAndLang', () => {
 });
 
 TEST_F(
-    'HelpAppUIWithDarkLightModeGtestBrowserTest',
-    'BodyHasCorrectBackgroundColorWithDarkLight', () => {
-      runHelpAppTest('BodyHasCorrectBackgroundColorWithDarkLight');
-    });
-
-TEST_F(
-    'HelpAppUIWithoutDarkLightModeGtestBrowserTest',
-    'BodyHasCorrectBackgroundColorWithoutDarkLight', () => {
-      runHelpAppTest('BodyHasCorrectBackgroundColorWithoutDarkLight');
+    'HelpAppUIWithDarkModeGtestBrowserTest',
+    'BodyHasCorrectBackgroundColorInDarkMode', () => {
+      runHelpAppTest('BodyHasCorrectBackgroundColorInDarkMode');
     });
 
 // Test cases injected into the guest context.
