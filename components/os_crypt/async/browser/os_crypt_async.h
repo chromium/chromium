@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) OSCryptAsync {
   explicit OSCryptAsync(
       std::vector<std::pair<Precedence, std::unique_ptr<KeyProvider>>>
           providers);
-  ~OSCryptAsync();
+  virtual ~OSCryptAsync();
 
   // Not moveable. Not copyable.
   OSCryptAsync(OSCryptAsync&& other) = delete;
@@ -59,7 +59,7 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) OSCryptAsync {
   // `callback`. Must be called on the same sequence that the OSCryptAsync
   // object was created on. Destruction of the `base::CallbackListSubscription`
   // will cause the callback not to run, see `base/callback_list.h`.
-  [[nodiscard]] base::CallbackListSubscription GetInstance(
+  [[nodiscard]] virtual base::CallbackListSubscription GetInstance(
       InitCallback callback);
 
  private:

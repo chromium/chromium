@@ -10,6 +10,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "components/os_crypt/async/browser/key_provider.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/sync/os_crypt.h"
@@ -239,6 +240,35 @@ TEST_F(OSCryptAsyncTest, SubscriptionCancelled) {
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+TEST_F(OSCryptAsyncTest, TestOSCryptAsyncInterface) {
+  auto os_crypt = GetTestOSCryptAsyncForTesting();
+  auto encryptor = GetInstanceSync(*os_crypt);
+  auto ciphertext = encryptor.EncryptString("testsecrets");
+  ASSERT_TRUE(ciphertext);
+  {
+    auto decrypted = encryptor.DecryptData(*ciphertext);
+    ASSERT_TRUE(decrypted);
+    EXPECT_EQ(*decrypted, "testsecrets");
+  }
+  {
+    // Verify that all encryptors returned by the test OSCryptAsync instance use
+    // the same keys.
+    auto second_encryptor = GetInstanceSync(*os_crypt);
+    auto decrypted = second_encryptor.DecryptData(*ciphertext);
+    ASSERT_TRUE(decrypted);
+    EXPECT_EQ(*decrypted, "testsecrets");
+  }
+}
+
+TEST_F(OSCryptAsyncTest, TestEncryptorInterface) {
+  auto encryptor = GetTestEncryptorForTesting();
+  auto ciphertext = encryptor.EncryptString("testsecrets");
+  ASSERT_TRUE(ciphertext);
+  auto decrypted = encryptor.DecryptData(*ciphertext);
+  ASSERT_TRUE(decrypted);
+  EXPECT_EQ(*decrypted, "testsecrets");
 }
 
 class FailingKeyProvider : public TestKeyProvider {
