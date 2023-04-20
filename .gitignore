@@ -338,6 +338,7 @@ vs-chromium-project.txt
 /ui/file_manager/internal
 /ui/file_manager/tsconfig.json
 /ui/keyboard/keyboard_mojom_bindings.xml
+/ui/gl/resources/angle-metal
 /ui/surface/surface.xml
 /ui/surface/surface_gpu_tests.xml
 /ui/webui/internal
