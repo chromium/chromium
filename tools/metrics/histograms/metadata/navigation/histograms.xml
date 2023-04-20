@@ -1406,10 +1406,10 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.TimeToActivatePrerender{PrerenderTriggerType}"
-    units="ms" expires_after="2023-04-27">
+    units="ms" expires_after="2024-04-27">
+  <owner>nhiroki@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
-  <owner>altimin@chromium.org</owner>
-  <owner>asamidoi@chromium.org</owner>
+  <owner>chrome-prerendering@chromium.org</owner>
   <summary>
     The time needed to commit a navigation using prerender activation. This is
     the time from the beginning of NavigationStart to the end of
