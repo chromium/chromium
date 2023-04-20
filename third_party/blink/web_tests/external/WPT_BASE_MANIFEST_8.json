@@ -255731,6 +255731,19 @@
         {}
        ]
       ],
+      "input-date-baseline-min-height.html": [
+       "86b552ab809bb77e0edee713daacab8869351941",
+       [
+        null,
+        [
+         [
+          "/html/rendering/widgets/input-date-baseline-min-height-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "input-date-baseline.html": [
        "0d8f46c06421d22d9d680a83785460bfa865dc81",
        [
@@ -269811,16 +269824,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "32c079baa62d30363e0c7c6df8f8e0dcefbc8505",
-     []
-    ],
-    "mtime.json": [
-     "faa20345fed4508dac76c376f4956f53422ee1a3",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -358996,6 +358999,10 @@
        "8caced027a54676335db3b2199e85cbafba2abee",
        []
       ],
+      "input-date-baseline-min-height-ref.html": [
+       "249076a5b7b064509684ddb4c70c6cea31d4b5ed",
+       []
+      ],
       "input-date-baseline-ref.html": [
        "dcef656bad00792262e05ab643195ef6804d5336",
        []
@@ -374335,7 +374342,7 @@
      []
     ],
     "permissions-policy-header-policy-allowed-for-malformed-wildcard.https.sub.html.sub.headers": [
-     "cfb0f3f5aeed4f2dcf76b191c0896b12515bdf28",
+     "d9facde69e011fed8c5d5fdb5b24c66a121b2570",
      []
     ],
     "permissions-policy-header-policy-allowed-for-self.https.sub.html.sub.headers": [
@@ -576332,7 +576339,7 @@
      ]
     ],
     "permissions-policy-header-policy-allowed-for-malformed-wildcard.https.sub.html": [
-     "daa47efb679dd0d24321b424447d0089e647f326",
+     "9d98d1abcca5780a750620987449f227f38c311e",
      [
       null,
       {}
@@ -613623,7 +613630,7 @@
    "trust-tokens": {
     "end-to-end": {
      "has-trust-token-with-no-top-frame.tentative.https.html": [
-      "587c641d8dca9ef5ce17f169cdd2e4430d2ac144",
+      "a384bec3c26d644ad9e993a965d58ed439e5abb3",
       [
        null,
        {}

@@ -2947,6 +2947,13 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 crbug.com/626703 external/wpt/css/css-multicol/file-control-crash.html [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/external/wpt/html/anonymous-iframe/web-lock.tentative.https.window.html [ Timeout ]
+crbug.com/626703 [ Linux ] virtual/isolate-sandboxed-iframes/external/wpt/html/infrastructure/urls/terminology-0/document-base-url-initiated-grand-parent.https.window.html [ Timeout ]
+crbug.com/626703 [ Linux ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-frame.https.sub.html [ Timeout ]
+crbug.com/626703 [ Linux ] virtual/lna-allow-potentially-trustworthy-same-origin/external/wpt/fetch/local-network-access/redirect.https.window.html [ Timeout ]
+crbug.com/626703 [ Linux ] virtual/partitioned-cookies/external/wpt/html/anonymous-iframe/web-lock.tentative.https.window.html [ Timeout ]
+crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/local-network-access/redirect.https.window.html [ Timeout ]
+crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/element-img.https.sub.html [ Timeout ]
 crbug.com/626703 [ Win11 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=a&eligible [ Skip Timeout ]
 crbug.com/626703 [ Linux ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=a&eligible [ Skip Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=a&eligible [ Skip Timeout ]
