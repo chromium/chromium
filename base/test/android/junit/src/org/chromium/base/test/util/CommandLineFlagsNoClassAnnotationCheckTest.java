@@ -33,22 +33,20 @@ public class CommandLineFlagsNoClassAnnotationCheckTest {
     }
 
     @Test
-    @CommandLineFlags.Add("some-switch")
+    @CommandLineFlags.Add("some-switch=method_value")
     @CommandLineFlags.Remove("some-switch")
     public void testAddThenRemoveSwitch_method() throws Throwable {
-        Assert.assertTrue(
-                "CommandLine switches should be empty after adding and removing the same switch",
-                CommandLine.getInstance().getSwitches().isEmpty());
+        Assert.assertEquals(
+                "some-switch should be removed from the class level and added back, not ignored",
+                "method_value", CommandLine.getInstance().getSwitchValue("some-switch"));
     }
 
     @Test
     @CommandLineFlags.Remove("some-switch")
-    @CommandLineFlags.Add("some-switch")
+    @CommandLineFlags.Add("some-switch=method_value")
     public void testRemoveThenAddSwitch_method() throws Throwable {
-        // ".Add" rules apply before ".Remove" rules when annotating the same method/class,
-        // regardless of the order the annotations are written.
-        Assert.assertTrue(
-                "CommandLine switches should be empty after removing and adding the same switch",
-                CommandLine.getInstance().getSwitches().isEmpty());
+        Assert.assertEquals(
+                "some-switch should be removed from the class level and added back, not ignored",
+                "method_value", CommandLine.getInstance().getSwitchValue("some-switch"));
     }
 }

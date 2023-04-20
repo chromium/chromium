@@ -170,16 +170,30 @@ public final class CommandLineFlags {
     }
 
     private static void restoreFlags(Set<String> flagsToRemove, Map<String, String> flagsToAdd) {
-        for (Entry<String, String> flag : flagsToAdd.entrySet()) {
-            CommandLine.getInstance().appendSwitchWithValue(flag.getKey(), flag.getValue());
-        }
         for (String flag : flagsToRemove) {
             CommandLine.getInstance().removeSwitch(flag);
+        }
+        for (Entry<String, String> flag : flagsToAdd.entrySet()) {
+            if (flag.getValue() == null) {
+                CommandLine.getInstance().appendSwitch(flag.getKey());
+            } else {
+                CommandLine.getInstance().appendSwitchWithValue(flag.getKey(), flag.getValue());
+            }
         }
     }
 
     private static void applyFlags(Set<String> flagsToAdd, Set<String> flagsToRemove,
             Set<String> flagsToRemoveForRestore, Map<String, String> flagsToAddForRestore) {
+        if (flagsToRemove != null) {
+            for (String flag : flagsToRemove) {
+                if (CommandLine.getInstance().hasSwitch(flag)) {
+                    String existingValue = CommandLine.getInstance().getSwitchValue(flag);
+                    CommandLine.getInstance().removeSwitch(flag);
+                    flagsToAddForRestore.put(flag, existingValue);
+                }
+            }
+        }
+
         Set<String> enableFeatures = new HashSet<String>(getFeatureValues(ENABLE_FEATURES));
         Set<String> disableFeatures = new HashSet<String>(getFeatureValues(DISABLE_FEATURES));
         for (String flag : flagsToAdd) {
@@ -210,24 +224,23 @@ public final class CommandLineFlags {
 
         if (enableFeatures.size() > 0) {
             String existingValue = CommandLine.getInstance().getSwitchValue(ENABLE_FEATURES);
-            flagsToAddForRestore.put(ENABLE_FEATURES, existingValue);
+            if (existingValue != null) {
+                flagsToAddForRestore.put(ENABLE_FEATURES, existingValue);
+                CommandLine.getInstance().removeSwitch(ENABLE_FEATURES);
+            }
             CommandLine.getInstance().appendSwitchWithValue(
                     ENABLE_FEATURES, TextUtils.join(",", enableFeatures));
             flagsToRemoveForRestore.add(ENABLE_FEATURES);
         }
         if (disableFeatures.size() > 0) {
             String existingValue = CommandLine.getInstance().getSwitchValue(DISABLE_FEATURES);
-            flagsToAddForRestore.put(DISABLE_FEATURES, existingValue);
+            if (existingValue != null) {
+                flagsToAddForRestore.put(DISABLE_FEATURES, existingValue);
+                CommandLine.getInstance().removeSwitch(DISABLE_FEATURES);
+            }
             CommandLine.getInstance().appendSwitchWithValue(
                     DISABLE_FEATURES, TextUtils.join(",", disableFeatures));
             flagsToRemoveForRestore.add(DISABLE_FEATURES);
-        }
-        if (flagsToRemove == null) return;
-        for (String flag : flagsToRemove) {
-            if (CommandLine.getInstance().hasSwitch(flag)) {
-                CommandLine.getInstance().removeSwitch(flag);
-                flagsToAddForRestore.put(flag, null);
-            }
         }
     }
 
