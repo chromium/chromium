@@ -774,10 +774,15 @@ void OverviewItem::SetShadowBounds(
   gfx::Rect bounds_in_item =
       gfx::Rect(item_widget_->GetNativeWindow()->GetTargetBounds().size());
 
+  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
+  if (!is_jellyroll_enabled) {
+    bounds_in_item.Inset(gfx::Insets::TLBR(kHeaderHeightDp, 0, 0, 0));
+  }
+
   bounds_in_item.ClampToCenteredSize(
       gfx::ToRoundedSize(bounds_in_screen->size()));
   shadow_->SetContentBounds(bounds_in_item);
-  if (chromeos::features::IsJellyrollEnabled()) {
+  if (is_jellyroll_enabled) {
     shadow_->SetRoundedCornerRadius(kOverviewItemCornerRadius);
   }
 }
@@ -816,8 +821,13 @@ void OverviewItem::UpdateRoundedCornersAndShadow() {
     // occupy the whole remaining area of the overview item widget minus the
     // header view in which case, the shadow looks weird if it matches the size
     // of the transformed window or preview view.
-    gfx::RectF shadow_bounds = target_bounds_;
-    shadow_bounds.Inset(gfx::InsetsF(kWindowMargin));
+    gfx::RectF shadow_bounds;
+    if (chromeos::features::IsJellyrollEnabled()) {
+      shadow_bounds = target_bounds_;
+      shadow_bounds.Inset(gfx::InsetsF(kWindowMargin));
+    } else {
+      shadow_bounds = GetWindowTargetBoundsWithInsets();
+    }
     SetShadowBounds(absl::make_optional(shadow_bounds));
   } else {
     SetShadowBounds(absl::nullopt);
