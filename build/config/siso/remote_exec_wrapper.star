@@ -31,6 +31,16 @@ def __step_config(ctx, step_config):
             "action": "(.*_)?cc",
             "use_remote_exec_wrapper": True,
         },
+        {
+            "name": "clang/objcxx",
+            "action": "(.*_)?objcxx",
+            "use_remote_exec_wrapper": True,
+        },
+        {
+            "name": "clang/objc",
+            "action": "(.*_)?objc",
+            "use_remote_exec_wrapper": True,
+        },
     ])
     return step_config
 
