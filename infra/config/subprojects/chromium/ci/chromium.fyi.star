@@ -1588,6 +1588,8 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
     ),
     execution_timeout = 10 * time.hour,
     service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+    siso_enable_cloud_profiler = True,
+    siso_enable_cloud_trace = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
@@ -1657,6 +1659,8 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
     ),
     execution_timeout = 6 * time.hour,
     service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+    siso_enable_cloud_profiler = True,
+    siso_enable_cloud_trace = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
     use_clang_coverage = True,
 )
@@ -1727,6 +1731,8 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
     ),
     execution_timeout = 6 * time.hour,
     service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+    siso_enable_cloud_profiler = True,
+    siso_enable_cloud_trace = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
     use_clang_coverage = True,
 )

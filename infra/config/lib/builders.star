@@ -430,6 +430,8 @@ defaults = args.defaults(
     reclient_ensure_verified = None,
     reclient_disable_bq_upload = None,
     siso_project = None,
+    siso_enable_cloud_profiler = None,
+    siso_enable_cloud_trace = None,
     health_spec = None,
 
     # Provide vars for bucket and executable so users don't have to
@@ -495,6 +497,8 @@ def builder(
         reclient_ensure_verified = None,
         reclient_disable_bq_upload = None,
         siso_project = args.DEFAULT,
+        siso_enable_cloud_profiler = args.DEFAULT,
+        siso_enable_cloud_trace = args.DEFAULT,
         health_spec = args.DEFAULT,
         **kwargs):
     """Define a builder.
@@ -679,6 +683,8 @@ def builder(
             BigQuery after each build
         siso_project: a string indicating the GCP project hosting the RBE
             instance and other Cloud services. e.g. logging, trace etc.
+        siso_enable_cloud_profiler: If True, enable cloud profiler in siso.
+        siso_enable_cloud_trace: If True, enable cloud trace in siso.
         **kwargs: Additional keyword arguments to forward on to `luci.builder`.
 
     Returns:
@@ -846,6 +852,8 @@ def builder(
 
     siso = {
         "project": defaults.get_value("siso_project", siso_project),
+        "enable_cloud_profiler": defaults.get_value("siso_enable_cloud_profiler", siso_enable_cloud_profiler),
+        "enable_cloud_trace": defaults.get_value("siso_enable_cloud_trace", siso_enable_cloud_trace),
     }
     if siso["project"]:
         properties["$build/siso"] = siso
