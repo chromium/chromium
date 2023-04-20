@@ -237,6 +237,9 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_SUPPORT_LEGACY_CONIC_CHOP
 
+// To be replaced with SK_ENABLE_SKSL_IN_RASTER_PIPELINE (go/sksl-rp):
+#define SK_ENABLE_SKVM
+
 // Use the original std::vector based serializer
 // Remove when new streaming support operations has been verified.
 // #define SK_SUPPORT_LEGACY_STRIKE_SERIALIZATION
