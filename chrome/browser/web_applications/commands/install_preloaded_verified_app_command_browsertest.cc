@@ -11,7 +11,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/commands/install_from_manifest_command.h"
+#include "chrome/browser/web_applications/commands/install_preloaded_verified_app_command.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -29,7 +29,8 @@
 
 namespace web_app {
 
-class InstallFromManifestCommandTest : public WebAppControllerBrowserTest {
+class InstallPreloadedVerifiedAppCommandTest
+    : public WebAppControllerBrowserTest {
  public:
   void SetUpOnMainThread() override {
     WebAppControllerBrowserTest::SetUpOnMainThread();
@@ -73,7 +74,8 @@ class InstallFromManifestCommandTest : public WebAppControllerBrowserTest {
       test_override_;
 };
 
-IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, SuccessNewInstall) {
+IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
+                       SuccessNewInstall) {
   const GURL kDocumentUrl("https://www.app.com/");
   const GURL kStartUrl("https://www.app.com/home");
   const GURL kManifestUrl("https://www.app.com/manifest.json");
@@ -96,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, SuccessNewInstall) {
   AppId expected_id = GenerateAppId(/*manifest_id=*/absl::nullopt, kStartUrl);
   base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
   provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallFromManifestCommand>(
+      std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
           kManifestUrl, manifest, expected_id, GetHostAllowlist(),
           result.GetCallback()));
@@ -120,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, SuccessNewInstall) {
   EXPECT_TRUE(IsShortcutCreated(result_id, "Test app"));
 }
 
-IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest,
+IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
                        SuccessCrossOriginManifest) {
   const GURL kDocumentUrl("https://www.app.com/");
   const GURL kManifestUrl("https://www.cdn.com/app/manifest.json");
@@ -142,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest,
 
   base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
   provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallFromManifestCommand>(
+      std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
           kManifestUrl, manifest, expected_id, GetHostAllowlist(),
           result.GetCallback()));
@@ -153,7 +155,8 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest,
   EXPECT_TRUE(IsShortcutCreated(result_id, "Test app"));
 }
 
-IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, SuccessWithManifestId) {
+IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
+                       SuccessWithManifestId) {
   const GURL kDocumentUrl("https://www.app.com/");
   const GURL kManifestUrl("https://www.app.com/manifest.json");
   const char kManifestTemplate[] = R"json({
@@ -173,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, SuccessWithManifestId) {
   AppId expected_id = GenerateAppId("appid", kDocumentUrl);
   base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
   provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallFromManifestCommand>(
+      std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
           kManifestUrl, manifest, expected_id, GetHostAllowlist(),
           result.GetCallback()));
@@ -187,7 +190,8 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, SuccessWithManifestId) {
             "Test app");
 }
 
-IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, SuccessWithExistingApp) {
+IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
+                       SuccessWithExistingApp) {
   const GURL kDocumentUrl("https://www.app.com/");
   const GURL kManifestUrl("https://www.app.com/manifest.json");
   const char kManifestTemplate[] = R"json({
@@ -207,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, SuccessWithExistingApp) {
 
   base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
   provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallFromManifestCommand>(
+      std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::INTERNAL_DEFAULT, kDocumentUrl,
           kManifestUrl, manifest, existing_id, GetHostAllowlist(),
           result.GetCallback()));
@@ -224,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, SuccessWithExistingApp) {
       provider().registrar_unsafe().GetAppById(result_id)->IsPreinstalledApp());
 }
 
-IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest,
+IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
                        SuccessWithMultipleIcons) {
   const GURL kDocumentUrl("https://www.app.com/");
   const GURL kManifestUrl("https://www.app.com/manifest.json");
@@ -269,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest,
 
   base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
   provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallFromManifestCommand>(
+      std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::INTERNAL_DEFAULT, kDocumentUrl,
           kManifestUrl, manifest, expected_id, GetHostAllowlist(),
           result.GetCallback()));
@@ -294,14 +298,15 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest,
   EXPECT_EQ(shortcut_icon_color, SK_ColorBLUE);
 }
 
-IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, FailureInvalidManifest) {
+IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
+                       FailureInvalidManifest) {
   const GURL kDocumentUrl("https://www.app.com/");
   const GURL kManifestUrl("https://www.app.com/manifest.json");
   const char kManifest[] = "notjson";
 
   base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
   provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallFromManifestCommand>(
+      std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
           kManifestUrl, kManifest,
           /*expected_id=*/"", GetHostAllowlist(), result.GetCallback()));
@@ -310,7 +315,8 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, FailureInvalidManifest) {
             webapps::InstallResultCode::kNotValidManifestForWebApp);
 }
 
-IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, FailureInvalidStartUrl) {
+IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
+                       FailureInvalidStartUrl) {
   // Installation will fail because there's no valid start URL.
   const GURL kDocumentUrl("https://www.app.com/");
   const GURL kManifestUrl("https://www.app.com/manifest.json");
@@ -320,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, FailureInvalidStartUrl) {
 
   base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
   provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallFromManifestCommand>(
+      std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
           kManifestUrl, kManifest,
           /*expected_id=*/"", GetHostAllowlist(), result.GetCallback()));
@@ -329,7 +335,8 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, FailureInvalidStartUrl) {
             webapps::InstallResultCode::kNotValidManifestForWebApp);
 }
 
-IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, FailureInvalidName) {
+IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
+                       FailureInvalidName) {
   // Installation will fail because there's no valid name.
   const GURL kDocumentUrl("https://www.app.com/");
   const GURL kManifestUrl("https://www.app.com/manifest.json");
@@ -339,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, FailureInvalidName) {
 
   base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
   provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallFromManifestCommand>(
+      std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
           kManifestUrl, kManifest,
           /*expected_id=*/"", GetHostAllowlist(), result.GetCallback()));
@@ -348,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, FailureInvalidName) {
             webapps::InstallResultCode::kNotValidManifestForWebApp);
 }
 
-IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest,
+IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
                        FailureStartUrlOriginMismatch) {
   // Installation will fail because the start URL is a different origin to the
   // document URL.
@@ -366,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest,
 
   base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
   provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallFromManifestCommand>(
+      std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
           kManifestUrl, kManifest,
           /*expected_id=*/"", GetHostAllowlist(), result.GetCallback()));
@@ -375,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest,
             webapps::InstallResultCode::kNotValidManifestForWebApp);
 }
 
-IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest,
+IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
                        FailureExpectedIdMismatch) {
   // Installation will fail because the expected ID doesn't match the ID in the
   // manifest.
@@ -397,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest,
 
   base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
   provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallFromManifestCommand>(
+      std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
           kManifestUrl, manifest, kExpectedId, GetHostAllowlist(),
           result.GetCallback()));
@@ -406,7 +413,8 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest,
             webapps::InstallResultCode::kExpectedAppIdCheckFailed);
 }
 
-IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, FailureNoValidIcons) {
+IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
+                       FailureNoValidIcons) {
   // Installation will fail because there are no icons that match the allowlist.
   const GURL kDocumentUrl("https://www.app.com/");
   const GURL kManifestUrl("https://www.app.com/manifest.json");
@@ -438,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, FailureNoValidIcons) {
 
   base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
   provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallFromManifestCommand>(
+      std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
           kManifestUrl, manifest, kExpectedId, host_allowlist,
           result.GetCallback()));
@@ -447,7 +455,8 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, FailureNoValidIcons) {
             webapps::InstallResultCode::kNotValidManifestForWebApp);
 }
 
-IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, FailureAllIconsError) {
+IN_PROC_BROWSER_TEST_F(InstallPreloadedVerifiedAppCommandTest,
+                       FailureAllIconsError) {
   // Installation will fail because all icons error when downloaded.
   const GURL kDocumentUrl("https://www.app.com/");
   const GURL kManifestUrl("https://www.app.com/manifest.json");
@@ -477,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromManifestCommandTest, FailureAllIconsError) {
 
   base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
   provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallFromManifestCommand>(
+      std::make_unique<InstallPreloadedVerifiedAppCommand>(
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
           kManifestUrl, manifest, kExpectedId, GetHostAllowlist(),
           result.GetCallback()));

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_FROM_MANIFEST_COMMAND_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_FROM_MANIFEST_COMMAND_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_PRELOADED_VERIFIED_APP_COMMAND_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_PRELOADED_VERIFIED_APP_COMMAND_H_
 
 #include <memory>
 #include <string>
@@ -45,7 +45,7 @@ class SharedWebContentsWithAppLockDescription;
 //
 // The web app can be simultaneously installed from multiple sources. If the
 // web app already exists, the manifest contents will be ignored.
-class InstallFromManifestCommand
+class InstallPreloadedVerifiedAppCommand
     : public WebAppCommandTemplate<SharedWebContentsLock> {
  public:
   // Begins installation of a web app from a raw manifest string.
@@ -62,15 +62,16 @@ class InstallFromManifestCommand
   // from. Icon URLs whose host does not exactly match a host from this set are
   // ignored.
   // `callback`: Called when installation completes.
-  InstallFromManifestCommand(webapps::WebappInstallSource install_source,
-                             GURL document_url,
-                             GURL manifest_url,
-                             std::string manifest_contents,
-                             AppId expected_id,
-                             base::flat_set<std::string> host_allowlist,
-                             OnceInstallCallback callback);
+  InstallPreloadedVerifiedAppCommand(
+      webapps::WebappInstallSource install_source,
+      GURL document_url,
+      GURL manifest_url,
+      std::string manifest_contents,
+      AppId expected_id,
+      base::flat_set<std::string> host_allowlist,
+      OnceInstallCallback callback);
 
-  ~InstallFromManifestCommand() override;
+  ~InstallPreloadedVerifiedAppCommand() override;
 
   // WebAppCommandTemplate<SharedWebContentsLock>:
   const LockDescription& lock_description() const override;
@@ -117,9 +118,10 @@ class InstallFromManifestCommand
 
   mojo::Remote<blink::mojom::ManifestManager> manifest_manager_;
 
-  base::WeakPtrFactory<InstallFromManifestCommand> weak_ptr_factory_{this};
+  base::WeakPtrFactory<InstallPreloadedVerifiedAppCommand> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_FROM_MANIFEST_COMMAND_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_PRELOADED_VERIFIED_APP_COMMAND_H_
