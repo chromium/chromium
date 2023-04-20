@@ -2804,19 +2804,6 @@
     'name': 'chromium.fuchsia.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'fuchsia-arm64-chrome-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'fuchsia_chrome_large_gtests',
-        },
-        'mixins': [
-          'arm64',
-          'docker',
-          'linux-focal',
-        ],
-      },
       'fuchsia-fyi-arm64-dbg': {
         'additional_compile_targets': [
           'all',
@@ -2886,23 +2873,6 @@
         },
         'test_suites': {
           'gtest_tests': 'fuchsia_facility_gtests',
-        },
-      },
-      'fuchsia-x64-chrome-rel': {
-        'browser_config': 'fuchsia-chrome',
-        'os_type': 'fuchsia',
-        'mixins': [
-          'linux-bionic',
-        ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'kvm': '1',
-            },
-          ],
-        },
-        'test_suites': {
-          'gtest_tests': 'fuchsia_chrome_large_gtests',
         },
       },
     },

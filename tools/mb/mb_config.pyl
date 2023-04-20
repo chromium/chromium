@@ -301,11 +301,9 @@
     },
 
     'chromium.fuchsia.fyi': {
-      'fuchsia-arm64-chrome-rel': 'release_bot_fuchsia_arm64_reclient',
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64_reclient',
       'fuchsia-fyi-x64-asan': 'asan_lsan_bot_fuchsia_reclient',
       'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia_reclient',
-      'fuchsia-x64-chrome-rel': 'release_bot_fuchsia_chrome_reclient',
       'fuchsia-x64-workstation': 'release_bot_fuchsia_chrome_reclient',
     },
 

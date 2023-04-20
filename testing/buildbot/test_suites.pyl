@@ -2238,24 +2238,6 @@
       },
     },
 
-    'fuchsia_chrome_large_gtests': {
-      'browser_tests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.browser_tests.filter',
-          '--test-arg=--test-launcher-timeout=60000',
-        ],
-        'swarming': {
-          'shards': 40,
-        },
-      },
-      'sync_integration_tests': {},
-      'unit_tests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.unit_tests.filter',
-        ],
-      },
-    },
-
     'fuchsia_chrome_small_gtests': {
       'courgette_unittests': {},
       'extensions_unittests': {},

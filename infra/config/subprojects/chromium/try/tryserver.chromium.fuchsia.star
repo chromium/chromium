@@ -46,13 +46,6 @@ try_.builder(
     ),
 )
 
-try_.builder(
-    name = "fuchsia-arm64-chrome-rel",
-    mirrors = [
-        "ci/fuchsia-arm64-chrome-rel",
-    ],
-)
-
 try_.orchestrator_builder(
     name = "fuchsia-arm64-rel",
     branch_selector = branches.selector.FUCHSIA_BRANCHES,
@@ -153,13 +146,6 @@ try_.compilator_builder(
     cores = "8|16",
     ssd = True,
     main_list_view = "try",
-)
-
-try_.builder(
-    name = "fuchsia-x64-chrome-rel",
-    mirrors = [
-        "ci/fuchsia-x64-chrome-rel",
-    ],
 )
 
 try_.builder(
