@@ -12,7 +12,7 @@ import logging
 import optparse
 import pathlib
 import urllib.parse
-from typing import Collection, List, Optional, Set, Tuple, Type, Union
+from typing import Collection, Hashable, List, Optional, Set, Tuple, Type, Union
 
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
@@ -67,7 +67,7 @@ class MetadataUnsortedSection(MetadataRule):
 
 class MetadataEmptySection(MetadataRule):
     name = 'META-EMPTY-SECTION'
-    description = 'Empty section can be removed:%(heading)s'
+    description = 'Empty section should be removed:%(heading)s'
     to_fix = """
     A section without keys or subsections has no effect and should be removed.
     The (sub)tests represented by empty sections default to enabled and
@@ -166,6 +166,16 @@ class MetadataConditionsUnnecessary(MetadataRule):
     description = '%(section_type)s key %(key)r always has value %(value)r'
     to_fix = """
     Express the key as an unconditional expression without `if`.
+    """
+
+
+class MetadataUnnecessaryKey(MetadataRule):
+    name = 'META-UNNECESSARY-KEY'
+    description = ("%(section_type)s%(heading)s key %(key)r always resolves "
+                   'to an implied %(value)r and should be removed')
+    to_fix = """
+    A key that only resolves to an implied default value should be removed. For
+    example, `expected: (OK|PASS)` is implied by an absent `expected` key.
     """
 
 
@@ -381,9 +391,11 @@ class MetadataLinter(Compiler):
 
     def _check_conditions(self, key_value_node: wptnode.KeyValueNode):
         conditions, values = self._get_conditional_values(key_value_node)
+        assert conditions and values
         # Reference conditions by index because they are not hashable.
         conditions_not_taken = set(range(len(conditions)))
         unique_values = set(map(self.visit, values))
+        implicit_default = self._implicit_default_value(key_value_node.data)
         # Simulate conditional value resolution for each test configuration.
         for config in self.configs:
             for i, condition in enumerate(conditions):
@@ -402,18 +414,13 @@ class MetadataLinter(Compiler):
                     # as if this branch were not taken.
                     conditions_not_taken.discard(i)
             else:
-                # Add a sentinel object to simulate no default (an empty value).
-                # This unique value forces `META-CONDITIONS-UNNECESSARY` to
-                # pass because at least one configuration falls through to the
-                # end.
-                #
-                # TODO(crbug.com/1406669): Add a special rule when
-                # `unique_values` is `expected: (PASS|OK)`, which can just be
-                # removed.
-                unique_values.add(object())
+                unique_values.add(implicit_default)
 
-        if (len([condition for condition in conditions if condition]) > 0
-                and len(unique_values) == 1):
+        if unique_values == {implicit_default}:
+            self._error(MetadataUnnecessaryKey, value=_format_node(values[0]))
+            return
+        elif (len([condition for condition in conditions if condition]) > 0
+              and len(unique_values) == 1):
             self._error(MetadataConditionsUnnecessary,
                         value=_format_node(values[0]))
             return
@@ -429,6 +436,20 @@ class MetadataLinter(Compiler):
                             prop=prop,
                             value=value,
                             condition=_format_condition(condition))
+
+    def _implicit_default_value(self, key: str) -> Hashable:
+        """Return the value wptrunner infers when no conditions match."""
+        if key == 'expected':
+            if (self.context['section_type'] is SectionType.TEST
+                    and self.test_type == 'testharness'):
+                return 'OK'
+            return 'PASS'
+        elif key == 'disabled' or key == 'restart-after':
+            return False
+        # Add a sentinel object to simulate no explicit default. This unique
+        # value forces `META-CONDITIONS-UNNECESSARY` to pass because at least
+        # one configuration falls through to the end.
+        return object()
 
     def _eval_condition_taken(self, condition: Condition,
                               run_info: metadata.RunInfo) -> bool:

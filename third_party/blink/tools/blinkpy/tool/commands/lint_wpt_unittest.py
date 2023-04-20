@@ -201,13 +201,13 @@ class LintWPTTest(LoggingTestCase):
         self.assertEqual(name, 'META-EMPTY-SECTION')
         self.assertEqual(path, 'variant.html.ini')
         self.assertEqual(description,
-                         "Empty section can be removed: '[empty subtest]'")
+                         "Empty section should be removed: '[empty subtest]'")
         name, description, path, _ = empty_test
         self.assertEqual(name, 'META-EMPTY-SECTION')
         self.assertEqual(path, 'variant.html.ini')
         self.assertEqual(
             description,
-            "Empty section can be removed: '[variant.html?foo=baz]'")
+            "Empty section should be removed: '[variant.html?foo=baz]'")
 
     def test_metadata_nonexistent_test(self):
         error1, error2 = self._check_metadata(
@@ -400,34 +400,47 @@ class LintWPTTest(LoggingTestCase):
                          "Test key 'restart-after' always has value '@True'")
 
     def test_metadata_condition_checks_exclusive(self):
-        conds_unnecessary, unreachable_value = self._check_metadata("""\
-            [reftest.html]
+        always_flaky, always_ok, unreachable_value = self._check_metadata(
+            """\
+            [variant.html?foo=baz]
               disabled:
                 if os == "win": flaky
                 if os == "win": flaky
                 flaky
               expected:
-                if os == "win": FAIL
-                if os == "win": [FAIL, PASS]
-                FAIL
-            """)
+                if os == "win": OK
+                if os == "win": OK
+                OK
+              [subtest]
+                expected:
+                  if os == "win": PASS
+                  if os == "win": [FAIL, PASS]
+                  FAIL
+            """, 'variant.html.ini')
         # Since the author should rewrite this key unconditionally as
         # `disabled: flaky` anyway, there's no need to say that the second
-        # condition is unreachable.
-        name, description, path, _ = conds_unnecessary
+        # condition is unreachable. Similar reasoning applies to skipping
+        # condition errors for `META-UNNECESSARY-KEY`.
+        name, description, path, _ = always_flaky
         self.assertEqual(name, 'META-CONDITIONS-UNNECESSARY')
-        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(path, 'variant.html.ini')
         self.assertEqual(description,
                          "Test key 'disabled' always has value 'flaky'")
+        name, description, path, _ = always_ok
+        self.assertEqual(name, 'META-UNNECESSARY-KEY')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description, "Test '[variant.html?foo=baz]' key 'expected' "
+            "always resolves to an implied 'OK' and should be removed")
         # `META-CONDITIONS-UNNECESSARY` should determine necessity using all
         # values, even unreachable ones, as unreachable values may become
         # reachable if fixed.
         name, description, path, _ = unreachable_value
         self.assertEqual(name, 'META-UNREACHABLE-VALUE')
-        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(path, 'variant.html.ini')
         self.assertEqual(
-            description,
-            "Test key 'expected' has an unused condition 'if os == \"win\"'")
+            description, "Subtest key 'expected' has "
+            "an unused condition 'if os == \"win\"'")
 
     def test_metadata_unreachable_value(self):
         shadowed_narrow, always_false, unused_default = self._check_metadata(
@@ -508,3 +521,35 @@ class LintWPTTest(LoggingTestCase):
             "Test key 'expected' condition 'if (os == \"mac\") or "
             "((os == \"linux\") and (\"contentshell\" != product))' "
             "compares 'product' against unrecognized value 'contentshell'")
+
+    def test_metadata_unnecessary_key(self):
+        always_enabled, always_pass, always_ok = self._check_metadata(
+            """\
+            disabled: @False
+            [variant.html?foo=baz]
+              expected:
+                if os == "mac": OK
+              [subtest]
+                expected:
+                  if os == "mac": PASS
+                  if os == "linux": PASS
+                  if os == "win": PASS
+            """, 'variant.html.ini')
+        name, description, path, _ = always_enabled
+        self.assertEqual(name, 'META-UNNECESSARY-KEY')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description, "Root key 'disabled' "
+            "always resolves to an implied '@False' and should be removed")
+        name, description, path, _ = always_ok
+        self.assertEqual(name, 'META-UNNECESSARY-KEY')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description, "Test '[variant.html?foo=baz]' key 'expected' "
+            "always resolves to an implied 'OK' and should be removed")
+        name, description, path, _ = always_pass
+        self.assertEqual(name, 'META-UNNECESSARY-KEY')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description, "Subtest '[subtest]' key 'expected' "
+            "always resolves to an implied 'PASS' and should be removed")
