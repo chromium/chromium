@@ -11,11 +11,11 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "base/uuid.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_context.h"
@@ -664,7 +664,7 @@ class TabDragController : public views::WidgetObserver,
 
   // The GUID of the saved tab group whose tracking is paused between paired
   // Detach() and Attach() calls, if dragging a saved tab group between windows.
-  absl::optional<base::GUID> paused_saved_group_id_;
+  absl::optional<base::Uuid> paused_saved_group_id_;
 
   // True until MoveAttached() is first invoked.
   bool initial_move_;
