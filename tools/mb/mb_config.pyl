@@ -600,15 +600,15 @@
     },
 
     'chromium.infra.codesearch': {
-      'codesearch-gen-chromium-android': 'codesearch_gen_chromium_android_bot',
-      'codesearch-gen-chromium-chromiumos': 'codesearch_gen_chromium_chromiumos_bot',
-      'codesearch-gen-chromium-fuchsia': 'codesearch_gen_chromium_fuchsia_bot',
-      'codesearch-gen-chromium-ios': 'codesearch_gen_chromium_ios_bot',
-      'codesearch-gen-chromium-lacros': 'codesearch_gen_chromium_lacros_bot',
-      'codesearch-gen-chromium-linux': 'codesearch_gen_chromium_bot',
-      'codesearch-gen-chromium-mac': 'codesearch_gen_chromium_mac_bot',
-      'codesearch-gen-chromium-webview': 'codesearch_gen_chromium_webview_bot',
-      'codesearch-gen-chromium-win': 'codesearch_gen_chromium_bot',
+      'codesearch-gen-chromium-android': 'codesearch_gen_chromium_android_bot_reclient',
+      'codesearch-gen-chromium-chromiumos': 'codesearch_gen_chromium_chromiumos_bot_reclient',
+      'codesearch-gen-chromium-fuchsia': 'codesearch_gen_chromium_fuchsia_bot_reclient',
+      'codesearch-gen-chromium-ios': 'codesearch_gen_chromium_ios_bot_reclient',
+      'codesearch-gen-chromium-lacros': 'codesearch_gen_chromium_lacros_bot_reclient',
+      'codesearch-gen-chromium-linux': 'codesearch_gen_chromium_bot_reclient',
+      'codesearch-gen-chromium-mac': 'codesearch_gen_chromium_mac_bot_reclient',
+      'codesearch-gen-chromium-webview': 'codesearch_gen_chromium_android_bot_reclient',
+      'codesearch-gen-chromium-win': 'codesearch_gen_chromium_bot_reclient',
     },
 
     'chromium.linux': {
@@ -916,7 +916,7 @@
 
     # Internal codesearch builders.
     'luci.infra-internal.codesearch': {
-      'codesearch-gen-chrome-internal-linux': 'codesearch_gen_chromium_bot',
+      'codesearch-gen-chrome-internal-linux': 'codesearch_gen_chromium_bot_reclient',
     },
 
     'official.chrome': {
@@ -2435,42 +2435,21 @@
       'clang_tot', 'win_cross', 'minimal_symbols', 'shared', 'release', 'dcheck_always_on',
     ],
 
-    'codesearch_gen_chromium_android_bot': [
-      # Set is_component_build=false to enable cronet targets.
-      'codesearch', 'android_without_codecs', 'static',
-    ],
-
     'codesearch_gen_chromium_android_bot_reclient': [
       # Set is_component_build=false to enable cronet targets.
       'codesearch_reclient', 'android_without_codecs', 'static',
-    ],
-
-    'codesearch_gen_chromium_bot': [
-      'codesearch',
     ],
 
     'codesearch_gen_chromium_bot_reclient': [
       'codesearch_reclient',
     ],
 
-    'codesearch_gen_chromium_chromiumos_bot': [
-      'codesearch', 'chromeos',
-    ],
-
     'codesearch_gen_chromium_chromiumos_bot_reclient': [
       'codesearch_reclient', 'chromeos',
     ],
 
-    'codesearch_gen_chromium_fuchsia_bot': [
-      'codesearch_release', 'fuchsia', 'cast_receiver',
-    ],
-
     'codesearch_gen_chromium_fuchsia_bot_reclient': [
       'codesearch_release_reclient', 'fuchsia', 'cast_receiver',
-    ],
-
-    'codesearch_gen_chromium_ios_bot': [
-      'codesearch_ios', 'ios', 'ios_disable_code_signing'
     ],
 
     'codesearch_gen_chromium_ios_bot_reclient': [
@@ -2479,26 +2458,12 @@
 
     # Lacros uses different gn args to build for chromeOS device vs. Linux. For
     # simplicity, we only generate codesearch x-refs for lacros on Linux.
-    'codesearch_gen_chromium_lacros_bot': [
-      'codesearch', 'lacros_on_linux',
-    ],
-
-    # Lacros uses different gn args to build for chromeOS device vs. Linux. For
-    # simplicity, we only generate codesearch x-refs for lacros on Linux.
     'codesearch_gen_chromium_lacros_bot_reclient': [
       'codesearch_reclient', 'lacros_on_linux',
     ],
 
-    'codesearch_gen_chromium_mac_bot': [
-      'codesearch', 'mac',
-    ],
-
     'codesearch_gen_chromium_mac_bot_reclient': [
       'codesearch_reclient', 'mac',
-    ],
-
-    'codesearch_gen_chromium_webview_bot': [
-      'codesearch', 'android_without_codecs', 'static', 'goma',
     ],
 
     'dawn_tests_android_release_trybot_reclient': [
@@ -4010,20 +3975,6 @@
       'mixins': ['clang'],
     },
 
-    # Settings used by the codesearch builders to generate cross-references.
-    'codesearch': {
-      'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
-      'mixins': ['goma', 'clang', 'shared', 'debug', 'minimal_symbols',
-                 'blink_enable_generated_code_formatting'],
-    },
-
-    # Same as regular codesearch except ios does not allow component builds
-    'codesearch_ios': {
-      'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
-      'mixins': ['goma', 'clang', 'debug', 'minimal_symbols',
-                 'blink_enable_generated_code_formatting'],
-    },
-
     # Same as regular codesearch except ios does not allow component builds
     'codesearch_ios_reclient': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
@@ -4035,12 +3986,6 @@
     'codesearch_reclient': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
       'mixins': ['reclient', 'clang', 'shared', 'debug', 'minimal_symbols',
-                 'blink_enable_generated_code_formatting'],
-    },
-
-    'codesearch_release': {
-      'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
-      'mixins': ['release', 'static', 'goma',
                  'blink_enable_generated_code_formatting'],
     },
 
