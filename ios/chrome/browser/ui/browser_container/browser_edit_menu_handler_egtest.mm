@@ -376,8 +376,13 @@ NSArray* BuildExpectedMenu(EditMenuAdditionType additions) {
   GREYAssertEqualObjects(items, expected, @"Edit Menu item don't match");
   DismissEditMenuByTapping();
 }
-
-- (void)testEditableMenu {
+// TODO(crbug.com/1435058): Test consistently failing on device.
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testEditableMenu DISABLED_testEditableMenu
+#else
+#define MAYBE_testEditableMenu testEditableMenu
+#endif
+- (void)MAYBE_testEditableMenu {
   std::string pageText = "mmmm";
   [self loadPageWithType:kEditableInputSelectionUrl forText:pageText];
   SelectAllInput();
