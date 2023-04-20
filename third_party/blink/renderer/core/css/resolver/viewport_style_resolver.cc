@@ -74,10 +74,7 @@ ViewportDescription ViewportStyleResolver::ResolveViewportDescription(
       // width to device-width in case Android based browsers want to simulate
       // desktop behavior where the default layout width comes from the window
       // size.
-      if (base::FeatureList::IsEnabled(
-              features::kDefaultViewportIsDeviceWidth)) {
-        description.min_width = Length::DeviceWidth();
-      }
+      description.min_width = Length::DeviceWidth();
       return description;
     }
     // We only want to use the device scale portion of the zoom factor, because
