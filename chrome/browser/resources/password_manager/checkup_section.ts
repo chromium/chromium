@@ -233,6 +233,9 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
           }
           getAnnouncerInstance().announce(
               [this.checkedPasswordsText_, stateText].join('. '));
+          focusWithoutInk(
+              this.showRetryButton_() ? this.$.retryButton :
+                                        this.$.refreshButton);
         }
         return;
       case CheckState.CANCELED:
