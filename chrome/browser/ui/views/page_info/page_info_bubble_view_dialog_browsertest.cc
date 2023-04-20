@@ -527,17 +527,7 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
     if (name == "AboutThisSite") {
       // No further action needed, default case.
     } else {
-      CHECK_EQ(name, "AboutThisSiteSubpage");
-      auto* service =
-          AboutThisSiteServiceFactory::GetForProfile(browser()->profile());
-      auto source_id = browser()
-                           ->tab_strip_model()
-                           ->GetActiveWebContents()
-                           ->GetPrimaryMainFrame()
-                           ->GetPageUkmSourceId();
-      bubble_view->OpenAboutThisSitePage(
-          service->GetAboutThisSiteInfo(GetUrl(kAboutThisSiteUrl), source_id)
-              .value());
+      NOTREACHED();
     }
   }
 
@@ -552,14 +542,6 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDialogBrowserTest,
                        InvokeUi_AboutThisSite) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDialogBrowserTest,
-                       InvokeUi_AboutThisSiteSubpage) {
-  // The subpage only exists in the old UI.
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSiteMoreInfo))
-    return;
   ShowAndVerifyUi();
 }
 

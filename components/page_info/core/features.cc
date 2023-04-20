@@ -51,10 +51,6 @@ BASE_FEATURE(kPageInfoAboutThisSiteNonEn,
 const base::FeatureParam<bool> kShowSampleContent{&kPageInfoAboutThisSiteEn,
                                                   "ShowSampleContent", false};
 
-BASE_FEATURE(kPageInfoAboutThisSiteMoreInfo,
-             "PageInfoAboutThisSiteMoreInfo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs,
              "PageInfoAboutThisSiteKeepSidePanelOnSameTabNavs",

@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/page_info/page_info_about_this_site_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_ad_personalization_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
@@ -146,16 +145,6 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreatePermissionPageView(
                           presenter_->GetSiteNameOrAppNameToDisplay()),
       std::make_unique<PageInfoPermissionContentView>(presenter_, ui_delegate_,
                                                       type));
-}
-
-std::unique_ptr<views::View> PageInfoViewFactory::CreateAboutThisSitePageView(
-    const page_info::proto::SiteInfo& info) {
-  return std::make_unique<PageInfoSubpageView>(
-      CreateSubpageHeader(
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER),
-          presenter_->GetSiteNameOrAppNameToDisplay()),
-      std::make_unique<PageInfoAboutThisSiteContentView>(presenter_,
-                                                         ui_delegate_, info));
 }
 
 std::unique_ptr<views::View>

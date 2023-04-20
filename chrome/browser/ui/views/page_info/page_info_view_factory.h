@@ -11,12 +11,6 @@
 #include "ui/base/models/image_model.h"
 #include "ui/views/view.h"
 
-namespace page_info {
-namespace proto {
-class SiteInfo;
-}
-}  // namespace page_info
-
 class ChromePageInfoUiDelegate;
 class PageInfo;
 class PageInfoNavigationHandler;
@@ -156,8 +150,6 @@ class PageInfoViewFactory {
   [[nodiscard]] std::unique_ptr<views::View> CreateSecurityPageView();
   [[nodiscard]] std::unique_ptr<views::View> CreatePermissionPageView(
       ContentSettingsType type);
-  [[nodiscard]] std::unique_ptr<views::View> CreateAboutThisSitePageView(
-      const page_info::proto::SiteInfo& info);
   [[nodiscard]] std::unique_ptr<views::View> CreateAdPersonalizationPageView();
   [[nodiscard]] std::unique_ptr<views::View> CreateCookiesPageView();
 

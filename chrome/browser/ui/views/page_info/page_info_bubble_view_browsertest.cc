@@ -766,7 +766,6 @@ class PageInfoBubbleViewAboutThisSiteBrowserTest : public InProcessBrowserTest {
         {
             page_info::kPageInfoAboutThisSiteEn,
             page_info::kPageInfoAboutThisSiteNonEn,
-            page_info::kPageInfoAboutThisSiteMoreInfo,
         },
         {});
   }
@@ -791,9 +790,9 @@ class PageInfoBubbleViewAboutThisSiteBrowserTest : public InProcessBrowserTest {
     description->mutable_source()->set_label("Example source");
     site_info.mutable_more_about()->set_url(
         https_server_.GetURL("a.test", "/title2.html").spec());
-    EXPECT_EQ(page_info::about_this_site_validation::ValidateSiteInfo(
-                  site_info, page_info::IsMoreAboutThisSiteFeatureEnabled()),
-              AboutThisSiteStatus::kValid);
+    EXPECT_EQ(
+        page_info::about_this_site_validation::ValidateSiteInfo(site_info),
+        AboutThisSiteStatus::kValid);
     return site_info;
   }
 
@@ -868,8 +867,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,
   auto url = https_server_.GetURL("a.test", "/title1.html");
   auto site_info = CreateValidSiteInfo();
   site_info.clear_description();
-  EXPECT_EQ(page_info::about_this_site_validation::ValidateSiteInfo(
-                site_info, page_info::IsMoreAboutThisSiteFeatureEnabled()),
+  EXPECT_EQ(page_info::about_this_site_validation::ValidateSiteInfo(site_info),
             AboutThisSiteStatus::kValid);
   AddHintForTesting(browser(), url, site_info);
 

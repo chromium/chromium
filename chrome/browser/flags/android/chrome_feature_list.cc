@@ -370,7 +370,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &optimization_guide::features::kPushNotifications,
     &page_info::kPageInfoAboutThisSiteEn,
     &page_info::kPageInfoAboutThisSiteImprovedBottomSheet,
-    &page_info::kPageInfoAboutThisSiteMoreInfo,
     &page_info::kPageInfoAboutThisSiteNewIcon,
     &page_info::kPageInfoAboutThisSiteNonEn,
     &password_manager::features::kBiometricTouchToFill,

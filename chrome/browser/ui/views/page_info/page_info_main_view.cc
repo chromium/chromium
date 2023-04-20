@@ -599,16 +599,13 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
       ->SetOrientation(views::LayoutOrientation::kVertical);
   about_this_site_section->AddChildView(PageInfoViewFactory::CreateSeparator());
 
-  RichHoverButton* about_this_site_button = nullptr;
-
-  if (page_info::IsMoreAboutThisSiteFeatureEnabled()) {
     const auto& description =
         info.has_description()
             ? base::UTF8ToUTF16(info.description().description())
             : l10n_util::GetStringUTF16(
                   IDS_PAGE_INFO_ABOUT_THIS_PAGE_DESCRIPTION_PLACEHOLDER);
 
-    about_this_site_button =
+    RichHoverButton* about_this_site_button =
         about_this_site_section->AddChildView(std::make_unique<RichHoverButton>(
             base::BindRepeating(
                 [](PageInfoMainView* view, GURL more_info_url,
@@ -630,32 +627,9 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
             description, PageInfoViewFactory::GetLaunchIcon()));
     about_this_site_button->SetID(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON);
-  } else {
-    // The kPageInfoAboutThisSiteDescriptionPlaceholder feature must only be
-    // enabled together with kPageInfoAboutThisSiteMoreInfo
-    DCHECK(info.has_description());
-    about_this_site_button =
-        about_this_site_section->AddChildView(std::make_unique<RichHoverButton>(
-            base::BindRepeating(
-                [](PageInfoMainView* view,
-                   const page_info::proto::SiteInfo& info) {
-                  page_info::AboutThisSiteService::OnAboutThisSiteRowClicked(
-                      info.has_description());
-                  view->navigation_handler_->OpenAboutThisSitePage(info);
-                },
-                this, info),
-            PageInfoViewFactory::GetAboutThisSiteIcon(),
-            l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER),
-            std::u16string(),
+    about_this_site_button->SetSubtitleMultiline(false);
 
-            l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_TOOLTIP),
-            base::UTF8ToUTF16(info.description().description()),
-            PageInfoViewFactory::GetOpenSubpageIcon()));
-    about_this_site_button->SetID(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON);
-  }
-  about_this_site_button->SetSubtitleMultiline(false);
-  return about_this_site_section;
+    return about_this_site_section;
 }
 
 std::unique_ptr<views::View>

@@ -6017,11 +6017,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "page-info-more-about-this-page",
-    "owners": [ "dullweber", "olesiamarukhno@google.com" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "page-visibility-page-content-annotations",
     "owners": [ "sophiechang", "mcrouse", "chrome-intelligence-core@google.com"],
     "expiry_milestone": 115

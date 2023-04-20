@@ -8,8 +8,7 @@
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace page_info {
-namespace about_this_site_validation {
+namespace page_info::about_this_site_validation {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -25,12 +24,12 @@ enum class AboutThisSiteStatus {
   kIncompleteTimeStamp = 7,
   kInvalidTimeStamp = 8,
   kUnknown = 9,
-  kMissingDescription = 10,
+  // kMissingDescription = 10 deprecated.
   kMissingDescriptionDescription = 11,
   kMissingDescriptionName = 12,
   kMissingDescriptionLang = 13,
   kMissingDescriptionSource = 14,
-  // Deprecated: kMissingBannerInfo = 15,
+  // kMissingBannerInfo = 15 deprecated
   kInvalidMoreAbout = 16,
   kMissingMoreAbout = 17,
 
@@ -38,18 +37,15 @@ enum class AboutThisSiteStatus {
 };
 
 AboutThisSiteStatus ValidateMetadata(
-    const absl::optional<proto::AboutThisSiteMetadata>& metadata,
-    bool allow_missing_description);
+    const absl::optional<proto::AboutThisSiteMetadata>& metadata);
 
 AboutThisSiteStatus ValidateSource(const proto::Hyperlink& link);
 AboutThisSiteStatus ValidateDescription(
     const proto::SiteDescription& description);
 AboutThisSiteStatus ValidateFirstSeen(const proto::SiteFirstSeen& first_seen);
 AboutThisSiteStatus ValidateMoreAbout(const proto::MoreAbout& more_about);
-AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info,
-                                     bool allow_missing_description);
+AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info);
 
-}  // namespace about_this_site_validation
-}  // namespace page_info
+}  // namespace page_info::about_this_site_validation
 
 #endif  // COMPONENTS_PAGE_INFO_CORE_ABOUT_THIS_SITE_VALIDATION_H_

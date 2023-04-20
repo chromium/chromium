@@ -7647,12 +7647,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(page_info::kPageInfoHistoryDesktop)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-    {"page-info-more-about-this-page",
-     flag_descriptions::kPageInfoMoreAboutThisPageName,
-     flag_descriptions::kPageInfoMoreAboutThisPageDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(page_info::kPageInfoAboutThisSiteMoreInfo)},
-
     {"page-info-about-this-site-new-icon",
      flag_descriptions::kPageInfoAboutThisSiteNewIconName,
      flag_descriptions::kPageInfoAboutThisSiteNewIconDescription,

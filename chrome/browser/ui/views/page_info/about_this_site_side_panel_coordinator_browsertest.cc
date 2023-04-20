@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "base/strings/escape.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -69,8 +71,7 @@ class AboutThisSiteSidePanelCoordinatorBrowserTest
  private:
   virtual void SetUpFeatureList() {
     feature_list_.InitWithFeatures(
-        {page_info::kPageInfoAboutThisSiteMoreInfo},
-        {page_info::kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs});
+        {}, {page_info::kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs});
   }
 
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
@@ -101,11 +102,10 @@ IN_PROC_BROWSER_TEST_F(AboutThisSiteSidePanelCoordinatorBrowserTest,
 // navigations including refreshes.
 class AboutThisSiteKeepSidePanelOpenBrowserTest
     : public AboutThisSiteSidePanelCoordinatorBrowserTest {
+ private:
   void SetUpFeatureList() override {
-    feature_list_.InitWithFeatures(
-        {page_info::kPageInfoAboutThisSiteMoreInfo,
-         page_info::kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs},
-        {});
+    feature_list_.InitAndEnableFeature(
+        page_info::kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs);
   }
 };
 
