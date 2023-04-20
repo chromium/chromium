@@ -1242,6 +1242,11 @@ ExtensionFunction::ResponseAction InputImeSetMenuItemsFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
 
+  if (engine->GetActiveComponentId() != params.engine_id) {
+    return RespondNow(
+        Error(InformativeError(kErrorEngineNotActive, static_function_name())));
+  }
+
   std::vector<ash::input_method::InputMethodManager::MenuItem> items_out;
   for (const input_ime::MenuItem& item_in : params.items) {
     items_out.emplace_back();
@@ -1266,6 +1271,11 @@ ExtensionFunction::ResponseAction InputImeUpdateMenuItemsFunction::Run() {
       GetEngine(browser_context(), extension_id(), &error);
   if (!engine) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
+  }
+
+  if (engine->GetActiveComponentId() != params.engine_id) {
+    return RespondNow(
+        Error(InformativeError(kErrorEngineNotActive, static_function_name())));
   }
 
   std::vector<ash::input_method::InputMethodManager::MenuItem> items_out;
