@@ -742,7 +742,7 @@ BASE_FEATURE(kCanvasCompressHibernatedImage,
 // Whether to aggressively free resources for canvases in background pages.
 BASE_FEATURE(kCanvasFreeMemoryWhenHidden,
              "CanvasFreeMemoryWhenHidden",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, add a new option, {imageOrientation: 'none'}, to
 // createImageBitmap, which ignores the image orientation metadata of the source
