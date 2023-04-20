@@ -111,6 +111,9 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // If YES, denotes that the view is shown in the settings.
 @property(nonatomic, assign) BOOL settingsView;
 
+// Points to the save/update button in the modal view.
+@property(nonatomic, strong) TableViewTextButtonItem* modalSaveUpdateButton;
+
 @end
 
 @implementation AutofillProfileEditTableViewController {
@@ -256,7 +259,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 }
 
 - (void)loadFooterForSettings {
-  DCHECK(self.settingsView);
+  CHECK(self.settingsView);
   TableViewModel* model = self.controller.tableViewModel;
 
   if (self.autofillAccountProfilesUnionViewEnabled && self.accountProfile &&
@@ -268,7 +271,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 }
 
 - (void)loadMessageAndButtonForModalIfSaveOrUpdate:(BOOL)update {
-  DCHECK(!self.settingsView);
+  CHECK(!self.settingsView);
   TableViewModel* model = self.controller.tableViewModel;
   if (self.accountProfile) {
     DCHECK([_userEmail length] > 0);
@@ -293,10 +296,13 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 }
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
-  if (self.autofillAccountProfilesUnionViewEnabled && self.accountProfile &&
-      self.settingsView) {
+  if (self.autofillAccountProfilesUnionViewEnabled && self.accountProfile) {
     [self computeErrorIfRequiredTextField:tableViewItem];
-    [self updateDoneButtonStatus];
+    if (self.settingsView) {
+      [self updateDoneButtonStatus];
+    } else {
+      [self updateSaveButtonStatus];
+    }
   }
   [self.controller reconfigureCellsForItems:@[ tableViewItem ]];
 }
@@ -308,7 +314,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 #pragma mark - AutofillProfileEditConsumer
 
 - (void)didSelectCountry:(NSString*)country {
-  DCHECK(self.autofillAccountProfilesUnionViewEnabled);
+  CHECK(self.autofillAccountProfilesUnionViewEnabled);
   self.homeAddressCountry = country;
 
   [self.requiredFieldsWithEmptyValue removeAllObjects];
@@ -318,7 +324,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       TableViewMultiDetailTextItem* multiDetailTextItem =
           base::mac::ObjCCastStrict<TableViewMultiDetailTextItem>(item);
       multiDetailTextItem.trailingDetailText = self.homeAddressCountry;
-    } else if (self.settingsView && [self isItemTypeTextEditCell:item.type]) {
+    } else if ([self isItemTypeTextEditCell:item.type]) {
       TableViewTextEditItem* tableViewTextEditItem =
           base::mac::ObjCCastStrict<TableViewTextEditItem>(item);
       [self computeErrorIfRequiredTextField:tableViewTextEditItem];
@@ -326,13 +332,17 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     [self.controller reconfigureCellsForItems:@[ item ]];
   }
 
-  [self updateDoneButtonStatus];
+  if (self.settingsView) {
+    [self updateDoneButtonStatus];
+  } else {
+    [self updateSaveButtonStatus];
+  }
 }
 
 #pragma mark - Actions
 
 - (void)didTapSaveButton {
-  DCHECK(!self.settingsView);
+  CHECK(!self.settingsView);
   [self updateProfileData];
   [self.delegate didSaveProfileFromModal];
 }
@@ -462,6 +472,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 // Creates and returns the `TableViewLinkHeaderFooterItem` footer item.
 - (TableViewLinkHeaderFooterItem*)footerItem {
+  CHECK(self.settingsView);
   TableViewLinkHeaderFooterItem* item =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
   item.text = [self footerMessage];
@@ -470,6 +481,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 // Returns the error message item as a footer.
 - (TableViewAttributedStringHeaderFooterItem*)errorMessageItem {
+  CHECK(self.settingsView);
   TableViewAttributedStringHeaderFooterItem* item =
       [[TableViewAttributedStringHeaderFooterItem alloc]
           initWithType:ItemTypeError];
@@ -519,6 +531,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 // Returns the footer element for the save/update prompts.
 - (TableViewTextItem*)footerItemForModalViewIfSaveOrUpdate:(BOOL)update {
+  CHECK(!self.settingsView);
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:ItemTypeFooter];
   item.text = l10n_util::GetNSStringF(
@@ -532,14 +545,16 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 // Returns the button element for the save/update prompts.
 - (TableViewTextButtonItem*)saveButtonIfSaveOrUpdate:(BOOL)update {
-  TableViewTextButtonItem* saveButton =
+  CHECK(!self.settingsView);
+  self.modalSaveUpdateButton =
       [[TableViewTextButtonItem alloc] initWithType:ItemTypeSaveButton];
-  saveButton.textAlignment = NSTextAlignmentNatural;
-  saveButton.buttonText = l10n_util::GetNSString(
+  self.modalSaveUpdateButton.textAlignment = NSTextAlignmentNatural;
+  self.modalSaveUpdateButton.buttonText = l10n_util::GetNSString(
       update ? IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL
              : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
-  saveButton.disableButtonIntrinsicWidth = YES;
-  return saveButton;
+  self.modalSaveUpdateButton.disableButtonIntrinsicWidth = YES;
+
+  return self.modalSaveUpdateButton;
 }
 
 #pragma mark - Private
@@ -615,6 +630,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // Removes the given section if it exists.
 - (void)removeSectionWithIdentifier:(NSInteger)sectionIdentifier
                    withRowAnimation:(UITableViewRowAnimation)animation {
+  CHECK(self.settingsView);
   TableViewModel* model = self.controller.tableViewModel;
   if ([model hasSectionForSectionIdentifier:sectionIdentifier]) {
     NSInteger section = [model sectionForSectionIdentifier:sectionIdentifier];
@@ -628,6 +644,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // If the error status has changed, displays the footer accordingly.
 - (void)changeFooterStatusToRemoveSection:(SectionIdentifier)removeSection
                                addSection:(SectionIdentifier)addSection {
+  CHECK(self.settingsView);
   TableViewModel* model = self.controller.tableViewModel;
   [self.controller
       performBatchTableViewUpdates:^{
@@ -654,6 +671,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // Updates the Done button status based on `self.requiredFieldsWithEmptyValue`
 // and shows/removes the error footer if required.
 - (void)updateDoneButtonStatus {
+  CHECK(self.settingsView);
   BOOL shouldShowError = ([self.requiredFieldsWithEmptyValue count] > 0);
   self.controller.navigationItem.rightBarButtonItem.enabled = !shouldShowError;
   if (shouldShowError != self.errorSectionPresented) {
@@ -672,9 +690,19 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   }
 }
 
+// Updates the Save/Update button status based on
+// `self.requiredFieldsWithEmptyValue`.
+- (void)updateSaveButtonStatus {
+  CHECK(!self.settingsView);
+  BOOL shouldShowError = ([self.requiredFieldsWithEmptyValue count] > 0);
+  self.modalSaveUpdateButton.enabled = !shouldShowError;
+  [self.controller reconfigureCellsForItems:@[ self.modalSaveUpdateButton ]];
+}
+
 // Returns YES, if the error message needs to be changed. This happens when
 // there are multiple required fields that become empty.
 - (BOOL)shouldChangeErrorMessage {
+  CHECK(self.settingsView);
   TableViewHeaderFooterItem* currentFooter = [self.controller.tableViewModel
       footerForSectionWithIdentifier:SectionIdentifierErrorFooter];
   TableViewAttributedStringHeaderFooterItem* attributedFooterItem =
@@ -699,7 +727,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 // Returns the error message combined with footer.
 - (NSAttributedString*)errorAndFooterMessage {
-  DCHECK([self.requiredFieldsWithEmptyValue count] > 0);
+  CHECK([self.requiredFieldsWithEmptyValue count] > 0);
+  CHECK(self.settingsView);
   NSString* error = l10n_util::GetPluralNSStringF(
       IDS_IOS_SETTINGS_EDIT_AUTOFILL_ADDRESS_REQUIREMENT_ERROR,
       (int)[self.requiredFieldsWithEmptyValue count]);

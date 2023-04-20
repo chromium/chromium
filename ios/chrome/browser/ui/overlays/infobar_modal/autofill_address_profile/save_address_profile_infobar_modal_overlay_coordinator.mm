@@ -151,11 +151,6 @@ using autofill_address_profile_infobar_overlays::
 - (void)willSelectCountryWithCurrentlySelectedCountry:(NSString*)country
                                           countryList:(NSArray<CountryItem*>*)
                                                           allCountries {
-  for (CountryItem* countryItem in allCountries) {
-    if ([country isEqualToString:countryItem.text]) {
-      countryItem.accessoryType = UITableViewCellAccessoryCheckmark;
-    }
-  }
   AutofillCountrySelectionTableViewController*
       autofillCountrySelectionTableViewController =
           [[AutofillCountrySelectionTableViewController alloc]

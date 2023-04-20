@@ -84,6 +84,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self sendAutofillProfileDataToConsumer];
   if (self.selectedCountryCode) {
     [self updateRequirementsForCountryCode:self.selectedCountryCode];
+  } else {
+    [self updateRequirementsForCountry:base::SysUTF16ToNSString(
+                                           _autofillProfile->GetInfo(
+                                               autofill::ADDRESS_HOME_COUNTRY,
+                                               GetApplicationContext()
+                                                   ->GetApplicationLocale()))];
   }
 
   [_consumer setAccountProfile:[self isAccountProfile]];
@@ -201,6 +207,26 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
   }
 
+  [self sendRequirementsToConsumer];
+}
+
+// Fetches and updates the required fields for the `country`.
+- (void)updateRequirementsForCountry:(NSString*)country {
+  for (CountryItem* countryItem in self.allCountries) {
+    if ([country isEqualToString:countryItem.text]) {
+      self.selectedCountryCode = countryItem.countryCode;
+      countryItem.accessoryType = UITableViewCellAccessoryCheckmark;
+    } else {
+      countryItem.accessoryType = UITableViewCellAccessoryNone;
+    }
+  }
+
+  [self sendRequirementsToConsumer];
+}
+
+// Informs the consumer about the required fields corresponding to the
+// `self.selectedCountryCode`.
+- (void)sendRequirementsToConsumer {
   autofill::AutofillCountry country(
       base::SysNSStringToUTF8(self.selectedCountryCode),
       GetApplicationContext()->GetApplicationLocale());
