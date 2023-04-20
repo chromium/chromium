@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/style/icon_button.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_observer.h"
@@ -31,7 +32,6 @@ class Widget;
 namespace ash {
 
 class MultiWindowResizeControllerTest;
-class SnapGroupLockOrUnlockButton;
 class WorkspaceWindowResizer;
 
 // MultiWindowResizeController is responsible for determining and showing a
@@ -79,13 +79,10 @@ class ASH_EXPORT MultiWindowResizeController
   void OnOverviewModeStarting() override;
   void OnOverviewModeEndingAnimationComplete(bool canceled) override;
 
-  SnapGroupLockOrUnlockButton* lock_button_for_testing() const {
-    return lock_button_;
-  }
+  IconButton* lock_button_for_testing() const { return lock_button_; }
 
  private:
   friend class MultiWindowResizeControllerTest;
-  friend class SnapGroupLockOrUnlockButton;
   friend class SnapGroupTest;
   class ResizeMouseWatcherHost;
   class ResizeView;
@@ -231,7 +228,7 @@ class ASH_EXPORT MultiWindowResizeController
   std::unique_ptr<views::Widget> lock_widget_;
 
   // The contents view of the `lock_widget_`.
-  SnapGroupLockOrUnlockButton* lock_button_;
+  IconButton* lock_button_;
 
   // If non-null we're in a resize loop.
   std::unique_ptr<WorkspaceWindowResizer> window_resizer_;

@@ -8,14 +8,15 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/icon_button.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/resize_shadow_controller.h"
-#include "ash/wm/snap_group/snap_group_constants.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
-#include "ash/wm/snap_group/snap_group_lock_or_unlock_button.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_metrics.h"
@@ -34,6 +35,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/wm/core/compound_event_filter.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_animations.h"
@@ -50,6 +52,8 @@ const int kResizeWidgetPadding = 15;
 
 // Distance between the resize widget and lock widget.
 const int kResizeWidgetAndLockWidgetDistance = 85;
+
+constexpr int kLockButtonCornerRadius = 20;
 
 // Returns the widget init params needed to create the resize widget or snap
 // group lock widget.
@@ -563,12 +567,13 @@ void MultiWindowResizeController::ShowNow() {
       lock_widget_ = std::make_unique<views::Widget>();
       lock_widget_->Init(CreateWidgetParams(
           parent_window, /*widget_name=*/"SnapGroupLockWidget"));
-      lock_button_ = lock_widget_->SetContentsView(
-          std::make_unique<SnapGroupLockOrUnlockButton>(
-              window1, window2,
-              base::BindRepeating(
-                  &MultiWindowResizeController::OnLockButtonPressed,
-                  base::Unretained(this))));
+      lock_button_ = lock_widget_->SetContentsView(std::make_unique<IconButton>(
+          base::BindRepeating(&MultiWindowResizeController::OnLockButtonPressed,
+                              base::Unretained(this)),
+          IconButton::Type::kMediumFloating, &kLockScreenEasyUnlockCloseIcon,
+          IDS_ASH_SNAP_GROUP_CLICK_TO_LOCK_WINDOWS,
+          /*is_togglable=*/false,
+          /*has_border=*/true));
       gfx::Rect lock_widget_show_bounds_in_screen =
           ConvertRectToScreen(windows_.window1->parent(),
                               CalculateLockWidgetBounds(resize_widget_bounds));
@@ -577,7 +582,11 @@ void MultiWindowResizeController::ShowNow() {
       lock_button_->SetPaintToLayer();
       lock_button_->layer()->SetFillsBoundsOpaquely(false);
       lock_button_->SetBackground(views::CreateThemedRoundedRectBackground(
-          kColorAshShieldAndBase80, snap_group::kLockButtonCornerRadius));
+          kColorAshShieldAndBase80, kLockButtonCornerRadius));
+      lock_button_->SetImageHorizontalAlignment(
+          views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
+      lock_button_->SetImageVerticalAlignment(
+          views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
     }
   }
 
@@ -740,17 +749,14 @@ gfx::Rect MultiWindowResizeController::CalculateLockWidgetBounds(
     const gfx::Rect& resize_widget_bounds) const {
   if (windows_.direction == Direction::kLeftRight) {
     return gfx::Rect(
-        resize_widget_bounds.top_center().x() -
-            snap_group::kLockButtonCornerRadius,
+        resize_widget_bounds.top_center().x() - kLockButtonCornerRadius,
         resize_widget_bounds.y() + kResizeWidgetAndLockWidgetDistance,
-        snap_group::kLockButtonCornerRadius * 2,
-        snap_group::kLockButtonCornerRadius * 2);
+        kLockButtonCornerRadius * 2, kLockButtonCornerRadius * 2);
   } else {
     return gfx::Rect(
         resize_widget_bounds.x() + kResizeWidgetAndLockWidgetDistance,
-        resize_widget_bounds.y() - snap_group::kLockButtonCornerRadius,
-        snap_group::kLockButtonCornerRadius * 2,
-        snap_group::kLockButtonCornerRadius * 2);
+        resize_widget_bounds.y() - kLockButtonCornerRadius,
+        kLockButtonCornerRadius * 2, kLockButtonCornerRadius * 2);
   }
 }
 

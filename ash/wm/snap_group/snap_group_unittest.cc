@@ -21,7 +21,6 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_expanded_menu_view.h"
-#include "ash/wm/snap_group/snap_group_lock_or_unlock_button.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
@@ -108,7 +107,7 @@ IconButton* update_secondary_window_button() {
       ->update_secondary_window_button_for_testing();
 }
 
-SnapGroupLockOrUnlockButton* unlock_button() {
+IconButton* unlock_button() {
   DCHECK(snap_group_expanded_menu_view());
   return snap_group_expanded_menu_view()->unlock_button_for_testing();
 }
@@ -164,10 +163,32 @@ class SnapGroupTest : public AshTestBase {
     EXPECT_EQ(state_type, window_state->GetStateType());
   }
 
+  // Verifies that the icon image and the tooltip of the lock button reflect the
+  // `locked` or `unlocked` state.
+  void VerifyLockButton(bool locked, IconButton* lock_button) {
+    const SkColor color =
+        lock_button->GetColorProvider()->GetColor(kColorAshIconColorPrimary);
+    const gfx::ImageSkia locked_icon_image =
+        gfx::CreateVectorIcon(kLockScreenEasyUnlockCloseIcon, color);
+    const gfx::ImageSkia unlocked_icon_image =
+        gfx::CreateVectorIcon(kLockScreenEasyUnlockOpenIcon, color);
+    const SkBitmap* expected_icon =
+        locked ? unlocked_icon_image.bitmap() : locked_icon_image.bitmap();
+    const SkBitmap* actual_icon =
+        lock_button->GetImage(views::ImageButton::ButtonState::STATE_NORMAL)
+            .bitmap();
+    EXPECT_TRUE(gfx::test::AreBitmapsEqual(*actual_icon, *expected_icon));
+
+    const auto expected_tooltip_string = l10n_util::GetStringUTF16(
+        locked ? IDS_ASH_SNAP_GROUP_CLICK_TO_UNLOCK_WINDOWS
+               : IDS_ASH_SNAP_GROUP_CLICK_TO_LOCK_WINDOWS);
+    EXPECT_EQ(lock_button->GetTooltipText(), expected_tooltip_string);
+  }
+
   // Verifies that the given two windows can be locked properly and the tooltip
   // is updated accordingly.
-  void ToggleLockWidgetToLockTwoWindows(aura::Window* window1,
-                                        aura::Window* window2) {
+  void PressLockWidgetToLockTwoWindows(aura::Window* window1,
+                                       aura::Window* window2) {
     auto* snap_group_controller = Shell::Get()->snap_group_controller();
     ASSERT_TRUE(snap_group_controller);
     EXPECT_TRUE(snap_group_controller->snap_groups_for_testing().empty());
@@ -221,28 +242,6 @@ class SnapGroupTest : public AshTestBase {
   }
 
  private:
-  // Verifies that the icon image and the tooltip of the lock button gets
-  // updated correctly based on the `locked` state.
-  void VerifyLockButton(bool locked, SnapGroupLockOrUnlockButton* lock_button) {
-    const SkColor color =
-        lock_button->GetColorProvider()->GetColor(kColorAshIconColorPrimary);
-    const gfx::ImageSkia locked_icon_image =
-        gfx::CreateVectorIcon(kLockScreenEasyUnlockCloseIcon, color);
-    const gfx::ImageSkia unlocked_icon_image =
-        gfx::CreateVectorIcon(kLockScreenEasyUnlockOpenIcon, color);
-    const SkBitmap* expected_icon =
-        locked ? unlocked_icon_image.bitmap() : locked_icon_image.bitmap();
-    const SkBitmap* actual_icon =
-        lock_button->GetImage(views::ImageButton::ButtonState::STATE_NORMAL)
-            .bitmap();
-    EXPECT_TRUE(gfx::test::AreBitmapsEqual(*actual_icon, *expected_icon));
-
-    const auto expected_tooltip_string = l10n_util::GetStringUTF16(
-        locked ? IDS_ASH_SNAP_GROUP_CLICK_TO_UNLOCK_WINDOWS
-               : IDS_ASH_SNAP_GROUP_CLICK_TO_LOCK_WINDOWS);
-    EXPECT_EQ(lock_button->GetTooltipText(), expected_tooltip_string);
-  }
-
   base::test::ScopedFeatureList scoped_feature_list_;
   MultiWindowResizeController* resize_controller_;
 };
@@ -449,7 +448,9 @@ class SnapGroupEntryPointArm1Test : public SnapGroupTest {
   void ClickUnlockButtonAndVerify() {
     EXPECT_TRUE(snap_group_expanded_menu_widget());
     EXPECT_TRUE(snap_group_expanded_menu_view());
-    EXPECT_TRUE(unlock_button());
+    IconButton* unlock_button_on_menu = unlock_button();
+    VerifyLockButton(/*locked=*/true, unlock_button_on_menu);
+    EXPECT_TRUE(unlock_button);
     auto* cached_primary_window = split_view_controller()->primary_window();
     auto* cached_secondary_window = split_view_controller()->secondary_window();
 
@@ -811,7 +812,7 @@ TEST_F(SnapGroupEntryPointArm1Test, UnlockAndRelockWindowsTest) {
   // TODO(michelefan): Add test APIs for multi-window resizer to wait until
   // resizer widget hides.
   WaitForSeconds(1);
-  ToggleLockWidgetToLockTwoWindows(w1.get(), w2.get());
+  PressLockWidgetToLockTwoWindows(w1.get(), w2.get());
 }
 
 // Tests that the windows bounds in the snap group are updated correctly with
@@ -995,7 +996,7 @@ TEST_F(SnapGroupEntryPointArm2Test, SnapGroupCreationTest) {
   SnapTwoTestWindows(w1.get(), w2.get());
   EXPECT_FALSE(GetLockWidget());
 
-  ToggleLockWidgetToLockTwoWindows(w1.get(), w2.get());
+  PressLockWidgetToLockTwoWindows(w1.get(), w2.get());
   auto* snap_group_controller = Shell::Get()->snap_group_controller();
   EXPECT_EQ(
       snap_group_controller->window_to_snap_group_map_for_testing().size(), 2u);

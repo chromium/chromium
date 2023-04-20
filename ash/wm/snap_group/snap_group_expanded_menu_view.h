@@ -11,7 +11,6 @@ namespace ash {
 
 class IconButton;
 class SnapGroup;
-class SnapGroupLockOrUnlockButton;
 
 // A view that acts as the contents view of the snap group expanded menu widget
 // which will show or hide on the kebab button toggled. Note that this view will
@@ -36,9 +35,7 @@ class SnapGroupExpandedMenuView : public views::View {
   IconButton* update_secondary_window_button_for_testing() const {
     return update_secondary_window_button_;
   }
-  SnapGroupLockOrUnlockButton* unlock_button_for_testing() const {
-    return unlock_button_;
-  }
+  IconButton* unlock_button_for_testing() const { return unlock_button_; }
 
  private:
   // Called when the `swap_windows_button_` is clicked to swap the two windows
@@ -69,7 +66,7 @@ class SnapGroupExpandedMenuView : public views::View {
   IconButton* swap_windows_button_;
   IconButton* update_primary_window_button_;
   IconButton* update_secondary_window_button_;
-  SnapGroupLockOrUnlockButton* unlock_button_;
+  IconButton* unlock_button_;
 };
 
 }  // namespace ash

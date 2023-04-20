@@ -13,7 +13,6 @@
 #include "ash/style/icon_button.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
-#include "ash/wm/snap_group/snap_group_lock_or_unlock_button.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "base/functional/bind.h"
@@ -68,11 +67,14 @@ SnapGroupExpandedMenuView::SnapGroupExpandedMenuView(SnapGroup* snap_group)
           IDS_ASH_SNAP_GROUP_UPDATE_RIGHT_WINDOW,
           /*is_togglable=*/false,
           /*has_border=*/true))),
-      unlock_button_(AddChildView(std::make_unique<SnapGroupLockOrUnlockButton>(
-          snap_group->window1(),
-          snap_group->window2(),
+      unlock_button_(AddChildView(std::make_unique<IconButton>(
           base::BindRepeating(&SnapGroupExpandedMenuView::OnUnLockButtonPressed,
-                              base::Unretained(this))))) {
+                              base::Unretained(this)),
+          IconButton::Type::kMediumFloating,
+          &kLockScreenEasyUnlockOpenIcon,
+          IDS_ASH_SNAP_GROUP_CLICK_TO_UNLOCK_WINDOWS,
+          /*is_togglable=*/false,
+          /*has_border=*/true))) {
   SetPaintToLayer();
   SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
   layer()->SetFillsBoundsOpaquely(false);
