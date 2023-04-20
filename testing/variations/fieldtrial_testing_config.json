@@ -8698,6 +8698,34 @@
             ]
         }
     ],
+    "OmniboxCr23M113Desktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "enabled",
+                    "params": {
+                        "OmniboxDarkBackgroundColor": "0x2A2A2A",
+                        "OmniboxDarkBackgroundColorHovered": "0x4C4C4B",
+                        "OmniboxFontSizeNonTouchUI ": "12",
+                        "OmniboxLightBackgroundColor": "0xEBEFF7",
+                        "OmniboxLightBackgroundColorHovered": "0xE3E7F0"
+                    },
+                    "enable_features": [
+                        "OmniboxSteadyStateBackgroundColor",
+                        "OmniboxSteadyStateTextColor",
+                        "OmniboxSteadyStateTextStyle"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxFuzzyUrlSuggestions": [
         {
             "platforms": [
