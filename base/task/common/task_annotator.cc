@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/sys_byteorder.h"
+#include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
@@ -167,6 +168,13 @@ void TaskAnnotator::RunTaskImpl(PendingTask& pending_task) {
   task_backtrace[kStackTaskTraceSnapshotSize - 2] =
       reinterpret_cast<void*>(pending_task.ipc_hash);
   debug::Alias(&task_backtrace);
+
+  // Record the task time in convenient units. This can be compared to times
+  // stored in places like ReportThreadHang() and BrowserMain() when analyzing
+  // hangs.
+  const int64_t task_time =
+      pending_task.GetDesiredExecutionTime().since_origin().InSeconds();
+  base::debug::Alias(&task_time);
 
   {
     const AutoReset<PendingTask*> resetter(&current_pending_task,

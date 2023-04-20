@@ -4,8 +4,10 @@
 
 #include "chrome/browser/metrics/thread_watcher_report_hang.h"
 
+#include "base/debug/alias.h"
 #include "base/debug/debugger.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 namespace metrics {
@@ -16,6 +18,12 @@ namespace metrics {
 // the caller will appear on the call stack.
 NOINLINE NOT_TAIL_CALLED void ReportThreadHang() {
   [[maybe_unused]] volatile const char* inhibit_comdat = __func__;
+
+  // Record the time of the hang in convenient units. This can be compared to
+  // times stored in places like TaskAnnotator::RunTaskImpl() and BrowserMain()
+  // when analyzing hangs.
+  const int64_t hang_time = base::TimeTicks::Now().since_origin().InSeconds();
+  base::debug::Alias(&hang_time);
 
 #if defined(NDEBUG)
   base::debug::DumpWithoutCrashing();
