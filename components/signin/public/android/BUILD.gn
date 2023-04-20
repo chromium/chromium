@@ -29,6 +29,7 @@ android_library("java") {
     "java/src/org/chromium/components/signin/AccountManagerFacade.java",
     "java/src/org/chromium/components/signin/AccountManagerFacadeImpl.java",
     "java/src/org/chromium/components/signin/AccountManagerFacadeProvider.java",
+    "java/src/org/chromium/components/signin/AccountReauthenticationUtils.java",
     "java/src/org/chromium/components/signin/AccountRenameChecker.java",
     "java/src/org/chromium/components/signin/AccountRestrictionPatternReceiver.java",
     "java/src/org/chromium/components/signin/AccountUtils.java",
@@ -164,9 +165,11 @@ android_library("unit_device_javatests") {
 robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/components/signin/AccountManagerFacadeImplTest.java",
+    "junit/src/org/chromium/components/signin/AccountReauthenticationUtilsTest.java",
     "junit/src/org/chromium/components/signin/AccountRenameCheckerTest.java",
     "junit/src/org/chromium/components/signin/AccountUtilsTest.java",
     "junit/src/org/chromium/components/signin/PatternMatcherTest.java",
+    "junit/src/org/chromium/components/signin/SystemAccountManagerDelegateTest.java",
     "junit/src/org/chromium/components/signin/base/AccountCapabilitiesTest.java",
     "junit/src/org/chromium/components/signin/identitymanager/AccountInfoServiceImplTest.java",
     "junit/src/org/chromium/components/signin/identitymanager/AccountTrackerServiceTest.java",
@@ -177,6 +180,7 @@ robolectric_library("junit") {
     "$google_play_services_package:google_play_services_auth_base_java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:base_java_test_support_uncommon",
     "//base:base_junit_test_support",
     "//components/externalauth/android:google_delegate_public_impl_java",
     "//components/externalauth/android:java",

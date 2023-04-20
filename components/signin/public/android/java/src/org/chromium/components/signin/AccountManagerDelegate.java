@@ -9,6 +9,7 @@ import android.accounts.AccountManager;
 import android.accounts.AuthenticatorDescription;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntDef;
@@ -128,4 +129,15 @@ public interface AccountManagerDelegate {
     @WorkerThread
     @Nullable
     String getAccountGaiaId(String accountEmail);
+
+    /**
+     * Asks the user to confirm their knowledge of the password to the given account.
+     *
+     * @param account The {@link Account} to confirm the credentials for.
+     * @param activity The {@link Activity} context to use for launching a new authenticator-defined
+     *                 sub-Activity to prompt the user to confirm the account's password.
+     * @param callback The callback to indicate whether the user successfully confirmed their
+     *                 knowledge of the account's credentials.
+     */
+    void confirmCredentials(Account account, Activity activity, Callback<Bundle> callback);
 }

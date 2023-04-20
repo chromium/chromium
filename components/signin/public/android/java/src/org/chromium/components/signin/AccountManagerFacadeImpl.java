@@ -9,6 +9,7 @@ import android.accounts.AccountManager;
 import android.accounts.AuthenticatorDescription;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
@@ -236,6 +237,11 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     @Override
     public String getAccountGaiaId(String accountEmail) {
         return mDelegate.getAccountGaiaId(accountEmail);
+    }
+
+    @Override
+    public void confirmCredentials(Account account, Activity activity, Callback<Bundle> callback) {
+        mDelegate.confirmCredentials(account, activity, callback);
     }
 
     /**

@@ -8,6 +8,7 @@ import android.accounts.Account;
 import android.accounts.AuthenticatorDescription;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.Nullable;
@@ -150,6 +151,11 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
         if (callback != null) {
             ThreadUtils.postOnUiThread(callback.bind(true));
         }
+    }
+
+    @Override
+    public void confirmCredentials(Account account, Activity activity, Callback<Bundle> callback) {
+        callback.onResult(null);
     }
 
     private AccountHolder tryGetAccountHolder(Account account) {
