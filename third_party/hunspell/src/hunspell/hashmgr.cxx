@@ -1224,9 +1224,17 @@ hentry* HashMgr::InitHashEntry(hentry* entry,
   // Initialize a hentry struct with the given parameters, and
   // append the given string at the end of this hentry struct.
   memset(entry, 0, item_size);
-  FileMgr af(NULL);
-  entry->alen = static_cast<short>(
-      const_cast<HashMgr*>(this)->get_aliasf(affix_index, &entry->astr, &af));
+
+  // `get_aliasf` only uses the dictionary file in the case of an error.
+  // Should that occur, `FileMgr::getlinenum` is called. But for a BDICT file,
+  // the line number doesn't help identify the place which caused the parser
+  // error. As a result, `getlinenum` always returns 0. Since we don't actually
+  // need the dictionary file, and since `InitHashEntry` is called for every
+  // dictionary entry, eliminate the overhead of creating the `FileMgr` object
+  // every time.
+  static FileMgr dummyDictionaryFile(NULL);
+  entry->alen = static_cast<short>(const_cast<HashMgr*>(this)->get_aliasf(
+      affix_index, &entry->astr, &dummyDictionaryFile));
   entry->blen = static_cast<unsigned char>(word_length);
   memcpy(&entry->word, word, word_length);
 

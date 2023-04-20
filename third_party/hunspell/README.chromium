@@ -24,6 +24,7 @@ The patch is in google.patch.
 * calloc buffers in SuggestMgr::lcs to avoid reads from uninintialized buffers.
 * Fix string OOB write in reverse_condition in src/hunspell/affixmgr.cxx
   Upstream issue: https://github.com/hunspell/hunspell/issues/714
+* Improve performance of HashMgr::InitHashEntry when BDICT file is used.
 
 Chromium-specific changes are in google.patch. To update the patch, follow these
 steps, or simply run update_google_patch.sh from the commandline.
