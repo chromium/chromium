@@ -27,7 +27,8 @@ found in the LICENSE file.
   <video src="data:cast_streaming_receiver">
 
   <script>
-    // The Cast Streaming session must stop when the stream is no longer visible. crbug.com/1111886
+    // The Cast Streaming session must stop when the stream is no longer
+    // visible. See crbug.com/1111886.
     document.addEventListener('visibilitychange', function(e) {
       if (document.hidden) {
         window.close();
@@ -37,7 +38,12 @@ found in the LICENSE file.
     var video = document.querySelector('video');
     video.addEventListener('ended', window.close);
     video.addEventListener('error', window.close);
-    video.play().catch(window.close);
+
+    // Await video element being able to play before calling play, as this
+    // script can execute when the video element exists but before its playable.
+    video.addEventListener('canplay', () => {
+      video.play().catch(window.close);
+    });
   </script>
 </body>
 </html>
