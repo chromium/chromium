@@ -6917,6 +6917,9 @@ crbug.com/1308826 fast/loader/reload-zero-byte-plugin.html [ Failure Pass Timeou
 # TODO(crbug.com/v8/13743): Re-enable tests after V8 roll.
 crbug.com/v8/13743 fast/forms/ValidityState-patternMismatch.html [ Failure Pass ]
 
+# Disable test due to M112 bot issues and incorrect expectations
+crbug.com/1418826 external/wpt/webrtc/RTCRtpSender-getStats.https.html [ Failure Pass ]
+
 # To land rename CL in devtools repo
 crbug.com/1418045 http/tests/devtools/portals/portals-console.js [ Failure Pass ]
 crbug.com/1418045 http/tests/devtools/portals/portals-elements-activate.js [ Failure Pass ]
