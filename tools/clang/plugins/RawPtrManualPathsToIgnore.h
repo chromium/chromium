@@ -175,6 +175,22 @@ constexpr const char* const kRawPtrManualPathsToIgnore[] = {
     "webkit/data/bmp_decoder/",
     "webkit/data/ico_decoder/",
     "webkit/data/test_shell/plugins/",
+
+    // ChromeOS ash rewrite:
+    //
+    // Temporary exclusion. Rewriting those files are causing compile errors.
+    // They will be added back later with manual fixes.
+    "ash/capture_mode/capture_mode_source_view.h",
+    "ash/public/cpp/network_icon_image_source.h",
+    "ash/quick_pair/fast_pair_handshake/"
+    "fast_pair_gatt_service_client_impl_unittest.cc",
+    "chrome/browser/ash/file_suggest/item_suggest_cache_unittest.cc",
+    "chrome/browser/ash/game_mode/game_mode_controller.cc",
+    "chrome/browser/extensions/dynamic_origin_browsertest.cc",
+    "chromeos/ash/components/drivefs/drivefs_pin_manager.cc",
+    "chromeos/ash/components/memory/userspace_swap/userfaultfd_unittest.cc",
+    "chromeos/ash/components/phonehub/icon_decoder.h",
+    "ui/ozone/platform/drm/gpu/crtc_commit_request.h",
 };
 
 #endif  // TOOLS_CLANG_PLUGINS_RAWPTRMANUALPATHSTOIGNORE_H_
