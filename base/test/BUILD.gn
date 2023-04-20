@@ -253,7 +253,10 @@ static_library("test_support") {
       "test_support_ios.h",
       "test_support_ios.mm",
     ]
-    deps += [ ":google_test_runner_shared_headers" ]
+    deps += [
+      ":google_test_runner_shared_headers",
+      "//build:blink_buildflags",
+    ]
 
     # With blink, we use the standard unit_test_launcher.cc.
     if (!use_blink) {

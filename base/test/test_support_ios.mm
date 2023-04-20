@@ -15,6 +15,7 @@
 #import "base/test/ios/google_test_runner_delegate.h"
 #include "base/test/test_suite.h"
 #include "base/test/test_switches.h"
+#include "build/blink_buildflags.h"
 #include "testing/coverage_util_ios.h"
 
 // Springboard will kill any iOS app that fails to check in after launch within
@@ -226,9 +227,13 @@ bool IsSceneStartupEnabled() {
 
   int exitStatus = [self runGoogleTests];
 
+  // The blink code path uses a spawning test launcher and this wait isn't
+  // really necessary for that code path.
+#if !BUILDFLAG(USE_BLINK)
   // If a test app is too fast, it will exit before Instruments has has a
   // a chance to initialize and no test results will be seen.
   [NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceNow:2.0]];
+#endif
   _window.reset();
 
   // Use the hidden selector to try and cleanly take down the app (otherwise
