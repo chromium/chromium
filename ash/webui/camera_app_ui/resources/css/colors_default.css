@@ -30,3 +30,35 @@
   box-shadow: 0 2px 3px rgba(var(--grey-900-rgb), 0.3);
   color: var(--grey-900);
 }
+
+#open-mirror-panel,
+#open-grid-panel,
+#open-timer-panel,
+#open-ptz-panel {
+  border-radius: 50%;
+}
+
+#open-mirror-panel,
+#open-grid-panel {
+  /* Always use the "on" icon before jelly. */
+  .off-icon {
+    display: none;
+  }
+  .on-icon {
+    display: block;
+  }
+}
+
+body.mirror #open-mirror-panel,
+body.grid #open-grid-panel,
+body:is(.timer-10s, .timer-3s) #open-timer-panel,
+body.view-ptz-panel #open-ptz-panel {
+  /* Before jelly, the background size is slightly smaller at 36px */
+  background: radial-gradient(
+    rgba(var(--blue-300-rgb), 0.24) 18px,
+    transparent 19px
+  );
+  :is(svg-wrapper) {
+    color: var(--blue-300);
+  }
+}

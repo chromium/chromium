@@ -134,13 +134,32 @@
                i18n-aria="aria_mute_off" data-key="toggleMic" checked>
       </div>
       <div id="options-group" class="left-stripe buttons circle">
+        <!--
+          TODO(pihsun): These should be icon-button when jellybean is ready.
+        -->
         <button id="open-mirror-panel" tabindex="0" aria-haspopup="true">
+          <svg-wrapper name="camera_button_mirror_off.svg"
+                       class="off-icon"></svg-wrapper>
+          <svg-wrapper name="camera_button_mirror_on.svg"
+                       class="on-icon"></svg-wrapper>
         </button>
-        <button id="open-grid-panel" tabindex="0" aria-haspopup="true"></button>
+        <button id="open-grid-panel" tabindex="0" aria-haspopup="true">
+          <svg-wrapper name="camera_button_grid_off.svg"
+                       class="off-icon"></svg-wrapper>
+          <svg-wrapper name="camera_button_grid_on.svg"
+                       class="on-icon"></svg-wrapper>
+        </button>
         <button id="open-timer-panel" tabindex="0" aria-haspopup="true">
-        <button id="open-ptz-panel" tabindex="0" aria-haspopup="true"
-                i18n-label="open_ptz_panel_button"></button>
+          <svg-wrapper name="camera_button_timer_off.svg"
+                       class="off-icon"></svg-wrapper>
+          <svg-wrapper name="camera_button_timer_on_3s.svg"
+                       class="on-3s-icon"></svg-wrapper>
+          <svg-wrapper name="camera_button_timer_on_10s.svg"
+                       class="on-10s-icon"></svg-wrapper>
         </button>
+        <button id="open-ptz-panel" tabindex="0" aria-haspopup="true"
+                i18n-label="open_ptz_panel_button"
+                data-svg="camera_button_ptz_panel.svg"></button>
       </div>
       <div id="scan-modes-group" class="mode-subgroup" role="radiogroup"
            i18n-aria="aria_scan_type_group">

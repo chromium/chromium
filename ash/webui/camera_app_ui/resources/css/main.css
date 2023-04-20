@@ -618,32 +618,60 @@ body:not(.enable-ptz) #open-ptz-panel {
   display: none;
 }
 
+#open-mirror-panel,
+#open-grid-panel,
+#open-timer-panel,
 #open-ptz-panel {
-  background-image: url(/images/camera_button_ptz_panel_off.svg);
+  border-radius: 12px;
 }
 
+#open-mirror-panel,
+#open-grid-panel {
+  .on-icon {
+    display: none;
+  }
+}
+
+body.mirror #open-mirror-panel,
+body.grid #open-grid-panel,
+body:is(.timer-3s, .timer-10s) #open-timer-panel,
 body.view-ptz-panel #open-ptz-panel {
-  background-image: url(/images/camera_button_ptz_panel_on.svg);
+  background: var(--cros-sys-primary_container);
 }
 
-body.timer-3s #open-timer-panel {
-  background-image: url(/images/camera_button_timer_on_3s.svg);
-}
-
-body.timer-10s #open-timer-panel {
-  background-image: url(/images/camera_button_timer_on_10s.svg);
+body.mirror #open-mirror-panel,
+body.grid #open-grid-panel {
+  .off-icon {
+    display: none;
+  }
+  .on-icon {
+    display: block;
+  }
 }
 
 #open-timer-panel {
-  background-image: url(/images/camera_button_timer_off.svg);
+  .on-3s-icon,
+  .on-10s-icon {
+    display: none;
+  }
 }
 
-body.grid #open-grid-panel {
-  background-image: url(/images/camera_button_grid_on.svg);
+body.timer-3s #open-timer-panel {
+  .off-icon {
+    display: none;
+  }
+  .on-3s-icon {
+    display: block;
+  }
 }
 
-#open-grid-panel {
-  background-image: url(/images/camera_button_grid_off.svg);
+body.timer-10s #open-timer-panel {
+  .off-icon {
+    display: none;
+  }
+  .on-10s-icon {
+    display: block;
+  }
 }
 
 body.scan #open-grid-panel,
@@ -654,14 +682,6 @@ body.scan #settings-photo-resolution,
 body.scan #settings-video-resolution,
 body.scan #preview-grid {
   display: none;
-}
-
-body.mirror #open-mirror-panel {
-  background-image: url(/images/camera_button_mirror_on.svg);
-}
-
-#open-mirror-panel {
-  background-image: url(/images/camera_button_mirror_off.svg);
 }
 
 #toggle-mic:checked {
@@ -1551,9 +1571,4 @@ body:not(.video) #settings-video-resolution {
   background: url(/images/external_link_icon.svg);
   height: 20px;
   width: 20px;
-}
-
-#open-settings,
-#switch-device {
-  color: var(--cros-sys-on_surface);
 }
