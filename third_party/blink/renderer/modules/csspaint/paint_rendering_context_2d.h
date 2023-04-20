@@ -98,7 +98,6 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   void FlushCanvas(CanvasResourceProvider::FlushReason) final {}
 
   PaintRecord GetRecord();
-  cc::PaintCanvas* GetDrawingPaintCanvas();
 
   ExecutionContext* GetTopExecutionContext() const override {
     return global_scope_.Get();
