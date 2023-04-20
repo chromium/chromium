@@ -297,7 +297,7 @@ void VideoCaptureDeviceMac::GetPhotoState(GetPhotoStateCallback callback) {
     uvc.MaybeUpdateControlRange<uint16_t>(uvc::kPuContrastAbsoluteControl,
                                           photo_state->contrast.get(),
                                           "contrast");
-    uvc.MaybeUpdateControlRange<uint16_t>(uvc::kPuBrightnessAbsoluteControl,
+    uvc.MaybeUpdateControlRange<uint16_t>(uvc::kPuSaturationAbsoluteControl,
                                           photo_state->saturation.get(),
                                           "saturation");
     uvc.MaybeUpdateControlRange<uint16_t>(uvc::kPuSharpnessAbsoluteControl,
