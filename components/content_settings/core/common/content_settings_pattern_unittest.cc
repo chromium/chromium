@@ -920,3 +920,33 @@ TEST(ContentSettingsPatternTest, MatchesSingleOrigin) {
       ContentSettingsPattern::FromURL(GURL("file:///foo/bar/example.txt"))
           .MatchesSingleOrigin());
 }
+
+TEST(ContentSettingsPatternTest, ToRepresentativeUrl) {
+  EXPECT_EQ(Pattern("*").ToRepresentativeUrl(), GURL());
+  EXPECT_EQ(Pattern("https://*").ToRepresentativeUrl(), GURL());
+
+  EXPECT_EQ(Pattern("https://example.com:443").ToRepresentativeUrl(),
+            GURL("https://example.com"));
+  EXPECT_EQ(Pattern("https://foo.com:*").ToRepresentativeUrl(),
+            GURL("https://foo.com"));
+  EXPECT_EQ(Pattern("*://example.com:443").ToRepresentativeUrl(),
+            GURL("https://example.com"));
+  EXPECT_EQ(Pattern("*://example.com:4443").ToRepresentativeUrl(),
+            GURL("https://example.com:4443"));
+  EXPECT_EQ(Pattern("https://[*.]example.com:443").ToRepresentativeUrl(),
+            GURL("https://example.com"));
+  EXPECT_EQ(Pattern("*://[*.]example.com:*").ToRepresentativeUrl(),
+            GURL("https://example.com"));
+
+  EXPECT_EQ(Pattern("http://example.com").ToRepresentativeUrl(),
+            GURL("http://example.com"));
+  EXPECT_EQ(Pattern("http://example.com:8080").ToRepresentativeUrl(),
+            GURL("http://example.com:8080"));
+
+  EXPECT_EQ(Pattern("chrome://settings").ToRepresentativeUrl(),
+            GURL("chrome://settings"));
+
+  EXPECT_EQ(Pattern("file:///*").ToRepresentativeUrl(), GURL());
+  EXPECT_EQ(Pattern("file:///foo/bar/example.txt").ToRepresentativeUrl(),
+            GURL("file:///foo/bar/example.txt"));
+}

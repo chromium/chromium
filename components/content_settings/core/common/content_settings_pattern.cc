@@ -604,6 +604,16 @@ std::string ContentSettingsPattern::ToString() const {
   return std::string();
 }
 
+GURL ContentSettingsPattern::ToRepresentativeUrl() const {
+  if (IsValid()) {
+    GURL url = content_settings::PatternParser::ToRepresentativeUrl(parts_);
+    DCHECK(!url.is_valid() || Matches(url))
+        << "Invalid conversion: " << ToString() << " to " << url;
+    return url;
+  }
+  return GURL();
+}
+
 ContentSettingsPattern::SchemeType ContentSettingsPattern::GetScheme() const {
   if (parts_.is_scheme_wildcard)
     return SCHEME_WILDCARD;
