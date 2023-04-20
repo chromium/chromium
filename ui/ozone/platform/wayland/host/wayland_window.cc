@@ -465,11 +465,11 @@ void WaylandWindow::ConfineCursorToBounds(const gfx::Rect& bounds) {
 }
 
 void WaylandWindow::SetRestoredBoundsInDIP(const gfx::Rect& bounds) {
-  restored_size_dip_ = bounds.size();
+  restored_bounds_dip_ = bounds;
 }
 
 gfx::Rect WaylandWindow::GetRestoredBoundsInDIP() const {
-  return gfx::Rect(restored_size_dip_);
+  return restored_bounds_dip_;
 }
 
 bool WaylandWindow::ShouldWindowContentsBeTransparent() const {

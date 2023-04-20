@@ -663,6 +663,33 @@ TEST_P(WaylandWindowTest, OnSequencePointClearsPreviousUnackedConfigures) {
   AdvanceFrameToCurrent(window_.get(), delegate_);
 }
 
+// This test is specifically to guard against origin being set to (0, 0)
+// thus lacros can be restored to correct display (crbug.com/1423690)
+TEST_P(WaylandWindowTest, RestoredBoundsSetWithCorrectOrigin) {
+  constexpr gfx::Rect kNormalBounds{1376, 10, 500, 300};
+  constexpr gfx::Rect kMaximizedBounds{1366, 0, 800, 600};
+
+  // Make sure the window has normal state initially.
+  window_->SetBoundsInDIP(kNormalBounds);
+  EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  VerifyAndClearExpectations();
+
+  // Deactivate the surface.
+  auto empty_state = MakeStateArray({});
+  SendConfigureEvent(surface_id_, {0, 0}, empty_state);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+
+  WaylandWindow::WindowStates window_states{.is_maximized = true,
+                                            .is_activated = true};
+
+  window_->HandleToplevelConfigure(kMaximizedBounds.width(),
+                                   kMaximizedBounds.height(), window_states);
+
+  EXPECT_EQ(PlatformWindowState::kMaximized, window_->GetPlatformWindowState());
+  EXPECT_EQ(window_->GetRestoredBoundsInDIP(), kNormalBounds);
+}
+
 TEST_P(WaylandWindowTest, MaximizeAndRestore) {
   constexpr gfx::Rect kNormalBounds{500, 300};
   constexpr gfx::Rect kMaximizedBounds{800, 600};
