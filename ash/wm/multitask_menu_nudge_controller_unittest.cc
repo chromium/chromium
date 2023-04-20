@@ -295,9 +295,7 @@ TEST_F(MultitaskMenuNudgeControllerTest, MenuShown) {
   auto window = CreateAppWindow(gfx::Rect(300, 300));
   ASSERT_TRUE(GetNudgeWidgetForWindow(window.get()));
 
-  // Fake waiting for nudge to dismiss and open the multitask menu.
-  FireDismissNudgeTimer(window.get());
-  ASSERT_FALSE(GetNudgeWidgetForWindow(window.get()));
+  // When opening the multitask menu, the nudge should dismiss immediately.
   views::NamedWidgetShownWaiter waiter(
       views::test::AnyWidgetTestPasskey{},
       std::string("MultitaskMenuBubbleWidget"));
@@ -309,6 +307,7 @@ TEST_F(MultitaskMenuNudgeControllerTest, MenuShown) {
   size_button->ShowMultitaskMenu(
       chromeos::MultitaskMenuEntryType::kFrameSizeButtonHover);
   waiter.WaitIfNeededAndGet();
+  EXPECT_FALSE(GetNudgeWidgetForWindow(window.get()));
 
   // Advance the clock and then destroy the window and create a new window.
   // Test that the nudge does not show up.

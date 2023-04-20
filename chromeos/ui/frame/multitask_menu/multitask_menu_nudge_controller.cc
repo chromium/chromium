@@ -201,7 +201,7 @@ void MultitaskMenuNudgeController::DismissNudge() {
 void MultitaskMenuNudgeController::OnMenuOpened(bool tablet_mode) {
   // Avoid sending prefs through the cros API or recording user actions if the
   // nudge isn't shown.
-  if (nudge_widget_ && !nudge_widget_->IsClosed()) {
+  if (!nudge_widget_ || nudge_widget_->IsClosed()) {
     return;
   }
 
