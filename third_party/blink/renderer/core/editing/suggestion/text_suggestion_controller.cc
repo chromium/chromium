@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_controller.h"
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
@@ -209,16 +208,9 @@ bool TextSuggestionController::IsMenuOpen() const {
 
 void TextSuggestionController::HandlePotentialSuggestionTap(
     const PositionInFlatTree& caret_position) {
-  if (!IsAvailable()) {
-    // TODO(crbug.com/1054955): We should fix caller not to make this happens.
-    // TODO(crbug.com/1409155): We should use `CHECK()`.
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
-  if (GetFrame() != GetDocument().GetFrame()) {
-    // TODO(crbug.com/1054955): We should fix caller not to make this happens.
-    // TODO(crbug.com/1409155): We should use `CHECK_EQ()`.
-    base::debug::DumpWithoutCrashing();
+  if (!IsAvailable() || GetFrame() != GetDocument().GetFrame()) {
+    // TODO(crbug.com/1054955, crbug.com/1409155, crbug.com/1412036): Callsites
+    // should not call this function in these conditions.
     return;
   }
 
