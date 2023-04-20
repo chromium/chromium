@@ -5078,11 +5078,6 @@
     "expiry_milestone": 94
   },
   {
-    "name": "microsoft-office-web-app-experiment",
-    "owners": [ "alancutter", "mgiuca", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "minutes-delay-to-restore-gaia-cookies-if-deleted",
     "owners": ["jlebel", "chrome-signin-team"],
     // Used for automated testing of Gaia cookie restoration in iOS.

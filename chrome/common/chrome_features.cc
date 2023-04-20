@@ -820,12 +820,6 @@ BASE_FEATURE(kMetricsSettingsAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kMicrosoftOfficeWebAppExperiment,
-             "MicrosoftOfficeWebAppExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kMigrateExternalPrefsToWebAppDB,
              "MigrateExternalPrefsToWebAppDB",
              base::FEATURE_ENABLED_BY_DEFAULT);

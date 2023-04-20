@@ -42,6 +42,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
+#include "chromeos/constants/chromeos_features.h"
 #endif
 
 namespace web_app {
@@ -342,8 +343,7 @@ size_t WebAppRegistrar::GetUrlInAppScopeScore(const std::string& url_spec,
           : 0;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(
-          features::kMicrosoftOfficeWebAppExperiment)) {
+  if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
     score = std::max(score, ChromeOsWebAppExperiments::GetExtendedScopeScore(
                                 app_id, url_spec));
   }

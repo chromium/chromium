@@ -891,6 +891,10 @@ source_set("app_service_browser_tests") {
     "//chrome/test:test_support_ui",
   ]
 
+  if (is_chromeos) {
+    deps += [ "//chromeos/constants:constants" ]
+  }
+
   if (is_chromeos_lacros) {
     deps += [ "//chromeos/lacros:lacros" ]
   }

@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS), "For Chrome OS only");
@@ -61,7 +62,7 @@ class ChromeOsWebAppExperimentsBrowserTest
   GURL extended_scope_page_;
   std::vector<const char* const> extended_scopes_;
   base::test::ScopedFeatureList scoped_feature_list_{
-      features::kMicrosoftOfficeWebAppExperiment};
+      chromeos::features::kUploadOfficeToCloud};
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,

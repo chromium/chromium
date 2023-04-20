@@ -6673,13 +6673,6 @@ const char kMessagesPreinstallName[] = "Preinstall  Messages PWA";
 const char kMessagesPreinstallDescription[] =
     "Enables preinstallation of the Messages for Web PWA for unmanaged users.";
 
-const char kMicrosoftOfficeWebAppExperimentName[] =
-    "Microsoft Office web app experiment";
-const char kMicrosoftOfficeWebAppExperimentDescription[] =
-    "A ChromeOS experiment on the Microsoft Office web app that overrides the "
-    "scope and theme color. Not intended for public release; this is testing "
-    "capabilites that will be available to websites at a later date.";
-
 const char kOneGroupPerRendererName[] =
     "Use one cgroup for each foreground renderer";
 const char kOneGroupPerRendererDescription[] =
