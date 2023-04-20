@@ -5,7 +5,6 @@
 #include "chrome/browser/hid/hid_chooser_context.h"
 
 #include "base/barrier_closure.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -14,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -129,7 +129,7 @@ class HidChooserContextTestBase {
         device::mojom::HidReportDescription::New());
 
     auto device = device::mojom::HidDeviceInfo::New();
-    device->guid = base::GenerateGUID();
+    device->guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
     device->physical_device_id = kTestPhysicalDeviceId;
     device->vendor_id = kTestVendorId;
     device->product_id = kTestProductId;

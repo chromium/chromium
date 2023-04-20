@@ -6,12 +6,12 @@
 
 #include <memory>
 
-#include "base/guid.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
@@ -1215,7 +1215,8 @@ TEST(ChromeHidDelegateBrowserContextTest, BrowserContextIsNull) {
   EXPECT_EQ(nullptr,
             chrome_hid_delegate.GetHidManager(/*browser_context=*/nullptr));
   EXPECT_EQ(nullptr, chrome_hid_delegate.GetDeviceInfo(
-                         /*browser_context=*/nullptr, base::GenerateGUID()));
+                         /*browser_context=*/nullptr,
+                         base::Uuid::GenerateRandomV4().AsLowercaseString()));
   EXPECT_FALSE(chrome_hid_delegate.IsFidoAllowedForOrigin(
       /*browser_context=*/nullptr, origin));
 }
