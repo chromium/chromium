@@ -6863,4 +6863,3 @@ crbug.com/1432763 [ Linux ] external/wpt/fetch/metadata/generated/element-pictur
 # Sheriff 2023-04-19
 crbug.com/1434731 http/tests/devtools/elements/styles-4/styles-overriden-properties.js [ Failure Pass ]
 crbug.com/1434731 http/tests/devtools/elements/styles-2/parse-declaration-with-quote.js [ Failure Pass ]
-crbug.com/1434788 [ Mac ] virtual/reduce-accept-language/http/tests/inspector-protocol/network/redirect-cached-navigation.js [ Failure Pass ]

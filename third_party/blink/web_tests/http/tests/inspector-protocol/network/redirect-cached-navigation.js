@@ -17,24 +17,52 @@
   dp.Network.onRequestWillBeSent(printRequest);
   dp.Network.onResponseReceived(printResponse);
 
-  let requestExtraInfoCount = 0;
-  let responseExtraInfoCount = 0;
-  dp.Network.onRequestWillBeSentExtraInfo(() => requestExtraInfoCount++);
-  dp.Network.onResponseReceivedExtraInfo(() => responseExtraInfoCount++);
+  function waitForExtraInfoCounts(count) {
+    let requestExtraInfoCount = 0;
+    let responseExtraInfoCount = 0;
+    return new Promise(resolve => {
+      function check() {
+        if (requestExtraInfoCount === count && responseExtraInfoCount === count) {
+          dp.Network.offRequestWillBeSentExtraInfo(onRequestWillBeSentExtraInfo);
+          dp.Network.offResponseReceivedExtraInfo(onResponseReceivedExtraInfo);
+          resolve([requestExtraInfoCount, responseExtraInfoCount]);
+        }
+      }
+      function onRequestWillBeSentExtraInfo() {
+        requestExtraInfoCount++;
+        check();
+      }
+      function onResponseReceivedExtraInfo() {
+        responseExtraInfoCount++;
+        check();
+      }
+      dp.Network.onRequestWillBeSentExtraInfo(onRequestWillBeSentExtraInfo);
+      dp.Network.onResponseReceivedExtraInfo(onResponseReceivedExtraInfo);
+    });
+
+  }
 
   dp.Network.enable();
   dp.Page.enable();
-  testRunner.log('Fresh redirect:');
-  dp.Page.navigate({url: testRunner.url('resources/redirect-cached.php')});
-  await dp.Network.onceLoadingFinished();
-  testRunner.log('  requestExtraInfoCount: ' + requestExtraInfoCount);
-  testRunner.log('  responseExtraInfoCount: ' + responseExtraInfoCount);
-  responseExtraInfoCount = requestExtraInfoCount = 0;
+  {
+    testRunner.log('Fresh redirect:');
+    const freshRedirectCounts = waitForExtraInfoCounts(2);
+    dp.Page.navigate({url: testRunner.url('resources/redirect-cached.php')});
+    await dp.Network.onceLoadingFinished();
+    const [requestExtraInfoCount, responseExtraInfoCount] = await freshRedirectCounts;
+    testRunner.log('  requestExtraInfoCount: ' + requestExtraInfoCount);
+    testRunner.log('  responseExtraInfoCount: ' + responseExtraInfoCount);
+  }
 
-  testRunner.log('\nRedirect to a cached resource:');
-  dp.Page.navigate({url: testRunner.url('resources/redirect-cached.php')});
-  await dp.Network.onceLoadingFinished();
-  testRunner.log('  requestExtraInfoCount: ' + requestExtraInfoCount);
-  testRunner.log('  responseExtraInfoCount: ' + responseExtraInfoCount);
+  {
+    testRunner.log('\nRedirect to a cached resource:');
+    const cachedRedirectCounts = waitForExtraInfoCounts(1);
+    dp.Page.navigate({url: testRunner.url('resources/redirect-cached.php')});
+    await dp.Network.onceLoadingFinished();
+    const [requestExtraInfoCount, responseExtraInfoCount] = await cachedRedirectCounts;
+    testRunner.log('  requestExtraInfoCount: ' + requestExtraInfoCount);
+    testRunner.log('  responseExtraInfoCount: ' + responseExtraInfoCount);
+  }
+
   testRunner.completeTest();
 });
