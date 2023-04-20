@@ -968,6 +968,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.Download.Rename.Dialog.Action"
     enum="Android.Download.Rename.Dialog.Action" expires_after="2021-08-09">
+  <obsolete>
+    Removed in April 2023.
+  </obsolete>
   <owner>hesen@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>

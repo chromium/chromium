@@ -1903,6 +1903,9 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="Android.Download.Rename.Dialog.Action">
+  <obsolete>
+    Removed in April 2023.
+  </obsolete>
   <int value="0" label="RenameDialogConfirm"/>
   <int value="1" label="RenameDialogCancel"/>
   <int value="2" label="RenameDialogOther"/>
