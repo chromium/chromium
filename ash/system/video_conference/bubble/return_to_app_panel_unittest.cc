@@ -16,12 +16,17 @@
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
+#include "ui/compositor/test/test_utils.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -53,6 +58,15 @@ void VerifyReturnToAppButtonInfo(
   EXPECT_EQ(is_capturing_microphone, button->is_capturing_microphone());
   EXPECT_EQ(is_capturing_screen, button->is_capturing_screen());
   EXPECT_EQ(display_text, button->label()->GetText());
+}
+
+void WaitForThroughputData(ui::Compositor* compositor) {
+  // Force a frame then wait, ensuring there is one more frame presented after
+  // animation finishes to allow animation throughput data to be passed from
+  // cc to ui.
+  compositor->ScheduleFullRedraw();
+  base::IgnoreResult(
+      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(300)));
 }
 
 // Used for verifying displayed url.
@@ -130,10 +144,11 @@ class ReturnToAppPanelTest : public AshTestBase {
         ->AnimationProgressed(animation);
   }
 
-  void SimulateAnimationEnded() {
-    auto* animation = GetBoundsChangeAnimation();
-    animation->End();
-    GetReturnToAppContainer(GetReturnToAppPanel())->AnimationEnded(animation);
+  // Wait until the bounds change animation is completed.
+  void WaitForAnimation() {
+    do {
+      base::RunLoop().RunUntilIdle();
+    } while (GetBoundsChangeAnimation()->is_animating());
   }
 
  private:
@@ -383,6 +398,8 @@ TEST_F(ReturnToAppPanelTest, ExpandAnimation) {
   auto* vc_bubble = video_conference_tray()->GetBubbleView();
   auto bubble_initial_height = vc_bubble->size().height();
 
+  base::HistogramTester histogram_tester;
+
   // The animation should start after we click the summary row to expand the
   // panel.
   LeftClickOn(summary_row);
@@ -400,7 +417,7 @@ TEST_F(ReturnToAppPanelTest, ExpandAnimation) {
             bubble_mid_animation_height - bubble_initial_height);
 
   // Test the same thing when animation ends.
-  SimulateAnimationEnded();
+  WaitForAnimation();
 
   auto panel_end_animation_height = return_to_app_panel->size().height();
   auto bubble_end_animation_height = vc_bubble->size().height();
@@ -408,6 +425,13 @@ TEST_F(ReturnToAppPanelTest, ExpandAnimation) {
   EXPECT_GT(panel_end_animation_height, panel_mid_animation_height);
   EXPECT_EQ(panel_end_animation_height - panel_mid_animation_height,
             bubble_end_animation_height - bubble_mid_animation_height);
+
+  WaitForThroughputData(return_to_app_panel->GetWidget()->GetCompositor());
+
+  // Smoothness should be recorded for the bounds change animation.
+  histogram_tester.ExpectTotalCount(
+      "Ash.VideoConference.ReturnToAppPanel.BoundsChange.AnimationSmoothness",
+      1);
 }
 
 TEST_F(ReturnToAppPanelTest, CollapseAnimation) {
@@ -432,12 +456,14 @@ TEST_F(ReturnToAppPanelTest, CollapseAnimation) {
       return_to_app_container->children().front());
 
   LeftClickOn(summary_row);
-  SimulateAnimationEnded();
+  WaitForAnimation();
   ASSERT_TRUE(summary_row->expanded());
 
   auto panel_initial_height = return_to_app_panel->size().height();
   auto* vc_bubble = video_conference_tray()->GetBubbleView();
   auto bubble_initial_height = vc_bubble->size().height();
+
+  base::HistogramTester histogram_tester;
 
   // The animation should start after we click the summary row again to collapse
   // the panel.
@@ -468,7 +494,7 @@ TEST_F(ReturnToAppPanelTest, CollapseAnimation) {
             bubble_mid_animation_height - bubble_initial_height);
 
   // Test the same thing when animation ends.
-  SimulateAnimationEnded();
+  WaitForAnimation();
 
   auto panel_end_animation_height = return_to_app_panel->size().height();
   auto bubble_end_animation_height = vc_bubble->size().height();
@@ -476,6 +502,13 @@ TEST_F(ReturnToAppPanelTest, CollapseAnimation) {
   EXPECT_LT(panel_end_animation_height, panel_mid_animation_height);
   EXPECT_EQ(panel_end_animation_height - panel_mid_animation_height,
             bubble_end_animation_height - bubble_mid_animation_height);
+
+  WaitForThroughputData(return_to_app_panel->GetWidget()->GetCompositor());
+
+  // Smoothness should be recorded for the bounds change animation.
+  histogram_tester.ExpectTotalCount(
+      "Ash.VideoConference.ReturnToAppPanel.BoundsChange.AnimationSmoothness",
+      1);
 }
 
 // Verify that the layer animations to show/hide the view are performed with
@@ -501,6 +534,8 @@ TEST_F(ReturnToAppPanelTest, LayerAnimations) {
   auto* summary_row = static_cast<ReturnToAppButton*>(
       return_to_app_container->children().front());
 
+  base::HistogramTester histogram_tester;
+
   // Expand animation: The return to app buttons should fade in.
   LeftClickOn(summary_row);
 
@@ -515,12 +550,17 @@ TEST_F(ReturnToAppPanelTest, LayerAnimations) {
   ui::LayerAnimationStoppedWaiter layer_animation_waiter;
   layer_animation_waiter.Wait(first_app_row->layer());
   layer_animation_waiter.Wait(second_app_row->layer());
+  WaitForThroughputData(first_app_row->layer()->GetCompositor());
 
   EXPECT_EQ(1, first_app_row->layer()->opacity());
   EXPECT_EQ(1, second_app_row->layer()->opacity());
 
+  // Smoothness should be recorded for these 2 rows.
+  histogram_tester.ExpectTotalCount(
+      "Ash.VideoConference.ReturnToAppButton.FadeIn.AnimationSmoothness", 2);
+
   // End the rest of the animation to test collapse animation.
-  SimulateAnimationEnded();
+  WaitForAnimation();
   ASSERT_TRUE(summary_row->expanded());
 
   // Collapse animation: The return to app buttons should fade out and the
@@ -537,10 +577,17 @@ TEST_F(ReturnToAppPanelTest, LayerAnimations) {
   layer_animation_waiter.Wait(summary_icons->layer());
   layer_animation_waiter.Wait(first_app_row->layer());
   layer_animation_waiter.Wait(second_app_row->layer());
+  WaitForThroughputData(first_app_row->layer()->GetCompositor());
 
   EXPECT_EQ(1, summary_icons->layer()->opacity());
   EXPECT_FALSE(first_app_row->GetVisible());
   EXPECT_FALSE(second_app_row->GetVisible());
+
+  // Smoothness should be recorded for these 2 rows and the summary icons.
+  histogram_tester.ExpectTotalCount(
+      "Ash.VideoConference.ReturnToAppButton.FadeOut.AnimationSmoothness", 2);
+  histogram_tester.ExpectTotalCount(
+      "Ash.VideoConference.SummaryIcons.FadeIn.AnimationSmoothness", 1);
 }
 
 }  // namespace ash::video_conference
