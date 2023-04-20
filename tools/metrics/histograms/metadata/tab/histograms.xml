@@ -1100,33 +1100,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabRestore.error_move_session_at_path_to_backup"
-    enum="FoundationFileSystemError" expires_after="M77">
-  <owner>sky@chromium.org</owner>
-  <summary>
-    Error code returned by [moveItemAtPath:toPath:error:] when moving previous
-    session file to backup file before restoring. 0 in case of success.
-  </summary>
-</histogram>
-
-<histogram name="TabRestore.error_remove_backup_at_path"
-    enum="FoundationFileSystemError" expires_after="M77">
-  <owner>sky@chromium.org</owner>
-  <summary>
-    Error code returned by [removeItemAtPath:error:] when removing previous
-    session backup file. 0 in case of success.
-  </summary>
-</histogram>
-
-<histogram name="TabRestore.error_remove_session_at_path"
-    enum="FoundationFileSystemError" expires_after="M77">
-  <owner>sky@chromium.org</owner>
-  <summary>
-    Error code returned by [removeItemAtPath:error:] when removing previous
-    session file. 0 in case of success.
-  </summary>
-</histogram>
-
 <histogram name="TabRestore.{RestoreType}.TimeBetweenClosedAndRestored"
     units="ms" expires_after="2023-07-10">
   <owner>sreejakshetty@chromium.org</owner>
