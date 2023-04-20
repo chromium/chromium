@@ -37,6 +37,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -377,6 +378,99 @@ TEST_F(HomeButtonWithQuickAppAccess, EmptyAppId) {
 
   // Setting to an empty app id hides the quick app button.
   EXPECT_TRUE(Shell::Get()->app_list_controller()->SetHomeButtonQuickApp(""));
+  EXPECT_FALSE(IsQuickAppVisible());
+}
+
+// Test that the quick app button animates when showing and hiding.
+TEST_F(HomeButtonWithQuickAppAccess, QuickAppButtonAnimation) {
+  EXPECT_FALSE(IsQuickAppVisible());
+  ui::ScopedAnimationDurationScaleMode regular_animations(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  const std::string quick_app_id = "Quick App Item";
+  GetAppListTestHelper()->model()->CreateAndAddItem(quick_app_id);
+  EXPECT_TRUE(
+      Shell::Get()->app_list_controller()->SetHomeButtonQuickApp(quick_app_id));
+
+  // The quick app button should be animating when shown.
+  EXPECT_TRUE(IsQuickAppVisible());
+  auto* quick_app_button = home_button()->quick_app_button_for_test();
+  EXPECT_EQ(0.0f, quick_app_button->layer()->opacity());
+  EXPECT_EQ(1.0f, quick_app_button->layer()->GetTargetOpacity());
+  EXPECT_TRUE(quick_app_button->layer()->GetAnimator()->is_animating());
+
+  // Wait for quick app button to finish show animation.
+  ui::LayerAnimationStoppedWaiter quick_app_button_animation_waiter;
+  quick_app_button_animation_waiter.Wait(quick_app_button->layer());
+  EXPECT_FALSE(quick_app_button->layer()->GetAnimator()->is_animating());
+
+  const int quick_app_margin = 8;
+  EXPECT_EQ(home_button()->width() + quick_app_margin,
+            quick_app_button->bounds().x());
+  EXPECT_EQ(0, quick_app_button->bounds().y());
+
+  // Show the app list to begin the hide quick app button animation.
+  GetAppListTestHelper()->ShowAppList();
+  EXPECT_TRUE(IsQuickAppVisible());
+  EXPECT_EQ(1.0f, quick_app_button->layer()->opacity());
+  EXPECT_EQ(0.0f, quick_app_button->layer()->GetTargetOpacity());
+  EXPECT_TRUE(quick_app_button->layer()->GetAnimator()->is_animating());
+
+  quick_app_button_animation_waiter.Wait(quick_app_button->layer());
+  EXPECT_FALSE(IsQuickAppVisible());
+}
+
+// Test the left shelf quick app button position.
+TEST_F(HomeButtonWithQuickAppAccess, LeftShelf) {
+  Shelf* shelf = GetPrimaryShelf();
+  EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
+
+  const std::string quick_app_id = "Quick App Item";
+  GetAppListTestHelper()->model()->CreateAndAddItem(quick_app_id);
+  EXPECT_TRUE(
+      Shell::Get()->app_list_controller()->SetHomeButtonQuickApp(quick_app_id));
+
+  const int quick_app_margin = 8;
+
+  // Set shelf to left alignment and check quick app button bounds.
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
+
+  auto* quick_app_button = home_button()->quick_app_button_for_test();
+  EXPECT_EQ(home_button()->width() + quick_app_margin,
+            quick_app_button->bounds().y());
+  EXPECT_EQ(0, quick_app_button->bounds().x());
+
+  // Test launching the quick app on the left aligned shelf.
+  GetEventGenerator()->MoveMouseTo(
+      quick_app_button->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_FALSE(IsQuickAppVisible());
+}
+
+// Test the right shelf quick app button position.
+TEST_F(HomeButtonWithQuickAppAccess, RightShelf) {
+  Shelf* shelf = GetPrimaryShelf();
+  EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
+
+  const std::string quick_app_id = "Quick App Item";
+  GetAppListTestHelper()->model()->CreateAndAddItem(quick_app_id);
+  EXPECT_TRUE(
+      Shell::Get()->app_list_controller()->SetHomeButtonQuickApp(quick_app_id));
+
+  const int quick_app_margin = 8;
+
+  // Set shelf to right alignment and check quick app button bounds.
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kRight);
+
+  auto* quick_app_button = home_button()->quick_app_button_for_test();
+  EXPECT_EQ(home_button()->width() + quick_app_margin,
+            quick_app_button->bounds().y());
+  EXPECT_EQ(0, quick_app_button->bounds().x());
+
+  // Test launching the quick app on the right aligned shelf.
+  GetEventGenerator()->MoveMouseTo(
+      quick_app_button->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
   EXPECT_FALSE(IsQuickAppVisible());
 }
 

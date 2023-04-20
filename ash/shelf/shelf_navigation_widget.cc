@@ -849,11 +849,14 @@ gfx::Size ShelfNavigationWidget::CalculateIdealSize(
     // There are home button and back button. So the maximum is 2.
     controls_space = control_size * 2 + ShelfConfig::Get()->button_spacing();
   } else {
-    // Use CalculatePreferredSize here to take the launcher nudge label into
-    // consider.
-    controls_space += home_button_shown
-                          ? GetHomeButton()->CalculatePreferredSize().width()
-                          : 0;
+    // Use CalculatePreferredSize here to take the launcher nudge label or quick
+    // app button into consideration.
+    controls_space +=
+        home_button_shown
+            ? (shelf_->IsHorizontalAlignment()
+                   ? GetHomeButton()->CalculatePreferredSize().width()
+                   : GetHomeButton()->CalculatePreferredSize().height())
+            : 0;
     controls_space += back_button_shown ? control_size : 0;
     controls_space +=
         (CalculateButtonCount() - 1) * ShelfConfig::Get()->button_spacing();

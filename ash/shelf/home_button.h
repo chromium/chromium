@@ -18,6 +18,7 @@
 #include "ash/shell_observer.h"
 #include "base/scoped_observation.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/views/view_targeter_delegate.h"
 
 namespace views {
@@ -198,6 +199,24 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   // QuickAppAccessModel::Observer:
   void OnQuickAppShouldShowChanged(bool quick_app_shown) override;
   void OnQuickAppIconChanged() override;
+
+  // Create and animate in the quick app button from behind the home button.
+  void AnimateQuickAppButtonIn();
+
+  // Animate out the quick app button, deleting the quick app button when
+  // completed.
+  void AnimateQuickAppButtonOut();
+
+  // Callback for the quick app button slide out animation.
+  void OnQuickAppButtonSlideOutDone();
+
+  // Returns a transform which will translate the child of the
+  // `expandable_container` to be placed behind the home button.
+  gfx::Transform GetTransformForContainerChildBehindHomeButton();
+
+  // Returns a clip rect which will clip the `expandable_container` to the
+  // bounds of the home button.
+  gfx::Rect GetExpandableContainerClipRectToHomeButton();
 
   base::ScopedObservation<QuickAppAccessModel, QuickAppAccessModel::Observer>
       quick_app_model_observation_{this};
