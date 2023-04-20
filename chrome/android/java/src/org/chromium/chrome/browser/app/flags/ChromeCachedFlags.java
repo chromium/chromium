@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app.flags;
 import android.text.TextUtils;
 
 import org.chromium.build.BuildConfig;
+import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -109,6 +110,7 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.sQueryTiles,
                 ChromeFeatureList.sQueryTilesOnStart,
                 ChromeFeatureList.sShouldIgnoreIntentSkipInternalCheck,
+                ChromeFeatureList.sSpareTab,
                 ChromeFeatureList.sStartSurfaceAndroid,
                 ChromeFeatureList.sStartSurfaceDisabledFeedImprovement,
                 ChromeFeatureList.sStartSurfaceReturnTime,
@@ -149,6 +151,7 @@ public class ChromeCachedFlags {
                 CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY,
                 CustomTabIntentDataProvider.DENYLIST_ENTRIES,
                 CustomTabIntentDataProvider.ALLOWLIST_ENTRIES,
+                WarmupManager.SPARE_TAB_INITIALIZE_RENDERER,
                 StartSurfaceConfiguration.IS_DOODLE_SUPPORTED,
                 StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS,
                 StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_USE_MODEL,

@@ -1601,6 +1601,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mStylusWritingCoordinator = null;
         }
 
+        // Destroy spare tab on activitiy destruction.
+        WarmupManager warmupManager = WarmupManager.getInstance();
+        warmupManager.destroySpareTab();
+
         mActivityTabProvider.destroy();
         ChromeActivitySessionTracker.getInstance().unregisterTabModelSelectorSupplier(this);
 

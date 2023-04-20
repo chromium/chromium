@@ -325,6 +325,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTrustedWebActivityQualityEnforcementForced,
     &kTrustedWebActivityQualityEnforcementWarning,
     &kResizeOnlyActiveTab,
+    &kSpareTab,
     &kStartSurfaceAndroid,
     &kStartSurfaceOnTablet,
     &kStartSurfaceReturnTime,
@@ -1088,6 +1089,11 @@ BASE_FEATURE(kTrustedWebActivityQualityEnforcementWarning,
 BASE_FEATURE(kResizeOnlyActiveTab,
              "ResizeOnlyActiveTab",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// SpareTab is enabled by default for configuring renderer initialization
+// through field trial. Users of spareTab should declare their own field trial
+// feature.
+BASE_FEATURE(kSpareTab, "SpareTab", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStartSurfaceAndroid,
              "StartSurfaceAndroid",

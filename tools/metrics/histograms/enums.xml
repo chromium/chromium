@@ -96722,6 +96722,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="6" label="RefusedForPdfContent"/>
 </enum>
 
+<enum name="SpareTabFinalStatus">
+  <int value="0" label="Tab Created Not Used"/>
+  <int value="1" label="Tab Creation In Progress"/>
+  <int value="2" label="Tab Used"/>
+  <int value="3" label="Tab Crashed"/>
+  <int value="4" label="Tab Destroyed"/>
+</enum>
+
 <enum name="SpareWebContentsStatus">
   <obsolete>
     Superseded by SpareWebContentsStatus2 as of 03/2019.

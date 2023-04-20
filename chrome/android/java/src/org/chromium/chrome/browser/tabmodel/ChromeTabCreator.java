@@ -5,11 +5,14 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
@@ -32,6 +35,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabParentIntent;
 import org.chromium.chrome.browser.tab.TabResolver;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.SerializedCriticalPersistedTabData;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -189,6 +193,49 @@ public class ChromeTabCreator extends TabCreator {
         if (index != TabModel.INVALID_TAB_INDEX) position = index + 1;
 
         return createNewTab(loadUrlParams, type, parent, position, intent);
+    }
+
+    /**
+     * Creates an instance of a {@link Tab} that is fully detached from any activity.
+     *
+     * Also performs general tab initialization as well as detached specifics.
+     *
+     * @param type Information about how the tab is launched.
+     * @param initializeRenderer Whether to initialize renderer with WebContents creation.
+     *
+     * @return The newly created and initialized spare tab.
+     *
+     * TODO(crbug.com/1412572): Adapt this method to create other tabs.
+     */
+    @Override
+    public Tab buildDetachedSpareTab(@TabLaunchType int type, boolean initializeRenderer) {
+        try (TraceEvent e = TraceEvent.scoped("ChromeTabCreator.buildDetachedTab")) {
+            Context context = ContextUtils.getApplicationContext();
+
+            // Don't create spare tab in incognito mode.
+            if (mIncognito) return null;
+
+            // TODO(crbug.com/1190971): Set isIncognito flag here if spare tabs are allowed for
+            // incognito mode.
+            TabDelegateFactory delegateFactory = createDefaultTabDelegateFactory();
+            Tab tab = TabBuilder.createLiveTab(true)
+                              .setWindow(mNativeWindow)
+                              .setLaunchType(type)
+                              .setDelegateFactory(delegateFactory)
+                              .setInitiallyHidden(true)
+                              .setInitializeRenderer(initializeRenderer)
+                              .build();
+
+            // Resize the webContents to avoid expensive post load resize when attaching the tab.
+            Rect bounds = TabUtils.estimateContentSize(context);
+            int width = bounds.right - bounds.left;
+            int height = bounds.bottom - bounds.top;
+            tab.getWebContents().setSize(width, height);
+
+            // Reparent the tab to detach it from the current activity.
+            ReparentingTask.from(tab).detach();
+            return tab;
+        }
     }
 
     /**

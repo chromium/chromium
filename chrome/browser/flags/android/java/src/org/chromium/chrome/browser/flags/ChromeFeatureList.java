@@ -477,6 +477,7 @@ public abstract class ChromeFeatureList {
             "SkipServiceWorkerForInstallPromot";
     public static final String SMART_SUGGESTION_FOR_LARGE_DOWNLOADS =
             "SmartSuggestionForLargeDownloads";
+    public static final String SPARE_TAB = "SpareTab";
     public static final String SPLIT_COMPOSITOR_TASK = "SplitCompositorTask";
     public static final String SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY =
             "SplitCacheByNetworkIsolationKey";
@@ -636,6 +637,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sQueryTilesOnStart = new CachedFlag(QUERY_TILES_ON_START, false);
     public static final CachedFlag sShouldIgnoreIntentSkipInternalCheck =
             new CachedFlag(SHOULD_IGNORE_INTENT_SKIP_INTERNAL_CHECK, true);
+    public static final CachedFlag sSpareTab = new CachedFlag(SPARE_TAB, false);
     public static final CachedFlag sStartSurfaceAndroid =
             new CachedFlag(START_SURFACE_ANDROID, true);
     public static final CachedFlag sStartSurfaceDisabledFeedImprovement =

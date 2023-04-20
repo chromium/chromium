@@ -862,18 +862,21 @@ public class TabImpl implements Tab {
      * a new {@link WebContents} will be created for this {@link Tab}.
      * @param parent The tab that caused this tab to be opened.
      * @param creationState State in which the tab is created.
-     * @param loadUrlParams Parameters used for a lazily loaded Tab.
+     * @param loadUrlParams Parameters used for a lazily loaded Tab or null if we initialize a tab
+     *         without an URL.
      * @param webContents A {@link WebContents} object or {@code null} if one should be created.
      * @param delegateFactory The {@link TabDelegateFactory} to be used for delegate creation.
      * @param initiallyHidden Only used if {@code webContents} is {@code null}.  Determines
      *        whether or not the newly created {@link WebContents} will be hidden or not.
      * @param tabState State containing information about this Tab, if it was persisted.
+     * @param initializeRenderer Determines whether or not we initialize renderer with {@link
+     *         WebContents} creation.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void initialize(Tab parent, @Nullable @TabCreationState Integer creationState,
-            LoadUrlParams loadUrlParams, WebContents webContents,
+            @Nullable LoadUrlParams loadUrlParams, WebContents webContents,
             @Nullable TabDelegateFactory delegateFactory, boolean initiallyHidden,
-            TabState tabState) {
+            TabState tabState, boolean initializeRenderer) {
         try {
             TraceEvent.begin("Tab.initialize");
 
@@ -921,8 +924,8 @@ public class TabImpl implements Tab {
                 if (webContents == null) {
                     Profile profile = IncognitoUtils.getProfileFromWindowAndroid(
                             mWindowAndroid, isIncognito());
-                    webContents =
-                            WebContentsFactory.createWebContents(profile, initiallyHidden, false);
+                    webContents = WebContentsFactory.createWebContents(
+                            profile, initiallyHidden, initializeRenderer);
                 }
             }
 
