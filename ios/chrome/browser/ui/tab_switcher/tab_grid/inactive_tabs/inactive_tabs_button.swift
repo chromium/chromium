@@ -24,19 +24,13 @@ struct InactiveTabsButton: View {
     Button {
       state.action?()
     } label: {
-      Group {
-        if sizeCategory < .accessibilityMedium {
-          regularLayout()
-        } else {
-          xxlLayout()
-        }
+      if sizeCategory < .accessibilityMedium {
+        regularLayout()
+      } else {
+        xxlLayout()
       }
-      .padding([.top, .bottom], Dimensions.verticalPadding)
-      .padding([.leading, .trailing], Dimensions.horizontalPadding)
-      .background(Color.secondaryBackground)
-      .cornerRadius(Dimensions.cornerRadius)
-      .environment(\.colorScheme, .dark)
     }
+    .buttonStyle(InactiveTabsButtonStyle())
   }
 
   /// MARK - Layouts
@@ -127,5 +121,21 @@ struct InactiveTabsButton: View {
       content()
     }
     .multilineTextAlignment(.leading)
+  }
+
+  /// MARK - Styles
+
+  /// Style for the main button, i.e. the top-level view.
+  private struct InactiveTabsButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+      configuration.label
+        .padding([.top, .bottom], 10)
+        .padding([.leading, .trailing], 16)
+        .background(
+          configuration.isPressed ? Color(.systemGray4) : Color.groupedSecondaryBackground
+        )
+        .cornerRadius(10)
+        .environment(\.colorScheme, .dark)
+    }
   }
 }
