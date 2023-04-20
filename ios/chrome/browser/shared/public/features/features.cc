@@ -53,7 +53,7 @@ BASE_FEATURE(kIOSBrowserEditMenuMetrics,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDefaultBrowserRefactoringPromoManager,
-             "kDefaultBrowserRefactoringPromoManager",
+             "DefaultBrowserRefactoringPromoManager",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIOSCustomBrowserEditMenu,
