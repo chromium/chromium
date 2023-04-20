@@ -41,6 +41,11 @@ std::map<HoldingSpaceSectionId, HoldingSpaceSection> CreateSectionsById() {
           /*supported_types=*/
           std::set<HoldingSpaceItem::Type>({
               HoldingSpaceItem::Type::kArcDownload,
+              HoldingSpaceItem::Type::kCameraAppPhoto,
+              HoldingSpaceItem::Type::kCameraAppScanJpg,
+              HoldingSpaceItem::Type::kCameraAppScanPdf,
+              HoldingSpaceItem::Type::kCameraAppVideoGif,
+              HoldingSpaceItem::Type::kCameraAppVideoMp4,
               HoldingSpaceItem::Type::kDiagnosticsLog,
               HoldingSpaceItem::Type::kDownload,
               HoldingSpaceItem::Type::kLacrosDownload,

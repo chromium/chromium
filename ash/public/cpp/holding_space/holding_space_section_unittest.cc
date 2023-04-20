@@ -34,19 +34,18 @@ std::set<HoldingSpaceSectionId> GetHoldingSpaceSectionIds() {
 }
 
 void ExpectSection(const HoldingSpaceSection* section,
-                   const absl::optional<HoldingSpaceSectionId>& expected_id) {
-  if (!section) {
-    // TODO(http://b/274484210): Update views for camera app types.
-    EXPECT_FALSE(expected_id.has_value());
-    return;
-  }
-  ASSERT_TRUE(expected_id.has_value());
-  switch (expected_id.value()) {
+                   HoldingSpaceSectionId expected_id) {
+  switch (expected_id) {
     case HoldingSpaceSectionId::kDownloads:
       EXPECT_EQ(section->id, HoldingSpaceSectionId::kDownloads);
       EXPECT_THAT(section->supported_types,
                   testing::UnorderedElementsAre(
                       HoldingSpaceItem::Type::kArcDownload,
+                      HoldingSpaceItem::Type::kCameraAppPhoto,
+                      HoldingSpaceItem::Type::kCameraAppScanJpg,
+                      HoldingSpaceItem::Type::kCameraAppScanPdf,
+                      HoldingSpaceItem::Type::kCameraAppVideoGif,
+                      HoldingSpaceItem::Type::kCameraAppVideoMp4,
                       HoldingSpaceItem::Type::kDiagnosticsLog,
                       HoldingSpaceItem::Type::kDownload,
                       HoldingSpaceItem::Type::kLacrosDownload,
@@ -108,6 +107,11 @@ TEST_F(HoldingSpaceSectionTest, GetHoldingSpaceSectionByType) {
     absl::optional<HoldingSpaceSectionId> id;
     switch (type) {
       case HoldingSpaceItem::Type::kArcDownload:
+      case HoldingSpaceItem::Type::kCameraAppPhoto:
+      case HoldingSpaceItem::Type::kCameraAppScanJpg:
+      case HoldingSpaceItem::Type::kCameraAppScanPdf:
+      case HoldingSpaceItem::Type::kCameraAppVideoGif:
+      case HoldingSpaceItem::Type::kCameraAppVideoMp4:
       case HoldingSpaceItem::Type::kDiagnosticsLog:
       case HoldingSpaceItem::Type::kDownload:
       case HoldingSpaceItem::Type::kLacrosDownload:
@@ -129,16 +133,8 @@ TEST_F(HoldingSpaceSectionTest, GetHoldingSpaceSectionByType) {
       case HoldingSpaceItem::Type::kScreenshot:
         id = HoldingSpaceSectionId::kScreenCaptures;
         break;
-      case HoldingSpaceItem::Type::kCameraAppPhoto:
-      case HoldingSpaceItem::Type::kCameraAppScanJpg:
-      case HoldingSpaceItem::Type::kCameraAppScanPdf:
-      case HoldingSpaceItem::Type::kCameraAppVideoGif:
-      case HoldingSpaceItem::Type::kCameraAppVideoMp4:
-        // TODO(http://b/274484210): Update views for camera app types.
-        id = absl::nullopt;
-        break;
     }
-    ExpectSection(GetHoldingSpaceSection(type), id);
+    ExpectSection(GetHoldingSpaceSection(type), id.value());
   }
 }
 
