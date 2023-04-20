@@ -1003,59 +1003,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.TouchSelectionHandle.BestVerticalClippingPercentage"
-    units="%" expires_after="M77">
-  <owner>amaralp@chromium.org</owner>
-  <summary>
-    Percentage of touch handle height that would be clipped by the viewport in
-    the best case of flipping or not flipping.
-  </summary>
-</histogram>
-
-<histogram name="Event.TouchSelectionHandle.BottomHandleClippingPercentage"
-    units="%" expires_after="M77">
-  <owner>amaralp@chromium.org</owner>
-  <summary>
-    Percentage of touch handle height that would be clipped by the viewport if
-    the handle was not vertically flipped.
-  </summary>
-</histogram>
-
-<histogram name="Event.TouchSelectionHandle.FlippingImprovementPercentage"
-    units="%" expires_after="M77">
-  <owner>amaralp@chromium.org</owner>
-  <summary>
-    The difference between the metrics |BottomHandleClippingPercentage| and
-    |BestVerticalClippingPercentage|. Measures how useful vertical flipping is.
-  </summary>
-</histogram>
-
-<histogram name="Event.TouchSelectionHandle.LeftHandleClippingPercentage"
-    units="%" expires_after="M77">
-  <owner>amaralp@chromium.org</owner>
-  <summary>
-    Percentage of left touch handle width that would be clipped by the viewport
-    without flipping.
-  </summary>
-</histogram>
-
-<histogram name="Event.TouchSelectionHandle.RightHandleClippingPercentage"
-    units="%" expires_after="M77">
-  <owner>amaralp@chromium.org</owner>
-  <summary>
-    Percentage of right touch handle width that would be clipped by the viewport
-    without flipping.
-  </summary>
-</histogram>
-
-<histogram name="Event.TouchSelectionHandle.ShouldFlipHandleVertically"
-    enum="TouchHandleVerticallyFlipped" expires_after="M77">
-  <owner>amaralp@chromium.org</owner>
-  <summary>
-    Whether flipping the handle vertically would result in less clipping.
-  </summary>
-</histogram>
-
 <histogram name="Event.UserActivation.TriggerFor{ActivationGatedApiType}"
     enum="UserActivationTriggerEnum" expires_after="2023-09-30">
   <owner>mustaq@chromium.org</owner>
