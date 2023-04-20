@@ -488,6 +488,10 @@ bool PrivacySection::LogMetric(mojom::Setting setting,
           "ChromeOS.Settings.Privacy.PeripheralDataAccessProtection",
           value.GetBool());
       return true;
+    case mojom::Setting::kVerifiedAccess:
+      base::UmaHistogramBoolean("ChromeOS.Settings.Privacy.VerifiedAccessOnOff",
+                                value.GetBool());
+      return true;
     default:
       return false;
   }

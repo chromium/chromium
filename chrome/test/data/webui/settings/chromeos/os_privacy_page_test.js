@@ -179,7 +179,7 @@ suite('PrivacyPageTests', function() {
     flush();
 
     const deepLinkElement =
-        privacyPage.shadowRoot.querySelector('#enableVerifiedAccess')
+        privacyPage.shadowRoot.querySelector('#verifiedAccessToggle')
             .shadowRoot.querySelector('cr-toggle');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(

@@ -26,6 +26,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {LockStateMixin} from '../lock_state_mixin.js';
+import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
@@ -35,6 +36,12 @@ import {getTemplate} from './os_privacy_page.html.js';
 import {PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './peripheral_data_access_browser_proxy.js';
 import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
 import {PrivacyHubNavigationOrigin} from './privacy_hub_subpage.js';
+
+interface OsSettingsPrivacyPageElement {
+  $: {
+    verifiedAccessToggle: SettingsToggleButtonElement,
+  };
+}
 
 const OsSettingsPrivacyPageElementBase = PrefsMixin(
     LockStateMixin(RouteObserverMixin(DeepLinkingMixin(PolymerElement))));
@@ -410,9 +417,7 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
     // previous element.
     if (this.dataAccessShiftTabPressed_) {
       this.dataAccessShiftTabPressed_ = false;
-      this.shadowRoot!
-          .querySelector<SettingsToggleButtonElement>(
-              '#enableVerifiedAccess')!.focus();
+      this.$.verifiedAccessToggle.focus();
       return;
     }
 
@@ -470,6 +475,11 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
             });
           });
     }
+  }
+
+  private onVerifiedAccessChange_(): void {
+    const enabled = this.$.verifiedAccessToggle.checked;
+    recordSettingChange(Setting.kVerifiedAccess, {boolValue: enabled});
   }
 
   /**

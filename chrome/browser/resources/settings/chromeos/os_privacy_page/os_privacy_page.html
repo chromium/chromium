@@ -69,10 +69,11 @@
       <div class="hr"></div>
     </template>
     <settings-toggle-button
-        id="enableVerifiedAccess"
+        id="verifiedAccessToggle"
         pref="{{
           prefs.cros.device.attestation_for_content_protection_enabled}}"
         label="$i18n{enableContentProtectionAttestation}"
+        on-settings-boolean-control-change="onVerifiedAccessChange_"
         deep-link-focus-id$="[[Setting.kVerifiedAccess]]">
     </settings-toggle-button>
     <template is="dom-if" if="[[showPrivacyHubPage_]]" restamp>
