@@ -15,32 +15,31 @@ std::string PluginTestUtils::RunTestScript(base::StringPiece test_script,
       "var plugin = window.document.getElementById('%s');"
       "if (plugin === undefined ||"
       "    (plugin.nodeName !== 'OBJECT' && plugin.nodeName !== 'EMBED')) {"
-      "  window.domAutomationController.send('error');"
+      "  'error';"
       "} else {"
       "  %s"
       "}",
       element_id.c_str(), test_script.data());
-  std::string result;
-  EXPECT_TRUE(
-      content::ExecuteScriptAndExtractString(contents, script, &result));
-  return result;
+  return content::EvalJs(contents, script).ExtractString();
 }
 
 // static
 void PluginTestUtils::WaitForPlaceholderReady(content::WebContents* contents,
                                               const std::string& element_id) {
   std::string result = RunTestScript(
-      "function handleEvent(event) {"
-      "  if (event.data === 'placeholderReady') {"
-      "    window.domAutomationController.send('ready');"
+      "new Promise(resolve => {"
+      "  function handleEvent(event) {"
+      "    if (event.data === 'placeholderReady') {"
+      "      resolve('ready');"
+      "      plugin.removeEventListener('message', handleEvent);"
+      "    }"
+      "  }"
+      "  plugin.addEventListener('message', handleEvent);"
+      "  if (plugin.hasAttribute('placeholderReady')) {"
+      "    resolve('ready');"
       "    plugin.removeEventListener('message', handleEvent);"
       "  }"
-      "}"
-      "plugin.addEventListener('message', handleEvent);"
-      "if (plugin.hasAttribute('placeholderReady')) {"
-      "  window.domAutomationController.send('ready');"
-      "  plugin.removeEventListener('message', handleEvent);"
-      "}",
+      "});",
       contents, element_id);
   ASSERT_EQ("ready", result);
 }
