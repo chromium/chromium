@@ -319,7 +319,9 @@ NSString* const kInactiveTabsUserEducationShownOnce =
             (InactiveTabsViewController*)inactiveTabsViewController
     didTapCloseAllInactiveBarButtonItem:(UIBarButtonItem*)barButtonItem {
   NSInteger numberOfTabs = [self.mediator numberOfItems];
-  DCHECK_GT(numberOfTabs, 0);
+  if (numberOfTabs <= 0) {
+    return;
+  }
 
   NSString* title;
   if (numberOfTabs > 99) {
