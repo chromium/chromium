@@ -1192,18 +1192,18 @@ dictionary BulkPinProgress {
   BulkPinStage stage;
 
   // Estimated amount of free space on the stateful partition in bytes.
-  long freeSpaceBytes;
+  double freeSpaceBytes;
 
   // Estimated amount of free space required in order to successfully complete
   // pinning.
-  long requiredSpaceBytes;
+  double requiredSpaceBytes;
 
   // Estimated amount of bytes remaining to be downloaded in order to
   // successfully complete pinning.
-  long bytesToPin;
+  double bytesToPin;
 
   // Bytes that have been downloaded so far.
-  long pinnedBytes;
+  double pinnedBytes;
 
   // Total number of files to pin.
   long filesToPin;
