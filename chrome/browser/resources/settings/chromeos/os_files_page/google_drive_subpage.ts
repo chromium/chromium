@@ -199,16 +199,12 @@ export class SettingsGoogleDriveSubpageElement extends
    * Retrieves the total pinned size of items in Drive and stores the total.
    */
   private async updateTotalPinnedSize_() {
-    try {
-      this.totalPinnedSize_ =
-          this.i18n('googleDriveOfflineClearCalculatingSubtitle');
-      const {size} = await this.pageHandler.getTotalPinnedSize();
-      if (size) {
-        this.totalPinnedSize_ = size;
-        return;
-      }
-    } catch (e) {
-      console.error(e);
+    this.totalPinnedSize_ =
+        this.i18n('googleDriveOfflineClearCalculatingSubtitle');
+    const {size} = await this.pageHandler.getTotalPinnedSize();
+    if (size) {
+      this.totalPinnedSize_ = size;
+      return;
     }
     this.totalPinnedSize_ = this.i18n('googleDriveOfflineClearErrorSubtitle');
   }

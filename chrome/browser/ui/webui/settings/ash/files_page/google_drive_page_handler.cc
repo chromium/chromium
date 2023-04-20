@@ -103,9 +103,15 @@ void GoogleDrivePageHandler::GetTotalPinnedSize(
     return;
   }
 
+  // If Drive crashes, this callback may not get invoked so in that instance
+  // ensure it gets invoked with "-1" to signal an error case.
+  auto on_total_pinned_size_callback =
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&GoogleDrivePageHandler::OnGetTotalPinnedSize,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+          /*size=*/-1);
   GetDriveService()->GetTotalPinnedSize(
-      base::BindOnce(&GoogleDrivePageHandler::OnGetTotalPinnedSize,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      std::move(on_total_pinned_size_callback));
 }
 
 void GoogleDrivePageHandler::OnGetTotalPinnedSize(
@@ -126,6 +132,9 @@ void GoogleDrivePageHandler::ClearPinnedFiles(
     return;
   }
 
+  // If Drive crashes, this callback may not get invoked so in that instance
+  // ensure it gets invoked with drve::FILE_ERROR_ABORT to indicate that the
+  // call has been aborted.
   auto on_clear_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       base::BindOnce(&GoogleDrivePageHandler::OnClearPinnedFiles,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
