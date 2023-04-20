@@ -522,6 +522,8 @@ source_set("web_applications_test_support") {
     "test/fake_web_app_provider.h",
     "test/fake_web_app_ui_manager.cc",
     "test/fake_web_app_ui_manager.h",
+    "test/fake_web_contents_manager.cc",
+    "test/fake_web_contents_manager.h",
     "test/mock_data_retriever.cc",
     "test/mock_data_retriever.h",
     "test/mock_file_utils_wrapper.cc",

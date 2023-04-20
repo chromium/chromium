@@ -6,19 +6,25 @@
 
 #include <map>
 #include <memory>
+#include <ostream>
 #include <utility>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
+#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "components/webapps/browser/install_result_code.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -68,7 +74,6 @@ ExternallyManagedAppManager::SynchronizeRequest::SynchronizeRequest(
     SynchronizeRequest&& other) = default;
 
 ExternallyManagedAppManager::ExternallyManagedAppManager() = default;
-
 ExternallyManagedAppManager::~ExternallyManagedAppManager() {
   DCHECK(!registration_callback_);
 }
@@ -273,6 +278,18 @@ void ExternallyManagedAppManager::ContinueOrCompleteSynchronization(
 void ExternallyManagedAppManager::ClearSynchronizeRequestsForTesting() {
   synchronize_requests_.erase(synchronize_requests_.begin(),
                               synchronize_requests_.end());
+}
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const ExternallyManagedAppManager::InstallResult& install_result) {
+  base::Value::Dict output;
+  output.Set("code", base::ToString(install_result.code));
+  output.Set("app_id", base::ToString(install_result.app_id));
+  output.Set("did_uninstall_and_replace",
+             install_result.did_uninstall_and_replace);
+  out << output.DebugString();
+  return out;
 }
 
 }  // namespace web_app

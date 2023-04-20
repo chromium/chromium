@@ -286,6 +286,10 @@ class WebApp {
 
   struct ExternalManagementConfig {
     ExternalManagementConfig();
+    ExternalManagementConfig(
+        bool is_placeholder,
+        const base::flat_set<GURL>& install_urls,
+        const base::flat_set<std::string>& additional_policy_ids);
     ~ExternalManagementConfig();
     ExternalManagementConfig(
         const ExternalManagementConfig& external_management_config);
@@ -597,6 +601,9 @@ bool operator==(const WebApp::SyncFallbackData& sync_fallback_data1,
 bool operator!=(const WebApp::SyncFallbackData& sync_fallback_data1,
                 const WebApp::SyncFallbackData& sync_fallback_data2);
 
+std::ostream& operator<<(
+    std::ostream& out,
+    const WebApp::ExternalManagementConfig& management_config);
 bool operator==(const WebApp::ExternalManagementConfig& management_config1,
                 const WebApp::ExternalManagementConfig& management_config2);
 bool operator!=(const WebApp::ExternalManagementConfig& management_config1,

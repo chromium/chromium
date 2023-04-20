@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -25,6 +26,8 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
+#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/uninstall_result_code.h"
@@ -116,7 +119,14 @@ void ExternallyManagedAppManagerImpl::Shutdown() {
 
 void ExternallyManagedAppManagerImpl::SetUrlLoaderForTesting(
     std::unique_ptr<WebAppUrlLoader> url_loader) {
+  CHECK_IS_TEST();
   url_loader_ = std::move(url_loader);
+}
+
+void ExternallyManagedAppManagerImpl::SetDataRetrieverFactoryForTesting(
+    base::RepeatingCallback<std::unique_ptr<WebAppDataRetriever>()> factory) {
+  CHECK_IS_TEST();
+  data_retriever_factory_for_testing_ = std::move(factory);
 }
 
 void ExternallyManagedAppManagerImpl::ReleaseWebContents() {
@@ -131,9 +141,16 @@ void ExternallyManagedAppManagerImpl::ReleaseWebContents() {
 std::unique_ptr<ExternallyManagedAppInstallTask>
 ExternallyManagedAppManagerImpl::CreateInstallationTask(
     ExternalInstallOptions install_options) {
-  return std::make_unique<ExternallyManagedAppInstallTask>(
-      profile_, url_loader_.get(), ui_manager(), finalizer(),
-      command_scheduler(), std::move(install_options));
+  std::unique_ptr<ExternallyManagedAppInstallTask> install_task =
+      std::make_unique<ExternallyManagedAppInstallTask>(
+          profile_, url_loader_.get(), ui_manager(), finalizer(),
+          command_scheduler(), std::move(install_options));
+  if (data_retriever_factory_for_testing_) {
+    CHECK_IS_TEST();
+    install_task->SetDataRetrieverFactoryForTesting(  // IN-TEST
+        data_retriever_factory_for_testing_);
+  }
+  return install_task;
 }
 
 std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>
