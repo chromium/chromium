@@ -135,7 +135,7 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
       if (eglQueryDeviceAttribEXT(angle_device, EGL_METAL_DEVICE_ANGLE,
                                   &metal_device)) {
         ca_layer_tree_coordinator_->GetPendingCARendererLayerTree()
-            ->SetMetalDevice(metal_device);
+            ->SetMetalDevice((id<MTLDevice>)metal_device);
       }
     }
   }
