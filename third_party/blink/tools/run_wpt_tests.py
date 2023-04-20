@@ -64,22 +64,53 @@ except ImportError:
     _IOS_ENABLED = False
 
 
-def _make_log_enabled_grouping_formatter():
-    # Make a grouping log formatter that shows regular log messages:
-    #   WARNING Unsupported test type wdspec for product content_shell
-    #
-    # Activating logs dynamically with:
-    #   StructuredLogger.send_message('show_logs', 'on')
-    # appears buggy. This factory exists as a workaround.
-    grouping_formatter = mozlog.formatters.GroupingFormatter()
-    grouping_formatter.message_handler.handle_message('show_logs', 'on')
-    return grouping_formatter
+class GroupingFormatter(mozlog.formatters.GroupingFormatter):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Enable informative log messages, which look like:
+        #   WARNING Unsupported test type wdspec for product content_shell
+        #
+        # Activating logs dynamically with:
+        #   StructuredLogger.send_message('show_logs', 'on')
+        # appears buggy. This default exists as a workaround.
+        self.show_logs = True
+
+    def suite_start(self, data) -> str:
+        self.completed_tests = 0
+        self.running_tests.clear()
+        self.test_output.clear()
+        self.subtest_failures.clear()
+        self.tests_with_failing_subtests.clear()
+        for status in self.expected:
+            self.expected[status] = 0
+        for tests in self.unexpected_tests.values():
+            tests.clear()
+        return super().suite_start(data)
+
+    def suite_end(self, data) -> str:
+        # Do not show test failures again in noninteractive mode. THey are
+        # already shown during the run.
+        self.test_failure_text = ''
+        return super().suite_end(data)
 
 
-mozlog.commandline.log_formatters['grouped'] = (
-    _make_log_enabled_grouping_formatter,
-    mozlog.commandline.log_formatters['grouped'][1],
-)
+class MachFormatter(mozlog.formatters.MachFormatter):
+    def __init__(self, *args, reset_before_suite: bool = True, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.reset_before_suite = reset_before_suite
+
+    def suite_start(self, data) -> str:
+        output = super().suite_start(data)
+        if self.reset_before_suite:
+            for counts in self.summary.current['counts'].values():
+                counts['count'] = 0
+                counts['expected'].clear()
+                counts['unexpected'].clear()
+                counts['known_intermittent'].clear()
+            self.summary.current['unexpected_logs'].clear()
+            self.summary.current['intermittent_logs'].clear()
+            self.summary.current['harness_errors'].clear()
+        return output
 
 
 class StructuredLogAdapter(logging.Handler):
@@ -687,6 +718,15 @@ class WPTAdapter:
                            action='count',
                            default=0,
                            help='Increase verbosity')
+        # Install customized versions of `mozlog` formatters.
+        for name, formatter in [
+            ('grouped', GroupingFormatter),
+            ('mach', MachFormatter),
+        ]:
+            mozlog.commandline.log_formatters[name] = (
+                formatter,
+                mozlog.commandline.log_formatters[name][1],
+            )
         return group
 
     def add_android_arguments(self, parser):
