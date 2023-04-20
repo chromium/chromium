@@ -235,12 +235,7 @@ std::string XrBrowserTestBase::RunJavaScriptAndExtractStringOrFail(
     return "";
   }
 
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents,
-      "window.domAutomationController.send(" + js_expression + ")", &result))
-      << "Failed to run given JavaScript for string: " << js_expression;
-  return result;
+  return content::EvalJs(web_contents, js_expression).ExtractString();
 }
 
 bool XrBrowserTestBase::PollJavaScriptBoolean(
