@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
-import("//chrome/android/chrome_test_apk_tmpl.gni")
+import("//chrome/android/chrome_public_apk_tmpl.gni")
 import("//components/feed/features.gni")
 
 android_library("chrome_java_test_pagecontroller") {
@@ -54,7 +54,7 @@ android_library("chrome_java_test_pagecontroller") {
   ]
 }
 
-chrome_test_apk_tmpl("chrome_java_test_pagecontroller_tests") {
+chrome_public_test_apk_tmpl("chrome_java_test_pagecontroller_tests") {
   apk_name = "ChromePageControllerTests"
   sources = [
     "javatests/src/org/chromium/chrome/test/pagecontroller/tests/ExampleTest.java",
@@ -109,7 +109,7 @@ instrumentation_test_runner("chrome_public_apk_baseline_profile_generator") {
   ]
 }
 
-chrome_test_apk_tmpl("chrome_java_test_wpr_tests") {
+chrome_public_test_apk_tmpl("chrome_java_test_wpr_tests") {
   apk_name = "ChromeWPRTests"
   sources = [ "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/network_fetch/FeedNewTabPageCardInstrumentationTest.java" ]
   data = [
@@ -142,7 +142,7 @@ chrome_test_apk_tmpl("chrome_java_test_wpr_tests") {
   ]
 }
 
-chrome_test_apk_tmpl("chrome_java_test_feed_test") {
+chrome_public_test_apk_tmpl("chrome_java_test_feed_test") {
   apk_name = "ChromeFeedTests"
   sources = [
     "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v2/FeedSurfaceCoordinatorIntegrationTest.java",
@@ -171,7 +171,7 @@ chrome_test_apk_tmpl("chrome_java_test_feed_test") {
 }
 
 # WebAPK tests which require additional_apks should be in this test suite.
-chrome_test_apk_tmpl("chrome_webapk_integration_tests") {
+chrome_public_test_apk_tmpl("chrome_webapk_integration_tests") {
   apk_name = "ChromeWebApkIntegrationTests"
   sources = [ "javatests/src/org/chromium/chrome/test/pagecontroller/tests/webapk/MapsGoFirstRunTest.java" ]
   deps = [
@@ -197,7 +197,7 @@ chrome_test_apk_tmpl("chrome_webapk_integration_tests") {
   ]
 }
 
-chrome_test_apk_tmpl("chrome_java_test_pagecontroller_codelab") {
+chrome_public_test_apk_tmpl("chrome_java_test_pagecontroller_codelab") {
   apk_name = "ChromePageControllerCodelab"
   sources = [ "javatests/src/org/chromium/chrome/test/pagecontroller/tests/codelab/SettingsForCodelabTest.java" ]
   deps = [

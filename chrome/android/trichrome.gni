@@ -25,16 +25,10 @@ declare_args() {
   trichrome_certdigest = default_trichrome_certdigest
 }
 
-# TODO(crbug.com/1411557): Remove variable once unused internally.
-use_32bit_abi_jinja_variable = "use32bitAbi=android:use32bitAbi=\"true\""
-
 trichrome_jinja_variables = [
   "trichrome_library=$trichrome_library_package",
   "trichrome_certdigest=$trichrome_certdigest",
   "zygote_preload_class=org.chromium.chrome.app.TrichromeZygotePreload",
-
-  # TODO(crbug.com/1411557): Remove variable once unused internally.
-  use_32bit_abi_jinja_variable,
 ]
 
 template("trichrome_library_apk_tmpl") {
@@ -46,80 +40,73 @@ template("trichrome_library_apk_tmpl") {
       !defined(invoker.include_32_bit_webview) || invoker.include_32_bit_webview
   _version_code = TRICHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
 
-  # TODO(crbug.com/1411557): Remove option for custom manifest.
-  if (!defined(invoker.android_manifest)) {
-    if (defined(invoker.manifest_package)) {
-      _manifest_package = invoker.manifest_package
-    } else {
-      _manifest_package = trichrome_library_package
-    }
-    _android_manifest = "$target_gen_dir/$target_name/AndroidManifest.xml"
-    _android_manifest_target_name = "${target_name}__android_manifest"
-    jinja_template(_android_manifest_target_name) {
-      input = "//chrome/android/java/AndroidManifest_trichrome_library.xml"
-      output = _android_manifest
-      _force_32_bit = _include_32_bit_webview && _include_64_bit_webview &&
-                      !_is_64_bit_browser
-      variables = trichrome_jinja_variables + [
-                    "force_32_bit=$_force_32_bit",
-                    "manifest_package=$_manifest_package",
-                    "trichrome_version=$_version_code",
-                  ]
+  # Include the ABI that is shared between webview & chrome.
+  _include_primary_abi = !android_64bit_target_cpu || _is_64_bit_browser
 
-      # TODO(crbug.com/1411557): Remove block.
-      if (_is_64_bit_browser) {
-        variables -= [ use_32bit_abi_jinja_variable ]
-      }
-      if (defined(invoker.jinja_extra_variables)) {
-        variables += invoker.jinja_extra_variables
-      }
+  if (!_include_primary_abi) {
+    _secondary_out_dir =
+        get_label_info("X($android_secondary_abi_toolchain)", "root_out_dir")
+  }
+
+  if (defined(invoker.manifest_package)) {
+    _manifest_package = invoker.manifest_package
+  } else {
+    _manifest_package = trichrome_library_package
+  }
+  _android_manifest = "$target_gen_dir/$target_name/AndroidManifest.xml"
+  _android_manifest_target_name = "${target_name}__android_manifest"
+  jinja_template(_android_manifest_target_name) {
+    input = "//chrome/android/java/AndroidManifest_trichrome_library.xml"
+    output = _android_manifest
+    _force_32_bit = _include_32_bit_webview && _include_64_bit_webview &&
+                    !_is_64_bit_browser
+    variables = trichrome_jinja_variables + [
+                  "force_32_bit=$_force_32_bit",
+                  "manifest_package=$_manifest_package",
+                  "trichrome_version=$_version_code",
+                ]
+
+    if (defined(invoker.jinja_extra_variables)) {
+      variables += invoker.jinja_extra_variables
     }
   }
   android_apk(target_name) {
-    if (defined(_android_manifest_target_name)) {
-      android_manifest = _android_manifest
-      android_manifest_dep = ":$_android_manifest_target_name"
-      manifest_package = _manifest_package
-    }
+    android_manifest = _android_manifest
+    android_manifest_dep = ":$_android_manifest_target_name"
+    manifest_package = _manifest_package
 
     if (defined(invoker.expected_android_manifest)) {
       expected_android_manifest_version_code_offset = chrome_version_code
       expected_android_manifest_library_version_offset = chrome_version_code
     }
 
-    # TODO(torne): since there's no real java code in the library right now,
-    # leave out the build hooks and let them get compiled into each APK. Later
-    # this should probably be in the library.
-    no_build_hooks = true
+    omit_dex = true
     include_size_info = is_official_build
-
     alternative_android_sdk_dep = webview_framework_dep
     r_java_root_package_name = "trichrome_lib"
     app_as_shared_lib = true
+    version_name = chrome_version_name
+    version_code = _version_code
+    min_sdk_version = 29
 
     # No support for this has been added, also not supported by test runner
     # since trichrome library is used in "additional_apks" in the trichrome
     # bundle smoke tests.
     never_incremental = true
 
-    version_name = chrome_version_name
-    version_code = _version_code
-    min_sdk_version = 29
-
     # TODO(torne): using icon_resources just to get a temporary icon
     deps = [
       "//android_webview/nonembedded:icon_resources",
       "//third_party/icu:icu_assets",
     ]
+    if (_include_primary_abi) {
+      deps += [ "//gin:v8_snapshot_assets" ]
+    } else {
+      deps += [ "//gin:v8_snapshot_secondary_abi_assets" ]
+    }
     if (defined(invoker.deps)) {
       deps += invoker.deps
     }
-
-    omit_dex = true
-
-    # Flag whether additional deps and libs should be included for each ABI.
-    _include_primary_support = false
-    _include_secondary_support = false
 
     if (android_64bit_target_cpu) {
       # Include the actual browser-bitness libmonochrome library, dependencies
@@ -128,64 +115,53 @@ template("trichrome_library_apk_tmpl") {
       # precompiled for both architectures.
       if (_is_64_bit_browser) {
         shared_libraries = [ "//chrome/android:libmonochrome_64" ]
-        _include_primary_support = true
         if (_include_32_bit_webview) {
           secondary_native_lib_placeholders = [ "libdummy.so" ]
+        }
+        if (build_hwasan_splits) {
+          _hwasan_toolchain =
+              "//build/toolchain/android:android_clang_arm64_hwasan"
+          shared_libraries +=
+              [ "//chrome/android:libmonochrome_64($_hwasan_toolchain)" ]
         }
       } else {
         secondary_abi_shared_libraries =
             [ "//chrome/android:monochrome_secondary_abi_lib" ]
-        _include_secondary_support = true
         if (invoker.include_64_bit_webview) {
           native_lib_placeholders = [ "libdummy.so" ]
         }
       }
     } else {
       shared_libraries = [ "//chrome/android:libmonochrome" ]
-      _include_primary_support = true
     }
 
-    if (_include_primary_support) {
+    # https://chromium.googlesource.com/chromium/src/+/main/docs/android_native_libraries.md#Crashpad-Packaging
+    loadable_modules = []
+    secondary_abi_loadable_modules = []
+    if (_include_primary_abi) {
       deps += [
-        "//gin:v8_snapshot_assets",
         "//third_party/crashpad/crashpad/handler:crashpad_handler_trampoline",
       ]
-      loadable_modules = [ "$root_out_dir/libcrashpad_handler_trampoline.so" ]
-    }
-    if (_include_secondary_support) {
-      _trampoline =
-          "//third_party/crashpad/crashpad/handler:" +
-          "crashpad_handler_trampoline($android_secondary_abi_toolchain)"
-      deps += [
-        "//gin:v8_snapshot_secondary_abi_assets",
-        _trampoline,
-      ]
-      _secondary_out_dir = get_label_info(_trampoline, "root_out_dir")
-      secondary_abi_loadable_modules =
+      loadable_modules += [ "$root_out_dir/libcrashpad_handler_trampoline.so" ]
+    } else {
+      deps += [ "//third_party/crashpad/crashpad/handler:crashpad_handler_trampoline($android_secondary_abi_toolchain)" ]
+      secondary_abi_loadable_modules +=
           [ "$_secondary_out_dir/libcrashpad_handler_trampoline.so" ]
     }
 
     if (enable_arcore) {
-      _libarcore_dir = get_label_info(
-                           "//third_party/arcore-android-sdk-client:com_google_ar_core_java($default_toolchain)",
-                           "target_out_dir") + "/com_google_ar_core_java/jni"
-      not_needed([ "_libarcore_dir" ])
+      _arcore_target = "//third_party/arcore-android-sdk-client:com_google_ar_core_J__unpack_aar"
+      _libarcore_dir = get_label_info(_arcore_target, "target_out_dir") +
+                       "/com_google_ar_core_java/jni"
+      deps += [ _arcore_target ]
 
-      _arcore_extra_deps = [ "//third_party/arcore-android-sdk-client:com_google_ar_core_J__unpack_aar" ]
-      not_needed([ "_arcore_extra_deps" ])
-
-      if (_include_primary_support) {
+      # Secondary ABI is stored in webview when enabled.
+      if (_include_primary_abi) {
         loadable_modules +=
             [ "$_libarcore_dir/$android_app_abi/libarcore_sdk_c.so" ]
-        deps += _arcore_extra_deps
-      }
-      if (_include_secondary_support) {
-        if (enable_arcore) {
-          secondary_abi_loadable_modules += [
-            "$_libarcore_dir/$android_app_secondary_abi/libarcore_sdk_c.so",
-          ]
-          deps += _arcore_extra_deps
-        }
+      } else {
+        secondary_abi_loadable_modules +=
+            [ "$_libarcore_dir/$android_app_secondary_abi/libarcore_sdk_c.so" ]
       }
     }
     forward_variables_from(invoker,
