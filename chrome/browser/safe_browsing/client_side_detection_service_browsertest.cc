@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/safe_browsing/chrome_client_side_detection_service_delegate.h"
 
 #include "base/path_service.h"
@@ -114,8 +115,14 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ClientSideDetectionServiceBrowserTest,
                          testing::Bool());
 
+// TODO(crbug.com/1434848): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
+#define MAYBE_ModelUpdatesPropagated DISABLED_ModelUpdatesPropagated
+#else
+#define MAYBE_ModelUpdatesPropagated ModelUpdatesPropagated
+#endif
 IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
-                       ModelUpdatesPropagated) {
+                       MAYBE_ModelUpdatesPropagated) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -209,8 +216,14 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
   }
 }
 
+// TODO(crbug.com/1434848): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
+#define MAYBE_TfLiteClassification DISABLED_TfLiteClassification
+#else
+#define MAYBE_TfLiteClassification TfLiteClassification
+#endif
 IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
-                       TfLiteClassification) {
+                       MAYBE_TfLiteClassification) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -343,8 +356,16 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
   }
 }
 
+// TODO(crbug.com/1434848): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
+#define MAYBE_TfLiteClassificationAfterTwoModelUploads \
+  DISABLED_TfLiteClassificationAfterTwoModelUploads
+#else
+#define MAYBE_TfLiteClassificationAfterTwoModelUploads \
+  TfLiteClassificationAfterTwoModelUploads
+#endif
 IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
-                       TfLiteClassificationAfterTwoModelUploads) {
+                       MAYBE_TfLiteClassificationAfterTwoModelUploads) {
   if (!base::FeatureList::IsEnabled(
           kClientSideDetectionModelOptimizationGuide)) {
     return;
