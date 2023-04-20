@@ -51,8 +51,14 @@ void FontFallbackMap::Remove(const FontDescription& font_description) {
 }
 
 void FontFallbackMap::InvalidateAll() {
-  recordreplay::Assert("[RUN-1219-1718] FontFallbackMap::InvalidateAll %d",
-    record_replay_id_);
+  // Only assert if events aren't disallowed.
+  // This is called from the font-fallback-map destructor, which may
+  // execute during GC.
+  if (!recordreplay::AreEventsDisallowed()) {
+    recordreplay::Assert("[RUN-1219-1718] FontFallbackMap::InvalidateAll %d",
+      record_replay_id_);
+  }
+
   lock_.AssertAcquired();
   for (auto& entry : fallback_list_for_description_)
     entry.value->MarkInvalid();
