@@ -221,22 +221,22 @@ Dactyloscoper::HighEntropyTracer::HighEntropyTracer(
         CalledJsApi& called_api = *(high_entropy_api.set_called_api());
         called_api.set_identifier(called_api_name);
 
-        std::unique_ptr<SourceLocation> source_location =
-            CaptureSourceLocation(execution_context);
-        SourceLocationProto* proto_source_location =
-            high_entropy_api.set_source_location();
-        source_location->WriteIntoTrace(ctx.Wrap(proto_source_location));
         SourceLocationProto* proto_source_location_deprecated =
             called_api.set_source_location();
+        std::unique_ptr<SourceLocation> source_location =
+            CaptureSourceLocation(execution_context);
         source_location->WriteIntoTrace(
             ctx.Wrap(proto_source_location_deprecated));
-
         for (int i = 0; i < info.Length(); ++i) {
           JSFunctionArgument& arg = *(called_api.add_func_arguments());
           arg.set_type(GetArgumentType(info[i]));
           arg.set_value(
               V8ValueToString(current_context, isolate, info[i]).Utf8());
         }
+
+        SourceLocationProto* proto_source_location =
+            high_entropy_api.set_source_location();
+        source_location->WriteIntoTrace(ctx.Wrap(proto_source_location));
       });
 }
 

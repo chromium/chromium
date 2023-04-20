@@ -54,7 +54,8 @@ async function getIdentifiabilityTraces() {
     const listener = (source, method, params) => {
       if (method === 'Tracing.dataCollected' && params && params.value) {
         traces = traces.concat(params.value.filter(
-            (trace) => trace.cat === HIGH_ENTROPY_API_CATEGORY));
+            (trace) => trace.cat === HIGH_ENTROPY_API_CATEGORY &&
+                       trace.name === "HighEntropyJavaScriptAPICall"));
       } else if (method === 'Tracing.tracingComplete') {
         chrome.debugger.onEvent.removeListener(listener);
         resolve();
@@ -88,7 +89,7 @@ chrome.test.getConfig((config) => {
   // Number of API calls triggered by loading the html file one time.
   // Depends on the number of api calls emitted by the inline script in the html
   // file and the number of high entropy traces emitted for each such call.
-  const API_CALL_COUNT = 60;
+  const API_CALL_COUNT = 62;
 
   chrome.test.runTests([
     // The current tab's traces should be receiveable using the default tracing
