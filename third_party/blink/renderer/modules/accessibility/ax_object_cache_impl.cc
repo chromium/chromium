@@ -1606,10 +1606,9 @@ void AXObjectCacheImpl::Remove(Node* node, bool notify_parent) {
   if (!node)
     return;
 
-  LayoutObject* layout_object = node->GetLayoutObject();
-
   auto iter = node_object_mapping_.find(node);
   if (iter != node_object_mapping_.end()) {
+    LayoutObject* layout_object = node->GetLayoutObject();
     DCHECK(!layout_object || layout_object_mapping_.find(layout_object) ==
                                  layout_object_mapping_.end())
         << "AXObject cannot be backed by both a layout object and node.";
@@ -2354,8 +2353,11 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
 #endif  // DCHECK_IS_ON()
 
   if (obj) {
-    obj->ChildrenChangedWithCleanLayout();
+    // Increment the modification count before the children are changed,
+    // because some of the children may need to recompute their ignored/included
+    // status, which affects where they belong as a child of |obj|.
     modification_count_++;
+    obj->ChildrenChangedWithCleanLayout();
     // TODO(accessibility) Only needed for <select> size changes.
     // This can turn into a DCHECK if the shadow DOM is used for <select>
     // elements instead of AXMenuList* and AXListBox* classes.
