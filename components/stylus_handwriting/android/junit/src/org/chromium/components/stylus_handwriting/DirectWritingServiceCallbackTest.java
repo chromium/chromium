@@ -5,6 +5,7 @@
 package org.chromium.components.stylus_handwriting;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -12,6 +13,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -268,6 +270,29 @@ public class DirectWritingServiceCallbackTest {
         verify(mImeCallback).setEditableSelectionOffsets(0, currentInputText.length());
         verify(mImeCallback).sendCompositionToNative(SAMPLE_INPUT, index, true);
         verify(mImeCallback).setEditableSelectionOffsets(index, index);
+    }
+
+    @Test
+    @Feature({"Stylus Handwriting"})
+    public void testUpdateEditBoundsMessage() {
+        mDwServiceCallback.setImeCallback(mImeCallback);
+        DirectWritingServiceCallback.TriggerCallback mockTriggercallback =
+                mock(DirectWritingServiceCallback.TriggerCallback.class);
+        mDwServiceCallback.setTriggerCallback(mockTriggercallback);
+        mDwServiceCallback.updateBoundedEditTextRect();
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mockTriggercallback).updateEditableBoundsToService();
+    }
+
+    @Test
+    @Feature({"Stylus Handwriting"})
+    public void testIsHoverIconShowing() {
+        DirectWritingServiceCallback.TriggerCallback mockTriggercallback =
+                mock(DirectWritingServiceCallback.TriggerCallback.class);
+        mDwServiceCallback.setTriggerCallback(mockTriggercallback);
+        assertFalse(mDwServiceCallback.isHoverIconShowing());
+        doReturn(true).when(mockTriggercallback).isHandwritingIconShowing();
+        assertTrue(mDwServiceCallback.isHoverIconShowing());
     }
 
     @Test

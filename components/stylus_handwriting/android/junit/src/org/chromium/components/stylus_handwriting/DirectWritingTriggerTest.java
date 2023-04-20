@@ -330,4 +330,28 @@ public class DirectWritingTriggerTest {
         verify(mDwServiceBinder, never())
                 .onStopRecognition(any(), eq(editableBounds), eq(mContainerView));
     }
+
+    @Test
+    @Config(minSdk = Build.VERSION_CODES.S)
+    @Feature({"Stylus Handwriting"})
+    public void testHoverIconHandling_stylusCursorRemoved() {
+        assertTrue(mDwTrigger.didHandleCursorUpdate(mContainerView));
+        assertTrue(mDwTrigger.isHandwritingIconShowing());
+        mDwTrigger.notifyStylusWritingCursorRemoved();
+        assertFalse(mDwTrigger.isHandwritingIconShowing());
+    }
+
+    @Test
+    @Config(minSdk = Build.VERSION_CODES.S)
+    @Feature({"Stylus Handwriting"})
+    public void testHoverIconHandling_onHoverExit() {
+        mDwTrigger.updateDWSettings(mContext);
+        assertTrue(mDwTrigger.didHandleCursorUpdate(mContainerView));
+        assertTrue(mDwTrigger.isHandwritingIconShowing());
+
+        MotionEvent hoverExitEvent =
+                getMotionEvent(MotionEvent.TOOL_TYPE_STYLUS, MotionEvent.ACTION_HOVER_EXIT);
+        mDwTrigger.handleHoverEvent(hoverExitEvent, mContainerView);
+        assertFalse(mDwTrigger.isHandwritingIconShowing());
+    }
 }

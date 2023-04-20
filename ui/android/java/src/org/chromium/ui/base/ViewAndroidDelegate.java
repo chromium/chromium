@@ -77,6 +77,11 @@ public class ViewAndroidDelegate {
          * @return true if cursor update was handled.
          */
         boolean didHandleCursorUpdate(View currentView);
+
+        /**
+         * Notify that stylus writing icon is removed and not shown.
+         */
+        default void notifyStylusWritingCursorRemoved() {}
     }
 
     private StylusWritingCursorHandler mStylusWritingCursorHandler;
@@ -421,6 +426,9 @@ public class ViewAndroidDelegate {
         // as the element under pointer is still same. Then reset to last cached icon from blink.
         if (mCursorOverridden && !stylusWritable) {
             getContainerViewGroup().setPointerIcon(mPointerIconForLastCursor);
+            if (mStylusWritingCursorHandler != null) {
+                mStylusWritingCursorHandler.notifyStylusWritingCursorRemoved();
+            }
         }
         mCursorOverridden = false;
     }
