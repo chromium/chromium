@@ -16,7 +16,7 @@
       <!-- TODO(b/277180533): finalize images and text. -->
       <img class="topics-banner" alt="">
     </div>
-    <div class="section cr-secondary-text">
+    <div class="section cr-secondary-text" id="lastTextElement">
       $i18n{m1NoticeRestrictedDescription3}
     </div>
     <div class="buttons-container">
@@ -28,5 +28,12 @@
         $i18n{m1NoticeRestrictedAckButton}
       </cr-button>
     </div>
+  </div>
+  <div id="showMoreOverlay" hidden="[[wasScrolledToBottom]]">
+    <cr-button id="moreButton" on-click="onNoticeMoreClicked"
+        class="action-button" aria-hidden="true" tabindex="-1">
+      $i18n{m1DialogMoreButton}
+      <iron-icon icon="cr:expand-more"></iron-icon>
+    </cr-button>
   </div>
 </div>

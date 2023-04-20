@@ -766,6 +766,71 @@ suite('PrivacySandboxDialogNoticeRestricted', function() {
     await verifyActionOccured(
         browserProxy, PrivacySandboxPromptAction.RESTRICTED_NOTICE_ACKNOWLEDGE);
   });
+
+  // TODO(b/277180533): determine whether some of the more button test logic can
+  // be shared.
+  test('moreButton', async function() {
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
+    await flushTasks();
+
+    const scrollable: HTMLElement =
+        page.shadowRoot!.querySelector('[scrollable]')!;
+    // Turn-off scroll animations.
+    scrollable.style.scrollBehavior = 'auto';
+    const allContentVisible = isAllContentVisible(scrollable);
+    assertEquals(
+        isChildVisible(page, '#moreButton'), !allContentVisible,
+        `more button should only be visible when some of the dialog content
+        wasn't visible`);
+
+    assertEquals(
+        isChildVisible(page, '#ackButton'), true,
+        `ack button should never be hidden`);
+    assertEquals(
+        isChildInParentBounds(page, '#ackButton'), allContentVisible,
+        allContentVisible ?
+            'ack button should visible if all content dialog is visible' :
+            `ack button should not be visible if some of the dialog content \
+            isn't visible from the start`);
+
+    assertEquals(
+        isChildVisible(page, '#settingsButton'), true,
+        `settings button should never be hidden`);
+    assertEquals(
+        isChildInParentBounds(page, '#settingsButton'), allContentVisible,
+        allContentVisible ?
+            'settings button should visible if all content dialog is visible' :
+            `settings button should not be visible if some of the dialog \
+            content isn't visible from the start`);
+
+    if (allContentVisible) {
+      return;
+    }
+    const moreButton: HTMLElement =
+        page.shadowRoot!.querySelector('#moreButton')!;
+    // Click until reaching the bottom.
+    while (isChildVisible(page, '#moreButton')) {
+      moreButton.click();
+      await waitForScrollToFinish(scrollable);
+    }
+
+    await verifyActionOccured(
+        browserProxy, PrivacySandboxPromptAction.NOTICE_MORE_BUTTON_CLICKED);
+    await page.whenWasScrolledToBottomForTest();
+
+    // After scrolling down, the "More" button is hidden and dialog button are
+    // visible in the parent bounds.
+    assertEquals(
+        isChildVisible(page, '#moreButton'), false,
+        'more button should not be visible anymore');
+    assertEquals(
+        isChildInParentBounds(page, '#ackButton'), true,
+        'ack button should be visible after scrolling to the bottom');
+    assertEquals(
+        isChildInParentBounds(page, '#settingsButton'), true,
+        'settings button should be visible after scrolling to the bottom');
+  });
 });
 
 suite('PrivacySandboxDialogMixin', function() {
