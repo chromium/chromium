@@ -746,38 +746,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BrowserServices.BrowsableIntentCheck" units="ms"
-    expires_after="M114">
-  <owner>peconn@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Triggered when we check whether a Trusted Web Activity client app can handle
-    Browsable Intents. It measures how long consulting the Android
-    PackageManager takes.
-  </summary>
-</histogram>
-
-<histogram name="BrowserServices.ClientAppDataLoad" units="ms"
-    expires_after="M114">
-  <owner>peconn@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Triggered when any Android app is uninstalled or has its data cleared. This
-    measures how long it takes to read data from Preferences to determine
-    whether we need to act.
-  </summary>
-</histogram>
-
-<histogram name="BrowserServices.ServiceTabResolveInfoQuery" units="ms"
-    expires_after="2023-04-23">
-  <owner>peconn@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Triggered when an Android background service attempts to create a Tab. We
-    time how long the Android package manager queryIntentActivities call takes.
-  </summary>
-</histogram>
-
 <histogram name="BrowserServices.TwaOpenTime.V2" units="ms"
     expires_after="M120">
   <owner>peconn@chromium.org</owner>

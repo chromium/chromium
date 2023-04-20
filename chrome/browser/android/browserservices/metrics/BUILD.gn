@@ -6,7 +6,6 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/browserservices/metrics/BrowserServicesTimingMetrics.java",
     "java/src/org/chromium/chrome/browser/browserservices/metrics/OriginVerifierMetricsRecorder.java",
     "java/src/org/chromium/chrome/browser/browserservices/metrics/TrustedWebActivityUmaRecorder.java",
     "java/src/org/chromium/chrome/browser/browserservices/metrics/WebApkUkmRecorder.java",

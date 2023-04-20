@@ -13,12 +13,10 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
-import org.chromium.chrome.browser.browserservices.metrics.BrowserServicesTimingMetrics;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
@@ -94,11 +92,7 @@ public class ServiceTabLauncher {
             final String extraHeaders, final ResourceRequestBody postData) {
         Context context = ContextUtils.getApplicationContext();
 
-        List<ResolveInfo> resolveInfos;
-        try (TimingMetric t = TimingMetric.mediumUptime(
-                     BrowserServicesTimingMetrics.SERVICE_TAB_RESOLVE_TIME)) {
-            resolveInfos = WebApkValidator.resolveInfosForUrl(context, url);
-        }
+        List<ResolveInfo> resolveInfos = WebApkValidator.resolveInfosForUrl(context, url);
         String webApkPackageName = WebApkValidator.findFirstWebApkPackage(context, resolveInfos);
 
         if (webApkPackageName != null) {
