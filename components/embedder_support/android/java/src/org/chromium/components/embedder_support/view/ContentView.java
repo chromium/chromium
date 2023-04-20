@@ -36,6 +36,7 @@ import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.EventOffsetHandler;
+import org.chromium.ui.dragdrop.DragEventDispatchHelper.DragEventDispatchDestination;
 
 /**
  * The containing view for {@link WebContents} that exists in the Android UI hierarchy and exposes
@@ -48,7 +49,8 @@ import org.chromium.ui.base.EventOffsetHandler;
  */
 public class ContentView extends FrameLayout
         implements ViewEventSink.InternalAccessDelegate, SmartClipProvider,
-                   OnHierarchyChangeListener, OnSystemUiVisibilityChangeListener, OnDragListener {
+                   OnHierarchyChangeListener, OnSystemUiVisibilityChangeListener, OnDragListener,
+                   DragEventDispatchDestination {
     private static final String TAG = "ContentView";
 
     // Default value to signal that the ContentView's size need not be overridden.
@@ -74,6 +76,7 @@ public class ContentView extends FrameLayout
 
     @Nullable
     private final EventOffsetHandler mEventOffsetHandler;
+    private EventOffsetHandler mDragDropEventOffsetHandler;
     private boolean mDeferKeepScreenOnChanges;
     private Boolean mPendingKeepScreenOnValue;
 
@@ -167,6 +170,18 @@ public class ContentView extends FrameLayout
             super.setKeepScreenOn(mPendingKeepScreenOnValue);
             mPendingKeepScreenOnValue = null;
         }
+    }
+
+    /**
+     * Set {@link EventOffsetHandler} used to handle drag event offsets. Offsets are
+     * provided if the content view is has a different coordinate base than the physical screen
+     * (e.g. top browser control).
+     * @param handler Handler used to adjust drag event offsets.
+     */
+    public void setEventOffsetHandlerForDragDrop(EventOffsetHandler handler) {
+        assert mDragDropEventOffsetHandler == null || handler == null
+            : "Non-null DragDropEventOffsetHandler was overwritten with another.";
+        mDragDropEventOffsetHandler = handler;
     }
 
     @Override
@@ -396,7 +411,7 @@ public class ContentView extends FrameLayout
     @Override
     public boolean dispatchDragEvent(DragEvent e) {
         if (mEventOffsetHandler != null) {
-            mEventOffsetHandler.onPreDispatchDragEvent(e.getAction());
+            mEventOffsetHandler.onPreDispatchDragEvent(e.getAction(), 0.f, 0.f);
         }
         boolean ret = super.dispatchDragEvent(e);
         if (mEventOffsetHandler != null) {
@@ -585,5 +600,23 @@ public class ContentView extends FrameLayout
 
     private boolean webContentsAttached() {
         return hasValidWebContents() && mWebContents.getTopLevelNativeWindow() != null;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    //              Start Implementation of DragEventDispatchDestination                         //
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    @Override
+    public View view() {
+        return this;
+    }
+
+    @Override
+    public boolean onDragEventWithOffset(DragEvent event, int dx, int dy) {
+        if (mDragDropEventOffsetHandler == null) return super.dispatchDragEvent(event);
+
+        mDragDropEventOffsetHandler.onPreDispatchDragEvent(event.getAction(), dx, dy);
+        boolean ret = super.dispatchDragEvent(event);
+        mDragDropEventOffsetHandler.onPostDispatchDragEvent(event.getAction());
+        return ret;
     }
 }
