@@ -325,6 +325,23 @@
     </template>
   </template>
 
+  <!-- Passpoint provider link -->
+  <template is="dom-if" if="[[shouldShowPasspointProviderRow_(
+        managedProperties_)]]">
+    <div id="passpointProviderRow" class="settings-box two-line"
+        on-click="onPasspointRowClicked_">
+      <div class="flex settings-box-text">
+        <div>$i18n{passpointProviderLabel}</div>
+        <div class="secondary">
+          [[getPasspointSubscriptionName_(passpointSubscription_)]]
+        </div>
+      </div>
+      <cr-icon-button class="subpage-arrow"
+          aria-roledescription="$i18n{subpageArrowRoleDescription}">
+      </cr-icon-button>
+    </div>
+  </template>
+
   <template is="dom-if" if="[[hasAdvancedSection_(managedProperties_,
                               propertiesReceived_, showMeteredToggle_,
                               deviceState_)]]">

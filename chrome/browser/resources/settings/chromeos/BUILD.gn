@@ -43,6 +43,8 @@ if (optimize_webui) {
       "chrome://resources/cr_components/app_management/app_management.mojom-webui.js",
       "chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js",
       "chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js",
+      "chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js",
+      "chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js",
       "chrome://resources/ash/common/hotspot/cros_hotspot_config.js",
       "chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js",
       "chrome://resources/ash/common/network/mojo_interface_provider.js",
