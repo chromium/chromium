@@ -5567,6 +5567,7 @@ test("unit_tests") {
     "../browser/media/media_engagement_session_unittest.cc",
     "../browser/media/media_storage_id_salt_unittest.cc",
     "../browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_database_unittest.cc",
+    "../browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_keyed_service_unittest.cc",
     "../browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_persister_unittest.cc",
     "../browser/top_level_storage_access_api/top_level_storage_access_permission_context_unittest.cc",
     "../common/google_url_loader_throttle_unittest.cc",
