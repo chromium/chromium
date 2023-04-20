@@ -158,12 +158,7 @@ public class TabUmaTest {
     public void testNoCreationStateNoTabUma() throws Exception {
         String switchFgStatus = "Tab.StatusWhenSwitchedBackToForeground";
 
-        String ageStartup = "Tabs.ForegroundTabAgeAtStartup";
-        String ageRestore = "Tab.AgeUponRestoreFromColdStart";
         int switchFgStatusOffset = getHistogram(switchFgStatus);
-        int ageStartupOffset = getHistogram(ageStartup);
-        int ageRestoreOffset = getHistogram(ageRestore);
-
         // Test a normal tab without an explicit creation state. UMA task doesn't start.
         Tab tab = TestThreadUtils.runOnUiThreadBlocking(() -> {
             return new TabBuilder()
@@ -179,8 +174,6 @@ public class TabUmaTest {
 
         // There should be no histogram changes.
         Assert.assertEquals(switchFgStatusOffset, getHistogram(switchFgStatus));
-        Assert.assertEquals(ageStartupOffset, getHistogram(ageStartup));
-        Assert.assertEquals(ageRestoreOffset, getHistogram(ageRestore));
     }
 
     /**

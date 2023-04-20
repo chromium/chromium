@@ -152,20 +152,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.AgeUponRestoreFromColdStart" units="minutes"
-    expires_after="M88">
-  <owner>dtrainor@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    [Android] Age (time since the last display in previous sessions) of a tab
-    being restored due to the first tab switch after the browser cold start,
-    recorded upon such restore. When the browser is started from cold, this
-    metric is not recorded for the foreground, automatically restored tab, so
-    that the metric tracks only the restores triggered by direct user decision
-    to switch tabs.
-  </summary>
-</histogram>
-
 <histogram name="Tab.AndroidCrashUpload{AndroidCrashUploadTypes}"
     enum="BooleanSuccess" expires_after="M85">
   <owner>wnwen@chromium.org</owner>
@@ -1165,16 +1151,6 @@ chromium-metrics-reviews@google.com.
     Creation Rank&quot; is relative to other background tabs which were opened
     from the same URL via the context menu. The newest background tab has a
     &quot;Reverse Tab Creation Rank&quot; of zero.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.ForegroundTabAgeAtStartup" units="minutes"
-    expires_after="M88">
-  <owner>dtrainor@chromium.org</owner>
-  <owner>yusufo@chromium.org</owner>
-  <summary>
-    [Android] Age (time since the last display in previous sessions) of the
-    foreground tab being restored on the browser cold start.
   </summary>
 </histogram>
 
