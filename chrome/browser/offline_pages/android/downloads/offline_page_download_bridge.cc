@@ -12,10 +12,10 @@
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/uuid.h"
 #include "chrome/android/chrome_jni_headers/OfflinePageDownloadBridge_jni.h"
 #include "chrome/browser/android/profile_key_util.h"
 #include "chrome/browser/android/tab_android.h"
@@ -120,7 +120,7 @@ DownloadUIAdapterDelegate::DownloadUIAdapterDelegate(OfflinePageModel* model)
 bool DownloadUIAdapterDelegate::IsVisibleInUI(const ClientId& client_id) {
   const std::string& name_space = client_id.name_space;
   return GetPolicy(name_space).is_supported_by_download &&
-         base::IsValidGUID(client_id.id);
+         base::Uuid::ParseCaseInsensitive(client_id.id).is_valid();
 }
 
 void DownloadUIAdapterDelegate::SetUIAdapter(DownloadUIAdapter* ui_adapter) {}
@@ -174,7 +174,7 @@ void SavePageIfNotNavigatedAway(const GURL& url,
 
   offline_pages::ClientId client_id;
   client_id.name_space = offline_pages::kDownloadNamespace;
-  client_id.id = base::GenerateGUID();
+  client_id.id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   int64_t request_id = OfflinePageModel::kInvalidOfflineId;
 
   // Post disabled request before passing the download task to the tab helper.

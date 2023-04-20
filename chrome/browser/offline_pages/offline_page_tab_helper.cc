@@ -9,9 +9,9 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "chrome/browser/offline_pages/offline_page_request_handler.h"
@@ -420,7 +420,8 @@ void OfflinePageTabHelper::DoDownloadPageLater(
 
   offline_pages::RequestCoordinator::SavePageLaterParams params;
   params.url = url;
-  params.client_id = offline_pages::ClientId(name_space, base::GenerateGUID());
+  params.client_id = offline_pages::ClientId(
+      name_space, base::Uuid::GenerateRandomV4().AsLowercaseString());
   params.request_origin = request_origin;
   request_coordinator->SavePageLater(params, base::DoNothing());
 

@@ -11,12 +11,12 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/uuid.h"
 #include "chrome/browser/offline_pages/offline_page_utils.h"
 #include "components/offline_pages/core/archive_validator.h"
 #include "components/offline_pages/core/model/offline_page_model_utils.h"
@@ -94,7 +94,7 @@ void OfflinePageMHTMLArchiver::GenerateMHTML(
   GURL url(web_contents->GetLastCommittedURL());
   std::u16string title(web_contents->GetTitle());
   base::FilePath file_path(
-      archives_dir.Append(base::GenerateGUID())
+      archives_dir.Append(base::Uuid::GenerateRandomV4().AsLowercaseString())
           .AddExtension(OfflinePageUtils::kMHTMLExtension));
   content::MHTMLGenerationParams params(file_path);
   params.use_binary_encoding = true;
