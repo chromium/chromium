@@ -41,8 +41,6 @@ class MockDataHost : public blink::mojom::AttributionDataHost {
 
   void WaitForSourceData(size_t num_source_data);
   void WaitForTriggerData(size_t num_trigger_data);
-  void WaitForSourceAndTriggerData(size_t num_source_data,
-                                   size_t num_trigger_data);
 
   const std::vector<attribution_reporting::SourceRegistration>& source_data()
       const {

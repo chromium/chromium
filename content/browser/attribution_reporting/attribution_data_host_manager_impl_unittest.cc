@@ -183,6 +183,8 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
 
 TEST_F(AttributionDataHostManagerImplTest,
        SourceDataHost_ReceiverDestinationsMayDiffer) {
+  base::HistogramTester histograms;
+
   Checkpoint checkpoint;
   {
     InSequence seq;
@@ -234,9 +236,14 @@ TEST_F(AttributionDataHostManagerImplTest,
                                                     std::move(source_data));
     data_host_remote.data_host.FlushForTesting();
   }
+
+  histograms.ExpectUniqueSample("Conversions.RegisteredSourcesPerDataHost", 4,
+                                1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
+  base::HistogramTester histograms;
+
   auto destination_origin =
       *SuitableOrigin::Deserialize("https://trigger.example");
   auto reporting_origin =
@@ -301,10 +308,15 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
         /*attestation=*/absl::nullopt);
     data_host_remote.data_host.FlushForTesting();
   }
+
+  histograms.ExpectBucketCount("Conversions.RegisteredTriggersPerDataHost", 1,
+                               1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
        TriggerDataHost_ReceiverModeCheckPerformed) {
+  base::HistogramTester histograms;
+
   Checkpoint checkpoint;
   {
     InSequence seq;
@@ -367,10 +379,16 @@ TEST_F(AttributionDataHostManagerImplTest,
         /*attestation=*/absl::nullopt);
     data_host_remote.data_host.FlushForTesting();
   }
+
+  histograms.ExpectTotalCount("Conversions.RegisteredSourcesPerDataHost", 0);
+  histograms.ExpectUniqueSample("Conversions.RegisteredTriggersPerDataHost", 3,
+                                1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
        MixedDataHost_AllowsSourcesAndTriggers) {
+  base::HistogramTester histograms;
+
   Checkpoint checkpoint;
   {
     InSequence seq;
@@ -424,10 +442,17 @@ TEST_F(AttributionDataHostManagerImplTest,
                                                     std::move(source_data));
     data_host_remote.data_host.FlushForTesting();
   }
+
+  histograms.ExpectUniqueSample("Conversions.RegisteredSourcesPerDataHost", 3,
+                                1);
+  histograms.ExpectUniqueSample("Conversions.RegisteredTriggersPerDataHost", 1,
+                                1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
        SourceDataHost_ReceiverModeCheckPerformed) {
+  base::HistogramTester histograms;
+
   Checkpoint checkpoint;
   {
     InSequence seq;
@@ -487,6 +512,10 @@ TEST_F(AttributionDataHostManagerImplTest,
                                                     std::move(source_data));
     data_host_remote.data_host.FlushForTesting();
   }
+
+  histograms.ExpectUniqueSample("Conversions.RegisteredSourcesPerDataHost", 3,
+                                1);
+  histograms.ExpectTotalCount("Conversions.RegisteredTriggersPerDataHost", 0);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -634,6 +663,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 // `AttributionDataHostManagerImpl::OnDataHostDisconnected()` when a data host
 // is registered but disconnects before registering a source or trigger.
 TEST_F(AttributionDataHostManagerImplTest, NoSourceOrTrigger) {
+  base::HistogramTester histograms;
+
   auto page_origin = *SuitableOrigin::Deserialize("https://page.example");
 
   {
@@ -644,6 +675,9 @@ TEST_F(AttributionDataHostManagerImplTest, NoSourceOrTrigger) {
         /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger,
         kFrameId, /*last_navigation_id=*/kNavigationId);
   }
+
+  histograms.ExpectTotalCount("Conversions.RegisteredSourcesPerDataHost", 0);
+  histograms.ExpectTotalCount("Conversions.RegisteredTriggersPerDataHost", 0);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,

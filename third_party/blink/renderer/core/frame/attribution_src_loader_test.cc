@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/fake_local_frame_host.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -60,8 +59,6 @@ using blink::url_test_helpers::RegisterMockedURLLoad;
 using blink::url_test_helpers::ToKURL;
 
 const char kAttributionReportingSupport[] = "Attribution-Reporting-Support";
-
-const char kUrl[] = "https://example1.com/foo.html";
 
 class AttributionSrcLocalFrameClient : public EmptyLocalFrameClient {
  public:
@@ -437,16 +434,15 @@ TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestsInvalidEligibleHeaders) {
 TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestStatusHistogram) {
   base::HistogramTester histograms;
 
-  KURL url1 = ToKURL(kUrl);
+  KURL url1 = ToKURL("https://example1.com/foo.html");
   RegisterMockedURLLoad(url1, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->Register(kUrl, /*element=*/nullptr);
+  attribution_src_loader_->Register(url1, /*element=*/nullptr);
 
-  static constexpr char kUrl2[] = "https://example2.com/foo.html";
-  KURL url2 = ToKURL(kUrl2);
+  KURL url2 = ToKURL("https://example2.com/foo.html");
   RegisterMockedErrorURLLoad(url2);
 
-  attribution_src_loader_->Register(kUrl2, /*element=*/nullptr);
+  attribution_src_loader_->Register(url2, /*element=*/nullptr);
 
   // kRequested = 0.
   histograms.ExpectUniqueSample("Conversions.AttributionSrcRequestStatus", 0,
@@ -465,7 +461,7 @@ TEST_F(AttributionSrcLoaderTest, Referrer) {
   KURL url = ToKURL("https://example1.com/foo.html");
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->Register(kUrl, /*element=*/nullptr);
+  attribution_src_loader_->Register(url, /*element=*/nullptr);
 
   url_test_helpers::ServeAsynchronousRequests();
 
@@ -475,10 +471,10 @@ TEST_F(AttributionSrcLoaderTest, Referrer) {
 }
 
 TEST_F(AttributionSrcLoaderTest, EligibleHeader_Register) {
-  KURL url = ToKURL(kUrl);
+  KURL url = ToKURL("https://example1.com/foo.html");
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->Register(kUrl, /*element=*/nullptr);
+  attribution_src_loader_->Register(url, /*element=*/nullptr);
 
   url_test_helpers::ServeAsynchronousRequests();
 
@@ -499,12 +495,12 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_Register) {
 }
 
 TEST_F(AttributionSrcLoaderTest, EligibleHeader_RegisterNavigation) {
-  KURL url = ToKURL(kUrl);
+  KURL url = ToKURL("https://example1.com/foo.html");
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
   std::ignore = attribution_src_loader_->RegisterNavigation(
-      /*navigation_url=*/KURL(), /*attribution_src=*/kUrl,
-      /*element=*/MakeGarbageCollected<HTMLAnchorElement>(GetDocument()));
+      /*navigation_url=*/KURL(), /*attribution_src=*/url,
+      /*element=*/nullptr);
 
   url_test_helpers::ServeAsynchronousRequests();
 
@@ -528,12 +524,12 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_RegisterNavigation) {
 // received on that channel. This test confirms the channel properly
 // disconnects in this case.
 TEST_F(AttributionSrcLoaderTest, EagerlyClosesRemote) {
-  KURL url = ToKURL(kUrl);
+  KURL url = ToKURL("https://example1.com/foo.html");
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
   MockAttributionHost host(
       GetFrame().GetRemoteNavigationAssociatedInterfaces());
-  attribution_src_loader_->Register(kUrl, /*element=*/nullptr);
+  attribution_src_loader_->Register(url, /*element=*/nullptr);
   host.WaitUntilBoundAndFlush();
   url_test_helpers::ServeAsynchronousRequests();
 
@@ -569,10 +565,10 @@ class AttributionSrcLoaderCrossAppWebEnabledTest
 TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, SupportHeader_Register) {
   platform_->os_support = network::mojom::AttributionOsSupport::kEnabled;
 
-  KURL url = ToKURL(kUrl);
+  KURL url = ToKURL("https://example1.com/foo.html");
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->Register(kUrl, /*element=*/nullptr);
+  attribution_src_loader_->Register(url, /*element=*/nullptr);
 
   url_test_helpers::ServeAsynchronousRequests();
 
@@ -584,12 +580,12 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
        SupportHeader_RegisterNavigation) {
   platform_->os_support = network::mojom::AttributionOsSupport::kEnabled;
 
-  KURL url = ToKURL(kUrl);
+  KURL url = ToKURL("https://example1.com/foo.html");
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
   std::ignore = attribution_src_loader_->RegisterNavigation(
-      /*navigation_url=*/KURL(), /*attribution_src=*/kUrl,
-      /*element=*/MakeGarbageCollected<HTMLAnchorElement>(GetDocument()));
+      /*navigation_url=*/KURL(), /*attribution_src=*/url,
+      /*element=*/nullptr);
 
   url_test_helpers::ServeAsynchronousRequests();
 
