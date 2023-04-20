@@ -475,5 +475,45 @@
       light: '$cros.ref.neutralvariant90',
       dark: '$cros.ref.neutralvariant40',
     },
+    'illo.card.color1' : {
+      light: '#fce3e0',
+      dark: '#4d2726',
+    },
+    'illo.card.on-color1' : {
+      light: '#a50e0e',
+      dark: '#f6aea9',
+    },
+    'illo.card.color2' : {
+      light: '#fef2cb',
+      dark: '#443117',
+    },
+    'illo.card.on-color2' : {
+      light: '#9b6100',
+      dark: '#fde293',
+    },
+    'illo.card.color3' : {
+      light: '#dcf4e3',
+      dark: '#16341e',
+    },
+    'illo.card.on-color3' : {
+      light: '#0d652d',
+      dark: '#a8dab5',
+    },
+    'illo.card.color4' : {
+      light: '#d6e5fc',
+      dark: '#20314e',
+    },
+    'illo.card.on-color4' : {
+      light: '#185abc',
+      dark: '#aecbfa',
+    },
+    'illo.card.color5' : {
+      light: '#f4e3fe',
+      dark: '#433355',
+    },
+    'illo.card.on-color5' : {
+      light: '#75099b',
+      dark: '#d7aefb',
+    },
   },
 }

@@ -32,7 +32,7 @@ class Color:
     '''A representation of a single color value.
 
     This color can be of the following formats:
-    - #RRGGBB
+    - #rrggbb
     - rgb(r, g, b)
     - rgba(r, g, b, a)
     - rgba(r, g, b, $named_opacity)
