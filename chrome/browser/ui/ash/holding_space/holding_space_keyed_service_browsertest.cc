@@ -821,7 +821,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceLacrosBrowserTest,
 
   // Create a `crosapi::mojom::DownloadItem`.
   auto download = crosapi::mojom::DownloadItem::New();
-  download->guid = base::GUID::GenerateRandomV4().AsLowercaseString();
+  download->guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   download->received_bytes = 0;
   download->has_received_bytes = true;
   download->total_bytes = -1;

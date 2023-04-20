@@ -32,7 +32,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
@@ -40,6 +39,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_locale.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -1795,7 +1795,7 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
     // Mock `download::DownloadItem::GetGuid()`.
     ON_CALL(*ash_download_item, GetGuid)
         .WillByDefault(testing::ReturnRefOfCopy(
-            base::GUID::GenerateRandomV4().AsLowercaseString()));
+            base::Uuid::GenerateRandomV4().AsLowercaseString()));
 
     // Mock `download::DownloadItem::GetId()`.
     ON_CALL(*ash_download_item, GetId).WillByDefault(testing::Invoke([]() {
@@ -1942,7 +1942,7 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
     auto lacros_download_item = crosapi::mojom::DownloadItem::New();
 
     lacros_download_item->guid =
-        base::GUID::GenerateRandomV4().AsLowercaseString();
+        base::Uuid::GenerateRandomV4().AsLowercaseString();
     lacros_download_item->state = state;
     lacros_download_item->full_path = file_path;
     lacros_download_item->target_file_path = target_file_path;
