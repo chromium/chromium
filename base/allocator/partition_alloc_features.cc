@@ -162,11 +162,18 @@ const base::FeatureParam<bool> kBackupRefPtrAsanEnableExtractionCheckParam{
 const base::FeatureParam<bool> kBackupRefPtrAsanEnableInstantiationCheckParam{
     &kPartitionAllocBackupRefPtr, "asan-enable-instantiation-check", true};
 
-// If enabled, switches the bucket distribution to an alternate one. Only one of
-// these features may b e enabled at a time.
+// If enabled, switches the bucket distribution to an alternate one.
+//
+// We enable this by default everywhere except for 32-bit Android, since we saw
+// regressions there.
 BASE_FEATURE(kPartitionAllocUseAlternateDistribution,
              "PartitionAllocUseAlternateDistribution",
-             FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_32_BITS)
+             FEATURE_DISABLED_BY_DEFAULT
+#else
+             FEATURE_ENABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_32_BITS)
+);
 const base::FeatureParam<AlternateBucketDistributionMode>::Option
     kPartitionAllocAlternateDistributionOption[] = {
         {AlternateBucketDistributionMode::kDefault, "default"},
