@@ -209,6 +209,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"managePasskeysLabel", IDS_PASSWORD_MANAGER_UI_MANAGE_PASSKEYS_LABEL},
 #endif
     {"menu", IDS_MENU},
+    {"menuButtonLabel", IDS_SETTINGS_MENU_BUTTON_LABEL},
     {"missingTLD", IDS_PASSWORD_MANAGER_UI_MISSING_TLD},
     {"moreActions", IDS_PASSWORD_MANAGER_UI_MORE_ACTIONS},
     {"moreActionsAriaDescription",
