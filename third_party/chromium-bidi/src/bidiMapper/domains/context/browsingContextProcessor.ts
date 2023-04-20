@@ -63,11 +63,11 @@ export class BrowsingContextProcessor {
    * for creating and destroying all targets and browsing contexts.
    */
   #setEventListeners(cdpClient: CdpClient) {
-    cdpClient.on('Target.attachedToTarget', async (params) => {
-      await this.#handleAttachedToTargetEvent(params, cdpClient);
+    cdpClient.on('Target.attachedToTarget', (params) => {
+      this.#handleAttachedToTargetEvent(params, cdpClient);
     });
-    cdpClient.on('Target.detachedFromTarget', async (params) => {
-      await this.#handleDetachedFromTargetEvent(params);
+    cdpClient.on('Target.detachedFromTarget', (params) => {
+      this.#handleDetachedFromTargetEvent(params);
     });
 
     cdpClient.on(
@@ -78,8 +78,8 @@ export class BrowsingContextProcessor {
     );
     cdpClient.on(
       'Page.frameDetached',
-      async (params: Protocol.Page.FrameDetachedEvent) => {
-        await this.#handleFrameDetachedEvent(params);
+      (params: Protocol.Page.FrameDetachedEvent) => {
+        this.#handleFrameDetachedEvent(params);
       }
     );
   }
@@ -109,12 +109,12 @@ export class BrowsingContextProcessor {
   //   "params": {
   //     "frameId": "0A639AB1D9A392DF2CE02C53CC4ED3A6",
   //     "reason": "swap" } }
-  async #handleFrameDetachedEvent(params: Protocol.Page.FrameDetachedEvent) {
+  #handleFrameDetachedEvent(params: Protocol.Page.FrameDetachedEvent) {
     // In case of OOPiF no need in deleting BrowsingContext.
     if (params.reason === 'swap') {
       return;
     }
-    await this.#browsingContextStorage.findContext(params.frameId)?.delete();
+    this.#browsingContextStorage.findContext(params.frameId)?.delete();
   }
 
   // { "method": "Target.attachedToTarget",
@@ -129,7 +129,7 @@ export class BrowsingContextProcessor {
   //       "canAccessOpener": false,
   //       "browserContextId": "1B5244080EC3FF28D03BBDA73138C0E2" },
   //     "waitingForDebugger": false } }
-  async #handleAttachedToTargetEvent(
+  #handleAttachedToTargetEvent(
     params: Protocol.Target.AttachedToTargetEvent,
     parentSessionCdpClient: CdpClient
   ) {
@@ -138,12 +138,13 @@ export class BrowsingContextProcessor {
     const targetCdpClient = this.#cdpConnection.getCdpClient(sessionId);
 
     if (!this.#isValidTarget(targetInfo)) {
-      // DevTools or some other not supported by BiDi target.
-      await targetCdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
-      await parentSessionCdpClient.sendCommand(
-        'Target.detachFromTarget',
-        params
-      );
+      // DevTools or some other not supported by BiDi target. Just release
+      // debugger  and ignore them.
+      void targetCdpClient
+        .sendCommand('Runtime.runIfWaitingForDebugger')
+        .then(() =>
+          parentSessionCdpClient.sendCommand('Target.detachFromTarget', params)
+        );
       return;
     }
 
@@ -185,14 +186,14 @@ export class BrowsingContextProcessor {
   //   "params": {
   //     "sessionId": "7EFBFB2A4942A8989B3EADC561BC46E9",
   //     "targetId": "19416886405CBA4E03DBB59FA67FF4E8" } }
-  async #handleDetachedFromTargetEvent(
+  #handleDetachedFromTargetEvent(
     params: Protocol.Target.DetachedFromTargetEvent
   ) {
     // TODO: params.targetId is deprecated. Update this class to track using
     // params.sessionId instead.
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/60
     const contextId = params.targetId!;
-    await this.#browsingContextStorage.findContext(contextId)?.delete();
+    this.#browsingContextStorage.findContext(contextId)?.delete();
   }
 
   async #getRealm(target: Script.Target): Promise<Realm> {
