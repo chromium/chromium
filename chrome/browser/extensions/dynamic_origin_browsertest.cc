@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(DynamicOriginBrowserTest,
     EXPECT_EQ(status, nav_observer.last_net_error_code());
   };
 
-  auto random_guid = base::GUID::GenerateRandomV4().AsLowercaseString();
+  auto random_guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   GURL random_url =
       Extension::GetBaseURLFromExtensionId(random_guid).Resolve("ok.html");
   GURL dynamic_url = extension->dynamic_url().Resolve("ok.html");
