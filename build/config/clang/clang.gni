@@ -16,7 +16,7 @@ declare_args() {
 
   enable_check_raw_ptr_fields =
       build_with_chromium && !is_official_build &&
-      ((is_linux && !is_castos) || (is_android && !is_cast_android))
+      ((is_linux && !is_castos) || (is_android && !is_cast_android) || is_win)
 
   clang_base_path = default_clang_base_path
 }
