@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_worklet_processor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_blink_audio_worklet_process_callback.h"
@@ -22,6 +23,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor_definition.h"
 #include "third_party/blink/renderer/modules/webaudio/cross_thread_audio_worklet_processor_info.h"
 #include "third_party/blink/renderer/platform/bindings/callback_method_retriever.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 
 namespace blink {
@@ -206,11 +208,27 @@ AudioWorkletProcessor* AudioWorkletGlobalScope::CreateProcessor(
           std::make_unique<ProcessorCreationParams>(
               name, std::move(message_port_channel)));
 
-  ScriptValue options(isolate,
-                      ToV8(node_options->Deserialize(isolate), script_state));
+  // Make sure that the transferred `node_options` is deserializable.
+  // See https://crbug.com/1429681 for details.
+  if (!node_options->CanDeserializeIn(this)) {
+    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "Transferred AudioWorkletNodeOptions could not be deserialized because "
+        "it contains an object of a type not available in "
+        "AudioWorkletGlobalScope. See https://crbug.com/1429681 for details."));
+    return nullptr;
+  }
+
+  UnpackedSerializedScriptValue* unpacked_node_options =
+      MakeGarbageCollected<UnpackedSerializedScriptValue>(
+          std::move(node_options));
+  ScriptValue deserialized_options(
+      isolate, unpacked_node_options->Deserialize(isolate));
 
   ScriptValue instance;
-  if (!definition->ConstructorFunction()->Construct(options).To(&instance)) {
+  if (!definition->ConstructorFunction()->Construct(deserialized_options)
+          .To(&instance)) {
     return nullptr;
   }
 
