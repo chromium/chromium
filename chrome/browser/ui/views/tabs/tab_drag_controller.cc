@@ -716,13 +716,6 @@ void TabDragController::OnSourceTabStripEmpty() {
   // NULL out source_context_ so that we don't attempt to add back to it (in
   // the case of a revert).
   source_context_ = nullptr;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Also update the source window info for the current dragged window.
-  if (attached_context_) {
-    GetWindowForTabDraggingProperties(attached_context_)
-        ->ClearProperty(ash::kTabDraggingSourceWindowKey);
-  }
-#endif
 }
 
 void TabDragController::OnActiveStripWebContentsRemoved(
@@ -2393,13 +2386,7 @@ void TabDragController::SetTabDraggingInfo() {
 
   aura::Window* dragged_window =
       GetWindowForTabDraggingProperties(dragged_context);
-  aura::Window* source_window =
-      GetWindowForTabDraggingProperties(source_context_);
   dragged_window->SetProperty(ash::kIsDraggingTabsKey, true);
-  if (source_window != dragged_window) {
-    dragged_window->SetProperty(ash::kTabDraggingSourceWindowKey,
-                                source_window);
-  }
 #endif
 }
 
@@ -2420,7 +2407,6 @@ void TabDragController::ClearTabDraggingInfo() {
   aura::Window* dragged_window =
       GetWindowForTabDraggingProperties(dragged_context);
   dragged_window->ClearProperty(ash::kIsDraggingTabsKey);
-  dragged_window->ClearProperty(ash::kTabDraggingSourceWindowKey);
 #endif
 }
 

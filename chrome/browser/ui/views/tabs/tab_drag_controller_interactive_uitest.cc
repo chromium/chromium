@@ -621,13 +621,7 @@ class DetachToBrowserTabDragControllerTest
     aura::Window* dragged_window =
         test::GetWindowForTabStrip(attached_tabstrip);
     attached_tabstrip->GetWidget()->GetNativeWindow();
-    aura::Window* source_window =
-        (source_tabstrip && source_tabstrip != attached_tabstrip)
-            ? test::GetWindowForTabStrip(source_tabstrip)
-            : nullptr;
-    return dragged_window->GetProperty(ash::kIsDraggingTabsKey) &&
-           dragged_window->GetProperty(ash::kTabDraggingSourceWindowKey) ==
-               source_window;
+    return dragged_window->GetProperty(ash::kIsDraggingTabsKey);
 #else
     return true;
 #endif
@@ -640,8 +634,7 @@ class DetachToBrowserTabDragControllerTest
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     aura::Window* dragged_window =
         test::GetWindowForTabStrip(attached_tabstrip);
-    return !dragged_window->GetProperty(ash::kIsDraggingTabsKey) &&
-           !dragged_window->GetProperty(ash::kTabDraggingSourceWindowKey);
+    return !dragged_window->GetProperty(ash::kIsDraggingTabsKey);
 #else
     return true;
 #endif
