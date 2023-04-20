@@ -47,6 +47,11 @@ class OmniboxLacrosProvider : public SearchProvider {
   std::u16string last_query_;
   absl::optional<ash::string_matching::TokenizedString> last_tokenized_query_;
 
+  // The AutocompleteController can sometimes update its results more than once
+  // after reporting it is done. This flag is set to ensure we only update the
+  // UI once.
+  bool query_finished_ = false;
+
   base::WeakPtrFactory<OmniboxLacrosProvider> weak_factory_{this};
 };
 
