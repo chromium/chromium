@@ -209,6 +209,13 @@ To get Chrome OS System Colors, an element must:
       var(--cros-sys-ripple_neutral_on_subtle);
 }
 
+:host-context(body.jelly-enabled) cr-card-radio-button {
+  --cr-card-background-color: var(--cros-sys-app_base);
+  --cr-checked-color: var(--cros-sys-primary);
+  --cr-radio-button-checked-ripple-color: var(--cros-sys-ripple_primary);
+  --hover-bg-color: var(--cros-sys-hover_on_subtle);
+}
+
 /* Search field */
 :host-context(body.jelly-enabled) cr-search-field {
   --cr-search-field-clear-icon-fill: var(--cros-sys-primary);
