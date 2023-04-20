@@ -39,7 +39,7 @@ void OnRatioSet(bool success) {
 
 BASE_FEATURE(kKstaled, "KstaledSwap", base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kKstaledRatio = {&kKstaled, "KstaledRatio", 1};
+const base::FeatureParam<int> kKstaledRatio = {&kKstaled, "KstaledRatio", 0};
 
 // InitializeKstaled will attempt to configure kstaled with the experimental
 // parameters for this user.
@@ -59,8 +59,8 @@ void InitializeKstaled() {
   }
 
   int feature_ratio = kKstaledRatio.Get();
-  if (feature_ratio < 0 || feature_ratio > 1) {
-    LOG(ERROR) << "Invalid value set for feature ratio, it can be 0 or 1 only";
+  if (feature_ratio < 0 || feature_ratio > std::numeric_limits<uint8_t>::max()) {
+    LOG(ERROR) << "Invalid value set for feature ratio.";
     return;
   }
 
