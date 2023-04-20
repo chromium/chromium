@@ -2454,16 +2454,6 @@ Safe Browsing lookup mechanism is working as expected -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.V4GetHash.SocialEngineeringPattern"
-    enum="SafeBrowsingV4SocialEngineeringPattern" expires_after="2023-05-10">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records social engineering patterns from V4GetHash response. Records each
-    pattern in metadata when the threat type is SOCIAL_ENGINEERING.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.V4LocalDatabaseManager.ThreatInfoSize"
     units="verdicts" expires_after="2023-10-15">
   <owner>xinghuilu@chromium.org</owner>
@@ -2488,7 +2478,7 @@ Safe Browsing lookup mechanism is working as expected -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4ProcessFullUpdate.AdditionsHashesCount2"
-    units="entries" expires_after="2023-04-30">
+    units="entries" expires_after="2024-04-18">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

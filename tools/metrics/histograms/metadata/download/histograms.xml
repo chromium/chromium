@@ -1256,7 +1256,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Session.IsDownloadBubbleShowingWhenSession{Status}"
-    enum="BooleanShowing" expires_after="2023-04-30">
+    enum="BooleanShowing" expires_after="2023-10-18">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
