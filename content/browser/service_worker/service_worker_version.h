@@ -792,6 +792,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
       service_worker_version_unittest::ServiceWorkerVersionTest,
       Doom);
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerRegistryTest, ScriptResponseTime);
+  FRIEND_TEST_ALL_PREFIXES(ServiceWorkerBrowserTest,
+                           WarmUpAndStartServiceWorker);
+  FRIEND_TEST_ALL_PREFIXES(ServiceWorkerBrowserTest, WarmUpWorkerAndTimeout);
 
   // Contains timeout info for InflightRequest.
   struct InflightRequestTimeoutInfo {
@@ -832,6 +835,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
   static constexpr base::TimeDelta kStartNewWorkerTimeout = base::Minutes(5);
   // Timeout for the worker to stop.
   static constexpr base::TimeDelta kStopWorkerTimeout = base::Seconds(5);
+  // Duration to keep worker warmed-up.
+  static constexpr base::TimeDelta kWarmUpDuration = base::Minutes(10);
 
   ~ServiceWorkerVersion() override;
 
@@ -843,6 +848,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
 
   // EmbeddedWorkerInstance::Listener overrides:
   void OnScriptEvaluationStart() override;
+  void OnScriptLoaded() override;
   void OnStarting() override;
   void OnStarted(blink::mojom::ServiceWorkerStartStatus status,
                  FetchHandlerType fetch_handler_type) override;
@@ -1046,6 +1052,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // re-enter StartWorker().
   bool is_running_start_callbacks_ = false;
   std::vector<StatusCallback> start_callbacks_;
+  std::vector<StatusCallback> warm_up_callbacks_;
   std::vector<base::OnceClosure> stop_callbacks_;
   std::vector<base::OnceClosure> status_change_callbacks_;
 

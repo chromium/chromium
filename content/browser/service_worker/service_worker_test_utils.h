@@ -46,6 +46,9 @@ base::OnceCallback<void(blink::ServiceWorkerStatusCode)>
 ReceiveServiceWorkerStatus(absl::optional<blink::ServiceWorkerStatusCode>* out,
                            base::OnceClosure quit_closure);
 
+blink::ServiceWorkerStatusCode WarmUpServiceWorker(
+    ServiceWorkerVersion* version);
+
 blink::ServiceWorkerStatusCode StartServiceWorker(
     ServiceWorkerVersion* version);
 

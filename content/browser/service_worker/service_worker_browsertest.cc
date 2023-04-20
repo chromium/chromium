@@ -4530,6 +4530,152 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSpeculativeStartupBrowserTest,
       static_cast<int>(blink::ServiceWorkerStatusCode::kOk), 1);
 }
 
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpAndStartServiceWorker) {
+  base::HistogramTester histogram_tester;
+  StartServerAndNavigateToSetup();
+  const GURL create_service_worker_url(embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html"));
+  const GURL out_scope_url(embedded_test_server()->GetURL("/empty.html"));
+  const GURL in_scope_url(
+      embedded_test_server()->GetURL("/service_worker/empty.html"));
+
+  // Register a service worker.
+  WorkerRunningStatusObserver observer1(public_context());
+  EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
+  EXPECT_EQ("DONE", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                           "register('fetch_event_respond_with_fetch.js');"));
+  observer1.WaitUntilRunning();
+
+  scoped_refptr<ServiceWorkerVersion> version =
+      wrapper()->GetLiveVersion(observer1.version_id());
+  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(1, version->embedded_worker()->restart_count());
+
+  // Stop the current running service worker.
+  StopServiceWorker(version.get());
+  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+
+  // Navigate away from the service worker's scope.
+  EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
+  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_FALSE(version->timeout_timer_.IsRunning());
+  EXPECT_FALSE(version->embedded_worker()->pause_initializing_global_scope());
+
+  // Warm-up ServiceWorker. The script should be loaded without evaluating the
+  // script.
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            WarmUpServiceWorker(version.get()));
+  EXPECT_EQ(EmbeddedWorkerStatus::STARTING, version->running_status());
+  EXPECT_EQ(EmbeddedWorkerInstance::StartingPhase::SCRIPT_LOADED,
+            version->embedded_worker()->starting_phase());
+  EXPECT_TRUE(version->embedded_worker()->pause_initializing_global_scope());
+  EXPECT_TRUE(version->timeout_timer_.IsRunning());
+  const int restart_count_on_warm_up =
+      version->embedded_worker()->restart_count();
+  EXPECT_EQ(2, restart_count_on_warm_up);
+  base::TimeTicks warm_up_start_time = version->start_time_;
+
+  // 2nd ServiceWorker warm-up doesn't change anything except `start_time_`.
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            WarmUpServiceWorker(version.get()));
+  EXPECT_EQ(EmbeddedWorkerStatus::STARTING, version->running_status());
+  EXPECT_EQ(EmbeddedWorkerInstance::StartingPhase::SCRIPT_LOADED,
+            version->embedded_worker()->starting_phase());
+  EXPECT_TRUE(version->embedded_worker()->pause_initializing_global_scope());
+  EXPECT_TRUE(version->timeout_timer_.IsRunning());
+  EXPECT_EQ(restart_count_on_warm_up,
+            version->embedded_worker()->restart_count());
+  // The 2nd ServiceWorker warm-up reset `start_time_` to be more recent time.
+  EXPECT_LT(warm_up_start_time, version->start_time_);
+
+  // Navigate to Service Worker controlled page.
+  WorkerRunningStatusObserver observer2(public_context());
+  shell()->LoadURL(in_scope_url);
+  observer2.WaitUntilRunning();
+
+  // The restart_count doesn't change because there is a warmed-up service
+  // worker.
+  EXPECT_EQ(restart_count_on_warm_up,
+            version->embedded_worker()->restart_count());
+  EXPECT_FALSE(version->embedded_worker()->pause_initializing_global_scope());
+  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  histogram_tester.ExpectBucketCount(
+      "ServiceWorker.StartWorker.Purpose",
+      static_cast<int>(ServiceWorkerMetrics::EventType::FETCH_MAIN_FRAME), 1);
+  histogram_tester.ExpectBucketCount(
+      "ServiceWorker.StartWorker.StatusByPurpose_FETCH_MAIN_FRAME",
+      static_cast<int>(blink::ServiceWorkerStatusCode::kOk), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpWorkerAndTimeout) {
+  base::HistogramTester histogram_tester;
+  StartServerAndNavigateToSetup();
+  const GURL create_service_worker_url(embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html"));
+  const GURL out_scope_url(embedded_test_server()->GetURL("/empty.html"));
+  const GURL in_scope_url(
+      embedded_test_server()->GetURL("/service_worker/empty.html"));
+
+  // Register a service worker.
+  WorkerRunningStatusObserver observer1(public_context());
+  EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
+  EXPECT_EQ("DONE", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                           "register('fetch_event_respond_with_fetch.js');"));
+  observer1.WaitUntilRunning();
+
+  scoped_refptr<ServiceWorkerVersion> version =
+      wrapper()->GetLiveVersion(observer1.version_id());
+  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  EXPECT_EQ(1, version->embedded_worker()->restart_count());
+
+  // Stop the current running service worker.
+  StopServiceWorker(version.get());
+  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+
+  // Navigate away from the service worker's scope.
+  EXPECT_TRUE(NavigateToURL(shell(), out_scope_url));
+  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_FALSE(version->timeout_timer_.IsRunning());
+
+  // Warm-up ServiceWorker. The script should be loaded without evaluating the
+  // script.
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            WarmUpServiceWorker(version.get()));
+  EXPECT_EQ(EmbeddedWorkerStatus::STARTING, version->running_status());
+  EXPECT_EQ(EmbeddedWorkerInstance::StartingPhase::SCRIPT_LOADED,
+            version->embedded_worker()->starting_phase());
+  EXPECT_TRUE(version->embedded_worker()->pause_initializing_global_scope());
+  EXPECT_EQ(2, version->embedded_worker()->restart_count());
+
+  // Simulate timeout.
+  EXPECT_TRUE(version->timeout_timer_.IsRunning());
+  version->start_time_ = base::TimeTicks::Now() -
+                         ServiceWorkerVersion::kWarmUpDuration -
+                         base::Minutes(1);
+  version->timeout_timer_.user_task().Run();
+  while (version->running_status() != EmbeddedWorkerStatus::STOPPED) {
+    base::RunLoop().RunUntilIdle();
+  }
+  EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+  EXPECT_FALSE(version->embedded_worker()->pause_initializing_global_scope());
+  EXPECT_EQ(2, version->embedded_worker()->restart_count());
+
+  // Navigate to Service Worker controlled page.
+  WorkerRunningStatusObserver observer2(public_context());
+  shell()->LoadURL(in_scope_url);
+  observer2.WaitUntilRunning();
+
+  EXPECT_EQ(3, version->embedded_worker()->restart_count());
+  EXPECT_FALSE(version->embedded_worker()->pause_initializing_global_scope());
+  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+  histogram_tester.ExpectBucketCount(
+      "ServiceWorker.StartWorker.Purpose",
+      static_cast<int>(ServiceWorkerMetrics::EventType::FETCH_MAIN_FRAME), 1);
+  histogram_tester.ExpectBucketCount(
+      "ServiceWorker.StartWorker.StatusByPurpose_FETCH_MAIN_FRAME",
+      static_cast<int>(blink::ServiceWorkerStatusCode::kOk), 1);
+}
+
 class ServiceWorkerBypassFetchHandlerTest
     : public ServiceWorkerBrowserTest,
       public testing::WithParamInterface<

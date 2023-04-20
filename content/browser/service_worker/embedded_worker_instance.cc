@@ -349,7 +349,10 @@ void EmbeddedWorkerInstance::Start(
           coep_reporter_for_subresources.InitWithNewPipeAndPassReceiver());
     }
 
-    owner_version_->InitializeGlobalScope();
+    // Pause initializing global scope (https://crbug.com/1431792).
+    if (!pause_initializing_global_scope_) {
+      owner_version_->InitializeGlobalScope();
+    }
 
     // Register to DevTools and update params accordingly.
     const int routing_id = rph->GetNextRoutingID();
@@ -488,6 +491,8 @@ void EmbeddedWorkerInstance::Stop() {
   // Discard the info for starting a worker because this worker is going to be
   // stopped.
   inflight_start_info_.reset();
+
+  pause_initializing_global_scope_ = false;
 
   // Don't send the StopWorker message if the StartWorker message hasn't
   // been sent.
@@ -641,6 +646,10 @@ void EmbeddedWorkerInstance::OnScriptLoaded() {
 
   // Renderer side has started to launch the worker thread.
   starting_phase_ = SCRIPT_LOADED;
+
+  for (auto& observer : listener_list_) {
+    observer.OnScriptLoaded();
+  }
 }
 
 void EmbeddedWorkerInstance::OnWorkerVersionInstalled() {
@@ -914,6 +923,23 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
   }
 
   return factory_bundle;
+}
+
+void EmbeddedWorkerInstance::SetPauseInitializingGlobalScope() {
+  TRACE_EVENT0("ServiceWorker",
+               "EmbeddedWorkerInstance::SetPauseInitializingGlobalScope");
+  CHECK_EQ(EmbeddedWorkerStatus::STOPPED, status_);
+  CHECK(!pause_initializing_global_scope_);
+  pause_initializing_global_scope_ = true;
+}
+
+void EmbeddedWorkerInstance::ResumeInitializingGlobalScope() {
+  TRACE_EVENT0("ServiceWorker",
+               "EmbeddedWorkerInstance::ResumeInitializingGlobalScope");
+  CHECK_EQ(EmbeddedWorkerStatus::STARTING, status_);
+  CHECK(pause_initializing_global_scope_);
+  pause_initializing_global_scope_ = false;
+  owner_version_->InitializeGlobalScope();
 }
 
 void EmbeddedWorkerInstance::OnReportException(

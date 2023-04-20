@@ -131,6 +131,8 @@ const char* EventTypeToSuffix(ServiceWorkerMetrics::EventType event_type) {
     case ServiceWorkerMetrics::EventType::
         BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED:
       return "_BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED";
+    case ServiceWorkerMetrics::EventType::WARM_UP:
+      return "_WARM_UP";
   }
   return "_UNKNOWN";
 }
@@ -200,6 +202,8 @@ const char* ServiceWorkerMetrics::EventTypeToString(EventType event_type) {
     case ServiceWorkerMetrics::EventType::
         BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED:
       return "Bypass Only If ServiceWorker Is Not Started";
+    case ServiceWorkerMetrics::EventType::WARM_UP:
+      return "Warm Up";
   }
   NOTREACHED() << "Got unexpected event type: " << static_cast<int>(event_type);
   return "error";
@@ -404,6 +408,9 @@ void ServiceWorkerMetrics::RecordEventDuration(EventType event,
       break;
     case EventType::PUSH_SUBSCRIPTION_CHANGE:
       // Do nothing: the histogram has been removed.
+      break;
+    case EventType::WARM_UP:
+      // Do nothing: the warm up should not be sent as an event.
       break;
     case EventType::BYPASS_MAIN_RESOURCE:
     // The bypass main resource should not be sent as an event.
