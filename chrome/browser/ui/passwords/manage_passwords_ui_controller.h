@@ -186,6 +186,10 @@ class ManagePasswordsUIController
   void AuthenticateUserForAccountStoreOptInAndMovePassword() override;
   void AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword()
       override;
+  // Skips user os level authentication during the life time of the returned
+  // object. To be used in tests of flows that require user authentication.
+  [[nodiscard]] std::unique_ptr<base::AutoReset<bool>>
+  BypassUserAuthtForTesting();
 #if defined(UNIT_TEST)
   // Overwrites the client for |passwords_data_|.
   void set_client(password_manager::PasswordManagerClient* client) {
@@ -342,6 +346,9 @@ class ManagePasswordsUIController
       move_to_account_store_helpers_;
 
   scoped_refptr<device_reauth::DeviceAuthenticator> biometric_authenticator_;
+
+  // Used to bypass user authentication in integration tests.
+  bool bypass_user_auth_for_testing_ = false;
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   bool was_biometric_authentication_for_filling_promo_shown_ = false;

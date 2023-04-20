@@ -10,7 +10,7 @@
 
 #include "base/metrics/histogram_samples.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
@@ -24,7 +24,7 @@ class ManagePasswordsUIController;
 
 // Test class for the various password management view bits and pieces. Provides
 // some helper methods to poke at the bubble, icon, and controller's state.
-class ManagePasswordsTest : public InProcessBrowserTest {
+class ManagePasswordsTest : public InteractiveBrowserTest {
  public:
   ManagePasswordsTest();
 
@@ -33,7 +33,7 @@ class ManagePasswordsTest : public InProcessBrowserTest {
 
   ~ManagePasswordsTest() override;
 
-  // InProcessBrowserTest:
+  // InteractiveBrowserTest:
   void SetUpOnMainThread() override;
   void SetUpInProcessBrowserTestFixture() override;
 

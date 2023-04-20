@@ -20,6 +20,7 @@
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/view_class_properties.h"
 
 using password_manager::metrics_util::PasswordManagementBubbleInteractions;
 
@@ -117,6 +118,10 @@ ManagePasswordsListView::ManagePasswordsListView(
           /*state_icon=*/absl::nullopt));
   manage_passwords_button->SetID(static_cast<int>(
       password_manager::ManagePasswordsViewIDs::kManagePasswordsButton));
+
+  SetProperty(views::kElementIdentifierKey, kTopView);
 }
 
 ManagePasswordsListView::~ManagePasswordsListView() = default;
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ManagePasswordsListView, kTopView);

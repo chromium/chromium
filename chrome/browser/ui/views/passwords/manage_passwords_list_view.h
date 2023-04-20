@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/layout/box_layout_view.h"
 
@@ -14,6 +15,8 @@
 // entry to navigate to the password manager. Used in the ManagePasswordsView.
 class ManagePasswordsListView : public views::BoxLayoutView {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTopView);
+
   // `credentials` is the list of credentials this view is displaying. `favicon`
   // is the icon to be displayed next to each row. `on_row_clicked_callback` is
   // invoked upon clicking a row in the list passing the credential that was

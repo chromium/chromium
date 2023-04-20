@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/passwords/bubble_controllers/items_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "ui/base/interaction/element_identifier.h"
 
 class PageSwitcherView;
 class ManagePasswordsListView;
@@ -20,6 +21,8 @@ class ManagePasswordsDetailsView;
 // stored password note.
 class ManagePasswordsView : public PasswordBubbleViewBase {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTopView);
+
   ManagePasswordsView(content::WebContents* web_contents,
                       views::View* anchor_view);
 

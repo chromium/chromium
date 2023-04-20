@@ -459,6 +459,8 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
       base::BindRepeating(&ManagePasswordsDetailsView::OnUserInputChanged,
                           base::Unretained(this))));
   edit_note_row_->SetVisible(false);
+
+  SetProperty(views::kElementIdentifierKey, kTopView);
 }
 
 ManagePasswordsDetailsView::~ManagePasswordsDetailsView() = default;
@@ -540,3 +542,5 @@ void ManagePasswordsDetailsView::OnUserInputChanged() {
 
   on_input_validation_callback_.Run(is_username_invalid || is_note_invalid);
 }
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ManagePasswordsDetailsView, kTopView);

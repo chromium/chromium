@@ -25,6 +25,7 @@
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/base/features.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/view_class_properties.h"
@@ -66,6 +67,7 @@ ManagePasswordsView::ManagePasswordsView(content::WebContents* web_contents,
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   SetFootnoteView(CreateFooterView());
+  SetProperty(views::kElementIdentifierKey, kTopView);
 }
 
 ManagePasswordsView::~ManagePasswordsView() = default;
@@ -325,3 +327,5 @@ void ManagePasswordsView::AuthenticateUserAndDisplayDetailsOf(
           },
           base::Unretained(this), std::move(pin)));
 }
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ManagePasswordsView, kTopView);
