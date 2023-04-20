@@ -2246,7 +2246,7 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
   frame_request.GetResourceRequest().SetHasUserGesture(has_user_gesture);
   GetFrame()->MaybeLogAdClickNavigation();
 
-  if (has_user_gesture && !window_features.attribution_src.IsNull()) {
+  if (has_user_gesture && window_features.attribution_srcs.has_value()) {
     // An impression must be attached prior to the
     // `FindOrCreateFrameForNavigation()` call, as that call may result in
     // performing a navigation if the call results in creating a new window with
@@ -2255,8 +2255,7 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
                                     ->GetAttributionSrcLoader()
                                     ->RegisterNavigation(
                                         /*navigation_url=*/completed_url,
-                                        window_features.attribution_src,
-                                        /*element=*/nullptr));
+                                        *window_features.attribution_srcs));
   }
 
   FrameTree::FindResult result =

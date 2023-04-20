@@ -376,9 +376,9 @@ void HTMLImageElement::ParseAttribute(
     }
   } else if (name == html_names::kAttributionsrcAttr) {
     LocalDOMWindow* window = GetDocument().domWindow();
-    if (!params.new_value.empty() && window && window->GetFrame()) {
-      window->GetFrame()->GetAttributionSrcLoader()->Register(
-          GetDocument().CompleteURL(params.new_value), this);
+    if (window && window->GetFrame()) {
+      window->GetFrame()->GetAttributionSrcLoader()->Register(params.new_value,
+                                                              /*element=*/this);
     }
   } else {
     HTMLElement::ParseAttribute(params);
