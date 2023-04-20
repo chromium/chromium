@@ -15,12 +15,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "build/blink_buildflags.h"
 
 namespace base {
 
 ProcessMetrics::ProcessMetrics(ProcessHandle process) {}
-
-ProcessMetrics::~ProcessMetrics() {}
 
 // static
 std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
@@ -32,6 +31,10 @@ TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
   NOTIMPLEMENTED();
   return TimeDelta();
 }
+
+// The blink code path pulls in process_metrics_posix.cc which
+// is used for the following implementations.
+#if !BUILDFLAG(USE_BLINK)
 
 size_t GetMaxFds() {
   static const rlim_t kSystemDefaultMaxFds = 256;
@@ -53,6 +56,13 @@ size_t GetMaxFds() {
 void IncreaseFdLimitTo(unsigned int max_descriptors) {
   // Unimplemented.
 }
+
+size_t ProcessMetrics::GetMallocUsage() {
+  malloc_statistics_t stats;
+  malloc_zone_statistics(nullptr, &stats);
+  return stats.size_in_use;
+}
+#endif  // !BUILDFLAG(USE_BLINK)
 
 // Bytes committed by the system.
 size_t GetSystemCommitCharge() {
@@ -94,12 +104,6 @@ bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
       saturated_cast<int>(PAGE_SIZE / 1024 * vm_info.purgeable_count);
 
   return true;
-}
-
-size_t ProcessMetrics::GetMallocUsage() {
-  malloc_statistics_t stats;
-  malloc_zone_statistics(nullptr, &stats);
-  return stats.size_in_use;
 }
 
 MachVMRegionResult ParseOutputFromVMRegion(kern_return_t kr) {

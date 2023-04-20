@@ -2165,6 +2165,7 @@ component("base") {
         "process/process_handle_mac.cc",
         "process/process_iterator_ios.mm",
         "process/process_mac.cc",
+        "process/process_metrics_posix.cc",
         "process/process_posix.cc",
         "sync_socket_posix.cc",
         "synchronization/waitable_event_watcher_mac.cc",
