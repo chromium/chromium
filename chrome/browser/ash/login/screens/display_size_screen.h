@@ -36,10 +36,12 @@ class DisplaySizeScreen : public BaseScreen {
 
  private:
   // BaseScreen:
+  bool ShouldBeSkipped(const WizardContext& context) const override;
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
+  ScreenSummary GetScreenSummary() override;
 
   base::WeakPtr<DisplaySizeScreenView> view_;
   ScreenExitCallback exit_callback_;

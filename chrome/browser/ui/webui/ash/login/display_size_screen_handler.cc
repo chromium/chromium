@@ -28,6 +28,8 @@ void DisplaySizeScreenHandler::DeclareLocalizedValues(
   builder->Add("DisplaySizeSliderTitle", IDS_OOBE_DISPLAY_SIZE_SLIDER_TITLE);
   builder->Add("DisplaySizeSliderDescription",
                IDS_OOBE_DISPLAY_SIZE_SLIDER_DESCRIPTION);
+  builder->Add("choobeDisplaySizeTitle",
+               IDS_OOBE_CHOOBE_DISPLAY_SIZE_TILE_TITLE);
 }
 
 void DisplaySizeScreenHandler::Show() {

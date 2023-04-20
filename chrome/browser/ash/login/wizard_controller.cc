@@ -1117,11 +1117,24 @@ void WizardController::ShowChoobeScreen() {
 }
 
 void WizardController::ShowTouchpadScrollScreen() {
-  SetCurrentScreen(GetScreen(TouchpadScrollScreenView::kScreenId));
+  // If the `OobeChoobe` or `OobeDisplaySize` feature is disabled, the
+  // DisplaySizeScreen object will not be created. In this case,
+  // `OnTouchpadScreenExit()` function is called with the exit result
+  // `kNotApplicable` to proceed to the next screen.
+  if (features::IsOobeChoobeEnabled() &&
+      features::IsOobeTouchpadScrollEnabled()) {
+    SetCurrentScreen(GetScreen(TouchpadScrollScreenView::kScreenId));
+  } else {
+    OnTouchpadScreenExit(TouchpadScrollScreen::Result::kNotApplicable);
+  }
 }
 
 void WizardController::ShowDisplaySizeScreen() {
-  SetCurrentScreen(GetScreen(DisplaySizeScreenView::kScreenId));
+  if (features::IsOobeChoobeEnabled() && features::IsOobeDisplaySizeEnabled()) {
+    SetCurrentScreen(GetScreen(DisplaySizeScreenView::kScreenId));
+  } else {
+    OnDisplaySizeScreenExit(DisplaySizeScreen::Result::kNotApplicable);
+  }
 }
 
 void WizardController::ShowCryptohomeRecoverySetupScreen() {
@@ -1447,18 +1460,16 @@ void WizardController::OnThemeSelectionScreenExit(
   OnScreenExit(ThemeSelectionScreenView::kScreenId,
                ThemeSelectionScreen::GetResultString(result));
 
-  // Since ThemeSelectionScreen is the last optional screen, either return to
-  // CHOOBE screen if return_to_choobe_screen is true, or reset
-  // choobe_flow_controller_.
-  if (features::IsOobeChoobeEnabled()) {
-    if (wizard_context_->return_to_choobe_screen) {
-      ShowChoobeScreen();
-      return;
-    }
-    choobe_flow_controller_.reset();
+  switch (result) {
+    case ThemeSelectionScreen::Result::kProceed:
+    case ThemeSelectionScreen::Result::kNotApplicable:
+      if (features::IsOobeChoobeEnabled()) {
+        ShowDisplaySizeScreen();
+      } else {
+        ShowMarketingOptInScreen();
+      }
+      break;
   }
-
-  ShowMarketingOptInScreen();
 }
 
 void WizardController::OnCryptohomeRecoveryScreenExit(
@@ -1519,8 +1530,14 @@ void WizardController::OnDisplaySizeScreenExit(
     DisplaySizeScreen::Result result) {
   OnScreenExit(DisplaySizeScreenView::kScreenId,
                DisplaySizeScreen::GetResultString(result));
-  // TODO(b/275556512): Include the screen In CHOOBE flow.
-  NOTIMPLEMENTED();
+
+  switch (result) {
+    case DisplaySizeScreen::Result::kNotApplicable:
+    case DisplaySizeScreen::Result::kNext:
+      choobe_flow_controller_.reset();
+      ShowMarketingOptInScreen();
+      break;
+  }
 }
 
 void WizardController::SkipToLoginForTesting() {

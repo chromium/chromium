@@ -6631,6 +6631,9 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_OOBE_CHOOBE_TOUCHPAD_SCROLL_TILE_TITLE" desc="Title of the touchpad scroll tile in the CHOOBE screen." translateable="false">
     Change touchpad scrolling direction
   </message>
+  <message name="IDS_OOBE_CHOOBE_DISPLAY_SIZE_TILE_TITLE" desc="Title of the display size tile in the CHOOBE screen." translateable="false">
+    Display size
+  </message>
 
   <!-- Strings for the office fallback dialog -->
   <message name="IDS_OFFICE_FALLBACK_CANCEL" desc="Label for the button that cancels office fallback.">
