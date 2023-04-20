@@ -37,6 +37,9 @@ namespace ash::video_conference {
 namespace {
 
 const int kReturnToAppPanelRadius = 16;
+const int kReturnToAppPanelTopPadding = 12;
+const int kReturnToAppPanelBottomPadding = 8;
+const int kReturnToAppPanelSidePadding = 16;
 const int kReturnToAppPanelSpacing = 8;
 const int kReturnToAppButtonTopRowSpacing = 12;
 const int kReturnToAppButtonSpacing = 16;
@@ -235,8 +238,9 @@ ReturnToAppButton::ReturnToAppButton(ReturnToAppPanel* panel,
       .SetMainAxisAlignment(is_top_row ? views::LayoutAlignment::kCenter
                                        : views::LayoutAlignment::kStart)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-      .SetDefault(views::kMarginsKey,
-                  gfx::Insets::TLBR(0, spacing, 0, spacing));
+      .SetDefault(views::kMarginsKey, gfx::Insets::TLBR(0, spacing, 0, spacing))
+      .SetInteriorMargin(gfx::Insets::TLBR(0, kReturnToAppPanelSidePadding, 0,
+                                           kReturnToAppPanelSidePadding));
 
   icons_container_ = AddChildView(CreateReturnToAppIconsContainer(
       is_capturing_camera, is_capturing_microphone, is_capturing_screen));
@@ -324,7 +328,18 @@ ReturnToAppPanel::ReturnToAppContainer::ReturnToAppContainer()
       animation_(std::make_unique<gfx::LinearAnimation>(
           kPanelBoundsChangeAnimationDuration,
           gfx::LinearAnimation::kDefaultFrameRate,
-          /*delegate=*/this)) {}
+          /*delegate=*/this)) {
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets::TLBR(0, 0, kReturnToAppPanelSpacing, 0))
+      .SetInteriorMargin(gfx::Insets::TLBR(kReturnToAppPanelTopPadding, 0,
+                                           kReturnToAppPanelBottomPadding, 0));
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemOnBase, kReturnToAppPanelRadius));
+}
 
 ReturnToAppPanel::ReturnToAppContainer::~ReturnToAppContainer() = default;
 
@@ -387,15 +402,6 @@ ReturnToAppPanel::ReturnToAppPanel() {
       .SetInteriorMargin(gfx::Insets::TLBR(16, 16, 0, 16));
 
   auto container_view = std::make_unique<ReturnToAppContainer>();
-  container_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-      .SetDefault(views::kMarginsKey,
-                  gfx::Insets::TLBR(0, 0, kReturnToAppPanelSpacing, 0))
-      .SetInteriorMargin(gfx::Insets::TLBR(12, 16, 8, 16));
-  container_view->SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBase, kReturnToAppPanelRadius));
   container_view_ = AddChildView(std::move(container_view));
 
   // Add running media apps buttons to the panel.
