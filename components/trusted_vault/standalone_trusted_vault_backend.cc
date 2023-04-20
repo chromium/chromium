@@ -32,7 +32,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/driver/trusted_vault_histograms.h"
-#include "components/trusted_vault/proto/local_trusted_vault.pb.h"
+#include "components/sync/protocol/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
@@ -48,9 +48,8 @@ constexpr int kCurrentLocalTrustedVaultVersion = 2;
 constexpr int kCurrentDeviceRegistrationVersion = 1;
 constexpr base::TimeDelta kVerifyDeviceRegistrationDelay = base::Seconds(10);
 
-trusted_vault_pb::LocalTrustedVault ReadEncryptedFile(
-    const base::FilePath& file_path) {
-  trusted_vault_pb::LocalTrustedVault proto;
+sync_pb::LocalTrustedVault ReadEncryptedFile(const base::FilePath& file_path) {
+  sync_pb::LocalTrustedVault proto;
   std::string ciphertext;
   std::string decrypted_content;
   if (!base::ReadFileToString(file_path, &ciphertext)) {
@@ -68,11 +67,10 @@ trusted_vault_pb::LocalTrustedVault ReadEncryptedFile(
   return proto;
 }
 
-trusted_vault_pb::LocalTrustedVault ReadMD5HashedFile(
-    const base::FilePath& file_path) {
+sync_pb::LocalTrustedVault ReadMD5HashedFile(const base::FilePath& file_path) {
   std::string file_content;
 
-  trusted_vault_pb::LocalTrustedVault data_proto;
+  sync_pb::LocalTrustedVault data_proto;
   if (!base::PathExists(file_path)) {
     RecordTrustedVaultFileReadStatus(
         TrustedVaultFileReadStatusForUMA::kNotFound);
@@ -83,7 +81,7 @@ trusted_vault_pb::LocalTrustedVault ReadMD5HashedFile(
         TrustedVaultFileReadStatusForUMA::kFileReadFailed);
     return data_proto;
   }
-  trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
+  sync_pb::LocalTrustedVaultFileContent file_proto;
   if (!file_proto.ParseFromString(file_content)) {
     RecordTrustedVaultFileReadStatus(
         TrustedVaultFileReadStatusForUMA::kFileProtoDeserializationFailed);
@@ -107,9 +105,9 @@ trusted_vault_pb::LocalTrustedVault ReadMD5HashedFile(
   return data_proto;
 }
 
-void WriteMD5HashedFileToDisk(const trusted_vault_pb::LocalTrustedVault& data,
+void WriteMD5HashedFileToDisk(const sync_pb::LocalTrustedVault& data,
                               const base::FilePath& file_path) {
-  trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
+  sync_pb::LocalTrustedVaultFileContent file_proto;
   file_proto.set_serialized_local_trusted_vault(data.SerializeAsString());
   file_proto.set_md5_digest_hex_string(
       base::MD5String(file_proto.serialized_local_trusted_vault()));
@@ -129,8 +127,7 @@ void MaybeMigrateDataFile(const base::FilePath& old_file_path,
   if (!base::PathExists(new_file_path)) {
     // Only write to `new_file_path` if it doesn't exist yet to prevent
     // overwriting the content with stale data.
-    trusted_vault_pb::LocalTrustedVault proto =
-        ReadEncryptedFile(old_file_path);
+    sync_pb::LocalTrustedVault proto = ReadEncryptedFile(old_file_path);
     WriteMD5HashedFileToDisk(proto, new_file_path);
   }
   if (base::PathExists(new_file_path)) {
@@ -139,12 +136,11 @@ void MaybeMigrateDataFile(const base::FilePath& old_file_path,
 }
 
 bool HasNonConstantKey(
-    const trusted_vault_pb::LocalTrustedVaultPerUser& per_user_vault) {
+    const sync_pb::LocalTrustedVaultPerUser& per_user_vault) {
   std::string constant_key_as_proto_string;
   AssignBytesToProtoString(GetConstantTrustedVaultKey(),
                            &constant_key_as_proto_string);
-  for (const trusted_vault_pb::LocalTrustedVaultKey& key :
-       per_user_vault.vault_key()) {
+  for (const sync_pb::LocalTrustedVaultKey& key : per_user_vault.vault_key()) {
     if (key.key_material() != constant_key_as_proto_string) {
       return true;
     }
@@ -153,10 +149,9 @@ bool HasNonConstantKey(
 }
 
 std::vector<std::vector<uint8_t>> GetAllVaultKeys(
-    const trusted_vault_pb::LocalTrustedVaultPerUser& per_user_vault) {
+    const sync_pb::LocalTrustedVaultPerUser& per_user_vault) {
   std::vector<std::vector<uint8_t>> vault_keys;
-  for (const trusted_vault_pb::LocalTrustedVaultKey& key :
-       per_user_vault.vault_key()) {
+  for (const sync_pb::LocalTrustedVaultKey& key : per_user_vault.vault_key()) {
     vault_keys.emplace_back(ProtoStringToBytes(key.key_material()));
   }
   return vault_keys;
@@ -225,8 +220,7 @@ GetDeviceRegistrationOutcomeForUMAFromResponse(
 // was affected by crbug.com/1267391, this function injects constant key if it's
 // not stored and there is exactly one non-constant key. |local_trusted_vault|
 // must not be null and must have |version| set to 0.
-void UpgradeToVersion1(
-    trusted_vault_pb::LocalTrustedVault* local_trusted_vault) {
+void UpgradeToVersion1(sync_pb::LocalTrustedVault* local_trusted_vault) {
   DCHECK(local_trusted_vault);
   DCHECK_EQ(local_trusted_vault->data_version(), 0);
 
@@ -234,7 +228,7 @@ void UpgradeToVersion1(
   AssignBytesToProtoString(GetConstantTrustedVaultKey(),
                            &constant_key_as_proto_string);
 
-  for (trusted_vault_pb::LocalTrustedVaultPerUser& per_user_vault :
+  for (sync_pb::LocalTrustedVaultPerUser& per_user_vault :
        *local_trusted_vault->mutable_user()) {
     if (per_user_vault.vault_key_size() == 1 &&
         per_user_vault.vault_key(0).key_material() !=
@@ -251,12 +245,11 @@ void UpgradeToVersion1(
 // Version 1 may contain `keys_marked_as_stale_by_consumer` (before the field
 // was renamed) accidentally set to true, upgrade to version 2 resets it to
 // false.
-void UpgradeToVersion2(
-    trusted_vault_pb::LocalTrustedVault* local_trusted_vault) {
+void UpgradeToVersion2(sync_pb::LocalTrustedVault* local_trusted_vault) {
   DCHECK(local_trusted_vault);
   DCHECK_EQ(local_trusted_vault->data_version(), 1);
 
-  for (trusted_vault_pb::LocalTrustedVaultPerUser& per_user_vault :
+  for (sync_pb::LocalTrustedVaultPerUser& per_user_vault :
        *local_trusted_vault->mutable_user()) {
     per_user_vault.set_keys_marked_as_stale_by_consumer(false);
   }
@@ -337,10 +330,10 @@ StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
 StandaloneTrustedVaultBackend::~StandaloneTrustedVaultBackend() = default;
 
 void StandaloneTrustedVaultBackend::WriteDegradedRecoverabilityState(
-    const trusted_vault_pb::LocalTrustedVaultDegradedRecoverabilityState&
+    const sync_pb::LocalTrustedVaultDegradedRecoverabilityState&
         degraded_recoverability_state) {
   DCHECK(primary_account_.has_value());
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(primary_account_->gaia);
   *per_user_vault->mutable_degraded_recoverability_state() =
       degraded_recoverability_state;
@@ -385,7 +378,7 @@ void StandaloneTrustedVaultBackend::FetchKeys(
   ongoing_fetch_keys_callback_ = std::move(callback);
   ongoing_fetch_keys_gaia_id_ = account_info.gaia;
 
-  const trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
+  const sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(account_info.gaia);
 
   if (per_user_vault && HasNonConstantKey(*per_user_vault) &&
@@ -468,8 +461,7 @@ void StandaloneTrustedVaultBackend::StoreKeys(
     const std::vector<std::vector<uint8_t>>& keys,
     int last_key_version) {
   // Find or create user for |gaid_id|.
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      FindUserVault(gaia_id);
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault = FindUserVault(gaia_id);
   if (!per_user_vault) {
     per_user_vault = data_.add_user();
     per_user_vault->set_gaia_id(gaia_id);
@@ -539,7 +531,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
     return;
   }
 
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(primary_account->gaia);
   if (!per_user_vault) {
     per_user_vault = data_.add_user();
@@ -610,14 +602,14 @@ void StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo(
   // jar.
   if (primary_account_.has_value() &&
       !base::Contains(gaia_ids_in_cookie_jar, primary_account_->gaia)) {
-    trusted_vault_pb::LocalTrustedVaultPerUser* primary_account_data_ =
+    sync_pb::LocalTrustedVaultPerUser* primary_account_data_ =
         FindUserVault(primary_account_->gaia);
     primary_account_data_->set_should_delete_keys_when_non_primary(true);
   }
 
   auto should_remove_user_data =
       [&gaia_ids_in_cookie_jar, &primary_account = primary_account_](
-          const trusted_vault_pb::LocalTrustedVaultPerUser& per_user_data) {
+          const sync_pb::LocalTrustedVaultPerUser& per_user_data) {
         const std::string& gaia_id = per_user_data.gaia_id();
         if (primary_account.has_value() && gaia_id == primary_account->gaia) {
           // Don't delete primary account data.
@@ -635,7 +627,7 @@ void StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo(
 
 bool StandaloneTrustedVaultBackend::MarkLocalKeysAsStale(
     const CoreAccountInfo& account_info) {
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(account_info.gaia);
   if (!per_user_vault || per_user_vault->keys_marked_as_stale_by_consumer()) {
     // No keys available for |account_info| or they are already marked as stale.
@@ -703,8 +695,7 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
     return;
   }
 
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      FindUserVault(gaia_id);
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault = FindUserVault(gaia_id);
   DCHECK(per_user_vault);
 
   if (per_user_vault->vault_key().empty()) {
@@ -744,13 +735,13 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
 
 void StandaloneTrustedVaultBackend::ClearLocalDataForAccount(
     const CoreAccountInfo& account_info) {
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(account_info.gaia);
   if (!per_user_vault) {
     return;
   }
 
-  *per_user_vault = trusted_vault_pb::LocalTrustedVaultPerUser();
+  *per_user_vault = sync_pb::LocalTrustedVaultPerUser();
   per_user_vault->set_gaia_id(account_info.gaia);
   WriteDataToDisk();
 
@@ -766,13 +757,12 @@ StandaloneTrustedVaultBackend::GetPrimaryAccountForTesting() const {
   return primary_account_;
 }
 
-trusted_vault_pb::LocalDeviceRegistrationInfo
+sync_pb::LocalDeviceRegistrationInfo
 StandaloneTrustedVaultBackend::GetDeviceRegistrationInfoForTesting(
     const std::string& gaia_id) {
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      FindUserVault(gaia_id);
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault = FindUserVault(gaia_id);
   if (!per_user_vault) {
-    return trusted_vault_pb::LocalDeviceRegistrationInfo();
+    return sync_pb::LocalDeviceRegistrationInfo();
   }
   return per_user_vault->local_device_registration_info();
 }
@@ -786,8 +776,7 @@ StandaloneTrustedVaultBackend::GetLastAddedRecoveryMethodPublicKeyForTesting()
 void StandaloneTrustedVaultBackend::SetDeviceRegisteredVersionForTesting(
     const std::string& gaia_id,
     int version) {
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      FindUserVault(gaia_id);
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault = FindUserVault(gaia_id);
   DCHECK(per_user_vault);
   per_user_vault->mutable_local_device_registration_info()
       ->set_device_registered_version(version);
@@ -797,8 +786,7 @@ void StandaloneTrustedVaultBackend::SetDeviceRegisteredVersionForTesting(
 void StandaloneTrustedVaultBackend::
     SetLastRegistrationReturnedLocalDataObsoleteForTesting(
         const std::string& gaia_id) {
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      FindUserVault(gaia_id);
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault = FindUserVault(gaia_id);
   DCHECK(per_user_vault);
   per_user_vault->mutable_local_device_registration_info()
       ->set_last_registration_returned_local_data_obsolete(true);
@@ -833,7 +821,7 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
   }
 
   // |per_user_vault| must be created before calling this function.
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(primary_account_->gaia);
   DCHECK(per_user_vault);
 
@@ -941,7 +929,7 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
   DCHECK(ongoing_device_registration_request_);
   ongoing_device_registration_request_ = nullptr;
 
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(primary_account_->gaia);
   DCHECK(per_user_vault);
 
@@ -995,7 +983,7 @@ void StandaloneTrustedVaultBackend::OnDeviceRegisteredWithoutKeys(
   // by OnDeviceRegistered() call.
   DCHECK(ongoing_device_registration_request_);
 
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(primary_account_->gaia);
   DCHECK(per_user_vault);
 
@@ -1048,7 +1036,7 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
   DCHECK(ongoing_keys_downloading_request_);
   ongoing_keys_downloading_request_ = nullptr;
 
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(primary_account_->gaia);
   DCHECK(per_user_vault);
   switch (status) {
@@ -1123,7 +1111,7 @@ void StandaloneTrustedVaultBackend::FulfillOngoingFetchKeys(
   }
   DCHECK(!ongoing_fetch_keys_callback_.is_null());
 
-  const trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
+  const sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(*ongoing_fetch_keys_gaia_id_);
 
   if (status_for_uma.has_value()) {
@@ -1153,7 +1141,7 @@ bool StandaloneTrustedVaultBackend::AreConnectionRequestsThrottled() {
   DCHECK(clock_);
   DCHECK(primary_account_.has_value());
 
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(primary_account_->gaia);
   DCHECK(per_user_vault);
 
@@ -1185,7 +1173,7 @@ void StandaloneTrustedVaultBackend::
     RemoveNonPrimaryAccountKeysIfMarkedForDeletion() {
   auto should_remove_user_data =
       [&primary_account = primary_account_](
-          const trusted_vault_pb::LocalTrustedVaultPerUser& per_user_data) {
+          const sync_pb::LocalTrustedVaultPerUser& per_user_data) {
         return per_user_data.should_delete_keys_when_non_primary() &&
                (!primary_account.has_value() ||
                 primary_account->gaia != per_user_data.gaia_id());
@@ -1197,8 +1185,8 @@ void StandaloneTrustedVaultBackend::
   WriteDataToDisk();
 }
 
-trusted_vault_pb::LocalTrustedVaultPerUser*
-StandaloneTrustedVaultBackend::FindUserVault(const std::string& gaia_id) {
+sync_pb::LocalTrustedVaultPerUser* StandaloneTrustedVaultBackend::FindUserVault(
+    const std::string& gaia_id) {
   for (int i = 0; i < data_.user_size(); ++i) {
     if (data_.user(i).gaia_id() == gaia_id) {
       return data_.mutable_user(i);
@@ -1209,7 +1197,7 @@ StandaloneTrustedVaultBackend::FindUserVault(const std::string& gaia_id) {
 
 void StandaloneTrustedVaultBackend::VerifyDeviceRegistrationForUMA(
     const std::string& gaia_id) {
-  const trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
+  const sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(gaia_id);
 
   // Ignore call if things have changed since the task was scheduled, although

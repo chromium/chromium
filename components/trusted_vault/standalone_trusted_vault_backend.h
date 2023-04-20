@@ -18,7 +18,7 @@
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/driver/trusted_vault_histograms.h"
-#include "components/trusted_vault/proto/local_trusted_vault.pb.h"
+#include "components/sync/protocol/local_trusted_vault.pb.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_degraded_recoverability_handler.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -81,7 +81,7 @@ class StandaloneTrustedVaultBackend
 
   // TrustedVaultDegradedRecoverabilityHandler::Delegate implementation.
   void WriteDegradedRecoverabilityState(
-      const trusted_vault_pb::LocalTrustedVaultDegradedRecoverabilityState&
+      const sync_pb::LocalTrustedVaultDegradedRecoverabilityState&
           degraded_recoverability_state) override;
   void OnDegradedRecoverabilityChanged() override;
 
@@ -134,8 +134,8 @@ class StandaloneTrustedVaultBackend
 
   absl::optional<CoreAccountInfo> GetPrimaryAccountForTesting() const;
 
-  trusted_vault_pb::LocalDeviceRegistrationInfo
-  GetDeviceRegistrationInfoForTesting(const std::string& gaia_id);
+  sync_pb::LocalDeviceRegistrationInfo GetDeviceRegistrationInfoForTesting(
+      const std::string& gaia_id);
 
   std::vector<uint8_t> GetLastAddedRecoveryMethodPublicKeyForTesting() const;
 
@@ -167,8 +167,7 @@ class StandaloneTrustedVaultBackend
 
   // Finds the per-user vault in |data_| for |gaia_id|. Returns null if not
   // found.
-  trusted_vault_pb::LocalTrustedVaultPerUser* FindUserVault(
-      const std::string& gaia_id);
+  sync_pb::LocalTrustedVaultPerUser* FindUserVault(const std::string& gaia_id);
 
   // Attempts to register device in case it's not yet registered and currently
   // available local data is sufficient to do it. For the cases where
@@ -231,7 +230,7 @@ class StandaloneTrustedVaultBackend
   // in this case and clean up related logic.
   const std::unique_ptr<TrustedVaultConnection> connection_;
 
-  trusted_vault_pb::LocalTrustedVault data_;
+  sync_pb::LocalTrustedVault data_;
 
   // Only current |primary_account_| can be used for communication with trusted
   // vault server.

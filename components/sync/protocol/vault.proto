@@ -6,9 +6,12 @@
 // subtle differences between enum fields.
 syntax = "proto3";
 
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
 option optimize_for = LITE_RUNTIME;
 
-package trusted_vault_pb;
+package sync_pb;
 
 message SharedMemberKey {
   int32 epoch = 1;
@@ -22,9 +25,7 @@ message RotationProof {
 }
 
 message SecurityDomainDetails {
-  message SyncDetails {
-    bool degraded_recoverability = 1;
-  }
+  message SyncDetails { bool degraded_recoverability = 1; }
 
   SyncDetails sync_details = 1;
 }

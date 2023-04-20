@@ -6,7 +6,8 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-package trusted_vault_pb;
+option java_package = "sync_pb";
+package sync_pb;
 
 // This enum is used in histograms. These values are persisted to logs. Entries
 // should not be renumbered and numeric values should never be reused, only add
