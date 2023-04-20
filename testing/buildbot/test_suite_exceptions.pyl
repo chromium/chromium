@@ -2737,6 +2737,9 @@
       },
       'Mac12 Tests (dbg)': { # https://crbug.com/1265051
         'experiment_percentage': 100,
+        'swarming': {
+          'shards':6,
+        }
       },
       'ToTLinuxTSan': {
         # These are slow on the TSan bots for some reason, crbug.com/1257927
