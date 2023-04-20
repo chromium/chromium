@@ -702,6 +702,10 @@ if (is_apple) {
       deps = [ "//third_party/icu:icudata" ]
     }
 
+    if (is_mac) {
+      sources += [ "//ui/gl/resources/angle-metal/gpu_shader_cache.bin" ]
+    }
+
     if (v8_use_external_startup_data) {
       public_deps += [ "//v8" ]
       if (use_v8_context_snapshot) {
