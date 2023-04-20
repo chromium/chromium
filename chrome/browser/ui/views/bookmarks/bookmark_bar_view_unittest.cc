@@ -7,12 +7,12 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -545,7 +545,7 @@ TEST_F(BookmarkBarViewTest, OnSavedTabGroupUpdateBookmarkBarCallsLayout) {
   keyed_service->model()->Add(SavedTabGroup(
       std::u16string(u"tab group 1"), tab_groups::TabGroupColorId::kGrey, {}));
 
-  base::GUID button_2_id = base::GUID::GenerateRandomV4();
+  base::Uuid button_2_id = base::Uuid::GenerateRandomV4();
   keyed_service->model()->Add(SavedTabGroup(std::u16string(u"tab group 2"),
                                             tab_groups::TabGroupColorId::kGrey,
                                             {}, button_2_id));
