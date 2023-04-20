@@ -6,8 +6,10 @@
 
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/dynamic_type_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -58,6 +60,10 @@ const CGFloat kIconSize = 56;
 - (void)updateConfiguration:(ContentSuggestionsMostVisitedActionItem*)config {
   _config = config;
   self.titleLabel.text = config.title;
+  if (IsMagicStackEnabled()) {
+    // When in the Magic Stack, a smaller preferred font is desired.
+    self.titleLabel.font = [self titleLabelFont];
+  }
   self.accessibilityTraits = config.accessibilityTraits;
   self.accessibilityLabel = config.accessibilityLabel.length
                                 ? config.accessibilityLabel
@@ -114,6 +120,26 @@ const CGFloat kIconSize = 56;
     AddSameCenterConstraints(_countLabel, _countContainer);
   }
   return _countLabel;
+}
+
+#pragma mark - UIView
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (IsMagicStackEnabled() &&
+      previousTraitCollection.preferredContentSizeCategory !=
+          self.traitCollection.preferredContentSizeCategory) {
+    self.titleLabel.font = [self titleLabelFont];
+  }
+}
+
+#pragma mark - Private
+
+- (UIFont*)titleLabelFont {
+  return PreferredFontForTextStyleWithMaxCategory(
+      UIFontTextStyleCaption2,
+      self.traitCollection.preferredContentSizeCategory,
+      UIContentSizeCategoryAccessibilityLarge);
 }
 
 @end
