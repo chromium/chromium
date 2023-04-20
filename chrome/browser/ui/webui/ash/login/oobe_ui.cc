@@ -296,16 +296,14 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
       base::FeatureList::IsEnabled(arc::kEnableArcVmDataMigration));
 
   source->AddBoolean("isTouchpadScrollEnabled",
-                     (features::IsOobeChoobeEnabled() &&
-                      features::IsOobeTouchpadScrollEnabled()));
+                     features::IsOobeTouchpadScrollEnabled());
   // Whether the timings in oobe_trace.js will be output to the console.
   source->AddBoolean(
       "printFrontendTimings",
       command_line->HasSwitch(switches::kOobePrintFrontendLoadTimings));
 
   source->AddBoolean("isDisplaySizeEnabled",
-                     (features::IsOobeChoobeEnabled() &&
-                      features::IsOobeDisplaySizeEnabled()));
+                     features::IsOobeDisplaySizeEnabled());
 
   // Configure shared resources
   AddProductLogoResources(source);
@@ -495,12 +493,11 @@ void OobeUI::ConfigureOobeDisplay() {
     AddScreenHandler(std::make_unique<ChoobeScreenHandler>());
   }
 
-  if (features::IsOobeChoobeEnabled() &&
-      features::IsOobeTouchpadScrollEnabled()) {
+  if (features::IsOobeTouchpadScrollEnabled()) {
     AddScreenHandler(std::make_unique<TouchpadScrollScreenHandler>());
   }
 
-  if (features::IsOobeChoobeEnabled() && features::IsOobeDisplaySizeEnabled()) {
+  if (features::IsOobeDisplaySizeEnabled()) {
     AddScreenHandler(std::make_unique<DisplaySizeScreenHandler>());
   }
 

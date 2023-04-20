@@ -871,14 +871,13 @@ WizardController::CreateScreens() {
                             weak_factory_.GetWeakPtr())));
   }
 
-  if (features::IsOobeChoobeEnabled() &&
-      features::IsOobeTouchpadScrollEnabled()) {
+  if (features::IsOobeTouchpadScrollEnabled()) {
     append(std::make_unique<TouchpadScrollScreen>(
         oobe_ui->GetView<TouchpadScrollScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnTouchpadScreenExit,
                             weak_factory_.GetWeakPtr())));
   }
-  if (features::IsOobeChoobeEnabled() && features::IsOobeDisplaySizeEnabled()) {
+  if (features::IsOobeDisplaySizeEnabled()) {
     append(std::make_unique<DisplaySizeScreen>(
         oobe_ui->GetView<DisplaySizeScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnDisplaySizeScreenExit,
@@ -1121,8 +1120,7 @@ void WizardController::ShowTouchpadScrollScreen() {
   // DisplaySizeScreen object will not be created. In this case,
   // `OnTouchpadScreenExit()` function is called with the exit result
   // `kNotApplicable` to proceed to the next screen.
-  if (features::IsOobeChoobeEnabled() &&
-      features::IsOobeTouchpadScrollEnabled()) {
+  if (features::IsOobeTouchpadScrollEnabled()) {
     SetCurrentScreen(GetScreen(TouchpadScrollScreenView::kScreenId));
   } else {
     OnTouchpadScreenExit(TouchpadScrollScreen::Result::kNotApplicable);
@@ -1130,7 +1128,7 @@ void WizardController::ShowTouchpadScrollScreen() {
 }
 
 void WizardController::ShowDisplaySizeScreen() {
-  if (features::IsOobeChoobeEnabled() && features::IsOobeDisplaySizeEnabled()) {
+  if (features::IsOobeDisplaySizeEnabled()) {
     SetCurrentScreen(GetScreen(DisplaySizeScreenView::kScreenId));
   } else {
     OnDisplaySizeScreenExit(DisplaySizeScreen::Result::kNotApplicable);
