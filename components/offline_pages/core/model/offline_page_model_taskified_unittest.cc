@@ -217,16 +217,19 @@ void OfflinePageModelTaskifiedTest::TearDown() {
   CheckTaskQueueIdle();
   store_test_util_.DeleteStore();
   if (temporary_dir_.IsValid()) {
-    if (!temporary_dir_.Delete())
+    if (!temporary_dir_.Delete()) {
       DLOG(ERROR) << "temporary_dir_ not created";
+    }
   }
   if (private_archive_dir_.IsValid()) {
-    if (!private_archive_dir_.Delete())
+    if (!private_archive_dir_.Delete()) {
       DLOG(ERROR) << "private_persistent_dir not created";
+    }
   }
   if (public_archive_dir_.IsValid()) {
-    if (!public_archive_dir_.Delete())
+    if (!public_archive_dir_.Delete()) {
       DLOG(ERROR) << "public_archive_dir not created";
+    }
   }
   archive_manager_ = nullptr;
   publisher_ = nullptr;
@@ -1085,9 +1088,6 @@ TEST_F(OfflinePageModelTaskifiedTest, ClearStorage) {
   PumpLoop();
   EXPECT_EQ(clock()->Now(), last_maintenance_tasks_schedule_time());
   base::Time last_scheduling_time = clock()->Now();
-  // Confirm no runs so far.
-  histogram_tester()->ExpectTotalCount(
-      "OfflinePages.ClearTemporaryPages.Result", 0);
 
   // After the delay (plus 1 millisecond just in case) ClearStorage should be
   // enqueued and executed.
@@ -1109,10 +1109,6 @@ TEST_F(OfflinePageModelTaskifiedTest, ClearStorage) {
   // And advance the delay too.
   FastForwardBy(run_delay);
   EXPECT_EQ(last_scheduling_time, last_maintenance_tasks_schedule_time());
-  // Confirm a single run happened so far.
-  histogram_tester()->ExpectUniqueSample(
-      "OfflinePages.ClearTemporaryPages.Result",
-      static_cast<int>(ClearStorageResult::UNNECESSARY), 1);
 
   // Forwarding by the full interval (plus 1 second just in case) should allow
   // the task to be enqueued again.
@@ -1129,12 +1125,6 @@ TEST_F(OfflinePageModelTaskifiedTest, ClearStorage) {
   FastForwardBy(run_delay);
   EXPECT_EQ(last_scheduling_time, last_maintenance_tasks_schedule_time());
 
-  // Confirm that two runs happened.
-  histogram_tester()->ExpectUniqueSample(
-      "OfflinePages.ClearTemporaryPages.Result",
-      static_cast<int>(ClearStorageResult::UNNECESSARY), 2);
-  histogram_tester()->ExpectTotalCount(
-      "OfflinePages.ClearTemporaryPages.BatchSize", 0);
   // Check that CleanupVisualsTask ran only once.
   histogram_tester()->ExpectTotalCount("OfflinePages.CleanupThumbnails.Count",
                                        1);
@@ -1263,10 +1253,6 @@ TEST_F(OfflinePageModelTaskifiedTest, MaintenanceTasksAreDisabled) {
   // Advance the clock considerably and confirm no runs happened.
   FastForwardBy(base::Days(1));
   EXPECT_EQ(base::Time(), last_maintenance_tasks_schedule_time());
-  histogram_tester()->ExpectTotalCount(
-      "OfflinePages.ClearTemporaryPages.Result", 0);
-  histogram_tester()->ExpectTotalCount(
-      "OfflinePages.ClearTemporaryPages.BatchSize", 0);
   histogram_tester()->ExpectTotalCount(
       "OfflinePages.ConsistencyCheck.Temporary.Result", 0);
   histogram_tester()->ExpectTotalCount(

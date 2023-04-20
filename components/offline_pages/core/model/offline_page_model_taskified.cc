@@ -50,8 +50,9 @@ namespace {
 void WrapInMultipleItemsCallback(MultipleOfflineIdCallback callback,
                                  const MultipleOfflinePageItemResult& pages) {
   std::vector<int64_t> results;
-  for (const auto& page : pages)
+  for (const auto& page : pages) {
     results.push_back(page.offline_id);
+  }
   std::move(callback).Run(results);
 }
 
@@ -175,8 +176,9 @@ void OfflinePageModelTaskified::SavePage(
 
   // If we already have an offline id, use it.  If not, generate one.
   int64_t offline_id = save_page_params.proposed_offline_id;
-  if (offline_id == kInvalidOfflineId)
+  if (offline_id == kInvalidOfflineId) {
     offline_id = store_utils::GenerateOfflineId();
+  }
 
   OfflinePageArchiver::CreateArchiveParams create_archive_params(
       save_page_params.client_id.name_space);
@@ -312,8 +314,9 @@ void OfflinePageModelTaskified::GetVisualsAvailability(
 
 const base::FilePath& OfflinePageModelTaskified::GetArchiveDirectory(
     const std::string& name_space) const {
-  if (GetPolicy(name_space).lifetime_type == LifetimeType::TEMPORARY)
+  if (GetPolicy(name_space).lifetime_type == LifetimeType::TEMPORARY) {
     return archive_manager_->GetTemporaryArchivesDir();
+  }
   return archive_manager_->GetPrivateArchivesDir();
 }
 
@@ -490,8 +493,9 @@ void OfflinePageModelTaskified::OnAddPageDone(const OfflinePageItem& page,
                                               AddPageResult result) {
   std::move(callback).Run(result, page.offline_id);
   if (result == AddPageResult::SUCCESS) {
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OfflinePageAdded(this, page);
+    }
   }
 }
 
@@ -504,8 +508,9 @@ void OfflinePageModelTaskified::OnDeleteDone(
   // Notify observers and run callback.
   for (const auto& item : deleted_items) {
     offline_event_logger_.RecordPageDeleted(item.offline_id);
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OfflinePageDeleted(item);
+    }
 
     publish_ids.emplace_back(item.system_download_id, item.file_path);
   }
@@ -516,16 +521,18 @@ void OfflinePageModelTaskified::OnDeleteDone(
       FROM_HERE, base::BindOnce(&OfflinePageModelTaskified::Unpublish,
                                 archive_publisher_->GetWeakPtr(), publish_ids));
 
-  if (!callback.is_null())
+  if (!callback.is_null()) {
     std::move(callback).Run(result);
+  }
 }
 
 void OfflinePageModelTaskified::OnStoreThumbnailDone(int64_t offline_id,
                                                      bool success,
                                                      std::string thumbnail) {
   if (success) {
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.ThumbnailAdded(this, offline_id, thumbnail);
+    }
   }
 }
 
@@ -533,25 +540,29 @@ void OfflinePageModelTaskified::OnStoreFaviconDone(int64_t offline_id,
                                                    bool success,
                                                    std::string favicon) {
   if (success) {
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.FaviconAdded(this, offline_id, favicon);
+    }
   }
 }
 
 void OfflinePageModelTaskified::Unpublish(
     base::WeakPtr<OfflinePageArchivePublisher> publisher,
     const std::vector<PublishedArchiveId>& publish_ids) {
-  if (publisher && !publish_ids.empty())
+  if (publisher && !publish_ids.empty()) {
     publisher->UnpublishArchives(publish_ids);
+  }
 }
 
 void OfflinePageModelTaskified::ScheduleMaintenanceTasks() {
-  if (skip_maintenance_tasks_for_testing_)
+  if (skip_maintenance_tasks_for_testing_) {
     return;
+  }
   // If not enough time has passed, don't queue maintenance tasks.
   base::Time now = OfflineTimeNow();
-  if (now - last_maintenance_tasks_schedule_time_ < kClearStorageInterval)
+  if (now - last_maintenance_tasks_schedule_time_ < kClearStorageInterval) {
     return;
+  }
 
   bool first_run = last_maintenance_tasks_schedule_time_.is_null();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -577,11 +588,6 @@ void OfflinePageModelTaskified::RunMaintenanceTasks(base::Time now,
         store_.get(), OfflineTimeNow(), base::DoNothing()));
   }
 
-  task_queue_.AddTask(std::make_unique<ClearStorageTask>(
-      store_.get(), archive_manager_.get(), now,
-      base::BindOnce(&OfflinePageModelTaskified::OnClearCachedPagesDone,
-                     weak_ptr_factory_.GetWeakPtr())));
-
   // TODO(https://crbug.com/834902) This might need a better execution plan.
   task_queue_.AddTask(std::make_unique<PersistentPageConsistencyCheckTask>(
       store_.get(), archive_manager_.get(), now,
@@ -594,16 +600,6 @@ void OfflinePageModelTaskified::OnPersistentPageConsistencyCheckDone(
     bool success,
     const std::vector<PublishedArchiveId>& ids_of_deleted_pages) {
   Unpublish(archive_publisher_->GetWeakPtr(), ids_of_deleted_pages);
-}
-
-void OfflinePageModelTaskified::OnClearCachedPagesDone(
-    size_t deleted_page_count,
-    ClearStorageResult result) {
-  UMA_HISTOGRAM_ENUMERATION("OfflinePages.ClearTemporaryPages.Result", result);
-  if (deleted_page_count > 0) {
-    UMA_HISTOGRAM_COUNTS_1M("OfflinePages.ClearTemporaryPages.BatchSize",
-                            deleted_page_count);
-  }
 }
 
 void OfflinePageModelTaskified::RemovePagesMatchingUrlAndNamespace(

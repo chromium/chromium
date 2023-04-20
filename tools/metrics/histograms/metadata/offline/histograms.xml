@@ -353,36 +353,6 @@ chromium-metrics-reviews@google.com.
   <summary>Number of thumbnails removed by the thumbnail cleanup task.</summary>
 </histogram>
 
-<histogram name="OfflinePages.ClearTemporaryPages.BatchSize" units="pages"
-    expires_after="2021-06-25">
-  <owner>dimich@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Number of pages deleted in a batch in one clear storage task.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.ClearTemporaryPages.Result"
-    enum="OfflinePagesClearStorageResult" expires_after="2021-06-25">
-  <owner>romax@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Result of clearing temporary pages to release storage space.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.ClearTemporaryPages.TimeSinceCreation"
-    units="minutes" expires_after="2021-06-25">
-  <owner>carlosk@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    When a temporary page is deleted due to storage pressure, reports the time
-    since its creation. This metric should be useful to track the occurrence of
-    &quot;content thrashing&quot;, when automatically created temporary pages
-    are forcing the deletion of recently saved temporary pages.
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.ConsistencyCheck.Persistent.Result"
     enum="OfflinePagesSyncOperationResult" expires_after="2021-06-25">
   <owner>dimich@chromium.org</owner>
