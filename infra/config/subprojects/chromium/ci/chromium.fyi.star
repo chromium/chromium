@@ -1548,6 +1548,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+    use_clang_coverage = True,
 )
 
 ci.builder(
@@ -1591,6 +1592,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
     siso_enable_cloud_profiler = True,
     siso_enable_cloud_trace = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
+    use_clang_coverage = True,
 )
 
 ci.builder(
