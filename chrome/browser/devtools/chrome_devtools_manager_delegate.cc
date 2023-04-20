@@ -247,7 +247,7 @@ bool ChromeDevToolsManagerDelegate::AllowInspection(
       return false;
     case Availability::kAllowed:
       return true;
-    case Availability::kDisallowedForSenstiveExtensions:
+    case Availability::kDisallowedForForceInstalledExtensions:
       if (!extension) {
         return true;
       }
@@ -278,7 +278,7 @@ bool ChromeDevToolsManagerDelegate::AllowInspection(
       return false;
     case Availability::kAllowed:
       return true;
-    case Availability::kDisallowedForSenstiveExtensions:
+    case Availability::kDisallowedForForceInstalledExtensions:
       return !web_app || !web_app->IsKioskInstalledApp();
     default:
       NOTREACHED() << "Unknown developer tools policy";

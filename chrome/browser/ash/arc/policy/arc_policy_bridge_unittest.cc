@@ -625,12 +625,12 @@ TEST_F(ArcPolicyBridgeTest, DeveloperToolsPolicyAllowedTest) {
 }
 
 TEST_F(ArcPolicyBridgeTest,
-       DeveloperToolsPolicyDisallowedForSensitiveExtensionsTest) {
+       DeveloperToolsPolicyDisallowedForForceInstalledExtensionsTest) {
   profile()->GetTestingPrefService()->SetManagedPref(
       ::prefs::kDevToolsAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(policy::DeveloperToolsPolicyHandler::Availability::
-                               kDisallowedForSenstiveExtensions)));
+                               kDisallowedForForceInstalledExtensions)));
   GetPoliciesAndVerifyResult(
       "{\"apkCacheEnabled\":true,\"debuggingFeaturesDisabled\":false,"
       "\"guid\":\"" +

@@ -31,7 +31,7 @@ class DeveloperToolsPolicyHandler : public ConfigurationPolicyHandler {
   enum class Availability {
     // Default: Developer tools are allowed, except for force-installed
     // extensions and component extensions with the management permission.
-    kDisallowedForSenstiveExtensions = 0,
+    kDisallowedForForceInstalledExtensions = 0,
     // Developer tools allowed in all contexts.
     kAllowed = 1,
     // Developer tools disallowed in all contexts.
