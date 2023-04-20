@@ -280,7 +280,7 @@ export class ToolbarController {
    * Updates toolbar's UI elements which are related to current directory.
    * @private
    */
-  updateCurrentDirectoryButtons_() {
+  updateCurrentDirectoryButtons_(event) {
     this.updateRefreshCommand_();
 
     this.newFolderCommand_.canExecuteChange(this.listContainer_.currentList);
@@ -299,6 +299,21 @@ export class ToolbarController {
         !(locationInfo && locationInfo.isReadOnly &&
           locationInfo.rootType !== VolumeManagerCommon.RootType.CROSTINI &&
           locationInfo.rootType !== VolumeManagerCommon.RootType.GUEST_OS);
+
+    if (util.isSearchV2Enabled()) {
+      const newDirectory = event.newDirEntry;
+      if (newDirectory) {
+        const locationInfo = this.volumeManager_.getLocationInfo(newDirectory);
+        const bodyClassList =
+            this.filesSelectedLabel_.ownerDocument.body.classList;
+        if (locationInfo &&
+            locationInfo.rootType === VolumeManagerCommon.RootType.TRASH) {
+          bodyClassList.add('check-select-v1');
+        } else {
+          bodyClassList.remove('check-select-v1');
+        }
+      }
+    }
   }
 
   /** @private */

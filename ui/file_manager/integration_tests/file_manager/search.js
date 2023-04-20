@@ -832,3 +832,27 @@ testcase.searchHierarchy = async () => {
       ]),
       {ignoreLastModifiedTime: true});
 };
+
+/**
+ * Checks that search is not visible when in the Trash volume.
+ */
+testcase.hideSearchInTrash = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  // Make sure that the search button is visible in Downloads.
+  await remoteCall.waitForElement(appId, '#search-button');
+  let searchButton = await remoteCall.waitForElementStyles(
+      appId, ['#search-button'], ['display']);
+  chrome.test.assertTrue(searchButton.styles['display'] !== 'none');
+
+  // Navigate to Trash and confirm that the search button is now hidden.
+  await navigateWithDirectoryTree(appId, '/Trash');
+  searchButton = await remoteCall.waitForElementStyles(
+      appId, ['#search-button'], ['display']);
+  chrome.test.assertTrue(searchButton.styles['display'] === 'none');
+
+  // Go back to Downloads and confirm that the search button is visible again.
+  await navigateWithDirectoryTree(appId, '/My files/Downloads');
+  searchButton = await remoteCall.waitForElementStyles(
+      appId, ['#search-button'], ['display']);
+  chrome.test.assertTrue(searchButton.styles['display'] !== 'none');
+};
