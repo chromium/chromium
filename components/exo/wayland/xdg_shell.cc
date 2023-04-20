@@ -206,16 +206,6 @@ class WaylandToplevel : public aura::WindowObserver {
       return;
     }
 
-    if (this == parent) {
-      // Some apps e.g. crbug/1210235 try to be their own parent. Ignore them.
-      auto* app_id = GetShellApplicationId(
-          shell_surface_data_->shell_surface->host_window());
-      LOG(WARNING)
-          << "Client attempts to add itself as a transient parent: app_id="
-          << app_id;
-      return;
-    }
-
     // This is a no-op if parent is not mapped.
     if (parent->shell_surface_data_ &&
         parent->shell_surface_data_->shell_surface->GetWidget())
