@@ -5,6 +5,7 @@
 #include "base/win/iat_patch_function.h"
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "base/win/patch_util.h"
 #include "base/win/pe_image.h"
@@ -18,9 +19,15 @@ struct InterceptFunctionInformation {
   bool finished_operation;
   const char* imported_from_module;
   const char* function_name;
-  void* new_function;
-  void** old_function;
-  IMAGE_THUNK_DATA** iat_thunk;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #reinterpret-cast-trivial-type
+  RAW_PTR_EXCLUSION void* new_function;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #reinterpret-cast-trivial-type
+  RAW_PTR_EXCLUSION void** old_function;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #reinterpret-cast-trivial-type
+  RAW_PTR_EXCLUSION IMAGE_THUNK_DATA** iat_thunk;
   DWORD return_code;
 };
 
@@ -36,7 +43,9 @@ void* GetIATFunction(IMAGE_THUNK_DATA* iat_thunk) {
   // or IMAGE_THUNK_DATA64 for correct pointer size.
   union FunctionThunk {
     IMAGE_THUNK_DATA thunk;
-    void* pointer;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION void* pointer;
   } iat_function;
 
   iat_function.thunk = *iat_thunk;

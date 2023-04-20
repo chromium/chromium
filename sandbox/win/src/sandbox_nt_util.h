@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <memory>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox_nt_types.h"
 
@@ -201,7 +202,9 @@ class AutoProtectMemory {
 
  private:
   bool changed_;
-  void* address_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION void* address_;
   size_t bytes_;
   ULONG old_protect_;
 };

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CHROME_CLEANER_REBOOT_DIALOG_WIN_H_
 #define CHROME_BROWSER_UI_VIEWS_CHROME_CLEANER_REBOOT_DIALOG_WIN_H_
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/button.h"
@@ -47,7 +48,10 @@ class ChromeCleanerRebootDialog : public views::DialogDelegateView {
 
   // The pointer will be set to nullptr once the controller has been notified of
   // user interaction since the controller can delete itself after that point.
-  safe_browsing::ChromeCleanerRebootDialogController* dialog_controller_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION safe_browsing::ChromeCleanerRebootDialogController*
+      dialog_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CHROME_CLEANER_REBOOT_DIALOG_WIN_H_

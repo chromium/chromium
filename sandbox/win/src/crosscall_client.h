@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "sandbox/win/src/crosscall_params.h"
 #include "sandbox/win/src/sandbox.h"
@@ -114,7 +115,9 @@ class CopyHelper<void*> {
   ArgType GetType() { return VOIDPTR_TYPE; }
 
  private:
-  const void* t_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION const void* t_;
 };
 
 // This copy helper template specialization catches the cases where the

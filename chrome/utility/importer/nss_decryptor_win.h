@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/native_library.h"
 
 // The following declarations of functions and types are from Firefox
@@ -71,7 +72,9 @@ enum SECItemType {
 
 struct SECItem {
   SECItemType type;
-  unsigned char *data;
+  // This field is not a raw_ptr<> because non Windows platforms uses SECItem
+  // from seccomon.h which is not in this repo and doesn't use raw_ptr<>.
+  RAW_PTR_EXCLUSION unsigned char* data;
   unsigned int len;
 };
 

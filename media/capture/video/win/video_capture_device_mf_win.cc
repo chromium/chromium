@@ -21,6 +21,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
@@ -195,7 +196,9 @@ class ScopedBufferLock {
  private:
   ComPtr<IMFMediaBuffer> buffer_;
   ComPtr<IMF2DBuffer> buffer_2d_;
-  BYTE* data_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION BYTE* data_ = nullptr;
   DWORD length_ = 0;
   LONG pitch_ = 0;
 };

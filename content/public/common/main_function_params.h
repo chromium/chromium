@@ -48,7 +48,9 @@ struct CONTENT_EXPORT MainFunctionParams {
   RAW_PTR_EXCLUSION const base::CommandLine* command_line;
 
 #if BUILDFLAG(IS_WIN)
-  sandbox::SandboxInterfaceInfo* sandbox_info = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION sandbox::SandboxInterfaceInfo* sandbox_info = nullptr;
 #elif BUILDFLAG(IS_MAC)
   base::mac::ScopedNSAutoreleasePool* autorelease_pool = nullptr;
 #elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)

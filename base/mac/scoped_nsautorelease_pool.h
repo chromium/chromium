@@ -6,6 +6,7 @@
 #define BASE_MAC_SCOPED_NSAUTORELEASE_POOL_H_
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/threading/thread_checker.h"
 
 namespace base::mac {
@@ -42,7 +43,9 @@ class BASE_EXPORT ScopedNSAutoreleasePool {
   void Recycle();
 
  private:
-  void* autorelease_pool_ GUARDED_BY_CONTEXT(thread_checker_);
+  // This field is not a raw_ptr<> because it is a pointer to an Objective-C
+  // object.
+  RAW_PTR_EXCLUSION void* autorelease_pool_ GUARDED_BY_CONTEXT(thread_checker_);
 
   THREAD_CHECKER(thread_checker_);
 };

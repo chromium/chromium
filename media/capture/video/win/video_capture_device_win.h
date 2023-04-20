@@ -19,6 +19,7 @@
 #include <string>
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "media/capture/video/video_capture_device.h"
@@ -55,7 +56,9 @@ class VideoCaptureDeviceWin : public VideoCaptureDevice,
     void FreeMediaType(AM_MEDIA_TYPE* mt);
     void DeleteMediaType(AM_MEDIA_TYPE* mt);
 
-    AM_MEDIA_TYPE* media_type_;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #addr-of
+    RAW_PTR_EXCLUSION AM_MEDIA_TYPE* media_type_;
   };
 
   static VideoCaptureControlSupport GetControlSupport(

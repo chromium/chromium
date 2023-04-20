@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_WIN_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/win/scoped_gdi_object.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/windows_caption_button.h"
@@ -167,7 +168,9 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   base::win::ScopedHICON big_window_icon_;
 
   // Icon and title. Only used when custom-drawing the titlebar for popups.
-  TabIconView* window_icon_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION TabIconView* window_icon_ = nullptr;
   raw_ptr<views::Label> window_title_ = nullptr;
 
   // The container holding the caption buttons (minimize, maximize, close, etc.)
