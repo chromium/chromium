@@ -242,7 +242,7 @@ class CORE_EXPORT HTMLElement : public Element {
   // |exception_state| can be nullptr when exceptions can't be thrown, such as
   // when the browser hides a popover during light dismiss or shows a popover in
   // response to clicking a button with popovershowtarget.
-  void ShowPopoverInternal(ExceptionState* exception_state);
+  void ShowPopoverInternal(Element* invoker, ExceptionState* exception_state);
   void HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
                            HidePopoverTransitionBehavior event_firing,
                            ExceptionState* exception_state);

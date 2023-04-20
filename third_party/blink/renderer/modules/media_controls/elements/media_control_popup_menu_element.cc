@@ -122,7 +122,7 @@ void MediaControlPopupMenuElement::SetIsWanted(bool wanted) {
   MediaControlDivElement::SetIsWanted(wanted);
 
   if (wanted) {
-    ShowPopoverInternal(nullptr);
+    ShowPopoverInternal(/*invoker*/ nullptr, /*exception_state*/ nullptr);
     if (!RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
       SetPosition();
     }

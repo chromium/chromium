@@ -443,7 +443,7 @@ TEST_F(HTMLElementTest, PopoverTopLayerRemovalTiming) {
 
   EXPECT_FALSE(target->popoverOpen());
   EXPECT_FALSE(target->IsInTopLayer());
-  target->ShowPopoverInternal(nullptr);
+  target->ShowPopoverInternal(/*invoker*/ nullptr, /*exception_state*/ nullptr);
   EXPECT_TRUE(target->popoverOpen());
   EXPECT_TRUE(target->IsInTopLayer());
 
@@ -458,7 +458,7 @@ TEST_F(HTMLElementTest, PopoverTopLayerRemovalTiming) {
   EXPECT_FALSE(target->IsInTopLayer());
 
   // Document removal should cause immediate top layer removal.
-  target->ShowPopoverInternal(nullptr);
+  target->ShowPopoverInternal(/*invoker*/ nullptr, /*exception_state*/ nullptr);
   EXPECT_TRUE(target->popoverOpen());
   EXPECT_TRUE(target->IsInTopLayer());
   target->remove();

@@ -1375,16 +1375,6 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
   return true;
 }
 
-void HTMLElement::togglePopover(ExceptionState& exception_state) {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-      GetDocument().GetExecutionContext()));
-  if (popoverOpen()) {
-    hidePopover(exception_state);
-  } else {
-    showPopover(exception_state);
-  }
-}
-
 namespace {
 // We have to mark *all* invokers for the given popover dirty in the
 // ax tree, since they all should now have an updated expanded state.
@@ -1405,24 +1395,39 @@ void MarkPopoverInvokersDirty(const HTMLElement& popover) {
 }
 }  // namespace
 
+void HTMLElement::togglePopover(ExceptionState& exception_state) {
+  DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
+      GetDocument().GetExecutionContext()));
+  if (popoverOpen()) {
+    hidePopover(exception_state);
+  } else {
+    ShowPopoverInternal(/*invoker*/ nullptr, &exception_state);
+  }
+}
+
 void HTMLElement::togglePopover(bool force, ExceptionState& exception_state) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
   if (!force && popoverOpen()) {
     hidePopover(exception_state);
   } else if (force && !popoverOpen()) {
-    showPopover(exception_state);
+    ShowPopoverInternal(/*invoker*/ nullptr, &exception_state);
   }
 }
 
 void HTMLElement::showPopover(ExceptionState& exception_state) {
-  ShowPopoverInternal(&exception_state);
+  ShowPopoverInternal(/*invoker*/ nullptr, &exception_state);
 }
 
-void HTMLElement::ShowPopoverInternal(ExceptionState* exception_state) {
+void HTMLElement::ShowPopoverInternal(Element* invoker,
+                                      ExceptionState* exception_state) {
   auto& original_document = GetDocument();
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       original_document.GetExecutionContext()));
+
+  if (GetPopoverData()) {
+    GetPopoverData()->setInvoker(invoker);
+  }
   if (!IsPopoverReady(PopoverTriggerAction::kShow, exception_state)) {
     DCHECK(exception_state)
         << " Callers which aren't supposed to throw exceptions should not call "
@@ -2040,8 +2045,7 @@ void HTMLElement::InvokePopover(Element* invoker) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
   DCHECK(HasPopoverAttribute());
-  GetPopoverData()->setInvoker(invoker);
-  ShowPopoverInternal(/*exception_state=*/nullptr);
+  ShowPopoverInternal(invoker, /*exception_state=*/nullptr);
 }
 
 Element* HTMLElement::anchorElement() {
