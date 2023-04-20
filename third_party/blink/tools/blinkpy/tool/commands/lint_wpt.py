@@ -11,6 +11,7 @@ import io
 import logging
 import optparse
 import pathlib
+import textwrap
 import urllib.parse
 from typing import Collection, Hashable, List, Optional, Set, Tuple, Type, Union
 
@@ -265,8 +266,62 @@ class LintWPT(Command):
                 _tool: Host) -> Optional[int]:
         # Pipe `wpt lint`'s logs into `blink_tool.py`'s formatter.
         wptlint.logger = _log
+        # Repurpose the `json` format to collect all lint errors, including
+        # non-metadata ones, so that `lint-wpt` can customize the logs.
+        errors = []
+        options.json = True
+        wptlint.output_errors_json = (
+            lambda _log, worker_errors: errors.extend(worker_errors))
         wptlint.file_lints.append(self.check_metadata)
-        return wptlint.main(**vars(options))
+        exit_code = wptlint.main(**vars(options))
+        self._log_errors(errors, [self._manifest(options.repo_root)])
+        return exit_code
+
+    def _log_errors(self, errors: List[LintError],
+                    manifests: Collection[WPTManifest]):
+        if not errors:
+            _log.info('All files OK.')
+            return
+        wptlint.output_errors_text(_log.error, errors)
+        test_file_errors, metadata_file_errors = [], []
+        for error in errors:
+            _, _, path, _ = error
+            if self._is_dir_metadata(path) or any(
+                    self._test_path(manifest, path) for manifest in manifests):
+                metadata_file_errors.append(error)
+            else:
+                test_file_errors.append(error)
+
+        paragraphs = []
+        # TODO(crbug.com/1406669): Document the supplemental `META-*` rules in
+        # `//docs/testing` and add the link.
+        paragraphs.append(
+            'You must address all errors; for details on how to fix them, see '
+            'https://web-platform-tests.org/writing-tests/lint-tool.html')
+        if test_file_errors:
+            error, _, path, _ = test_file_errors[-1]
+            context = {'error': error, 'path': path}
+            paragraphs.append(
+                "However, for errors in test files, it's sometimes OK to add "
+                'lines to `web_tests/external/wpt/lint.ignore` to ignore them.'
+            )
+            paragraphs.append(
+                "For example, to make the lint tool ignore all '%(error)s' "
+                'errors in the %(path)s file, you could add the following '
+                'line to the lint.ignore file:' % context)
+            paragraphs.append('%(error)s: %(path)s' % context)
+        if metadata_file_errors:
+            # TODO(crbug.com/1406669): Referencing metadata files from
+            # `lint.ignore` should be an error itself.
+            paragraphs.append(
+                'Errors for `*.ini` metadata files cannot be ignored and must '
+                'be fixed.')
+        wptlint.output_error_count(
+            collections.Counter(error for error, _, _, _ in errors))
+        for paragraph in paragraphs:
+            _log.info('')
+            for line in textwrap.wrap(paragraph):
+                _log.info(line)
 
     def check_metadata(self, repo_root: str, path: str,
                        metadata_file: io.BytesIO) -> List[LintError]:

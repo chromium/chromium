@@ -95,17 +95,63 @@ class LintWPTTest(LoggingTestCase):
             stack.enter_context(self.tool.executive.patch_builtins())
             yield stack
 
-    def test_execute_basic(self):
+    def test_execute_basic_ok(self):
+        path = self.finder.path_from_wpt_tests('good_python.py')
+        self.fs.write_text_file(path, 'import os')
+        with self._patch_builtins():
+            exit_code = self.command.main([path])
+        self.assertEqual(exit_code, 0)
+        self.assertLog(['INFO: All files OK.\n'])
+
+    def test_execute_basic_test_file_error(self):
         path = self.finder.path_from_wpt_tests('bad_python.py')
         self.fs.write_text_file(path, 'invalid syntax should be detected')
         with self._patch_builtins():
             exit_code = self.command.main([path])
         self.assertNotEqual(exit_code, 0)
-        self.assertIn(
+        self.assertLog([
             'ERROR: bad_python.py:1: Unable to parse file (PARSE-FAILED)\n',
-            self.logMessages())
-        self.assertIn('INFO: There was 1 error (PARSE-FAILED: 1)\n',
-                      self.logMessages())
+            'INFO: \n',
+            'INFO: There was 1 error (PARSE-FAILED: 1)\n',
+            'INFO: \n',
+            'INFO: You must address all errors; for details on how to fix '
+            'them, see\n',
+            'INFO: https://web-platform-tests.org/writing-tests/'
+            'lint-tool.html\n',
+            'INFO: \n',
+            "INFO: However, for errors in test files, it's sometimes OK "
+            'to add lines to\n',
+            'INFO: `web_tests/external/wpt/lint.ignore` to ignore them.\n',
+            'INFO: \n',
+            'INFO: For example, to make the lint tool ignore all '
+            "'PARSE-FAILED' errors in\n",
+            'INFO: the bad_python.py file, you could add the following line '
+            'to the\n',
+            'INFO: lint.ignore file:\n',
+            'INFO: \n',
+            'INFO: PARSE-FAILED: bad_python.py\n',
+        ])
+
+    def test_execute_basic_metadata_file_error(self):
+        path = self.finder.path_from_wpt_tests('reftest.html.ini')
+        self.fs.write_text_file(path, '[reftest.html]')
+        with self._patch_builtins():
+            exit_code = self.command.main([path])
+        self.assertNotEqual(exit_code, 0)
+        self.assertLog([
+            'ERROR: reftest.html.ini: Empty section should be removed: '
+            "'[reftest.html]' (META-EMPTY-SECTION)\n",
+            'INFO: \n',
+            'INFO: There was 1 error (META-EMPTY-SECTION: 1)\n',
+            'INFO: \n',
+            'INFO: You must address all errors; for details on how to fix '
+            'them, see\n',
+            'INFO: https://web-platform-tests.org/writing-tests/'
+            'lint-tool.html\n',
+            'INFO: \n',
+            'INFO: Errors for `*.ini` metadata files cannot be ignored and '
+            'must be fixed.\n',
+        ])
 
     def _check_metadata(self,
                         contents: str,
