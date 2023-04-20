@@ -27066,6 +27066,11 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="4" label="DevTools settings sync enabled"/>
 </enum>
 
+<enum name="DevToolsVMInlineScriptType">
+  <int value="0" label="Module Script"/>
+  <int value="1" label="Classic Script"/>
+</enum>
+
 <enum name="DexFixerReason">
   <int value="0" label="Os.stat() failed"/>
   <int value="1" label="Runtime.exec() failed"/>

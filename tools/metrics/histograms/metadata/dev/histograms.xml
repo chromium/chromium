@@ -189,6 +189,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.InlineScriptParsed" enum="DevToolsVMInlineScriptType"
+    expires_after="2023-12-01">
+  <owner>yangguo@chromium.org</owner>
+  <owner>jarin@chromium.org</owner>
+  <owner>kimanh@chromium.org</owner>
+  <summary>Records the inline script types that are parsed.</summary>
+</histogram>
+
 <histogram name="DevTools.InspectElement" units="ms" expires_after="2023-12-01">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
@@ -479,6 +487,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether syncing DevTools settings via Chrome Sync is enabled or why
     it's disabled. Logged once per DevTools session when DevTools is booted up.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.VMInlineScriptShown"
+    enum="DevToolsVMInlineScriptType" expires_after="2023-12-01">
+  <owner>yangguo@chromium.org</owner>
+  <owner>jarin@chromium.org</owner>
+  <owner>kimanh@chromium.org</owner>
+  <summary>
+    Records the inline script types for which we show the VM script instead of
+    the HTML resource.
   </summary>
 </histogram>
 
