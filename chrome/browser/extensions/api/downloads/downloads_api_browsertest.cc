@@ -15,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -28,6 +27,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/bubble/download_display.h"
@@ -507,7 +507,8 @@ class DownloadExtensionTest : public ExtensionApiTest {
     url_chain.push_back(GURL());
     for (size_t i = 0; i < count; ++i) {
       DownloadItem* item = GetOnRecordManager()->CreateDownloadItem(
-          base::GenerateGUID(), download::DownloadItem::kInvalidId + 1 + i,
+          base::Uuid::GenerateRandomV4().AsLowercaseString(),
+          download::DownloadItem::kInvalidId + 1 + i,
           downloads_directory().Append(history_info[i].filename),
           downloads_directory().Append(history_info[i].filename), url_chain,
           GURL(),
