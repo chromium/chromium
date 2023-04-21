@@ -1658,8 +1658,12 @@ void AshNotificationView::UpdateBackground(int top_radius, int bottom_radius) {
     background_color = AshColorProvider::Get()->GetBaseLayerColor(
         AshColorProvider::BaseLayerType::kTransparent80);
   } else {
-    background_color = AshColorProvider::Get()->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+    background_color =
+        chromeos::features::IsJellyEnabled() && GetColorProvider()
+            ? GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBase)
+            : AshColorProvider::Get()->GetControlsLayerColor(
+                  AshColorProvider::ControlsLayerType::
+                      kControlBackgroundColorInactive);
   }
 
   if (background_color == background_color_ && top_radius_ == top_radius &&

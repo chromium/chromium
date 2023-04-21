@@ -27,6 +27,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/animation/linear_animation.h"
@@ -85,6 +86,20 @@ void SetupThroughputTrackerForAnimationSmoothness(
       base::BindRepeating(&RecordAnimationSmoothness, histogram_name)));
 }
 
+int GetInnerCornerRadius() {
+  return chromeos::features::IsJellyEnabled()
+             ? kJellyMessageCenterNotificationInnerCornerRadius
+             : kMessageCenterNotificationInnerCornerRadius;
+}
+
+int GetTopBottomCornerRadius() {
+  // The top bottom radius should be the same as the corresponding scroll view
+  // corner radius.
+  return chromeos::features::IsJellyEnabled()
+             ? kJellyMessageCenterScrollViewCornerRadius
+             : kMessageCenterScrollViewCornerRadius;
+}
+
 }  // namespace
 
 // Container view of notification and swipe control.
@@ -140,22 +155,19 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
     is_bottom_ = is_bottom;
 
     // The entire scroll view has rounded corners.
-    const int top_radius = is_top
-                               ? kMessageCenterNotificationTopBottomCornerRadius
-                               : kMessageCenterNotificationInnerCornerRadius;
-    const int bottom_radius =
-        is_bottom ? kMessageCenterNotificationTopBottomCornerRadius
-                  : kMessageCenterNotificationInnerCornerRadius;
-    message_view_->UpdateCornerRadius(top_radius, bottom_radius);
+    const int top_bottom_corner_radius = GetTopBottomCornerRadius();
+    const int inner_corner_radius = GetInnerCornerRadius();
+    message_view_->UpdateCornerRadius(
+        is_top ? top_bottom_corner_radius : inner_corner_radius,
+        is_bottom ? top_bottom_corner_radius : inner_corner_radius);
   }
 
   // Reset rounding the corner of the view. This is called when we end a slide.
   void ResetCornerRadius() {
     need_update_corner_radius_ = true;
 
-    message_view_->UpdateCornerRadius(
-        kMessageCenterNotificationInnerCornerRadius,
-        kMessageCenterNotificationInnerCornerRadius);
+    message_view_->UpdateCornerRadius(GetInnerCornerRadius(),
+                                      GetInnerCornerRadius());
   }
 
   // Collapses the notification if its state haven't changed manually by a user.
@@ -281,9 +293,10 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
 
     need_update_corner_radius_ = false;
 
-    message_view_->UpdateCornerRadius(
-        kMessageCenterNotificationTopBottomCornerRadius,
-        kMessageCenterNotificationTopBottomCornerRadius);
+    const int top_bottom_corner_radius = GetTopBottomCornerRadius();
+    const int inner_corner_radius = GetInnerCornerRadius();
+    message_view_->UpdateCornerRadius(top_bottom_corner_radius,
+                                      top_bottom_corner_radius);
 
     // Also update `above_view_`'s bottom and `below_view_`'s top corner radius
     // when sliding.
@@ -292,18 +305,16 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
 
     above_view_ = (index == 0) ? nullptr : AsMVC(list_child_views[index - 1]);
     if (above_view_) {
-      above_view_->message_view()->UpdateCornerRadius(
-          kMessageCenterNotificationInnerCornerRadius,
-          kMessageCenterNotificationTopBottomCornerRadius);
+      above_view_->message_view()->UpdateCornerRadius(inner_corner_radius,
+                                                      top_bottom_corner_radius);
     }
 
     below_view_ = (index == list_child_views.size() - 1)
                       ? nullptr
                       : AsMVC(list_child_views[index + 1]);
     if (below_view_) {
-      below_view_->message_view()->UpdateCornerRadius(
-          kMessageCenterNotificationTopBottomCornerRadius,
-          kMessageCenterNotificationInnerCornerRadius);
+      below_view_->message_view()->UpdateCornerRadius(top_bottom_corner_radius,
+                                                      inner_corner_radius);
     }
   }
 

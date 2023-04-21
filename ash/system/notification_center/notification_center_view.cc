@@ -24,6 +24,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/user_metrics.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -126,8 +127,10 @@ void NotificationCenterView::Init() {
   scroller_->SetVerticalScrollBar(base::WrapUnique(scroll_bar_));
   scroller_->SetDrawOverflowIndicator(false);
   scroller_->SetPaintToLayer();
-  scroller_->layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF{kMessageCenterScrollViewCornerRadius});
+  scroller_->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{
+      static_cast<float>(chromeos::features::IsJellyEnabled()
+                             ? kJellyMessageCenterScrollViewCornerRadius
+                             : kMessageCenterScrollViewCornerRadius)});
 
   AddChildView(scroller_);
 
