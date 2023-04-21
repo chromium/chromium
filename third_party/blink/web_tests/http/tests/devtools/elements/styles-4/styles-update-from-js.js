@@ -49,52 +49,43 @@
       }
   `);
 
-  TestRunner.runTestSuite([
-    function testInit(next) {
-      ElementsTestRunner.selectNodeAndWaitForStyles('container', next);
+  TestRunner.runAsyncTestSuite([
+    async function testInit(next) {
+      await ElementsTestRunner.selectNodeAndWaitForStylesPromise('container');
     },
 
-    function testSetStyleAttribute(next) {
-      waitAndDumpAttributeAndStyles(next);
-      TestRunner.evaluateInPage('modifyStyleAttribute()');
+    async function testSetStyleAttribute() {
+      await TestRunner.evaluateInPage('modifyStyleAttribute()');
+      await waitAndDumpAttributeAndStyles();
     },
 
-    function testSetStyleCSSText(next) {
-      waitAndDumpAttributeAndStyles(next);
-      TestRunner.evaluateInPage('modifyCSSText()');
+    async function testSetStyleCSSText() {
+      await TestRunner.evaluateInPage('modifyCSSText()');
+      await waitAndDumpAttributeAndStyles();
     },
 
-    function testSetViaParsedAttributes(next) {
-      waitAndDumpAttributeAndStyles(next);
-      TestRunner.evaluateInPage('modifyParsedAttributes()');
+    async function testSetViaParsedAttributes() {
+      await TestRunner.evaluateInPage('modifyParsedAttributes()');
+      await waitAndDumpAttributeAndStyles();
     },
 
-    function testSetViaAncestorClass(next) {
-      ElementsTestRunner.selectNodeAndWaitForStyles('child', callback);
-
-      function callback() {
-        waitAndDumpAttributeAndStyles(next, 'child');
-        TestRunner.evaluateInPage('modifyContainerClass()');
-      }
+    async function testSetViaAncestorClass() {
+      await ElementsTestRunner.selectNodeAndWaitForStylesPromise('child');
+      await TestRunner.evaluateInPage('modifyContainerClass()');
+      await waitAndDumpAttributeAndStyles('child');
     },
 
-    function testSetViaSiblingAttr(next) {
-      ElementsTestRunner.selectNodeAndWaitForStyles('childSibling', callback);
-
-      function callback() {
-        waitAndDumpAttributeAndStyles(next, 'childSibling');
-        TestRunner.evaluateInPage('modifyChildAttr()');
-      }
+    async function testSetViaSiblingAttr() {
+      await ElementsTestRunner.selectNodeAndWaitForStylesPromise('childSibling');
+      await TestRunner.evaluateInPage('modifyChildAttr()');
+      await waitAndDumpAttributeAndStyles('childSibling');
     }
   ]);
 
-  function waitAndDumpAttributeAndStyles(next, id) {
+  async function waitAndDumpAttributeAndStyles(id) {
     id = id || 'container';
-    async function callback() {
-      await dumpAttributeAndStyles(id);
-      next();
-    }
-    ElementsTestRunner.waitForStyles(id, callback);
+    await new Promise(resolve => ElementsTestRunner.waitForStyles(id, resolve));
+    await dumpAttributeAndStyles(id);
   }
 
   async function dumpAttributeAndStyles(id) {
