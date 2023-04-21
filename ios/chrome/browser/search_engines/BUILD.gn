@@ -139,3 +139,42 @@ optimize_js("search_engine_js") {
   primary_script = "resources/search_engine.js"
   sources = [ "resources/search_engine.js" ]
 }
+
+source_set("eg_app_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+
+  sources = [
+    "search_engines_app_interface.h",
+    "search_engines_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/search_engines",
+    "//ios/chrome/browser/search_engines",
+    "//ios/chrome/test/app:test_support",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//ios/third_party/earl_grey2:app_framework+link",
+    "//testing/gmock",
+    "//testing/gtest:gtest",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+
+  sources = [
+    "search_engines_app_interface.h",
+    "search_engines_app_interface_stub.mm",
+  ]
+
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}

@@ -328,6 +328,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/search_engines:eg_test_support+eg2",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin:capabilities_types",
     "//ios/chrome/browser/signin:fake_system_identity",
