@@ -148,10 +148,11 @@ content::WebUIDataSource* CreateAndAddMediaAppUntrustedDataSource(
   // Allow images to also handle data urls.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc, "img-src blob: data: 'self';");
-  // Allow styles to include inline styling needed for Polymer elements.
+  // Allow styles to include inline styling needed for Polymer elements and
+  // the material 3 dynamic palette.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
-      "style-src 'self' 'unsafe-inline';");
+      "style-src 'self' 'unsafe-inline' chrome-untrusted://theme;");
   // Allow loading PDFs as blob URLs.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ObjectSrc, "object-src blob:;");
