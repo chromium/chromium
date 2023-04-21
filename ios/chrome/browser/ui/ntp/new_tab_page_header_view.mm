@@ -171,7 +171,7 @@ CGFloat ToolbarHeight() {
 - (void)addViewsToSearchField:(UIView*)searchField {
   // Fake Toolbar.
   ToolbarButtonFactory* buttonFactory =
-      [[ToolbarButtonFactory alloc] initWithStyle:NORMAL];
+      [[ToolbarButtonFactory alloc] initWithStyle:ToolbarStyle::kNormal];
   self.fakeToolbar = [[UIView alloc] init];
   self.fakeToolbar.backgroundColor =
       buttonFactory.toolbarConfiguration.backgroundColor;
@@ -203,7 +203,7 @@ CGFloat ToolbarHeight() {
 
   // Cancel button, used in animation.
   ToolbarButtonFactory* factory =
-      [[ToolbarButtonFactory alloc] initWithStyle:NORMAL];
+      [[ToolbarButtonFactory alloc] initWithStyle:ToolbarStyle::kNormal];
   self.cancelButton = [factory cancelButton];
   [searchField addSubview:self.cancelButton];
   self.cancelButton.translatesAutoresizingMaskIntoConstraints = NO;

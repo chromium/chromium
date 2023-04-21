@@ -59,10 +59,10 @@
   // For the omnibox specifically, the background should be different in
   // incognito compared to dark mode.
   switch (self.style) {
-    case NORMAL:
+    case ToolbarStyle::kNormal:
       return [[UIColor colorNamed:kTextfieldBackgroundColor]
           colorWithAlphaComponent:visibilityFactor];
-    case INCOGNITO:
+    case ToolbarStyle::kIncognito:
       return [[UIColor colorNamed:@"omnibox_incognito_background_color"]
           colorWithAlphaComponent:visibilityFactor];
   }

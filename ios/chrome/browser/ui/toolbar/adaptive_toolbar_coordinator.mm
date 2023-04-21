@@ -132,7 +132,8 @@
 
 - (ToolbarButtonFactory*)buttonFactoryWithType:(ToolbarType)type {
   BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
-  ToolbarStyle style = isIncognito ? INCOGNITO : NORMAL;
+  ToolbarStyle style =
+      isIncognito ? ToolbarStyle::kIncognito : ToolbarStyle::kNormal;
 
   ToolbarButtonActionsHandler* actionHandler =
       [[ToolbarButtonActionsHandler alloc] init];

@@ -6,11 +6,11 @@
 #define IOS_CHROME_BROWSER_UI_TOOLBAR_BUTTONS_TOOLBAR_STYLE_H_
 
 // Enum defining the different styles for the toolbar.
-typedef NS_ENUM(NSInteger, ToolbarStyle) {
+enum class ToolbarStyle {
   // Normal (non-incognito) style.
-  NORMAL = 0,
+  kNormal,
   // Incognito style.
-  INCOGNITO = 1
+  kIncognito,
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_BUTTONS_TOOLBAR_STYLE_H_

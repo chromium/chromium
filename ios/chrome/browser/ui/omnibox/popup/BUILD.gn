@@ -14,11 +14,6 @@ swift_source_set("popup_swift") {
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
     "//ios/chrome/browser/net:crurl",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/omnibox/popup:popup_accessibility_identifier_constants",
-    "//ios/chrome/browser/ui/toolbar/buttons",
-    "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/common/ui/colors:swift",
     "//ui/base",
   ]

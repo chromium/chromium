@@ -56,7 +56,8 @@ const CGFloat kPopupBottomPaddingTablet = 80;
     // Popup uses same colors as the toolbar, so the ToolbarConfiguration is
     // used to get the style.
     ToolbarConfiguration* configuration = [[ToolbarConfiguration alloc]
-        initWithStyle:incognito ? INCOGNITO : NORMAL];
+        initWithStyle:incognito ? ToolbarStyle::kIncognito
+                                : ToolbarStyle::kNormal];
 
     UIView* containerView = [[OmniboxPopupContainerView alloc] init];
     [containerView addSubview:viewController.view];
