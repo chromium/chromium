@@ -2877,5 +2877,27 @@ TEST_F(HistoryBackendDBTest, QuerySegmentUsage) {
   EXPECT_EQ(segment_id2, results2[0]->GetID());
 }
 
+TEST_F(HistoryBackendDBTest, QuerySegmentUsageReturnsZeroScoreForZeroVisits) {
+  CreateBackendAndDatabase();
+
+  const GURL url("http://www.foo.com");
+  const base::Time time(base::Time::Now());
+
+  URLID url_id = db_->AddURL(URLRow(url));
+  ASSERT_NE(0, url_id);
+
+  SegmentID segment_id =
+      db_->CreateSegment(url_id, VisitSegmentDatabase::ComputeSegmentName(url));
+  ASSERT_NE(0, segment_id);
+  ASSERT_TRUE(db_->IncreaseSegmentVisitCount(segment_id, time, 0));
+
+  std::vector<std::unique_ptr<PageUsageData>> results =
+      db_->QuerySegmentUsage(/*max_result_count=*/1, base::NullCallback());
+  ASSERT_EQ(1u, results.size());
+  EXPECT_EQ(url, results[0]->GetURL());
+  EXPECT_EQ(segment_id, results[0]->GetID());
+  EXPECT_EQ(0, results[0]->GetScore());
+}
+
 }  // namespace
 }  // namespace history

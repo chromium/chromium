@@ -228,7 +228,9 @@ VisitSegmentDatabase::QuerySegmentUsage(
     int days_ago = (now - timeslot).InDays();
 
     // Score for this day in isolation.
-    float day_visits_score = 1.0f + log(static_cast<float>(visit_count));
+    float day_visits_score = visit_count <= 0.0f
+                                 ? 0.0f
+                                 : 1.0f + log(static_cast<float>(visit_count));
     // Recent visits count more than historical ones, so we multiply in a boost
     // related to how long ago this day was.
     // This boost is a curve that smoothly goes through these values:
