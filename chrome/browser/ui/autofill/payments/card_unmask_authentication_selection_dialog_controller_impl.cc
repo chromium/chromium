@@ -207,7 +207,7 @@ ui::ImageModel CardUnmaskAuthenticationSelectionDialogControllerImpl::
     case CardUnmaskChallengeOptionType::kSmsOtp:
       return ui::ImageModel::FromVectorIcon(vector_icons::kSmsIcon);
     case CardUnmaskChallengeOptionType::kEmailOtp:
-      return ui::ImageModel::FromVectorIcon(vector_icons::kEmailIcon);
+      return ui::ImageModel::FromVectorIcon(vector_icons::kEmailOutlineIcon);
     case CardUnmaskChallengeOptionType::kCvc:
     case CardUnmaskChallengeOptionType::kUnknownType:
       NOTREACHED();

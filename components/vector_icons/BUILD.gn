@@ -47,6 +47,7 @@ aggregate_vector_icons("components_vector_icons") {
     "dogfood.icon",
     "edit.icon",
     "email.icon",
+    "email_outline.icon",
     "error.icon",
     "error_outline.icon",
     "ethernet.icon",
