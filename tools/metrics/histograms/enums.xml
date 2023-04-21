@@ -26010,6 +26010,54 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="3" label="Cancel"/>
 </enum>
 
+<enum name="DevicePoliciesState">
+  <int value="0" label="Consumer owned good key and policy"/>
+  <int value="1" label="Consumer owned malformed key, good policy"/>
+  <int value="2" label="Consumer owned no key, good policy"/>
+  <int value="3" label="Consumer owned good key, malformed policy"/>
+  <int value="4" label="Consumer owned malformed key, malformed policy"/>
+  <int value="5" label="Consumer owned no key, malformed policy"/>
+  <int value="6" label="Consumer owned good key, no policy"/>
+  <int value="7" label="Consumer owned malformed key, no policy"/>
+  <int value="8" label="Consumer owned no key, no policy"/>
+  <int value="9" label="Enrolled device good key and policy"/>
+  <int value="10" label="Enrolled device malformed key, good policy"/>
+  <int value="11" label="Enrolled device no key, good policy"/>
+  <int value="12" label="Enrolled device good key, malformed policy"/>
+  <int value="13" label="Enrolled device malformed key, malformed policy"/>
+  <int value="14" label="Enrolled device no key, malformed policy"/>
+  <int value="15" label="Enrolled device good key, no policy"/>
+  <int value="16" label="Enrolled device malformed key, no policy"/>
+  <int value="17" label="Enrolled device no key, no policy"/>
+  <int value="18" label="Legacy retail good key and policy"/>
+  <int value="19" label="Legacy retail malformed key, good policy"/>
+  <int value="20" label="Legacy retail no key, good policy"/>
+  <int value="21" label="Legacy retail good key, malformed policy"/>
+  <int value="22" label="Legacy retail malformed key, malformed policy"/>
+  <int value="23" label="Legacy retail no key, malformed policy"/>
+  <int value="24" label="Legacy retail good key, no policy"/>
+  <int value="25" label="Legacy retail malformed key, no policy"/>
+  <int value="26" label="Legacy retail no key, no policy"/>
+  <int value="27" label="Consumer kiosk good key and policy"/>
+  <int value="28" label="Consumer kiosk malformed key, good policy"/>
+  <int value="29" label="Consumer kiosk no key, good policy"/>
+  <int value="30" label="Consumer kiosk good key, malformed policy"/>
+  <int value="31" label="Consumer kiosk malformed key, malformed policy"/>
+  <int value="32" label="Consumer kiosk no key, malformed policy"/>
+  <int value="33" label="Consumer kiosk good key, no policy"/>
+  <int value="34" label="Consumer kiosk malformed key, no policy"/>
+  <int value="35" label="Consumer kiosk no key, no policy"/>
+  <int value="36" label="Unknown owner good key and policy"/>
+  <int value="37" label="Unknown owner malformed key, good policy"/>
+  <int value="38" label="Unknown owner no key, good policy"/>
+  <int value="39" label="Unknown owner good key, malformed policy"/>
+  <int value="40" label="Unknown owner malformed key, malformed policy"/>
+  <int value="41" label="Unknown owner no key, malformed policy"/>
+  <int value="42" label="Unknown owner good key, no policy"/>
+  <int value="43" label="Unknown owner malformed key, no policy"/>
+  <int value="44" label="Unknown owner no key, no policy"/>
+</enum>
+
 <enum name="DeviceSettingsFeatureFlagsMigrationStatus">
   <int value="0" label="No feature flags present"/>
   <int value="1" label="Migration already completed previously"/>
