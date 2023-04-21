@@ -3,16 +3,18 @@
 // found in the LICENSE file.
 
 import 'chrome://os-settings/chromeos/os_settings.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-suite('CellularSetupDialog', function() {
-  test('Dialog opened on attach', function(done) {
-    /** @type {!OsSettingsCellularSetupDialog} */
-    const cellularSetupDialog =
+import {OsSettingsCellularSetupDialogElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+
+suite('<os-settings-cellular-setup-dialog>', () => {
+  test('Dialog opened on attach', (done) => {
+    const cellularSetupDialog: OsSettingsCellularSetupDialogElement =
         document.createElement('os-settings-cellular-setup-dialog');
 
     // Verify the dialog is opened.
-    cellularSetupDialog.addEventListener('cr-dialog-open', function(e) {
+    cellularSetupDialog.addEventListener('cr-dialog-open', () => {
       done();
     });
 

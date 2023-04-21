@@ -22,7 +22,6 @@ build_webui_tests("build") {
     "apps_page_test.js",
     "cellular_networks_list_test.js",
     "cellular_roaming_toggle_button_test.js",
-    "cellular_setup_dialog_test.js",
     "change_dictation_locale_dialog_test.js",
     "crostini_extra_containers_subpage_test.js",
     "crostini_page_test.js",
@@ -183,6 +182,7 @@ build_webui_tests("build") {
     "guest_os/guest_os_shared_usb_devices_test.ts",
     "guest_os/test_guest_os_browser_proxy.ts",
 
+    "internet_page/cellular_setup_dialog_test.ts",
     "internet_page/internet_detail_subpage_tests.js",
     "internet_page/network_summary_item_test.ts",
     "internet_page/network_summary_test.ts",

@@ -240,7 +240,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['AppManagementToggleRow', 'app_management/toggle_row_test.js'],
  ['CellularNetworksList', 'cellular_networks_list_test.js'],
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.js'],
- ['CellularSetupDialog', 'cellular_setup_dialog_test.js'],
  [
    'DictationChangeLanguageLocaleDialogTest',
    'change_dictation_locale_dialog_test.js',
@@ -338,6 +337,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
        'ash::features::kPasspointARCSupport'
      ]
    }
+ ],
+ [
+   'InternetPageCellularSetupDialog',
+   'internet_page/cellular_setup_dialog_test.js'
  ],
  [
    'InternetPageInternetDetailSubpage',
