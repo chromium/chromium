@@ -66,6 +66,7 @@
 #include "services/network/public/mojom/net_log.mojom.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/network_interface_change_listener.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/network/public/mojom/socket_broker.mojom.h"
@@ -385,12 +386,13 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
   if (base::FeatureList::IsEnabled(
           net::features::kAddressTrackerLinuxIsProxied) &&
       IsOutOfProcessNetworkService()) {
-    auto address_map =
-        net::NetworkChangeNotifier::GetAddressMapOwner()->GetAddressMap();
-    auto online_links =
-        net::NetworkChangeNotifier::GetAddressMapOwner()->GetOnlineLinks();
+    auto [address_map, online_links] =
+        net::NetworkChangeNotifier::GetAddressMapOwner()
+            ->GetAddressTrackerLinux()
+            ->GetInitialDataAndStartRecordingDiffs();
     network_service_params->initial_address_map =
-        network::mojom::InitialAddressMap::New(address_map, online_links);
+        network::mojom::InitialAddressMap::New(std::move(address_map),
+                                               std::move(online_links));
   }
 #endif  // BUILDFLAG(IS_LINUX)
 

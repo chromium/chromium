@@ -43,3 +43,23 @@ struct InitialAddressMap {
   // The initial online interfaces.
   OnlineLinks online_links;
 };
+
+// Represents a diff of an AddressMap and a set of online links.
+[EnableIf=use_network_interface_change_listener]
+struct NetworkInterfaceChangeParams {
+  // Maps an IPAddress to null if the IPAddress has been removed from the map.
+  // Otherwise maps an IPAddress to an IfAddrMsg if the entry has been changed
+  // or added.
+  map<network.mojom.IPAddress, IfAddrMsg?> address_map;
+  // Maps an interface index to true if it has been added to the set, and false
+  // if it has been removed from the set.
+  map<int32, bool> online_links;
+};
+
+// Used to listen for changes to the network interfaces (e.g. updates received
+// via netlink from the Linux kernel).
+[EnableIf=use_network_interface_change_listener]
+interface NetworkInterfaceChangeListener {
+  // Called when there is a change to the network interfaces.
+  OnNetworkInterfacesChanged(NetworkInterfaceChangeParams params);
+};

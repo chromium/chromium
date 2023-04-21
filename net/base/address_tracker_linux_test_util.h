@@ -63,12 +63,14 @@ void MakeAddrMessage(uint16_t type,
 void MakeLinkMessage(uint16_t type,
                      uint32_t flags,
                      uint32_t index,
-                     NetlinkBuffer* output);
+                     NetlinkBuffer* output,
+                     bool clear_output = true);
 
 void MakeWirelessLinkMessage(uint16_t type,
                              uint32_t flags,
                              uint32_t index,
-                             NetlinkBuffer* output);
+                             NetlinkBuffer* output,
+                             bool clear_output = true);
 }  // namespace net::test
 
 #endif  // NET_BASE_ADDRESS_TRACKER_LINUX_TEST_UTIL_H_

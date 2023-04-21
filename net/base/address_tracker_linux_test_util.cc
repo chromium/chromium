@@ -107,14 +107,17 @@ void MakeAddrMessage(uint16_t type,
 void MakeLinkMessage(uint16_t type,
                      uint32_t flags,
                      uint32_t index,
-                     NetlinkBuffer* output) {
+                     NetlinkBuffer* output,
+                     bool clear_output) {
   NetlinkMessage nlmsg(type);
   struct ifinfomsg msg = {};
   msg.ifi_index = index;
   msg.ifi_flags = flags;
   msg.ifi_change = 0xFFFFFFFF;
   nlmsg.AddPayload(msg);
-  output->clear();
+  if (clear_output) {
+    output->clear();
+  }
   nlmsg.AppendTo(output);
 }
 
@@ -123,7 +126,8 @@ void MakeLinkMessage(uint16_t type,
 void MakeWirelessLinkMessage(uint16_t type,
                              uint32_t flags,
                              uint32_t index,
-                             NetlinkBuffer* output) {
+                             NetlinkBuffer* output,
+                             bool clear_output) {
   NetlinkMessage nlmsg(type);
   struct ifinfomsg msg = {};
   msg.ifi_index = index;
@@ -132,7 +136,9 @@ void MakeWirelessLinkMessage(uint16_t type,
   nlmsg.AddPayload(msg);
   char data[8] = {0};
   nlmsg.AddAttribute(IFLA_WIRELESS, data, sizeof(data));
-  output->clear();
+  if (clear_output) {
+    output->clear();
+  }
   nlmsg.AppendTo(output);
 }
 
