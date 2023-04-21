@@ -41,12 +41,17 @@
     grid-area: options;
   }
 
-  #zoneCustomizationButton:not([aria-pressed='true']) iron-icon {
-    display: none;
+  #zoneCustomizationButton[aria-pressed='true'] {
+    background-color: var(--cros-sys-primary, var(--cros-button-background-color-primary));
+    color: var(--cros-sys-on_primary, var(--cros-button-label-color-primary));
   }
 
   #zoneCustomizationButton[aria-pressed='true'] .text {
     margin-inline-start: 8px;
+  }
+
+  #zoneCustomizationButton:not([aria-pressed='true']) iron-icon {
+    display: none;
   }
 </style>
 <div id="container" class="preview-container">
