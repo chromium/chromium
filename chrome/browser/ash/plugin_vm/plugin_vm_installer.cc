@@ -11,10 +11,10 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/uuid.h"
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_drive_image_download_service.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
@@ -991,7 +991,7 @@ download::DownloadParams PluginVmInstaller::GetDownloadParams(const GURL& url) {
 
   // DownloadParams
   params.client = download::DownloadClient::PLUGIN_VM_IMAGE;
-  params.guid = base::GenerateGUID();
+  params.guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   params.callback = base::BindRepeating(&PluginVmInstaller::OnStartDownload,
                                         weak_ptr_factory_.GetWeakPtr());
 
