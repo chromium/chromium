@@ -827,6 +827,10 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
 
+      <message name="IDS_VIEW_PASSWORDS" desc="Item in the app menu which shows Password Manager page">
+        Password Manager
+      </message>
+
       <!-- Chrome sign-in page -->
       <message name="IDS_CHROME_SIGNIN_TITLE" desc="Title on the about:chrome-signin page">
         Chromium
