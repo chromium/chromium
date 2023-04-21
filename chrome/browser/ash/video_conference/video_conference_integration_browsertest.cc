@@ -87,7 +87,9 @@ void ClickButton(views::Button* button) {
   views::test::ButtonTestApi(button).NotifyClick(event);
 }
 
-class VideoConferenceIntegrationTest : public WebRtcTestBase {
+// Parameter stands for whether in incognito mode.
+class VideoConferenceIntegrationTest : public testing::WithParamInterface<bool>,
+                                       public WebRtcTestBase {
  public:
   VideoConferenceIntegrationTest() = default;
   ~VideoConferenceIntegrationTest() override = default;
@@ -96,6 +98,21 @@ class VideoConferenceIntegrationTest : public WebRtcTestBase {
     WebRtcTestBase::SetUpOnMainThread();
 
     ASSERT_TRUE(embedded_test_server()->Start());
+
+    // Create an incognito browser when parameter is true.
+    if (GetParam()) {
+      browser_ = Browser::Create(Browser::CreateParams(
+          browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+          true));
+      // This creates a blank page which is more consistent with normal mode.
+      ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
+          browser_, GURL("chrome://blank"), 1,
+          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
+              ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    } else {
+      browser_ = browser();
+    }
 
     camera_bt_ = GetVcTray()->camera_icon();
     mic_bt_ = GetVcTray()->audio_icon();
@@ -109,7 +126,7 @@ class VideoConferenceIntegrationTest : public WebRtcTestBase {
     const GURL url(embedded_test_server()->GetURL(url_str));
     content::RenderFrameHost* main_rfh = ui_test_utils::
         NavigateToURLWithDispositionBlockUntilNavigationsComplete(
-            browser(), url, 1, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            browser_, url, 1, WindowOpenDisposition::NEW_FOREGROUND_TAB,
             ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
                 ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     content::WebContents* web_contents =
@@ -121,7 +138,7 @@ class VideoConferenceIntegrationTest : public WebRtcTestBase {
   void SetPermission(content::WebContents* web_contents,
                      ContentSettingsType type,
                      ContentSetting result) {
-    HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+    HostContentSettingsMapFactory::GetForProfile(browser_->profile())
         ->SetContentSettingDefaultScope(web_contents->GetURL(), GURL(), type,
                                         result);
   }
@@ -205,12 +222,17 @@ class VideoConferenceIntegrationTest : public WebRtcTestBase {
   VideoConferenceTrayButton* share_bt_ = nullptr;
 
   ToastManagerImpl* toast_manager_ = nullptr;
+  Browser* browser_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_{
       ash::features::kVideoConference};
 };
 
-IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         VideoConferenceIntegrationTest,
+                         ::testing::Values(true, false));
+
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
                        CaptureVideoShowsVcTray) {
   // Open a tab.
   content::WebContents* web_contents =
@@ -259,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest,
   EXPECT_FALSE(camera_bt_->show_privacy_indicator());
 }
 
-IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest,
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
                        CaptureAudioShowsVcTray) {
   // Open a tab.
   content::WebContents* web_contents =
@@ -308,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest,
   EXPECT_FALSE(mic_bt_->show_privacy_indicator());
 }
 
-IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest,
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
                        ScreenSharingShowsVcTray) {
   // Open a tab.
   content::WebContents* web_contents =
@@ -354,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest,
   WAIT_FOR_CONDITION(!GetVcTray()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest,
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
                        MicWithoutPermissionShouldNotShow) {
   // Open a tab.
   content::WebContents* web_contents =
@@ -376,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest,
   EXPECT_FALSE(share_bt_->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest,
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
                        CameraWithoutPermissionShouldNotShow) {
   // Open a tab.
   content::WebContents* web_contents =
@@ -398,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest,
   EXPECT_FALSE(share_bt_->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest,
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
                        CameraMicWithoutPermissionShouldNotShow) {
   // Open a tab.
   content::WebContents* web_contents =
@@ -420,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest,
   EXPECT_TRUE(share_bt_->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest,
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
                        ClickOnTheMicOrCameraIconsShouldMute) {
   // Open a tab.
   content::WebContents* web_contents =
@@ -457,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest,
   EXPECT_FALSE(camera_bt_->show_privacy_indicator());
 }
 
-IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest,
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
                        OneTabReturnToAppInformation) {
   // Open a tab.
   content::WebContents* web_contents =
@@ -529,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest,
   EXPECT_EQ(buttons[0]->label()->GetText(), kTitle1);
 }
 
-IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest, OneTabReturnToApp) {
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest, OneTabReturnToApp) {
   // Open a tab.
   content::WebContents* web_contents =
       NavigateTo("/video_conference_demo.html");
@@ -544,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest, OneTabReturnToApp) {
   WAIT_FOR_CONDITION(GetVcTray()->GetVisible());
 
   // Switch to the default tab at 0; this should make the `web_contents` hidden.
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser_->tab_strip_model()->ActivateTabAt(0);
   WAIT_FOR_CONDITION(web_contents->GetVisibility() ==
                      content::Visibility::HIDDEN);
 
@@ -562,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest, OneTabReturnToApp) {
   GetVcTray()->CloseBubble();
 
   // Minimize the browser window; this should make the `web_contents` hidden.
-  browser()->window()->Minimize();
+  browser_->window()->Minimize();
   WAIT_FOR_CONDITION(web_contents->GetVisibility() ==
                      content::Visibility::HIDDEN);
 
@@ -577,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest, OneTabReturnToApp) {
                      content::Visibility::VISIBLE);
 }
 
-IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest, UseWhileDisabled) {
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest, UseWhileDisabled) {
   // Open a tab.
   content::WebContents* web_contents =
       NavigateTo("/video_conference_demo.html");
@@ -636,7 +658,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest, UseWhileDisabled) {
           l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_CAMERA_NAME)));
 }
 
-IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest,
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
                        TwoTabsButtonInformation) {
   // Open a tab.
   content::WebContents* web_contents_1 =
@@ -721,7 +743,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest,
   EXPECT_TRUE(bt_2->is_capturing_screen());
 }
 
-IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest, TwoTabsReturnToApp) {
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest, TwoTabsReturnToApp) {
   // Open a tab.
   content::WebContents* web_contents_1 =
       NavigateTo("/video_conference_demo.html");
