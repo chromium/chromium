@@ -28,7 +28,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/path_service.h"
@@ -44,6 +43,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
@@ -226,7 +226,8 @@ HRESULT CreateUniqueEventInEnvironment(const std::wstring& var_name,
                                        HANDLE* unique_event) {
   CHECK(unique_event);
 
-  const std::wstring event_name = base::ASCIIToWide(base::GenerateGUID());
+  const std::wstring event_name =
+      base::ASCIIToWide(base::Uuid::GenerateRandomV4().AsLowercaseString());
   NamedObjectAttributes attr =
       GetNamedObjectAttributes(event_name.c_str(), scope);
 
