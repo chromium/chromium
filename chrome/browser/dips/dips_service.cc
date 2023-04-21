@@ -385,6 +385,16 @@ void DIPSService::OnTimerFired() {
   base::Time start = base::Time::Now();
   // Storage init should be finished by now, so no need to delay until then.
   storage_.AsyncCall(&DIPSStorage::GetSitesToClear)
+      .WithArgs(absl::nullopt)
+      .Then(base::BindOnce(&DIPSService::DeleteDIPSEligibleState,
+                           weak_factory_.GetWeakPtr(), start));
+}
+
+void DIPSService::DeleteEligibleSitesImmediately() {
+  base::Time start = base::Time::Now();
+  // Storage init should be finished by now, so no need to delay until then.
+  storage_.AsyncCall(&DIPSStorage::GetSitesToClear)
+      .WithArgs(base::Seconds(0))
       .Then(base::BindOnce(&DIPSService::DeleteDIPSEligibleState,
                            weak_factory_.GetWeakPtr(), start));
 }

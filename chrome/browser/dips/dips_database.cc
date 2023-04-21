@@ -543,7 +543,8 @@ std::vector<std::string> DIPSDatabase::GetAllSitesForTesting() {
   return sites;
 }
 
-std::vector<std::string> DIPSDatabase::GetSitesThatBounced() {
+std::vector<std::string> DIPSDatabase::GetSitesThatBounced(
+    const base::TimeDelta& grace_period) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return {};
@@ -556,7 +557,54 @@ std::vector<std::string> DIPSDatabase::GetSitesThatBounced() {
         "ORDER BY site";  // clang-format on
   DCHECK(db_->IsSQLValid(kBounceSql));
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kBounceSql));
-  statement.BindTime(0, clock_->Now() - dips::kGracePeriod.Get());
+  statement.BindTime(0, clock_->Now() - grace_period);
+
+  std::vector<std::string> sites;
+  while (statement.Step()) {
+    sites.push_back(statement.ColumnString(0));
+  }
+  return sites;
+}
+
+std::vector<std::string> DIPSDatabase::GetSitesThatBouncedWithState(
+    const base::TimeDelta& grace_period) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!CheckDBInit()) {
+    return {};
+  }
+  ClearRowsWithExpiredInteractions();
+  static constexpr char kStatefulBounceSql[] =  // clang-format off
+      "SELECT site FROM bounces "
+        "WHERE first_stateful_bounce_time < ? AND "
+        "last_user_interaction_time IS NULL "
+        "ORDER BY site";  // clang-format on
+  DCHECK(db_->IsSQLValid(kStatefulBounceSql));
+  sql::Statement statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kStatefulBounceSql));
+  statement.BindTime(0, clock_->Now() - grace_period);
+
+  std::vector<std::string> sites;
+  while (statement.Step()) {
+    sites.push_back(statement.ColumnString(0));
+  }
+  return sites;
+}
+
+std::vector<std::string> DIPSDatabase::GetSitesThatUsedStorage(
+    const base::TimeDelta& grace_period) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!CheckDBInit()) {
+    return {};
+  }
+  ClearRowsWithExpiredInteractions();
+  static constexpr char kStorageSql[] =  // clang-format off
+    "SELECT site FROM bounces "
+      "WHERE first_site_storage_time < ? AND "
+        "last_user_interaction_time IS NULL "
+      "ORDER BY site";  // clang-format on
+  DCHECK(db_->IsSQLValid(kStorageSql));
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kStorageSql));
+  statement.BindTime(0, clock_->Now() - grace_period);
 
   std::vector<std::string> sites;
   while (statement.Step()) {
@@ -593,51 +641,6 @@ std::set<std::string> DIPSDatabase::FilterSitesWithInteraction(
     }
   }
   return interacted_sites;
-}
-
-std::vector<std::string> DIPSDatabase::GetSitesThatBouncedWithState() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CheckDBInit()) {
-    return {};
-  }
-  ClearRowsWithExpiredInteractions();
-  static constexpr char kStatefulBounceSql[] =  // clang-format off
-      "SELECT site FROM bounces "
-        "WHERE first_stateful_bounce_time < ? AND "
-        "last_user_interaction_time IS NULL "
-        "ORDER BY site";  // clang-format on
-  DCHECK(db_->IsSQLValid(kStatefulBounceSql));
-  sql::Statement statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kStatefulBounceSql));
-  statement.BindTime(0, clock_->Now() - dips::kGracePeriod.Get());
-
-  std::vector<std::string> sites;
-  while (statement.Step()) {
-    sites.push_back(statement.ColumnString(0));
-  }
-  return sites;
-}
-
-std::vector<std::string> DIPSDatabase::GetSitesThatUsedStorage() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CheckDBInit()) {
-    return {};
-  }
-  ClearRowsWithExpiredInteractions();
-  static constexpr char kStorageSql[] =  // clang-format off
-    "SELECT site FROM bounces "
-      "WHERE first_site_storage_time < ? AND "
-        "last_user_interaction_time IS NULL "
-      "ORDER BY site";  // clang-format on
-  DCHECK(db_->IsSQLValid(kStorageSql));
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kStorageSql));
-  statement.BindTime(0, clock_->Now() - dips::kGracePeriod.Get());
-
-  std::vector<std::string> sites;
-  while (statement.Step()) {
-    sites.push_back(statement.ColumnString(0));
-  }
-  return sites;
 }
 
 size_t DIPSDatabase::ClearRowsWithExpiredInteractions() {

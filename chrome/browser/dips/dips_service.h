@@ -57,6 +57,10 @@ class DIPSService : public KeyedService {
                     network::mojom::ClearDataFilterPtr filter,
                     const DIPSEventRemovalType type);
 
+  // This allows for deletion of state for sites deemed eligible when evaluated
+  // with no grace period.
+  void DeleteEligibleSitesImmediately();
+
   void HandleRedirectChain(std::vector<DIPSRedirectInfoPtr> redirects,
                            DIPSRedirectChainInfoPtr chain);
 

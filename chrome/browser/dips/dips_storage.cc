@@ -215,40 +215,47 @@ std::set<std::string> DIPSStorage::FilterSitesWithoutInteraction(
   return sites;
 }
 
-std::vector<std::string> DIPSStorage::GetSitesThatBounced() const {
+std::vector<std::string> DIPSStorage::GetSitesThatBounced(
+    const base::TimeDelta& grace_period) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
-  return db_->GetSitesThatBounced();
+  return db_->GetSitesThatBounced(grace_period);
 }
 
-std::vector<std::string> DIPSStorage::GetSitesThatBouncedWithState() const {
+std::vector<std::string> DIPSStorage::GetSitesThatBouncedWithState(
+    const base::TimeDelta& grace_period) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
-  return db_->GetSitesThatBouncedWithState();
+  return db_->GetSitesThatBouncedWithState(grace_period);
 }
 
-std::vector<std::string> DIPSStorage::GetSitesThatUsedStorage() const {
+std::vector<std::string> DIPSStorage::GetSitesThatUsedStorage(
+    const base::TimeDelta& grace_period) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
-  return db_->GetSitesThatUsedStorage();
+  return db_->GetSitesThatUsedStorage(grace_period);
 }
 
-std::vector<std::string> DIPSStorage::GetSitesToClear() const {
+std::vector<std::string> DIPSStorage::GetSitesToClear(
+    absl::optional<base::TimeDelta> custom_period) const {
   std::vector<std::string> sites_to_clear;
+  base::TimeDelta grace_period =
+      custom_period.value_or(dips::kGracePeriod.Get());
+
   switch (dips::kTriggeringAction.Get()) {
     case DIPSTriggeringAction::kNone: {
       return {};
     }
     case DIPSTriggeringAction::kStorage: {
-      sites_to_clear = GetSitesThatUsedStorage();
+      sites_to_clear = GetSitesThatUsedStorage(grace_period);
       break;
     }
     case DIPSTriggeringAction::kBounce: {
-      sites_to_clear = GetSitesThatBounced();
+      sites_to_clear = GetSitesThatBounced(grace_period);
       break;
     }
     case DIPSTriggeringAction::kStatefulBounce: {
-      sites_to_clear = GetSitesThatBouncedWithState();
+      sites_to_clear = GetSitesThatBouncedWithState(grace_period);
       break;
     }
   }

@@ -154,6 +154,9 @@ class DIPSServiceStateRemovalTest : public testing::Test {
     clock_.SetNow(now);
   }
 
+  base::Time Now() { return clock_.Now(); }
+  void SetNow(base::Time now) { clock_.SetNow(now); }
+
   void AdvanceTimeBy(base::TimeDelta delta) { clock_.Advance(delta); }
 
   void FireDIPSTimer() {
@@ -380,6 +383,51 @@ TEST_F(DIPSServiceStateRemovalTest,
               EntryUrlsAre("DIPS.Deletion", {"http://excepted-as-3p.com/",
                                              "http://excepted-as-1p.com/",
                                              "http://not-excepted.com/"}));
+}
+
+TEST_F(DIPSServiceStateRemovalTest, ImmediateEnforcement) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      dips::kFeature, {{"delete", "true"}, {"triggering_action", "bounce"}});
+  SetNow(base::Time::FromDoubleT(2));
+
+  // Record a bounce.
+  GURL url("https://example.com");
+  base::Time bounce = Now();
+  GetService()
+      ->storage()
+      ->AsyncCall(&DIPSStorage::RecordBounce)
+      .WithArgs(url, bounce, false);
+  WaitOnStorage();
+  EXPECT_TRUE(GetDIPSState(url).has_value());
+
+  // Set the current time to just after the bounce happened and simulate firing
+  // the DIPS timer.
+  AdvanceTimeTo(bounce + tiny_delta);
+  FireDIPSTimer();
+  task_environment_.RunUntilIdle();
+
+  // Verify a removal task was not posted to the BrowsingDataRemover(Delegate).
+  delegate_.VerifyAndClearExpectations();
+
+  auto filter_builder = content::BrowsingDataFilterBuilder::Create(
+      content::BrowsingDataFilterBuilder::Mode::kDelete);
+  filter_builder->AddRegisterableDomain(GetSiteForDIPS(url));
+  delegate_.ExpectCall(
+      base::Time::Min(), base::Time::Max(),
+      chrome_browsing_data_remover::FILTERABLE_DATA_TYPES |
+          content::BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
+      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
+          content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
+      filter_builder.get());
+
+  // Perform immediate enforcement of deletion, without regard for grace period.
+  GetService()->DeleteEligibleSitesImmediately();
+  task_environment_.RunUntilIdle();
+
+  // Verify that a removal task was posted to the BrowsingDataRemover(Delegate)
+  // for 'url'.
+  delegate_.VerifyAndClearExpectations();
 }
 
 // A test class that verifies DIPSService state deletion metrics collection
