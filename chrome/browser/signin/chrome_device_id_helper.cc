@@ -12,8 +12,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/command_line.h"
-#include "base/guid.h"
 #include "base/logging.h"
+#include "base/uuid.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "components/prefs/pref_service.h"
@@ -54,7 +54,7 @@ std::string GetSigninScopedDeviceIdForProfile(Profile* profile) {
 
 std::string GenerateSigninScopedDeviceId(bool for_ephemeral) {
   constexpr char kEphemeralUserDeviceIDPrefix[] = "t_";
-  std::string guid = base::GenerateGUID();
+  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   return for_ephemeral ? kEphemeralUserDeviceIDPrefix + guid : guid;
 }
 
