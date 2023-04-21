@@ -82612,17 +82612,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="443" label="Port 443"/>
 </enum>
 
-<enum name="PostMergeVerificationOutcome">
-  <int value="0" label="Undefined"/>
-  <int value="1" label="Succeeded"/>
-  <int value="2" label="No accounts found"/>
-  <int value="3" label="Missing primary account"/>
-  <int value="4" label="Primary account is not the first"/>
-  <int value="5" label="Verification failed"/>
-  <int value="6" label="Connection failed"/>
-  <int value="7" label="Overflow"/>
-</enum>
-
 <enum name="PostOperationState">
   <obsolete>
     Removed in M95.

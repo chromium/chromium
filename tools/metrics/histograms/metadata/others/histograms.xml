@@ -8368,38 +8368,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OAuth2Login.PostMergeVerification"
-    enum="PostMergeVerificationOutcome" expires_after="2021-06-17">
-  <obsolete>
-    Deprecated on 2023-03-27 in M114. The code that generated this histogram was
-    removed.
-  </obsolete>
-  <owner>droger@chromium.org</owner>
-  <owner>msarda@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Outcome of Chrome OS GAIA cookie post-merge session verification process. It
-    measures how often /MergeSession request collided with browser session
-    restore process resulting in partially authenticated primary GAIA session.
-  </summary>
-</histogram>
-
-<histogram name="OAuth2Login.PreMergeVerification"
-    enum="PostMergeVerificationOutcome" expires_after="2021-06-17">
-  <obsolete>
-    Deprecated on 2023-03-27 in M114. The code that generated this histogram was
-    removed.
-  </obsolete>
-  <owner>droger@chromium.org</owner>
-  <owner>msarda@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Outcome of Chrome OS GAIA cookie pre-merge session verification process. It
-    measures how often we need to perform /MergeSession request to
-    re-authenticated exisitng user with GAIA.
-  </summary>
-</histogram>
-
 <histogram name="OAuth2Login.SessionRestore" enum="GaiaSessionRestoreOutcome"
     expires_after="2023-08-20">
   <owner>anastasiian@chromium.org</owner>
