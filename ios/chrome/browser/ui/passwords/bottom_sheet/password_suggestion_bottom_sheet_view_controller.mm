@@ -18,6 +18,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -208,6 +209,13 @@ CGFloat const kTableViewCornerRadius = 10;
   cell.URLLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
   cell.URLLabel.hidden = NO;
 
+  // Make separator invisible on last cell
+  CGFloat separatorLeftMargin =
+      (_tableViewIsMinimized || [self isLastRow:indexPath])
+          ? _tableView.bounds.size.width
+          : kTableViewHorizontalSpacing;
+  cell.separatorInset = UIEdgeInsetsMake(0.f, separatorLeftMargin, 0.f, 0.f);
+
   [cell setFaviconContainerBackgroundColor:
             [UIColor colorNamed:kPrimaryBackgroundColor]];
   cell.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
@@ -375,6 +383,13 @@ CGFloat const kTableViewCornerRadius = 10;
   [self.delegate didSelectSuggestion:_row];
 }
 
+// Returns whether the provided index path points to the last row of the table
+// view.
+- (BOOL)isLastRow:(NSIndexPath*)indexPath {
+  return NSUInteger(indexPath.row) == (_suggestions.count - 1);
+}
+
+// Height of 1 row in the table view
 - (CGFloat)rowHeight {
   // TODO(crbug.com/1422350): The row height below must be dynamic for
   // accessibility.

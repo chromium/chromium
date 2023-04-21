@@ -42,6 +42,7 @@ source_set("bottom_sheet") {
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
