@@ -27,6 +27,11 @@
   cr-policy-pref-indicator {
     margin-inline-start: var(--cr-controlled-by-spacing);
   }
+
+  /* Style links that can appear within #subLabel. */
+  a {
+    color: var(--cr-link-color);
+  }
 </style>
 <div id="outerRow" noSubLabel$="[[!hasSubLabel_(subLabel, subLabelHtml)]]">
   <cr-checkbox id="checkbox" checked="{{checked}}"
