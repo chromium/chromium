@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"
@@ -560,12 +561,21 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
         return;
       }
       if (features::kAsyncStartServiceWorkerForEmptyFetchHandler.Get()) {
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        int duration =
+            features::kAsyncStartServiceWorkerForEmptyFetchHandlerDurationInMs
+                .Get();
+        constexpr int kDurationThresholdInMs = 10 * 1000;  // 10 seconds.
+        if (duration < 0 || duration > kDurationThresholdInMs) {
+          LOG(ERROR) << "Ignored out-of-range duration:" << duration;
+          duration = 0;
+        }
+        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(
                 &ServiceWorkerControlleeRequestHandler::MaybeStartServiceWorker,
                 weak_factory_.GetWeakPtr(), std::move(active_version),
-                ServiceWorkerMetrics::EventType::SKIP_EMPTY_FETCH_HANDLER));
+                ServiceWorkerMetrics::EventType::SKIP_EMPTY_FETCH_HANDLER),
+            base::Milliseconds(duration));
         return;
       }
       MaybeStartServiceWorker(
