@@ -4,9 +4,9 @@
 
 package org.chromium.chromecast.shell;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyIterable;
-import static org.junit.Assert.assertThat;
 
 import android.content.Intent;
 import android.content.IntentFilter;

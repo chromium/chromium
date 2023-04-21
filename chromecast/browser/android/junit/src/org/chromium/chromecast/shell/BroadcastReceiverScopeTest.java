@@ -6,9 +6,9 @@ package org.chromium.chromecast.shell;
 
 import static android.os.Looper.getMainLooper;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyIterable;
-import static org.junit.Assert.assertThat;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.content.Context;
