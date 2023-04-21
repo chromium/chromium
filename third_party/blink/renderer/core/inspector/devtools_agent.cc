@@ -96,7 +96,10 @@ class DevToolsAgent::IOAgent : public mojom::blink::DevToolsAgent {
   }
 
   // May be called from any thread.
-  void DeleteSoon() { io_task_runner_->DeleteSoon(FROM_HERE, this); }
+  void DeleteSoon() {
+    recordreplay::Assert("[RUN-1124-1785] DevToolsAgent::IOAgent::DeleteSoon %d", receiver_.is_bound());
+    io_task_runner_->DeleteSoon(FROM_HERE, this);
+  }
 
   ~IOAgent() override {}
 

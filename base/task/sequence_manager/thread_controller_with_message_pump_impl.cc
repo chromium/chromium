@@ -477,8 +477,9 @@ WorkDetails ThreadControllerWithMessagePumpImpl::DoWorkImpl(
             : TimeTicks(),
         lazy_now_task_selected);
 
-    recordreplay::Assert("[RUN-1124] ThreadControllerWithMessagePumpImpl::DoWorkImpl #6 %d",
-                         !!selected_task);
+    recordreplay::Assert("[RUN-1124] ThreadControllerWithMessagePumpImpl::DoWorkImpl #6 %d %d",
+                         selected_task ? selected_task->task.RecordReplayId() : 0,
+                         selected_task ? selected_task->task.IsCanceled() : -1);
 
     if (!selected_task) {
       OnEndWorkItemImpl(lazy_now_task_selected);

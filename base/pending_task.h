@@ -85,6 +85,10 @@ struct BASE_EXPORT PendingTask {
   int sequence_num = 0;
 
   bool task_backtrace_overflow = false;
+
+  int record_replay_id = 0;
+
+  int RecordReplayId() const { return record_replay_id; }
 };
 
 }  // namespace base
