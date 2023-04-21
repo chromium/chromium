@@ -8,7 +8,6 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
@@ -17,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
@@ -138,7 +138,7 @@ Profile::OTRProfileID Profile::OTRProfileID::CreateUnique(
     const std::string& profile_id_prefix) {
   return OTRProfileID(base::StringPrintf(
       "%s-%s", profile_id_prefix.c_str(),
-      base::GUID::GenerateRandomV4().AsLowercaseString().c_str()));
+      base::Uuid::GenerateRandomV4().AsLowercaseString().c_str()));
 }
 
 // static
