@@ -1538,9 +1538,7 @@ AXNode* AXPlatformNodeTextRangeProviderWin::GetSelectionCommonAnchor() {
 // if we move by word from a text field (focusable) to a static text (not
 // focusable), the selection will stay on the text field because the DOM focused
 // element will still be the text field. To avoid that, we need to remove the
-// focus from this element. Since |ax::mojom::Action::kBlur| is not implemented,
-// we perform a |ax::mojom::Action::focus| action on the root node. The result
-// is the same.
+// focus from this element.
 void AXPlatformNodeTextRangeProviderWin::
     RemoveFocusFromPreviousSelectionIfNeeded(const AXNodeRange& new_selection) {
   const AXNode* old_selection_node = GetSelectionCommonAnchor();
@@ -1568,9 +1566,16 @@ void AXPlatformNodeTextRangeProviderWin::
         GetRootDelegate(old_selection_node->tree()->GetAXTreeID());
     DCHECK(root_delegate);
 
-    AXActionData focus_action;
-    focus_action.action = ax::mojom::Action::kFocus;
-    root_delegate->AccessibilityPerformAction(focus_action);
+    AXPlatformNodeWin* old_selection_platform_node =
+        GetPlatformNodeFromAXNode(old_selection_node);
+    if (!old_selection_platform_node) {
+      return;
+    }
+
+    AXActionData blur_action;
+    blur_action.action = ax::mojom::Action::kBlur;
+    old_selection_platform_node->GetDelegate()->AccessibilityPerformAction(
+        blur_action);
   }
 }
 

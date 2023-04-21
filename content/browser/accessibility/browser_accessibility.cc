@@ -1197,6 +1197,9 @@ bool BrowserAccessibility::AccessibilityPerformAction(
     case ax::mojom::Action::kDoDefault:
       manager_->DoDefaultAction(*this);
       return true;
+    case ax::mojom::Action::kBlur:
+      manager_->Blur(*this);
+      return true;
     case ax::mojom::Action::kFocus:
       manager_->SetFocus(*this);
       return true;

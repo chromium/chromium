@@ -1286,6 +1286,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // event listeners. These all return true if handled.
   virtual bool OnNativeDecrementAction();
   virtual bool OnNativeClickAction();
+  virtual bool OnNativeBlurAction();
   virtual bool OnNativeFocusAction();
   virtual bool OnNativeIncrementAction();
   bool OnNativeScrollToGlobalPointAction(const gfx::Point&) const;

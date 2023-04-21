@@ -222,6 +222,45 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, FocusAction) {
   EXPECT_EQ(target->GetId(), focus->GetId());
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, BlurAction) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <button>One</button>
+      <button>Two</button>
+      <button>Three</button>
+      )HTML");
+
+  BrowserAccessibility* target = FindNode(ax::mojom::Role::kButton, "One");
+  ASSERT_NE(nullptr, target);
+
+  // First, set the focus.
+  AccessibilityNotificationWaiter waiter1(
+      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kFocus);
+  GetManager()->SetFocus(*target);
+  ASSERT_TRUE(waiter1.WaitForNotification());
+
+  BrowserAccessibility* focus = GetManager()->GetFocus();
+  ASSERT_NE(nullptr, focus);
+  EXPECT_EQ(target->GetId(), focus->GetId());
+
+  // Second, fire the blur event to validate that it works.
+  AccessibilityNotificationWaiter waiter2(
+      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kBlur);
+  AccessibilityNotificationWaiter waiter3(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ui::AXEventGenerator::Event::FOCUS_CHANGED);
+
+  GetManager()->Blur(*target);
+
+  ASSERT_TRUE(waiter2.WaitForNotification());
+  ASSERT_TRUE(waiter3.WaitForNotification());
+
+  focus = GetManager()->GetFocus();
+  ASSERT_NE(nullptr, focus);
+
+  // The focus should have moved to the root of the tree.
+  EXPECT_EQ(GetManager()->GetRoot()->id(), focus->GetId());
+}
+
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
                        IncrementDecrementActions) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(

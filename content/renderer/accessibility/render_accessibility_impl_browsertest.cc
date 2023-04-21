@@ -1097,6 +1097,15 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
   }
   EXPECT_TRUE(input_range.IsFocused());
 
+  {
+    // Blurring an element requires layout to be clean.
+    GetRenderAccessibilityImpl()->GetAXContext()->UpdateAXForAllDocuments();
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kBlur;
+    EXPECT_TRUE(input_range_action_target->PerformAction(action_data));
+  }
+  EXPECT_FALSE(input_range.IsFocused());
+
   // Increment/decrement actions produce synthesized keydown and keyup events,
   // and the keyup event is delayed 100ms to look more natural. We need to wait
   // for them to happen to finish the test cleanly in the TearDown phase.

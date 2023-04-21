@@ -802,6 +802,18 @@ BrowserAccessibilityManager::GetFocusFromThisOrDescendantFrame() const {
   return GetActiveDescendant(obj);
 }
 
+void BrowserAccessibilityManager::Blur(const BrowserAccessibility& node) {
+  if (!delegate_) {
+    return;
+  }
+
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kBlur;
+  action_data.target_node_id = node.GetId();
+  delegate_->AccessibilityPerformAction(action_data);
+  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
+}
+
 void BrowserAccessibilityManager::SetFocus(const BrowserAccessibility& node) {
   if (!delegate_)
     return;

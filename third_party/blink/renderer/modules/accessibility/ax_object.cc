@@ -6222,7 +6222,7 @@ LayoutRect AXObject::GetBoundsInFrameCoordinates() const {
 bool AXObject::PerformAction(const ui::AXActionData& action_data) {
   switch (action_data.action) {
     case ax::mojom::blink::Action::kBlur:
-      return RequestFocusAction();
+      return OnNativeBlurAction();
     case ax::mojom::blink::Action::kClearAccessibilityFocus:
       return InternalClearAccessibilityFocusAction();
     case ax::mojom::blink::Action::kCollapse:
@@ -6563,6 +6563,10 @@ bool AXObject::OnNativeSetSequentialFocusNavigationStartingPointAction() {
 }
 
 bool AXObject::OnNativeDecrementAction() {
+  return false;
+}
+
+bool AXObject::OnNativeBlurAction() {
   return false;
 }
 

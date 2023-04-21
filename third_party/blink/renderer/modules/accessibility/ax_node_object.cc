@@ -4695,6 +4695,33 @@ const AtomicString& AXNodeObject::GetInternalsAttribute(
   return element.EnsureElementInternals().FastGetAttribute(attribute);
 }
 
+bool AXNodeObject::OnNativeBlurAction() {
+  Document* document = GetDocument();
+  Node* node = GetNode();
+  if (!document || !node) {
+    return false;
+  }
+
+  document->UpdateStyleAndLayoutTreeForNode(node);
+
+  // An AXObject's node will always be of type `Element`, `Document` or
+  // `Text`. If the object we're currently on is associated with the currently
+  // focused element or the document object, we want to clear the focus.
+  // Otherwise, no modification is needed.
+  Element* element = GetElement();
+  if (element) {
+    element->blur();
+    return true;
+  }
+
+  if (IsA<Document>(GetNode())) {
+    document->ClearFocusedElement();
+    return true;
+  }
+
+  return false;
+}
+
 bool AXNodeObject::OnNativeFocusAction() {
   // Checking if node is focusable in a native focus action requires that we
   // have updated style and layout tree, since the focus check relies on the

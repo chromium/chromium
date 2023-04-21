@@ -257,6 +257,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   const AtomicString& GetAttribute(const QualifiedName&) const override;
 
   // Modify or take an action on an object.
+  bool OnNativeBlurAction() final;
   bool OnNativeFocusAction() final;
   bool OnNativeIncrementAction() final;
   bool OnNativeDecrementAction() final;
