@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TESTING_LIBFUZZER_FUZZERS_COMMAND_BUFFER_FUZZER_CMD_BUF_FUZZ_H_
-#define TESTING_LIBFUZZER_FUZZERS_COMMAND_BUFFER_FUZZER_CMD_BUF_FUZZ_H_
+#ifndef TESTING_LIBFUZZER_FUZZERS_COMMAND_BUFFER_LPM_FUZZER_CMD_BUF_LPM_FUZZ_H_
+#define TESTING_LIBFUZZER_FUZZERS_COMMAND_BUFFER_LPM_FUZZER_CMD_BUF_LPM_FUZZ_H_
 
 #include <dawn/native/DawnNative.h>
 #include <dawn/webgpu_cpp.h>
@@ -25,8 +25,8 @@
 #include "gpu/ipc/webgpu_in_process_context.h"
 #include "ui/gl/buildflags.h"
 
-#include "testing/libfuzzer/fuzzers/command_buffer_fuzzer/cmd_buf_fuzz.pb.h"
-#include "testing/libfuzzer/fuzzers/command_buffer_fuzzer/webgpu_support.h"
+#include "testing/libfuzzer/fuzzers/command_buffer_lpm_fuzzer/cmd_buf_lpm_fuzz.pb.h"
+#include "testing/libfuzzer/fuzzers/command_buffer_lpm_fuzzer/webgpu_support.h"
 
 namespace gpu::cmdbuf::fuzzing {
 
@@ -175,4 +175,4 @@ class CmdBufFuzz : public base::TestSuite {
 };
 }  // namespace gpu::cmdbuf::fuzzing
 
-#endif  // TESTING_LIBFUZZER_FUZZERS_COMMAND_BUFFER_FUZZER_CMD_BUF_FUZZ_H_
+#endif  // TESTING_LIBFUZZER_FUZZERS_COMMAND_BUFFER_LPM_FUZZER_CMD_BUF_LPM_FUZZ_H_

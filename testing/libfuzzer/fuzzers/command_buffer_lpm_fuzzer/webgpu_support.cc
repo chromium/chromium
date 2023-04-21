@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "testing/libfuzzer/fuzzers/command_buffer_fuzzer/webgpu_support.h"
+#include "testing/libfuzzer/fuzzers/command_buffer_lpm_fuzzer/webgpu_support.h"
 #include "gpu/webgpu/callback.h"
-#include "testing/libfuzzer/fuzzers/command_buffer_fuzzer/cmd_buf_fuzz.h"
+#include "testing/libfuzzer/fuzzers/command_buffer_lpm_fuzzer/cmd_buf_lpm_fuzz.h"
 
 namespace gpu::cmdbuf::fuzzing {
 

@@ -38,9 +38,9 @@
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
-#include "testing/libfuzzer/fuzzers/command_buffer_fuzzer/cmd_buf_fuzz.h"
-#include "testing/libfuzzer/fuzzers/command_buffer_fuzzer/cmd_buf_fuzz.pb.h"
-#include "testing/libfuzzer/fuzzers/command_buffer_fuzzer/webgpu_support.h"
+#include "testing/libfuzzer/fuzzers/command_buffer_lpm_fuzzer/cmd_buf_lpm_fuzz.h"
+#include "testing/libfuzzer/fuzzers/command_buffer_lpm_fuzzer/cmd_buf_lpm_fuzz.pb.h"
+#include "testing/libfuzzer/fuzzers/command_buffer_lpm_fuzzer/webgpu_support.h"
 #include "testing/libfuzzer/libfuzzer_exports.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 

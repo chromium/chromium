@@ -6,8 +6,8 @@
 #include "gpu/command_buffer/client/webgpu_cmd_helper.h"
 #include "gpu/command_buffer/client/webgpu_implementation.h"
 
-#ifndef TESTING_LIBFUZZER_FUZZERS_COMMAND_BUFFER_FUZZER_WEBGPU_SUPPORT_H_
-#define TESTING_LIBFUZZER_FUZZERS_COMMAND_BUFFER_FUZZER_WEBGPU_SUPPORT_H_
+#ifndef TESTING_LIBFUZZER_FUZZERS_COMMAND_BUFFER_LPM_FUZZER_WEBGPU_SUPPORT_H_
+#define TESTING_LIBFUZZER_FUZZERS_COMMAND_BUFFER_LPM_FUZZER_WEBGPU_SUPPORT_H_
 
 namespace gpu::cmdbuf::fuzzing {
 
@@ -27,4 +27,4 @@ class DawnWireSerializerFuzzer : public dawn::wire::CommandSerializer {
 
 }  // namespace gpu::cmdbuf::fuzzing
 
-#endif  // TESTING_LIBFUZZER_FUZZERS_COMMAND_BUFFER_FUZZER_WEBGPU_SUPPORT_H_
+#endif  // TESTING_LIBFUZZER_FUZZERS_COMMAND_BUFFER_LPM_FUZZER_WEBGPU_SUPPORT_H_
