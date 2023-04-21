@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/common/extensions/api/wm_desks_private.h"
 
@@ -27,12 +27,12 @@ class WMDesksPrivateFeature {
       base::OnceCallback<void(std::string, const base::Value)>;
   // Gets the template associated with the templateUuid and returns its JSON
   // representation.
-  virtual void GetDeskTemplateJson(const base::GUID& template_uuid,
+  virtual void GetDeskTemplateJson(const base::Uuid& template_uuid,
                                    Profile* profile,
                                    GetDeskTemplateJsonCallback callback) = 0;
 
   using LaunchDeskCallback =
-      base::OnceCallback<void(std::string, const base::GUID&)>;
+      base::OnceCallback<void(std::string, const base::Uuid&)>;
 
   // Launches a desk with provided `desk_name` and returns `desk_uuid` of new
   // desk.
@@ -43,7 +43,7 @@ class WMDesksPrivateFeature {
   // Removes a desk as specified in `desk_uuid`. If `combine_desk` is present or
   // set to true, remove the desk and combine windows to the active desk to the
   // left. Otherwise close all windows on the desk.
-  virtual void RemoveDesk(const base::GUID& desk_uuid,
+  virtual void RemoveDesk(const base::Uuid& desk_uuid,
                           bool combine_desk,
                           RemoveDeskCallback callback) = 0;
 
@@ -68,13 +68,13 @@ class WMDesksPrivateFeature {
 
   using DeleteSavedDeskCallback = base::OnceCallback<void(std::string)>;
   // Deletes the saved desk from the library.
-  virtual void DeleteSavedDesk(const base::GUID& desk_uuid,
+  virtual void DeleteSavedDesk(const base::Uuid& desk_uuid,
                                DeleteSavedDeskCallback callback) = 0;
 
   using RecallSavedDeskCallback =
-      base::OnceCallback<void(std::string, const base::GUID&)>;
+      base::OnceCallback<void(std::string, const base::Uuid&)>;
   // Launches a saved desk from the library back to active desk.
-  virtual void RecallSavedDesk(const base::GUID& desk_uuid,
+  virtual void RecallSavedDesk(const base::Uuid& desk_uuid,
                                RecallSavedDeskCallback callback) = 0;
 
   using GetSavedDesksCallback =
@@ -84,19 +84,19 @@ class WMDesksPrivateFeature {
   virtual void GetSavedDesks(GetSavedDesksCallback callback) = 0;
 
   using GetActiveDeskCallback =
-      base::OnceCallback<void(std::string, const base::GUID&)>;
+      base::OnceCallback<void(std::string, const base::Uuid&)>;
   // Retrieves the UUID of the current active desk.
   virtual void GetActiveDesk(GetActiveDeskCallback callback) = 0;
 
   using SwitchDeskCallback = base::OnceCallback<void(std::string)>;
   // Switches to the target desk.
-  virtual void SwitchDesk(const base::GUID& desk_uuid,
+  virtual void SwitchDesk(const base::Uuid& desk_uuid,
                           SwitchDeskCallback callback) = 0;
 
   using GetDeskByIDCallback =
       base::OnceCallback<void(std::string, api::wm_desks_private::Desk desk)>;
   // Retrieves the desk information by desk ID.
-  virtual void GetDeskByID(const base::GUID& desk_uuid,
+  virtual void GetDeskByID(const base::Uuid& desk_uuid,
                            GetDeskByIDCallback callback) = 0;
 };
 

@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_api.h"
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_feature_lacros.h"
 #include "chrome/common/extensions/api/wm_desks_private.h"
@@ -89,7 +89,7 @@ WMDesksPrivateFeatureLacros::WMDesksPrivateFeatureLacros() = default;
 WMDesksPrivateFeatureLacros::~WMDesksPrivateFeatureLacros() = default;
 
 void WMDesksPrivateFeatureLacros::GetDeskTemplateJson(
-    const base::GUID& template_uuid,
+    const base::Uuid& template_uuid,
     Profile* profile,
     GetDeskTemplateJsonCallback callback) {
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
@@ -133,7 +133,7 @@ void WMDesksPrivateFeatureLacros::LaunchDesk(std::string desk_name,
                      std::move(callback)));
 }
 
-void WMDesksPrivateFeatureLacros::RemoveDesk(const base::GUID& desk_uuid,
+void WMDesksPrivateFeatureLacros::RemoveDesk(const base::Uuid& desk_uuid,
                                              bool close_all,
                                              RemoveDeskCallback callback) {
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
@@ -220,7 +220,7 @@ void WMDesksPrivateFeatureLacros::SaveActiveDesk(
 }
 
 void WMDesksPrivateFeatureLacros::DeleteSavedDesk(
-    const base::GUID& desk_uuid,
+    const base::Uuid& desk_uuid,
     DeleteSavedDeskCallback callback) {
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (!service->IsAvailable<crosapi::mojom::Desk>()) {
@@ -242,7 +242,7 @@ void WMDesksPrivateFeatureLacros::DeleteSavedDesk(
 }
 
 void WMDesksPrivateFeatureLacros::RecallSavedDesk(
-    const base::GUID& desk_uuid,
+    const base::Uuid& desk_uuid,
     RecallSavedDeskCallback callback) {
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (!service->IsAvailable<crosapi::mojom::Desk>()) {
@@ -311,7 +311,7 @@ void WMDesksPrivateFeatureLacros::GetActiveDesk(
       std::move(callback)));
 }
 
-void WMDesksPrivateFeatureLacros::SwitchDesk(const base::GUID& desk_uuid,
+void WMDesksPrivateFeatureLacros::SwitchDesk(const base::Uuid& desk_uuid,
                                              SwitchDeskCallback callback) {
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (!service->IsAvailable<crosapi::mojom::Desk>() ||
@@ -335,7 +335,7 @@ void WMDesksPrivateFeatureLacros::SwitchDesk(const base::GUID& desk_uuid,
           std::move(callback)));
 }
 
-void WMDesksPrivateFeatureLacros::GetDeskByID(const base::GUID& desk_uuid,
+void WMDesksPrivateFeatureLacros::GetDeskByID(const base::Uuid& desk_uuid,
                                               GetDeskByIDCallback callback) {
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (!service->IsAvailable<crosapi::mojom::Desk>() ||

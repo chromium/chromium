@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, LaunchAndCloseDeskTest) {
       launch_desk_function.get(), R"([{"deskName":"test"}])", profile());
   EXPECT_TRUE(desk_id->is_string());
   EXPECT_TRUE(
-      base::GUID::ParseCaseInsensitive(desk_id->GetString()).is_valid());
+      base::Uuid::ParseCaseInsensitive(desk_id->GetString()).is_valid());
 
   // Wait for launch desk animation to settle.
   WaitForDeskAnimation(lacros_service, kWaitForAnimationTimeout);
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, SwitchToDifferentDeskTest) {
       get_active_desk_function.get(), "[]", profile());
   ASSERT_TRUE(desk_id->is_string());
   EXPECT_TRUE(
-      base::GUID::ParseCaseInsensitive(desk_id->GetString()).is_valid());
+      base::Uuid::ParseCaseInsensitive(desk_id->GetString()).is_valid());
 
   // Launch a desk.
   auto launch_desk_function =
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, SwitchToDifferentDeskTest) {
       launch_desk_function.get(), R"([{"deskName":"test"}])", profile());
   ASSERT_TRUE(desk_id_1->is_string());
   EXPECT_TRUE(
-      base::GUID::ParseCaseInsensitive(desk_id_1->GetString()).is_valid());
+      base::Uuid::ParseCaseInsensitive(desk_id_1->GetString()).is_valid());
   // Waiting for desk launch animation to settle
   WaitForDeskAnimation(lacros_service, kWaitForAnimationTimeout);
 
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, SwitchToCurrentDeskTest) {
       get_active_desk_function.get(), "[]", profile());
   ASSERT_TRUE(desk_id->is_string());
   ASSERT_TRUE(
-      base::GUID::ParseCaseInsensitive(desk_id->GetString()).is_valid());
+      base::Uuid::ParseCaseInsensitive(desk_id->GetString()).is_valid());
 
   // Switches to the current desk.
   auto switch_desk_function =
