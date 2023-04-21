@@ -261,17 +261,17 @@ const int kMainIntentCheckDelay = 1;
     completionHandler();
     return;
   }
-  ChromeBrowserState* browserState =
-      _mainController.browserProviderInterface.mainBrowserProvider.browser
-          ->GetBrowserState();
-  if (!browserState) {
+  Browser* browser =
+      _mainController.browserProviderInterface.mainBrowserProvider.browser;
+  if (!browser) {
     // TODO(crbug.com/1368617): We should store the completionHandler and wait
     // for mainBrowserProvider creation.
     completionHandler();
     return;
   }
   download::BackgroundDownloadService* download_service =
-      BackgroundDownloadServiceFactory::GetForBrowserState(browserState);
+      BackgroundDownloadServiceFactory::GetForBrowserState(
+          browser->GetBrowserState());
   if (download_service) {
     download_service->HandleEventsForBackgroundURLSession(
         base::BindOnce(completionHandler));
@@ -429,17 +429,17 @@ const int kMainIntentCheckDelay = 1;
 // the share sheet), which is an eligibility criterion for the default browser
 // blue dot promo.
 - (void)notifyFETAppStartupFromExternalIntent {
-  ChromeBrowserState* browserState =
-      _mainController.browserProviderInterface.mainBrowserProvider.browser
-          ->GetBrowserState();
+  Browser* browser =
+      _mainController.browserProviderInterface.mainBrowserProvider.browser;
 
   // OTR browsers are ignored because they can sometimes cause a nullptr tracker
   // to be returned from the tracker factory.
-  if (!browserState || browserState->IsOffTheRecord()) {
+  if (!browser || browser->GetBrowserState()->IsOffTheRecord()) {
     return;
   }
 
-  feature_engagement::TrackerFactory::GetForBrowserState(browserState)
+  feature_engagement::TrackerFactory::GetForBrowserState(
+      browser->GetBrowserState())
       ->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
 }
 

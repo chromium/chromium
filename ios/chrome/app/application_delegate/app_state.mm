@@ -258,7 +258,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   // Do not save cookies if it is already in progress.
   id<BrowserProvider> currentBrowserProvider =
       _browserLauncher.browserProviderInterface.currentBrowserProvider;
-  if (currentBrowserProvider.browser->GetBrowserState() && !_savingCookies) {
+  if (currentBrowserProvider.browser && !_savingCookies) {
     // Save cookies to disk. The empty critical closure guarantees that the task
     // will be run before backgrounding.
     scoped_refptr<net::URLRequestContextGetter> getter =
