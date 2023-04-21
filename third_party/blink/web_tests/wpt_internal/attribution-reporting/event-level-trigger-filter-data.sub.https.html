@@ -15,7 +15,7 @@ const filter_data_promise_test = (testCase) =>
   attribution_reporting_promise_test(async t => {
     const source = {
       source_event_id: generateSourceEventId(),
-      destination: `https://{{host}}`,
+      destination: 'https://{{host}}',
         filter_data: testCase.source_filter_data,
     };
     await registerAttributionSrc(t, {

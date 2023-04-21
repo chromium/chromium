@@ -12,7 +12,7 @@ const debug_key_promise_test = (testCase, forSource) =>
   attribution_reporting_promise_test(async t => {
     const source = {
       source_event_id: generateSourceEventId(),
-      destination: `https://{{host}}`,
+      destination: 'https://{{host}}',
       debug_key: forSource ? testCase.debugKey : undefined,
     };
     await registerAttributionSrc(t, {

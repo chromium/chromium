@@ -6,11 +6,11 @@
 <script src="resources/helpers.js"></script>
 <script>
 attribution_reporting_promise_test(async t => {
-  const host = `https://{{host}}`;
+  const host = 'https://{{host}}';
   const source = {
     destination: host,
     source_event_id: generateSourceEventId(),
-    filter_data: { a: ["b"] },
+    filter_data: { a: ['b'] },
   };
   await registerAttributionSrc(t, {
     source,

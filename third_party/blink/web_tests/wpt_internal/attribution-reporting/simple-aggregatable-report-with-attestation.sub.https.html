@@ -10,15 +10,15 @@ attribution_reporting_promise_test(async (t) => {
   //    report to then be sent.
   const source = {
     source_event_id: generateSourceEventId(),
-    destination: `https://{{host}}`,
+    destination: 'https://{{host}}',
     aggregation_keys: {
-      campaignCounts: "0x159",
-      geoValue: "0x5",
+      campaignCounts: '0x159',
+      geoValue: '0x5',
     },
   };
   await registerAttributionSrc(t, {
     source,
-    cookie: "foo=bar;Secure;HttpOnly;Path=/",
+    cookie: 'foo=bar;Secure;HttpOnly;Path=/',
   });
   await waitForSourceToBeRegistered(source.source_event_id);
 
@@ -27,17 +27,17 @@ attribution_reporting_promise_test(async (t) => {
   //    sign the blinded message receive and return a blind signature.
   const trigger = {
     aggregatable_trigger_data: [
-      { key_piece: "0x400", source_keys: ["campaignCounts"] },
-      { key_piece: "0xA80", source_keys: ["geoValue", "nonMatchingKey"] },
+      { key_piece: '0x400', source_keys: ['campaignCounts'] },
+      { key_piece: '0xA80', source_keys: ['geoValue', 'nonMatchingKey'] },
     ],
     aggregatable_values: { campaignCounts: 32768, geoValue: 1664 },
   };
   const triggerRegistrationResponse = await fetch(
-    "/wpt_internal/attribution-reporting/resources/trigger_with_attestation.py",
+    '/wpt_internal/attribution-reporting/resources/trigger_with_attestation.py',
     {
       headers: {
-        "Attribution-Reporting-Eligible": "trigger",
-        "Test-Trigger-Header-Value": JSON.stringify(trigger),
+        'Attribution-Reporting-Eligible': 'trigger',
+        'Test-Trigger-Header-Value': JSON.stringify(trigger),
       },
       keepalive: true,
     }
@@ -49,23 +49,23 @@ attribution_reporting_promise_test(async (t) => {
   //    a redemption header.
   const payload = await pollAggregatableReports();
   const headers = payload.reports[0].headers;
-  assert_own_property(headers, "sec-attribution-reporting-private-state-token");
+  assert_own_property(headers, 'sec-attribution-reporting-private-state-token');
   const redemptionHeader =
-    headers["sec-attribution-reporting-private-state-token"];
+    headers['sec-attribution-reporting-private-state-token'];
   // 4. We check that the redemption header can be validated. The implementation
   //    in trust_token_voprf.py is not complete (e.g. were not passing the message
   //    required for redemption and it still pass), but it still ensure that there
   //    is an attestation token and it has the right shape.
   const redemptionResponse = await fetch(
-    "/wpt_internal/attribution-reporting/resources/validate_attestation_header.py",
+    '/wpt_internal/attribution-reporting/resources/validate_attestation_header.py',
     {
       headers: {
-        "Test-Sec-Attribution-Reporting-Private-State-Token": redemptionHeader,
+        'Test-Sec-Attribution-Reporting-Private-State-Token': redemptionHeader,
       },
     }
   );
   assert_equals(redemptionResponse.status, 200);
 
-}, "Ensure aggregatable attribution with trigger attestation is received.");
+}, 'Ensure aggregatable attribution with trigger attestation is received.');
 
 </script>

@@ -180,7 +180,7 @@ const registerAttributionSrc = async (t, {
   if (source && 'source_event_id' in source) {
     // We add param indicating to stash the ID to be able to poll in
     // `waitForSourceToBeRegistered` and know when a source has been processed.
-    url.searchParams.set("store-source-id", source.source_event_id);
+    url.searchParams.set('store-source-id', source.source_event_id);
   }
 
   Object.entries(extraQueryParams)
@@ -301,7 +301,7 @@ const pollAttributionReports = async (url, origin = location.origin) => {
  */
 const waitForSourceToBeRegistered = async (sourceId) => {
   const url = blankURL();
-  url.searchParams.set("check-source-id", sourceId);
+  url.searchParams.set('check-source-id', sourceId);
 
   for (let i = 0; i < 20; i++) {
     const {status} = await fetch(url);

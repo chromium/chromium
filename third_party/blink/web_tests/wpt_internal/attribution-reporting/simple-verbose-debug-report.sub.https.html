@@ -7,8 +7,6 @@
 <script src="resources/helpers.js"></script>
 <script>
 attribution_reporting_promise_test(async t => {
-  const reportingOrigin = getDefaultReportingOrigin();
-
   await registerAttributionSrc(t, {
     trigger: {
       event_trigger_data: [{}],
@@ -16,16 +14,15 @@ attribution_reporting_promise_test(async t => {
       debug_key: '456',
     },
     cookie: attributionDebugCookie,
-    reportingOrigin,
   });
 
-  const payload = await pollVerboseDebugReports(reportingOrigin);
+  const payload = await pollVerboseDebugReports();
   assert_equals(payload.reports.length, 1);
   const report = JSON.parse(payload.reports[0].body);
   assert_equals(report.length, 1);
   assert_equals(report[0].type, 'trigger-no-matching-source');
   assert_own_property(report[0], 'body');
-  assert_equals(report[0].body.attribution_destination, `https://{{host}}`);
+  assert_equals(report[0].body.attribution_destination, 'https://{{host}}');
   assert_equals(report[0].body.trigger_debug_key, '456');
 }, 'Verbose debug report is received.');
 </script>

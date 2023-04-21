@@ -7,10 +7,9 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/helpers.js"></script>
 <script>
-
 const aggregatable_dedup_promise_test = (testCase) => {
   attribution_reporting_promise_test(async t => {
-    const host = `https://{{host}}`;
+    const host = 'https://{{host}}';
 
     const source = {
       source_event_id: generateSourceEventId(),

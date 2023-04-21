@@ -24,7 +24,7 @@ attribution_reporting_promise_test(async t => {
   const reportingOrigin = getDefaultReportingOrigin();
   const source = {
     source_event_id: generateSourceEventId(),
-    destination: `https://{{host}}`,
+    destination: 'https://{{host}}',
     debug_reporting: true,
   };
   const sourceType = await registerAttributionSrc(t, {

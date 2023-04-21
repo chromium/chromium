@@ -8,17 +8,17 @@
 attribution_reporting_promise_test(async t => {
   const sources = [{
       source_event_id: generateSourceEventId(),
-      destination: `https://{{host}}`,
+      destination: 'https://{{host}}',
       priority: '11',
     },
     {
       source_event_id: generateSourceEventId(),
-      destination: `https://{{host}}`,
+      destination: 'https://{{host}}',
       priority: '13',
     },
     {
       source_event_id: generateSourceEventId(),
-      destination: `https://{{host}}`,
+      destination: 'https://{{host}}',
       priority: '12',
     }]
   await Promise.all(sources.map(source => registerAttributionSrc(t, {source})));

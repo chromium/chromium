@@ -11,7 +11,7 @@
 attribution_reporting_promise_test(async t => {
   const source = {
       source_event_id: generateSourceEventId(),
-      destination: `https://{{host}}`,
+      destination: 'https://{{host}}',
     };
   await registerAttributionSrc(t, {
     source,
