@@ -11,7 +11,6 @@
 namespace string_constants {
 
 extern const char kReadAnythingDefaultFontName[];
-extern const char kReadAnythingDefaultFontSyle[];
 extern const char kLetterSpacingHistogramName[];
 extern const char kLineSpacingHistogramName[];
 extern const char kColorHistogramName[];

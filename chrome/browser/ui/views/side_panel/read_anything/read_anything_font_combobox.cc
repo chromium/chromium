@@ -31,8 +31,13 @@ class ReadAnythingFontCombobox::MenuModel : public ComboboxMenuModel {
   // The Read Anything font combobox will use a different FontList for each
   // item in the menu. This will give a preview of the font to the user.
   const gfx::FontList* GetLabelFontListAt(size_t index) const override {
-    return new gfx::FontList(static_cast<ReadAnythingFontModel*>(GetModel())
-                                 ->GetLabelFontListAt(index));
+    std::vector<std::string> font_list = GetModel()->GetLabelFontNameAt(index);
+    if (!font_list.empty()) {
+      return new gfx::FontList(font_list, gfx::Font::FontStyle::NORMAL,
+                               kMenuLabelFontSizePx, gfx::Font::Weight::NORMAL);
+    }
+
+    return ComboboxMenuModel::GetLabelFontListAt(index);
   }
 };
 
@@ -62,6 +67,7 @@ void ReadAnythingFontCombobox::GetAccessibleNodeData(
 }
 
 void ReadAnythingFontCombobox::FontNameChangedCallback() {
+  UpdateFont();
   if (delegate_)
     delegate_->OnFontChoiceChanged(GetSelectedIndex().value());
 }

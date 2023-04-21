@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/common/accessibility/read_anything_constants.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -256,6 +257,20 @@ TEST_F(ReadAnythingModelTest, FontModelGetCurrentFontName) {
   EXPECT_EQ("Arial", GetFontModel()->GetFontNameAt(3));
   EXPECT_EQ("Comic Sans MS", GetFontModel()->GetFontNameAt(4));
   EXPECT_EQ("Times New Roman", GetFontModel()->GetFontNameAt(5));
+}
+
+TEST_F(ReadAnythingModelTest, LabelFontListModelGetsCurrentFontList) {
+  std::string default_font = string_constants::kReadAnythingDefaultFontName;
+
+  const std::vector<std::string> expected_fonts = {
+      "Standard font", "Sans-serif",    "Serif",
+      "Arial",         "Comic Sans MS", "Times New Roman"};
+
+  for (size_t i = 0; i < expected_fonts.size(); i++) {
+    auto retrieved_fonts = GetFontModel()->GetLabelFontNameAt(i);
+    EXPECT_EQ(expected_fonts[i], retrieved_fonts[0]);
+    EXPECT_EQ(default_font, retrieved_fonts[1]);
+  }
 }
 
 TEST_F(ReadAnythingModelTest, DefaultIndexSetOnSetSelectedFontByIndex) {

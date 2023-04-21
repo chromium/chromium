@@ -43,7 +43,8 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
   bool IsValidFontIndex(size_t index);
   size_t GetFontNameIndex(std::string font_name);
   void SetSelectedIndex(size_t index);
-  std::string GetLabelFontListAt(size_t index);
+  std::vector<std::string> GetLabelFontNameAt(size_t index) override;
+  absl::optional<int> GetLabelFontSize() override;
   size_t GetSelectedIndex() { return selected_index_; }
 
   absl::optional<ui::ColorId> GetDropdownForegroundColorIdAt(

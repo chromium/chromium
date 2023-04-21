@@ -12,11 +12,6 @@ namespace string_constants {
 // unavailable by the system.
 const char kReadAnythingDefaultFontName[] = "Sans-serif";
 
-// The font string to be used with gfx::FontList
-// TODO(b/1266555): Replace all usages of gfx::FontList that use the font style
-// string with the constructor that takes a vector of fonts instead.
-const char kReadAnythingDefaultFontSyle[] = ", Sans-serif, 15px";
-
 const char kLetterSpacingHistogramName[] =
     "Accessibility.ReadAnything.LetterSpacing";
 const char kLineSpacingHistogramName[] =

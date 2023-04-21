@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/common/accessibility/read_anything_constants.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -268,17 +269,19 @@ std::string ReadAnythingFontModel::GetFontNameAt(size_t index) {
 // FontList to be used by the |ReadAnythingFontCombobox::MenuModel| to make
 // each option to display in its associated font.
 // This text is not visible to the user.
-// We append 'Arial' and '18px' to have a back-up font and a set size in case
+// We add the default font to have a back-up font and a set size in case
 // the chosen font does not work for some reason.
-// E.g. User chooses 'Serif', this method returns 'Serif, Arial, 18px'.
-std::string ReadAnythingFontModel::GetLabelFontListAt(size_t index) {
-  // TODO(b/1266555): Instead of appending a string, have two separate methods
-  // ::GetFontVector and ::GetFontSize and use these as inputs into
-  // gfx::FontList instead.
+// E.g. User chooses 'Serif', this method returns {'Serif, Sans-serif'}.
+std::vector<std::string> ReadAnythingFontModel::GetLabelFontNameAt(
+    size_t index) {
   std::string font_label = base::UTF16ToUTF8(GetDropDownTextAt(index));
-  base::StringAppendF(&font_label, "%s",
-                      string_constants::kReadAnythingDefaultFontSyle);
-  return font_label;
+  std::vector<std::string> font_vector = {
+      font_label, string_constants::kReadAnythingDefaultFontName};
+  return font_vector;
+}
+
+absl::optional<int> ReadAnythingFontModel::GetLabelFontSize() {
+  return kMenuLabelFontSizePx;
 }
 
 absl::optional<ui::ColorId>
