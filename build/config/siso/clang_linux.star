@@ -56,7 +56,7 @@ def __step_config(ctx, step_config):
     step_config["rules"].extend([
         {
             "name": "clang/cxx",
-            "action": "cxx",
+            "action": "(.*_)?cxx",
             "command_prefix": "../../third_party/llvm-build/Release+Asserts/bin/clang++ ",
             "inputs": [
                 "third_party/llvm-build/Release+Asserts/bin/clang++",
@@ -66,7 +66,7 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "clang/cc",
-            "action": "cc",
+            "action": "(.*_)?cc",
             "command_prefix": "../../third_party/llvm-build/Release+Asserts/bin/clang ",
             "inputs": [
                 "third_party/llvm-build/Release+Asserts/bin/clang",
@@ -76,7 +76,7 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "clang-coverage/cxx",
-            "action": "cxx",
+            "action": "(.*_)?cxx",
             "command_prefix": "\"python3\" ../../build/toolchain/clang_code_coverage_wrapper.py",
             "inputs": [
                 "build/toolchain/clang_code_coverage_wrapper.py",
@@ -88,7 +88,7 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "clang-coverage/cc",
-            "action": "cc",
+            "action": "(.*_)?cc",
             "command_prefix": "\"python3\" ../../build/toolchain/clang_code_coverage_wrapper.py",
             "inputs": [
                 "build/toolchain/clang_code_coverage_wrapper.py",
