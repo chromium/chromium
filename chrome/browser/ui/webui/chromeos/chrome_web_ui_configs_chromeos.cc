@@ -63,6 +63,7 @@
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.h"
 #include "chrome/browser/ui/webui/ash/power_ui.h"
+#include "chrome/browser/ui/webui/ash/remote_maintenance_curtain_ui.h"
 #include "chrome/browser/ui/webui/ash/set_time_ui.h"
 #include "chrome/browser/ui/webui/ash/slow_trace_ui.h"
 #include "chrome/browser/ui/webui/ash/slow_ui.h"
@@ -196,6 +197,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(
       std::make_unique<ash::reporting::EnterpriseReportingUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::PowerUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::RemoteMaintenanceCurtainUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::SetTimeUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::ShortcutCustomizationAppUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::SlowTraceControllerConfig>());
