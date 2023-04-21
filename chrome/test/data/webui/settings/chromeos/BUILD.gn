@@ -150,6 +150,7 @@ build_webui_tests("build") {
     "app_management/borealis_detail_view_test.js",
     "app_management/chrome_app_detail_view_test.js",
     "app_management/dom_switch_test.js",
+    "app_management/fake_page_handler.ts",
     "app_management/file_handling_item_test.js",
     "app_management/main_view_test.js",
     "app_management/managed_apps_test.js",

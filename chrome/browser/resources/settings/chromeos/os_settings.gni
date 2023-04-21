@@ -366,7 +366,6 @@ non_web_component_files = [
   "chromeos/os_apps_page/app_management_page/actions.ts",
   "chromeos/os_apps_page/app_management_page/api_listener.ts",
   "chromeos/os_apps_page/app_management_page/browser_proxy.ts",
-  "chromeos/os_apps_page/app_management_page/fake_page_handler.ts",
   "chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.ts",
   "chromeos/os_apps_page/app_management_page/reducers.ts",
   "chromeos/os_apps_page/app_management_page/store.ts",

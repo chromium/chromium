@@ -2,17 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {App, AppType, ExtensionAppPermissionMessage, OptionalBool, PageHandlerInterface, PageHandlerReceiver, PageHandlerRemote, PageRemote, Permission, PermissionType, RunOnOsLoginMode, TriState, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppManagementStore} from 'chrome://os-settings/chromeos/os_settings.js';
+import {App, AppType, ExtensionAppPermissionMessage, OptionalBool, PageHandlerInterface, PageHandlerReceiver, PageHandlerRemote, PageRemote, Permission, PermissionType, PermissionValue, RunOnOsLoginMode, TriState, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {InstallReason, InstallSource} from 'chrome://resources/cr_components/app_management/constants.js';
 import {createBoolPermission, createTriStatePermission, getTriStatePermissionValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
-import {PermissionOption} from './browser_proxy.js';
-import {AppManagementStore} from './store.js';
-
 type AppConfig = Partial<App>;
 type PermissionMap = Partial<Record<PermissionType, Permission>>;
+
+export interface PermissionOption {
+  permissionValue: TriState;
+  isManaged: boolean;
+  value?: PermissionValue;
+}
 
 export class FakePageHandler implements PageHandlerInterface {
   static createWebPermissions(
@@ -178,12 +182,14 @@ export class FakePageHandler implements PageHandlerInterface {
 
   setPinned(appId: string, isPinned: OptionalBool): void {
     const app = AppManagementStore.getInstance().data.apps[appId];
+    assert(app);
     const newApp = {...app, isPinned};
     this.page.onAppChanged(newApp);
   }
 
   setPermission(appId: string, permission: Permission): void {
     const app = AppManagementStore.getInstance().data.apps[appId];
+    assert(app);
 
     // Check that the app had a previous value for the given permission
     assert(app.permissions[permission.permissionType]);
@@ -196,12 +202,16 @@ export class FakePageHandler implements PageHandlerInterface {
 
   setResizeLocked(appId: string, resizeLocked: boolean): void {
     const app = AppManagementStore.getInstance().data.apps[appId];
+    assert(app);
+
     const newApp = {...app, resizeLocked};
     this.page.onAppChanged(newApp);
   }
 
   setHideResizeLocked(appId: string, hideResizeLocked: boolean): void {
     const app = AppManagementStore.getInstance().data.apps[appId];
+    assert(app);
+
     const newApp = {...app, hideResizeLocked};
     this.page.onAppChanged(newApp);
   }
@@ -212,6 +222,8 @@ export class FakePageHandler implements PageHandlerInterface {
 
   setPreferredApp(appId: string, isPreferredApp: boolean): void {
     const app = AppManagementStore.getInstance().data.apps[appId];
+    assert(app);
+
     const newApp = {...app, isPreferredApp};
     this.page.onAppChanged(newApp);
     this.methodCalled('setPreferredApp');
