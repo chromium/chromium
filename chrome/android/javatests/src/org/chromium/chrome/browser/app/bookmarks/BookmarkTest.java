@@ -58,7 +58,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.bookmarks.BookmarkDelegate;
@@ -117,9 +116,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
-/**
- * Tests for the bookmark manager.
- */
+/** Tests for the bookmark manager. */
 // clang-format off
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
@@ -162,7 +159,6 @@ public class BookmarkTest {
     private GURL mTestPageFoo;
     private EmbeddedTestServer mTestServer;
     private @Nullable BookmarkActivity mBookmarkActivity;
-    private UserActionTester mActionTester;
 
     @Mock
     private SyncService mSyncService;
@@ -208,7 +204,6 @@ public class BookmarkTest {
     @After
     public void tearDown() throws Exception {
         if (mBookmarkActivity != null) ApplicationTestUtils.finishActivity(mBookmarkActivity);
-        if (mActionTester != null) mActionTester.tearDown();
     }
 
     @AfterClass
@@ -736,12 +731,10 @@ public class BookmarkTest {
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testBookmarkFolderIcon(boolean nightModeEnabled) throws Exception {
         BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
-        BookmarkId testId = addFolder(TEST_FOLDER_TITLE);
+        addFolder(TEST_FOLDER_TITLE);
         openBookmarkManager();
         BookmarkTestUtil.openMobileBookmarks(
                 mItemsContainer, getBookmarkDelegate(), mBookmarkModel);
-
-        RecyclerView.Adapter adapter = getAdapter();
 
         mRenderTestRule.render(
                 mBookmarkManagerCoordinator.getView(), "bookmark_manager_one_folder");
@@ -1629,7 +1622,7 @@ public class BookmarkTest {
         // selected on bookmarks and then remove one of them in background
         // in the meantime, the toolbar stays in selection mode
         BookmarkId folder = addFolder(TEST_FOLDER_TITLE);
-        BookmarkId fooId = addBookmark(TEST_PAGE_TITLE_FOO, mTestPageFoo, folder);
+        addBookmark(TEST_PAGE_TITLE_FOO, mTestPageFoo, folder);
         BookmarkId googleId = addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage, folder);
         BookmarkId aId = addBookmark(TEST_TITLE_A, mTestUrlA, folder);
         BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
@@ -1803,8 +1796,6 @@ public class BookmarkTest {
         openBookmarkManager();
         BookmarkTestUtil.openMobileBookmarks(
                 mItemsContainer, getBookmarkDelegate(), mBookmarkModel);
-
-        RecyclerView.Adapter adapter = getAdapter();
 
         mRenderTestRule.render(
                 mBookmarkManagerCoordinator.getView(), "bookmarks_visual_refresh_folders");
