@@ -233,7 +233,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   void TransitionToStatus(Status new_status);
 
   bool MaybeStartRaceNetworkRequest(
-      scoped_refptr<ServiceWorkerContextWrapper> context_wrapper);
+      scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
+      scoped_refptr<ServiceWorkerVersion> version);
 
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;
 

@@ -34,6 +34,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 
 namespace content {
 
@@ -199,7 +200,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   if (container_host_->IsContainerForWindowClient()) {
     // The RaceNetworkRequest mode doesn't support Navigation Preload. If
     // RaceNetworkRequest is triggered, Navigation Preload never happens.
-    if (MaybeStartRaceNetworkRequest(context)) {
+    if (MaybeStartRaceNetworkRequest(context, active_worker)) {
       dispatched_preload_type_ = DispatchedPreloadType::kRaceNetworkRequest;
     } else if (fetch_dispatcher_->MaybeStartNavigationPreload(
                    resource_request_, context, frame_tree_node_id_)) {
@@ -215,16 +216,27 @@ void ServiceWorkerMainResourceLoader::StartRequest(
 }
 
 bool ServiceWorkerMainResourceLoader::MaybeStartRaceNetworkRequest(
-    scoped_refptr<ServiceWorkerContextWrapper> context) {
-  if (!base::FeatureList::IsEnabled(
-          features::kServiceWorkerBypassFetchHandler)) {
+    scoped_refptr<ServiceWorkerContextWrapper> context,
+    scoped_refptr<ServiceWorkerVersion> version) {
+  bool is_enabled_by_feature_flag =
+      base::FeatureList::IsEnabled(
+          features::kServiceWorkerBypassFetchHandler) &&
+      features::kServiceWorkerBypassFetchHandlerTarget.Get() ==
+          features::ServiceWorkerBypassFetchHandlerTarget::
+              kAllWithRaceNetworkRequest;
+  bool is_enabled_by_origin_trial =
+      version->origin_trial_tokens() &&
+      version->origin_trial_tokens()->contains(
+          "ServiceWorkerBypassFetchHandlerWithRaceNetworkRequest");
+
+  if (!(is_enabled_by_feature_flag || is_enabled_by_origin_trial)) {
     return false;
   }
-  if (features::kServiceWorkerBypassFetchHandlerTarget.Get() !=
-      features::ServiceWorkerBypassFetchHandlerTarget::
-          kAllWithRaceNetworkRequest) {
-    return false;
-  }
+
+  // Set fetch_handler_bypass_option to tell the renderer that
+  // RaceNetworkRequest is enabled.
+  version->set_fetch_handler_bypass_option(
+      blink::mojom::ServiceWorkerFetchHandlerBypassOption::kRaceNetworkRequest);
 
   // RaceNetworkRequest only supports GET method.
   if (resource_request_.method != net::HttpRequestHeaders::kGetMethod) {

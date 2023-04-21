@@ -30,6 +30,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 
 namespace blink {
 namespace scheduler {
@@ -193,6 +194,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
           blink::mojom::ServiceWorkerContainerHostInterfaceBase>
           service_worker_container_host,
       const blink::WebString& client_id,
+      blink::mojom::ServiceWorkerFetchHandlerBypassOption
+          fetch_handler_bypass_option,
       std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
       scoped_refptr<base::SequencedTaskRunner> task_runner) override;

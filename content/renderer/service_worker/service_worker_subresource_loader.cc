@@ -36,6 +36,7 @@
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/dispatch_fetch_event_params.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_stream_handle.mojom.h"
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -192,13 +193,9 @@ class ServiceWorkerSubresourceLoader::StreamWaiter
 };
 
 bool ServiceWorkerSubresourceLoader::MaybeStartRaceNetworkRequest() {
-  if (!base::FeatureList::IsEnabled(
-          features::kServiceWorkerBypassFetchHandler)) {
-    return false;
-  }
-  if (features::kServiceWorkerBypassFetchHandlerTarget.Get() !=
-      features::ServiceWorkerBypassFetchHandlerTarget::
-          kAllWithRaceNetworkRequest) {
+  if (controller_connector_->fetch_handler_bypass_option() !=
+      blink::mojom::ServiceWorkerFetchHandlerBypassOption::
+          kRaceNetworkRequest) {
     return false;
   }
 

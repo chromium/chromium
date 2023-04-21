@@ -35,6 +35,7 @@
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/dispatch_fetch_event_params.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_stream_handle.mojom.h"
@@ -556,7 +557,8 @@ class ServiceWorkerSubresourceLoaderTest : public ::testing::Test {
           remote_container_host.InitWithNewPipeAndPassReceiver());
       connector_ = base::MakeRefCounted<ControllerServiceWorkerConnector>(
           std::move(remote_container_host),
-          mojo::NullRemote() /*remote_controller*/, "" /*client_id*/);
+          mojo::NullRemote() /*remote_controller*/, "" /*client_id*/,
+          blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault);
     }
     mojo::Remote<network::mojom::URLLoaderFactory>
         service_worker_url_loader_factory;
