@@ -431,7 +431,6 @@ test("components_unittests") {
       "//components/safe_browsing/core/common:unit_tests",
       "//components/safety_check:unit_tests",
       "//components/security_interstitials/content:unit_tests",
-      "//components/services/heap_profiling:unit_tests",
       "//components/services/paint_preview_compositor:unit_tests",
       "//components/services/quarantine:unit_tests",
       "//components/services/storage:tests",
@@ -479,6 +478,10 @@ test("components_unittests") {
       "//ui/resources:ui_test_pak_data",
     ]
   }  # iOS / !iOS
+
+  if (use_blink) {
+    deps += [ "//components/services/heap_profiling:unit_tests" ]
+  }
 
   if (is_ios) {
     deps += [ ":components_tests_pak_bundle_data" ]
