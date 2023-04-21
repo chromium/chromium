@@ -19126,6 +19126,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileInactiveTabsSettingsBack">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <description>
+    Reported when user goes back from Inactive Tabs Settings UI to Tabs Settings
+    screen. iOS only.
+  </description>
+</action>
+
+<action name="MobileInactiveTabsSettingsClose">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <description>
+    Reported when Inactive Tabs Settings UI was dismissed. iOS only.
+  </description>
+</action>
+
 <action name="MobileIncognitoBiometricAuthenticationRequested">
   <owner>stkhapugin@chromium.org</owner>
   <description>
@@ -21727,6 +21744,23 @@ should be able to be added at any place in this file.
   <description>
     Users returned to the tab that was active, either by tapping the tab card or
     pressing the back button, when the grid tab switcher is enabled.
+  </description>
+</action>
+
+<action name="MobileTabsSettingsBack">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <description>
+    Reported when user goes back from Tabs Settings UI to root Settings screen.
+    iOS only.
+  </description>
+</action>
+
+<action name="MobileTabsSettingsClose">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <description>
+    Reported when Tabs Settings UI was dismissed. iOS only.
   </description>
 </action>
 
@@ -29583,6 +29617,22 @@ should be able to be added at any place in this file.
   <owner>fernandex@chromium.org</owner>
   <description>
     Reported when user navigates to Google Sync Settings. iOS only.
+  </description>
+</action>
+
+<action name="Settings.Tabs">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <description>
+    Reported when user navigates to Tabs Settings. iOS only.
+  </description>
+</action>
+
+<action name="Settings.Tabs.InactiveTabs">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <description>
+    Reported when user navigates to Inactive Tabs Settings. iOS only.
   </description>
 </action>
 

@@ -1411,7 +1411,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           [[ContentSettingsTableViewController alloc] initWithBrowser:_browser];
       break;
     case SettingsItemTypeTabs:
-      // TODO(crbug.com/1418021): Add metrics about tabs settings.
+      base::RecordAction(base::UserMetricsAction("Settings.Tabs"));
       [self showTabsSettings];
       break;
     case SettingsItemTypeBandwidth:

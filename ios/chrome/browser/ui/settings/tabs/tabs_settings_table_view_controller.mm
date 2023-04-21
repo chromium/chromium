@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_table_view_controller.h"
 
 #import "base/i18n/message_formatter.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -76,12 +78,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
-  // TODO(crbug.com/1418021): Add metrics when the user go close Tabs Settings.
+  base::RecordAction(base::UserMetricsAction("MobileTabsSettingsClose"));
 }
 
 - (void)reportBackUserAction {
-  // TODO(crbug.com/1418021): Add metrics when the user go back from Tabs
-  // Settings to root Settings screen.
+  base::RecordAction(base::UserMetricsAction("MobileTabsSettingsBack"));
 }
 
 #pragma mark - UITableViewDelegate
