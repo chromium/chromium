@@ -1019,10 +1019,13 @@ void NetworkStateHandler::SetTetherNetworkStateConnected(
     const std::string& guid) {
   // Being connected implies that AssociateTetherNetworkStateWithWifiNetwork()
   // was already called, so ensure that the association is still intact.
+  // TODO(b/278966899): Promote this to a CHECK.
   DCHECK(GetNetworkStateFromGuid(GetNetworkStateFromGuid(guid)->tether_guid())
              ->tether_guid() == guid);
 
   // At this point, there should be a default network set.
+  // TODO(b/279047073): We can hit this due to a race between
+  // `SetTetherNetworkStateConnected` and `DefaultNetworkServiceChange`.
   DCHECK(!default_network_path_.empty());
 
   SetTetherNetworkStateConnectionState(guid, shill::kStateOnline);

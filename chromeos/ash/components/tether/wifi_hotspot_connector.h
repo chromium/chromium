@@ -71,6 +71,7 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
   void InitiateConnectionToCurrentNetwork();
   void CompleteActiveConnectionAttempt(bool success);
   void CreateWifiConfiguration();
+  void RequestWifiScan();
   base::Value::Dict CreateWifiPropertyDictionary(const std::string& ssid,
                                                  const std::string& password);
   void OnConnectionTimeout();
@@ -93,6 +94,7 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
   std::string tether_network_guid_;
   std::string wifi_network_guid_;
   WifiConnectionCallback callback_;
+  bool has_requested_wifi_scan_ = false;
   bool is_waiting_for_wifi_to_enable_ = false;
   bool has_initiated_connection_to_current_network_ = false;
   base::Time connection_attempt_start_time_;

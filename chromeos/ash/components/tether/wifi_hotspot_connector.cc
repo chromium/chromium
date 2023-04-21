@@ -105,6 +105,10 @@ void WifiHotspotConnector::ConnectToWifiHotspot(
   }
 }
 
+void WifiHotspotConnector::RequestWifiScan() {
+  network_state_handler_->RequestScan(NetworkTypePattern::WiFi());
+}
+
 void WifiHotspotConnector::OnEnableWifiError(const std::string& error_name) {
   is_waiting_for_wifi_to_enable_ = false;
   PA_LOG(ERROR) << "Failed to enable Wi-Fi: " << error_name;
@@ -122,6 +126,11 @@ void WifiHotspotConnector::NetworkPropertiesUpdated(
     return;
   }
 
+  if (!has_requested_wifi_scan_) {
+    has_requested_wifi_scan_ = true;
+    RequestWifiScan();
+  }
+
   if (network->IsConnectedState()) {
     // The network has connected, so complete the connection attempt. Because
     // this is a NetworkStateHandlerObserver callback, complete the attempt in
@@ -135,6 +144,12 @@ void WifiHotspotConnector::NetworkPropertiesUpdated(
   }
 
   if (network->connectable() && !has_initiated_connection_to_current_network_) {
+    // Set |has_initiated_connection_to_current_network_| to true to ensure that
+    // this code path is only run once per connection attempt. Without this
+    // field, the association and connection code below would be re-run multiple
+    // times for one network.
+    has_initiated_connection_to_current_network_ = true;
+
     // The network is connectable, so initiate a connection attempt. Because
     // this is a NetworkStateHandlerObserver callback, complete the attempt in
     // a new task to ensure that NetworkStateHandler is not modified while it is
@@ -180,12 +195,6 @@ void WifiHotspotConnector::InitiateConnectionToCurrentNetwork() {
                     << "initiated.";
     return;
   }
-
-  // Set |has_initiated_connection_to_current_network_| to true to ensure that
-  // this code path is only run once per connection attempt. Without this
-  // field, the association and connection code below would be re-run multiple
-  // times for one network.
-  has_initiated_connection_to_current_network_ = true;
 
   // If the network is now connectable, associate it with a Tether network
   // ASAP so that the correct icon will be displayed in the tray while the
@@ -234,6 +243,7 @@ void WifiHotspotConnector::CompleteActiveConnectionAttempt(bool success) {
   wifi_network_guid_.clear();
   has_initiated_connection_to_current_network_ = false;
   is_waiting_for_wifi_to_enable_ = false;
+  has_requested_wifi_scan_ = false;
 
   timer_->Stop();
 
