@@ -223,7 +223,7 @@ HelpBubbleFactoryViewsAsh::CreateBubbleImpl(
     user_education::HelpBubbleParams params) {
   anchor.view->SetProperty(user_education::kHasInProductHelpPromoKey, true);
   auto result = base::WrapUnique(new HelpBubbleViewsAsh(
-      new HelpBubbleViewAsh(delegate_, anchor, std::move(params)), element));
+      new HelpBubbleViewAsh(anchor, std::move(params)), element));
   for (const auto& accelerator :
        delegate_->GetPaneNavigationAccelerators(element)) {
     result->bubble_view()->GetFocusManager()->RegisterAccelerator(

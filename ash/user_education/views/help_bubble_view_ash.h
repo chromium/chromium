@@ -26,10 +26,6 @@ namespace ui {
 class MouseEvent;
 }  // namespace ui
 
-namespace user_education {
-class HelpBubbleDelegate;
-}  // namespace user_education
-
 namespace views {
 class ImageView;
 class Label;
@@ -68,8 +64,7 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFirstNonDefaultButtonIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBodyTextIdForTesting);
 
-  HelpBubbleViewAsh(const user_education::HelpBubbleDelegate* delegate,
-                    const internal::HelpBubbleAnchorParams& anchor,
+  HelpBubbleViewAsh(const internal::HelpBubbleAnchorParams& anchor,
                     user_education::HelpBubbleParams params);
   HelpBubbleViewAsh(const HelpBubbleViewAsh&) = delete;
   HelpBubbleViewAsh& operator=(const HelpBubbleViewAsh&) = delete;
@@ -102,8 +97,6 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
   void MaybeStartAutoCloseTimer();
 
   void OnTimeout();
-
-  const base::raw_ptr<const user_education::HelpBubbleDelegate> delegate_;
 
   // If set, overrides the anchor bounds within the anchor view.
   absl::optional<gfx::Rect> local_anchor_bounds_;

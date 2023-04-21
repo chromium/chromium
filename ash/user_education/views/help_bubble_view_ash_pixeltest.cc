@@ -15,8 +15,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/user_education/common/help_bubble_params.h"
-#include "components/user_education/views/help_bubble_delegate.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -51,38 +52,6 @@ std::u16string Repeat(base::StringPiece16 str, size_t times) {
   return base::JoinString(strs, u" ");
 }
 
-// HelpBubbleDelegate ----------------------------------------------------------
-
-// TODO(http://b/277994050): Remove after moving style into `HelpBubbleViewAsh`.
-// Implementation of `user_education::HelpBubbleDelegate` for testing. This
-// interface will be removed once style is no longer delegated.
-class HelpBubbleDelegate : public user_education::HelpBubbleDelegate {
- private:
-  // user_education::HelpBubbleDelegate:
-  std::vector<ui::Accelerator> GetPaneNavigationAccelerators(
-      ui::TrackedElement* anchor_element) const override {
-    return std::vector<ui::Accelerator>();
-  }
-  int GetTitleTextContext() const override { return 0; }
-  int GetBodyTextContext() const override { return 0; }
-  ui::ColorId GetHelpBubbleBackgroundColorId() const override {
-    return cros_tokens::kCrosSysDialogContainer;
-  }
-  ui::ColorId GetHelpBubbleForegroundColorId() const override {
-    return cros_tokens::kCrosSysOnSurface;
-  }
-  ui::ColorId GetHelpBubbleDefaultButtonBackgroundColorId() const override {
-    return cros_tokens::kCrosSysPrimary;
-  }
-  ui::ColorId GetHelpBubbleDefaultButtonForegroundColorId() const override {
-    return cros_tokens::kCrosSysOnPrimary;
-  }
-  ui::ColorId GetHelpBubbleButtonBorderColorId() const override { return 0; }
-  ui::ColorId GetHelpBubbleCloseButtonInkDropColorId() const override {
-    return 0;
-  }
-};
-
 }  // namespace
 
 // HelpBubbleViewAshPixelTestBase ----------------------------------------------
@@ -90,6 +59,12 @@ class HelpBubbleDelegate : public user_education::HelpBubbleDelegate {
 // Base class for pixel tests of `HelpBubbleViewAsh`.
 class HelpBubbleViewAshPixelTestBase : public AshTestBase {
  public:
+  HelpBubbleViewAshPixelTestBase() {
+    // Features using help bubble views are not launching until post-Jelly, so
+    // ensure that benchmark images are taken with the Jelly flag enabled.
+    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kJelly);
+  }
+
   // Creates and returns a pointer to a new `HelpBubbleViewAsh` instance with
   // the specified attributes. Note that the returned help bubble view is owned
   // by its widget.
@@ -133,13 +108,17 @@ class HelpBubbleViewAshPixelTestBase : public AshTestBase {
     anchor_params.show_arrow = false;
 
     // NOTE: The returned help bubble view is owned by its widget.
-    return new HelpBubbleViewAsh(&delegate_, anchor_params, std::move(params));
+    return new HelpBubbleViewAsh(anchor_params, std::move(params));
   }
 
  private:
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
+
+    // Use a slightly larger display than is default to ensure that help bubble
+    // views are fully on screen in all test scenarios.
+    UpdateDisplay("1024x768");
 
     // Initialize a test `widget_` to be used as an anchor for help bubble
     // views. Note that shadow is removed since pixel tests of help bubble views
@@ -164,11 +143,12 @@ class HelpBubbleViewAshPixelTestBase : public AshTestBase {
     return pixel_test::InitParams();
   }
 
+  // Used to enable the Jelly flag so that benchmark images accurately reflect
+  // the state of the world when features using help bubble views launch.
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   // The test `widget_` to be used as an anchor for help bubble views.
   views::UniqueWidgetPtr widget_;
-
-  // The delegate which provides help bubble views with style.
-  HelpBubbleDelegate delegate_;
 };
 
 // HelpBubbleViewPixelTest -----------------------------------------------------
@@ -219,7 +199,7 @@ TEST_P(HelpBubbleViewAshPixelTest, Appearance) {
                            with_body_icon(), with_buttons(), with_progress());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "appearance", /*revision_number=*/0u, help_bubble_view,
+      "appearance", /*revision_number=*/1u, help_bubble_view,
       help_bubble_view->anchor_widget()));
 }
 
@@ -285,7 +265,7 @@ TEST_P(HelpBubbleViewAshArrowPixelTest, Placement) {
       /*with_buttons=*/true, /*with_progress=*/true);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "placement", /*revision_number=*/0u, help_bubble_view,
+      "placement", /*revision_number=*/1u, help_bubble_view,
       help_bubble_view->anchor_widget()));
 }
 

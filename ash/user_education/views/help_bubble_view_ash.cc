@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/style/style_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
@@ -17,13 +18,13 @@
 #include "base/time/time.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/help_bubble_params.h"
-#include "components/user_education/views/help_bubble_delegate.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -112,13 +113,10 @@ class MdIPHBubbleButton : public views::MdTextButton {
  public:
   METADATA_HEADER(MdIPHBubbleButton);
 
-  MdIPHBubbleButton(const user_education::HelpBubbleDelegate* delegate,
-                    PressedCallback callback,
+  MdIPHBubbleButton(PressedCallback callback,
                     const std::u16string& text,
                     bool is_default_button)
-      : MdTextButton(callback, text),
-        delegate_(delegate),
-        is_default_button_(is_default_button) {
+      : MdTextButton(callback, text), is_default_button_(is_default_button) {
     // Prominent style gives a button hover highlight.
     SetProminent(true);
     GetViewAccessibility().OverrideIsLeaf(true);
@@ -136,20 +134,14 @@ class MdIPHBubbleButton : public views::MdTextButton {
       return;
     }
     SkColor background_color = color_provider->GetColor(
-        is_default_button_
-            ? delegate_->GetHelpBubbleDefaultButtonBackgroundColorId()
-            : delegate_->GetHelpBubbleBackgroundColorId());
+        is_default_button_ ? cros_tokens::kCrosSysPrimary
+                           : cros_tokens::kCrosSysPrimaryContainer);
     if (GetState() == STATE_PRESSED) {
       background_color =
           GetNativeTheme()->GetSystemButtonPressedColor(background_color);
     }
-    const SkColor stroke_color = color_provider->GetColor(
-        is_default_button_
-            ? delegate_->GetHelpBubbleDefaultButtonBackgroundColorId()
-            : delegate_->GetHelpBubbleButtonBorderColorId());
-    SetBackground(CreateBackgroundFromPainter(
-        views::Painter::CreateRoundRectWith1PxBorderPainter(
-            background_color, stroke_color, GetCornerRadiusValue())));
+    SetBackground(views::CreateRoundedRectBackground(background_color,
+                                                     GetCornerRadiusValue()));
   }
 
   void OnThemeChanged() override {
@@ -157,12 +149,11 @@ class MdIPHBubbleButton : public views::MdTextButton {
 
     const auto* color_provider = GetColorProvider();
     views::FocusRing::Get(this)->SetColorId(
-        delegate_->GetHelpBubbleBackgroundColorId());
+        cros_tokens::kCrosSysDialogContainer);
 
     const SkColor foreground_color = color_provider->GetColor(
-        is_default_button_
-            ? delegate_->GetHelpBubbleDefaultButtonForegroundColorId()
-            : delegate_->GetHelpBubbleForegroundColorId());
+        is_default_button_ ? cros_tokens::kCrosSysOnPrimary
+                           : cros_tokens::kCrosSysOnPrimaryContainer);
     SetEnabledTextColors(foreground_color);
 
     // TODO(crbug/1112244): Temporary fix for Mac. Bubble shouldn't be in
@@ -171,7 +162,6 @@ class MdIPHBubbleButton : public views::MdTextButton {
   }
 
  private:
-  const base::raw_ptr<const user_education::HelpBubbleDelegate> delegate_;
   bool is_default_button_;
 };
 
@@ -184,10 +174,8 @@ END_METADATA
 class ClosePromoButton : public views::ImageButton {
  public:
   METADATA_HEADER(ClosePromoButton);
-  ClosePromoButton(const user_education::HelpBubbleDelegate* delegate,
-                   const std::u16string accessible_name,
-                   PressedCallback callback)
-      : delegate_(delegate) {
+  ClosePromoButton(const std::u16string accessible_name,
+                   PressedCallback callback) {
     SetCallback(callback);
     views::ConfigureVectorImageButton(this);
     views::HighlightPathGenerator::Install(
@@ -197,10 +185,10 @@ class ClosePromoButton : public views::ImageButton {
     SetTooltipText(accessible_name);
 
     constexpr int kIconSize = 16;
-    SetImageModel(views::ImageButton::STATE_NORMAL,
-                  ui::ImageModel::FromVectorIcon(
-                      views::kIcCloseIcon,
-                      delegate_->GetHelpBubbleForegroundColorId(), kIconSize));
+    SetImageModel(
+        views::ImageButton::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(
+            views::kIcCloseIcon, cros_tokens::kCrosSysOnSurface, kIconSize));
 
     constexpr float kCloseButtonFocusRingHaloThickness = 1.25f;
     views::FocusRing::Get(this)->SetHaloThickness(
@@ -209,15 +197,9 @@ class ClosePromoButton : public views::ImageButton {
 
   void OnThemeChanged() override {
     views::ImageButton::OnThemeChanged();
-    const auto* color_provider = GetColorProvider();
-    views::InkDrop::Get(this)->SetBaseColor(color_provider->GetColor(
-        delegate_->GetHelpBubbleCloseButtonInkDropColorId()));
-    views::FocusRing::Get(this)->SetColorId(
-        delegate_->GetHelpBubbleForegroundColorId());
+    StyleUtil::SetUpInkDropForButton(this);
+    views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysOnSurface);
   }
-
- private:
-  const base::raw_ptr<const user_education::HelpBubbleDelegate> delegate_;
 };
 
 BEGIN_METADATA(ClosePromoButton, views::ImageButton)
@@ -226,10 +208,8 @@ END_METADATA
 class DotView : public views::View {
  public:
   METADATA_HEADER(DotView);
-  DotView(const user_education::HelpBubbleDelegate* delegate,
-          gfx::Size size,
-          bool should_fill)
-      : delegate_(delegate), size_(size), should_fill_(should_fill) {
+  DotView(gfx::Size size, bool should_fill)
+      : size_(size), should_fill_(should_fill) {
     // In order to anti-alias properly, we'll grow by the stroke width and then
     // have the excess space be subtracted from the margins by the layout.
     SetProperty(views::kInternalPaddingKey, gfx::Insets(kStrokeWidth));
@@ -251,8 +231,8 @@ class DotView : public views::View {
     const gfx::PointF center_point = local_bounds.CenterPoint();
     const float radius = (size_.width() - kStrokeWidth) / 2.0f;
 
-    const SkColor color = GetColorProvider()->GetColor(
-        delegate_->GetHelpBubbleForegroundColorId());
+    const SkColor color =
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface);
     if (should_fill_) {
       cc::PaintFlags fill_flags;
       fill_flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -272,7 +252,6 @@ class DotView : public views::View {
  private:
   static constexpr int kStrokeWidth = 1;
 
-  base::raw_ptr<const user_education::HelpBubbleDelegate> delegate_;
   const gfx::Size size_;
   const bool should_fill_;
 };
@@ -297,13 +276,11 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleViewAsh, kBodyTextIdForTesting);
 // outline in dark mode on Mac. Use our own shadow instead. The shadow type is
 // the same for all other platforms.
 HelpBubbleViewAsh::HelpBubbleViewAsh(
-    const user_education::HelpBubbleDelegate* delegate,
     const internal::HelpBubbleAnchorParams& anchor,
     user_education::HelpBubbleParams params)
     : BubbleDialogDelegateView(anchor.view,
                                TranslateArrow(params.arrow),
-                               views::BubbleBorder::STANDARD_SHADOW),
-      delegate_(delegate) {
+                               views::BubbleBorder::STANDARD_SHADOW) {
   if (anchor.rect.has_value()) {
     SetForceAnchorRect(anchor.rect.value());
   } else {
@@ -366,7 +343,7 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
     for (int i = 0; i < params.progress->second; ++i) {
       // TODO(crbug.com/1197208): formalize dot size
       progress_container->AddChildView(std::make_unique<DotView>(
-          delegate, gfx::Size(8, 8), i < params.progress->first));
+          gfx::Size(8, 8), i < params.progress->first));
     }
   } else {
     progress_container->SetVisible(false);
@@ -378,7 +355,7 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
   if (params.body_icon) {
     icon_view_ = top_text_container->AddChildViewAt(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            *params.body_icon, delegate->GetHelpBubbleBackgroundColorId(),
+            *params.body_icon, cros_tokens::kCrosSysDialogContainer,
             kBodyIconSize)),
         0);
     icon_view_->SetPreferredSize(
@@ -388,19 +365,16 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
 
   // Add title (optional) and body label.
   if (!params.title_text.empty()) {
-    labels_.push_back(
-        top_text_container->AddChildView(std::make_unique<views::Label>(
-            params.title_text, delegate->GetTitleTextContext())));
+    labels_.push_back(top_text_container->AddChildView(
+        std::make_unique<views::Label>(params.title_text)));
     views::Label* label =
-        AddChildViewAt(std::make_unique<views::Label>(
-                           params.body_text, delegate->GetBodyTextContext()),
+        AddChildViewAt(std::make_unique<views::Label>(params.body_text),
                        GetIndexOf(button_container).value());
     labels_.push_back(label);
     label->SetProperty(views::kElementIdentifierKey, kBodyTextIdForTesting);
   } else {
-    views::Label* label =
-        top_text_container->AddChildView(std::make_unique<views::Label>(
-            params.body_text, delegate->GetBodyTextContext()));
+    views::Label* label = top_text_container->AddChildView(
+        std::make_unique<views::Label>(params.body_text));
     labels_.push_back(label);
     label->SetProperty(views::kElementIdentifierKey, kBodyTextIdForTesting);
   }
@@ -424,11 +398,11 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
     }
 
     // Since we set the cancel callback, we will use CancelDialog() to dismiss.
-    close_button_ = (params.progress ? progress_container : top_text_container)
-                        ->AddChildView(std::make_unique<ClosePromoButton>(
-                            delegate, alt_text,
-                            base::BindRepeating(&DialogDelegate::CancelDialog,
-                                                base::Unretained(this))));
+    close_button_ =
+        (params.progress ? progress_container : top_text_container)
+            ->AddChildView(std::make_unique<ClosePromoButton>(
+                alt_text, base::BindRepeating(&DialogDelegate::CancelDialog,
+                                              base::Unretained(this))));
   }
 
   // Add other buttons.
@@ -453,7 +427,6 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
     for (user_education::HelpBubbleButtonParams& button_params :
          params.buttons) {
       auto button = std::make_unique<MdIPHBubbleButton>(
-          delegate,
           base::BindRepeating(run_callback_and_close, base::Unretained(this),
                               base::Passed(std::move(button_params.callback))),
           button_params.text, button_params.is_default);
@@ -700,11 +673,11 @@ void HelpBubbleViewAsh::OnThemeChanged() {
 
   const auto* color_provider = GetColorProvider();
   const SkColor background_color =
-      color_provider->GetColor(delegate_->GetHelpBubbleBackgroundColorId());
+      color_provider->GetColor(cros_tokens::kCrosSysDialogContainer);
   set_color(background_color);
 
   const SkColor foreground_color =
-      color_provider->GetColor(delegate_->GetHelpBubbleForegroundColorId());
+      color_provider->GetColor(cros_tokens::kCrosSysOnSurface);
   if (icon_view_) {
     icon_view_->SetBackground(views::CreateRoundedRectBackground(
         foreground_color, icon_view_->GetPreferredSize().height() / 2));
