@@ -49,7 +49,7 @@ void ResultRefreshManager::RefreshModelResults(
 
   for (const auto& config : configs_) {
     if (config->on_demand_execution ||
-        !metadata_utils::HasMigratedToMultiOutput(config.get())) {
+        metadata_utils::ConfigUsesLegacyOutput(config.get())) {
       continue;
     }
     auto* segment_result_provider =

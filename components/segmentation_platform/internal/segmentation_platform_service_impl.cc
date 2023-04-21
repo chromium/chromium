@@ -107,7 +107,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       configs_, cached_result_provider_.get());
 
   for (const auto& config : configs_) {
-    if (metadata_utils::HasMigratedToMultiOutput(config.get())) {
+    if (!metadata_utils::ConfigUsesLegacyOutput(config.get())) {
       continue;
     }
     segment_selectors_[config->segmentation_key] =

@@ -434,16 +434,29 @@ proto::ClientResult CreateClientResultFromPredResult(
   return client_result;
 }
 
-bool HasMigratedToMultiOutput(Config* config) {
-  // List of migrated config segments ids supporting multi output.
-  base::flat_set<SegmentId> migrated_config_ids{
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER,
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR,
-      SegmentId::DEVICE_TIER_SEGMENT,
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_TABLET_PRODUCTIVITY_USER};
+bool ConfigUsesLegacyOutput(Config* config) {
+  // List of config segments ids that doesn't support multi output and uses
+  // legacy output. Please delete `SegmentId` from this list if segment is
+  // migrated to support multi output.
+  base::flat_set<SegmentId> config_ids_use_legacy{
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE,
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES,
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT,
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER,
+      SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER,
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2,
+      SegmentId::POWER_USER_SEGMENT,
+      SegmentId::CROSS_DEVICE_USER_SEGMENT,
+      SegmentId::FREQUENT_FEATURE_USER_SEGMENT,
+      SegmentId::INTENTIONAL_USER_SEGMENT,
+      SegmentId::RESUME_HEAVY_USER_SEGMENT};
 
-  return (config->segments.size() == 1 &&
-          migrated_config_ids.contains(config->segments.begin()->first));
+  return (config->segments.size() >= 1 &&
+          config_ids_use_legacy.contains(config->segments.begin()->first));
 }
 
 }  // namespace metadata_utils
