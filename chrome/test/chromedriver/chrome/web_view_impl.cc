@@ -15,7 +15,6 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -24,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
@@ -217,7 +217,9 @@ base::Value::Dict GenerateTouchPoint(const TouchEvent& event) {
 class ObjectGroup {
  public:
   explicit ObjectGroup(DevToolsClient* client)
-      : client_(client), object_group_name_(base::GenerateGUID()) {}
+      : client_(client),
+        object_group_name_(base::Uuid::GenerateRandomV4().AsLowercaseString()) {
+  }
 
   ~ObjectGroup() {
     base::Value::Dict params;
