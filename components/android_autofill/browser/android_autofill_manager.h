@@ -171,6 +171,7 @@ class AndroidAutofillManager : public AutofillManager {
   raw_ptr<AutofillProvider> autofill_provider_for_testing_ = nullptr;
   std::unique_ptr<FormEventLoggerWeblayerAndroid> address_logger_;
   std::unique_ptr<FormEventLoggerWeblayerAndroid> payments_logger_;
+  std::unique_ptr<FormEventLoggerWeblayerAndroid> password_logger_;
 
   base::WeakPtrFactory<AndroidAutofillManager> weak_ptr_factory_{this};
 };
