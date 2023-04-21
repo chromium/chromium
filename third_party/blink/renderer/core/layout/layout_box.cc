@@ -4508,57 +4508,6 @@ void LayoutBox::ComputeInlineStaticDistance(
   }
 }
 
-void LayoutBox::ComputeLogicalLeftPositionedOffset(
-    LayoutUnit& logical_left_pos,
-    const LayoutBox* child,
-    LayoutUnit logical_width_value,
-    const LayoutBoxModelObject* container_block,
-    LayoutUnit container_logical_width) {
-  if (child->IsHorizontalWritingMode()) {
-    if (container_block->HasFlippedBlocksWritingMode()) {
-      // Deal with differing writing modes here. Our offset needs to be in the
-      // containing block's coordinate space. If the containing block is flipped
-      // along this axis, then we need to flip the coordinate. This can only
-      // happen if the containing block has flipped mode and is perpendicular
-      // to us.
-      logical_left_pos =
-          container_logical_width - logical_width_value - logical_left_pos;
-      logical_left_pos += container_block->BorderRight();
-      if (container_block->IsBox() &&
-          !To<LayoutBox>(container_block)->CanSkipComputeScrollbars()) {
-        logical_left_pos += To<LayoutBox>(container_block)
-                                ->ComputeScrollbarsInternal(kClampToContentBox)
-                                .right;
-      }
-    } else {
-      logical_left_pos += container_block->BorderLeft();
-      if (container_block->IsBox() &&
-          !To<LayoutBox>(container_block)->CanSkipComputeScrollbars()) {
-        logical_left_pos += To<LayoutBox>(container_block)
-                                ->ComputeScrollbarsInternal(kClampToContentBox)
-                                .left;
-      }
-    }
-  } else {
-    logical_left_pos += container_block->BorderTop();
-    if (container_block->IsBox() &&
-        !To<LayoutBox>(container_block)->CanSkipComputeScrollbars()) {
-      logical_left_pos += To<LayoutBox>(container_block)
-                              ->ComputeScrollbarsInternal(kClampToContentBox)
-                              .top;
-    }
-  }
-}
-
-LayoutUnit LayoutBox::ShrinkToFitLogicalWidth(
-    LayoutUnit available_logical_width,
-    LayoutUnit borders_plus_padding) const {
-  NOT_DESTROYED();
-  MinMaxSizes sizes = PreferredLogicalWidths();
-  sizes -= borders_plus_padding;
-  return sizes.ShrinkToFit(available_logical_width);
-}
-
 void LayoutBox::ComputeBlockStaticDistance(
     Length& logical_top,
     Length& logical_bottom,
@@ -5257,39 +5206,6 @@ void LayoutBox::AddVisualOverflowFromChild(const LayoutBox& child,
   AddContentsVisualOverflow(child_visual_overflow_rect);
 }
 
-DISABLE_CFI_PERF
-void LayoutBox::AddLayoutOverflowFromChild(const LayoutBox& child,
-                                           const LayoutSize& delta) {
-  NOT_DESTROYED();
-  DCHECK(!ChildLayoutBlockedByDisplayLock());
-
-  // Never allow flow threads to propagate overflow up to a parent.
-  if (child.IsLayoutFlowThread())
-    return;
-
-  // Only propagate layout overflow from the child if the child isn't clipping
-  // its overflow.  If it is, then its overflow is internal to it, and we don't
-  // care about it. LayoutOverflowRectForPropagation takes care of this and just
-  // propagates the border box rect instead.
-  LayoutRect child_layout_overflow_rect =
-      child.LayoutOverflowRectForPropagation(this);
-  child_layout_overflow_rect.Move(delta);
-  AddLayoutOverflow(child_layout_overflow_rect);
-}
-
-void LayoutBox::SetLayoutClientAfterEdge(LayoutUnit client_after_edge) {
-  NOT_DESTROYED();
-  if (LayoutOverflowIsSet())
-    overflow_->layout_overflow->SetLayoutClientAfterEdge(client_after_edge);
-}
-
-LayoutUnit LayoutBox::LayoutClientAfterEdge() const {
-  NOT_DESTROYED();
-  return LayoutOverflowIsSet()
-             ? overflow_->layout_overflow->LayoutClientAfterEdge()
-             : ClientLogicalBottom();
-}
-
 bool LayoutBox::HasTopOverflow() const {
   NOT_DESTROYED();
   return !StyleRef().IsLeftToRightDirection() && !IsHorizontalWritingMode();
@@ -5786,28 +5702,6 @@ LayoutUnit LayoutBox::LineHeight(bool /*firstLine*/,
   return LayoutUnit();
 }
 
-PaintLayer* LayoutBox::EnclosingFloatPaintingLayer() const {
-  NOT_DESTROYED();
-  const LayoutObject* curr = this;
-  while (curr) {
-    PaintLayer* layer = curr->HasLayer() && curr->IsBox()
-                            ? To<LayoutBox>(curr)->Layer()
-                            : nullptr;
-    if (layer && layer->IsSelfPaintingLayer())
-      return layer;
-    curr = curr->Parent();
-  }
-  return nullptr;
-}
-
-LayoutRect LayoutBox::LogicalVisualOverflowRectForPropagation() const {
-  NOT_DESTROYED();
-  LayoutRect rect = VisualOverflowRectForPropagation();
-  if (!Parent()->StyleRef().IsHorizontalWritingMode())
-    return rect.TransposedRect();
-  return rect;
-}
-
 DISABLE_CFI_PERF
 LayoutRect LayoutBox::RectForOverflowPropagation(const LayoutRect& rect) const {
   NOT_DESTROYED();
@@ -6066,13 +5960,6 @@ LayoutBox* LayoutBox::LocationContainer() const {
   while (container && !container->IsBox())
     container = container->Container();
   return To<LayoutBox>(container);
-}
-
-bool LayoutBox::HasRelativeLogicalWidth() const {
-  NOT_DESTROYED();
-  return StyleRef().LogicalWidth().IsPercentOrCalc() ||
-         StyleRef().LogicalMinWidth().IsPercentOrCalc() ||
-         StyleRef().LogicalMaxWidth().IsPercentOrCalc();
 }
 
 bool LayoutBox::HasRelativeLogicalHeight() const {

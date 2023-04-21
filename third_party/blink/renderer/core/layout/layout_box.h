@@ -605,16 +605,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     AddVisualOverflowFromChild(child, child.LocationOffset());
   }
-  void AddLayoutOverflowFromChild(const LayoutBox& child) {
-    NOT_DESTROYED();
-    AddLayoutOverflowFromChild(child, child.LocationOffset());
-  }
   void AddVisualOverflowFromChild(const LayoutBox& child,
                                   const LayoutSize& delta);
-  void AddLayoutOverflowFromChild(const LayoutBox& child,
-                                  const LayoutSize& delta);
-  void SetLayoutClientAfterEdge(LayoutUnit client_after_edge);
-  LayoutUnit LayoutClientAfterEdge() const;
 
   void ClearLayoutOverflow();
   void ClearVisualOverflow();
@@ -1367,8 +1359,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   void RemoveFloatingOrPositionedChildFromBlockLists();
 
-  PaintLayer* EnclosingFloatPaintingLayer() const;
-
   bool ShrinkToAvoidFloats() const;
   virtual bool CreatesNewFormattingContext() const {
     NOT_DESTROYED();
@@ -1466,7 +1456,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // direction, for parent to accumulate layout or visual overflow.
   LayoutRect RectForOverflowPropagation(const LayoutRect&) const;
 
-  LayoutRect LogicalVisualOverflowRectForPropagation() const;
   LayoutRect VisualOverflowRectForPropagation() const {
     NOT_DESTROYED();
     return RectForOverflowPropagation(VisualOverflowRect());
@@ -1554,7 +1543,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                                 VisualRectFlags,
                                 TransformState&) const;
 
-  bool HasRelativeLogicalWidth() const;
   bool HasRelativeLogicalHeight() const;
 
   virtual LayoutBox* CreateAnonymousBoxWithSameTypeAs(
@@ -1847,12 +1835,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const LayoutBoxModelObject* container_block,
       LayoutUnit container_logical_width,
       const NGBoxFragmentBuilder* = nullptr);
-  static void ComputeLogicalLeftPositionedOffset(
-      LayoutUnit& logical_left_pos,
-      const LayoutBox* child,
-      LayoutUnit logical_width_value,
-      const LayoutBoxModelObject* container_block,
-      LayoutUnit container_logical_width);
   static void ComputeLogicalTopPositionedOffset(
       LayoutUnit& logical_top_pos,
       const LayoutBox* child,
@@ -1908,9 +1890,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void UpdateScrollSnapMappingAfterStyleChange(const ComputedStyle& old_style);
   void ClearScrollSnapMapping();
   void AddScrollSnapMapping();
-
-  LayoutUnit ShrinkToFitLogicalWidth(LayoutUnit available_logical_width,
-                                     LayoutUnit borders_plus_padding) const;
 
   bool StretchesToViewportInQuirksMode() const;
 

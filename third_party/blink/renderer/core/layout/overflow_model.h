@@ -116,16 +116,8 @@ class BoxLayoutOverflowModel {
     UniteLayoutOverflowRect(layout_overflow_, rect);
   }
 
-  void Move(LayoutUnit dx, LayoutUnit dy) { layout_overflow_.Move(dx, dy); }
-
-  LayoutUnit LayoutClientAfterEdge() const { return layout_client_after_edge_; }
-  void SetLayoutClientAfterEdge(LayoutUnit client_after_edge) {
-    layout_client_after_edge_ = client_after_edge;
-  }
-
  private:
   LayoutRect layout_overflow_;
-  LayoutUnit layout_client_after_edge_;
 };
 
 class BoxVisualOverflowModel {

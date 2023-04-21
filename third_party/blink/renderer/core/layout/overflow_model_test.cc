@@ -130,12 +130,6 @@ TEST_F(BoxOverflowModelTest, AddContentsVisualOverflowEmpty) {
             visual_overflow_.ContentsVisualOverflowRect());
 }
 
-TEST_F(BoxOverflowModelTest, MoveAffectsLayoutOverflow) {
-  layout_overflow_.Move(LayoutUnit(500), LayoutUnit(100));
-  EXPECT_EQ(LayoutRect(510, 110, 80, 80),
-            layout_overflow_.LayoutOverflowRect());
-}
-
 TEST_F(BoxOverflowModelTest, MoveAffectsSelfVisualOverflow) {
   visual_overflow_.Move(LayoutUnit(500), LayoutUnit(100));
   EXPECT_EQ(LayoutRect(500, 100, 100, 100),
