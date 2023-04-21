@@ -46,7 +46,7 @@ class SyncSetupService : public KeyedService {
   static syncer::ModelType GetModelType(SyncableDatatype datatype);
 
   // Returns whether the user wants Sync to run.
-  // TODO(crbug.com/1291946): Callers should typically use CanSyncFeatureStart()
+  // TODO(crbug.com/1291953): Callers should typically use CanSyncFeatureStart()
   // or IsSyncFeatureEnabled() instead.
   virtual bool IsSyncRequested() const;
   // Returns whether Sync-the-transport can start the Sync feature.

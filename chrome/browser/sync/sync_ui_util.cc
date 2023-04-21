@@ -103,7 +103,8 @@ SyncStatusLabels GetSyncStatusLabelsImpl(
 
   // Check to see if sync has been disabled via the dashboard and needs to be
   // set up once again.
-  if (!service->GetUserSettings()->IsSyncRequested()) {
+  if (service->GetDisableReasons().Has(
+          syncer::SyncService::DISABLE_REASON_USER_CHOICE)) {
     return {SyncStatusMessageType::kSyncError,
             IDS_SIGNED_IN_WITH_SYNC_STOPPED_VIA_DASHBOARD,
             IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};

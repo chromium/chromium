@@ -25,7 +25,6 @@ class TestSyncUserSettings : public SyncUserSettings {
   explicit TestSyncUserSettings(TestSyncService* service);
   ~TestSyncUserSettings() override;
 
-  bool IsSyncRequested() const override;
   void SetSyncRequested() override;
 
   bool IsFirstSetupComplete() const override;
@@ -70,10 +69,6 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori) override;
   std::unique_ptr<Nigori> GetDecryptionNigoriKey() const override;
 
-  // TODO(crbug.com/1219990): Remove or rename this function since there is no
-  // UI for the user to achieve this, with the exception of ChromeOS for the
-  // case where the user clears sync data via dashboard.
-  void ClearSyncRequested();
   void SetFirstSetupComplete();
   void ClearFirstSetupComplete();
   void SetCustomPassphraseAllowed(bool allowed);

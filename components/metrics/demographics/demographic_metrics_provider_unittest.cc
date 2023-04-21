@@ -35,7 +35,10 @@ enum TestSyncServiceState {
   SYNC_FEATURE_NOT_ENABLED,
   SYNC_FEATURE_ENABLED,
   SYNC_FEATURE_ENABLED_BUT_PAUSED,
-  SYNC_FEATURE_TEMPORARILY_DISABLED,
+  // Represents the user clearing sync data via dashboard. On all platforms
+  // except ChromeOS (Ash), this clears the primary account (which is basically
+  // SYNC_FEATURE_NOT_ENABLED). On ChromeOS Ash, Sync enters a special state.
+  SYNC_FEATURE_DISABLED_ON_CHROMEOS_ASH_VIA_DASHBOARD,
 };
 
 // Profile client for testing that gets fake Profile information and services.
@@ -68,7 +71,6 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
         // TestSyncService by default behaves as everything enabled/active.
         sync_service_ = std::make_unique<syncer::TestSyncService>();
 
-        CHECK(sync_service_->GetUserSettings()->IsSyncRequested());
         CHECK(sync_service_->GetDisableReasons().Empty());
         CHECK_EQ(syncer::SyncService::TransportState::ACTIVE,
                  sync_service_->GetTransportState());
@@ -79,21 +81,23 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
         // Mimic the user signing out from content are (sync paused).
         sync_service_->SetPersistentAuthError();
 
-        CHECK(sync_service_->GetUserSettings()->IsSyncRequested());
         CHECK(sync_service_->GetDisableReasons().Empty());
         CHECK_EQ(syncer::SyncService::TransportState::PAUSED,
                  sync_service_->GetTransportState());
         break;
 
-      case SYNC_FEATURE_TEMPORARILY_DISABLED:
+      case SYNC_FEATURE_DISABLED_ON_CHROMEOS_ASH_VIA_DASHBOARD:
         sync_service_ = std::make_unique<syncer::TestSyncService>();
-        // Temporarily disable sync without turning it off.
-        sync_service_->GetUserSettings()->ClearSyncRequested();
+        sync_service_->SetDisableReasons(syncer::SyncService::DisableReasonSet(
+            syncer::SyncService::DISABLE_REASON_USER_CHOICE));
 
-        CHECK(!sync_service_->GetUserSettings()->IsSyncRequested());
-        CHECK(syncer::SyncService::DisableReasonSet(
-                  syncer::SyncService::DISABLE_REASON_USER_CHOICE) ==
-              sync_service_->GetDisableReasons());
+        // On ChromeOS Ash, IsFirstSetupComplete gets cleared temporarily but
+        // immediately afterwards, it gets set again with
+        // ENGINE_INITIALIZED_WITH_AUTO_START. And yet, IsSyncFeatureEnabled()
+        // stays false because the user needs to manually resume sync the
+        // feature.
+        CHECK(sync_service_->GetUserSettings()->IsFirstSetupComplete());
+        CHECK(!sync_service_->IsSyncFeatureEnabled());
         break;
     }
   }
@@ -201,12 +205,14 @@ TEST(DemographicMetricsProviderTest,
                                UserDemographicsStatus::kSyncNotEnabled, 1);
 }
 
-TEST(DemographicMetricsProviderTest,
-     ProvideSyncedUserNoisedBirthYearAndGender_SyncTemporarilyDisabled) {
+TEST(
+    DemographicMetricsProviderTest,
+    ProvideSyncedUserNoisedBirthYearAndGender_SyncFeatureDisabledOnChromeOsAshViaSyncDashboard) {
   base::HistogramTester histogram;
 
   auto client = std::make_unique<TestProfileClient>(
-      /*number_of_profiles=*/1, SYNC_FEATURE_TEMPORARILY_DISABLED);
+      /*number_of_profiles=*/1,
+      SYNC_FEATURE_DISABLED_ON_CHROMEOS_ASH_VIA_DASHBOARD);
 
   // Run demographics provider.
   DemographicMetricsProvider provider(

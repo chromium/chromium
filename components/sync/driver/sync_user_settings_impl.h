@@ -33,7 +33,6 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   ~SyncUserSettingsImpl() override;
 
   // SyncUserSettings implementation.
-  bool IsSyncRequested() const override;
   void SetSyncRequested() override;
   bool IsFirstSetupComplete() const override;
   void SetFirstSetupComplete(SyncFirstSetupCompleteSource source) override;
@@ -70,6 +69,15 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   void SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori) override;
   std::unique_ptr<Nigori> GetDecryptionNigoriKey() const override;
 
+  // Whether the user wants Sync to run. This is false by default, but gets set
+  // to true early in the Sync setup flow, after the user has pressed "turn on
+  // Sync" but before they have actually confirmed the settings (that's
+  // IsFirstSetupComplete()). After Sync is enabled, this can get set to false
+  // via signout (which also clears IsFirstSetupComplete) or, on ChromeOS Ash,
+  // when Sync gets reset from the dashboard.
+  //
+  // This maps to DISABLE_REASON_USER_CHOICE.
+  bool IsSyncRequested() const;
   void ClearSyncRequested();
   void SetSyncRequestedIfNotSetExplicitly();
 

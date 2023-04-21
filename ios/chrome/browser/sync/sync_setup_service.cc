@@ -116,7 +116,8 @@ void SyncSetupService::SetSyncingAllDataTypes(bool sync_all) {
 }
 
 bool SyncSetupService::IsSyncRequested() const {
-  return sync_service_->GetUserSettings()->IsSyncRequested();
+  return !sync_service_->GetDisableReasons().Has(
+      syncer::SyncService::DISABLE_REASON_USER_CHOICE);
 }
 
 bool SyncSetupService::CanSyncFeatureStart() const {
