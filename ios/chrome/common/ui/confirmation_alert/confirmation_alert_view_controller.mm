@@ -88,6 +88,17 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
 #pragma mark - Public
 
+- (UISheetPresentationControllerDetent*)preferredHeightDetent {
+  __typeof(self) __weak weakSelf = self;
+  auto resolver = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    return [weakSelf detentForPreferredHeightInContext:context];
+  };
+  return [UISheetPresentationControllerDetent
+      customDetentWithIdentifier:@"preferred_height"
+                        resolver:resolver];
+}
+
 - (instancetype)init {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
@@ -768,6 +779,44 @@ const CGFloat kFaviconBadgeSideLength = 24;
       CreateOpaqueButtonPointerStyleProvider();
 
   return tertiaryActionButton;
+}
+
+- (CGFloat)detentForPreferredHeightInContext:
+    (id<UISheetPresentationControllerDetentResolutionContext>)context
+    API_AVAILABLE(ios(16)) {
+  // Only activate this detent in portrait orientation on iPhone.
+  UITraitCollection* traitCollection = context.containerTraitCollection;
+  if (traitCollection.horizontalSizeClass != UIUserInterfaceSizeClassCompact ||
+      traitCollection.verticalSizeClass != UIUserInterfaceSizeClassRegular) {
+    return UISheetPresentationControllerDetentInactive;
+  }
+
+  // Obtain container view from presentation controller directly because
+  // this view may not have been added to its container view yet.
+  UIView* containerView = self.sheetPresentationController.containerView;
+
+  // Measure compressed height without safe area inset (detent values are
+  // generally expressed without safe area insets).
+  CGFloat fittingWidth = containerView.bounds.size.width;
+  CGSize fittingSize =
+      CGSizeMake(fittingWidth, UILayoutFittingCompressedSize.height);
+  CGFloat height = [self.view systemLayoutSizeFittingSize:fittingSize].height;
+  height -= containerView.safeAreaInsets.bottom;
+
+  // Replace bottom margin calculated based on view's own safe area with bottom
+  // margin calculated based on the safe area of the container view it will
+  // eventually live in. This is needed in case the detent value is requested
+  // before the view has been added to its superview.
+  height -= MAX(kActionsBottomMargin, self.view.safeAreaInsets.bottom);
+  height += MAX(kActionsBottomMargin, containerView.safeAreaInsets.bottom);
+
+  // Make sure detent is not larger than 75% of the maximum detent value but at
+  // least as large as a standard medium detent.
+  height = MIN(height, 0.75 * context.maximumDetentValue);
+  CGFloat mediumDetentHeight = [UISheetPresentationControllerDetent.mediumDetent
+      resolvedValueInContext:context];
+  height = MAX(height, mediumDetentHeight);
+  return height;
 }
 
 @end
