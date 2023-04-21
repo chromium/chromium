@@ -223,7 +223,7 @@ TEST_F(AttributionStorageTest,
 
   // Test all public methods on AttributionStorage.
   EXPECT_NO_FATAL_FAILURE(storage->StoreSource(SourceBuilder().Build()));
-  EXPECT_EQ(AttributionTrigger::EventLevelResult::kNoMatchingImpressions,
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kInternalError,
             storage->MaybeCreateAndStoreReport(DefaultTrigger())
                 .event_level_status());
   EXPECT_THAT(storage->GetAttributionReports(base::Time::Now()), IsEmpty());
@@ -3457,12 +3457,82 @@ TEST_F(AttributionStorageTest, NoEventTriggerData_NotRegisteredReturned) {
 }
 
 TEST_F(AttributionStorageTest, StoreNullAggregatableReport) {
-  AttributionReport report = ReportBuilder(AttributionInfoBuilder().Build(),
-                                           SourceBuilder().BuildStored())
-                                 .BuildNullAggregatable();
-  storage()->StoreAttributionReportForTesting(report);
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()),
-              ElementsAre(report));
+  base::Time now = base::Time::Now();
+  base::Time source_time = now - base::Days(1);
+  base::Time report_time = now + kReportDelay;
+
+  delegate()->set_null_aggregatable_reports(
+      {AttributionStorageDelegate::NullAggregatableReport{
+          .fake_source_time = source_time,
+      }});
+  AttributionTrigger trigger = DefaultAggregatableTriggerBuilder().Build();
+  auto result = storage()->MaybeCreateAndStoreReport(trigger);
+  delegate()->set_null_aggregatable_reports({});
+
+  ASSERT_TRUE(result.min_null_aggregatable_report_time().has_value());
+  EXPECT_EQ(*result.min_null_aggregatable_report_time(), report_time);
+
+  AttributionReport expected_report =
+      ReportBuilder(AttributionInfoBuilder(
+                        /*context_origin=*/trigger.destination_origin())
+                        .SetTime(now)
+                        .Build(),
+                    SourceBuilder(source_time).BuildStored())
+          .SetReportTime(report_time)
+          .BuildNullAggregatable();
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
+              ElementsAre(expected_report));
+}
+
+TEST_F(AttributionStorageTest, NoAggregatableData_NoNullReport) {
+  delegate()->set_null_aggregatable_reports(
+      {AttributionStorageDelegate::NullAggregatableReport{
+          .fake_source_time = base::Time::Now(),
+      }});
+  auto result = storage()->MaybeCreateAndStoreReport(DefaultTrigger());
+  delegate()->set_null_aggregatable_reports({});
+
+  EXPECT_FALSE(result.min_null_aggregatable_report_time().has_value());
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
+}
+
+TEST_F(AttributionStorageTest, BothRealAndNullAggregatableReports) {
+  base::Time now = base::Time::Now();
+
+  SourceBuilder builder = TestAggregatableSourceProvider().GetBuilder(now);
+
+  storage()->StoreSource(builder.Build());
+
+  delegate()->set_null_aggregatable_reports(
+      {AttributionStorageDelegate::NullAggregatableReport{
+          .fake_source_time = now,
+      }});
+  AttributionTrigger trigger = DefaultAggregatableTriggerBuilder().Build(
+      /*generate_event_trigger_data=*/false);
+  auto result = storage()->MaybeCreateAndStoreReport(trigger);
+  delegate()->set_null_aggregatable_reports({});
+
+  EXPECT_TRUE(result.min_null_aggregatable_report_time().has_value());
+  EXPECT_EQ(result.aggregatable_status(),
+            AttributionTrigger::AggregatableResult::kSuccess);
+
+  const AttributionReport expected_null_report =
+      ReportBuilder(AttributionInfoBuilder(
+                        /*context_origin=*/trigger.destination_origin())
+                        .SetTime(now)
+                        .Build(),
+                    SourceBuilder(now).BuildStored())
+          .SetReportTime(now + kReportDelay)
+          .BuildNullAggregatable();
+
+  const AttributionReport expected_aggregatable_report =
+      GetExpectedAggregatableReport(
+          builder.SetAggregatableBudgetConsumed(1).BuildStored(),
+          DefaultAggregatableHistogramContributions(), trigger);
+
+  EXPECT_THAT(
+      storage()->GetAttributionReports(base::Time::Max()),
+      UnorderedElementsAre(expected_aggregatable_report, expected_null_report));
 }
 
 }  // namespace content

@@ -20,6 +20,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -512,6 +513,157 @@ TEST_F(
   CloseDatabase();
 }
 
+TEST_F(AttributionStorageSqlTest, NullReportWithAttestation_FeatureEnabled) {
+  OpenDatabase();
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      network::features::kAttributionReportingTriggerAttestation);
+  base::HistogramTester histograms;
+
+  delegate()->set_null_aggregatable_reports({
+      AttributionStorageDelegate::NullAggregatableReport{
+          .fake_source_time = base::Time::Now(),
+      },
+      AttributionStorageDelegate::NullAggregatableReport{
+          .fake_source_time = base::Time::Now() - base::Days(1),
+      },
+  });
+  auto trigger_attestation = network::TriggerAttestation::Create(
+      /*token=*/"attestation-token", /*aggregatable_report_id=*/
+      "55865da3-fb0e-4b71-965e-64fc4bf0a323");
+  AttributionTrigger trigger = DefaultAggregatableTriggerBuilder()
+                                   .SetAttestation(trigger_attestation)
+                                   .Build();
+  auto result = storage()->MaybeCreateAndStoreReport(trigger);
+  EXPECT_TRUE(result.min_null_aggregatable_report_time().has_value());
+
+  histograms.ExpectUniqueSample(
+      "Conversions.TriggerAttestation.ReportHasAttestation", true,
+      /*expected_bucket_count=*/1);
+
+  auto reports = storage()->GetAttributionReports(base::Time::Max());
+  ASSERT_THAT(reports, SizeIs(2));
+  base::ranges::sort(reports, std::less<>(), &AttributionReport::id);
+
+  // Only the first report was created with the id from the trigger attestation.
+  const AttributionReport& first_report = reports.front();
+  EXPECT_EQ(first_report.external_report_id(),
+            trigger_attestation->aggregatable_report_id());
+  // Should store the attestation token on the report.
+  const auto* data = absl::get_if<AttributionReport::NullAggregatableData>(
+      &first_report.data());
+  EXPECT_EQ(data->common_data.attestation_token.value(),
+            trigger_attestation->token());
+
+  // The second report was not created with the trigger attestation.
+  const AttributionReport& second_report = reports.back();
+  EXPECT_EQ(second_report.external_report_id(), DefaultExternalReportID());
+  data = absl::get_if<AttributionReport::NullAggregatableData>(
+      &second_report.data());
+  EXPECT_FALSE(data->common_data.attestation_token.has_value());
+  CloseDatabase();
+}
+
+TEST_F(AttributionStorageSqlTest,
+       BothRealAndNullReports_OnlyOneReportWithAttestation) {
+  OpenDatabase();
+
+  StorableSource source = TestAggregatableSourceProvider().GetBuilder().Build();
+  storage()->StoreSource(source);
+
+  delegate()->set_null_aggregatable_reports({
+      AttributionStorageDelegate::NullAggregatableReport{
+          .fake_source_time = base::Time::Now(),
+      },
+  });
+  auto trigger_attestation = network::TriggerAttestation::Create(
+      /*token=*/"attestation-token", /*aggregatable_report_id=*/
+      "55865da3-fb0e-4b71-965e-64fc4bf0a323");
+  AttributionTrigger trigger =
+      DefaultAggregatableTriggerBuilder()
+          .SetAttestation(trigger_attestation)
+          .Build(/*generate_event_trigger_data=*/false);
+  auto result = storage()->MaybeCreateAndStoreReport(trigger);
+
+  EXPECT_EQ(result.aggregatable_status(),
+            AttributionTrigger::AggregatableResult::kSuccess);
+  EXPECT_TRUE(result.min_null_aggregatable_report_time().has_value());
+
+  auto reports = storage()->GetAttributionReports(base::Time::Max());
+  ASSERT_THAT(reports, SizeIs(2));
+  base::ranges::sort(reports, std::less<>(), &AttributionReport::id);
+
+  // Only the first report was created with the id from the trigger attestation.
+  const AttributionReport& first_report = reports.front();
+  EXPECT_EQ(first_report.external_report_id(),
+            trigger_attestation->aggregatable_report_id());
+  // Should store the attestation token on the report.
+  const auto* aggregatable_data =
+      absl::get_if<AttributionReport::AggregatableAttributionData>(
+          &first_report.data());
+  EXPECT_EQ(aggregatable_data->common_data.attestation_token.value(),
+            trigger_attestation->token());
+
+  // The second report was not created with the trigger attestation.
+  const AttributionReport& second_report = reports.back();
+  EXPECT_EQ(second_report.external_report_id(), DefaultExternalReportID());
+  const auto* null_data = absl::get_if<AttributionReport::NullAggregatableData>(
+      &second_report.data());
+  EXPECT_FALSE(null_data->common_data.attestation_token.has_value());
+  CloseDatabase();
+}
+
+TEST_F(AttributionStorageSqlTest,
+       BothRealAndNullReportsReverseShuffle_OnlyOneReportWithAttestation) {
+  OpenDatabase();
+
+  StorableSource source = TestAggregatableSourceProvider().GetBuilder().Build();
+  storage()->StoreSource(source);
+
+  delegate()->set_null_aggregatable_reports({
+      AttributionStorageDelegate::NullAggregatableReport{
+          .fake_source_time = base::Time::Now(),
+      },
+  });
+  delegate()->set_reverse_reports_on_shuffle(true);
+  auto trigger_attestation = network::TriggerAttestation::Create(
+      /*token=*/"attestation-token", /*aggregatable_report_id=*/
+      "55865da3-fb0e-4b71-965e-64fc4bf0a323");
+  AttributionTrigger trigger =
+      DefaultAggregatableTriggerBuilder()
+          .SetAttestation(trigger_attestation)
+          .Build(/*generate_event_trigger_data=*/false);
+  auto result = storage()->MaybeCreateAndStoreReport(trigger);
+
+  EXPECT_EQ(result.aggregatable_status(),
+            AttributionTrigger::AggregatableResult::kSuccess);
+  EXPECT_TRUE(result.min_null_aggregatable_report_time().has_value());
+
+  auto reports = storage()->GetAttributionReports(base::Time::Max());
+  ASSERT_THAT(reports, SizeIs(2));
+  base::ranges::sort(reports, std::less<>(), &AttributionReport::id);
+
+  // Only the first report was created with the id from the trigger attestation.
+  const AttributionReport& first_report = reports.front();
+  EXPECT_EQ(first_report.external_report_id(),
+            trigger_attestation->aggregatable_report_id());
+  // Should store the attestation token on the report.
+  const auto* null_data = absl::get_if<AttributionReport::NullAggregatableData>(
+      &first_report.data());
+  EXPECT_EQ(null_data->common_data.attestation_token.value(),
+            trigger_attestation->token());
+
+  // The second report was not created with the trigger attestation.
+  const AttributionReport& second_report = reports.back();
+  EXPECT_EQ(second_report.external_report_id(), DefaultExternalReportID());
+  const auto* aggregatable_data =
+      absl::get_if<AttributionReport::AggregatableAttributionData>(
+          &second_report.data());
+  EXPECT_FALSE(aggregatable_data->common_data.attestation_token.has_value());
+  CloseDatabase();
+}
+
 // Create a source with three triggers and craft a query that will target all.
 TEST_F(AttributionStorageSqlTest, ClearDataRangeMultipleReports) {
   base::HistogramTester histograms;
@@ -765,15 +917,18 @@ TEST_F(AttributionStorageSqlTest, DeleteAttributionDataByDataKey) {
               *attribution_reporting::SuitableOrigin::Deserialize(
                   "https://report1.test"))
           .Build());
-  storage()->StoreAttributionReportForTesting(
-      ReportBuilder(AttributionInfoBuilder().Build(),
-                    SourceBuilder()
-                        .SetReportingOrigin(
-                            *attribution_reporting::SuitableOrigin::Deserialize(
-                                "https://report2.test"))
-                        .BuildStored())
-          .SetReportTime(base::Time::Now())
-          .BuildNullAggregatable());
+
+  delegate()->set_null_aggregatable_reports(
+      {AttributionStorageDelegate::NullAggregatableReport{
+          .fake_source_time = base::Time::Now(),
+      }});
+  AttributionTrigger trigger =
+      DefaultAggregatableTriggerBuilder()
+          .SetReportingOrigin(
+              *attribution_reporting::SuitableOrigin::Deserialize(
+                  "https://report2.test"))
+          .Build();
+  storage()->MaybeCreateAndStoreReport(trigger);
 
   std::vector keys = storage()->GetAllDataKeys();
   ASSERT_THAT(keys, SizeIs(2));
@@ -851,7 +1006,7 @@ TEST_F(AttributionStorageSqlTest, CantOpenDb_FailsSilentlyInRelease) {
 
   // These calls should be no-ops.
   storage->StoreSource(SourceBuilder().Build());
-  EXPECT_EQ(AttributionTrigger::EventLevelResult::kNoMatchingImpressions,
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kInternalError,
             storage->MaybeCreateAndStoreReport(DefaultTrigger())
                 .event_level_status());
 }

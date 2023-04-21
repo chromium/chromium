@@ -266,8 +266,6 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
                         bool success);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  void StoreAttributionReportForTesting(AttributionReport);
-
   // Never null.
   const raw_ptr<StoragePartitionImpl> storage_partition_;
 

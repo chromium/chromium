@@ -391,4 +391,13 @@ base::Time AttributionStorageDelegateImpl::ReportTimeAtWindow(
   return ReportTimeFromDeadline(source.source_time(), deadlines[window_index]);
 }
 
+std::vector<AttributionStorageDelegate::NullAggregatableReport>
+AttributionStorageDelegateImpl::GetNullAggregatableReports(
+    const AttributionTrigger& trigger,
+    base::Time trigger_time,
+    absl::optional<base::Time> attributed_source_time) const {
+  // TODO(crbug.com/1432558): Generate null reports.
+  return {};
+}
+
 }  // namespace content

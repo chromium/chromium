@@ -204,7 +204,7 @@ class CONTENT_EXPORT AttributionReport {
 
   void set_report_time(base::Time report_time);
 
-  void SetExternalReportIdForTesting(base::Uuid external_report_id);
+  void set_external_report_id(base::Uuid external_report_id);
 
  private:
   // The attribution info.

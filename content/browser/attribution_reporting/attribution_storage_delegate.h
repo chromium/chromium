@@ -22,6 +22,7 @@
 namespace content {
 
 class AttributionReport;
+class AttributionTrigger;
 class CommonSourceInfo;
 class StoredSource;
 
@@ -47,6 +48,10 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   // empty vector -> `StoredSource::AttributionLogic::kNever`
   // non-empty vector -> `StoredSource::AttributionLogic::kFalsely`
   using RandomizedResponse = absl::optional<std::vector<FakeReport>>;
+
+  struct NullAggregatableReport {
+    base::Time fake_source_time;
+  };
 
   explicit AttributionStorageDelegate(const AttributionConfig& config);
 
@@ -149,6 +154,12 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   // Sanitizes `trigger_data` according to the data limits for `source_type`.
   uint64_t SanitizeTriggerData(uint64_t trigger_data,
                                attribution_reporting::mojom::SourceType) const;
+
+  // Returns zero or more null aggregatable reports for the given trigger.
+  virtual std::vector<NullAggregatableReport> GetNullAggregatableReports(
+      const AttributionTrigger&,
+      base::Time trigger_time,
+      absl::optional<base::Time> attributed_source_time) const = 0;
 
  protected:
   uint64_t TriggerDataCardinality(

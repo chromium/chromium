@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <vector>
+
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
@@ -43,6 +45,10 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   absl::optional<base::Time> GetReportWindowTime(
       absl::optional<base::TimeDelta> declared_window,
       base::Time source_time) override;
+  std::vector<NullAggregatableReport> GetNullAggregatableReports(
+      const AttributionTrigger&,
+      base::Time trigger_time,
+      absl::optional<base::Time> attributed_source_time) const override;
 
   void set_max_attributions_per_source(int max);
 
@@ -75,6 +81,8 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   void set_trigger_data_cardinality(uint64_t navigation, uint64_t event);
 
+  void set_null_aggregatable_reports(std::vector<NullAggregatableReport>);
+
   // Detaches the delegate from its current sequence in preparation for being
   // moved to storage, which runs on its own sequence.
   void DetachFromSequence();
@@ -99,6 +107,9 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   RandomizedResponse randomized_response_
       GUARDED_BY_CONTEXT(sequence_checker_) = absl::nullopt;
+
+  std::vector<NullAggregatableReport> null_aggregatable_reports_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace content

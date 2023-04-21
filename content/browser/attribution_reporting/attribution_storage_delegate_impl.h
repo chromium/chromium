@@ -88,6 +88,10 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   absl::optional<base::Time> GetReportWindowTime(
       absl::optional<base::TimeDelta> declared_window,
       base::Time source_time) override;
+  std::vector<NullAggregatableReport> GetNullAggregatableReports(
+      const AttributionTrigger&,
+      base::Time trigger_time,
+      absl::optional<base::Time> attributed_source_time) const override;
 
   // Generates fake reports using a random "stars and bars" sequence index of a
   // possible output of the API.

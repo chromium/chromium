@@ -288,8 +288,7 @@ void AttributionReport::set_report_time(base::Time report_time) {
   report_time_ = report_time;
 }
 
-void AttributionReport::SetExternalReportIdForTesting(
-    base::Uuid external_report_id) {
+void AttributionReport::set_external_report_id(base::Uuid external_report_id) {
   DCHECK(external_report_id.is_valid());
   external_report_id_ = std::move(external_report_id);
 }

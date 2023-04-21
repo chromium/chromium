@@ -615,13 +615,6 @@ void AttributionManagerImpl::StoreSource(StorableSource source,
                            cleared_debug_key, is_debug_cookie_set));
 }
 
-void AttributionManagerImpl::StoreAttributionReportForTesting(
-    AttributionReport report) {
-  attribution_storage_
-      .AsyncCall(&AttributionStorage::StoreAttributionReportForTesting)
-      .WithArgs(std::move(report));
-}
-
 void AttributionManagerImpl::RecordPendingAggregatableReportsTimings() {
   const base::Time now = base::Time::Now();
 
@@ -815,6 +808,9 @@ void AttributionManagerImpl::OnReportStored(
     MaybeSendDebugReport(std::move(*report));
   }
 
+  min_new_report_time = AttributionReport::MinReportTime(
+      min_new_report_time, result.min_null_aggregatable_report_time());
+
   scheduler_timer_.MaybeSet(min_new_report_time);
 
   if (result.event_level_status() !=
@@ -827,6 +823,8 @@ void AttributionManagerImpl::OnReportStored(
     NotifySourcesChanged();
     NotifyReportsChanged();
   }
+
+  // TODO(crbug.com/1432558): Notify reports changed for null reports.
 
   for (auto& observer : observers_) {
     observer.OnTriggerHandled(trigger, cleared_debug_key, result);

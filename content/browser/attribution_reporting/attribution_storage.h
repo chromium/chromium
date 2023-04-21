@@ -117,8 +117,6 @@ class AttributionStorage {
                          base::Time delete_end,
                          StoragePartition::StorageKeyMatcherFunction filter,
                          bool delete_rate_limit_data = true) = 0;
-
-  virtual void StoreAttributionReportForTesting(AttributionReport) = 0;
 };
 
 }  // namespace content

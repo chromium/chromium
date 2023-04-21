@@ -386,10 +386,6 @@ class AttributionManagerImplTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  void StoreAttributionReport(AttributionReport report) {
-    attribution_manager_->StoreAttributionReportForTesting(std::move(report));
-  }
-
  protected:
   // Override this in order to modify the delegate before it is passed
   // irretrievably to storage.
@@ -449,7 +445,7 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
   // so zero it out here to avoid flakiness.
   std::vector<AttributionReport> reports = StoredReports();
   for (auto& report : reports) {
-    report.SetExternalReportIdForTesting(DefaultExternalReportID());
+    report.set_external_report_id(DefaultExternalReportID());
   }
   EXPECT_THAT(reports, ElementsAre(expected_report));
 }
@@ -3071,46 +3067,67 @@ TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(AttributionManagerImplTest, NullAggregatableReport_ReportSent) {
-  StoreAttributionReport(ReportBuilder(AttributionInfoBuilder().Build(),
-                                       SourceBuilder().BuildStored())
-                             .SetReportTime(base::Time::Now())
-                             .BuildNullAggregatable());
+class AttributionManagerImplNullAggregatableReportTest
+    : public AttributionManagerImplTest {
+ protected:
+  void ConfigureStorageDelegate(
+      ConfigurableStorageDelegate& delegate) const override {
+    delegate.set_null_aggregatable_reports(
+        {AttributionStorageDelegate::NullAggregatableReport{
+            .fake_source_time = base::Time::Now(),
+        }});
+  }
+};
 
-  base::RunLoop run_loop;
+TEST_F(AttributionManagerImplNullAggregatableReportTest, ReportSent) {
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+    EXPECT_CALL(*aggregation_service_, AssembleReport).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*aggregation_service_, AssembleReport)
+        .WillOnce([](AggregatableReportRequest request,
+                     AggregationService::AssemblyCallback callback) {
+          std::move(callback).Run(std::move(request),
+                                  CreateExampleAggregatableReport(),
+                                  AggregationService::AssemblyStatus::kOk);
+        });
+    EXPECT_CALL(
+        *report_sender_,
+        SendReport(ReportTypeIs(AttributionReport::Type::kNullAggregatable),
+                   /*is_debug_report=*/false, _));
+  }
 
-  EXPECT_CALL(*aggregation_service_, AssembleReport)
-      .WillOnce([](AggregatableReportRequest request,
-                   AggregationService::AssemblyCallback callback) {
-        std::move(callback).Run(std::move(request),
-                                CreateExampleAggregatableReport(),
-                                AggregationService::AssemblyStatus::kOk);
-      });
+  attribution_manager_->HandleTrigger(
+      DefaultAggregatableTriggerBuilder().Build(), kFrameId);
 
-  EXPECT_CALL(
-      *report_sender_,
-      SendReport(ReportTypeIs(AttributionReport::Type::kNullAggregatable),
-                 /*is_debug_report=*/false, _))
-      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  // Make sure the report is not sent earlier than its report time.
+  task_environment_.FastForwardBy(kFirstReportingWindow -
+                                  base::Microseconds(1));
 
-  ForceGetReportsToSend();
-  run_loop.Run();
+  checkpoint.Call(1);
+
+  task_environment_.FastForwardBy(base::Microseconds(1));
 }
 
-TEST_F(AttributionManagerImplTest,
-       EmbedderDisallowsReporting_NullReportNotSent) {
-  StoreAttributionReport(ReportBuilder(AttributionInfoBuilder().Build(),
-                                       SourceBuilder().BuildStored())
-                             .SetReportTime(base::Time::Now())
-                             .BuildNullAggregatable());
-
+TEST_F(AttributionManagerImplNullAggregatableReportTest,
+       EmbedderDisallowsReporting_ReportNotSent) {
   MockAttributionReportingContentBrowserClient browser_client;
   EXPECT_CALL(
       browser_client,
       IsAttributionReportingOperationAllowed(
+          _,
+          AnyOf(ContentBrowserClient::AttributionReportingOperation::kTrigger,
+                ContentBrowserClient::AttributionReportingOperation::
+                    kTriggerVerboseDebugReport),
+          _, _, _, _))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(
+      browser_client,
+      IsAttributionReportingOperationAllowed(
           _, ContentBrowserClient::AttributionReportingOperation::kReport, _,
-          Pointee(url::Origin::Create(GURL("https://conversion.test/"))),
-          Pointee(url::Origin::Create(GURL("https://conversion.test/"))),
+          Pointee(url::Origin::Create(GURL("https://sub.conversion.test/"))),
+          Pointee(url::Origin::Create(GURL("https://sub.conversion.test/"))),
           Pointee(url::Origin::Create(GURL("https://report.test/")))))
       .WillOnce(Return(false));
   ScopedContentBrowserClientSetting setting(&browser_client);
@@ -3122,18 +3139,17 @@ TEST_F(AttributionManagerImplTest,
       &observer);
   observation.Observe(attribution_manager_.get());
 
-  base::RunLoop run_loop;
-
   EXPECT_CALL(
       observer,
       OnReportSent(ReportTypeIs(AttributionReport::Type::kNullAggregatable),
                    /*is_debug_report=*/false,
-                   Field(&SendResult::status, SendResult::Status::kDropped)))
-      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+                   Field(&SendResult::status, SendResult::Status::kDropped)));
 
-  ForceGetReportsToSend();
-  run_loop.Run();
+  attribution_manager_->HandleTrigger(
+      DefaultAggregatableTriggerBuilder().Build(), kFrameId);
+  EXPECT_THAT(StoredReports(), SizeIs(1));
 
+  task_environment_.FastForwardBy(kFirstReportingWindow);
   EXPECT_THAT(StoredReports(), IsEmpty());
 }
 
