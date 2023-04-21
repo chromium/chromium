@@ -1080,6 +1080,9 @@
                   'components/feedback/|' \
                   'extensions/browser/api/feedback_private/'
     },
+    'file_preview': {
+      'filepath': 'ash/public/cpp/file_preview/'
+    },
     'fileapi': {
       'filepath': 'file_system/|' \
                   'fileapi/'
@@ -2704,6 +2707,7 @@
              'petewil+watch@chromium.org',
              'iwells+watch@chromium.org'],
     'feedback': ['cros-telemetry+feedback@google.com'],
+    'file_preview': ['cros-system-ui-productivity-eng+reviews@google.com'],
     'fileapi': ['kinuko+fileapi@chromium.org'],
     'filebrowse': ['rginda+watch@chromium.org'],
     'filesapp': ['filesapp-reviews@chromium.org'],
