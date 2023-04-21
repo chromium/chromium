@@ -124,13 +124,10 @@ std::string LocalDeviceDataProviderImpl::GetDeviceName() const {
   CHECK(!user_name.empty());
   CHECK(!profile_url.empty());
 
-  // TODO (b/276307539): Change `device_type` to DEVICE_TYPE_CHROMEOS once
-  // available in //third_party/nearby protos.
-  //
   // `mac_address` is empty for Nearby Presence MVP on ChromeOS since
   // broadcasting is not supported.
   return BuildMetadata(
-      /*device_type=*/::nearby::internal::DeviceType::DEVICE_TYPE_LAPTOP,
+      /*device_type=*/::nearby::internal::DeviceType::DEVICE_TYPE_CHROMEOS,
       /*account_name=*/GetAccountName(),
       /*device_name=*/GetDeviceName(),
       /*user_name=*/user_name,

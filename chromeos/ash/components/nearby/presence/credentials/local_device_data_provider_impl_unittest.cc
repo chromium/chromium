@@ -122,6 +122,8 @@ TEST_F(LocalDeviceDataProviderImplTest, Metadata) {
   EXPECT_EQ(kCanocalizedUserEmail, metadata.account_name());
   EXPECT_EQ(kUserName, metadata.user_name());
   EXPECT_EQ(kProfileUrl, metadata.device_profile_url());
+  EXPECT_EQ(::nearby::internal::DeviceType::DEVICE_TYPE_CHROMEOS,
+            metadata.device_type());
   EXPECT_EQ(std::string(), metadata.bluetooth_mac_address());
 }
 
