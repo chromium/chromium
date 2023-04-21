@@ -11,7 +11,6 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"

@@ -11,12 +11,12 @@
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/functional/callback_forward.h"
-#include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
@@ -289,7 +289,7 @@ class RlweOprf {
         context.device_management_service,
         DeviceManagementService::JobConfiguration::
             TYPE_PSM_HAS_DEVICE_STATE_REQUEST,
-        base::GUID::GenerateRandomV4().AsLowercaseString(),
+        base::Uuid::GenerateRandomV4().AsLowercaseString(),
         /*critical=*/true, DMAuth::NoAuth(),
         /*oauth_token=*/absl::nullopt, context.url_loader_factory,
         base::BindOnce(&RlweOprf::OnRequestDone, weak_factory_.GetWeakPtr(),
@@ -382,7 +382,7 @@ class RlweQuery {
         context.device_management_service,
         DeviceManagementService::JobConfiguration::
             TYPE_PSM_HAS_DEVICE_STATE_REQUEST,
-        base::GUID::GenerateRandomV4().AsLowercaseString(),
+        base::Uuid::GenerateRandomV4().AsLowercaseString(),
         /*critical=*/true, DMAuth::NoAuth(),
         /*oauth_token=*/absl::nullopt, context.url_loader_factory,
         base::BindOnce(&RlweQuery::OnRequestDone, weak_factory_.GetWeakPtr(),
@@ -493,7 +493,7 @@ class EnrollmentState {
     auto config = std::make_unique<DMServerJobConfiguration>(
         context.device_management_service,
         DeviceManagementService::JobConfiguration::TYPE_DEVICE_STATE_RETRIEVAL,
-        base::GUID::GenerateRandomV4().AsLowercaseString(),
+        base::Uuid::GenerateRandomV4().AsLowercaseString(),
         /*critical=*/true, DMAuth::NoAuth(),
         /*oauth_token=*/absl::nullopt, context.url_loader_factory,
         base::BindOnce(&EnrollmentState::OnRequestDone,

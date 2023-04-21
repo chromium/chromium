@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -19,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state_message_processor.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client.h"
@@ -741,7 +741,8 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForFRE(
     const std::string& server_backed_state_key,
     int power_initial,
     int power_limit) {
-  const std::string device_id = base::GenerateGUID();
+  const std::string device_id =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
   return base::WrapUnique(new AutoEnrollmentClientImpl(
       progress_callback,
       std::make_unique<FREServerStateAvailabilityRequester>(
@@ -769,7 +770,8 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForInitialEnrollment(
           std::move(psm_rlwe_dmserver_client), local_state),
       std::make_unique<ServerStateRetriever>(
           device_management_service, url_loader_factory, local_state,
-          /*device_id=*/base::GenerateGUID(), kUMASuffixInitialEnrollment,
+          /*device_id=*/base::Uuid::GenerateRandomV4().AsLowercaseString(),
+          kUMASuffixInitialEnrollment,
           AutoEnrollmentStateMessageProcessor::CreateForInitialEnrollment(
               device_serial_number, device_brand_code))));
 }
