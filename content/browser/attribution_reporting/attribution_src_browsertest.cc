@@ -207,14 +207,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   }
 }
 
-// See crbug.com/1426892, where attributionsrc window.open features are
-// incorrectly handled if multiple attributionsrc features are specified.
-// Multiple attributionsrc features should not issue multiple background
-// requests, and we should only handle the last attributionsrc entry to comply
-// with
-// https://html.spec.whatwg.org/multipage/nav-history-apis.html#concept-window-open-features-tokenize
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
-                       AttributionSrcWindowOpen_MultipleFeatures_UsesLast) {
+                       AttributionSrcWindowOpen_MultipleFeatures_RequestsAll) {
   // Create a separate server as we cannot register a `ControllableHttpResponse`
   // after the server starts.
   auto https_server = std::make_unique<net::EmbeddedTestServer>(
@@ -241,11 +235,10 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                 "attributionsrc=/source1 attributionsrc=/source2");
   )"));
 
+  register_response1->WaitForRequest();
   register_response2->WaitForRequest();
+  register_response1->Done();
   register_response2->Done();
-
-  // Only the last feature's value should be used.
-  EXPECT_FALSE(register_response1->has_received_request());
 }
 
 // See crbug.com/1322450
@@ -766,6 +759,87 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(trigger_data.size(), 1u);
   EXPECT_EQ(trigger_data.front().event_triggers.size(), 1u);
   EXPECT_EQ(trigger_data.front().event_triggers.front().data, 7u);
+}
+
+class AttributionSrcMultipleBackgroundRequestTest
+    : public AttributionSrcBrowserTest,
+      public ::testing::WithParamInterface<
+          std::pair<std::string, std::string>> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AttributionSrcMultipleBackgroundRequestTest,
+    ::testing::Values(std::make_pair("createAttributionSrcImg",
+                                     "createAttributionSrcImg($1)"),
+                      std::make_pair("createAttributionSrcScript",
+                                     "createAttributionSrcScript($1)")),
+    [](const auto& info) { return info.param.first; });  // test name generator
+
+IN_PROC_BROWSER_TEST_P(AttributionSrcMultipleBackgroundRequestTest,
+                       AllRegistered) {
+  // Create a separate server as we cannot register a `ControllableHttpResponse`
+  // after the server starts.
+  auto https_server = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_server->ServeFilesFromSourceDirectory(
+      "content/test/data/attribution_reporting");
+
+  auto register_response1 =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/source1");
+  auto register_response2 =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/trigger1");
+  ASSERT_TRUE(https_server->Start());
+
+  std::unique_ptr<MockDataHost> data_host;
+  base::RunLoop loop;
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
+      .WillRepeatedly(
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              RegistrationType) {
+            data_host = GetRegisteredDataHost(std::move(host));
+            loop.Quit();
+          });
+
+  SourceObserver source_observer(web_contents());
+  GURL page_url =
+      https_server->GetURL("b.test", "/page_with_impression_creator.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  ASSERT_TRUE(ExecJs(
+      web_contents(),
+      JsReplace(GetParam().second, "/source1 http://invalid.test /trigger1")));
+
+  register_response1->WaitForRequest();
+  register_response2->WaitForRequest();
+
+  {
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->AddCustomHeader(kAttributionReportingRegisterSourceHeader,
+                                   R"({"destination":"https://d.test"})");
+    register_response1->Send(http_response->ToResponseString());
+    register_response1->Done();
+  }
+
+  {
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->AddCustomHeader("Attribution-Reporting-Register-Trigger",
+                                   R"({})");
+    register_response2->Send(http_response->ToResponseString());
+    register_response2->Done();
+  }
+
+  if (!data_host) {
+    loop.Run();
+  }
+  data_host->WaitForSourceAndTriggerData(/*num_source_data=*/1,
+                                         /*num_trigger_data=*/1);
 }
 
 class AttributionSrcPrerenderBrowserTest : public AttributionSrcBrowserTest {

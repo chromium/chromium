@@ -215,19 +215,26 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
       window_features.is_fullscreen = value;
     } else if (attribution_reporting_enabled &&
                key_string == "attributionsrc") {
-      // attributionsrc values are URLs, and as such their original case needs
-      // to be retained for correctness. Positions in both `feature_string` and
-      // `buffer` correspond because ASCII-lowercasing doesn't add, remove, or
-      // swap character positions; it only does in-place transformations of
-      // capital ASCII characters. See crbug.com/1338698 for details.
-      DCHECK_EQ(feature_string.length(), buffer.length());
-      const StringView original_case_value_string(feature_string, value_begin,
-                                                  value_end - value_begin);
+      if (!window_features.attribution_srcs.has_value()) {
+        window_features.attribution_srcs.emplace();
+      }
 
-      // attributionsrc values are encoded in order to support embedded special
-      // characters, such as '='.
-      window_features.attribution_src = DecodeURLEscapeSequences(
-          original_case_value_string.ToString(), DecodeURLMode::kUTF8);
+      if (!value_string.empty()) {
+        // attributionsrc values are URLs, and as such their original case needs
+        // to be retained for correctness. Positions in both `feature_string`
+        // and `buffer` correspond because ASCII-lowercasing doesn't add,
+        // remove, or swap character positions; it only does in-place
+        // transformations of capital ASCII characters. See crbug.com/1338698
+        // for details.
+        DCHECK_EQ(feature_string.length(), buffer.length());
+        const StringView original_case_value_string(feature_string, value_begin,
+                                                    value_end - value_begin);
+
+        // attributionsrc values are encoded in order to support embedded
+        // special characters, such as '='.
+        window_features.attribution_srcs->emplace_back(DecodeURLEscapeSequences(
+            original_case_value_string.ToString(), DecodeURLMode::kUTF8));
+      }
     }
   }
 

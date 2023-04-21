@@ -158,10 +158,6 @@ class AttributionDataHostManagerImpl::ReceiverContext {
 
   RegistrationType registration_type() const { return registration_type_; }
 
-  size_t sources_registered() const { return sources_registered_; }
-
-  size_t triggers_registered() const { return triggers_registered_; }
-
   bool is_within_fenced_frame() const { return is_within_fenced_frame_; }
 
   absl::optional<int64_t> navigation_id() const { return navigation_id_; }
@@ -172,16 +168,6 @@ class AttributionDataHostManagerImpl::ReceiverContext {
 
   GlobalRenderFrameHostId render_frame_id() const { return render_frame_id_; }
 
-  void IncrementSourcesRegistered() {
-    DCHECK_NE(registration_type_, RegistrationType::kTrigger);
-    ++sources_registered_;
-  }
-
-  void IncrementTriggersRegistered() {
-    DCHECK_NE(registration_type_, RegistrationType::kSource);
-    ++triggers_registered_;
-  }
-
   const AttributionInputEvent& input_event() const { return input_event_; }
 
  private:
@@ -191,9 +177,6 @@ class AttributionDataHostManagerImpl::ReceiverContext {
 
   // Logically const.
   RegistrationType registration_type_;
-
-  size_t sources_registered_ = 0;
-  size_t triggers_registered_ = 0;
 
   // Whether the attribution is registered within a fenced frame tree.
   // Logically const.
@@ -636,27 +619,25 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
 
 const AttributionDataHostManagerImpl::ReceiverContext*
 AttributionDataHostManagerImpl::GetReceiverContextForSource() {
-  ReceiverContext& context = receivers_.current_context();
+  const ReceiverContext& context = receivers_.current_context();
 
   if (context.registration_type() == RegistrationType::kTrigger) {
     mojo::ReportBadMessage("AttributionDataHost: Not eligible for source.");
     return nullptr;
   }
 
-  context.IncrementSourcesRegistered();
   return &context;
 }
 
 const AttributionDataHostManagerImpl::ReceiverContext*
 AttributionDataHostManagerImpl::GetReceiverContextForTrigger() {
-  ReceiverContext& context = receivers_.current_context();
+  const ReceiverContext& context = receivers_.current_context();
 
   if (context.registration_type() == RegistrationType::kSource) {
     mojo::ReportBadMessage("AttributionDataHost: Not eligible for trigger.");
     return nullptr;
   }
 
-  context.IncrementTriggersRegistered();
   return &context;
 }
 
@@ -748,16 +729,6 @@ void AttributionDataHostManagerImpl::OnReceiverDisconnected() {
       MaybeBindDeferredReceivers(context.navigation_id().value(),
                                  /*due_to_timeout=*/false);
     }
-  }
-
-  if (size_t num = context.sources_registered()) {
-    base::UmaHistogramExactLinear("Conversions.RegisteredSourcesPerDataHost",
-                                  num, 101);
-  }
-
-  if (size_t num = context.triggers_registered()) {
-    base::UmaHistogramExactLinear("Conversions.RegisteredTriggersPerDataHost",
-                                  num, 101);
   }
 }
 

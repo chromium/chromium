@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -27,7 +28,8 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-shared.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/trigger_attestation.h"
 #include "services/network/public/mojom/attribution.mojom-blink.h"
@@ -41,7 +43,10 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -71,6 +76,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -104,6 +110,26 @@ void LogAuditIssue(ExecutionContext* execution_context,
 
   AuditsIssue::ReportAttributionIssue(execution_context, issue_type, element,
                                       id_string, invalid_parameter);
+}
+
+template <typename Container>
+Vector<KURL> ParseAttributionSrcUrls(AttributionSrcLoader& loader,
+                                     const Document& document,
+                                     const Container& strings,
+                                     HTMLElement* element) {
+  Vector<KURL> urls;
+  urls.reserve(base::checked_cast<wtf_size_t>(strings.size()));
+
+  // TODO(crbug.com/1434306): Extract URL-invariant checks to avoid redundant
+  // operations and DevTools issues.
+  for (wtf_size_t i = 0; i < strings.size(); i++) {
+    KURL url = document.CompleteURL(strings[i]);
+    if (loader.CanRegister(url, element, /*request_id=*/absl::nullopt)) {
+      urls.emplace_back(std::move(url));
+    }
+  }
+
+  return urls;
 }
 
 }  // namespace
@@ -185,28 +211,15 @@ class AttributionSrcLoader::ResourceClient
     : public GarbageCollected<AttributionSrcLoader::ResourceClient>,
       public RawResourceClient {
  public:
-  // `attribution_src_token` has a value if the attribution data
-  // produced by this client will need to be associated with a navigation.
-  ResourceClient(AttributionSrcLoader* loader,
-                 RegistrationType type,
-                 absl::optional<AttributionSrcToken> attribution_src_token)
-      : loader_(loader), type_(type) {
+  ResourceClient(
+      AttributionSrcLoader* loader,
+      RegistrationType type,
+      mojo::SharedRemote<mojom::blink::AttributionDataHost> data_host)
+      : loader_(loader), type_(type), data_host_(std::move(data_host)) {
     DCHECK(loader_);
     DCHECK(loader_->local_frame_);
     DCHECK(loader_->local_frame_->IsAttached());
-
-    mojo::AssociatedRemote<mojom::blink::AttributionHost> attribution_host;
-    loader_->local_frame_->GetRemoteNavigationAssociatedInterfaces()
-        ->GetInterface(&attribution_host);
-
-    if (attribution_src_token.has_value()) {
-      attribution_host->RegisterNavigationDataHost(
-          data_host_.BindNewPipeAndPassReceiver(), *attribution_src_token);
-    } else {
-      // Send the data host normally.
-      attribution_host->RegisterDataHost(
-          data_host_.BindNewPipeAndPassReceiver(), type_);
-    }
+    CHECK(data_host_.is_bound());
   }
 
   ~ResourceClient() override = default;
@@ -261,7 +274,9 @@ class AttributionSrcLoader::ResourceClient
 
   // Remote used for registering responses with the browser-process.
   GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::Remote<mojom::blink::AttributionDataHost> data_host_;
+  mojo::SharedRemote<mojom::blink::AttributionDataHost> data_host_;
+
+  wtf_size_t num_registrations_ = 0;
 
   SelfKeepAlive<ResourceClient> keep_alive_{this};
 };
@@ -277,32 +292,37 @@ void AttributionSrcLoader::Trace(Visitor* visitor) const {
   visitor->Trace(local_frame_);
 }
 
-void AttributionSrcLoader::Register(const KURL& src_url, HTMLElement* element) {
-  CreateAndSendRequest(src_url, element,
-                       /*attribution_src_token=*/absl::nullopt);
+Vector<KURL> AttributionSrcLoader::ParseAttributionSrc(
+    const AtomicString& attribution_src,
+    HTMLElement* element) {
+  return ParseAttributionSrcUrls(*this, *local_frame_->GetDocument(),
+                                 SpaceSplitString(attribution_src), element);
 }
 
-absl::optional<Impression> AttributionSrcLoader::RegisterNavigation(
-    const KURL& navigation_url,
-    const String& attribution_src,
-    HTMLAnchorElement* element) {
-  DCHECK(!attribution_src.IsNull());
+void AttributionSrcLoader::Register(const AtomicString& attribution_src,
+                                    HTMLElement* element) {
+  CreateAndSendRequests(ParseAttributionSrc(attribution_src, element), element,
+                        /*attribution_src_token=*/absl::nullopt);
+}
 
+absl::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
+    const KURL& navigation_url,
+    Vector<KURL> attribution_src_urls,
+    HTMLAnchorElement* element) {
   // TODO(apaseltiner): Add tests to ensure that this method can't be used to
   // register triggers.
+
+  // TODO(crbug.com/1434306): Extract URL-invariant checks to avoid redundant
+  // operations and DevTools issues.
 
   const Impression impression{
       .nav_type = element
                       ? mojom::blink::AttributionNavigationType::kAnchor
                       : mojom::blink::AttributionNavigationType::kWindowOpen};
 
-  if (!attribution_src.empty()) {
-    KURL background_url =
-        local_frame_->GetDocument()->CompleteURL(attribution_src);
-    if (CreateAndSendRequest(background_url, element,
-                             impression.attribution_src_token)) {
-      return impression;
-    }
+  if (CreateAndSendRequests(std::move(attribution_src_urls), element,
+                            impression.attribution_src_token)) {
+    return impression;
   }
 
   if (CanRegister(navigation_url, element, /*request_id=*/absl::nullopt)) {
@@ -312,71 +332,107 @@ absl::optional<Impression> AttributionSrcLoader::RegisterNavigation(
   return absl::nullopt;
 }
 
-bool AttributionSrcLoader::CreateAndSendRequest(
-    const KURL& src_url,
+absl::optional<Impression> AttributionSrcLoader::RegisterNavigation(
+    const KURL& navigation_url,
+    const AtomicString& attribution_src,
+    HTMLAnchorElement* element) {
+  CHECK(!attribution_src.IsNull());
+  CHECK(element);
+
+  return RegisterNavigationInternal(
+      navigation_url, ParseAttributionSrc(attribution_src, element), element);
+}
+
+absl::optional<Impression> AttributionSrcLoader::RegisterNavigation(
+    const KURL& navigation_url,
+    const WebVector<WebString>& attribution_srcs) {
+  return RegisterNavigationInternal(
+      navigation_url,
+      ParseAttributionSrcUrls(*this, *local_frame_->GetDocument(),
+                              attribution_srcs,
+                              /*element=*/nullptr),
+      /*element=*/nullptr);
+}
+
+bool AttributionSrcLoader::CreateAndSendRequests(
+    Vector<KURL> urls,
     HTMLElement* element,
     absl::optional<AttributionSrcToken> attribution_src_token) {
   // Detached frames cannot/should not register new attributionsrcs.
-  if (!local_frame_->IsAttached())
-    return false;
-
-  LocalDOMWindow* window = local_frame_->DomWindow();
-
-  if (!CanRegister(src_url, element, /*request_id=*/absl::nullopt))
-    return false;
-
-  Document* document = window->document();
-
-  if (document->IsPrerendering()) {
-    document->AddPostPrerenderingActivationStep(WTF::BindOnce(
-        base::IgnoreResult(&AttributionSrcLoader::DoRegistration),
-        WrapPersistentIfNeeded(this), src_url, attribution_src_token));
+  if (!local_frame_->IsAttached() || urls.empty()) {
     return false;
   }
 
-  return DoRegistration(src_url, attribution_src_token);
+  if (Document* document = local_frame_->DomWindow()->document();
+      document->IsPrerendering()) {
+    document->AddPostPrerenderingActivationStep(WTF::BindOnce(
+        base::IgnoreResult(&AttributionSrcLoader::DoRegistration),
+        WrapPersistentIfNeeded(this), std::move(urls), attribution_src_token));
+    return false;
+  }
+
+  return DoRegistration(urls, attribution_src_token);
 }
 
 bool AttributionSrcLoader::DoRegistration(
-    const KURL& src_url,
+    const Vector<KURL>& urls,
     const absl::optional<AttributionSrcToken> attribution_src_token) {
+  DCHECK(!urls.empty());
+
   if (!local_frame_->IsAttached())
     return false;
-
-  // TODO(apaseltiner): Respect the referrerpolicy attribute of the
-  // originating <a> or <img> tag, if present.
-  ResourceRequest request(src_url);
-  request.SetHttpMethod(http_names::kGET);
-
-  request.SetKeepalive(true);
-  request.SetRequestContext(mojom::blink::RequestContextType::ATTRIBUTION_SRC);
 
   const auto src_type = attribution_src_token.has_value()
                             ? RegistrationType::kSource
                             : RegistrationType::kSourceOrTrigger;
 
-  request.SetHttpHeaderField(http_names::kAttributionReportingEligible,
-                             attribution_src_token.has_value()
-                                 ? "navigation-source"
-                                 : kAttributionEligibleEventSourceAndTrigger);
+  mojo::AssociatedRemote<mojom::blink::AttributionHost> conversion_host;
+  local_frame_->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
+      &conversion_host);
 
-  FetchParameters params(
-      std::move(request),
-      ResourceLoaderOptions(local_frame_->DomWindow()->GetCurrentWorld()));
-  params.MutableOptions().initiator_info.name =
-      fetch_initiator_type_names::kAttributionsrc;
+  mojo::SharedRemote<mojom::blink::AttributionDataHost> data_host;
 
-  auto* client = MakeGarbageCollected<ResourceClient>(this, src_type,
-                                                      attribution_src_token);
-  // TODO(https://crbug.com/1374121): If this registration is
-  // `associated_with_navigation`, there is a risk that the navigation will
-  // complete before the resource fetch here is complete. In this case, the
-  // browser will mark the page as frozen. This will cause MojoURLLoaderClient
-  // to store the request and never dispatch it, causing ResponseReceived() to
-  // never be called.
-  RawResource::Fetch(params, local_frame_->DomWindow()->Fetcher(), client);
+  if (attribution_src_token.has_value()) {
+    conversion_host->RegisterNavigationDataHost(
+        data_host.BindNewPipeAndPassReceiver(), *attribution_src_token);
+  } else {
+    conversion_host->RegisterDataHost(data_host.BindNewPipeAndPassReceiver(),
+                                      src_type);
+  }
 
-  RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus::kRequested);
+  for (const KURL& url : urls) {
+    // TODO(apaseltiner): Respect the referrerpolicy attribute of the
+    // originating <a> or <img> tag, if present.
+    ResourceRequest request(url);
+    request.SetHttpMethod(http_names::kGET);
+
+    request.SetKeepalive(true);
+    request.SetRequestContext(
+        mojom::blink::RequestContextType::ATTRIBUTION_SRC);
+
+    request.SetHttpHeaderField(http_names::kAttributionReportingEligible,
+                               attribution_src_token.has_value()
+                                   ? "navigation-source"
+                                   : kAttributionEligibleEventSourceAndTrigger);
+
+    FetchParameters params(
+        std::move(request),
+        ResourceLoaderOptions(local_frame_->DomWindow()->GetCurrentWorld()));
+    params.MutableOptions().initiator_info.name =
+        fetch_initiator_type_names::kAttributionsrc;
+
+    auto* client =
+        MakeGarbageCollected<ResourceClient>(this, src_type, data_host);
+    // TODO(https://crbug.com/1374121): If this registration is
+    // `associated_with_navigation`, there is a risk that the navigation will
+    // complete before the resource fetch here is complete. In this case, the
+    // browser will mark the page as frozen. This will cause MojoURLLoaderClient
+    // to store the request and never dispatch it, causing ResponseReceived() to
+    // never be called.
+    RawResource::Fetch(params, local_frame_->DomWindow()->Fetcher(), client);
+
+    RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus::kRequested);
+  }
 
   return true;
 }
@@ -538,12 +594,20 @@ void AttributionSrcLoader::RegisterAttributionHeaders(
     attribution_reporting::SuitableOrigin reporting_origin,
     const AttributionHeaders& headers,
     const absl::optional<network::TriggerAttestation>& trigger_attestation) {
+  mojo::AssociatedRemote<mojom::blink::AttributionHost> conversion_host;
+  local_frame_->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
+      &conversion_host);
+
+  mojo::SharedRemote<mojom::blink::AttributionDataHost> data_host;
+  conversion_host->RegisterDataHost(data_host.BindNewPipeAndPassReceiver(),
+                                    src_type);
+
   // Create a client to mimic processing of attributionsrc requests. Note we do
   // not share `AttributionDataHosts` for redirects chains.
   // TODO(johnidel): Consider refactoring this such that we can share clients
   // for redirect chain, or not create the client at all.
-  auto* client = MakeGarbageCollected<ResourceClient>(
-      this, src_type, /*attribution_src_token=*/absl::nullopt);
+  auto* client = MakeGarbageCollected<ResourceClient>(this, src_type,
+                                                      std::move(data_host));
   client->HandleResponseHeaders(std::move(reporting_origin), headers,
                                 trigger_attestation);
   client->Finish();
@@ -589,6 +653,12 @@ void AttributionSrcLoader::ResourceClient::Finish() {
   data_host_.reset();
 
   keep_alive_.Clear();
+
+  if (num_registrations_ > 0) {
+    // 1 more than `net::URLRequest::kMaxRedirects`.
+    base::UmaHistogramExactLinear("Conversions.RegistrationsPerRedirectChain",
+                                  num_registrations_, 21);
+  }
 }
 
 void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
@@ -689,6 +759,7 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
 
     data_host_->SourceDataAvailable(std::move(reporting_origin),
                                     std::move(*source_data));
+    ++num_registrations_;
     return;
   }
 
@@ -709,6 +780,7 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
     return;
   }
   data_host_->OsSourceDataAvailable(KURL(registration_url));
+  ++num_registrations_;
 #else
   NOTREACHED();
 #endif
@@ -741,6 +813,7 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
     data_host_->TriggerDataAvailable(std::move(reporting_origin),
                                      std::move(*trigger_data),
                                      std::move(trigger_attestation));
+    ++num_registrations_;
     return;
   }
 
@@ -762,6 +835,7 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
     return;
   }
   data_host_->OsTriggerDataAvailable(KURL(registration_url));
+  ++num_registrations_;
 #else
   NOTREACHED();
 #endif

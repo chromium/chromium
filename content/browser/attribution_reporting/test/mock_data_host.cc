@@ -33,16 +33,19 @@ MockDataHost::MockDataHost(
 MockDataHost::~MockDataHost() = default;
 
 void MockDataHost::WaitForSourceData(size_t num_source_data) {
-  min_source_data_count_ = num_source_data;
-  if (source_data_.size() >= min_source_data_count_) {
-    return;
-  }
-  wait_loop_.Run();
+  WaitForSourceAndTriggerData(num_source_data, /*num_trigger_data=*/0);
 }
 
 void MockDataHost::WaitForTriggerData(size_t num_trigger_data) {
+  WaitForSourceAndTriggerData(/*num_source_data=*/0, num_trigger_data);
+}
+
+void MockDataHost::WaitForSourceAndTriggerData(size_t num_source_data,
+                                               size_t num_trigger_data) {
+  min_source_data_count_ = num_source_data;
   min_trigger_data_count_ = num_trigger_data;
-  if (trigger_data_.size() >= min_trigger_data_count_) {
+  if (source_data_.size() >= min_source_data_count_ &&
+      trigger_data_.size() >= min_trigger_data_count_) {
     return;
   }
   wait_loop_.Run();
@@ -52,7 +55,8 @@ void MockDataHost::SourceDataAvailable(
     attribution_reporting::SuitableOrigin reporting_origin,
     attribution_reporting::SourceRegistration data) {
   source_data_.push_back(std::move(data));
-  if (source_data_.size() < min_source_data_count_) {
+  if (source_data_.size() < min_source_data_count_ ||
+      trigger_data_.size() < min_trigger_data_count_) {
     return;
   }
   wait_loop_.Quit();
@@ -63,7 +67,8 @@ void MockDataHost::TriggerDataAvailable(
     attribution_reporting::TriggerRegistration data,
     absl::optional<network::TriggerAttestation> attestation) {
   trigger_data_.push_back(std::move(data));
-  if (trigger_data_.size() < min_trigger_data_count_) {
+  if (trigger_data_.size() < min_trigger_data_count_ ||
+      source_data_.size() < min_source_data_count_) {
     return;
   }
   wait_loop_.Quit();
