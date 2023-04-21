@@ -6,6 +6,10 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import androidx.preference.Preference;
@@ -25,6 +29,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
@@ -350,21 +355,74 @@ public class AutofillPaymentMethodsFragmentTest {
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        // Verify that the preference on the initial screen map is only Save and Fill toggle +
-        // Mandatory Reauth toggle + Add Card button + Payment Apps.
-        Assert.assertEquals(4, getPreferenceScreen(activity).getPreferenceCount());
-        ChromeSwitchPreference mandatoryReauthPreference =
-                (ChromeSwitchPreference) getPreferenceScreen(activity).getPreference(1);
-        Assert.assertEquals(mandatoryReauthPreference.getTitle(),
-                activity.getString(
-                        R.string.autofill_settings_page_enable_payment_method_mandatory_reauth_label));
-        Assert.assertFalse(mandatoryReauthPreference.isChecked());
+        // Verify that the Reauth preference is not checked, since Reauth pref is disabled.
+        Assert.assertFalse(getMandatoryReauthPreference(activity).isChecked());
 
-        // Simulate click on the Reauth toggle.
-        TestThreadUtils.runOnUiThreadBlocking(mandatoryReauthPreference::performClick);
+        // Simulate the biometric authentication will succeed.
+        setUpBiometricAuthenticationResult(/*success=*/true);
+        // Simulate click on the Reauth toggle, trying to toggle on. Now Chrome is waiting for OS
+        // authentication.
+        TestThreadUtils.runOnUiThreadBlocking(getMandatoryReauthPreference(activity)::performClick);
+        // Now call onResume to simulate bringing the settings page back to foreground, which will
+        // rebuild the fragment.
+        TestThreadUtils.runOnUiThreadBlocking(activity.getMainFragment()::onResume);
 
-        // Verify that the Reauth toggle is now checked.
-        Assert.assertTrue(mandatoryReauthPreference.isChecked());
+        verify(mReauthenticatorMock).reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
+        // Verify that the refreshed Reauth toggle is now checked.
+        Assert.assertTrue(getMandatoryReauthPreference(activity).isChecked());
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
+    public void testMandatoryReauthToggle_stayAtOldValueIfBiometricAuthFails() throws Exception {
+        // Simulate Reauth pref is enabled previously.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
+        });
+        // Simulate the user can authenticate with biometric, so that Reauth toggle can be shown.
+        when(mReauthenticatorMock.canUseAuthentication()).thenReturn(true);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the Reauth preference is checked.
+        Assert.assertTrue(getMandatoryReauthPreference(activity).isChecked());
+
+        // Simulate the biometric authentication will fail.
+        setUpBiometricAuthenticationResult(/*success=*/false);
+        // Simulate click on the Reauth toggle, trying to toggle off. Now Chrome is waiting for OS
+        // authentication.
+        TestThreadUtils.runOnUiThreadBlocking(getMandatoryReauthPreference(activity)::performClick);
+        // Now call onResume to simulate bringing the settings page back to foreground, which will
+        // rebuild the fragment.
+        TestThreadUtils.runOnUiThreadBlocking(activity.getMainFragment()::onResume);
+
+        verify(mReauthenticatorMock).reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
+        // Verify that the refreshed Reauth toggle is still checked since authentication failed.
+        Assert.assertTrue(getMandatoryReauthPreference(activity).isChecked());
+    }
+
+    private void setUpBiometricAuthenticationResult(boolean success) {
+        // We have to manually invoke the passed-in callback.
+        doAnswer(invocation -> {
+            Callback<Boolean> callback = invocation.getArgument(0);
+            callback.onResult(success);
+            return true;
+        })
+                .when(mReauthenticatorMock)
+                .reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
+    }
+
+    private ChromeSwitchPreference getMandatoryReauthPreference(SettingsActivity activity) {
+        return findPreferenceByKey(activity, AutofillPaymentMethodsFragment.PREF_MANDATORY_REAUTH);
+    }
+
+    /**Find preference by the provided key, fail if no matched preference is found.*/
+    private ChromeSwitchPreference findPreferenceByKey(SettingsActivity activity, String key) {
+        ChromeSwitchPreference preference =
+                (ChromeSwitchPreference) getPreferenceScreen(activity).findPreference(key);
+        Assert.assertNotNull(preference);
+        return preference;
     }
 
     private static PreferenceScreen getPreferenceScreen(SettingsActivity activity) {
