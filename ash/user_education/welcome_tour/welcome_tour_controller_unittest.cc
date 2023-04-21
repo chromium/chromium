@@ -18,6 +18,7 @@
 #include "ash/user_education/welcome_tour/mock_welcome_tour_controller_observer.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller_observer.h"
 #include "base/functional/callback.h"
+#include "base/functional/overloaded.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
@@ -25,6 +26,7 @@
 #include "components/user_education/common/tutorial_description.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash {
 namespace {
@@ -56,10 +58,37 @@ auto MoveArgs(T*... out) {
 
 // Matchers --------------------------------------------------------------------
 
-MATCHER_P3(BubbleStep, element_id, body_text_id, has_next_button, "") {
+MATCHER_P3(BubbleStep, element_specifier, body_text_id, has_next_button, "") {
   return arg.step_type == ui::InteractionSequence::StepType::kShown &&
-         arg.element_id == element_id && arg.body_text_id == body_text_id &&
-         arg.next_button_callback.is_null() != has_next_button;
+         arg.body_text_id == body_text_id &&
+         arg.next_button_callback.is_null() != has_next_button &&
+         absl::visit(base::Overloaded{
+                         [&](const ui::ElementIdentifier& element_id) {
+                           return arg.element_id == element_id &&
+                                  arg.element_name.empty();
+                         },
+                         [&](const std::string& element_name) {
+                           return arg.element_name == element_name &&
+                                  arg.element_id == ui::ElementIdentifier();
+                         },
+                     },
+                     element_specifier);
+}
+
+MATCHER_P2(EventStep, element_specifier, has_name_elements_callback, "") {
+  return arg.step_type == ui::InteractionSequence::StepType::kCustomEvent &&
+         arg.name_elements_callback.is_null() != has_name_elements_callback &&
+         absl::visit(base::Overloaded{
+                         [&](const ui::ElementIdentifier& element_id) {
+                           return arg.element_id == element_id &&
+                                  arg.element_name.empty();
+                         },
+                         [&](const std::string& element_name) {
+                           return arg.element_name == element_name &&
+                                  arg.element_id == ui::ElementIdentifier();
+                         },
+                     },
+                     element_specifier);
 }
 
 }  // namespace
@@ -100,22 +129,34 @@ TEST_F(WelcomeTourControllerTest, GetTutorialDescriptions) {
           Field(
               &TutorialDescription::steps,
               ElementsAre(
-                  BubbleStep(kShelfViewElementId,
+                  BubbleStep(TutorialDescription::ElementSpecifier(
+                                 kShelfViewElementId),
                              IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT,
                              /*has_next_button=*/true),
-                  BubbleStep(kUnifiedSystemTrayElementId,
+                  EventStep(TutorialDescription::ElementSpecifier(
+                                kShelfViewElementId),
+                            /*has_name_elements_callback=*/true),
+                  BubbleStep(TutorialDescription::ElementSpecifier(
+                                 kUnifiedSystemTrayElementName),
                              IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT,
                              /*has_next_button=*/true),
-                  BubbleStep(kHomeButtonElementId,
+                  EventStep(TutorialDescription::ElementSpecifier(
+                                kUnifiedSystemTrayElementName),
+                            /*has_name_elements_callback=*/true),
+                  BubbleStep(TutorialDescription::ElementSpecifier(
+                                 kHomeButtonElementName),
                              IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT,
                              /*has_next_button=*/true),
-                  BubbleStep(kSearchBoxViewElementId,
+                  BubbleStep(TutorialDescription::ElementSpecifier(
+                                 kSearchBoxViewElementId),
                              IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT,
                              /*has_next_button=*/true),
-                  BubbleStep(kSettingsAppListItemViewElementId,
+                  BubbleStep(TutorialDescription::ElementSpecifier(
+                                 kSettingsAppListItemViewElementId),
                              IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT,
                              /*has_next_button=*/true),
-                  BubbleStep(kExploreAppListItemViewElementId,
+                  BubbleStep(TutorialDescription::ElementSpecifier(
+                                 kExploreAppListItemViewElementId),
                              IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT,
                              /*has_next_button=*/false))))));
 }

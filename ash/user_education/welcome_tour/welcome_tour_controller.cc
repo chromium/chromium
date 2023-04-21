@@ -13,10 +13,11 @@
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller_observer.h"
 #include "base/check_op.h"
+#include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/display/display.h"
-#include "ui/display/screen.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/interaction_sequence.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 
@@ -25,6 +26,35 @@ namespace {
 
 // The singleton instance owned by the `UserEducationController`.
 WelcomeTourController* g_instance = nullptr;
+
+// Helpers ---------------------------------------------------------------------
+
+views::View* GetMatchingViewInPrimaryRootWindow(
+    ui::ElementIdentifier element_id) {
+  return user_education_util::GetMatchingViewInRootWindow(
+      display::Screen::GetScreen()->GetPrimaryDisplay().id(), element_id);
+}
+
+views::TrackedElementViews* GetMatchingElementInPrimaryRootWindow(
+    ui::ElementIdentifier element_id) {
+  return views::ElementTrackerViews::GetInstance()->GetElementForView(
+      GetMatchingViewInPrimaryRootWindow(element_id));
+}
+
+user_education::TutorialDescription::NameElementsCallback
+NameMatchingElementInPrimaryRootWindowCallback(ui::ElementIdentifier element_id,
+                                               const char* element_name) {
+  return base::BindRepeating(
+      [](ui::ElementIdentifier element_id, const char* element_name,
+         ui::InteractionSequence* sequence, ui::TrackedElement*) {
+        if (auto* element = GetMatchingElementInPrimaryRootWindow(element_id)) {
+          sequence->NameElement(element, base::StringPiece(element_name));
+          return true;
+        }
+        return false;
+      },
+      element_id, element_name);
+}
 
 }  // namespace
 
@@ -59,10 +89,11 @@ void WelcomeTourController::RemoveObserver(
 }
 
 ui::ElementContext WelcomeTourController::GetInitialElementContext() const {
+  // NOTE: Don't use `GetMatchingElementInPrimaryRootWindow()` here as
+  // `views::TrackedElementViews` only exist while views are shown and that may
+  // not be the case when this method is called.
   return views::ElementTrackerViews::GetContextForView(
-      user_education_util::GetMatchingViewInRootWindow(
-          display::Screen::GetScreen()->GetPrimaryDisplay().id(),
-          kShelfViewElementId));
+      GetMatchingViewInPrimaryRootWindow(kShelfViewElementId));
 }
 
 // TODO(http://b/275616974): Implement tutorial descriptions.
@@ -84,16 +115,36 @@ WelcomeTourController::GetTutorialDescriptions() {
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT)
           .AddDefaultNextButton());
 
+  // Wait for "Next" button click before proceeding to the next bubble step.
+  // NOTE: This event step also ensures that the next bubble step will show on
+  // the primary display by naming the primary root window's status area.
+  tutorial_description.steps.emplace_back(
+      user_education::TutorialDescription::EventStep(
+          user_education::kHelpBubbleNextButtonClickedEvent,
+          kShelfViewElementId)
+          .NameElements(NameMatchingElementInPrimaryRootWindowCallback(
+              kUnifiedSystemTrayElementId, kUnifiedSystemTrayElementName)));
+
   // Step 2: Status area.
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(
-          kUnifiedSystemTrayElementId)
+          kUnifiedSystemTrayElementName)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT)
           .AddDefaultNextButton());
 
+  // Wait for "Next" button click before proceeding to the next bubble step.
+  // NOTE: This event step also ensures that the next bubble step will show on
+  // the primary display by naming the primary root window's home button.
+  tutorial_description.steps.emplace_back(
+      user_education::TutorialDescription::EventStep(
+          user_education::kHelpBubbleNextButtonClickedEvent,
+          kUnifiedSystemTrayElementName)
+          .NameElements(NameMatchingElementInPrimaryRootWindowCallback(
+              kHomeButtonElementId, kHomeButtonElementName)));
+
   // Step 3: Home button.
   tutorial_description.steps.emplace_back(
-      user_education::TutorialDescription::BubbleStep(kHomeButtonElementId)
+      user_education::TutorialDescription::BubbleStep(kHomeButtonElementName)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT)
           .AddDefaultNextButton());
 
