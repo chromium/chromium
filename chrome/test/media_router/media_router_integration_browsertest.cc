@@ -140,22 +140,24 @@ void MediaRouterIntegrationBrowserTest::SetUp() {
 void MediaRouterIntegrationBrowserTest::InitTestUi() {
   auto* const web_contents = GetActiveWebContents();
   auto* const context = browser()->profile();
+  if (test_ui_) {
+    test_ui_->TearDown();
+  }
   switch (GetParam()) {
     case UiForBrowserTest::kCast:
       CHECK(!GlobalMediaControlsCastStartStopEnabled(context));
-      test_ui_ =
-          MediaRouterCastUiForTest::GetOrCreateForWebContents(web_contents);
+      test_ui_ = std::make_unique<MediaRouterCastUiForTest>(web_contents);
       break;
     case UiForBrowserTest::kGmc:
       CHECK(GlobalMediaControlsCastStartStopEnabled(context));
-      test_ui_ =
-          MediaRouterGmcUiForTest::GetOrCreateForWebContents(web_contents);
+      test_ui_ = std::make_unique<MediaRouterGmcUiForTest>(web_contents);
       break;
   }
 }
 
 void MediaRouterIntegrationBrowserTest::TearDownOnMainThread() {
   test_ui_->TearDown();
+  test_ui_.reset();
   test_provider_->TearDown();
   InProcessBrowserTest::TearDownOnMainThread();
   test_navigation_observer_.reset();

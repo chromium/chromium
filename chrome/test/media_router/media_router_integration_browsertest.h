@@ -184,7 +184,7 @@ class MediaRouterIntegrationBrowserTest
   virtual bool RequiresMediaRouteProviders() const;
 
   // Test API for manipulating the UI.
-  raw_ptr<MediaRouterUiForTestBase, DanglingUntriaged> test_ui_ = nullptr;
+  std::unique_ptr<MediaRouterUiForTestBase> test_ui_;
 
   // Enabled features.
   base::test::ScopedFeatureList scoped_feature_list_;

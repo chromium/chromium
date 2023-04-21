@@ -18,12 +18,11 @@
 
 namespace media_router {
 
-// static
-MediaRouterGmcUiForTest* MediaRouterGmcUiForTest::GetOrCreateForWebContents(
-    content::WebContents* web_contents) {
-  // No-op if an instance already exists for the WebContents.
-  MediaRouterGmcUiForTest::CreateForWebContents(web_contents);
-  return MediaRouterGmcUiForTest::FromWebContents(web_contents);
+MediaRouterGmcUiForTest::MediaRouterGmcUiForTest(
+    content::WebContents* web_contents)
+    : MediaRouterUiForTestBase(web_contents),
+      browser_(chrome::FindBrowserWithWebContents(web_contents)) {
+  DCHECK(browser_);
 }
 
 MediaRouterGmcUiForTest::~MediaRouterGmcUiForTest() {
@@ -103,14 +102,6 @@ void MediaRouterGmcUiForTest::WaitForDialogHidden() {
   NOTIMPLEMENTED();
 }
 
-MediaRouterGmcUiForTest::MediaRouterGmcUiForTest(
-    content::WebContents* web_contents)
-    : MediaRouterUiForTestBase(web_contents),
-      content::WebContentsUserData<MediaRouterGmcUiForTest>(*web_contents),
-      browser_(chrome::FindBrowserWithWebContents(&GetWebContents())) {
-  DCHECK(browser_);
-}
-
 views::View* MediaRouterGmcUiForTest::GetSinkButton(
     const std::string& sink_name) const {
   return GetDeviceView(sink_name);
@@ -148,7 +139,5 @@ void MediaRouterGmcUiForTest::ObserveDialog(
   watch_type_ = WatchType::kNone;
   base::RunLoop().RunUntilIdle();
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaRouterGmcUiForTest);
 
 }  // namespace media_router

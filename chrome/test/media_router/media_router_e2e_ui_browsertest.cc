@@ -20,7 +20,7 @@ IN_PROC_BROWSER_TEST_P(MediaRouterE2EBrowserTest, MANUAL_MirrorHTML5Video) {
   MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  test_ui_ = MediaRouterCastUiForTest::GetOrCreateForWebContents(web_contents);
+  test_ui_ = std::make_unique<MediaRouterCastUiForTest>(web_contents);
   test_ui_->ShowDialog();
 
   // Wait until the dialog finishes rendering.
