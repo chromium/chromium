@@ -60524,6 +60524,7 @@ from previous Chrome versions.
   <int value="-859583725" label="WebRtcTimerUsesMetronome:enabled"/>
   <int value="-859193162" label="KeepSecondaryZeroSuggest:disabled"/>
   <int value="-858280894" label="DelayCompetingLowPriorityRequests:disabled"/>
+  <int value="-857507314" label="ArcExternalStorageAccess:disabled"/>
   <int value="-856915246" label="enable-new-audio-rendering-mixing-strategy"/>
   <int value="-856407187" label="OnDeviceGrammarCheck:disabled"/>
   <int value="-856146376"
@@ -61275,6 +61276,7 @@ from previous Chrome versions.
   <int value="-450917820" label="EnableCbdSignOut:enabled"/>
   <int value="-450100254" label="OverviewButton:enabled"/>
   <int value="-449465495" label="disable-browser-task-scheduler"/>
+  <int value="-449229817" label="ArcExternalStorageAccess:enabled"/>
   <int value="-448929520" label="TranslateMessageUI:enabled"/>
   <int value="-447986568" label="WebNotesDynamicTemplates:disabled"/>
   <int value="-447148659" label="ContextMenuTranslateWithGoogleLens:enabled"/>

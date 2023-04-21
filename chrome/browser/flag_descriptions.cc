@@ -5109,6 +5109,11 @@ const char kArcEnableVirtioBlkForDataName[] =
 const char kArcEnableVirtioBlkForDataDesc[] =
     "If enabled, ARCVM uses virtio-blk for /data in Android storage.";
 
+const char kArcExternalStorageAccessName[] = "External storage access by ARC";
+const char kArcExternalStorageAccessDescription[] =
+    "Allow Android apps to access external storage devices like USB flash "
+    "drives and SD cards";
+
 const char kAshEnableUnifiedDesktopName[] = "Unified desktop mode";
 const char kAshEnableUnifiedDesktopDescription[] =
     "Enable unified desktop mode which allows a window to span multiple "

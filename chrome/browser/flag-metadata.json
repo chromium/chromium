@@ -252,6 +252,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "arc-external-storage-access",
+    "owners": [ "momohatt", "youkichihosoi" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "arc-file-picker-experiment",
     "owners": [ "youkichihosoi", "niwa" ],
     "expiry_milestone": 120
