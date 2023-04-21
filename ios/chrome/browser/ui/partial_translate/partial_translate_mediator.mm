@@ -154,7 +154,7 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
     // Feature is not available.
     return NO;
   }
-  if (!base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate)) {
+  if (!IsPartialTranslateEnabled()) {
     // Feature is not enabled.
     return NO;
   }

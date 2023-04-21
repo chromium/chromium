@@ -194,6 +194,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/ui/recent_tabs:eg2_tests",
     "//ios/chrome/browser/ui/sad_tab:eg2_tests",
     "//ios/chrome/browser/ui/safe_mode:eg2_tests",
+    "//ios/chrome/browser/ui/search_with:eg2_tests",
     "//ios/chrome/browser/ui/send_tab_to_self:eg2_tests",
     "//ios/chrome/browser/ui/settings/sync/utils:eg2_tests",
     "//ios/chrome/browser/ui/sharing/activity_services:eg2_tests",

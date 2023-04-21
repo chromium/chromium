@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/shared/public/features/features.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 BASE_FEATURE(kDefaultBrowserBlueDotPromo,
              "DefaultBrowserBlueDotPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -67,8 +71,15 @@ BASE_FEATURE(kIOSEditMenuPartialTranslate,
              "IOSEditMenuPartialTranslate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool IsPartialTranslateEnabled() {
+  if (@available(iOS 16, *)) {
+    return base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate);
+  }
+  return false;
+}
+
 bool ShouldShowPartialTranslateInIncognito() {
-  if (!base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate)) {
+  if (!IsPartialTranslateEnabled()) {
     return false;
   }
   return !base::GetFieldTrialParamByFeatureAsBool(
@@ -84,6 +95,14 @@ const char kIOSEditMenuSearchWithTitleWebSearchParam[] = "WebSearch";
 BASE_FEATURE(kIOSEditMenuSearchWith,
              "IOSEditMenuSearchWith",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsSearchWithEnabled() {
+  if (@available(iOS 16, *)) {
+    return base::FeatureList::IsEnabled(kIOSEditMenuSearchWith) &&
+           base::FeatureList::IsEnabled(kIOSCustomBrowserEditMenu);
+  }
+  return false;
+}
 
 BASE_FEATURE(kIOSEditMenuHideSearchWeb,
              "IOSEditMenuHideSearchWeb",

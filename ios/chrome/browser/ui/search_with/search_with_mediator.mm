@@ -1,0 +1,199 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/ui/search_with/search_with_mediator.h"
+
+#import "base/ios/ios_util.h"
+#import "base/mac/foundation_util.h"
+#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/search_engines/template_url.h"
+#import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/web_selection/web_selection_response.h"
+#import "ios/chrome/browser/web_selection/web_selection_tab_helper.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace {
+typedef void (^ProceduralBlockWithItemArray)(NSArray<UIMenuElement*>*);
+typedef void (^ProceduralBlockWithBlockWithItemArray)(
+    ProceduralBlockWithItemArray);
+
+// Character limit for the search with feature.
+const NSUInteger kSearchWithCharacterLimit = 200;
+}  // namespace
+
+@interface SearchWithMediator ()
+
+// Whether the mediator is handling search with for an incognito tab.
+@property(nonatomic, assign) BOOL incognito;
+
+@end
+
+@implementation SearchWithMediator {
+  // The Browser's WebStateList.
+  base::WeakPtr<WebStateList> _webStateList;
+
+  // The service to retrieve default search engine URL.
+  raw_ptr<TemplateURLService> _templateURLService;
+}
+
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                  templateURLService:(TemplateURLService*)templateURLService
+                           incognito:(BOOL)incognito {
+  if (self = [super init]) {
+    CHECK(webStateList);
+    _webStateList = webStateList->AsWeakPtr();
+    _incognito = incognito;
+    _templateURLService = templateURLService;
+  }
+  return self;
+}
+
+- (void)shutdown {
+  _templateURLService = nullptr;
+}
+
+- (WebSelectionTabHelper*)webSelectionTabHelper {
+  web::WebState* webState =
+      _webStateList ? _webStateList->GetActiveWebState() : nullptr;
+  if (!webState) {
+    return nullptr;
+  }
+  WebSelectionTabHelper* helper = WebSelectionTabHelper::FromWebState(webState);
+  return helper;
+}
+
+- (BOOL)canPerformSearch {
+  if (!IsSearchWithEnabled()) {
+    return NO;
+  }
+  WebSelectionTabHelper* tabHelper = [self webSelectionTabHelper];
+  if (!tabHelper || !tabHelper->CanRetrieveSelectedText() ||
+      !self.applicationCommandHandler || !_templateURLService ||
+      !_templateURLService->GetDefaultSearchProvider()) {
+    return NO;
+  }
+  return YES;
+}
+
+- (NSString*)buttonTitle {
+  if (![self canPerformSearch]) {
+    return @"";
+  }
+  std::string param = base::GetFieldTrialParamValueByFeature(
+      kIOSEditMenuSearchWith, kIOSEditMenuSearchWithTitleParamTitle);
+  if (param == kIOSEditMenuSearchWithTitleSearchParam) {
+    return l10n_util::GetNSString(IDS_IOS_SEARCH_WITH_TITLE_SEARCH);
+  }
+  if (param == kIOSEditMenuSearchWithTitleWebSearchParam) {
+    return l10n_util::GetNSString(IDS_IOS_SEARCH_WITH_TITLE_WEB_SEARCH);
+  }
+  // Default value
+  return l10n_util::GetNSStringF(
+      IDS_IOS_SEARCH_WITH_TITLE_SEARCH_WITH,
+      _templateURLService->GetDefaultSearchProvider()->short_name());
+}
+
+- (void)addItemWithCompletion:(ProceduralBlockWithItemArray)completion {
+  WebSelectionTabHelper* tabHelper = [self webSelectionTabHelper];
+  if (![self canPerformSearch] || !tabHelper) {
+    completion(@[]);
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  tabHelper->GetSelectedText(base::BindOnce(^(WebSelectionResponse* response) {
+    if (weakSelf) {
+      [weakSelf addItemWithResponse:response completion:completion];
+    } else {
+      completion(@[]);
+    }
+  }));
+}
+
+- (void)addItemWithResponse:(WebSelectionResponse*)response
+                 completion:(ProceduralBlockWithItemArray)completion {
+  if (!response.valid || ![self canPerformSearch]) {
+    completion(@[]);
+    return;
+  }
+  NSString* text = response.selectedText;
+  NSString* searchWithMenuTitle = [self buttonTitle];
+  if ([[text
+          stringByTrimmingCharactersInSet:[NSCharacterSet
+                                              whitespaceAndNewlineCharacterSet]]
+          length] == 0u ||
+      [text length] > kSearchWithCharacterLimit ||
+      [searchWithMenuTitle length] == 0) {
+    completion(@[]);
+    return;
+  }
+
+  NSString* searchWithMenuId = @"chromeAction.searchWith";
+  __weak __typeof(self) weakSelf = self;
+  UIAction* action = [UIAction actionWithTitle:searchWithMenuTitle
+                                         image:nil
+                                    identifier:searchWithMenuId
+                                       handler:^(UIAction* a) {
+                                         [weakSelf triggerSearchForText:text];
+                                       }];
+  completion(@[ action ]);
+}
+
+- (void)triggerSearchForText:(NSString*)text {
+  if (![self canPerformSearch]) {
+    return;
+  }
+  GURL searchURL =
+      _templateURLService->GenerateSearchURLForDefaultSearchProvider(
+          base::SysNSStringToUTF16(text));
+  if (!searchURL.is_valid()) {
+    return;
+  }
+  OpenNewTabCommand* command =
+      [[OpenNewTabCommand alloc] initWithURL:searchURL
+                                    referrer:web::Referrer()
+                                 inIncognito:self.incognito
+                                inBackground:NO
+                                    appendTo:OpenPosition::kCurrentTab];
+  [self.applicationCommandHandler openURLInNewTab:command];
+}
+
+#pragma mark - SearchWithDelegate
+
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
+  if (![self canPerformSearch]) {
+    return;
+  }
+  NSString* searchWithMenuTitle = [self buttonTitle];
+  NSString* searchWithMenuId = @"chromeMenu.searchWith";
+
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlockWithBlockWithItemArray provider =
+      ^(ProceduralBlockWithItemArray completion) {
+        [weakSelf addItemWithCompletion:completion];
+      };
+  UIDeferredMenuElement* deferredMenuElement =
+      [UIDeferredMenuElement elementWithProvider:provider];
+
+  UIMenu* searchWithMenu = [UIMenu menuWithTitle:searchWithMenuTitle
+                                           image:nil
+                                      identifier:searchWithMenuId
+                                         options:UIMenuOptionsDisplayInline
+                                        children:@[ deferredMenuElement ]];
+  [builder insertSiblingMenu:searchWithMenu
+      afterMenuForIdentifier:UIMenuLookup];
+}
+
+@end

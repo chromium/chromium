@@ -258,7 +258,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     LinkToTextTabHelper::CreateForWebState(web_state);
   }
 
-  if (base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate)) {
+  if (IsPartialTranslateEnabled() || IsSearchWithEnabled()) {
     WebSelectionTabHelper::CreateForWebState(web_state);
   }
 
