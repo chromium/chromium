@@ -391,7 +391,7 @@ std::vector<sk_sp<SkSurface>> WrappedSkImageBacking::GetSkSurfaces(
   return surfaces;
 }
 
-std::unique_ptr<SkiaImageRepresentation>
+std::unique_ptr<SkiaGaneshImageRepresentation>
 WrappedSkImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,

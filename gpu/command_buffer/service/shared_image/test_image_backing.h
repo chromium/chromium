@@ -69,7 +69,7 @@ class TestImageBacking : public SharedImageBacking {
 
   // ProduceSkiaGanesh creates a representation that is backed by |texture_|,
   // which allows for the creation of SkImages from the representation.
-  std::unique_ptr<SkiaImageRepresentation> ProduceSkiaGanesh(
+  std::unique_ptr<SkiaGaneshImageRepresentation> ProduceSkiaGanesh(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;

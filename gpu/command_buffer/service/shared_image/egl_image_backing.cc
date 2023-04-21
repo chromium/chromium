@@ -266,7 +266,8 @@ EGLImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
       manager, tracker);
 }
 
-std::unique_ptr<SkiaImageRepresentation> EGLImageBacking::ProduceSkiaGanesh(
+std::unique_ptr<SkiaGaneshImageRepresentation>
+EGLImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {

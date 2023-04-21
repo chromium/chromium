@@ -808,7 +808,7 @@ ExternalVkImageBacking::ProduceGLTexturePassthrough(
       manager, this, tracker, std::move(textures));
 }
 
-std::unique_ptr<SkiaImageRepresentation>
+std::unique_ptr<SkiaGaneshImageRepresentation>
 ExternalVkImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,

@@ -146,7 +146,8 @@ std::unique_ptr<RasterImageRepresentation> RawDrawImageBacking::ProduceRaster(
                                                             tracker);
 }
 
-std::unique_ptr<SkiaImageRepresentation> RawDrawImageBacking::ProduceSkiaGanesh(
+std::unique_ptr<SkiaGaneshImageRepresentation>
+RawDrawImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {

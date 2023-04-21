@@ -171,7 +171,8 @@ std::unique_ptr<SkiaImageRepresentation> SharedImageBacking::ProduceSkia(
   return ProduceSkiaGanesh(manager, tracker, context_state);
 }
 
-std::unique_ptr<SkiaImageRepresentation> SharedImageBacking::ProduceSkiaGanesh(
+std::unique_ptr<SkiaGaneshImageRepresentation>
+SharedImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {

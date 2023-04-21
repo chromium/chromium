@@ -216,7 +216,7 @@ DCompSurfaceImageBacking::ProduceOverlay(SharedImageManager* manager,
                                                                   tracker);
 }
 
-std::unique_ptr<SkiaImageRepresentation>
+std::unique_ptr<SkiaGaneshImageRepresentation>
 DCompSurfaceImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,

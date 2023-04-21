@@ -58,7 +58,7 @@ class GPU_GLES2_EXPORT DCompSurfaceImageBacking
   // globally due to DComp surface limitations (which can be resolved with
   // Suspend/ResumeDraw) and usage of the GL FB0 (which can be resolved by
   // binding the DComp texture to a renderbuffer instead of a pbuffer).
-  std::unique_ptr<SkiaImageRepresentation> ProduceSkiaGanesh(
+  std::unique_ptr<SkiaGaneshImageRepresentation> ProduceSkiaGanesh(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;

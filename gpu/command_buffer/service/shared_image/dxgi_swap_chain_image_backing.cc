@@ -273,7 +273,7 @@ DXGISwapChainImageBacking::ProduceOverlay(SharedImageManager* manager,
       manager, this, tracker);
 }
 
-std::unique_ptr<SkiaImageRepresentation>
+std::unique_ptr<SkiaGaneshImageRepresentation>
 DXGISwapChainImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,

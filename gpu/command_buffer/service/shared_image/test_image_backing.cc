@@ -291,7 +291,8 @@ TestImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
       manager, this, tracker, texture_passthrough_);
 }
 
-std::unique_ptr<SkiaImageRepresentation> TestImageBacking::ProduceSkiaGanesh(
+std::unique_ptr<SkiaGaneshImageRepresentation>
+TestImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {

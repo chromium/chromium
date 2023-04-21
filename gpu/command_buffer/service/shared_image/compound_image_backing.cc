@@ -156,15 +156,15 @@ class WrappedGLTexturePassthroughCompoundImageRepresentation
   std::unique_ptr<GLTexturePassthroughImageRepresentation> wrapped_;
 };
 
-class WrappedSkiaCompoundImageRepresentation
+class WrappedSkiaGaneshCompoundImageRepresentation
     : public SkiaGaneshImageRepresentation {
  public:
-  WrappedSkiaCompoundImageRepresentation(
+  WrappedSkiaGaneshCompoundImageRepresentation(
       GrDirectContext* gr_context,
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      std::unique_ptr<SkiaImageRepresentation> wrapped)
+      std::unique_ptr<SkiaGaneshImageRepresentation> wrapped)
       : SkiaGaneshImageRepresentation(gr_context, manager, backing, tracker),
         wrapped_(std::move(wrapped)) {
     DCHECK(wrapped_);
@@ -215,7 +215,7 @@ class WrappedSkiaCompoundImageRepresentation
   void EndReadAccess() final { wrapped_->EndReadAccess(); }
 
  private:
-  std::unique_ptr<SkiaImageRepresentation> wrapped_;
+  std::unique_ptr<SkiaGaneshImageRepresentation> wrapped_;
 };
 
 class WrappedDawnCompoundImageRepresentation : public DawnImageRepresentation {
@@ -555,7 +555,7 @@ CompoundImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
       manager, this, tracker, std::move(real_rep));
 }
 
-std::unique_ptr<SkiaImageRepresentation>
+std::unique_ptr<SkiaGaneshImageRepresentation>
 CompoundImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
@@ -569,7 +569,7 @@ CompoundImageBacking::ProduceSkiaGanesh(
     return nullptr;
 
   auto* gr_context = context_state ? context_state->gr_context() : nullptr;
-  return std::make_unique<WrappedSkiaCompoundImageRepresentation>(
+  return std::make_unique<WrappedSkiaGaneshCompoundImageRepresentation>(
       gr_context, manager, this, tracker, std::move(real_rep));
 }
 

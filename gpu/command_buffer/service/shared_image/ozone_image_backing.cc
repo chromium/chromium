@@ -173,7 +173,8 @@ OzoneImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
       need_cache ? &cached_texture_holders_ : nullptr);
 }
 
-std::unique_ptr<SkiaImageRepresentation> OzoneImageBacking::ProduceSkiaGanesh(
+std::unique_ptr<SkiaGaneshImageRepresentation>
+OzoneImageBacking::ProduceSkiaGanesh(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {

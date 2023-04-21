@@ -51,6 +51,7 @@ class SharedImageManager;
 class SharedImageRepresentation;
 class GLTextureImageRepresentation;
 class GLTexturePassthroughImageRepresentation;
+class SkiaGaneshImageRepresentation;
 class SkiaImageRepresentation;
 class DawnImageRepresentation;
 class LegacyOverlayImageRepresentation;
@@ -248,8 +249,9 @@ class GPU_GLES2_EXPORT SharedImageBacking {
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state);
-  // Returns a SkiaImageRepresentation created using the Skia Ganesh backend.
-  virtual std::unique_ptr<SkiaImageRepresentation> ProduceSkiaGanesh(
+  // Returns a SkiaGaneshImageRepresentation created using the Skia Ganesh
+  // backend.
+  virtual std::unique_ptr<SkiaGaneshImageRepresentation> ProduceSkiaGanesh(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state);

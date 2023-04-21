@@ -146,12 +146,10 @@ bool GLTexturePassthroughImageRepresentation::
 ///////////////////////////////////////////////////////////////////////////////
 // SkiaImageRepresentation
 
-SkiaImageRepresentation::SkiaImageRepresentation(GrDirectContext* gr_context,
-                                                 SharedImageManager* manager,
+SkiaImageRepresentation::SkiaImageRepresentation(SharedImageManager* manager,
                                                  SharedImageBacking* backing,
                                                  MemoryTypeTracker* tracker)
-    : SharedImageRepresentation(manager, backing, tracker),
-      gr_context_(gr_context) {}
+    : SharedImageRepresentation(manager, backing, tracker) {}
 
 SkiaImageRepresentation::~SkiaImageRepresentation() = default;
 
@@ -160,158 +158,36 @@ bool SkiaImageRepresentation::SupportsMultipleConcurrentReadAccess() {
 }
 
 SkiaImageRepresentation::ScopedWriteAccess::ScopedWriteAccess(
-    base::PassKey<SkiaImageRepresentation> /* pass_key */,
     SkiaImageRepresentation* representation,
-    std::vector<sk_sp<SkSurface>> surfaces,
-    std::unique_ptr<GrBackendSurfaceMutableState> end_state)
-    : ScopedAccessBase(representation),
-      surfaces_(std::move(surfaces)),
-      end_state_(std::move(end_state)) {
+    std::vector<sk_sp<SkSurface>> surfaces)
+    : ScopedAccessBase(representation), surfaces_(std::move(surfaces)) {
   DCHECK(!surfaces_.empty());
 }
 
 SkiaImageRepresentation::ScopedWriteAccess::ScopedWriteAccess(
-    base::PassKey<SkiaImageRepresentation> /* pass_key */,
     SkiaImageRepresentation* representation,
-    std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures,
-    std::unique_ptr<GrBackendSurfaceMutableState> end_state)
+    std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures)
     : ScopedAccessBase(representation),
-      promise_image_textures_(std::move(promise_image_textures)),
-      end_state_(std::move(end_state)) {
+      promise_image_textures_(std::move(promise_image_textures)) {
   DCHECK(!promise_image_textures_.empty());
 }
 
 SkiaImageRepresentation::ScopedWriteAccess::~ScopedWriteAccess() {
-  if (end_state_) {
-    NOTREACHED() << "Before ending write access TakeEndState() must be called "
-                    "and the result passed to skia to make sure all layout and "
-                    "ownership transitions are done.";
-
-    static std::atomic_int count = 0;
-    if (count++ < 3)
-      base::debug::DumpWithoutCrashing();
-  }
-
   // Ensure no one uses `surfaces_` by dropping the reference before calling
   // EndWriteAccess.
   surfaces_.clear();
   representation()->EndWriteAccess();
 }
 
-void SkiaImageRepresentation::ScopedWriteAccess::ApplyBackendSurfaceEndState() {
-  if (!end_state_) {
-    return;
-  }
-  DCHECK(promise_image_textures_.empty() || surfaces_.empty());
-
-  int num_planes = representation()->format().NumberOfPlanes();
-  if (!surfaces_.empty()) {
-    for (int plane = 0; plane < num_planes; plane++) {
-      surface(plane)->flush(/*info=*/{}, end_state_.get());
-    }
-  }
-  if (!promise_image_textures_.empty()) {
-    for (int plane = 0; plane < num_planes; plane++) {
-      if (!representation()->gr_context()->setBackendTextureState(
-              promise_image_texture(plane)->backendTexture(), *end_state_)) {
-        LOG(ERROR) << "setBackendTextureState() failed for plane: " << plane;
-        return;
-      }
-    }
-  }
-  end_state_ = nullptr;
-}
-
-std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
-SkiaImageRepresentation::BeginScopedWriteAccess(
-    int final_msaa_count,
-    const SkSurfaceProps& surface_props,
-    const gfx::Rect& update_rect,
-    std::vector<GrBackendSemaphore>* begin_semaphores,
-    std::vector<GrBackendSemaphore>* end_semaphores,
-    AllowUnclearedAccess allow_uncleared,
-    bool use_sk_surface) {
-  if (allow_uncleared != AllowUnclearedAccess::kYes && !IsCleared()) {
-    LOG(ERROR) << "Attempt to write to an uninitialized SharedImage";
-    return nullptr;
-  }
-
-  std::unique_ptr<GrBackendSurfaceMutableState> end_state;
-  if (use_sk_surface) {
-    std::vector<sk_sp<SkSurface>> surfaces =
-        BeginWriteAccess(final_msaa_count, surface_props, update_rect,
-                         begin_semaphores, end_semaphores, &end_state);
-    if (surfaces.empty()) {
-      LOG(ERROR) << "Unable to initialize SkSurface";
-      return nullptr;
-    }
-
-    backing()->OnWriteSucceeded();
-
-    return std::make_unique<ScopedWriteAccess>(
-        base::PassKey<SkiaImageRepresentation>(), this, std::move(surfaces),
-        std::move(end_state));
-  }
-  std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures =
-      BeginWriteAccess(begin_semaphores, end_semaphores, &end_state);
-  if (promise_image_textures.empty()) {
-    LOG(ERROR) << "Unable to initialize SkPromiseImageTexture";
-    return nullptr;
-  }
-
-  backing()->OnWriteSucceeded();
-
-  return std::make_unique<ScopedWriteAccess>(
-      base::PassKey<SkiaImageRepresentation>(), this,
-      std::move(promise_image_textures), std::move(end_state));
-}
-
-std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
-SkiaImageRepresentation::BeginScopedWriteAccess(
-    int final_msaa_count,
-    const SkSurfaceProps& surface_props,
-    std::vector<GrBackendSemaphore>* begin_semaphores,
-    std::vector<GrBackendSemaphore>* end_semaphores,
-    AllowUnclearedAccess allow_uncleared,
-    bool use_sk_surface) {
-  return BeginScopedWriteAccess(
-      final_msaa_count, surface_props, gfx::Rect(size()), begin_semaphores,
-      end_semaphores, allow_uncleared, use_sk_surface);
-}
-
-std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
-SkiaImageRepresentation::BeginScopedWriteAccess(
-    std::vector<GrBackendSemaphore>* begin_semaphores,
-    std::vector<GrBackendSemaphore>* end_semaphores,
-    AllowUnclearedAccess allow_uncleared,
-    bool use_sk_surface) {
-  return BeginScopedWriteAccess(
-      /*final_msaa_count=*/1,
-      SkSurfaceProps(/*flags=*/0, kUnknown_SkPixelGeometry), begin_semaphores,
-      end_semaphores, allow_uncleared, use_sk_surface);
-}
-
 SkiaImageRepresentation::ScopedReadAccess::ScopedReadAccess(
-    base::PassKey<SkiaImageRepresentation> /* pass_key */,
     SkiaImageRepresentation* representation,
-    std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures,
-    std::unique_ptr<GrBackendSurfaceMutableState> end_state)
+    std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures)
     : ScopedAccessBase(representation),
-      promise_image_textures_(std::move(promise_image_textures)),
-      end_state_(std::move(end_state)) {
+      promise_image_textures_(std::move(promise_image_textures)) {
   DCHECK(!promise_image_textures_.empty());
 }
 
 SkiaImageRepresentation::ScopedReadAccess::~ScopedReadAccess() {
-  if (end_state_) {
-    NOTREACHED() << "Before ending read access TakeEndState() must be called "
-                    "and the result passed to skia to make sure all layout and "
-                    "ownership transitions are done.";
-    static std::atomic_int count = 0;
-    if (count++ < 3)
-      base::debug::DumpWithoutCrashing();
-  }
-
   representation()->EndReadAccess();
 }
 
@@ -375,17 +251,180 @@ sk_sp<SkImage> SkiaImageRepresentation::ScopedReadAccess::CreateSkImageForPlane(
       surface_origin, color_type, alpha_type, /*sk_color_space=*/nullptr);
 }
 
-bool SkiaImageRepresentation::ScopedReadAccess::HasBackendSurfaceEndState() {
+///////////////////////////////////////////////////////////////////////////////
+// SkiaGaneshImageRepresentation
+
+SkiaGaneshImageRepresentation::SkiaGaneshImageRepresentation(
+    GrDirectContext* gr_context,
+    SharedImageManager* manager,
+    SharedImageBacking* backing,
+    MemoryTypeTracker* tracker)
+    : SkiaImageRepresentation(manager, backing, tracker),
+      gr_context_(gr_context) {}
+
+SkiaGaneshImageRepresentation::ScopedGaneshWriteAccess::ScopedGaneshWriteAccess(
+    base::PassKey<SkiaGaneshImageRepresentation> /* pass_key */,
+    SkiaImageRepresentation* representation,
+    std::vector<sk_sp<SkSurface>> surfaces,
+    std::unique_ptr<GrBackendSurfaceMutableState> end_state)
+    : ScopedWriteAccess(representation, std::move(surfaces)),
+      end_state_(std::move(end_state)) {
+  DCHECK(!surfaces_.empty());
+}
+
+SkiaGaneshImageRepresentation::ScopedGaneshWriteAccess::ScopedGaneshWriteAccess(
+    base::PassKey<SkiaGaneshImageRepresentation> /* pass_key */,
+    SkiaImageRepresentation* representation,
+    std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures,
+    std::unique_ptr<GrBackendSurfaceMutableState> end_state)
+    : ScopedWriteAccess(representation, std::move(promise_image_textures)),
+      end_state_(std::move(end_state)) {
+  DCHECK(!promise_image_textures_.empty());
+}
+
+SkiaGaneshImageRepresentation::ScopedGaneshWriteAccess::
+    ~ScopedGaneshWriteAccess() {
+  if (end_state_) {
+    NOTREACHED() << "Before ending write access TakeEndState() must be called "
+                    "and the result passed to skia to make sure all layout and "
+                    "ownership transitions are done.";
+
+    static std::atomic_int count = 0;
+    if (count++ < 3)
+      base::debug::DumpWithoutCrashing();
+  }
+}
+
+void SkiaGaneshImageRepresentation::ScopedGaneshWriteAccess::
+    ApplyBackendSurfaceEndState() {
+  if (!end_state_) {
+    return;
+  }
+  DCHECK(promise_image_textures_.empty() || surfaces_.empty());
+
+  int num_planes = representation()->format().NumberOfPlanes();
+  if (!surfaces_.empty()) {
+    for (int plane = 0; plane < num_planes; plane++) {
+      surface(plane)->flush(/*info=*/{}, end_state_.get());
+    }
+  }
+  if (!promise_image_textures_.empty()) {
+    for (int plane = 0; plane < num_planes; plane++) {
+      if (!ganesh_representation()->gr_context()->setBackendTextureState(
+              promise_image_texture(plane)->backendTexture(), *end_state_)) {
+        LOG(ERROR) << "setBackendTextureState() failed for plane: " << plane;
+        return;
+      }
+    }
+  }
+  end_state_ = nullptr;
+}
+
+std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
+SkiaGaneshImageRepresentation::BeginScopedWriteAccess(
+    int final_msaa_count,
+    const SkSurfaceProps& surface_props,
+    const gfx::Rect& update_rect,
+    std::vector<GrBackendSemaphore>* begin_semaphores,
+    std::vector<GrBackendSemaphore>* end_semaphores,
+    AllowUnclearedAccess allow_uncleared,
+    bool use_sk_surface) {
+  if (allow_uncleared != AllowUnclearedAccess::kYes && !IsCleared()) {
+    LOG(ERROR) << "Attempt to write to an uninitialized SharedImage";
+    return nullptr;
+  }
+
+  std::unique_ptr<GrBackendSurfaceMutableState> end_state;
+  if (use_sk_surface) {
+    std::vector<sk_sp<SkSurface>> surfaces =
+        BeginWriteAccess(final_msaa_count, surface_props, update_rect,
+                         begin_semaphores, end_semaphores, &end_state);
+    if (surfaces.empty()) {
+      LOG(ERROR) << "Unable to initialize SkSurface";
+      return nullptr;
+    }
+
+    backing()->OnWriteSucceeded();
+
+    return std::make_unique<ScopedGaneshWriteAccess>(
+        base::PassKey<SkiaGaneshImageRepresentation>(), this,
+        std::move(surfaces), std::move(end_state));
+  }
+  std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures =
+      BeginWriteAccess(begin_semaphores, end_semaphores, &end_state);
+  if (promise_image_textures.empty()) {
+    LOG(ERROR) << "Unable to initialize SkPromiseImageTexture";
+    return nullptr;
+  }
+
+  backing()->OnWriteSucceeded();
+
+  return std::make_unique<ScopedGaneshWriteAccess>(
+      base::PassKey<SkiaGaneshImageRepresentation>(), this,
+      std::move(promise_image_textures), std::move(end_state));
+}
+
+std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
+SkiaGaneshImageRepresentation::BeginScopedWriteAccess(
+    int final_msaa_count,
+    const SkSurfaceProps& surface_props,
+    std::vector<GrBackendSemaphore>* begin_semaphores,
+    std::vector<GrBackendSemaphore>* end_semaphores,
+    AllowUnclearedAccess allow_uncleared,
+    bool use_sk_surface) {
+  return BeginScopedWriteAccess(
+      final_msaa_count, surface_props, gfx::Rect(size()), begin_semaphores,
+      end_semaphores, allow_uncleared, use_sk_surface);
+}
+
+std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
+SkiaGaneshImageRepresentation::BeginScopedWriteAccess(
+    std::vector<GrBackendSemaphore>* begin_semaphores,
+    std::vector<GrBackendSemaphore>* end_semaphores,
+    AllowUnclearedAccess allow_uncleared,
+    bool use_sk_surface) {
+  return BeginScopedWriteAccess(
+      /*final_msaa_count=*/1,
+      SkSurfaceProps(/*flags=*/0, kUnknown_SkPixelGeometry), begin_semaphores,
+      end_semaphores, allow_uncleared, use_sk_surface);
+}
+
+SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::ScopedGaneshReadAccess(
+    base::PassKey<SkiaGaneshImageRepresentation> /* pass_key */,
+    SkiaImageRepresentation* representation,
+    std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures,
+    std::unique_ptr<GrBackendSurfaceMutableState> end_state)
+    : ScopedReadAccess(representation, std::move(promise_image_textures)),
+      end_state_(std::move(end_state)) {
+  DCHECK(!promise_image_textures_.empty());
+}
+
+SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::
+    ~ScopedGaneshReadAccess() {
+  if (end_state_) {
+    NOTREACHED() << "Before ending read access TakeEndState() must be called "
+                    "and the result passed to skia to make sure all layout and "
+                    "ownership transitions are done.";
+    static std::atomic_int count = 0;
+    if (count++ < 3) {
+      base::debug::DumpWithoutCrashing();
+    }
+  }
+}
+
+bool SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::
+    HasBackendSurfaceEndState() {
   return end_state_.get();
 }
 
-void SkiaImageRepresentation::ScopedReadAccess::ApplyBackendSurfaceEndState() {
+void SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::
+    ApplyBackendSurfaceEndState() {
   if (!end_state_) {
     return;
   }
   for (int plane = 0; plane < representation()->format().NumberOfPlanes();
        plane++) {
-    if (!representation()->gr_context()->setBackendTextureState(
+    if (!ganesh_representation()->gr_context()->setBackendTextureState(
             promise_image_texture(plane)->backendTexture(), *end_state_)) {
       LOG(ERROR) << "setBackendTextureState() failed for plane: " << plane;
       return;
@@ -395,7 +434,7 @@ void SkiaImageRepresentation::ScopedReadAccess::ApplyBackendSurfaceEndState() {
 }
 
 std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
-SkiaImageRepresentation::BeginScopedReadAccess(
+SkiaGaneshImageRepresentation::BeginScopedReadAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores) {
   if (!IsCleared()) {
@@ -416,8 +455,8 @@ SkiaImageRepresentation::BeginScopedReadAccess(
 
   backing()->OnReadSucceeded();
 
-  return std::make_unique<ScopedReadAccess>(
-      base::PassKey<SkiaImageRepresentation>(), this,
+  return std::make_unique<ScopedGaneshReadAccess>(
+      base::PassKey<SkiaGaneshImageRepresentation>(), this,
       std::move(promise_image_textures), std::move(end_state));
 }
 
