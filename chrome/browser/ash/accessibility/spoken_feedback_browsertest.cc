@@ -969,12 +969,6 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {
     sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
     sm_.ExpectSpeech("Battery");
 
-    // Avatar button. Disabled for guest account.
-    if (GetParam() != kTestAsGuestUser) {
-      sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
-      sm_.ExpectSpeech("Button");
-    }
-
     // Shutdown button.
     sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
     if (base::FeatureList::IsEnabled(features::kQsRevamp)) {

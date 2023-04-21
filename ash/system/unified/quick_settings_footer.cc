@@ -13,18 +13,15 @@
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/power/adaptive_charging_controller.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/buttons.h"
-#include "ash/system/unified/detailed_view_controller.h"
 #include "ash/system/unified/power_button.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
-#include "ash/system/unified/user_chooser_detailed_view_controller.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
@@ -175,22 +172,11 @@ QuickSettingsFooter::QuickSettingsFooter(
               views::BoxLayout::Orientation::kHorizontal));
   button_container_layout->set_between_child_spacing(16);
 
-  power_button_ =
-      front_buttons_container->AddChildView(std::make_unique<PowerButton>());
-  if (Shell::Get()->session_controller()->login_status() !=
-      LoginStatus::NOT_LOGGED_IN) {
-    auto* user_avatar_button = front_buttons_container->AddChildView(
-        std::make_unique<UserAvatarButton>(base::BindRepeating(
-            [](UnifiedSystemTrayController* controller) {
-              quick_settings_metrics_util::RecordQsButtonActivated(
-                  QsButtonCatalogName::kAvatarButton);
-              controller->ShowUserChooserView();
-            },
-            base::Unretained(controller))));
-    user_avatar_button->SetEnabled(
-        UserChooserDetailedViewController::IsUserChooserEnabled());
-    user_avatar_button->SetID(VIEW_ID_QS_USER_AVATAR_BUTTON);
-  }
+  power_button_ = front_buttons_container->AddChildView(
+      std::make_unique<PowerButton>(controller));
+
+  // TODO(b/278323464): Add a "Sign out" button to `front_buttons_container` if
+  // there are multiple accounts on the device.
 
   // `PowerButton` should start aligned , also battery icons and
   // `settings_button_` should be end aligned, so here adding a empty spacing

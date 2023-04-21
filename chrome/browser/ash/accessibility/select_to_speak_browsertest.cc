@@ -678,13 +678,13 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
   // Open tray bubble menu.
   tray_test_api_->ShowBubble();
 
-  // Search key + click the avatar button.
+  // Search key + click the settings button.
   generator_->PressKey(ui::VKEY_LWIN, 0 /* flags */);
-  tray_test_api_->ClickBubbleView(ViewID::VIEW_ID_QS_USER_AVATAR_BUTTON);
+  tray_test_api_->ClickBubbleView(ViewID::VIEW_ID_QS_SETTINGS_BUTTON);
   generator_->ReleaseKey(ui::VKEY_LWIN, 0 /* flags */);
 
   // Should read out text.
-  sm_.ExpectSpeechPattern("*stub-user@example.com*");
+  sm_.ExpectSpeechPattern("*Settings*");
   sm_.Replay();
 
   // Tray bubble menu should remain open.
