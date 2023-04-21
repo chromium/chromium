@@ -4,6 +4,9 @@
 
   const url = 'http://localhost:8000/inspector-protocol/fetch/resources/post-echo.pl';
 
+  await dp.Network.enable();
+  // Disable the cache so that we do not use cached OPTIONS.
+  await dp.Network.setCacheDisabled({cacheDisabled: true});
   await dp.Fetch.enable();
 
   const contentPromise = session.evaluateAsync(`

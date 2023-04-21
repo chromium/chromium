@@ -44,6 +44,10 @@
     swdp.Runtime.runIfWaitingForDebugger();
   });
 
+  // Disable the cache so that we do not use cached OPTIONS.
+  await dp.Network.enable();
+  await dp.Network.setCacheDisabled({cacheDisabled: true});
+
   await dp.ServiceWorker.enable();
   await session.navigate("resources/service-worker.html");
   session.evaluateAsync(`navigator.serviceWorker.register('service-worker.js')`);

@@ -12,6 +12,8 @@
   };
 
   await dp.Network.enable();
+  // Disable the cache so that we do not use cached OPTIONS.
+  await dp.Network.setCacheDisabled({cacheDisabled: true});
   await dp.Fetch.enable();
 
   session.evaluate(`
