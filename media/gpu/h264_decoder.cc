@@ -881,6 +881,14 @@ bool H264Decoder::HandleMemoryManagementOps(scoped_refptr<H264Picture> pic) {
         to_mark = dpb_.GetShortRefPicByPicNum(pic_num_x);
         if (to_mark) {
           DCHECK(to_mark->ref && !to_mark->long_term);
+
+          scoped_refptr<H264Picture> long_term_mark =
+              dpb_.GetLongRefPicByLongTermIdx(
+                  ref_pic_marking->long_term_frame_idx);
+          if (long_term_mark) {
+            long_term_mark->ref = false;
+          }
+
           to_mark->long_term = true;
           to_mark->long_term_frame_idx = ref_pic_marking->long_term_frame_idx;
         } else {

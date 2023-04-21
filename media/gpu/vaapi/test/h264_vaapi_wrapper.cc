@@ -95,23 +95,6 @@ void FillVAPicture(VAPictureH264* va_pic, scoped_refptr<H264Picture> pic) {
   va_pic->BottomFieldOrderCnt = pic->bottom_field_order_cnt;
 }
 
-int FillVARefFramesFromDPB(const H264DPB& dpb,
-                           VAPictureH264* va_pics,
-                           int num_pics) {
-  H264Picture::Vector::const_reverse_iterator rit;
-  int i;
-
-  // Return reference frames in reverse order of insertion.
-  // Libva does not document this, but other implementations (e.g. mplayer)
-  // do it this way as well.
-  for (rit = dpb.rbegin(), i = 0; rit != dpb.rend() && i < num_pics; ++rit) {
-    if ((*rit)->ref)
-      FillVAPicture(&va_pics[i++], *rit);
-  }
-
-  return i;
-}
-
 }  // namespace
 
 H264VaapiWrapper::H264VaapiWrapper(const VaapiDevice& va_device)
@@ -215,9 +198,10 @@ void H264VaapiWrapper::SubmitFrameMetadata(
   for (int i = 0; i < 16; ++i)
     InitVAPicture(&pic_param.ReferenceFrames[i]);
 
-  // And fill it with picture info from DPB.
-  FillVARefFramesFromDPB(dpb, pic_param.ReferenceFrames,
-                         std::size(pic_param.ReferenceFrames));
+  // And fill it with our reference frames.
+  for (size_t i = 0; i < ref_pic_listp0.size(); i++) {
+    FillVAPicture(pic_param.ReferenceFrames + i, ref_pic_listp0[i]);
+  }
 
   pic_param.num_ref_frames = sps->max_num_ref_frames;
 

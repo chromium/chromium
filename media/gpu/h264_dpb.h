@@ -140,6 +140,9 @@ class H264DPB {
   // Return a long-term reference picture by its long_term_pic_num.
   scoped_refptr<H264Picture> GetLongRefPicByLongTermPicNum(int pic_num);
 
+  // Return a long-term reference picture by its long term reference index.
+  scoped_refptr<H264Picture> GetLongRefPicByLongTermIdx(int idx);
+
   // Return the short reference picture with lowest frame_num. Used for sliding
   // window memory management.
   scoped_refptr<H264Picture> GetLowestFrameNumWrapShortRefPic();

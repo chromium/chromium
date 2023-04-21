@@ -130,6 +130,16 @@ scoped_refptr<H264Picture> H264DPB::GetLongRefPicByLongTermPicNum(int pic_num) {
   return nullptr;
 }
 
+scoped_refptr<H264Picture> H264DPB::GetLongRefPicByLongTermIdx(int idx) {
+  for (const auto& pic : pics_) {
+    if (pic->ref && pic->long_term && pic->long_term_frame_idx == idx) {
+      return pic;
+    }
+  }
+
+  return nullptr;
+}
+
 scoped_refptr<H264Picture> H264DPB::GetLowestFrameNumWrapShortRefPic() {
   scoped_refptr<H264Picture> ret;
   for (const auto& pic : pics_) {
