@@ -11,13 +11,13 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
@@ -362,7 +362,7 @@ void OfflineInternalsUIMessageHandler::HandleAddToRequestQueue(
     // To be visible in Downloads UI, these items need a well-formed GUID
     // and AsyncNamespace in their ClientId.
     std::ostringstream id_stream;
-    id_stream << base::GenerateGUID();
+    id_stream << base::Uuid::GenerateRandomV4().AsLowercaseString();
 
     offline_pages::RequestCoordinator::SavePageLaterParams params;
     params.url = GURL(url);
