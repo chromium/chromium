@@ -350,6 +350,11 @@ struct DisplayScaleFactor {
 const DisplayScaleFactor k4KDisplay = {3840, 1.5f},
                          kMediumDisplay = {1440, 4.f / 3};
 
+bool OobeUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
+  return ash::ProfileHelper::IsSigninProfile(
+      Profile::FromBrowserContext(browser_context));
+}
+
 // static
 const char OobeUI::kAppLaunchSplashDisplay[] = "app-launch-splash";
 const char OobeUI::kGaiaSigninDisplay[] = "gaia-signin";

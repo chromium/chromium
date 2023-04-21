@@ -55,6 +55,7 @@
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_network_ui.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_start_reauth_ui.h"
+#include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_internals/multidevice_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
@@ -188,6 +189,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::NotificationTesterUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<ash::office_fallback::OfficeFallbackUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::OobeUIConfig>());
   map.AddWebUIConfig(
       MakeComponentConfig<ash::OSFeedbackUIConfig, ash::OSFeedbackUI,
                           ash::ChromeOsFeedbackDelegate>());

@@ -32,7 +32,20 @@ class ChromeOSWebUIConfig : public content::WebUIConfig {
             host,
             [](content::WebUI* web_ui,
                const GURL& url) -> std::unique_ptr<content::WebUIController> {
-              return std::make_unique<T>(web_ui);
+              // We need to determine the correct WebUIController constructor to
+              // use at compile time, depending on whether it requires only
+              // WebUI* or both WebUI* and GURL. We currently don't support
+              // WebUIControllers that have two constructors where one has a
+              // single WebUI* arg and the other has both WebUI* and GURL
+              // params.
+              static_assert(
+                  !(std::is_constructible_v<T, content::WebUI*> &&
+                    std::is_constructible_v<T, content::WebUI*, GURL>));
+              if constexpr (std::is_constructible_v<T, content::WebUI*, GURL>) {
+                return std::make_unique<T>(web_ui, url);
+              } else {
+                return std::make_unique<T>(web_ui);
+              }
             }) {}
 
   // Same as above, but takes in an extra `create_controller_func` argument that

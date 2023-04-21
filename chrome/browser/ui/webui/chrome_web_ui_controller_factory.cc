@@ -282,7 +282,6 @@
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_network_ui.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_start_reauth_ui.h"
-#include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_internals/multidevice_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
@@ -499,11 +498,6 @@ WebUIController* NewWebUI<HistoryClustersInternalsUI>(WebUI* web_ui,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-template <>
-WebUIController* NewWebUI<ash::OobeUI>(WebUI* web_ui, const GURL& url) {
-  return new ash::OobeUI(web_ui, url);
-}
-
 template <>
 WebUIController* NewWebUI<ash::TrustedProjectorUI>(WebUI* web_ui,
                                                    const GURL& url) {
@@ -970,12 +964,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewComponentUI<ash::HelpAppUI, ash::ChromeHelpAppUIDelegate>;
   if (url.host_piece() == chrome::kChromeUIMobileSetupHost)
     return &NewWebUI<ash::cellular_setup::MobileSetupUI>;
-  if (url.host_piece() == chrome::kChromeUIOobeHost) {
-    if (ash::ProfileHelper::IsSigninProfile(profile)) {
-      return &NewWebUI<ash::OobeUI>;
-    }
-    return nullptr;
-  }
   if (url.host_piece() == ash::kChromeUIDiagnosticsAppHost) {
     return &NewWebUI<ash::DiagnosticsDialogUI>;
   }
