@@ -174,17 +174,11 @@ public class AutofillPaymentMethodsFragment
             card_pref.setSingleLineTitle(false);
             card_pref.setTitle(card.getCardLabel());
 
-            // Show virtual card enrollment status for eligible cards, expiration date otherwise.
-            if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA)) {
-                if (card.getVirtualCardEnrollmentState() == VirtualCardEnrollmentState.ENROLLED) {
-                    card_pref.setSummary(R.string.autofill_virtual_card_enrolled_text);
-                } else if (card.getVirtualCardEnrollmentState()
-                        == VirtualCardEnrollmentState.UNENROLLED_AND_ELIGIBLE) {
-                    card_pref.setSummary(R.string.autofill_virtual_card_enrollment_eligible_text);
-                } else {
-                    card_pref.setSummary(card.getFormattedExpirationDate(getActivity()));
-                }
+            // Show virtual card enabled status for enrolled cards, expiration date otherwise.
+            if (card.getVirtualCardEnrollmentState() == VirtualCardEnrollmentState.ENROLLED
+                    && ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA)) {
+                card_pref.setSummary(R.string.autofill_virtual_card_enrolled_text);
             } else {
                 card_pref.setSummary(card.getFormattedExpirationDate(getActivity()));
             }

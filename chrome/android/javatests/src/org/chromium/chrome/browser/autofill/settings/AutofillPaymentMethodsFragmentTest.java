@@ -205,15 +205,16 @@ public class AutofillPaymentMethodsFragmentTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA})
-    public void testCreditCardSummary_displaysVirtualCardEligibleStatus() throws Exception {
+    public void testCreditCardSummary_displaysExpirationDateForUnenrolledCards() throws Exception {
         mAutofillTestHelper.addServerCreditCard(SAMPLE_VIRTUAL_CARD_UNENROLLED);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         Preference cardPreference = getPreferenceScreen(activity).getPreference(1);
         String summary = cardPreference.getSummary().toString();
-        assertThat(summary).isEqualTo(
-                activity.getString(R.string.autofill_virtual_card_enrollment_eligible_text));
+        // Verify that the summary (line below the card name and number) contains the expiration
+        // date.
+        assertThat(summary).contains(String.format("05/%s", AutofillTestHelper.nextYear()));
     }
 
     @Test

@@ -685,9 +685,6 @@
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SNACKBAR_ACTION_TEXT" desc="Text to be displayed as the snackbar action shown after a virtual card number id autofilled.">
       View card
     </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_ELIGIBLE_TEXT" desc="Text to be displayed in the Settings page as label for cards that are not enrolled into virtual card number, but are eligible." formatter_data="android_java">
-      Virtual card available
-    </message>
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLED_TEXT" desc="Text to be displayed in the Settings page as label for cards that are enrolled into virtual card number." formatter_data="android_java">
       Virtual card turned on
     </message>
