@@ -9,6 +9,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/trace_event/typed_macros.h"
 #include "ui/events/gesture_event_details.h"
 
 namespace ui {
@@ -134,6 +135,11 @@ bool IsTouchStartEvent(GestureEventDataPacket::GestureSource gesture_source) {
          gesture_source == GestureEventDataPacket::TOUCH_START;
 }
 
+bool DoAddInputTimestampsToGesture(const GestureEventData& gesture_data) {
+  return gesture_data.type() == EventType::ET_GESTURE_SCROLL_UPDATE ||
+         gesture_data.type() == EventType::ET_GESTURE_SCROLL_BEGIN;
+}
+
 }  // namespace
 
 // TouchDispositionGestureFilter
@@ -201,7 +207,8 @@ TouchDispositionGestureFilter::OnGesturePacket(
 void TouchDispositionGestureFilter::OnTouchEventAck(
     uint32_t unique_touch_event_id,
     bool event_consumed,
-    bool is_source_touch_event_set_blocking) {
+    bool is_source_touch_event_set_blocking,
+    const absl::optional<EventLatencyMetadata>& event_latency_metadata) {
   // Spurious asynchronous acks should not trigger a crash.
   if (IsEmpty() || (Head().empty() && sequences_.size() == 1))
     return;
@@ -216,16 +223,17 @@ void TouchDispositionGestureFilter::OnTouchEventAck(
       Tail().back().gesture_source() != GestureEventDataPacket::TOUCH_TIMEOUT) {
     Tail().back().Ack(event_consumed, is_source_touch_event_set_blocking);
     if (sequences_.size() == 1 && Tail().size() == 1)
-      SendAckedEvents();
+      SendAckedEvents(event_latency_metadata);
   } else {
     DCHECK(!Head().empty());
     DCHECK_EQ(Head().front().unique_touch_event_id(), unique_touch_event_id);
     Head().front().Ack(event_consumed, is_source_touch_event_set_blocking);
-    SendAckedEvents();
+    SendAckedEvents(event_latency_metadata);
   }
 }
 
-void TouchDispositionGestureFilter::SendAckedEvents() {
+void TouchDispositionGestureFilter::SendAckedEvents(
+    const absl::optional<EventLatencyMetadata>& event_latency_metadata) {
   // Dispatch all packets corresponding to ack'ed touches, as well as
   // any pending timeout-based packets.
   bool touch_packet_for_current_ack_handled = false;
@@ -256,8 +264,20 @@ void TouchDispositionGestureFilter::SendAckedEvents() {
     // Aura, we could trigger a touch-cancel). As popping the sequence destroys
     // the packet, we copy the packet before popping it.
     touch_packet_for_current_ack_handled = true;
-    const GestureEventDataPacket packet = sequence.front();
+    GestureEventDataPacket packet = sequence.front();
     sequence.pop();
+
+    if (source == GestureEventDataPacket::TOUCH_MOVE &&
+        event_latency_metadata.has_value()) {
+      EventLatencyMetadata gesture_event_latency_metadata;
+      gesture_event_latency_metadata
+          .scrolls_blocking_touch_dispatched_to_renderer =
+          event_latency_metadata->dispatched_to_renderer;
+      packet.AddEventLatencyMetadataToGestures(
+          std::move(gesture_event_latency_metadata),
+          base::BindRepeating(DoAddInputTimestampsToGesture));
+    }
+
     FilterAndSendPacket(packet);
   }
   DCHECK(touch_packet_for_current_ack_handled);

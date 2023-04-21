@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 
 namespace mojo {
@@ -33,6 +34,11 @@ struct BLINK_COMMON_EXPORT
   static const ui::LatencyInfo& latency(
       const std::unique_ptr<blink::WebCoalescedInputEvent>& event) {
     return event->latency_info();
+  }
+
+  static const ui::EventLatencyMetadata& event_latency_metadata(
+      const std::unique_ptr<blink::WebCoalescedInputEvent>& event) {
+    return event->Event().GetEventLatencyMetadata();
   }
 
   static blink::mojom::KeyDataPtr key_data(

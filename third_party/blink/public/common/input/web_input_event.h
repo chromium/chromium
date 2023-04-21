@@ -40,6 +40,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/input/input_event.mojom-shared.h"
+#include "ui/events/event_latency_metadata.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -314,6 +315,13 @@ class BLINK_COMMON_EXPORT WebInputEvent {
   base::TimeTicks TimeStamp() const { return time_stamp_; }
   void SetTimeStamp(base::TimeTicks time_stamp) { time_stamp_ = time_stamp; }
 
+  const ui::EventLatencyMetadata& GetEventLatencyMetadata() const {
+    return event_latency_metadata_;
+  }
+  ui::EventLatencyMetadata& GetModifiableEventLatencyMetadata() {
+    return event_latency_metadata_;
+  }
+
   void SetTargetFrameMovedRecently() {
     modifiers_ |= kTargetFrameMovedRecently;
   }
@@ -357,6 +365,8 @@ class BLINK_COMMON_EXPORT WebInputEvent {
   base::TimeTicks time_stamp_;
   Type type_ = Type::kUndefined;
   int modifiers_ = kNoModifiers;
+
+  ui::EventLatencyMetadata event_latency_metadata_;
 };
 
 }  // namespace blink

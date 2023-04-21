@@ -35,7 +35,8 @@ class CONTENT_EXPORT RenderWidgetHostLatencyTracker {
   // Called when an event is received by the RenderWidgetHost, prior to
   // that event being forwarded to the renderer (via the InputRouter).
   void OnInputEvent(const blink::WebInputEvent& event,
-                    ui::LatencyInfo* latency);
+                    ui::LatencyInfo* latency,
+                    ui::EventLatencyMetadata* event_latency_metadata);
 
   // Populates the LatencyInfo with relevant entries for latency tracking, also
   // terminating latency tracking for events that did not trigger rendering and

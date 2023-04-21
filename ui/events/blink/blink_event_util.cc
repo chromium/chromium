@@ -335,6 +335,8 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
   gesture.primary_unique_touch_event_id =
       details.primary_unique_touch_event_id();
   gesture.unique_touch_event_id = unique_touch_event_id;
+  gesture.GetModifiableEventLatencyMetadata() =
+      details.GetEventLatencyMetadata();
 
   switch (details.type()) {
     case ET_GESTURE_SHOW_PRESS:
