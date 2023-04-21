@@ -1002,9 +1002,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #endif
 
 #if BUILDFLAG(IS_MAC)
-  base::FilePath GetChildProcessPath(
-      int child_flags,
-      const base::FilePath& helpers_path) override;
+  std::string GetChildProcessSuffix(int child_flags) override;
 #endif  // BUILDFLAG(IS_MAC)
 
   base::WeakPtrFactory<ChromeContentBrowserClient> weak_factory_{this};

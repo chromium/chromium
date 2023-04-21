@@ -1427,11 +1427,9 @@ bool ContentBrowserClient::IsFileSystemURLNavigationAllowed(
 }
 
 #if BUILDFLAG(IS_MAC)
-base::FilePath ContentBrowserClient::GetChildProcessPath(
-    int child_flags,
-    const base::FilePath& helpers_path) {
+std::string ContentBrowserClient::GetChildProcessSuffix(int child_flags) {
   NOTIMPLEMENTED();
-  return base::FilePath();
+  return std::string();
 }
 #endif
 

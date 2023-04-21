@@ -101,8 +101,8 @@ base::FilePath ChildProcessHost::GetChildPath(int flags) {
     } else if (flags == CHILD_PLUGIN) {
       child_base_name += kMacHelperSuffix_plugin;
     } else if (flags > CHILD_EMBEDDER_FIRST) {
-      return GetContentClient()->browser()->GetChildProcessPath(flags,
-                                                                child_path);
+      child_base_name +=
+          GetContentClient()->browser()->GetChildProcessSuffix(flags);
     } else {
       NOTREACHED();
     }

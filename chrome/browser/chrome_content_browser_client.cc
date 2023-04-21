@@ -7748,16 +7748,9 @@ bool ChromeContentBrowserClient::
 }
 
 #if BUILDFLAG(IS_MAC)
-base::FilePath ChromeContentBrowserClient::GetChildProcessPath(
-    int child_flags,
-    const base::FilePath& helpers_path) {
-  std::string helper_name(chrome::kHelperProcessExecutableName);
+std::string ChromeContentBrowserClient::GetChildProcessSuffix(int child_flags) {
   if (child_flags == chrome::kChildProcessHelperAlerts) {
-    helper_name += chrome::kMacHelperSuffixAlerts;
-    return helpers_path.Append(helper_name + ".app")
-        .Append("Contents")
-        .Append("MacOS")
-        .Append(helper_name);
+    return chrome::kMacHelperSuffixAlerts;
   }
   NOTREACHED() << "Unsupported child process flags!";
   return {};
