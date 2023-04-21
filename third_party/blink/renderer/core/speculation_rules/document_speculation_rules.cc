@@ -507,8 +507,8 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
             rule->requires_anonymous_client_ip_when_cross_origin(),
             rule->target_browsing_context_name_hint().value_or(
                 mojom::blink::SpeculationTargetHint::kNoHint),
-            eagerness, rule->no_vary_search_expected().Clone(), rule_set,
-            /*anchor=*/nullptr));
+            eagerness, rule->no_vary_search_expected().Clone(),
+            rule->injection_world(), rule_set, /*anchor=*/nullptr));
       }
     }
   };
@@ -653,7 +653,7 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
                     rule->target_browsing_context_name_hint().value_or(
                         mojom::blink::SpeculationTargetHint::kNoHint),
                     eagerness, rule->no_vary_search_expected().Clone(),
-                    rule_set, link);
+                    rule->injection_world(), rule_set, link);
             link_candidates->push_back(std::move(candidate));
           }
         };

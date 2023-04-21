@@ -36,7 +36,8 @@ class CORE_EXPORT SpeculationRule final
       absl::optional<mojom::blink::SpeculationTargetHint> target_hint,
       absl::optional<network::mojom::ReferrerPolicy>,
       absl::optional<mojom::blink::SpeculationEagerness>,
-      network::mojom::blink::NoVarySearchPtr);
+      network::mojom::blink::NoVarySearchPtr,
+      mojom::blink::SpeculationInjectionWorld);
   ~SpeculationRule();
 
   const Vector<KURL>& urls() const { return urls_; }
@@ -58,6 +59,9 @@ class CORE_EXPORT SpeculationRule final
       const {
     return no_vary_search_expected_;
   }
+  mojom::blink::SpeculationInjectionWorld injection_world() const {
+    return injection_world_;
+  }
 
   void Trace(Visitor*) const;
 
@@ -70,6 +74,8 @@ class CORE_EXPORT SpeculationRule final
   const absl::optional<network::mojom::ReferrerPolicy> referrer_policy_;
   absl::optional<mojom::blink::SpeculationEagerness> eagerness_;
   network::mojom::blink::NoVarySearchPtr no_vary_search_expected_;
+  mojom::blink::SpeculationInjectionWorld injection_world_ =
+      mojom::blink::SpeculationInjectionWorld::kNone;
 };
 
 }  // namespace blink

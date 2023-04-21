@@ -24,6 +24,7 @@
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/preloading/prerender/prerender_navigation_utils.h"
 #include "content/browser/preloading/prerender/prerender_new_tab_handle.h"
+#include "content/browser/preloading/prerender/prerender_trigger_type_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -448,6 +449,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
           blink::features::kPrerender2SequentialPrerendering)) {
     switch (attributes.trigger_type) {
       case PrerenderTriggerType::kSpeculationRule:
+      case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
         pending_prerenders_.push_back(frame_tree_node_id);
         // Start the initial prerendering navigation of the pending request in
         // the head of the queue if there's no running prerender.
@@ -485,7 +487,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
 int PrerenderHostRegistry::CreateAndStartHostForNewTab(
     const PrerenderAttributes& attributes) {
   CHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab));
-  CHECK_EQ(attributes.trigger_type, PrerenderTriggerType::kSpeculationRule);
+  CHECK(IsSpeculationRuleType(attributes.trigger_type));
   std::string recorded_url =
       attributes.initiator_origin.has_value()
           ? attributes.initiator_origin.value().GetURL().spec()
@@ -564,6 +566,7 @@ int PrerenderHostRegistry::StartPrerendering(int frame_tree_node_id) {
   switch (prerender_host_by_frame_tree_node_id_[frame_tree_node_id]
               ->trigger_type()) {
     case PrerenderTriggerType::kSpeculationRule:
+    case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
       DestroyWhenUsingExcessiveMemory(frame_tree_node_id);
       break;
     case PrerenderTriggerType::kEmbedder:
@@ -578,6 +581,7 @@ int PrerenderHostRegistry::StartPrerendering(int frame_tree_node_id) {
     switch (prerender_host_by_frame_tree_node_id_[frame_tree_node_id]
                 ->trigger_type()) {
       case PrerenderTriggerType::kSpeculationRule:
+      case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
         running_prerender_host_id_ = frame_tree_node_id;
         break;
       case PrerenderTriggerType::kEmbedder:
@@ -668,31 +672,27 @@ bool PrerenderHostRegistry::CancelHost(
   return !cancelled_ids.empty();
 }
 
-void PrerenderHostRegistry::CancelHostsForTrigger(
-    PrerenderTriggerType trigger_type,
+void PrerenderHostRegistry::CancelHostsForTriggers(
+    std::vector<PrerenderTriggerType> trigger_types,
     const PrerenderCancellationReason& reason) {
   TRACE_EVENT1("navigation", "PrerenderHostRegistry::CancelHostsForTrigger",
-               "trigger_type", trigger_type);
+               "trigger_type", trigger_types[0]);
 
   std::vector<int> ids_to_be_deleted;
 
   for (auto& iter : prerender_host_by_frame_tree_node_id_) {
-    if (iter.second->trigger_type() == trigger_type) {
+    if (base::Contains(trigger_types, iter.second->trigger_type())) {
       ids_to_be_deleted.push_back(iter.first);
     }
   }
-
   if (base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab)) {
-    switch (trigger_type) {
-      case PrerenderTriggerType::kSpeculationRule:
-        for (auto& iter : prerender_new_tab_handle_by_frame_tree_node_id_) {
-          ids_to_be_deleted.push_back(iter.first);
-        }
-        break;
-      case PrerenderTriggerType::kEmbedder:
-        // Prerendering into a new tab can be triggered by speculation
-        // rules only.
-        break;
+    for (auto& iter : prerender_new_tab_handle_by_frame_tree_node_id_) {
+      if (base::Contains(trigger_types, iter.second->trigger_type())) {
+        // Prerendering into a new tab can be triggered by speculation rules
+        // only.
+        CHECK(IsSpeculationRuleType(iter.second->trigger_type()));
+        ids_to_be_deleted.push_back(iter.first);
+      }
     }
   } else {
     CHECK(prerender_new_tab_handle_by_frame_tree_node_id_.empty());
@@ -1116,17 +1116,21 @@ void PrerenderHostRegistry::OnVisibilityChanged(Visibility visibility) {
     // amount of time. The timeout differs depending on the trigger type.
     timeout_timer_for_embedder_.Start(
         FROM_HERE, kTimeToLiveInBackgroundForEmbedder,
-        base::BindOnce(&PrerenderHostRegistry::CancelHostsForTrigger,
-                       base::Unretained(this), PrerenderTriggerType::kEmbedder,
+        base::BindOnce(&PrerenderHostRegistry::CancelHostsForTriggers,
+                       base::Unretained(this),
+                       std::vector({PrerenderTriggerType::kEmbedder}),
                        PrerenderCancellationReason(
                            PrerenderFinalStatus::kTimeoutBackgrounded)));
     timeout_timer_for_speculation_rules_.Start(
         FROM_HERE, kTimeToLiveInBackgroundForSpeculationRules,
-        base::BindOnce(&PrerenderHostRegistry::CancelHostsForTrigger,
-                       base::Unretained(this),
-                       PrerenderTriggerType::kSpeculationRule,
-                       PrerenderCancellationReason(
-                           PrerenderFinalStatus::kTimeoutBackgrounded)));
+        base::BindOnce(
+            &PrerenderHostRegistry::CancelHostsForTriggers,
+            base::Unretained(this),
+            std::vector(
+                {PrerenderTriggerType::kSpeculationRule,
+                 PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld}),
+            PrerenderCancellationReason(
+                PrerenderFinalStatus::kTimeoutBackgrounded)));
   } else {
     // Stop the timer when a prerendered page gets visible to users.
     timeout_timer_for_embedder_.Stop();
@@ -1331,6 +1335,7 @@ bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
 
   switch (trigger_type) {
     case PrerenderTriggerType::kSpeculationRule:
+    case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
       // The number of prerenders triggered by speculation rules is limited to a
       // Finch config param.
       return trigger_type_count <

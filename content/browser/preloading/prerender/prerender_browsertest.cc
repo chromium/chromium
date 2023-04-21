@@ -291,8 +291,9 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     prerender_helper_->WaitForRequest(url, count);
   }
 
-  int AddPrerender(const GURL& prerendering_url) {
-    return prerender_helper_->AddPrerender(prerendering_url);
+  int AddPrerender(const GURL& prerendering_url,
+                   int32_t world_id = ISOLATED_WORLD_ID_GLOBAL) {
+    return prerender_helper_->AddPrerender(prerendering_url, world_id);
   }
 
   void AddPrerenderAsync(const GURL& prerendering_url) {
@@ -505,11 +506,10 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
   }
 
-  void ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus status) {
+  void ExpectFinalStatus(const std::string& final_status_name,
+                         PrerenderFinalStatus status) {
     // Check FinalStatus in UMA.
-    histogram_tester().ExpectUniqueSample(
-        "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-        status, 1);
+    histogram_tester().ExpectUniqueSample(final_status_name, status, 1);
 
     // Check all entries in UKM to make sure that the recorded FinalStatus is
     // equal to `status`. At least one entry should exist.
@@ -529,13 +529,21 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     EXPECT_TRUE(final_status_entry_found);
   }
 
-  void ExpectFinalStatusForEmbedder(PrerenderFinalStatus status) {
-    // Check FinalStatus in UMA.
-    histogram_tester().ExpectUniqueSample(
-        "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
-        "EmbedderSuffixForTest",
-        status, 1);
+  void ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus status) {
+    ExpectFinalStatus(
+        "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+        status);
+  }
 
+  void ExpectFinalStatusForSpeculationRuleFromIsolatedWorld(
+      PrerenderFinalStatus status) {
+    ExpectFinalStatus(
+        "Prerender.Experimental.PrerenderHostFinalStatus."
+        "SpeculationRuleFromIsolatedWorld",
+        status);
+  }
+
+  void ExpectFinalStatusForEmbedder(PrerenderFinalStatus status) {
     // UKM can be recorded in an initiator page and an activated page. Embedder
     // triggers don't have an initiator page, so UKM is not recorded anywhere
     // when prerendering is canceled.
@@ -543,22 +551,10 @@ class PrerenderBrowserTest : public ContentBrowserTest,
       return;
     }
 
-    // Check all entries in UKM to make sure that the recorded FinalStatus is
-    // equal to `status`. At least one entry should exist.
-    bool final_status_entry_found = false;
-    const auto entries = ukm_recorder_->GetEntriesByName(
-        ukm::builders::PrerenderPageLoad::kEntryName);
-    for (const auto* entry : entries) {
-      if (ukm_recorder_->EntryHasMetric(
-              entry, ukm::builders::PrerenderPageLoad::kFinalStatusName)) {
-        final_status_entry_found = true;
-        ukm_recorder_->ExpectEntryMetric(
-            entry, ukm::builders::PrerenderPageLoad::kFinalStatusName,
-            static_cast<int>(status));
-      }
-    }
-
-    EXPECT_TRUE(final_status_entry_found);
+    ExpectFinalStatus(
+        "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+        "EmbedderSuffixForTest",
+        status);
   }
 
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -2303,6 +2299,9 @@ class PrerenderMainFrameNavigationBrowserTest
       case PrerenderTriggerType::kSpeculationRule:
         host_id = AddPrerender(kPrerenderingUrl);
         break;
+      case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+        host_id = AddPrerender(kPrerenderingUrl, /*world_id=*/1);
+        break;
       case PrerenderTriggerType::kEmbedder:
         prerender_handle = AddEmbedderTriggeredPrerender(kPrerenderingUrl);
         host_id = static_cast<PrerenderHandleImpl*>(prerender_handle.get())
@@ -2338,6 +2337,7 @@ class PrerenderMainFrameNavigationBrowserTest
         // Activation should succeed.
         switch (trigger_type) {
           case PrerenderTriggerType::kSpeculationRule:
+          case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
             NavigatePrimaryPage(kPrerenderingUrl);
             break;
           case PrerenderTriggerType::kEmbedder:
@@ -2362,6 +2362,9 @@ class PrerenderMainFrameNavigationBrowserTest
     switch (trigger_type) {
       case PrerenderTriggerType::kSpeculationRule:
         ExpectFinalStatusForSpeculationRule(expected_status);
+        break;
+      case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+        ExpectFinalStatusForSpeculationRuleFromIsolatedWorld(expected_status);
         break;
       case PrerenderTriggerType::kEmbedder:
         ExpectFinalStatusForEmbedder(expected_status);
@@ -2401,6 +2404,9 @@ class PrerenderMainFrameNavigationBrowserTest
       case PrerenderTriggerType::kSpeculationRule:
         host_id = AddPrerender(kPrerenderingUrl);
         break;
+      case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+        host_id = AddPrerender(kPrerenderingUrl, /*world_id=*/1);
+        break;
       case PrerenderTriggerType::kEmbedder:
         prerender_handle = AddEmbedderTriggeredPrerender(kPrerenderingUrl);
         host_id = static_cast<PrerenderHandleImpl*>(prerender_handle.get())
@@ -2424,6 +2430,7 @@ class PrerenderMainFrameNavigationBrowserTest
         // Activation should succeed.
         switch (trigger_type) {
           case PrerenderTriggerType::kSpeculationRule:
+          case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
             NavigatePrimaryPage(kPrerenderingUrl);
             break;
           case PrerenderTriggerType::kEmbedder:
@@ -2448,6 +2455,9 @@ class PrerenderMainFrameNavigationBrowserTest
     switch (trigger_type) {
       case PrerenderTriggerType::kSpeculationRule:
         ExpectFinalStatusForSpeculationRule(expected_status);
+        break;
+      case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+        ExpectFinalStatusForSpeculationRuleFromIsolatedWorld(expected_status);
         break;
       case PrerenderTriggerType::kEmbedder:
         ExpectFinalStatusForEmbedder(expected_status);
@@ -2495,11 +2505,14 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     PrerenderMainFrameNavigationBrowserTest,
     testing::Values(PrerenderTriggerType::kSpeculationRule,
+                    PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld,
                     PrerenderTriggerType::kEmbedder),
     [](const testing::TestParamInfo<PrerenderTriggerType>& info) {
       switch (info.param) {
         case PrerenderTriggerType::kSpeculationRule:
           return "SpeculationRule";
+        case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+          return "SpeculationRuleFromIsolatedWorld";
         case PrerenderTriggerType::kEmbedder:
           return "Embedder";
       }

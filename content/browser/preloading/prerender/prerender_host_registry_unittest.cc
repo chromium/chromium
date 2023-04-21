@@ -198,6 +198,7 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
       RenderFrameHostImpl* rfh) {
     switch (trigger_type) {
       case PrerenderTriggerType::kSpeculationRule:
+      case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
         return PrerenderAttributes(
             url, trigger_type, embedder_histogram_suffix, Referrer(),
             rfh->GetLastCommittedOrigin(), rfh->GetProcess()->GetID(),

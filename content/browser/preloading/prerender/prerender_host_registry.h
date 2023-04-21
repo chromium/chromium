@@ -140,10 +140,6 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   std::set<int> CancelHosts(const std::vector<int>& frame_tree_node_ids,
                             const PrerenderCancellationReason& reason);
 
-  // Cancels the existing hosts that were triggered by `trigger_type`.
-  void CancelHostsForTrigger(PrerenderTriggerType trigger_type,
-                             const PrerenderCancellationReason& reason);
-
   // Applies CancelHost for all existing PrerenderHost.
   void CancelAllHosts(PrerenderFinalStatus final_status);
 
@@ -265,6 +261,10 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // when it succeeds, and returns `RenderFrameHost::kNoFrameTreeNodeId` if it's
   // cancelled.
   int StartPrerendering(int frame_tree_node_id);
+
+  // Cancels the existing hosts that were triggered by `trigger_types`.
+  void CancelHostsForTriggers(std::vector<PrerenderTriggerType> trigger_types,
+                              const PrerenderCancellationReason& reason);
 
   // Returns whether a certain type of PrerenderTriggerType is allowed to be
   // added to PrerenderHostRegistry according to the limit of the given

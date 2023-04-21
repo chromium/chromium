@@ -9,6 +9,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_util.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/preloading/prerender/prerender_trigger_type_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/prerender_trigger_type.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -61,6 +62,10 @@ std::string GenerateHistogramName(const std::string& histogram_base_name,
     case PrerenderTriggerType::kSpeculationRule:
       CHECK(embedder_suffix.empty());
       return std::string(histogram_base_name) + ".SpeculationRule";
+    case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
+      CHECK(embedder_suffix.empty());
+      return std::string(histogram_base_name) +
+             ".SpeculationRuleFromIsolatedWorld";
     case PrerenderTriggerType::kEmbedder:
       CHECK(!embedder_suffix.empty());
       return std::string(histogram_base_name) + ".Embedder_" + embedder_suffix;
@@ -215,7 +220,7 @@ void RecordFailedPrerenderFinalStatus(
 
   if (attributes.initiator_ukm_id != ukm::kInvalidSourceId) {
     // `initiator_ukm_id` must be valid for the speculation rules.
-    CHECK_EQ(attributes.trigger_type, PrerenderTriggerType::kSpeculationRule);
+    CHECK(IsSpeculationRuleType(attributes.trigger_type));
     ukm::builders::PrerenderPageLoad(attributes.initiator_ukm_id)
         .SetFinalStatus(static_cast<int>(cancellation_reason.final_status()))
         .Record(ukm::UkmRecorder::Get());
@@ -247,7 +252,7 @@ void ReportSuccessActivation(const PrerenderAttributes& attributes,
                                 attributes.embedder_histogram_suffix);
   if (attributes.initiator_ukm_id != ukm::kInvalidSourceId) {
     // `initiator_ukm_id` must be valid only for the speculation rules.
-    CHECK_EQ(attributes.trigger_type, PrerenderTriggerType::kSpeculationRule);
+    CHECK(IsSpeculationRuleType(attributes.trigger_type));
     ukm::builders::PrerenderPageLoad(attributes.initiator_ukm_id)
         .SetFinalStatus(static_cast<int>(PrerenderFinalStatus::kActivated))
         .Record(ukm::UkmRecorder::Get());

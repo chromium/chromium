@@ -214,7 +214,11 @@ bool PrerendererImpl::MaybePrerender(
 
   Referrer referrer(*(candidate->referrer));
   PrerenderAttributes attributes(
-      candidate->url, PrerenderTriggerType::kSpeculationRule,
+      candidate->url,
+      candidate->injection_world !=
+              blink::mojom::SpeculationInjectionWorld::kIsolated
+          ? PrerenderTriggerType::kSpeculationRule
+          : PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld,
       /*embedder_histogram_suffix=*/"", referrer, rfhi.GetLastCommittedOrigin(),
       rfhi.GetProcess()->GetID(), web_contents->GetWeakPtr(),
       rfhi.GetFrameToken(), rfhi.GetFrameTreeNodeId(),

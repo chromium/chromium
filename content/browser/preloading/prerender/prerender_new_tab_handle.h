@@ -56,6 +56,9 @@ class PrerenderNewTabHandle {
   // Returns PrerenderHost that `web_contents_` is hosting.
   PrerenderHost* GetPrerenderHostForTesting();
 
+  // Returns PrerenderTriggerType.
+  PrerenderTriggerType trigger_type() const { return attributes_.trigger_type; }
+
  private:
   PrerenderHostRegistry& GetPrerenderHostRegistry();
 

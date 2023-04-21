@@ -30,6 +30,7 @@ class SpeculationCandidate : public GarbageCollected<SpeculationCandidate> {
                        mojom::blink::SpeculationTargetHint target_hint,
                        mojom::blink::SpeculationEagerness eagerness,
                        network::mojom::blink::NoVarySearchPtr no_vary_search,
+                       mojom::blink::SpeculationInjectionWorld injection_world,
                        SpeculationRuleSet* rule_set,
                        HTMLAnchorElement* anchor);
   virtual ~SpeculationCandidate() = default;
@@ -57,6 +58,7 @@ class SpeculationCandidate : public GarbageCollected<SpeculationCandidate> {
   const mojom::blink::SpeculationTargetHint target_hint_;
   const mojom::blink::SpeculationEagerness eagerness_;
   const network::mojom::blink::NoVarySearchPtr no_vary_search_;
+  const mojom::blink::SpeculationInjectionWorld injection_world_;
   const Member<SpeculationRuleSet> rule_set_;
   const Member<HTMLAnchorElement> anchor_;
 };

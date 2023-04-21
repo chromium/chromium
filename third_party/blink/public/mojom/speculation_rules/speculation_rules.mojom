@@ -56,6 +56,14 @@ enum SpeculationEagerness {
   kEager,
 };
 
+// Specifies the v8 world where the JavaScript runs if the JavaScript injects
+// the speculation rule.
+enum SpeculationInjectionWorld {
+  kNone,  // No v8 context, i.e. statically inserted script tags.
+  kMain,
+  kIsolated,
+};
+
 // A single candidate: a URL, an action, a referrer, and any associated
 // metadata that might be needed to make a decision.
 // https://wicg.github.io/nav-speculation/speculation-rules.html#prefetch-candidate
@@ -86,4 +94,8 @@ struct SpeculationCandidate {
   // The expected No-Vary-Search header if specified.
   // Explainer: https://github.com/WICG/nav-speculation/blob/main/no-vary-search.md#a-referrer-hint
   network.mojom.NoVarySearch? no_vary_search_expected;
+
+  // The v8 world where the JavaScript runs if the speculation rule is injected
+  // by the JavaScript.
+  SpeculationInjectionWorld injection_world = kNone;
 };
