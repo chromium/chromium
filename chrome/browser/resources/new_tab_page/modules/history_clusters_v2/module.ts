@@ -2,14 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Cluster, URLVisit} from '../../history_cluster_types.mojom-webui.js';
-import {I18nMixin} from '../../i18n_setup.js';
+import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
 import {HistoryClustersProxyImpl} from '../history_clusters/history_clusters_proxy.js';
+import {InfoDialogElement} from '../info_dialog';
 import {ModuleDescriptorV2, ModuleHeight} from '../module_descriptor.js';
 
 import {getTemplate} from './module.html.js';
+
+export interface HistoryClustersModuleElement {
+  $: {
+    infoDialogRender: CrLazyRenderElement<InfoDialogElement>,
+  };
+}
 
 export class HistoryClustersModuleElement extends I18nMixin
 (PolymerElement) {
@@ -40,6 +49,47 @@ export class HistoryClustersModuleElement extends I18nMixin
 
   private onClusterUpdated_() {
     this.searchResultsPage_ = this.cluster!.visits[0];
+  }
+
+  private onDisableButtonClick_() {
+    const disableEvent = new CustomEvent('disable-module', {
+      composed: true,
+      detail: {
+        message: loadTimeData.getStringF(
+            'disableModuleToastMessage',
+            loadTimeData.getString('modulesJourneysSentence2')),
+      },
+    });
+    this.dispatchEvent(disableEvent);
+  }
+
+  private onDismissButtonClick_() {
+    HistoryClustersProxyImpl.getInstance().handler.dismissCluster(
+        [this.searchResultsPage_, ...this.cluster.visits]);
+    this.dispatchEvent(new CustomEvent('dismiss-module', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        message: loadTimeData.getStringF(
+            'dismissModuleToastMessage', this.cluster.label),
+      },
+    }));
+  }
+
+  private onInfoButtonClick_() {
+    this.$.infoDialogRender.get().showModal();
+  }
+
+  private onShowAllClick_() {
+    assert(this.cluster.label.length >= 2);
+    HistoryClustersProxyImpl.getInstance().handler.showJourneysSidePanel(
+        this.cluster.label.substring(1, this.cluster.label.length - 1));
+  }
+
+  private onOpenAllInTabGroupClick_() {
+    const urls = [this.searchResultsPage_, ...this.cluster.visits].map(
+        visit => visit.normalizedUrl);
+    HistoryClustersProxyImpl.getInstance().handler.openUrlsInTabGroup(urls);
   }
 }
 
