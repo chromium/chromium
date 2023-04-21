@@ -662,8 +662,6 @@ class StartupBrowserCreatorChromeAppShortcutTest
             : GURL(chrome::kChromeUIAppsWithDeprecationDialogURL + app_id);
     EXPECT_EQ(expected_url,
               other_tab_strip->GetWebContentsAt(0)->GetVisibleURL());
-    EXPECT_EQ(expected_url,
-              other_tab_strip->GetWebContentsAt(0)->GetVisibleURL());
 
     // Verify that the Deprecated Apps Dialog View also shows up.
     EXPECT_TRUE(waiter.WaitIfNeededAndGet() != nullptr);
