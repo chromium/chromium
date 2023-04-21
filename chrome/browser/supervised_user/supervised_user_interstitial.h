@@ -10,14 +10,8 @@
 
 #include "base/allocator/partition_allocator/pointers/raw_ref.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "url/gurl.h"
-
-namespace content {
-class WebContents;
-}  // namespace content
 
 namespace supervised_user {
 class WebContentHandler;
@@ -76,13 +70,10 @@ class SupervisedUserInterstitial {
   ~SupervisedUserInterstitial();
 
   static std::unique_ptr<SupervisedUserInterstitial> Create(
-      content::WebContents* web_contents,
       std::unique_ptr<supervised_user::WebContentHandler> web_content_handler,
       SupervisedUserService& supervised_user_service,
       const GURL& url,
-      supervised_user::FilteringBehaviorReason reason,
-      int frame_id,
-      int64_t interstitial_navigation_id);
+      supervised_user::FilteringBehaviorReason reason);
 
   static std::string GetHTMLContents(
       SupervisedUserService* supervised_user_service,
@@ -97,11 +88,6 @@ class SupervisedUserInterstitial {
   void ShowFeedback();
 
   // Getter methods.
-  content::WebContents* web_contents() { return web_contents_; }
-  int frame_id() const { return frame_id_; }
-  int64_t interstitial_navigation_id() const {
-    return interstitial_navigation_id_;
-  }
   const GURL& url() const { return url_; }
   supervised_user::WebContentHandler* web_content_handler() {
     return web_content_handler_.get();
@@ -109,37 +95,19 @@ class SupervisedUserInterstitial {
 
  private:
   SupervisedUserInterstitial(
-      content::WebContents* web_contents,
       std::unique_ptr<supervised_user::WebContentHandler> web_content_handler,
       SupervisedUserService& supervised_user_service,
       const GURL& url,
-      supervised_user::FilteringBehaviorReason reason,
-      int frame_id,
-      int64_t interstitial_navigation_id);
-
-  // Tries to go back.
-  void AttemptMoveAwayFromCurrentFrameURL();
-
-  void OnInterstitialDone();
-
+      supervised_user::FilteringBehaviorReason reason);
   void OutputRequestPermissionSourceMetric();
 
   const raw_ref<SupervisedUserService> supervised_user_service_;
 
   std::unique_ptr<supervised_user::WebContentHandler> web_content_handler_;
 
-  // Owns SupervisedUserNavigationObserver which owns us.
-  raw_ptr<content::WebContents> web_contents_;
-
   // The last committed url for this frame.
   GURL url_;
   supervised_user::FilteringBehaviorReason reason_;
-
-  // The uniquely identifying global id for the frame.
-  int frame_id_;
-
-  // The Navigation ID of the navigation that last triggered the interstitial.
-  int64_t interstitial_navigation_id_;
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_INTERSTITIAL_H_

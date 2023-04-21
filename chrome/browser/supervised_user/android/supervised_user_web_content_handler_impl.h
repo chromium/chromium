@@ -18,7 +18,8 @@ class SupervisedUserWebContentHandlerImpl
     : public ChromeSupervisedUserWebContentHandlerBase {
  public:
   SupervisedUserWebContentHandlerImpl(content::WebContents* web_contents,
-                                      int frame_id);
+                                      int frame_id,
+                                      int64_t interstitial_navigation_id);
 
   SupervisedUserWebContentHandlerImpl(
       const SupervisedUserWebContentHandlerImpl&) = delete;

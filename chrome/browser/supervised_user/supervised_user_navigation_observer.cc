@@ -51,17 +51,19 @@ std::unique_ptr<supervised_user::WebContentHandler> CreateWebContentHandler(
     content::WebContents* web_contents,
     GURL url,
     Profile* profile,
-    int frame_id) {
+    int frame_id,
+    int navigation_id) {
 #if BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<SupervisedUserWebContentHandlerImpl>(
       web_contents, url,
-      *LargeIconServiceFactory::GetForBrowserContext(profile), frame_id);
+      *LargeIconServiceFactory::GetForBrowserContext(profile), frame_id,
+      navigation_id);
 #elif BUILDFLAG(IS_ANDROID)
-  return std::make_unique<SupervisedUserWebContentHandlerImpl>(web_contents,
-                                                               frame_id);
+  return std::make_unique<SupervisedUserWebContentHandlerImpl>(
+      web_contents, frame_id, navigation_id);
 #elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  return std::make_unique<SupervisedUserWebContentHandlerImpl>(web_contents,
-                                                               frame_id);
+  return std::make_unique<SupervisedUserWebContentHandlerImpl>(
+      web_contents, frame_id, navigation_id);
 #endif
 }
 
@@ -144,7 +146,8 @@ void SupervisedUserNavigationObserver::DidFinishNavigation(
   // interstitial in the frame, then interstitial is done.
   if (base::Contains(supervised_user_interstitials_, frame_id) &&
       navigation_id != supervised_user_interstitials_[frame_id]
-                           ->interstitial_navigation_id()) {
+                           ->web_content_handler()
+                           ->GetInterstitialNavigationId()) {
     OnInterstitialDone(frame_id);
   }
 
@@ -313,13 +316,13 @@ void SupervisedUserNavigationObserver::MaybeShowInterstitial(
     const OnInterstitialResultCallback& callback) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  auto web_content_handler =
-      CreateWebContentHandler(web_contents(), url, profile, frame_id);
+  auto web_content_handler = CreateWebContentHandler(
+      web_contents(), url, profile, frame_id, navigation_id);
   CHECK(web_content_handler);
   std::unique_ptr<SupervisedUserInterstitial> interstitial =
-      SupervisedUserInterstitial::Create(
-          web_contents(), std::move(web_content_handler),
-          *supervised_user_service_, url, reason, frame_id, navigation_id);
+      SupervisedUserInterstitial::Create(std::move(web_content_handler),
+                                         *supervised_user_service_, url,
+                                         reason);
   supervised_user_interstitials_[frame_id] = std::move(interstitial);
 
   bool already_requested = base::Contains(requested_hosts_, url.host());

@@ -27,15 +27,26 @@ class ChromeSupervisedUserWebContentHandlerBase
   // supervised_user::WebContentHandler implementation:
   bool IsMainFrame() const override;
   void CleanUpInfoBarOnMainFrame() override;
+  int64_t GetInterstitialNavigationId() const override;
+  void GoBack() override;
 
  protected:
   ChromeSupervisedUserWebContentHandlerBase(content::WebContents* web_contents,
-                                            int frame_id);
+                                            int frame_id,
+                                            int64_t interstitial_navigation_id);
   raw_ptr<content::WebContents> web_contents_;
 
  private:
+  // Tries to navigate to the previous page (if one exists) and returns
+  // if it was successful.
+  bool AttemptMoveAwayFromCurrentFrameURL();
+  // Notifies the consumers of the intestitial.
+  void OnInterstitialDone();
+
   // The uniquely identifying global id for the frame.
   const int frame_id_;
+  // The Navigation id of the navigation that last triggered the interstitial.
+  int64_t interstitial_navigation_id_;
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_CHROME_SUPERVISED_USER_WEB_CONTENT_HANDLER_BASE_H_
