@@ -960,7 +960,7 @@ void MoveTabsToNewWindow(Browser* browser,
       // 1) Stop listening to changes on it
       // 2) Close the group in the browser
       // 3) Open the group in a new browser and link it to the saved guid.
-      const base::GUID& saved_guid =
+      const base::Uuid& saved_guid =
           service->model()->Get(group.value())->saved_guid();
 
       service->DisconnectLocalTabGroup(group.value());
