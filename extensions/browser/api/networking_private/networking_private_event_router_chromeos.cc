@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/networking_private/networking_private_event_router.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_certificate_handler.h"
 #include "chromeos/ash/components/network/network_event_log.h"
@@ -90,7 +91,7 @@ class NetworkingPrivateEventRouterImpl
   // Otherwise, we want to unregister and not be listening to network changes.
   void StartOrStopListeningForNetworkChanges();
 
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
   bool listening_ = false;
 };
 

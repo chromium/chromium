@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "extensions/browser/api/lock_screen_data/lock_screen_value_store_migrator.h"
@@ -127,16 +128,16 @@ class LockScreenValueStoreMigratorImpl : public LockScreenValueStoreMigrator {
   // |migration_items_|.
   void ClearMigrationData(const ExtensionId& extension_id);
 
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
 
   ExtensionMigratedCallback callback_;
 
   // Set of extensions whose data is being migrated.
   std::set<ExtensionId> extensions_to_migrate_;
 
-  ValueStoreCache* const source_store_cache_;
-  ValueStoreCache* const target_store_cache_;
-  base::SequencedTaskRunner* const task_runner_;
+  const raw_ptr<ValueStoreCache, ExperimentalAsh> source_store_cache_;
+  const raw_ptr<ValueStoreCache, ExperimentalAsh> target_store_cache_;
+  const raw_ptr<base::SequencedTaskRunner, ExperimentalAsh> task_runner_;
 
   // Crypto key used to encrypt/decrypt data items in the storage.
   const std::string crypto_key_;

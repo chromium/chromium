@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/cec_service/cec_service_client.h"
 #include "chromeos/ash/components/dbus/cec_service/fake_cec_service_client.h"
 #include "extensions/common/features/feature_session_type.h"
@@ -48,7 +49,7 @@ class CecPrivateKioskApiTest : public ShellApiTest {
   }
 
  protected:
-  ash::FakeCecServiceClient* cec_ = nullptr;
+  raw_ptr<ash::FakeCecServiceClient, ExperimentalAsh> cec_ = nullptr;
 
  private:
   std::unique_ptr<base::AutoReset<mojom::FeatureSessionType>> session_type_;

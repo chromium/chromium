@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/audio/audio_device.h"
@@ -125,9 +126,9 @@ class AudioServiceImpl : public AudioService,
   // List of observers.
   base::ObserverList<AudioService::Observer>::Unchecked observer_list_;
 
-  CrasAudioHandler* cras_audio_handler_;
+  raw_ptr<CrasAudioHandler, ExperimentalAsh> cras_audio_handler_;
 
-  AudioDeviceIdCalculator* id_calculator_;
+  raw_ptr<AudioDeviceIdCalculator, ExperimentalAsh> id_calculator_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate.h"
@@ -112,7 +113,7 @@ class NetworkingPrivateChromeOS : public NetworkingPrivateDelegate {
   // which is not available to the chromeos/ash/components/network module.
   void AppendThirdPartyProviderName(base::Value::Dict* dictionary);
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
   base::WeakPtrFactory<NetworkingPrivateChromeOS> weak_ptr_factory_{this};
 };
 

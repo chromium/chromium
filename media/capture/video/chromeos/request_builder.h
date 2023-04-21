@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "media/capture/video/chromeos/camera_device_delegate.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video_capture_types.h"
@@ -60,7 +61,7 @@ class CAPTURE_EXPORT RequestBuilder {
       uint64_t buffer_id,
       cros::mojom::CameraBufferHandlePtr buffer_handle);
 
-  CameraDeviceContext* device_context_;
+  raw_ptr<CameraDeviceContext, ExperimentalAsh> device_context_;
 
   // The frame number. Increased by one for each capture request sent.
   uint32_t frame_number_;

@@ -75,18 +75,18 @@ void FrameSinkDesktopCapturer::Start(DesktopCapturer::Callback* callback) {
   video_capturer_->Start(&video_consumer_,
                          viz::mojom::BufferFormatPreference::kDefault);
 
-  SelectSource(ash_.GetPrimaryDisplayId());
+  SelectSource(ash_->GetPrimaryDisplayId());
 }
 
 void FrameSinkDesktopCapturer::BindRemote(
     mojo::PendingReceiver<FrameSinkVideoCapturer> pending_receiver) {
   DCHECK(callback_) << "BindRemote must be called after Start()";
 
-  ash_.CreateVideoCapturer(std::move(pending_receiver));
+  ash_->CreateVideoCapturer(std::move(pending_receiver));
 }
 
 void FrameSinkDesktopCapturer::CaptureFrame() {
-  const display::Display* source = ash_.GetDisplayForId(source_display_id_);
+  const display::Display* source = ash_->GetDisplayForId(source_display_id_);
   if (!source) {
     callback_->OnCaptureResult(Result::ERROR_TEMPORARY, nullptr);
     return;
@@ -109,24 +109,24 @@ bool FrameSinkDesktopCapturer::GetSourceList(SourceList* sources) {
 }
 
 bool FrameSinkDesktopCapturer::SelectSource(SourceId id) {
-  if (!ash_.GetDisplayForId(id)) {
+  if (!ash_->GetDisplayForId(id)) {
     return false;
   }
 
   source_display_id_ = id;
 
   scoped_window_capture_request_ =
-      ash_.MakeDisplayCapturable(source_display_id_);
+      ash_->MakeDisplayCapturable(source_display_id_);
 
   video_capturer_->ChangeTarget(
-      viz::VideoCaptureTarget(ash_.GetFrameSinkId(source_display_id_),
+      viz::VideoCaptureTarget(ash_->GetFrameSinkId(source_display_id_),
                               scoped_window_capture_request_.GetCaptureId()),
       /*crop_version=*/0);
   return true;
 }
 
 const display::Display* FrameSinkDesktopCapturer::GetSourceDisplay() {
-  return ash_.GetDisplayForId(source_display_id_);
+  return ash_->GetDisplayForId(source_display_id_);
 }
 
 }  // namespace remoting

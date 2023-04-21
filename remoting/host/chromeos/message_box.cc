@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -53,10 +54,10 @@ class MessageBox::Core : public views::DialogDelegateView {
  private:
   const std::u16string title_label_;
   ResultCallback result_callback_;
-  MessageBox* message_box_;
+  raw_ptr<MessageBox, ExperimentalAsh> message_box_;
 
   // Owned by the native widget hierarchy.
-  views::MessageBoxView* message_box_view_;
+  raw_ptr<views::MessageBoxView, ExperimentalAsh> message_box_view_;
 };
 
 MessageBox::Core::Core(const std::u16string& title_label,

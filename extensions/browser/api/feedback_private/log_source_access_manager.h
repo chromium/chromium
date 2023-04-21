@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/tick_clock.h"
@@ -152,11 +153,11 @@ class LogSourceAccessManager {
   std::map<api::feedback_private::LogSource, size_t> num_readers_per_source_;
 
   // For fetching browser resources like ApiResourceManager.
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
 
   // Provides a timer clock implementation for keeping track of access times.
   // Can override the default clock for testing.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
 
   // For removing PII from log strings from log sources.
   scoped_refptr<base::SequencedTaskRunner> task_runner_for_redactor_;

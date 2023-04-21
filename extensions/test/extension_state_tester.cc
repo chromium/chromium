@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "extensions/test/extension_state_tester.h"
+#include "base/memory/raw_ref.h"
 
 #include "base/strings/stringprintf.h"
 #include "extensions/browser/extension_prefs.h"
@@ -99,13 +100,13 @@ bool ExtensionStateTester::ExpectTerminated(const ExtensionId& extension_id) {
 bool ExtensionStateTester::ExpectOnlyInSet(const ExtensionId& extension_id,
                                            const char* expected_set_name) {
   struct {
-    const ExtensionSet& extensions;
+    const raw_ref<const ExtensionSet, ExperimentalAsh> extensions;
     const char* set_name;
   } registry_sets[] = {
-      {registry_->enabled_extensions(), kEnabledSet},
-      {registry_->disabled_extensions(), kDisabledSet},
-      {registry_->terminated_extensions(), kTerminatedSet},
-      {registry_->blocklisted_extensions(), kBlocklistedSet},
+      {raw_ref(registry_->enabled_extensions()), kEnabledSet},
+      {raw_ref(registry_->disabled_extensions()), kDisabledSet},
+      {raw_ref(registry_->terminated_extensions()), kTerminatedSet},
+      {raw_ref(registry_->blocklisted_extensions()), kBlocklistedSet},
   };
 
   auto get_error = [extension_id](const char* set_name, bool expected_in_set) {
@@ -124,7 +125,7 @@ bool ExtensionStateTester::ExpectOnlyInSet(const ExtensionId& extension_id,
   bool succeeded = true;
   for (const auto& set : registry_sets) {
     bool expected_in_set = set.set_name == expected_set_name;
-    bool is_in_set = set.extensions.Contains(extension_id);
+    bool is_in_set = set.extensions->Contains(extension_id);
     if (expected_in_set == is_in_set)
       continue;  // Extension is in the set we expect it.
 

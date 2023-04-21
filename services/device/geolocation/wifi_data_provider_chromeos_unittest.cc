@@ -4,6 +4,7 @@
 
 #include "services/device/geolocation/wifi_data_provider_chromeos.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -63,7 +64,8 @@ class GeolocationChromeOsWifiDataProviderTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   ash::NetworkHandlerTestHelper network_handler_test_helper_;
   scoped_refptr<WifiDataProviderChromeOs> provider_;
-  ash::ShillManagerClient::TestInterface* manager_test_;
+  raw_ptr<ash::ShillManagerClient::TestInterface, ExperimentalAsh>
+      manager_test_;
   WifiData::AccessPointDataSet ap_data_;
 };
 

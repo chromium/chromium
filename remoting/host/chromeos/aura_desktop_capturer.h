@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/chromeos/ash_proxy.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -40,10 +42,11 @@ class AuraDesktopCapturer : public webrtc::DesktopCapturer {
 
   const display::Display* GetSourceDisplay() const;
 
-  AshProxy& ash_;
+  const raw_ref<AshProxy, ExperimentalAsh> ash_;
 
   // Points to the callback passed to webrtc::DesktopCapturer::Start().
-  webrtc::DesktopCapturer::Callback* callback_ = nullptr;
+  raw_ptr<webrtc::DesktopCapturer::Callback, ExperimentalAsh> callback_ =
+      nullptr;
 
   // The id of the display we're currently capturing.
   DisplayId source_display_id_;

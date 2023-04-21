@@ -713,7 +713,7 @@ void LayerTreeImpl::Draw(Layer& layer,
                  transform_new_pass_to_parent_target.MapRect(content_rect)));
   data.render_pass_damage = std::move(parent_pass_damage);
 
-  data.frame.render_pass_list.push_back(std::move(new_pass));
+  data.frame->render_pass_list.push_back(std::move(new_pass));
 }
 
 void LayerTreeImpl::DrawChildrenAndAppendQuads(

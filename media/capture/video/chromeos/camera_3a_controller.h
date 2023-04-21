@@ -8,6 +8,8 @@
 #include <unordered_set>
 
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
@@ -103,13 +105,15 @@ class CAPTURE_EXPORT Camera3AController final
 
   void ClearRepeatingCaptureMetadata();
 
-  const cros::mojom::CameraMetadataPtr& static_metadata_;
+  const raw_ref<const cros::mojom::CameraMetadataPtr, ExperimentalAsh>
+      static_metadata_;
   bool ae_region_supported_;
   bool af_region_supported_;
   bool point_of_interest_supported_;
   bool zero_shutter_lag_supported_;
 
-  CaptureMetadataDispatcher* capture_metadata_dispatcher_;
+  raw_ptr<CaptureMetadataDispatcher, ExperimentalAsh>
+      capture_metadata_dispatcher_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   std::unordered_set<cros::mojom::AndroidControlAfMode> available_af_modes_;

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/dbus/media_analytics/media_analytics_client.h"
@@ -144,7 +145,7 @@ class MediaPerceptionAPIManager : public BrowserContextKeyedAPI,
 
   bool ComponentIsLoaded();
 
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
 
   // Keeps track of whether the analytics process is running so that it can be
   // started with an Upstart D-Bus method call if necessary.

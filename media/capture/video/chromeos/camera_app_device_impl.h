@@ -13,6 +13,7 @@
 
 #include "ash/webui/camera_app_ui/document_scanner_service_client.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
@@ -234,7 +235,7 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   mojo::RemoteSet<cros::mojom::CameraEventObserver> camera_event_observers_;
 
   base::Lock camera_device_context_lock_;
-  CameraDeviceContext* camera_device_context_
+  raw_ptr<CameraDeviceContext, ExperimentalAsh> camera_device_context_
       GUARDED_BY(camera_device_context_lock_);
 
   base::Lock document_corners_observers_lock_;

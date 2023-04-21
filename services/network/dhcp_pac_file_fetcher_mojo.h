@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -62,7 +63,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DhcpPacFileFetcherMojo
   void OnPacUrlReceived(const std::string& url);
 
   net::CompletionOnceCallback callback_;
-  std::u16string* utf16_text_;
+  raw_ptr<std::u16string, ExperimentalAsh> utf16_text_;
   GURL pac_url_;
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
   std::unique_ptr<net::PacFileFetcher> pac_file_fetcher_;

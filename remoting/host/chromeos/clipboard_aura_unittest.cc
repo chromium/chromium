@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -59,7 +60,7 @@ class ClipboardAuraTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
-  ClientClipboard* client_clipboard_;
+  raw_ptr<ClientClipboard, ExperimentalAsh> client_clipboard_;
   std::unique_ptr<ClipboardAura> clipboard_;
 };
 
@@ -78,7 +79,7 @@ void ClipboardAuraTest::SetUp() {
       << "The test timeout should be greater than the polling interval";
   clipboard_->SetPollingIntervalForTesting(kTestOverridePollingInterval);
 
-  clipboard_->Start(base::WrapUnique(client_clipboard_));
+  clipboard_->Start(base::WrapUnique(client_clipboard_.get()));
 }
 
 void ClipboardAuraTest::TearDown() {

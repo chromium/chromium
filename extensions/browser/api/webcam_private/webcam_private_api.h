@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/webcam_private/webcam.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -78,7 +79,7 @@ class WebcamPrivateAPI : public BrowserContextKeyedAPI {
   static const bool kServiceIsNULLWhileTesting = true;
   static const bool kServiceRedirectedInIncognito = true;
 
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
   std::unique_ptr<ApiResourceManager<WebcamResource>> webcam_resource_manager_;
 
   base::WeakPtrFactory<WebcamPrivateAPI> weak_ptr_factory_{this};

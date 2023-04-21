@@ -5,6 +5,7 @@
 #include "services/accessibility/os_accessibility_service.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -41,7 +42,7 @@ class FakeAssistiveTechnologyController {
   bool IsBound() { return at_controller_.is_bound(); }
 
  private:
-  mojom::AccessibilityService* service_;
+  raw_ptr<mojom::AccessibilityService, ExperimentalAsh> service_;
   mojo::Remote<mojom::AssistiveTechnologyController> at_controller_;
 };
 

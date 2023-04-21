@@ -5,6 +5,7 @@
 #include "services/network/dhcp_pac_file_fetcher_mojo.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "net/base/test_completion_callback.h"
 #include "net/proxy_resolution/mock_pac_file_fetcher.h"
 #include "net/test/gtest_util.h"
@@ -39,11 +40,11 @@ class DhcpPacFileFetcherMojoTest : public testing::Test {
             pac_url));
     mock_pac_file_fetcher_ = new net::MockPacFileFetcher();
     dhcp_pac_file_fetcher_mojo_->SetPacFileFetcherForTesting(
-        base::WrapUnique(mock_pac_file_fetcher_));
+        base::WrapUnique(mock_pac_file_fetcher_.get()));
   }
 
   std::unique_ptr<DhcpPacFileFetcherMojo> dhcp_pac_file_fetcher_mojo_;
-  net::MockPacFileFetcher* mock_pac_file_fetcher_;
+  raw_ptr<net::MockPacFileFetcher, ExperimentalAsh> mock_pac_file_fetcher_;
 
  private:
   base::test::TaskEnvironment task_environment_;

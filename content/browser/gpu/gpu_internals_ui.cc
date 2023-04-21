@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringize_macros.h"
 #include "base/strings/stringprintf.h"
@@ -618,10 +619,13 @@ base::Value::List GetVideoAcceleratorsInfo() {
   base::Value::List info;
 
   struct {
-    const gpu::VideoDecodeAcceleratorSupportedProfiles& capabilities;
+    const raw_ref<const gpu::VideoDecodeAcceleratorSupportedProfiles,
+                  ExperimentalAsh>
+        capabilities;
     std::string name;
   } kVideoDecoderImplementations[] = {
-      {gpu_info.video_decode_accelerator_supported_profiles, "Decoding"},
+      {raw_ref(gpu_info.video_decode_accelerator_supported_profiles),
+       "Decoding"},
   };
 
   info.Append(display::BuildGpuInfoEntry("Decoding", ""));

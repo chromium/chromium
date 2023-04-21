@@ -9,6 +9,7 @@
 #include <queue>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/capture/video/chromeos/camera_device_context.h"
@@ -269,12 +270,12 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   // Current configured resolution of BLOB stream.
   gfx::Size current_blob_resolution_;
 
-  CameraHalDelegate* camera_hal_delegate_;
+  raw_ptr<CameraHalDelegate, ExperimentalAsh> camera_hal_delegate_;
 
   // Map client type to video capture parameter.
   base::flat_map<ClientType, VideoCaptureParams> chrome_capture_params_;
 
-  CameraDeviceContext* device_context_;
+  raw_ptr<CameraDeviceContext, ExperimentalAsh> device_context_;
 
   std::queue<VideoCaptureDevice::TakePhotoCallback> take_photo_callbacks_;
 

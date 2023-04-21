@@ -17,6 +17,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
@@ -343,7 +344,7 @@ class OperationQueue {
 
  private:
   std::string id_;
-  ItemRegistry* item_registry_;
+  raw_ptr<ItemRegistry, ExperimentalAsh> item_registry_;
   base::queue<PendingOperation> pending_operations_;
   std::vector<char> content_;
   bool deleted_ = false;
@@ -385,7 +386,7 @@ class TestDataItem : public DataItem {
   }
 
  private:
-  OperationQueue* operations_;
+  raw_ptr<OperationQueue, ExperimentalAsh> operations_;
 };
 
 class TestLockScreenValueStoreMigrator : public LockScreenValueStoreMigrator {
@@ -784,7 +785,8 @@ class LockScreenItemStorageTest : public ExtensionsTest {
   // Whether the test is expected to create deprecated value store version.
   bool can_create_deprecated_value_store_ = false;
 
-  TestLockScreenValueStoreMigrator* value_store_migrator_ = nullptr;
+  raw_ptr<TestLockScreenValueStoreMigrator, ExperimentalAsh>
+      value_store_migrator_ = nullptr;
 };
 
 }  // namespace
