@@ -14458,6 +14458,22 @@
             ]
         }
     ],
+    "WebRTC-RtcEventLogNewFormat": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows",
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled"
+                }
+            ]
+        }
+    ],
     "WebRTC-RttMult": [
         {
             "platforms": [
