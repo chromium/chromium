@@ -46,7 +46,7 @@ const std::u16string kTelemetrySerialNumberPermissionMessage =
 const std::u16string kTelemetryNetworkInformationPermissionMessage =
     u"Read ChromeOS network information";
 const std::u16string kAttachedDeviceInfo =
-    u"Read attached device information and data";
+    u"Read attached devices information and data";
 }  // namespace
 
 // Tests that ChromePermissionMessageProvider provides not only correct, but
