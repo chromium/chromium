@@ -91,6 +91,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
     _customSpacingAfterImage = kStackViewSpacingAfterIllustration;
     _customSpacing = kStackViewSpacing;
     _showsVerticalScrollIndicator = YES;
+    _scrollEnabled = YES;
     _showDismissBarButton = YES;
     _dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
   }
@@ -475,6 +476,13 @@ const CGFloat kFaviconBadgeSideLength = 24;
   _imageView.image = image;
 }
 
+- (void)setScrollEnabled:(BOOL)scrollEnabled {
+  _scrollEnabled = scrollEnabled;
+  if (_scrollView) {
+    _scrollView.scrollEnabled = _scrollEnabled;
+  }
+}
+
 // Helper to create the image view.
 - (UIImageView*)createImageView {
   UIImageView* imageView = [[UIImageView alloc] initWithImage:self.image];
@@ -624,6 +632,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
   scrollView.alwaysBounceVertical = NO;
   scrollView.showsHorizontalScrollIndicator = NO;
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  scrollView.scrollEnabled = self.scrollEnabled;
   [scrollView
       setShowsVerticalScrollIndicator:self.showsVerticalScrollIndicator];
   return scrollView;

@@ -90,6 +90,9 @@
 // indicator. Must be set before the view is loaded. Default is YES.
 @property(nonatomic) BOOL showsVerticalScrollIndicator;
 
+// Set to NO to prevent the scroll view from scrolling. Default is YES.
+@property(nonatomic) BOOL scrollEnabled;
+
 // When set, this value will be set as the accessibility label for the help
 // button.
 @property(nonatomic, copy) NSString* helpButtonAccessibilityLabel;

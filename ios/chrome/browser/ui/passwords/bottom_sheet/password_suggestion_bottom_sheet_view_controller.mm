@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2023 The Chromium scrollAuthors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@
 namespace {
 // Base height value for the bottom sheet without the table view.
 // TODO(crbug.com/1422350): This needs some proper calculation.
-CGFloat const kBaseHeightForBottomSheet = 190;
+CGFloat const kBaseHeightForBottomSheet = 225;
 
 // Spacing size before image if there are no navigation bar.
 CGFloat const kCustomSpacingBeforeImageIfNoNavigationBar = 24;
@@ -110,6 +110,7 @@ CGFloat const kTableViewCornerRadius = 10;
   self.titleTextStyle = UIFontTextStyleTitle2;
   self.topAlignedLayout = YES;
   self.actionHandler = self;
+  self.scrollEnabled = NO;
 
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD);
@@ -311,6 +312,7 @@ CGFloat const kTableViewCornerRadius = 10;
 
   _tableView.layer.cornerRadius = kTableViewCornerRadius;
   _tableView.rowHeight = [self rowHeight];
+  _tableView.scrollEnabled = NO;
   _tableView.showsVerticalScrollIndicator = NO;
   _tableView.delegate = self;
   _tableView.dataSource = self;
@@ -392,39 +394,48 @@ CGFloat const kTableViewCornerRadius = 10;
   return kBaseHeightForBottomSheet + ([self rowHeight] * _suggestions.count);
 }
 
+// Enables scrolling of the table view
+- (void)enableScrolling {
+  _tableView.scrollEnabled = YES;
+  self.scrollEnabled = YES;
+}
+
 // Performs the expand bottom sheet animation.
 - (void)expand {
   UISheetPresentationController* presentationController =
       self.sheetPresentationController;
-  CGFloat screenHeight = [[UIScreen mainScreen] bounds].size.height;
-  CGFloat fullHeight = [self fullHeight];
   if (@available(iOS 16, *)) {
-    if (fullHeight < screenHeight) {
-      // Expand to custom size (only available for iOS 16+).
-      auto fullHeightBlock = ^CGFloat(
-          id<UISheetPresentationControllerDetentResolutionContext> context) {
-        return fullHeight;
-      };
-      UISheetPresentationControllerDetent* customDetentExpand =
-          [UISheetPresentationControllerDetent
-              customDetentWithIdentifier:@"customDetentExpand"
-                                resolver:fullHeightBlock];
-      NSMutableArray* currentDetents =
-          [presentationController.detents mutableCopy];
-      [currentDetents addObject:customDetentExpand];
-      presentationController.detents = [currentDetents copy];
-      [presentationController animateChanges:^{
-        presentationController.selectedDetentIdentifier = @"customDetentExpand";
-      }];
-      return;
-    }
-  }
+    // Expand to custom size (only available for iOS 16+).
+    CGFloat fullHeight = [self fullHeight];
 
-  // Expand to large detent.
-  [presentationController animateChanges:^{
-    presentationController.selectedDetentIdentifier =
-        UISheetPresentationControllerDetentIdentifierLarge;
-  }];
+    __weak __typeof(self) weakSelf = self;
+    auto fullHeightBlock = ^CGFloat(
+        id<UISheetPresentationControllerDetentResolutionContext> context) {
+      BOOL tooLarge = (fullHeight > context.maximumDetentValue);
+      if (tooLarge) {
+        [weakSelf enableScrolling];
+      }
+      return tooLarge ? context.maximumDetentValue : fullHeight;
+    };
+    UISheetPresentationControllerDetent* customDetentExpand =
+        [UISheetPresentationControllerDetent
+            customDetentWithIdentifier:@"customDetentExpand"
+                              resolver:fullHeightBlock];
+    NSMutableArray* currentDetents =
+        [presentationController.detents mutableCopy];
+    [currentDetents addObject:customDetentExpand];
+    presentationController.detents = [currentDetents copy];
+    [presentationController animateChanges:^{
+      presentationController.selectedDetentIdentifier = @"customDetentExpand";
+    }];
+  } else {
+    // Expand to large detent.
+    [self enableScrolling];
+    [presentationController animateChanges:^{
+      presentationController.selectedDetentIdentifier =
+          UISheetPresentationControllerDetentIdentifierLarge;
+    }];
+  }
 }
 
 // Opens the password manager settings page.
