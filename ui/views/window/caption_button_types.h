@@ -20,6 +20,7 @@ enum CaptionButtonIcon {
   CAPTION_BUTTON_ICON_MENU,
   CAPTION_BUTTON_ICON_ZOOM,
   CAPTION_BUTTON_ICON_CENTER,
+  CAPTION_BUTTON_ICON_FLOAT,
   // The custom icon type allows clients to instantiate a caption button that is
   // specific to their use case (e.g. tab search caption button in the browser
   // window frame).

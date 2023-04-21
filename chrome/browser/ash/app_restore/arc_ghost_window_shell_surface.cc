@@ -144,7 +144,8 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
       1 << views::CAPTION_BUTTON_ICON_MINIMIZE |
       1 << views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE |
       1 << views::CAPTION_BUTTON_ICON_CLOSE |
-      1 << views::CAPTION_BUTTON_ICON_BACK;
+      1 << views::CAPTION_BUTTON_ICON_BACK |
+      1 << views::CAPTION_BUTTON_ICON_FLOAT;
   shell_surface->SetFrameButtons(kAllButtonMask, kAllButtonMask);
   shell_surface->OnSetFrameColors(theme_color, theme_color);
 
