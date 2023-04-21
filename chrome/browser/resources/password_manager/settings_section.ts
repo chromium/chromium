@@ -101,6 +101,14 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   private setCredentialsChangedListener_: CredentialsChangedListener|null =
       null;
 
+  override ready() {
+    super.ready();
+
+    chrome.metricsPrivate.recordBoolean(
+        'PasswordManager.OpenedAsShortcut',
+        window.matchMedia('(display-mode: standalone)').matches);
+  }
+
   override connectedCallback() {
     super.connectedCallback();
     this.setBlockedSitesListListener_ = blockedSites => {

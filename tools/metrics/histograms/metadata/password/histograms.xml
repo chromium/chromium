@@ -2215,6 +2215,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.OpenedAsShortcut" enum="Boolean"
+    expires_after="2023-10-15">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records whether Password Manager was opened as a standalone app or inside a
+    browser window. Recorded every time Password Manager is opened.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.ParserDetectedOtpFieldWithRegex"
     enum="Boolean" expires_after="2023-07-01">
   <owner>kolos@chromium.org</owner>
