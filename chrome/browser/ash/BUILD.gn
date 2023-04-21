@@ -4868,6 +4868,7 @@ source_set("unit_tests") {
     "app_mode/web_app/web_kiosk_app_manager_unittest.cc",
     "app_mode/web_app/web_kiosk_app_service_launcher_unittest.cc",
     "app_restore/arc_app_single_restore_handler_unittest.cc",
+    "app_restore/arc_ghost_window_handler_unittest.cc",
     "app_restore/arc_ghost_window_view_unittest.cc",
     "app_restore/arc_window_utils_unittest.cc",
     "app_restore/full_restore_prefs_unittest.cc",

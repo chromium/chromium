@@ -110,6 +110,12 @@ class ArcGhostWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
   // exo::WMHelper::LifetimeManager::Observer:
   void OnDestroyed() override;
 
+ protected:
+  FRIEND_TEST_ALL_PREFIXES(ArcGhostWindowHandlerTest,
+                           UpdateOverrideBoundsIfGeneralState);
+  FRIEND_TEST_ALL_PREFIXES(ArcGhostWindowHandlerTest,
+                           NotUpdateOverrideBoundsIfStateIsDefault);
+
  private:
   bool is_app_instance_connected_ = false;
 
