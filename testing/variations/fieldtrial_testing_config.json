@@ -11313,6 +11313,21 @@
             ]
         }
     ],
+    "SafeBrowsingTailoredSecurityObserverBasedRetry": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TailoredSecurityObserverRetries"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafetyCheckNotificationPermissions": [
         {
             "platforms": [
