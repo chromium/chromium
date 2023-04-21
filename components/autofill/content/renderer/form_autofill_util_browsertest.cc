@@ -444,8 +444,6 @@ TEST_F(FormAutofillUtilsTest, IsEnabled) {
       "<input type='password' id='name3'>"
       "<input type='text' id='name4' disabled>");
 
-  const std::vector<WebElement> dummy_fieldsets;
-
   WebLocalFrame* web_frame = GetMainFrame();
   ASSERT_TRUE(web_frame);
   std::vector<WebFormControlElement> control_elements;
@@ -459,9 +457,9 @@ TEST_F(FormAutofillUtilsTest, IsEnabled) {
   std::vector<WebElement> iframe_elements;
 
   autofill::FormData target;
-  EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
-      dummy_fieldsets, control_elements, iframe_elements, nullptr,
-      web_frame->GetDocument(), nullptr, EXTRACT_NONE, &target, nullptr));
+  EXPECT_TRUE(UnownedFormElementsToFormData(
+      control_elements, iframe_elements, nullptr, web_frame->GetDocument(),
+      nullptr, EXTRACT_NONE, &target, nullptr));
   const struct {
     const char16_t* const name;
     bool enabled;
@@ -486,8 +484,6 @@ TEST_F(FormAutofillUtilsTest, IsReadonly) {
       "<input type='password' id='name3'>"
       "<input type='text' id='name4' readonly>");
 
-  const std::vector<WebElement> dummy_fieldsets;
-
   WebLocalFrame* web_frame = GetMainFrame();
   ASSERT_TRUE(web_frame);
   std::vector<WebFormControlElement> control_elements;
@@ -501,9 +497,9 @@ TEST_F(FormAutofillUtilsTest, IsReadonly) {
   std::vector<WebElement> iframe_elements;
 
   autofill::FormData target;
-  EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
-      dummy_fieldsets, control_elements, iframe_elements, nullptr,
-      web_frame->GetDocument(), nullptr, EXTRACT_NONE, &target, nullptr));
+  EXPECT_TRUE(UnownedFormElementsToFormData(
+      control_elements, iframe_elements, nullptr, web_frame->GetDocument(),
+      nullptr, EXTRACT_NONE, &target, nullptr));
   const struct {
     const char16_t* const name;
     bool readonly;
@@ -526,8 +522,6 @@ TEST_F(FormAutofillUtilsTest, IsFocusable) {
       "<input type='text' id='name1' value='123'>"
       "<input type='text' id='name2' style='display:none'>");
 
-  const std::vector<WebElement> dummy_fieldsets;
-
   WebLocalFrame* web_frame = GetMainFrame();
   ASSERT_TRUE(web_frame);
 
@@ -543,9 +537,9 @@ TEST_F(FormAutofillUtilsTest, IsFocusable) {
   std::vector<WebElement> iframe_elements;
 
   autofill::FormData target;
-  EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
-      dummy_fieldsets, control_elements, iframe_elements, nullptr,
-      web_frame->GetDocument(), nullptr, EXTRACT_NONE, &target, nullptr));
+  EXPECT_TRUE(UnownedFormElementsToFormData(
+      control_elements, iframe_elements, nullptr, web_frame->GetDocument(),
+      nullptr, EXTRACT_NONE, &target, nullptr));
   ASSERT_EQ(2u, target.fields.size());
   EXPECT_EQ(u"name1", target.fields[0].name);
   EXPECT_TRUE(target.fields[0].is_focusable);
@@ -1371,9 +1365,8 @@ TEST_F(FormAutofillUtilsTest, GetUnownedFormFieldElements) {
   )");
 
   WebDocument doc = GetMainFrame()->GetDocument();
-  std::vector<blink::WebElement> unowned_fieldsets;
   std::vector<WebFormControlElement> unowned_form_fields =
-      GetUnownedFormFieldElements(doc, &unowned_fieldsets);
+      GetUnownedFormFieldElements(doc);
 
   EXPECT_THAT(
       unowned_form_fields,
@@ -1384,8 +1377,6 @@ TEST_F(FormAutofillUtilsTest, GetUnownedFormFieldElements) {
                   GetFormControlElementById(doc, "unowned_output"),
                   GetFormControlElementById(doc, "unowned_select"),
                   GetFormControlElementById(doc, "unowned_selectmenu")));
-  EXPECT_THAT(unowned_fieldsets,
-              ElementsAre(GetFormControlElementById(doc, "unowned_fieldset")));
 }
 
 // Tests that FormData::fields and FormData::child_frames are extracted fully
@@ -1400,14 +1391,13 @@ TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
   FormData form_data;
   FormRendererId host_form;
   if (!test_case.form_id) {  // Synthetic form.
-    std::vector<blink::WebElement> fieldsets;
     std::vector<WebFormControlElement> control_elements =
-        GetUnownedAutofillableFormFieldElements(doc, &fieldsets);
+        GetUnownedAutofillableFormFieldElements(doc);
     std::vector<WebElement> iframe_elements =
         form_util::GetUnownedIframeElements(doc);
-    ASSERT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
-        fieldsets, control_elements, iframe_elements, nullptr, doc, nullptr,
-        EXTRACT_NONE, &form_data, nullptr));
+    ASSERT_TRUE(UnownedFormElementsToFormData(
+        control_elements, iframe_elements, nullptr, doc, nullptr, EXTRACT_NONE,
+        &form_data, nullptr));
     host_form = FormRendererId();
   } else {  // Real <form>.
     ASSERT_GT(std::strlen(test_case.form_id), 0u);

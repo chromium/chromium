@@ -3589,10 +3589,6 @@ TEST_F(FormAutofillTest, Labels) {
 // at the moment. Moreover, it seems like the form is parsed multiple times, so
 // checking for metrics is tricky.
 TEST_F(FormAutofillTest, LabelForAttribute) {
-  base::test::ScopedFeatureList improved_label_for_inference;
-  improved_label_for_inference.InitAndEnableFeature(
-      features::kAutofillImprovedLabelForInference);
-
   LoadHTML(R"(
     <label for=fieldId>foo</label>
     <label for=fieldId>bar</label>
@@ -3603,9 +3599,9 @@ TEST_F(FormAutofillTest, LabelForAttribute) {
   base::HistogramTester histogram_tester;
   FormData form;
   // Simulate seeing an unowned form containing just the input "fieldID".
-  UnownedFormElementsAndFieldSetsToFormData(
-      {}, {GetFormControlElementById("fieldId")}, {}, nullptr,
-      GetMainFrame()->GetDocument(), nullptr, EXTRACT_NONE, &form, nullptr);
+  UnownedFormElementsToFormData({GetFormControlElementById("fieldId")}, {},
+                                nullptr, GetMainFrame()->GetDocument(), nullptr,
+                                EXTRACT_NONE, &form, nullptr);
   ASSERT_EQ(form.fields.size(), 1u);
   FormFieldData& form_field_data = form.fields[0];
 
@@ -5357,9 +5353,7 @@ TEST_F(FormAutofillTest, SelectOneAsText) {
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
 }
 
-TEST_F(FormAutofillTest,
-       UnownedFormElementsAndFieldSetsToFormDataFieldsets) {
-  std::vector<WebElement> fieldsets;
+TEST_F(FormAutofillTest, UnownedFormElementsToFormDataWithoutForm) {
   std::vector<WebFormControlElement> control_elements;
 
   const ExtractMask extract_mask =
@@ -5367,32 +5361,27 @@ TEST_F(FormAutofillTest,
 
   LoadHTML("<HEAD><TITLE>delivery info</TITLE></HEAD>"
            "<DIV>"
-           "  <FIELDSET>"
-           "    <LABEL for='firstname'>First name:</LABEL>"
-           "    <LABEL for='lastname'>Last name:</LABEL>"
-           "    <INPUT type='text' id='firstname' value='John'/>"
-           "    <INPUT type='text' id='lastname' value='Smith'/>"
-           "  </FIELDSET>"
-           "  <FIELDSET>"
-           "    <LABEL for='email'>Email:</LABEL>"
-           "    <INPUT type='text' id='email' value='john@example.com'/>"
-           "  </FIELDSET>"
+           "  <LABEL for='firstname'>First name:</LABEL>"
+           "  <LABEL for='lastname'>Last name:</LABEL>"
+           "  <INPUT type='text' id='firstname' value='John'/>"
+           "  <INPUT type='text' id='lastname' value='Smith'/>"
+           "  <LABEL for='email'>Email:</LABEL>"
+           "  <INPUT type='text' id='email' value='john@example.com'/>"
            "</DIV>");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
 
   control_elements =
-      GetUnownedAutofillableFormFieldElements(frame->GetDocument(), &fieldsets);
+      GetUnownedAutofillableFormFieldElements(frame->GetDocument());
   ASSERT_EQ(3U, control_elements.size());
-  ASSERT_EQ(2U, fieldsets.size());
 
   std::vector<WebElement> iframe_elements;
 
   FormData form;
-  EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
-      fieldsets, control_elements, iframe_elements, nullptr,
-      frame->GetDocument(), nullptr, extract_mask, &form, nullptr));
+  EXPECT_TRUE(UnownedFormElementsToFormData(
+      control_elements, iframe_elements, nullptr, frame->GetDocument(), nullptr,
+      extract_mask, &form, nullptr));
 
   EXPECT_TRUE(form.name.empty());
   EXPECT_FALSE(form.action.is_valid());
@@ -5423,80 +5412,7 @@ TEST_F(FormAutofillTest,
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
 }
 
-TEST_F(FormAutofillTest,
-       UnownedFormElementsAndFieldSetsToFormDataControlOutsideOfFieldset) {
-  std::vector<WebElement> fieldsets;
-  std::vector<WebFormControlElement> control_elements;
-
-  const ExtractMask extract_mask =
-      static_cast<ExtractMask>(EXTRACT_VALUE | EXTRACT_OPTIONS);
-
-  LoadHTML(
-      "<HEAD><TITLE>shipping details</TITLE></HEAD>"
-      "<DIV>"
-      "  <FIELDSET>"
-      "    <LABEL for='firstname'>First name:</LABEL>"
-      "    <LABEL for='lastname'>Last name:</LABEL>"
-      "    <INPUT type='text' id='firstname' value='John'/>"
-      "    <INPUT type='text' id='lastname' value='Smith'/>"
-      "  </FIELDSET>"
-      "  <DIV><LABEL for='email'>Email:</LABEL></DIV>"
-      "  <INPUT type='text' id='email' value='john@example.com'/>"
-      "</DIV>");
-
-  WebLocalFrame* frame = GetMainFrame();
-  ASSERT_NE(nullptr, frame);
-
-  control_elements =
-      GetUnownedAutofillableFormFieldElements(frame->GetDocument(), &fieldsets);
-  ASSERT_EQ(3U, control_elements.size());
-  ASSERT_EQ(1U, fieldsets.size());
-
-  std::vector<WebElement> iframe_elements;
-
-  FormData form;
-  EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
-      fieldsets, control_elements, iframe_elements, nullptr,
-      frame->GetDocument(), nullptr, extract_mask, &form, nullptr));
-
-  EXPECT_TRUE(form.name.empty());
-  EXPECT_FALSE(form.action.is_valid());
-
-  const std::vector<FormFieldData>& fields = form.fields;
-  ASSERT_EQ(3U, fields.size());
-
-  FormFieldData expected;
-  expected.form_control_type = "text";
-  expected.max_length = WebInputElement::DefaultMaxLength();
-
-  expected.id_attribute = u"firstname";
-  expected.name = expected.id_attribute;
-  expected.value = u"John";
-  expected.label = u"First name:";
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[0]);
-
-  expected.id_attribute = u"lastname";
-  expected.name = expected.id_attribute;
-  expected.value = u"Smith";
-  expected.label = u"Last name:";
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[1]);
-
-  expected.id_attribute = u"email";
-  expected.name = expected.id_attribute;
-  expected.value = u"john@example.com";
-  // With AutofillImprovedLabelForInference, labels assigned with the for-
-  // attribute are even associated outside of fieldsets. Otherwise, the logic
-  // defaults to div-label inference here, which is broken in many ways.
-  // TODO(crbug.com/1368977): Improve div-label inference.
-  expected.label =
-      base::FeatureList::IsEnabled(features::kAutofillImprovedLabelForInference)
-          ? u"Email:"
-          : u"First name: Last name: Email:";
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
-}
-
-TEST_F(FormAutofillTest, UnownedFormElementsAndFieldSetsToFormDataWithForm) {
-  std::vector<WebElement> fieldsets;
+TEST_F(FormAutofillTest, UnownedFormElementsToFormDataWithForm) {
   std::vector<WebFormControlElement> control_elements;
 
   const ExtractMask extract_mask =
@@ -5508,20 +5424,18 @@ TEST_F(FormAutofillTest, UnownedFormElementsAndFieldSetsToFormDataWithForm) {
   ASSERT_NE(nullptr, frame);
 
   control_elements =
-      GetUnownedAutofillableFormFieldElements(frame->GetDocument(), &fieldsets);
+      GetUnownedAutofillableFormFieldElements(frame->GetDocument());
   ASSERT_TRUE(control_elements.empty());
-  ASSERT_TRUE(fieldsets.empty());
 
   std::vector<WebElement> iframe_elements;
 
   FormData form;
-  EXPECT_FALSE(UnownedFormElementsAndFieldSetsToFormData(
-      fieldsets, control_elements, iframe_elements, nullptr,
-      frame->GetDocument(), nullptr, extract_mask, &form, nullptr));
+  EXPECT_FALSE(UnownedFormElementsToFormData(
+      control_elements, iframe_elements, nullptr, frame->GetDocument(), nullptr,
+      extract_mask, &form, nullptr));
 }
 
 TEST_F(FormAutofillTest, FormlessForms) {
-  std::vector<WebElement> fieldsets;
   std::vector<WebFormControlElement> control_elements;
 
   const ExtractMask extract_mask =
@@ -5533,17 +5447,16 @@ TEST_F(FormAutofillTest, FormlessForms) {
   ASSERT_NE(nullptr, frame);
 
   control_elements =
-      GetUnownedAutofillableFormFieldElements(frame->GetDocument(), &fieldsets);
+      GetUnownedAutofillableFormFieldElements(frame->GetDocument());
   ASSERT_FALSE(control_elements.empty());
-  ASSERT_TRUE(fieldsets.empty());
 
   std::vector<WebElement> iframe_elements;
 
   {
     FormData form;
-    EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
-        fieldsets, control_elements, iframe_elements, nullptr,
-        frame->GetDocument(), nullptr, extract_mask, &form, nullptr));
+    EXPECT_TRUE(UnownedFormElementsToFormData(
+        control_elements, iframe_elements, nullptr, frame->GetDocument(),
+        nullptr, extract_mask, &form, nullptr));
   }
 }
 

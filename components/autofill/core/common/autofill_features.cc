@@ -354,13 +354,6 @@ BASE_FEATURE(kAutofillIgnoreUnmappableAutocompleteValues,
              "AutofillIgnoreUnmappableAutocompleteValues",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, <label for=..> inference relies on control.labels() instead of
-// iterating through all <label> tags manually.
-// TODO(crbug.com/1339277) Remove once launched.
-BASE_FEATURE(kAutofillImprovedLabelForInference,
-             "AutofillImprovedLabelForInference",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, only changed values are highlighted in preview mode.
 // TODO(crbug/1248585): Remove when launched.
 BASE_FEATURE(kAutofillHighlightOnlyChangedValuesInPreviewMode,

@@ -165,22 +165,6 @@ bool IsElementInControlElementSet(
   return base::Contains(control_elements, form_control_element);
 }
 
-bool IsElementInsideFormOrFieldSet(const WebElement& element,
-                                   bool consider_fieldset_tags) {
-  for (WebNode parent_node = element.ParentNode(); !parent_node.IsNull();
-       parent_node = parent_node.ParentNode()) {
-    if (!parent_node.IsElementNode())
-      continue;
-
-    WebElement cur_element = parent_node.To<WebElement>();
-    if (cur_element.HasHTMLTagName("form") ||
-        (consider_fieldset_tags && cur_element.HasHTMLTagName("fieldset"))) {
-      return true;
-    }
-  }
-  return false;
-}
-
 // Returns true if |node| is an element and it is a container type that
 // InferLabelForElement() can traverse.
 bool IsTraversableContainerElement(const WebNode& node) {
@@ -1237,8 +1221,7 @@ std::vector<WebFormControlElement> ForEachMatchingUnownedFormField(
     return {};
 
   std::vector<WebFormControlElement> control_elements =
-      GetUnownedAutofillableFormFieldElements(initiating_element.GetDocument(),
-                                              nullptr);
+      GetUnownedAutofillableFormFieldElements(initiating_element.GetDocument());
   if (!IsElementInControlElementSet(initiating_element, control_elements))
     return {};
 
@@ -1417,7 +1400,7 @@ void EmitDevtoolsIssueForLabelWithoutControl(
 // we look for fields with matching name as a fallback. Moreover, the ids and
 // names of shadow root ancestors of the fields are considered as a fallback.
 void MatchLabelsAndFields(
-    const WebNode& root,
+    const WebDocument& root,
     const base::flat_set<std::pair<FormFieldData*, ShadowFieldData>,
                          CompareByRendererId>& field_set) {
   static base::NoDestructor<WebString> kLabel("label");
@@ -1581,16 +1564,12 @@ void MaybeEmitInputAssignedAutocompleteValueToIdOrNameAttributesIssue(
 // Optionally, |optional_field| is set to the FormFieldData that corresponds to
 // |form_control_element|.
 //
-// The labels of the FormData::fields are extracted from the |form_element| or,
-// if |form_element| is nullptr, from the <fieldset> elements |fieldsets|.
-//
 // |field_data_manager| and |extract_mask| are only passed to
 // WebFormControlElementToFormField().
-bool FormOrFieldsetsToFormData(
+bool OwnedOrUnownedFormToFormData(
     const WebFrame* frame,
     const blink::WebFormElement* form_element,
     const blink::WebFormControlElement* form_control_element,
-    const std::vector<blink::WebElement>& fieldsets,
     const WebVector<WebFormControlElement>& control_elements,
     const std::vector<blink::WebElement>& iframe_elements,
     const FieldDataManager* field_data_manager,
@@ -1601,7 +1580,6 @@ bool FormOrFieldsetsToFormData(
   DCHECK(form->fields.empty());
   DCHECK(form->child_frames.empty());
   DCHECK(!optional_field || form_control_element);
-  DCHECK(!form_element || fieldsets.empty());
 
   if (base::FeatureList::IsEnabled(features::kAutofillEnableDevtoolsIssues)) {
     MaybeEmitDuplicateIdForInputIssue(control_elements);
@@ -1688,23 +1666,12 @@ bool FormOrFieldsetsToFormData(
                  CompareByRendererId>
       field_set(std::move(items));
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillImprovedLabelForInference)) {
-    // All `control_elements` share the same document. By providing it as the
-    // `root` of `MatchLabelsAndFields()` all label tags are considered. This is
-    // necessary to support label-for inference in unowned forms and in owned
-    // forms utilizing the form-attribute.
-    // TODO(crbug.com/1339277): Change the type of `MatchLabelsAndFields()`'s
-    // first parameter to `WebDocument`.
-    if (!control_elements.empty())
-      MatchLabelsAndFields(control_elements[0].GetDocument(), field_set);
-  } else {
-    if (form_element) {
-      MatchLabelsAndFields(*form_element, field_set);
-    } else {
-      for (const WebElement& fieldset : fieldsets)
-        MatchLabelsAndFields(fieldset, field_set);
-    }
+  // All `control_elements` share the same document. By providing it as the
+  // `root` of `MatchLabelsAndFields()` all label tags are considered. This is
+  // necessary to support label-for inference in unowned forms and in owned
+  // forms utilizing the form-attribute.
+  if (!control_elements.empty()) {
+    MatchLabelsAndFields(control_elements[0].GetDocument(), field_set);
   }
 
   // Infers field labels from other tags or <labels> without for="...".
@@ -2399,35 +2366,21 @@ bool WebFormElementToFormData(
     }
   }
 
-  std::vector<blink::WebElement> dummy_fieldset;
-  return FormOrFieldsetsToFormData(
-      frame, &form_element, &form_control_element, dummy_fieldset,
+  return OwnedOrUnownedFormToFormData(
+      frame, &form_element, &form_control_element,
       form_element.GetFormControlElements(), owned_iframes, field_data_manager,
       extract_mask, form, field);
 }
 
 std::vector<WebFormControlElement> GetUnownedFormFieldElements(
-    const WebDocument& document,
-    std::vector<WebElement>* fieldsets) {
-  std::vector<WebFormControlElement> unowned_form_field_elements =
-      document.UnassociatedFormControls().ReleaseVector();
-  if (fieldsets) {
-    for (const auto& element : unowned_form_field_elements) {
-      if (element.HasHTMLTagName("fieldset") &&
-          !IsElementInsideFormOrFieldSet(element,
-                                         /*consider_fieldset_tags=*/true)) {
-        fieldsets->push_back(element);
-      }
-    }
-  }
-  return unowned_form_field_elements;
+    const WebDocument& document) {
+  return document.UnassociatedFormControls().ReleaseVector();
 }
 
 std::vector<WebFormControlElement> GetUnownedAutofillableFormFieldElements(
-    const WebDocument& document,
-    std::vector<WebElement>* fieldsets) {
+    const WebDocument& document) {
   return ExtractAutofillableElementsFromSet(
-      GetUnownedFormFieldElements(document, fieldsets));
+      GetUnownedFormFieldElements(document));
 }
 
 std::vector<WebElement> GetUnownedIframeElements(const WebDocument& document) {
@@ -2446,8 +2399,7 @@ std::vector<WebElement> GetUnownedIframeElements(const WebDocument& document) {
   return unowned_iframes;
 }
 
-bool UnownedFormElementsAndFieldSetsToFormData(
-    const std::vector<blink::WebElement>& fieldsets,
+bool UnownedFormElementsToFormData(
     const std::vector<blink::WebFormControlElement>& control_elements,
     const std::vector<blink::WebElement>& iframe_elements,
     const blink::WebFormControlElement* element,
@@ -2465,9 +2417,9 @@ bool UnownedFormElementsAndFieldSetsToFormData(
 
   form->is_form_tag = false;
 
-  return FormOrFieldsetsToFormData(
-      frame, nullptr, element, fieldsets, control_elements, iframe_elements,
-      field_data_manager, extract_mask, form, field);
+  return OwnedOrUnownedFormToFormData(frame, nullptr, element, control_elements,
+                                      iframe_elements, field_data_manager,
+                                      extract_mask, form, field);
 }
 
 bool FindFormAndFieldForFormControlElement(
@@ -2491,14 +2443,13 @@ bool FindFormAndFieldForFormControlElement(
   if (form_element.IsNull()) {
     // No associated form, try the synthetic form for unowned form elements.
     WebDocument document = element.GetDocument();
-    std::vector<WebElement> fieldsets;
     std::vector<WebFormControlElement> control_elements =
-        GetUnownedAutofillableFormFieldElements(document, &fieldsets);
+        GetUnownedAutofillableFormFieldElements(document);
     std::vector<WebElement> iframe_elements =
         GetUnownedIframeElements(document);
-    return UnownedFormElementsAndFieldSetsToFormData(
-        fieldsets, control_elements, iframe_elements, &element, document,
-        field_data_manager, extract_mask, form, field);
+    return UnownedFormElementsToFormData(control_elements, iframe_elements,
+                                         &element, document, field_data_manager,
+                                         extract_mask, form, field);
   }
 
   return WebFormElementToFormData(form_element, element, field_data_manager,
@@ -2544,8 +2495,7 @@ void ClearPreviewedElements(
     // get all element associated with the form of the initiated field.
     std::vector<WebFormControlElement> form_elements =
         initiating_element.Form().IsNull()
-            ? GetUnownedFormFieldElements(initiating_element.GetDocument(),
-                                          nullptr)
+            ? GetUnownedFormFieldElements(initiating_element.GetDocument())
             : ExtractAutofillableElementsInForm(initiating_element.Form());
 
     // Allow the highlighting of already autofilled fields again.

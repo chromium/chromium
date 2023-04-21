@@ -217,16 +217,15 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
 
   // Look for more parseable fields outside of forms. Create a synthetic form
   // from them.
-  std::vector<WebElement> fieldsets;
   std::vector<WebFormControlElement> control_elements =
-      form_util::GetUnownedAutofillableFormFieldElements(document, &fieldsets);
+      form_util::GetUnownedAutofillableFormFieldElements(document);
   std::vector<WebElement> iframe_elements =
       form_util::GetUnownedIframeElements(document);
 
   FormData synthetic_form;
-  if (!UnownedFormElementsAndFieldSetsToFormData(
-          fieldsets, control_elements, iframe_elements, nullptr, document,
-          field_data_manager, extract_mask, &synthetic_form, nullptr)) {
+  if (!UnownedFormElementsToFormData(control_elements, iframe_elements, nullptr,
+                                     document, field_data_manager, extract_mask,
+                                     &synthetic_form, nullptr)) {
     PruneInitialValueCaches(observed_unique_renderer_ids);
     return r;
   }
@@ -311,7 +310,7 @@ bool FormCache::ClearSectionWithElement(const WebFormControlElement& element) {
   std::vector<WebFormControlElement> control_elements =
       form_element.IsNull()
           ? form_util::GetUnownedAutofillableFormFieldElements(
-                element.GetDocument(), nullptr)
+                element.GetDocument())
           : form_util::ExtractAutofillableElementsInForm(form_element);
 
   if (control_elements.empty())
@@ -359,7 +358,7 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
   if (form.data.unique_renderer_id.is_null()) {  // Form is synthetic.
     WebDocument document = frame_->GetDocument();
     control_elements =
-        form_util::GetUnownedAutofillableFormFieldElements(document, nullptr);
+        form_util::GetUnownedAutofillableFormFieldElements(document);
   } else {
     for (const WebFormElement& form_element : frame_->GetDocument().Forms()) {
       FormRendererId form_id(form_element.UniqueRendererFormId());

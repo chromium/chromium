@@ -822,9 +822,8 @@ bool AutofillAgent::CollectFormlessElements(FormData* output) const {
   // mirrors the construction of the synthetic form in form_cache.cc, but
   // happens at submit-time so we can capture the modifications the user
   // has made, and doesn't depend on form_cache's internal state.
-  std::vector<WebElement> fieldsets;
   std::vector<WebFormControlElement> control_elements =
-      form_util::GetUnownedAutofillableFormFieldElements(document, &fieldsets);
+      form_util::GetUnownedAutofillableFormFieldElements(document);
 
   std::vector<WebElement> iframe_elements =
       form_util::GetUnownedIframeElements(document);
@@ -832,8 +831,8 @@ bool AutofillAgent::CollectFormlessElements(FormData* output) const {
   const ExtractMask extract_mask = static_cast<ExtractMask>(
       form_util::EXTRACT_VALUE | form_util::EXTRACT_OPTIONS);
 
-  return form_util::UnownedFormElementsAndFieldSetsToFormData(
-      fieldsets, control_elements, iframe_elements, nullptr, document,
+  return form_util::UnownedFormElementsToFormData(
+      control_elements, iframe_elements, nullptr, document,
       field_data_manager_.get(), extract_mask, output, nullptr);
 }
 
