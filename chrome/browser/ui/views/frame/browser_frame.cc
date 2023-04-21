@@ -317,6 +317,12 @@ void BrowserFrame::ShowContextMenuForViewImpl(views::View* source,
   if (chrome::IsRunningInForcedAppMode())
     return;
 
+  // Do not show context menu for Document picture-in-picture browser. Context:
+  // http://b/274862709.
+  if (browser_view_->browser()->is_type_picture_in_picture()) {
+    return;
+  }
+
   // Only show context menu if point is in unobscured parts of browser, i.e.
   // if NonClientHitTest returns :
   // - HTCAPTION: in title bar or unobscured part of tabstrip
@@ -334,6 +340,10 @@ void BrowserFrame::ShowContextMenuForViewImpl(views::View* source,
                             gfx::Rect(p, gfx::Size(0, 0)),
                             views::MenuAnchorPosition::kTopLeft, source_type);
   }
+}
+
+bool BrowserFrame::IsMenuRunnerRunningForTesting() const {
+  return menu_runner_ ? menu_runner_->IsRunning() : false;
 }
 
 ui::MenuModel* BrowserFrame::GetSystemMenuModel() {

@@ -163,6 +163,10 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
                                   const gfx::Point& p,
                                   ui::MenuSourceType source_type) override;
 
+  // Returns whether MenuRunner is running or not. Useful to check if the system
+  // context menu is showing, when menu_runner_ is used.
+  bool IsMenuRunnerRunningForTesting() const;
+
   // Returns the menu model. BrowserFrame owns the returned model.
   // Note that in multi user mode this will upon each call create a new model.
   ui::MenuModel* GetSystemMenuModel();

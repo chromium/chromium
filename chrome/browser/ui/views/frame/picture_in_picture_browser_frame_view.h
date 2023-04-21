@@ -180,6 +180,7 @@ class PictureInPictureBrowserFrameView
   std::vector<gfx::Animation*> GetRenderInactiveAnimationsForTesting();
   views::View* GetBackToTabButtonForTesting();
   views::View* GetCloseButtonForTesting();
+  views::Label* GetWindowTitleForTesting();
 
  private:
   // A model required to use LocationIconView.

@@ -936,6 +936,10 @@ views::View* PictureInPictureBrowserFrameView::GetCloseButtonForTesting() {
   return close_image_button_;
 }
 
+views::Label* PictureInPictureBrowserFrameView::GetWindowTitleForTesting() {
+  return window_title_;
+}
+
 void PictureInPictureBrowserFrameView::OnMouseEnteredOrExitedWindow(
     bool entered) {
   mouse_inside_window_ = entered;

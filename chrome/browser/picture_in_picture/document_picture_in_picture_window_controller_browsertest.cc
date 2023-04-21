@@ -462,3 +462,31 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
       BrowserWindow::FindBrowserWindowWithWebContents(pip_web_contents));
   ASSERT_EQ(maximum_window_size, browser_view->GetBounds().size());
 }
+
+// Context menu should not be shown when right clicking on a document picture in
+// picture window title.
+IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+                       ContextMenuIsDisabled) {
+  LoadTabAndEnterPictureInPicture(browser());
+  auto* pip_web_contents = window_controller()->GetChildWebContents();
+  ASSERT_NE(nullptr, pip_web_contents);
+  WaitForPageLoad(pip_web_contents);
+
+  auto* browser_view = static_cast<BrowserView*>(
+      BrowserWindow::FindBrowserWindowWithWebContents(pip_web_contents));
+  auto* pip_frame_view = static_cast<PictureInPictureBrowserFrameView*>(
+      browser_view->frame()->GetFrameView());
+
+  // Get the document picture in picture window title and the location to be
+  // clicked.
+  views::Label* window_title = pip_frame_view->GetWindowTitleForTesting();
+  const gfx::Point click_location =
+      window_title->GetBoundsInScreen().CenterPoint();
+
+  // Simulate a click on the document picture in picture window title, and
+  // verify that the context menu is not shown.
+  pip_frame_view->frame()->ShowContextMenuForViewImpl(
+      window_title, click_location, ui::MenuSourceType::MENU_SOURCE_MOUSE);
+
+  EXPECT_EQ(false, pip_frame_view->frame()->IsMenuRunnerRunningForTesting());
+}
