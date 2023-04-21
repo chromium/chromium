@@ -9,7 +9,6 @@ import android.content.Context;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
@@ -157,9 +156,6 @@ public class PartnerBookmarksReader {
         FetchFaviconCallback callback = new FetchFaviconCallback() {
             @Override
             public void onFaviconFetched(@FaviconFetchResult int result) {
-                RecordHistogram.recordEnumeratedHistogram(
-                        "PartnerBookmark.FaviconThrottleFetchResult", result,
-                        FaviconFetchResult.UMA_BOUNDARY);
                 synchronized (mProgressLock) {
                     if (result == FaviconFetchResult.SUCCESS_FROM_SERVER) {
                         // If we've fetched a new favicon from a server, store a flag to indicate
@@ -238,10 +234,6 @@ public class PartnerBookmarksReader {
         }
     }
 
-    void recordPartnerBookmarkCount(int count) {
-        RecordHistogram.recordCount100Histogram("PartnerBookmark.Count2", count);
-    }
-
     /** Handles fetching partner bookmarks in a background thread. */
     private class ReadBookmarksTask extends AsyncTask<Void> {
         private final Object mRootSync = new Object();
@@ -286,8 +278,6 @@ public class PartnerBookmarksReader {
                 urlSet.add(bookmark.mUrl);
             }
             bookmarkIterator.close();
-            int count = urlSet.size();
-            recordPartnerBookmarkCount(count);
 
             // Recreate the folder hierarchy and read it.
             recreateFolderHierarchy(idMap);
