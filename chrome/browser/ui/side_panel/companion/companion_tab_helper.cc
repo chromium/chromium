@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
 
+#include <string>
+
 #include "base/strings/strcat.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
@@ -130,6 +132,15 @@ void CompanionTabHelper::SetTextQuery(const std::string& text_query) {
   if (companion_page_handler_) {
     companion_page_handler_->OnSearchTextQuery(GetTextQuery());
   }
+}
+
+void CompanionTabHelper::UpdateNewTabButtonState() {
+  delegate_->UpdateNewTabButtonState();
+}
+
+GURL CompanionTabHelper::GetNewTabButtonUrl() {
+  return companion_page_handler_ ? companion_page_handler_->GetNewTabButtonUrl()
+                                 : GURL();
 }
 
 std::string CompanionTabHelper::GetTextQueryFromSearchUrl(

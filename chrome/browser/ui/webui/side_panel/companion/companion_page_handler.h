@@ -44,6 +44,7 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
                      side_panel::mojom::PromoAction promo_action) override;
   void OnRegionSearchClicked() override;
   void OnExpsOptInStatusAvailable(bool is_exps_opted_in) override;
+  void OnOpenInNewTabButtonURLChanged(const ::GURL& url_to_open) override;
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
@@ -52,6 +53,10 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   // page with was sent from client.
   void OnSearchTextQuery(const std::string& text_query);
   void OnImageQuery(side_panel::mojom::ImageQuery image_query);
+
+  // Returns the latest set url to be used for the 'open in new tab' button in
+  // the side panel header.
+  GURL GetNewTabButtonUrl();
 
  private:
   // MsbbDelegate overrides.
@@ -75,6 +80,7 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   std::unique_ptr<SigninDelegate> signin_delegate_;
   std::unique_ptr<CompanionUrlBuilder> url_builder_;
   std::unique_ptr<PromoHandler> promo_handler_;
+  GURL open_in_new_tab_url_;
 
   base::WeakPtrFactory<CompanionPageHandler> weak_ptr_factory_{this};
 };

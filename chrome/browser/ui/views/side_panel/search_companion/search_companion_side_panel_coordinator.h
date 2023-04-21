@@ -64,6 +64,8 @@ class SearchCompanionSidePanelCoordinator
 
   std::unique_ptr<views::View> CreateCompanionWebView();
 
+  GURL GetOpenInNewTabUrl();
+
   // content::WebContentsObserver:
   void DidOpenRequestedURL(content::WebContents* new_contents,
                            content::RenderFrameHost* source_render_frame_host,

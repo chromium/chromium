@@ -115,6 +115,10 @@ void CompanionPageHandler::OnImageQuery(
   page_->OnImageQuery(image_query.Clone());
 }
 
+GURL CompanionPageHandler::GetNewTabButtonUrl() {
+  return open_in_new_tab_url_;
+}
+
 void CompanionPageHandler::OnPromoAction(
     side_panel::mojom::PromoType promo_type,
     side_panel::mojom::PromoAction promo_action) {
@@ -133,6 +137,15 @@ void CompanionPageHandler::OnExpsOptInStatusAvailable(bool is_exps_opted_in) {
   // Update default value for pref indicating whether companion should be
   // pinned to the toolbar.
   companion::UpdateCompanionDefaultPinnedToToolbarState(pref_service);
+}
+
+void CompanionPageHandler::OnOpenInNewTabButtonURLChanged(
+    const ::GURL& url_to_open) {
+  auto* companion_helper =
+      companion::CompanionTabHelper::FromWebContents(web_contents());
+  DCHECK(companion_helper);
+  open_in_new_tab_url_ = url_to_open;
+  companion_helper->UpdateNewTabButtonState();
 }
 
 void CompanionPageHandler::EnableMsbb(bool enable_msbb) {

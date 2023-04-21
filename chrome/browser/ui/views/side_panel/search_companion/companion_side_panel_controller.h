@@ -25,6 +25,7 @@ class CompanionSidePanelController : public CompanionTabHelper::Delegate {
 
   // CompanionTabHelper::Delegate:
   void ShowCompanionSidePanel() override;
+  void UpdateNewTabButtonState() override;
 
  private:
   const raw_ptr<content::WebContents> web_contents_;

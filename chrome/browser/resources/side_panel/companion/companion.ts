@@ -144,6 +144,10 @@ function onCompanionMessageEvent(event: MessageEvent) {
   } else if (methodType === MethodType.kOnExpsOptInStatusAvailable) {
     companionProxy.handler.onExpsOptInStatusAvailable(
         data[ParamType.IS_EXPS_OPTED_IN]);
+  } else if (methodType === MethodType.kOnOpenInNewTabButtonURLChanged) {
+    const openInNewTabUrl = new Url();
+    openInNewTabUrl.url = data[ParamType.URL_FOR_OPEN_IN_NEW_TAB];
+    companionProxy.handler.onOpenInNewTabButtonURLChanged(openInNewTabUrl);
   }
 }
 

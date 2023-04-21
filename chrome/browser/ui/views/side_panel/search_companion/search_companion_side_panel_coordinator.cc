@@ -9,6 +9,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -74,6 +75,16 @@ SearchCompanionSidePanelCoordinator::CreateCompanionWebView() {
   return companion_web_view;
 }
 
+GURL SearchCompanionSidePanelCoordinator::GetOpenInNewTabUrl() {
+  if (content::WebContents* active_web_contents =
+          browser_->tab_strip_model()->GetActiveWebContents()) {
+    auto* companion_helper =
+        companion::CompanionTabHelper::FromWebContents(active_web_contents);
+    return companion_helper->GetNewTabButtonUrl();
+  }
+  return GURL();
+}
+
 bool SearchCompanionSidePanelCoordinator::Show() {
   auto* browser_view = GetBrowserView();
   if (!browser_view) {
@@ -135,6 +146,9 @@ SearchCompanionSidePanelCoordinator::CreateCompanionEntry() {
                                      /*icon_size=*/16),
       base::BindRepeating(
           &SearchCompanionSidePanelCoordinator::CreateCompanionWebView,
+          base::Unretained(this)),
+      base::BindRepeating(
+          &SearchCompanionSidePanelCoordinator::GetOpenInNewTabUrl,
           base::Unretained(this)));
 }
 

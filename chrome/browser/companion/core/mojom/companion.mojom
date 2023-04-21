@@ -18,6 +18,10 @@ enum MethodType {
 
   // Method called when user's experience opt-in status is available.
   kOnExpsOptInStatusAvailable = 3,
+
+  // Method called when the url used for the 'open in new tab' button in the
+  // side panel header should be updated.
+  kOnOpenInNewTabButtonURLChanged = 4,
 };
 
 // Types of promos shown in the companion UI.
@@ -86,6 +90,11 @@ interface CompanionPageHandler {
   // Called to notify the browser that the user's experience opt-in status is
   // available.
   OnExpsOptInStatusAvailable(bool is_exps_opted_in);
+
+  // Called to notify the browser that the url used for the 'open in new tab'
+  // button in the side panel header should be updated. If the url is empty
+  // the button would be hidden.
+  OnOpenInNewTabButtonURLChanged(url.mojom.Url url_to_open);
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)
