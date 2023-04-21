@@ -58872,6 +58872,7 @@ from previous Chrome versions.
   <int value="-1959602781" label="ShimlessRMADisableDarkMode:disabled"/>
   <int value="-1959563554" label="ChromeOSAccountManager:enabled"/>
   <int value="-1958364669" label="QueryTilesSegmentation:enabled"/>
+  <int value="-1958336515" label="DefaultViewportIsDeviceWidth:enabled"/>
   <int value="-1958315092" label="EnableGamepadButtonAxisEvents:disabled"/>
   <int value="-1957328398" label="MacSystemShareMenu:disabled"/>
   <int value="-1956747298" label="LayeredAPI:enabled"/>
@@ -64106,6 +64107,7 @@ from previous Chrome versions.
   <int value="926844887" label="QuickDim:disabled"/>
   <int value="926852901" label="DataReductionProxyMainMenu:disabled"/>
   <int value="928900043" label="OmniboxLooseMaxLimitOnDedicatedRows:disabled"/>
+  <int value="928991555" label="DefaultViewportIsDeviceWidth:disabled"/>
   <int value="929462705" label="disable-link-disambiguation-popup"/>
   <int value="930187600" label="WebAssemblyExperimentalJSPI:enabled"/>
   <int value="932468127" label="LauncherPulsingBlocksRefresh:enabled"/>

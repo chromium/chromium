@@ -1374,6 +1374,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "default-viewport-is-device-width",
+    "owners": [ "bokan@google.com", "twellington@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "deprecate-alt-based-six-pack",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],

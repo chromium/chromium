@@ -3707,6 +3707,12 @@ const char kContextualSearchSuppressShortViewName[] =
 const char kContextualSearchSuppressShortViewDescription[] =
     "Contextual Search suppress when the base page view is too short";
 
+const char kDefaultViewportIsDeviceWidthName[] =
+    "Default viewport width is device width";
+const char kDefaultViewportIsDeviceWidthDescription[] =
+    "Sets the default viewport layout width to be equivalent to "
+    "width=device-width";
+
 const char kAutofillManualFallbackAndroidName[] =
     "Enable Autofill manual fallback for Addresses and Payments (Android)";
 const char kAutofillManualFallbackAndroidDescription[] =

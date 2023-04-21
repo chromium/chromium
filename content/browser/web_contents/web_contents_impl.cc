@@ -2874,6 +2874,12 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
   prefs.threaded_scrolling_enabled =
       !command_line.HasSwitch(blink::switches::kDisableThreadedScrolling);
 
+  if (prefs.viewport_enabled &&
+      base::FeatureList::IsEnabled(
+          blink::features::kDefaultViewportIsDeviceWidth)) {
+    prefs.viewport_style = blink::mojom::ViewportStyle::kDefault;
+  }
+
   if (GetController().GetVisibleEntry() &&
       GetController().GetVisibleEntry()->GetIsOverridingUserAgent()) {
 #if BUILDFLAG(IS_ANDROID)
