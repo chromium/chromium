@@ -10,12 +10,11 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/feature_list.h"
+
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/geo/country_names.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "third_party/icu/source/common/unicode/locid.h"
@@ -188,6 +187,9 @@ bool AutofillCountry::IsAddressFieldSettingAccessible(
 }
 
 bool AutofillCountry::IsAddressFieldRequired(AddressField address_field) const {
+  if (address_field == AddressField::RECIPIENT && requires_full_name()) {
+    return true;
+  }
   auto* mapping_it = kRequiredFieldMapping.find(address_field);
   return mapping_it != kRequiredFieldMapping.end() &&
          (required_fields_for_address_import_ & mapping_it->second);

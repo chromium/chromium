@@ -109,13 +109,12 @@ bool IsMinimumAddress(const AutofillProfile& profile,
       !(is_line1_missing || is_city_missing || is_state_missing ||
         is_zip_missing || is_zip_or_state_requirement_violated ||
         is_line1_or_house_number_violated);
-  if (is_minimum_address &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillRequireNameForProfileImport)) {
-    is_minimum_address &= ValidateAndLog(
-        /*required=*/true, {NAME_FULL},
-        AddressImportRequirement::kNameRequirementFulfilled,
-        AddressImportRequirement::kNameRequirementViolated);
+  // TODO(crbug.com/1413205): Merge this into is_minimum_address.
+  if (is_minimum_address && country.requires_full_name()) {
+    is_minimum_address &=
+        ValidateAndLog(/*required=*/true, {NAME_FULL},
+                       AddressImportRequirement::kNameRequirementFulfilled,
+                       AddressImportRequirement::kNameRequirementViolated);
   }
   if (collect_metrics) {
     autofill_metrics::
