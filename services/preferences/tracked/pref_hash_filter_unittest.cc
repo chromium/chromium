@@ -729,9 +729,10 @@ TEST_P(PrefHashFilterTest, FilterTrackedPrefClearing) {
 
 TEST_P(PrefHashFilterTest, FilterSplitPrefUpdate) {
   base::Value::Dict root_dict;
-  base::Value* dict_value = root_dict.Set(kSplitPref, base::Value::Dict());
-  dict_value->SetStringKey("a", "foo");
-  dict_value->SetIntKey("b", 1234);
+  base::Value::Dict& dict_value =
+      root_dict.Set(kSplitPref, base::Value::Dict())->GetDict();
+  dict_value.Set("a", "foo");
+  dict_value.Set("b", 1234);
 
   // No path should be stored on FilterUpdate.
   pref_hash_filter_->FilterUpdate(kSplitPref);
@@ -742,7 +743,7 @@ TEST_P(PrefHashFilterTest, FilterSplitPrefUpdate) {
   ASSERT_EQ(1u, mock_pref_hash_store_->stored_paths_count());
   MockPrefHashStore::ValuePtrStrategyPair stored_value =
       mock_pref_hash_store_->stored_value(kSplitPref);
-  ASSERT_EQ(dict_value, stored_value.first);
+  ASSERT_EQ(&dict_value, stored_value.first);
   ASSERT_EQ(PrefTrackingStrategy::SPLIT, stored_value.second);
 
   ASSERT_EQ(1u, mock_pref_hash_store_->transactions_performed());
@@ -794,7 +795,7 @@ TEST_P(PrefHashFilterTest, MultiplePrefsFilterSerializeData) {
   root_dict.Set(kAtomicPref3, 3);
   root_dict.Set("untracked", 4);
   base::Value* dict_value = root_dict.Set(kSplitPref, base::Value::Dict());
-  dict_value->SetBoolKey("a", true);
+  dict_value->GetDict().Set("a", true);
 
   // Only update kAtomicPref, kAtomicPref3, and kSplitPref.
   pref_hash_filter_->FilterUpdate(kAtomicPref);
