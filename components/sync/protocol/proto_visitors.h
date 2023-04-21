@@ -885,6 +885,7 @@ VISIT_PROTO_FIELDS(const sync_pb::PasswordIssues& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::PasswordIssues_PasswordIssue& proto) {
   VISIT(date_first_detection_windows_epoch_micros);
   VISIT(is_muted);
+  VISIT(trigger_notification_from_backend_on_detection);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsData_Notes& proto) {
