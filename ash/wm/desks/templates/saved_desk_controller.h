@@ -5,14 +5,17 @@
 #ifndef ASH_WM_DESKS_TEMPLATES_SAVED_DESK_CONTROLLER_H_
 #define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_CONTROLLER_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/containers/flat_map.h"
 #include "base/uuid.h"
 
 namespace ash {
 
+class AdminTemplateLaunchTracker;
 class DeskTemplate;
 
 struct AdminTemplateMetadata {
@@ -46,11 +49,19 @@ class ASH_EXPORT SavedDeskController {
  private:
   friend class SavedDeskControllerTestApi;
 
+  // Invoked when the user has interacted with windows from a launched template.
+  void OnAdminTemplateUpdate(const DeskTemplate& admin_template);
+
   std::unique_ptr<DeskTemplate> GetAdminTemplate(
       const base::Uuid& template_uuid) const;
 
   // Install an admin template that can be used by `LaunchAdminTemplate`.
   void SetAdminTemplateForTesting(std::unique_ptr<DeskTemplate> admin_template);
+
+  int32_t admin_template_launch_id_ = 0;
+
+  base::flat_map<int32_t, std::unique_ptr<AdminTemplateLaunchTracker>>
+      admin_template_launch_trackers_;
 
   // An optional admin template used for testing.
   std::unique_ptr<DeskTemplate> admin_template_for_testing_;

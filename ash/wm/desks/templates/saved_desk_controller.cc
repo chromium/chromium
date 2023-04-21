@@ -5,13 +5,11 @@
 #include "ash/wm/desks/templates/saved_desk_controller.h"
 
 #include "ash/public/cpp/desk_template.h"
-#include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/shell.h"
-#include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/desks/templates/saved_desk_constants.h"
+#include "ash/wm/desks/templates/admin_template_launch_tracker.h"
 #include "base/check.h"
-#include "base/containers/adapters.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/app_restore/app_restore_data.h"
@@ -30,7 +28,6 @@ constexpr char kPlaceholderJson[] = R"json(
          "active_tab_index": 0,
          "app_name": "",
          "current_bounds": [ 100, 50, 640, 480 ],
-         "display_id": "2200000000",
          "index": 0,
          "title": "Chrome",
          "urls": [ "https://www.google.com/" ],
@@ -62,27 +59,6 @@ std::unique_ptr<DeskTemplate> CreatePlaceholderTemplate() {
 // Pointer to the global `SavedDeskController` instance.
 SavedDeskController* g_instance = nullptr;
 
-// The next activation index to assign to an admin template window.
-int32_t g_admin_template_next_activation_index =
-    kAdminTemplateStartingActivationIndex;
-
-// This function updates the activation indices of all the windows in an admin
-// template so that windows launched from it will stack in the order they are
-// defined, while also stacking on top of any existing windows.
-void UpdateAdminTemplateActivationIndices(DeskTemplate& saved_desk) {
-  auto& app_id_to_launch_list =
-      saved_desk.mutable_desk_restore_data()->mutable_app_id_to_launch_list();
-  // Go through the windows as defined in the saved desk in reverse order so
-  // that the window with the lowest id gets the lowest activation index. NB:
-  // for now, we expect admin templates to only contain a single app.
-  for (auto& [app_id, launch_list] : app_id_to_launch_list) {
-    for (auto& [window_id, app_restore_data] : base::Reversed(launch_list)) {
-      app_restore_data->activation_index =
-          g_admin_template_next_activation_index--;
-    }
-  }
-}
-
 }  // namespace
 
 SavedDeskController::SavedDeskController() {
@@ -112,18 +88,25 @@ bool SavedDeskController::LaunchAdminTemplate(const base::Uuid& template_uuid,
     return false;
   }
 
-  // Set apps to launch on the current desk.
-  auto* desks_controller = DesksController::Get();
-  const int desk_index =
-      desks_controller->GetDeskIndex(desks_controller->active_desk());
-  admin_template->SetDeskIndex(desk_index);
+  int64_t launch_id = ++admin_template_launch_id_;
+  admin_template_launch_trackers_[launch_id] =
+      std::make_unique<AdminTemplateLaunchTracker>(
+          std::move(admin_template),
+          base::BindRepeating(&SavedDeskController::OnAdminTemplateUpdate,
+                              base::Unretained(this)));
 
-  UpdateAdminTemplateActivationIndices(*admin_template);
+  admin_template_launch_trackers_[launch_id]->LaunchTemplate(
+      Shell::Get()->saved_desk_delegate(), default_display_id);
 
-  Shell::Get()->saved_desk_delegate()->LaunchAppsFromSavedDesk(
-      std::move(admin_template));
+  // TODO(dandersson): Remove the launch tracker when all its windows have been
+  // closed.
 
   return true;
+}
+
+void SavedDeskController::OnAdminTemplateUpdate(
+    const DeskTemplate& admin_template) {
+  // TODO(dandersson): Write to desk model.
 }
 
 std::unique_ptr<DeskTemplate> SavedDeskController::GetAdminTemplate(

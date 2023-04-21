@@ -1,0 +1,175 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/public/cpp/desk_template.h"
+#include "ash/public/cpp/saved_desk_delegate.h"
+#include "ash/wm/desks/templates/admin_template_launch_tracker.h"
+#include "ash/wm/desks/templates/saved_desk_constants.h"
+#include "ash/wm/overview/overview_test_base.h"
+#include "base/json/json_string_value_serializer.h"
+#include "components/app_restore/restore_data.h"
+
+namespace ash {
+namespace {
+
+using testing::_;
+using testing::Eq;
+using testing::Not;
+using testing::Optional;
+
+class MockSavedDeskDelegate : public SavedDeskDelegate {
+ public:
+  MOCK_METHOD(void,
+              GetAppLaunchDataForSavedDesk,
+              (aura::Window*, GetAppLaunchDataCallback),
+              (const override));
+  MOCK_METHOD(desks_storage::DeskModel*, GetDeskModel, (), (override));
+  MOCK_METHOD(bool, IsIncognitoWindow, (aura::Window*), (const override));
+  MOCK_METHOD(absl::optional<gfx::ImageSkia>,
+              MaybeRetrieveIconForSpecialIdentifier,
+              (const std::string&, const ui::ColorProvider*),
+              (const override));
+  MOCK_METHOD(void,
+              GetFaviconForUrl,
+              (const std::string&,
+               base::OnceCallback<void(const gfx::ImageSkia&)>,
+               base::CancelableTaskTracker*),
+              (const override));
+  MOCK_METHOD(void,
+              GetIconForAppId,
+              (const std::string&,
+               int,
+               base::OnceCallback<void(const gfx::ImageSkia&)>),
+              (const override));
+  MOCK_METHOD(void,
+              LaunchAppsFromSavedDesk,
+              (std::unique_ptr<DeskTemplate>),
+              (override));
+  MOCK_METHOD(bool,
+              IsWindowSupportedForSavedDesk,
+              (aura::Window*),
+              (const override));
+  MOCK_METHOD(std::string, GetAppShortName, (const std::string&), (override));
+  MOCK_METHOD(bool, IsAppAvailable, (const std::string&), (const override));
+};
+
+constexpr char kAdminTemplateJson[] = R"json({
+   "mgndgikekgjfcpckkfioiadnlibdjbkf": {
+      "1": {
+         "active_tab_index": 0,
+         "app_name": "",
+         "current_bounds": [ 100, 50, 640, 480 ],
+         "index": 0,
+         "urls": [ "https://www.google.com/" ]
+      }
+   }
+})json";
+
+class AdminTemplateTest : public OverviewTestBase {
+ public:
+  AdminTemplateTest() = default;
+  AdminTemplateTest(const AdminTemplateTest&) = delete;
+  AdminTemplateTest& operator=(const AdminTemplateTest&) = delete;
+  ~AdminTemplateTest() override = default;
+
+ protected:
+  // Creates a template from a JSON string.
+  std::unique_ptr<DeskTemplate> CreateTemplateFromJson(base::StringPiece json) {
+    base::JSONReader::Result json_read_result =
+        base::JSONReader::ReadAndReturnValueWithError(json);
+    if (!json_read_result.has_value()) {
+      return nullptr;
+    }
+
+    auto admin_template = std::make_unique<DeskTemplate>(
+        base::GUID::GenerateRandomV4(), DeskTemplateSource::kPolicy,
+        "admin template", base::Time::Now(), DeskTemplateType::kTemplate);
+    admin_template->set_desk_restore_data(
+        std::make_unique<app_restore::RestoreData>(
+            std::move(json_read_result).value()));
+
+    return admin_template;
+  }
+
+  // Returns the app restore data for `app_id` and `window_id` in
+  // `admin_template`.
+  const app_restore::AppRestoreData* GetRestoreData(
+      const DeskTemplate& admin_template,
+      const std::string& app_id,
+      int32_t window_id) {
+    const auto& app_id_to_launch_list =
+        admin_template.desk_restore_data()->app_id_to_launch_list();
+    auto it = app_id_to_launch_list.find(app_id);
+    if (it == app_id_to_launch_list.end()) {
+      return nullptr;
+    }
+
+    const auto& launch_list = it->second;
+    auto it2 = launch_list.find(window_id);
+    return it2 != launch_list.end() ? it2->second.get() : nullptr;
+  }
+};
+
+TEST_F(AdminTemplateTest, MergeAdminTemplateWindowUpdate) {
+  auto admin_template = CreateTemplateFromJson(kAdminTemplateJson);
+  ASSERT_TRUE(admin_template);
+
+  const auto* app_restore_data =
+      GetRestoreData(*admin_template, "mgndgikekgjfcpckkfioiadnlibdjbkf", 1);
+  ASSERT_TRUE(app_restore_data);
+
+  // Using a window ID not present in the template.
+  EXPECT_FALSE(
+      MergeAdminTemplateWindowUpdate(*admin_template, {.template_rwid = 123}));
+
+  // Checks that the original window bounds are present.
+  EXPECT_THAT(app_restore_data->current_bounds,
+              Optional(gfx::Rect(100, 50, 640, 480)));
+
+  gfx::Rect new_bounds(10, 10, 300, 200);
+  EXPECT_TRUE(MergeAdminTemplateWindowUpdate(
+      *admin_template, {.template_rwid = 1, .bounds = new_bounds}));
+  EXPECT_THAT(app_restore_data->current_bounds, Optional(new_bounds));
+
+  EXPECT_THAT(app_restore_data->display_id, Eq(absl::nullopt));
+  EXPECT_TRUE(MergeAdminTemplateWindowUpdate(
+      *admin_template, {.template_rwid = 1, .display_id = 123456}));
+  EXPECT_THAT(app_restore_data->display_id, Optional(123456));
+}
+
+TEST_F(AdminTemplateTest, LaunchTemplate) {
+  auto admin_template = CreateTemplateFromJson(kAdminTemplateJson);
+  ASSERT_TRUE(admin_template);
+
+  AdminTemplateLaunchTracker launch_tracker(std::move(admin_template),
+                                            base::DoNothing());
+
+  MockSavedDeskDelegate saved_desk_delegate;
+  std::unique_ptr<DeskTemplate> launched_template;
+
+  // Tells the tracker to launch the template. This will modify parts of the
+  // template, set up trackers and eventually send it to the delegate. We'll
+  // capture the launched template here so that it can be inspected.
+  EXPECT_CALL(saved_desk_delegate, LaunchAppsFromSavedDesk(_))
+      .WillOnce([&](std::unique_ptr<DeskTemplate> arg) {
+        launched_template = std::move(arg);
+      });
+  launch_tracker.LaunchTemplate(&saved_desk_delegate,
+                                /*default_display_id=*/-1);
+
+  ASSERT_TRUE(launched_template);
+  // The first launched window will start at -2.
+  const auto* app_restore_data = GetRestoreData(
+      *launched_template, "mgndgikekgjfcpckkfioiadnlibdjbkf", -2);
+  ASSERT_TRUE(app_restore_data);
+
+  // Verifies that a display id has been assigned.
+  EXPECT_THAT(app_restore_data->display_id, Optional(Not(Eq(-1))));
+  // And window activation index.
+  EXPECT_THAT(app_restore_data->activation_index,
+              Optional(kAdminTemplateStartingActivationIndex));
+}
+
+}  // namespace
+}  // namespace ash

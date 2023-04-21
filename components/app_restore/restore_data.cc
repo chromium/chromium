@@ -310,18 +310,28 @@ void RestoreData::SetDeskIndex(int desk_index) {
   }
 }
 
-void RestoreData::MakeWindowIdsUniqueForDeskTemplate() {
+base::flat_map<int32_t, int32_t>
+RestoreData::MakeWindowIdsUniqueForDeskTemplate() {
+  if (has_unique_window_ids_for_desk_template_) {
+    return {};
+  }
+
+  base::flat_map<int32_t, int32_t> mapping;
   for (auto& [app_id, launch_list] : app_id_to_launch_list_) {
     // We don't want to do in-place updates of the launch list since it
     // complicates traversal. We'll therefore build a new LaunchList and pilfer
     // the old one for AppRestoreData.
     LaunchList new_launch_list;
     for (auto& [window_id, app_restore_data] : launch_list) {
-      new_launch_list[--g_desk_template_window_restore_id] =
-          std::move(app_restore_data);
+      int32_t new_rwid = --g_desk_template_window_restore_id;
+      new_launch_list[new_rwid] = std::move(app_restore_data);
+      mapping[new_rwid] = window_id;
     }
     launch_list = std::move(new_launch_list);
   }
+
+  has_unique_window_ids_for_desk_template_ = true;
+  return mapping;
 }
 
 void RestoreData::UpdateBrowserAppIdToLacros() {
