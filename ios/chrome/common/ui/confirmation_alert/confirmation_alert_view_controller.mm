@@ -8,6 +8,7 @@
 #import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -17,21 +18,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-NSString* const kConfirmationAlertMoreInfoAccessibilityIdentifier =
-    @"kConfirmationAlertMoreInfoAccessibilityIdentifier";
-NSString* const kConfirmationAlertTitleAccessibilityIdentifier =
-    @"kConfirmationAlertTitleAccessibilityIdentifier";
-NSString* const kConfirmationAlertSecondaryTitleAccessibilityIdentifier =
-    @"kConfirmationAlertSecondaryTitleAccessibilityIdentifier";
-NSString* const kConfirmationAlertSubtitleAccessibilityIdentifier =
-    @"kConfirmationAlertSubtitleAccessibilityIdentifier";
-NSString* const kConfirmationAlertPrimaryActionAccessibilityIdentifier =
-    @"kConfirmationAlertPrimaryActionAccessibilityIdentifier";
-NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier =
-    @"kConfirmationAlertSecondaryActionAccessibilityIdentifier";
-NSString* const kConfirmationAlertTertiaryActionAccessibilityIdentifier =
-    @"kConfirmationAlertTertiaryActionAccessibilityIdentifier";
 
 namespace {
 

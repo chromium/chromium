@@ -25,7 +25,7 @@ source_set("eg2_tests") {
   sources = [ "default_browser_fullscreen_promo_egtest.mm" ]
   deps = [
     "//base",
-    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/confirmation_alert:constants",
     "//ios/showcase/test:eg2_test",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/base",

@@ -30,7 +30,7 @@ source_set("eg2_tests") {
   sources = []
   deps = [
     "//base",
-    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/confirmation_alert:constants",
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/showcase/test:eg2_test",
     "//ios/testing/earl_grey:eg_test_support+eg2",

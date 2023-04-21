@@ -7,13 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-// A11y Identifiers for testing.
-extern NSString* const kConfirmationAlertMoreInfoAccessibilityIdentifier;
-extern NSString* const kConfirmationAlertTitleAccessibilityIdentifier;
-extern NSString* const kConfirmationAlertSubtitleAccessibilityIdentifier;
-extern NSString* const kConfirmationAlertPrimaryActionAccessibilityIdentifier;
-extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
-
 @protocol ConfirmationAlertActionHandler;
 
 // A view controller useful to show modal alerts and confirmations. The main
