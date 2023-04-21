@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/guid.h"
 #include "base/i18n/time_formatting.h"
 #include "base/location.h"
 #include "base/strings/string_util.h"
@@ -23,6 +22,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/policy/policy_ui_utils.h"
 #include "chrome/browser/support_tool/data_collector.h"
@@ -188,7 +188,7 @@ std::string SupportPacketMetadata::GetDataCollectorsListString(
 }
 
 std::string SupportPacketMetadata::GetGUIDForSupportPacket() {
-  return base::GUID::GenerateRandomV4().AsLowercaseString();
+  return base::Uuid::GenerateRandomV4().AsLowercaseString();
 }
 
 void SupportPacketMetadata::AddErrorMessagesToMetadata() {
