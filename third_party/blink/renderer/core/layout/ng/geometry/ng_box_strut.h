@@ -152,6 +152,13 @@ struct CORE_EXPORT NGPhysicalBoxStrut {
                      LayoutUnit left)
       : top(top), right(right), bottom(bottom), left(left) {}
 
+  // Arguments are clamped to [LayoutUnix::Min(), LayoutUnit::Max()].
+  NGPhysicalBoxStrut(int t, int r, int b, int l)
+      : top(LayoutUnit(t)),
+        right(LayoutUnit(r)),
+        bottom(LayoutUnit(b)),
+        left(LayoutUnit(l)) {}
+
   // Creates new NGPhysicalBoxStrut instance from the specified `outsets`.
   // A data member of `outsets` is rounded up to the minimum LayoutUnit value
   // which is equal or lager than the data member.
@@ -299,11 +306,6 @@ inline NGPhysicalBoxStrut NGBoxStrut::ConvertToPhysical(
 
 inline NGPhysicalBoxStrut operator-(const NGPhysicalBoxStrut& a) {
   return {-a.top, -a.right, -a.bottom, -a.left};
-}
-
-inline LayoutRectOutsets operator+(const LayoutRectOutsets& a,
-                                   const NGPhysicalBoxStrut& b) {
-  return a + b.ToLayoutRectOutsets();
 }
 
 }  // namespace blink

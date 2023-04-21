@@ -265,7 +265,7 @@ void BoxPainterBase::PaintInsetBoxShadowWithInnerRect(
   if (!style.BoxShadow())
     return;
   auto bounds = RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
-      style, inner_rect, LayoutRectOutsets());
+      style, inner_rect, NGPhysicalBoxStrut());
   PaintInsetBoxShadow(info, bounds, style);
 }
 
@@ -923,7 +923,7 @@ FloatRoundedRect RoundedBorderRectForClip(
     bool object_has_multiple_boxes,
     const PhysicalSize& flow_box_size,
     BackgroundBleedAvoidance bleed_avoidance,
-    LayoutRectOutsets border_padding_insets) {
+    const NGPhysicalBoxStrut& border_padding_insets) {
   if (!info.is_rounded_fill)
     return FloatRoundedRect();
 
@@ -1006,18 +1006,18 @@ void PaintFillLayerBackground(const Document* document,
   }
 }
 
-LayoutRectOutsets AdjustOutsetsForEdgeInclusion(
-    const LayoutRectOutsets outsets,
+NGPhysicalBoxStrut AdjustOutsetsForEdgeInclusion(
+    const NGPhysicalBoxStrut& outsets,
     const BoxPainterBase::FillLayerInfo& info) {
-  LayoutRectOutsets adjusted = outsets;
+  NGPhysicalBoxStrut adjusted = outsets;
   if (!info.sides_to_include.top)
-    adjusted.SetTop(LayoutUnit());
+    adjusted.top = LayoutUnit();
   if (!info.sides_to_include.right)
-    adjusted.SetRight(LayoutUnit());
+    adjusted.right = LayoutUnit();
   if (!info.sides_to_include.bottom)
-    adjusted.SetBottom(LayoutUnit());
+    adjusted.bottom = LayoutUnit();
   if (!info.sides_to_include.left)
-    adjusted.SetLeft(LayoutUnit());
+    adjusted.left = LayoutUnit();
   return adjusted;
 }
 
@@ -1029,14 +1029,14 @@ bool ShouldApplyBlendOperation(const BoxPainterBase::FillLayerInfo& info,
 
 }  // anonymous namespace
 
-LayoutRectOutsets BoxPainterBase::ComputeSnappedBorders() const {
+NGPhysicalBoxStrut BoxPainterBase::ComputeSnappedBorders() const {
   const NGPhysicalBoxStrut border_widths = ComputeBorders();
-  return LayoutRectOutsets(
+  return NGPhysicalBoxStrut(
       border_widths.top.ToInt(), border_widths.right.ToInt(),
       border_widths.bottom.ToInt(), border_widths.left.ToInt());
 }
 
-LayoutRectOutsets BoxPainterBase::AdjustedBorderOutsets(
+NGPhysicalBoxStrut BoxPainterBase::AdjustedBorderOutsets(
     const FillLayerInfo& info) const {
   return AdjustOutsetsForEdgeInclusion(ComputeSnappedBorders(), info);
 }
@@ -1084,9 +1084,9 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
     }
   }
 
-  LayoutRectOutsets border = ComputeSnappedBorders();
+  NGPhysicalBoxStrut border = ComputeSnappedBorders();
   NGPhysicalBoxStrut padding = ComputePadding();
-  LayoutRectOutsets border_padding_insets = -(border + padding);
+  NGPhysicalBoxStrut border_padding_insets = -(border + padding);
   FloatRoundedRect border_rect = RoundedBorderRectForClip(
       style_, fill_layer_info, bg_layer, rect, object_has_multiple_boxes,
       flow_box_size, bleed_avoidance, border_padding_insets);
@@ -1131,8 +1131,8 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
       clip_rect.Contract(
           AdjustOutsetsForEdgeInclusion(border, fill_layer_info));
       if (bg_layer.Clip() == EFillBox::kContent) {
-        clip_rect.Contract(AdjustOutsetsForEdgeInclusion(
-            padding.ToLayoutRectOutsets(), fill_layer_info));
+        clip_rect.Contract(
+            AdjustOutsetsForEdgeInclusion(padding, fill_layer_info));
       }
       background_clip_state_saver.Save();
       context.Clip(ToPixelSnappedRect(clip_rect));

@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/nine_piece_image_grid.h"
 
-#include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
+#include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "ui/gfx/geometry/outsets.h"
 
@@ -47,28 +47,28 @@ float ComputeEdgeSlice(const Length& slice, float slice_scale, float maximum) {
 //     to the edge with the highest coverage - giving the starting edge
 //     precedence if tied.
 //
-gfx::Outsets SnapEdgeWidths(const LayoutRectOutsets& edge_widths,
+gfx::Outsets SnapEdgeWidths(const NGPhysicalBoxStrut& edge_widths,
                             const gfx::Size& snapped_box_size) {
   gfx::Outsets snapped;
   // Allow a small deviation when checking if the the edges are abutting.
   constexpr LayoutUnit kAbuttingEpsilon(LayoutUnit::Epsilon());
-  if (snapped_box_size.width() - edge_widths.Left() - edge_widths.Right() <=
+  if (snapped_box_size.width() - edge_widths.HorizontalSum() <=
       kAbuttingEpsilon) {
-    snapped.set_left(edge_widths.Left().Round());
+    snapped.set_left(edge_widths.left.Round());
     snapped.set_right(snapped_box_size.width() - snapped.left());
   } else {
-    snapped.set_left(edge_widths.Left().Floor());
-    snapped.set_right(edge_widths.Right().Floor());
+    snapped.set_left(edge_widths.left.Floor());
+    snapped.set_right(edge_widths.right.Floor());
   }
   DCHECK_LE(snapped.left() + snapped.right(), snapped_box_size.width());
 
-  if (snapped_box_size.height() - edge_widths.Top() - edge_widths.Bottom() <=
+  if (snapped_box_size.height() - edge_widths.VerticalSum() <=
       kAbuttingEpsilon) {
-    snapped.set_top(edge_widths.Top().Round());
+    snapped.set_top(edge_widths.top.Round());
     snapped.set_bottom(snapped_box_size.height() - snapped.top());
   } else {
-    snapped.set_top(edge_widths.Top().Floor());
-    snapped.set_bottom(edge_widths.Bottom().Floor());
+    snapped.set_top(edge_widths.top.Floor());
+    snapped.set_bottom(edge_widths.bottom.Floor());
   }
   DCHECK_LE(snapped.top() + snapped.bottom(), snapped_box_size.height());
   return snapped;
@@ -105,48 +105,46 @@ NinePieceImageGrid::NinePieceImageGrid(const NinePieceImage& nine_piece_image,
   const gfx::Vector2dF auto_slice_adjustment(zoom / slice_scale.x(),
                                              zoom / slice_scale.y());
   const BorderImageLengthBox& border_slices = nine_piece_image.BorderSlices();
-  LayoutRectOutsets resolved_widths;
+  NGPhysicalBoxStrut resolved_widths;
   if (sides_to_include.top) {
-    resolved_widths.SetTop(ComputeEdgeWidth(
+    resolved_widths.top = ComputeEdgeWidth(
         border_slices.Top(), border_widths.top(),
-        top_.slice * auto_slice_adjustment.y(), border_image_area.height()));
+        top_.slice * auto_slice_adjustment.y(), border_image_area.height());
   }
   if (sides_to_include.right) {
-    resolved_widths.SetRight(ComputeEdgeWidth(
+    resolved_widths.right = ComputeEdgeWidth(
         border_slices.Right(), border_widths.right(),
-        right_.slice * auto_slice_adjustment.x(), border_image_area.width()));
+        right_.slice * auto_slice_adjustment.x(), border_image_area.width());
   }
   if (sides_to_include.bottom) {
-    resolved_widths.SetBottom(ComputeEdgeWidth(
+    resolved_widths.bottom = ComputeEdgeWidth(
         border_slices.Bottom(), border_widths.bottom(),
-        bottom_.slice * auto_slice_adjustment.y(), border_image_area.height()));
+        bottom_.slice * auto_slice_adjustment.y(), border_image_area.height());
   }
   if (sides_to_include.left) {
-    resolved_widths.SetLeft(ComputeEdgeWidth(
+    resolved_widths.left = ComputeEdgeWidth(
         border_slices.Left(), border_widths.left(),
-        left_.slice * auto_slice_adjustment.x(), border_image_area.width()));
+        left_.slice * auto_slice_adjustment.x(), border_image_area.width());
   }
 
   // The spec says: Given Lwidth as the width of the border image area, Lheight
   // as its height, and Wside as the border image width offset for the side, let
   // f = min(Lwidth/(Wleft+Wright), Lheight/(Wtop+Wbottom)). If f < 1, then all
   // W are reduced by multiplying them by f.
-  const LayoutUnit border_side_width =
-      resolved_widths.Left() + resolved_widths.Right();
-  const LayoutUnit border_side_height =
-      resolved_widths.Top() + resolved_widths.Bottom();
+  const LayoutUnit border_side_width = resolved_widths.HorizontalSum();
+  const LayoutUnit border_side_height = resolved_widths.VerticalSum();
   const float border_side_scale_factor = std::min(
       static_cast<float>(border_image_area.width()) / border_side_width,
       static_cast<float>(border_image_area.height()) / border_side_height);
   if (border_side_scale_factor < 1) {
-    resolved_widths.SetTop(
-        LayoutUnit(resolved_widths.Top() * border_side_scale_factor));
-    resolved_widths.SetRight(
-        LayoutUnit(resolved_widths.Right() * border_side_scale_factor));
-    resolved_widths.SetBottom(
-        LayoutUnit(resolved_widths.Bottom() * border_side_scale_factor));
-    resolved_widths.SetLeft(
-        LayoutUnit(resolved_widths.Left() * border_side_scale_factor));
+    resolved_widths.top =
+        LayoutUnit(resolved_widths.top * border_side_scale_factor);
+    resolved_widths.right =
+        LayoutUnit(resolved_widths.right * border_side_scale_factor);
+    resolved_widths.bottom =
+        LayoutUnit(resolved_widths.bottom * border_side_scale_factor);
+    resolved_widths.left =
+        LayoutUnit(resolved_widths.left * border_side_scale_factor);
   }
 
   const gfx::Outsets snapped_widths =

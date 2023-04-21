@@ -2152,7 +2152,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
         auto clip_rect =
             RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
                 replaced.StyleRef(), content_rect,
-                LayoutRectOutsets(
+                NGPhysicalBoxStrut(
                     -(replaced.PaddingTop() + replaced.BorderTop()),
                     -(replaced.PaddingRight() + replaced.BorderRight()),
                     -(replaced.PaddingBottom() + replaced.BorderBottom()),

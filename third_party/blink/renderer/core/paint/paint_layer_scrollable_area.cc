@@ -675,14 +675,15 @@ PhysicalRect PaintLayerScrollableArea::VisibleScrollSnapportRect(
   const ComputedStyle* style = GetLayoutBox()->Style();
   PhysicalRect layout_content_rect(LayoutContentRect(scrollbar_inclusion));
   layout_content_rect.Move(PhysicalOffset(-ScrollOrigin().OffsetFromOrigin()));
-  LayoutRectOutsets padding(MinimumValueForLength(style->ScrollPaddingTop(),
-                                                  layout_content_rect.Height()),
-                            MinimumValueForLength(style->ScrollPaddingRight(),
-                                                  layout_content_rect.Width()),
-                            MinimumValueForLength(style->ScrollPaddingBottom(),
-                                                  layout_content_rect.Height()),
-                            MinimumValueForLength(style->ScrollPaddingLeft(),
-                                                  layout_content_rect.Width()));
+  NGPhysicalBoxStrut padding(
+      MinimumValueForLength(style->ScrollPaddingTop(),
+                            layout_content_rect.Height()),
+      MinimumValueForLength(style->ScrollPaddingRight(),
+                            layout_content_rect.Width()),
+      MinimumValueForLength(style->ScrollPaddingBottom(),
+                            layout_content_rect.Height()),
+      MinimumValueForLength(style->ScrollPaddingLeft(),
+                            layout_content_rect.Width()));
   layout_content_rect.Contract(padding);
   return layout_content_rect;
 }

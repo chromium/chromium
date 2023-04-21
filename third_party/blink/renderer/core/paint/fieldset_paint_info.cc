@@ -10,15 +10,15 @@ namespace blink {
 
 FieldsetPaintInfo::FieldsetPaintInfo(const ComputedStyle& fieldset_style,
                                      const PhysicalSize& fieldset_size,
-                                     const LayoutRectOutsets& fieldset_borders,
+                                     const NGPhysicalBoxStrut& fieldset_borders,
                                      const PhysicalRect& legend_border_box) {
   if (fieldset_style.IsHorizontalWritingMode()) {
     // horizontal-tb
     LayoutUnit legend_size = legend_border_box.size.height;
-    LayoutUnit border_size = fieldset_borders.Top();
+    LayoutUnit border_size = fieldset_borders.top;
     LayoutUnit legend_excess_size = legend_size - border_size;
     if (legend_excess_size > LayoutUnit())
-      border_outsets.SetTop(legend_excess_size / 2);
+      border_outsets.top = legend_excess_size / 2;
     legend_cutout_rect = PhysicalRect(legend_border_box.X(), LayoutUnit(),
                                       legend_border_box.Width(),
                                       std::max(legend_size, border_size));
@@ -27,16 +27,16 @@ FieldsetPaintInfo::FieldsetPaintInfo(const ComputedStyle& fieldset_style,
     LayoutUnit border_size;
     if (fieldset_style.IsFlippedBlocksWritingMode()) {
       // vertical-rl
-      border_size = fieldset_borders.Right();
+      border_size = fieldset_borders.right;
       LayoutUnit legend_excess_size = legend_size - border_size;
       if (legend_excess_size > LayoutUnit())
-        border_outsets.SetRight(legend_excess_size / 2);
+        border_outsets.right = legend_excess_size / 2;
     } else {
       // vertical-lr
-      border_size = fieldset_borders.Left();
+      border_size = fieldset_borders.left;
       LayoutUnit legend_excess_size = legend_size - border_size;
       if (legend_excess_size > LayoutUnit())
-        border_outsets.SetLeft(legend_excess_size / 2);
+        border_outsets.left = legend_excess_size / 2;
     }
     LayoutUnit legend_total_block_size = std::max(legend_size, border_size);
     legend_cutout_rect =

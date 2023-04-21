@@ -200,7 +200,7 @@ FloatRoundedRect::Radii ComputeCornerRadii(
     float offset) {
   return RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
              style, reference_border_rect,
-             LayoutRectOutsets(offset, offset, offset, offset))
+             NGPhysicalBoxStrut(LayoutUnit(offset)))
       .GetRadii();
 }
 
@@ -890,10 +890,12 @@ void OutlinePainter::PaintOutlineRects(
   }
 
   if (*united_outline_rect == pixel_snapped_outline_rects[0]) {
+    gfx::Outsets offset =
+        AdjustedOutlineOffset(*united_outline_rect, info.offset);
     BoxBorderPainter::PaintSingleRectOutline(
         paint_info.context, style, outline_rects[0], info.width,
-        LayoutRectOutsets(
-            AdjustedOutlineOffset(*united_outline_rect, info.offset)));
+        NGPhysicalBoxStrut(offset.top(), offset.right(), offset.bottom(),
+                           offset.left()));
     return;
   }
 

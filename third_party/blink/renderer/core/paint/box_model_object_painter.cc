@@ -72,9 +72,8 @@ PhysicalRect BoxModelObjectPainter::AdjustRectForScrolledContent(
   PhysicalRect scrolled_paint_rect = rect;
   scrolled_paint_rect.offset -=
       PhysicalOffset(this_box.PixelSnappedScrolledContentOffset());
-  LayoutRectOutsets border = AdjustedBorderOutsets(info);
-  scrolled_paint_rect.SetWidth(border.Left() + this_box.ScrollWidth() +
-                               border.Right());
+  NGPhysicalBoxStrut border = AdjustedBorderOutsets(info);
+  scrolled_paint_rect.SetWidth(border.HorizontalSum() + this_box.ScrollWidth());
   scrolled_paint_rect.SetHeight(this_box.BorderTop() + this_box.ScrollHeight() +
                                 this_box.BorderBottom());
   return scrolled_paint_rect;

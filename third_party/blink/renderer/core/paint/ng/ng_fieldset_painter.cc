@@ -29,7 +29,7 @@ FieldsetPaintInfo NGFieldsetPainter::CreateFieldsetPaintInfo() const {
   }
   const PhysicalSize fieldset_size(fieldset_.Size());
   const auto& fragment = fieldset_;
-  LayoutRectOutsets fieldset_borders = fragment.Borders().ToLayoutRectOutsets();
+  NGPhysicalBoxStrut fieldset_borders = fragment.Borders();
   const ComputedStyle& style = fieldset_.Style();
   PhysicalRect legend_border_box;
   if (legend) {
@@ -49,7 +49,9 @@ FieldsetPaintInfo NGFieldsetPainter::CreateFieldsetPaintInfo() const {
     // However we don't need them.
     const WritingDirectionMode writing_direction = style.GetWritingDirection();
     const LogicalSize logical_fieldset_content_size =
-        (fieldset_size - PhysicalSize(fieldset_borders.Size()) -
+        (fieldset_size -
+         PhysicalSize(fieldset_borders.HorizontalSum(),
+                      fieldset_borders.VerticalSum()) -
          PhysicalSize(fragment.Padding().HorizontalSum(),
                       fragment.Padding().VerticalSum()))
             .ConvertToLogical(writing_direction.GetWritingMode());
