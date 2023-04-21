@@ -12,6 +12,8 @@ source_set("origin_trials") {
     "origin_trial_policy_impl.h",
     "origin_trial_prefs.cc",
     "origin_trial_prefs.h",
+    "origin_trials_settings_manager.cc",
+    "origin_trials_settings_manager.h",
     "pref_names.cc",
     "pref_names.h",
   ]
