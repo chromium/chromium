@@ -2747,11 +2747,6 @@ enum HeaderBehaviour {
 
 #pragma mark - BrowserCommands
 
-// TODO(crbug.com/1272540): Remove this command after updating ios_internal.
-- (void)addToReadingList:(ReadingListAddCommand*)command {
-  self.readingListBrowserAgent->AddURLsToReadingList(command.URLs);
-}
-
 - (void)prepareForOverflowMenuPresentation {
   DCHECK(self.visible || self.dismissingModal);
 

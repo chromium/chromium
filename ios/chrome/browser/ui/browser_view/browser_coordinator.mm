@@ -665,8 +665,6 @@ enum class ToolbarKind {
                                 dependencies:_viewControllerDependencies];
   self.tabLifecycleMediator.baseViewController = self.viewController;
   self.tabLifecycleMediator.delegate = self.viewController;
-  _viewController.readingListBrowserAgent =
-      ReadingListBrowserAgent::FromBrowser(self.browser);
 
   WebNavigationBrowserAgent::FromBrowser(self.browser)->SetDelegate(self);
 

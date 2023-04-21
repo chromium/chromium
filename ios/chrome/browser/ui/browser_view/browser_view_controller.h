@@ -56,7 +56,6 @@ class PagePlaceholderBrowserAgent;
 @protocol PopupMenuUIUpdating;
 class PrerenderService;
 @class PrimaryToolbarCoordinator;
-class ReadingListBrowserAgent;
 @class SafeAreaProvider;
 @class SecondaryToolbarCoordinator;
 @class SideSwipeController;
@@ -163,9 +162,6 @@ typedef struct {
 // Presentation delegate for the non-modal default browser promo.
 @property(nonatomic, weak) id<DefaultPromoNonModalPresentationDelegate>
     nonModalPromoPresentationDelegate;
-
-// TODO(crbug.com/1272540): Remove this command.
-@property(nonatomic) ReadingListBrowserAgent* readingListBrowserAgent;
 
 // Whether the receiver is currently the primary BVC.
 - (void)setPrimary:(BOOL)primary;
