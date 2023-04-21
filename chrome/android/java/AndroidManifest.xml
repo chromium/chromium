@@ -1296,7 +1296,7 @@ by a child template that "extends" this file.
       <meta-data android:name="android.content.APP_RESTRICTIONS"
           android:resource="@xml/app_restrictions"/>
 
-      {% if include_arcore_manifest_flag == 'true' %}
+      {% if enable_arcore == 'true' %}
       <!-- This tag indicates that this application optionally uses ARCore. -->
       <meta-data android:name="com.google.ar.core" android:value="optional" />
 
