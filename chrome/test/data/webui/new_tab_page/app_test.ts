@@ -604,6 +604,7 @@ suite('NewTabPageAppTest', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         modulesEnabled: true,
+        wideModulesEnabled: false,
       });
     });
 
