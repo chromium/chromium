@@ -108,6 +108,10 @@ const int kMainIntentCheckDelay = 1;
     didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
   self.didFinishLaunching = YES;
 
+  UNUserNotificationCenter* center =
+      [UNUserNotificationCenter currentNotificationCenter];
+  center.delegate = _pushNotificationDelegate;
+
   _appState.startupInformation.didFinishLaunchingTime = base::TimeTicks::Now();
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   [defaults
@@ -417,10 +421,6 @@ const int kMainIntentCheckDelay = 1;
 // were received while Chrome was open.
 - (void)registerDeviceForPushNotifications {
   if (!_didRegisterDeviceWithAPNS && IsPriceNotificationsEnabled()) {
-    UNUserNotificationCenter* center =
-        UNUserNotificationCenter.currentNotificationCenter;
-    center.delegate = _pushNotificationDelegate;
-
     [PushNotificationUtil registerDeviceWithAPNS];
   }
 }
