@@ -43,6 +43,9 @@ if (is_win) {
 #   on their dependencies and any configs applied. The same applies here. Set
 #   any configs here as if this were a C target.
 #
+# bindgen_flags: (optional)
+#    the additional bindgen flags which are passed to the executable
+#
 # Rust targets depending on the output must include! the generated file.
 #
 template("rust_bindgen") {
@@ -98,6 +101,13 @@ template("rust_bindgen") {
       "--ld-library-path",
       lib_path,
     ]
+
+    if (defined(invoker.bindgen_flags)) {
+      args += [ "--bindgen-flags" ]
+      foreach(flag, invoker.bindgen_flags) {
+        args += [ flag ]
+      }
+    }
 
     args += [
       "--",

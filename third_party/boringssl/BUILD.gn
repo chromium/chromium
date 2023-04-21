@@ -11,6 +11,11 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("BUILD.generated.gni")
 import("BUILD.generated_tests.gni")
 
+if (enable_rust) {
+  import("//build/rust/cargo_crate.gni")
+  import("//build/rust/rust_bindgen.gni")
+}
+
 # Config for us and everybody else depending on BoringSSL.
 config("external_config") {
   include_dirs = [ "src/include" ]
@@ -44,6 +49,48 @@ config("no_asm_config") {
 
 all_sources = crypto_sources + ssl_sources
 all_headers = crypto_headers + ssl_headers
+
+if (enable_rust_boringssl) {
+  rust_bindgen("raw_bssl_sys_bindings") {
+    header = "src/rust/bssl-sys/wrapper.h"
+    deps = [ ":boringssl" ]
+    bindgen_flags = [
+      "no-derive-default",
+      "enable-function-attribute-detection",
+      "use-core",
+      "default-macro-constant-type=signed",
+      "rustified-enum=point_conversion_form_t",
+      "allowlist-file=.*[[:punct:]]include[[:punct:]]openssl[[:punct:]].*\\.h",
+      "allowlist-file=.*[[:punct:]]rust_wrapper\\.h",
+    ]
+    visibility = [ ":*" ]  # private, should only be exposed through bssl_crypto
+  }
+
+  # Low level, bindgen generates system bindings to boringssl
+  cargo_crate("bssl_sys") {
+    crate_type = "rlib"
+    crate_root = "src/rust/bssl-sys/src/lib.rs"
+    sources = [ "src/rust/bssl-sys/src/lib.rs" ]
+    edition = "2021"
+    deps = [
+      ":boringssl",
+      ":raw_bssl_sys_bindings",
+    ]
+    visibility = [ ":*" ]  # private, should only be exposed through bssl_crypto
+
+    _bindgen_output = get_target_outputs(":raw_bssl_sys_bindings")
+    rustenv = [ "BINDGEN_RS_FILE=" + rebase_path(_bindgen_output[0]) ]
+  }
+
+  # Rust bindings to boringssl
+  cargo_crate("bssl_crypto") {
+    crate_type = "rlib"
+    crate_root = "src/rust/bssl-crypto/src/lib.rs"
+    sources = [ "src/rust/bssl-crypto/src/lib.rs" ]
+    edition = "2021"
+    deps = [ ":bssl_sys" ]
+  }
+}
 
 # Windows' assembly is built with NASM. The other platforms use the platform
 # assembler. Exclude Windows ARM64 because NASM targets x86 and x64 only.

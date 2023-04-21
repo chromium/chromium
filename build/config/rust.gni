@@ -113,6 +113,9 @@ declare_args() {
 
   # Rust gtest interop
   enable_rust_gtest_interop = enable_all_rust_features
+
+  # Enable Boringssl Rust bindings generation
+  enable_rust_boringssl = enable_all_rust_features
 }
 
 # Platform support for "official" toolchains (Android or Chromium)
