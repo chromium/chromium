@@ -1479,11 +1479,9 @@ void SiteSettingsHandler::HandleGetExceptionList(
 
   base::Value::List exceptions;
 
-  const auto* extension_registry = extensions::ExtensionRegistry::Get(profile_);
   AddExceptionsGrantedByHostedApps(profile_, APIPermissionFromGroupName(type),
                                    &exceptions);
-  site_settings::GetExceptionsForContentType(content_type, profile_,
-                                             extension_registry, web_ui(),
+  site_settings::GetExceptionsForContentType(content_type, profile_, web_ui(),
                                              /*incognito=*/false, &exceptions);
 
   Profile* incognito =
@@ -1493,9 +1491,8 @@ void SiteSettingsHandler::HandleGetExceptionList(
   // On Chrome OS in Guest mode the incognito profile is the primary profile,
   // so do not fetch an extra copy of the same exceptions.
   if (incognito && incognito != profile_) {
-    extension_registry = extensions::ExtensionRegistry::Get(incognito);
     site_settings::GetExceptionsForContentType(content_type, incognito,
-                                               extension_registry, web_ui(),
+                                               web_ui(),
                                                /*incognito=*/true, &exceptions);
   }
 

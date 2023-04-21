@@ -27,10 +27,6 @@ namespace content {
 class WebUI;
 }
 
-namespace extensions {
-class ExtensionRegistry;
-}
-
 namespace permissions {
 class ObjectPermissionContextBase;
 }
@@ -135,13 +131,11 @@ void AddExceptionForHostedApp(const std::string& url_pattern,
                               base::Value::List* exceptions);
 
 // Fills in |exceptions| with Values for the given |type| from |profile|.
-void GetExceptionsForContentType(
-    ContentSettingsType type,
-    Profile* profile,
-    const extensions::ExtensionRegistry* extension_registry,
-    content::WebUI* web_ui,
-    bool incognito,
-    base::Value::List* exceptions);
+void GetExceptionsForContentType(ContentSettingsType type,
+                                 Profile* profile,
+                                 content::WebUI* web_ui,
+                                 bool incognito,
+                                 base::Value::List* exceptions);
 
 // Fills in object saying what the current settings is for the category (such as
 // enabled or blocked) and the source of that setting (such preference, policy,
@@ -165,15 +159,6 @@ ContentSetting GetContentSettingForOrigin(Profile* profile,
 void GetFileSystemGrantedEntries(std::vector<base::Value::Dict>* exceptions,
                                  Profile* profile,
                                  bool incognito);
-
-// Returns exceptions constructed from the policy-set allowed URLs
-// for the content settings |type| mic or camera.
-void GetPolicyAllowedUrls(
-    ContentSettingsType type,
-    std::vector<base::Value::Dict>* exceptions,
-    const extensions::ExtensionRegistry* extension_registry,
-    content::WebUI* web_ui,
-    bool incognito);
 
 // Returns all site permission exceptions for a given content type
 std::vector<ContentSettingPatternSource>

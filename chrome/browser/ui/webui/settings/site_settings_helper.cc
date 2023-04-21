@@ -295,6 +295,64 @@ bool PatternAppliesToWebUISchemes(const ContentSettingPatternSource& pattern) {
              ContentSettingsPattern::SchemeType::SCHEME_DEVTOOLS;
 }
 
+// If the given |pattern| represents an individual origin or extension, retrieve
+// a string to display it as such. If not, return the pattern as a string.
+std::string GetDisplayNameForPattern(Profile* profile,
+                                     const ContentSettingsPattern& pattern) {
+  absl::optional<std::string> extension_display_name =
+      GetExtensionDisplayName(profile, GURL(pattern.ToString()));
+  if (extension_display_name.has_value()) {
+    return extension_display_name.value();
+  }
+  return pattern.ToString();
+}
+
+// Returns exceptions constructed from the policy-set allowed URLs
+// for the content settings |type| mic or camera.
+void GetPolicyAllowedUrls(ContentSettingsType type,
+                          std::vector<base::Value::Dict>* exceptions,
+                          content::WebUI* web_ui,
+                          bool incognito) {
+  DCHECK(type == ContentSettingsType::MEDIASTREAM_MIC ||
+         type == ContentSettingsType::MEDIASTREAM_CAMERA);
+
+  Profile* profile = Profile::FromWebUI(web_ui);
+  PrefService* prefs = profile->GetPrefs();
+  const base::Value::List& policy_urls =
+      prefs->GetList(type == ContentSettingsType::MEDIASTREAM_MIC
+                         ? prefs::kAudioCaptureAllowedUrls
+                         : prefs::kVideoCaptureAllowedUrls);
+
+  // Convert the URLs to |ContentSettingsPattern|s. Ignore any invalid ones.
+  std::vector<ContentSettingsPattern> patterns;
+  for (const auto& entry : policy_urls) {
+    const std::string* url = entry.GetIfString();
+    if (!url) {
+      continue;
+    }
+
+    ContentSettingsPattern pattern = ContentSettingsPattern::FromString(*url);
+    if (!pattern.IsValid()) {
+      continue;
+    }
+
+    patterns.push_back(pattern);
+  }
+
+  // The patterns are shown in the UI in a reverse order defined by
+  // |ContentSettingsPattern::operator<|.
+  std::sort(patterns.begin(), patterns.end(),
+            std::greater<ContentSettingsPattern>());
+
+  for (const ContentSettingsPattern& pattern : patterns) {
+    std::string display_name = GetDisplayNameForPattern(profile, pattern);
+    exceptions->push_back(GetExceptionForPage(
+        type, profile, pattern, ContentSettingsPattern(), display_name,
+        CONTENT_SETTING_ALLOW,
+        SiteSettingSourceToString(SiteSettingSource::kPolicy), incognito));
+  }
+}
+
 // Retrieves the source of a chooser exception as a string. This method uses the
 // CalculateSiteSettingSource method above to calculate the correct string to
 // use.
@@ -584,25 +642,11 @@ std::string GetDisplayNameForGURL(Profile* profile, const GURL& url) {
   return url_string;
 }
 
-// If the given |pattern| represents an individual origin or extension, retrieve
-// a string to display it as such. If not, return the pattern as a string.
-std::string GetDisplayNameForPattern(Profile* profile,
-                                     const ContentSettingsPattern& pattern) {
-  absl::optional<std::string> extension_display_name =
-      GetExtensionDisplayName(profile, GURL(pattern.ToString()));
-  if (extension_display_name.has_value()) {
-    return extension_display_name.value();
-  }
-  return pattern.ToString();
-}
-
-void GetExceptionsForContentType(
-    ContentSettingsType type,
-    Profile* profile,
-    const extensions::ExtensionRegistry* extension_registry,
-    content::WebUI* web_ui,
-    bool incognito,
-    base::Value::List* exceptions) {
+void GetExceptionsForContentType(ContentSettingsType type,
+                                 Profile* profile,
+                                 content::WebUI* web_ui,
+                                 bool incognito,
+                                 base::Value::List* exceptions) {
   ContentSettingsForOneType all_settings;
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile);
@@ -719,8 +763,7 @@ void GetExceptionsForContentType(
         [HostContentSettingsMap::GetProviderTypeFromSource(
             SiteSettingSourceToString(SiteSettingSource::kPolicy))];
     DCHECK(policy_exceptions.empty());
-    GetPolicyAllowedUrls(type, &policy_exceptions, extension_registry, web_ui,
-                         incognito);
+    GetPolicyAllowedUrls(type, &policy_exceptions, web_ui, incognito);
   }
 
   // Display the URLs with File System entries that are granted
@@ -849,50 +892,6 @@ void GetFileSystemGrantedEntries(std::vector<base::Value::Dict>* exceptions,
                                      const base::Value::Dict& rhs) {
     return lhs.Find(kOrigin)->GetString() < rhs.Find(kOrigin)->GetString();
   });
-}
-
-void GetPolicyAllowedUrls(
-    ContentSettingsType type,
-    std::vector<base::Value::Dict>* exceptions,
-    const extensions::ExtensionRegistry* extension_registry,
-    content::WebUI* web_ui,
-    bool incognito) {
-  DCHECK(type == ContentSettingsType::MEDIASTREAM_MIC ||
-         type == ContentSettingsType::MEDIASTREAM_CAMERA);
-
-  Profile* profile = Profile::FromWebUI(web_ui);
-  PrefService* prefs = profile->GetPrefs();
-  const base::Value::List& policy_urls =
-      prefs->GetList(type == ContentSettingsType::MEDIASTREAM_MIC
-                         ? prefs::kAudioCaptureAllowedUrls
-                         : prefs::kVideoCaptureAllowedUrls);
-
-  // Convert the URLs to |ContentSettingsPattern|s. Ignore any invalid ones.
-  std::vector<ContentSettingsPattern> patterns;
-  for (const auto& entry : policy_urls) {
-    const std::string* url = entry.GetIfString();
-    if (!url)
-      continue;
-
-    ContentSettingsPattern pattern = ContentSettingsPattern::FromString(*url);
-    if (!pattern.IsValid())
-      continue;
-
-    patterns.push_back(pattern);
-  }
-
-  // The patterns are shown in the UI in a reverse order defined by
-  // |ContentSettingsPattern::operator<|.
-  std::sort(patterns.begin(), patterns.end(),
-            std::greater<ContentSettingsPattern>());
-
-  for (const ContentSettingsPattern& pattern : patterns) {
-    std::string display_name = GetDisplayNameForPattern(profile, pattern);
-    exceptions->push_back(GetExceptionForPage(
-        type, profile, pattern, ContentSettingsPattern(), display_name,
-        CONTENT_SETTING_ALLOW,
-        SiteSettingSourceToString(SiteSettingSource::kPolicy), incognito));
-  }
 }
 
 const ChooserTypeNameEntry* ChooserTypeFromGroupName(base::StringPiece name) {

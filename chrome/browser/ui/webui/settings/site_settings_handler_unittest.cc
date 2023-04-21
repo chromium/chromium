@@ -1648,8 +1648,7 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
   {
     base::Value::List exceptions;
     site_settings::GetExceptionsForContentType(
-        kPermissionNotifications, profile(), /*extension_registry=*/nullptr,
-        web_ui(),
+        kPermissionNotifications, profile(), web_ui(),
         /*incognito=*/false, &exceptions);
 
     // The size should be 2, 1st is blocked origin, 2nd is embargoed origin.
@@ -1668,8 +1667,7 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
     // Check there is 1 blocked origin.
     base::Value::List exceptions;
     site_settings::GetExceptionsForContentType(
-        kPermissionNotifications, profile(), /*extension_registry=*/nullptr,
-        web_ui(),
+        kPermissionNotifications, profile(), web_ui(),
         /*incognito=*/false, &exceptions);
     ASSERT_EQ(1U, exceptions.size());
   }
@@ -1686,8 +1684,7 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
     // Check that there are no blocked or embargoed origins.
     base::Value::List exceptions;
     site_settings::GetExceptionsForContentType(
-        kPermissionNotifications, profile(), /*extension_registry=*/nullptr,
-        web_ui(),
+        kPermissionNotifications, profile(), web_ui(),
         /*incognito=*/false, &exceptions);
     ASSERT_TRUE(exceptions.empty());
   }
