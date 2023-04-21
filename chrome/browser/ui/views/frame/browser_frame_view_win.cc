@@ -69,6 +69,8 @@ base::win::ScopedHICON CreateHICONFromSkBitmapSizedTo(
 // TODO(https://crbug.com/1411801): Avoid hardcoding sizes like this.
 constexpr int kMaximizedLeftMargin = 2;
 
+constexpr int kIconTitleSpacing = 5;
+
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -222,6 +224,24 @@ void BrowserFrameViewWin::UpdateThrobber(bool running) {
 gfx::Size BrowserFrameViewWin::GetMinimumSize() const {
   gfx::Size min_size(browser_view()->GetMinimumSize());
   min_size.Enlarge(0, GetTopInset(false));
+
+  const int caption_buttons_width =
+      CaptionButtonsOnLeadingEdge()
+          ? width() - frame()->GetMinimizeButtonOffset()
+          : width() - MinimizeButtonX();
+
+  gfx::Size titlebar_min_size(
+      display::win::ScreenWin::GetSystemMetricsInDIP(SM_CXSIZEFRAME) +
+          caption_buttons_width,
+      TitlebarHeight(false));
+  if (ShouldShowWindowIcon(TitlebarType::kAny)) {
+    titlebar_min_size.Enlarge(
+        display::win::ScreenWin::GetSystemMetricsInDIP(SM_CXSMICON) +
+            kIconTitleSpacing,
+        0);
+  }
+
+  min_size.SetToMax(titlebar_min_size);
 
   return min_size;
 }
@@ -716,7 +736,6 @@ void BrowserFrameViewWin::LayoutTitleBar() {
   const gfx::Rect window_icon_bounds =
       gfx::Rect(next_leading_x, y, icon_size, icon_size);
 
-  constexpr int kIconTitleSpacing = 5;
   if (show_icon) {
     window_icon_->SetBoundsRect(window_icon_bounds);
     next_leading_x = window_icon_bounds.right() + kIconTitleSpacing;
