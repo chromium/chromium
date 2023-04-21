@@ -123,6 +123,8 @@ class MockDownloadBubbleUpdateService : public DownloadBubbleUpdateService {
 
   void AddModel(ModelType type) { model_types_.push_back(type); }
 
+  bool IsInitialized() const override { return true; }
+
   MOCK_METHOD(DownloadDisplayController::ProgressInfo,
               GetProgressInfo,
               (),
@@ -184,8 +186,6 @@ class DownloadBubbleUIControllerTest : public testing::Test {
     second_display_controller_ =
         std::make_unique<NiceMock<MockDownloadDisplayController>>(
             browser_.get(), second_controller_.get());
-    controller_->set_manager_for_testing(manager_);
-    second_controller_->set_manager_for_testing(manager_);
   }
 
   void TearDown() override {

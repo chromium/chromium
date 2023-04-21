@@ -32,6 +32,7 @@
 #else
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
+#include "chrome/browser/download/bubble/download_bubble_update_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -67,6 +68,16 @@ void AndroidUIControllerDelegate::OnNewDownloadReady(
 }
 
 #else  // BUILDFLAG(IS_ANDROID)
+
+void InitializeDownloadBubbleUpdateService(Profile* profile,
+                                           content::DownloadManager* manager) {
+  DownloadBubbleUpdateService* download_bubble_update_service =
+      DownloadBubbleUpdateServiceFactory::GetForProfile(profile);
+  if (!download_bubble_update_service) {
+    return;
+  }
+  download_bubble_update_service->Initialize(manager);
+}
 
 class DownloadShelfUIControllerDelegate
     : public DownloadUIController::Delegate {
@@ -191,24 +202,24 @@ DownloadUIController::DownloadUIController(content::DownloadManager* manager,
     delegate_ = std::make_unique<AndroidUIControllerDelegate>();
 #elif BUILDFLAG(IS_CHROMEOS)
   if (!delegate_) {
-    if (download::IsDownloadBubbleEnabled(
-            Profile::FromBrowserContext(manager->GetBrowserContext()))) {
-      delegate_ = std::make_unique<DownloadBubbleUIControllerDelegate>(
-          Profile::FromBrowserContext(manager->GetBrowserContext()));
+    Profile* profile =
+        Profile::FromBrowserContext(manager->GetBrowserContext());
+    if (download::IsDownloadBubbleEnabled(profile)) {
+      delegate_ = std::make_unique<DownloadBubbleUIControllerDelegate>(profile);
+      InitializeDownloadBubbleUpdateService(profile, manager);
     } else {
-      delegate_ = std::make_unique<DownloadNotificationManager>(
-          Profile::FromBrowserContext(manager->GetBrowserContext()));
+      delegate_ = std::make_unique<DownloadNotificationManager>(profile);
     }
   }
 #else   // BUILDFLAG(IS_CHROMEOS)
   if (!delegate_) {
-    if (download::IsDownloadBubbleEnabled(
-            Profile::FromBrowserContext(manager->GetBrowserContext()))) {
-      delegate_ = std::make_unique<DownloadBubbleUIControllerDelegate>(
-          Profile::FromBrowserContext(manager->GetBrowserContext()));
+    Profile* profile =
+        Profile::FromBrowserContext(manager->GetBrowserContext());
+    if (download::IsDownloadBubbleEnabled(profile)) {
+      delegate_ = std::make_unique<DownloadBubbleUIControllerDelegate>(profile);
+      InitializeDownloadBubbleUpdateService(profile, manager);
     } else {
-      delegate_ = std::make_unique<DownloadShelfUIControllerDelegate>(
-          Profile::FromBrowserContext(manager->GetBrowserContext()));
+      delegate_ = std::make_unique<DownloadShelfUIControllerDelegate>(profile);
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)

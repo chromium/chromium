@@ -97,6 +97,24 @@ class DownloadBubbleUpdateService
   // anyway. Virtual for testing.
   virtual DownloadDisplayController::ProgressInfo GetProgressInfo() const;
 
+  // Initializes AllDownloadItemNotifier for the current profile, and
+  // initializes caches. This is called when the manager is ready, to signal
+  // that the DownloadBubbleUpdateService should begin tracking downloads. This
+  // starts initialization of both the download items and the offline items.
+  // Should only be called once.
+  void Initialize(content::DownloadManager* manager);
+
+  // Initializes the AllDownloadItemNotifier for the original profile, if
+  // |profile_| is off the record. May trigger re-initialization of the download
+  // items cache.
+  void InitializeOriginalNotifier(content::DownloadManager* manager);
+
+  // Get the DownloadManager that |download_item_notifier_| is listening to.
+  content::DownloadManager* GetDownloadManager();
+
+  // Virtual for testing.
+  virtual bool IsInitialized() const;
+
   // KeyedService:
   void Shutdown() override;
 
@@ -130,7 +148,12 @@ class DownloadBubbleUpdateService
   }
 
   download::AllDownloadItemNotifier& download_item_notifier_for_testing() {
-    return download_item_notifier_;
+    return *download_item_notifier_;
+  }
+
+  download::AllDownloadItemNotifier&
+  original_download_item_notifier_for_testing() {
+    return *original_download_item_notifier_;
   }
 
  private:
@@ -278,18 +301,19 @@ class DownloadBubbleUpdateService
   DownloadItemIterMap download_items_iter_map_;
   OfflineItemIterMap offline_items_iter_map_;
 
-  // Notifier for the current profile's DownloadManager.
-  download::AllDownloadItemNotifier download_item_notifier_;
-  // Nullopt if the profile is not OTR. If the profile is OTR, this holds a
-  // notifier for the original profile.
-  absl::optional<download::AllDownloadItemNotifier>
+  // Notifier for the current profile's DownloadManager. Null until initialized
+  // in Initialize().
+  std::unique_ptr<download::AllDownloadItemNotifier> download_item_notifier_;
+  // Null if the profile is not OTR. Null until the original profile initiates
+  // a download. If the profile is OTR, this holds a notifier for the original
+  // profile.
+  std::unique_ptr<download::AllDownloadItemNotifier>
       original_download_item_notifier_;
 
   bool offline_items_initialized_ = false;
   // Holds functions queued up while offline items were being initialized.
   std::vector<base::OnceClosure> offline_item_callbacks_;
 
-  bool download_manager_shut_down_ = false;
   bool offline_content_provider_shut_down_ = false;
 
   // Set of GUIDs for extension/theme (crx) downloads that are pending notifying
