@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestNetworkSignals) {
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   AshSignalsDecorator decorator(connector_, profile);
 
-  std::set<std::string> user_affiliation_ids;
+  base::flat_set<std::string> user_affiliation_ids;
   user_affiliation_ids.insert(kFakeAffilationID);
 
   ash::ChromeUserManager::Get()->SetUserAffiliation(user->GetAccountId(),

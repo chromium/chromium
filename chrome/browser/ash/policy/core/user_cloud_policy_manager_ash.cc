@@ -532,12 +532,10 @@ void UserCloudPolicyManagerAsh::OnStoreLoaded(
     enforcement_type_ = PolicyEnforcement::kPolicyOptional;
 
     DCHECK(policy_data->has_username());
-    ash::AffiliationIDSet set_of_user_affiliation_ids(
-        policy_data->user_affiliation_ids().begin(),
-        policy_data->user_affiliation_ids().end());
-
     ash::ChromeUserManager::Get()->SetUserAffiliation(
-        account_id_, set_of_user_affiliation_ids);
+        account_id_,
+        base::flat_set<std::string>(policy_data->user_affiliation_ids().begin(),
+                                    policy_data->user_affiliation_ids().end()));
   }
 }
 

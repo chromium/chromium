@@ -1184,7 +1184,7 @@ void SAMLPolicyTest::SetUpOnMainThread() {
       user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
 
   // Give affiliated users appropriate affiliation IDs.
-  std::set<std::string> user_affiliation_ids;
+  base::flat_set<std::string> user_affiliation_ids;
   user_affiliation_ids.insert(kAffiliationID);
   ChromeUserManager::Get()->SetUserAffiliation(
       AccountId::FromUserEmailGaiaId(

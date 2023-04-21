@@ -327,16 +327,15 @@ void UserActiveDirectoryPolicyManager::CancelWaitForInitialPolicy() {
 
 void UserActiveDirectoryPolicyManager::OnPublishPolicy() {
   const em::PolicyData* policy_data = store()->policy();
-  if (!policy_data)
+  if (!policy_data) {
     return;
+  }
 
   // Update user affiliation IDs.
-  ash::AffiliationIDSet set_of_user_affiliation_ids(
-      policy_data->user_affiliation_ids().begin(),
-      policy_data->user_affiliation_ids().end());
-
   ash::ChromeUserManager::Get()->SetUserAffiliation(
-      account_id_, set_of_user_affiliation_ids);
+      account_id_,
+      base::flat_set<std::string>(policy_data->user_affiliation_ids().begin(),
+                                  policy_data->user_affiliation_ids().end()));
 }
 
 void UserActiveDirectoryPolicyManager::OnBlockingFetchTimeout() {

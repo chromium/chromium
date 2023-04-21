@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_USERS_CHROME_USER_MANAGER_H_
 #define CHROME_BROWSER_ASH_LOGIN_USERS_CHROME_USER_MANAGER_H_
 
+#include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/ash/login/users/affiliation.h"
 #include "chrome/browser/ash/login/users/user_manager_interface.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
@@ -58,7 +58,7 @@ class ChromeUserManager : public user_manager::UserManagerBase,
   // judging by `user_affiliation_ids` and device affiliation IDs.
   virtual void SetUserAffiliation(
       const AccountId& account_id,
-      const AffiliationIDSet& user_affiliation_ids) = 0;
+      const base::flat_set<std::string>& user_affiliation_ids) = 0;
 
   // Return whether the given user should be reported (see
   // policy::DeviceStatusCollector).

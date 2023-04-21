@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler.h"
-#include "chrome/browser/ash/login/users/affiliation.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -241,10 +240,7 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   void OnDeviceCloudPolicyManagerConnected() override;
   void OnDeviceCloudPolicyManagerGotRegistry() override;
 
-  // TODO(crbug.com/1187628): Combine the following two functions into one to
-  // simplify the API.
   base::flat_set<std::string> device_affiliation_ids() const override;
-  ash::AffiliationIDSet GetDeviceAffiliationIDs() const;
 
   // BrowserPolicyConnector:
   // Always returns true as command line flag can be set under dev mode only.

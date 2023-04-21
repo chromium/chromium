@@ -594,12 +594,6 @@ base::flat_set<std::string> BrowserPolicyConnectorAsh::device_affiliation_ids()
   return {};
 }
 
-ash::AffiliationIDSet BrowserPolicyConnectorAsh::GetDeviceAffiliationIDs()
-    const {
-  base::flat_set<std::string> affiliation_ids = device_affiliation_ids();
-  return {affiliation_ids.begin(), affiliation_ids.end()};
-}
-
 const em::PolicyData* BrowserPolicyConnectorAsh::GetDevicePolicy() const {
   if (device_cloud_policy_manager_)
     return device_cloud_policy_manager_->device_store()->policy();

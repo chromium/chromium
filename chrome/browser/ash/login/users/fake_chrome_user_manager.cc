@@ -725,7 +725,7 @@ void FakeChromeUserManager::OnUserRemoved(const AccountId& account_id) {
 
 void FakeChromeUserManager::SetUserAffiliation(
     const AccountId& account_id,
-    const AffiliationIDSet& user_affiliation_ids) {}
+    const base::flat_set<std::string>& user_affiliation_ids) {}
 
 void FakeChromeUserManager::SetUserAffiliationForTesting(
     const AccountId& account_id,

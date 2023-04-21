@@ -136,7 +136,7 @@ class ChromeUserManagerImpl
   bool IsEnterpriseManaged() const override;
   void SetUserAffiliation(
       const AccountId& account_id,
-      const AffiliationIDSet& user_affiliation_ids) override;
+      const base::flat_set<std::string>& user_affiliation_ids) override;
   bool IsFullManagementDisclosureNeeded(
       policy::DeviceLocalAccountPolicyBroker* broker) const override;
 
