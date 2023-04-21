@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "cc/metrics/compositor_frame_reporter.h"
@@ -424,7 +425,9 @@ void CompositorFrameReportingController::TrackSwapTiming(
   }
 
   // Making sure the queue would not keep growing in size.
-  DCHECK_LE(latest_swap_times_.size(), 10u);
+  if (latest_swap_times_.size() > 10) {
+    base::debug::DumpWithoutCrashing();
+  }
 }
 
 void CompositorFrameReportingController::ReportMultipleSwaps(
