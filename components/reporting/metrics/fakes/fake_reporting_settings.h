@@ -12,10 +12,10 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback_forward.h"
+#include "base/values.h"
 #include "components/reporting/metrics/reporting_settings.h"
 
-namespace reporting {
-namespace test {
+namespace reporting::test {
 
 // Fake reporting settings for testing.
 class FakeReportingSettings : public ReportingSettings {
@@ -35,10 +35,14 @@ class FakeReportingSettings : public ReportingSettings {
 
   bool GetBoolean(const std::string& path, bool* out_value) const override;
   bool GetInteger(const std::string& path, int* out_value) const override;
+  bool GetList(const std::string& path,
+               const base::Value::List** out_value) const override;
 
   void SetBoolean(const std::string& path, bool bool_value);
 
   void SetInteger(const std::string& path, int int_value);
+
+  void SetList(const std::string& path, const base::Value::List& list_value);
 
   void SetIsTrusted(bool is_trusted);
 
@@ -50,10 +54,10 @@ class FakeReportingSettings : public ReportingSettings {
 
   base::flat_map<std::string, bool> bool_map_;
   base::flat_map<std::string, int> int_map_;
+  base::flat_map<std::string, base::Value::List> list_map_;
 
   bool is_trusted_ = true;
 };
-}  // namespace test
-}  // namespace reporting
+}  // namespace reporting::test
 
 #endif  // COMPONENTS_REPORTING_METRICS_FAKES_FAKE_REPORTING_SETTINGS_H_

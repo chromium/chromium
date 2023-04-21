@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "base/values.h"
 
 namespace reporting {
 
@@ -32,6 +33,8 @@ class ReportingSettings {
   // do not change value and return false.
   virtual bool GetBoolean(const std::string& path, bool* out_value) const = 0;
   virtual bool GetInteger(const std::string& path, int* out_value) const = 0;
+  virtual bool GetList(const std::string& path,
+                       const base::Value::List** out_value) const = 0;
 };
 
 }  // namespace reporting

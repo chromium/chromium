@@ -7,9 +7,9 @@
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/values.h"
 
-namespace reporting {
-namespace test {
+namespace reporting::test {
 
 FakeReportingSettings::FakeReportingSettings() = default;
 
@@ -50,6 +50,15 @@ bool FakeReportingSettings::GetInteger(const std::string& path,
   return true;
 }
 
+bool FakeReportingSettings::GetList(const std::string& path,
+                                    const base::Value::List** out_value) const {
+  if (!base::Contains(list_map_, path)) {
+    return false;
+  }
+  *out_value = &list_map_.at(path);
+  return true;
+}
+
 void FakeReportingSettings::SetBoolean(const std::string& path,
                                        bool bool_value) {
   bool_map_[path] = bool_value;
@@ -60,6 +69,15 @@ void FakeReportingSettings::SetBoolean(const std::string& path,
 
 void FakeReportingSettings::SetInteger(const std::string& path, int int_value) {
   int_map_[path] = int_value;
+  if (base::Contains(settings_callbacks_map_, path)) {
+    settings_callbacks_map_.at(path)->Notify();
+  }
+}
+
+void FakeReportingSettings::SetList(const std::string& path,
+                                    const base::Value::List& list_value) {
+  const auto& [_, placed] = list_map_.emplace(path, list_value.Clone());
+  DCHECK(placed);
   if (base::Contains(settings_callbacks_map_, path)) {
     settings_callbacks_map_.at(path)->Notify();
   }
@@ -76,5 +94,4 @@ void FakeReportingSettings::SetIsTrusted(bool is_trusted) {
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 }
-}  // namespace test
-}  // namespace reporting
+}  // namespace reporting::test

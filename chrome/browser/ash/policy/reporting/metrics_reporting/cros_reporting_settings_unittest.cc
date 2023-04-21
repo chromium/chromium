@@ -8,11 +8,17 @@
 
 #include "base/callback_list.h"
 #include "base/test/bind.h"
+#include "base/values.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::Eq;
+using ::testing::IsNull;
+using ::testing::Not;
 
 namespace reporting {
 
@@ -56,6 +62,25 @@ TEST(CrosReportingSettingsTest, GetInteger) {
   cros_reporting_settings.GetInteger(ash::kReportUploadFrequency, &int_value);
 
   EXPECT_EQ(int_value, 100);
+}
+
+TEST(CrosReportingSettingsTest, GetList) {
+  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings;
+  CrosReportingSettings cros_reporting_settings;
+
+  static constexpr char kListSettingValue[] = "network_telemetry";
+  base::Value::List list_setting;
+  list_setting.Append(kListSettingValue);
+  scoped_testing_cros_settings.device_settings()->Set(
+      ::ash::kReportDeviceSignalStrengthEventDrivenTelemetry,
+      base::Value(std::move(list_setting)));
+
+  const base::Value::List* list_value = nullptr;
+  ASSERT_TRUE(cros_reporting_settings.GetList(
+      ::ash::kReportDeviceSignalStrengthEventDrivenTelemetry, &list_value));
+  ASSERT_THAT(list_value, Not(IsNull()));
+  ASSERT_THAT(list_value->size(), Eq(1uL));
+  EXPECT_THAT(list_value->front().GetString(), Eq(kListSettingValue));
 }
 
 TEST(CrosReportingSettingsTest, AddSettingsObserver) {

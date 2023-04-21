@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_reporting_settings.h"
 
+#include "base/notreached.h"
+#include "base/values.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 
@@ -28,5 +30,10 @@ bool CrosReportingSettings::GetBoolean(const std::string& path,
 bool CrosReportingSettings::GetInteger(const std::string& path,
                                        int* out_value) const {
   return ash::CrosSettings::Get()->GetInteger(path, out_value);
+}
+
+bool CrosReportingSettings::GetList(const std::string& path,
+                                    const base::Value::List** out_value) const {
+  return ::ash::CrosSettings::Get()->GetList(path, out_value);
 }
 }  // namespace reporting

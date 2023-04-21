@@ -11,10 +11,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
 #include "components/policy/policy_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::IsNull;
 
 namespace reporting {
 namespace {
@@ -106,6 +109,14 @@ TEST_F(DeviceReportingSettingsLacrosTest, GetInteger) {
   ASSERT_TRUE(device_reporting_settings_->GetInteger(
       ::policy::key::kReportUploadFrequency, &value));
   EXPECT_EQ(value, kUploadFrequency);
+}
+
+TEST_F(DeviceReportingSettingsLacrosTest, GetList) {
+  static constexpr char kTestSettingPath[] = "test_setting";
+  const base::Value::List* list_value = nullptr;
+  ASSERT_FALSE(
+      device_reporting_settings_->GetList(kTestSettingPath, &list_value));
+  EXPECT_THAT(list_value, IsNull());
 }
 
 TEST_F(DeviceReportingSettingsLacrosTest,

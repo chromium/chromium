@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/values.h"
 #include "chrome/browser/lacros/device_settings_lacros.h"
 #include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
 #include "components/reporting/metrics/reporting_settings.h"
@@ -73,6 +74,8 @@ class DeviceReportingSettingsLacros : public ReportingSettings,
                   bool* out_value) const override;
   bool GetInteger(const std::string& policy_name,
                   int* out_value) const override;
+  bool GetList(const std::string& policy_name,
+               const base::Value::List** out_value) const override;
 
  private:
   explicit DeviceReportingSettingsLacros(std::unique_ptr<Delegate> delegate);
