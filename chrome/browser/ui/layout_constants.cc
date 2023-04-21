@@ -14,6 +14,10 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // IS_CHROMEOS
+
 int GetLayoutConstant(LayoutConstant constant) {
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   switch (constant) {
@@ -68,6 +72,11 @@ int GetLayoutConstant(LayoutConstant constant) {
     case TAB_ALERT_INDICATOR_ICON_WIDTH:
       return touch_ui ? 12 : 16;
     case TAB_HEIGHT:
+#if BUILDFLAG(IS_CHROMEOS)
+      if (chromeos::features::IsJellyrollEnabled()) {
+        return 34 + GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
+      }
+#endif  // IS_CHROMEOS
       return (touch_ui ? 41 : 34) + GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
     case TAB_PRE_TITLE_PADDING:
       return 8;

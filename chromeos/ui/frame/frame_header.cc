@@ -12,6 +12,7 @@
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -319,6 +320,10 @@ void FrameHeader::SetFrameTextOverride(
 
 SkPath FrameHeader::GetWindowMaskForFrameHeader(const gfx::Size& size) {
   return SkPath();
+}
+
+ui::ColorId FrameHeader::GetColorIdForCurrentMode() const {
+  return mode_ == MODE_ACTIVE ? ui::kColorFrameActive : ui::kColorFrameInactive;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

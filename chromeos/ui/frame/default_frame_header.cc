@@ -5,12 +5,14 @@
 #include "chromeos/ui/frame/default_frame_header.h"
 
 #include "base/logging.h"  // DCHECK
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -83,7 +85,7 @@ void DefaultFrameHeader::UpdateFrameColors() {
       target_window->GetProperty(kFrameInactiveColorKey);
 
   bool updated = false;
-  // Update the frame if the frame color for the current active state chagnes.
+  // Update the frame if the frame color for the current active state changes.
   if (active_frame_color_ != active_frame_color) {
     active_frame_color_ = active_frame_color;
     updated = mode() == Mode::MODE_ACTIVE;
@@ -109,8 +111,15 @@ void DefaultFrameHeader::DoPaintHeader(gfx::Canvas* canvas) {
                           : 0;
 
   cc::PaintFlags flags;
-  flags.setColor(mode() == Mode::MODE_ACTIVE ? active_frame_color_
-                                             : inactive_frame_color_);
+
+  if (features::IsJellyrollEnabled()) {
+    flags.setColor(target_widget()->GetColorProvider()->GetColor(
+        GetColorIdForCurrentMode()));
+  } else {
+    flags.setColor(mode() == Mode::MODE_ACTIVE ? active_frame_color_
+                                               : inactive_frame_color_);
+  }
+
   flags.setAntiAlias(true);
   if (width_in_pixels_ > 0) {
     canvas->Save();
