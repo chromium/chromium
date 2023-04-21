@@ -1149,10 +1149,14 @@ TEST_F(InsecureCredentialsManagerTest, GetInsecureCredentialsReused) {
   store().AddLogin(form2);
   RunUntilIdle();
   provider().StartReuseCheck();
+  AdvanceClock(base::Milliseconds(kDelay));
   RunUntilIdle();
 
   EXPECT_THAT(provider().GetInsecureCredentialEntries(),
               ElementsAre(CredentialUIEntry(form1), CredentialUIEntry(form2)));
+
+  histogram_tester().ExpectUniqueSample("PasswordManager.ReuseCheck.Time",
+                                        kDelay, 1);
 }
 
 TEST_F(InsecureCredentialsManagerTest, UpdatingReusedPasswordFixesTheIssue) {

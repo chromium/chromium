@@ -3167,6 +3167,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.ReuseCheck.CheckedPasswords" units="passwords"
+    expires_after="2023-09-01">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of passwords analyzed during the password reuse check. Note: this
+    is a number of unique password values. Recorded after reuse check is
+    finished.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ReuseCheck.ReusedPasswords" units="passwords"
+    expires_after="2023-09-01">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of reused passwords found when the password reuse check
+    completed. Note: this is a number of unique password values. Recorded after
+    reuse check is finished.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ReuseCheck.Time" units="ms"
+    expires_after="2023-09-01">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The time it took to complete the password reuse check. Recorded after reuse
+    check is finished.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.ReusedPasswordType" enum="ReusedPasswordType"
     expires_after="2023-10-15">
   <owner>vakh@chromium.org</owner>

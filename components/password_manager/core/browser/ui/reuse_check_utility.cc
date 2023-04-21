@@ -7,6 +7,7 @@
 
 #include <unordered_map>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
@@ -136,6 +137,11 @@ base::flat_set<std::u16string> BulkReuseCheck(
     }
     reused_passwords.insert(password);
   }
+
+  base::UmaHistogramCounts1000("PasswordManager.ReuseCheck.CheckedPasswords",
+                               password_to_credentials.size());
+  base::UmaHistogramCounts1000("PasswordManager.ReuseCheck.ReusedPasswords",
+                               reused_passwords.size());
   return reused_passwords;
 }
 

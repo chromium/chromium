@@ -198,6 +198,8 @@ void InsecureCredentialsManager::RemoveObserver(Observer* observer) {
 void InsecureCredentialsManager::OnReuseCheckDone(
     base::ElapsedTimer timer_since_reuse_check_start,
     base::flat_set<std::u16string> reused_passwords) {
+  base::UmaHistogramTimes("PasswordManager.ReuseCheck.Time",
+                          timer_since_reuse_check_start.Elapsed());
   reused_passwords_ = std::move(reused_passwords);
   NotifyInsecureCredentialsChanged();
 }
