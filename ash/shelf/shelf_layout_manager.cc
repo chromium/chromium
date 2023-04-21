@@ -610,45 +610,10 @@ void ShelfLayoutManager::UpdateVisibilityState() {
   if (in_shutdown_ || !shelf_window || suspend_visibility_update_)
     return;
 
+  SetState(CalculateShelfVisibility());
+
   const WorkspaceWindowState window_state =
       GetShelfWorkspaceWindowState(shelf_window);
-
-  if (shelf_->ShouldHideOnSecondaryDisplay(state_.session_state)) {
-    // Needed to hide system tray on secondary display.
-    SetState(SHELF_HIDDEN);
-  } else if (!state_.IsActiveSessionState()) {
-    // Needed to show system tray in non active session state.
-    SetState(SHELF_VISIBLE);
-  } else if (Shell::Get()->screen_pinning_controller()->IsPinned()) {
-    SetState(SHELF_HIDDEN);
-  } else if (Shell::Get()->session_controller()->IsRunningInAppMode()) {
-    SetState(SHELF_HIDDEN);
-  } else {
-    // TODO(zelidrag): Verify shelf drag animation still shows on the device
-    // when we are in ShelfAutoHideBehavior::kAlwaysHidden.
-    switch (window_state) {
-      case WorkspaceWindowState::kFullscreen:
-        if (IsShelfAutoHideForFullscreenMaximized()) {
-          SetState(SHELF_AUTO_HIDE);
-        } else if (IsShelfHiddenForFullscreen()) {
-          SetState(SHELF_HIDDEN);
-        } else {
-          // The shelf is sometimes not hidden when in immersive fullscreen.
-          // Force the shelf to be auto hidden in this case.
-          SetState(SHELF_AUTO_HIDE);
-        }
-        break;
-      case WorkspaceWindowState::kMaximized:
-        SetState(IsShelfAutoHideForFullscreenMaximized()
-                     ? SHELF_AUTO_HIDE
-                     : CalculateShelfVisibility());
-        break;
-      case WorkspaceWindowState::kDefault:
-        SetState(CalculateShelfVisibility());
-        break;
-    }
-  }
-
   UpdateWorkspaceMask(window_state);
   SendA11yAlertForFullscreenWorkspaceState(window_state);
 }
@@ -1711,6 +1676,47 @@ HotseatState ShelfLayoutManager::CalculateHotseatState(
 }
 
 ShelfVisibilityState ShelfLayoutManager::CalculateShelfVisibility() {
+  if (shelf_->ShouldHideOnSecondaryDisplay(state_.session_state)) {
+    // Needed to hide system tray on secondary display.
+    return SHELF_HIDDEN;
+  }
+
+  if (!state_.IsActiveSessionState()) {
+    // Needed to show system tray in non active session state.
+    return SHELF_VISIBLE;
+  }
+
+  if (Shell::Get()->screen_pinning_controller()->IsPinned()) {
+    return SHELF_HIDDEN;
+  }
+
+  if (Shell::Get()->session_controller()->IsRunningInAppMode()) {
+    return SHELF_HIDDEN;
+  }
+
+  aura::Window* shelf_window = shelf_widget_->GetNativeWindow();
+  const WorkspaceWindowState window_state =
+      GetShelfWorkspaceWindowState(shelf_window);
+  switch (window_state) {
+    case WorkspaceWindowState::kFullscreen:
+      if (IsShelfAutoHideForFullscreenMaximized()) {
+        return SHELF_AUTO_HIDE;
+      }
+      if (IsShelfHiddenForFullscreen()) {
+        return SHELF_HIDDEN;
+      }
+      // The shelf is sometimes not hidden when in immersive fullscreen.
+      // Force the shelf to be auto hidden in this case.
+      return SHELF_AUTO_HIDE;
+    case WorkspaceWindowState::kMaximized:
+      if (IsShelfAutoHideForFullscreenMaximized()) {
+        return SHELF_AUTO_HIDE;
+      }
+      break;
+    case WorkspaceWindowState::kDefault:
+      break;
+  }
+
   switch (shelf_->auto_hide_behavior()) {
     case ShelfAutoHideBehavior::kAlways:
       return SHELF_AUTO_HIDE;
@@ -2621,7 +2627,8 @@ bool ShelfLayoutManager::StartShelfDrag(const ui::LocatedEvent& event_in_screen,
 
   // Clamshell launcher does not support shelf drags unless autohide
   // is enabled or the shelf is autohidden for immersive fullscreen.
-  if (!is_tablet_mode && CalculateShelfVisibility() != SHELF_AUTO_HIDE &&
+  if (!is_tablet_mode &&
+      shelf_->auto_hide_behavior() != ShelfAutoHideBehavior::kAlways &&
       !IsInImmersiveFullscreen()) {
     return false;
   }
