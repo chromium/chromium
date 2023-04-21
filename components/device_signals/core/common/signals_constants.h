@@ -44,6 +44,7 @@ extern const char kSerialNumber[];
 extern const char kSiteIsolationEnabled[];
 extern const char kSystemDnsServers[];
 extern const char kThirdPartyBlockingEnabled[];
+extern const char kUserEnrollmentDomain[];
 extern const char kWindowsMachineDomain[];
 extern const char kWindowsUserDomain[];
 

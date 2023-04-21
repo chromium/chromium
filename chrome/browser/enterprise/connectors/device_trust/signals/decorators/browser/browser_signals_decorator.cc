@@ -25,13 +25,27 @@
 namespace enterprise_connectors {
 
 namespace {
+
 constexpr char kLatencyHistogramVariant[] = "Browser";
+
+absl::optional<std::string> TryGetEnrollmentDomain(
+    policy::CloudPolicyStore* store) {
+  if (store && store->has_policy()) {
+    const auto* policy = store->policy();
+    return policy->has_managed_by() ? policy->managed_by()
+                                    : policy->display_domain();
+  }
+  return absl::nullopt;
+}
+
 }  // namespace
 
 BrowserSignalsDecorator::BrowserSignalsDecorator(
-    policy::CloudPolicyStore* cloud_policy_store,
+    policy::CloudPolicyStore* browser_cloud_policy_store,
+    policy::CloudPolicyStore* user_cloud_policy_store,
     device_signals::SignalsAggregator* signals_aggregator)
-    : cloud_policy_store_(cloud_policy_store),
+    : browser_cloud_policy_store_(browser_cloud_policy_store),
+      user_cloud_policy_store_(user_cloud_policy_store),
       signals_aggregator_(signals_aggregator) {}
 
 BrowserSignalsDecorator::~BrowserSignalsDecorator() = default;
@@ -40,11 +54,18 @@ void BrowserSignalsDecorator::Decorate(base::Value::Dict& signals,
                                        base::OnceClosure done_closure) {
   auto start_time = base::TimeTicks::Now();
 
-  if (cloud_policy_store_ && cloud_policy_store_->has_policy()) {
-    const auto* policy = cloud_policy_store_->policy();
+  const auto device_enrollment_domain =
+      TryGetEnrollmentDomain(browser_cloud_policy_store_);
+  if (device_enrollment_domain) {
     signals.Set(device_signals::names::kDeviceEnrollmentDomain,
-                policy->has_managed_by() ? policy->managed_by()
-                                         : policy->display_domain());
+                device_enrollment_domain.value());
+  }
+
+  const auto user_enrollment_domain =
+      TryGetEnrollmentDomain(user_cloud_policy_store_);
+  if (user_enrollment_domain) {
+    signals.Set(device_signals::names::kUserEnrollmentDomain,
+                user_enrollment_domain.value());
   }
 
   auto barrier_closure = base::BarrierClosure(

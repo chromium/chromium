@@ -29,7 +29,8 @@ namespace enterprise_connectors {
 
 namespace {
 
-constexpr char kFakeEnrollmentDomain[] = "fake.domain.google.com";
+constexpr char kFakeBrowserEnrollmentDomain[] = "fake.domain.google.com";
+constexpr char kFakeUserEnrollmentDomain[] = "user.fake.domain.google.com";
 constexpr char kLatencyHistogram[] =
     "Enterprise.DeviceTrust.SignalsDecorator.Latency.Browser";
 
@@ -136,15 +137,23 @@ class BrowserSignalsDecoratorTest : public testing::Test {
         /*should_force=*/false);
   }
 
-  void SetFakePolicyData() {
+  void SetFakeBrowserPolicyData() {
     auto policy_data = std::make_unique<enterprise_management::PolicyData>();
-    policy_data->set_managed_by(kFakeEnrollmentDomain);
-    mock_cloud_policy_store_.set_policy_data_for_testing(
+    policy_data->set_managed_by(kFakeBrowserEnrollmentDomain);
+    mock_browser_cloud_policy_store_.set_policy_data_for_testing(
+        std::move(policy_data));
+  }
+
+  void SetFakeUserPolicyData() {
+    auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+    policy_data->set_managed_by(kFakeUserEnrollmentDomain);
+    mock_user_cloud_policy_store_.set_policy_data_for_testing(
         std::move(policy_data));
   }
 
   BrowserSignalsDecorator CreateDecorator() {
-    return BrowserSignalsDecorator(&mock_cloud_policy_store_,
+    return BrowserSignalsDecorator(&mock_browser_cloud_policy_store_,
+                                   &mock_user_cloud_policy_store_,
                                    &mock_aggregator_);
   }
 
@@ -160,12 +169,14 @@ class BrowserSignalsDecoratorTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
-  policy::MockCloudPolicyStore mock_cloud_policy_store_;
+  policy::MockCloudPolicyStore mock_browser_cloud_policy_store_;
+  policy::MockCloudPolicyStore mock_user_cloud_policy_store_;
   StrictMock<device_signals::MockSignalsAggregator> mock_aggregator_;
 };
 
 TEST_F(BrowserSignalsDecoratorTest, Decorate_AllSignals) {
-  SetFakePolicyData();
+  SetFakeBrowserPolicyData();
+  SetFakeUserPolicyData();
   SetUpAggregatorExpectations();
 
   auto decorator = CreateDecorator();
@@ -178,17 +189,20 @@ TEST_F(BrowserSignalsDecoratorTest, Decorate_AllSignals) {
   ValidateStaticSignals(signals);
   ValidateCrowdStrikeSignals(signals);
 
-  EXPECT_EQ(
-      kFakeEnrollmentDomain,
-      *signals.FindString(device_signals::names::kDeviceEnrollmentDomain));
+  EXPECT_EQ(*signals.FindString(device_signals::names::kDeviceEnrollmentDomain),
+            kFakeBrowserEnrollmentDomain);
+  EXPECT_EQ(*signals.FindString(device_signals::names::kUserEnrollmentDomain),
+            kFakeUserEnrollmentDomain);
 
   histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
 }
 
 TEST_F(BrowserSignalsDecoratorTest, Decorate_NullAggregator) {
-  SetFakePolicyData();
+  SetFakeBrowserPolicyData();
+  SetFakeUserPolicyData();
 
-  BrowserSignalsDecorator decorator(&mock_cloud_policy_store_, nullptr);
+  BrowserSignalsDecorator decorator(&mock_browser_cloud_policy_store_,
+                                    &mock_user_cloud_policy_store_, nullptr);
   base::RunLoop run_loop;
   base::Value::Dict signals;
   decorator.Decorate(signals, run_loop.QuitClosure());
@@ -198,14 +212,16 @@ TEST_F(BrowserSignalsDecoratorTest, Decorate_NullAggregator) {
   ValidateStaticSignals(signals);
 
   EXPECT_FALSE(signals.contains(device_signals::names::kCrowdStrike));
-  EXPECT_EQ(
-      kFakeEnrollmentDomain,
-      *signals.FindString(device_signals::names::kDeviceEnrollmentDomain));
+  EXPECT_EQ(*signals.FindString(device_signals::names::kDeviceEnrollmentDomain),
+            kFakeBrowserEnrollmentDomain);
+  EXPECT_EQ(*signals.FindString(device_signals::names::kUserEnrollmentDomain),
+            kFakeUserEnrollmentDomain);
 
   histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
 }
 
-TEST_F(BrowserSignalsDecoratorTest, Decorate_WithoutPolicyData) {
+TEST_F(BrowserSignalsDecoratorTest, Decorate_WithoutBrowserPolicyData) {
+  SetFakeUserPolicyData();
   SetUpAggregatorExpectations();
 
   auto decorator = CreateDecorator();
@@ -219,12 +235,16 @@ TEST_F(BrowserSignalsDecoratorTest, Decorate_WithoutPolicyData) {
   ValidateCrowdStrikeSignals(signals);
   EXPECT_FALSE(
       signals.contains(device_signals::names::kDeviceEnrollmentDomain));
+  EXPECT_EQ(*signals.FindString(device_signals::names::kUserEnrollmentDomain),
+            kFakeUserEnrollmentDomain);
 }
 
-TEST_F(BrowserSignalsDecoratorTest, Decorate_NullPolicyStore) {
+TEST_F(BrowserSignalsDecoratorTest, Decorate_NullBrowserPolicyStore) {
+  SetFakeUserPolicyData();
   SetUpAggregatorExpectations();
 
-  BrowserSignalsDecorator decorator(nullptr, &mock_aggregator_);
+  BrowserSignalsDecorator decorator(nullptr, &mock_user_cloud_policy_store_,
+                                    &mock_aggregator_);
   base::RunLoop run_loop;
   base::Value::Dict signals;
   decorator.Decorate(signals, run_loop.QuitClosure());
@@ -235,10 +255,50 @@ TEST_F(BrowserSignalsDecoratorTest, Decorate_NullPolicyStore) {
   ValidateCrowdStrikeSignals(signals);
   EXPECT_FALSE(
       signals.contains(device_signals::names::kDeviceEnrollmentDomain));
+  EXPECT_EQ(*signals.FindString(device_signals::names::kUserEnrollmentDomain),
+            kFakeUserEnrollmentDomain);
+}
+
+TEST_F(BrowserSignalsDecoratorTest, Decorate_WithoutUserPolicyData) {
+  SetFakeBrowserPolicyData();
+  SetUpAggregatorExpectations();
+
+  auto decorator = CreateDecorator();
+  base::RunLoop run_loop;
+  base::Value::Dict signals;
+  decorator.Decorate(signals, run_loop.QuitClosure());
+
+  run_loop.Run();
+
+  ValidateStaticSignals(signals);
+  ValidateCrowdStrikeSignals(signals);
+  EXPECT_EQ(*signals.FindString(device_signals::names::kDeviceEnrollmentDomain),
+            kFakeBrowserEnrollmentDomain);
+  EXPECT_FALSE(signals.contains(device_signals::names::kUserEnrollmentDomain));
+}
+
+TEST_F(BrowserSignalsDecoratorTest, Decorate_NullUserPolicyStore) {
+  SetFakeBrowserPolicyData();
+  SetUpAggregatorExpectations();
+
+  BrowserSignalsDecorator decorator(&mock_browser_cloud_policy_store_, nullptr,
+                                    &mock_aggregator_);
+  base::RunLoop run_loop;
+  base::Value::Dict signals;
+  decorator.Decorate(signals, run_loop.QuitClosure());
+
+  run_loop.Run();
+
+  ValidateStaticSignals(signals);
+  ValidateCrowdStrikeSignals(signals);
+  EXPECT_EQ(*signals.FindString(device_signals::names::kDeviceEnrollmentDomain),
+            kFakeBrowserEnrollmentDomain);
+  EXPECT_FALSE(signals.contains(device_signals::names::kUserEnrollmentDomain));
 }
 
 TEST_F(BrowserSignalsDecoratorTest, Decorate_NoAgentSignals) {
-  SetFakePolicyData();
+  SetFakeBrowserPolicyData();
+  SetFakeUserPolicyData();
 
   EXPECT_CALL(mock_aggregator_, GetSignals(CreateExpectedRequest(), _))
       .WillOnce(
@@ -259,9 +319,10 @@ TEST_F(BrowserSignalsDecoratorTest, Decorate_NoAgentSignals) {
   ValidateStaticSignals(signals);
   EXPECT_FALSE(signals.contains(device_signals::names::kCrowdStrike));
 
-  EXPECT_EQ(
-      kFakeEnrollmentDomain,
-      *signals.FindString(device_signals::names::kDeviceEnrollmentDomain));
+  EXPECT_EQ(*signals.FindString(device_signals::names::kDeviceEnrollmentDomain),
+            kFakeBrowserEnrollmentDomain);
+  EXPECT_EQ(*signals.FindString(device_signals::names::kUserEnrollmentDomain),
+            kFakeUserEnrollmentDomain);
 
   histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
 }

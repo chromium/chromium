@@ -14,7 +14,6 @@ namespace device_signals::test {
 
 namespace {
 
-#if BUILDFLAG(IS_WIN)
 // Only return false if the value is set to something other than a string.
 bool VerifyOptionalString(const std::string& signal_name,
                           const base::Value::Dict& signals) {
@@ -24,7 +23,6 @@ bool VerifyOptionalString(const std::string& signal_name,
 
   return signals.FindString(signal_name);
 }
-#endif  // BUILDFLAG(IS_WIN)
 
 bool VerifyIsString(const std::string& signal_name,
                     const base::Value::Dict& signals) {
@@ -132,7 +130,9 @@ GetSignalsContract() {
   // Signals added for both CrOS and Browser but from different collection
   // locations.
   contract[names::kDeviceEnrollmentDomain] =
-      base::BindRepeating(VerifyIsString, names::kDeviceEnrollmentDomain);
+      base::BindRepeating(VerifyOptionalString, names::kDeviceEnrollmentDomain);
+  contract[names::kUserEnrollmentDomain] =
+      base::BindRepeating(VerifyOptionalString, names::kUserEnrollmentDomain);
   contract[names::kDiskEncrypted] =
       base::BindRepeating(VerifyIsSettingInteger, names::kDiskEncrypted);
   contract[names::kSerialNumber] =
