@@ -41,6 +41,7 @@ test("services_unittests") {
       "//services/media_session:tests",
       "//services/media_session/public/cpp:tests",
       "//services/preferences/tracked:unit_tests",
+      "//services/resource_coordinator:tests",
       "//services/shape_detection:tests",
       "//services/viz/privileged/mojom:unit_tests",
       "//services/viz/public/cpp/compositing:tests",
@@ -55,7 +56,6 @@ test("services_unittests") {
       "//services/data_decoder:tests",
       "//services/device:tests",
       "//services/proxy_resolver:tests",
-      "//services/resource_coordinator:tests",
       "//services/tracing:tests",
     ]
     if (is_android && (current_cpu == "arm" || current_cpu == "arm64")) {

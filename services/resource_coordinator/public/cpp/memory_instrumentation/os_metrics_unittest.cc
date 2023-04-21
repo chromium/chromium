@@ -142,7 +142,7 @@ TEST(OSMetricsTest, GivesNonZeroResults) {
   EXPECT_GT(dump.platform_private_footprint->rss_anon_bytes, 0u);
 #elif BUILDFLAG(IS_WIN)
   EXPECT_GT(dump.platform_private_footprint->private_bytes, 0u);
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   EXPECT_GT(dump.platform_private_footprint->internal_bytes, 0u);
 #endif
 }
