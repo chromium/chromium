@@ -13,7 +13,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "components/sync/base/time.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_token_status.h"
@@ -24,10 +23,6 @@
 #include "components/sync/protocol/proto_enum_conversions.h"
 #include "components/version_info/version_info.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif
 
 namespace syncer::sync_ui_util {
 
@@ -314,10 +309,6 @@ base::Value::Dict ConstructAboutInformation(
       section_summary->AddStringStat("User Actionable Error");
   Stat<std::string>* disable_reasons =
       section_summary->AddStringStat("Disable Reasons");
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  Stat<std::string>* os_feature_state =
-      section_summary->AddStringStat("Chrome OS Sync Feature");
-#endif
   Stat<bool>* feature_enabled =
       section_summary->AddBoolStat("Sync Feature Enabled");
   Stat<bool>* setup_in_progress =
@@ -452,9 +443,6 @@ base::Value::Dict ConstructAboutInformation(
                    /*is_good=*/user_actionable_error ==
                        SyncService::UserActionableError::kNone);
   disable_reasons->Set(GetDisableReasonsString(service->GetDisableReasons()));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  os_feature_state->Set("Enforced Enabled");
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   feature_enabled->Set(service->IsSyncFeatureEnabled());
   setup_in_progress->Set(service->IsSetupInProgress());
   std::string auth_error_str = service->GetAuthError().ToString();
