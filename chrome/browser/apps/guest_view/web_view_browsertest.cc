@@ -4429,6 +4429,12 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, ReloadWebviewAccessibleResource) {
   EXPECT_EQ(webview_url, web_view_frame->GetLastCommittedURL());
 }
 
+IN_PROC_BROWSER_TEST_F(WebViewTest,
+                       CookiesEnabledAfterWebviewAccessibleResource) {
+  TestHelper("testCookiesEnabledAfterWebviewAccessibleResource",
+             "web_view/load_webview_accessible_resource", NEEDS_TEST_SERVER);
+}
+
 // Tests that webviews cannot embed accessible resources in iframes.
 // https://crbug.com/1430991.
 IN_PROC_BROWSER_TEST_F(WebViewTest, CannotIframeWebviewAccessibleResource) {

@@ -23,6 +23,8 @@ window.runTest = function(testName) {
     testInaccessibleResourceDoesNotLoadInAppWebviewFrame();
   } else if (testName == 'testNavigateGuestToWebviewAccessibleResource') {
     testNavigateGuestToWebviewAccessibleResource();
+  } else if (testName == 'testCookiesEnabledAfterWebviewAccessibleResource') {
+    testCookiesEnabledAfterWebviewAccessibleResource();
   } else {
     window.console.log('Incorrect testName: ' + testName);
     chrome.test.sendMessage('TEST_FAILED');
@@ -94,7 +96,7 @@ function testLoadAccessibleSubresourceInAppWebviewFrame() {
         .then(data => {
           if (data == 'Hello World\\n')
             chrome.test.sendMessage('TEST_PASSED');
-          else 
+          else
             throw new Error("Unexpected data: " + data);
         })
         .catch((error) => {
@@ -220,6 +222,28 @@ function testLoadWebviewInaccessibleResource() {
 
   webview.src = '/assets/foo.html';
 }
+
+// Initially navigate a webview to a webview accessible resource, then navigate
+// to a regular web page. The web page should have access to cookies. See
+// https://crbug.com/1417528 .
+function testCookiesEnabledAfterWebviewAccessibleResource() {
+  let webview = document.querySelector('webview');
+  let firstLoad = true;
+
+  webview.addEventListener('loadstop', () => {
+    if (firstLoad) {
+      firstLoad = false;
+      webview.src = embedder.guestURL;
+      return;
+    }
+
+    webview.executeScript({code: 'navigator.cookieEnabled'}, (result) => {
+      chrome.test.sendMessage(result[0] ? 'TEST_PASSED' : 'TEST_FAILED');
+    });
+  });
+
+  webview.src = chrome.runtime.getURL('assets/foo.html');
+};
 
 onload = function() {
   chrome.test.getConfig(function(config) {
