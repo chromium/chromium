@@ -5,7 +5,9 @@
 #include "chrome/browser/speech/chrome_speech_recognition_service.h"
 
 #include <string>
+#include <unordered_set>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
@@ -75,7 +77,7 @@ void ChromeSpeechRecognitionService::LaunchIfNotRunning() {
   base::FilePath binary_path;
   binary_path = global_prefs->GetFilePath(prefs::kSodaBinaryPath);
   base::flat_map<std::string, base::FilePath> config_paths =
-      ChromeSpeechRecognitionService::GetSodaConfigPaths(profile_prefs);
+      ChromeSpeechRecognitionService::GetSodaConfigPaths();
 
   if (binary_path.empty() || config_paths[language_name].empty()) {
     LOG(ERROR) << "Unable to find SODA files on the device.";
@@ -100,14 +102,21 @@ void ChromeSpeechRecognitionService::LaunchIfNotRunning() {
 }
 
 base::flat_map<std::string, base::FilePath>
-ChromeSpeechRecognitionService::GetSodaConfigPaths(PrefService* prefs) {
+ChromeSpeechRecognitionService::GetSodaConfigPaths() {
   base::flat_map<std::string, base::FilePath> config_file_paths;
+  std::unordered_set<std::string> registered_language_packs;
+  for (const auto& language : g_browser_process->local_state()->GetList(
+           prefs::kSodaRegisteredLanguagePacks)) {
+    registered_language_packs.insert(language.GetString());
+  }
+
   for (const SodaLanguagePackComponentConfig& config :
        kLanguageComponentConfigs) {
     base::FilePath config_path =
         g_browser_process->local_state()->GetFilePath(config.config_path_pref);
 
-    if (!config_path.empty()) {
+    if (!config_path.empty() &&
+        base::Contains(registered_language_packs, config.language_name)) {
       config_file_paths[config.language_name] = config_path;
     }
   }

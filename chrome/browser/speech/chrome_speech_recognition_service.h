@@ -15,8 +15,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-class PrefService;
-
 namespace content {
 class BrowserContext;
 }  // namespace content
@@ -51,8 +49,7 @@ class ChromeSpeechRecognitionService : public SpeechRecognitionService {
   void LaunchIfNotRunning();
 
   // Gets the path of the SODA configuration file for the selected language.
-  base::flat_map<std::string, base::FilePath> GetSodaConfigPaths(
-      PrefService* prefs);
+  base::flat_map<std::string, base::FilePath> GetSodaConfigPaths();
 
   // The browser context associated with the keyed service.
   raw_ptr<content::BrowserContext> context_;
