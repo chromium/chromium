@@ -203,12 +203,6 @@ BASE_FEATURE(kAutofillEnableSupportForApartmentNumbers,
              "AutofillEnableSupportForApartmentNumbers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether we download server credit cards to the ephemeral
-// account-based storage when sync the transport is enabled.
-BASE_FEATURE(kAutofillEnableAccountWalletStorage,
-             "AutofillEnableAccountWalletStorage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables parsing for birthdate fields. Filling is not supported and parsing
 // is meant to prevent false positive credit card expiration dates.
 // TODO(crbug.com/1306654): Remove once launched.

@@ -246,11 +246,8 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
       WebDataServiceFactory::GetAutofillWebDataForProfile(
           profile_, ServiceAccessType::IMPLICIT_ACCESS);
   account_web_data_service_ =
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableAccountWalletStorage)
-          ? WebDataServiceFactory::GetAutofillWebDataForAccount(
-                profile_, ServiceAccessType::IMPLICIT_ACCESS)
-          : nullptr;
+      WebDataServiceFactory::GetAutofillWebDataForAccount(
+          profile_, ServiceAccessType::IMPLICIT_ACCESS);
   web_data_service_thread_ = profile_web_data_service_
                                  ? profile_web_data_service_->GetDBTaskRunner()
                                  : nullptr;

@@ -125,24 +125,6 @@ void ExpectSameElements(const std::vector<T*>& expectations,
       results_copy.end());
 }
 
-class ScopedFeatureListWrapper {
- public:
-  explicit ScopedFeatureListWrapper(
-      const std::vector<base::test::FeatureRef>& default_enabled_features,
-      const std::vector<base::test::FeatureRef>& additional_enabled_features) {
-    std::vector<base::test::FeatureRef> all_enabled_features(
-        default_enabled_features);
-    base::ranges::copy(additional_enabled_features,
-                       std::back_inserter(all_enabled_features));
-    scoped_features_.InitWithFeatures(all_enabled_features,
-                                      /*disabled_features=*/{});
-  }
-  ~ScopedFeatureListWrapper() = default;
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
-};
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 std::vector<std::vector<Suggestion::Text>> ConstructLabelLineMatrix(
     const std::vector<std::u16string>& parts) {
@@ -155,10 +137,6 @@ std::vector<std::vector<Suggestion::Text>> ConstructLabelLineMatrix(
 class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
  protected:
   PersonalDataManagerHelper() = default;
-
-  explicit PersonalDataManagerHelper(
-      const std::vector<base::test::FeatureRef>& additional_enabled_features)
-      : PersonalDataManagerTestBase(additional_enabled_features) {}
 
   virtual ~PersonalDataManagerHelper() {
     if (personal_data_)
@@ -1495,12 +1473,6 @@ TEST_F(PersonalDataManagerTest, UpdateVerifiedProfilesOrigin) {
 // Clearing/changing the primary account is not supported on CrOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PersonalDataManagerTest, KeepExistingLocalDataOnSignIn) {
-  // Set up the experiment flags.
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableAccountWalletStorage},
-      /*disabled_features=*/{});
-
   // Sign out.
   identity_test_env_.ClearPrimaryAccount();
   sync_service_.SetAccountInfo(CoreAccountInfo());
@@ -2193,8 +2165,6 @@ TEST_F(PersonalDataManagerTest, DefaultCountryCodeComesFromProfiles) {
 }
 
 TEST_F(PersonalDataManagerTest, DefaultCountryCodeComesFromVariations) {
-  base::test::ScopedFeatureList enabled;
-
   const std::string expected_country_code = "DE";
   const std::string unepected_country_code = "FR";
 
@@ -3775,9 +3745,6 @@ class SaveImportedProfileTest
   }
 
   void TearDown() override { TearDownTest(); }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 TEST_P(SaveImportedProfileTest, SaveImportedProfile) {
@@ -5338,17 +5305,6 @@ TEST_F(PersonalDataManagerTest, GetAccountInfoForPaymentsServer) {
   // The Active Sync AccountInfo should be returned.
   EXPECT_EQ(sync_account_email,
             personal_data_->GetAccountInfoForPaymentsServer().email);
-
-  // The Active Sync AccountInfo should still be returned even if
-  // kAutofillEnableAccountWalletStorage is disabled.
-  {
-    base::test::ScopedFeatureList scoped_features;
-    scoped_features.InitAndDisableFeature(
-        features::kAutofillEnableAccountWalletStorage);
-
-    EXPECT_EQ(sync_account_email,
-              personal_data_->GetAccountInfoForPaymentsServer().email);
-  }
 }
 
 TEST_F(PersonalDataManagerTest, OnAccountsCookieDeletedByUserAction) {
@@ -5530,10 +5486,6 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
   personal_data_->Refresh();
   WaitForOnPersonalDataChanged();
 
-  // Set the feature to enabled.
-  base::test::ScopedFeatureList scoped_features(
-      features::kAutofillEnableAccountWalletStorage);
-
   // Make sure the function returns true.
   EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
 
@@ -5601,12 +5553,6 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
   personal_data_->Refresh();
   WaitForOnPersonalDataChanged();
 
-  // Set the feature to enabled.
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableAccountWalletStorage},
-      /*disabled_features=*/{});
-
   // Make sure the function returns false.
   EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 
@@ -5663,40 +5609,17 @@ TEST_F(PersonalDataManagerSyncTransportModeTest, GetSyncSigninState) {
       /*types=*/syncer::UserSelectableTypeSet(
           syncer::UserSelectableType::kAutofill));
 
-  // Check that the sync state is |SignedInAndWalletSyncTransportEnabled| if the
-  // account info is not empty, the kAutofillEnableAccountWalletStorage feature
-  // is enabled and the Wallet data type is active for the sync service.
-  {
-    base::test::ScopedFeatureList scoped_features(
-        features::kAutofillEnableAccountWalletStorage);
-
-    EXPECT_EQ(AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled,
-              personal_data_->GetSyncSigninState());
-  }
-
-  // Check that the sync state is |SignedIn| if the
-  // kAutofillEnableAccountWalletStorage feature is disabled.
-  {
-    base::test::ScopedFeatureList scoped_features;
-    scoped_features.InitAndDisableFeature(
-        features::kAutofillEnableAccountWalletStorage);
-
-    EXPECT_EQ(AutofillSyncSigninState::kSignedIn,
-              personal_data_->GetSyncSigninState());
-  }
+  EXPECT_EQ(AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled,
+            personal_data_->GetSyncSigninState());
 
   // Check that the sync state is |SignedIn| if the sync service does not have
   // wallet data active.
-  {
-    base::test::ScopedFeatureList scoped_features(
-        features::kAutofillEnableAccountWalletStorage);
-    sync_service_.GetUserSettings()->SetSelectedTypes(
-        /*sync_everything=*/false,
-        /*types=*/syncer::UserSelectableTypeSet());
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
 
-    EXPECT_EQ(AutofillSyncSigninState::kSignedIn,
-              personal_data_->GetSyncSigninState());
-  }
+  EXPECT_EQ(AutofillSyncSigninState::kSignedIn,
+            personal_data_->GetSyncSigninState());
 
 // ClearPrimaryAccount is not supported on CrOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -5725,16 +5648,6 @@ TEST_F(PersonalDataManagerSyncTransportModeTest, GetSyncSigninState) {
   // is enabled.
   EXPECT_EQ(AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled,
             personal_data_->GetSyncSigninState());
-
-  // Check that the sync state is |SignedInAndSyncFeature| if the the sync
-  // feature is enabled even if the kAutofillEnableAccountWalletStorage feature
-  // is enabled.
-  {
-    base::test::ScopedFeatureList scoped_features(
-        features::kAutofillEnableAccountWalletStorage);
-    EXPECT_EQ(AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled,
-              personal_data_->GetSyncSigninState());
-  }
 }
 
 // On mobile, no dedicated opt-in is required for WalletSyncTransport - the
@@ -5767,19 +5680,13 @@ TEST_F(PersonalDataManagerSyncTransportModeTest, OnUserAcceptedUpstreamOffer) {
   // Account wallet storage only makes sense together with support for
   // unconsented primary accounts, i.e. on Win/Mac/Linux.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  {
-    base::test::ScopedFeatureList scoped_features;
-    scoped_features.InitAndEnableFeature(
-        features::kAutofillEnableAccountWalletStorage);
+  EXPECT_EQ(AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled,
+            personal_data_->GetSyncSigninState());
 
-    EXPECT_EQ(AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled,
-              personal_data_->GetSyncSigninState());
-
-    // Make sure an opt-in gets recorded if the user accepted an Upstream offer.
-    personal_data_->OnUserAcceptedUpstreamOffer();
-    EXPECT_TRUE(prefs::IsUserOptedInWalletSyncTransport(
-        prefs_.get(), active_info.account_id));
-  }
+  // Make sure an opt-in gets recorded if the user accepted an Upstream offer.
+  personal_data_->OnUserAcceptedUpstreamOffer();
+  EXPECT_TRUE(prefs::IsUserOptedInWalletSyncTransport(prefs_.get(),
+                                                      active_info.account_id));
 
   // Clear the prefs.
   prefs::ClearSyncTransportOptIns(prefs_.get());
@@ -5789,22 +5696,20 @@ TEST_F(PersonalDataManagerSyncTransportModeTest, OnUserAcceptedUpstreamOffer) {
   ///////////////////////////////////////////////////////////
   // kSignedIn
   ///////////////////////////////////////////////////////////
-  {
-    // Without AccountWalletStorage, kSignedInAndWalletSyncTransportEnabled
-    // shouldn't be available.
-    base::test::ScopedFeatureList scoped_features;
-    scoped_features.InitAndDisableFeature(
-        features::kAutofillEnableAccountWalletStorage);
+  // Disable the wallet data type. kSignedInAndWalletSyncTransportEnabled
+  // shouldn't be available.
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
 
-    EXPECT_EQ(AutofillSyncSigninState::kSignedIn,
-              personal_data_->GetSyncSigninState());
+  EXPECT_EQ(AutofillSyncSigninState::kSignedIn,
+            personal_data_->GetSyncSigninState());
 
-    // Make sure an opt-in does not get recorded even if the user accepted an
-    // Upstream offer.
-    personal_data_->OnUserAcceptedUpstreamOffer();
-    EXPECT_FALSE(prefs::IsUserOptedInWalletSyncTransport(
-        prefs_.get(), active_info.account_id));
-  }
+  // Make sure an opt-in does not get recorded even if the user accepted an
+  // Upstream offer.
+  personal_data_->OnUserAcceptedUpstreamOffer();
+  EXPECT_FALSE(prefs::IsUserOptedInWalletSyncTransport(prefs_.get(),
+                                                       active_info.account_id));
 
   // Clear the prefs.
   prefs::ClearSyncTransportOptIns(prefs_.get());

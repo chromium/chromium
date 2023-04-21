@@ -122,6 +122,7 @@ class AutofillWebDataServiceConsumer : public WebDataServiceConsumer {
   T result_;
 };
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 std::vector<std::unique_ptr<CreditCard>> GetServerCards(
     scoped_refptr<autofill::AutofillWebDataService> service) {
   AutofillWebDataServiceConsumer<std::vector<std::unique_ptr<CreditCard>>>
@@ -140,7 +141,6 @@ std::vector<std::unique_ptr<AutofillProfile>> GetServerProfiles(
   return std::move(consumer.result());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<autofill::PaymentsCustomerData> GetPaymentsCustomerData(
     scoped_refptr<autofill::AutofillWebDataService> service) {
   AutofillWebDataServiceConsumer<
@@ -251,64 +251,10 @@ class SingleClientWalletSyncTest : public SyncTest {
   autofill::TestAutofillClock test_clock_;
 };
 
-class SingleClientWalletSyncTestWithoutAccountStorage
-    : public SingleClientWalletSyncTest {
- public:
-  SingleClientWalletSyncTestWithoutAccountStorage() {
-    features_.InitAndDisableFeature(
-        autofill::features::kAutofillEnableAccountWalletStorage);
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTestWithoutAccountStorage,
-                       DownloadProfileStorage) {
-  GetFakeServer()->SetWalletData({CreateDefaultSyncWalletAddress(),
-                                  CreateDefaultSyncWalletCard(),
-                                  CreateDefaultSyncPaymentsCustomerData()});
-  ASSERT_TRUE(SetupSync());
-
-  scoped_refptr<autofill::AutofillWebDataService> profile_data =
-      GetProfileWebDataService(0);
-  ASSERT_NE(nullptr, profile_data);
-  scoped_refptr<autofill::AutofillWebDataService> account_data =
-      GetAccountWebDataService(0);
-  ASSERT_EQ(nullptr, account_data);
-
-  autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
-  ASSERT_NE(nullptr, pdm);
-  std::vector<CreditCard*> cards = pdm->GetCreditCards();
-  ASSERT_EQ(1uL, cards.size());
-  std::vector<AutofillProfile*> profiles = pdm->GetServerProfiles();
-  ASSERT_EQ(1uL, profiles.size());
-
-  // Check that the data was set correctly.
-  ExpectDefaultCreditCardValues(*cards[0]);
-  ExpectDefaultProfileValues(*profiles[0]);
-
-  // Check that the data is stored in the profile storage.
-  EXPECT_EQ(1U, GetServerCards(GetProfileWebDataService(0)).size());
-  EXPECT_EQ(1U, GetServerProfiles(GetProfileWebDataService(0)).size());
-}
-
-class SingleClientWalletWithAccountStorageSyncTest
-    : public SingleClientWalletSyncTest {
- public:
-  SingleClientWalletWithAccountStorageSyncTest() {
-    features_.InitAndEnableFeature(
-        autofill::features::kAutofillEnableAccountWalletStorage);
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
 // ChromeOS does not support late signin after profile creation, so the test
 // below does not apply, at least in the current form.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
                        DownloadAccountStorage_Card) {
   ASSERT_TRUE(SetupClients());
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
@@ -363,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
 // Wallet data should get cleared from the database when the user signs out and
 // different data should get downstreamed when the user signs in with a
 // different account.
-IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
                        ClearOnSignOutAndDownstreamOnSignIn) {
   ASSERT_TRUE(SetupClients());
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
@@ -1269,10 +1215,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
 class SingleClientWalletSecondaryAccountSyncTest
     : public SingleClientWalletSyncTest {
  public:
-  SingleClientWalletSecondaryAccountSyncTest() {
-    features_.InitAndEnableFeature(
-        autofill::features::kAutofillEnableAccountWalletStorage);
-  }
+  SingleClientWalletSecondaryAccountSyncTest() = default;
 
   SingleClientWalletSecondaryAccountSyncTest(
       const SingleClientWalletSecondaryAccountSyncTest&) = delete;

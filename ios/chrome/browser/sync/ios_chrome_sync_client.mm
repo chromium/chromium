@@ -72,11 +72,9 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
       ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
           browser_state_, ServiceAccessType::IMPLICIT_ACCESS);
   account_web_data_service_ =
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableAccountWalletStorage)
-          ? ios::WebDataServiceFactory::GetAutofillWebDataForAccount(
-                browser_state_, ServiceAccessType::IMPLICIT_ACCESS)
-          : nullptr;
+      ios::WebDataServiceFactory::GetAutofillWebDataForAccount(
+          browser_state_, ServiceAccessType::IMPLICIT_ACCESS);
+  ;
   db_thread_ = profile_web_data_service_
                    ? profile_web_data_service_->GetDBTaskRunner()
                    : nullptr;

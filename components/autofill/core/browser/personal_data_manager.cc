@@ -606,15 +606,12 @@ void PersonalDataManager::OnStateChanged(syncer::SyncService* sync_service) {
     observer.OnPersonalDataSyncStateChanged();
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableAccountWalletStorage)) {
-    // Use the ephemeral account storage when the user didn't enable the sync
-    // feature explicitly. `sync_service` is nullptr-checked because this
-    // method can also be used (apart from the Sync service observer's calls) in
-    // SetSyncService() where setting a nullptr is possible.
-    database_helper_->SetUseAccountStorageForServerData(
-        sync_service && !sync_service->IsSyncFeatureEnabled());
-  }
+  // Use the ephemeral account storage when the user didn't enable the sync
+  // feature explicitly. `sync_service` is nullptr-checked because this
+  // method can also be used (apart from the Sync service observer's calls) in
+  // SetSyncService() where setting a nullptr is possible.
+  database_helper_->SetUseAccountStorageForServerData(
+      sync_service && !sync_service->IsSyncFeatureEnabled());
 }
 
 void PersonalDataManager::OnSyncShutdown(syncer::SyncService* sync_service) {
@@ -667,10 +664,8 @@ AutofillSyncSigninState PersonalDataManager::GetSyncSigninState() const {
     return AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled;
   }
 
-  // Check if the feature is enabled and if Wallet data types are supported.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableAccountWalletStorage) &&
-      sync_service_->GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA)) {
+  // Check if Wallet data types are supported.
+  if (sync_service_->GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA)) {
     return AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled;
   }
 
@@ -1587,9 +1582,7 @@ bool PersonalDataManager::ShouldSuggestServerCards() const {
     return false;
 
   // Check if the user is in sync transport mode for wallet data.
-  if (!sync_service_->IsSyncFeatureEnabled() &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableAccountWalletStorage)) {
+  if (!sync_service_->IsSyncFeatureEnabled()) {
     // For SyncTransport, only show server cards if the user has opted in to
     // seeing them in the dropdown.
     if (!prefs::IsUserOptedInWalletSyncTransport(
@@ -2327,12 +2320,6 @@ bool PersonalDataManager::ShouldShowCardsFromAccountOption() const {
       GetServerCreditCards().empty()) {
     return false;
   }
-
-  // If we have not returned yet, it should mean that the user is in Sync
-  // Transport mode for Wallet data (Sync Feature disabled but has server
-  // cards). This should only happen if that feature is enabled.
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kAutofillEnableAccountWalletStorage));
 
   bool is_opted_in = prefs::IsUserOptedInWalletSyncTransport(
       pref_service_, sync_service_->GetAccountInfo().account_id);

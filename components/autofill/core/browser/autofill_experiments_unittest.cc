@@ -195,8 +195,6 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_EmptyUserEmail) {
 }
 
 TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_TransportModeOnly) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillEnableAccountWalletStorage);
   // When we don't have Sync consent, Sync will start in Transport-only mode
   // (if allowed).
   sync_service_.SetHasSyncConsent(false);
@@ -215,8 +213,6 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_TransportModeOnly) {
 TEST_F(
     AutofillExperimentsTest,
     IsCardUploadEnabled_TransportSyncDoesNotHaveAutofillProfileActiveDataType) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillEnableAccountWalletStorage);
   // When we don't have Sync consent, Sync will start in Transport-only mode
   // (if allowed).
   sync_service_.SetHasSyncConsent(false);

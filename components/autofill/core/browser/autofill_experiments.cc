@@ -147,11 +147,6 @@ bool IsCreditCardUploadEnabled(const PrefService* pref_service,
           "SYNC_SERVICE_MISSING_AUTOFILL_PROFILE_ACTIVE_DATA_TYPE");
       return false;
     }
-  } else {
-    // If Wallet sync is running even when sync the feature is off, the account
-    // Wallet feature must be on.
-    DCHECK(base::FeatureList::IsEnabled(
-        features::kAutofillEnableAccountWalletStorage));
   }
 
   // Also don't offer upload for users that have an explicit sync passphrase.

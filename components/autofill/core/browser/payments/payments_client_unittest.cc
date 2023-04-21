@@ -629,10 +629,6 @@ TEST_F(PaymentsClientTest, GetUnmaskDetailsSuccess) {
 }
 
 TEST_F(PaymentsClientTest, GetUnmaskDetailsIncludesChromeUserContext) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillEnableAccountWalletStorage);
-
   StartGettingUnmaskDetails();
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{}");
@@ -951,20 +947,6 @@ TEST_F(PaymentsClientTest, IncorrectOtp) {
   EXPECT_EQ("FLOW_STATUS_INCORRECT_OTP", unmask_response_details_->flow_status);
 }
 
-TEST_F(PaymentsClientTest, UnmaskIncludesChromeUserContext) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillEnableAccountWalletStorage);
-
-  StartUnmasking(CardUnmaskOptions());
-  IssueOAuthToken();
-  ReturnResponse(net::HTTP_OK, "{}");
-
-  // ChromeUserContext was set.
-  EXPECT_TRUE(GetUploadData().find("chrome_user_context") != std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("full_sync_enabled") != std::string::npos);
-}
-
 TEST_F(PaymentsClientTest, UnmaskIncludesLegacyAndNonLegacyId) {
   StartUnmasking(CardUnmaskOptions());
   IssueOAuthToken();
@@ -999,12 +981,7 @@ TEST_F(PaymentsClientTest, UnmaskIncludesOnlyNonLegacyId) {
   EXPECT_TRUE(GetUploadData().find("credit_card_id") == std::string::npos);
 }
 
-TEST_F(PaymentsClientTest,
-       UnmaskIncludesChromeUserContextIfWalletStorageFlagEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableAccountWalletStorage);
-
+TEST_F(PaymentsClientTest, UnmaskIncludesChromeUserContext) {
   StartUnmasking(CardUnmaskOptions());
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{}");
@@ -1180,19 +1157,6 @@ TEST_P(PaymentsClientUploadDetailsTest,
               std::string::npos);
 }
 
-TEST_P(PaymentsClientUploadDetailsTest, GetDetailsIncludesChromeUserContext) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillEnableAccountWalletStorage);
-
-  StartGettingUploadDetails(GetUploadDetailsOptions());
-  IssueOAuthTokenIfNecessaryForPreflightCall();
-
-  // ChromeUserContext was set.
-  EXPECT_TRUE(GetUploadData().find("chrome_user_context") != std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("full_sync_enabled") != std::string::npos);
-}
-
 TEST_P(PaymentsClientUploadDetailsTest,
        GetDetailsIncludesIncludesClientBehaviorSignalsInChromeUserContext) {
   base::test::ScopedFeatureList feature_list;
@@ -1215,12 +1179,7 @@ TEST_P(PaymentsClientUploadDetailsTest,
   EXPECT_THAT(GetUploadData(), HasSubstr("\"client_behavior_signals\":[1]"));
 }
 
-TEST_P(PaymentsClientUploadDetailsTest,
-       GetDetailsIncludesChromeUserContextIfWalletStorageFlagEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableAccountWalletStorage);
-
+TEST_P(PaymentsClientUploadDetailsTest, GetDetailsIncludesChromeUserContext) {
   StartGettingUploadDetails(GetUploadDetailsOptions());
   IssueOAuthTokenIfNecessaryForPreflightCall();
 
@@ -1675,24 +1634,6 @@ TEST_F(PaymentsClientTest, UploadDoesNotIncludeCvcInRequestIfNotProvided) {
 }
 
 TEST_F(PaymentsClientTest, UploadIncludesChromeUserContext) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillEnableAccountWalletStorage);
-
-  StartUploading(UploadCardOptions());
-  IssueOAuthToken();
-
-  // ChromeUserContext was set.
-  EXPECT_TRUE(GetUploadData().find("chrome_user_context") != std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("full_sync_enabled") != std::string::npos);
-}
-
-TEST_F(PaymentsClientTest,
-       UploadIncludesChromeUserContextIfWalletStorageFlagEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableAccountWalletStorage);
-
   StartUploading(UploadCardOptions());
   IssueOAuthToken();
 
@@ -1934,24 +1875,6 @@ TEST_F(PaymentsClientTest,
 }
 
 TEST_F(PaymentsClientTest, MigrationRequestIncludesChromeUserContext) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillEnableAccountWalletStorage);
-
-  StartMigrating(/*has_cardholder_name=*/true);
-  IssueOAuthToken();
-
-  // ChromeUserContext was set.
-  EXPECT_TRUE(GetUploadData().find("chrome_user_context") != std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("full_sync_enabled") != std::string::npos);
-}
-
-TEST_F(PaymentsClientTest,
-       MigrationRequestIncludesChromeUserContextIfWalletStorageFlagEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableAccountWalletStorage);
-
   StartMigrating(/*has_cardholder_name=*/true);
   IssueOAuthToken();
 

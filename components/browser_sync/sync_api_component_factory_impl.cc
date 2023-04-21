@@ -259,22 +259,10 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
     // Wallet data sync is enabled by default. Register unless explicitly
     // disabled.
     if (!disabled_types.Has(syncer::AUTOFILL_WALLET_DATA)) {
-      if (base::FeatureList::IsEnabled(
-              autofill::features::kAutofillEnableAccountWalletStorage)) {
-        controllers.push_back(
-            CreateWalletModelTypeControllerWithInMemorySupport(
-                syncer::AUTOFILL_WALLET_DATA,
-                base::BindRepeating(&AutofillWalletDelegateFromDataService),
-                sync_service));
-      } else {
-        // Create without a transport-mode delegate otherwise.
-        // Since the feature is already enabled by default, this path is only
-        // executed in integration tests.
-        controllers.push_back(CreateWalletModelTypeController(
-            syncer::AUTOFILL_WALLET_DATA,
-            base::BindRepeating(&AutofillWalletDelegateFromDataService),
-            sync_service));
-      }
+      controllers.push_back(CreateWalletModelTypeControllerWithInMemorySupport(
+          syncer::AUTOFILL_WALLET_DATA,
+          base::BindRepeating(&AutofillWalletDelegateFromDataService),
+          sync_service));
     }
 
     // Wallet metadata sync depends on Wallet data sync. Register if neither
@@ -302,11 +290,10 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
     if (base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletUsageData) &&
         !disabled_types.Has(syncer::AUTOFILL_WALLET_DATA) &&
         !disabled_types.Has(syncer::AUTOFILL_WALLET_USAGE)) {
-      controllers.push_back(
-          CreateWalletModelTypeControllerWithInMemorySupport(
-              syncer::AUTOFILL_WALLET_USAGE,
-              base::BindRepeating(&AutofillWalletUsageDataDelegateFromDataService),
-              sync_service));
+      controllers.push_back(CreateWalletModelTypeControllerWithInMemorySupport(
+          syncer::AUTOFILL_WALLET_USAGE,
+          base::BindRepeating(&AutofillWalletUsageDataDelegateFromDataService),
+          sync_service));
     }
   }
 
