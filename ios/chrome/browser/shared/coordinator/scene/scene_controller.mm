@@ -111,6 +111,7 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
 #import "ios/chrome/browser/ui/history/history_coordinator.h"
+#import "ios/chrome/browser/ui/history/history_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_coordinator.h"
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
@@ -239,6 +240,7 @@ void InjectNTP(Browser* browser) {
                                PolicyWatcherBrowserAgentObserving,
                                SettingsNavigationControllerDelegate,
                                SceneUIProvider,
+                               HistoryCoordinatorDelegate,
                                SceneURLLoadingServiceDelegate,
                                TabGridCoordinatorDelegate,
                                WebStateListObserving,
@@ -1405,6 +1407,7 @@ void InjectNTP(Browser* browser) {
   self.historyCoordinator.loadStrategy =
       self.currentInterface.incognito ? UrlLoadStrategy::ALWAYS_IN_INCOGNITO
                                       : UrlLoadStrategy::NORMAL;
+  self.historyCoordinator.delegate = self;
   [self.historyCoordinator start];
 }
 
@@ -3377,6 +3380,19 @@ void InjectNTP(Browser* browser) {
 
 - (UIViewController*)activeViewController {
   return self.mainCoordinator.activeViewController;
+}
+
+#pragma mark - HistoryCoordinatorDelegate
+
+- (void)closeHistoryWithCompletion:(ProceduralBlock)completion {
+  __weak __typeof(self) weakSelf = self;
+  [self.historyCoordinator dismissWithCompletion:^{
+    if (completion) {
+      completion();
+    }
+    [weakSelf.historyCoordinator stop];
+    weakSelf.historyCoordinator = nil;
+  }];
 }
 
 @end

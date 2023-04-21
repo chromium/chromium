@@ -7,6 +7,7 @@ source_set("history") {
   sources = [
     "history_coordinator.h",
     "history_coordinator.mm",
+    "history_coordinator_delegate.h",
     "history_mediator.h",
     "history_mediator.mm",
   ]

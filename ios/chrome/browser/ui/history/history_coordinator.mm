@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/history/history_clear_browsing_data_coordinator.h"
+#import "ios/chrome/browser/ui/history/history_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/history/history_mediator.h"
 #import "ios/chrome/browser/ui/history/history_menu_provider.h"
 #import "ios/chrome/browser/ui/history/history_table_view_controller.h"
@@ -140,7 +141,13 @@ history::WebHistoryService* WebHistoryServiceGetter(
   // Disconnect the historyTableViewController before dismissing it to avoid
   // it accessing stalled objects.
   [self.historyTableViewController detachFromBrowser];
-  [self stopWithCompletion:nil];
+  [self dismissWithCompletion:nil];
+
+  // Clear C++ objects as they may reference objects that will become
+  // unavailable.
+  _browsingHistoryDriver = nullptr;
+  _browsingHistoryService = nullptr;
+  _browsingHistoryDriverDelegate = nullptr;
 }
 
 - (void)dealloc {
@@ -148,7 +155,7 @@ history::WebHistoryService* WebHistoryServiceGetter(
 }
 
 // This method should always execute the `completionHandler`.
-- (void)stopWithCompletion:(ProceduralBlock)completionHandler {
+- (void)dismissWithCompletion:(ProceduralBlock)completionHandler {
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
 
@@ -187,7 +194,7 @@ history::WebHistoryService* WebHistoryServiceGetter(
 #pragma mark - HistoryUIDelegate
 
 - (void)dismissHistoryWithCompletion:(ProceduralBlock)completionHandler {
-  [self stopWithCompletion:completionHandler];
+  [self.delegate closeHistoryWithCompletion:completionHandler];
 }
 
 - (void)displayPrivacySettings {
@@ -289,7 +296,7 @@ history::WebHistoryService* WebHistoryServiceGetter(
 // the active regular tab.
 - (void)onOpenedURLInNewTab {
   __weak __typeof(self) weakSelf = self;
-  [self stopWithCompletion:^{
+  [self.delegate closeHistoryWithCompletion:^{
     [weakSelf.presentationDelegate showActiveRegularTabFromHistory];
   }];
 }
@@ -298,7 +305,7 @@ history::WebHistoryService* WebHistoryServiceGetter(
 // the active incognito tab.
 - (void)onOpenedURLInNewIncognitoTab {
   __weak __typeof(self) weakSelf = self;
-  [self stopWithCompletion:^{
+  [self.delegate closeHistoryWithCompletion:^{
     [weakSelf.presentationDelegate showActiveIncognitoTabFromHistory];
   }];
 }
