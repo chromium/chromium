@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SMART_CARD_SMART_CARD_RESOURCE_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SMART_CARD_SMART_CARD_RESOURCE_MANAGER_H_
 
-#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/smart_card/smart_card.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -15,6 +14,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
@@ -79,9 +79,9 @@ class MODULES_EXPORT SmartCardResourceManager final
   SmartCardReaderPresenceObserver* GetOrCreatePresenceObserver();
 
   HeapMojoRemote<mojom::blink::SmartCardService> service_;
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::AssociatedReceiver<mojom::blink::SmartCardServiceClient> receiver_{
-      this};
+  HeapMojoAssociatedReceiver<mojom::blink::SmartCardServiceClient,
+                             SmartCardResourceManager>
+      receiver_;
   HeapHashSet<Member<ScriptPromiseResolver>> get_readers_promises_;
   HeapHashSet<Member<ScriptPromiseResolver>> watch_for_readers_promises_;
   bool tracking_started_ = false;

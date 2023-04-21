@@ -57,7 +57,8 @@ SmartCardResourceManager* SmartCardResourceManager::smartCard(
 SmartCardResourceManager::SmartCardResourceManager(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator),
       ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
-      service_(navigator.GetExecutionContext()) {}
+      service_(navigator.GetExecutionContext()),
+      receiver_(this, navigator.GetExecutionContext()) {}
 
 void SmartCardResourceManager::ContextDestroyed() {
   CloseServiceConnection();
@@ -121,6 +122,7 @@ void SmartCardResourceManager::Connect(
 
 void SmartCardResourceManager::Trace(Visitor* visitor) const {
   visitor->Trace(service_);
+  visitor->Trace(receiver_);
   visitor->Trace(get_readers_promises_);
   visitor->Trace(watch_for_readers_promises_);
   visitor->Trace(reader_cache_);
@@ -237,7 +239,7 @@ void SmartCardResourceManager::EnsureServiceConnection() {
                     WrapWeakPersistent(this)));
   DCHECK(!receiver_.is_bound());
   service_->RegisterClient(
-      receiver_.BindNewEndpointAndPassRemote(),
+      receiver_.BindNewEndpointAndPassRemote(task_runner),
       WTF::BindOnce(&SmartCardResourceManager::OnServiceClientRegistered,
                     WrapWeakPersistent(this)));
 }
