@@ -112,6 +112,14 @@ luci.notifier(
     ],
 )
 
+luci.notifier(
+    name = "chrome-build-perf",
+    on_new_status = ["FAILURE"],
+    notify_emails = [
+        "chrome-buld-team+alert@google.com",
+    ],
+)
+
 TREE_CLOSING_STEPS_REGEXP = "\\b({})\\b".format("|".join([
     "bot_update",
     "compile",

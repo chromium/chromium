@@ -1522,6 +1522,7 @@ def build_perf_builder(**kwargs):
         siso_enable_cloud_trace = True,
         siso_project = siso.project.DEFAULT_UNTRUSTED,
         use_clang_coverage = True,
+        notifies = ["chrome-build-perf"],
         **kwargs
     )
 
