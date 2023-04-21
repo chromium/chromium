@@ -580,21 +580,22 @@ AHardwareBufferImageBackingFactory::AHardwareBufferImageBackingFactory(
   // Build the feature info for all the resource formats.
   for (int i = 0; i <= viz::RESOURCE_FORMAT_MAX; ++i) {
     auto format = static_cast<viz::ResourceFormat>(i);
-    FormatInfo& info = format_info_[i];
 
     // If AHB does not support this format, we will not be able to create this
     // backing.
     if (!AHardwareBufferSupportedFormat(format))
       continue;
 
-    info.ahb_supported = true;
+    FormatInfo info;
     info.ahb_format = AHardwareBufferFormat(format);
 
     // TODO(vikassoni): In future when we use GL_TEXTURE_EXTERNAL_OES target
     // with AHB, we need to check if oes_egl_image_external is supported or
     // not.
-    if (!is_egl_image_supported)
+    if (!is_egl_image_supported) {
+      format_infos_[viz::SharedImageFormat::SinglePlane(format)] = info;
       continue;
+    }
 
     // Check if AHB backed GL texture can be created using this format and
     // gather GL related format info.
@@ -604,8 +605,10 @@ AHardwareBufferImageBackingFactory::AHardwareBufferImageBackingFactory(
     GLenum gl_type = viz::GLDataType(format);
 
     //  GLImageAHardwareBuffer supports internal format GL_RGBA and GL_RGB.
-    if (internal_format != GL_RGBA && internal_format != GL_RGB)
+    if (internal_format != GL_RGBA && internal_format != GL_RGB) {
+      format_infos_[viz::SharedImageFormat::SinglePlane(format)] = info;
       continue;
+    }
 
     // Validate if GL format, type and internal format is supported.
     if (validators->texture_internal_format.IsValid(internal_format) &&
@@ -616,6 +619,7 @@ AHardwareBufferImageBackingFactory::AHardwareBufferImageBackingFactory(
       info.gl_type = gl_type;
       info.internal_format = internal_format;
     }
+    format_infos_[viz::SharedImageFormat::SinglePlane(format)] = info;
   }
   // TODO(vikassoni): We are using below GL api calls for now as Vulkan mode
   // doesn't exist. Once we have vulkan support, we shouldn't query GL in this
@@ -649,14 +653,13 @@ bool AHardwareBufferImageBackingFactory::ValidateUsage(
     uint32_t usage,
     const gfx::Size& size,
     viz::SharedImageFormat format) const {
-  const FormatInfo& format_info = GetFormatInfo(format);
-
-  // Check if the format is supported by AHardwareBuffer.
-  if (!format_info.ahb_supported) {
-    LOG(ERROR) << "viz::ResourceFormat " << format.ToString()
+  if (!AHardwareBufferSupportedFormat(format.resource_format())) {
+    LOG(ERROR) << "viz::SharedImageFormat " << format.ToString()
                << " not supported by AHardwareBuffer";
     return false;
   }
+
+  const FormatInfo& format_info = GetFormatInfo(format);
 
   // SHARED_IMAGE_USAGE_RASTER is set when we want to write on Skia
   // representation and SHARED_IMAGE_USAGE_DISPLAY_READ is used for cases we
@@ -854,17 +857,11 @@ bool AHardwareBufferImageBackingFactory::IsSupported(
     return false;
   }
 
-  if (!IsFormatSupported(format)) {
+  if (!AHardwareBufferSupportedFormat(format.resource_format())) {
     return false;
   }
 
   return true;
-}
-
-bool AHardwareBufferImageBackingFactory::IsFormatSupported(
-    viz::SharedImageFormat format) {
-  const FormatInfo& format_info = GetFormatInfo(format);
-  return format_info.ahb_supported;
 }
 
 AHardwareBufferImageBackingFactory::FormatInfo::FormatInfo() = default;

@@ -7,6 +7,7 @@
 
 #include <dawn/dawn_proc_table.h>
 
+#include "base/containers/flat_map.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gl/gl_bindings.h"
@@ -88,8 +89,6 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
     FormatInfo();
     ~FormatInfo();
 
-    // Whether this format is supported by AHardwareBuffer.
-    bool ahb_supported = false;
     unsigned int ahb_format = 0;
 
     // Whether this format can be used to create a GL texture from the AHB.
@@ -118,12 +117,13 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
       bool is_thread_safe,
       base::span<const uint8_t> pixel_data);
 
-  // WARNING: Format must be single plane.
   const FormatInfo& GetFormatInfo(viz::SharedImageFormat format) const {
-    return format_info_[format.resource_format()];
+    auto iter = format_infos_.find(format);
+    CHECK(iter != format_infos_.end());
+    return iter->second;
   }
 
-  FormatInfo format_info_[viz::RESOURCE_FORMAT_MAX + 1];
+  base::flat_map<viz::SharedImageFormat, FormatInfo> format_infos_;
 
   // Used to limit the max size of AHardwareBuffer.
   int32_t max_gl_texture_size_ = 0;
