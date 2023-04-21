@@ -1330,7 +1330,7 @@ const CGFloat kSymbolSize = 18;
   // Set the content size to be large enough to contain all the tabs at the
   // desired width, with the standard overlap, plus the new tab button.
   CGSize contentSize = CGSizeMake(
-      (_currentTabWidth * tabCount) - ([self tabOverlap] * tabCount) +
+      (_currentTabWidth * tabCount) - ([self tabOverlap] * (tabCount - 1)) +
           CGRectGetWidth([_buttonNewTab frame]) - kNewTabOverlap,
       tabHeight);
   if (CGSizeEqualToSize([_tabStripView contentSize], contentSize))
