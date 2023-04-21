@@ -460,47 +460,67 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   // point of each <iframe> to transform the coordinates of the inner <input>
   // elements. For example, main frame: 497,18;497,185:381,59;499,59 and each
   // iframe: 55,18;55,67
-  std::string script =
-      "function onFocus(e) {"
-      "  console.log(window.name + '-focused-' + e.target.id);"
-      "  domAutomationController.send(window.name + '-focused-' + e.target.id);"
-      "}"
-      ""
-      "function getElementCoords(element) {"
-      "  var rect = element.getBoundingClientRect();"
-      "  return Math.floor(rect.left + 0.5 * rect.width) +','+"
-      "         Math.floor(rect.top + 0.5 * rect.height);"
-      "}"
-      "function getIframeCoords(element) {"
-      "  var rect = element.getBoundingClientRect();"
-      "  return Math.floor(rect.left) +','+"
-      "         Math.floor(rect.top);"
-      "}"
-      "function onClick(e) {"
-      " console.log('Click event ' + window.name + ' at: ' + e.x + ', ' + e.y "
-      "             + ' screen: ' + e.screenX + ', ' + e.screenY);"
-      "}"
-      ""
-      "window.addEventListener('click', onClick);"
-      "console.log(document.location.origin);"
-      "document.styleSheets[0].insertRule('input {width:100%;margin:0;}', 1);"
-      "document.styleSheets[0].insertRule('h2 {margin:0;}', 1);"
-      "var input1 = document.createElement('input');"
-      "input1.id = 'input1';"
-      "input1.addEventListener('focus', onFocus, false);"
-      "var input2 = document.createElement('input');"
-      "input2.id = 'input2';"
-      "input2.addEventListener('focus', onFocus, false);"
-      "document.body.insertBefore(input1, document.body.firstChild);"
-      "document.body.appendChild(input2);"
-      ""
-      "var frames = document.querySelectorAll('iframe');"
-      "frames = Array.prototype.map.call(frames, getIframeCoords).join(';');"
-      "var inputCoords = [input1, input2].map(getElementCoords).join(';');"
-      "if (frames) {"
-      "  inputCoords = inputCoords + ':' + frames;"
-      "}"
-      "domAutomationController.send(inputCoords);";
+  std::string script = R"(
+      /* Invariant: eventsOrGets is either all event records, or all
+       * `resolve` functions.
+       */
+      var eventsOrGets = [];
+      function waitForFocusEvent() {
+        if (eventsOrGets.length && (typeof eventsOrGets.at(-1) !=
+           'function')) {
+          return eventsOrGets.pop();
+        }
+        return new Promise(resolve => {
+          eventsOrGets.push(resolve);
+        });
+      }
+      function onFocus(e) {
+        var result = window.name + '-focused-' + e.target.id;
+        console.log(result);
+        if (eventsOrGets.length && (typeof eventsOrGets.at(-1) ==
+            'function')) {
+          eventsOrGets.pop()(result);
+          return;
+        }
+        eventsOrGets.push(result);
+      }
+
+      function getElementCoords(element) {
+        var rect = element.getBoundingClientRect();
+        return Math.floor(rect.left + 0.5 * rect.width) +','+
+               Math.floor(rect.top + 0.5 * rect.height);
+      }
+      function getIframeCoords(element) {
+        var rect = element.getBoundingClientRect();
+        return Math.floor(rect.left) +','+
+               Math.floor(rect.top);
+      }
+      function onClick(e) {
+       console.log('Click event ' + window.name + ' at: ' + e.x + ', ' + e.y
+                   + ' screen: ' + e.screenX + ', ' + e.screenY);
+      }
+
+      window.addEventListener('click', onClick);
+      console.log(document.location.origin);
+      document.styleSheets[0].insertRule('input {width:100%;margin:0;}', 1);
+      document.styleSheets[0].insertRule('h2 {margin:0;}', 1);
+      var input1 = document.createElement('input');
+      input1.id = 'input1';
+      input1.addEventListener('focus', onFocus, false);
+      var input2 = document.createElement('input');
+      input2.id = 'input2';
+      input2.addEventListener('focus', onFocus, false);
+      document.body.insertBefore(input1, document.body.firstChild);
+      document.body.appendChild(input2);
+
+      var frames = document.querySelectorAll('iframe');
+      frames = Array.prototype.map.call(frames, getIframeCoords).join(';');
+      var inputCoords = [input1, input2].map(getElementCoords).join(';');
+      if (frames) {
+        inputCoords = inputCoords + ':' + frames;
+      }
+      inputCoords;
+      )";
 
   auto parse_points = [](const std::string& input, const gfx::Point& offset) {
     base::StringPairs pieces;
@@ -524,98 +544,97 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 
   // Add two input fields to each of the three frames and retrieve click
   // coordinates.
-  std::string result;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(main_frame, script, &result));
+  std::string result = EvalJs(main_frame, script).ExtractString();
   auto parsed = parse_points_and_offsets(result);
   auto main_frame_input_coords = parsed.first;
   auto iframe1_offset = parsed.second[0];
   auto iframe2_offset = parsed.second[1];
 
-  EXPECT_TRUE(ExecuteScriptAndExtractString(child1, script, &result));
+  result = EvalJs(child1, script).ExtractString();
   auto child1_input_coords = parse_points(result, iframe1_offset);
-  EXPECT_TRUE(ExecuteScriptAndExtractString(child2, script, &result));
+  result = EvalJs(child2, script).ExtractString();
   auto child2_input_coords = parse_points(result, iframe2_offset);
 
   // Helper to simulate a tab press and wait for a focus message.
-  auto press_tab_and_wait_for_message = [web_contents](bool reverse) {
-    content::DOMMessageQueue msg_queue(web_contents);
-    std::string reply;
+  auto press_tab_and_wait_for_message = [web_contents](
+                                            content::RenderFrameHost* receiver,
+                                            bool reverse) {
     SimulateKeyPress(web_contents, ui::DomKey::TAB, ui::DomCode::TAB,
                      ui::VKEY_TAB, false, reverse /* shift */, false, false);
     LOG(INFO) << "Press tab";
-    EXPECT_TRUE(msg_queue.WaitForMessage(&reply));
-    return reply;
+    return EvalJs(receiver, "waitForFocusEvent()");
   };
 
   auto click_element_and_wait_for_message =
-      [web_contents](const gfx::Point& point) {
-        content::DOMMessageQueue msg_queue(web_contents);
-
+      [web_contents](content::RenderFrameHost* receiver,
+                     const gfx::Point& point) {
         auto content_bounds = web_contents->GetContainerBounds();
         ui_controls::SendMouseMove(point.x() + content_bounds.x(),
                                    point.y() + content_bounds.y());
         ui_controls::SendMouseClick(ui_controls::LEFT);
 
-        std::string reply;
         LOG(INFO) << "Click element";
-        EXPECT_TRUE(msg_queue.WaitForMessage(&reply));
-        return reply;
+        return EvalJs(receiver, "waitForFocusEvent()");
       };
 
   // Tab from child1 back to root.
-  EXPECT_EQ("\"root-focused-input1\"",
-            click_element_and_wait_for_message(main_frame_input_coords[0]));
+  EXPECT_EQ("root-focused-input1", click_element_and_wait_for_message(
+                                       main_frame, main_frame_input_coords[0]));
   EXPECT_EQ(main_frame, web_contents->GetFocusedFrame());
   auto frame_focused = std::make_unique<content::FrameFocusedObserver>(child1);
-  EXPECT_EQ("\"child1-focused-input1\"",
-            click_element_and_wait_for_message(child1_input_coords[0]));
+  EXPECT_EQ("child1-focused-input1",
+            click_element_and_wait_for_message(child1, child1_input_coords[0]));
   frame_focused->Wait();
   frame_focused = std::make_unique<content::FrameFocusedObserver>(main_frame);
-  EXPECT_EQ("\"root-focused-input1\"", press_tab_and_wait_for_message(true));
+  EXPECT_EQ("root-focused-input1",
+            press_tab_and_wait_for_message(main_frame, true));
   frame_focused->Wait();
 
   // Tab from child2 forward to root.
-  EXPECT_EQ("\"root-focused-input2\"",
-            click_element_and_wait_for_message(main_frame_input_coords[1]));
+  EXPECT_EQ("root-focused-input2", click_element_and_wait_for_message(
+                                       main_frame, main_frame_input_coords[1]));
   EXPECT_EQ(main_frame, web_contents->GetFocusedFrame());
   frame_focused = std::make_unique<content::FrameFocusedObserver>(child2);
-  EXPECT_EQ("\"child2-focused-input2\"",
-            click_element_and_wait_for_message(child2_input_coords[1]));
+  EXPECT_EQ("child2-focused-input2",
+            click_element_and_wait_for_message(child2, child2_input_coords[1]));
   frame_focused->Wait();
   frame_focused = std::make_unique<content::FrameFocusedObserver>(main_frame);
-  EXPECT_EQ("\"root-focused-input2\"", press_tab_and_wait_for_message(false));
+  EXPECT_EQ("root-focused-input2",
+            press_tab_and_wait_for_message(main_frame, false));
   frame_focused->Wait();
 
   // Tab forward from child1 to child2.
   frame_focused = std::make_unique<content::FrameFocusedObserver>(child2);
-  EXPECT_EQ("\"child2-focused-input1\"",
-            click_element_and_wait_for_message(child2_input_coords[0]));
+  EXPECT_EQ("child2-focused-input1",
+            click_element_and_wait_for_message(child2, child2_input_coords[0]));
   frame_focused->Wait();
   frame_focused = std::make_unique<content::FrameFocusedObserver>(child1);
-  EXPECT_EQ("\"child1-focused-input2\"",
-            click_element_and_wait_for_message(child1_input_coords[1]));
+  EXPECT_EQ("child1-focused-input2",
+            click_element_and_wait_for_message(child1, child1_input_coords[1]));
   frame_focused->Wait();
   frame_focused = std::make_unique<content::FrameFocusedObserver>(child2);
-  EXPECT_EQ("\"child2-focused-input1\"", press_tab_and_wait_for_message(false));
+  EXPECT_EQ("child2-focused-input1",
+            press_tab_and_wait_for_message(child2, false));
   frame_focused->Wait();
 
   // Tab backward from child2 to child1.
   frame_focused = std::make_unique<content::FrameFocusedObserver>(child1);
-  EXPECT_EQ("\"child1-focused-input2\"",
-            click_element_and_wait_for_message(child1_input_coords[1]));
+  EXPECT_EQ("child1-focused-input2",
+            click_element_and_wait_for_message(child1, child1_input_coords[1]));
   frame_focused->Wait();
   frame_focused = std::make_unique<content::FrameFocusedObserver>(child2);
-  EXPECT_EQ("\"child2-focused-input1\"",
-            click_element_and_wait_for_message(child2_input_coords[0]));
+  EXPECT_EQ("child2-focused-input1",
+            click_element_and_wait_for_message(child2, child2_input_coords[0]));
   frame_focused->Wait();
   frame_focused = std::make_unique<content::FrameFocusedObserver>(child1);
-  EXPECT_EQ("\"child1-focused-input2\"", press_tab_and_wait_for_message(true));
+  EXPECT_EQ("child1-focused-input2",
+            press_tab_and_wait_for_message(child1, true));
   // EXPECT_EQ(child1, web_contents->GetFocusedFrame());
   frame_focused->Wait();
 
   // Ensure there are no pending focus events after tabbing.
-  EXPECT_EQ("\"root-focused-input1\"",
-            click_element_and_wait_for_message(main_frame_input_coords[0]))
+  EXPECT_EQ("root-focused-input1", click_element_and_wait_for_message(
+                                       main_frame, main_frame_input_coords[0]))
       << "Unexpected extra focus events.";
 }
 #endif
@@ -635,14 +654,10 @@ gfx::Size GetFrameSize(content::RenderFrameHost* frame) {
 // if it's defined (which is the case when |frame| is in fullscreen mode), or
 // "none" otherwise.
 std::string GetFullscreenElementId(content::RenderFrameHost* frame) {
-  std::string fullscreen_element;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      frame,
-      "domAutomationController.send("
-      "    document.webkitFullscreenElement ? "
-      "        document.webkitFullscreenElement.id : 'none')",
-      &fullscreen_element));
-  return fullscreen_element;
+  return EvalJs(frame,
+                "document.webkitFullscreenElement ? "
+                "    document.webkitFullscreenElement.id : 'none'")
+      .ExtractString();
 }
 
 // Helper to check if an element with ID |element_id| has the
@@ -1438,10 +1453,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
       "              'width: 120px; height: 20px;';"));
 
   // Cache current date value for a sanity check later.
-  std::string cached_date;
-  ASSERT_TRUE(ExecuteScriptAndExtractString(
-      child_frame, "window.domAutomationController.send(input.value);",
-      &cached_date));
+  std::string cached_date = EvalJs(child_frame, "input.value;").ExtractString();
 
   // We use this to determine whether a new RenderWidgetHost is created or an
   // old one is removed.
@@ -1493,9 +1505,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 
   // To make sure we never clicked into the date picker, get current date value
   // and make sure it matches the cached value.
-  std::string date;
-  ASSERT_TRUE(ExecuteScriptAndExtractString(
-      child_frame, "window.domAutomationController.send(input.value);", &date));
+  std::string date = EvalJs(child_frame, "input.value;").ExtractString();
   EXPECT_EQ(cached_date, date) << "Cached date was '" << cached_date
                                << "' but current date is '" << date << "'.";
 }
