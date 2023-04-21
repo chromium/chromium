@@ -23,9 +23,11 @@
 #include "ash/webui/connectivity_diagnostics/connectivity_diagnostics_ui.h"
 #include "ash/webui/files_internals/files_internals_ui.h"
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
+#include "ash/webui/guest_os_installer/guest_os_installer_ui.h"
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
 #include "ash/webui/system_extensions_internals_ui/system_extensions_internals_ui.h"
+#include "chrome/browser/ash/guest_os/public/installer_delegate_factory.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/os_feedback/chrome_os_feedback_delegate.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_delegate.h"
@@ -139,6 +141,18 @@ std::unique_ptr<content::WebUIConfig> MakeConnectivityDiagnosticsUIConfig() {
       create_controller_func);
 }
 
+std::unique_ptr<content::WebUIConfig> MakeGuestOSInstallerUIConfig() {
+  CreateWebUIControllerFunc create_controller_func =
+      [](content::WebUI* web_ui,
+         const GURL& url) -> std::unique_ptr<content::WebUIController> {
+    return std::make_unique<ash::GuestOSInstallerUI>(
+        web_ui, base::BindRepeating(&guest_os::InstallerDelegateFactory));
+  };
+
+  return std::make_unique<ash::GuestOSInstallerUIConfig>(
+      create_controller_func);
+}
+
 void RegisterAshChromeWebUIConfigs() {
   // Add `WebUIConfig`s for Ash ChromeOS to the list here.
   auto& map = content::WebUIConfigMap::GetInstance();
@@ -171,6 +185,7 @@ void RegisterAshChromeWebUIConfigs() {
       MakeComponentConfig<ash::FilesInternalsUIConfig, ash::FilesInternalsUI,
                           ChromeFilesInternalsUIDelegate>());
   map.AddWebUIConfig(std::make_unique<ash::FirmwareUpdateAppUIConfig>());
+  map.AddWebUIConfig(MakeGuestOSInstallerUIConfig());
   map.AddWebUIConfig(std::make_unique<ash::HealthdInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::HumanPresenceInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::InternetConfigDialogUIConfig>());

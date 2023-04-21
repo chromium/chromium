@@ -15,6 +15,7 @@ static_library("guest_os_installer") {
   ]
 
   deps = [
+    "//ash/webui/common:chrome_os_webui_config",
     "//ash/webui/guest_os_installer/mojom",
     "//ash/webui/guest_os_installer/resources:resources",
     "//content/public/browser",

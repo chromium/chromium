@@ -12,11 +12,8 @@
 namespace ash {
 
 GuestOSInstallerUI::GuestOSInstallerUI(content::WebUI* web_ui,
-                                       const GURL& url,
                                        DelegateFactory delegate_factory)
-    : ui::MojoWebDialogUI(web_ui),
-      url_(url),
-      delegate_factory_(delegate_factory) {
+    : ui::MojoWebDialogUI(web_ui), delegate_factory_(delegate_factory) {
   auto* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       ash::kChromeUIGuestOSInstallerHost);
@@ -45,7 +42,7 @@ void GuestOSInstallerUI::CreatePageHandler(
   // this we delegate actually picking a backend to this delegate factory
   // callback, which lives in //chrome and is passed to us by our constructor
   // (which also lives in //chrome).
-  handler_ = delegate_factory_.Run(this, url_, std::move(pending_page),
+  handler_ = delegate_factory_.Run(this, std::move(pending_page),
                                    std::move(pending_page_handler));
 }
 
