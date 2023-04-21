@@ -90,7 +90,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputMethod {
     SpellcheckMode spellcheck_mode = SpellcheckMode::kUnspecified;
     AutocapitalizationMode autocapitalization_mode =
         AutocapitalizationMode::kUnspecified;
-    bool has_been_password = false;
     // How this input field was focused.
     ui::TextInputClient::FocusReason focus_reason =
         ui::TextInputClient::FOCUS_REASON_NONE;
