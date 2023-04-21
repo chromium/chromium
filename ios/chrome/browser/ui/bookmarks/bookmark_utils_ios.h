@@ -166,7 +166,7 @@ MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
 // the operation wasn't successful or there's nothing to undo.
 MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
     const std::set<const bookmarks::BookmarkNode*>& bookmarks,
-    const std::vector<bookmarks::BookmarkModel*> bookmark_models,
+    const std::vector<bookmarks::BookmarkModel*>& bookmark_models,
     ChromeBrowserState* browser_state);
 
 // Deletes all nodes in `bookmarks`.

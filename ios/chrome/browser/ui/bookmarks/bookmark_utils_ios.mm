@@ -368,7 +368,7 @@ void DeleteBookmarks(const std::set<const BookmarkNode*>& bookmarks,
 
 MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
     const std::set<const BookmarkNode*>& nodes,
-    const std::vector<bookmarks::BookmarkModel*> bookmark_models,
+    const std::vector<bookmarks::BookmarkModel*>& bookmark_models,
     ChromeBrowserState* browser_state) {
   CHECK_GT(bookmark_models.size(), 0u);
   size_t node_count = nodes.size();
