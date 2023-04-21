@@ -70,7 +70,7 @@ try_.orchestrator_builder(
     },
     main_list_view = "try",
     # TODO(crbug.com/1434402): Restore to the CQ when bot pools are back.
-    #tryjob = try_.job(),
+    tryjob = try_.job(experiment_percentage = 100),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,

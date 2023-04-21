@@ -9,7 +9,6 @@
   },
   "try": {
     "android-12-x64-rel": "Ubuntu-22.04",
-    "android-12-x64-rel-compilator": "Ubuntu-22.04",
     "linux-chromeos-rel": "Ubuntu-22.04",
     "linux-lacros-rel": "Ubuntu-22.04",
     "linux-rel": "Ubuntu-22.04",
