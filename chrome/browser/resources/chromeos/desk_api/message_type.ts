@@ -11,6 +11,7 @@ export enum RequestType {
   SET_WINDOW_PROPERTIES = 'SetWindowProperties',
   GET_ACTIVE_DESK = 'GetActiveDesk',
   SWITCH_DESK = 'SwitchDesk',
+  GET_DESK_BY_ID = 'GetDeskByID',
 }
 
 /**

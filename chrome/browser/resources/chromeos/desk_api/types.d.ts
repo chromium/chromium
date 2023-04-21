@@ -31,6 +31,13 @@ export interface RemoveDeskOptions {
 }
 
 /**
+ * Operands for retrieve desk information.
+ */
+export interface GetDeskByIdOperands {
+  deskId: string;
+}
+
+/**
  * Confirmation window setting for desk removal.
  */
 export interface ConfirmationSetting {
@@ -46,6 +53,7 @@ export interface ConfirmationSetting {
  */
 export interface Desk {
   deskUuid: string;
+  deskName?: string;
 }
 
 /**
@@ -95,6 +103,7 @@ export interface DeskApi {
       callback: VoidCallback): void;
   getActiveDesk(callback: DeskIdCallback): void;
   switchDesk(deskId: string, callback: VoidCallback): void;
+  getDeskById(deskId: string, callback: DeskCallback): void;
 }
 
 /**
@@ -123,3 +132,8 @@ export type DeskIdCallback = (deskId: string) => void;
  */
 export type ClickEventListener =
     (notificationId: string, buttonIndex: number) => void;
+
+/**
+ * Callback for desk output.
+ */
+export type DeskCallback = (desk: Desk) => void;

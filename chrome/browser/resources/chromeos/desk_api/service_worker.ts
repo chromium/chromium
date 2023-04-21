@@ -9,7 +9,7 @@
 
 import {DeskApiBridgeRequest, DeskApiBridgeResponse, MessageSender, ServiceWorker} from './desk_api_types';
 import {RequestType, ResponseType} from './message_type';
-import {DeskApi, LaunchOptions, NotificationApi, NotificationOptions, RemoveDeskOperands, SwitchDeskOperands, WindowProperties} from './types';
+import {Desk, DeskApi, GetDeskByIdOperands, LaunchOptions, NotificationApi, NotificationOptions, RemoveDeskOperands, SwitchDeskOperands, WindowProperties} from './types';
 
 
 /**
@@ -177,6 +177,27 @@ class ServiceWorkerImpl implements ServiceWorker {
       }
     });
   }
+
+  getDeskByIdPromise(operands: GetDeskByIdOperands) {
+    return new Promise<DeskApiBridgeResponse>((resolve, reject) => {
+      try {
+        this.deskApi.getDeskById(operands.deskId, (desk: Desk) => {
+          if (!this.isTest && chrome.runtime.lastError) {
+            reject(chrome.runtime.lastError);
+            return;
+          }
+          resolve({
+            messageType: ResponseType.OPERATION_SUCCESS,
+            operands: {'deskUuid': desk.deskUuid, 'deskName': desk.deskName},
+          });
+        });
+
+      } catch (error: unknown) {
+        reject(error);
+      }
+    });
+  }
+
   /**
    * This function handles a message and returns a promise containing
    * the result of the operation called for by the RequestType field.
@@ -195,6 +216,8 @@ class ServiceWorkerImpl implements ServiceWorker {
         return this.getActiveDeskPromise();
       case RequestType.SWITCH_DESK:
         return this.switchDeskPromise(message.operands as SwitchDeskOperands);
+      case RequestType.GET_DESK_BY_ID:
+        return this.getDeskByIdPromise(message.operands as GetDeskByIdOperands);
       default:
         throw new Error(`message of unknown type: ${message.messageType}!`);
     }
