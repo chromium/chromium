@@ -151,12 +151,6 @@ class PLATFORM_EXPORT LayoutRect {
     size_.Shrink(left + right, top + bottom);
   }
 
-  // Convert to an outsets for {{0, 0}, size} rect.
-  LayoutRectOutsets ToOutsets(const LayoutSize& size) const {
-    return LayoutRectOutsets(-Y(), MaxX() - size.Width(),
-                             MaxY() - size.Height(), -X());
-  }
-
   void ShiftXEdgeTo(LayoutUnit edge) {
     LayoutUnit delta = edge - X();
     SetX(edge);

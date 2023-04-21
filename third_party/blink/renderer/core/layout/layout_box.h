@@ -600,7 +600,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void AddContentsVisualOverflow(const LayoutRect&);
 
   virtual void AddVisualEffectOverflow();
-  LayoutRectOutsets ComputeVisualEffectOverflowOutsets();
+  NGPhysicalBoxStrut ComputeVisualEffectOverflowOutsets();
   void AddVisualOverflowFromChild(const LayoutBox& child) {
     NOT_DESTROYED();
     AddVisualOverflowFromChild(child, child.LocationOffset());
@@ -804,36 +804,40 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   int PixelSnappedScrollWidth() const;
   int PixelSnappedScrollHeight() const;
 
-  LayoutRectOutsets MarginBoxOutsets() const {
+  NGPhysicalBoxStrut MarginBoxOutsets() const {
     NOT_DESTROYED();
     return margin_box_outsets_;
   }
   LayoutUnit MarginTop() const override {
     NOT_DESTROYED();
-    return margin_box_outsets_.Top();
+    return margin_box_outsets_.top;
   }
   LayoutUnit MarginBottom() const override {
     NOT_DESTROYED();
-    return margin_box_outsets_.Bottom();
+    return margin_box_outsets_.bottom;
   }
   LayoutUnit MarginLeft() const override {
     NOT_DESTROYED();
-    return margin_box_outsets_.Left();
+    return margin_box_outsets_.left;
   }
   LayoutUnit MarginRight() const override {
     NOT_DESTROYED();
-    return margin_box_outsets_.Right();
+    return margin_box_outsets_.right;
   }
   void SetMargin(const NGPhysicalBoxStrut&);
-  void SetMarginBefore(LayoutUnit value,
-                       const ComputedStyle* override_style = nullptr) {
+  void SetMarginBefore(LayoutUnit value, const ComputedStyle& override_style) {
     NOT_DESTROYED();
-    LogicalMarginToPhysicalSetter(override_style).SetBefore(value);
+    WritingDirectionMode mode = override_style.GetWritingDirection();
+    NGBoxStrut logical_margin = margin_box_outsets_.ConvertToLogical(mode);
+    logical_margin.block_start = value;
+    margin_box_outsets_ = logical_margin.ConvertToPhysical(mode);
   }
-  void SetMarginAfter(LayoutUnit value,
-                      const ComputedStyle* override_style = nullptr) {
+  void SetMarginAfter(LayoutUnit value, const ComputedStyle& override_style) {
     NOT_DESTROYED();
-    LogicalMarginToPhysicalSetter(override_style).SetAfter(value);
+    WritingDirectionMode mode = override_style.GetWritingDirection();
+    NGBoxStrut logical_margin = margin_box_outsets_.ConvertToLogical(mode);
+    logical_margin.block_end = value;
+    margin_box_outsets_ = logical_margin.ConvertToPhysical(mode);
   }
 
   void AbsoluteQuads(Vector<gfx::QuadF>&,
@@ -1890,9 +1894,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // The outsets from this box's border-box that the element's content should be
   // clipped to, including overflow-clip-margin.
-  LayoutRectOutsets BorderBoxOutsetsForClipping() const;
+  NGPhysicalBoxStrut BorderBoxOutsetsForClipping() const;
 
-  void UpdateHasSubpixelVisualEffectOutsets(const LayoutRectOutsets&);
+  void UpdateHasSubpixelVisualEffectOutsets(const NGPhysicalBoxStrut&);
   void SetVisualOverflow(const PhysicalRect& self,
                          const PhysicalRect& contents);
   void CopyVisualOverflowFromFragmentsWithoutInvalidations();
@@ -1956,7 +1960,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const LayoutObject& container,
       const LayoutBoxModelObject* ancestor_to_stop_at) const;
 
-  LayoutRectOutsets margin_box_outsets_;
+  NGPhysicalBoxStrut margin_box_outsets_;
 
   void AddSnapArea(LayoutBox&);
   void RemoveSnapArea(const LayoutBox&);
@@ -2042,16 +2046,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   friend class LayoutBoxTest;
 
  private:
-  LogicalToPhysicalSetter<LayoutUnit, LayoutRectOutsets>
-  LogicalMarginToPhysicalSetter(const ComputedStyle* override_style) {
-    NOT_DESTROYED();
-    const auto& style = override_style ? *override_style : StyleRef();
-    return LogicalToPhysicalSetter<LayoutUnit, LayoutRectOutsets>(
-        style.GetWritingDirection(), this->margin_box_outsets_,
-        &LayoutRectOutsets::SetTop, &LayoutRectOutsets::SetRight,
-        &LayoutRectOutsets::SetBottom, &LayoutRectOutsets::SetLeft);
-  }
-
   std::unique_ptr<BoxOverflowModel> overflow_;
 
   // Extra layout input data. This one may be set during layout, and cleared

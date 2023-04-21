@@ -128,7 +128,7 @@ static const unsigned kBackgroundObscurationTestMaxDepth = 4;
 struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   LayoutRect frame_rect;
   LayoutSize previous_size;
-  LayoutRectOutsets margin_box_outsets;
+  NGPhysicalBoxStrut margin_box_outsets;
   MinMaxSizes intrinsic_logical_widths;
   LayoutUnit intrinsic_logical_widths_initial_block_size;
   Member<void*> result;
@@ -1221,10 +1221,7 @@ int LayoutBox::PixelSnappedScrollHeight() const {
 
 void LayoutBox::SetMargin(const NGPhysicalBoxStrut& box) {
   NOT_DESTROYED();
-  margin_box_outsets_.SetTop(box.top);
-  margin_box_outsets_.SetRight(box.right);
-  margin_box_outsets_.SetBottom(box.bottom);
-  margin_box_outsets_.SetLeft(box.left);
+  margin_box_outsets_ = box;
 }
 
 void LayoutBox::AbsoluteQuads(Vector<gfx::QuadF>& quads,
@@ -4312,8 +4309,8 @@ void LayoutBox::ComputeAndSetBlockDirectionMargins(
   // containing block's writing mode rather than our own when calculating
   // margins.
   // http://www.w3.org/TR/2014/CR-css-writing-modes-3-20140320/#orthogonal-flows
-  SetMarginBefore(margin_before, &containing_block_style);
-  SetMarginAfter(margin_after, &containing_block_style);
+  SetMarginBefore(margin_before, containing_block_style);
+  SetMarginAfter(margin_after, containing_block_style);
 }
 
 LayoutUnit LayoutBox::ContainingBlockLogicalWidthForPositioned(
@@ -5183,14 +5180,14 @@ void LayoutBox::AddVisualEffectOverflow() {
 
   // Add in the final overflow with shadows, outsets and outline combined.
   PhysicalRect visual_effect_overflow = PhysicalBorderBoxRect();
-  LayoutRectOutsets outsets = ComputeVisualEffectOverflowOutsets();
+  NGPhysicalBoxStrut outsets = ComputeVisualEffectOverflowOutsets();
   visual_effect_overflow.Expand(outsets);
   AddSelfVisualOverflow(visual_effect_overflow);
   if (VisualOverflowIsSet())
     UpdateHasSubpixelVisualEffectOutsets(outsets);
 }
 
-LayoutRectOutsets LayoutBox::ComputeVisualEffectOverflowOutsets() {
+NGPhysicalBoxStrut LayoutBox::ComputeVisualEffectOverflowOutsets() {
   NOT_DESTROYED();
   const ComputedStyle& style = StyleRef();
   DCHECK(style.HasVisualOverflowingEffect());
@@ -5211,7 +5208,7 @@ LayoutRectOutsets LayoutBox::ComputeVisualEffectOverflowOutsets() {
                                      -rect.X()));
   }
 
-  return outsets.ToLayoutRectOutsets();
+  return outsets;
 }
 
 void LayoutBox::AddVisualOverflowFromChild(const LayoutBox& child,
@@ -5546,11 +5543,11 @@ void LayoutBox::AddContentsVisualOverflow(const LayoutRect& rect) {
 }
 
 void LayoutBox::UpdateHasSubpixelVisualEffectOutsets(
-    const LayoutRectOutsets& outsets) {
+    const NGPhysicalBoxStrut& outsets) {
   DCHECK(VisualOverflowIsSet());
   overflow_->visual_overflow->SetHasSubpixelVisualEffectOutsets(
-      !IsIntegerValue(outsets.Top()) || !IsIntegerValue(outsets.Right()) ||
-      !IsIntegerValue(outsets.Bottom()) || !IsIntegerValue(outsets.Left()));
+      !IsIntegerValue(outsets.top) || !IsIntegerValue(outsets.right) ||
+      !IsIntegerValue(outsets.bottom) || !IsIntegerValue(outsets.left));
 }
 
 void LayoutBox::SetVisualOverflow(const PhysicalRect& self,
@@ -5561,8 +5558,12 @@ void LayoutBox::SetVisualOverflow(const PhysicalRect& self,
   if (!VisualOverflowIsSet())
     return;
 
-  const LayoutRectOutsets outsets =
-      overflow_->visual_overflow->SelfVisualOverflowRect().ToOutsets(Size());
+  const LayoutRect overflow_rect =
+      overflow_->visual_overflow->SelfVisualOverflowRect();
+  const LayoutSize box_size = Size();
+  const NGPhysicalBoxStrut outsets(
+      -overflow_rect.Y(), overflow_rect.MaxX() - box_size.Width(),
+      overflow_rect.MaxY() - box_size.Height(), -overflow_rect.X());
   UpdateHasSubpixelVisualEffectOutsets(outsets);
 
   // |OutlineMayBeAffectedByDescendants| is set whenever outline style
@@ -5572,8 +5573,8 @@ void LayoutBox::SetVisualOverflow(const PhysicalRect& self,
     const LayoutUnit outline_extent(OutlinePainter::OutlineOutsetExtent(
         style, OutlineInfo::GetFromStyle(style)));
     SetOutlineMayBeAffectedByDescendants(
-        outsets.Top() != outline_extent || outsets.Right() != outline_extent ||
-        outsets.Bottom() != outline_extent || outsets.Left() != outline_extent);
+        outsets.top != outline_extent || outsets.right != outline_extent ||
+        outsets.bottom != outline_extent || outsets.left != outline_extent);
   }
 }
 
@@ -5806,10 +5807,10 @@ LayoutRect LayoutBox::LogicalLayoutOverflowRectForPropagation(
   return rect;
 }
 
-LayoutRectOutsets LayoutBox::BorderBoxOutsetsForClipping() const {
+NGPhysicalBoxStrut LayoutBox::BorderBoxOutsetsForClipping() const {
   auto padding_box = -BorderBoxOutsets();
   if (!ShouldApplyOverflowClipMargin())
-    return padding_box.ToLayoutRectOutsets();
+    return padding_box;
 
   NGPhysicalBoxStrut overflow_clip_margin;
   switch (StyleRef().OverflowClipMargin()->GetReferenceBox()) {
@@ -5823,9 +5824,8 @@ LayoutRectOutsets LayoutBox::BorderBoxOutsetsForClipping() const {
       break;
   }
 
-  return overflow_clip_margin
-      .Inflate(StyleRef().OverflowClipMargin()->GetMargin())
-      .ToLayoutRectOutsets();
+  return overflow_clip_margin.Inflate(
+      StyleRef().OverflowClipMargin()->GetMargin());
 }
 
 DISABLE_CFI_PERF
@@ -5845,7 +5845,9 @@ LayoutRect LayoutBox::LayoutOverflowRectForPropagation(
         // We should apply overflow clip margin only if we clip overflow on both
         // axes.
         DCHECK_EQ(overflow_clip_axes, kOverflowClipBothAxis);
-        clip_rect.Expand(BorderBoxOutsetsForClipping());
+        NGPhysicalBoxStrut outsets = BorderBoxOutsetsForClipping();
+        clip_rect.ExpandEdges(outsets.top, outsets.right, outsets.bottom,
+                              outsets.left);
         overflow.Intersect(clip_rect);
       } else {
         ApplyOverflowClip(overflow_clip_axes, clip_rect, overflow);
@@ -5905,7 +5907,9 @@ LayoutRect LayoutBox::VisualOverflowRect() const {
         overflow_->visual_overflow->ContentsVisualOverflowRect();
     if (!contents_visual_overflow_rect.IsEmpty()) {
       LayoutRect result = BorderBoxRect();
-      result.Expand(BorderBoxOutsetsForClipping());
+      NGPhysicalBoxStrut outsets = BorderBoxOutsetsForClipping();
+      result.ExpandEdges(outsets.top, outsets.right, outsets.bottom,
+                         outsets.left);
       result.Intersect(contents_visual_overflow_rect);
       result.Unite(self_visual_overflow_rect);
       return result;
