@@ -865,6 +865,7 @@ source_set("presence_internal") {
   ]
   public_deps = [
     ":connections_enums_proto",
+    ":connections_metadata_proto",
     ":platform_base",
     ":platform_base_uuid",
     ":platform_public_comm",

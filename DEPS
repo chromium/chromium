@@ -436,7 +436,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling nearby
   # and whatever else without interference from each other.
-  'nearby_revision': 'f1a1a7510bfb1e3d0fefc9aa58041d3ebc616a25',
+  'nearby_revision': '6ee8d32b2e31c3a18e3ad57520e9fecd4b10e035',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling securemessage
   # and whatever else without interference from each other.
