@@ -410,8 +410,10 @@ suite('PrivacyPageTests', function() {
 
     await waitAfterNextRender(privacyPage);
 
-    assertEquals(privacyHubBrowserProxy.sendOpenedOsPrivacyPageCalled, 0);
-    assertEquals(privacyHubBrowserProxy.sendLeftOsPrivacyPageCalled, 1);
+    assertEquals(
+        0, privacyHubBrowserProxy.getCallCount('sendOpenedOsPrivacyPage'));
+    assertEquals(
+        1, privacyHubBrowserProxy.getCallCount('sendLeftOsPrivacyPage'));
 
     const params = new URLSearchParams();
     params.append('settingId', '1101');
@@ -419,16 +421,20 @@ suite('PrivacyPageTests', function() {
 
     flush();
 
-    assertEquals(privacyHubBrowserProxy.sendOpenedOsPrivacyPageCalled, 1);
-    assertEquals(privacyHubBrowserProxy.sendLeftOsPrivacyPageCalled, 1);
+    assertEquals(
+        1, privacyHubBrowserProxy.getCallCount('sendOpenedOsPrivacyPage'));
+    assertEquals(
+        1, privacyHubBrowserProxy.getCallCount('sendLeftOsPrivacyPage'));
 
     params.set('settingId', '1105');
     Router.getInstance().navigateTo(routes.ACCOUNTS, params);
 
     flush();
 
-    assertEquals(privacyHubBrowserProxy.sendOpenedOsPrivacyPageCalled, 1);
-    assertEquals(privacyHubBrowserProxy.sendLeftOsPrivacyPageCalled, 2);
+    assertEquals(
+        1, privacyHubBrowserProxy.getCallCount('sendOpenedOsPrivacyPage'));
+    assertEquals(
+        2, privacyHubBrowserProxy.getCallCount('sendLeftOsPrivacyPage'));
   });
 
   // TODO(crbug.com/1262869): add a test for deep linking to snopping setting

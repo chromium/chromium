@@ -1,43 +1,38 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {MetricsConsentBrowserProxy, MetricsConsentState} from 'chrome://os-settings/chromeos/os_settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export const DEVICE_METRICS_CONSENT_PREF_NAME = 'cros.metrics.reportingEnabled';
 
-/** @implements {MetricsConsentBrowserProxy} */
-export class TestMetricsConsentBrowserProxy extends TestBrowserProxy {
+export class TestMetricsConsentBrowserProxy extends TestBrowserProxy implements
+    MetricsConsentBrowserProxy {
+  private state_: MetricsConsentState;
   constructor() {
     super([
       'getMetricsConsentState',
       'updateMetricsConsent',
     ]);
 
-    /** @type {MetricsConsentState} */
     this.state_ = {
       prefName: DEVICE_METRICS_CONSENT_PREF_NAME,
       isConfigurable: false,
     };
   }
 
-  /** @override */
-  getMetricsConsentState() {
+  getMetricsConsentState(): Promise<MetricsConsentState> {
     this.methodCalled('getMetricsConsentState');
     return Promise.resolve(this.state_);
   }
 
-  /** @override */
-  updateMetricsConsent(consent) {
+  updateMetricsConsent(consent: boolean): Promise<boolean> {
     this.methodCalled('updateMetricsConsent');
     return Promise.resolve(consent);
   }
 
-  /**
-   * @param {String} prefName
-   * @param {Boolean} isConfigurable
-   */
-  setMetricsConsentState(prefName, isConfigurable) {
+  setMetricsConsentState(prefName: string, isConfigurable: boolean): void {
     this.state_.prefName = prefName;
     this.state_.isConfigurable = isConfigurable;
   }

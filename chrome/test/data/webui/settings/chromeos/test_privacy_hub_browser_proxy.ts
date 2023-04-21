@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PrivacyHubBrowserProxy} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {PrivacyHubBrowserProxy} */
-export class TestPrivacyHubBrowserProxy extends TestBrowserProxy {
+export class TestPrivacyHubBrowserProxy extends TestBrowserProxy implements
+    PrivacyHubBrowserProxy {
+  microphoneToggleIsEnabled: boolean;
   constructor() {
     super([
       'getInitialMicrophoneHardwareToggleState',
@@ -13,21 +15,18 @@ export class TestPrivacyHubBrowserProxy extends TestBrowserProxy {
       'sendOpenedOsPrivacyPage',
     ]);
     this.microphoneToggleIsEnabled = false;
-    this.sendLeftOsPrivacyPageCalled = 0;
-    this.sendOpenedOsPrivacyPageCalled = 0;
   }
 
-  /** override */
-  getInitialMicrophoneHardwareToggleState() {
+  getInitialMicrophoneHardwareToggleState(): Promise<boolean> {
     this.methodCalled('getInitialMicrophoneHardwareToggleState');
     return Promise.resolve(this.microphoneToggleIsEnabled);
   }
 
-  sendLeftOsPrivacyPage() {
-    this.sendLeftOsPrivacyPageCalled = this.sendLeftOsPrivacyPageCalled + 1;
+  sendLeftOsPrivacyPage(): void {
+    this.methodCalled('sendLeftOsPrivacyPage');
   }
 
-  sendOpenedOsPrivacyPage() {
-    this.sendOpenedOsPrivacyPageCalled = this.sendOpenedOsPrivacyPageCalled + 1;
+  sendOpenedOsPrivacyPage(): void {
+    this.methodCalled('sendOpenedOsPrivacyPage');
   }
 }
