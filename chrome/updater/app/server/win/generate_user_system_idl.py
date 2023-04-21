@@ -75,108 +75,63 @@ Usage:
         --idl_output_file updater_idl_new.idl
 """
 
-import getopt
+import argparse
 import json
 import re
-import sys
-
-
-def _GetDict(f_in):
-    dict_text = ''
-    while True:
-        line = f_in.readline()
-        if not line:
-            break
-
-        if line.startswith(')'):
-            break
-        dict_text += line
-
-    return json.loads(dict_text)
-
-
-def _GetInterface(f_in):
-    interface_text = ''
-    while True:
-        line = f_in.readline()
-        if not line:
-            break
-
-        if line.startswith('END_INTERFACE'):
-            break
-        interface_text += line
-
-    return interface_text
 
 
 def _GenerateIDLFile(idl_template_filename, idl_output_filename):
-    idl_output = ''
-    f_in = open(idl_template_filename, 'r')
+    pattern = re.compile(
+        r'''BEGIN_INTERFACE\(
+            (.*?)    # Group for the replacement dictionary.
+            \)
+            (.*?)    # Group for interface text.
+            END_INTERFACE''', re.DOTALL | re.X)
 
-    while True:
-        line = f_in.readline()
-        if not line:
-            break
+    with open(idl_template_filename, 'rt') as f:
+        matches = re.split(pattern, f.read())
 
-        if line.startswith('BEGIN_INTERFACE('):
-            dict = _GetDict(f_in)
-            interface = _GetInterface(f_in)
-            idl_output += interface
+        # Copy anything before the first 'BEGIN_INTERFACE' to output.
+        idl_output = [matches[0]]
 
+        for i in range(1, len(matches), 3):
+            replacement_dict = json.loads(matches[i])
+            interface_text = matches[i + 1]
+            trailer = matches[i + 2]
+
+            idl_output.append(interface_text)
             for user_or_system in ['user', 'system']:
-                interface_gen = interface
-                for key, value in dict[user_or_system].items():
-                    interface_gen = re.sub(r"\b%s\b" % key, value,
-                                           interface_gen)
-                idl_output += interface_gen
-        else:
-            idl_output += line
+                interface_gen = interface_text
+                for k, v in replacement_dict[user_or_system].items():
+                    interface_gen = re.sub(r'\b%s\b' % k, v, interface_gen)
+                idl_output.append(interface_gen)
 
-    f_in.close()
-    with open(idl_output_filename, 'w') as f_out:
-        f_out.write('// *** AUTO-GENERATED IDL FILE. ***\n\n')
-        f_out.write(idl_output)
+            if trailer.strip():
+                idl_output.append(trailer)
 
-
-def _Usage():
-    """Prints out script usage information."""
-    print("""
-Usage:
-  generate_user_system_idl.py [--help
-                               | --idl_template_file filename
-                                 --idl_output_file filename]
-
-Options:
-  --help                        Show this information.
-  --idl_output_file filename    Path/name of output IDL filename.
-  --idl_template_file filename  Path/name of input IDL template.
-""")
+        with open(idl_output_filename, 'w') as f_out:
+            f_out.write('// *** AUTO-GENERATED IDL FILE. ***\n\n')
+            for item in idl_output:
+                f_out.write(item)
 
 
 def _Main():
     """Generates IDL files from a template for user and system marshaling."""
-    argument_list = ['help', 'idl_template_file=', 'idl_output_file=']
-    (opts, unused_args) = getopt.getopt(sys.argv[1:], '', argument_list)
-    if not opts or ('--help', '') in opts:
-        _Usage()
-        sys.exit()
+    cmd_parser = argparse.ArgumentParser(
+        description='Tool to generate IDL from template.')
 
-    idl_template_filename = ''
-    idl_output_filename = ''
+    cmd_parser.add_argument('--idl_template_file',
+                            dest='idl_template_file',
+                            type=str,
+                            required=True,
+                            help='Input IDL template file.')
+    cmd_parser.add_argument('--idl_output_file',
+                            type=str,
+                            required=True,
+                            help='Output IDL file.')
+    flags = cmd_parser.parse_args()
 
-    for (o, v) in opts:
-        if o == '--idl_template_file':
-            idl_template_filename = v
-        if o == '--idl_output_file':
-            idl_output_filename = v
-
-    if not idl_template_filename:
-        raise StandardError('no idl_template_filename specified')
-    if not idl_output_filename:
-        raise StandardError('no idl_output_filename specified')
-
-    _GenerateIDLFile(idl_template_filename, idl_output_filename)
-    sys.exit()
+    _GenerateIDLFile(flags.idl_template_file, flags.idl_output_file)
 
 
 if __name__ == '__main__':
