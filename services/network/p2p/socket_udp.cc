@@ -240,6 +240,10 @@ void P2PSocketUdp::MaybeDrainReceivedPackets(bool force) {
   std::vector<mojom::P2PReceivedPacketPtr> received_packets;
   received_packets.swap(pending_received_packets_);
 
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      "WebRTC.P2P.UDP.BatchingNumberOfReceivedPackets", received_packets.size(),
+      1, kUdpMaxBatchingRecvPackets, kUdpMaxBatchingRecvPackets);
+
   TRACE_EVENT1("p2p", __func__, "number_of_packets", received_packets.size());
   client_->DataReceived(std::move(received_packets));
 
