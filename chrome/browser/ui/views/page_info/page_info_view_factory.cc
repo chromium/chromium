@@ -33,6 +33,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -240,6 +241,47 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
 // static
 const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
     const PageInfo::PermissionInfo& info) {
+  ContentSetting setting = info.setting == CONTENT_SETTING_DEFAULT
+                               ? info.default_setting
+                               : info.setting;
+  const bool show_blocked_badge =
+      !permissions::PermissionUtil::IsGuardContentSetting(info.type)
+          ? setting == CONTENT_SETTING_BLOCK || setting == CONTENT_SETTING_ASK
+          : setting == CONTENT_SETTING_BLOCK;
+
+  if (features::IsChromeRefresh2023()) {
+    // Cr2023 does not add an additional blocked badge for block states,
+    // instead it uses a completely different icon. This icon usually has the
+    // word `Off` in the icon name.
+    const gfx::VectorIcon* icon = nullptr;
+    switch (info.type) {
+      case ContentSettingsType::COOKIES:
+        icon = &vector_icons::kCookieChromeRefreshIcon;
+        break;
+      case ContentSettingsType::POPUPS:
+        icon = &vector_icons::kLaunchChromeRefreshIcon;
+        break;
+      case ContentSettingsType::GEOLOCATION:
+        icon = show_blocked_badge ? &vector_icons::kLocationOffChromeRefreshIcon
+                                  : &vector_icons::kLocationOnChromeRefreshIcon;
+        break;
+      case ContentSettingsType::NOTIFICATIONS:
+        icon = show_blocked_badge
+                   ? &vector_icons::kNotificationsOffChromeRefreshIcon
+                   : &vector_icons::kNotificationsChromeRefreshIcon;
+        break;
+      default:
+        break;
+    }
+
+    // If there is no ChromeRefreshIcon currently defined, continue to the rest
+    // of the function.
+    if (icon != nullptr) {
+      return ui::ImageModel::FromVectorIcon(*icon, ui::kColorIcon,
+                                            GetIconSize());
+    }
+  }
+
   const gfx::VectorIcon* icon = &gfx::kNoneIcon;
   switch (info.type) {
     case ContentSettingsType::COOKIES:
@@ -333,13 +375,6 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       NOTREACHED_NORETURN();
   }
 
-  ContentSetting setting = info.setting == CONTENT_SETTING_DEFAULT
-                               ? info.default_setting
-                               : info.setting;
-  const bool show_blocked_badge =
-      !permissions::PermissionUtil::IsGuardContentSetting(info.type)
-          ? setting == CONTENT_SETTING_BLOCK || setting == CONTENT_SETTING_ASK
-          : setting == CONTENT_SETTING_BLOCK;
   return ui::ImageModel::FromVectorIcon(
       *icon, ui::kColorIcon, GetIconSize(),
       show_blocked_badge ? &vector_icons::kBlockedBadgeIcon : nullptr);
@@ -380,8 +415,11 @@ const ui::ImageModel PageInfoViewFactory::GetChosenObjectIcon(
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetValidCertificateIcon() {
-  return ui::ImageModel::FromVectorIcon(vector_icons::kCertificateIcon,
-                                        ui::kColorIcon, GetIconSize());
+  return ui::ImageModel::FromVectorIcon(
+      features::IsChromeRefresh2023()
+          ? vector_icons::kCertificateChromeRefreshIcon
+          : vector_icons::kCertificateIcon,
+      ui::kColorIcon, GetIconSize());
 }
 
 // static
@@ -393,8 +431,10 @@ const ui::ImageModel PageInfoViewFactory::GetInvalidCertificateIcon() {
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetSiteSettingsIcon() {
-  return ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
-                                        ui::kColorIcon);
+  return ui::ImageModel::FromVectorIcon(
+      features::IsChromeRefresh2023() ? vector_icons::kSettingsChromeRefreshIcon
+                                      : vector_icons::kSettingsIcon,
+      ui::kColorIcon);
 }
 
 // static
@@ -405,8 +445,10 @@ const ui::ImageModel PageInfoViewFactory::GetVrSettingsIcon() {
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetLaunchIcon() {
-  return ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
-                                        ui::kColorIconSecondary, GetIconSize());
+  return ui::ImageModel::FromVectorIcon(
+      features::IsChromeRefresh2023() ? vector_icons::kLaunchChromeRefreshIcon
+                                      : vector_icons::kLaunchIcon,
+      ui::kColorIconSecondary, GetIconSize());
 }
 
 // static
@@ -423,8 +465,11 @@ const ui::ImageModel PageInfoViewFactory::GetConnectionNotSecureIcon() {
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetConnectionSecureIcon() {
-  return ui::ImageModel::FromVectorIcon(vector_icons::kHttpsValidIcon,
-                                        ui::kColorIcon);
+  return ui::ImageModel::FromVectorIcon(
+      features::IsChromeRefresh2023()
+          ? vector_icons::kHttpsValidChromeRefreshIcon
+          : vector_icons::kHttpsValidIcon,
+      ui::kColorIcon, GetIconSize());
 }
 
 // static
