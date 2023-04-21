@@ -213,7 +213,8 @@ class MODULES_EXPORT RTCPeerConnection final
   ScriptPromise LegacyCallbackBasedGetStats(
       ScriptState*,
       V8RTCStatsCallback* success_callback,
-      MediaStreamTrack* selector);
+      MediaStreamTrack* selector,
+      ExceptionState&);
   ScriptPromise PromiseBasedGetStats(ScriptState*,
                                      MediaStreamTrack* selector,
                                      ExceptionState&);
