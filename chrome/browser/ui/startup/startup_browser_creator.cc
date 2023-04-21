@@ -290,6 +290,9 @@ bool CanOpenProfileOnStartup(StartupProfileInfo profile_info) {
 
   Profile* profile = profile_info.profile;
 
+  // System profiles are not available.
+  DCHECK(!profile->IsSystemProfile());
+
   // Profiles that require signin are not available.
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
@@ -299,18 +302,19 @@ bool CanOpenProfileOnStartup(StartupProfileInfo profile_info) {
     return false;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (profile->IsGuestSession()) {
-    DCHECK_NE(profile_info.mode, StartupProfileMode::kProfilePicker);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
     return true;
-  }
+#else
+    // Guest is not available unless a there is already a guest browser open
+    // (for example, launching a new browser after clicking on a downloaded file
+    // in Guest mode).
+    return chrome::GetBrowserCount(
+               profile->GetPrimaryOTRProfile(/*create_if_needed=*/false)) > 0;
 #endif
+  }
 
-  // Guest or system profiles are not available unless a separate process
-  // already has a window open for the profile.
-  return (!profile->IsGuestSession() && !profile->IsSystemProfile()) ||
-         (chrome::GetBrowserCount(
-              profile->GetPrimaryOTRProfile(/*create_if_needed=*/false)) > 0);
+  return true;
 #endif
 }
 
