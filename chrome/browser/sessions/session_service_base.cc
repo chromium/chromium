@@ -348,8 +348,12 @@ bool SessionServiceBase::ShouldUseDelayedSave() {
 }
 
 void SessionServiceBase::OnWillSaveCommands() {
-  if (!is_saving_enabled_)
+  if (!is_saving_enabled_) {
+    // There should be no commands scheduled, otherwise data will be written,
+    // potentially clobbering the last file.
+    DCHECK(command_storage_manager_->pending_commands().empty());
     return;
+  }
 
   RebuildCommandsIfRequired();
   did_save_commands_at_least_once_ |=
