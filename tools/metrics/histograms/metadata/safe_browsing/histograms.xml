@@ -1812,6 +1812,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.RT.GetCacheResultIsFromPastSession"
+    enum="Boolean" expires_after="2023-07-20">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    If the real-time URL cache lookup had a cache hit, logs whether the cache
+    entry was defined in a previous browser session rather than the current one.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.RT.GetToken.Time" units="ms"
     expires_after="2023-10-15">
   <owner>xinghuilu@chromium.org</owner>
