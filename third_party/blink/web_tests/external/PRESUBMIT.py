@@ -14,41 +14,30 @@ import tempfile
 USE_PYTHON3 = True
 
 
-def python3_command(input_api):
-    if not input_api.is_windows:
-        return 'python3'
-
-    # The subprocess module on Windows does not look at PATHEXT, so we cannot
-    # rely on 'python3' working. Instead we must check each possible name to
-    # find the working one.
-    input_api.logging.debug('Searching for Python 3 command name')
-
-    exts = list(filter(len, input_api.environ.get('PATHEXT', '').split(';')))
-    for ext in [''] + exts:
-        python = 'python3%s' % ext
-        input_api.logging.debug('Trying "%s"' % python)
-        try:
-            input_api.subprocess.check_output([python, '--version'])
-            return python
-        except WindowsError:
-            pass
-    raise WindowsError('Unable to find a valid python3 command name')
-
-
 def _LintWPT(input_api, output_api):
-    """Lint functionality duplicated from web-platform-tests upstream.
+    """Lint functionality encompassing web-platform-tests upstream.
 
     This is to catch lint errors that would otherwise be caught in WPT CI.
     See https://web-platform-tests.org/writing-tests/lint-tool.html for more
     information about the lint tool.
     """
     wpt_path = input_api.os_path.join(input_api.PresubmitLocalPath(), 'wpt')
-    linter_path = input_api.os_path.join(input_api.change.RepositoryRoot(),
-                                         'third_party', 'wpt_tools', 'wpt',
-                                         'wpt')
+    tool_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                       input_api.os_path.pardir,
+                                       input_api.os_path.pardir, 'tools',
+                                       'blink_tool.py')
 
+    # TODO(crbug.com/1406669): After switching to wptrunner, changing a test
+    # file should also lint its corresponding metadata file, if any, because the
+    # test-side change may invalidate the metadata file's contents. For example,
+    # removing a test variant will orphan its expectations, which the linter
+    # should flag for cleanup.
     paths_in_wpt = []
     for abs_path in input_api.AbsoluteLocalPaths():
+        # For now, skip checking metadata files in `presubmit --{files,all}` for
+        # the invalidation reason mentioned above.
+        if input_api.no_diffs and abs_path.endswith('.ini'):
+            continue
         if abs_path.endswith(input_api.os_path.relpath(abs_path, wpt_path)):
             paths_in_wpt.append(abs_path)
 
@@ -65,14 +54,13 @@ def _LintWPT(input_api, output_api):
             f.write('%s\n' % path)
         paths_name = f.name
     args = [
-        python3_command(input_api),
-        linter_path,
-        'lint',
+        input_api.python3_executable,
+        tool_path,
+        'lint-wpt',
         '--repo-root=%s' % wpt_path,
         # To avoid false positives, do not lint files not upstreamed from
         # Chromium.
         '--ignore-glob=*-expected.txt',
-        '--ignore-glob=*.ini',
         '--ignore-glob=*DIR_METADATA',
         '--ignore-glob=*OWNERS',
         '--ignore-glob=config.json',
@@ -87,7 +75,7 @@ def _LintWPT(input_api, output_api):
 
     if proc.returncode != 0:
         return [
-            output_api.PresubmitError('wpt lint failed:',
+            output_api.PresubmitError('`blink_tool.py lint-wpt` failed:',
                                       long_text=stdout + stderr)
         ]
     return []

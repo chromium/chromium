@@ -17,6 +17,7 @@ from typing import Collection, Hashable, List, Optional, Set, Tuple, Type, Union
 
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
+from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.tool.commands.command import Command
 from blinkpy.w3c.wpt_manifest import WPTManifest
 from blinkpy.tool.commands.update_metadata import BUG_PATTERN, generate_configs
@@ -110,6 +111,7 @@ class MetadataUnknownKey(MetadataRule):
             'fuzzy',
             'implementation-status',
             'tags',
+            'bug',
         }),
         SectionType.ROOT:
         frozenset({
@@ -118,6 +120,7 @@ class MetadataUnknownKey(MetadataRule):
             'fuzzy',
             'implementation-status',
             'tags',
+            'bug',
         }),
         SectionType.TEST:
         frozenset({
@@ -224,6 +227,20 @@ ValueNode = Union[wptnode.ValueNode, wptnode.AtomNode, wptnode.ListNode]
 Condition = Optional[wptnode.Node]
 
 
+class WebPlatformTestRegexp(rules.WebPlatformTestRegexp):
+    def __init__(self, fs: FileSystem):
+        super().__init__()
+        self._fs = fs
+
+    def applies(self, path: str) -> bool:
+        # Skip searching for the forbidden `web-platform.test` domain if this
+        # is a metadata file. Checking the metadata file is redundant because
+        # its contents simply reflect the corresponding test file that needs to
+        # be fixed first.
+        _, extension = self._fs.splitext(path)
+        return extension != '.ini' and super().applies(path)
+
+
 class LintWPT(Command):
     name = 'lint-wpt'
     show_in_main_help = False  # TODO(crbug.com/1406669): To be switched on.
@@ -272,6 +289,12 @@ class LintWPT(Command):
         options.json = True
         wptlint.output_errors_json = (
             lambda _log, worker_errors: errors.extend(worker_errors))
+        # Replace `web-platform.test` regexp rule with a metadata-aware one.
+        wptlint.regexps = [
+            regexp for regexp in wptlint.regexps
+            if not isinstance(regexp, rules.WebPlatformTestRegexp)
+        ]
+        wptlint.regexps.append(WebPlatformTestRegexp(self._fs))
         wptlint.file_lints.append(self.check_metadata)
         exit_code = wptlint.main(**vars(options))
         self._log_errors(errors, [self._manifest(options.repo_root)])
