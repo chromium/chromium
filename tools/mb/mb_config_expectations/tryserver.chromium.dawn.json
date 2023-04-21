@@ -86,6 +86,7 @@
   },
   "dawn-try-win-x64-intel-exp": {
     "gn_args": {
+      "dawn_enable_d3d11": true,
       "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_component_build": false,
@@ -97,6 +98,7 @@
   },
   "dawn-try-win-x86-intel-exp": {
     "gn_args": {
+      "dawn_enable_d3d11": true,
       "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_component_build": false,
@@ -109,6 +111,7 @@
   },
   "dawn-try-win10-x64-asan-rel": {
     "gn_args": {
+      "dawn_enable_d3d11": true,
       "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_asan": true,
@@ -121,6 +124,7 @@
   },
   "dawn-try-win10-x86-rel": {
     "gn_args": {
+      "dawn_enable_d3d11": true,
       "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_component_build": false,
@@ -133,6 +137,7 @@
   },
   "dawn-win10-x64-deps-rel": {
     "gn_args": {
+      "dawn_enable_d3d11": true,
       "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_component_build": false,
@@ -144,6 +149,7 @@
   },
   "dawn-win10-x86-deps-rel": {
     "gn_args": {
+      "dawn_enable_d3d11": true,
       "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_component_build": false,
@@ -179,6 +185,7 @@
   },
   "win-dawn-rel": {
     "gn_args": {
+      "dawn_enable_d3d11": true,
       "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "is_component_build": false,

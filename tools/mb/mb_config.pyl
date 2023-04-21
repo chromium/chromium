@@ -1158,15 +1158,15 @@
       'dawn-try-linux-tsan-rel': 'dawn_tests_tsan_release_trybot_reclient',
       'dawn-try-mac-amd-exp': 'dawn_tests_release_trybot_reclient',
       'dawn-try-mac-intel-exp': 'dawn_tests_release_trybot_reclient',
-      'dawn-try-win-x64-intel-exp': 'dawn_tests_release_trybot_reclient',
+      'dawn-try-win-x64-intel-exp': 'dawn_tests_with_d3d11_release_trybot_reclient',
       'dawn-try-win-x86-intel-exp': 'dawn_tests_release_trybot_x86_reclient',
       'dawn-try-win10-x64-asan-rel': 'dawn_tests_asan_release_trybot_reclient',
       'dawn-try-win10-x86-rel': 'dawn_tests_release_trybot_x86_reclient',
-      'dawn-win10-x64-deps-rel': 'dawn_tests_release_trybot_reclient',
+      'dawn-win10-x64-deps-rel': 'dawn_tests_with_d3d11_release_trybot_reclient',
       'dawn-win10-x86-deps-rel': 'dawn_tests_release_trybot_x86_reclient',
       'linux-dawn-rel': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
       'mac-dawn-rel': 'dawn_tests_release_trybot_reclient',
-      'win-dawn-rel': 'dawn_tests_release_trybot_reclient',
+      'win-dawn-rel': 'dawn_tests_with_d3d11_release_trybot_reclient',
     },
 
     'tryserver.chromium.fuchsia': {
@@ -2508,7 +2508,7 @@
     ],
 
     'dawn_tests_asan_release_trybot_reclient': [
-      'dawn_tests', 'asan', 'release_trybot_reclient',
+      'dawn_tests', 'dawn_enable_d3d11', 'asan', 'release_trybot_reclient',
     ],
 
     'dawn_tests_release_bot_dcheck_always_on_reclient': [
@@ -2520,7 +2520,7 @@
     ],
 
     'dawn_tests_release_trybot_x86_reclient': [
-      'dawn_tests', 'release_trybot_reclient', 'x86',
+      'dawn_tests', 'dawn_enable_d3d11', 'release_trybot_reclient', 'x86',
     ],
 
     'dawn_tests_tsan_release_bot_dcheck_always_on_reclient': [
@@ -2537,6 +2537,10 @@
 
     'dawn_tests_with_d3d11_release_bot_dcheck_always_on_x86_reclient': [
       'dawn_tests', 'dawn_enable_d3d11', 'release_trybot_minimal_symbols_reclient', 'x86',
+    ],
+
+    'dawn_tests_with_d3d11_release_trybot_reclient': [
+      'dawn_tests', 'dawn_enable_d3d11', 'release_trybot_reclient',
     ],
 
     'dawn_tests_with_desktop_gl_release_trybot_reclient': [

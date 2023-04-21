@@ -1575,7 +1575,8 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
         dawn_adapters_.push_back(adapter);
       }
     } else if (adapterProperties.backendType != WGPUBackendType_Null &&
-               adapterProperties.backendType != WGPUBackendType_OpenGL) {
+               adapterProperties.backendType != WGPUBackendType_OpenGL &&
+               adapterProperties.backendType != WGPUBackendType_D3D11) {
       dawn_adapters_.push_back(adapter);
     }
   }
