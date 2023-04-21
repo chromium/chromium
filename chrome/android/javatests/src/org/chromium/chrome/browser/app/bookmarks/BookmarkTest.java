@@ -961,6 +961,18 @@ public class BookmarkTest {
             Assert.assertEquals(expected, observed.subList(0, 3));
             Assert.assertTrue("The selected item should stay selected", foo.isItemSelected());
         });
+
+        // After a drag is finished, the toolbar menu items should still reflect the selected state.
+        // Check inspired by https://crbug.com/1434566.
+        BookmarkToolbar toolbar = mBookmarkManagerCoordinator.getToolbarForTesting();
+        Assert.assertTrue(toolbar.getMenu().findItem(R.id.selection_mode_edit_menu_id).isVisible());
+        Assert.assertTrue(toolbar.getMenu().findItem(R.id.selection_mode_move_menu_id).isVisible());
+        Assert.assertTrue(
+                toolbar.getMenu().findItem(R.id.selection_mode_delete_menu_id).isVisible());
+        Assert.assertTrue(
+                toolbar.getMenu().findItem(R.id.selection_open_in_new_tab_id).isVisible());
+        Assert.assertTrue(
+                toolbar.getMenu().findItem(R.id.selection_open_in_incognito_tab_id).isVisible());
     }
 
     @Test

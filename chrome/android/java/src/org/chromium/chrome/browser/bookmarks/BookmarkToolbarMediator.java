@@ -209,6 +209,12 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
 
     @Override
     public void onFolderStateSet(BookmarkId folder) {
+        // If we're in the middle of a selection, do not override things.
+        // TODO(https://crbug.com/1435024): Rework logic to not be more robust.
+        if (mSelectionDelegate.isSelectionEnabled()) {
+            return;
+        }
+
         mCurrentFolder = folder;
         mModel.set(BookmarkToolbarProperties.CURRENT_FOLDER, mCurrentFolder);
 
