@@ -534,7 +534,7 @@ Status WebViewImpl::TraverseHistory(int delta, const Timeout* timeout) {
   }
 
   base::Value& entry = (*entries)[*current_index + delta];
-  absl::optional<int> entry_id = entry.FindIntKey("id");
+  absl::optional<int> entry_id = entry.GetDict().FindInt("id");
   if (!entry_id)
     return Status(kUnknownError, "history entry does not have an id");
   params.Set("entryId", *entry_id);

@@ -295,7 +295,7 @@ Status ChromeImpl::GetWindow(const std::string& target_id, Window* window) {
   if (status.IsError())
     return status;
 
-  return ParseWindow(base::Value(std::move(result)), window);
+  return ParseWindow(std::move(result), window);
 }
 
 Status ChromeImpl::GetWindowRect(const std::string& target_id,
@@ -390,7 +390,7 @@ Status ChromeImpl::GetWindowBounds(int window_id, Window* window) {
   if (status.IsError())
     return status;
 
-  return ParseWindowBounds(base::Value(std::move(result)), window);
+  return ParseWindowBounds(std::move(result), window);
 }
 
 Status ChromeImpl::SetWindowBounds(Window* window,
@@ -579,8 +579,9 @@ Status ChromeImpl::GetWebViewsInfo(WebViewsInfo* views_info) {
   return status;
 }
 
-Status ChromeImpl::ParseWindow(const base::Value& params, Window* window) {
-  absl::optional<int> id = params.FindIntKey("windowId");
+Status ChromeImpl::ParseWindow(const base::Value::Dict& params,
+                               Window* window) {
+  absl::optional<int> id = params.FindInt("windowId");
   if (!id)
     return Status(kUnknownError, "no window id in response");
   window->id = *id;
@@ -588,9 +589,9 @@ Status ChromeImpl::ParseWindow(const base::Value& params, Window* window) {
   return ParseWindowBounds(std::move(params), window);
 }
 
-Status ChromeImpl::ParseWindowBounds(const base::Value& params,
+Status ChromeImpl::ParseWindowBounds(const base::Value::Dict& params,
                                      Window* window) {
-  const base::Value::Dict* value = params.GetDict().FindDict("bounds");
+  const base::Value::Dict* value = params.FindDict("bounds");
   if (!value) {
     return Status(kUnknownError, "no window bounds in response");
   }
