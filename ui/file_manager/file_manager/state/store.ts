@@ -59,6 +59,7 @@ export function getEmptyState(): State {
     folderShortcuts: [],
     androidApps: [],
     bulkPinning: undefined,
+    preferences: undefined,
   };
 }
 

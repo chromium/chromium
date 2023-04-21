@@ -11,6 +11,7 @@ import {updateBulkPinning} from './bulk_pinning.js';
 import {changeDirectory, updateDirectoryContent, updateFileTasks, updateSelection} from './current_directory.js';
 import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from './folder_shortcuts.js';
 import {refreshNavigationRoots, updateNavigationEntry} from './navigation.js';
+import {updatePreferences} from './preferences.js';
 import {search} from './search.js';
 import {addUiEntry, removeUiEntry} from './ui_entries.js';
 import {addVolume, removeVolume} from './volumes.js';
@@ -67,6 +68,8 @@ export function rootReducer(currentState: State, action: Action): State {
       return addChildEntries(currentState, action);
     case ActionType.UPDATE_BULK_PIN_PROGRESS:
       return updateBulkPinning(currentState, action);
+    case ActionType.UPDATE_PREFERENCES:
+      return updatePreferences(currentState, action);
     default:
       console.error(`invalid action type: ${(action as any)?.type} action: ${
           JSON.stringify(action)}`);

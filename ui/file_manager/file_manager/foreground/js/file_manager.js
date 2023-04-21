@@ -29,6 +29,7 @@ import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfa
 import {ForegroundWindow} from '../../externs/foreground_window.js';
 import {PropStatus} from '../../externs/ts/state.js';
 import {Store} from '../../externs/ts/store.js';
+import {updatePreferences} from '../../state/actions/preferences.js';
 import {updateSearch} from '../../state/actions/search.js';
 import {addUiEntry, removeUiEntry} from '../../state/actions/ui_entries.js';
 import {trashRootKey} from '../../state/reducers/volumes.js';
@@ -1677,6 +1678,8 @@ export class FileManager extends EventTarget {
       console.error('Failed to retrieve preferences:', e);
       return;
     }
+
+    this.store_.dispatch(updatePreferences(prefs));
 
     let redraw = false;
     if (this.driveEnabled_ !== prefs.driveEnabled) {

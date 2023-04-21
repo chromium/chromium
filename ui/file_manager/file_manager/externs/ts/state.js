@@ -381,6 +381,7 @@ export let VolumeMap;
  *   folderShortcuts: !Array<!FileKey>,
  *   androidApps: !Object<!string, !chrome.fileManagerPrivate.AndroidApp>,
  *   bulkPinning: (chrome.fileManagerPrivate.BulkPinProgress|undefined),
+ *   preferences: (chrome.fileManagerPrivate.Preferences|undefined),
  * }}
  */
 export let State;
