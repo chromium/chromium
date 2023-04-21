@@ -3365,6 +3365,10 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CrOSEnforceSystemAec"
+                    ],
+                    "disable_features": [
+                        "AudioServiceOutOfProcess",
+                        "ChromeWideEchoCancellation"
                     ]
                 }
             ]
