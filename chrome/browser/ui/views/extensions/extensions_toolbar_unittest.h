@@ -100,6 +100,11 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
       content::WebContents* web_contents,
       extensions::PermissionsManager::UserSiteAccess site_access);
 
+  // Updates the user's site setting to `site_setting` for `url`.
+  void UpdateUserSiteSetting(
+      extensions::PermissionsManager::UserSiteSetting site_setting,
+      const GURL& url);
+
   // Returns the user's site setting for `url`.
   extensions::PermissionsManager::UserSiteSetting GetUserSiteSetting(
       const GURL& url);

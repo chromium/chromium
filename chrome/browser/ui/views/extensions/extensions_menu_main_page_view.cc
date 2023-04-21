@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -224,14 +225,19 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
 void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
     std::unique_ptr<ExtensionActionViewController> action_controller,
     extensions::ExtensionId extension_id,
+    ExtensionMenuItemView::SiteAccessToggleState site_access_toggle_state,
     ExtensionMenuItemView::SitePermissionsButtonState
         site_permissions_button_state,
     int index) {
   auto item = std::make_unique<ExtensionMenuItemView>(
-      browser_, std::move(action_controller), site_permissions_button_state,
+      browser_, std::move(action_controller),
+      // TODO(crbug.com/1390952): Create callback that grants/withhelds site
+      // access when toggling the site access toggle.
+      base::RepeatingClosure(base::NullCallback()),
       base::BindRepeating(
           &ExtensionsMenuNavigationHandler::OpenSitePermissionsPage,
           base::Unretained(navigation_handler_), extension_id));
+  item->Update(site_access_toggle_state, site_permissions_button_state);
   menu_items_->AddChildViewAt(std::move(item), index);
 }
 

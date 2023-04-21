@@ -168,6 +168,16 @@ void ExtensionsToolbarUnitTest::UpdateUserSiteAccess(
   waiter.WaitForExtensionPermissionsUpdate();
 }
 
+void ExtensionsToolbarUnitTest::UpdateUserSiteSetting(
+    extensions::PermissionsManager::UserSiteSetting site_setting,
+    const GURL& url) {
+  auto* permissions_manager = PermissionsManager::Get(browser()->profile());
+  extensions::PermissionsManagerWaiter waiter(permissions_manager);
+  permissions_manager->UpdateUserSiteSetting(url::Origin::Create(url),
+                                             site_setting);
+  waiter.WaitForUserPermissionsSettingsChange();
+}
+
 PermissionsManager::UserSiteSetting
 ExtensionsToolbarUnitTest::GetUserSiteSetting(const GURL& url) {
   return PermissionsManager::Get(browser()->profile())

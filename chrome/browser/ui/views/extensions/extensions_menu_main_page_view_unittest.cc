@@ -163,6 +163,135 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ExtensionsAreSorted) {
   EXPECT_EQ(GetNamesFromMenuItems(items), expected_items);
 }
 
+// Verifies the site access toggle is always hidden for an extension that
+// doesn't request site access.
+TEST_F(ExtensionsMenuMainPageViewUnitTest,
+       SiteAccessToggle_NoSiteAccessRequested) {
+  auto extension = InstallExtension("Extension");
+
+  const GURL url("http://www.example.com");
+  web_contents_tester()->NavigateAndCommit(url);
+
+  ShowMenu();
+  ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+
+  // Button is hidden when site is set to "customize by extension" (default
+  // setting).
+  EXPECT_EQ(GetUserSiteSetting(url),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+  EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetVisible());
+
+  // Button is hidden when site setting is set to "block all extensions".
+  UpdateUserSiteSetting(
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions, url);
+  EXPECT_FALSE(menu_item->site_permissions_button_for_testing()->GetVisible());
+}
+
+// Verifies the site access toggle properties for an extension that
+// requests site access and access is withheld.
+TEST_F(ExtensionsMenuMainPageViewUnitTest,
+       SiteAccessToggle_SiteAccessWithheld) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  WithholdHostPermissions(extension.get());
+
+  const GURL url("http://www.example.com");
+  web_contents_tester()->NavigateAndCommit(url);
+
+  ShowMenu();
+  ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+
+  // Button is visible and off when site setting is set to "customize by
+  // extension" (default setting).
+  EXPECT_EQ(GetUserSiteSetting(url),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+  EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
+  EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetIsOn());
+
+  // Button is hidden when site setting is set to "block all extensions".
+  UpdateUserSiteSetting(
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions, url);
+  EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetVisible());
+}
+
+// Verifies the site access properties for an extension that
+// requests access to a specific site.
+TEST_F(ExtensionsMenuMainPageViewUnitTest, SiteAccessToggle_SiteAccessGranted) {
+  const GURL url("http://www.example.com");
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {url.spec()});
+
+  web_contents_tester()->NavigateAndCommit(url);
+
+  ShowMenu();
+  ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+
+  // Button is visible and on when site setting is set to "customize by
+  // extension" (default setting).
+  EXPECT_EQ(GetUserSiteSetting(url),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+  EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
+  EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetIsOn());
+
+  // Button is hidden when site setting is set to "block all extensions".
+  UpdateUserSiteSetting(
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions, url);
+  EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetVisible());
+}
+
+// Verifies the site access toggle properties for an extension that
+// requests access to all sites.
+TEST_F(ExtensionsMenuMainPageViewUnitTest,
+       SitePermissionsButton_AllSitesAccessGranted) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+
+  const GURL url("http://www.example.com");
+  web_contents_tester()->NavigateAndCommit(url);
+
+  ShowMenu();
+  ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+
+  // Button is visible and on when site setting is set to "customize by
+  // extension" (default setting).
+  EXPECT_EQ(GetUserSiteSetting(url),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+  EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
+  EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetIsOn());
+
+  // Button is hidden when site setting is set to "block all extensions".
+  UpdateUserSiteSetting(
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions, url);
+  EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetVisible());
+}
+
+// Verifies the site access toggle is always hidden for enterprise extensions,
+// even if the extension has site access.
+TEST_F(ExtensionsMenuMainPageViewUnitTest,
+       SiteAccessToggle_EnterpriseExtension) {
+  auto extension =
+      InstallEnterpriseExtension("Extension",
+                                 /*host_permissions=*/{"<all_urls>"});
+
+  const GURL url("http://www.example.com");
+  web_contents_tester()->NavigateAndCommit(url);
+
+  ShowMenu();
+  ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+
+  // Button is hidden when site setting is set to "customize by extension"
+  // (default setting) because extension has site access but user cannot change
+  // it.
+  EXPECT_EQ(GetUserSiteSetting(url),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+  EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetVisible());
+
+  // Button is hidden when site setting is set to "block all extensions".
+  UpdateUserSiteSetting(
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions, url);
+  EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetVisible());
+}
+
 // Verifies that the permissions button for all extension menu items is always
 // visible when user can customize site access by extension. However, enterprise
 // extensions and extensions that don't request host permissions should have the

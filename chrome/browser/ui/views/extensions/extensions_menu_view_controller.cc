@@ -199,6 +199,25 @@ ExtensionMenuItemView::SitePermissionsButtonState GetSitePermissionsButtonState(
              : ExtensionMenuItemView::SitePermissionsButtonState::kDisabled;
 }
 
+// Returns the state for the `extension`'s site access toggle button.
+ExtensionMenuItemView::SiteAccessToggleState GetSiteAccessToggleState(
+    const extensions::Extension& extension,
+    Profile& profile,
+    const ToolbarActionsModel& toolbar_model,
+    content::WebContents& web_contents) {
+  if (!CanUserCustomizeExtensionSiteAccess(extension, profile, toolbar_model,
+                                           web_contents)) {
+    return ExtensionMenuItemView::SiteAccessToggleState::kHidden;
+  }
+
+  PermissionsManager::UserSiteAccess site_access =
+      PermissionsManager::Get(&profile)->GetUserSiteAccess(
+          extension, web_contents.GetLastCommittedURL());
+  return site_access == PermissionsManager::UserSiteAccess::kOnClick
+             ? ExtensionMenuItemView::SiteAccessToggleState::kOff
+             : ExtensionMenuItemView::SiteAccessToggleState::kOn;
+}
+
 }  // namespace
 
 ExtensionsMenuViewController::ExtensionsMenuViewController(
@@ -323,10 +342,13 @@ void ExtensionsMenuViewController::UpdateMainPage(
         GetExtension(browser_, menu_item->view_controller()->GetId());
     CHECK(extension);
 
+    ExtensionMenuItemView::SiteAccessToggleState site_access_toggle_state =
+        GetSiteAccessToggleState(*extension, *browser_->profile(),
+                                 *toolbar_model_, *web_contents);
     ExtensionMenuItemView::SitePermissionsButtonState
         site_permissions_button_state = GetSitePermissionsButtonState(
             *extension, *browser_->profile(), *toolbar_model_, *web_contents);
-    menu_item->Update(site_permissions_button_state);
+    menu_item->Update(site_access_toggle_state, site_permissions_button_state);
   }
 }
 
@@ -376,12 +398,17 @@ void ExtensionsMenuViewController::OnToolbarActionAdded(
   std::unique_ptr<ExtensionActionViewController> action_controller =
       ExtensionActionViewController::Create(action_id, browser_,
                                             extensions_container_);
+  ExtensionMenuItemView::SiteAccessToggleState site_access_toggle_state =
+      GetSiteAccessToggleState(*action_controller->extension(),
+                               *browser_->profile(), *toolbar_model_,
+                               *GetActiveWebContents());
   ExtensionMenuItemView::SitePermissionsButtonState
       site_permissions_button_state = GetSitePermissionsButtonState(
           *action_controller->extension(), *browser_->profile(),
           *toolbar_model_, *GetActiveWebContents());
 
   main_page->CreateAndInsertMenuItem(std::move(action_controller), action_id,
+                                     site_access_toggle_state,
                                      site_permissions_button_state, index);
 
   // TODO(crbug.com/1390952): Update requests access section once such section
@@ -537,13 +564,17 @@ void ExtensionsMenuViewController::PopulateMainPage(
     std::unique_ptr<ExtensionActionViewController> action_controller =
         ExtensionActionViewController::Create(sorted_ids[i], browser_,
                                               extensions_container_);
+    ExtensionMenuItemView::SiteAccessToggleState site_access_toggle_state =
+        GetSiteAccessToggleState(*action_controller->extension(),
+                                 *browser_->profile(), *toolbar_model_,
+                                 *GetActiveWebContents());
     ExtensionMenuItemView::SitePermissionsButtonState
         site_permissions_button_state = GetSitePermissionsButtonState(
             *action_controller->extension(), *browser_->profile(),
             *toolbar_model_, *GetActiveWebContents());
 
     main_page->CreateAndInsertMenuItem(std::move(action_controller),
-                                       sorted_ids[i],
+                                       sorted_ids[i], site_access_toggle_state,
                                        site_permissions_button_state, i);
   }
 }

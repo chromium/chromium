@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 class Browser;
@@ -21,12 +22,25 @@ class HoverButton;
 class ToolbarActionViewController;
 class ToolbarActionsModel;
 
+namespace views {
+class ToggleButton;
+}  // namespace views
+
 // Single row inside the extensions menu for every installed extension. Includes
 // information about the extension, a button to pin the extension to the toolbar
 // and a button for accessing the associated context menu.
 class ExtensionMenuItemView : public views::FlexLayoutView {
  public:
   METADATA_HEADER(ExtensionMenuItemView);
+
+  enum class SiteAccessToggleState {
+    // Button is not visible.
+    kHidden,
+    // Button is visible and off.
+    kOff,
+    // Button is visible and on.
+    kOn,
+  };
 
   enum class SitePermissionsButtonState {
     // Button is not visible.
@@ -45,7 +59,8 @@ class ExtensionMenuItemView : public views::FlexLayoutView {
   ExtensionMenuItemView(
       Browser* browser,
       std::unique_ptr<ToolbarActionViewController> controller,
-      SitePermissionsButtonState site_permissions_button_state,
+      views::Button::PressedCallback site_access_toggle_callback =
+          base::RepeatingClosure(base::NullCallback()),
       views::Button::PressedCallback site_permissions_button_callback =
           base::RepeatingClosure(base::NullCallback()));
   ExtensionMenuItemView(const ExtensionMenuItemView&) = delete;
@@ -56,7 +71,8 @@ class ExtensionMenuItemView : public views::FlexLayoutView {
   void OnThemeChanged() override;
 
   // Updates the controller and child views to be on sync with the parent views.
-  void Update(SitePermissionsButtonState site_permissions_button_state);
+  void Update(SiteAccessToggleState site_access_toggle_state,
+              SitePermissionsButtonState site_permissions_button_state);
 
   // Updates the pin button.
   void UpdatePinButton(bool is_force_pinned, bool is_pinned);
@@ -72,6 +88,9 @@ class ExtensionMenuItemView : public views::FlexLayoutView {
   bool IsContextMenuRunningForTesting() const;
   ExtensionsMenuButton* primary_action_button_for_testing() {
     return primary_action_button_;
+  }
+  views::ToggleButton* site_access_toggle_for_testing() {
+    return site_access_toggle_;
   }
   HoverButton* context_menu_button_for_testing() {
     return context_menu_button_;
@@ -104,6 +123,8 @@ class ExtensionMenuItemView : public views::FlexLayoutView {
   const raw_ptr<ToolbarActionsModel> model_;
 
   raw_ptr<ExtensionsMenuButton> primary_action_button_;
+
+  raw_ptr<views::ToggleButton> site_access_toggle_ = nullptr;
 
   raw_ptr<HoverButton> site_permissions_button_ = nullptr;
 

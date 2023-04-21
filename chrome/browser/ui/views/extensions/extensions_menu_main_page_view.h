@@ -45,6 +45,7 @@ class ExtensionsMenuMainPageView : public views::View {
   void CreateAndInsertMenuItem(
       std::unique_ptr<ExtensionActionViewController> action_controller,
       extensions::ExtensionId extension_id,
+      ExtensionMenuItemView::SiteAccessToggleState site_access_toggle_state,
       ExtensionMenuItemView::SitePermissionsButtonState
           site_permissions_button_state,
       int index);
