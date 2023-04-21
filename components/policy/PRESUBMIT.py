@@ -145,7 +145,7 @@ def _GetUnchangedPolicyList(input_api):
   return results
 
 def _GetPolicyChangeList(input_api):
-  '''Returns a list of policies modified inthe changelist with their old schema
+  '''Returns a list of policies modified in the changelist with their old schema
      next to their new schemas.
      Args:
        input_api
@@ -157,6 +157,7 @@ def _GetPolicyChangeList(input_api):
   if _CACHED_POLICY_CHANGE_LIST:
     return _CACHED_POLICY_CHANGE_LIST
 
+  policy_changes_map = {}
   root = input_api.change.RepositoryRoot()
   policies_dir = input_api.os_path.join(root,
                                         _POLICIES_DEFINITIONS_PATH)
@@ -177,22 +178,41 @@ def _GetPolicyChangeList(input_api):
     old_policy = None
     new_policy = None
     if affected_file.Action() == 'M':
-        old_policy = pyyaml.safe_load('\n'.join(affected_file.OldContents()))
-        old_policy['name'] = policy_name
-        old_policy['id'] = policy_name_to_id[policy_name]
+      old_policy = pyyaml.safe_load('\n'.join(affected_file.OldContents()))
+      old_policy['name'] = policy_name
+      old_policy['id'] = policy_name_to_id[policy_name]
 
     if affected_file.Action() == 'D':
-        old_policy = pyyaml.safe_load('\n'.join(affected_file.OldContents()))
-        old_policy['name'] = policy_name
+      old_policy = pyyaml.safe_load('\n'.join(affected_file.OldContents()))
+      old_policy['name'] = policy_name
 
     if affected_file.Action() != 'D':
       new_policy = pyyaml.safe_load('\n'.join(affected_file.NewContents()))
       new_policy['name'] = policy_name
       new_policy['id'] = policy_name_to_id[policy_name]
-    _CACHED_POLICY_CHANGE_LIST.append({
+
+    # If a policy has been moved, it will appear as deleted then added.
+    # Here we reconcile such policies so that a moved policy does not appear as
+    # deleted. This also allows to verify the new policy schema against the one
+    # from the previous location.
+    if policy_name in policy_changes_map:
+      # We previously found the policy at the new location, update old_policy
+      # with the value from the old location.
+      if policy_changes_map[policy_name]['old_policy'] == None:
+        policy_changes_map[policy_name]['old_policy'] = old_policy
+      # We previously found the policy at the old location, update new_policy
+      # with the value from the new location.
+      if policy_changes_map[policy_name]['new_policy'] == None:
+        policy_changes_map[policy_name]['new_policy'] = new_policy
+    else:
+      policy_changes_map[policy_name] = {
       'policy': policy_name,
       'old_policy': old_policy,
-      'new_policy': new_policy})
+      'new_policy': new_policy}
+
+  for policy_change in policy_changes_map.values():
+    _CACHED_POLICY_CHANGE_LIST.append(policy_change)
+
   return _CACHED_POLICY_CHANGE_LIST
 
 
