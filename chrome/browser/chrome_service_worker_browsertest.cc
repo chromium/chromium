@@ -537,13 +537,6 @@ class ChromeServiceWorkerFetchTest : public ChromeServiceWorkerTest {
     InitializeServiceWorkerFetchTestPage();
   }
 
-  std::string ExecuteScriptAndExtractString(const std::string& js) {
-    std::string result;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        browser()->tab_strip_model()->GetActiveWebContents(), js, &result));
-    return result;
-  }
-
   std::string RequestString(const std::string& url,
                             const std::string& mode,
                             const std::string& credentials,
@@ -714,7 +707,9 @@ class ChromeServiceWorkerLinkFetchTest : public ChromeServiceWorkerFetchTest {
                            url.c_str()));
     ExecuteJavaScriptForTests(js);
     waiter.Wait();
-    return ExecuteScriptAndExtractString("reportRequests();");
+    return EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                  "reportRequests();", content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+        .ExtractString();
   }
 
   void CopyTestFile(const std::string& src, const std::string& dst) {
@@ -751,9 +746,11 @@ class ChromeServiceWorkerLinkFetchTest : public ChromeServiceWorkerFetchTest {
         .GetManifest(
             base::BindOnce(&ManifestCallbackAndRun, run_loop.QuitClosure()));
     run_loop.Run();
-    return ExecuteScriptAndExtractString(
-        "if (issuedRequests.length != 0) reportRequests();"
-        "else reportOnFetch = true;");
+    return EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                  "if (issuedRequests.length != 0) reportRequests();"
+                  "else reportOnFetch = true;",
+                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+        .ExtractString();
   }
 
   static void ManifestCallbackAndRun(base::OnceClosure continuation,
@@ -853,14 +850,20 @@ class ChromeServiceWorkerFetchPPAPITest : public ChromeServiceWorkerFetchTest {
   }
 
   std::string ExecutePNACLUrlLoaderTest(const std::string& mode) {
-    std::string result(ExecuteScriptAndExtractString(
-        base::StringPrintf("reportOnFetch = false;"
-                           "var iframe = document.createElement('iframe');"
-                           "iframe.src='%s#%s';"
-                           "document.body.appendChild(iframe);",
-                           test_page_url_.c_str(), mode.c_str())));
+    std::string result(
+        EvalJs(
+            browser()->tab_strip_model()->GetActiveWebContents(),
+            base::StringPrintf("reportOnFetch = false;"
+                               "var iframe = document.createElement('iframe');"
+                               "iframe.src='%s#%s';"
+                               "document.body.appendChild(iframe);",
+                               test_page_url_.c_str(), mode.c_str()),
+            content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+            .ExtractString());
     EXPECT_EQ(base::StringPrintf("OnOpen%s", mode.c_str()), result);
-    return ExecuteScriptAndExtractString("reportRequests();");
+    return EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                  "reportRequests();")
+        .ExtractString();
   }
 
  private:
