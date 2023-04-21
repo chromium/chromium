@@ -54,10 +54,11 @@ class BookmarkMediatorUnitTest : public BookmarkIOSUnitTestSupport {
     sync_setup_service_ = std::make_unique<FakeSyncSetupService>(sync_service_);
 
     mediator_ = [[BookmarkMediator alloc]
-        initWithWithBookmarkModel:profile_bookmark_model_
-                            prefs:chrome_browser_state_->GetPrefs()
-            authenticationService:authentication_service_
-                 syncSetupService:sync_setup_service_.get()];
+        initWithWithProfileBookmarkModel:profile_bookmark_model_
+                    accountBookmarkModel:nullptr
+                                   prefs:chrome_browser_state_->GetPrefs()
+                   authenticationService:authentication_service_
+                        syncSetupService:sync_setup_service_.get()];
   }
 
  protected:

@@ -27,11 +27,15 @@ class PrefRegistrySyncable;
 @interface BookmarkMediator : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)
-    initWithWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-                        prefs:(PrefService*)prefs
-        authenticationService:(AuthenticationService*)authenticationService
-             syncSetupService:(SyncSetupService*)syncSetupService
+- (instancetype)initWithWithProfileBookmarkModel:
+                    (bookmarks::BookmarkModel*)profileBookmarkModel
+                            accountBookmarkModel:
+                                (bookmarks::BookmarkModel*)accountBookmarkModel
+                                           prefs:(PrefService*)prefs
+                           authenticationService:
+                               (AuthenticationService*)authenticationService
+                                syncSetupService:
+                                    (SyncSetupService*)syncSetupService
     NS_DESIGNATED_INITIALIZER;
 
 // Registers the feature preferences.
