@@ -117,14 +117,25 @@ mojom::PointingStickPtr BuildMojomPointingStick(
 // suppress_meta_fkey_rewrites must never be non-default for internal
 // keyboards, otherwise the keyboard settings are not valid.
 // Modifier remappings must only contain valid modifiers within the
-// modifier_keys array.
-bool KeyboardSettingsAreValid(const mojom::Keyboard& keyboard,
-                              const mojom::KeyboardSettings& settings) {
+// modifier_keys array. Settings are invalid if top_row_are_fkeys_policy exists
+// and policy status is kManaged and the top_row_are_fkeys_policy's value is
+// different from the settings top_row_are_fkeys value.
+bool KeyboardSettingsAreValid(
+    const mojom::Keyboard& keyboard,
+    const mojom::KeyboardSettings& settings,
+    const mojom::KeyboardPolicies& keyboard_policies) {
   for (const auto& remapping : settings.modifier_remappings) {
     auto it = base::ranges::find(keyboard.modifier_keys, remapping.first);
     if (it == keyboard.modifier_keys.end()) {
       return false;
     }
+  }
+  if (keyboard_policies.top_row_are_fkeys_policy &&
+      keyboard_policies.top_row_are_fkeys_policy->policy_status ==
+          mojom::PolicyStatus::kManaged &&
+      keyboard_policies.top_row_are_fkeys_policy->value !=
+          settings.top_row_are_fkeys) {
+    return false;
   }
   return keyboard.is_external || (settings.suppress_meta_fkey_rewrites ==
                                   kDefaultSuppressMetaFKeyRewrites);
@@ -571,7 +582,8 @@ void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
   }
 
   auto& found_keyboard = *found_keyboard_iter->second;
-  if (!KeyboardSettingsAreValid(found_keyboard, *settings)) {
+  if (!KeyboardSettingsAreValid(found_keyboard, *settings,
+                                policy_handler_->keyboard_policies())) {
     RecordSetKeyboardSetttingsValidMetric(/*is_valid=*/false);
     return;
   }
