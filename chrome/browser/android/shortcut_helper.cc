@@ -13,7 +13,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "chrome/android/chrome_jni_headers/ShortcutHelper_jni.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "content/public/browser/manifest_icon_downloader.h"
@@ -123,7 +123,7 @@ void ShortcutHelper::AddToLauncherWithSkBitmap(
     webapps::InstallableStatusCode installable_status) {
   RecordAddToHomeScreenUKM(web_contents, info, installable_status);
 
-  std::string webapp_id = base::GenerateGUID();
+  std::string webapp_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   if (info.display == blink::mojom::DisplayMode::kStandalone ||
       info.display == blink::mojom::DisplayMode::kFullscreen ||
       info.display == blink::mojom::DisplayMode::kMinimalUi) {
