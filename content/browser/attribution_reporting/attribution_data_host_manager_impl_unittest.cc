@@ -958,7 +958,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   task_environment_.RunUntilIdle();
 
   histograms.ExpectUniqueSample(
-      "Conversions.DeferedDataHostProcessedAfterTimeout", true, 1);
+      "Conversions.DeferredDataHostProcessedAfterTimeout", true, 1);
   // kDeferred = 1
   histograms.ExpectUniqueSample(kRegisterDataHostOutcomeHistogram, 1, 1);
 }
@@ -1053,9 +1053,9 @@ TEST_F(AttributionDataHostManagerImplTest,
   task_environment_.FastForwardBy(base::Seconds(5));
 
   histograms.ExpectBucketCount(
-      "Conversions.DeferedDataHostProcessedAfterTimeout", true, 2);
+      "Conversions.DeferredDataHostProcessedAfterTimeout", true, 2);
   histograms.ExpectBucketCount(
-      "Conversions.DeferedDataHostProcessedAfterTimeout", false, 1);
+      "Conversions.DeferredDataHostProcessedAfterTimeout", false, 1);
   // kDeferred = 1
   histograms.ExpectUniqueSample(kRegisterDataHostOutcomeHistogram, 1, 3);
   histograms.ExpectTimeBucketCount(kProcessRegisterDataHostDelayHistogram,
@@ -2513,7 +2513,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   task_environment_.RunUntilIdle();
 
   histograms.ExpectUniqueSample(
-      "Conversions.DeferedDataHostProcessedAfterTimeout", true, 1);
+      "Conversions.DeferredDataHostProcessedAfterTimeout", true, 1);
 
   histograms.ExpectTimeBucketCount(kProcessRegisterDataHostDelayHistogram,
                                    base::Seconds(10), 1);

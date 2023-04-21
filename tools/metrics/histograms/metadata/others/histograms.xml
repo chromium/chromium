@@ -3657,7 +3657,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.DeferedDataHostProcessedAfterTimeout"
+<histogram name="Conversions.DeferredDataHostProcessedAfterTimeout"
     enum="Boolean" expires_after="M117">
   <owner>anthonygarant@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -3815,6 +3815,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the status of a data host registraton. Its status is influenced by
     trigger buffering.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.RegisteredSourcesPerDataHost" units="sources"
+    expires_after="2023-10-08">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the number of sources registered per data host. Recorded when the
+    data host is disconnected or when the data host manager is destroyed.
   </summary>
 </histogram>
 

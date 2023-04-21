@@ -1009,7 +1009,7 @@ void AttributionDataHostManagerImpl::MaybeBindDeferredReceivers(
   if (auto it = deferred_receivers_.find(navigation_id);
       it != deferred_receivers_.end()) {
     base::UmaHistogramBoolean(
-        "Conversions.DeferedDataHostProcessedAfterTimeout", due_to_timeout);
+        "Conversions.DeferredDataHostProcessedAfterTimeout", due_to_timeout);
     for (auto& deferred_receiver : it->second) {
       base::UmaHistogramMediumTimes(
           "Conversions.ProcessRegisterDataHostDelay",
