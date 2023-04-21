@@ -206,6 +206,8 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
         readOnly: true,
       },
 
+      noRecoveryVirtualPref_: Object,
+
       showSetupPinDialog_: Boolean,
 
       showPinAutosubmitDialog_: Boolean,
@@ -238,6 +240,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   private lockScreenHideSensitiveNotificationSupported_: boolean;
   private cryptohomeRecoveryEnabled_: boolean;
   private recovery_: chrome.settingsPrivate.PrefObject|null;
+  private noRecoveryVirtualPref_: chrome.settingsPrivate.PrefObject;
   private recoveryChangeInProcess_: boolean;
   private quickUnlockPinAutosubmitFeatureEnabled_: boolean;
   private smartLockUIRevampEnabled_: boolean;
@@ -259,6 +262,13 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     this.fingerprintBrowserProxy_ = FingerprintBrowserProxyImpl.getInstance();
 
     this.numFingerprintDescription_ = '';
+    // The pref is used to bind to the settings toggle when the `recovery_` pref
+    // is not set because the recovery feature is not available on the device.
+    this.noRecoveryVirtualPref_ = {
+      key: '',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    };
   }
 
   override ready(): void {
@@ -435,8 +445,35 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     return selectedUnlockType === LockScreenUnlockType.PIN_PASSWORD;
   }
 
-  private showRecoveryWarning_(): boolean {
-    return this.cryptohomeRecoveryEnabled_ && this.recovery_ === null;
+  private recoveryToggleSubLabel_(): string {
+    if (!this.cryptohomeRecoveryEnabled_) {
+      return '';
+    }
+    if (this.recovery_) {
+      return this.i18n('recoveryToggleSubLabel');
+    }
+    return this.i18n('recoveryNotSupportedMessage');
+  }
+
+  private recoveryToggleLearnMoreUrl_(): string {
+    if (!this.cryptohomeRecoveryEnabled_ || this.recovery_) {
+      return '';
+    }
+    return this.i18n('recoveryNotSupportedMessage');
+  }
+
+  private recoveryToggleDisabled_(): boolean {
+    if (!this.cryptohomeRecoveryEnabled_ || !this.recovery_) {
+      return true;
+    }
+    return this.recoveryChangeInProcess_;
+  }
+
+  private recoveryTogglePref_(): chrome.settingsPrivate.PrefObject {
+    if (this.recovery_) {
+      return this.recovery_;
+    }
+    return this.noRecoveryVirtualPref_;
   }
 
   private getSetupPinText_(hasPin: boolean): string {

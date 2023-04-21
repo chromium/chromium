@@ -4223,7 +4223,7 @@ Press an assigned switch or key to remove assignment.
     You will not be able to recover local data if you forget your password or PIN.
   </message>
   <message name="IDS_SETTINGS_PEOPLE_RECOVERY_NOT_SUPPORTED_MESSAGE" desc="Text for the notification informing the user that local data recovery not supported">
-    Local data recovery is currently not supported. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>.
+    Local data recovery is currently not supported.
   </message>
 
   <!-- Kerberos section (OS settings) -->

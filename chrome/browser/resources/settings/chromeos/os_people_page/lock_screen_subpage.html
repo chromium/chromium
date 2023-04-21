@@ -46,13 +46,6 @@
     padding-inline-start: 16px;
     width: 100%;
   }
-
-  #recoveryWarning iron-icon[icon='cr:info-outline'] {
-    --iron-icon-width: 1rem;
-    --iron-icon-height: 1rem;
-    --iron-icon-fill-color: var(--cros-text-color-secondary);
-    margin-inline-end: 10px;
-  }
 </style>
 <div>
   <settings-toggle-button id="enableLockScreen"
@@ -141,26 +134,18 @@
       </settings-radio-group>
     </div>
   </template>
-  <template is="dom-if" if="[[recovery_]]">
+  <template is="dom-if" if="[[cryptohomeRecoveryEnabled_]]">
     <settings-toggle-button
         id="recoveryToggle"
         label="$i18n{recoveryToggleLabel}"
-        sub-label="$i18n{recoveryToggleSubLabel}"
-        pref="{{recovery_}}"
-        disabled="[[recoveryChangeInProcess_]]"
+        sub-label="[[recoveryToggleSubLabel_(recovery_)]]"
+        learn-more-url="[[recoveryToggleLearnMoreUrl_(recovery_)]]"
+        pref="{{recoveryTogglePref_(recovery_)}}"
+        disabled="[[recoveryToggleDisabled_(recovery_,
+                        recoveryChangeInProcess_)]]"
         no-set-pref
         on-settings-boolean-control-change="onRecoveryChange_">
     </settings-toggle-button>
-  </template>
-  <template is="dom-if" if="[[showRecoveryWarning_(cryptohomeRecoveryEnabled_,
-                                recovery_)]]">
-    <div id="recoveryWarning" class="settings-box">
-      <iron-icon icon="cr:info-outline"></iron-icon>
-      <localized-link
-        localized-string="$i18n{recoveryNotSupportedMessage}"
-        link-url="$i18nRaw{recoveryLearnMoreUrl}">
-      </localized-link>
-    </div>
   </template>
   <template is="dom-if" if="[[showDisableRecoveryDialog_]]" restamp>
     <local-data-recovery-dialog id="localDataRecoveryDialog"

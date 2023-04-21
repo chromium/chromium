@@ -306,6 +306,19 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
     return toggle;
   }
 
+  async assertRecoveryControlAvailability(isAvailable: boolean): Promise<void> {
+    const property = () => {
+      const toggle = this.recoveryToggle();
+      if (toggle === null) {
+        return !isAvailable;
+      }
+      return toggle.outerHTML.includes('not supported') === !isAvailable;
+    };
+
+    await assertAsync(property);
+    await assertForDuration(property);
+  }
+
   async assertRecoveryControlVisibility(isVisible: boolean): Promise<void> {
     const property = () => {
       const toggle = this.recoveryToggle();

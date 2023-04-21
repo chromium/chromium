@@ -27,6 +27,9 @@ interface LockScreenSettings {
   // Crashes if authentication succeeds.
   AuthenticateIncorrectly(string password) => ();
 
+  // Checks whether a control for recovery is available or not.
+  AssertRecoveryControlAvailability(bool is_available) => ();
+
   // Checks whether a control for recovery is visible or not.
   AssertRecoveryControlVisibility(bool is_visible) => ();
 

@@ -63,16 +63,18 @@ IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithoutFeature, ControlInvisible) {
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeatureWithoutHardwareSupport,
-                       ControlInvisible) {
+                       ControlInvisibleNotAvailable) {
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
       OpenLockScreenSettingsAndAuthenticate();
-  lock_screen_settings.AssertRecoveryControlVisibility(false);
+  lock_screen_settings.AssertRecoveryControlVisibility(true);
+  lock_screen_settings.AssertRecoveryControlAvailability(false);
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature, ControlVisible) {
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
       OpenLockScreenSettingsAndAuthenticate();
   lock_screen_settings.AssertRecoveryControlVisibility(true);
+  lock_screen_settings.AssertRecoveryControlAvailability(true);
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature, CheckingEnables) {
