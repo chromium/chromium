@@ -579,6 +579,51 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    public void testSearchBookmarks_Delete_FromInitialQuery() throws Exception {
+        // Inspired by https://crbug.com/1434600. Selected item deletion happens during the initial
+        // query that's still showing the folder's children.
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
+        BookmarkId testFolder = addFolder(TEST_FOLDER_TITLE);
+        BookmarkId testFolder2 = addFolder(TEST_FOLDER_TITLE2);
+        addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage, testFolder);
+        addBookmark(TEST_PAGE_TITLE_FOO, mTestPageFoo, testFolder2);
+
+        openBookmarkManager();
+        openFolder(testFolder);
+
+        RecyclerView.Adapter adapter = getAdapter();
+        BookmarkToolbar toolbar = mBookmarkManagerCoordinator.getToolbarForTesting();
+        View search_view = toolbar.findViewById(R.id.search_view);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> toolbar.onMenuItemClick(toolbar.getMenu().findItem(R.id.search_menu_id)));
+
+        // Despite being in search mode, this is the initial query state, and the previous 1
+        // bookmark inside of testFolder should be shown.
+        Assert.assertEquals(search_view.getVisibility(), View.VISIBLE);
+        Assert.assertEquals(1, adapter.getItemCount());
+
+        BookmarkRow itemView = (BookmarkRow) mBookmarkManagerCoordinator.getRecyclerViewForTesting()
+                                       .findViewHolderForAdapterPosition(0)
+                                       .itemView;
+        toggleSelectionAndEndAnimation(getIdByPosition(0), itemView);
+
+        // Selecting an item should cause the search view to be hidden, replaced with menu items
+        // that operate on the selected rows.
+        Assert.assertNotEquals(search_view.getVisibility(), View.VISIBLE);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            toolbar.onMenuItemClick(toolbar.getMenu().findItem(R.id.selection_mode_delete_menu_id));
+        });
+
+        // Should now be kicked back into an empty search string query, not the initial query. This
+        // is why 3 items should now be visible, the two folders and the other url bookmark.
+        Assert.assertEquals(search_view.getVisibility(), View.VISIBLE);
+        Assert.assertEquals(3, adapter.getItemCount());
+    }
+
+    @Test
+    @MediumTest
     public void testSearchBookmarks_Delete() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         BookmarkId testFolder = addFolder(TEST_FOLDER_TITLE);

@@ -11,7 +11,6 @@ import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
@@ -173,19 +172,6 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
         }
     };
 
-    private final AdapterDataObserver mAdapterDataObserver =
-            new AdapterDataObserver() {
-                @Override
-                public void onItemRangeRemoved(int positionStart, int itemCount) {
-                    syncAdapterAndSelectionDelegate();
-                }
-
-                @Override
-                public void onChanged() {
-                    syncAdapterAndSelectionDelegate();
-                }
-            };
-
     // TODO(https://crbug.com/1413463): Combine with mBookmarkModelObserver.
     private BookmarkModelObserver mBookmarkModelObserver2 = new BookmarkModelObserver() {
         @Override
@@ -213,7 +199,8 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
             } else {
                 int deletedPosition = getPositionForBookmark(node.getId());
                 if (deletedPosition >= 0) {
-                    removeItem(deletedPosition);
+                    mModelList.removeAt(deletedPosition);
+                    syncAdapterAndSelectionDelegate();
                 }
             }
         }
@@ -363,7 +350,6 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
         mSelectionDelegate = selectionDelegate;
         mRecyclerView = recyclerView;
         mDragReorderableRecyclerViewAdapter = dragReorderableRecyclerViewAdapter;
-        mDragReorderableRecyclerViewAdapter.registerAdapterDataObserver(mAdapterDataObserver);
         mDragReorderableRecyclerViewAdapter.addDragListener(mDragListener);
         mDragReorderableRecyclerViewAdapter.setLongPressDragDelegate(
                 () -> mDragStateDelegate.getDragActive());
@@ -406,7 +392,6 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
 
     void onDestroy() {
         mIsDestroyed = true;
-        mDragReorderableRecyclerViewAdapter.unregisterAdapterDataObserver(mAdapterDataObserver);
         mBookmarkModel.removeObserver(mBookmarkModelObserver);
 
         mLargeIconBridge.destroy();
@@ -923,6 +908,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
         }
 
         updateAllLocations();
+        syncAdapterAndSelectionDelegate();
     }
 
     private void updateOrAdd(int index, ListItem listItem) {
@@ -973,10 +959,6 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
         for (int i = startIndex + 1; i < lastIndex; i++) {
             mModelList.get(i).model.set(BookmarkManagerProperties.LOCATION, Location.MIDDLE);
         }
-    }
-
-    private void removeItem(int position) {
-        mModelList.removeAt(position);
     }
 
     /** Refresh the list of bookmarks within the currently visible folder. */
