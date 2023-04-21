@@ -99,6 +99,7 @@ build_webui_tests("build") {
     "passpoint_subpage_test.js",
     "people_page_account_manager_subpage_test.js",
     "personalization_page_with_personalization_hub_test.js",
+    "printer_status_tests.js",
     "privacy_hub_subpage_tests.js",
     "quick_unlock_authenticate_browsertest_chromeos.js",
     "search_engine_test.js",

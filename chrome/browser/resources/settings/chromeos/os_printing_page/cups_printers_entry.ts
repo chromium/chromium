@@ -12,11 +12,13 @@ import '../../settings_shared.css.js';
 import './cups_printer_types.js';
 
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrinterListEntry, PrinterType} from './cups_printer_types.js';
 import {getTemplate} from './cups_printers_entry.html.js';
+import {PrinterOnlineState} from './printer_status.js';
 
 const SettingsCupsPrintersEntryElementBase = FocusRowMixin(PolymerElement);
 
@@ -156,6 +158,24 @@ export class SettingsCupsPrintersEntryElement extends
 
   private showPrinterStatusIcon_(): boolean {
     return this.isSavedPrinter_() && this.isPrinterSettingsRevampEnabled_;
+  }
+
+  private getPrinterStatusIcon_(): string {
+    let iconColor = '';
+    switch (this.printerEntry.printerInfo.printerOnlineState) {
+      case PrinterOnlineState.ONLINE:
+        iconColor = 'green';
+        break;
+      case PrinterOnlineState.OFFLINE:
+        iconColor = 'red';
+        break;
+      case PrinterOnlineState.UNKNOWN:
+        iconColor = 'grey';
+        break;
+      default:
+        assertNotReached('Invalid PrinterOnlineState');
+    }
+    return `os-settings:printer-status-${iconColor}`;
   }
 }
 

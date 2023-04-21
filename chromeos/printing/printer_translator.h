@@ -13,6 +13,15 @@
 
 namespace chromeos {
 
+// Enumeration giving a local Chrome OS printer 3 different state possibilities
+// depending on its current online status.
+enum class PrinterOnlineState {
+  kUnknown = 0,
+  kOffline,
+  kOnline,
+  kMaxValue = kOnline,
+};
+
 class CupsPrinterStatus;
 
 COMPONENT_EXPORT(CHROMEOS_PRINTING) extern const char kPrinterId[];

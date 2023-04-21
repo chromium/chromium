@@ -26,7 +26,8 @@
           </iron-icon>
           <iron-icon id="printerStatusIcon"
             hidden="[[!showPrinterStatusIcon_(printerEntry.printerType)]]"
-            icon="os-settings:printer-status-grey">
+            icon="[[getPrinterStatusIcon_(
+                printerEntry.printerInfo.printerOnlineState)]]">
           </iron-icon>
           [[printerEntry.printerInfo.printerName]]
       </span>

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PrinterType} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {PrinterOnlineState, PrinterType} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -96,6 +96,7 @@ function createPrinterEntry(printerType) {
       printerId: 'id_123',
       printerMakeAndModel: '',
       printerName: 'Test name',
+      printerOnlineState: PrinterOnlineState.UNKNOWN,
       printerPPDPath: '',
       printerPpdReference: {
         userSuppliedPpdUrl: '',
@@ -104,7 +105,6 @@ function createPrinterEntry(printerType) {
       },
       printerProtocol: 'ipp',
       printerQueue: 'moreinfohere',
-      printerStatus: '',
     },
     printerType: printerType,
   };
@@ -216,5 +216,36 @@ suite('CupsPrinterEntry', function() {
         createPrinterEntry(PrinterType.AUTOMATIC);
     assertFalse(isVisible(printerEntryTestElement.shadowRoot.querySelector(
         '#printerStatusIcon')));
+  });
+
+  // Verify the correct printer status icon is shown based on the printer's
+  // online state.
+  test('savedPrinterCorrectPrinterStatusIcon', function() {
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.SAVED);
+
+    // Start at the unknown state.
+    assertEquals(
+        'os-settings:printer-status-grey',
+        printerEntryTestElement.shadowRoot.querySelector('#printerStatusIcon')
+            .icon);
+
+    // Set online state.
+    printerEntryTestElement.set(
+        'printerEntry.printerInfo.printerOnlineState',
+        PrinterOnlineState.ONLINE);
+    assertEquals(
+        'os-settings:printer-status-green',
+        printerEntryTestElement.shadowRoot.querySelector('#printerStatusIcon')
+            .icon);
+
+    // Set offline state.
+    printerEntryTestElement.set(
+        'printerEntry.printerInfo.printerOnlineState',
+        PrinterOnlineState.OFFLINE);
+    assertEquals(
+        'os-settings:printer-status-red',
+        printerEntryTestElement.shadowRoot.querySelector('#printerStatusIcon')
+            .icon);
   });
 });

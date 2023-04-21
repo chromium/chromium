@@ -553,6 +553,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'personalization_page_with_personalization_hub_test.js',
  ],
  [
+   'PrinterStatus',
+   'printer_status_tests.js',
+ ],
+ [
    'PrivacyHubSubpage',
    'privacy_hub_subpage_tests.js',
    {enabled: ['ash::features::kCrosPrivacyHub']},

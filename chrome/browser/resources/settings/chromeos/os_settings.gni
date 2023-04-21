@@ -390,6 +390,7 @@ non_web_component_files = [
   "chromeos/os_printing_page/cups_printers_browser_proxy.ts",
   "chromeos/os_printing_page/cups_printers_entry_list_mixin.ts",
   "chromeos/os_printing_page/cups_printers_entry_manager.ts",
+  "chromeos/os_printing_page/printer_status.ts",
   "chromeos/os_privacy_page/media_devices_proxy.ts",
   "chromeos/os_privacy_page/metrics_consent_browser_proxy.ts",
   "chromeos/os_privacy_page/peripheral_data_access_browser_proxy.ts",
