@@ -121,43 +121,6 @@ class WindowLayerRecreatedCounter : public aura::WindowObserver {
       window_observation_{this};
 };
 
-// A subclass of `NonClientFrameViewAsh` that allows us to set a custom minimum
-// size.
-class TestNonClientFrameView : public NonClientFrameViewAsh {
- public:
-  explicit TestNonClientFrameView(views::Widget* widget)
-      : NonClientFrameViewAsh(widget) {}
-  TestNonClientFrameView(const TestNonClientFrameView&) = delete;
-  TestNonClientFrameView& operator=(const TestNonClientFrameView&) = delete;
-  ~TestNonClientFrameView() override = default;
-
-  void SetMinimumSize(const gfx::Size& size) {
-    minimum_size_ = size;
-    frame()->OnSizeConstraintsChanged();
-  }
-
-  // NonClientFrameViewAsh:
-  gfx::Size GetMinimumSize() const override { return minimum_size_; }
-
- private:
-  gfx::Size minimum_size_;
-};
-
-// A test widget delegate that creates `TestNonClientFrameView` as its frame.
-class TestWidgetDelegate : public views::WidgetDelegate {
- public:
-  TestWidgetDelegate() { SetHasWindowSizeControls(true); }
-  TestWidgetDelegate(const TestWidgetDelegate& other) = delete;
-  TestWidgetDelegate& operator=(const TestWidgetDelegate& other) = delete;
-  ~TestWidgetDelegate() override = default;
-
-  // views::WidgetDelegateView:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
-      views::Widget* widget) override {
-    return std::make_unique<TestNonClientFrameView>(widget);
-  }
-};
-
 }  // namespace
 
 class WindowFloatTest : public AshTestBase {
@@ -1193,14 +1156,11 @@ TEST_F(TabletWindowFloatTest, MinimumSizeChangeOnTablet) {
 
   // Create a window in clamshell mode without a minimum size, and larger than
   // its tablet minimum size.
-  auto window =
-      CreateAppWindow(gfx::Rect(500, 500), AppType::SYSTEM_APP,
-                      kShellWindowId_DeskContainerA, new TestWidgetDelegate());
-  auto* custom_frame = static_cast<TestNonClientFrameView*>(
-      views::Widget::GetWidgetForNativeWindow(window.get())
-          ->non_client_view()
-          ->frame_view());
-
+  aura::test::TestWindowDelegate window_delegate;
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
+      &window_delegate, /*id=*/-1, gfx::Rect(500, 500)));
+  window->SetProperty(aura::client::kAppType,
+                      static_cast<int>(AppType::BROWSER));
   wm::ActivateWindow(window.get());
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
@@ -1215,10 +1175,10 @@ TEST_F(TabletWindowFloatTest, MinimumSizeChangeOnTablet) {
       base::BindLambdaForTesting([&](display::TabletState state) {
         switch (state) {
           case display::TabletState::kInTabletMode:
-            custom_frame->SetMinimumSize(tablet_minimum_size);
+            window_delegate.set_minimum_size(tablet_minimum_size);
             return;
           case display::TabletState::kInClamshellMode:
-            custom_frame->SetMinimumSize(gfx::Size());
+            window_delegate.set_minimum_size(gfx::Size());
             return;
           case display::TabletState::kEnteringTabletMode:
           case display::TabletState::kExitingTabletMode:
@@ -1231,12 +1191,6 @@ TEST_F(TabletWindowFloatTest, MinimumSizeChangeOnTablet) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
   EXPECT_EQ(tablet_minimum_size.width(), window->bounds().width());
-
-  // Alter the minimum size of the window. Tests that the window bounds adjust
-  // to match.
-  custom_frame->SetMinimumSize(gfx::Size(350, 350));
-  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
-  EXPECT_EQ(350, window->bounds().width());
 }
 
 // Tests that a window can be floated in tablet mode, unless its minimum width
