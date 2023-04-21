@@ -7,11 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-/*typedef NS_ENUM(NSUInteger, BringAndroidTabsAppInterfaceForeignSession) {
-  BringAndroidTabsAppInterfaceRecentSessionFromAndroidPhone = 0,
-  BringAndroidTabsAppInterfaceExpiredSessionFromAndroidPhone,
-  BringAndroidTabsAppInterfaceRecentSessionFromDesktop,
-};*/
 // Enum specifying different foreign sessions used for Bring Android Tabs
 // testing.
 enum class BringAndroidTabsAppInterfaceForeignSession {
