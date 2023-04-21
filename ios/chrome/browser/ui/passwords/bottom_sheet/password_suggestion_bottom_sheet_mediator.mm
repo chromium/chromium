@@ -160,7 +160,6 @@
 - (void)didSelectSuggestion:(NSInteger)row {
   DCHECK(row >= 0);
 
-  _needsRefocus = false;
   FormSuggestion* suggestion = [self.suggestions objectAtIndex:row];
   [self.suggestionsProvider didSelectSuggestion:suggestion];
 }
@@ -177,6 +176,11 @@
     BottomSheetTabHelper::FromWebState(activeWebState)
         ->DetachListenersAndRefocus(frame);
   }
+}
+
+// Disables future refocus requests.
+- (void)disableRefocus {
+  _needsRefocus = false;
 }
 
 - (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
@@ -202,7 +206,7 @@
                atIndex:(int)atIndex {
   DCHECK_EQ(_webStateList, webStateList);
   if (atIndex == webStateList->active_index()) {
-    _needsRefocus = false;
+    [self disableRefocus];
     [self.consumer dismiss];
   }
 }
@@ -213,25 +217,25 @@
                     atIndex:(int)atIndex
                      reason:(ActiveWebStateChangeReason)reason {
   DCHECK_EQ(_webStateList, webStateList);
-  _needsRefocus = false;
+  [self disableRefocus];
   [self.consumer dismiss];
 }
 
 #pragma mark - CRWWebStateObserver
 
 - (void)webStateDestroyed:(web::WebState*)webState {
-  _needsRefocus = false;
+  [self disableRefocus];
   [self.consumer dismiss];
 }
 
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigation {
-  _needsRefocus = false;
+  [self disableRefocus];
   [self.consumer dismiss];
 }
 
 - (void)renderProcessGoneForWebState:(web::WebState*)webState {
-  _needsRefocus = false;
+  [self disableRefocus];
   [self.consumer dismiss];
 }
 

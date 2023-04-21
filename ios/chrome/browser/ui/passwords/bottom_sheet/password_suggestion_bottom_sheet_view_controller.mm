@@ -239,6 +239,7 @@ CGFloat const kTableViewCornerRadius = 10;
 
 - (void)confirmationAlertPrimaryAction {
   // Use password button
+  [self.delegate disableRefocus];
   __weak __typeof(self) weakSelf = self;
   [self dismissViewControllerAnimated:NO
                            completion:^{
@@ -436,6 +437,7 @@ CGFloat const kTableViewCornerRadius = 10;
   __weak __typeof(self) weakSelf = self;
   void (^passwordManagerButtonTapHandler)(UIAction*) = ^(UIAction* action) {
     // Open Password Manager.
+    [weakSelf.delegate disableRefocus];
     [weakSelf dismissViewControllerAnimated:NO
                                  completion:^{
                                    // Send some message to open the password

@@ -20,6 +20,9 @@
 // after the bottom sheet has been dismissed.
 - (void)refocus;
 
+// Disables future refocus requests.
+- (void)disableRefocus;
+
 // Loads the favicon associated with the provided index path.
 // Defaults to the globe symbol if no URL is found.
 - (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
