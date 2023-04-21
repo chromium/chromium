@@ -305,6 +305,7 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kPasswordDismissCompromisedAlertEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(prefs::kPasswordsPrefWithNewLabelUsed, false);
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kOfferToSavePasswordsEnabledGMS, true);
   registry->RegisterBooleanPref(prefs::kSavePasswordsSuspendedByError, false);
@@ -315,7 +316,6 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt, 0.0);
   registry->RegisterBooleanPref(prefs::kRequiresMigrationAfterSyncStatusChange,
                                 false);
-  registry->RegisterBooleanPref(prefs::kPasswordsPrefWithNewLabelUsed, false);
   registry->RegisterBooleanPref(
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
   registry->RegisterIntegerPref(

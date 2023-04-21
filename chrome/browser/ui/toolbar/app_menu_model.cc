@@ -62,6 +62,7 @@
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/performance_manager/public/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -495,6 +496,11 @@ void AppMenuModel::ExecuteCommand(int command_id, int event_flags) {
   if (command_id == IDC_PERFORMANCE) {
     browser()->window()->NotifyFeatureEngagementEvent(
         feature_engagement::events::kPerformanceMenuItemActivated);
+  }
+
+  if (command_id == IDC_VIEW_PASSWORDS) {
+    browser()->profile()->GetPrefs()->SetBoolean(
+        password_manager::prefs::kPasswordsPrefWithNewLabelUsed, true);
   }
 
   LogMenuMetrics(command_id);
@@ -1014,6 +1020,10 @@ void AppMenuModel::Build() {
     AddItemWithStringId(IDC_VIEW_PASSWORDS, IDS_VIEW_PASSWORDS);
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_VIEW_PASSWORDS).value(),
                            kPasswordManagerMenuItem);
+    if (!browser_->profile()->GetPrefs()->GetBoolean(
+            password_manager::prefs::kPasswordsPrefWithNewLabelUsed)) {
+      SetIsNewFeatureAt(GetIndexOfCommandId(IDC_VIEW_PASSWORDS).value(), true);
+    }
   }
 
   if (base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) ||

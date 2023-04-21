@@ -33,9 +33,6 @@ const char kTimeOfLastMigrationAttempt[] = "time_of_last_migration_attempt";
 const char kRequiresMigrationAfterSyncStatusChange[] =
     "requires_migration_after_sync_status_change";
 
-const char kPasswordsPrefWithNewLabelUsed[] =
-    "passwords_pref_with_new_label_used";
-
 const char kUnenrolledFromGoogleMobileServicesDueToErrors[] =
     "unenrolled_from_google_mobile_services_due_to_errors";
 const char kUnenrolledFromGoogleMobileServicesAfterApiErrorCode[] =
@@ -99,6 +96,9 @@ const char kPasswordLeakDetectionEnabled[] =
 
 const char kPasswordDismissCompromisedAlertEnabled[] =
     "profile.password_dismiss_compromised_alert";
+
+const char kPasswordsPrefWithNewLabelUsed[] =
+    "passwords_pref_with_new_label_used";
 
 const char kProfileStoreDateLastUsedForFilling[] =
     "password_manager.profile_store_date_last_used_for_filling";

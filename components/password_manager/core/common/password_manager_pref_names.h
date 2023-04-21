@@ -82,12 +82,6 @@ extern const char kTimeOfLastMigrationAttempt[];
 // backends due to sync settings change.
 extern const char kRequiresMigrationAfterSyncStatusChange[];
 
-// Boolean value indicating if the user has clicked on the "Password Manager"
-// item in settings after switching to the Unified Password Manager. A "New"
-// label is shown for the users who have not clicked on this item yet.
-// TODO(crbug.com/1217070): Remove this once the feature is rolled out.
-extern const char kPasswordsPrefWithNewLabelUsed[];
-
 // Boolean value indicating if the user should not get UPM experience because
 // of user-unresolvable errors received on communication with Google Mobile
 // Services.
@@ -193,6 +187,15 @@ extern const char kPasswordLeakDetectionEnabled[];
 // Boolean indicating whether users can mute (aka dismiss) alerts resulting from
 // compromised credentials that were submitted by the user.
 extern const char kPasswordDismissCompromisedAlertEnabled[];
+
+// Boolean value indicating if the user has clicked on the "Password Manager"
+// item in settings after switching to the Unified Password Manager. A "New"
+// label is shown for the users who have not clicked on this item yet.
+// TODO(crbug.com/1217070): Remove this on Android once the feature is rolled
+// out.
+// TODO(crbug.com/1420597): Remove this for desktop once the feature is rolled
+// out.
+extern const char kPasswordsPrefWithNewLabelUsed[];
 
 // Timestamps of when credentials from the profile / account store were last
 // used to fill a form, in microseconds since Windows epoch.
