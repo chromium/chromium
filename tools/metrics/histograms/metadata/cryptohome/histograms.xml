@@ -520,6 +520,10 @@ chromium-metrics-reviews@google.com.
     <variant name="GetDelayInSeconds"/>
     <variant name="Insert"/>
     <variant name="Remove"/>
+    <variant name="ReplayCheck"/>
+    <variant name="ReplayInsert"/>
+    <variant name="ReplayRemove"/>
+    <variant name="ReplayReset"/>
     <variant name="Reset"/>
     <variant name="ResetTree"/>
     <variant name="Sync"/>
