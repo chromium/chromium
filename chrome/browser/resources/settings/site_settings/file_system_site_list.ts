@@ -32,6 +32,17 @@ export interface OriginFileSystemGrants {
   editGrants: FileSystemGrant[];
 }
 
+interface SelectedGrant {
+  origin: string;
+  filePath: string;
+}
+
+declare global {
+  interface HTMLElementEventMap {
+    'revoke-grant': CustomEvent<SelectedGrant>;
+  }
+}
+
 /**
  * Map the given edit grants to the allowPermissionGrantsList, to be displayed
  * on the UI.
@@ -197,6 +208,17 @@ export class FileSystemSiteListElement extends FileSystemSiteListElementBase {
         this.push('allowedGrants_', allowPermissionGrants);
       }
     }
+  }
+
+  /**
+   * Revoke an individual permission grant for a given origin and filePath,
+   * then update the list displayed on the UI.
+   */
+  private onRevokeGrant_(e: CustomEvent<SelectedGrant>) {
+    this.browserProxy.revokeFileSystemGrant(e.detail.origin, e.detail.filePath);
+    // TODO(crbug.com/1373962): Implement an observer on the backend that
+    // triggers a UI update when permission grants are modified.
+    this.populateList_();
   }
 }
 

@@ -1,4 +1,4 @@
 <template is="dom-repeat" items="[[allowedGrants_]]" as="grantsPerOrigin">
-  <file-system-site-entry grants-per-origin="[[grantsPerOrigin]]">
-  </file-system-site-entry>
+  <file-system-site-entry grants-per-origin="[[grantsPerOrigin]]"
+      on-revoke-grant="onRevokeGrant_"></file-system-site-entry>
 </template>

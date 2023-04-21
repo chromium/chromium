@@ -9,13 +9,13 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FileSystemGrant, FileSystemSiteEntryItemElement} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 // clang-format on
 
 suite(
-    'FileSystemSettings_EnablePersistentPermissions_SiteEntryItem_DirGrant',
-    function() {
+    'FileSystemSettings_EnablePersistentPermissions_SiteEntryItem', function() {
       let testElement: FileSystemSiteEntryItemElement;
       const origin: string = 'https://a.com/';
       const directoryFilePath: string = 'a/';
@@ -49,7 +49,7 @@ suite(
         document.body.appendChild(testElement);
       });
 
-      test('FileSystemSiteListEntryItemsPopulated', function() {
+      test('FileSystemSiteListEntryItemsPopulated_DirectoryGrant', function() {
         testElement.grant = TEST_FILE_SYSTEM_DIRECTORY_GRANT;
         flush();
         const directoryGrantDisplayName =
@@ -60,7 +60,7 @@ suite(
         assertTrue(icon.classList.contains('icon-folder-open'));
       });
 
-      test('FileSystemSiteListEntryItemsPopulated', function() {
+      test('FileSystemSiteListEntryItemsPopulated_FileGrant', function() {
         testElement.grant = TEST_FILE_SYSTEM_FILE_GRANT;
         flush();
         const fileGrantDisplayName =
@@ -70,4 +70,17 @@ suite(
         assertTrue(!!icon);
         assertTrue(icon.classList.contains('icon-file'));
       });
+
+      test(
+          'FileSystemSiteListEntryItemRemoveIndiviudalPermissionGrant',
+          async function() {
+            testElement.grant = TEST_FILE_SYSTEM_FILE_GRANT;
+            flush();
+            const whenFired = eventToPromise('revoke-grant', testElement);
+            testElement.$.removeGrant.click();
+            const permissionRemovedEvent = await whenFired;
+            const {origin, filePath} = permissionRemovedEvent.detail;
+            assertEquals(TEST_FILE_SYSTEM_FILE_GRANT.origin, origin);
+            assertEquals(TEST_FILE_SYSTEM_FILE_GRANT.filePath, filePath);
+          });
     });
