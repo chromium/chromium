@@ -18,6 +18,7 @@ jobs:
         with:
           node-version: 16
           cache: npm
+      - uses: google/wireit@setup-github-actions-caching/v1
       - name: Install and build npm dependencies
         run: npm ci
       - name: Verify mapper size

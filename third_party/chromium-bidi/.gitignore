@@ -11,5 +11,7 @@ out/
 wptreport*.json
 .ackrc
 .envrc
+.eslintcache
 .nyc_output*
+.wireit/
 *MANIFEST.json

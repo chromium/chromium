@@ -4,6 +4,7 @@
     "composite": true,
     "declaration": true,
     "esModuleInterop": true,
+    "incremental": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
