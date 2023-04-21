@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/sessions/fake_tab_restore_service.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
@@ -20,10 +21,14 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/test/ios/ui_image_test_utils.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using ui::test::uiimage_utils::UIImagesAreEqual;
+using ui::test::uiimage_utils::UIImageWithSizeAndSolidColor;
 
 namespace {
 std::unique_ptr<KeyedService> BuildFakeTabRestoreService(
@@ -89,6 +94,24 @@ class BrowserUtilTest : public PlatformTest {
     return web_state->GetStableIdentifier();
   }
 
+  // Returns the cached snapshot for the given identifier in the given snapshot
+  // cache.
+  UIImage* GetSnapshot(SnapshotCache* snapshot_cache,
+                       NSString* snapshot_identifier) {
+    CHECK(snapshot_cache);
+    base::RunLoop run_loop;
+    base::RunLoop* run_loop_ptr = &run_loop;
+
+    __block UIImage* snapshot = nil;
+    [snapshot_cache retrieveImageForSnapshotID:snapshot_identifier
+                                      callback:^(UIImage* cached_snapshot) {
+                                        snapshot = cached_snapshot;
+                                        run_loop_ptr->Quit();
+                                      }];
+    run_loop.Run();
+    return snapshot;
+  }
+
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
@@ -137,4 +160,39 @@ TEST_F(BrowserUtilTest, TestReorderTabWithinSameBrowser) {
   EXPECT_EQ(3, browser_->GetWebStateList()->count());
   EXPECT_NE(tab_id, GetTabIDForWebStateAt(0, browser_.get()));
   EXPECT_EQ(tab_id, GetTabIDForWebStateAt(2, browser_.get()));
+}
+
+// Tests that snapshots are correctly moved when moving a web state from active
+// to inactive browser.
+TEST_F(BrowserUtilTest, TestMovedSnapshot) {
+  // Set a snapshot to the first web state of `browser_`.
+  web::WebState* web_state = browser_->GetWebStateList()->GetWebStateAt(0);
+  SnapshotBrowserAgent::CreateForBrowser(browser_.get());
+  SnapshotBrowserAgent* agent =
+      SnapshotBrowserAgent::FromBrowser(browser_.get());
+  agent->SetSessionID([[NSUUID UUID] UUIDString]);
+  SnapshotCache* snapshot_cache = agent->snapshot_cache();
+  ASSERT_NE(nil, snapshot_cache);
+  UIImage* snapshot = UIImageWithSizeAndSolidColor({10, 20}, UIColor.redColor);
+  SnapshotTabHelper* snapshot_tab_helper =
+      SnapshotTabHelper::FromWebState(web_state);
+  NSString* snapshot_identifier = snapshot_tab_helper->GetSnapshotIdentifier();
+  [snapshot_cache setImage:snapshot withSnapshotID:snapshot_identifier];
+  ASSERT_TRUE(UIImagesAreEqual(
+      snapshot, GetSnapshot(snapshot_cache, snapshot_identifier)));
+  // Check that the other browser doesn’t have a snapshot for that identifier.
+  SnapshotBrowserAgent::CreateForBrowser(other_browser_.get());
+  SnapshotBrowserAgent* other_agent =
+      SnapshotBrowserAgent::FromBrowser(other_browser_.get());
+  other_agent->SetSessionID([[NSUUID UUID] UUIDString]);
+  SnapshotCache* other_snapshot_cache = other_agent->snapshot_cache();
+  ASSERT_NE(nil, other_snapshot_cache);
+  ASSERT_EQ(nil, GetSnapshot(other_snapshot_cache, snapshot_identifier));
+
+  // Migrate the tab between browsers.
+  MoveTabFromBrowserToBrowser(browser_.get(), 0, other_browser_.get(), 0);
+
+  EXPECT_EQ(nil, GetSnapshot(snapshot_cache, snapshot_identifier));
+  EXPECT_TRUE(UIImagesAreEqual(
+      snapshot, GetSnapshot(other_snapshot_cache, snapshot_identifier)));
 }

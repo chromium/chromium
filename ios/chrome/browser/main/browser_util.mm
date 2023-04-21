@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
+#import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/web_state.h"
 
@@ -95,7 +96,9 @@ void MoveTabFromBrowserToBrowser(Browser* source_browser,
   }
   std::unique_ptr<web::WebState> web_state =
       source_browser->GetWebStateList()->DetachWebStateAt(source_tab_index);
-  MoveSnapshot(web_state->GetStableIdentifier(), source_browser,
+  SnapshotTabHelper* snapshot_tab_helper =
+      SnapshotTabHelper::FromWebState(web_state.get());
+  MoveSnapshot(snapshot_tab_helper->GetSnapshotIdentifier(), source_browser,
                destination_browser);
 
   int insertion_flags = flags;

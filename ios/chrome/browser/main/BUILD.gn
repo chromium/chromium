@@ -130,6 +130,7 @@ source_set("unit_tests") {
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base:test_support",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
