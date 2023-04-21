@@ -909,8 +909,6 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
       context ? web::GetItemWithUniqueID(self.navigationManagerImpl, context)
               : nullptr;
   // Item may not exist if navigation was stopped (see crbug.com/969915).
-
-  DCHECK(context);
   UMA_HISTOGRAM_BOOLEAN("IOS.FinishedNavigationHasContext", context);
   UMA_HISTOGRAM_BOOLEAN("IOS.FinishedNavigationHasItem", item);
 
