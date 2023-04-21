@@ -8,6 +8,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_os_info_override_win.h"
 #include "base/test/test_reg_util_win.h"
@@ -378,7 +379,7 @@ class AddUpdateBrandCodeWorkItemTest
 
     if (is_cbcm_enrolled) {
       std::wstring enrollment_token(L"ENROLLMENT_TOKEN");
-      std::wstring dm_token(L"0123456789");
+      std::string dm_token = base::RandBytesAsString(1000);
       for (const std::pair<std::wstring, std::wstring>& key_and_value :
            InstallUtil::GetCloudManagementEnrollmentTokenRegistryPaths()) {
         base::win::RegKey key(installer_state_->root_key(),
@@ -394,7 +395,9 @@ class AddUpdateBrandCodeWorkItemTest
               InstallUtil::ReadOnly(false),
               InstallUtil::BrowserLocation(false));
       ASSERT_TRUE(key.Valid());
-      ASSERT_EQ(0, key.WriteValue(value_name.c_str(), dm_token.c_str()));
+      ASSERT_EQ(0, key.WriteValue(value_name.c_str(), dm_token.data(),
+                                  base::saturated_cast<DWORD>(dm_token.size()),
+                                  REG_BINARY));
     }
 
     if ((!installer::GetUpdatedBrandCode(brand).empty() ||
