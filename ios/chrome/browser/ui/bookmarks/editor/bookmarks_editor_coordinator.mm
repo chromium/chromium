@@ -6,6 +6,7 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -75,25 +76,26 @@
 
 - (void)start {
   [super start];
-  ChromeBrowserState* browserState =
-      self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
-  bookmarks::BookmarkModel* model =
-      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-          browserState);
-
   _viewController =
       [[BookmarksEditorViewController alloc] initWithBrowser:self.browser];
   _viewController.delegate = self;
   _viewController.snackbarCommandsHandler = _snackbarCommandsHandler;
-
+  ChromeBrowserState* browserState =
+      self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  bookmarks::BookmarkModel* profileBookmarkModel =
+      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+          browserState);
+  bookmarks::BookmarkModel* accountBookmarkModel =
+      ios::AccountBookmarkModelFactory::GetForBrowserState(browserState);
   _mediator = [[BookmarksEditorMediator alloc]
-      initWithBookmarkModel:model
-                   bookmark:_node
-                      prefs:browserState->GetPrefs()
-           syncSetupService:SyncSetupServiceFactory::GetForBrowserState(
-                                browserState)
-                syncService:SyncServiceFactory::GetForBrowserState(
-                                browserState)];
+      initWithProfileBookmarkModel:profileBookmarkModel
+              accountBookmarkModel:accountBookmarkModel
+                      bookmarkNode:_node
+                             prefs:browserState->GetPrefs()
+                  syncSetupService:SyncSetupServiceFactory::GetForBrowserState(
+                                       browserState)
+                       syncService:SyncServiceFactory::GetForBrowserState(
+                                       browserState)];
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   _viewController.mutator = _mediator;
@@ -250,7 +252,6 @@
                                      (const bookmarks::BookmarkNode*)folder {
   DCHECK(_folderChooserCoordinator);
   DCHECK(folder);
-
   [_folderChooserCoordinator stop];
   _folderChooserCoordinator.delegate = nil;
   _folderChooserCoordinator = nil;

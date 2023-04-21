@@ -27,7 +27,7 @@ class SyncService;
 @interface BookmarksEditorMediator : NSObject <BookmarksEditorMutator>
 
 // Reference to the bookmark model.
-@property(nonatomic, assign) bookmarks::BookmarkModel* bookmarkModel;
+@property(nonatomic, assign, readonly) bookmarks::BookmarkModel* bookmarkModel;
 // BookmarkNode to edit.
 @property(nonatomic, assign) const bookmarks::BookmarkNode* bookmark;
 // Parent of `_bookmark` if the user tap on "save".
@@ -38,14 +38,20 @@ class SyncService;
 @property(nonatomic, weak) id<BookmarksEditorConsumer> consumer;
 
 // Designated initializer.
-// `bookmark`: mustn't be NULL at initialization time. It also must be a URL.
-// `parent`: mustn't be NULL at initialization time. It also must not be a
-// folder. `bookmarkModel` should be loaded.
-- (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-                             bookmark:(const bookmarks::BookmarkNode*)bookmark
-                                prefs:(PrefService*)prefs
-                     syncSetupService:(SyncSetupService*)syncSetupService
-                          syncService:(syncer::SyncService*)syncService
+// `profileBookmarkModel` is the bookmark model for the profile storage, must
+// not be `nullptr` and must be loaded.
+// `accountBookmarkModel` is the bookmark model for the profile storage, must
+// be `nullptr`, or it should be loaded.
+// `bookmarkNode` mustn't be `nullptr` at initialization time. It also must be a
+// URL.
+// `prefs` is the user pref service.
+- (instancetype)
+    initWithProfileBookmarkModel:(bookmarks::BookmarkModel*)profileBookmarkModel
+            accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel
+                    bookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode
+                           prefs:(PrefService*)prefs
+                syncSetupService:(SyncSetupService*)syncSetupService
+                     syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
