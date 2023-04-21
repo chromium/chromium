@@ -1531,6 +1531,12 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Duplicate Credential is viewed"/>
 </enum>
 
+<enum name="AddFingerprint">
+  <int value="0" label="NewVisit"/>
+  <int value="1" label="AlreadyVisited"/>
+  <int value="2" label="TableError"/>
+</enum>
+
 <enum name="AddIceCandidateResult">
   <int value="0" label="Success"/>
   <int value="1" label="Closed"/>

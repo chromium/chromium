@@ -2555,6 +2555,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.VisitedLinks.TryToAddFingerprint"
+    enum="AddFingerprint" expires_after="2024-04-20">
+  <owner>kyraseevers@chromium.org</owner>
+  <owner>brgoldstein@google.com</owner>
+  <summary>
+    When VisitedLinkWriter is asked to add a URL, it calculates that URL's
+    fingerprint and tries to add that fingerprint to the hashtable. This metric
+    records the result of that function: AddFingerprint(). If the fingerprint is
+    already in the table, we record kAlreadyVisited. If we haven't seen this
+    fingerprint before and it can be successfully stored in the hashtable, we
+    record kNewVisit. Any other outcomes due to table sizing errors are recorded
+    as kTableError.
+  </summary>
+</histogram>
+
 <histogram name="History.VisitedLinks.VisitLoggedFromMainFrame" units="boolean"
     expires_after="2024-04-11">
   <owner>kyraseevers@chromium.org</owner>
