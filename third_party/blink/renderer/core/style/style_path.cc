@@ -43,6 +43,7 @@ const Path& StylePath::GetPath() const {
   if (!path_) {
     path_ = std::make_unique<Path>();
     BuildPathFromByteStream(*byte_stream_, *path_);
+    path_->SetWindRule(wind_rule_);
   }
   return *path_;
 }

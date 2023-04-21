@@ -117,6 +117,7 @@ void BasicShapePolygon::GetPath(Path& path,
   DCHECK(!(values_.size() % 2));
   wtf_size_t length = values_.size();
 
+  path.SetWindRule(wind_rule_);
   if (!length) {
     return;
   }

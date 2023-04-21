@@ -71,7 +71,6 @@ class CORE_EXPORT BasicShape : public RefCounted<BasicShape> {
   }
 
   virtual void GetPath(Path&, const gfx::RectF&, float zoom) = 0;
-  virtual WindRule GetWindRule() const { return RULE_NONZERO; }
   bool operator==(const BasicShape& o) const {
     return IsSameType(o) && IsEqualAssumingSameType(o);
   }
@@ -234,7 +233,7 @@ class BasicShapePolygon final : public BasicShape {
 
   void GetPath(Path&, const gfx::RectF&, float) override;
 
-  WindRule GetWindRule() const override { return wind_rule_; }
+  WindRule GetWindRule() const { return wind_rule_; }
 
   ShapeType GetType() const override { return kBasicShapePolygonType; }
 
