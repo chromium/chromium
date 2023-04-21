@@ -442,6 +442,12 @@ TEST_P(OnBeginFrameAcksFrameSinkBundleImplTest, ReclaimResourcesOnAck) {
   TestFrameSink frame_b(manager(), kSubFrameB, kMainFrame, kBundleId);
   TestFrameSink frame_c(manager(), kSubFrameC, kMainFrame, kBundleId);
 
+  if (BeginFrameAcksEnabled()) {
+    frame_a.frame_sink->SetWantsBeginFrameAcks();
+    frame_b.frame_sink->SetWantsBeginFrameAcks();
+    frame_c.frame_sink->SetWantsBeginFrameAcks();
+  }
+
   // First submit frames through all the sinks, to each surface.
   std::vector<mojom::BundledFrameSubmissionPtr> submissions;
   submissions.push_back(CreateFrameSubmission(kSubFrameA, kSurfaceA));
