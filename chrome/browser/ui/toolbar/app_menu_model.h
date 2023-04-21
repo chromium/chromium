@@ -140,6 +140,17 @@ class ExtensionsMenuModel : public ui::SimpleMenuModel {
   raw_ptr<AppMenuIconController> app_menu_icon_controller_ = nullptr;
 };
 
+class AutofillSubMenuModel : public ui::SimpleMenuModel {
+ public:
+  AutofillSubMenuModel(ui::SimpleMenuModel::Delegate* delegate,
+                       AppMenuIconController* app_menu_icon_controller);
+
+  AutofillSubMenuModel(const AutofillSubMenuModel&) = delete;
+  AutofillSubMenuModel& operator=(const AutofillSubMenuModel&) = delete;
+
+  ~AutofillSubMenuModel() override;
+};
+
 class FindAndEditSubMenuModel : public ui::SimpleMenuModel {
  public:
   FindAndEditSubMenuModel(ui::SimpleMenuModel::Delegate* delegate,

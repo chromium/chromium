@@ -1141,6 +1141,12 @@ are declared in tools/grit/grit_rule.gni.
       <!-- Page menu. Android has separate strings for its menu -->
       <if expr="not is_android">
         <if expr="not use_titlecase">
+          <message name="IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION" desc="The text label of the addresses and more item for the autofill submenu">
+            &amp;Addresses and more
+          </message>
+          <message name="IDS_AUTOFILL_MENU" desc="The text label of the autofill menu item">
+            &amp;Autofill and passwords
+          </message>
           <message name="IDS_NEW_TAB" desc="The text label of a menu item for opening a new tab">
             New &amp;tab
           </message>
@@ -1179,6 +1185,12 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_FIND_AND_EDIT_MENU" desc="The text label of the Find and edit sub menu item">
             &amp;Find and edit
+          </message>
+          <message name="IDS_PASSWORD_MANAGER_SUBMENU_OPTION" desc="The text label of the password manager for the autofill submenu">
+            &amp;Google Password Manager
+          </message>
+            <message name="IDS_PAYMENT_METHOD_SUBMENU_OPTION" desc="The text label of the payment method for the autofill submenu">
+            &amp;Payment methods
           </message>
           <message name="IDS_SAVE_PAGE" desc="The text label of the Save Page As menu item">
             Save page &amp;as...
@@ -1230,6 +1242,12 @@ are declared in tools/grit/grit_rule.gni.
           </message>
         </if>
         <if expr="use_titlecase">
+          <message name="IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION" desc="In Title Case: The text label of the addresses and more item for the autofill submenu">
+            &amp;Addresses and More
+          </message>
+          <message name="IDS_AUTOFILL_MENU" desc="In Title Case: The text label of the autofill menu item">
+            &amp;Autofill and Passwords
+          </message>
           <message name="IDS_NEW_TAB" desc="In Title Case: The text label of a menu item for opening a new tab">
             New &amp;Tab
           </message>
@@ -1268,6 +1286,12 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_FIND_AND_EDIT_MENU" desc="In Title Case: The text label of the Find and edit sub menu item">
             &amp;Find and Edit
+          </message>
+          <message name="IDS_PASSWORD_MANAGER_SUBMENU_OPTION" desc="In Title Case: The text label of the password manager for the autofill submenu">
+            &amp;Google Password Manager
+          </message>
+          <message name="IDS_PAYMENT_METHOD_SUBMENU_OPTION" desc="In Title Case: The text label of the payment method for the autofill submenu">
+            &amp;Payment Methods
           </message>
           <message name="IDS_SAVE_PAGE" desc="In Title Case: The text label of the Save Page As menu item">
             Save Page &amp;As...

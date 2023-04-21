@@ -620,6 +620,15 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_SAVE_AUTOFILL_ADDRESS:
       SaveAutofillAddress(browser_);
       break;
+    case IDC_SHOW_PASSWORD_MANAGER:
+      ShowPasswordManager(browser_);
+      break;
+    case IDC_SHOW_PAYMENT_METHODS:
+      ShowPaymentMethods(browser_);
+      break;
+    case IDC_SHOW_ADDRESSES:
+      ShowAddresses(browser_);
+      break;
     case IDC_VIRTUAL_CARD_MANUAL_FALLBACK:
       ShowVirtualCardManualFallbackBubble(browser_);
       break;
@@ -1166,32 +1175,36 @@ void BrowserCommandController::InitCommandState() {
   DCHECK(!profile()->IsSystemProfile())
       << "Ought to never have browser for the system profile.";
   const bool normal_window = browser_->is_type_normal();
+  const bool guest_session = profile()->IsGuestSession();
   command_updater_.UpdateCommandEnabled(IDC_OPEN_FILE, CanOpenFile(browser_));
   UpdateCommandsForDevTools();
   command_updater_.UpdateCommandEnabled(IDC_TASK_MANAGER, CanOpenTaskManager());
   command_updater_.UpdateCommandEnabled(
-      IDC_SHOW_HISTORY,
-      (!profile()->IsGuestSession() && !profile()->IsSystemProfile()));
+      IDC_SHOW_HISTORY, (!guest_session && !profile()->IsSystemProfile()));
   command_updater_.UpdateCommandEnabled(IDC_SHOW_DOWNLOADS, true);
   command_updater_.UpdateCommandEnabled(IDC_FIND_AND_EDIT_MENU, true);
+  command_updater_.UpdateCommandEnabled(IDC_AUTOFILL_MENU, !guest_session);
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_PASSWORD_MANAGER,
+                                        !guest_session);
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_PAYMENT_METHODS,
+                                        !guest_session);
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_ADDRESSES, !guest_session);
   command_updater_.UpdateCommandEnabled(IDC_HELP_MENU, true);
   command_updater_.UpdateCommandEnabled(IDC_HELP_PAGE_VIA_KEYBOARD, true);
   command_updater_.UpdateCommandEnabled(IDC_HELP_PAGE_VIA_MENU, true);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_BETA_FORUM, true);
   command_updater_.UpdateCommandEnabled(
-      IDC_BOOKMARKS_MENU,
-      (!profile()->IsGuestSession() && !profile()->IsSystemProfile()));
+      IDC_BOOKMARKS_MENU, (!guest_session && !profile()->IsSystemProfile()));
   command_updater_.UpdateCommandEnabled(
-      IDC_RECENT_TABS_MENU,
-      (!profile()->IsGuestSession() && !profile()->IsSystemProfile() &&
-       !profile()->IsIncognitoProfile()));
+      IDC_RECENT_TABS_MENU, (!guest_session && !profile()->IsSystemProfile() &&
+                             !profile()->IsIncognitoProfile()));
 
   if (profile()->IsIncognitoProfile()) {
     command_updater_.UpdateCommandEnabled(IDC_CLEAR_BROWSING_DATA, true);
   } else {
     command_updater_.UpdateCommandEnabled(
         IDC_CLEAR_BROWSING_DATA,
-        (!profile()->IsGuestSession() && !profile()->IsSystemProfile()));
+        (!guest_session && !profile()->IsSystemProfile()));
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
