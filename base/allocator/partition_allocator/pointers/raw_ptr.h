@@ -1149,6 +1149,17 @@ constexpr auto DanglingUntriaged = base::RawPtrTraits::kMayDangle;
 // instead of the raw_ptr.
 constexpr auto AllowPtrArithmetic = base::RawPtrTraits::kAllowPtrArithmetic;
 
+// Temporary flag for `raw_ptr` / `raw_ref`. This is used by finch experiments
+// to differentiate pointers added recently for the ChromeOS ash rewrite.
+//
+// See launch plan:
+// https://docs.google.com/document/d/105OVhNl-2lrfWElQSk5BXYv-nLynfxUrbC4l8cZ0CoU/edit#
+//
+// This is not meant to be added manually. You can ignore this flag.
+//
+// TODO(https://crbug.com/XXXXXXX) Implement the ExperimentalAsh Trait.
+constexpr auto ExperimentalAsh = base::RawPtrTraits::kMayDangle;
+
 namespace std {
 
 // Override so set/map lookups do not create extra raw_ptr. This also allows
