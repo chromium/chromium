@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "ash/wm/desks/desk.h"
-#include "base/guid.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "base/uuid.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chromeos/crosapi/mojom/desk.mojom-forward.h"
 #include "chromeos/crosapi/mojom/desk.mojom.h"
@@ -25,7 +25,7 @@ class MockDesksClient : public DesksClient {
  public:
   MOCK_METHOD((base::expected<const ash::Desk*, DesksClient::DeskActionError>),
               GetDeskByID,
-              (const base::GUID&),
+              (const base::Uuid&),
               (const));
 };
 
@@ -52,7 +52,7 @@ class DeskAshTest : public testing::Test {
 
 TEST_F(DeskAshTest, GetDeskByIDWithInvalidIDTest) {
   ASSERT_EQ(&mock_desks_client(), DesksClient::Get());
-  base::GUID fake_id;
+  base::Uuid fake_id;
   EXPECT_CALL(mock_desks_client(), GetDeskByID(fake_id))
       .Times(1)
       .WillOnce(testing::Return(
