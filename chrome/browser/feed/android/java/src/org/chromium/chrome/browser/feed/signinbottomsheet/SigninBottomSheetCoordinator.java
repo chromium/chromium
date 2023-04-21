@@ -23,6 +23,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.Toast;
 
@@ -93,6 +94,8 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     }
 
     private void makeSigninNotAllowedToast() {
+        RecordHistogram.recordEnumeratedHistogram("Signin.SigninDisabledNotificationShown",
+                SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO, SigninAccessPoint.MAX);
         if (mSetTestToast) return;
         Toast.makeText(mWindowAndroid.getActivity().get(),
                      R.string.sign_in_to_chrome_disabled_by_user_summary, Toast.LENGTH_SHORT)

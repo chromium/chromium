@@ -34,6 +34,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Tests for SigninBottomSheetCoordinator */
@@ -118,6 +119,9 @@ public class SigninBottomSheetCoordinatorTest {
 
     @Test
     public void testSignInNotAllowed() {
+        HistogramWatcher watchSigninDisabledToastShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher("Signin.SigninDisabledNotificationShown",
+                        SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
         mSigninCoordinator.setToastOverrideForTesting();
         mSigninCoordinator.signIn(TEST_EMAIL, error -> {});

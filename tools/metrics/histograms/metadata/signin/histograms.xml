@@ -1152,6 +1152,17 @@ OAuth Multilogin call. -->
   <summary>Logs the original access point of each completed sign in.</summary>
 </histogram>
 
+<histogram name="Signin.SigninDisabledNotificationShown"
+    enum="SigninAccessPoint" expires_after="2023-09-22">
+  <owner>birnie@google.com</owner>
+  <owner>bsazonov@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    This histogram records the signin access point which was used when the
+    signin disabled notification was shown. This is on Android only.
+  </summary>
+</histogram>
+
 <histogram name="Signin.SigninReason" enum="SigninReason"
     expires_after="2023-08-08">
   <owner>msarda@chromium.org</owner>
@@ -1299,6 +1310,17 @@ kept as long as profile signout is possible -->
   <summary>
     This histogram records which sync data row was clicked by the user on the
     tangible sync consent page on Android and iOS.
+  </summary>
+</histogram>
+
+<histogram name="Signin.SyncDisabledNotificationShown" enum="SigninAccessPoint"
+    expires_after="2023-09-22">
+  <owner>birnie@google.com</owner>
+  <owner>bsazonov@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    This histogram records the sync access point which was used when the sync
+    disabled notification was shown. This is on Android only.
   </summary>
 </histogram>
 
