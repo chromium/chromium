@@ -12,6 +12,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
@@ -124,13 +125,8 @@ SidePanelToolbarContainer::SidePanelToolbarContainer(BrowserView* browser_view)
   // pin state group (i.e. from the default being false to the default being
   // true) we want to make sure their pin state changes if they have not
   // explicitly changed it themselves.
-  PrefService* pref_service = browser_view_->GetProfile()->GetPrefs();
-  if (pref_service) {
-    bool companion_should_be_default_pinned = base::FeatureList::IsEnabled(
-        features::kSidePanelCompanionDefaultPinned);
-    pref_service->SetDefaultPrefValue(
-        prefs::kSidePanelCompanionEntryPinnedToToolbar,
-        base::Value(companion_should_be_default_pinned));
+  if (PrefService* pref_service = browser_view_->GetProfile()->GetPrefs()) {
+    companion::UpdateCompanionDefaultPinnedToToolbarState(pref_service);
   }
   CreatePinnedEntryButtons();
 }

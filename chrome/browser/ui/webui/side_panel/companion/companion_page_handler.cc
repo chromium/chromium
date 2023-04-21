@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/side_panel/companion/companion_side_panel_controller_utils.h"
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
+#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
@@ -129,6 +130,9 @@ void CompanionPageHandler::OnRegionSearchClicked() {
 void CompanionPageHandler::OnExpsOptInStatusAvailable(bool is_exps_opted_in) {
   auto* pref_service = GetProfile()->GetPrefs();
   pref_service->SetBoolean(kExpsOptInStatusGrantedPref, is_exps_opted_in);
+  // Update default value for pref indicating whether companion should be
+  // pinned to the toolbar.
+  companion::UpdateCompanionDefaultPinnedToToolbarState(pref_service);
 }
 
 void CompanionPageHandler::EnableMsbb(bool enable_msbb) {
