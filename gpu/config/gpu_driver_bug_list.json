@@ -4184,6 +4184,22 @@
       "features": [
         "flush_before_create_fence"
       ]
+    },
+    {
+      "id": 411,
+      "cr_bugs": [1433287],
+      "description": "Disable VP9 HW encode on Intel GPU with old drivers",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "driver_version": {
+        "op": "<",
+        "value": "30.0.100.9667"
+      },
+      "features": [
+        "disable_accelerated_vp9_encode"
+      ]
     }
   ]
 }
