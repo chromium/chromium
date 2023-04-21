@@ -12,9 +12,8 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
-
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +21,7 @@ import java.io.InputStream;
 /**
  * Checks that Robolectric tests can use android assets.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class AndroidAssetsTest {
     private static final String TEST_ASSET_NAME = "AndroidAssetsTest.java";
 

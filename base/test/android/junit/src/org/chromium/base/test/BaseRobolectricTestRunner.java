@@ -9,6 +9,7 @@ import androidx.test.core.app.ApplicationProvider;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.robolectric.DefaultTestLifecycle;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.TestLifecycle;
 import org.robolectric.internal.bytecode.InstrumentationConfiguration;
 
@@ -27,16 +28,15 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.TimeoutTimer;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 import java.lang.reflect.Method;
 
 /**
  * A Robolectric Test Runner that configures Chromium-specific settings and initializes base
  * globals. If initializing base globals is not desired, then {@link
- * org.chromium.testing.local.LocalRobolectricTestRunner} could be used.
+ * org.robolectric.RobolectricTestRunner} could be used directly.
  */
-public class BaseRobolectricTestRunner extends LocalRobolectricTestRunner {
+public class BaseRobolectricTestRunner extends RobolectricTestRunner {
     /**
      * Enables a per-test setUp / tearDown hook.
      */

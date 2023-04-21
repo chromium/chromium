@@ -17,7 +17,6 @@ robolectric_library("junit_test_support") {
     "java/src/org/chromium/testing/local/JsonLogger.java",
     "java/src/org/chromium/testing/local/JunitTestArgParser.java",
     "java/src/org/chromium/testing/local/JunitTestMain.java",
-    "java/src/org/chromium/testing/local/LocalRobolectricTestRunner.java",
     "java/src/org/chromium/testing/local/PackageFilter.java",
     "java/src/org/chromium/testing/local/RunnerFilter.java",
     "java/src/org/chromium/testing/local/TestDir.java",
