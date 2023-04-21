@@ -174,6 +174,8 @@ executable("v4l2_stateless_decoder") {
   sources = [
     "test/h264_decoder.cc",
     "test/h264_decoder.h",
+    "test/h264_dpb.cc",
+    "test/h264_dpb.h",
     "test/upstream_pix_fmt.h",
     "test/v4l2_ioctl_shim.cc",
     "test/v4l2_ioctl_shim.h",

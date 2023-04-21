@@ -12,64 +12,19 @@
 #include <linux/media/h264-ctrls-upstream.h>
 #endif
 
-#include <map>
-#include <set>
-
 #include "base/files/memory_mapped_file.h"
+#include "media/gpu/v4l2/test/h264_dpb.h"
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 #include "media/gpu/v4l2/test/video_decoder.h"
-#include "media/video/h264_parser.h"
 
 namespace media {
 namespace v4l2_test {
-
-struct H264SliceMetadata;
 
 // PreviousRefPicOrder contains data regarding the picture
 // order counts for the previously decoded frame.
 struct PreviousRefPicOrder {
   int prev_ref_pic_order_cnt_msb = 0;
   int prev_ref_pic_order_cnt_lsb = 0;
-};
-
-// H264DPB is a class representing a Decoded Picture Buffer (DPB).
-// The DPB is a map of H264 picture slice metadata objects that
-// describe the pictures used in the H.264 decoding process.
-class H264DPB : public std::map<uint64_t, H264SliceMetadata> {
- public:
-  H264DPB() = default;
-  ~H264DPB() = default;
-
-  H264DPB(const H264DPB&) = delete;
-  H264DPB& operator=(const H264DPB&) = delete;
-
-  // Returns number of Reference H264SliceMetadata elements
-  // in the DPB.
-  int CountRefPics();
-  // Deletes input H264SliceMetadata object from the DPB.
-  void Delete(const H264SliceMetadata& pic);
-  // Deletes any H264SliceMetadata object from DPB that is considered
-  // to be unused by the decoder.
-  // An H264SliceMetadata is unused if it has been outputted and is not a
-  // reference picture.
-  void DeleteUnused();
-  // Removes the reference picture marking from the lowest frame
-  // number H264SliceMetadata object in the DPB. This is used for implementing
-  // a sliding window DPB replacement algorithm.
-  void UnmarkLowestFrameNumWrapShortRefPic();
-  // Returns a vector of H264SliceMetadata objects that have not been output
-  // by the H264 Decoder.
-  std::vector<H264SliceMetadata*> GetNotOutputtedPicsAppending();
-  // Updates every H264SliceMetadata object in the DPB to indicate that they are
-  // not reference elements.
-  void MarkAllUnusedRef();
-  // Updates each H264SliceMetadata object in DPB's frame num wrap
-  // based on the max frame num.
-  void UpdatePicNums(const int curr_frame_num, const int max_frame_num);
-
-  // Maximum number of elements in the DPB. This is utilized by the
-  // decoder for updating elements in the DPB.
-  size_t max_dpb_size_ = -1;
 };
 
 class H264Decoder : public VideoDecoder {

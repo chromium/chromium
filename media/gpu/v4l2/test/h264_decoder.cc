@@ -17,25 +17,6 @@ namespace media {
 
 namespace v4l2_test {
 
-// H264SliceMetadata contains metadata about an H.264 picture
-// slice including how the slice is reordered. It is used as
-// elements in the decoded picture buffer class H264DPB.
-struct H264SliceMetadata {
-  H264SliceHeader slice_header;
-  int bottom_field_order_cnt = 0;
-  int frame_num = -1;
-  int frame_num_offset = 0;
-  int frame_num_wrap = 0;
-  uint64_t ref_ts_nsec = 0;  // Reference Timestamp in nanoseconds.
-  int pic_num = -1;
-  int pic_order_cnt = 0;
-  int pic_order_cnt_lsb = 0;
-  int pic_order_cnt_msb = 0;
-  int top_field_order_cnt = 0;
-  bool outputted = false;  // Whether this slice has been outputted.
-  bool ref = false;        // Whether this slice is a reference element.
-};
-
 namespace {
 constexpr uint32_t kDriverCodecFourcc = V4L2_PIX_FMT_H264_SLICE;
 
@@ -348,79 +329,6 @@ uint32_t GetMaxDPBMBS(uint8_t level) {
 }
 
 }  // namespace
-
-int H264DPB::CountRefPics() {
-  int ret = 0;
-  for (auto& i : *this) {
-    if (i.second.ref) {
-      ret++;
-    }
-  }
-  return ret;
-}
-
-void H264DPB::Delete(const H264SliceMetadata& pic) {
-  erase(pic.ref_ts_nsec);
-}
-
-void H264DPB::DeleteUnused() {
-  std::vector<uint64_t> keys;
-  for (auto& i : *this) {
-    if (i.second.outputted && !i.second.ref) {
-      keys.push_back(i.first);
-    }
-  }
-  for (auto i : keys) {
-    erase(i);
-  }
-}
-
-void H264DPB::UnmarkLowestFrameNumWrapShortRefPic() {
-  int key = -1;
-  for (auto& i : *this) {
-    H264SliceMetadata pic = i.second;
-    if (pic.ref &&
-        (key < 0 || pic.frame_num_wrap < this->at(key).frame_num_wrap)) {
-      key = i.first;
-    }
-  }
-
-  if (key >= 0) {
-    this->at(key).ref = false;
-  }
-}
-
-std::vector<H264SliceMetadata*> H264DPB::GetNotOutputtedPicsAppending() {
-  std::vector<H264SliceMetadata*> data;
-  for (auto& i : *this) {
-    H264SliceMetadata pic = i.second;
-    if (!pic.outputted) {
-      data.push_back(&pic);
-    }
-  }
-
-  return data;
-}
-
-void H264DPB::MarkAllUnusedRef() {
-  for (auto& i : *this) {
-    i.second.ref = false;
-  }
-}
-
-void H264DPB::UpdatePicNums(const int curr_frame_num, const int max_frame_num) {
-  for (auto& i : *this) {
-    if (i.second.ref) {
-      continue;
-    }
-
-    if (i.second.frame_num > curr_frame_num) {
-      i.second.frame_num_wrap = i.second.frame_num - max_frame_num;
-    } else {
-      i.second.frame_num_wrap = i.second.frame_num;
-    }
-  }
-}
 
 void H264Decoder::ProcessSPS(const int sps_id) {
   const H264SPS* sps = parser_->GetSPS(sps_id);
