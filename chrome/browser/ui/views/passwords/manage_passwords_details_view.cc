@@ -347,10 +347,17 @@ std::unique_ptr<views::View> ManagePasswordsDetailsView::CreateTitleView(
     base::RepeatingClosure on_back_clicked_callback) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   auto header = std::make_unique<views::BoxLayoutView>();
-  // Set the space between the icons and title similar to the default behavior
-  // in BubbleFrameView::Layout().
+  // Set the space between the icon and title similar to the space in the row
+  // below to make sure the bubble title and the labels below are vertically
+  // aligned. In the rows below the distance between the icon and the text is
+  // DISTANCE_RELATED_CONTROL_HORIZONTAL. But the icon in the title has a border
+  // of size INSETS_VECTOR_IMAGE_BUTTON to have space for the focus ring, and
+  // hence this is subtracted here.
   header->SetBetweenChildSpacing(
-      layout_provider->GetInsetsMetric(views::INSETS_DIALOG_TITLE).left());
+      layout_provider->GetDistanceMetric(
+          views::DISTANCE_RELATED_CONTROL_HORIZONTAL) -
+      layout_provider->GetInsetsMetric(views::INSETS_VECTOR_IMAGE_BUTTON)
+          .right());
 
   auto back_button = views::CreateVectorImageButtonWithNativeTheme(
       on_back_clicked_callback, vector_icons::kArrowBackIcon);
