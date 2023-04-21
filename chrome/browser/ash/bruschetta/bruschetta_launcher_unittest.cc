@@ -55,6 +55,7 @@ class BruschettaLauncherTest : public testing::Test,
 
     // We set up all our mocks to succeed, then failing tests explicitly break
     // the one thing they want to check the failure mode of.
+    ASSERT_TRUE(CreateTestFiles());
     vm_tools::concierge::StartVmResponse response;
     response.set_success(true);
     response.set_status(vm_tools::concierge::VmStatus::VM_STATUS_RUNNING);
@@ -76,6 +77,18 @@ class BruschettaLauncherTest : public testing::Test,
           *out_result = result;
           this->run_loop_.Quit();
         });
+  }
+
+  bool CreateTestFiles() {
+    bios_path_ = profile_.GetPath().Append(kBiosPath);
+    base::File::Error error;
+    bool result =
+        base::CreateDirectoryAndGetError(bios_path_.DirName(), &error);
+    if (!result) {
+      LOG(ERROR) << "Error creating downloads folder: " << error;
+      return false;
+    }
+    return base::WriteFile(bios_path_, "");
   }
 
   void SetupPrefs() {
@@ -114,15 +127,15 @@ class BruschettaLauncherTest : public testing::Test,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::RunLoop run_loop_;
   TestingProfile profile_;
+  base::FilePath bios_path_;
   std::unique_ptr<BruschettaLauncher> launcher_;
   base::HistogramTester histogram_tester_{};
 };
 
 // Try to launch, but DLC service returns an error.
-TEST_F(BruschettaLauncherTest, LaunchToolsDlcFailure) {
+TEST_F(BruschettaLauncherTest, LaunchDlcFailure) {
   BruschettaResult result;
-  FakeDlcserviceClient()->set_install_errors(base::circular_deque(
-      {std::string("Error installing"), std::string(dlcservice::kErrorNone)}));
+  FakeDlcserviceClient()->set_install_error("Error installing");
 
   launcher_->EnsureRunning(StoreResultThenQuitRunLoop(&result));
   run_loop_.Run();
@@ -136,18 +149,17 @@ TEST_F(BruschettaLauncherTest, LaunchToolsDlcFailure) {
                    .contains(kTestVmName));
 }
 
-// Try to launch, but DLC service returns an error.
-TEST_F(BruschettaLauncherTest, LaunchFirmwareDlcFailure) {
+// Try to launch, but BIOS file doesn't exist.
+TEST_F(BruschettaLauncherTest, LaunchBiosNotAccessible) {
   BruschettaResult result;
-  FakeDlcserviceClient()->set_install_errors(base::circular_deque(
-      {std::string(dlcservice::kErrorNone), std::string("Error installing")}));
+  ASSERT_TRUE(base::DeleteFile(bios_path_));
 
   launcher_->EnsureRunning(StoreResultThenQuitRunLoop(&result));
   run_loop_.Run();
 
-  ASSERT_EQ(result, BruschettaResult::kDlcInstallError);
+  ASSERT_EQ(result, BruschettaResult::kBiosNotAccessible);
   histogram_tester_.ExpectUniqueSample(kLaunchHistogram,
-                                       BruschettaResult::kDlcInstallError, 1);
+                                       BruschettaResult::kBiosNotAccessible, 1);
 
   ASSERT_FALSE(BruschettaService::GetForProfile(&profile_)
                    ->GetRunningVmsForTesting()
