@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_navigation_handler.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/permissions_manager.h"
 #include "ui/views/view_observer.h"
 
 namespace views {
@@ -43,6 +44,9 @@ class ExtensionsMenuViewController
   void OpenMainPage() override;
   void OpenSitePermissionsPage(extensions::ExtensionId extension_id) override;
   void CloseBubble() override;
+  void OnSiteAccessSelected(
+      extensions::ExtensionId extension_id,
+      extensions::PermissionsManager::UserSiteAccess site_access) override;
 
   // TabStripModelObserver:
   // Sometimes, menu can stay open when tab changes (e.g keyboard shortcuts) or

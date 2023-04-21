@@ -93,6 +93,13 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
   // Triggers the press and release event of the given `button`.
   void ClickButton(views::Button* button) const;
 
+  // Updates the user's site access for `extension` on `web_contents` to
+  // `site_access`.
+  void UpdateUserSiteAccess(
+      const extensions::Extension& extension,
+      content::WebContents* web_contents,
+      extensions::PermissionsManager::UserSiteAccess site_access);
+
   // Returns the user's site setting for `url`.
   extensions::PermissionsManager::UserSiteSetting GetUserSiteSetting(
       const GURL& url);

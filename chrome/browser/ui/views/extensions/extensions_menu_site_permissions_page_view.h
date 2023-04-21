@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_VIEW_H_
 
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension_id.h"
 #include "ui/views/view.h"
 
@@ -15,6 +16,7 @@ class ImageModel;
 namespace views {
 class ImageView;
 class Label;
+class RadioButton;
 class ToggleButton;
 }  // namespace views
 
@@ -38,6 +40,8 @@ class ExtensionsMenuSitePermissionsPageView : public views::View {
   // Updates the page contents with the given parameters.
   void Update(const std::u16string& extension_name,
               const ui::ImageModel& extension_icon,
+              const std::u16string& current_site,
+              extensions::PermissionsManager::UserSiteAccess user_site_access,
               bool is_show_requests_toggle_on);
 
   // Updates `show_requests_toggle_` state to `is_on`.
@@ -53,6 +57,8 @@ class ExtensionsMenuSitePermissionsPageView : public views::View {
   views::ToggleButton* GetShowRequestsToggleForTesting() {
     return show_requests_toggle_;
   }
+  views::RadioButton* GetSiteAccessButtonForTesting(
+      extensions::PermissionsManager::UserSiteAccess site_access);
 
  private:
   const raw_ptr<Browser> browser_;
