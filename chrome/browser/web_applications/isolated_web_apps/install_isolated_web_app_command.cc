@@ -76,20 +76,6 @@ absl::optional<std::string> UTF16ToUTF8(base::StringPiece16 src) {
   return dest;
 }
 
-std::unique_ptr<IsolatedWebAppResponseReaderFactory>
-CreateDefaultResponseReaderFactory(content::BrowserContext& browser_context) {
-  Profile& profile = *Profile::FromBrowserContext(&browser_context);
-  PrefService& pref_service = *profile.GetPrefs();
-
-  auto trust_checker =
-      std::make_unique<IsolatedWebAppTrustChecker>(pref_service);
-  auto validator =
-      std::make_unique<IsolatedWebAppValidator>(std::move(trust_checker));
-
-  return std::make_unique<IsolatedWebAppResponseReaderFactory>(
-      std::move(validator));
-}
-
 }  // namespace
 
 InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
@@ -97,25 +83,6 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
     const IsolatedWebAppLocation& location,
     std::unique_ptr<content::WebContents> web_contents,
     std::unique_ptr<WebAppUrlLoader> url_loader,
-    content::BrowserContext& browser_context,
-    base::OnceCallback<void(base::expected<InstallIsolatedWebAppCommandSuccess,
-                                           InstallIsolatedWebAppCommandError>)>
-        callback)
-    : InstallIsolatedWebAppCommand(
-          url_info,
-          location,
-          std::move(web_contents),
-          std::move(url_loader),
-          browser_context,
-          std::move(callback),
-          CreateDefaultResponseReaderFactory(browser_context)) {}
-
-InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
-    const IsolatedWebAppUrlInfo& url_info,
-    const IsolatedWebAppLocation& location,
-    std::unique_ptr<content::WebContents> web_contents,
-    std::unique_ptr<WebAppUrlLoader> url_loader,
-    content::BrowserContext& browser_context,
     base::OnceCallback<void(base::expected<InstallIsolatedWebAppCommandSuccess,
                                            InstallIsolatedWebAppCommandError>)>
         callback,
@@ -129,7 +96,6 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
       response_reader_factory_(std::move(response_reader_factory)),
       web_contents_(std::move(web_contents)),
       url_loader_(std::move(url_loader)),
-      browser_context_(browser_context),
       data_retriever_(std::make_unique<WebAppDataRetriever>()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
@@ -144,6 +110,18 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
             return result;
           })
           .Then(std::move(callback));
+}
+
+// static
+std::unique_ptr<IsolatedWebAppResponseReaderFactory>
+InstallIsolatedWebAppCommand::CreateDefaultResponseReaderFactory(
+    const PrefService& prefs) {
+  auto trust_checker = std::make_unique<IsolatedWebAppTrustChecker>(prefs);
+  auto validator =
+      std::make_unique<IsolatedWebAppValidator>(std::move(trust_checker));
+
+  return std::make_unique<IsolatedWebAppResponseReaderFactory>(
+      std::move(validator));
 }
 
 void InstallIsolatedWebAppCommand::SetDataRetrieverForTesting(
@@ -172,8 +150,6 @@ void InstallIsolatedWebAppCommand::StartWithLock(
     std::unique_ptr<AppLock> lock) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   lock_ = std::move(lock);
-  const PrefService& prefs =
-      *Profile::FromBrowserContext(&*browser_context_)->GetPrefs();
 
   absl::visit(
       base::Overloaded{
@@ -185,7 +161,7 @@ void InstallIsolatedWebAppCommand::StartWithLock(
           [&](const DevModeBundle& location) {
             DCHECK_EQ(url_info_.web_bundle_id().type(),
                       web_package::SignedWebBundleId::Type::kEd25519PublicKey);
-            if (!IsIwaDevModeEnabled(prefs)) {
+            if (!IsIwaDevModeEnabled(prefs())) {
               ReportFailure(kIwaDevModeNotEnabledMessage);
               return;
             }
@@ -194,7 +170,7 @@ void InstallIsolatedWebAppCommand::StartWithLock(
           [&](const DevModeProxy& location) {
             DCHECK_EQ(url_info_.web_bundle_id().type(),
                       web_package::SignedWebBundleId::Type::kDevelopment);
-            if (!IsIwaDevModeEnabled(prefs)) {
+            if (!IsIwaDevModeEnabled(prefs())) {
               ReportFailure(kIwaDevModeNotEnabledMessage);
               return;
             }
@@ -251,9 +227,8 @@ void InstallIsolatedWebAppCommand::OnTrustAndSignaturesChecked(
 }
 
 void InstallIsolatedWebAppCommand::CreateStoragePartition() {
-  browser_context_->GetStoragePartition(
-      url_info_.storage_partition_config(&*browser_context_),
-      /*can_create=*/true);
+  profile().GetStoragePartition(url_info_.storage_partition_config(&profile()),
+                                /*can_create=*/true);
 }
 
 void InstallIsolatedWebAppCommand::LoadUrl() {
@@ -476,6 +451,16 @@ void InstallIsolatedWebAppCommand::ReportSuccess() {
       CommandResult::kSuccess,
       base::BindOnce(std::move(callback_),
                      InstallIsolatedWebAppCommandSuccess{}));
+}
+
+Profile& InstallIsolatedWebAppCommand::profile() {
+  CHECK(web_contents_);
+  CHECK(web_contents_->GetBrowserContext());
+  return *Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+}
+
+const PrefService& InstallIsolatedWebAppCommand::prefs() {
+  return *profile().GetPrefs();
 }
 
 }  // namespace web_app

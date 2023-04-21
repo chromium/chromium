@@ -28,9 +28,10 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class GURL;
+class Profile;
+class PrefService;
 
 namespace content {
-class BrowserContext;
 class WebContents;
 }  // namespace content
 
@@ -64,35 +65,28 @@ struct InstallIsolatedWebAppCommandError {
 // re-using web contents.
 class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
  public:
-  //
-  // |url_info| holds the origin information of the app. It is
-  // randomly generated for dev-proxy and the public key of signed bundle. It is
+  static std::unique_ptr<IsolatedWebAppResponseReaderFactory>
+  CreateDefaultResponseReaderFactory(const PrefService& prefs);
+
+  // |url_info| holds the origin information of the app. It is randomly
+  // generated for dev-proxy and the public key of signed bundle. It is
   // guarantee to be valid.
   //
-  // |location| holds information about the
-  // mode(dev-mod-proxy/signed-bundle) and the source.
+  // |location| holds information about the mode(dev-mod-proxy/signed-bundle)
+  // and the source.
   //
   // |callback| must be not null.
   //
   // The `id` in the application's manifest must equal "/".
+  //
+  // `response_reader_factory` should be created via
+  // `CreateDefaultResponseReaderFactory` and is used to create the
+  // `IsolatedWebAppResponseReader` for the Web Bundle.
   explicit InstallIsolatedWebAppCommand(
       const IsolatedWebAppUrlInfo& url_info,
       const IsolatedWebAppLocation& location,
       std::unique_ptr<content::WebContents> web_contents,
       std::unique_ptr<WebAppUrlLoader> url_loader,
-      content::BrowserContext& browser_context,
-      base::OnceCallback<
-          void(base::expected<InstallIsolatedWebAppCommandSuccess,
-                              InstallIsolatedWebAppCommandError>)> callback);
-
-  // Same constructor as above, but additionally exposes the
-  // `response_reader_factory` for providing a mock factory in testing.
-  explicit InstallIsolatedWebAppCommand(
-      const IsolatedWebAppUrlInfo& url_info,
-      const IsolatedWebAppLocation& location,
-      std::unique_ptr<content::WebContents> web_contents,
-      std::unique_ptr<WebAppUrlLoader> url_loader,
-      content::BrowserContext& browser_context,
       base::OnceCallback<
           void(base::expected<InstallIsolatedWebAppCommandSuccess,
                               InstallIsolatedWebAppCommandError>)> callback,
@@ -122,6 +116,9 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
  private:
   void ReportFailure(base::StringPiece message);
   void ReportSuccess();
+
+  Profile& profile();
+  const PrefService& prefs();
 
   void DownloadIcons(WebAppInstallInfo install_info);
   void OnGetIcons(WebAppInstallInfo install_info,
@@ -165,8 +162,6 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
   std::unique_ptr<content::WebContents> web_contents_;
 
   std::unique_ptr<WebAppUrlLoader> url_loader_;
-
-  base::raw_ref<content::BrowserContext> browser_context_;
 
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
 
