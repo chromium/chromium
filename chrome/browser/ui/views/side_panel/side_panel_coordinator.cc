@@ -543,6 +543,7 @@ void SidePanelCoordinator::PopulateSidePanel(
   if (auto* side_panel_container =
           browser_view_->toolbar()->side_panel_container()) {
     UpdateHeaderPinButtonState();
+    side_panel_container->UpdateSidePanelContainerButtonsState();
   }
 }
 

@@ -102,12 +102,11 @@ TEST_F(SidePanelToolbarContainerTest, CompanionPinnedByDefault) {
 
 TEST_F(SidePanelToolbarContainerTest, ClickingPinnedEntryOpensSidePanel) {
   auto* search_companion_button = GetPinnedEntryButtons()[0];
-  auto* side_panel_button = browser_view()->toolbar()->GetSidePanelButton();
   ClickButton(search_companion_button);
   ASSERT_TRUE(browser_view()->unified_side_panel()->GetVisible());
   ASSERT_EQ(browser_view()->side_panel_coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kSearchCompanion);
-  ASSERT_TRUE(views::InkDrop::Get(side_panel_button)->GetHighlighted());
+  ASSERT_TRUE(views::InkDrop::Get(search_companion_button)->GetHighlighted());
 }
 
 TEST_F(SidePanelToolbarContainerTest,
