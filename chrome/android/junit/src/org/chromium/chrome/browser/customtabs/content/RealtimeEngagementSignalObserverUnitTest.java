@@ -15,6 +15,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -28,6 +29,8 @@ import static org.chromium.url.JUnitTestGURLs.URL_1;
 
 import android.graphics.Point;
 import android.os.SystemClock;
+
+import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -54,6 +57,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content.browser.GestureListenerManagerImpl;
@@ -204,51 +208,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
         Assert.assertNotEquals(
                 "A new listener should be created once tab swapped.", listener, listener2);
         verifyNoMemoryLeakForGestureStateListener(listener2);
-    }
-
-    @Test
-    public void sendUserInteractionOnTabDestroyed_NoUserInteraction() {
-        initializeTabForTest();
-        doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
-        List<TabObserver> tabObservers = captureTabObservers();
-        for (TabObserver observer : tabObservers) {
-            observer.onDestroyed(env.tabProvider.getTab());
-        }
-        verify(env.connection).notifyDidGetUserInteraction(eq(env.session), eq(false));
-    }
-
-    @Test
-    public void sendUserInteractionOnTabDestroyed_DidGetUserInteraction() {
-        initializeTabForTest();
-        doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
-        List<TabObserver> tabObservers = captureTabObservers();
-        for (TabObserver observer : tabObservers) {
-            observer.onDestroyed(env.tabProvider.getTab());
-        }
-        verify(env.connection).notifyDidGetUserInteraction(eq(env.session), eq(true));
-    }
-
-    @Test
-    public void sendUserInteractionOnTabHidden() {
-        initializeTabForTest();
-        doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
-        List<TabObserver> tabObservers = captureTabObservers();
-        for (TabObserver observer : tabObservers) {
-            observer.onHidden(env.tabProvider.getTab(), TabHidingType.ACTIVITY_HIDDEN);
-        }
-        verify(env.connection).notifyDidGetUserInteraction(eq(env.session), eq(false));
-    }
-
-    @Test
-    public void sendUserInteractionOnTabHidden_OtherReason() {
-        initializeTabForTest();
-        doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
-        List<TabObserver> tabObservers = captureTabObservers();
-        for (TabObserver observer : tabObservers) {
-            observer.onHidden(env.tabProvider.getTab(), TabHidingType.CHANGED_TABS);
-            observer.onHidden(env.tabProvider.getTab(), TabHidingType.REPARENTED);
-        }
-        verify(env.connection, never()).notifyDidGetUserInteraction(eq(env.session), eq(false));
     }
 
     @Test
@@ -516,6 +475,32 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
+    public void resetsMaxOnTabChange() {
+        initializeTabForTest();
+        GestureStateListener gestureStateListener = captureGestureStateListener();
+
+        // Scroll down to 50%.
+        gestureStateListener.onScrollStarted(0, SCROLL_EXTENT, false);
+        gestureStateListener.onScrollUpdateGestureConsumed(new Point(0, 50));
+        gestureStateListener.onScrollEnded(50, SCROLL_EXTENT);
+
+        // Verify 50% is reported.
+        verify(env.connection).notifyGreatestScrollPercentageIncreased(eq(env.session), eq(50));
+        clearInvocations(env.connection);
+
+        // Change tabs.
+        mEngagementSignalObserver.onHidden(env.tabProvider.getTab(), TabHidingType.CHANGED_TABS);
+
+        // Scroll down to 10%.
+        gestureStateListener.onScrollStarted(0, SCROLL_EXTENT, false);
+        gestureStateListener.onScrollUpdateGestureConsumed(new Point(0, 10));
+        gestureStateListener.onScrollEnded(10, SCROLL_EXTENT);
+
+        // Verify 10% is reported.
+        verify(env.connection).notifyGreatestScrollPercentageIncreased(eq(env.session), eq(10));
+    }
+
+    @Test
     public void returnsRetroactiveMaxScroll() {
         initializeTabForTest();
         GestureStateListener gestureStateListener = captureGestureStateListener();
@@ -749,6 +734,44 @@ public class RealtimeEngagementSignalObserverUnitTest {
                 .notifyGreatestScrollPercentageIncreased(eq(env.session), anyInt());
     }
 
+    @Test
+    @Features.DisableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
+    public void sendOnSessionEnded_HadInteraction() {
+        initializeTabForTest();
+        doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
+        Tab tab = mock(TabImpl.class);
+        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        doReturn(false).when(tab).isIncognito();
+        mEngagementSignalObserver.onObservingDifferentTab(tab);
+        doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
+        mEngagementSignalObserver.webContentsWillSwap(tab);
+        // Close all tabs.
+        mEngagementSignalObserver.onClosingStateChanged(tab, true);
+        doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
+        mEngagementSignalObserver.onClosingStateChanged(env.tabProvider.getTab(), true);
+        mEngagementSignalObserver.onAllTabsClosed();
+
+        verify(env.connection, times(1)).notifyDidGetUserInteraction(env.session, true);
+    }
+
+    @Test
+    @Features.DisableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
+    public void sendOnSessionEnded_HadNoInteraction() {
+        initializeTabForTest();
+        doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
+        Tab tab = mock(TabImpl.class);
+        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        doReturn(false).when(tab).isIncognito();
+        mEngagementSignalObserver.onObservingDifferentTab(tab);
+        mEngagementSignalObserver.webContentsWillSwap(tab);
+        // Close all tabs.
+        mEngagementSignalObserver.onClosingStateChanged(tab, true);
+        mEngagementSignalObserver.onClosingStateChanged(env.tabProvider.getTab(), true);
+        mEngagementSignalObserver.onAllTabsClosed();
+
+        verify(env.connection, times(1)).notifyDidGetUserInteraction(env.session, false);
+    }
+
     private void advanceTime(long millis) {
         SystemClock.setCurrentTimeMillis(CURRENT_TIME_MS + millis);
     }
@@ -831,7 +854,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         ArgumentCaptor<Supplier<Integer>> greatestScrollPercentageSupplierArgumentCaptor =
                 ArgumentCaptor.forClass(Supplier.class);
         verify(env.connection)
-                .setGreatestScrollPercentageSupplier(
+                .setGreatestScrollPercentageSupplier(any(CustomTabsSessionToken.class),
                         greatestScrollPercentageSupplierArgumentCaptor.capture());
         return greatestScrollPercentageSupplierArgumentCaptor.getValue();
     }

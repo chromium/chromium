@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
@@ -32,6 +33,7 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     private final Context mContext;
     private final SharedPreferencesManager mPrefs;
 
+    private ObserverList<Observer> mObservers;
     private PolicyService mPolicyService;
     private PolicyService.Observer mPolicyServiceObserver;
 
@@ -124,6 +126,33 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
 
         mPrefs.writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY,
                 !PrivacyPreferencesManagerImplJni.get().isMetricsReportingDisabledByPolicy());
+    }
+
+    @Override
+    public void addObserver(Observer observer) {
+        if (mObservers == null) {
+            mObservers = new ObserverList<>();
+        }
+        mObservers.addObserver(observer);
+        mPrefs.addObserver(key -> {
+            if (key.equals(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER)
+                    || key.equals(
+                            ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY)) {
+                notifyObservers();
+            }
+        });
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
+    }
+
+    private void notifyObservers() {
+        boolean permitted = isUsageAndCrashReportingPermitted();
+        for (var observer : mObservers) {
+            observer.onIsUsageAndCrashReportingPermittedChanged(permitted);
+        }
     }
 
     @Override

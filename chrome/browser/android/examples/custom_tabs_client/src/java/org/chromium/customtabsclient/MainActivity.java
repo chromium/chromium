@@ -21,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -51,6 +52,7 @@ import androidx.browser.customtabs.CustomTabsClient;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsServiceConnection;
 import androidx.browser.customtabs.CustomTabsSession;
+import androidx.browser.customtabs.EngagementSignalsCallback;
 
 import com.google.android.material.button.MaterialButtonToggleGroup;
 
@@ -252,6 +254,38 @@ public class MainActivity
                                 // CustomTabsConnection#ON_ACTIVITY_LAYOUT_STATE_EXTRA
                                 + " state = " + args.getInt("state"));
             }
+        }
+    }
+
+    private class EngagementCallback implements EngagementSignalsCallback {
+        @Override
+        public void onVerticalScrollEvent(boolean isDirectionUp, Bundle extras) {
+            Log.w(TAG,
+                    "EngagementSignalsCallback#onVerticalScrollEvent: isDirectionUp = "
+                            + isDirectionUp);
+        }
+
+        @Override
+        public void onGreatestScrollPercentageIncreased(int scrollPercentage, Bundle extras) {
+            Log.w(TAG,
+                    "EngagementSignalsCallback#onGreatestScrollPercentageIncreased: "
+                            + "scrollPercentage = " + scrollPercentage);
+            try {
+                Log.w(TAG,
+                        "getGreatestScrollPercentage: "
+                                + getSession().getGreatestScrollPercentage(Bundle.EMPTY));
+            } catch (RemoteException e) {
+                Log.w(TAG, "The Service died while responding to the request.", e);
+            } catch (UnsupportedOperationException e) {
+                Log.w(TAG, "Engagement Signals API isn't supported by the browser.", e);
+            }
+        }
+
+        @Override
+        public void onSessionEnded(boolean didUserInteract, Bundle extras) {
+            Log.w(TAG,
+                    "EngagementSignalsCallback#onSessionEnded: didUserInteract = "
+                            + didUserInteract);
         }
     }
 
@@ -995,6 +1029,15 @@ public class MainActivity
         mWarmupButton.setEnabled(true);
         mDisconnectButton.setEnabled(true);
         mMayLaunchButton.setEnabled(true);
+        try {
+            if (getSession().isEngagementSignalsApiAvailable(Bundle.EMPTY)) {
+                getSession().setEngagementSignalsCallback(new EngagementCallback(), Bundle.EMPTY);
+            }
+        } catch (RemoteException e) {
+            Log.w(TAG, "The Service died while responding to the request.", e);
+        } catch (UnsupportedOperationException e) {
+            Log.w(TAG, "Engagement Signals API isn't supported by the browser.", e);
+        }
     }
 
     @Override

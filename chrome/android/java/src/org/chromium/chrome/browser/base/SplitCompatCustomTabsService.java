@@ -12,6 +12,7 @@ import android.os.IBinder;
 
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSessionToken;
+import androidx.browser.customtabs.EngagementSignalsCallback;
 
 import org.chromium.base.BundleUtils;
 
@@ -109,6 +110,23 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
         return mImpl.receiveFile(sessionToken, uri, purpose, extras);
     }
 
+    @Override
+    protected boolean isEngagementSignalsApiAvailable(
+            CustomTabsSessionToken sessionToken, Bundle extras) {
+        return mImpl.isEngagementSignalsApiAvailable(sessionToken, extras);
+    }
+
+    @Override
+    protected boolean setEngagementSignalsCallback(CustomTabsSessionToken sessionToken,
+            EngagementSignalsCallback callback, Bundle extras) {
+        return mImpl.setEngagementSignalsCallback(sessionToken, callback, extras);
+    }
+
+    @Override
+    protected int getGreatestScrollPercentage(CustomTabsSessionToken sessionToken, Bundle extras) {
+        return mImpl.getGreatestScrollPercentage(sessionToken, extras);
+    }
+
     /**
      * Holds the implementation of service logic. Will be called by {@link
      * SplitCompatCustomTabsService}.
@@ -148,5 +166,11 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
                 CustomTabsSessionToken sessionToken, int relation, Uri originAsUri, Bundle extras);
         protected abstract boolean receiveFile(
                 CustomTabsSessionToken sessionToken, Uri uri, int purpose, Bundle extras);
+        protected abstract boolean isEngagementSignalsApiAvailable(
+                CustomTabsSessionToken sessionToken, Bundle extras);
+        protected abstract boolean setEngagementSignalsCallback(CustomTabsSessionToken sessionToken,
+                EngagementSignalsCallback callback, Bundle extras);
+        protected abstract int getGreatestScrollPercentage(
+                CustomTabsSessionToken sessionToken, Bundle extras);
     }
 }

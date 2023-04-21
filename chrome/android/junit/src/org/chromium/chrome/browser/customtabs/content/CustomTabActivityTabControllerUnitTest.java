@@ -39,6 +39,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -65,12 +67,15 @@ public class CustomTabActivityTabControllerUnitTest {
 
     @Mock
     private Profile mProfile;
+    @Mock
+    private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         Profile.setLastUsedProfileForTesting(mProfile);
         mTabController = env.createTabController();
+        PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManager);
     }
 
     @After
@@ -231,6 +236,7 @@ public class CustomTabActivityTabControllerUnitTest {
     @Features.DisableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
     public void attachEngagementSignalObserver() {
         when(env.connection.isDynamicFeatureEnabled(anyString())).thenReturn(true);
+        when(mPrivacyPreferencesManager.isUsageAndCrashReportingPermitted()).thenReturn(true);
         env.reachNativeInit(mTabController);
 
         ArgumentCaptor<CustomTabTabObserver> tabObservers =
@@ -243,5 +249,33 @@ public class CustomTabActivityTabControllerUnitTest {
             }
         }
         throw new AssertionError("RealtimeEngagementSignalObserver is not attached.");
+    }
+
+    @Test
+    @Features.DisableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
+    public void disableUsageAndCrashReporting_BeforeInit() {
+        when(env.connection.isDynamicFeatureEnabled(anyString())).thenReturn(true);
+        when(mPrivacyPreferencesManager.isUsageAndCrashReportingPermitted()).thenReturn(false);
+        env.reachNativeInit(mTabController);
+
+        assertNull(mTabController.getRealtimeEngagementSignalObserverForTesting());
+    }
+
+    @Test
+    @Features.DisableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
+    public void disableUsageAndCrashReporting_AfterInit() {
+        when(env.connection.isDynamicFeatureEnabled(anyString())).thenReturn(true);
+        when(mPrivacyPreferencesManager.isUsageAndCrashReportingPermitted()).thenReturn(true);
+        env.reachNativeInit(mTabController);
+
+        assertNotNull(mTabController.getRealtimeEngagementSignalObserverForTesting());
+
+        ArgumentCaptor<PrivacyPreferencesManager.Observer> observer =
+                ArgumentCaptor.forClass(PrivacyPreferencesManager.Observer.class);
+        verify(mPrivacyPreferencesManager).addObserver(observer.capture());
+
+        observer.getValue().onIsUsageAndCrashReportingPermittedChanged(false);
+        verify(env.connection).notifyDidGetUserInteraction(eq(env.session), eq(false));
+        assertNull(mTabController.getRealtimeEngagementSignalObserverForTesting());
     }
 }

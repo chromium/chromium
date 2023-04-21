@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSessionToken;
+import androidx.browser.customtabs.EngagementSignalsCallback;
 
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
@@ -108,6 +109,23 @@ public class CustomTabsConnectionServiceImpl extends CustomTabsConnectionService
     protected boolean receiveFile(@NonNull CustomTabsSessionToken sessionToken, @NonNull Uri uri,
             int purpose, @Nullable Bundle extras) {
         return mConnection.receiveFile(sessionToken, uri, purpose, extras);
+    }
+
+    @Override
+    protected boolean isEngagementSignalsApiAvailable(
+            CustomTabsSessionToken sessionToken, Bundle extras) {
+        return mConnection.isEngagementSignalsApiAvailable(sessionToken, extras);
+    }
+
+    @Override
+    protected boolean setEngagementSignalsCallback(CustomTabsSessionToken sessionToken,
+            EngagementSignalsCallback callback, Bundle extras) {
+        return mConnection.setEngagementSignalsCallback(sessionToken, callback, extras);
+    }
+
+    @Override
+    protected int getGreatestScrollPercentage(CustomTabsSessionToken sessionToken, Bundle extras) {
+        return mConnection.getGreatestScrollPercentage(sessionToken, extras);
     }
 
     private boolean isFirstRunDone() {

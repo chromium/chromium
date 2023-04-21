@@ -48,7 +48,6 @@ import org.chromium.ui.base.WindowAndroid;
  *
  * The engagement signal will reset in navigation.
  */
-// TODO(https://crbug.com/1381619): Reset scroll state during tab switching.
 @ActivityScope
 class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     private static final int SCROLL_STATE_MAX_PERCENTAGE_NOT_INCREASING = -1;
@@ -86,6 +85,8 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     private ScrollState mScrollState;
     private @RootScrollOffsetUpdateFrequency.EnumType int mScrollOffsetUpdateFrequency;
     private int mAfterScrollEndThresholdMs;
+    // Tracks the user interaction state across multiple tabs and WebContents.
+    private boolean mDidGetUserInteraction;
 
     /**
      * A tab observer that will send real time scrolling signals to CustomTabsConnection, if a
@@ -118,20 +119,34 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         initializeGreatestScrollPercentageSupplier();
     }
 
+    public void destroy() {
+        removeWebContentsDependencies(mWebContents);
+        mConnection.setEngagementSignalsAvailableSupplier(mSession, null);
+        mConnection.setGreatestScrollPercentageSupplier(mSession, null);
+        mTabObserverRegistrar.unregisterActivityTabObserver(this);
+    }
+
     // extends CustomTabTabObserver
     @Override
     protected void onAttachedToInitialTab(@NonNull Tab tab) {
+        mConnection.setEngagementSignalsAvailableSupplier(
+                mSession, () -> shouldSendEngagementSignal(tab));
         maybeStartSendingRealTimeEngagementSignals(tab);
     }
 
     @Override
     protected void onObservingDifferentTab(@NonNull Tab tab) {
+        mConnection.setEngagementSignalsAvailableSupplier(
+                mSession, () -> shouldSendEngagementSignal(tab));
         removeWebContentsDependencies(mWebContents);
         maybeStartSendingRealTimeEngagementSignals(tab);
     }
 
     @Override
     protected void onAllTabsClosed() {
+        mConnection.notifyDidGetUserInteraction(mSession, mDidGetUserInteraction);
+        mDidGetUserInteraction = false;
+        mConnection.setEngagementSignalsAvailableSupplier(mSession, null);
         removeWebContentsDependencies(mWebContents);
     }
 
@@ -149,26 +164,28 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
 
     @Override
     public void webContentsWillSwap(Tab tab) {
+        collectUserInteraction(tab);
         removeWebContentsDependencies(tab.getWebContents());
     }
 
     @Override
-    public void onHidden(Tab tab, int reason) {
-        if (reason == TabHidingType.ACTIVITY_HIDDEN) {
-            collectUserInteraction(tab);
+    public void onHidden(Tab tab, @TabHidingType int reason) {
+        if (reason == TabHidingType.CHANGED_TABS) {
+            ScrollState.from(tab).resetMaxScrollPercentage();
         }
     }
 
     @Override
     public void onClosingStateChanged(Tab tab, boolean closing) {
         if (!closing) return;
+        collectUserInteraction(tab);
         removeWebContentsDependencies(mWebContents);
     }
 
     @Override
     public void onDestroyed(Tab tab) {
-        collectUserInteraction(tab);
         removeWebContentsDependencies(tab.getWebContents());
+        mConnection.setEngagementSignalsAvailableSupplier(mSession, null);
     }
 
     private void initializeGreatestScrollPercentageSupplier() {
@@ -179,7 +196,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
             }
             return null;
         };
-        mConnection.setGreatestScrollPercentageSupplier(percentageSupplier);
+        mConnection.setGreatestScrollPercentageSupplier(mSession, percentageSupplier);
     }
 
     /**
@@ -188,6 +205,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
      */
     private void maybeStartSendingRealTimeEngagementSignals(Tab tab) {
         if (!shouldSendEngagementSignal(tab)) {
+            mScrollState = null;
             return;
         }
 
@@ -278,8 +296,6 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         mEngagementSignalWebContentsObserver = new WebContentsObserver() {
             @Override
             public void navigationEntryCommitted(LoadCommittedDetails details) {
-                // TODO(https://crbug.com/1351026): Look into back navigation/scroll
-                // restoration to see if we need any changes to match PRD specs.
                 if (details.isMainFrame() && !details.isSameDocument()) {
                     mScrollState.resetMaxScrollPercentage();
                 }
@@ -300,7 +316,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         TabInteractionRecorder recorder = TabInteractionRecorder.getFromTab(tab);
         if (recorder == null) return;
 
-        mConnection.notifyDidGetUserInteraction(mSession, recorder.didGetUserInteraction());
+        mDidGetUserInteraction |= recorder.didGetUserInteraction();
     }
 
     private void removeWebContentsDependencies(@Nullable WebContents webContents) {
