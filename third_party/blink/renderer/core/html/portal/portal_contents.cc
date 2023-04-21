@@ -38,10 +38,17 @@ PortalContents::PortalContents(
     : document_(portal_element.GetDocument()),
       portal_element_(&portal_element),
       portal_token_(portal_token),
-      remote_portal_(std::move(remote_portal)),
-      portal_client_receiver_(this, std::move(portal_client_receiver)) {
+      remote_portal_(portal_element.GetDocument().GetExecutionContext()),
+      portal_client_receiver_(
+          this,
+          portal_element.GetDocument().GetExecutionContext()) {
+  remote_portal_.Bind(std::move(remote_portal),
+                      document_->GetTaskRunner(TaskType::kInternalDefault));
   remote_portal_.set_disconnect_handler(WTF::BindOnce(
       &PortalContents::DisconnectHandler, WrapWeakPersistent(this)));
+  portal_client_receiver_.Bind(
+      std::move(portal_client_receiver),
+      document_->GetTaskRunner(TaskType::kInternalDefault));
   DocumentPortals::GetOrCreate(GetDocument()).RegisterPortalContents(this);
 }
 
@@ -215,6 +222,8 @@ void PortalContents::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(portal_element_);
   visitor->Trace(activation_delegate_);
+  visitor->Trace(remote_portal_);
+  visitor->Trace(portal_client_receiver_);
 }
 
 }  // namespace blink
