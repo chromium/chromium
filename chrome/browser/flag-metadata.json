@@ -2317,7 +2317,7 @@
   {
     "name": "enable-device-trust-connector",
     "owners": [ "rogerta", "seblalancette" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 119
   },
   {
     "name": "enable-disco-feed-endpoint",
@@ -3405,6 +3405,11 @@
     "name": "enable-unsafe-webgpu",
     "owners": [ "//third_party/blink/renderer/modules/webgpu/OWNERS" ],
     "expiry_milestone": 115
+  },
+  {
+    "name": "enable-user-dtc-inline-flow",
+    "owners": [ "seblalancette", "hmare" ],
+    "expiry_milestone": 119
   },
   {
     "name": "enable-user-policy",
