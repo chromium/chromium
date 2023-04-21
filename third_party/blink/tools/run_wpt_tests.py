@@ -14,6 +14,7 @@ import multiprocessing
 import os
 import re
 import shutil
+import signal
 import subprocess
 import sys
 import warnings
@@ -1268,6 +1269,16 @@ def _parse_environ_int(name: str) -> Optional[int]:
     return None
 
 
+def handle_interrupt_signals():
+    def termination_handler(_signum, _unused_frame):
+        raise KeyboardInterrupt()
+
+    if sys.platform == "win32":
+        signal.signal(signal.SIGBREAK, termination_handler)
+    else:
+        signal.signal(signal.SIGTERM, termination_handler)
+
+
 def main() -> int:
     # Force log output in utf-8 instead of a locale-dependent encoding. On
     # Windows, this can be cp1252. See: crbug.com/1371195.
@@ -1276,11 +1287,17 @@ def main() -> int:
         sys.stderr.reconfigure(encoding='utf-8')
     # Also apply utf-8 mode to python subprocesses.
     os.environ['PYTHONUTF8'] = '1'
+    # Convert SIGTERM to be handled as KeyboardInterrupt to handle early termination
+    # Same handle is declared later on in wptrunner
+    # See: https://github.com/web-platform-tests/wpt/blob/25cd6eb086db5977ac51f7dee7faafe6772dc9d7/tools/wptrunner/wptrunner/wptrunner.py
+    # This early declaration allow graceful exit when Chromium swarming kill process before wpt starts
+    handle_interrupt_signals()
     try:
         adapter = WPTAdapter()
         options = adapter.parse_arguments()
         return adapter.run_tests(options)
     except KeyboardInterrupt:
+        logger.critical("Harness exited after signal interrupt")
         return exit_codes.INTERRUPTED_EXIT_STATUS
 
 
