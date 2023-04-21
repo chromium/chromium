@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_LOCAL_TAB_GROUP_LISTENER_H_
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_LOCAL_TAB_GROUP_LISTENER_H_
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -23,9 +23,9 @@ class LocalTabGroupListener {
  public:
   LocalTabGroupListener(
       tab_groups::TabGroupId local_id,
-      base::GUID saved_guid,
+      base::Uuid saved_guid,
       SavedTabGroupModel* model,
-      std::vector<std::pair<content::WebContents*, base::GUID>> mapping);
+      std::vector<std::pair<content::WebContents*, base::Uuid>> mapping);
   virtual ~LocalTabGroupListener();
 
   // Pauses listening to changes to the local tab group. Call this before
@@ -64,7 +64,7 @@ class LocalTabGroupListener {
       web_contents_to_tab_id_map_;
   const raw_ptr<SavedTabGroupModel> model_;
   const tab_groups::TabGroupId local_id_;
-  const base::GUID saved_guid_;
+  const base::Uuid saved_guid_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_LOCAL_TAB_GROUP_LISTENER_H_

@@ -35,22 +35,22 @@ class SavedTabGroupKeyedService : public KeyedService,
 
   // Populates `saved_guid_to_local_group_id_mapping_` with a pair to link once
   // SavedTabGroupModelLoaded is called.
-  void StoreLocalToSavedId(const base::GUID& saved_guid,
+  void StoreLocalToSavedId(const base::Uuid& saved_guid,
                            const tab_groups::TabGroupId local_group_id);
 
   // SavedTabGroupController
   void OpenSavedTabGroupInBrowser(Browser* browser,
-                                  const base::GUID& saved_group_guid) override;
+                                  const base::Uuid& saved_group_guid) override;
   void SaveGroup(const tab_groups::TabGroupId& group_id) override;
   void UnsaveGroup(const tab_groups::TabGroupId& group_id) override;
   void PauseTrackingLocalTabGroup(
       const tab_groups::TabGroupId& group_id) override;
   void ResumeTrackingLocalTabGroup(
-      const base::GUID& saved_group_guid,
+      const base::Uuid& saved_group_guid,
       const tab_groups::TabGroupId& group_id) override;
   void DisconnectLocalTabGroup(const tab_groups::TabGroupId& group_id) override;
   void ConnectLocalTabGroup(const tab_groups::TabGroupId& group_id,
-                            const base::GUID& saved_group_guid) override;
+                            const base::Uuid& saved_group_guid) override;
 
   // SavedTabGroupModelObserver
   void SavedTabGroupModelLoaded() override;
@@ -68,7 +68,7 @@ class SavedTabGroupKeyedService : public KeyedService,
 
   // Notifies observers that the tab group with id `group_id`'s visual data was
   // changed using data found in `saved_group_guid`.
-  void UpdateGroupVisualData(base::GUID saved_group_guid,
+  void UpdateGroupVisualData(base::Uuid saved_group_guid,
                              tab_groups::TabGroupId group_id);
 
   // The profile used to instantiate the keyed service.
@@ -88,7 +88,7 @@ class SavedTabGroupKeyedService : public KeyedService,
   // in order to link them together again once the SavedTabGroupModelLoaded is
   // called. After the model is loaded, this variable is emptied to conserve
   // memory.
-  std::vector<std::pair<base::GUID, tab_groups::TabGroupId>>
+  std::vector<std::pair<base::Uuid, tab_groups::TabGroupId>>
       saved_guid_to_local_group_id_mapping_;
 };
 

@@ -170,7 +170,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, PauseResumeTracking) {
   tab_groups::TabGroupId group_id =
       browser_1->tab_strip_model()->AddToNewGroup({1});
   service()->SaveGroup(group_id);
-  base::GUID saved_group_id = service()->model()->Get(group_id)->saved_guid();
+  base::Uuid saved_group_id = service()->model()->Get(group_id)->saved_guid();
 
   // We should be listening to one group and one tab in that group.
   auto& group_listener_map =
@@ -226,7 +226,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, ResumeTrackingValidatesConsistency) {
   tab_groups::TabGroupId group_id =
       browser_1->tab_strip_model()->AddToNewGroup({0, 1});
   service()->SaveGroup(group_id);
-  base::GUID saved_group_id = service()->model()->Get(group_id)->saved_guid();
+  base::Uuid saved_group_id = service()->model()->Get(group_id)->saved_guid();
 
   // Pause tracking.
   service()->PauseTrackingLocalTabGroup(group_id);
@@ -257,8 +257,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   const tab_groups::TabGroupId tab_group_id_3 =
       browser_1->tab_strip_model()->AddToNewGroup({3});
 
-  const base::GUID guid_1 = base::GUID::GenerateRandomV4();
-  const base::GUID guid_2 = base::GUID::GenerateRandomV4();
+  const base::Uuid guid_1 = base::Uuid::GenerateRandomV4();
+  const base::Uuid guid_2 = base::Uuid::GenerateRandomV4();
 
   // Store the guid to tab_group_id association in the keyed service. We should
   // expect at the end of the test, `tab_group_id_3` has no association with the
@@ -324,7 +324,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   const tab_groups::TabGroupId tab_group_id =
       browser->tab_strip_model()->AddToNewGroup({0});
-  const base::GUID guid = base::GUID::GenerateRandomV4();
+  const base::Uuid guid = base::Uuid::GenerateRandomV4();
 
   // Store the guid to tab_group_id association in the keyed service.
   service()->StoreLocalToSavedId(guid, tab_group_id);

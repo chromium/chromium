@@ -118,7 +118,7 @@ SavedTabGroupModelListener::~SavedTabGroupModelListener() {
 
 void SavedTabGroupModelListener::ConnectToLocalTabGroup(
     const SavedTabGroup& saved_tab_group,
-    std::vector<std::pair<content::WebContents*, base::GUID>> mapping) {
+    std::vector<std::pair<content::WebContents*, base::Uuid>> mapping) {
   const tab_groups::TabGroupId local_group_id =
       saved_tab_group.local_group_id().value();
 

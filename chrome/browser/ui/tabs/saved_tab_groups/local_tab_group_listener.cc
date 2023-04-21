@@ -18,9 +18,9 @@ class WebContents;
 
 LocalTabGroupListener::LocalTabGroupListener(
     const tab_groups::TabGroupId local_id,
-    const base::GUID saved_guid,
+    const base::Uuid saved_guid,
     SavedTabGroupModel* const model,
-    std::vector<std::pair<content::WebContents*, base::GUID>> mapping)
+    std::vector<std::pair<content::WebContents*, base::Uuid>> mapping)
     : model_(model), local_id_(local_id), saved_guid_(saved_guid) {
   for (const auto& [contents, saved_tab_guid] : mapping) {
     const base::Token local_tab_id = base::Token::CreateRandom();
@@ -108,7 +108,7 @@ void LocalTabGroupListener::RemoveWebContentsIfPresent(
 
   const base::Token tab_id =
       web_contents_to_tab_id_map_.at(web_contents).token();
-  const base::GUID tab_guid = saved_group()->GetTab(tab_id)->saved_tab_guid();
+  const base::Uuid tab_guid = saved_group()->GetTab(tab_id)->saved_tab_guid();
 
   web_contents_to_tab_id_map_.erase(web_contents);
   model_->RemoveTabFromGroup(saved_guid_, tab_guid);

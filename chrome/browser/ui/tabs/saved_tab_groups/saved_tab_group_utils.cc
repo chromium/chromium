@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -17,7 +17,7 @@
 
 SavedTabGroupTab SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
     content::WebContents* contents,
-    base::GUID saved_tab_group_id) {
+    base::Uuid saved_tab_group_id) {
   SavedTabGroupTab tab(contents->GetVisibleURL(), contents->GetTitle(),
                        saved_tab_group_id);
   tab.SetFavicon(favicon::TabFaviconFromWebContents(contents));

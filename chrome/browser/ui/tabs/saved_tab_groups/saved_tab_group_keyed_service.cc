@@ -64,7 +64,7 @@ syncer::OnceModelTypeStoreFactory SavedTabGroupKeyedService::GetStoreFactory() {
 }
 
 void SavedTabGroupKeyedService::StoreLocalToSavedId(
-    const base::GUID& saved_guid,
+    const base::Uuid& saved_guid,
     const tab_groups::TabGroupId local_group_id) {
   CHECK(!model()->is_loaded());
   saved_guid_to_local_group_id_mapping_.emplace_back(saved_guid,
@@ -73,7 +73,7 @@ void SavedTabGroupKeyedService::StoreLocalToSavedId(
 
 void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
     Browser* browser,
-    const base::GUID& saved_group_guid) {
+    const base::Uuid& saved_group_guid) {
   const SavedTabGroup* saved_group = model_.Get(saved_group_guid);
 
   // In the case where this function is called after confirmation of an
@@ -110,7 +110,7 @@ void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
   TabStripModel* tab_strip_model_for_creation = browser->tab_strip_model();
 
   std::vector<content::WebContents*> opened_web_contents;
-  std::vector<std::pair<content::WebContents*, base::GUID>>
+  std::vector<std::pair<content::WebContents*, base::Uuid>>
       local_and_saved_tab_mapping;
   for (const SavedTabGroupTab& saved_tab : saved_group->saved_tabs()) {
     if (!saved_tab.url().is_valid()) {
@@ -189,7 +189,7 @@ void SavedTabGroupKeyedService::SaveGroup(
 
   // Build the SavedTabGroupTabs and add them to the SavedTabGroup.
   const gfx::Range tab_range = tab_group->ListTabs();
-  std::vector<std::pair<content::WebContents*, base::GUID>>
+  std::vector<std::pair<content::WebContents*, base::Uuid>>
       local_and_saved_tab_mapping;
   for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
     content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
@@ -206,7 +206,7 @@ void SavedTabGroupKeyedService::SaveGroup(
                            /*update_tab_positions=*/true);
   }
 
-  const base::GUID saved_group_guid = saved_tab_group.saved_guid();
+  const base::Uuid saved_group_guid = saved_tab_group.saved_guid();
   model_.Add(std::move(saved_tab_group));
 
   // Link the local group to the saved group in the listener.
@@ -233,7 +233,7 @@ void SavedTabGroupKeyedService::PauseTrackingLocalTabGroup(
 }
 
 void SavedTabGroupKeyedService::ResumeTrackingLocalTabGroup(
-    const base::GUID& saved_group_guid,
+    const base::Uuid& saved_group_guid,
     const tab_groups::TabGroupId& group_id) {
   listener_.ResumeTrackingLocalTabGroup(group_id);
   model_.OnGroupOpenedInTabStrip(saved_group_guid, group_id);
@@ -250,7 +250,7 @@ void SavedTabGroupKeyedService::DisconnectLocalTabGroup(
 
 void SavedTabGroupKeyedService::ConnectLocalTabGroup(
     const tab_groups::TabGroupId& local_group_id,
-    const base::GUID& saved_guid) {
+    const base::Uuid& saved_guid) {
   const TabStripModel* tab_strip_model =
       GetTabStripModelWithTabGroupId(local_group_id);
   TabGroup* const tab_group =
@@ -262,7 +262,7 @@ void SavedTabGroupKeyedService::ConnectLocalTabGroup(
   CHECK(saved_group);
   CHECK(tab_range.length() == saved_group->saved_tabs().size());
 
-  std::vector<std::pair<content::WebContents*, base::GUID>>
+  std::vector<std::pair<content::WebContents*, base::Uuid>>
       web_contents_to_guid_mapping;
 
   for (size_t i = tab_range.start(); i < tab_range.end(); ++i) {
@@ -335,7 +335,7 @@ const TabStripModel* SavedTabGroupKeyedService::GetTabStripModelWithTabGroupId(
 }
 
 void SavedTabGroupKeyedService::UpdateGroupVisualData(
-    const base::GUID saved_group_guid,
+    const base::Uuid saved_group_guid,
     const tab_groups::TabGroupId group_id) {
   TabGroup* const tab_group = SavedTabGroupUtils::GetTabGroupWithId(group_id);
   CHECK(tab_group);
