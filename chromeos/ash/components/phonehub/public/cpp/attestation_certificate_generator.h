@@ -18,11 +18,11 @@ class AttestationCertificateGenerator {
       delete;
   AttestationCertificateGenerator& operator=(
       const AttestationCertificateGenerator&) = delete;
-  using OnCertificateGeneratedCallback =
-      base::RepeatingCallback<void(const std::vector<std::string>& certs,
-                                   bool valid)>;
+  using OnCertificateRetrievedCallback =
+      base::OnceCallback<void(const std::vector<std::string>& certs,
+                              bool valid)>;
 
-  virtual void GenerateCertificate(OnCertificateGeneratedCallback callback) = 0;
+  virtual void RetrieveCertificate(OnCertificateRetrievedCallback callback) = 0;
 };
 
 }  // namespace ash::phonehub

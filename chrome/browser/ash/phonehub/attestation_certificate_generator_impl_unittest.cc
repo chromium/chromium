@@ -6,6 +6,7 @@
 #include <iterator>
 #include <memory>
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/attestation/fake_soft_bind_attestation_flow.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -132,16 +133,30 @@ class AttestationCertificateGeneratorImplTest : public testing::Test {
 };
 
 TEST_F(AttestationCertificateGeneratorImplTest,
-       CallsSoftBindAttestationFlowSuccessfully) {
+       RetrieveCertificateWithoutCache) {
   mock_attestation_flow_->SetCertificates(false_certs_);
   base::RunLoop wait_loop;
-  attestation_certificate_generator_impl_->GenerateCertificate(
-      base::BindRepeating(
-          &AttestationCertificateGeneratorImplTest::OnCertificateGenerated,
-          base::Unretained(this), &wait_loop));
+  // Reset the timestamp to force regenerate certificate.
+  attestation_certificate_generator_impl_
+      ->last_attestation_certificate_generated_time_ = base::Time();
+  attestation_certificate_generator_impl_->RetrieveCertificate(base::BindOnce(
+      &AttestationCertificateGeneratorImplTest::OnCertificateGenerated,
+      base::Unretained(this), &wait_loop));
   wait_loop.Run();
   EXPECT_TRUE(is_valid_);
   EXPECT_EQ(*certs_, false_certs_);
+}
+
+TEST_F(AttestationCertificateGeneratorImplTest, RetrieveCertificateWithCache) {
+  mock_attestation_flow_->SetCertificates(false_certs_);
+  base::RunLoop wait_loop;
+  attestation_certificate_generator_impl_->RetrieveCertificate(base::BindOnce(
+      &AttestationCertificateGeneratorImplTest::OnCertificateGenerated,
+      base::Unretained(this), &wait_loop));
+  wait_loop.Run();
+  // Used cached result generated in constructor.
+  EXPECT_FALSE(is_valid_);
+  EXPECT_EQ(*certs_, std::vector<std::string>());
 }
 
 }  // namespace ash::phonehub

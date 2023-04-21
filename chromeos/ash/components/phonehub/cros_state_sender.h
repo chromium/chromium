@@ -60,7 +60,7 @@ class CrosStateSender
   void PerformUpdateCrosState();
   void OnRetryTimerFired();
   void SendCrosStateMessage(const std::vector<std::string>* attestation_certs);
-  void OnAttestationCertificateGenerated(
+  void OnAttestationCertificateRetrieved(
       const std::vector<std::string>& attestation_certs,
       bool is_valid);
 

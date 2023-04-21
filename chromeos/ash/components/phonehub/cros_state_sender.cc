@@ -105,12 +105,12 @@ void CrosStateSender::PerformUpdateCrosState() {
   }
 
   attestation_generating_start_time_ = base::Time::Now();
-  attestation_certificate_generator_->GenerateCertificate(
-      base::BindRepeating(&CrosStateSender::OnAttestationCertificateGenerated,
-                          weak_ptr_factory_.GetWeakPtr()));
+  attestation_certificate_generator_->RetrieveCertificate(
+      base::BindOnce(&CrosStateSender::OnAttestationCertificateRetrieved,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void CrosStateSender::OnAttestationCertificateGenerated(
+void CrosStateSender::OnAttestationCertificateRetrieved(
     const std::vector<std::string>& attestation_certs,
     bool is_valid) {
   if (!is_valid) {
