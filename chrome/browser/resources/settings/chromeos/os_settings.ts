@@ -206,8 +206,8 @@ if (jellyEnabled) {
   document.body.classList.add('jelly-enabled');
 }
 
-window.onload = () => {
+window.addEventListener('load', () => {
   if (jellyEnabled) {
     startColorChangeUpdater();
   }
-};
+});
