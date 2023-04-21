@@ -9,7 +9,7 @@
 #include <unordered_map>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -180,7 +180,7 @@ void SavedTabGroupBar::UpdateDropIndex() {
   // TODO(tbergquist): Test this in RTL.
 
   const gfx::Point cursor_location = drag_data_->location().value();
-  const base::GUID dragged_group_guid = drag_data_->guid();
+  const base::Uuid dragged_group_guid = drag_data_->guid();
 
   // Calculates the index in `parent` that a group dragged to `location` should
   // be dropped at. `vertical` should be true when the buttons in `parent` are
@@ -346,7 +346,7 @@ void SavedTabGroupBar::OnPaint(gfx::Canvas* canvas) {
   }
 }
 
-void SavedTabGroupBar::SavedTabGroupAddedLocally(const base::GUID& guid) {
+void SavedTabGroupBar::SavedTabGroupAddedLocally(const base::Uuid& guid) {
   SavedTabGroupAdded(guid);
 }
 
@@ -356,8 +356,8 @@ void SavedTabGroupBar::SavedTabGroupRemovedLocally(
 }
 
 void SavedTabGroupBar::SavedTabGroupUpdatedLocally(
-    const base::GUID& group_guid,
-    const absl::optional<base::GUID>& tab_guid) {
+    const base::Uuid& group_guid,
+    const absl::optional<base::Uuid>& tab_guid) {
   SavedTabGroupUpdated(group_guid);
 }
 
@@ -387,7 +387,7 @@ void SavedTabGroupBar::SavedTabGroupReorderedLocally() {
   PreferredSizeChanged();
 }
 
-void SavedTabGroupBar::SavedTabGroupAddedFromSync(const base::GUID& guid) {
+void SavedTabGroupBar::SavedTabGroupAddedFromSync(const base::Uuid& guid) {
   SavedTabGroupAdded(guid);
 }
 
@@ -397,8 +397,8 @@ void SavedTabGroupBar::SavedTabGroupRemovedFromSync(
 }
 
 void SavedTabGroupBar::SavedTabGroupUpdatedFromSync(
-    const base::GUID& group_guid,
-    const absl::optional<base::GUID>& tab_guid) {
+    const base::Uuid& group_guid,
+    const absl::optional<base::Uuid>& tab_guid) {
   SavedTabGroupUpdated(group_guid);
 }
 
@@ -458,7 +458,7 @@ void SavedTabGroupBar::AddTabGroupButton(const SavedTabGroup& group,
   }
 }
 
-void SavedTabGroupBar::SavedTabGroupAdded(const base::GUID& guid) {
+void SavedTabGroupBar::SavedTabGroupAdded(const base::Uuid& guid) {
   absl::optional<int> index = saved_tab_group_model_->GetIndexOf(guid);
   if (!index.has_value()) {
     return;
@@ -467,12 +467,12 @@ void SavedTabGroupBar::SavedTabGroupAdded(const base::GUID& guid) {
   PreferredSizeChanged();
 }
 
-void SavedTabGroupBar::SavedTabGroupRemoved(const base::GUID& guid) {
+void SavedTabGroupBar::SavedTabGroupRemoved(const base::Uuid& guid) {
   RemoveTabGroupButton(guid);
   PreferredSizeChanged();
 }
 
-void SavedTabGroupBar::SavedTabGroupUpdated(const base::GUID& guid) {
+void SavedTabGroupBar::SavedTabGroupUpdated(const base::Uuid& guid) {
   absl::optional<int> index = saved_tab_group_model_->GetIndexOf(guid);
   if (!index.has_value()) {
     return;
@@ -508,7 +508,7 @@ void SavedTabGroupBar::LoadAllButtonsFromModel() {
     AddTabGroupButton(saved_tab_groups[index], index);
 }
 
-void SavedTabGroupBar::RemoveTabGroupButton(const base::GUID& guid) {
+void SavedTabGroupBar::RemoveTabGroupButton(const base::Uuid& guid) {
   // Make sure we have a valid button before trying to remove it.
   views::View* button = GetButton(guid);
   const bool visible_button_removed = button->GetVisible();
@@ -537,7 +537,7 @@ void SavedTabGroupBar::RemoveAllButtons() {
     RemoveChildViewT(children().at(index));
 }
 
-views::View* SavedTabGroupBar::GetButton(const base::GUID& guid) {
+views::View* SavedTabGroupBar::GetButton(const base::Uuid& guid) {
   for (views::View* child : children()) {
     if (views::IsViewClass<SavedTabGroupButton>(child) &&
         views::AsViewClass<SavedTabGroupButton>(child)->guid() == guid)
@@ -547,7 +547,7 @@ views::View* SavedTabGroupBar::GetButton(const base::GUID& guid) {
   return nullptr;
 }
 
-void SavedTabGroupBar::OnTabGroupButtonPressed(const base::GUID& id,
+void SavedTabGroupBar::OnTabGroupButtonPressed(const base::Uuid& id,
                                                const ui::Event& event) {
   DCHECK(saved_tab_group_model_ && saved_tab_group_model_->Contains(id));
 

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_DRAG_DATA_H_
 #define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_DRAG_DATA_H_
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -19,7 +19,7 @@ class SavedTabGroupButton;
 
 class SavedTabGroupDragData {
  public:
-  explicit SavedTabGroupDragData(const base::GUID guid);
+  explicit SavedTabGroupDragData(const base::Uuid guid);
 
   static const ui::ClipboardFormatType& GetFormatType();
 
@@ -41,7 +41,7 @@ class SavedTabGroupDragData {
     location_ = new_location;
   }
 
-  const base::GUID guid() { return guid_; }
+  const base::Uuid guid() { return guid_; }
 
  private:
   // Insertion index if the drop is finished
@@ -51,7 +51,7 @@ class SavedTabGroupDragData {
   absl::optional<gfx::Point> location_;
 
   // A copy of the group being dragged.
-  const base::GUID guid_;
+  const base::Uuid guid_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_BAR_H_

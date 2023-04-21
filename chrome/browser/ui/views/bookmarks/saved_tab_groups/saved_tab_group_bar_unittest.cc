@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
@@ -262,7 +262,7 @@ TEST_F(SavedTabGroupBarUnitTest, UpdatedVisualDataMakesChangeToSpecificView) {
 
 TEST_F(SavedTabGroupBarUnitTest, MoveButtonFromModelMove) {
   const auto get_button_guids = [this]() {
-    std::vector<base::GUID> guids;
+    std::vector<base::Uuid> guids;
     for (views::View* view : saved_tab_group_bar()->children()) {
       const SavedTabGroupButton* button =
           views::AsViewClass<SavedTabGroupButton>(view);
@@ -284,9 +284,9 @@ TEST_F(SavedTabGroupBarUnitTest, MoveButtonFromModelMove) {
     return guids;
   };
 
-  const base::GUID guid_1 = kSavedTabGroup1.saved_guid();
-  const base::GUID guid_2 = kSavedTabGroup2.saved_guid();
-  const base::GUID guid_3 = kSavedTabGroup3.saved_guid();
+  const base::Uuid guid_1 = kSavedTabGroup1.saved_guid();
+  const base::Uuid guid_2 = kSavedTabGroup2.saved_guid();
+  const base::Uuid guid_3 = kSavedTabGroup3.saved_guid();
 
   saved_tab_group_model()->Add(kSavedTabGroup1);
   saved_tab_group_model()->Add(kSavedTabGroup2);
