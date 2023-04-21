@@ -4713,6 +4713,41 @@ class FencedFrameReportEventBrowserTest
                        "attribution-reporting-eligible"));
   }
 
+  void SendBasicRequest(GURL url,
+                        absl::optional<std::string> content = absl::nullopt) {
+    // Construct the resource request.
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+        web_contents()
+            ->GetPrimaryMainFrame()
+            ->GetStoragePartition()
+            ->GetURLLoaderFactoryForBrowserProcess();
+
+    auto request = std::make_unique<network::ResourceRequest>();
+
+    request->url = url;
+    request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+    request->method = net::HttpRequestHeaders::kPostMethod;
+    request->trusted_params = network::ResourceRequest::TrustedParams();
+    request->trusted_params->isolation_info =
+        net::IsolationInfo::CreateTransient();
+
+    std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
+        network::SimpleURLLoader::Create(std::move(request),
+                                         TRAFFIC_ANNOTATION_FOR_TESTS);
+
+    if (content) {
+      simple_url_loader->AttachStringForUpload(
+          content.value(),
+          /*upload_content_type=*/"text/plain;charset=UTF-8");
+    }
+    network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
+
+    // Send out the reporting beacon.
+    simple_url_loader_ptr->DownloadHeadersOnly(
+        url_loader_factory.get(),
+        base::DoNothingWithBoundArgs(std::move(simple_url_loader)));
+  }
+
   scoped_refptr<FencedFrameReporter> CreateFencedFrameReporter() {
     return FencedFrameReporter::CreateForFledge(
         web_contents()
@@ -5045,8 +5080,13 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
   EXPECT_FALSE(console_observer.messages().empty());
   EXPECT_EQ(console_observer.messages().size(), 1u);
 
-  // Check that the reporting beacon is not sent.
-  EXPECT_FALSE(response.has_received_request());
+  // Check that the request received is from `SendBasicRequest`. This implies
+  // the reporting beacon from `window.fence.reportEvent` was not sent as
+  // expected.
+  SendBasicRequest(https_server()->GetURL("c.test", kReportingURL), "response");
+  response.WaitForRequest();
+  EXPECT_TRUE(response.has_received_request());
+  EXPECT_EQ(response.http_request()->content, "response");
 }
 
 // The simplest test case: URN navigation into reportEvent.
@@ -6142,15 +6182,10 @@ IN_PROC_BROWSER_TEST_P(UUIDFrameTreeBrowserTest,
 }
 
 class FencedFrameAutomaticBeaconBrowserTest
-    : public FencedFrameParameterizedBrowserTest,
+    : public FencedFrameReportEventBrowserTest,
       public testing::WithParamInterface<const char*> {
  public:
-  FencedFrameAutomaticBeaconBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kAllowURNsInIframes,
-                              features::kAttributionFencedFrameReportingBeacon},
-        /*disabled_features=*/{});
-  }
+  FencedFrameAutomaticBeaconBrowserTest() = default;
 
   // An object representing the configuration of the test. First a frame is
   // navigated to a page. Then, it does a top navigation.
@@ -6234,47 +6269,14 @@ class FencedFrameAutomaticBeaconBrowserTest
         /*winner_origin=*/url::Origin::Create(GURL("https://a.test")));
   }
 
-  void SendBasicRequest(GURL url) {
-    // Construct the resource request.
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-        web_contents()
-            ->GetPrimaryMainFrame()
-            ->GetStoragePartition()
-            ->GetURLLoaderFactoryForBrowserProcess();
-
-    auto request = std::make_unique<network::ResourceRequest>();
-
-    request->url = url;
-    request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-    request->trusted_params = network::ResourceRequest::TrustedParams();
-    request->trusted_params->isolation_info =
-        net::IsolationInfo::CreateTransient();
-
-    std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
-        network::SimpleURLLoader::Create(std::move(request),
-                                         TRAFFIC_ANNOTATION_FOR_TESTS);
-
-    network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
-
-    // Send out the reporting beacon.
-    simple_url_loader_ptr->DownloadHeadersOnly(
-        url_loader_factory.get(),
-        base::DoNothingWithBoundArgs(std::move(simple_url_loader)));
-  }
-
   // A helper function for specifying automatic beacon tests.
   void RunTest(Config& config) {
     // In order to check events reported over the network, we register an HTTP
     // response interceptor for each successful reportEvent request we expect.
-    // We register an additional one so that we can check for spurious requests
-    // at the end of the test.
-    constexpr char page_loaded_url[] = "/_loaded_beacon_server.html";
     net::test_server::ControllableHttpResponse preflight_response(
         https_server(), kReportingURL);
     net::test_server::ControllableHttpResponse response(https_server(),
                                                         kReportingURL);
-    net::test_server::ControllableHttpResponse page_loaded_response(
-        https_server(), page_loaded_url);
 
     std::string reporting_origin = "c.test";
     // An additional response is used to check any spurious waiting reported
@@ -6317,10 +6319,19 @@ class FencedFrameAutomaticBeaconBrowserTest
     GURL starting_urn = test::AddAndVerifyFencedFrameURL(
         &url_mapping, starting_url, fenced_frame_reporter);
 
-    EXPECT_TRUE(
-        ExecJs(root, JsReplace("var ad_frame = document.createElement($1);"
-                               "document.body.appendChild(ad_frame);",
-                               GetParam())));
+    // ExecJs() by default gives its execution target transient user activation.
+    // If the test requires a frame to not have user activation, that must be
+    // specified in the function call's `options` parameter for every ExecJs()
+    // call made on the frame.
+    EvalJsOptions ad_frame_execjs_options =
+        config.initiator_has_user_activation ? EXECUTE_SCRIPT_DEFAULT_OPTIONS
+                                             : EXECUTE_SCRIPT_NO_USER_GESTURE;
+
+    EXPECT_TRUE(ExecJs(root,
+                       JsReplace("var ad_frame = document.createElement($1);"
+                                 "document.body.appendChild(ad_frame);",
+                                 GetParam()),
+                       ad_frame_execjs_options));
 
     EXPECT_EQ(1U, root->child_count());
     FrameTreeNode* ad_frame_root_node;
@@ -6338,20 +6349,15 @@ class FencedFrameAutomaticBeaconBrowserTest
 
     if (GetParam() == std::string("fencedframe")) {
       EXPECT_TRUE(
-          ExecJs(root, JsReplace("ad_frame.config = new FencedFrameConfig($1);",
-                                 starting_urn)));
+          ExecJs(root,
+                 JsReplace("ad_frame.config = new FencedFrameConfig($1);",
+                           starting_urn),
+                 ad_frame_execjs_options));
     } else {
-      EXPECT_TRUE(ExecJs(root, JsReplace("ad_frame.src = $1;", starting_urn)));
+      EXPECT_TRUE(ExecJs(root, JsReplace("ad_frame.src = $1;", starting_urn),
+                         ad_frame_execjs_options));
     }
     ad_frame_observer.WaitForCommit();
-
-    // ExecJs() by default gives its execution target transient user activation.
-    // If the test requires a frame to not have user activation, that must be
-    // specified in the function call's `options` parameter for every ExecJs()
-    // call made on the frame.
-    EvalJsOptions ad_frame_execjs_options =
-        config.initiator_has_user_activation ? EXECUTE_SCRIPT_DEFAULT_OPTIONS
-                                             : EXECUTE_SCRIPT_NO_USER_GESTURE;
 
     if (config.register_beacon_data) {
       EXPECT_TRUE(ExecJs(
@@ -6380,18 +6386,25 @@ class FencedFrameAutomaticBeaconBrowserTest
                ad_frame_execjs_options));
 
     if (!config.expected_success) {
-      // Send a message indicating that the top-level navigation happened.
-      // Since this message is using the same infrastructure as the automatic
-      // beacons used in FencedFrameReporter, this message will reach the server
-      // after any automatic beacons are sent. We use this in the expected
-      // failure case to determine that no beacons were sent out as a result of
-      // the top navigation.
-      SendBasicRequest(https_server()->GetURL("c.test", page_loaded_url));
-      page_loaded_response.WaitForRequest();
+      // Send a request with different content using `SendBasicRequest`, which
+      // uses the same infrastructure as the automatic beacons used in
+      // FencedFrameReporter.
+      // ControllableHttpResponse handles only one request. Verifying that it
+      // received the request from `SendBasicRequest`, which was sent after the
+      // possible automatic beacon, implies the automatic beacon was not sent as
+      // a result of the top navigation, as expected.
+      SendBasicRequest(https_server()->GetURL("c.test", kReportingURL),
+                       "preflight_response");
+      preflight_response.WaitForRequest();
+      EXPECT_TRUE(preflight_response.has_received_request());
+      EXPECT_EQ(preflight_response.http_request()->content,
+                "preflight_response");
 
-      EXPECT_TRUE(page_loaded_response.has_received_request());
-      EXPECT_FALSE(response.has_received_request());
-      EXPECT_FALSE(preflight_response.has_received_request());
+      SendBasicRequest(https_server()->GetURL("c.test", kReportingURL),
+                       "response");
+      response.WaitForRequest();
+      EXPECT_TRUE(response.has_received_request());
+      EXPECT_EQ(response.http_request()->content, "response");
       return;
     }
 
