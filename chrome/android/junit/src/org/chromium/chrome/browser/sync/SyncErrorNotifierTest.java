@@ -34,7 +34,6 @@ import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.sync.PassphraseType;
 
 /** Unit tests for {@link SyncErrorNotifier}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -64,7 +63,6 @@ public class SyncErrorNotifierTest {
         when(mSyncService.isPassphraseRequiredForPreferredDataTypes()).thenReturn(false);
         when(mSyncService.isPassphrasePromptMutedForCurrentProductVersion()).thenReturn(false);
         when(mSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()).thenReturn(false);
-        when(mSyncService.getPassphraseType()).thenReturn(PassphraseType.IMPLICIT_PASSPHRASE);
 
         SyncErrorNotifier notifier =
                 new SyncErrorNotifier(mNotificationManagerProxy, mSyncService, mTrustedVaultClient);
@@ -85,7 +83,6 @@ public class SyncErrorNotifierTest {
         when(mSyncService.isPassphraseRequiredForPreferredDataTypes()).thenReturn(true);
         when(mSyncService.isPassphrasePromptMutedForCurrentProductVersion()).thenReturn(false);
         when(mSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()).thenReturn(false);
-        when(mSyncService.getPassphraseType()).thenReturn(PassphraseType.CUSTOM_PASSPHRASE);
 
         SyncErrorNotifier notifier =
                 new SyncErrorNotifier(mNotificationManagerProxy, mSyncService, mTrustedVaultClient);
@@ -125,7 +122,6 @@ public class SyncErrorNotifierTest {
         when(mSyncService.isPassphraseRequiredForPreferredDataTypes()).thenReturn(true);
         when(mSyncService.isPassphrasePromptMutedForCurrentProductVersion()).thenReturn(true);
         when(mSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()).thenReturn(false);
-        when(mSyncService.getPassphraseType()).thenReturn(PassphraseType.CUSTOM_PASSPHRASE);
 
         SyncErrorNotifier notifier =
                 new SyncErrorNotifier(mNotificationManagerProxy, mSyncService, mTrustedVaultClient);
@@ -146,7 +142,6 @@ public class SyncErrorNotifierTest {
         when(mSyncService.isPassphraseRequiredForPreferredDataTypes()).thenReturn(false);
         when(mSyncService.isPassphrasePromptMutedForCurrentProductVersion()).thenReturn(false);
         when(mSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()).thenReturn(true);
-        when(mSyncService.getPassphraseType()).thenReturn(PassphraseType.TRUSTED_VAULT_PASSPHRASE);
         Promise<PendingIntent> intentPromise = new Promise<>();
         when(mTrustedVaultClient.createKeyRetrievalIntent(any())).thenReturn(intentPromise);
 
@@ -204,7 +199,6 @@ public class SyncErrorNotifierTest {
         when(mSyncService.isPassphraseRequiredForPreferredDataTypes()).thenReturn(false);
         when(mSyncService.isPassphrasePromptMutedForCurrentProductVersion()).thenReturn(false);
         when(mSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()).thenReturn(true);
-        when(mSyncService.getPassphraseType()).thenReturn(PassphraseType.TRUSTED_VAULT_PASSPHRASE);
         when(mTrustedVaultClient.createKeyRetrievalIntent(any()))
                 .thenReturn(Promise.fulfilled(null));
 
@@ -234,7 +228,6 @@ public class SyncErrorNotifierTest {
         when(mSyncService.isPassphraseRequiredForPreferredDataTypes()).thenReturn(false);
         when(mSyncService.isPassphrasePromptMutedForCurrentProductVersion()).thenReturn(false);
         when(mSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()).thenReturn(true);
-        when(mSyncService.getPassphraseType()).thenReturn(PassphraseType.TRUSTED_VAULT_PASSPHRASE);
         when(mTrustedVaultClient.createKeyRetrievalIntent(any())).thenReturn(Promise.rejected());
 
         SyncErrorNotifier notifier =

@@ -28,7 +28,6 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
-import org.chromium.components.sync.PassphraseType;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 
 import java.lang.annotation.Retention;
@@ -160,39 +159,30 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
     }
 
     private @NotificationState int computeGoalNotificationState() {
-        // TODO(crbug.com/1402252): Remove returns with else branches (left them for a better diff).
         if (!mSyncService.isSyncFeatureEnabled()) {
+            // Error notifications are only currently shown to syncing users, even though passphrase
+            // and trusted vault key errors still apply to signed-in users.
             return NotificationState.HIDDEN;
-        } else if (mSyncService.isEngineInitialized()
-                && mSyncService.isPassphraseRequiredForPreferredDataTypes()) {
-            assert (!mSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes());
+        }
 
-            if (mSyncService.isPassphrasePromptMutedForCurrentProductVersion()) {
-                return NotificationState.HIDDEN;
-            }
+        if (!mSyncService.isEngineInitialized()) {
+            // The notifications expose encryption errors and those can only be detected once the
+            // engine is up. In the meantime, don't show anything.
+            return NotificationState.HIDDEN;
+        }
 
-            switch (mSyncService.getPassphraseType()) {
-                case PassphraseType.IMPLICIT_PASSPHRASE:
-                case PassphraseType.FROZEN_IMPLICIT_PASSPHRASE:
-                case PassphraseType.CUSTOM_PASSPHRASE:
-                    return NotificationState.REQUIRE_PASSPHRASE;
-                case PassphraseType.TRUSTED_VAULT_PASSPHRASE:
-                    assert false : "Passphrase cannot be required with trusted vault passphrase";
-                    return NotificationState.HIDDEN;
-                case PassphraseType.KEYSTORE_PASSPHRASE:
-                    return NotificationState.HIDDEN;
-                default:
-                    assert false : "Unknown passphrase type";
-                    return NotificationState.HIDDEN;
-            }
-        } else if (mSyncService.isEngineInitialized()
-                && mSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()) {
+        if (mSyncService.isPassphraseRequiredForPreferredDataTypes()
+                && !mSyncService.isPassphrasePromptMutedForCurrentProductVersion()) {
+            return NotificationState.REQUIRE_PASSPHRASE;
+        }
+
+        if (mSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()) {
             return mSyncService.isEncryptEverythingEnabled()
                     ? NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_EVERYTHING
                     : NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_PASSWORDS;
-        } else {
-            return NotificationState.HIDDEN;
         }
+
+        return NotificationState.HIDDEN;
     }
 
     /**
