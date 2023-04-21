@@ -310,6 +310,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.ANGLE.MetalShaderInBlobCache" enum="Boolean"
+    expires_after="2023-12-17">
+  <owner>sky@chromium.org</owner>
+  <owner>angle-team@google.com</owner>
+  <summary>
+    A boolean that is logged for each shader program. A value of true means the
+    metallib for the shader existed in blob-cache. A value of false means the
+    metallib for the shader did not exist in blob-cache.
+  </summary>
+</histogram>
+
 <histogram name="GPU.ANGLE.SupportsDXGI1_2" enum="BooleanSupported"
     expires_after="2023-09-17">
   <owner>jonahr@google.com</owner>
@@ -1027,6 +1038,36 @@ chromium-metrics-reviews@google.com.
     The time that it takes to create a new MTLRenderPipelineState, including all
     retries. Recorded after every call to -[MTLDeviceProxy
     newRenderPipelineStateWithDescriptor:] completes.
+  </summary>
+</histogram>
+
+<histogram name="Gpu.MetalShaderCache.LoadTime" units="microseconds"
+    expires_after="2023-12-17">
+  <owner>sky@chromium.org</owner>
+  <owner>angle-team@google.com</owner>
+  <summary>
+    The amount of time (in microseconds) the gpu process takes to load the metal
+    shader lib cache. Logged after loading completes on a background thread.
+  </summary>
+</histogram>
+
+<histogram name="Gpu.MetalShaderCache.NumEntriesInCache" units="count"
+    expires_after="2023-12-17">
+  <owner>sky@chromium.org</owner>
+  <owner>angle-team@google.com</owner>
+  <summary>
+    The number of shader programs in the metal shader lib cache. Logged after
+    loading of the metal shader lib cache completes.
+  </summary>
+</histogram>
+
+<histogram name="Gpu.MetalShaderCache.WaitTime" units="microseconds"
+    expires_after="2023-12-17">
+  <owner>sky@chromium.org</owner>
+  <owner>angle-team@google.com</owner>
+  <summary>
+    The amount of time (in microseconds) the gpu process main thread is blocked
+    waiting for the metal shader lib cache to load.
   </summary>
 </histogram>
 
