@@ -71,6 +71,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'recordPasswordViewInteraction',
       'removeBlockedSite',
       'removeSavedPassword',
+      'resetImporter',
       'requestCredentialsDetails',
       'requestExportProgressStatus',
       'requestPlaintextPassword',
@@ -326,6 +327,11 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   importPasswords(toStore: chrome.passwordsPrivate.PasswordStoreSet) {
     this.methodCalled('importPasswords', toStore);
     return Promise.resolve(this.importResults_);
+  }
+
+  resetImporter(deleteFile: boolean) {
+    this.methodCalled('resetImporter', deleteFile);
+    return Promise.resolve();
   }
 
   isOptedInForAccountStorage() {

@@ -9,6 +9,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './site_favicon.js';
 
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
@@ -47,6 +48,13 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
 
   static get properties() {
     return {
+      enablePasswordsImportM2_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enablePasswordsImportM2');
+        },
+      },
+
       inProgress_: {
         type: Boolean,
         value: false,
@@ -103,6 +111,7 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
   isAccountStoreUser: boolean;
   accountEmail: string;
 
+  private enablePasswordsImportM2_: boolean;
   private inProgress_: boolean;
   private dialogState_: DialogState = DialogState.NO_DIALOG;
   // Refers both to syncing users with sync enabled for passwords and account
@@ -171,11 +180,28 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
     // dialog is closed.
   }
 
-  private onCloseClick_() {
+  private async resetImporter() {
+    let deleteFile = false;
+    if (this.isState_(DialogState.SUCCESS) &&
+        !this.shouldHideDeleteFileOption_()) {
+      // Trigger the file deletion if checkbox is ticked in SUCCESS (with no
+      // errors) state.
+      const deleteFileOption =
+          this.shadowRoot!.querySelector<CrCheckboxElement>(
+              '#deleteFileOption');
+      assert(deleteFileOption);
+      deleteFile = deleteFileOption.checked;
+    }
+    await this.passwordManager_.resetImporter(deleteFile);
+  }
+
+  private async onCloseClick_() {
+    await this.resetImporter();
     this.closeDialog_();
   }
 
-  private onViewPasswordsClick_() {
+  private async onViewPasswordsClick_() {
+    await this.resetImporter();
     this.closeDialog_();
     Router.getInstance().navigateTo(Page.PASSWORDS);
   }
@@ -317,13 +343,33 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
         {attrs: ['class'], substitutions: [this.results_.fileName]});
   }
 
+  private getCheckboxLabelHtml_(): TrustedHTML {
+    assert(this.results_);
+    return this.i18nAdvanced(
+        'importPasswordsDeleteFileOption',
+        {attrs: ['class'], substitutions: [this.results_.fileName]});
+  }
+
   private shouldHideLinkRowIcon_(): boolean {
     return this.inProgress_ || this.showSelectFileButton_;
   }
 
   private shouldHideTipBox_(): boolean {
     // Tip box is only shown in "success" state if all passwords were imported.
-    // TODO(crbug/1432962): Also hide when import M2 is enabled.
+    // Only shown in Passwords Import M1.
+    if (this.enablePasswordsImportM2_) {
+      return true;
+    }
+    assert(this.results_);
+    return !!this.results_.displayedEntries.length;
+  }
+
+  private shouldHideDeleteFileOption_(): boolean {
+    // "Delete file" checkbox is only shown in "success" state if all passwords
+    // were imported.
+    if (!this.enablePasswordsImportM2_) {
+      return true;
+    }
     assert(this.results_);
     return !!this.results_.displayedEntries.length;
   }

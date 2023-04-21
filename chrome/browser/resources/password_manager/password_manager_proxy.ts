@@ -249,6 +249,14 @@ export interface PasswordManagerProxy {
       Promise<chrome.passwordsPrivate.ImportResults>;
 
   /**
+   * Resets the PasswordImporter if it is in the CONFLICTS/FINISHED state and
+   * the user closes the dialog. Only when the PasswordImporter is in FINISHED
+   * state, |deleteFile| option is taken into account.
+   * @param deleteFile Whether to trigger deletion of the last imported file.
+   */
+  resetImporter(deleteFile: boolean): Promise<void>;
+
+  /**
    * Queries the status of any ongoing export.
    */
   requestExportProgressStatus():
@@ -483,6 +491,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   importPasswords(toStore: chrome.passwordsPrivate.PasswordStoreSet) {
     return chrome.passwordsPrivate.importPasswords(toStore);
+  }
+
+  resetImporter(deleteFile: boolean) {
+    return chrome.passwordsPrivate.resetImporter(deleteFile);
   }
 
   requestExportProgressStatus() {

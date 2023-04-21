@@ -59,18 +59,23 @@ function assertVisibleTextContent(
   assertEquals(expectedText, element?.textContent!.trim());
 }
 
-function assertButtonShouldCloseDialog(
-    importer: PasswordsImporterElement, dialog: HTMLElement, selector: string) {
+async function closeDialogHelper(
+    importer: PasswordsImporterElement,
+    passwordManager: TestPasswordManagerProxy, dialog: HTMLElement,
+    selector: string, shouldDeleteFile: boolean = false) {
   const button = dialog.querySelector<HTMLElement>(selector);
   assertTrue(!!button);
-  // Should close the dialog.
+  // Should close the dialog and trigger 'passwordsPrivate.resetImporter'.
   button.click();
-  flush();
+  const deleteFile = await passwordManager.whenCalled('resetImporter');
+  assertEquals(shouldDeleteFile, deleteFile);
+  await flushTasks();
   assertFalse(!!importer.shadowRoot!.querySelector<CrDialogElement>('#dialog'));
 }
 
 async function assertErrorStateAndClose(
-    importer: PasswordsImporterElement, expectedDescription: string) {
+    importer: PasswordsImporterElement,
+    passwordManager: TestPasswordManagerProxy, expectedDescription: string) {
   const dialog = importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
   assertTrue(!!dialog);
   assertTrue(dialog.open);
@@ -86,7 +91,7 @@ async function assertErrorStateAndClose(
       dialog, '#selectFileButton', importer.i18n('selectFile'));
   assertVisibleTextContent(dialog, '#closeButton', importer.i18n('close'));
 
-  assertButtonShouldCloseDialog(importer, dialog, '#closeButton');
+  await closeDialogHelper(importer, passwordManager, dialog, '#closeButton');
 }
 
 suite('PasswordsImporterTest', function() {
@@ -140,7 +145,7 @@ suite('PasswordsImporterTest', function() {
     await triggerImportHelper(importer, passwordManager);
   });
 
-  test('store picker dialog has correct state', function() {
+  test('store picker dialog has correct state', async function() {
     const importer = createPasswordsImporter(
         /*isUserSyncingPasswords=*/ false, /*isAccountStoreUser=*/ true,
         /*accountEmail=*/ 'test@test.com');
@@ -164,7 +169,7 @@ suite('PasswordsImporterTest', function() {
         dialog, '#selectFileButton', importer.i18n('selectFile'));
     assertVisibleTextContent(dialog, '#cancelButton', importer.i18n('cancel'));
 
-    assertButtonShouldCloseDialog(importer, dialog, '#cancelButton');
+    await closeDialogHelper(importer, passwordManager, dialog, '#cancelButton');
   });
 
   test('account store user can import passwords to device', async function() {
@@ -199,7 +204,8 @@ suite('PasswordsImporterTest', function() {
     await triggerImportHelper(importer, passwordManager, expectedStore);
   });
 
-  test('has correct success state with no errors', async function() {
+  test('M1: has correct success state with no errors', async function() {
+    loadTimeData.overrideValues({enablePasswordsImportM2: false});
     const importer = createPasswordsImporter();
     passwordManager.setImportResults({
       status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
@@ -221,6 +227,9 @@ suite('PasswordsImporterTest', function() {
         dialog, '#title', importer.i18n('importPasswordsSuccessTitle'));
 
     assertTrue(isChildVisible(dialog, '#tipBox', /*checkLightDom=*/ true));
+
+    assertFalse(
+        isChildVisible(dialog, '#deleteFileOption', /*checkLightDom=*/ true));
     assertFalse(
         isChildVisible(dialog, '#failuresSummary', /*checkLightDom=*/ true));
 
@@ -236,8 +245,116 @@ suite('PasswordsImporterTest', function() {
 
     assertVisibleTextContent(dialog, '#closeButton', importer.i18n('close'));
 
-    assertButtonShouldCloseDialog(importer, dialog, '#closeButton');
+    await closeDialogHelper(importer, passwordManager, dialog, '#closeButton');
   });
+
+  test('M2: has correct success state with no errors', async function() {
+    loadTimeData.overrideValues({enablePasswordsImportM2: true});
+    const importer = createPasswordsImporter();
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
+      numberImported: 42,
+      displayedEntries: [],
+      fileName: 'test.csv',
+    });
+
+    await triggerImportHelper(importer, passwordManager);
+    await pluralString.whenCalled('getPluralString');
+    await flushTasks();
+
+    const dialog =
+        importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+    assertTrue(!!dialog);
+    assertTrue(dialog.open);
+
+    assertVisibleTextContent(
+        dialog, '#title', importer.i18n('importPasswordsSuccessTitle'));
+
+    assertTrue(
+        isChildVisible(dialog, '#deleteFileOption', /*checkLightDom=*/ true));
+
+    assertFalse(isChildVisible(dialog, '#tipBox', /*checkLightDom=*/ true));
+    assertFalse(
+        isChildVisible(dialog, '#failuresSummary', /*checkLightDom=*/ true));
+
+    const deleteFileOption = dialog.querySelector('#deleteFileOption');
+    assertTrue(!!deleteFileOption);
+    assertEquals(
+        deleteFileOption.innerHTML.toString(),
+        importer
+            .i18nAdvanced(
+                'importPasswordsDeleteFileOption',
+                {attrs: ['class'], substitutions: ['test.csv']})
+            .toString());
+
+    assertVisibleTextContent(dialog, '#closeButton', importer.i18n('close'));
+
+    await closeDialogHelper(importer, passwordManager, dialog, '#closeButton');
+  });
+
+  test(
+      'M2: close button triggers file deletion with ticked checkbox',
+      async function() {
+        loadTimeData.overrideValues({enablePasswordsImportM2: true});
+        const importer = createPasswordsImporter();
+        passwordManager.setImportResults({
+          status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
+          numberImported: 42,
+          displayedEntries: [],
+          fileName: 'test.csv',
+        });
+
+        await triggerImportHelper(importer, passwordManager);
+        await pluralString.whenCalled('getPluralString');
+        await flushTasks();
+
+        const dialog =
+            importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+        assertTrue(!!dialog);
+        assertTrue(dialog.open);
+
+        const deleteFileOption =
+            dialog.querySelector<HTMLElement>('#deleteFileOption');
+        assertTrue(!!deleteFileOption);
+        deleteFileOption.click();
+        flush();
+
+        await closeDialogHelper(
+            importer, passwordManager, dialog, '#closeButton',
+            /*shouldDeleteFile=*/ true);
+      });
+
+  test(
+      'M2: view passwords triggers file deletion with ticked checkbox',
+      async function() {
+        loadTimeData.overrideValues({enablePasswordsImportM2: true});
+        const importer = createPasswordsImporter();
+        passwordManager.setImportResults({
+          status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
+          numberImported: 42,
+          displayedEntries: [],
+          fileName: 'test.csv',
+        });
+
+        await triggerImportHelper(importer, passwordManager);
+        await pluralString.whenCalled('getPluralString');
+        await flushTasks();
+
+        const dialog =
+            importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+        assertTrue(!!dialog);
+        assertTrue(dialog.open);
+
+        const deleteFileOption =
+            dialog.querySelector<HTMLElement>('#deleteFileOption');
+        assertTrue(!!deleteFileOption);
+        deleteFileOption.click();
+        flush();
+
+        await closeDialogHelper(
+            importer, passwordManager, dialog, '#viewPasswordsButton',
+            /*shouldDeleteFile=*/ true);
+      });
 
 
   test('view passwords navigates to the passwords page', async function() {
@@ -260,14 +377,9 @@ suite('PasswordsImporterTest', function() {
 
     assertVisibleTextContent(
         dialog, '#viewPasswordsButton', importer.i18n('viewPasswordsButton'));
-    const button = dialog.querySelector<HTMLElement>('#viewPasswordsButton');
-    assertTrue(!!button);
     // Should close the dialog and navigate to PASSWORDS page.
-    button.click();
-    flush();
-    assertFalse(
-        !!importer.shadowRoot!.querySelector<CrDialogElement>('#dialog'));
-    await flushTasks();
+    await closeDialogHelper(
+        importer, passwordManager, dialog, '#viewPasswordsButton');
     assertEquals(Page.PASSWORDS, Router.getInstance().currentRoute.page);
   });
 
@@ -365,13 +477,15 @@ suite('PasswordsImporterTest', function() {
 
     // Success tip should not be visible.
     assertFalse(isChildVisible(dialog, '#tipBox', /*checkLightDom=*/ true));
+    assertFalse(
+        isChildVisible(dialog, '#deleteFileOption', /*checkLightDom=*/ true));
 
     assertTrue(
         isChildVisible(dialog, '#failuresSummary', /*checkLightDom=*/ true));
 
     assertVisibleTextContent(dialog, '#closeButton', importer.i18n('close'));
 
-    assertButtonShouldCloseDialog(importer, dialog, '#closeButton');
+    await closeDialogHelper(importer, passwordManager, dialog, '#closeButton');
   });
 
   test('bad format error dialog is correct', async function() {
@@ -385,7 +499,7 @@ suite('PasswordsImporterTest', function() {
     await triggerImportHelper(importer, passwordManager);
 
     await assertErrorStateAndClose(
-        importer,
+        importer, passwordManager,
         importer
             .i18nAdvanced(
                 'importPasswordsBadFormatError',
@@ -411,7 +525,7 @@ suite('PasswordsImporterTest', function() {
     await triggerImportHelper(importer, passwordManager);
 
     await assertErrorStateAndClose(
-        importer,
+        importer, passwordManager,
         importer.i18nAdvanced('importPasswordsUnknownError').toString());
   });
 
@@ -427,7 +541,7 @@ suite('PasswordsImporterTest', function() {
     await triggerImportHelper(importer, passwordManager);
 
     await assertErrorStateAndClose(
-        importer,
+        importer, passwordManager,
         importer.i18nAdvanced('importPasswordsLimitExceeded').toString());
   });
 
@@ -442,7 +556,7 @@ suite('PasswordsImporterTest', function() {
     await triggerImportHelper(importer, passwordManager);
 
     await assertErrorStateAndClose(
-        importer,
+        importer, passwordManager,
         importer.i18nAdvanced('importPasswordsFileSizeExceeded').toString());
   });
 
@@ -468,6 +582,6 @@ suite('PasswordsImporterTest', function() {
         dialog, '#description', importer.i18n('importPasswordsAlreadyActive'));
     assertVisibleTextContent(dialog, '#closeButton', importer.i18n('close'));
 
-    assertButtonShouldCloseDialog(importer, dialog, '#closeButton');
+    await closeDialogHelper(importer, passwordManager, dialog, '#closeButton');
   });
 });

@@ -30,6 +30,7 @@
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "content/public/browser/url_data_source.h"
@@ -193,6 +194,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"importPasswordsSuccessTitle",
      IDS_PASSWORD_MANAGER_UI_IMPORT_SUCCESS_TITLE},
     {"importPasswordsSuccessTip", IDS_PASSWORD_MANAGER_UI_IMPORT_SUCCESS_TIP},
+    {"importPasswordsDeleteFileOption",
+     IDS_PASSWORD_MANAGER_UI_IMPORT_DELETE_FILE_OPTION},
     {"importPasswordsDescriptionAccount",
      IDS_PASSWORD_MANAGER_UI_IMPORT_DESCRIPTION_SYNCING_USERS},
     {"importPasswordsSelectFile",
@@ -320,6 +323,10 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
                          ShouldBiometricAuthenticationForFillingToggleBeVisible(
                              g_browser_process->local_state()));
 #endif
+
+  source->AddBoolean("enablePasswordsImportM2",
+                     base::FeatureList::IsEnabled(
+                         password_manager::features::kPasswordsImportM2));
 
   source->AddString("passwordManagerLearnMoreURL",
                     chrome::kPasswordManagerLearnMoreURL);
