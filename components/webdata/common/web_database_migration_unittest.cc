@@ -140,7 +140,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 111;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 112;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -1099,5 +1099,27 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion110ToCurrent) {
     EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
     EXPECT_TRUE(connection.DoesColumnExist("masked_credit_cards",
                                            "virtual_card_enrollment_type"));
+  }
+}
+
+// Tests that the enforced_by_policy column is added to the keywords table.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion111ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_111.sql")));
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    EXPECT_EQ(111, VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesColumnExist("keywords", "enforced_by_policy"));
+  }
+  DoMigration();
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesColumnExist("keywords", "enforced_by_policy"));
   }
 }

@@ -165,6 +165,13 @@ struct TemplateURLData {
   // group policy.
   bool created_by_policy;
 
+  // True if this TemplateURL is forced to be the default search engine via
+  // policy. This prevents the user from setting another search engine as
+  // default.
+  // False if this TemplateURL is recommended or not set via policy. This allows
+  // the user to set another search engine as default.
+  bool enforced_by_policy;
+
   // True if this TemplateURL was created from metadata received from Play API.
   bool created_from_play_api;
 

@@ -1498,6 +1498,8 @@ bool TemplateURL::IsBetterThanEngineWithConflictingKeyword(
     return std::make_tuple(
         // Policy-created engines always win over non-policy created engines.
         engine->created_by_policy(),
+        // Policy-enforced engines always win over policy-recommended engines.
+        engine->enforced_by_policy(),
         // The integral value of the type enum is used to sort next.
         // This makes extension-controlled engines win.
         engine->type(),

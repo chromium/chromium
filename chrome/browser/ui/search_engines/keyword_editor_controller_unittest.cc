@@ -207,6 +207,49 @@ TEST_F(KeywordEditorControllerTest, SetDefaultWhileRecommended) {
   controller()->MakeDefaultTemplateURL(index);
   VerifyChanged();
   EXPECT_EQ(turl2, util()->model()->GetDefaultSearchProvider());
+
+  // Ensure that the recommended search provider is not deleted.
+  ASSERT_NE(util()->model()->GetTemplateURLForKeyword(kManaged), nullptr);
+}
+
+// Tests that a recomended search provider does not persist when a different
+// recommended provider is applied via policy.
+TEST_F(KeywordEditorControllerTest, UpdateRecommended) {
+  // Simulate setting a recommended default provider.
+  SimulateDefaultSearchIsManaged("url1", /*is_mandatory=*/false);
+  EXPECT_EQ(kManaged,
+            util()->model()->GetDefaultSearchProvider()->short_name());
+  EXPECT_EQ("url1", util()->model()->GetDefaultSearchProvider()->url());
+  EXPECT_FALSE(util()->model()->is_default_search_managed());
+  auto original_size = util()->model()->GetTemplateURLs().size();
+
+  // Update the default search provider to a different recommended provider.
+  SimulateDefaultSearchIsManaged("url2", /*is_mandatory=*/false);
+  EXPECT_EQ("url2", util()->model()->GetDefaultSearchProvider()->url());
+  EXPECT_FALSE(util()->model()->is_default_search_managed());
+  EXPECT_FALSE(
+      util()->model()->GetDefaultSearchProvider()->enforced_by_policy());
+  EXPECT_EQ(original_size, util()->model()->GetTemplateURLs().size());
+}
+
+// Tests that a recomended search provider does not persist when a managed
+// provider is applied via policy.
+TEST_F(KeywordEditorControllerTest, SetManagedWhileRecommended) {
+  // Simulate setting a recommended default provider.
+  SimulateDefaultSearchIsManaged("url1", /*is_mandatory=*/false);
+  EXPECT_EQ(kManaged,
+            util()->model()->GetDefaultSearchProvider()->short_name());
+  EXPECT_EQ("url1", util()->model()->GetDefaultSearchProvider()->url());
+  EXPECT_FALSE(util()->model()->is_default_search_managed());
+  auto original_size = util()->model()->GetTemplateURLs().size();
+
+  // Update the default search provider to a managed (enforced) provider.
+  SimulateDefaultSearchIsManaged("url2", /*is_mandatory=*/true);
+  EXPECT_EQ("url2", util()->model()->GetDefaultSearchProvider()->url());
+  EXPECT_TRUE(util()->model()->is_default_search_managed());
+  EXPECT_TRUE(
+      util()->model()->GetDefaultSearchProvider()->enforced_by_policy());
+  EXPECT_EQ(original_size, util()->model()->GetTemplateURLs().size());
 }
 
 // Tests that a TemplateURL can't be edited if it is the managed default search

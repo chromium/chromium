@@ -225,6 +225,9 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
   result->is_active = static_cast<TemplateURLData::ActiveStatus>(
       dict.FindInt(DefaultSearchManager::kIsActive)
           .value_or(static_cast<int>(result->is_active)));
+  result->enforced_by_policy =
+      dict.FindBool(DefaultSearchManager::kEnforcedByPolicy)
+          .value_or(result->enforced_by_policy);
   return result;
 }
 
@@ -305,6 +308,8 @@ base::Value::Dict TemplateURLDataToDictionary(const TemplateURLData& data) {
                data.prefetch_likely_navigations);
   url_dict.Set(DefaultSearchManager::kIsActive,
                static_cast<int>(data.is_active));
+  url_dict.Set(DefaultSearchManager::kEnforcedByPolicy,
+               data.enforced_by_policy);
   return url_dict;
 }
 

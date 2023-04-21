@@ -779,6 +779,7 @@ class TemplateURL {
   base::Time last_visited() const { return data_.last_visited; }
 
   bool created_by_policy() const { return data_.created_by_policy; }
+  bool enforced_by_policy() const { return data_.enforced_by_policy; }
   bool created_from_play_api() const { return data_.created_from_play_api; }
 
   int usage_count() const { return data_.usage_count; }
