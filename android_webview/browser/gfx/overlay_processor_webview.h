@@ -45,7 +45,8 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl,
       viz::FrameSinkManagerImpl* frame_sink_manager);
   ~OverlayProcessorWebView() override;
 
-  void ProcessForFrameSinkId(const viz::FrameSinkId& frame_sink_id,
+  // returns false if it failed to update overlays.
+  bool ProcessForFrameSinkId(const viz::FrameSinkId& frame_sink_id,
                              const viz::ResolvedFrameData* frame_data);
   void SetOverlaysEnabledByHWUI(bool enabled);
   void RemoveOverlays();
