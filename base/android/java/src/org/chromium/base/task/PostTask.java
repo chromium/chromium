@@ -4,6 +4,8 @@
 
 package org.chromium.base.task;
 
+import android.os.Handler;
+
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -269,9 +271,9 @@ public class PostTask {
     }
 
     /** Called once when the UI thread has been initialized */
-    public static void onUiThreadReady() {
+    public static void onUiThreadReady(Handler uiThreadHandler) {
         assert sUiThreadTaskExecutor == null;
-        sUiThreadTaskExecutor = new UiThreadTaskExecutor();
+        sUiThreadTaskExecutor = new UiThreadTaskExecutor(uiThreadHandler);
     }
 
     public static void resetUiThreadForTesting() {

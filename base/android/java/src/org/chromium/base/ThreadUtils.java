@@ -25,9 +25,9 @@ public class ThreadUtils {
 
     private static final Object sLock = new Object();
 
-    private static boolean sWillOverride;
+    private static volatile boolean sWillOverride;
 
-    private static Handler sUiThreadHandler;
+    private static volatile Handler sUiThreadHandler;
 
     private static boolean sThreadAssertsDisabled;
 
@@ -76,51 +76,45 @@ public class ThreadUtils {
         }
     }
 
-    public static void setWillOverrideUiThread(boolean willOverrideUiThread) {
-        synchronized (sLock) {
-            sWillOverride = willOverrideUiThread;
-        }
+    public static void setWillOverrideUiThread() {
+        sWillOverride = true;
+        assert sUiThreadHandler == null;
     }
 
     @VisibleForTesting
     public static void clearUiThreadForTesting() {
-        synchronized (sLock) {
-            sUiThreadHandler = null;
-            sWillOverride = false;
-            PostTask.resetUiThreadForTesting(); // IN-TEST
-        }
+        sWillOverride = false;
+        PostTask.resetUiThreadForTesting(); // IN-TEST
+        sUiThreadHandler = null;
     }
 
     public static void setUiThread(Looper looper) {
+        assert looper != null;
         synchronized (sLock) {
-            assert looper != null;
-            if (sUiThreadHandler != null && sUiThreadHandler.getLooper() != looper) {
+            if (sUiThreadHandler == null) {
+                Handler uiThreadHandler = new Handler(looper);
+                // Set up the UI Thread TaskExecutor before signaling readiness.
+                PostTask.onUiThreadReady(uiThreadHandler);
+                // volatile write signals readiness since other threads read it without acquiring
+                // sLock.
+                sUiThreadHandler = uiThreadHandler;
+                // Must come after PostTask is initialized since it uses PostTask.
+                TraceEvent.onUiThreadReady();
+            } else if (sUiThreadHandler.getLooper() != looper) {
                 throw new RuntimeException("UI thread looper is already set to "
                         + sUiThreadHandler.getLooper() + " (Main thread looper is "
                         + Looper.getMainLooper() + "), cannot set to new looper " + looper);
-            } else {
-                sUiThreadHandler = new Handler(looper);
             }
-            PostTask.onUiThreadReady();
         }
-        TraceEvent.onUiThreadReady();
     }
 
     public static Handler getUiThreadHandler() {
-        boolean createdHandler = false;
-        synchronized (sLock) {
-            if (sUiThreadHandler == null) {
-                if (sWillOverride) {
-                    throw new RuntimeException("Did not yet override the UI thread");
-                }
-                sUiThreadHandler = new Handler(Looper.getMainLooper());
-                PostTask.onUiThreadReady();
-                createdHandler = true;
-            }
+        if (sUiThreadHandler != null) return sUiThreadHandler;
+
+        if (sWillOverride) {
+            throw new RuntimeException("Did not yet override the UI thread");
         }
-        if (createdHandler) {
-            TraceEvent.onUiThreadReady();
-        }
+        setUiThread(Looper.getMainLooper());
         return sUiThreadHandler;
     }
 

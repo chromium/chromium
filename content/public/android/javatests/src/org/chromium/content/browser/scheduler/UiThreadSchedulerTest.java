@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class UiThreadSchedulerTest {
     @Before
     public void setUp() {
-        ThreadUtils.setWillOverrideUiThread(true);
+        ThreadUtils.setWillOverrideUiThread();
         mUiThread = new HandlerThread("UiThreadForTest");
         mUiThread.start();
         ThreadUtils.setUiThread(mUiThread.getLooper());
