@@ -6869,3 +6869,4 @@ crbug.com/952717 [ Win11 ] http/tests/xmlhttprequest/redirect-cross-origin-post.
 
 # Sheriff 2023-04-21
 crbug.com/1433050 [ Mac10.15 ] http/tests/devtools/bindings/sourcemap-bindings-multiple-frames.js [ Failure Pass ]
+crbug.com/1426534 wpt_internal/content-security-policy/reporting-api/reporting-api-works-on-frame-ancestors.https.sub.html [ Failure Pass ]
