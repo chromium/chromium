@@ -43,11 +43,11 @@ namespace {
 
 // The paddings in `close_button_container_`.
 const auto kCloseButtonContainerInsets = gfx::Insets(15);
-const auto kCloseButtonContainerInsetsJelly = gfx::Insets::TLBR(8, 16, 8, 26);
+const auto kCloseButtonContainerInsetsJelly = gfx::Insets::VH(8, 16);
 
 // The paddings in `CalendarEventListView`.
 constexpr auto kContentInsets = gfx::Insets::TLBR(0, 0, 20, 0);
-constexpr auto kContentInsetsJelly = gfx::Insets::TLBR(0, 14, 20, 14);
+constexpr auto kContentInsetsJelly = gfx::Insets::TLBR(0, 16, 16, 16);
 
 // The insets for `CalendarEmptyEventListView`.
 constexpr auto kOpenGoogleCalendarContainerInsets = gfx::Insets::VH(20, 60);
@@ -57,7 +57,8 @@ constexpr int kOpenGoogleCalendarBorderThickness = 1;
 
 constexpr auto kEventListViewCornerRadius =
     gfx::RoundedCornersF(0, 0, kBubbleCornerRadius, kBubbleCornerRadius);
-constexpr auto kEventListViewCornerRadiusJelly = gfx::RoundedCornersF(12);
+constexpr auto kEventListViewCornerRadiusJelly =
+    gfx::RoundedCornersF(24, 24, kBubbleCornerRadius, kBubbleCornerRadius);
 
 constexpr int kScrollViewGradientSize = 16;
 
@@ -65,7 +66,7 @@ constexpr int kScrollViewGradientSize = 16;
 // separate multi-day and non multi-day events into two separate child list
 // views.
 constexpr int kEventListViewBetweenChildSpacing = 0;
-constexpr int kEventListViewBetweenChildSpacingJelly = 4;
+constexpr int kEventListViewBetweenChildSpacingJelly = 8;
 
 // The between child spacing within the child event lists. Only applicable to
 // Jelly.
