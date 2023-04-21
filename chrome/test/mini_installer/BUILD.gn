@@ -64,6 +64,7 @@ if (is_win) {
       "//testing:test_scripts_shared",
       "//third_party/catapult/third_party/typ",
     ]
+    deps = [ "//third_party/pefile_py3:pefile_py3_py" ]
     data = [
              "//testing/scripts/",
              "//third_party/depot_tools/download_from_google_storage.py",

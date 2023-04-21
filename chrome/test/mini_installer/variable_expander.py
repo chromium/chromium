@@ -8,10 +8,15 @@ import os
 import string
 import sys
 import win32api
-import win32file
 import win32com.client
 from win32com.shell import shell, shellcon
 import win32security
+
+sys.path.insert(
+    0,
+    os.path.join(os.path.dirname(__file__), '..', '..', '..', 'third_party',
+                 'pefile_py3'))
+import pefile
 
 
 def _GetFileVersion(file_path):
@@ -22,9 +27,15 @@ def _GetFileVersion(file_path):
 
 def _GetFileBitness(file_path):
     """Returns the bitness of the given file."""
-    if win32file.GetBinaryType(file_path) == win32file.SCS_32BIT_BINARY:
+    processor_type = pefile.PE(file_path).FILE_HEADER.Machine
+    if processor_type == pefile.MACHINE_TYPE['IMAGE_FILE_MACHINE_I386']:
         return '32'
-    return '64'
+    if processor_type in [
+            pefile.MACHINE_TYPE['IMAGE_FILE_MACHINE_AMD64'],
+            pefile.MACHINE_TYPE['IMAGE_FILE_MACHINE_ARM64']
+    ]:
+        return '64'
+    raise Exception('Unknown processor type %d' % processor_type)
 
 
 def _GetProductName(file_path):
@@ -109,6 +120,7 @@ class VariableExpander:
         * $LOG_FILE: "--log-file=FILE" or an empty string.
         * $MINI_INSTALLER: the unquoted path to the mini_installer.
         * $MINI_INSTALLER_BITNESS: the bitness of the mini_installer.
+             32 for x86, 64 for x64 or ARM64
         * $MINI_INSTALLER_FILE_VERSION: the file version of $MINI_INSTALLER.
         * $PREVIOUS_VERSION_MINI_INSTALLER: the unquoted path to a
              mini_installer whose version is lower than $MINI_INSTALLER.

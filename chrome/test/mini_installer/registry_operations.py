@@ -95,6 +95,7 @@ def VerifyRegistryEntryExpectation(expectation_name, expectation,
         if 'wow_key' in expectation:
             registry_view = _RegistryViewConstant(expectation['wow_key'])
         elif variable_expander.Expand('$MINI_INSTALLER_BITNESS') == '64':
+            # Note that $MINI_INSTALLER_BITNESS == '64' for x64 and for ARM64.
             registry_view = winreg.KEY_WOW64_64KEY
 
         key_handle = winreg.OpenKey(_RootKeyConstant(root_key), sub_key, 0,
@@ -177,6 +178,7 @@ def CleanRegistryEntry(expectation_name, expectation, variable_expander):
     if 'wow_key' in expectation:
         registry_view = _RegistryViewConstant(expectation['wow_key'])
     elif variable_expander.Expand('$MINI_INSTALLER_BITNESS') == '64':
+        # Note that $MINI_INSTALLER_BITNESS == '64' for x64 and for ARM64.
         registry_view = winreg.KEY_WOW64_64KEY
 
     try:
