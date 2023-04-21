@@ -96,7 +96,8 @@ void ScopedCriticalPolicySection::Init(base::OnceClosure callback) {
         base::BindOnce(&ScopedCriticalPolicySection::OnSectionEntered,
                        weak_factory_.GetWeakPtr()));
     base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock()},
+        FROM_HERE,
+        {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce(std::move(enter_section_callback_),
                        std::move(on_section_entered)));
   }
