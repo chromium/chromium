@@ -7682,6 +7682,7 @@ test("unit_tests") {
       "../browser/upgrade_detector/upgrade_detector_chromeos_unittest.cc",
       "../common/chrome_constants_ash_unittest.cc",
       "../renderer/chromeos_delayed_callback_group_unittest.cc",
+      "base/chromeos/ash_browser_test_starter_unittest.cc",
     ]
 
     deps += [
