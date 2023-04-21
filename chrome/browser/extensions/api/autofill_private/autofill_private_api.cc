@@ -8,9 +8,9 @@
 
 #include <utility>
 
-#include "base/guid.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -176,8 +176,9 @@ autofill::AutofillProfile CreateNewAutofillProfile(
     // filtering.
     source = autofill::AutofillProfile::Source::kLocalOrSyncable;
   }
-  return autofill::AutofillProfile(base::GenerateGUID(), kSettingsOrigin,
-                                   source);
+  return autofill::AutofillProfile(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), kSettingsOrigin,
+      source);
 }
 
 }  // namespace
@@ -433,9 +434,10 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveCreditCardFunction::Run() {
       return RespondNow(Error(kErrorDataUnavailable));
   }
   autofill::CreditCard credit_card =
-      existing_card
-          ? *existing_card
-          : autofill::CreditCard(base::GenerateGUID(), kSettingsOrigin);
+      existing_card ? *existing_card
+                    : autofill::CreditCard(
+                          base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                          kSettingsOrigin);
 
   if (card->name) {
     credit_card.SetRawInfo(autofill::CREDIT_CARD_NAME_FULL,
@@ -681,7 +683,9 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveIbanFunction::Run() {
       return RespondNow(Error(kErrorDataUnavailable));
   }
   autofill::IBAN iban =
-      existing_iban ? *existing_iban : autofill::IBAN(base::GenerateGUID());
+      existing_iban
+          ? *existing_iban
+          : autofill::IBAN(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   iban.SetRawInfo(autofill::IBAN_VALUE, base::UTF8ToUTF16(*iban_entry->value));
 
