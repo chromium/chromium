@@ -135,24 +135,6 @@ public class UmaUtils {
     }
 
     /**
-     * Called to log the number of items that were shared through the multi-share top menu action.
-     * @param count The number of items that were shared.
-     */
-    public static void recordTopMenuShareCount(int count) {
-        RecordHistogram.recordCount100Histogram(
-                "Android.DownloadManager.Menu.Share.SelectedCount", count);
-    }
-
-    /**
-     * Called to log the number of items that were deleted through the multi-delete top menu action.
-     * @param count The number of items that were deleted.
-     */
-    public static void recordTopMenuDeleteCount(int count) {
-        RecordHistogram.recordCount100Histogram(
-                "Android.DownloadManager.Menu.Delete.SelectedCount", count);
-    }
-
-    /**
      * Called to log metrics about shared {@link OfflineItem}s.  Note that this relies on both
      * {@link OfflineItemFilter} and {@link Filters#FilterType} to determine what to log.
      * @param items The {@link OfflineItem}s that were shared.

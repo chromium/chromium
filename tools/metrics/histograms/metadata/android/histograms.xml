@@ -1049,6 +1049,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.DownloadManager.Menu.Delete.SelectedCount"
     units="units" expires_after="M81">
+  <obsolete>
+    Removed in April 2023.
+  </obsolete>
   <owner>dtrainor@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -1058,6 +1061,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.DownloadManager.Menu.Share.SelectedCount"
     units="units" expires_after="M81">
+  <obsolete>
+    Removed in April 2023.
+  </obsolete>
   <owner>dtrainor@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>

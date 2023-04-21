@@ -192,12 +192,10 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
             mDelegate.close();
             return true;
         } else if (item.getItemId() == R.id.selection_mode_delete_menu_id) {
-            int itemsDeleted = mListActionDelegate.deleteSelectedItems();
-            UmaUtils.recordTopMenuDeleteCount(itemsDeleted);
+            mListActionDelegate.deleteSelectedItems();
             return true;
         } else if (item.getItemId() == R.id.selection_mode_share_menu_id) {
-            int itemsShared = mListActionDelegate.shareSelectedItems();
-            UmaUtils.recordTopMenuShareCount(itemsShared);
+            mListActionDelegate.shareSelectedItems();
             return true;
         } else if (item.getItemId() == R.id.search_menu_id) {
             mToolbar.showSearchView(true);
