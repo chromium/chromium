@@ -519,6 +519,11 @@ ScopedInterfaceEndpointHandle MultiplexRouter::CreateLocalEndpointHandle(
 void MultiplexRouter::CloseEndpointHandle(
     InterfaceId id,
     const absl::optional<DisconnectReason>& reason) {
+  recordreplay::Assert(
+      "[RUN-1209-1784] MultiplexRouter::CloseEndpointHandle %u %d %d %u %s", id,
+      IsValidInterfaceId(id), IsPrimaryInterfaceId(id), 
+      reason.has_value() ? reason->custom_reason : (uint32_t)-1,
+      reason.has_value() ? reason->description.c_str() : "");
   if (!IsValidInterfaceId(id))
     return;
 
