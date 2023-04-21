@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/component_updater/masked_domain_list_component_installer.h"
+#include "components/component_updater/installer_policies/masked_domain_list_component_installer.h"
 
 #include <utility>
 
@@ -16,9 +16,8 @@
 #include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
-#include "chrome/common/chrome_features.h"
 #include "components/component_updater/component_installer.h"
-#include "components/update_client/update_client.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using component_updater::ComponentUpdateService;
@@ -49,7 +48,7 @@ base::File OpenFile(const base::FilePath& pb_path) {
 
 bool IsMaskedDomainListEnabled() {
   // TODO(aakallam): move this to a more accessible location.
-  return base::FeatureList::IsEnabled(features::kMaskedDomainList);
+  return base::FeatureList::IsEnabled(network::features::kMaskedDomainList);
 }
 
 base::TaskPriority GetTaskPriority() {

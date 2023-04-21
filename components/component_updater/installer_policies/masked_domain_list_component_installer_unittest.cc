@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/component_updater/masked_domain_list_component_installer.h"
+#include "components/component_updater/installer_policies/masked_domain_list_component_installer.h"
 
 #include "base/check.h"
 #include "base/files/file.h"
@@ -13,8 +13,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/version.h"
-#include "chrome/common/chrome_features.h"
 #include "components/component_updater/mock_component_updater_service.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,7 +45,8 @@ class MaskedDomainListComponentInstallerTest : public ::testing::Test {
 };
 
 TEST_F(MaskedDomainListComponentInstallerTest, FeatureDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(features::kMaskedDomainList);
+  scoped_feature_list_.InitAndDisableFeature(
+      network::features::kMaskedDomainList);
   auto service =
       std::make_unique<component_updater::MockComponentUpdateService>();
   EXPECT_CALL(*service, RegisterComponent(_)).Times(0);
@@ -55,7 +56,8 @@ TEST_F(MaskedDomainListComponentInstallerTest, FeatureDisabled) {
 }
 
 TEST_F(MaskedDomainListComponentInstallerTest, FeatureEnabled) {
-  scoped_feature_list_.InitAndEnableFeature(features::kMaskedDomainList);
+  scoped_feature_list_.InitAndEnableFeature(
+      network::features::kMaskedDomainList);
   auto service =
       std::make_unique<component_updater::MockComponentUpdateService>();
   EXPECT_CALL(*service, RegisterComponent(_)).Times(1);
@@ -66,7 +68,8 @@ TEST_F(MaskedDomainListComponentInstallerTest, FeatureEnabled) {
 
 TEST_F(MaskedDomainListComponentInstallerTest,
        NonexistentFile_OnComponentReady) {
-  scoped_feature_list_.InitAndEnableFeature(features::kMaskedDomainList);
+  scoped_feature_list_.InitAndEnableFeature(
+      network::features::kMaskedDomainList);
   ASSERT_TRUE(base::DeleteFile(
       MaskedDomainListComponentInstallerPolicy::GetInstalledPath(
           component_install_dir_.GetPath())));
@@ -82,7 +85,8 @@ TEST_F(MaskedDomainListComponentInstallerTest,
 }
 
 TEST_F(MaskedDomainListComponentInstallerTest, LoadsFile_OnComponentReady) {
-  scoped_feature_list_.InitAndEnableFeature(features::kMaskedDomainList);
+  scoped_feature_list_.InitAndEnableFeature(
+      network::features::kMaskedDomainList);
   const base::Version version = base::Version("0.0.1");
   const std::string expectation = "some list contents";
   base::test::RepeatingTestFuture<base::Version, base::File> future;
@@ -104,7 +108,8 @@ TEST_F(MaskedDomainListComponentInstallerTest, LoadsFile_OnComponentReady) {
 }
 
 TEST_F(MaskedDomainListComponentInstallerTest, LoadsNewListWhenUpdated) {
-  scoped_feature_list_.InitAndEnableFeature(features::kMaskedDomainList);
+  scoped_feature_list_.InitAndEnableFeature(
+      network::features::kMaskedDomainList);
 
   base::test::RepeatingTestFuture<base::Version, base::File> future;
   auto policy = MaskedDomainListComponentInstallerPolicy(future.GetCallback());
