@@ -51,6 +51,8 @@ class CaptureModeBehavior {
   virtual bool ShouldShowPreviewNotification() const;
   virtual bool ShouldSkipVideoRecordingCountDown() const;
   virtual bool ShouldCreateRecordingOverlayController() const;
+  virtual bool ShouldShowUserNudge() const;
+  virtual bool ShouldAutoSelectFirstCamera() const;
 
  protected:
   explicit CaptureModeBehavior(const CaptureModeSessionConfigs& configs);

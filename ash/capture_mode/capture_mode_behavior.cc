@@ -48,14 +48,12 @@ class ProjectorBehavior : public CaptureModeBehavior {
 
   // CaptureModeBehavior:
   bool ShouldImageCaptureTypeBeAllowed() const override { return false; }
-
   bool ShouldSaveToSettingsBeIncluded() const override { return false; }
-
   bool ShouldGifBeSupported() const override { return false; }
-
   bool ShouldShowPreviewNotification() const override { return false; }
-
   bool ShouldCreateRecordingOverlayController() const override { return true; }
+  bool ShouldShowUserNudge() const override { return false; }
+  bool ShouldAutoSelectFirstCamera() const override { return true; }
 };
 
 }  // namespace
@@ -127,6 +125,14 @@ bool CaptureModeBehavior::ShouldSkipVideoRecordingCountDown() const {
 }
 
 bool CaptureModeBehavior::ShouldCreateRecordingOverlayController() const {
+  return false;
+}
+
+bool CaptureModeBehavior::ShouldShowUserNudge() const {
+  return true;
+}
+
+bool CaptureModeBehavior::ShouldAutoSelectFirstCamera() const {
   return false;
 }
 

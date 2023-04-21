@@ -6,6 +6,7 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_BAR_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -47,9 +48,8 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
  public:
   METADATA_HEADER(CaptureModeBarView);
 
-  // |projector_mode| is true when the current session was started through the
-  // projector workflow.
-  explicit CaptureModeBarView(bool projector_mode);
+  // The `active_behavior` decides the capture bar configurations.
+  explicit CaptureModeBarView(CaptureModeBehavior* active_behavior);
   CaptureModeBarView(const CaptureModeBarView&) = delete;
   CaptureModeBarView& operator=(const CaptureModeBarView&) = delete;
   ~CaptureModeBarView() override;
@@ -63,9 +63,9 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
 
   // Gets the ideal bounds in screen coordinates of the bar of widget on the
   // given `root` window. The `image_toggle_button` will not be shown in the bar
-  // if `is_in_projector_mode` is true, which means the width of the bar will be
-  // different.
-  static gfx::Rect GetBounds(aura::Window* root, bool is_in_projector_mode);
+  // The width of the bar will be adjusted based on the current active behavior
+  static gfx::Rect GetBounds(aura::Window* root,
+                             CaptureModeBehavior* active_behavior);
 
   // Called when either the capture mode source or type changes.
   void OnCaptureSourceChanged(CaptureModeSource new_source);

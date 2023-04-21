@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
+#include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_camera_preview_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
@@ -177,12 +178,14 @@ class RecordedWindowRootObserver : public aura::WindowObserver {
 
 VideoRecordingWatcher::VideoRecordingWatcher(
     CaptureModeController* controller,
+    CaptureModeBehavior* active_behavior,
     aura::Window* window_being_recorded,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCaptureOverlay>
         cursor_capture_overlay,
     bool projector_mode,
     bool is_recording_audio)
     : controller_(controller),
+      active_behavior_(active_behavior),
       cursor_manager_(Shell::Get()->cursor_manager()),
       window_being_recorded_(window_being_recorded),
       current_root_(window_being_recorded->GetRootWindow()),
@@ -241,7 +244,7 @@ VideoRecordingWatcher::VideoRecordingWatcher(
 
   controller_->camera_controller()->OnRecordingStarted(is_in_projector_mode_);
 
-  if (is_in_projector_mode_) {
+  if (active_behavior_->ShouldCreateRecordingOverlayController()) {
     recording_overlay_controller_ =
         std::make_unique<RecordingOverlayController>(window_being_recorded_,
                                                      GetOverlayWidgetBounds());
@@ -373,7 +376,7 @@ void VideoRecordingWatcher::OnWindowBoundsChanged(
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
-  if (is_in_projector_mode_) {
+  if (recording_overlay_controller_) {
     recording_overlay_controller_->SetBounds(GetOverlayWidgetBounds());
   }
 
@@ -497,8 +500,9 @@ void VideoRecordingWatcher::OnDisplayMetricsChanged(
     uint32_t metrics) {
   // A change in the work area, could mean that the docked magnifier state has
   // changed, therefore we must update the overlay widget's bounds if any.
-  if (is_in_projector_mode_ && (metrics & DISPLAY_METRIC_WORK_AREA))
+  if (recording_overlay_controller_ && (metrics & DISPLAY_METRIC_WORK_AREA)) {
     recording_overlay_controller_->SetBounds(GetOverlayWidgetBounds());
+  }
 
   if (!(metrics &
         (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |

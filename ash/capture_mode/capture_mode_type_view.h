@@ -6,6 +6,7 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_TYPE_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -21,10 +22,8 @@ class ASH_EXPORT CaptureModeTypeView : public views::View {
  public:
   METADATA_HEADER(CaptureModeTypeView);
 
-  // |projector_mode| specifies whether the current capture mode session was
-  // started for the projector workflow. In this mode, only video recording is
-  // allowed.
-  explicit CaptureModeTypeView(bool projector_mode);
+  // The `active_behavior` decides the supported capture types.
+  explicit CaptureModeTypeView(CaptureModeBehavior* active_behavior);
   CaptureModeTypeView(const CaptureModeTypeView&) = delete;
   CaptureModeTypeView& operator=(const CaptureModeTypeView&) = delete;
   ~CaptureModeTypeView() override;

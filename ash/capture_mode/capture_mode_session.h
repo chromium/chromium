@@ -11,6 +11,7 @@
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_label_view.h"
+#include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_toast_controller.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
@@ -63,7 +64,9 @@ class ASH_EXPORT CaptureModeSession
  public:
   // Creates the bar widget on a calculated root window. |projector_mode|
   // specifies whether this session was started for the projector workflow.
-  CaptureModeSession(CaptureModeController* controller, bool projector_mode);
+  CaptureModeSession(CaptureModeController* controller,
+                     CaptureModeBehavior* active_behavior,
+                     bool projector_mode);
   CaptureModeSession(const CaptureModeSession&) = delete;
   CaptureModeSession& operator=(const CaptureModeSession&) = delete;
   ~CaptureModeSession() override;
@@ -87,6 +90,7 @@ class ASH_EXPORT CaptureModeSession
   void set_can_exit_on_escape(bool value) { can_exit_on_escape_ = value; }
   bool is_selecting_region() const { return is_selecting_region_; }
   bool is_drag_in_progress() const { return is_drag_in_progress_; }
+  CaptureModeBehavior* active_behavior() { return active_behavior_; }
   void set_a11y_alert_on_session_exit(bool value) {
     a11y_alert_on_session_exit_ = value;
   }
@@ -444,6 +448,10 @@ class ASH_EXPORT CaptureModeSession
   void MaybeUpdateRecordingTypeMenu();
 
   CaptureModeController* const controller_;
+
+  // The currently active capture mode behavior for this session which will be
+  // used to configure capture mode session differently with different modes.
+  CaptureModeBehavior* const active_behavior_;
 
   // The current root window on which the capture session is active, which may
   // change if the user warps the cursor to another display in some situations.

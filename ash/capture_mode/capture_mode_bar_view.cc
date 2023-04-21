@@ -61,9 +61,9 @@ constexpr int kDistanceFromShelfOrHotseatTopDp = 16;
 
 }  // namespace
 
-CaptureModeBarView::CaptureModeBarView(bool projector_mode)
+CaptureModeBarView::CaptureModeBarView(CaptureModeBehavior* active_behavior)
     : capture_type_view_(
-          AddChildView(std::make_unique<CaptureModeTypeView>(projector_mode))),
+          AddChildView(std::make_unique<CaptureModeTypeView>(active_behavior))),
       separator_1_(AddChildView(std::make_unique<views::Separator>())),
       capture_source_view_(
           AddChildView(std::make_unique<CaptureModeSourceView>())),
@@ -127,7 +127,7 @@ CaptureModeBarView::~CaptureModeBarView() = default;
 
 // static
 gfx::Rect CaptureModeBarView::GetBounds(aura::Window* root,
-                                        bool is_in_projector_mode) {
+                                        CaptureModeBehavior* active_behavior) {
   DCHECK(root);
 
   auto bounds = root->GetBoundsInScreen();
@@ -146,7 +146,8 @@ gfx::Rect CaptureModeBarView::GetBounds(aura::Window* root,
   }
 
   gfx::Size bar_size = kFullBarSize;
-  if (is_in_projector_mode) {
+  CHECK(active_behavior);
+  if (!active_behavior->ShouldImageCaptureTypeBeAllowed()) {
     bar_size.set_width(kFullBarSize.width() -
                        capture_mode::kButtonSize.width() -
                        capture_mode::kSpaceBetweenCaptureModeTypeButtons);

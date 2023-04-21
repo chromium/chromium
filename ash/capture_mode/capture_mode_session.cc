@@ -11,6 +11,7 @@
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
+#include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_camera_preview_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
@@ -577,15 +578,17 @@ class CaptureModeSession::ParentContainerObserver
 // CaptureModeSession:
 
 CaptureModeSession::CaptureModeSession(CaptureModeController* controller,
+                                       CaptureModeBehavior* active_behavior,
                                        bool projector_mode)
     : controller_(controller),
+      active_behavior_(active_behavior),
       current_root_(capture_mode_util::GetPreferredRootWindow()),
       magnifier_glass_(kMagnifierParams),
       is_in_projector_mode_(projector_mode),
       cursor_setter_(std::make_unique<CursorSetter>()),
       focus_cycler_(std::make_unique<CaptureModeSessionFocusCycler>(this)),
       capture_toast_controller_(this) {
-  DCHECK(current_root_);
+  CHECK(current_root_);
 }
 
 CaptureModeSession::~CaptureModeSession() = default;
@@ -638,11 +641,10 @@ void CaptureModeSession::Initialize() {
   ClampCaptureRegionToRootWindowSize();
 
   capture_mode_bar_widget_->Init(CreateWidgetParams(
-      parent,
-      CaptureModeBarView::GetBounds(current_root_, is_in_projector_mode_),
+      parent, CaptureModeBarView::GetBounds(current_root_, active_behavior_),
       "CaptureModeBarWidget"));
   capture_mode_bar_view_ = capture_mode_bar_widget_->SetContentsView(
-      std::make_unique<CaptureModeBarView>(is_in_projector_mode_));
+      std::make_unique<CaptureModeBarView>(active_behavior_));
   capture_mode_bar_widget_->GetNativeWindow()->SetTitle(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_A11Y_TITLE));
   capture_mode_bar_widget_->Show();
@@ -682,8 +684,9 @@ void CaptureModeSession::Initialize() {
       controller_->type());
   MaybeCreateUserNudge();
 
-  if (is_in_projector_mode_)
+  if (active_behavior_->ShouldAutoSelectFirstCamera()) {
     controller_->camera_controller()->MaybeSelectFirstCamera();
+  }
 
   Shell::Get()->AddShellObserver(this);
 }
@@ -1703,7 +1706,7 @@ void CaptureModeSession::RefreshBarWidgetBounds() {
   // The sequence matters here since settings bounds depend on capture bar
   // bounds.
   capture_mode_bar_widget_->SetBounds(
-      CaptureModeBarView::GetBounds(current_root_, is_in_projector_mode_));
+      CaptureModeBarView::GetBounds(current_root_, active_behavior_));
   MaybeUpdateSettingsBounds();
   if (user_nudge_controller_)
     user_nudge_controller_->Reposition();
@@ -1713,11 +1716,13 @@ void CaptureModeSession::RefreshBarWidgetBounds() {
 void CaptureModeSession::MaybeCreateUserNudge() {
   user_nudge_controller_.reset();
 
-  if (is_in_projector_mode_)
+  if (!active_behavior_->ShouldShowUserNudge()) {
     return;
+  }
 
-  if (!controller_->CanShowUserNudge())
+  if (!controller_->CanShowUserNudge()) {
     return;
+  }
 
   user_nudge_controller_ = std::make_unique<UserNudgeController>(
       this, capture_mode_bar_view_->settings_button());

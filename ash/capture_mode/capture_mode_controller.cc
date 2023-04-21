@@ -1611,6 +1611,11 @@ void CaptureModeController::BeginVideoRecording(
   // DLP or user cancellation.
   capture_mode_session_->set_is_stopping_to_start_video_recording(true);
 
+  // Cache the active behavior of the capture session to be passed to video
+  // recording watcher after stopping the capture mode session.
+  CaptureModeBehavior* active_behavior =
+      capture_mode_session_->active_behavior();
+
   // Stop the capture session now, so the bar doesn't show up in the captured
   // video.
   Stop();
@@ -1622,8 +1627,8 @@ void CaptureModeController::BeginVideoRecording(
   auto cursor_overlay_receiver =
       cursor_capture_overlay.InitWithNewPipeAndPassReceiver();
   video_recording_watcher_ = std::make_unique<VideoRecordingWatcher>(
-      this, capture_params.window, std::move(cursor_capture_overlay),
-      for_projector, should_record_audio);
+      this, active_behavior, capture_params.window,
+      std::move(cursor_capture_overlay), for_projector, should_record_audio);
 
   // We only paint the recorded area highlight for window and region captures.
   if (source_ != CaptureModeSource::kFullscreen)
@@ -1813,6 +1818,8 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
   // where only video recording is allowed, with audio recording enabled.
   bool for_projector = false;
 
+  BehaviorType behavior_type = BehaviorType::kDefault;
+
   // Before we start the session, if video recording is in progress, we need to
   // set the current type to image, as we can't have more than one recording at
   // a time. The video toggle button in the capture mode bar will be disabled.
@@ -1825,6 +1832,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
            "capture is disabled by policy.";
 
     for_projector = true;
+    behavior_type = BehaviorType::kProjector;
 
     // Cache the normal capture mode configurations that will be used for
     // restoration when switching to the normal capture mode session if needed.
@@ -1851,8 +1859,8 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
 
   delegate_->OnSessionStateChanged(/*started=*/true);
 
-  capture_mode_session_ =
-      std::make_unique<CaptureModeSession>(this, for_projector);
+  capture_mode_session_ = std::make_unique<CaptureModeSession>(
+      this, GetBehavior(behavior_type), for_projector);
   capture_mode_session_->Initialize();
 
   camera_controller_->OnCaptureSessionStarted();
