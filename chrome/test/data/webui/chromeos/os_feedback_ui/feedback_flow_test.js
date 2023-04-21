@@ -913,35 +913,64 @@ export function FeedbackFlowTestSuite() {
         true, FeedbackAppHelpContentOutcome.kContinueNoHelpContentDisplayed);
   });
 
-  test('UpdatesCSSUrlBasedOnIsJellyEnabledForOsFeedback', async () => {
-    // Setup test for jelly disabled.
-    loadTimeData.overrideValues({
-      isJellyEnabledForOsFeedback: false,
-    });
-    /*@type {HTMLLinkElement}*/
-    const link = document.createElement('link');
-    const disabledUrl = 'chrome://resources/chromeos/colors/cros_styles.css';
-    link.href = disabledUrl;
-    document.head.appendChild(link);
-    await initializePage();
+  test(
+      'UpdatesCSSUrlBasedOnIsJellyEnabledForOsFeedback_TrustedUi', async () => {
+        // Setup test for jelly disabled.
+        loadTimeData.overrideValues({
+          isJellyEnabledForOsFeedback: false,
+        });
+        /*@type {HTMLLinkElement}*/
+        const link = document.createElement('link');
+        const disabledUrl =
+            'chrome://resources/chromeos/colors/cros_styles.css';
+        link.href = disabledUrl;
+        document.head.appendChild(link);
+        await initializePage();
 
-    assertTrue(link.href.includes(disabledUrl));
+        assertTrue(link.href.includes(disabledUrl));
 
-    // Reset app element.
-    document.body.innerHTML = '';
-    page.remove();
-    page = null;
+        // Reset app element.
+        document.body.innerHTML = '';
+        page.remove();
+        page = null;
 
-    // Setup test for jelly enabled.
-    loadTimeData.overrideValues({
-      isJellyEnabledForOsFeedback: true,
-    });
-    await initializePage();
+        // Setup test for jelly enabled.
+        loadTimeData.overrideValues({
+          isJellyEnabledForOsFeedback: true,
+        });
+        await initializePage();
 
-    const enabledUrl = 'theme/colors.css';
-    assertTrue(link.href.includes(enabledUrl));
+        const enabledUrl = 'theme/colors.css';
+        assertTrue(link.href.includes(enabledUrl));
 
-    // Clean up test specific element.
-    document.head.removeChild(link);
-  });
+        // Clean up test specific element.
+        document.head.removeChild(link);
+      });
+
+  // Test that test helper message is triggered on untrusted UI when
+  // `isJellyEnabledForOsFeedback` is true.
+  test(
+      'UpdatesCSSUrlBasedOnIsJellyEnabledForOsFeedback_UntrustedUi',
+      async () => {
+        // `isJellyEnabledForOsFeedback` is true by default based on test flag
+        // configuration.
+        assertTrue(loadTimeData.getBoolean('isJellyEnabledForOsFeedback'));
+
+        const resolver = new PromiseResolver();
+        let colorChangeUpdaterCalled = false;
+        const testMessageListener = (event) => {
+          if (event.data.id === 'color-change-updater-started-for-testing') {
+            colorChangeUpdaterCalled = true;
+            resolver.resolve();
+          }
+        };
+        window.addEventListener('message', testMessageListener);
+
+        await initializePage();
+        await resolver.promise;
+
+        assertTrue(colorChangeUpdaterCalled);
+
+        window.removeEventListener('message', testMessageListener);
+      });
 }
