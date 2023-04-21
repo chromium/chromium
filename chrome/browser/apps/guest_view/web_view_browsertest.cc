@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
@@ -25,6 +24,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -3606,7 +3606,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, DownloadCookieIsolation_CrossSession) {
     url_chain.push_back(download->GetURL().ReplaceComponents(replacements));
 
     downloads.push_back(download_manager->CreateDownloadItem(
-        base::GenerateGUID(), download->GetId() + 2, download->GetFullPath(),
+        base::Uuid::GenerateRandomV4().AsLowercaseString(),
+        download->GetId() + 2, download->GetFullPath(),
         download->GetTargetFilePath(), url_chain, download->GetReferrerUrl(),
         download_manager
             ->SerializedEmbedderDownloadDataToStoragePartitionConfig(
