@@ -705,9 +705,9 @@ TEST_P(RTCVideoEncoderEncodeTest, SoftwareFallbackAfterError) {
         encoder_thread_.task_runner()->PostTask(
             FROM_HERE,
             base::BindOnce(
-                &media::VideoEncodeAccelerator::Client::NotifyError,
+                &media::VideoEncodeAccelerator::Client::NotifyErrorStatus,
                 base::Unretained(client_),
-                media::VideoEncodeAccelerator::kPlatformFailureError));
+                media::EncoderStatus::Codes::kEncoderFailedEncode));
       }));
 
   const rtc::scoped_refptr<webrtc::I420Buffer> buffer =

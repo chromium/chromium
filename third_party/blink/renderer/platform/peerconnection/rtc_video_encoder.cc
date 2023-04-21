@@ -611,7 +611,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   void BitstreamBufferReady(
       int32_t bitstream_buffer_id,
       const media::BitstreamBufferMetadata& metadata) override;
-  void NotifyError(media::VideoEncodeAccelerator::Error error) override;
+  void NotifyErrorStatus(const media::EncoderStatus& status) override;
   void NotifyEncoderInfoChange(const media::VideoEncoderInfo& info) override;
 
  private:
@@ -621,11 +621,6 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
                                  // VEA::RequireBitstreamBuffers().
     kOutputBufferCount = 3,
   };
-
-  // Logs the |error| and |str| sent from |location| and NotifyError()s forward.
-  void LogAndNotifyError(const base::Location& location,
-                         const String& str,
-                         media::VideoEncodeAccelerator::Error error);
 
   // Perform encoding on an input frame from the input queue.
   void EncodeOneFrame(FrameChunk frame_chunk);
@@ -814,8 +809,8 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
 
   video_encoder_ = gpu_factories_->CreateVideoEncodeAccelerator();
   if (!video_encoder_) {
-    LogAndNotifyError(FROM_HERE, "Error creating VideoEncodeAccelerator",
-                      media::VideoEncodeAccelerator::kPlatformFailureError);
+    NotifyErrorStatus({media::EncoderStatus::Codes::kEncoderInitializationError,
+                       "Failed to create VideoEncodeAccelerato"});
     return;
   }
 
@@ -841,8 +836,8 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
 #endif
   if (!video_encoder_->Initialize(vea_config, this,
                                   std::make_unique<media::NullMediaLog>())) {
-    LogAndNotifyError(FROM_HERE, "Error initializing video_encoder",
-                      media::VideoEncodeAccelerator::kInvalidArgumentError);
+    NotifyErrorStatus({media::EncoderStatus::Codes::kEncoderInitializationError,
+                       "Failed to initialize VideoEncodeAccelerator"});
     return;
   }
 
@@ -1051,8 +1046,8 @@ void RTCVideoEncoder::Impl::RequireBitstreamBuffers(
         gpu_factories_->CreateSharedMemoryRegion(output_buffer_size);
     base::WritableSharedMemoryMapping mapping = region.Map();
     if (!mapping.IsValid()) {
-      LogAndNotifyError(FROM_HERE, "failed to create output buffer",
-                        media::VideoEncodeAccelerator::kPlatformFailureError);
+      NotifyErrorStatus({media::EncoderStatus::Codes::kSystemAPICallError,
+                         "failed to create output buffer"});
       return;
     }
     output_buffers_.push_back(
@@ -1085,16 +1080,18 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
 
   if (bitstream_buffer_id < 0 ||
       bitstream_buffer_id >= static_cast<int>(output_buffers_.size())) {
-    LogAndNotifyError(FROM_HERE, "invalid bitstream_buffer_id",
-                      media::VideoEncodeAccelerator::kPlatformFailureError);
+    NotifyErrorStatus({media::EncoderStatus::Codes::kInvalidOutputBuffer,
+                       "invalid bitstream_buffer_id: " +
+                           base::NumberToString(bitstream_buffer_id)});
     return;
   }
   void* output_mapping_memory =
       output_buffers_[bitstream_buffer_id].second.memory();
   if (metadata.payload_size_bytes >
       output_buffers_[bitstream_buffer_id].second.size()) {
-    LogAndNotifyError(FROM_HERE, "invalid payload_size",
-                      media::VideoEncodeAccelerator::kPlatformFailureError);
+    NotifyErrorStatus({media::EncoderStatus::Codes::kInvalidOutputBuffer,
+                       "invalid payload_size: " +
+                           base::NumberToString(metadata.payload_size_bytes)});
     return;
   }
   DCHECK_NE(output_buffers_in_encoder_count_, 0u);
@@ -1127,9 +1124,8 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
         if (front_frame.produced_frames_ == num_resolutions &&
             !end_of_picture) {
           // The top layer must always have the end-of-picture indicator.
-          LogAndNotifyError(
-              FROM_HERE, "missing end-of-picture",
-              media::VideoEncodeAccelerator::kPlatformFailureError);
+          NotifyErrorStatus({media::EncoderStatus::Codes::kEncoderFailedEncode,
+                             "missing end-of-picture"});
           return;
         }
         if (end_of_picture) {
@@ -1138,9 +1134,9 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
           if (!front_frame.resolutions_.empty() &&
               front_frame.produced_frames_ != front_frame.resolutions_.size()) {
             // At least one resolution was not produced.
-            LogAndNotifyError(
-                FROM_HERE, "missing resolution",
-                media::VideoEncodeAccelerator::kPlatformFailureError);
+            NotifyErrorStatus(
+                {media::EncoderStatus::Codes::kEncoderFailedEncode,
+                 "missing resolution"});
             return;
           }
           submitted_frames_.pop_front();
@@ -1207,17 +1203,16 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
         // Temporal and/or spatial layer stream.
         if (!metadata.vp9->spatial_layer_resolutions.empty() &&
             expected_resolutions != metadata.vp9->spatial_layer_resolutions) {
-          LogAndNotifyError(
-              FROM_HERE, "Encoded SVC resolution set does not match request.",
-              media::VideoEncodeAccelerator::kPlatformFailureError);
+          NotifyErrorStatus(
+              {media::EncoderStatus::Codes::kEncoderFailedEncode,
+               "Encoded SVC resolution set does not match request"});
           return;
         }
 
         const uint8_t spatial_index = metadata.vp9->spatial_idx;
         if (spatial_index >= current_spatial_layer_resolutions_.size()) {
-          LogAndNotifyError(
-              FROM_HERE, "invalid spatial index",
-              media::VideoEncodeAccelerator::kPlatformFailureError);
+          NotifyErrorStatus({media::EncoderStatus::Codes::kInvalidOutputBuffer,
+                             "invalid spatial index"});
           return;
         }
         image.SetSpatialIndex(spatial_index);
@@ -1292,14 +1287,20 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
   }
 }
 
-void RTCVideoEncoder::Impl::NotifyError(
-    media::VideoEncodeAccelerator::Error error) {
-  TRACE_EVENT0("webrtc", "RTCVideoEncoder::Impl::NotifyError");
+void RTCVideoEncoder::Impl::NotifyErrorStatus(
+    const media::EncoderStatus& status) {
+  TRACE_EVENT0("webrtc", "RTCVideoEncoder::Impl::NotifyErrorStatus");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!status.is_ok());
+  LOG(ERROR) << "NotifyErrorStatus is called with code="
+             << static_cast<int>(status.code())
+             << ", message=" << status.message();
+  // TODO(b/275663480): Deprecate RTCVideoEncoderShutdownReason
+  // in favor of UKM.
   int32_t retval = WEBRTC_VIDEO_CODEC_ERROR;
-  switch (error) {
+  switch (media::ConvertStatusToVideoEncodeAcceleratorError(status)) {
     case media::VideoEncodeAccelerator::kInvalidArgumentError:
-      retval = WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
+      retval = WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
       RecordEncoderShutdownReasonUMA(
           RTCVideoEncoderShutdownReason::kInvalidArgument, video_codec_type_);
       break;
@@ -1344,19 +1345,6 @@ RTCVideoEncoder::Impl::~Impl() {
 
   // weak_this_ must be invalidated in |gpu_task_runner_|.
   weak_this_factory_.InvalidateWeakPtrs();
-}
-
-void RTCVideoEncoder::Impl::LogAndNotifyError(
-    const base::Location& location,
-    const String& str,
-    media::VideoEncodeAccelerator::Error error) {
-  static const char* const kErrorNames[] = {
-      "kIllegalStateError", "kInvalidArgumentError", "kPlatformFailureError"};
-  static_assert(
-      std::size(kErrorNames) == media::VideoEncodeAccelerator::kErrorMax + 1,
-      "Different number of errors and textual descriptions");
-  DLOG(ERROR) << location.ToString() << kErrorNames[error] << " - " << str;
-  NotifyError(error);
 }
 
 void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
@@ -1427,22 +1415,23 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
       auto mapped_buffer =
           scaled_buffer->GetMappedFrameBuffer(preferred_pixel_formats_);
       if (!mapped_buffer) {
-        mapped_buffer = scaled_buffer->ToI420();
+        NotifyErrorStatus({media::EncoderStatus::Codes::kSystemAPICallError,
+                           "Failed to map a buffer"});
+        return;
       }
+
+      mapped_buffer = scaled_buffer->ToI420();
       if (!mapped_buffer) {
-        LogAndNotifyError(FROM_HERE, "Failed to map or convert buffer to I420",
-                          media::VideoEncodeAccelerator::kPlatformFailureError);
-        NOTREACHED();
+        NotifyErrorStatus({media::EncoderStatus::Codes::kFormatConversionError,
+                           "Failed to convert a buffer to I420"});
         return;
       }
       DCHECK_NE(mapped_buffer->type(), webrtc::VideoFrameBuffer::Type::kNative);
       frame = ConvertFromMappedWebRtcVideoFrameBuffer(mapped_buffer, timestamp);
       if (!frame) {
-        LogAndNotifyError(
-            FROM_HERE,
-            "Failed to convert WebRTC mapped buffer to media::VideoFrame",
-            media::VideoEncodeAccelerator::kPlatformFailureError);
-        NOTREACHED();
+        NotifyErrorStatus(
+            {media::EncoderStatus::Codes::kFormatConversionError,
+             "Failed to convert WebRTC mapped buffer to media::VideoFrame"});
         return;
       }
     } else {
@@ -1454,9 +1443,8 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
         input_buffers_[index] = std::make_unique<base::MappedReadOnlyRegion>(
             base::ReadOnlySharedMemoryRegion::Create(input_frame_buffer_size));
         if (!input_buffers_[index]) {
-          LogAndNotifyError(
-              FROM_HERE, "Failed to create input buffer",
-              media::VideoEncodeAccelerator::kPlatformFailureError);
+          NotifyErrorStatus({media::EncoderStatus::Codes::kSystemAPICallError,
+                             "Failed to create input buffer"});
           return;
         }
       }
@@ -1468,8 +1456,8 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
           gfx::Rect(input_visible_size_), input_visible_size_,
           static_cast<uint8_t*>(mapping.memory()), mapping.size(), timestamp);
       if (!frame) {
-        LogAndNotifyError(FROM_HERE, "failed to create frame",
-                          media::VideoEncodeAccelerator::kPlatformFailureError);
+        NotifyErrorStatus({media::EncoderStatus::Codes::kEncoderFailedEncode,
+                           "Failed to create input buffer"});
         return;
       }
 
@@ -1493,8 +1481,8 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
               frame->stride(media::VideoFrame::kVPlane),
               frame->visible_rect().width(), frame->visible_rect().height(),
               libyuv::kFilterBox)) {
-        LogAndNotifyError(FROM_HERE, "Failed to copy buffer",
-                          media::VideoEncodeAccelerator::kPlatformFailureError);
+        NotifyErrorStatus({media::EncoderStatus::Codes::kFormatConversionError,
+                           "Failed to copy buffer"});
         return;
       }
 
@@ -1565,8 +1553,8 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
   frame->set_timestamp(base::Microseconds(frame_chunk.timestamp_us));
 
   if (frame->storage_type() != media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    LogAndNotifyError(FROM_HERE, "frame isn't GpuMemoryBuffer based VideoFrame",
-                      media::VideoEncodeAccelerator::kPlatformFailureError);
+    NotifyErrorStatus({media::EncoderStatus::Codes::kInvalidInputFrame,
+                       "frame isn't GpuMemoryBuffer based VideoFrame"});
     return;
   }
 
