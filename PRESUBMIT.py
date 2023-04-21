@@ -1174,7 +1174,12 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         ' char and std::string instead?',
       ),
       True,
-      [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
+      [
+        # The demangler does not use this type but needs to know about it.
+        'base/third_party/symbolize/demangle\.cc',
+        # Don't warn in third_party folders.
+        _THIRD_PARTY_EXCEPT_BLINK
+      ],
     ),
     BanRule(
       r'/(\b(co_await|co_return|co_yield)\b|#include <coroutine>)',

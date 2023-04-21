@@ -32,4 +32,6 @@ Local modifications:
   platforms.
 - 008-include-cstdlib.patch: include <cstdlib> for abort() rather than relying
   on transitive includes.
-- 009-clang-format.patch: format the source files using Chrome formatting rules.
+- 009-clone-absl-demangle.patch: Clone the demangling implementation from
+  abseil-cpp, which is itself a fork of https://github.com/google/glog/.
+- 010-clang-format.patch: format the source files using Chrome formatting rules.
