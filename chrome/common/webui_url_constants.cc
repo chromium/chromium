@@ -267,10 +267,10 @@ const char kChromeUIHistoryClustersSidePanelHost[] =
     "history-clusters-side-panel.top-chrome";
 const char kChromeUIHistoryClustersSidePanelURL[] =
     "chrome://history-clusters-side-panel.top-chrome/";
-const char kChromeUIReadAnythingSidePanelHost[] =
+const char kChromeUIUntrustedReadAnythingSidePanelHost[] =
     "read-anything-side-panel.top-chrome";
-const char kChromeUIReadAnythingSidePanelURL[] =
-    "chrome://read-anything-side-panel.top-chrome/";
+const char kChromeUIUntrustedReadAnythingSidePanelURL[] =
+    "chrome-untrusted://read-anything-side-panel.top-chrome/";
 const char kChromeUIReadLaterHost[] = "read-later.top-chrome";
 const char kChromeUIReadLaterURL[] = "chrome://read-later.top-chrome/";
 const char kChromeUIUntrustedFeedURL[] = "chrome-untrusted://feed/";

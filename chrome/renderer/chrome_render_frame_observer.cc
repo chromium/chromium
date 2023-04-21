@@ -27,6 +27,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/draggable_regions.mojom.h"
 #include "chrome/common/open_search_description_document_handler.mojom.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
 #include "chrome/renderer/media/media_feeds.h"
 #include "components/crash/core/common/crash_key.h"
@@ -322,13 +323,13 @@ void ChromeRenderFrameObserver::DidClearWindowObject() {
   if (command_line.HasSwitch(switches::kInstantProcess))
     SearchBoxExtension::Install(render_frame()->GetWebFrame());
 
-  // Install ReadAnythingAppController on render frames belonging to a WebUIs.
-  // ReadAnythingAppController installs v8 bindings in the chrome.readAnything
-  // namespace which are consumed by read_anything/app.ts, the resource of the
-  // Read Anything WebUI.
+  // Install ReadAnythingAppController on render frames with the Read Anything
+  // url, which is chrome-untrusted. ReadAnythingAppController installs v8
+  // bindings in the chrome.readAnything namespace which are consumed by
+  // read_anything/app.ts, the resource of the Read Anything WebUI.
   if (features::IsReadAnythingEnabled() &&
-      render_frame()->GetEnabledBindings() &
-          content::kWebUIBindingsPolicyMask) {
+      render_frame()->GetWebFrame()->GetDocument().Url() ==
+          chrome::kChromeUIUntrustedReadAnythingSidePanelURL) {
     ReadAnythingAppController::Install(render_frame());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -150,7 +150,8 @@ std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {
       /* close_cb= */ base::RepeatingClosure(),
       /* contents_wrapper= */
       std::make_unique<BubbleContentsWrapperT<ReadAnythingUI>>(
-          /* webui_url= */ GURL(chrome::kChromeUIReadAnythingSidePanelURL),
+          /* webui_url= */ GURL(
+              chrome::kChromeUIUntrustedReadAnythingSidePanelURL),
           /* browser_context= */ browser->profile(),
           /* task_manager_string_id= */ IDS_READING_MODE_TITLE,
           /* webui_resizes_host= */ false,

@@ -896,10 +896,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (url.host_piece() == chrome::kChromeUIUserNotesSidePanelHost)
     return &NewWebUI<UserNotesSidePanelUI>;
-  if (features::IsReadAnythingEnabled()) {
-    if (url.host_piece() == chrome::kChromeUIReadAnythingSidePanelHost)
-      return &NewWebUI<ReadAnythingUI>;
-  }
   // Settings are implemented with native UI elements on Android.
   if (url.host_piece() == chrome::kChromeUISettingsHost)
     return &NewWebUI<settings::SettingsUI>;

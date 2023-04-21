@@ -24,11 +24,28 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
 
+ReadAnythingUIUntrustedConfig::ReadAnythingUIUntrustedConfig()
+    : WebUIConfig(content::kChromeUIUntrustedScheme,
+                  chrome::kChromeUIUntrustedReadAnythingSidePanelHost) {}
+
+ReadAnythingUIUntrustedConfig::~ReadAnythingUIUntrustedConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+ReadAnythingUIUntrustedConfig::CreateWebUIController(content::WebUI* web_ui,
+                                                     const GURL& url) {
+  return std::make_unique<ReadAnythingUI>(web_ui);
+}
+
+bool ReadAnythingUIUntrustedConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return features::IsReadAnythingEnabled();
+}
+
 ReadAnythingUI::ReadAnythingUI(content::WebUI* web_ui)
-    : ui::MojoBubbleWebUIController(web_ui) {
+    : ui::UntrustedBubbleWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
-      chrome::kChromeUIReadAnythingSidePanelHost);
+      chrome::kChromeUIUntrustedReadAnythingSidePanelURL);
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"readAnythingTabTitle", IDS_READING_MODE_TITLE},
       {"emptyStateHeader", IDS_READING_MODE_EMPTY_STATE_HEADER},
@@ -45,6 +62,16 @@ ReadAnythingUI::ReadAnythingUI(content::WebUI* web_ui)
       IDR_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_HTML);
   source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
                                            kSidePanelSharedResourcesSize));
+
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src 'self' chrome-untrusted://resources;");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::StyleSrc,
+      "style-src 'self' chrome-untrusted://resources 'unsafe-inline';");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FontSrc,
+      "font-src 'self' chrome-untrusted://resources;");
 }
 
 ReadAnythingUI::~ReadAnythingUI() = default;

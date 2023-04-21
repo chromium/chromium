@@ -7,7 +7,6 @@
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
-GEN('#include "ui/accessibility/accessibility_features.h"');
 GEN('#include "components/user_notes/user_notes_features.h"');
 GEN('#include "components/power_bookmarks/core/power_bookmark_features.h"');
 
@@ -123,22 +122,6 @@ var ReadingListAppTest = class extends SidePanelBrowserTest {
 };
 
 TEST_F('ReadingListAppTest', 'All', function() {
-  mocha.run();
-});
-
-var ReadAnythingAppTest = class extends SidePanelBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://read-anything-side-panel.top-chrome/test_loader.html?module=side_panel/read_anything/read_anything_app_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['features::kReadAnything']};
-  }
-};
-
-TEST_F('ReadAnythingAppTest', 'All', function() {
   mocha.run();
 });
 

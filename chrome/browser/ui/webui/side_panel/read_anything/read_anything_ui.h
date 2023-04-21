@@ -8,12 +8,25 @@
 #include <memory>
 
 #include "chrome/common/accessibility/read_anything.mojom.h"
+#include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/webui/mojo_bubble_web_ui_controller.h"
+#include "ui/webui/untrusted_bubble_web_ui_controller.h"
 
 class ReadAnythingPageHandler;
+
+class ReadAnythingUIUntrustedConfig : public content::WebUIConfig {
+ public:
+  ReadAnythingUIUntrustedConfig();
+  ~ReadAnythingUIUntrustedConfig() override;
+
+  // content::WebUIConfig:
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingUI
@@ -21,7 +34,7 @@ class ReadAnythingPageHandler;
 //  A WebUI that holds distilled page contents for the Read Anything feature.
 //  This class has the same lifetime as the Side Panel view.
 //
-class ReadAnythingUI : public ui::MojoBubbleWebUIController,
+class ReadAnythingUI : public ui::UntrustedBubbleWebUIController,
                        public read_anything::mojom::PageHandlerFactory {
  public:
   explicit ReadAnythingUI(content::WebUI* web_ui);
