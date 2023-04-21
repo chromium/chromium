@@ -414,6 +414,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _passwordGroups = passwordGroups;
   _dismissedWarningsButtonText = buttonText;
   [self reloadData];
+
+  // User removed/resolved all issues, dismiss the vc and go back to the
+  // previous screen.
+  if (IsPasswordCheckupEnabled() && passwordGroups.count == 0 &&
+      buttonText == nullptr) {
+    [self.presenter dismissAfterAllIssuesGone];
+  }
 }
 
 - (void)setNavigationBarTitle:(NSString*)title {

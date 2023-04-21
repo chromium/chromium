@@ -139,7 +139,7 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   self.passwordDetails.delegate = nil;
   self.passwordDetails = nil;
 
-  [self stopDismissedPasswordIssuesCordinator];
+  [self stopDismissedPasswordIssuesCoordinator];
 }
 
 #pragma mark - PasswordIssuesPresenter
@@ -179,6 +179,28 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   [_dismissedPasswordIssuesCoordinator start];
 }
 
+- (void)dismissAfterAllIssuesGone {
+  UINavigationController* baseNavigationController =
+      self.baseNavigationController;
+  NSInteger indexInNavigationController =
+      [baseNavigationController.viewControllers
+          indexOfObject:self.viewController];
+
+  // Nothing to do if viewController was already removed from the navigation
+  // stack.
+  if (indexInNavigationController == NSNotFound) {
+    return;
+  }
+
+  CHECK_GT(indexInNavigationController, 0);
+
+  // Go to previous view controller in navigation stack.
+  [baseNavigationController
+      popToViewController:baseNavigationController
+                              .viewControllers[indexInNavigationController - 1]
+                 animated:YES];
+}
+
 #pragma mark - PasswordDetailsCoordinatorDelegate
 
 - (void)passwordDetailsCoordinatorDidRemove:
@@ -194,12 +216,12 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 - (void)passwordIssuesCoordinatorDidRemove:
     (PasswordIssuesCoordinator*)coordinator {
   CHECK_EQ(_dismissedPasswordIssuesCoordinator, coordinator);
-  [self stopDismissedPasswordIssuesCordinator];
+  [self stopDismissedPasswordIssuesCoordinator];
 }
 
 #pragma mark - Private
 
-- (void)stopDismissedPasswordIssuesCordinator {
+- (void)stopDismissedPasswordIssuesCoordinator {
   [_dismissedPasswordIssuesCoordinator stop];
   _dismissedPasswordIssuesCoordinator.reauthModule = nil;
   _dismissedPasswordIssuesCoordinator.delegate = nil;

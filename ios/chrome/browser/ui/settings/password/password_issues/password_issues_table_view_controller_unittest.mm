@@ -56,6 +56,8 @@ PasswordIssue* CreateTestPasswordIssue() {
 
 @property(nonatomic, strong) CrURL* openedURL;
 
+@property(nonatomic, assign) BOOL dismissalTriggered;
+
 @end
 
 @implementation FakePasswordIssuesPresenter
@@ -77,6 +79,10 @@ PasswordIssue* CreateTestPasswordIssue() {
   _dismissedWarningsPresented = YES;
 }
 
+- (void)dismissAfterAllIssuesGone {
+  _dismissalTriggered = YES;
+}
+
 @end
 
 // Unit tests for PasswordIssuesTableViewController.
@@ -93,6 +99,10 @@ class PasswordIssuesTableViewControllerTest
             initWithStyle:UITableViewStylePlain];
     controller.presenter = presenter_;
     return controller;
+  }
+
+  PasswordIssuesTableViewController* GetPasswordIssuesController() {
+    return static_cast<PasswordIssuesTableViewController*>(controller());
   }
 
   // Adds password issue to the view controller.
@@ -147,7 +157,7 @@ TEST_F(PasswordIssuesTableViewControllerTest, TestPasswordIssueSelection) {
   AddPasswordIssue();
 
   PasswordIssuesTableViewController* passwords_controller =
-      static_cast<PasswordIssuesTableViewController*>(controller());
+      GetPasswordIssuesController();
 
   EXPECT_FALSE(presenter().presentedPassword);
   [passwords_controller tableView:passwords_controller.tableView
@@ -167,7 +177,7 @@ TEST_F(PasswordIssuesTableViewControllerTest, TestDismissWarningsTap) {
                                           @"Dismiss Warnings (1)");
 
   PasswordIssuesTableViewController* passwords_controller =
-      static_cast<PasswordIssuesTableViewController*>(controller());
+      GetPasswordIssuesController();
 
   EXPECT_FALSE(presenter().dismissedWarningsPresented);
   [passwords_controller tableView:passwords_controller.tableView
@@ -180,7 +190,6 @@ TEST_F(PasswordIssuesTableViewControllerTest, TestChangePasswordTap) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
-  CreateController();
   PasswordIssue* password_issue = CreateTestPasswordIssue();
   SetIssuesAndDismissedWarningsButtonText(@[ password_issue ]);
 
@@ -192,4 +201,23 @@ TEST_F(PasswordIssuesTableViewControllerTest, TestChangePasswordTap) {
   [passwords_controller tableView:passwords_controller.tableView
           didSelectRowAtIndexPath:[NSIndexPath indexPathForItem:1 inSection:0]];
   EXPECT_NSEQ(presenter().openedURL, password_issue.changePasswordURL.value());
+}
+
+// Test verifies removing all issues and dismissed warnings triggers a dismissal
+// in the presenter.
+TEST_F(PasswordIssuesTableViewControllerTest, TestDismissAfterIssuesGone) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  CreateController();
+  AddPasswordIssue();
+
+  EXPECT_FALSE(presenter().dismissalTriggered);
+
+  PasswordIssuesTableViewController* passwords_controller =
+      GetPasswordIssuesController();
+  // Simulate all content gone.
+  [passwords_controller setPasswordIssues:@[] dismissedWarningsButtonText:nil];
+
+  EXPECT_TRUE(presenter().dismissalTriggered);
 }
