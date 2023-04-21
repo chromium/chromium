@@ -15,16 +15,6 @@ files that belong there instead.
   <translations />
   <release seq="1">
     <includes>
-      <include name="IDR_GPU_BROWSER_BRIDGE_JS" file="browser/resources/gpu/browser_bridge.js" type="BINDATA" />
-      <include name="IDR_GPU_INTERNALS_HTML" file="browser/resources/gpu/gpu_internals.html" type="BINDATA" />
-      <include name="IDR_GPU_INTERNALS_JS" file="browser/resources/gpu/gpu_internals.js" type="BINDATA" />
-      <include name="IDR_GPU_INTERNALS_INFO_VIEW_HTML_JS" file="${root_gen_dir}/content/browser/resources/gpu/info_view.html.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_GPU_INTERNALS_INFO_VIEW_JS" file="browser/resources/gpu/info_view.js" type="BINDATA" />
-      <include name="IDR_GPU_INTERNALS_INFO_VIEW_TABLE_HTML_JS" file="${root_gen_dir}/content/browser/resources/gpu/info_view_table.html.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_GPU_INTERNALS_INFO_VIEW_TABLE_JS" file="browser/resources/gpu/info_view_table.js" type="BINDATA" />
-      <include name="IDR_GPU_INTERNALS_INFO_VIEW_TABLE_ROW_HTML_JS" file="${root_gen_dir}/content/browser/resources/gpu/info_view_table_row.html.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_GPU_INTERNALS_INFO_VIEW_TABLE_ROW_JS" file="browser/resources/gpu/info_view_table_row.js" type="BINDATA" />
-      <include name="IDR_GPU_VULKAN_INFO_JS" file="browser/resources/gpu/vulkan_info.js" type="BINDATA" />
       <include name="IDR_NETWORK_ERROR_LISTING_HTML" file="browser/resources/net/network_errors_listing.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_NETWORK_ERROR_LISTING_JS" file="browser/resources/net/network_errors_listing.js" type="BINDATA" />
       <include name="IDR_NETWORK_ERROR_LISTING_CSS" file="browser/resources/net/network_errors_listing.css" type="BINDATA" />

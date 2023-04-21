@@ -28,7 +28,8 @@
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/grit/content_resources.h"
-#include "content/grit/dev_ui_content_resources.h"
+#include "content/grit/gpu_resources.h"
+#include "content/grit/gpu_resources_map.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/gpu_data_manager_observer.h"
@@ -80,25 +81,12 @@ void CreateAndAddGpuHTMLSource(BrowserContext* browser_context) {
       "trusted-types static-types;");
 
   source->UseStringsJs();
-  source->AddResourcePath("browser_bridge.js", IDR_GPU_BROWSER_BRIDGE_JS);
-  source->AddResourcePath("gpu_internals.js", IDR_GPU_INTERNALS_JS);
-  source->AddResourcePath("info_view.html.js",
-                          IDR_GPU_INTERNALS_INFO_VIEW_HTML_JS);
-  source->AddResourcePath("info_view.js", IDR_GPU_INTERNALS_INFO_VIEW_JS);
-  source->AddResourcePath("info_view_table.html.js",
-                          IDR_GPU_INTERNALS_INFO_VIEW_TABLE_HTML_JS);
-  source->AddResourcePath("info_view_table.js",
-                          IDR_GPU_INTERNALS_INFO_VIEW_TABLE_JS);
-  source->AddResourcePath("info_view_table_row.html.js",
-                          IDR_GPU_INTERNALS_INFO_VIEW_TABLE_ROW_HTML_JS);
-  source->AddResourcePath("info_view_table_row.js",
-                          IDR_GPU_INTERNALS_INFO_VIEW_TABLE_ROW_JS);
-  source->AddResourcePath("vulkan_info.js", IDR_GPU_VULKAN_INFO_JS);
+  source->AddResourcePaths(base::make_span(kGpuResources, kGpuResourcesSize));
   source->AddResourcePath("vulkan_info.mojom-webui.js",
                           IDR_VULKAN_INFO_MOJO_JS);
   source->AddResourcePath("vulkan_types.mojom-webui.js",
                           IDR_VULKAN_TYPES_MOJO_JS);
-  source->SetDefaultResource(IDR_GPU_INTERNALS_HTML);
+  source->AddResourcePath("", IDR_GPU_GPU_INTERNALS_HTML);
 }
 
 #if BUILDFLAG(IS_WIN)
