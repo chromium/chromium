@@ -13,8 +13,10 @@ import {str, strf, util} from '../../../common/js/util.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../../externs/background/file_operation_manager.js';
 import {FilesAppDirEntry} from '../../../externs/files_app_entry_interfaces.js';
+import {PropStatus, SearchData, State} from '../../../externs/ts/state.js';
 import {VolumeInfo} from '../../../externs/volume_info.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
+import {getStore} from '../../../state/store.js';
 import {constants} from '../constants.js';
 import {FileFilter} from '../directory_contents.js';
 import {DirectoryModel} from '../directory_model.js';
@@ -1980,6 +1982,9 @@ export class DirectoryTree extends Tree {
     /** @type {?DirectoryItem} */
     this.activeItem_ = null;
 
+    /** @type {?DirectoryItem} */
+    this.lastActiveItem_ = null;
+
     /** @type {NavigationListModel} */
     this.dataModel_ = null;
 
@@ -2056,6 +2061,36 @@ export class DirectoryTree extends Tree {
      * @private
      */
     this.fakeEntriesVisible_ = fakeEntriesVisible;
+
+    // For Search V2 subscribe to the store so that we can listen to search
+    // becoming active and inactive. We use this to hide or show the highlight
+    // of the active item in the directory tree.
+    if (util.isSearchV2Enabled()) {
+      /** @type {!SearchData|undefined} */
+      this.cachedSearchState_ = {};
+      getStore().subscribe(this);
+    }
+  }
+
+  /**
+   * @param {!State} state
+   */
+  onStateChanged(state) {
+    const searchState = state.search;
+    if (searchState === this.cachedSearchState_) {
+      return;
+    }
+    this.cachedSearchState_ = searchState;
+    if (searchState === undefined) {
+      this.setActiveItemHighlighted_(true);
+    } else {
+      if (searchState.status === undefined) {
+        this.setActiveItemHighlighted_(true);
+      } else if (
+          searchState.status === PropStatus.STARTED && searchState.query) {
+        this.setActiveItemHighlighted_(false);
+      }
+    }
   }
 
   onMouseOver_(event) {
@@ -2366,21 +2401,64 @@ export class DirectoryTree extends Tree {
    * @private
    */
   async onCurrentDirectoryChanged_(event) {
+    // Clear last active item; this is set by search temporarily disabling
+    // highlight in the directory tree. When the user changes the directory and
+    // search is active, the search closes and  attempts to restore last active
+    // item, unless we clear it.
+    this.lastActiveItem_ = null;
     await this.selectByEntry(event.newDirEntry);
 
-    if (this.activeItem_) {
-      this.activeItem_.removeAttribute('aria-description');
-      this.activeItem_.rowElement.removeAttribute('active');
-    }
-
+    // Update style of the current item as inactive.
+    this.updateActiveItemStyle_(/*active=*/ false);
     this.activeItem_ = this.selectedItem;
-    if (this.activeItem_) {
+    // Update style of the new current item as active.
+    this.updateActiveItemStyle_(/*active=*/ true);
+    this.updateSubDirectories(/*recursive=*/ false, () => {});
+  }
+
+  /**
+   * Sets whether the active item is highlighted.
+   * @param {boolean} highlighted If the active item should be highlighted.
+   * @return {boolean} Whether the highlight was changed.
+   * @private
+   */
+  setActiveItemHighlighted_(highlighted) {
+    if (highlighted) {
+      if (!this.lastActiveItem_) {
+        return false;
+      }
+      this.activeItem_ = this.lastActiveItem_;
+      this.lastActiveItem_ = null;
+      this.updateActiveItemStyle_(true);
+      return true;
+    }
+    // Make it not highlighted path.
+    if (!this.updateActiveItemStyle_(false)) {
+      return false;
+    }
+    this.lastActiveItem_ = this.activeItem_;
+    this.activeItem_ = null;
+    return true;
+  }
+
+  /**
+   * Updates active items style to show it as active or not.
+   * @param {boolean} active Whether to style active item as active or not.
+   * @return {boolean} If style has been updated.
+   */
+  updateActiveItemStyle_(active) {
+    if (!this.activeItem_) {
+      return false;
+    }
+    if (active) {
       this.activeItem_.setAttribute(
           'aria-description', str('CURRENT_DIRECTORY_LABEL'));
       this.activeItem_.rowElement.setAttribute('active', '');
+    } else {
+      this.activeItem_.removeAttribute('aria-description');
+      this.activeItem_.rowElement.removeAttribute('active');
     }
-
-    this.updateSubDirectories(false /* recursive */, () => {});
+    return true;
   }
 
   /**
