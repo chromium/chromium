@@ -40,12 +40,8 @@ template("chrome_common_shared_library") {
   forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
   _is_monochrome = defined(invoker.is_monochrome) && invoker.is_monochrome
   _is_webview = defined(invoker.is_webview) && invoker.is_webview
-  _export_java_symbols = _is_monochrome || _is_webview
   _collect_inputs_only =
       defined(invoker.collect_inputs_only) && invoker.collect_inputs_only
-
-  # When _collect_inputs_only && !(!_is_webview && enable_vr).
-  not_needed([ "_export_java_symbols" ])
 
   # Create a partitioned libraries if the build config supports it, and the
   # invoker has supplied module descriptors.
@@ -63,7 +59,6 @@ template("chrome_common_shared_library") {
     # Create a custom linker script based on JNI and feature module requirements.
     generate_linker_version_script(_linker_script_target) {
       linker_script = _linker_script
-      export_java_symbols = _export_java_symbols
       export_feature_registrations = true
       if (_generate_partitions) {
         export_symbol_allowlist_files = []

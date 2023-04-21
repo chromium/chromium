@@ -1999,44 +1999,6 @@ if (current_toolchain == default_toolchain) {
     variables = [ "manifest_package=$chrome_public_test_manifest_package" ]
   }
 
-  generate_jni_registration("chrome_jni_registration") {
-    targets = [ ":chrome_public_base_module_java" ]
-    if (enable_vr) {
-      targets += [ "//chrome/android/features/vr:java" ]
-    }
-    manual_jni_registration = true
-    if (allow_jni_multiplexing) {
-      enable_jni_multiplexing = true
-    }
-  }
-
-  # The test apks do not use chromium linker, but using manual JNI registration
-  # helps ensure that the correct classes are marked with @MainDex.
-  generate_jni_registration("chrome_jni_for_test_registration") {
-    testonly = true
-    targets = [ ":chrome_public_base_module_java_for_test" ]
-    if (enable_vr) {
-      targets += [ "//chrome/android/features/vr:java" ]
-    }
-    manual_jni_registration = true
-    if (allow_jni_multiplexing) {
-      enable_jni_multiplexing = true
-    }
-  }
-
-  if (allow_jni_multiplexing) {
-    generate_jni_registration("monochrome_jni_registration") {
-      targets = [
-        ":monochrome_java",
-        ":chrome_all_java",
-      ]
-      if (enable_vr) {
-        targets += [ "//chrome/android/features/vr:java" ]
-      }
-      enable_jni_multiplexing = true
-    }
-  }
-
   # This template instantiates targets responsible for generating pak
   # resources. The generated target names are derived from input variables.
   #
@@ -3543,7 +3505,7 @@ group("jni_headers") {
 template("libchrome_impl") {
   chrome_common_shared_library(target_name) {
     sources = [ "../browser/android/chrome_entry_point.cc" ]
-    deps = [ ":chrome_jni_registration($default_toolchain)" ]
+    deps = []
     if (allow_jni_multiplexing) {
       enable_jni_multiplexing = true
     }
@@ -3582,7 +3544,6 @@ chrome_common_shared_library("libchromefortest") {
   sources = [ "../browser/android/chrome_entry_point_for_test.cc" ]
   deps = [
     ":browser_test_support",
-    ":chrome_jni_for_test_registration($default_toolchain)",
     ":chrome_test_util_jni",
     "//base/test:test_support",
     "//chrome:chrome_android_core",
@@ -3635,8 +3596,6 @@ template("libmonochrome_apk_or_bundle_tmpl") {
     }
 
     if (allow_jni_multiplexing) {
-      defines += [ "JNI_REGISTRATION_REQUIRED" ]
-      deps += [ ":monochrome_jni_registration($default_toolchain)" ]
       enable_jni_multiplexing = true
     }
 

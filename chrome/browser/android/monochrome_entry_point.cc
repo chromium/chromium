@@ -9,9 +9,6 @@
 #include "base/functional/bind.h"
 #include "chrome/app/android/chrome_jni_onload.h"
 
-#if defined(JNI_REGISTRATION_REQUIRED)
-#include "chrome/android/monochrome_jni_registration_generated.h"
-#endif
 #if defined(WEBVIEW_INCLUDES_WEBLAYER)
 #include "weblayer/app/jni_onload.h"
 #endif

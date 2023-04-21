@@ -23,14 +23,11 @@ template("generate_linker_version_script") {
     inputs = []
     args = [ "--output=" + rebase_path(invoker.linker_script, root_build_dir) ]
 
-    if (defined(invoker.export_java_symbols) && invoker.export_java_symbols) {
-      args += [ "--export-java-symbols" ]
-      if (defined(invoker.testonly) && invoker.testonly) {
-        args += [ "--export-fortesting-java-symbols" ]
-      }
-      if (allow_jni_multiplexing) {
-        args += [ "--jni-multiplexing" ]
-      }
+    if (defined(invoker.testonly) && invoker.testonly) {
+      args += [ "--export-fortesting-java-symbols" ]
+    }
+    if (allow_jni_multiplexing) {
+      args += [ "--jni-multiplexing" ]
     }
 
     if (defined(invoker.export_feature_registrations) &&
