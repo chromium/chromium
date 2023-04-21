@@ -24,6 +24,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "back_arrow_touch.icon",
     "backspace.icon",
     "battery_saver.icon",
+    "battery_saver_refresh.icon",
     "blocked_redirect.icon",
     "bookmarkbar_touch_overflow.icon",
     "bookmarks_lists_menu.icon",
