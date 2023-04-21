@@ -7,9 +7,9 @@
 #include <string>
 #include <utility>
 
-#include "base/guid.h"
 #include "base/json/values_util.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/policy_test_server_constants.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -211,7 +211,7 @@ bool EmbeddedPolicyTestServerMixin::SetDeviceStateRetrievalResponse(
 
   policy::ClientStorage::ClientInfo client_info;
   client_info.device_token = "dm_token";
-  client_info.device_id = base::GenerateGUID();
+  client_info.device_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   client_info.state_keys = keys;
   policy_test_server_->client_storage()->RegisterClient(client_info);
   policy_test_server_->policy_storage()->set_device_state(

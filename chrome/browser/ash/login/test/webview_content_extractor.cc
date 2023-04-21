@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/login/test/webview_content_extractor.h"
 
-#include "base/guid.h"
 #include "base/strings/stringprintf.h"
+#include "base/uuid.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
@@ -19,7 +19,8 @@ namespace {
 
 content::RenderFrameHost* FindFrame(const std::string& element_id) {
   // Tag the webview in use with a unique name.
-  std::string unique_webview_name = base::GenerateGUID();
+  std::string unique_webview_name =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
   OobeJS().Evaluate(
       base::StringPrintf("(function(){"
                          "  var webView = %s;"
