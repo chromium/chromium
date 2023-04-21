@@ -273,33 +273,30 @@ void UserPerformanceTuningManager::Start() {
   // Make sure the initial state of the pref is passed on to the policy.
   OnHighEfficiencyModePrefChanged();
 
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kBatterySaverModeAvailable)) {
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    if (command_line->HasSwitch(kForceDeviceHasBattery)) {
-      force_has_battery_ = true;
-      has_battery_ = true;
-    }
-
-    pref_change_registrar_.Add(
-        performance_manager::user_tuning::prefs::kBatterySaverModeState,
-        base::BindRepeating(
-            &UserPerformanceTuningManager::OnBatterySaverModePrefChanged,
-            base::Unretained(this)));
-
-    on_battery_power_ =
-        base::PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(this);
-
-    base::BatteryStateSampler* battery_state_sampler =
-        base::BatteryStateSampler::Get();
-    // Some platforms don't have a battery sampler, treat them as if they had no
-    // battery at all.
-    if (battery_state_sampler) {
-      battery_state_sampler_obs_.Observe(battery_state_sampler);
-    }
-
-    OnBatterySaverModePrefChanged();
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(kForceDeviceHasBattery)) {
+    force_has_battery_ = true;
+    has_battery_ = true;
   }
+
+  pref_change_registrar_.Add(
+      performance_manager::user_tuning::prefs::kBatterySaverModeState,
+      base::BindRepeating(
+          &UserPerformanceTuningManager::OnBatterySaverModePrefChanged,
+          base::Unretained(this)));
+
+  on_battery_power_ =
+      base::PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(this);
+
+  base::BatteryStateSampler* battery_state_sampler =
+      base::BatteryStateSampler::Get();
+  // Some platforms don't have a battery sampler, treat them as if they had no
+  // battery at all.
+  if (battery_state_sampler) {
+    battery_state_sampler_obs_.Observe(battery_state_sampler);
+  }
+
+  OnBatterySaverModePrefChanged();
 }
 
 void UserPerformanceTuningManager::OnHighEfficiencyModePrefChanged() {

@@ -25,9 +25,7 @@ bool IsRefreshRateThrottled() {
     return false;
   }
 
-  return base::FeatureList::IsEnabled(
-             performance_manager::features::kBatterySaverModeAvailable) &&
-         UserPerformanceTuningManager::GetInstance()->IsBatterySaverActive();
+  return UserPerformanceTuningManager::GetInstance()->IsBatterySaverActive();
 #endif
 }
 

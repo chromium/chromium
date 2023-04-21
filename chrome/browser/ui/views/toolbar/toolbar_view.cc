@@ -361,11 +361,8 @@ void ToolbarView::Init() {
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kBatterySaverModeAvailable)) {
-    battery_saver_button_ =
-        AddChildView(std::make_unique<BatterySaverButton>(browser_view_));
-  }
+  battery_saver_button_ =
+      AddChildView(std::make_unique<BatterySaverButton>(browser_view_));
 
   if (cast)
     cast_ = AddChildView(std::move(cast));
