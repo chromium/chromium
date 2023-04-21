@@ -350,6 +350,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerVolumes) {
   RunTestURL("state/reducers/volumes_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerBulkPinning) {
+  RunTestURL("state/reducers/bulk_pinning_unittest.js");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, NudgeContainer) {
   RunTestURL("containers/nudge_container_unittest.js");
 }

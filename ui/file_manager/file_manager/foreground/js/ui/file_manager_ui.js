@@ -12,7 +12,10 @@ import {AllowedPaths} from '../../../common/js/volume_manager_types.js';
 import {BreadcrumbContainer} from '../../../containers/breadcrumb_container.js';
 import {NudgeContainer} from '../../../containers/nudge_container.js';
 import {SearchContainer} from '../../../containers/search_container.js';
+import {Store} from '../../../externs/ts/store.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
+import {updateBulkPinProgress} from '../../../state/actions/bulk_pinning.js';
+import {getStore} from '../../../state/store.js';
 import {XfConflictDialog} from '../../../widgets/xf_conflict_dialog.js';
 import {XfDlpRestrictionDetailsDialog} from '../../../widgets/xf_dlp_restriction_details_dialog.js';
 import {XfSplitter} from '../../../widgets/xf_splitter.js';
@@ -427,6 +430,11 @@ export class FileManagerUI {
      * @public {boolean}
      */
     this.dragInProcess = false;
+
+    /**
+     * @private {!Store}
+     */
+    this.store_ = getStore();
   }
 
   /**
@@ -575,6 +583,14 @@ export class FileManagerUI {
     // and this.layoutChanged_() is used to clamp their size to the viewport.
     const resizeObserver = new ResizeObserver(() => this.layoutChanged_());
     resizeObserver.observe(queryRequiredElement('div.dialog-header'));
+
+    // When bulk pin progress events are received, dispatch an action to the
+    // store containing the updated data.
+    // TODO(b/275635808): Depending on the users corpus size, this API could be
+    // quite chatty, consider wrapping it in a concurrency model.
+    chrome.fileManagerPrivate.onBulkPinProgress.addListener((progress) => {
+      this.store_.dispatch(updateBulkPinProgress(progress));
+    });
   }
 
   /**

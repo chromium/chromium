@@ -58,6 +58,7 @@ export function getEmptyState(): State {
     uiEntries: [],
     folderShortcuts: [],
     androidApps: [],
+    bulkPinning: undefined,
   };
 }
 
