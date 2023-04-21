@@ -31,6 +31,8 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash::video_conference {
 
@@ -250,7 +252,13 @@ ReturnToAppButton::ReturnToAppButton(ReturnToAppPanel* panel,
                   /*height=*/kReturnToAppIconSize));
   }
 
-  label_ = AddChildView(std::make_unique<views::Label>(display_text));
+  auto label = std::make_unique<views::Label>(display_text);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred));
+  label_ = AddChildView(std::move(label));
 
   if (is_top_row) {
     auto expand_indicator = std::make_unique<ReturnToAppExpandButton>(this);

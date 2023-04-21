@@ -16,6 +16,7 @@
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
+#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
@@ -541,6 +542,35 @@ TEST_F(ReturnToAppPanelTest, LayerAnimations) {
   EXPECT_EQ(1, summary_icons->layer()->opacity());
   EXPECT_FALSE(first_app_row->GetVisible());
   EXPECT_FALSE(second_app_row->GetVisible());
+}
+
+TEST_F(ReturnToAppPanelTest, ReturnToAppButtonTextElide) {
+  controller()->ClearMediaApps();
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
+      /*is_capturing_screen=*/false,
+      /*title=*/
+      u"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
+      u"eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      /*url=*/""));
+
+  LeftClickOn(toggle_bubble_button());
+
+  auto* return_to_app_container =
+      GetReturnToAppContainer(GetReturnToAppPanel());
+  auto* app_button = static_cast<ReturnToAppButton*>(
+      return_to_app_container->children().front());
+  auto* app_button_label = app_button->label();
+
+  // With a long title, the app title should still fit inside the button (the
+  // width of the label should still be smaller).
+  EXPECT_LT(app_button_label->width(), app_button->width());
+
+  const char16_t kEllipsisString[] = {0x2026, 0};
+
+  // The display text should end with the ellipsis.
+  EXPECT_TRUE(base::EndsWith(app_button_label->GetDisplayTextForTesting(),
+                             kEllipsisString));
 }
 
 }  // namespace ash::video_conference
