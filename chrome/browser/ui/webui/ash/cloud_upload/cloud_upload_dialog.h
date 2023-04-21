@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -67,7 +68,8 @@ class CloudUploadDialog;
 // The business logic for running setup, moving files to a cloud provider, and
 // opening files on cloud providers. Spawns instances of `CloudUploadDialog` if
 // necessary to run setup or get confirmation from the user.
-class CloudOpenTask : public base::RefCounted<CloudOpenTask> {
+class CloudOpenTask : public BrowserListObserver,
+                      public base::RefCounted<CloudOpenTask> {
  public:
   CloudOpenTask(const CloudOpenTask&) = delete;
   CloudOpenTask& operator=(const CloudOpenTask&) = delete;
@@ -90,6 +92,12 @@ class CloudOpenTask : public base::RefCounted<CloudOpenTask> {
   // logic.
   void SetTasksForTest(
       const std::vector<::file_manager::file_tasks::TaskDescriptor>& tasks);
+
+  // BrowserListObserver implementation.
+  // This is called when we are waiting for a new Files app window to be
+  // launched, to be used as the modal parent. This is triggered by
+  // ShowDialog().
+  void OnBrowserAdded(Browser* browser) override;
 
   FRIEND_TEST_ALL_PREFIXES(FileHandlerDialogBrowserTest,
                            OnDialogCompleteOpensFileTasks);
@@ -124,7 +132,7 @@ class CloudOpenTask : public base::RefCounted<CloudOpenTask> {
                 const CloudProvider cloud_provider,
                 gfx::NativeWindow modal_parent);
 
-  ~CloudOpenTask();
+  ~CloudOpenTask() override;
 
   // See the .cc implementation for comments on private methods.
   bool ExecuteInternal();
@@ -152,8 +160,6 @@ class CloudOpenTask : public base::RefCounted<CloudOpenTask> {
   void SetTaskArgs(mojom::DialogArgsPtr& args,
                    std::unique_ptr<::file_manager::file_tasks::ResultingTasks>
                        resulting_tasks);
-  void FilesAppWindowCreated(CloudUploadDialog* dialog,
-                             platform_util::OpenOperationResult result);
 
   void OnDialogComplete(const std::string& user_response);
   void LaunchLocalFileTask(const std::string& string_task_position);
@@ -180,6 +186,7 @@ class CloudOpenTask : public base::RefCounted<CloudOpenTask> {
   gfx::NativeWindow modal_parent_;
   std::vector<::file_manager::file_tasks::TaskDescriptor> local_tasks_;
   size_t pending_uploads_ = 0;
+  CloudUploadDialog* pending_dialog_ = nullptr;
 };
 
 // Return True if feature `kUploadOfficeToCloud` is enabled and is eligible for
@@ -238,8 +245,6 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
   void OnDialogShown(content::WebUI* webui) override;
   void OnDialogClosed(const std::string& json_retval) override;
 
-  void set_modal_type(ui::ModalType modal_type) { modal_type_ = modal_type; }
-
  protected:
   ~CloudUploadDialog() override;
   ui::ModalType GetDialogModalType() const override;
@@ -259,9 +264,6 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
   mojom::DialogPage dialog_page_;
   size_t num_local_tasks_;
   bool office_move_confirmation_shown_;
-  // Modal by default, although if we don't have a parent window, we will
-  // make it non-modal so that the dialog stays on top.
-  ui::ModalType modal_type_ = ui::MODAL_TYPE_WINDOW;
 };
 
 }  // namespace ash::cloud_upload

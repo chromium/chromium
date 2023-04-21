@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/url_util.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -272,8 +273,6 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
       FindSystemWebAppBrowser(profile(), SystemWebAppType::FILE_MANAGER);
   ASSERT_EQ(nullptr, browser);
 
-  ui_test_utils::BrowserChangeObserver browser_added_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   // Open a files app window.
   base::RunLoop run_loop;
   file_manager::util::ShowItemInFolder(
@@ -285,10 +284,11 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
             run_loop.Quit();
           }));
   run_loop.Run();
-  browser_added_observer.Wait();
+  Browser* first_files_app = ui_test_utils::WaitForBrowserToOpen();
 
   browser = FindSystemWebAppBrowser(profile(), SystemWebAppType::FILE_MANAGER);
   ASSERT_NE(nullptr, browser);
+  ASSERT_EQ(first_files_app, browser);
 
   // Watch for File Handler dialog URL chrome://cloud-upload.
   content::TestNavigationObserver navigation_observer_dialog(
@@ -298,16 +298,15 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
   // Launch File Handler dialog.
   ASSERT_TRUE(CloudOpenTask::Execute(profile(), files_,
                                      CloudProvider::kGoogleDrive, nullptr));
+  // Check that a new browser opened.
+  Browser* new_browser = ui_test_utils::WaitForBrowserToOpen();
+  ASSERT_NE(new_browser, first_files_app);
+  ASSERT_TRUE(
+      IsBrowserForSystemWebApp(new_browser, SystemWebAppType::FILE_MANAGER));
 
   // Wait for File Handler dialog to open at chrome://cloud-upload.
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
-
-  // Check that a new Files app window opened.
-  Browser* new_browser =
-      FindSystemWebAppBrowser(profile(), SystemWebAppType::FILE_MANAGER);
-  ASSERT_NE(nullptr, new_browser);
-  ASSERT_NE(browser, new_browser);
 }
 
 // Tests that a new Files app window is not created when there is a Files app
@@ -551,6 +550,12 @@ class FixUpFlowBrowserTest : public InProcessBrowserTest {
 
   Profile* profile() { return browser()->profile(); }
 
+  void SetUpOnMainThread() override {
+    // Needed to check that Files app was launched as the dialog's modal parent.
+    ash::SystemWebAppManager::GetForTest(browser()->profile())
+        ->InstallSystemAppsForTesting();
+  }
+
   // Add a doc test file.
   void SetUpFiles() {
     base::FilePath file =
@@ -578,6 +583,26 @@ class FixUpFlowBrowserTest : public InProcessBrowserTest {
     file_manager::test::AddFakeWebApp(
         web_app::kMicrosoft365AppId, kDocMimeType, kDocFileExtension, "", true,
         apps::AppServiceProxyFactory::GetForProfile(profile()));
+  }
+
+  // Launch Files app and return its NativeWindow.
+  gfx::NativeWindow LaunchFilesAppAndWait() {
+    GURL files_swa_url =
+        file_manager::util::GetFileManagerMainPageUrlWithParams(
+            ui::SelectFileDialog::SELECT_NONE, /*title=*/std::u16string(),
+            /*current_directory_url=*/{},
+            /*selection_url=*/GURL(),
+            /*target_name=*/{}, /*file_types=*/{},
+            /*file_type_index=*/0,
+            /*search_query=*/{},
+            /*show_android_picker_apps=*/false,
+            /*volume_filter=*/{});
+    ash::SystemAppLaunchParams params;
+    params.url = files_swa_url;
+    ash::LaunchSystemWebAppAsync(browser()->profile(),
+                                 ash::SystemWebAppType::FILE_MANAGER, params);
+    Browser* files_app = ui_test_utils::WaitForBrowserToOpen();
+    return files_app->window()->GetNativeWindow();
   }
 
  protected:
@@ -611,7 +636,10 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest, FixUpFlowWhenODFSNotMounted) {
       (GURL(chrome::kChromeUICloudUploadURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
-  CloudOpenTask::Execute(profile(), files_, CloudProvider::kOneDrive, nullptr);
+  gfx::NativeWindow modal_parent = LaunchFilesAppAndWait();
+
+  CloudOpenTask::Execute(profile(), files_, CloudProvider::kOneDrive,
+                         modal_parent);
 
   // Wait for Welcome Page to open at chrome://cloud-upload.
   navigation_observer_dialog.Wait();
@@ -653,7 +681,10 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
       (GURL(chrome::kChromeUICloudUploadURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
-  CloudOpenTask::Execute(profile(), files_, CloudProvider::kOneDrive, nullptr);
+  gfx::NativeWindow modal_parent = LaunchFilesAppAndWait();
+
+  CloudOpenTask::Execute(profile(), files_, CloudProvider::kOneDrive,
+                         modal_parent);
 
   // Wait for Welcome Page to open at chrome://cloud-upload.
   navigation_observer_dialog.Wait();
