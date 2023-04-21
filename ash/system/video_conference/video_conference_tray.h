@@ -11,6 +11,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -101,7 +102,8 @@ class VideoConferenceTrayButton : public IconButton {
 class ASH_EXPORT VideoConferenceTray
     : public SessionObserver,
       public TrayBackgroundView,
-      public VideoConferenceTrayController::Observer {
+      public VideoConferenceTrayController::Observer,
+      public VideoConferenceTrayEffectsManager::Observer {
  public:
   METADATA_HEADER(VideoConferenceTray);
 
@@ -133,6 +135,10 @@ class ASH_EXPORT VideoConferenceTray
   void OnCameraCapturingStateChange(bool is_capturing) override;
   void OnMicrophoneCapturingStateChange(bool is_capturing) override;
   void OnScreenSharingStateChange(bool is_capturing_screen) override;
+
+  // VideoConferenceTrayEffectsManager::Observer:
+  void OnEffectSupportStateChanged(VcEffectId effect_id,
+                                   bool is_supported) override;
 
   // The expand indicator of the toggle bubble button needs to rotate according
   // to shelf alignment and whether the bubble is opened. This function will

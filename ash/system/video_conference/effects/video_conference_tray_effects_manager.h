@@ -9,10 +9,13 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 
 namespace ash {
 
 class VcEffectsDelegate;
+enum class VcEffectId;
 class VcHostedEffect;
 
 // The interface used to construct the UI that exposes video
@@ -27,6 +30,17 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
       const VideoConferenceTrayEffectsManager&) = delete;
 
   virtual ~VideoConferenceTrayEffectsManager();
+
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when an affect has change its support state.
+    virtual void OnEffectSupportStateChanged(VcEffectId effect_id,
+                                             bool is_supported) = 0;
+  };
+
+  // Adds/removes `VideoConferenceTrayEffectsManager::Observer`.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Register/unregister a delegate that hosts one or more effects.
   void RegisterDelegate(VcEffectsDelegate* delegate);
@@ -61,6 +75,9 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
   // `VcEffectType::kSetValue`, in no special order.
   EffectDataVector GetSetValueEffects();
 
+  // Notifies all observers about effect support state changed.
+  void NotifyEffectSupportStateChanged(VcEffectId effect_id, bool is_supported);
+
  private:
   // Returns a vector of `VcHostedEffect` objects of type
   // `VcEffectType::kToggle`, in no special order.
@@ -68,6 +85,8 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
 
   // This list of registered effect delegates, unowned.
   std::vector<VcEffectsDelegate*> effect_delegates_;
+
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace ash

@@ -232,6 +232,7 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
                                     weak_ptr_factory_.GetWeakPtr())));
 
   VideoConferenceTrayController::Get()->AddObserver(this);
+  VideoConferenceTrayController::Get()->effects_manager().AddObserver(this);
   Shell::Get()->session_controller()->AddObserver(this);
 
   // Update visibility of the tray and all child icons and indicators. If this
@@ -246,6 +247,7 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
 
 VideoConferenceTray::~VideoConferenceTray() {
   Shell::Get()->session_controller()->RemoveObserver(this);
+  VideoConferenceTrayController::Get()->effects_manager().RemoveObserver(this);
   VideoConferenceTrayController::Get()->RemoveObserver(this);
 }
 
@@ -323,6 +325,15 @@ void VideoConferenceTray::OnCameraCapturingStateChange(bool is_capturing) {
 
 void VideoConferenceTray::OnMicrophoneCapturingStateChange(bool is_capturing) {
   audio_icon_->SetIsCapturing(is_capturing);
+}
+
+void VideoConferenceTray::OnEffectSupportStateChanged(VcEffectId effect_id,
+                                                      bool is_supported) {
+  // If the bubble is open, we close it so that when it is re-opened, the
+  // bubble is updated with the correct effect support state.
+  if (GetBubbleWidget()) {
+    CloseBubble();
+  }
 }
 
 SkScalar VideoConferenceTray::GetRotationValueForToggleBubbleButton() {

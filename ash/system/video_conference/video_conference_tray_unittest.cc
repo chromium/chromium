@@ -16,6 +16,7 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_common.h"
 #include "ash/test/ash_test_base.h"
@@ -661,6 +662,21 @@ TEST_F(VideoConferenceTrayTest, MutingChangesTooltip) {
           l10n_util::GetStringUTF16(
               VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_MICROPHONE),
           l10n_util::GetStringUTF16(VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_OFF)));
+}
+
+TEST_F(VideoConferenceTrayTest, CloseBubbleOnEffectSupportStateChange) {
+  SetTrayAndButtonsVisible();
+
+  // Clicking the toggle button should construct and open up the bubble.
+  LeftClickOn(toggle_bubble_button());
+  ASSERT_TRUE(video_conference_tray()->GetBubbleView());
+
+  controller()->effects_manager().NotifyEffectSupportStateChanged(
+      VcEffectId::kTestEffect, /*is_supported=*/true);
+
+  // When there's a change to effect support state, the bubble should be
+  // automatically close to update.
+  EXPECT_FALSE(video_conference_tray()->GetBubbleView());
 }
 
 }  // namespace ash
