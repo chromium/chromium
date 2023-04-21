@@ -17,11 +17,13 @@
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
+#include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/os_registration.h"
 #include "content/public/android/content_jni_headers/AttributionOsLevelManager_jni.h"
@@ -122,6 +124,9 @@ static void JNI_AttributionOsLevelManager_OnMeasurementStateReturned(
     JNIEnv* env,
     jint state) {
   SetOsSupport(ConvertToOsSupport(state));
+
+  base::UmaHistogramEnumeration("Conversions.AttributionSupport",
+                                AttributionManagerImpl::GetOsSupport());
 }
 
 ScopedOsSupportForTesting::ScopedOsSupportForTesting(

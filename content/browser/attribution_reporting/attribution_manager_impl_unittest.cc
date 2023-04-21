@@ -1147,6 +1147,8 @@ TEST_F(AttributionManagerImplTest, HandleOsSource) {
   auto* os_level_manager_ptr = os_level_manager.get();
   OverrideOsLevelManager(std::move(os_level_manager));
 
+  base::HistogramTester histograms;
+
   cookie_checker_->AddOriginWithDebugCookieSet(
       url::Origin::Create(kRegistrationUrl1));
 
@@ -1156,12 +1158,14 @@ TEST_F(AttributionManagerImplTest, HandleOsSource) {
     EXPECT_CALL(*os_level_manager_ptr,
                 Register(OsRegistration(kRegistrationUrl1, kTopLevelOrigin1,
                                         AttributionInputEvent()),
-                         /*is_debug_key_allowed=*/true, _));
+                         /*is_debug_key_allowed=*/true, _))
+        .WillOnce(base::test::RunOnceCallback<2>(true));
 
     EXPECT_CALL(*os_level_manager_ptr,
                 Register(OsRegistration(kRegistrationUrl2, kTopLevelOrigin2,
                                         AttributionInputEvent()),
-                         /*is_debug_key_allowed=*/false, _));
+                         /*is_debug_key_allowed=*/false, _))
+        .WillOnce(base::test::RunOnceCallback<2>(false));
   }
 
   // Dropped due to the URL being opaque.
@@ -1205,6 +1209,11 @@ TEST_F(AttributionManagerImplTest, HandleOsSource) {
       OsRegistration(kRegistrationUrl4, kTopLevelOrigin4,
                      AttributionInputEvent()),
       kFrameId);
+
+  histograms.ExpectBucketCount("Conversions.AttributionOsRegistrationResult",
+                               true, 1);
+  histograms.ExpectBucketCount("Conversions.AttributionOsRegistrationResult",
+                               false, 1);
 }
 
 TEST_F(AttributionManagerImplTest, HandleOsTrigger) {
@@ -1222,6 +1231,8 @@ TEST_F(AttributionManagerImplTest, HandleOsTrigger) {
   auto* os_level_manager_ptr = os_level_manager.get();
   OverrideOsLevelManager(std::move(os_level_manager));
 
+  base::HistogramTester histograms;
+
   cookie_checker_->AddOriginWithDebugCookieSet(
       url::Origin::Create(kRegistrationUrl1));
 
@@ -1231,12 +1242,14 @@ TEST_F(AttributionManagerImplTest, HandleOsTrigger) {
     EXPECT_CALL(*os_level_manager_ptr,
                 Register(OsRegistration(kRegistrationUrl1, kTopLevelOrigin1,
                                         /*input_event=*/absl::nullopt),
-                         /*is_debug_key_allowed=*/true, _));
+                         /*is_debug_key_allowed=*/true, _))
+        .WillOnce(base::test::RunOnceCallback<2>(true));
 
     EXPECT_CALL(*os_level_manager_ptr,
                 Register(OsRegistration(kRegistrationUrl2, kTopLevelOrigin2,
                                         /*input_event=*/absl::nullopt),
-                         /*is_debug_key_allowed=*/false, _));
+                         /*is_debug_key_allowed=*/false, _))
+        .WillOnce(base::test::RunOnceCallback<2>(false));
   }
 
   // Dropped due to the URL being opaque.
@@ -1280,6 +1293,11 @@ TEST_F(AttributionManagerImplTest, HandleOsTrigger) {
       OsRegistration(kRegistrationUrl4, kTopLevelOrigin4,
                      /*input_event=*/absl::nullopt),
       kFrameId);
+
+  histograms.ExpectBucketCount("Conversions.AttributionOsRegistrationResult",
+                               true, 1);
+  histograms.ExpectBucketCount("Conversions.AttributionOsRegistrationResult",
+                               false, 1);
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

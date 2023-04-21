@@ -19629,6 +19629,11 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Failed"/>
 </enum>
 
+<enum name="ConversionAttributionSupport">
+  <int value="0" label="Web"/>
+  <int value="1" label="Web and OS"/>
+</enum>
+
 <enum name="ConversionCreateAggregatableReportStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Internal error"/>
@@ -42137,6 +42142,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4543" label="V8CompileHintsMagicAll"/>
   <int value="4544" label="TextWrapBalance"/>
   <int value="4545" label="TextWrapBalanceFail"/>
+  <int value="4546" label="AttributionReportingCrossAppWeb"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

@@ -86,6 +86,7 @@
 #include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/os_registration.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #endif
 
 namespace content {
@@ -1302,6 +1303,13 @@ void AttributionManagerImpl::HandleOsRegistration(
     return;
   }
 
+  auto* rfh = RenderFrameHost::FromID(render_frame_id);
+
+  if (rfh) {
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        rfh, blink::mojom::WebFeature::kAttributionReportingCrossAppWeb);
+  }
+
   ContentBrowserClient::AttributionReportingOperation operation;
   const url::Origin* source_origin;
   const url::Origin* destination_origin;
@@ -1320,8 +1328,7 @@ void AttributionManagerImpl::HandleOsRegistration(
       break;
   }
 
-  if (!IsOperationAllowed(storage_partition_.get(), operation,
-                          RenderFrameHost::FromID(render_frame_id),
+  if (!IsOperationAllowed(storage_partition_.get(), operation, rfh,
                           source_origin, destination_origin,
                           /*reporting_origin=*/&registration_origin)) {
     NotifyOsRegistration(registration,
@@ -1396,6 +1403,9 @@ void AttributionManagerImpl::OnOsRegistration(
     const OsRegistration& registration,
     bool is_debug_key_allowed,
     bool success) {
+  base::UmaHistogramBoolean("Conversions.AttributionOsRegistrationResult",
+                            success);
+
   NotifyOsRegistration(registration, is_debug_key_allowed,
                        success ? OsRegistrationResult::kPassedToOs
                                : OsRegistrationResult::kRejectedByOs);

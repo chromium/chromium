@@ -3551,6 +3551,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.AttributionOsRegistrationResult"
+    enum="BooleanSuccess" expires_after="2023-10-20">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often attribution OS registrations are succesfully registered
+    with Android. Only recorded on Android when the
+    AttributionReportingCrossAppWeb feature is enabled. Recorded for each OS
+    registration sent to Android when the result is returned.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.AttributionSrcRequestStatus"
     enum="ConversionAttributionSrcRequestStatus" expires_after="2023-10-08">
   <owner>linnan@chromium.org</owner>
@@ -3559,6 +3572,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the status of the attributionsrc requests. Recorded when the request
     started and finished.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AttributionSupport"
+    enum="ConversionAttributionSupport" expires_after="2023-10-20">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether OS-level attribution is supported on the device. Only
+    recorded on Android when the AttributionReportingCrossAppWeb feature is
+    enabled. Recorded once per browser session when the browser starts up.
   </summary>
 </histogram>
 
