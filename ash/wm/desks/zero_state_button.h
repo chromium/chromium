@@ -15,7 +15,7 @@ struct VectorIcon;
 
 namespace ash {
 
-class LegacyDeskBarView;
+class DeskBarViewBase;
 
 // A button in zero state bar showing "Desk 1". Zero state is the state of the
 // desks bar when there's only a single desk available, in which case the bar is
@@ -26,7 +26,7 @@ class ASH_EXPORT ZeroStateDefaultDeskButton : public DeskButtonBase {
  public:
   METADATA_HEADER(ZeroStateDefaultDeskButton);
 
-  explicit ZeroStateDefaultDeskButton(LegacyDeskBarView* bar_view);
+  explicit ZeroStateDefaultDeskButton(DeskBarViewBase* bar_view);
   ZeroStateDefaultDeskButton(const ZeroStateDefaultDeskButton&) = delete;
   ZeroStateDefaultDeskButton& operator=(const ZeroStateDefaultDeskButton&) =
       delete;
@@ -48,7 +48,7 @@ class ASH_EXPORT ZeroStateIconButton : public DeskButtonBase {
  public:
   METADATA_HEADER(ZeroStateIconButton);
 
-  ZeroStateIconButton(LegacyDeskBarView* bar_view,
+  ZeroStateIconButton(DeskBarViewBase* bar_view,
                       const gfx::VectorIcon* button_icon,
                       const std::u16string& text,
                       base::RepeatingClosure callback);

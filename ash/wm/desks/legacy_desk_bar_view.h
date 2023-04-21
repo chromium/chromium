@@ -44,10 +44,6 @@ class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
 
   ~LegacyDeskBarView() override;
 
-  void set_is_bounds_animation_on_going(bool value) {
-    is_bounds_animation_on_going_ = value;
-  }
-
   ZeroStateDefaultDeskButton* zero_state_default_desk_button() const {
     return zero_state_default_desk_button_;
   }
@@ -95,23 +91,6 @@ class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
     return library_button_label_;
   }
 
-  const std::vector<DeskMiniView*>& mini_views() const { return mini_views_; }
-
-  const gfx::Point& last_dragged_item_screen_location() const {
-    return last_dragged_item_screen_location_;
-  }
-
-  bool dragged_item_over_bar() const { return dragged_item_over_bar_; }
-
-  OverviewGrid* overview_grid() const { return overview_grid_; }
-  void set_overview_grid(OverviewGrid* overview_grid) {
-    overview_grid_ = overview_grid;
-  }
-
-  const views::View* scroll_view_contents() const {
-    return scroll_view_contents_;
-  }
-
   // Initializes and creates mini_views for any pre-existing desks, before the
   // bar was created. This should only be called after this view has been added
   // to a widget, as it needs to call `GetWidget()` when it's performing a
@@ -121,9 +100,6 @@ class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
   // Returns true if a desk name is being modified using its mini view's
   // DeskNameView on this bar.
   bool IsDeskNameBeingModified() const;
-
-  // Get the index of a desk mini view in the |mini_views|.
-  int GetMiniViewIndex(const DeskMiniView* mini_view) const;
 
   // Updates the visibility state of the close buttons on all the mini_views as
   // a result of mouse and gesture events.
@@ -137,16 +113,18 @@ class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
                       bool dragged_item_over_bar);
 
   // Handle the mouse press event from a desk preview.
-  void HandlePressEvent(DeskMiniView* mini_view, const ui::LocatedEvent& event);
+  void HandlePressEvent(DeskMiniView* mini_view,
+                        const ui::LocatedEvent& event) override;
   // Handle the gesture long press event from a desk preview.
   void HandleLongPressEvent(DeskMiniView* mini_view,
-                            const ui::LocatedEvent& event);
+                            const ui::LocatedEvent& event) override;
   // Handle the drag event from a desk preview.
-  void HandleDragEvent(DeskMiniView* mini_view, const ui::LocatedEvent& event);
+  void HandleDragEvent(DeskMiniView* mini_view,
+                       const ui::LocatedEvent& event) override;
   // Handle the release event from a desk preview. Return true if a drag event
   // is ended.
   bool HandleReleaseEvent(DeskMiniView* mini_view,
-                          const ui::LocatedEvent& event);
+                          const ui::LocatedEvent& event) override;
 
   // Finalize any unfinished drag & drop. Initialize a new drag proxy.
   void InitDragDesk(DeskMiniView* mini_view,
@@ -167,8 +145,6 @@ class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
   void EndDragDesk(DeskMiniView* mini_view, bool end_by_user);
   // Reset the drag view and the drag proxy.
   void FinalizeDragDesk();
-  // If a desk is in a drag & drop cycle.
-  bool IsDraggingDesk() const;
 
   // Called when the saved desk library is hidden. Transitions the desk bar
   // view to zero state if necessary.
@@ -209,12 +185,8 @@ class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
   //      Not a valid input.
   // TODO(b/277969403): Improve and simplify this overloaded function by moving
   // logic to `SwitchToZeroState` and `SwitchToExpandedState`.
-  void UpdateNewMiniViews(bool initializing_bar_view, bool expanding_bar_view);
-
-  // If the focused `view` is outside of the scroll view's visible bounds,
-  // scrolls the bar to make sure it can always be seen. Please note, `view`
-  // must be a child of `scroll_view_contents_`.
-  void ScrollToShowViewIfNecessary(const views::View* view);
+  void UpdateNewMiniViews(bool initializing_bar_view,
+                          bool expanding_bar_view) override;
 
   void OnNewDeskButtonPressed(
       DesksCreationRemovalSource desks_creation_removal_source);
@@ -228,13 +200,13 @@ class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
 
   // Updates the visibility of the two buttons inside the zero state desk bar
   // and the `ExpandedDesksBarButton` on the desk bar's state.
-  void UpdateDeskButtonsVisibility();
+  void UpdateDeskButtonsVisibility() override;
 
   // Udates the visibility of the `default_desk_button_` on the desk bar's
   // state.
   // TODO(conniekxu): Remove `UpdateDeskButtonsVisibility`, replace it with this
   // function, and rename this function by removing the prefix CrOSNext.
-  void UpdateDeskButtonsVisibilityCrOSNext();
+  void UpdateDeskButtonsVisibilityCrOSNext() override;
 
   // Updates the visibility of the saved desk library button based on whether
   // the saved desk feature is enabled, the user has any saved desks and the
@@ -245,11 +217,7 @@ class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
   // the saved desk feature is enabled and the user has any saved desks.
   // TODO(conniekxu): Remove `UpdateLibraryButtonVisibility`, replace it with
   // this function, and rename this function by removing the prefix CrOSNext.
-  void UpdateLibraryButtonVisibilityCrOSNext();
-
-  // Returns the mini_view associated with `desk` or nullptr if no mini_view
-  // has been created for it yet.
-  DeskMiniView* FindMiniViewForDesk(const Desk* desk) const;
+  void UpdateLibraryButtonVisibilityCrOSNext() override;
 
   // Animates the bar from the expanded state to the zero state. It refreshes
   // the bounds of the desk bar widget, and also updates child UI components,
@@ -257,10 +225,10 @@ class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
   void SwitchToZeroState();
 
   // Animates the bar from the zero state to the expanded state.
-  void SwitchToExpandedState();
+  void SwitchToExpandedState() override;
 
   // Bring focus to the name view of the desk with `desk_index`.
-  void NudgeDeskName(int desk_index);
+  void NudgeDeskName(int desk_index) override;
 
   // Called to update state of `button` and apply the scale animation to the
   // button. For the new desk button, this is called when the make the new desk
@@ -285,22 +253,16 @@ class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
   // is ended.
   bool MaybeScrollByDraggedDesk();
 
-  // Returns the X offset of the first mini_view on the left (if there's one),
-  // or the X offset of this view's center point when there are no mini_views.
-  // This offset is used to calculate the amount by which the mini_views should
-  // be moved when performing the mini_view creation or deletion animations.
-  int GetFirstMiniViewXOffset() const;
-
   // Updates the visibility of |left_scroll_button_| and |right_scroll_button_|.
   // Show |left_scroll_button_| if there are contents outside of the left edge
   // of the |scroll_view_|, the same for |right_scroll_button_| based on the
   // right side of the |scroll_view_|.
-  void UpdateScrollButtonsVisibility();
+  void UpdateScrollButtonsVisibility() override;
 
   // We will show a fade in gradient besides |left_scroll_button_| and a fade
   // out gradient besides |right_scroll_button_|. Show the gradient only when
   // the corresponding scroll button is visible.
-  void UpdateGradientMask();
+  void UpdateGradientMask() override;
 
   // Scrolls the desk bar to the previous or next page. The page size is the
   // width of the scroll view, the contents that are outside of the scroll view
@@ -322,38 +284,9 @@ class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
   void OnContentsScrolled();
   void OnContentsScrollEnded();
 
-  // The views representing desks mini_views. They're owned by views hierarchy.
-  std::vector<DeskMiniView*> mini_views_;
-
   // Observes mouse events on the desk bar widget and updates the states of the
   // mini_views accordingly.
   std::unique_ptr<DeskBarHoverObserver> hover_observer_;
-
-  // The screen location of the most recent drag position. This value is valid
-  // only when the below `dragged_item_on_bar_` is true.
-  gfx::Point last_dragged_item_screen_location_;
-
-  // True when the drag location of the overview item is intersecting with this
-  // view.
-  bool dragged_item_over_bar_ = false;
-
-  // The OverviewGrid that contains this object.
-  OverviewGrid* overview_grid_;
-
-  // Puts the contents in a ScrollView to support scrollable desks.
-  views::ScrollView* scroll_view_ = nullptr;
-
-  // Contents of `scroll_view_`, which includes `mini_views_`,
-  // `expanded_state_new_desk_button_` and optionally
-  // `expanded_state_library_button_` currently.
-  views::View* scroll_view_contents_ = nullptr;
-
-  // True if the `DesksBarBoundsAnimation` is started and hasn't finished yet.
-  // It will be used to hold `Layout` until the bounds animation is completed.
-  // `Layout` is expensive and will be called on bounds changes, which means it
-  // will be called lots of times during the bounds changes animation. This is
-  // done to eliminate the unnecessary `Layout` calls during the animation.
-  bool is_bounds_animation_on_going_ = false;
 
   ZeroStateDefaultDeskButton* zero_state_default_desk_button_ = nullptr;
   ZeroStateIconButton* zero_state_new_desk_button_ = nullptr;
@@ -380,8 +313,6 @@ class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
 
   ScrollArrowButton* left_scroll_button_ = nullptr;
   ScrollArrowButton* right_scroll_button_ = nullptr;
-  // Mini view whose preview is being dragged.
-  DeskMiniView* drag_view_ = nullptr;
   // Drag proxy for the dragged desk.
   std::unique_ptr<DeskDragProxy> drag_proxy_;
 

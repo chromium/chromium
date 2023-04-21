@@ -10,10 +10,10 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_button_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
-#include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
@@ -45,7 +45,7 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
   METADATA_HEADER(InnerExpandedDesksBarButton);
 
   InnerExpandedDesksBarButton(ExpandedDesksBarButton* outer_button,
-                              LegacyDeskBarView* bar_view,
+                              DeskBarViewBase* bar_view,
                               base::RepeatingClosure callback,
                               const std::u16string& text)
       : DeskButtonBase(text,
@@ -110,7 +110,7 @@ END_METADATA
 // ExpandedDesksBarButton:
 
 ExpandedDesksBarButton::ExpandedDesksBarButton(
-    LegacyDeskBarView* bar_view,
+    DeskBarViewBase* bar_view,
     const gfx::VectorIcon* button_icon,
     const std::u16string& button_label,
     bool initially_enabled,

@@ -21,8 +21,8 @@ class Label;
 namespace ash {
 
 class DeskButtonBase;
-class LegacyDeskBarView;
 class InnerExpandedDesksBarButton;
+class DeskBarViewBase;
 
 // A desk button view in the expanded desks bar. It includes the
 // InnerExpandedDesksBarButton and a name label below, which has the same style
@@ -31,7 +31,7 @@ class ASH_EXPORT ExpandedDesksBarButton : public views::View {
  public:
   METADATA_HEADER(ExpandedDesksBarButton);
 
-  ExpandedDesksBarButton(LegacyDeskBarView* bar_view,
+  ExpandedDesksBarButton(DeskBarViewBase* bar_view,
                          const gfx::VectorIcon* button_icon,
                          const std::u16string& button_label,
                          bool initially_enabled,
@@ -65,7 +65,7 @@ class ASH_EXPORT ExpandedDesksBarButton : public views::View {
   absl::optional<ui::ColorId> GetFocusColorIdForTesting();
 
  private:
-  LegacyDeskBarView* const bar_view_;  // Not owned.
+  DeskBarViewBase* const bar_view_;  // Not owned.
   const gfx::VectorIcon* const button_icon_;
   const std::u16string button_label_;
   InnerExpandedDesksBarButton* inner_button_;

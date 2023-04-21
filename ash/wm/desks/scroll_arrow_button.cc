@@ -23,7 +23,7 @@ namespace ash {
 
 ScrollArrowButton::ScrollArrowButton(base::RepeatingClosure on_scroll,
                                      bool is_left_arrow,
-                                     LegacyDeskBarView* bar_view)
+                                     DeskBarViewBase* bar_view)
     : on_scroll_(std::move(on_scroll)),
       state_change_subscription_(AddStateChangedCallback(
           base::BindRepeating(&ScrollArrowButton::OnStateChanged,

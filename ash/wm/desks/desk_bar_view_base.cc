@@ -128,8 +128,95 @@ std::unique_ptr<views::Widget> DeskBarViewBase::CreateDeskWidget(
   return widget;
 }
 
+void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
+                                         bool expanding_bar_view) {
+  NOTREACHED();
+}
+void DeskBarViewBase::UpdateDeskButtonsVisibility() {
+  NOTREACHED();
+}
+void DeskBarViewBase::SwitchToExpandedState() {
+  NOTREACHED();
+}
+void DeskBarViewBase::NudgeDeskName(int desk_index) {
+  NOTREACHED();
+}
+void DeskBarViewBase::HandlePressEvent(DeskMiniView* mini_view,
+                                       const ui::LocatedEvent& event) {
+  NOTREACHED();
+}
+void DeskBarViewBase::HandleLongPressEvent(DeskMiniView* mini_view,
+                                           const ui::LocatedEvent& event) {
+  NOTREACHED();
+}
+void DeskBarViewBase::HandleDragEvent(DeskMiniView* mini_view,
+                                      const ui::LocatedEvent& event) {
+  NOTREACHED();
+}
+bool DeskBarViewBase::HandleReleaseEvent(DeskMiniView* mini_view,
+                                         const ui::LocatedEvent& event) {
+  NOTREACHED_NORETURN();
+}
+
 bool DeskBarViewBase::IsZeroState() const {
   return state_ == DeskBarViewBase::State::kZero;
+}
+
+bool DeskBarViewBase::IsDraggingDesk() const {
+  return drag_view_ != nullptr;
+}
+
+void DeskBarViewBase::ScrollToShowViewIfNecessary(const views::View* view) {
+  CHECK(base::Contains(scroll_view_contents_->children(), view));
+  const gfx::Rect visible_bounds = scroll_view_->GetVisibleRect();
+  const gfx::Rect view_bounds = view->bounds();
+  const bool beyond_left = view_bounds.x() < visible_bounds.x();
+  const bool beyond_right = view_bounds.right() > visible_bounds.right();
+  auto* scroll_bar = scroll_view_->horizontal_scroll_bar();
+  if (beyond_left) {
+    scroll_view_->ScrollToPosition(
+        scroll_bar, view_bounds.right() - scroll_view_->bounds().width());
+  } else if (beyond_right) {
+    scroll_view_->ScrollToPosition(scroll_bar, view_bounds.x());
+  }
+}
+
+DeskMiniView* DeskBarViewBase::FindMiniViewForDesk(const Desk* desk) const {
+  for (auto* mini_view : mini_views_) {
+    if (mini_view->desk() == desk) {
+      return mini_view;
+    }
+  }
+
+  return nullptr;
+}
+
+int DeskBarViewBase::GetMiniViewIndex(const DeskMiniView* mini_view) const {
+  auto iter = base::ranges::find(mini_views_, mini_view);
+  return (iter == mini_views_.cend())
+             ? -1
+             : std::distance(mini_views_.cbegin(), iter);
+}
+
+void DeskBarViewBase::UpdateScrollButtonsVisibility() {
+  NOTREACHED();
+}
+void DeskBarViewBase::UpdateGradientMask() {
+  NOTREACHED();
+}
+
+int DeskBarViewBase::GetFirstMiniViewXOffset() const {
+  // `GetMirroredX` is used here to make sure the removing and adding a desk
+  // transform is correct while in RTL layout.
+  return mini_views_.empty() ? bounds().CenterPoint().x()
+                             : mini_views_[0]->GetMirroredX();
+}
+
+void DeskBarViewBase::UpdateDeskButtonsVisibilityCrOSNext() {
+  NOTREACHED();
+}
+void DeskBarViewBase::UpdateLibraryButtonVisibilityCrOSNext() {
+  NOTREACHED();
 }
 
 }  // namespace ash

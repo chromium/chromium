@@ -88,7 +88,7 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
 
   // This returns the screen space bounds of the desk preview that `mini_view`
   // holds. It is intended to be called when launching a Save & Recall desk so
-  // that the `SavedDeskItemView` can be animated up to the `LegacyDeskBarView`.
+  // that the `SavedDeskItemView` can be animated up to the desk bar view.
   // It takes animation into consideration and will return the position where
   // the desk preview will end up, rather than where it currently is.
   absl::optional<gfx::Rect> GetDeskPreviewBoundsForLaunch(

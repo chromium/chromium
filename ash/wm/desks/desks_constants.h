@@ -5,6 +5,8 @@
 #ifndef ASH_WM_DESKS_DESKS_CONSTANTS_H_
 #define ASH_WM_DESKS_DESKS_CONSTANTS_H_
 
+#include "base/time/time.h"
+
 namespace ash {
 
 // The space between the starting and ending desks screenshots in dips.
@@ -27,6 +29,13 @@ constexpr int kDeskBarNonPreviewAllocatedHeight = 48;
 
 // This is the desk bar height for zero state.
 constexpr int kDeskBarZeroStateHeight = 40;
+
+constexpr int kDeskBarGradientZoneLength = 40;
+
+constexpr int kDeskBarDeskPreviewViewFocusRingThicknessAndPadding = 4;
+
+// The duration of scrolling one page.
+constexpr base::TimeDelta kDeskBarScrollDuration = base::Milliseconds(250);
 
 }  // namespace ash
 

@@ -16,6 +16,8 @@ struct VectorIcon;
 
 namespace ash {
 
+class DeskBarViewBase;
+
 // A button view in the desks bar with an icon. The button have three different
 // states, and the three states are interchangeable.
 // TODO(conniekxu): Remove `ZeroStateIconButton` and `ExpandedDesksBarButton`,
@@ -29,9 +31,9 @@ class ASH_EXPORT CrOSNextDeskIconButton : public CrOSNextDeskButtonBase {
   // states has different sizes. Any state could be transformed into another
   // state under certain conditions.
   enum class State {
-    // The state of the button when the LegacyDeskBarView is in zero state.
+    // The state of the button when the desk bar view is in zero state.
     kZero,
-    // The state of the button when the LegacyDeskBarView is in expanded state.
+    // The state of the button when the desk bar view is in expanded state.
     kExpanded,
     // The state of when the user is interacting with the button. For the new
     // desk button, active state represents a state that a window is dragged
@@ -43,7 +45,7 @@ class ASH_EXPORT CrOSNextDeskIconButton : public CrOSNextDeskButtonBase {
     kActive,
   };
 
-  CrOSNextDeskIconButton(LegacyDeskBarView* bar_view,
+  CrOSNextDeskIconButton(DeskBarViewBase* bar_view,
                          const gfx::VectorIcon* button_icon,
                          const std::u16string& text,
                          ui::ColorId icon_color_id,
