@@ -678,6 +678,20 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
     // where a RenderFrameHost is swapped in.
     if (!frame_tree_node_->frame_tree().IsHidden())
       render_frame_host_->GetView()->Show();
+
+    // TODO(crbug.com/1434403): For same RenderFrameHost, it isn't clear
+    // whether we should start the new content timer, but to be safe, we start
+    // it here. The TODO here is to remove this call when we can.
+    //
+    // Note that this is only OK to do for non-prerender. For prerendering path,
+    // setting this timeout is incorrect because it causes a clear of graphical
+    // output on prerender activation.
+    if (render_frame_host_->lifecycle_state() !=
+        LifecycleStateImpl::kPrerendering) {
+      static_cast<RenderWidgetHostImpl*>(
+          render_frame_host_->GetView()->GetRenderWidgetHost())
+          ->StartNewContentRenderingTimeout();
+    }
   }
 
   // If we are navigating away from a Page that has a form data associated with
@@ -4179,15 +4193,32 @@ void RenderFrameHostManager::CommitPending(
         render_frame_host_.get());
   }
 
+  bool should_take_fallback_content = false;
+  // Make the new view show the contents of old view until it has something
+  // useful to show. Note that we don't do this for BFCache entries with a
+  // valid surface id, because it already has that surface embedded through
+  // `RenderFrameHostImpl::WillLeaveBackForwardCache` and the timeout that
+  // would be set here will clear that frame (incorrectly).
+  if (is_main_frame && old_view && old_view != new_view) {
+    // We should take the fallback if we're not coming from BFCache or if we
+    // don't have a valid surface id to display.
+    auto* render_widget_host_view_base =
+        static_cast<RenderWidgetHostViewBase*>(render_frame_host_->GetView());
+    should_take_fallback_content =
+        prev_state !=
+            RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache ||
+        !render_widget_host_view_base->GetLocalSurfaceId().is_valid() ||
+        render_widget_host_view_base->is_evicted();
+  }
+
   // Notify that we've swapped RenderFrameHosts. We do this before shutting down
   // the RFH so that we can clean up RendererResources related to the RFH first.
   delegate_->NotifySwappedFromRenderManager(old_render_frame_host.get(),
                                             render_frame_host_.get());
 
-  // Make the new view show the contents of old view until it has something
-  // useful to show.
-  if (is_main_frame && old_view && old_view != new_view)
+  if (should_take_fallback_content) {
     new_view->TakeFallbackContentFrom(old_view);
+  }
 
   // The RenderViewHost keeps track of the main RenderFrameHost routing id.
   // If this is committing a main frame navigation, update it and set the
@@ -4319,6 +4350,13 @@ void RenderFrameHostManager::CommitPending(
         render_frame_host_->SetVisibilityForChildViews(true);
       }
     }
+  }
+
+  // If we took fallback content, we need to start a timeout timer to clear it
+  // in case the new renderer does not produce a timely frame.
+  if (should_take_fallback_content) {
+    static_cast<RenderWidgetHostImpl*>(new_view->GetRenderWidgetHost())
+        ->StartNewContentRenderingTimeout();
   }
 
   // The process will no longer try to exit, so we can decrement the count.

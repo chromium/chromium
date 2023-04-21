@@ -506,10 +506,15 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // in flight change).
   bool RequestRepaintForTesting();
 
+  // Called after every cross-document navigation. Note that for prerender
+  // navigations, this is called before the renderer is shown.
+  void DidNavigate();
+
   // Called after every cross-document navigation. The displayed graphics of
   // the renderer is cleared after a certain timeout if it does not produce a
-  // new CompositorFrame after navigation.
-  void DidNavigate();
+  // new CompositorFrame after navigation. This is called after either
+  // navigation (for non-prerender pages) or activation (for prerender pages).
+  void StartNewContentRenderingTimeout();
 
   // Forwards the keyboard event with optional commands to the renderer. If
   // |key_event| is not forwarded for any reason, then |commands| are ignored.
