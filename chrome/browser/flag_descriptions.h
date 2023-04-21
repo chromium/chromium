@@ -2562,6 +2562,11 @@ extern const char kHighEfficiencyModeAvailableDescription[];
 extern const char kHeuristicMemorySaverName[];
 extern const char kHeuristicMemorySaverDescription[];
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+extern const char kIOSPromoPasswordBubbleName[];
+extern const char kIOSPromoPasswordBubbleDecription[];
+#endif
+
 extern const char kMuteNotificationSnoozeActionName[];
 extern const char kMuteNotificationSnoozeActionDescription[];
 

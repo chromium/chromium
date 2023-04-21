@@ -4481,6 +4481,14 @@ extern const char kHeuristicMemorySaverDescription[] =
     "discarding a tab rather than doing it after a fixed amount of time in the "
     "background.";
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+extern const char kIOSPromoPasswordBubbleName[] =
+    "Contextual Chrome for iOS promo in the password save/update bubble.";
+extern const char kIOSPromoPasswordBubbleDecription[] =
+    "When enabled, a contextual Chrome for iOS promo will be shown to eligible "
+    "users. The different flag options are for the promo's activation.";
+#endif
+
 const char kMuteNotificationSnoozeActionName[] =
     "Snooze action for mute notifications";
 const char kMuteNotificationSnoozeActionDescription[] =
