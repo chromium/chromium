@@ -281,6 +281,9 @@ class NET_EXPORT SpdySessionPool
   // the process of closing those new ones, etc.) are unavailable.
   void CloseAllSessions();
 
+  // Mark all current sessions as going away.
+  void MakeCurrentSessionsGoingAway(Error error);
+
   // Creates a Value summary of the state of the spdy session pool.
   std::unique_ptr<base::Value> SpdySessionPoolInfoToValue() const;
 
