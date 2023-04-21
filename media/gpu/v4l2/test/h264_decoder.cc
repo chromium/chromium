@@ -411,6 +411,16 @@ VideoDecoder::Result H264Decoder::InitializeSliceMetadata(
   slice_metadata->pic_num = slice_hdr.frame_num;
   slice_metadata->pic_order_cnt_lsb = slice_hdr.pic_order_cnt_lsb;
 
+  slice_metadata->long_term_reference_flag = slice_hdr.long_term_reference_flag;
+
+  if (slice_hdr.adaptive_ref_pic_marking_mode_flag) {
+    static_assert(sizeof(slice_metadata->ref_pic_marking) ==
+                      sizeof(slice_hdr.ref_pic_marking),
+                  "Array sizes of ref pic marking do not match.");
+    memcpy(slice_metadata->ref_pic_marking, slice_hdr.ref_pic_marking,
+           sizeof(slice_metadata->ref_pic_marking));
+  }
+
   // Calculate H264 slice order counts.
   switch (sps->pic_order_cnt_type) {
     // See specification 8.2.1.1.
@@ -548,7 +558,10 @@ VideoDecoder::Result H264Decoder::StartNewFrame(
              .bottom_field_order_cnt = element.second.bottom_field_order_cnt,
              .flags = static_cast<uint32_t>(
                  V4L2_H264_DPB_ENTRY_FLAG_VALID |
-                 (element.second.ref ? V4L2_H264_DPB_ENTRY_FLAG_ACTIVE : 0))};
+                 (element.second.ref ? V4L2_H264_DPB_ENTRY_FLAG_ACTIVE : 0) |
+                 (element.second.long_term_reference_flag
+                      ? V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM
+                      : 0))};
   }
 
   return VideoDecoder::kOk;
@@ -734,9 +747,67 @@ VideoDecoder::Result H264Decoder::FinishFrame(
     // H.264 section 8.2.4.1.2.
     if (slice_metadata.slice_header.idr_pic_flag) {
       dpb_.MarkAllUnusedRef();
+      if (slice_metadata.long_term_reference_flag) {
+        slice_metadata.long_term_frame_idx = 0;
+      }
+
     } else if (slice_metadata.slice_header.adaptive_ref_pic_marking_mode_flag) {
-      // TODO(b/234752983): Handle Memory Mgmt operations
-      // as specified in specification 8.2.4.4.
+      for (size_t i = 0; i < std::size(slice_metadata.ref_pic_marking); ++i) {
+        H264DecRefPicMarking* ref_pic_marking =
+            &slice_metadata.ref_pic_marking[i];
+
+        // Handle Memory Mgmt operations as specified in specification 8.2.5.4.
+        switch (ref_pic_marking->memory_mgmnt_control_operation) {
+          case 0:
+            break;
+
+          case 1: {
+            const int pic_num_x =
+                slice_metadata.pic_num -
+                (ref_pic_marking->difference_of_pic_nums_minus1 + 1);
+            dpb_.UnmarkPicByPicNum(pic_num_x);
+            break;
+          }
+
+          case 2: {
+            dpb_.UnmarkLongTerm(ref_pic_marking->long_term_pic_num);
+            break;
+          }
+
+          case 3: {
+            // H.264 section 8.2.5.4.3
+            const int pic_num_x =
+                slice_metadata.pic_num -
+                (ref_pic_marking->difference_of_pic_nums_minus1 + 1);
+            H264SliceMetadata* short_pic =
+                dpb_.GetShortRefPicByPicNum(pic_num_x);
+            if (short_pic) {
+              H264SliceMetadata* long_term_mark = dpb_.GetLongRefPicByFrameIdx(
+                  ref_pic_marking->long_term_frame_idx);
+
+              if (long_term_mark) {
+                long_term_mark->ref = false;
+              }
+
+              short_pic->long_term_reference_flag = true;
+              short_pic->long_term_frame_idx =
+                  ref_pic_marking->long_term_frame_idx;
+            }
+            break;
+          }
+
+          case 4: {
+            const int max_long_term_frame_idx =
+                ref_pic_marking->max_long_term_frame_idx_plus1 - 1;
+            dpb_.UnmarkLongTermPicsGreaterThanFrameIndex(
+                max_long_term_frame_idx);
+            break;
+          }
+
+          default:
+            break;
+        }
+      }
     } else {
       // Use a sliding window method decoded reference picture marking process
       // H.264 section 8.2.4.3.
@@ -748,6 +819,11 @@ VideoDecoder::Result H264Decoder::FinishFrame(
         dpb_.UnmarkLowestFrameNumWrapShortRefPic();
       }
     }
+
+    prev_pic_order_.prev_ref_pic_order_cnt_msb =
+        slice_metadata.pic_order_cnt_msb;
+    prev_pic_order_.prev_ref_pic_order_cnt_lsb =
+        slice_metadata.pic_order_cnt_lsb;
   }
 
   prev_frame_num_ = slice_metadata.frame_num;

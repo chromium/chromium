@@ -37,7 +37,7 @@ void H264DPB::UnmarkLowestFrameNumWrapShortRefPic() {
   int key = -1;
   for (auto& i : *this) {
     H264SliceMetadata pic = i.second;
-    if (pic.ref &&
+    if (pic.ref && !pic.long_term_reference_flag &&
         (key < 0 || pic.frame_num_wrap < this->at(key).frame_num_wrap)) {
       key = i.first;
     }
@@ -49,15 +49,14 @@ void H264DPB::UnmarkLowestFrameNumWrapShortRefPic() {
 }
 
 std::vector<H264SliceMetadata*> H264DPB::GetNotOutputtedPicsAppending() {
-  std::vector<H264SliceMetadata*> data;
+  std::vector<H264SliceMetadata*> notOutputtedSlices;
   for (auto& i : *this) {
-    H264SliceMetadata pic = i.second;
-    if (!pic.outputted) {
-      data.push_back(&pic);
+    if (!i.second.outputted) {
+      notOutputtedSlices.push_back(&(i.second));
     }
   }
 
-  return data;
+  return notOutputtedSlices;
 }
 
 void H264DPB::MarkAllUnusedRef() {
@@ -68,14 +67,70 @@ void H264DPB::MarkAllUnusedRef() {
 
 void H264DPB::UpdatePicNums(const int curr_frame_num, const int max_frame_num) {
   for (auto& i : *this) {
-    if (i.second.ref) {
+    if (!i.second.ref) {
       continue;
     }
 
-    if (i.second.frame_num > curr_frame_num) {
-      i.second.frame_num_wrap = i.second.frame_num - max_frame_num;
+    // Update picture numbers as defined in section 8.2.4.1.
+    if (i.second.long_term_reference_flag) {
+      i.second.long_term_pic_num = i.second.long_term_frame_idx;
     } else {
-      i.second.frame_num_wrap = i.second.frame_num;
+      if (i.second.frame_num > curr_frame_num) {
+        i.second.frame_num_wrap = i.second.frame_num - max_frame_num;
+      } else {
+        i.second.frame_num_wrap = i.second.frame_num;
+      }
+
+      i.second.pic_num = i.second.frame_num_wrap;
+    }
+  }
+}
+
+void H264DPB::UnmarkPicByPicNum(const int pic_num) {
+  for (auto& i : *this) {
+    if (i.second.pic_num == pic_num && i.second.ref &&
+        !i.second.long_term_reference_flag) {
+      i.second.ref = false;
+      break;
+    }
+  }
+}
+
+void H264DPB::UnmarkLongTerm(const int pic_num) {
+  for (auto& i : *this) {
+    if (i.second.long_term_pic_num == pic_num && i.second.ref &&
+        i.second.long_term_reference_flag) {
+      i.second.ref = false;
+      break;
+    }
+  }
+}
+
+H264SliceMetadata* H264DPB::GetShortRefPicByPicNum(const int pic_num) {
+  for (auto& i : *this) {
+    if (i.second.ref && !i.second.long_term_reference_flag &&
+        i.second.pic_num == pic_num) {
+      return &i.second;
+    }
+  }
+  return nullptr;
+}
+
+H264SliceMetadata* H264DPB::GetLongRefPicByFrameIdx(const int frame_index) {
+  for (auto& i : *this) {
+    if (i.second.ref && i.second.long_term_reference_flag &&
+        i.second.long_term_frame_idx == frame_index) {
+      return &i.second;
+    }
+  }
+  return nullptr;
+}
+
+void H264DPB::UnmarkLongTermPicsGreaterThanFrameIndex(const int index) {
+  for (auto& i : *this) {
+    if (i.second.long_term_reference_flag &&
+        i.second.long_term_frame_idx > index) {
+      i.second.ref = false;
     }
   }
 }

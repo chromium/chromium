@@ -37,6 +37,12 @@ struct H264SliceMetadata {
   int top_field_order_cnt = 0;
   bool outputted = false;  // Whether this slice has been outputted.
   bool ref = false;        // Whether this slice is a reference element.
+  H264DecRefPicMarking ref_pic_marking[H264SliceHeader::kRefListSize];
+  bool long_term_reference_flag = false;
+  int long_term_frame_idx = 0;
+  // Picture number for picture which is marked as long term as defined in
+  // section 7.4.3.1.
+  int long_term_pic_num = 0;
 };
 
 // H264DPB is a class representing a Decoded Picture Buffer (DPB).
@@ -50,29 +56,45 @@ class H264DPB : public std::map<uint64_t, H264SliceMetadata> {
   H264DPB(const H264DPB&) = delete;
   H264DPB& operator=(const H264DPB&) = delete;
 
-  // Returns number of Reference H264SliceMetadata elements
+  // Returns number of Reference |H264SliceMetadata| elements
   // in the DPB.
   int CountRefPics();
-  // Deletes input H264SliceMetadata object from the DPB.
+  // Deletes input |H264SliceMetadata| object from the DPB.
   void Delete(const H264SliceMetadata& pic);
-  // Deletes any H264SliceMetadata object from DPB that is considered
+  // Deletes any |H264SliceMetadata| object from DPB that is considered
   // to be unused by the decoder.
-  // An H264SliceMetadata is unused if it has been outputted and is not a
+  // An |H264SliceMetadata| is unused if it has been outputted and is not a
   // reference picture.
   void DeleteUnused();
   // Removes the reference picture marking from the lowest frame
-  // number H264SliceMetadata object in the DPB. This is used for implementing
-  // a sliding window DPB replacement algorithm.
+  // number |H264SliceMetadata| object in the DPB. This is used for
+  // implementing a sliding window DPB replacement algorithm.
   void UnmarkLowestFrameNumWrapShortRefPic();
-  // Returns a vector of H264SliceMetadata objects that have not been output
+  // Returns a vector of |H264SliceMetadata| objects that have not been output
   // by the H264 Decoder.
   std::vector<H264SliceMetadata*> GetNotOutputtedPicsAppending();
-  // Updates every H264SliceMetadata object in the DPB to indicate that they are
-  // not reference elements.
+  // Updates every |H264SliceMetadata| object in the DPB to indicate that they
+  // are not reference elements.
   void MarkAllUnusedRef();
-  // Updates each H264SliceMetadata object in DPB's frame num wrap
+  // Updates each |H264SliceMetadata| object in DPB's frame num wrap
   // based on the max frame num.
   void UpdatePicNums(const int curr_frame_num, const int max_frame_num);
+  // Removes the reference picture marking from the |H264SliceMetadata| object
+  // in the DPB which has the same picture number as pic_num and is not a long
+  // term picture.
+  void UnmarkPicByPicNum(const int pic_num);
+  // Removes the long term reference marking from a |H264SliceMetadata| object
+  // that has a long term picture number equal to pic_num.
+  void UnmarkLongTerm(const int pic_num);
+  // Returns a short term reference picture from the |H264SliceMetadata|
+  // objects that has a picture number equal to pic_num.
+  H264SliceMetadata* GetShortRefPicByPicNum(const int pic_num);
+  // Returns a long term reference picture from the |H264SliceMetadata|
+  // objects that has a long term frame index equal to frame_index.
+  H264SliceMetadata* GetLongRefPicByFrameIdx(const int frame_index);
+  // Removes long term reference picture marking from |H264SliceMetadata|
+  // objects that have a long term frame index greater than index.
+  void UnmarkLongTermPicsGreaterThanFrameIndex(const int index);
 
   // Maximum number of elements in the DPB. This is utilized by the
   // decoder for updating elements in the DPB.
