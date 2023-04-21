@@ -120,6 +120,7 @@ class ASH_EXPORT VideoConferenceTray
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
   std::u16string GetAccessibleNameForTray() override;
+  std::u16string GetAccessibleNameForBubble() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble() override;
   void HandleLocaleChange() override;

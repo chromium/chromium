@@ -77,4 +77,8 @@ void BubbleView::ChildPreferredSizeChanged(View* child) {
   SizeToContents();
 }
 
+bool BubbleView::CanActivate() const {
+  return true;
+}
+
 }  // namespace ash::video_conference

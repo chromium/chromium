@@ -271,6 +271,12 @@ std::u16string VideoConferenceTray::GetAccessibleNameForTray() {
   return u"Placeholder";
 }
 
+std::u16string VideoConferenceTray::GetAccessibleNameForBubble() {
+  // TODO(b/261640628): Replace this placeholder with the appropriate string,
+  // once it is decided.
+  return u"Placeholder2";
+}
+
 void VideoConferenceTray::HideBubbleWithView(
     const TrayBubbleView* bubble_view) {
   if (bubble_ && bubble_->bubble_view() == bubble_view)

@@ -31,6 +31,9 @@ class BubbleView : public TrayBubbleView {
   void AddedToWidget() override;
   void ChildPreferredSizeChanged(View* child) override;
 
+  // TrayBubbleView:
+  bool CanActivate() const override;
+
  private:
   // Unowned by `BubbleView`.
   VideoConferenceTrayController* controller_;
