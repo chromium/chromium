@@ -152,7 +152,7 @@ void ShelfTooltipManager::OnKeyEvent(ui::KeyEvent* event) {
   Close();
 }
 
-void ShelfTooltipManager::WillChangeVisibilityState(
+void ShelfTooltipManager::OnShelfVisibilityStateChanged(
     ShelfVisibilityState new_state) {
   if (new_state == SHELF_HIDDEN)
     Close();

@@ -307,7 +307,7 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
  protected:
   // ShelfLayoutManagerObserver:
   void WillDeleteShelfLayoutManager() override;
-  void WillChangeVisibilityState(ShelfVisibilityState new_state) override;
+  void OnShelfVisibilityStateChanged(ShelfVisibilityState new_state) override;
   void OnAutoHideStateChanged(ShelfAutoHideState new_state) override;
   void OnBackgroundUpdated(ShelfBackgroundType background_type,
                            AnimationChangeType change_type) override;

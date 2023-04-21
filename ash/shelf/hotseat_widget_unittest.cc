@@ -280,7 +280,7 @@ class ShelfStateWatcher : public ShelfObserver {
   ~ShelfStateWatcher() override {
     AshTestBase::GetPrimaryShelf()->RemoveObserver(this);
   }
-  void WillChangeVisibilityState(ShelfVisibilityState new_state) override {
+  void OnShelfVisibilityStateChanged(ShelfVisibilityState new_state) override {
     state_change_count_++;
   }
   int state_change_count() const { return state_change_count_; }

@@ -44,7 +44,7 @@ class ShelfWindowTargeter : public ::wm::EasyResizeWindowTargeter,
                                ShelfAlignment old_alignment) override;
 
   // ShelfObserver:
-  void WillChangeVisibilityState(ShelfVisibilityState new_state) override;
+  void OnShelfVisibilityStateChanged(ShelfVisibilityState new_state) override;
 
   // Updates `mouse_inset_size_for_shelf_visibility_` and
   // `touch_inset_for_shelf_visibility_`, and runs

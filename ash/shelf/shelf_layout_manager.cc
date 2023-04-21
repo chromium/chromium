@@ -1492,9 +1492,6 @@ void ShelfLayoutManager::SetState(ShelfVisibilityState visibility_state) {
     drag_drop_observer_.reset();
   }
 
-  for (auto& observer : observers_)
-    observer.WillChangeVisibilityState(visibility_state);
-
   StopAutoHideTimer();
 
   State old_state = state_;
@@ -1538,6 +1535,10 @@ void ShelfLayoutManager::SetState(ShelfVisibilityState visibility_state) {
       hotseat_widget, previous_hotseat_state, new_hotseat_state);
 
   UpdateBoundsAndOpacity(true /* animate */);
+
+  for (auto& observer : observers_) {
+    observer.OnShelfVisibilityStateChanged(visibility_state);
+  }
 
   // OnAutoHideStateChanged Should be emitted when:
   //  - firstly state changed to auto-hide from other state

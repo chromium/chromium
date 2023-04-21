@@ -20,8 +20,8 @@ class ASH_EXPORT ShelfLayoutManagerObserver {
   // Called when the target ShelfLayoutManager will be deleted.
   virtual void WillDeleteShelfLayoutManager() {}
 
-  // Called when the visibility change is scheduled.
-  virtual void WillChangeVisibilityState(ShelfVisibilityState new_state) {}
+  // Called when the shelf visibility state changes.
+  virtual void OnShelfVisibilityStateChanged(ShelfVisibilityState new_state) {}
 
   // Called when the auto hide state is changed.
   virtual void OnAutoHideStateChanged(ShelfAutoHideState new_state) {}

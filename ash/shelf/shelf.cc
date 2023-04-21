@@ -314,7 +314,7 @@ class Shelf::AutoDimEventHandler : public ui::EventHandler,
   }
 
   // ShelfObserver:
-  void WillChangeVisibilityState(ShelfVisibilityState new_state) override {
+  void OnShelfVisibilityStateChanged(ShelfVisibilityState new_state) override {
     // Shelf should be undimmed when it is shown.
     if (new_state != ShelfVisibilityState::SHELF_HIDDEN)
       UndimShelf();
@@ -728,17 +728,19 @@ void Shelf::WillDeleteShelfLayoutManager() {
   shelf_layout_manager_ = nullptr;
 }
 
-void Shelf::WillChangeVisibilityState(ShelfVisibilityState new_state) {
-  for (auto& observer : observers_)
-    observer.WillChangeVisibilityState(new_state);
+void Shelf::OnShelfVisibilityStateChanged(ShelfVisibilityState new_state) {
+  if (!auto_dim_event_handler_ && switches::IsUsingShelfAutoDim()) {
+    auto_dim_event_handler_ = std::make_unique<AutoDimEventHandler>(this);
+  }
+
   if (new_state != SHELF_AUTO_HIDE) {
     auto_hide_event_handler_.reset();
   } else if (!auto_hide_event_handler_) {
     auto_hide_event_handler_ = std::make_unique<AutoHideEventHandler>(this);
   }
 
-  if (!auto_dim_event_handler_ && switches::IsUsingShelfAutoDim()) {
-    auto_dim_event_handler_ = std::make_unique<AutoDimEventHandler>(this);
+  for (auto& observer : observers_) {
+    observer.OnShelfVisibilityStateChanged(new_state);
   }
 }
 

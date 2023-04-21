@@ -112,7 +112,7 @@ void ShelfWindowTargeter::OnShelfAlignmentChanged(
   UpdateInsets();
 }
 
-void ShelfWindowTargeter::WillChangeVisibilityState(
+void ShelfWindowTargeter::OnShelfVisibilityStateChanged(
     ShelfVisibilityState new_state) {
   UpdateInsetsForVisibilityState(new_state);
 }
