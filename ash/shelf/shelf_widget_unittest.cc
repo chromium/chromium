@@ -470,7 +470,6 @@ TEST_F(ShelfWidgetTest, HiddenShelfHitTestTouch) {
 
   // Now auto-hide (hidden) the shelf.
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
-  shelf_layout_manager->LayoutShelf();
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf_layout_manager->visibility_state());
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf_layout_manager->auto_hide_state());
   shelf_bounds = shelf_widget->GetWindowBoundsInScreen();
@@ -589,7 +588,6 @@ TEST_F(ShelfWidgetTest, ShelfEdgeOverlappingWindowHitTestMouse) {
   // Change shelf alignment to verify that the targeter insets are updated.
   Shelf* shelf = GetPrimaryShelf();
   shelf->SetAlignment(ShelfAlignment::kLeft);
-  shelf_layout_manager->LayoutShelf();
   shelf_bounds = shelf_widget->GetWindowBoundsInScreen();
   {
     // Create a mouse-event targeting the right edge of the shelf widget. The
@@ -605,7 +603,6 @@ TEST_F(ShelfWidgetTest, ShelfEdgeOverlappingWindowHitTestMouse) {
   // Now restore shelf alignment (bottom) and auto-hide (hidden) the shelf.
   shelf->SetAlignment(ShelfAlignment::kBottom);
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
-  shelf_layout_manager->LayoutShelf();
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf_layout_manager->visibility_state());
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf_layout_manager->auto_hide_state());
   shelf_bounds = shelf_widget->GetWindowBoundsInScreen();

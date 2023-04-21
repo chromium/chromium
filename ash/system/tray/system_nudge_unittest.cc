@@ -91,7 +91,8 @@ class SystemNudgeTest : public AshTestBase {
   ~SystemNudgeTest() override = default;
 
   void SetState(ShelfVisibilityState visibility_state) {
-    GetPrimaryShelf()->shelf_layout_manager()->SetState(visibility_state);
+    GetPrimaryShelf()->shelf_layout_manager()->SetState(visibility_state,
+                                                        /*force_layout=*/false);
   }
 };
 

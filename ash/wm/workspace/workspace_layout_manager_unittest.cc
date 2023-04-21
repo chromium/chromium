@@ -1487,12 +1487,12 @@ TEST_F(WorkspaceLayoutManagerSoloTest, NotResizeWhenScreenIsLocked) {
   // The window size should not get touched while we are in lock screen.
   GetSessionControllerClient()->LockScreen();
   ShelfLayoutManager* shelf_layout_manager = shelf->shelf_layout_manager();
-  shelf_layout_manager->UpdateVisibilityState();
+  shelf_layout_manager->UpdateVisibilityState(/*force_layout=*/false);
   EXPECT_EQ(window_bounds.ToString(), window->bounds().ToString());
 
   // Coming out of the lock screen the window size should still remain.
   GetSessionControllerClient()->UnlockScreen();
-  shelf_layout_manager->UpdateVisibilityState();
+  shelf_layout_manager->UpdateVisibilityState(/*force_layout=*/false);
   EXPECT_EQ(
       screen_util::GetMaximizedWindowBoundsInParent(window.get()).ToString(),
       window_bounds.ToString());
@@ -1679,17 +1679,17 @@ TEST_F(WorkspaceLayoutManagerBackdropTest,
   EXPECT_EQ(fullscreen_size,
             default_container()->children()[0]->bounds().size());
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlwaysHidden);
-  shelf_layout_manager->UpdateVisibilityState();
+  shelf_layout_manager->UpdateVisibilityState(/*force_layout=*/false);
 
   // When the shelf is re-shown WorkspaceLayoutManager shrinks all children but
   // the backdrop.
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kNever);
-  shelf_layout_manager->UpdateVisibilityState();
+  shelf_layout_manager->UpdateVisibilityState(/*force_layout=*/false);
   EXPECT_EQ(fullscreen_size,
             default_container()->children()[0]->bounds().size());
 
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlwaysHidden);
-  shelf_layout_manager->UpdateVisibilityState();
+  shelf_layout_manager->UpdateVisibilityState(/*force_layout=*/false);
   EXPECT_EQ(fullscreen_size,
             default_container()->children()[0]->bounds().size());
 }

@@ -395,7 +395,8 @@ TEST_F(ToastManagerImplTest, PositionWithHotseatExtendedOnSecondMonitor) {
   std::unique_ptr<aura::Window> window(
       CreateTestWindow(gfx::Rect(700, 100, 200, 200)));
   shelf->hotseat_widget()->set_manually_extended(true);
-  shelf->shelf_widget()->shelf_layout_manager()->UpdateVisibilityState();
+  shelf->shelf_widget()->shelf_layout_manager()->UpdateVisibilityState(
+      /*force_layout=*/false);
 
   EXPECT_EQ(hotseat->state(), HotseatState::kExtended);
 
@@ -438,7 +439,8 @@ TEST_F(ToastManagerImplTest, PositionWithHotseatExtendedOnAnotherMonitor) {
 
   // Extend the hotseat on the secondary display.
   shelf->hotseat_widget()->set_manually_extended(true);
-  shelf->shelf_widget()->shelf_layout_manager()->UpdateVisibilityState();
+  shelf->shelf_widget()->shelf_layout_manager()->UpdateVisibilityState(
+      /*force_layout=*/false);
   EXPECT_EQ(hotseat->state(), HotseatState::kExtended);
 
   // Show the toast - should be shown on the primary display (on the display

@@ -502,7 +502,7 @@ void Shelf::SetAlignment(ShelfAlignment alignment) {
   alignment_ = alignment;
   tooltip_->Close();
   if (needs_relayout) {
-    shelf_layout_manager_->LayoutShelf();
+    shelf_layout_manager_->HandleShelfAlignmentChange();
     Shell::Get()->NotifyShelfAlignmentChanged(GetWindow()->GetRootWindow(),
                                               old_alignment);
   }
@@ -552,7 +552,7 @@ ShelfBackgroundType Shelf::GetBackgroundType() const {
 
 void Shelf::UpdateVisibilityState() {
   if (shelf_layout_manager_)
-    shelf_layout_manager_->UpdateVisibilityState();
+    shelf_layout_manager_->UpdateVisibilityState(/*force_layout=*/false);
 }
 
 void Shelf::MaybeUpdateShelfBackground() {

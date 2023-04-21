@@ -980,7 +980,8 @@ void ScrollableShelfView::OnShelfButtonAboutToRequestFocusFromTabTraversal(
   // gets focused, it should update the visibility of the hotseat.
   if (Shell::Get()->IsInTabletMode() &&
       !shelf_widget->hotseat_widget()->IsExtended()) {
-    shelf_widget->shelf_layout_manager()->UpdateVisibilityState();
+    shelf_widget->shelf_layout_manager()->UpdateVisibilityState(
+        /*force_layout=*/false);
   }
 }
 
@@ -999,7 +1000,8 @@ void ScrollableShelfView::HandleAccessibleActionScrollToMakeVisible(
     ShelfButton* button) {
   // Scrollable shelf can only be hidden in tablet mode.
   GetShelf()->hotseat_widget()->set_manually_extended(true);
-  GetShelf()->shelf_widget()->shelf_layout_manager()->UpdateVisibilityState();
+  GetShelf()->shelf_widget()->shelf_layout_manager()->UpdateVisibilityState(
+      /*force_layout=*/false);
 }
 
 void ScrollableShelfView::OnButtonWillBeRemoved() {

@@ -685,7 +685,7 @@ base::ScopedClosureRunner ShelfWidget::ForceShowHotseatInTabletMode() {
   ++force_show_hotseat_count_;
 
   if (force_show_hotseat_count_ == 1)
-    shelf_layout_manager_->UpdateVisibilityState();
+    shelf_layout_manager_->UpdateVisibilityState(/*force_layout=*/false);
 
   return base::ScopedClosureRunner(base::BindOnce(
       &ShelfWidget::ResetForceShowHotseat, weak_ptr_factory_.GetWeakPtr()));
@@ -831,7 +831,6 @@ void ShelfWidget::PostCreateShelf() {
   hotseat_widget()->SetFocusCycler(focus_cycler);
   focus_cycler->AddWidget(status_area_widget());
 
-  shelf_layout_manager_->LayoutShelf();
   shelf_layout_manager_->UpdateAutoHideState();
   ShowIfHidden();
 }
@@ -1201,7 +1200,7 @@ void ShelfWidget::ResetForceShowHotseat() {
   --force_show_hotseat_count_;
 
   if (force_show_hotseat_count_ == 0)
-    shelf_layout_manager_->UpdateVisibilityState();
+    shelf_layout_manager_->UpdateVisibilityState(/*force_layout=*/false);
 }
 
 }  // namespace ash
