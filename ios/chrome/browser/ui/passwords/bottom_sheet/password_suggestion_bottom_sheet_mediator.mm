@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_tab_helper.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_consumer.h"
+#import "ios/chrome/browser/ui/settings/password/saved_passwords_presenter_observer.h"
 #import "ios/chrome/browser/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -28,8 +30,10 @@
 #error "This file requires ARC support."
 #endif
 
-@interface PasswordSuggestionBottomSheetMediator () <WebStateListObserving,
-                                                     CRWWebStateObserver>
+@interface PasswordSuggestionBottomSheetMediator () <
+    WebStateListObserving,
+    CRWWebStateObserver,
+    SavedPasswordsPresenterObserver>
 
 // The object that provides suggestions while filling forms.
 @property(nonatomic, weak) id<FormInputSuggestionsProvider> suggestionsProvider;
@@ -47,6 +51,14 @@
   raw_ptr<WebStateList> _webStateList;
   std::unique_ptr<web::WebStateObserverBridge> _observer;
   std::unique_ptr<ActiveWebStateObservationForwarder> _forwarder;
+
+  // A helper object for passing data about saved passwords from a finished
+  // password store request to the PasswordSuggestionBottomSheetViewController.
+  std::unique_ptr<SavedPasswordsPresenterObserverBridge>
+      _passwordsPresenterObserver;
+
+  // Service which gives us a view on users' saved passwords.
+  raw_ptr<password_manager::SavedPasswordsPresenter> _savedPasswordsPresenter;
 
   // Whether the field that triggered the bottom sheet will need to refocus when
   // the bottom sheet is dismissed. Default is true.
@@ -68,8 +80,10 @@
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                        faviconLoader:(FaviconLoader*)faviconLoader
                          prefService:(PrefService*)prefService
-                              params:
-                                  (const autofill::FormActivityParams&)params {
+                              params:(const autofill::FormActivityParams&)params
+             savedPasswordsPresenter:
+                 (raw_ptr<password_manager::SavedPasswordsPresenter>)
+                     passwordPresenter {
   if (self = [super init]) {
     _needsRefocus = true;
     _frameId = params.frame_id;
@@ -83,6 +97,12 @@
     _observer = std::make_unique<web::WebStateObserverBridge>(self);
     _forwarder = std::make_unique<ActiveWebStateObservationForwarder>(
         webStateList, _observer.get());
+
+    _savedPasswordsPresenter = passwordPresenter;
+    _passwordsPresenterObserver =
+        std::make_unique<SavedPasswordsPresenterObserverBridge>(
+            self, _savedPasswordsPresenter);
+    _savedPasswordsPresenter->Init();
 
     if (activeWebState) {
       FormSuggestionTabHelper* tabHelper =
@@ -109,6 +129,10 @@
 }
 
 - (void)disconnect {
+  DCHECK(_savedPasswordsPresenter);
+  DCHECK(_passwordsPresenterObserver);
+  _savedPasswordsPresenter->RemoveObserver(_passwordsPresenterObserver.get());
+  _passwordsPresenterObserver.reset();
   _prefService = nullptr;
   _faviconLoader = nullptr;
   _webStateList = nullptr;
@@ -209,6 +233,20 @@
 - (void)renderProcessGoneForWebState:(web::WebState*)webState {
   _needsRefocus = false;
   [self.consumer dismiss];
+}
+
+#pragma mark - SavedPasswordsPresenterObserver
+
+- (void)savedPasswordsDidChange {
+  std::vector<password_manager::CredentialUIEntry> savedCredentials =
+      _savedPasswordsPresenter->GetSavedCredentials();
+  if (!savedCredentials.empty()) {
+    // TODO(crbug.com/1422362): Get the CredentialUIEntry associated to this
+    // FormSuggestion. From the saved credentials, we will find the ones
+    // associated with the current suggestions, store them and send that
+    // information to the consumer.
+    [self.consumer setSuggestions:self.suggestions];
+  }
 }
 
 #pragma mark - Private

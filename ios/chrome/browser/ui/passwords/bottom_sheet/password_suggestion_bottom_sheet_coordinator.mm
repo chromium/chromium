@@ -4,9 +4,14 @@
 
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_coordinator.h"
 
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
+#import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/passwords/password_controller_delegate.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_view_controller.h"
@@ -18,6 +23,10 @@
 @interface PasswordSuggestionBottomSheetCoordinator () {
   // The password controller delegate used to open the password manager.
   id<PasswordControllerDelegate> _passwordControllerDelegate;
+
+  // Service which gives us a view on users' saved passwords.
+  std::unique_ptr<password_manager::SavedPasswordsPresenter>
+      _savedPasswordsPresenter;
 }
 
 // This mediator is used to fetch data related to the bottom sheet.
@@ -41,12 +50,25 @@
     _passwordControllerDelegate = delegate;
     self.viewController = [[PasswordSuggestionBottomSheetViewController alloc]
         initWithHandler:self];
+
+    ChromeBrowserState* browserState = self.browser->GetBrowserState();
+    _savedPasswordsPresenter =
+        std::make_unique<password_manager::SavedPasswordsPresenter>(
+            IOSChromeAffiliationServiceFactory::GetForBrowserState(
+                browserState),
+            IOSChromePasswordStoreFactory::GetForBrowserState(
+                browserState, ServiceAccessType::EXPLICIT_ACCESS),
+            IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+                browserState, ServiceAccessType::EXPLICIT_ACCESS));
+
     self.mediator = [[PasswordSuggestionBottomSheetMediator alloc]
-        initWithWebStateList:browser->GetWebStateList()
-               faviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
-                                 browser->GetBrowserState())
-                 prefService:browser->GetBrowserState()->GetPrefs()
-                      params:params];
+           initWithWebStateList:browser->GetWebStateList()
+                  faviconLoader:IOSChromeFaviconLoaderFactory::
+                                    GetForBrowserState(
+                                        browser->GetBrowserState())
+                    prefService:browser->GetBrowserState()->GetPrefs()
+                         params:params
+        savedPasswordsPresenter:_savedPasswordsPresenter.get()];
     self.viewController.delegate = self.mediator;
 
     self.mediator.consumer = self.viewController;

@@ -11,6 +11,10 @@ namespace autofill {
 struct FormActivityParams;
 }  // namespace autofill
 
+namespace password_manager {
+class SavedPasswordsPresenter;
+}  // namespace password_manager
+
 class FaviconLoader;
 class PrefService;
 class WebStateList;
@@ -26,8 +30,10 @@ class WebStateList;
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                        faviconLoader:(FaviconLoader*)faviconLoader
                          prefService:(PrefService*)prefService
-                              params:
-                                  (const autofill::FormActivityParams&)params;
+                              params:(const autofill::FormActivityParams&)params
+             savedPasswordsPresenter:
+                 (raw_ptr<password_manager::SavedPasswordsPresenter>)
+                     passwordPresenter;
 
 // Disconnects the mediator.
 - (void)disconnect;
