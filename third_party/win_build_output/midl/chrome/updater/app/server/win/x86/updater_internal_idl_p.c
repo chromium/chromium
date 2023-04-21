@@ -235,6 +235,12 @@ static const updater_internal_idl_MIDL_PROC_FORMAT_STRING updater_internal_idl__
 
 	/* Procedure Run */
 
+
+	/* Procedure Run */
+
+
+	/* Procedure Run */
+
 			0x33,		/* FC_AUTO_HANDLE */
 			0x6c,		/* Old Flags:  object, Oi2 */
 /*  2 */	NdrFcLong( 0x0 ),	/* 0 */
@@ -252,10 +258,22 @@ static const updater_internal_idl_MIDL_PROC_FORMAT_STRING updater_internal_idl__
 
 	/* Parameter result */
 
+
+	/* Parameter result */
+
+
+	/* Parameter result */
+
 /* 24 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
 /* 26 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
 /* 28 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
+
+	/* Return value */
+
+
+	/* Return value */
+
 
 	/* Return value */
 
@@ -561,7 +579,6 @@ const CInterfaceStubVtbl _IUpdaterInternalCallbackStubVtbl =
 #pragma code_seg(".orpc")
 static const unsigned short IUpdaterInternalCallbackUser_FormatStringOffsetTable[] =
     {
-    0,
     0
     };
 
@@ -588,27 +605,21 @@ static const MIDL_SERVER_INFO IUpdaterInternalCallbackUser_ServerInfo =
     0};
 CINTERFACE_PROXY_VTABLE(4) _IUpdaterInternalCallbackUserProxyVtbl = 
 {
-    0,
+    &IUpdaterInternalCallbackUser_ProxyInfo,
     &IID_IUpdaterInternalCallbackUser,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    0 /* forced delegation IUpdaterInternalCallback::Run */
+    (void *) (INT_PTR) -1 /* IUpdaterInternalCallbackUser::Run */
 };
 
-
-EXTERN_C DECLSPEC_SELECTANY const PRPC_STUB_FUNCTION IUpdaterInternalCallbackUser_table[] =
-{
-    NdrStubCall2
-};
-
-CInterfaceStubVtbl _IUpdaterInternalCallbackUserStubVtbl =
+const CInterfaceStubVtbl _IUpdaterInternalCallbackUserStubVtbl =
 {
     &IID_IUpdaterInternalCallbackUser,
     &IUpdaterInternalCallbackUser_ServerInfo,
     4,
-    &IUpdaterInternalCallbackUser_table[-3],
-    CStdStubBuffer_DELEGATING_METHODS
+    0, /* pure interpreted */
+    CStdStubBuffer_METHODS
 };
 
 
@@ -618,7 +629,6 @@ CInterfaceStubVtbl _IUpdaterInternalCallbackUserStubVtbl =
 #pragma code_seg(".orpc")
 static const unsigned short IUpdaterInternalCallbackSystem_FormatStringOffsetTable[] =
     {
-    0,
     0
     };
 
@@ -645,27 +655,21 @@ static const MIDL_SERVER_INFO IUpdaterInternalCallbackSystem_ServerInfo =
     0};
 CINTERFACE_PROXY_VTABLE(4) _IUpdaterInternalCallbackSystemProxyVtbl = 
 {
-    0,
+    &IUpdaterInternalCallbackSystem_ProxyInfo,
     &IID_IUpdaterInternalCallbackSystem,
     IUnknown_QueryInterface_Proxy,
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
-    0 /* forced delegation IUpdaterInternalCallback::Run */
+    (void *) (INT_PTR) -1 /* IUpdaterInternalCallbackSystem::Run */
 };
 
-
-EXTERN_C DECLSPEC_SELECTANY const PRPC_STUB_FUNCTION IUpdaterInternalCallbackSystem_table[] =
-{
-    NdrStubCall2
-};
-
-CInterfaceStubVtbl _IUpdaterInternalCallbackSystemStubVtbl =
+const CInterfaceStubVtbl _IUpdaterInternalCallbackSystemStubVtbl =
 {
     &IID_IUpdaterInternalCallbackSystem,
     &IUpdaterInternalCallbackSystem_ServerInfo,
     4,
-    &IUpdaterInternalCallbackSystem_table[-3],
-    CStdStubBuffer_DELEGATING_METHODS
+    0, /* pure interpreted */
+    CStdStubBuffer_METHODS
 };
 
 
@@ -887,17 +891,6 @@ PCInterfaceName const _updater_internal_idl_InterfaceNamesList[] =
     0
 };
 
-const IID *  const _updater_internal_idl_BaseIIDList[] = 
-{
-    0,
-    &IID_IUpdaterInternalCallback,   /* forced */
-    &IID_IUpdaterInternalCallback,   /* forced */
-    0,
-    0,
-    0,
-    0
-};
-
 
 #define _updater_internal_idl_CHECK_IID(n)	IID_GENERIC_CHECK_IID( _updater_internal_idl, pIID, n)
 
@@ -917,7 +910,7 @@ EXTERN_C const ExtendedProxyFileInfo updater_internal_idl_ProxyFileInfo =
     (PCInterfaceProxyVtblList *) & _updater_internal_idl_ProxyVtblList,
     (PCInterfaceStubVtblList *) & _updater_internal_idl_StubVtblList,
     (const PCInterfaceName * ) & _updater_internal_idl_InterfaceNamesList,
-    (const IID ** ) & _updater_internal_idl_BaseIIDList,
+    0, /* no delegation */
     & _updater_internal_idl_IID_Lookup, 
     6,
     2,

@@ -11,7 +11,6 @@
 
 *********************************************************/
 
-#define PROXY_DELEGATION
 
 #include <rpcproxy.h>
 

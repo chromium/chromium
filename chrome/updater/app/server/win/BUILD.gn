@@ -6,6 +6,27 @@ import("//build/toolchain/win/midl.gni")
 import("//chrome/updater/branding.gni")
 import("//chrome/version.gni")
 
+# Processes IDL template files into a new IDL template with distinct user and
+# system identities for interfaces that are decorated with `BEGIN_INTERFACE` and
+# `END_INTERFACE`.
+template("generate_user_system_idl") {
+  action(target_name + "_generate_user_system_idl") {
+    script = "generate_user_system_idl.py"
+    inputs = [
+      script,
+      invoker.idl_template_filename,
+    ]
+    output_file = "$target_gen_dir/" + invoker.idl_template_filename
+    args = [
+      "--idl_template_file",
+      rebase_path(invoker.idl_template_filename, root_build_dir),
+      "--idl_output_file",
+      rebase_path(output_file, root_build_dir),
+    ]
+    outputs = [ output_file ]
+  }
+}
+
 # These GUIDs must depend on branding only.
 branding_only_placeholder_guids = [
   "PLACEHOLDER-GUID-69464FF0-D9EC-4037-A35F-8AE4358106CC",  # UpdaterLib
@@ -40,27 +61,18 @@ foreach(guid, branding_only_placeholder_guids) {
 }
 uuid5_guids = string_join(",", uuid5_guids)
 
-action("generate_user_system_idl") {
-  script = "generate_user_system_idl.py"
-  inputs = [ script ]
-  output_file = "$root_gen_dir/chrome/updater/updater_idl.template"
-  args = [
-    "--idl_template_file",
-    rebase_path("updater_idl.template", root_build_dir),
-    "--idl_output_file",
-    rebase_path(output_file, root_build_dir),
-  ]
-  outputs = [ output_file ]
+generate_user_system_idl("updater_idl") {
+  idl_template_filename = "updater_idl.template"
 }
 
 midl("updater_idl_idl") {
   dynamic_guids = "ignore_proxy_stub," + uuid5_guids
 
-  sources = [ "$root_gen_dir/chrome/updater/updater_idl.template" ]
+  sources = [ "$target_gen_dir/updater_idl.template" ]
 
   writes_tlb = true
 
-  deps = [ ":generate_user_system_idl" ]
+  deps = [ ":updater_idl_generate_user_system_idl" ]
 }
 
 # These GUIDs must depend on branding and version.
@@ -83,12 +95,18 @@ foreach(guid, branding_version_placeholder_guids) {
 }
 uuid5_guids = string_join(",", uuid5_guids)
 
+generate_user_system_idl("updater_internal_idl") {
+  idl_template_filename = "updater_internal_idl.template"
+}
+
 midl("updater_internal_idl_idl") {
   dynamic_guids = "ignore_proxy_stub," + uuid5_guids
 
-  sources = [ "updater_internal_idl.template" ]
+  sources = [ "$target_gen_dir/updater_internal_idl.template" ]
 
   writes_tlb = true
+
+  deps = [ ":updater_internal_idl_generate_user_system_idl" ]
 }
 
 updater_legacy_idl_guids = [

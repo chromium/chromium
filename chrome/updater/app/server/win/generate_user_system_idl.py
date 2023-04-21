@@ -77,6 +77,7 @@ Usage:
 
 import getopt
 import json
+import re
 import sys
 
 
@@ -125,7 +126,8 @@ def _GenerateIDLFile(idl_template_filename, idl_output_filename):
             for user_or_system in ['user', 'system']:
                 interface_gen = interface
                 for key, value in dict[user_or_system].items():
-                    interface_gen = interface_gen.replace(key, value)
+                    interface_gen = re.sub(r"\b%s\b" % key, value,
+                                           interface_gen)
                 idl_output += interface_gen
         else:
             idl_output += line

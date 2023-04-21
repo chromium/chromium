@@ -196,13 +196,6 @@ typedef interface IUpdaterSystem IUpdaterSystem;
 #endif 	/* __IUpdaterSystem_FWD_DEFINED__ */
 
 
-#ifndef __IUpdateState_FWD_DEFINED__
-#define __IUpdateState_FWD_DEFINED__
-typedef interface IUpdateState IUpdateState;
-
-#endif 	/* __IUpdateState_FWD_DEFINED__ */
-
-
 #ifndef __IUpdateStateUser_FWD_DEFINED__
 #define __IUpdateStateUser_FWD_DEFINED__
 typedef interface IUpdateStateUser IUpdateStateUser;
@@ -245,13 +238,6 @@ typedef interface IUpdaterObserverSystem IUpdaterObserverSystem;
 #endif 	/* __IUpdaterObserverSystem_FWD_DEFINED__ */
 
 
-#ifndef __IUpdaterCallback_FWD_DEFINED__
-#define __IUpdaterCallback_FWD_DEFINED__
-typedef interface IUpdaterCallback IUpdaterCallback;
-
-#endif 	/* __IUpdaterCallback_FWD_DEFINED__ */
-
-
 #ifndef __IUpdaterCallbackUser_FWD_DEFINED__
 #define __IUpdaterCallbackUser_FWD_DEFINED__
 typedef interface IUpdaterCallbackUser IUpdaterCallbackUser;
@@ -279,7 +265,7 @@ extern "C"{
 #define __IUpdateState_INTERFACE_DEFINED__
 
 /* interface IUpdateState */
-/* [object][unique][helpstring][uuid] */ 
+/* [unique][helpstring][uuid][oleautomation][object] */ 
 
 
 EXTERN_C const IID IID_IUpdateState;
@@ -473,7 +459,7 @@ EXTERN_C const IID IID_IUpdateState;
 #define __IUpdateStateUser_INTERFACE_DEFINED__
 
 /* interface IUpdateStateUser */
-/* [unique][helpstring][uuid][dual][object] */ 
+/* [unique][helpstring][uuid][oleautomation][object] */ 
 
 
 EXTERN_C const IID IID_IUpdateStateUser;
@@ -481,9 +467,42 @@ EXTERN_C const IID IID_IUpdateStateUser;
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
     MIDL_INTERFACE("C3485D9F-C684-4C43-B85B-E339EA395C29")
-    IUpdateStateUser : public IUpdateState
+    IUpdateStateUser : public IUnknown
     {
     public:
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_state( 
+            /* [retval][out] */ LONG *__MIDL__IUpdateStateUser0000) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_appId( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdateStateUser0001) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_nextVersion( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdateStateUser0002) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_downloadedBytes( 
+            /* [retval][out] */ LONGLONG *__MIDL__IUpdateStateUser0003) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_totalBytes( 
+            /* [retval][out] */ LONGLONG *__MIDL__IUpdateStateUser0004) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_installProgress( 
+            /* [retval][out] */ LONG *__MIDL__IUpdateStateUser0005) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_errorCategory( 
+            /* [retval][out] */ LONG *__MIDL__IUpdateStateUser0006) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_errorCode( 
+            /* [retval][out] */ LONG *__MIDL__IUpdateStateUser0007) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_extraCode1( 
+            /* [retval][out] */ LONG *__MIDL__IUpdateStateUser0008) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_installerText( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdateStateUser0009) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_installerCommandLine( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdateStateUser0010) = 0;
+        
     };
     
     
@@ -508,60 +527,60 @@ EXTERN_C const IID IID_IUpdateStateUser;
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IUpdateStateUser * This);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_state)
+        DECLSPEC_XFGVIRT(IUpdateStateUser, get_state)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_state )( 
             IUpdateStateUser * This,
-            /* [retval][out] */ LONG *__MIDL__IUpdateState0000);
+            /* [retval][out] */ LONG *__MIDL__IUpdateStateUser0000);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_appId)
+        DECLSPEC_XFGVIRT(IUpdateStateUser, get_appId)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_appId )( 
             IUpdateStateUser * This,
-            /* [retval][out] */ BSTR *__MIDL__IUpdateState0001);
+            /* [retval][out] */ BSTR *__MIDL__IUpdateStateUser0001);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_nextVersion)
+        DECLSPEC_XFGVIRT(IUpdateStateUser, get_nextVersion)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nextVersion )( 
             IUpdateStateUser * This,
-            /* [retval][out] */ BSTR *__MIDL__IUpdateState0002);
+            /* [retval][out] */ BSTR *__MIDL__IUpdateStateUser0002);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_downloadedBytes)
+        DECLSPEC_XFGVIRT(IUpdateStateUser, get_downloadedBytes)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_downloadedBytes )( 
             IUpdateStateUser * This,
-            /* [retval][out] */ LONGLONG *__MIDL__IUpdateState0003);
+            /* [retval][out] */ LONGLONG *__MIDL__IUpdateStateUser0003);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_totalBytes)
+        DECLSPEC_XFGVIRT(IUpdateStateUser, get_totalBytes)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_totalBytes )( 
             IUpdateStateUser * This,
-            /* [retval][out] */ LONGLONG *__MIDL__IUpdateState0004);
+            /* [retval][out] */ LONGLONG *__MIDL__IUpdateStateUser0004);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_installProgress)
+        DECLSPEC_XFGVIRT(IUpdateStateUser, get_installProgress)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_installProgress )( 
             IUpdateStateUser * This,
-            /* [retval][out] */ LONG *__MIDL__IUpdateState0005);
+            /* [retval][out] */ LONG *__MIDL__IUpdateStateUser0005);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_errorCategory)
+        DECLSPEC_XFGVIRT(IUpdateStateUser, get_errorCategory)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_errorCategory )( 
             IUpdateStateUser * This,
-            /* [retval][out] */ LONG *__MIDL__IUpdateState0006);
+            /* [retval][out] */ LONG *__MIDL__IUpdateStateUser0006);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_errorCode)
+        DECLSPEC_XFGVIRT(IUpdateStateUser, get_errorCode)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_errorCode )( 
             IUpdateStateUser * This,
-            /* [retval][out] */ LONG *__MIDL__IUpdateState0007);
+            /* [retval][out] */ LONG *__MIDL__IUpdateStateUser0007);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_extraCode1)
+        DECLSPEC_XFGVIRT(IUpdateStateUser, get_extraCode1)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_extraCode1 )( 
             IUpdateStateUser * This,
-            /* [retval][out] */ LONG *__MIDL__IUpdateState0008);
+            /* [retval][out] */ LONG *__MIDL__IUpdateStateUser0008);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_installerText)
+        DECLSPEC_XFGVIRT(IUpdateStateUser, get_installerText)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_installerText )( 
             IUpdateStateUser * This,
-            /* [retval][out] */ BSTR *__MIDL__IUpdateState0009);
+            /* [retval][out] */ BSTR *__MIDL__IUpdateStateUser0009);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_installerCommandLine)
+        DECLSPEC_XFGVIRT(IUpdateStateUser, get_installerCommandLine)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_installerCommandLine )( 
             IUpdateStateUser * This,
-            /* [retval][out] */ BSTR *__MIDL__IUpdateState0010);
+            /* [retval][out] */ BSTR *__MIDL__IUpdateStateUser0010);
         
         END_INTERFACE
     } IUpdateStateUserVtbl;
@@ -586,39 +605,38 @@ EXTERN_C const IID IID_IUpdateStateUser;
     ( (This)->lpVtbl -> Release(This) ) 
 
 
-#define IUpdateStateUser_get_state(This,__MIDL__IUpdateState0000)	\
-    ( (This)->lpVtbl -> get_state(This,__MIDL__IUpdateState0000) ) 
+#define IUpdateStateUser_get_state(This,__MIDL__IUpdateStateUser0000)	\
+    ( (This)->lpVtbl -> get_state(This,__MIDL__IUpdateStateUser0000) ) 
 
-#define IUpdateStateUser_get_appId(This,__MIDL__IUpdateState0001)	\
-    ( (This)->lpVtbl -> get_appId(This,__MIDL__IUpdateState0001) ) 
+#define IUpdateStateUser_get_appId(This,__MIDL__IUpdateStateUser0001)	\
+    ( (This)->lpVtbl -> get_appId(This,__MIDL__IUpdateStateUser0001) ) 
 
-#define IUpdateStateUser_get_nextVersion(This,__MIDL__IUpdateState0002)	\
-    ( (This)->lpVtbl -> get_nextVersion(This,__MIDL__IUpdateState0002) ) 
+#define IUpdateStateUser_get_nextVersion(This,__MIDL__IUpdateStateUser0002)	\
+    ( (This)->lpVtbl -> get_nextVersion(This,__MIDL__IUpdateStateUser0002) ) 
 
-#define IUpdateStateUser_get_downloadedBytes(This,__MIDL__IUpdateState0003)	\
-    ( (This)->lpVtbl -> get_downloadedBytes(This,__MIDL__IUpdateState0003) ) 
+#define IUpdateStateUser_get_downloadedBytes(This,__MIDL__IUpdateStateUser0003)	\
+    ( (This)->lpVtbl -> get_downloadedBytes(This,__MIDL__IUpdateStateUser0003) ) 
 
-#define IUpdateStateUser_get_totalBytes(This,__MIDL__IUpdateState0004)	\
-    ( (This)->lpVtbl -> get_totalBytes(This,__MIDL__IUpdateState0004) ) 
+#define IUpdateStateUser_get_totalBytes(This,__MIDL__IUpdateStateUser0004)	\
+    ( (This)->lpVtbl -> get_totalBytes(This,__MIDL__IUpdateStateUser0004) ) 
 
-#define IUpdateStateUser_get_installProgress(This,__MIDL__IUpdateState0005)	\
-    ( (This)->lpVtbl -> get_installProgress(This,__MIDL__IUpdateState0005) ) 
+#define IUpdateStateUser_get_installProgress(This,__MIDL__IUpdateStateUser0005)	\
+    ( (This)->lpVtbl -> get_installProgress(This,__MIDL__IUpdateStateUser0005) ) 
 
-#define IUpdateStateUser_get_errorCategory(This,__MIDL__IUpdateState0006)	\
-    ( (This)->lpVtbl -> get_errorCategory(This,__MIDL__IUpdateState0006) ) 
+#define IUpdateStateUser_get_errorCategory(This,__MIDL__IUpdateStateUser0006)	\
+    ( (This)->lpVtbl -> get_errorCategory(This,__MIDL__IUpdateStateUser0006) ) 
 
-#define IUpdateStateUser_get_errorCode(This,__MIDL__IUpdateState0007)	\
-    ( (This)->lpVtbl -> get_errorCode(This,__MIDL__IUpdateState0007) ) 
+#define IUpdateStateUser_get_errorCode(This,__MIDL__IUpdateStateUser0007)	\
+    ( (This)->lpVtbl -> get_errorCode(This,__MIDL__IUpdateStateUser0007) ) 
 
-#define IUpdateStateUser_get_extraCode1(This,__MIDL__IUpdateState0008)	\
-    ( (This)->lpVtbl -> get_extraCode1(This,__MIDL__IUpdateState0008) ) 
+#define IUpdateStateUser_get_extraCode1(This,__MIDL__IUpdateStateUser0008)	\
+    ( (This)->lpVtbl -> get_extraCode1(This,__MIDL__IUpdateStateUser0008) ) 
 
-#define IUpdateStateUser_get_installerText(This,__MIDL__IUpdateState0009)	\
-    ( (This)->lpVtbl -> get_installerText(This,__MIDL__IUpdateState0009) ) 
+#define IUpdateStateUser_get_installerText(This,__MIDL__IUpdateStateUser0009)	\
+    ( (This)->lpVtbl -> get_installerText(This,__MIDL__IUpdateStateUser0009) ) 
 
-#define IUpdateStateUser_get_installerCommandLine(This,__MIDL__IUpdateState0010)	\
-    ( (This)->lpVtbl -> get_installerCommandLine(This,__MIDL__IUpdateState0010) ) 
-
+#define IUpdateStateUser_get_installerCommandLine(This,__MIDL__IUpdateStateUser0010)	\
+    ( (This)->lpVtbl -> get_installerCommandLine(This,__MIDL__IUpdateStateUser0010) ) 
 
 #endif /* COBJMACROS */
 
@@ -635,7 +653,7 @@ EXTERN_C const IID IID_IUpdateStateUser;
 #define __IUpdateStateSystem_INTERFACE_DEFINED__
 
 /* interface IUpdateStateSystem */
-/* [unique][helpstring][uuid][dual][object] */ 
+/* [unique][helpstring][uuid][oleautomation][object] */ 
 
 
 EXTERN_C const IID IID_IUpdateStateSystem;
@@ -643,9 +661,42 @@ EXTERN_C const IID IID_IUpdateStateSystem;
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
     MIDL_INTERFACE("EA6FDC05-CDC5-4EA4-AB41-CCBD1040A2B5")
-    IUpdateStateSystem : public IUpdateState
+    IUpdateStateSystem : public IUnknown
     {
     public:
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_state( 
+            /* [retval][out] */ LONG *__MIDL__IUpdateStateSystem0000) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_appId( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdateStateSystem0001) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_nextVersion( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdateStateSystem0002) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_downloadedBytes( 
+            /* [retval][out] */ LONGLONG *__MIDL__IUpdateStateSystem0003) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_totalBytes( 
+            /* [retval][out] */ LONGLONG *__MIDL__IUpdateStateSystem0004) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_installProgress( 
+            /* [retval][out] */ LONG *__MIDL__IUpdateStateSystem0005) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_errorCategory( 
+            /* [retval][out] */ LONG *__MIDL__IUpdateStateSystem0006) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_errorCode( 
+            /* [retval][out] */ LONG *__MIDL__IUpdateStateSystem0007) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_extraCode1( 
+            /* [retval][out] */ LONG *__MIDL__IUpdateStateSystem0008) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_installerText( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdateStateSystem0009) = 0;
+        
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_installerCommandLine( 
+            /* [retval][out] */ BSTR *__MIDL__IUpdateStateSystem0010) = 0;
+        
     };
     
     
@@ -670,60 +721,60 @@ EXTERN_C const IID IID_IUpdateStateSystem;
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IUpdateStateSystem * This);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_state)
+        DECLSPEC_XFGVIRT(IUpdateStateSystem, get_state)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_state )( 
             IUpdateStateSystem * This,
-            /* [retval][out] */ LONG *__MIDL__IUpdateState0000);
+            /* [retval][out] */ LONG *__MIDL__IUpdateStateSystem0000);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_appId)
+        DECLSPEC_XFGVIRT(IUpdateStateSystem, get_appId)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_appId )( 
             IUpdateStateSystem * This,
-            /* [retval][out] */ BSTR *__MIDL__IUpdateState0001);
+            /* [retval][out] */ BSTR *__MIDL__IUpdateStateSystem0001);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_nextVersion)
+        DECLSPEC_XFGVIRT(IUpdateStateSystem, get_nextVersion)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nextVersion )( 
             IUpdateStateSystem * This,
-            /* [retval][out] */ BSTR *__MIDL__IUpdateState0002);
+            /* [retval][out] */ BSTR *__MIDL__IUpdateStateSystem0002);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_downloadedBytes)
+        DECLSPEC_XFGVIRT(IUpdateStateSystem, get_downloadedBytes)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_downloadedBytes )( 
             IUpdateStateSystem * This,
-            /* [retval][out] */ LONGLONG *__MIDL__IUpdateState0003);
+            /* [retval][out] */ LONGLONG *__MIDL__IUpdateStateSystem0003);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_totalBytes)
+        DECLSPEC_XFGVIRT(IUpdateStateSystem, get_totalBytes)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_totalBytes )( 
             IUpdateStateSystem * This,
-            /* [retval][out] */ LONGLONG *__MIDL__IUpdateState0004);
+            /* [retval][out] */ LONGLONG *__MIDL__IUpdateStateSystem0004);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_installProgress)
+        DECLSPEC_XFGVIRT(IUpdateStateSystem, get_installProgress)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_installProgress )( 
             IUpdateStateSystem * This,
-            /* [retval][out] */ LONG *__MIDL__IUpdateState0005);
+            /* [retval][out] */ LONG *__MIDL__IUpdateStateSystem0005);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_errorCategory)
+        DECLSPEC_XFGVIRT(IUpdateStateSystem, get_errorCategory)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_errorCategory )( 
             IUpdateStateSystem * This,
-            /* [retval][out] */ LONG *__MIDL__IUpdateState0006);
+            /* [retval][out] */ LONG *__MIDL__IUpdateStateSystem0006);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_errorCode)
+        DECLSPEC_XFGVIRT(IUpdateStateSystem, get_errorCode)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_errorCode )( 
             IUpdateStateSystem * This,
-            /* [retval][out] */ LONG *__MIDL__IUpdateState0007);
+            /* [retval][out] */ LONG *__MIDL__IUpdateStateSystem0007);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_extraCode1)
+        DECLSPEC_XFGVIRT(IUpdateStateSystem, get_extraCode1)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_extraCode1 )( 
             IUpdateStateSystem * This,
-            /* [retval][out] */ LONG *__MIDL__IUpdateState0008);
+            /* [retval][out] */ LONG *__MIDL__IUpdateStateSystem0008);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_installerText)
+        DECLSPEC_XFGVIRT(IUpdateStateSystem, get_installerText)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_installerText )( 
             IUpdateStateSystem * This,
-            /* [retval][out] */ BSTR *__MIDL__IUpdateState0009);
+            /* [retval][out] */ BSTR *__MIDL__IUpdateStateSystem0009);
         
-        DECLSPEC_XFGVIRT(IUpdateState, get_installerCommandLine)
+        DECLSPEC_XFGVIRT(IUpdateStateSystem, get_installerCommandLine)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_installerCommandLine )( 
             IUpdateStateSystem * This,
-            /* [retval][out] */ BSTR *__MIDL__IUpdateState0010);
+            /* [retval][out] */ BSTR *__MIDL__IUpdateStateSystem0010);
         
         END_INTERFACE
     } IUpdateStateSystemVtbl;
@@ -748,39 +799,38 @@ EXTERN_C const IID IID_IUpdateStateSystem;
     ( (This)->lpVtbl -> Release(This) ) 
 
 
-#define IUpdateStateSystem_get_state(This,__MIDL__IUpdateState0000)	\
-    ( (This)->lpVtbl -> get_state(This,__MIDL__IUpdateState0000) ) 
+#define IUpdateStateSystem_get_state(This,__MIDL__IUpdateStateSystem0000)	\
+    ( (This)->lpVtbl -> get_state(This,__MIDL__IUpdateStateSystem0000) ) 
 
-#define IUpdateStateSystem_get_appId(This,__MIDL__IUpdateState0001)	\
-    ( (This)->lpVtbl -> get_appId(This,__MIDL__IUpdateState0001) ) 
+#define IUpdateStateSystem_get_appId(This,__MIDL__IUpdateStateSystem0001)	\
+    ( (This)->lpVtbl -> get_appId(This,__MIDL__IUpdateStateSystem0001) ) 
 
-#define IUpdateStateSystem_get_nextVersion(This,__MIDL__IUpdateState0002)	\
-    ( (This)->lpVtbl -> get_nextVersion(This,__MIDL__IUpdateState0002) ) 
+#define IUpdateStateSystem_get_nextVersion(This,__MIDL__IUpdateStateSystem0002)	\
+    ( (This)->lpVtbl -> get_nextVersion(This,__MIDL__IUpdateStateSystem0002) ) 
 
-#define IUpdateStateSystem_get_downloadedBytes(This,__MIDL__IUpdateState0003)	\
-    ( (This)->lpVtbl -> get_downloadedBytes(This,__MIDL__IUpdateState0003) ) 
+#define IUpdateStateSystem_get_downloadedBytes(This,__MIDL__IUpdateStateSystem0003)	\
+    ( (This)->lpVtbl -> get_downloadedBytes(This,__MIDL__IUpdateStateSystem0003) ) 
 
-#define IUpdateStateSystem_get_totalBytes(This,__MIDL__IUpdateState0004)	\
-    ( (This)->lpVtbl -> get_totalBytes(This,__MIDL__IUpdateState0004) ) 
+#define IUpdateStateSystem_get_totalBytes(This,__MIDL__IUpdateStateSystem0004)	\
+    ( (This)->lpVtbl -> get_totalBytes(This,__MIDL__IUpdateStateSystem0004) ) 
 
-#define IUpdateStateSystem_get_installProgress(This,__MIDL__IUpdateState0005)	\
-    ( (This)->lpVtbl -> get_installProgress(This,__MIDL__IUpdateState0005) ) 
+#define IUpdateStateSystem_get_installProgress(This,__MIDL__IUpdateStateSystem0005)	\
+    ( (This)->lpVtbl -> get_installProgress(This,__MIDL__IUpdateStateSystem0005) ) 
 
-#define IUpdateStateSystem_get_errorCategory(This,__MIDL__IUpdateState0006)	\
-    ( (This)->lpVtbl -> get_errorCategory(This,__MIDL__IUpdateState0006) ) 
+#define IUpdateStateSystem_get_errorCategory(This,__MIDL__IUpdateStateSystem0006)	\
+    ( (This)->lpVtbl -> get_errorCategory(This,__MIDL__IUpdateStateSystem0006) ) 
 
-#define IUpdateStateSystem_get_errorCode(This,__MIDL__IUpdateState0007)	\
-    ( (This)->lpVtbl -> get_errorCode(This,__MIDL__IUpdateState0007) ) 
+#define IUpdateStateSystem_get_errorCode(This,__MIDL__IUpdateStateSystem0007)	\
+    ( (This)->lpVtbl -> get_errorCode(This,__MIDL__IUpdateStateSystem0007) ) 
 
-#define IUpdateStateSystem_get_extraCode1(This,__MIDL__IUpdateState0008)	\
-    ( (This)->lpVtbl -> get_extraCode1(This,__MIDL__IUpdateState0008) ) 
+#define IUpdateStateSystem_get_extraCode1(This,__MIDL__IUpdateStateSystem0008)	\
+    ( (This)->lpVtbl -> get_extraCode1(This,__MIDL__IUpdateStateSystem0008) ) 
 
-#define IUpdateStateSystem_get_installerText(This,__MIDL__IUpdateState0009)	\
-    ( (This)->lpVtbl -> get_installerText(This,__MIDL__IUpdateState0009) ) 
+#define IUpdateStateSystem_get_installerText(This,__MIDL__IUpdateStateSystem0009)	\
+    ( (This)->lpVtbl -> get_installerText(This,__MIDL__IUpdateStateSystem0009) ) 
 
-#define IUpdateStateSystem_get_installerCommandLine(This,__MIDL__IUpdateState0010)	\
-    ( (This)->lpVtbl -> get_installerCommandLine(This,__MIDL__IUpdateState0010) ) 
-
+#define IUpdateStateSystem_get_installerCommandLine(This,__MIDL__IUpdateStateSystem0010)	\
+    ( (This)->lpVtbl -> get_installerCommandLine(This,__MIDL__IUpdateStateSystem0010) ) 
 
 #endif /* COBJMACROS */
 
@@ -797,7 +847,7 @@ EXTERN_C const IID IID_IUpdateStateSystem;
 #define __ICompleteStatus_INTERFACE_DEFINED__
 
 /* interface ICompleteStatus */
-/* [object][unique][oleautomation][uuid] */ 
+/* [unique][helpstring][uuid][oleautomation][object] */ 
 
 
 EXTERN_C const IID IID_ICompleteStatus;
@@ -892,7 +942,7 @@ EXTERN_C const IID IID_ICompleteStatus;
 #define __ICompleteStatusUser_INTERFACE_DEFINED__
 
 /* interface ICompleteStatusUser */
-/* [object][unique][oleautomation][uuid] */ 
+/* [unique][helpstring][uuid][oleautomation][object] */ 
 
 
 EXTERN_C const IID IID_ICompleteStatusUser;
@@ -987,7 +1037,7 @@ EXTERN_C const IID IID_ICompleteStatusUser;
 #define __ICompleteStatusSystem_INTERFACE_DEFINED__
 
 /* interface ICompleteStatusSystem */
-/* [object][unique][oleautomation][uuid] */ 
+/* [unique][helpstring][uuid][oleautomation][object] */ 
 
 
 EXTERN_C const IID IID_ICompleteStatusSystem;
@@ -1082,7 +1132,7 @@ EXTERN_C const IID IID_ICompleteStatusSystem;
 #define __IUpdaterObserver_INTERFACE_DEFINED__
 
 /* interface IUpdaterObserver */
-/* [object][unique][helpstring][uuid] */ 
+/* [unique][helpstring][uuid][oleautomation][object] */ 
 
 
 EXTERN_C const IID IID_IUpdaterObserver;
@@ -1367,7 +1417,7 @@ EXTERN_C const IID IID_IUpdaterObserverSystem;
 #define __IUpdaterCallback_INTERFACE_DEFINED__
 
 /* interface IUpdaterCallback */
-/* [object][unique][helpstring][uuid] */ 
+/* [unique][helpstring][uuid][oleautomation][object] */ 
 
 
 EXTERN_C const IID IID_IUpdaterCallback;
@@ -1451,7 +1501,7 @@ EXTERN_C const IID IID_IUpdaterCallback;
 #define __IUpdaterCallbackUser_INTERFACE_DEFINED__
 
 /* interface IUpdaterCallbackUser */
-/* [unique][helpstring][uuid][dual][object] */ 
+/* [unique][helpstring][uuid][oleautomation][object] */ 
 
 
 EXTERN_C const IID IID_IUpdaterCallbackUser;
@@ -1459,9 +1509,12 @@ EXTERN_C const IID IID_IUpdaterCallbackUser;
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
     MIDL_INTERFACE("34ADC89D-552B-4102-8AE5-D613A691335B")
-    IUpdaterCallbackUser : public IUpdaterCallback
+    IUpdaterCallbackUser : public IUnknown
     {
     public:
+        virtual HRESULT STDMETHODCALLTYPE Run( 
+            /* [in] */ LONG result) = 0;
+        
     };
     
     
@@ -1486,7 +1539,7 @@ EXTERN_C const IID IID_IUpdaterCallbackUser;
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IUpdaterCallbackUser * This);
         
-        DECLSPEC_XFGVIRT(IUpdaterCallback, Run)
+        DECLSPEC_XFGVIRT(IUpdaterCallbackUser, Run)
         HRESULT ( STDMETHODCALLTYPE *Run )( 
             IUpdaterCallbackUser * This,
             /* [in] */ LONG result);
@@ -1517,7 +1570,6 @@ EXTERN_C const IID IID_IUpdaterCallbackUser;
 #define IUpdaterCallbackUser_Run(This,result)	\
     ( (This)->lpVtbl -> Run(This,result) ) 
 
-
 #endif /* COBJMACROS */
 
 
@@ -1533,7 +1585,7 @@ EXTERN_C const IID IID_IUpdaterCallbackUser;
 #define __IUpdaterCallbackSystem_INTERFACE_DEFINED__
 
 /* interface IUpdaterCallbackSystem */
-/* [unique][helpstring][uuid][dual][object] */ 
+/* [unique][helpstring][uuid][oleautomation][object] */ 
 
 
 EXTERN_C const IID IID_IUpdaterCallbackSystem;
@@ -1541,9 +1593,12 @@ EXTERN_C const IID IID_IUpdaterCallbackSystem;
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
     MIDL_INTERFACE("F0D6763A-0182-4136-B1FA-508E334CFFC1")
-    IUpdaterCallbackSystem : public IUpdaterCallback
+    IUpdaterCallbackSystem : public IUnknown
     {
     public:
+        virtual HRESULT STDMETHODCALLTYPE Run( 
+            /* [in] */ LONG result) = 0;
+        
     };
     
     
@@ -1568,7 +1623,7 @@ EXTERN_C const IID IID_IUpdaterCallbackSystem;
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IUpdaterCallbackSystem * This);
         
-        DECLSPEC_XFGVIRT(IUpdaterCallback, Run)
+        DECLSPEC_XFGVIRT(IUpdaterCallbackSystem, Run)
         HRESULT ( STDMETHODCALLTYPE *Run )( 
             IUpdaterCallbackSystem * This,
             /* [in] */ LONG result);
@@ -1599,7 +1654,6 @@ EXTERN_C const IID IID_IUpdaterCallbackSystem;
 #define IUpdaterCallbackSystem_Run(This,result)	\
     ( (This)->lpVtbl -> Run(This,result) ) 
 
-
 #endif /* COBJMACROS */
 
 
@@ -1615,7 +1669,7 @@ EXTERN_C const IID IID_IUpdaterCallbackSystem;
 #define __IUpdater_INTERFACE_DEFINED__
 
 /* interface IUpdater */
-/* [object][unique][helpstring][uuid] */ 
+/* [unique][helpstring][uuid][oleautomation][object] */ 
 
 
 EXTERN_C const IID IID_IUpdater;
@@ -1852,7 +1906,7 @@ EXTERN_C const IID IID_IUpdater;
 #define __IUpdaterUser_INTERFACE_DEFINED__
 
 /* interface IUpdaterUser */
-/* [unique][helpstring][uuid][dual][object] */ 
+/* [unique][helpstring][uuid][oleautomation][object] */ 
 
 
 EXTERN_C const IID IID_IUpdaterUser;
@@ -2089,7 +2143,7 @@ EXTERN_C const IID IID_IUpdaterUser;
 #define __IUpdaterSystem_INTERFACE_DEFINED__
 
 /* interface IUpdaterSystem */
-/* [unique][helpstring][uuid][dual][object] */ 
+/* [unique][helpstring][uuid][oleautomation][object] */ 
 
 
 EXTERN_C const IID IID_IUpdaterSystem;

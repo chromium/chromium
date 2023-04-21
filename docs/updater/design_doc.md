@@ -772,25 +772,77 @@ take priority over `HKLM` entries when UAC is off.
 
 When introducing a new interface, or making an existing interface to be SxS,
 the following steps need to be followed:
-* Add corresponding interfaces with `User` and `System` suffixes that are
-  binary-identical to the non-suffixed interface, to the `.template` IDL file
-  and BUILD files.
-* IDL file changes use the following rules:
-  * If there are no interface parameters in any of the methods of the interface,
-    simply derive the `User` and `System` suffixed interfaces from the
-    non-suffixed interface.
+* Decorate interfaces with distinct user and system identities with
+`BEGIN_INTERFACE` and `END_INTERFACE` in the `.template` IDL file.
 
-    Example: `IUpdaterInternalCallbackUser` and `IUpdaterInternalCallbackSystem`
-    derive from `IUpdaterInternalCallback` in `updater_internal_idl.template`.
-  * If there are interface parameters in any of the methods of the interface,
-    make an exact copy of the non-suffixed interface, but replace any interface
-    parameters with the `User` and `System` suffixed interface equivalents.
+`BEGIN_INTERFACE` takes the placeholder guid, the interface that needs distinct
+identities, as well as any other items that need to be distinct for `user` and
+`system` respectively.
 
-    Example: `IUpdaterInternalUser` and `IUpdaterInternalSystem` are copies of
-    `IUpdaterInternal`, but with the interface parameters of type
-    `IUpdaterInternalCallback` replaced with `IUpdaterInternalCallbackUser` and
-    `IUpdaterInternalCallbackSystem` respectively for the methods `Run` and
-    `Hello` in `updater_internal_idl.template`.
+Here is an example:
+
+```
+BEGIN_INTERFACE(
+  {
+    "user": {
+      "PLACEHOLDER-GUID-2FCD14AF-B645-4351-8359-E80A0E202A0B":
+          "PLACEHOLDER-GUID-9AD1A645-5A4B-4D36-BC21-F0059482E6EA",
+      "ICompleteStatus":"ICompleteStatusUser"
+    },
+    "system": {
+      "PLACEHOLDER-GUID-2FCD14AF-B645-4351-8359-E80A0E202A0B":
+          "PLACEHOLDER-GUID-E2BD9A6B-0A19-4C89-AE8B-B7E9E51D9A07",
+      "ICompleteStatus":"ICompleteStatusSystem"
+    }
+  }
+)
+[
+  uuid(PLACEHOLDER-GUID-2FCD14AF-B645-4351-8359-E80A0E202A0B),
+  oleautomation,
+  pointer_default(unique)
+]
+interface ICompleteStatus : IUnknown {
+  [propget] HRESULT statusCode([out, retval] LONG*);
+  [propget] HRESULT statusMessage([out, retval] BSTR*);
+};
+END_INTERFACE
+```
+
+The example IDL above will produce the following output via the build:
+
+```
+[
+  uuid(PLACEHOLDER-GUID-2FCD14AF-B645-4351-8359-E80A0E202A0B),
+  oleautomation,
+  pointer_default(unique)
+]
+interface ICompleteStatus : IUnknown {
+  [propget] HRESULT statusCode([out, retval] LONG*);
+  [propget] HRESULT statusMessage([out, retval] BSTR*);
+};
+[
+  uuid(PLACEHOLDER-GUID-9AD1A645-5A4B-4D36-BC21-F0059482E6EA),
+  oleautomation,
+  pointer_default(unique)
+]
+interface ICompleteStatusUser : IUnknown {
+  [propget] HRESULT statusCode([out, retval] LONG*);
+  [propget] HRESULT statusMessage([out, retval] BSTR*);
+};
+[
+  uuid(PLACEHOLDER-GUID-E2BD9A6B-0A19-4C89-AE8B-B7E9E51D9A07),
+  oleautomation,
+  pointer_default(unique)
+]
+interface ICompleteStatusSystem : IUnknown {
+  [propget] HRESULT statusCode([out, retval] LONG*);
+  [propget] HRESULT statusMessage([out, retval] BSTR*);
+};
+```
+
+* List the interfaces with `User` and `System` suffixes that are
+  binary-identical to the non-suffixed interface, to the `.template` IDL file's
+  `library` section and `BUILD.gn` files.
 * Code changes:
   * Derive the COM class that implements interface `Interface` from
     `DynamicIIDsImpl<Interface, iid_user, iid_system>`. `iid_user` and
@@ -971,7 +1023,7 @@ Consider the following sequence of updater processes A, B, and C
   3. B: Shared memory `foo` exists. Open the existing shared memory object.
   4. A: Release the mutex lock and `shm_unlink` “foo”. Note: Process B can
      still use the shared memory until it closes it. Future attempts to open
-     `foo` will fail with ENOENT. `foo` can be recreated. 
+     `foo` will fail with ENOENT. `foo` can be recreated.
   5. C:  Shared memory `foo` does not exist. Create the shared memory object.
   6. B: Acquire the mutex lock in shared memory.
   7. C: Creates and acquires the mutex lock in shared memory.
