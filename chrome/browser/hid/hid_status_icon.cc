@@ -51,20 +51,13 @@ std::u16string GetAboutDeviceLabel() {
 // specified origin.
 std::u16string GetOriginConnectionCountLabel(Profile* profile,
                                              const url::Origin& origin,
-                                             int connection_count) {
+                                             int connection_count,
+                                             const std::string& name) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (origin.scheme() == extensions::kExtensionScheme) {
-    const auto* extension_registry =
-        extensions::ExtensionRegistry::Get(profile);
-    DCHECK(extension_registry);
-    const extensions::Extension* extension =
-        extension_registry->GetExtensionById(
-            origin.host(), extensions::ExtensionRegistry::EVERYTHING);
-    // The extension must be installed if we are generating this label.
-    DCHECK(extension);
     return base::i18n::MessageFormatter::FormatWithNumberedArgs(
         l10n_util::GetStringUTF16(IDS_DEVICE_CONNECTED_BY_EXTENSION),
-        connection_count, base::UTF8ToUTF16(extension->name()));
+        connection_count, base::UTF8ToUTF16(name));
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   NOTREACHED_NORETURN();
@@ -181,10 +174,10 @@ void HidStatusIcon::RefreshIcon() {
     auto* connection_tracker =
         HidConnectionTrackerFactory::GetForProfile(profile, /*create=*/false);
     CHECK(connection_tracker);
-    for (const auto& [origin, connection_count] :
-         connection_tracker->origins()) {
+    for (const auto& [origin, state] : connection_tracker->origins()) {
       AddItem(menu.get(),
-              GetOriginConnectionCountLabel(profile, origin, connection_count),
+              GetOriginConnectionCountLabel(profile, origin, state.count,
+                                            state.name),
               base::BindRepeating(&HidStatusIcon::ShowSiteSettings,
                                   profile->GetWeakPtr(), origin));
     }

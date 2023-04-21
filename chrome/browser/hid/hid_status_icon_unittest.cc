@@ -32,19 +32,17 @@ namespace {
 
 std::u16string GetExpectedOriginConnectionCountLabel(Profile* profile,
                                                      const url::Origin& origin,
+                                                     const std::string& name,
                                                      int connection_count) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (origin.scheme() == extensions::kExtensionScheme) {
-    const auto* extension_registry =
-        extensions::ExtensionRegistry::Get(profile);
-    CHECK(extension_registry);
-    const extensions::Extension* extension =
-        extension_registry->GetExtensionById(
-            origin.host(), extensions::ExtensionRegistry::EVERYTHING);
-    CHECK(extension);
+    if (connection_count == 0) {
+      return base::UTF8ToUTF16(base::StringPrintf(
+          "Extension \"%s\" was accessing devices", name.c_str()));
+    }
     return base::UTF8ToUTF16(base::StringPrintf(
-        "Extension \"%s\" is connecting to %d %s", extension->name().c_str(),
-        connection_count, (connection_count == 1 ? "device" : "devices")));
+        "Extension \"%s\" is accessing %d %s", name.c_str(), connection_count,
+        (connection_count <= 1 ? "device" : "devices")));
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   NOTREACHED_NORETURN();
@@ -149,7 +147,7 @@ class HidStatusIconTest : public HidSystemTrayIconTestBase {
       auto sorted_origin_items = origin_items;
       // Sort the |origin_items| by origin. This is necessary because the origin
       // items for each profile in the menu are created by iterating through a
-      // structure of flat_map<url::Origin, int>.
+      // structure of flat_map<url::Origin, ...>.
       base::ranges::sort(sorted_origin_items);
       auto* hid_connection_tracker = static_cast<MockHidConnectionTracker*>(
           HidConnectionTrackerFactory::GetForProfile(profile,
@@ -161,11 +159,11 @@ class HidStatusIconTest : public HidSystemTrayIconTestBase {
       EXPECT_CALL(*hid_connection_tracker, ShowContentSettingsExceptions());
       CheckClickableMenuItem(menu_item, menu_idx++, u"HID settings",
                              expected_command_id++, /*click=*/true);
-      for (const auto& [origin, connection_count] : sorted_origin_items) {
+      for (const auto& [origin, connection_count, name] : sorted_origin_items) {
         EXPECT_CALL(*hid_connection_tracker, ShowSiteSettings(origin));
         CheckClickableMenuItem(menu_item, menu_idx++,
                                GetExpectedOriginConnectionCountLabel(
-                                   profile, origin, connection_count),
+                                   profile, origin, name, connection_count),
                                expected_command_id++, /*click=*/true);
         total_connection_count += connection_count;
       }
@@ -200,8 +198,8 @@ TEST_F(HidStatusIconTest, SingleProfileNonEmptyNameExtentionOrigins) {
   TestSingleProfileExtentionOrigins();
 }
 
-TEST_F(HidStatusIconTest, ProfileShownWhileUnstagingExtensionOrigins) {
-  TestProfileShownWhileUnstagingExtensionOrigins();
+TEST_F(HidStatusIconTest, BounceConnectionExtensionOrigins) {
+  TestBounceConnectionExtensionOrigins();
 }
 
 TEST_F(HidStatusIconTest, MultipleProfilesExtensionOrigins) {
@@ -226,7 +224,8 @@ TEST_F(HidStatusIconTest, NumCommandIdOverLimitExtensionOrigin) {
         HidConnectionTrackerFactory::GetForProfile(profile,
                                                    /*create=*/true);
     connection_tracker->IncrementConnectionCount(extension->origin());
-    profile_connection_counts.push_back({profile, {{extension->origin(), 1}}});
+    profile_connection_counts.push_back(
+        {profile, {{extension->origin(), 1, extension->name()}}});
   }
   CheckIcon(profile_connection_counts);
 
@@ -245,10 +244,15 @@ TEST_F(HidStatusIconTest, NumCommandIdOverLimitExtensionOrigin) {
     // iterating over a flat_map<Profile*, bool> structure, so it needs to
     // identify the last profile by sorting profiles and remove its origin
     // count.
-    profile_connection_counts.push_back({profile, {{extension->origin(), 1}}});
+    profile_connection_counts.push_back(
+        {profile, {{extension->origin(), 1, extension->name()}}});
     base::ranges::sort(profile_connection_counts);
     profile_connection_counts.back().second.clear();
     CheckIcon(profile_connection_counts);
   }
+}
+
+TEST_F(HidStatusIconTest, ExtensionRemoval) {
+  TestExtensionRemoval();
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_HID_HID_SYSTEM_TRAY_ICON_UNITTEST_H_
 
 #include <string>
+#include <tuple>
 
 #include "chrome/browser/hid/hid_connection_tracker.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,7 +24,7 @@ class MockHidConnectionTracker : public HidConnectionTracker {
 
 class HidSystemTrayIconTestBase : public BrowserWithTestWindowTest {
  public:
-  using OriginItem = std::pair<url::Origin, int>;
+  using OriginItem = std::tuple<url::Origin, int, std::string>;
   using ProfileItem = std::pair<Profile*, std::vector<OriginItem>>;
 
   HidSystemTrayIconTestBase()
@@ -53,12 +54,13 @@ class HidSystemTrayIconTestBase : public BrowserWithTestWindowTest {
   // Test the scenario involving multiple profiles including profile
   // destruction.
   void TestMultipleProfiles(
-      const std::vector<std::pair<Profile*, std::vector<url::Origin>>>&
+      const std::vector<
+          std::pair<Profile*,
+                    std::vector<std::pair<url::Origin, std::string>>>>&
           profile_origins_pairs);
 
-  // Test the scenario when a profile is unstaging.
-  void TestProfileShownWhileUnstaging(Profile* profile,
-                                      const url::Origin& origin);
+  // Test the scenario when a device connection is bouncing.
+  void TestBounceConnection(Profile* profile, const url::Origin& origin);
 
   // Test the scenario with single profile.
   void TestSingleProfile(Profile* profile,
@@ -74,14 +76,21 @@ class HidSystemTrayIconTestBase : public BrowserWithTestWindowTest {
   void AddExtensionToProfile(Profile* profile,
                              const extensions::Extension* extension);
 
+  // Unload the |extension| from the |profile|'s extension service.
+  void UnloadExtensionFromProfile(Profile* profile,
+                                  const extensions::Extension* extension);
+
   // Run TestMultipleProfiles with extension origins.
   void TestSingleProfileExtentionOrigins();
 
-  // Run TestProfileShownWhileUnstaging with extension origins.
-  void TestProfileShownWhileUnstagingExtensionOrigins();
+  // Run TestBounceConnection with extension origins.
+  void TestBounceConnectionExtensionOrigins();
 
   // Run TestMultipleProfiles with extension origins.
   void TestMultipleProfilesExtensionOrigins();
+
+  // Test the scenario of removing an extension.
+  void TestExtensionRemoval();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 };
 

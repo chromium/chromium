@@ -13008,8 +13008,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_DEVICE_CONNECTED_BY_EXTENSION" desc="Text for the WebHID system tray icon button that displays how many active connections for the extension and opens the extension's site setting page.">
         {NUM_CONNECTION, plural,
-        =1 {Extension "<ph name="EXTENSION">{1}<ex>Google Translate</ex></ph>" is connecting to {0} device}
-        other {Extension "<ph name="EXTENSION">{1}<ex>Google Translate</ex></ph>" is connecting to {0} devices}}
+        =0 {Extension "<ph name="EXTENSION">{1}<ex>Google Translate</ex></ph>" was accessing devices}
+        =1 {Extension "<ph name="EXTENSION">{1}<ex>Google Translate</ex></ph>" is accessing {0} device}
+        other {Extension "<ph name="EXTENSION">{1}<ex>Google Translate</ex></ph>" is accessing {0} devices}}
       </message>
     </if>
 

@@ -40,6 +40,23 @@ namespace {
 using testing::Pair;
 using testing::UnorderedElementsAre;
 
+const std::string& GetExpectedOriginName(Profile* profile,
+                                         const url::Origin& origin) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (origin.scheme() == extensions::kExtensionScheme) {
+    const auto* extension_registry =
+        extensions::ExtensionRegistry::Get(profile);
+    CHECK(extension_registry);
+    const extensions::Extension* extension =
+        extension_registry->GetExtensionById(
+            origin.host(), extensions::ExtensionRegistry::EVERYTHING);
+    CHECK(extension);
+    return extension->name();
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace
 
 MockHidConnectionTracker::MockHidConnectionTracker(Profile* profile)
@@ -137,86 +154,99 @@ void HidSystemTrayIconTestBase::AddExtensionToProfile(
   }
   extension_service->AddExtension(extension);
 }
+
+void HidSystemTrayIconTestBase::UnloadExtensionFromProfile(
+    Profile* profile,
+    const extensions::Extension* extension) {
+  extensions::TestExtensionSystem* extension_system =
+      static_cast<extensions::TestExtensionSystem*>(
+          extensions::ExtensionSystem::Get(profile));
+  extensions::ExtensionService* extension_service =
+      extension_system->extension_service();
+  CHECK(extension_service);
+  extension_service->UnloadExtension(
+      extension->id(), extensions::UnloadedExtensionReason::UNINSTALL);
+}
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 void HidSystemTrayIconTestBase::TestSingleProfile(Profile* profile,
                                                   const url::Origin& origin1,
                                                   const url::Origin& origin2) {
+  auto origin1_name = GetExpectedOriginName(profile, origin1);
+  auto origin2_name = GetExpectedOriginName(profile, origin2);
   HidConnectionTracker* hid_connection_tracker =
       HidConnectionTrackerFactory::GetForProfile(profile, /*create=*/true);
   CheckIconHidden();
 
   hid_connection_tracker->IncrementConnectionCount(origin1);
-  CheckIcon({{profile, {{origin1, 1}}}});
+  CheckIcon({{profile, {{origin1, 1, origin1_name}}}});
 
   hid_connection_tracker->IncrementConnectionCount(origin1);
-  CheckIcon({{profile, {{origin1, 2}}}});
+  CheckIcon({{profile, {{origin1, 2, origin1_name}}}});
 
   hid_connection_tracker->IncrementConnectionCount(origin1);
-  CheckIcon({{profile, {{origin1, 3}}}});
+  CheckIcon({{profile, {{origin1, 3, origin1_name}}}});
 
   hid_connection_tracker->IncrementConnectionCount(origin2);
-  CheckIcon({{profile, {{origin1, 3}, {origin2, 1}}}});
+  CheckIcon(
+      {{profile, {{origin1, 3, origin1_name}, {origin2, 1, origin2_name}}}});
 
   hid_connection_tracker->DecrementConnectionCount(origin1);
-  CheckIcon({{profile, {{origin1, 2}, {origin2, 1}}}});
+  CheckIcon(
+      {{profile, {{origin1, 2, origin1_name}, {origin2, 1, origin2_name}}}});
 
   hid_connection_tracker->DecrementConnectionCount(origin1);
-  CheckIcon({{profile, {{origin1, 1}, {origin2, 1}}}});
+  CheckIcon(
+      {{profile, {{origin1, 1, origin1_name}, {origin2, 1, origin2_name}}}});
 
+  // Two origins are removed 5 seconds apart.
   hid_connection_tracker->DecrementConnectionCount(origin2);
-  CheckIcon({{profile, {{origin1, 1}}}});
-
+  CheckIcon(
+      {{profile, {{origin1, 1, origin1_name}, {origin2, 0, origin2_name}}}});
+  task_environment()->FastForwardBy(base::Seconds(5));
   hid_connection_tracker->DecrementConnectionCount(origin1);
-  CheckIcon({{profile, {}}});
-  task_environment()->FastForwardBy(HidSystemTrayIcon::kProfileUnstagingTime);
+  CheckIcon(
+      {{profile, {{origin1, 0, origin1_name}, {origin2, 0, origin2_name}}}});
+  task_environment()->FastForwardBy(base::Seconds(5));
+  CheckIcon({{profile, {{origin1, 0, origin1_name}}}});
+  task_environment()->FastForwardBy(base::Seconds(5));
   CheckIconHidden();
 }
 
-void HidSystemTrayIconTestBase::TestProfileShownWhileUnstaging(
+// Simulate a device connection bounce with a duration of 1 microsecond and
+// ensure the profile lingers for 10 seconds.
+void HidSystemTrayIconTestBase::TestBounceConnection(
     Profile* profile,
     const url::Origin& origin) {
+  auto origin_name = GetExpectedOriginName(profile, origin);
   HidConnectionTracker* hid_connection_tracker =
       HidConnectionTrackerFactory::GetForProfile(profile, /*create=*/true);
   CheckIconHidden();
 
-  // Check the profile is visible while unstaging during 1000ms interval and
-  // removed after that.
-  {
-    hid_connection_tracker->IncrementConnectionCount(origin);
-    CheckIcon({{profile, {{origin, 1}}}});
-
-    hid_connection_tracker->DecrementConnectionCount(origin);
-    task_environment()->FastForwardBy(base::Seconds(6));
-    // Connection count is updated immediately while the profile is scheduled
-    // to be removed later.
-    CheckIcon({{profile, {}}});
-    task_environment()->FastForwardBy(base::Seconds(4));
-    CheckIconHidden();
-  }
-
-  // Simulate bouncing the device connection and make sure the profile exist
-  // during 1000ms interval and removed eventually.
-  {
-    hid_connection_tracker->IncrementConnectionCount(origin);
-    CheckIcon({{profile, {{origin, 1}}}});
-    hid_connection_tracker->DecrementConnectionCount(origin);
-    CheckIcon({{profile, {}}});
-    hid_connection_tracker->IncrementConnectionCount(origin);
-    CheckIcon({{profile, {{origin, 1}}}});
-    hid_connection_tracker->DecrementConnectionCount(origin);
-    CheckIcon({{profile, {}}});
-    hid_connection_tracker->IncrementConnectionCount(origin);
-    CheckIcon({{profile, {{origin, 1}}}});
-    hid_connection_tracker->DecrementConnectionCount(origin);
-    CheckIcon({{profile, {}}});
-    task_environment()->FastForwardBy(HidSystemTrayIcon::kProfileUnstagingTime);
-    CheckIconHidden();
-  }
+  hid_connection_tracker->IncrementConnectionCount(origin);
+  CheckIcon({{profile, {{origin, 1, origin_name}}}});
+  task_environment()->FastForwardBy(base::Nanoseconds(100));
+  hid_connection_tracker->DecrementConnectionCount(origin);
+  CheckIcon({{profile, {{origin, 0, origin_name}}}});
+  task_environment()->FastForwardBy(base::Nanoseconds(100));
+  hid_connection_tracker->IncrementConnectionCount(origin);
+  CheckIcon({{profile, {{origin, 1, origin_name}}}});
+  task_environment()->FastForwardBy(base::Nanoseconds(100));
+  hid_connection_tracker->DecrementConnectionCount(origin);
+  CheckIcon({{profile, {{origin, 0, origin_name}}}});
+  task_environment()->FastForwardBy(base::Nanoseconds(100));
+  hid_connection_tracker->IncrementConnectionCount(origin);
+  CheckIcon({{profile, {{origin, 1, origin_name}}}});
+  task_environment()->FastForwardBy(base::Nanoseconds(100));
+  hid_connection_tracker->DecrementConnectionCount(origin);
+  CheckIcon({{profile, {{origin, 0, origin_name}}}});
+  task_environment()->FastForwardBy(HidConnectionTracker::kOriginInactiveTime);
+  CheckIconHidden();
 }
 
 void HidSystemTrayIconTestBase::TestMultipleProfiles(
-    const std::vector<std::pair<Profile*, std::vector<url::Origin>>>&
+    const std::vector<
+        std::pair<Profile*, std::vector<std::pair<url::Origin, std::string>>>>&
         profile_origins_pairs) {
   ASSERT_EQ(profile_origins_pairs.size(), 3u);
   std::vector<HidConnectionTracker*> hid_connection_trackers;
@@ -229,64 +259,89 @@ void HidSystemTrayIconTestBase::TestMultipleProfiles(
 
   // Profile 1 has two connection on the first origin.
   hid_connection_trackers[0]->IncrementConnectionCount(
-      profile_origins_pairs[0].second[0]);
+      profile_origins_pairs[0].second[0].first);
   hid_connection_trackers[0]->IncrementConnectionCount(
-      profile_origins_pairs[0].second[0]);
+      profile_origins_pairs[0].second[0].first);
   CheckIcon({{profile_origins_pairs[0].first,
-              {{profile_origins_pairs[0].second[0], 2}}}});
+              {{profile_origins_pairs[0].second[0].first, 2,
+                profile_origins_pairs[0].second[0].second}}}});
 
   // Profile 2 has one connection for each origin.
   hid_connection_trackers[1]->IncrementConnectionCount(
-      profile_origins_pairs[1].second[0]);
+      profile_origins_pairs[1].second[0].first);
   hid_connection_trackers[1]->IncrementConnectionCount(
-      profile_origins_pairs[1].second[1]);
+      profile_origins_pairs[1].second[1].first);
   CheckIcon({{profile_origins_pairs[0].first,
-              {{profile_origins_pairs[1].second[0], 2}}},
+              {{profile_origins_pairs[1].second[0].first, 2,
+                profile_origins_pairs[1].second[0].second}}},
              {profile_origins_pairs[1].first,
-              {{profile_origins_pairs[1].second[0], 1},
-               {profile_origins_pairs[1].second[1], 1}}}});
+              {{profile_origins_pairs[1].second[0].first, 1,
+                profile_origins_pairs[1].second[0].second},
+               {profile_origins_pairs[1].second[1].first, 1,
+                profile_origins_pairs[1].second[1].second}}}});
 
   // Profile 3 has one connection on the first origin.
   hid_connection_trackers[2]->IncrementConnectionCount(
-      profile_origins_pairs[2].second[0]);
+      profile_origins_pairs[2].second[0].first);
   CheckIcon({{profile_origins_pairs[0].first,
-              {{profile_origins_pairs[1].second[0], 2}}},
+              {{profile_origins_pairs[1].second[0].first, 2,
+                profile_origins_pairs[1].second[0].second}}},
              {profile_origins_pairs[1].first,
-              {{profile_origins_pairs[1].second[0], 1},
-               {profile_origins_pairs[1].second[1], 1}}},
+              {{profile_origins_pairs[1].second[0].first, 1,
+                profile_origins_pairs[1].second[0].second},
+               {profile_origins_pairs[1].second[1].first, 1,
+                profile_origins_pairs[1].second[1].second}}},
              {profile_origins_pairs[2].first,
-              {{profile_origins_pairs[2].second[0], 1}}}});
+              {{profile_origins_pairs[2].second[0].first, 1,
+                profile_origins_pairs[2].second[0].second}}}});
 
   // Destroyed a profile will remove it from being tracked in the hid system
   // tray icon immediately.
   profile_manager()->DeleteTestingProfile(
       profile_origins_pairs[0].first->GetProfileUserName());
   CheckIcon({{profile_origins_pairs[1].first,
-              {{profile_origins_pairs[1].second[0], 1},
-               {profile_origins_pairs[1].second[1], 1}}},
+              {{profile_origins_pairs[1].second[0].first, 1,
+                profile_origins_pairs[1].second[0].second},
+               {profile_origins_pairs[1].second[1].first, 1,
+                profile_origins_pairs[1].second[1].second}}},
              {profile_origins_pairs[2].first,
-              {{profile_origins_pairs[2].second[0], 1}}}});
+              {{profile_origins_pairs[2].second[0].first, 1,
+                profile_origins_pairs[2].second[0].second}}}});
 
   // The remaining two profiles are removed 5 seconds apart.
   hid_connection_trackers[2]->DecrementConnectionCount(
-      profile_origins_pairs[2].second[0]);
+      profile_origins_pairs[2].second[0].first);
   // Connection count is updated immediately while the profile is scheduled
   // to be removed later.
   CheckIcon({{profile_origins_pairs[1].first,
-              {{profile_origins_pairs[1].second[0], 1},
-               {profile_origins_pairs[1].second[1], 1}}},
-             {profile_origins_pairs[2].first, {}}});
+              {{profile_origins_pairs[1].second[0].first, 1,
+                profile_origins_pairs[1].second[0].second},
+               {profile_origins_pairs[1].second[1].first, 1,
+                profile_origins_pairs[1].second[1].second}}},
+             {profile_origins_pairs[2].first,
+              {{profile_origins_pairs[2].second[0].first, 0,
+                profile_origins_pairs[2].second[0].second}}}});
 
   task_environment()->FastForwardBy(base::Seconds(5));
   hid_connection_trackers[1]->DecrementConnectionCount(
-      profile_origins_pairs[1].second[0]);
+      profile_origins_pairs[1].second[0].first);
   hid_connection_trackers[1]->DecrementConnectionCount(
-      profile_origins_pairs[1].second[1]);
-  CheckIcon({{profile_origins_pairs[1].first, {}},
-             {profile_origins_pairs[2].first, {}}});
+      profile_origins_pairs[1].second[1].first);
+  CheckIcon({{profile_origins_pairs[1].first,
+              {{profile_origins_pairs[1].second[0].first, 0,
+                profile_origins_pairs[1].second[0].second},
+               {profile_origins_pairs[1].second[1].first, 0,
+                profile_origins_pairs[1].second[1].second}}},
+             {profile_origins_pairs[2].first,
+              {{profile_origins_pairs[2].second[0].first, 0,
+                profile_origins_pairs[2].second[0].second}}}});
 
   task_environment()->FastForwardBy(base::Seconds(5));
-  CheckIcon({{profile_origins_pairs[1].first, {}}});
+  CheckIcon({{profile_origins_pairs[1].first,
+              {{profile_origins_pairs[1].second[0].first, 0,
+                profile_origins_pairs[1].second[0].second},
+               {profile_origins_pairs[1].second[1].first, 0,
+                profile_origins_pairs[1].second[1].second}}}});
   task_environment()->FastForwardBy(base::Seconds(5));
   CheckIconHidden();
 }
@@ -301,16 +356,16 @@ void HidSystemTrayIconTestBase::TestSingleProfileExtentionOrigins() {
   TestSingleProfile(profile, extension1->origin(), extension2->origin());
 }
 
-void HidSystemTrayIconTestBase::
-    TestProfileShownWhileUnstagingExtensionOrigins() {
+void HidSystemTrayIconTestBase::TestBounceConnectionExtensionOrigins() {
   Profile* profile = CreateTestingProfile("user");
   auto extension = CreateExtensionWithName("Test Extension");
   AddExtensionToProfile(profile, extension.get());
-  TestProfileShownWhileUnstaging(profile, extension->origin());
+  TestBounceConnection(profile, extension->origin());
 }
 
 void HidSystemTrayIconTestBase::TestMultipleProfilesExtensionOrigins() {
-  std::vector<std::pair<Profile*, std::vector<url::Origin>>>
+  std::vector<
+      std::pair<Profile*, std::vector<std::pair<url::Origin, std::string>>>>
       profile_extensions_pairs;
   for (size_t idx = 0; idx < 3; idx++) {
     std::string profile_name = base::StringPrintf("user%zu", idx);
@@ -320,9 +375,35 @@ void HidSystemTrayIconTestBase::TestMultipleProfilesExtensionOrigins() {
     AddExtensionToProfile(profile, extension1.get());
     AddExtensionToProfile(profile, extension2.get());
     profile_extensions_pairs.push_back(
-        {profile, {extension1->origin(), extension2->origin()}});
+        {profile,
+         {{extension1->origin(), extension1->name()},
+          {extension2->origin(), extension2->name()}}});
   }
   TestMultipleProfiles(profile_extensions_pairs);
+}
+
+void HidSystemTrayIconTestBase::TestExtensionRemoval() {
+  Profile* profile = CreateTestingProfile("user");
+  auto extension1 = CreateExtensionWithName("Test Extension 1");
+  auto extension2 = CreateExtensionWithName("Test Extension 2");
+  AddExtensionToProfile(profile, extension1.get());
+  AddExtensionToProfile(profile, extension2.get());
+
+  HidConnectionTracker* hid_connection_tracker =
+      HidConnectionTrackerFactory::GetForProfile(profile, /*create=*/true);
+  hid_connection_tracker->IncrementConnectionCount(extension1->origin());
+  hid_connection_tracker->IncrementConnectionCount(extension2->origin());
+
+  // The name remains available while it is in inactive duration, even if the
+  // extension is removed.
+  hid_connection_tracker->DecrementConnectionCount(extension1->origin());
+  UnloadExtensionFromProfile(profile, extension1.get());
+  // Removing extension2's connection will refresh the tray icon text. We want
+  // to make sure it still shows extension1's name.
+  hid_connection_tracker->DecrementConnectionCount(extension2->origin());
+  CheckIcon({{profile,
+              {{extension1->origin(), 0, "Test Extension 1"},
+               {extension2->origin(), 0, "Test Extension 2"}}}});
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -395,40 +476,6 @@ TEST_F(HidSystemTrayIconTest, ScheduledRemovalFollowedByStageProfile) {
   task_environment()->FastForwardBy(HidSystemTrayIcon::kProfileUnstagingTime);
   EXPECT_THAT(hid_system_tray_icon().GetProfilesForTesting(),
               UnorderedElementsAre(Pair(profile(), true)));
-}
-
-// CleanUpProfile is called after an unstaging profile is destroyed.
-TEST_F(HidSystemTrayIconTest, CleanUpProfileCalledAfterProfileDestroyed) {
-  // This test needs to involve HidConnectionTracker because it is responsible
-  // for removing its profile from the system tray icon during profile
-  // destruction.
-  TestingBrowserProcess::GetGlobal()->SetHidSystemTrayIcon(
-      std::make_unique<MockHidSystemTrayIcon>());
-  auto* hid_system_tray_icon = static_cast<MockHidSystemTrayIcon*>(
-      TestingBrowserProcess::GetGlobal()->hid_system_tray_icon());
-
-  auto origin = url::Origin::Create(GURL("https://www.example.com"));
-  Profile* profile_to_be_destroyed = CreateTestingProfile("user2");
-  auto* connection_tracker = HidConnectionTrackerFactory::GetForProfile(
-      profile_to_be_destroyed, /*create=*/true);
-  EXPECT_CALL(*hid_system_tray_icon, ProfileAdded(profile_to_be_destroyed));
-  connection_tracker->IncrementConnectionCount(origin);
-
-  EXPECT_CALL(*hid_system_tray_icon,
-              NotifyConnectionCountUpdated(profile_to_be_destroyed));
-  connection_tracker->DecrementConnectionCount(origin);
-
-  EXPECT_CALL(*hid_system_tray_icon, ProfileRemoved(profile_to_be_destroyed));
-  profile_manager()->DeleteTestingProfile(
-      profile_to_be_destroyed->GetProfileUserName());
-  EXPECT_TRUE(hid_system_tray_icon->GetProfilesForTesting().empty());
-  testing::Mock::VerifyAndClearExpectations(hid_system_tray_icon);
-
-  // CleanUpProfile callback 10s later will be no-op since the profile is
-  // destroyed.
-  EXPECT_CALL(*hid_system_tray_icon, ProfileRemoved(profile_to_be_destroyed))
-      .Times(0);
-  task_environment()->FastForwardBy(HidSystemTrayIcon::kProfileUnstagingTime);
 }
 
 // Two profiles removed 5 seconds apart.

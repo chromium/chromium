@@ -38,7 +38,7 @@ class HidPinnedNotificationTest : public HidSystemTrayIconTestBase {
     // Check each button label and behavior of clicking the button.
     for (const auto& [profile, origin_items] : profile_connection_counts) {
       size_t total_connection_count = 0;
-      for (const auto& [origin, connection_count] : origin_items) {
+      for (const auto& [origin, connection_count, name] : origin_items) {
         total_connection_count += connection_count;
       }
 
@@ -95,8 +95,8 @@ TEST_F(HidPinnedNotificationTest, SingleProfileEmptyNameExtensionOrigins) {
   TestSingleProfileExtentionOrigins();
 }
 
-TEST_F(HidPinnedNotificationTest, ProfileShownWhileUnstagingExtentionOrigins) {
-  TestProfileShownWhileUnstagingExtensionOrigins();
+TEST_F(HidPinnedNotificationTest, BounceConnectionExtensionOrigins) {
+  TestBounceConnectionExtensionOrigins();
 }
 
 TEST_F(HidPinnedNotificationTest, SingleProfileNonEmptyNameExtentionOrigins) {
@@ -105,5 +105,9 @@ TEST_F(HidPinnedNotificationTest, SingleProfileNonEmptyNameExtentionOrigins) {
 
 TEST_F(HidPinnedNotificationTest, MultipleProfilesExtentionOrigins) {
   TestMultipleProfilesExtensionOrigins();
+}
+
+TEST_F(HidPinnedNotificationTest, ExtensionRemoval) {
+  TestExtensionRemoval();
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
