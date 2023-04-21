@@ -421,8 +421,6 @@ component("headless_non_renderer") {
   deps = [
     ":backend_cdp_bindings",
     ":gen_devtools_client_api",
-    ":version_header",
-    ":version_header",
     "//base:base_static",
     "//base:base_static",
     "//build:branding_buildflags",
@@ -990,13 +988,4 @@ executable("headless_shell") {
   }
 
   configs += [ ":headless_defines_config" ]
-}
-
-process_version("version_header") {
-  template_file = "public/version.h.in"
-  sources = [
-    "//chrome/VERSION",
-    lastchange_file,
-  ]
-  output = "$target_gen_dir/public/version.h"
 }
