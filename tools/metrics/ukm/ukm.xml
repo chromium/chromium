@@ -18777,7 +18777,7 @@ be describing additional metrics about the same event.
 
 <event name="PerformanceManager.PageResourceUsage">
   <owner>anthonyvd@chromium.org</owner>
-  <owner>joenotcharles@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
   <summary>
     Metrics detailing the estimated resources used by pages. The resources of a
     renderer process are allocated to all pages hosted in that process using the

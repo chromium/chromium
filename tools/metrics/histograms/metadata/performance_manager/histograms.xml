@@ -31,7 +31,7 @@ each histogram.
 <histogram
     name="PerformanceManager.V8DetailedMemory.{Destination}.MeasurementMode"
     enum="V8DetailedMemoryMeasurementMode" expires_after="2023-05-23">
-  <owner>joenotcharles@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
     Logged every time V8DetailedMemoryReporter.GetV8MemoryUsage is sent to a

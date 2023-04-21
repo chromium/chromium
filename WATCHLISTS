@@ -699,14 +699,6 @@
                   '|media/capture/video/chromeos/camera_app'\
                   '|media/capture/video/chromeos/mojom/camera_app',
     },
-    'chrome_cleaner': {
-      'filepath': 'chrome/browser/component_updater/sw_reporter_'\
-                  '|chrome/browser/safe_browsing/chrome_cleaner/'\
-                  '|chrome/browser/ui/views/chrome_cleaner_'\
-                  '|chrome/browser/ui/webui/settings/chrome_cleanup_'\
-                  '|chrome/chrome_cleaner/'\
-                  '|components/chrome_cleaner/',
-    },
     'chrome_elf': {
       'filepath': 'chrome/chrome_elf',
     },
@@ -2531,7 +2523,6 @@
                                  'martijn+crwatch@martijnc.be',
                                  'rsleevi+watch@chromium.org'],
     'chrome_camera_app': ['chromeos-camera-app-eng@google.com'],
-    'chrome_cleaner': ['joenotcharles+watch@chromium.org'],
     'chrome_elf': ['caitkp+watch@chromium.org',
                    'pmonette+watch@chromium.org'],
     'chrome_grc': ['chrome-grc-reviews@chromium.org'],

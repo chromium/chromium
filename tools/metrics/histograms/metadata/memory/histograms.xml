@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="HeapProfiling.AndroidStackUnwinder"
     enum="AndroidStackUnwinder" expires_after="2023-09-10">
-  <owner>joenotcharles@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
     The stack unwinder implementation used by the SamplingHeapProfiler. Emitted
@@ -82,7 +82,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="HeapProfiling.InProcess.AndroidNonChromeFrames{Process}"
     units="%" expires_after="2023-06-05">
-  <owner>joenotcharles@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
     For every stack captured by the in-process heap profiler in {Process} on
@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="HeapProfiling.InProcess.AndroidShortStacks{Process}"
     enum="Boolean" expires_after="2023-06-05">
-  <owner>joenotcharles@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
     For every stack captured by the in-process heap profiler in {Process} on
@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="HeapProfiling.InProcess.Enabled{Process}"
     enum="BooleanEnabled" expires_after="2023-06-05">
-  <owner>joenotcharles@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
     One metric is emitted on every process start, recording whether the
@@ -119,7 +119,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="HeapProfiling.InProcess.SamplesPerSnapshot{Process}"
     units="samples" expires_after="2023-06-05">
-  <owner>joenotcharles@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
     The number of samples in a heap snapshot taken in {Process}. Emitted once
@@ -131,7 +131,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="HeapProfiling.InProcess.SnapshotInterval.{Platform}.{RecordingTime}{Process}"
     units="ms" expires_after="2023-06-05">
-  <owner>joenotcharles@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
     The time between heap snapshots taken in {Process} on {Platform}. Emitted
@@ -156,7 +156,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="HeapProfiling.InProcess.TotalSampledMemory{Process}"
     units="MB" expires_after="2023-10-30">
-  <owner>joenotcharles@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
   <owner>etienneb@chromium.org</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
@@ -193,7 +193,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="HeapProfiling.SamplingIntervalKB" units="KB"
     expires_after="2023-08-20">
-  <owner>joenotcharles@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
     The mean number of kilobytes between samples used by the
