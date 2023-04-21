@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/file_preview/file_preview_image_skia_source.h"
-
 #include <array>
 #include <vector>
 
+#include "ash/public/cpp/file_preview/file_preview_controller.h"
+#include "ash/public/cpp/file_preview/file_preview_image_skia_source.h"
 #include "ash/public/cpp/test/test_image_decoder.h"
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
@@ -46,40 +46,15 @@ std::vector<data_decoder::mojom::AnimationFramePtr> TestFrames() {
   return result;
 }
 
-// Test implementation of `FilePreviewImageSkiaSource::Controller` that allows
-// callbacks to be added to be called on `Invalidate()`.
-class TestController : public FilePreviewImageSkiaSource::Controller {
- public:
-  // Adds a callback to be called on `Invalidate()`. The callback will be
-  // removed from the list when the returned `base::CallbackListSubscription` is
-  // destroyed.
-  [[nodiscard]] base::CallbackListSubscription AddInvalidationCallback(
-      base::RepeatingClosure callback) {
-    return invalidation_callbacks_.Add(callback);
-  }
-
-  // FilePreviewImageSkiaSource::Controller:
-  void Invalidate() override { invalidation_callbacks_.Notify(); }
-
- private:
-  base::RepeatingClosureList invalidation_callbacks_;
-};
 }  // namespace
 
-class FilePreviewImageSkiaSourceTest : public testing::Test {
+class FilePreviewTest : public testing::Test {
  public:
-  FilePreviewImageSkiaSourceTest()
+  FilePreviewTest()
       : decoder_(base::BindRepeating(&TestFrames), mock_image_callback_.Get()) {
-    invalidation_subscription_ =
-        controller_.AddInvalidationCallback(base::BindLambdaForTesting([&]() {
-          SkBitmap bitmap = GetBitmap();
-          last_pixel_color_ =
-              bitmap.isNull() ? SK_ColorTRANSPARENT : bitmap.getColor(0, 0);
-        }));
   }
 
-  base::raw_ptr<TestController> controller() { return &controller_; }
-  base::raw_ptr<FilePreviewImageSkiaSource> source() { return source_.get(); }
+  FilePreviewController* controller() { return controller_.get(); }
   SkColor last_pixel_color() const { return last_pixel_color_; }
 
   // testing::Test:
@@ -96,11 +71,21 @@ class FilePreviewImageSkiaSourceTest : public testing::Test {
     return scoped_temp_dir_.GetPath().Append("test_file.gif");
   }
 
-  void SetUpImageSkiaSource(base::FilePath path) {
-    source_ = std::make_unique<FilePreviewImageSkiaSource>(&controller_, path);
+  void SetUpFilePreviewController(base::FilePath path) {
+    controller_ = std::make_unique<FilePreviewController>(std::move(path),
+                                                          gfx::Size(1, 1));
+    invalidation_subscription_ =
+        controller_->AddInvalidationCallback(base::BindLambdaForTesting([&]() {
+          SkBitmap bitmap = GetBitmap();
+          last_pixel_color_ =
+              bitmap.isNull() ? SK_ColorTRANSPARENT : bitmap.getColor(0, 0);
+        }));
   }
 
-  SkBitmap GetBitmap() { return source()->GetImageForScale(1.0f).GetBitmap(); }
+  SkBitmap GetBitmap() {
+    const auto* bitmap_ptr = controller()->GetImageSkiaForTest().bitmap();
+    return bitmap_ptr ? SkBitmap(*bitmap_ptr) : SkBitmap();
+  }
 
   void WaitForInvalidation() {
     base::RunLoop run_loop;
@@ -112,16 +97,15 @@ class FilePreviewImageSkiaSourceTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_dir_;
-  TestController controller_;
+  std::unique_ptr<FilePreviewController> controller_;
   base::MockRepeatingCallback<SkBitmap()> mock_image_callback_;
   TestImageDecoder decoder_;
   SkColor last_pixel_color_ = SK_ColorTRANSPARENT;
   base::CallbackListSubscription invalidation_subscription_;
-  std::unique_ptr<FilePreviewImageSkiaSource> source_;
 };
 
-TEST_F(FilePreviewImageSkiaSourceTest, IsNullForBadPath) {
-  SetUpImageSkiaSource(base::FilePath("does_not_exist.gif"));
+TEST_F(FilePreviewTest, IsNullForBadPath) {
+  SetUpFilePreviewController(base::FilePath("does_not_exist.gif"));
   auto bitmap = GetBitmap();
   EXPECT_TRUE(bitmap.isNull());
 
@@ -132,10 +116,11 @@ TEST_F(FilePreviewImageSkiaSourceTest, IsNullForBadPath) {
   EXPECT_TRUE(bitmap.isNull());
 }
 
-TEST_F(FilePreviewImageSkiaSourceTest, PlaybackModeChange) {
-  SetUpImageSkiaSource(TestFilePath());
+TEST_F(FilePreviewTest, PlaybackModeChange) {
+  SetUpFilePreviewController(base::FilePath(TestFilePath()));
 
-  source()->SetPlaybackMode(FilePreviewImageSkiaSource::PlaybackMode::kLoop);
+  controller()->SetPlaybackMode(
+      FilePreviewImageSkiaSource::PlaybackMode::kLoop);
 
   // Expect frames to automatically update.
   for (auto expected_color : kTestColors) {
@@ -149,7 +134,7 @@ TEST_F(FilePreviewImageSkiaSourceTest, PlaybackModeChange) {
   WaitForInvalidation();
   EXPECT_EQ(last_pixel_color(), kTestColors[1]);
 
-  source()->SetPlaybackMode(
+  controller()->SetPlaybackMode(
       FilePreviewImageSkiaSource::PlaybackMode::kFirstFrame);
 
   EXPECT_EQ(last_pixel_color(), kTestColors[0]);

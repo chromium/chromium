@@ -4,15 +4,18 @@
 
 #include "ash/public/cpp/file_preview/file_preview_image_skia_source.h"
 
+#include "ash/public/cpp/file_preview/file_preview_controller.h"
 #include "ash/public/cpp/image_util.h"
 #include "base/task/delay_policy.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
 namespace ash {
 
-FilePreviewImageSkiaSource::FilePreviewImageSkiaSource(Controller* controller,
-                                                       base::FilePath file_path)
+FilePreviewImageSkiaSource::FilePreviewImageSkiaSource(
+    FilePreviewController* controller,
+    base::FilePath file_path)
     : controller_(controller), file_path_(std::move(file_path)) {}
 
 FilePreviewImageSkiaSource::~FilePreviewImageSkiaSource() = default;
@@ -97,7 +100,7 @@ void FilePreviewImageSkiaSource::Update() {
         base::subtle::DelayPolicy::kPrecise);
   }
 
-  controller_->Invalidate();
+  controller_->Invalidate(base::PassKey<FilePreviewImageSkiaSource>());
 }
 
 gfx::ImageSkiaRep FilePreviewImageSkiaSource::GetImageForScale(float scale) {

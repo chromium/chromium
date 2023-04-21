@@ -14,6 +14,8 @@
 
 namespace ash {
 
+class FilePreviewController;
+
 namespace image_util {
 struct AnimationFrame;
 }  // namespace image_util
@@ -34,16 +36,8 @@ class ASH_PUBLIC_EXPORT FilePreviewImageSkiaSource
     kLoop,
   };
 
-  // TODO(http://b/278602934): Replace this testing interface with a full
-  // `FilePreviewController` implementation and test the implementation of file
-  // preview holisitically.
-  class Controller {
-   public:
-    // Triggers invalidation after the image has changed.
-    virtual void Invalidate() = 0;
-  };
-
-  FilePreviewImageSkiaSource(Controller* controller, base::FilePath file_path);
+  FilePreviewImageSkiaSource(FilePreviewController* controller,
+                             base::FilePath file_path);
 
   FilePreviewImageSkiaSource(const FilePreviewImageSkiaSource&) = delete;
   FilePreviewImageSkiaSource& operator=(const FilePreviewImageSkiaSource&) =
@@ -77,7 +71,7 @@ class ASH_PUBLIC_EXPORT FilePreviewImageSkiaSource
   // triggers invalidation.
   void Update();
 
-  base::raw_ptr<Controller> controller_;
+  base::raw_ptr<FilePreviewController> controller_;
   const base::FilePath file_path_;
   std::vector<image_util::AnimationFrame> frames_;
   size_t frame_index_ = 0;
