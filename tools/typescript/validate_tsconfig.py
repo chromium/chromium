@@ -123,7 +123,7 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'chrome/browser/resources/bluetooth_internals',
       'chrome/browser/resources/chromeos/accessibility',
       'chrome/browser/resources/chromeos/emoji_picker',
-      # TODO(b/279061461): Remove when migration is done.
+      # TODO(b/270653607): Remove when Mojo files have been migrated.
       'chrome/browser/resources/nearby_share',
       # TODO(b/270653607): Remove when Mojo files have been migrated.
       'chrome/browser/resources/nearby_share/shared',

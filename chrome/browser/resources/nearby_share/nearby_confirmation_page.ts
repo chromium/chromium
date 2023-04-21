@@ -12,26 +12,26 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
-import './shared/nearby_page_template.js';
-import './shared/nearby_preview.js';
-import './shared/nearby_progress.js';
+import '/shared/nearby_page_template.js';
+import '/shared/nearby_preview.js';
+import '/shared/nearby_progress.js';
 import './strings.m.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ConfirmationManagerInterface, PayloadPreview, ShareTarget, TransferStatus, TransferUpdateListenerInterface, TransferUpdateListenerPendingReceiver, TransferUpdateListenerReceiver} from '/shared/mojo/nearby_share.mojom-webui.js';
+import {CloseReason} from '/shared/types.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getDiscoveryManager} from './discovery_manager.js';
 import {getTemplate} from './nearby_confirmation_page.html.js';
-import {ConfirmationManagerInterface, PayloadPreview, ShareTarget, TransferStatus, TransferUpdateListenerInterface, TransferUpdateListenerPendingReceiver, TransferUpdateListenerReceiver} from './shared/mojo/nearby_share.mojom-webui.js';
-import {CloseReason} from './shared/types.js';
 
-/** @implements {TransferUpdateListenerInterface} */
-class TransferUpdateListener {
-  /**
-   * @param {!NearbyConfirmationPageElement} page
-   * @param {!TransferUpdateListenerPendingReceiver} transferUpdateListener
-   */
-  constructor(page, transferUpdateListener) {
+class TransferUpdateListener implements TransferUpdateListenerInterface {
+  private page_: NearbyConfirmationPageElement;
+  private transferUpdateListenerReceiver_: TransferUpdateListenerReceiver;
+
+  constructor(
+      page: NearbyConfirmationPageElement,
+      transferUpdateListener: TransferUpdateListenerPendingReceiver) {
     this.page_ = page;
     this.transferUpdateListenerReceiver_ =
         new TransferUpdateListenerReceiver(this);
@@ -40,38 +40,27 @@ class TransferUpdateListener {
   }
 
   /**
-   * @param {!TransferStatus} status The status update.
-   * @param {?string} token The optional token to show to the user.
-   * @private
-   * @override
+   * @param status The status update.
+   * @param token The optional token to show to the user.
    */
-  onTransferUpdate(status, token) {
+  onTransferUpdate(status: TransferStatus, token: string|null) {
     this.page_.onTransferUpdate(status, token);
   }
 }
 
 /**
  * The progress bar asset URL for light mode
- * @type {string}
  */
-const PROGRESS_BAR_URL_LIGHT = 'nearby_share_progress_bar_light.json';
+const PROGRESS_BAR_URL_LIGHT: string = 'nearby_share_progress_bar_light.json';
 
 /**
  * The progress bar asset URL for dark mode
- * @type {string}
  */
-const PROGRESS_BAR_URL_DARK = 'nearby_share_progress_bar_dark.json';
+const PROGRESS_BAR_URL_DARK: string = 'nearby_share_progress_bar_dark.json';
 
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const NearbyConfirmationPageElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const NearbyConfirmationPageElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class NearbyConfirmationPageElement extends
     NearbyConfirmationPageElementBase {
   static get is() {
@@ -132,7 +121,6 @@ export class NearbyConfirmationPageElement extends
        * Token to show to the user to confirm the selected share target.
        * Expected to start as null, then change to a valid object via updates
        * from the transferUpdateListener.
-       * @private {?string}
        */
       confirmationToken_: {
         type: String,
@@ -142,7 +130,6 @@ export class NearbyConfirmationPageElement extends
       /**
        * Header text for error. The error section is not displayed if this is
        * falsey.
-       * @private {?string}
        */
       errorTitle_: {
         type: String,
@@ -151,7 +138,6 @@ export class NearbyConfirmationPageElement extends
 
       /**
        * Description text for error, displayed under the error title.
-       * @private {?string}
        */
       errorDescription_: {
         type: String,
@@ -161,16 +147,12 @@ export class NearbyConfirmationPageElement extends
       /**
        * Whether the user needs to confirm this transfer on the local device.
        * This affects which buttons are displayed to the user.
-       * @private
        * */
       needsConfirmation_: {
         type: Boolean,
         value: false,
       },
 
-      /**
-       * @private {?TransferStatus}
-       */
       lastTransferStatus_: {
         type: TransferStatus,
         value: null,
@@ -178,7 +160,6 @@ export class NearbyConfirmationPageElement extends
 
       /**
        * Whether the confirmation page is being rendered in dark mode.
-       * @private {boolean}
        */
       isDarkModeActive_: {
         type: Boolean,
@@ -188,27 +169,28 @@ export class NearbyConfirmationPageElement extends
     };
   }
 
-  constructor() {
-    super();
+  confirmationManager: ConfirmationManagerInterface;
+  transferUpdateListener: TransferUpdateListenerPendingReceiver|null;
+  shareTarget: ShareTarget|null;
+  payloadPreview: PayloadPreview|null;
 
-    /** @private {?TransferUpdateListener} */
-    this.transferUpdateListener_ = null;
-  }
+  private confirmationToken_: string|null;
+  private errorTitle_: string|null;
+  private errorDescription_: string|null;
+  private needsConfirmation_: boolean;
+  private lastTransferStatus_: TransferStatus;
+  private isDarkModeActive_: boolean;
 
-  /** @override */
-  ready() {
+  private transferUpdateListener_: TransferUpdateListener|null = null;
+
+  override ready() {
     super.ready();
     this.addEventListener('accept', this.onAccept_);
     this.addEventListener('reject', this.onReject_);
     this.addEventListener('cancel', this.onCancel_);
   }
 
-  /**
-   * @param {string} eventName
-   * @param {*=} detail
-   * @private
-   */
-  fire_(eventName, detail) {
+  private fire_(eventName: string, detail: any) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
@@ -226,11 +208,8 @@ export class NearbyConfirmationPageElement extends
     };
   }
 
-  /**
-   * @param {?TransferUpdateListenerPendingReceiver} transferUpdateListener
-   * @private
-   */
-  onTransferUpdateListenerChanged_(transferUpdateListener) {
+  private onTransferUpdateListenerChanged_(
+      transferUpdateListener: TransferUpdateListenerPendingReceiver|null) {
     if (!transferUpdateListener) {
       return;
     }
@@ -240,10 +219,10 @@ export class NearbyConfirmationPageElement extends
   }
 
   /**
-   * @param {!TransferStatus} status The status update.
-   * @param {?string} token The optional token to show to the user.
+   * @param status The status update.
+   * @param token The optional token to show to the user.
    */
-  onTransferUpdate(status, token) {
+  onTransferUpdate(status: TransferStatus, token: string|null) {
     if (token) {
       this.confirmationToken_ = token;
     }
@@ -301,10 +280,9 @@ export class NearbyConfirmationPageElement extends
   }
 
   /**
-   * @return {string} The contact name of the selected ShareTarget.
-   * @private
+   * @return The contact name of the selected ShareTarget.
    */
-  contactName_() {
+  private contactName_(): string {
     // TODO(crbug.com/1123943): Get contact name from ShareTarget.
     const contactName = null;
     if (!contactName || this.errorTitle_) {
@@ -313,60 +291,52 @@ export class NearbyConfirmationPageElement extends
     return this.i18n('nearbyShareConfirmationPageAddContactTitle', contactName);
   }
 
-  /** @private */
-  onAccept_() {
+  private onAccept_() {
     this.confirmationManager.accept().then(
-        result => {
+        _result => {
             // TODO(crbug.com/1123934): Show error if !result.success
         });
   }
 
-  /** @private */
-  onReject_() {
-    this.confirmationManager.reject().then(result => {
+  private onReject_() {
+    this.confirmationManager.reject().then(_result => {
       this.fire_('close', {reason: CloseReason.REJECTED});
     });
   }
 
-  /** @private */
-  onCancel_() {
-    this.confirmationManager.cancel().then(result => {
+  private onCancel_() {
+    this.confirmationManager.cancel().then(_result => {
       this.fire_('close', {reason: CloseReason.CANCELLED});
     });
   }
 
   /**
-   * @param {boolean} needsConfirmation
-   * @return {?string} Localized string or null if the button should be hidden.
+   * @return Localized string or null if the button should be hidden.
    */
-  getActionButtonLabel_(needsConfirmation) {
-    return needsConfirmation ? this.i18n('nearbyShareActionsConfirm') : null;
+  private getActionButtonLabel_(): string|null {
+    return this.needsConfirmation_ ? this.i18n('nearbyShareActionsConfirm') :
+                                     null;
   }
 
   /**
-   * @param {boolean} needsConfirmation
-   * @return {string} Localized string to show on the cancel button.
-   * @private
+   * @return Localized string to show on the cancel button.
    */
-  getCancelButtonLabel_(needsConfirmation) {
-    return needsConfirmation ? this.i18n('nearbyShareActionsReject') :
-                               this.i18n('nearbyShareActionsCancel');
+  private getCancelButtonLabel_(): string {
+    return this.needsConfirmation_ ? this.i18n('nearbyShareActionsReject') :
+                                     this.i18n('nearbyShareActionsCancel');
   }
 
   /**
-   * @param {boolean} needsConfirmation
-   * @return {string} The event name fire when the cancel button is clicked.
-   * @private
+   * @return The event name fire when the cancel button is clicked.
    */
-  getCancelEventName_(needsConfirmation) {
-    return needsConfirmation ? 'reject' : 'cancel';
+  private getCancelEventName_(): string {
+    return this.needsConfirmation_ ? 'reject' : 'cancel';
   }
 
   /**
-   * @return {!string} The title of the attachment to be shared.
-   * @private
+   * @return The title of the attachment to be shared.
    */
-  attachmentTitle_() {
+  private attachmentTitle_(): string {
     return this.payloadPreview && this.payloadPreview.description ?
         this.payloadPreview.description :
         'Unknown file';
@@ -376,7 +346,7 @@ export class NearbyConfirmationPageElement extends
    * Returns the URL for the asset that defines a file transfer's animated
    * progress bar.
    */
-  getAnimationUrl_() {
+  private getAnimationUrl_(): string {
     return this.isDarkModeActive_ ? PROGRESS_BAR_URL_DARK :
                                     PROGRESS_BAR_URL_LIGHT;
   }
