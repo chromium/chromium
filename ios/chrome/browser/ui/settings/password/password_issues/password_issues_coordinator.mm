@@ -163,6 +163,8 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
                           reauthModule:self.reauthModule
                                context:ComputeDetailsContextFromWarningType(
                                            _warningType)];
+  self.passwordDetails.shouldDismissOnAllPasswordsGone =
+      !self.mediator.hasOneIssueLeft;
   self.passwordDetails.delegate = self;
   [self.passwordDetails start];
 }
