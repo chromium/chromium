@@ -33,20 +33,15 @@ std::unique_ptr<LocationProvider> GetCustomLocationProviderForTest(
 class MockLocationObserver {
  public:
   virtual ~MockLocationObserver() = default;
-  void InvalidateLastPosition() {
-    last_position_.latitude = 100;
-    last_position_.error_code = mojom::Geoposition::ErrorCode::NONE;
-    ASSERT_FALSE(ValidateGeoposition(last_position_));
-  }
   void OnLocationUpdate(const LocationProvider* provider,
-                        const mojom::Geoposition& position) {
-    last_position_ = position;
+                        mojom::GeopositionResultPtr result) {
+    last_result_ = std::move(result);
   }
 
-  mojom::Geoposition last_position() { return last_position_; }
+  const mojom::GeopositionResult* last_result() { return last_result_.get(); }
 
  private:
-  mojom::Geoposition last_position_;
+  mojom::GeopositionResultPtr last_result_;
 };
 
 double g_fake_time_now_secs = 1;
@@ -63,14 +58,15 @@ void SetPositionFix(FakeLocationProvider* provider,
                     double latitude,
                     double longitude,
                     double accuracy) {
-  mojom::Geoposition position;
-  position.error_code = mojom::Geoposition::ErrorCode::NONE;
+  auto result =
+      mojom::GeopositionResult::NewPosition(mojom::Geoposition::New());
+  auto& position = *result->get_position();
   position.latitude = latitude;
   position.longitude = longitude;
   position.accuracy = accuracy;
   position.timestamp = GetTimeNowForTest();
   ASSERT_TRUE(ValidateGeoposition(position));
-  provider->HandlePositionChanged(position);
+  provider->HandlePositionChanged(std::move(result));
 }
 
 // TODO(lethalantidote): Populate a Geoposition in the class from kConstants
@@ -148,11 +144,14 @@ class GeolocationLocationArbitratorTest : public testing::Test {
   void CheckLastPositionInfo(double latitude,
                              double longitude,
                              double accuracy) {
-    mojom::Geoposition geoposition = observer_->last_position();
-    EXPECT_TRUE(ValidateGeoposition(geoposition));
-    EXPECT_DOUBLE_EQ(latitude, geoposition.latitude);
-    EXPECT_DOUBLE_EQ(longitude, geoposition.longitude);
-    EXPECT_DOUBLE_EQ(accuracy, geoposition.accuracy);
+    const auto* result = observer_->last_result();
+    EXPECT_TRUE(result && result->is_position());
+    if (result && result->is_position()) {
+      const mojom::Geoposition& geoposition = *result->get_position();
+      EXPECT_DOUBLE_EQ(latitude, geoposition.latitude);
+      EXPECT_DOUBLE_EQ(longitude, geoposition.longitude);
+      EXPECT_DOUBLE_EQ(accuracy, geoposition.accuracy);
+    }
   }
 
   base::TimeDelta SwitchOnFreshnessCliff() {
@@ -212,17 +211,17 @@ TEST_F(GeolocationLocationArbitratorTest, NormalUsageNetwork) {
   EXPECT_FALSE(system_location_provider());
   EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY,
             network_location_provider()->state_);
-  EXPECT_FALSE(ValidateGeoposition(observer_->last_position()));
-  EXPECT_EQ(mojom::Geoposition::ErrorCode::NONE,
-            observer_->last_position().error_code);
+  EXPECT_FALSE(observer_->last_result());
 
   SetReferencePosition(network_location_provider());
 
-  EXPECT_TRUE(ValidateGeoposition(observer_->last_position()) ||
-              observer_->last_position().error_code !=
-                  mojom::Geoposition::ErrorCode::NONE);
-  EXPECT_EQ(network_location_provider()->GetPosition().latitude,
-            observer_->last_position().latitude);
+  ASSERT_TRUE(observer_->last_result());
+  if (observer_->last_result()->is_position()) {
+    ASSERT_TRUE(network_location_provider()->GetPosition());
+    EXPECT_EQ(
+        network_location_provider()->GetPosition()->get_position()->latitude,
+        observer_->last_result()->get_position()->latitude);
+  }
 
   EXPECT_FALSE(network_location_provider()->is_permission_granted());
   EXPECT_FALSE(arbitrator_->HasPermissionBeenGrantedForTest());
@@ -246,17 +245,17 @@ TEST_F(GeolocationLocationArbitratorTest, NormalUsageSystem) {
   ASSERT_TRUE(system_location_provider());
   EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY,
             system_location_provider()->state_);
-  EXPECT_FALSE(ValidateGeoposition(observer_->last_position()));
-  EXPECT_EQ(mojom::Geoposition::ErrorCode::NONE,
-            observer_->last_position().error_code);
+  EXPECT_FALSE(observer_->last_result());
 
   SetReferencePosition(system_location_provider());
 
-  EXPECT_TRUE(ValidateGeoposition(observer_->last_position()) ||
-              observer_->last_position().error_code !=
-                  mojom::Geoposition::ErrorCode::NONE);
-  EXPECT_EQ(system_location_provider()->GetPosition().latitude,
-            observer_->last_position().latitude);
+  ASSERT_TRUE(observer_->last_result());
+  if (observer_->last_result()->is_position()) {
+    ASSERT_TRUE(system_location_provider()->GetPosition());
+    EXPECT_EQ(
+        system_location_provider()->GetPosition()->get_position()->latitude,
+        observer_->last_result()->get_position()->latitude);
+  }
 
   EXPECT_FALSE(system_location_provider()->is_permission_granted());
   EXPECT_FALSE(arbitrator_->HasPermissionBeenGrantedForTest());
@@ -282,17 +281,16 @@ TEST_F(GeolocationLocationArbitratorTest, CustomSystemProviderOnly) {
   EXPECT_FALSE(network_location_provider());
   EXPECT_FALSE(system_location_provider());
   EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY, fake_location_provider->state_);
-  EXPECT_FALSE(ValidateGeoposition(observer_->last_position()));
-  EXPECT_EQ(mojom::Geoposition::ErrorCode::NONE,
-            observer_->last_position().error_code);
+  EXPECT_FALSE(observer_->last_result());
 
   SetReferencePosition(fake_location_provider);
 
-  EXPECT_TRUE(ValidateGeoposition(observer_->last_position()) ||
-              observer_->last_position().error_code !=
-                  mojom::Geoposition::ErrorCode::NONE);
-  EXPECT_EQ(fake_location_provider->GetPosition().latitude,
-            observer_->last_position().latitude);
+  ASSERT_TRUE(observer_->last_result());
+  if (observer_->last_result()->is_position()) {
+    ASSERT_TRUE(fake_location_provider->GetPosition());
+    EXPECT_EQ(fake_location_provider->GetPosition()->get_position()->latitude,
+              observer_->last_result()->get_position()->latitude);
+  }
 
   EXPECT_FALSE(fake_location_provider->is_permission_granted());
   EXPECT_FALSE(arbitrator_->HasPermissionBeenGrantedForTest());

@@ -30,14 +30,15 @@ class CoreLocationProvider : public LocationProvider,
       const LocationProviderUpdateCallback& callback) override;
   void StartProvider(bool high_accuracy) override;
   void StopProvider() override;
-  const mojom::Geoposition& GetPosition() override;
+  const mojom::GeopositionResult* GetPosition() override;
   void OnPermissionGranted() override;
 
  private:
   void StartWatching();
 
   // GeolocationManager::PositionObserver implementation.
-  void OnPositionUpdated(const mojom::Geoposition& location) override;
+  void OnPositionUpdated(const mojom::Geoposition& position) override;
+  void OnPositionError(const mojom::GeopositionError& error) override;
 
   // GeolocationManager::PermissionObserver implementation.
   void OnSystemPermissionUpdated(
@@ -50,7 +51,7 @@ class CoreLocationProvider : public LocationProvider,
   scoped_refptr<GeolocationManager::PermissionObserverList>
       permission_observers_;
   scoped_refptr<GeolocationManager::PositionObserverList> position_observers_;
-  mojom::Geoposition last_position_;
+  mojom::GeopositionResultPtr last_result_;
   LocationProviderUpdateCallback callback_;
   bool has_permission_ = false;
   bool provider_start_attemped_ = false;

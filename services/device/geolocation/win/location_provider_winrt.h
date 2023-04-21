@@ -30,7 +30,7 @@ class LocationProviderWinrt : public LocationProvider {
       const LocationProviderUpdateCallback& callback) override;
   void StartProvider(bool high_accuracy) override;
   void StopProvider() override;
-  const mojom::Geoposition& GetPosition() override;
+  const mojom::GeopositionResult* GetPosition() override;
   void OnPermissionGranted() override;
 
  protected:
@@ -43,7 +43,10 @@ class LocationProviderWinrt : public LocationProvider {
   absl::optional<EventRegistrationToken> status_changed_token_;
 
  private:
-  void HandleErrorCondition(mojom::Geoposition::ErrorCode position_error_code,
+  // Returns true if `last_result_` contains a valid geoposition.
+  bool HasValidLastPosition() const;
+
+  void HandleErrorCondition(mojom::GeopositionErrorCode position_error_code,
                             const std::string& position_error_message);
   void RegisterCallbacks();
   void UnregisterCallbacks();
@@ -55,11 +58,10 @@ class LocationProviderWinrt : public LocationProvider {
       ABI::Windows::Devices::Geolocation::IGeolocator* geo_locator,
       ABI::Windows::Devices::Geolocation::IStatusChangedEventArgs*
           status_update);
-  void PopulateLocationData(
-      ABI::Windows::Devices::Geolocation::IGeoposition* geoposition,
-      mojom::Geoposition* location_data);
+  mojom::GeopositionPtr CreateGeoposition(
+      ABI::Windows::Devices::Geolocation::IGeoposition* geoposition);
 
-  mojom::Geoposition last_position_;
+  mojom::GeopositionResultPtr last_result_;
   LocationProviderUpdateCallback location_update_callback_;
   Microsoft::WRL::ComPtr<ABI::Windows::Devices::Geolocation::IGeolocator>
       geo_locator_;

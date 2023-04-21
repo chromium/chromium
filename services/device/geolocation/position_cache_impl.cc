@@ -19,10 +19,10 @@ const base::TimeDelta PositionCacheImpl::kMaximumLifetime = base::Days(1);
 
 PositionCacheImpl::CacheEntry::CacheEntry(
     const Hash& hash,
-    const mojom::Geoposition& position,
+    mojom::GeopositionPtr position,
     std::unique_ptr<base::OneShotTimer> eviction_timer)
     : hash_(hash),
-      position_(position),
+      position_(std::move(position)),
       eviction_timer_(std::move(eviction_timer)) {}
 PositionCacheImpl::CacheEntry::~CacheEntry() = default;
 PositionCacheImpl::CacheEntry::CacheEntry(CacheEntry&&) = default;
@@ -58,8 +58,9 @@ void PositionCacheImpl::CachePosition(const WifiData& wifi_data,
   const Hash key = MakeKey(wifi_data);
 
   // If the cache is full, remove the oldest entry.
-  if (data_.size() == kMaximumSize)
+  if (data_.size() == kMaximumSize) {
     data_.erase(data_.begin());
+  }
 
   DCHECK_LT(data_.size(), kMaximumSize);
 
@@ -70,7 +71,7 @@ void PositionCacheImpl::CachePosition(const WifiData& wifi_data,
                         base::BindOnce(&PositionCacheImpl::EvictEntry,
                                        base::Unretained(this), key));
 
-  data_.emplace_back(key, position, std::move(eviction_timer));
+  data_.emplace_back(key, position.Clone(), std::move(eviction_timer));
 }
 
 const mojom::Geoposition* PositionCacheImpl::FindPosition(
@@ -84,15 +85,15 @@ size_t PositionCacheImpl::GetPositionCacheSize() const {
   return data_.size();
 }
 
-const mojom::Geoposition& PositionCacheImpl::GetLastUsedNetworkPosition()
+const mojom::GeopositionResult* PositionCacheImpl::GetLastUsedNetworkPosition()
     const {
   GEOLOCATION_LOG(DEBUG) << "Get last used network position";
-  return last_used_position_;
+  return last_used_result_.get();
 }
 
 void PositionCacheImpl::SetLastUsedNetworkPosition(
-    const mojom::Geoposition& position) {
-  last_used_position_ = position;
+    const mojom::GeopositionResult& result) {
+  last_used_result_ = result.Clone();
 }
 
 void PositionCacheImpl::OnNetworkChanged(
@@ -103,7 +104,7 @@ void PositionCacheImpl::OnNetworkChanged(
   // take to any network server.". This means that whatever position we had
   // stored for a wired connection (empty WifiData) could have become stale.
   EvictEntry(MakeKey(WifiData()));
-  last_used_position_ = {};
+  last_used_result_.reset();
 }
 
 void PositionCacheImpl::EvictEntry(const Hash& hash) {

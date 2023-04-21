@@ -35,18 +35,16 @@ class PublicIpAddressLocationNotifierTest : public testing::Test {
     // Optional. Wait until the callback from MakeCallback() is called.
     void Wait() { loop_.Run(); }
 
-    const absl::optional<mojom::Geoposition>& position() const {
-      return position_;
-    }
+    const mojom::GeopositionResult* result() const { return result_.get(); }
 
    private:
-    void OnQueryNextPositionResponse(const mojom::Geoposition& position) {
-      position_ = position;
+    void OnQueryNextPositionResponse(mojom::GeopositionResultPtr result) {
+      result_ = std::move(result);
       loop_.Quit();
     }
 
     base::RunLoop loop_;
-    absl::optional<mojom::Geoposition> position_;
+    mojom::GeopositionResultPtr result_;
   };
 
   PublicIpAddressLocationNotifierTest()
@@ -106,19 +104,18 @@ class PublicIpAddressLocationNotifierTest : public testing::Test {
     test_url_loader_factory_.ClearResponses();
   }
 
-  // Expects a non-empty and valid Geoposition, including the specified
-  // |latitude|.
-  void ExpectValidPosition(const absl::optional<mojom::Geoposition>& position,
+  // Expects a valid Geoposition with the specified |latitude|.
+  void ExpectValidPosition(const mojom::GeopositionResult* result,
                            const float latitude) {
-    ASSERT_TRUE(position);
-    EXPECT_TRUE(ValidateGeoposition(*position));
-    EXPECT_FLOAT_EQ(position->latitude, latitude);
+    ASSERT_TRUE(result && result->is_position());
+    EXPECT_TRUE(ValidateGeoposition(*result->get_position()));
+    EXPECT_FLOAT_EQ(result->get_position()->latitude, latitude);
   }
 
-  void ExpectError(const absl::optional<mojom::Geoposition>& position) {
-    ASSERT_TRUE(position);
-    EXPECT_THAT(position->error_code,
-                mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE);
+  void ExpectError(const mojom::GeopositionResult* result) {
+    ASSERT_TRUE(result && result->is_error());
+    EXPECT_THAT(result->get_error()->error_code,
+                mojom::GeopositionErrorCode::kPositionUnavailable);
   }
 
   // Use a TaskRunner on which we can fast-forward time.
@@ -148,7 +145,7 @@ TEST_F(PublicIpAddressLocationNotifierTest, SingleQueryReturns) {
   RespondToFetchWithLatitude(1.0f);
 
   // Expect the query to return.
-  ExpectValidPosition(query.position(), 1.0f);
+  ExpectValidPosition(query.result(), 1.0f);
 }
 
 // Tests that a second query asking for an older timestamp gets a cached result.
@@ -160,7 +157,7 @@ TEST_F(PublicIpAddressLocationNotifierTest, OlderQueryReturnsCached) {
   notifier_.QueryNextPosition(time, PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
                               query_1.MakeCallback());
   RespondToFetchWithLatitude(1.0f);
-  ExpectValidPosition(query_1.position(), 1.0f);
+  ExpectValidPosition(query_1.result(), 1.0f);
 
   // Second query for an earlier time.
   TestPositionQuery query_2;
@@ -170,7 +167,7 @@ TEST_F(PublicIpAddressLocationNotifierTest, OlderQueryReturnsCached) {
   // Expect a cached result, so no new network request.
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
   // Expect the same result as query_1.
-  ExpectValidPosition(query_2.position(), 1.0f);
+  ExpectValidPosition(query_2.result(), 1.0f);
 }
 
 // Tests that a subsequent query seeking a newer geoposition does not return,
@@ -183,16 +180,17 @@ TEST_F(PublicIpAddressLocationNotifierTest,
                               PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
                               query_1.MakeCallback());
   RespondToFetchWithLatitude(1.0f);
-  ExpectValidPosition(query_1.position(), 1.0f);
+  ASSERT_TRUE(query_1.result()->is_position());
+  ExpectValidPosition(query_1.result(), 1.0f);
 
   // Second query seeking a position newer than the result of query_1.
   TestPositionQuery query_2;
-  notifier_.QueryNextPosition(query_1.position()->timestamp,
+  notifier_.QueryNextPosition(query_1.result()->get_position()->timestamp,
                               PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
                               query_2.MakeCallback());
   // Expect no network request or callback.
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
-  EXPECT_FALSE(query_2.position().has_value());
+  EXPECT_FALSE(query_2.result());
 
   // Fake a network change notification.
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
@@ -202,7 +200,7 @@ TEST_F(PublicIpAddressLocationNotifierTest,
 
   // Now expect a network request and query_2 to return.
   RespondToFetchWithLatitude(2.0f);
-  ExpectValidPosition(query_2.position(), 2.0f);
+  ExpectValidPosition(query_2.result(), 2.0f);
 }
 
 // Tests that multiple network changes in a short time result in only one
@@ -215,16 +213,17 @@ TEST_F(PublicIpAddressLocationNotifierTest,
                               PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
                               query_1.MakeCallback());
   RespondToFetchWithLatitude(1.0f);
-  ExpectValidPosition(query_1.position(), 1.0f);
+  ASSERT_TRUE(query_1.result()->is_position());
+  ExpectValidPosition(query_1.result(), 1.0f);
 
   // Second query seeking a position newer than the result of query_1.
   TestPositionQuery query_2;
-  notifier_.QueryNextPosition(query_1.position()->timestamp,
+  notifier_.QueryNextPosition(query_1.result()->get_position()->timestamp,
                               PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
                               query_2.MakeCallback());
   // Expect no network request or callback since network has not changed.
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
-  EXPECT_FALSE(query_2.position().has_value());
+  EXPECT_FALSE(query_2.result());
 
   // Fake several consecutive network changes notification.
   for (int i = 0; i < 10; ++i) {
@@ -234,14 +233,14 @@ TEST_F(PublicIpAddressLocationNotifierTest,
   }
   // Expect still no network request or callback.
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
-  EXPECT_FALSE(query_2.position().has_value());
+  EXPECT_FALSE(query_2.result());
 
   // Wait longer.
   task_environment_.FastForwardUntilNoTasksRemain();
 
   // Now expect a network request & query_2 to return.
   RespondToFetchWithLatitude(2.0f);
-  ExpectValidPosition(query_2.position(), 2.0f);
+  ExpectValidPosition(query_2.result(), 2.0f);
 }
 
 // Tests multiple waiting queries.
@@ -252,22 +251,23 @@ TEST_F(PublicIpAddressLocationNotifierTest, MutipleWaitingQueries) {
                               PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
                               query_1.MakeCallback());
   RespondToFetchWithLatitude(1.0f);
-  ExpectValidPosition(query_1.position(), 1.0f);
+  ASSERT_TRUE(query_1.result()->is_position());
+  ExpectValidPosition(query_1.result(), 1.0f);
 
   // Multiple queries seeking positions newer than the result of query_1.
   TestPositionQuery query_2;
-  notifier_.QueryNextPosition(query_1.position()->timestamp,
+  notifier_.QueryNextPosition(query_1.result()->get_position()->timestamp,
                               PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
                               query_2.MakeCallback());
   TestPositionQuery query_3;
-  notifier_.QueryNextPosition(query_1.position()->timestamp,
+  notifier_.QueryNextPosition(query_1.result()->get_position()->timestamp,
                               PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
                               query_3.MakeCallback());
 
   // Expect no network requests or callback since network has not changed.
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
-  EXPECT_FALSE(query_2.position().has_value());
-  EXPECT_FALSE(query_3.position().has_value());
+  EXPECT_FALSE(query_2.result());
+  EXPECT_FALSE(query_3.result());
 
   // Fake a network change notification.
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
@@ -278,8 +278,8 @@ TEST_F(PublicIpAddressLocationNotifierTest, MutipleWaitingQueries) {
   // Now expect a network request & fake a valid response.
   RespondToFetchWithLatitude(2.0f);
   // Expect all queries to now return.
-  ExpectValidPosition(query_2.position(), 2.0f);
-  ExpectValidPosition(query_3.position(), 2.0f);
+  ExpectValidPosition(query_2.result(), 2.0f);
+  ExpectValidPosition(query_3.result(), 2.0f);
 }
 
 // Tests that server error is propagated to the client.
@@ -292,7 +292,7 @@ TEST_F(PublicIpAddressLocationNotifierTest, ServerError) {
   // Expect a URL fetch & send a valid response.
   RespondToFetchWithServerError();
   // Expect the query to return.
-  ExpectError(query.position());
+  ExpectError(query.result());
 }
 
 }  // namespace device

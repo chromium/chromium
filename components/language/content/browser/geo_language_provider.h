@@ -97,7 +97,7 @@ class GeoLanguageProvider {
   void SetGeoLanguages(const std::vector<std::string>& languages);
 
   // Callback for updates from |ip_geolocation_service_|.
-  void OnIpGeolocationResponse(device::mojom::GeopositionPtr geoposition);
+  void OnIpGeolocationResponse(device::mojom::GeopositionResultPtr result);
 
   // List of BCP-47 language code inferred from public-IP geolocation.
   // May be empty. See comment on CurrentGeoLanguages() above.

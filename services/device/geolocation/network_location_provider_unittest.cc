@@ -52,15 +52,16 @@ struct LocationUpdateListener {
                                      base::Unretained(this))) {}
 
   void OnLocationUpdate(const LocationProvider* provider,
-                        const mojom::Geoposition& position) {
-    last_position = position;
+                        mojom::GeopositionResultPtr result) {
+    last_result = std::move(result);
     update_count++;
-    if (position.error_code != mojom::Geoposition::ErrorCode::NONE)
+    if (last_result->is_error()) {
       error_count++;
+    }
   }
 
   const LocationProvider::LocationProviderUpdateCallback callback;
-  mojom::Geoposition last_position;
+  mojom::GeopositionResultPtr last_result;
   int update_count = 0;
   int error_count = 0;
 };
@@ -227,8 +228,10 @@ class GeolocationNetworkProviderTest : public testing::Test {
     }
   }
 
-  static mojom::Geoposition CreateReferencePosition(int id) {
-    mojom::Geoposition pos;
+  static mojom::GeopositionResultPtr CreateReferencePosition(int id) {
+    auto result =
+        mojom::GeopositionResult::NewPosition(mojom::Geoposition::New());
+    mojom::Geoposition& pos = *result->get_position();
     pos.latitude = id;
     pos.longitude = -(id + 1);
     pos.altitude = 2 * id;
@@ -237,7 +240,7 @@ class GeolocationNetworkProviderTest : public testing::Test {
     // base::time::Now() as well as not old enough to be considered invalid
     // (kLastPositionMaxAgeSeconds)
     pos.timestamp = base::Time::Now() - base::Minutes(5);
-    return pos;
+    return result;
   }
 
   static std::string PrettyJson(const base::Value& value) {
@@ -446,10 +449,13 @@ TEST_F(GeolocationNetworkProviderTest, MultipleWifiScansComplete) {
   base::RunLoop().RunUntilIdle();
   test_url_loader_factory_.ClearResponses();
 
-  mojom::Geoposition position = provider->GetPosition();
-  EXPECT_FALSE(ValidateGeoposition(position));
-  EXPECT_EQ("Did not provide a good position fix", position.error_message);
-  EXPECT_TRUE(position.error_technical.empty());
+  {
+    const mojom::GeopositionResult* result = provider->GetPosition();
+    ASSERT_TRUE(result->is_error());
+    const mojom::GeopositionError& error = *result->get_error();
+    EXPECT_EQ("Did not provide a good position fix", error.error_message);
+    EXPECT_TRUE(error.error_technical.empty());
+  }
 
   // 2. Now wifi data arrives -- SetData will notify listeners.
   const int kFirstScanAps = 6;
@@ -476,12 +482,16 @@ TEST_F(GeolocationNetworkProviderTest, MultipleWifiScansComplete) {
   base::RunLoop().RunUntilIdle();
   test_url_loader_factory_.ClearResponses();
 
-  position = provider->GetPosition();
-  EXPECT_EQ(51.0, position.latitude);
-  EXPECT_EQ(-0.1, position.longitude);
-  EXPECT_EQ(1200.4, position.accuracy);
-  EXPECT_FALSE(position.timestamp.is_null());
-  EXPECT_TRUE(ValidateGeoposition(position));
+  {
+    const mojom::GeopositionResult* result = provider->GetPosition();
+    ASSERT_TRUE(result->is_position());
+    const mojom::Geoposition& position = *result->get_position();
+    EXPECT_EQ(51.0, position.latitude);
+    EXPECT_EQ(-0.1, position.longitude);
+    EXPECT_EQ(1200.4, position.accuracy);
+    EXPECT_FALSE(position.timestamp.is_null());
+    EXPECT_TRUE(ValidateGeoposition(position));
+  }
 
   // 4. Wifi updated again, with one less AP. This is 'close enough' to the
   // previous scan, so no new request made.
@@ -490,10 +500,14 @@ TEST_F(GeolocationNetworkProviderTest, MultipleWifiScansComplete) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 
-  position = provider->GetPosition();
-  EXPECT_EQ(51.0, position.latitude);
-  EXPECT_EQ(-0.1, position.longitude);
-  EXPECT_TRUE(ValidateGeoposition(position));
+  {
+    const mojom::GeopositionResult* result = provider->GetPosition();
+    ASSERT_TRUE(result->is_position());
+    const mojom::Geoposition& position = *result->get_position();
+    EXPECT_EQ(51.0, position.latitude);
+    EXPECT_EQ(-0.1, position.longitude);
+    EXPECT_TRUE(ValidateGeoposition(position));
+  }
 
   // 5. Now a third scan with more than twice the original APs -> new request.
   const int kThirdScanAps = kFirstScanAps * 2 + 1;
@@ -511,24 +525,31 @@ TEST_F(GeolocationNetworkProviderTest, MultipleWifiScansComplete) {
   base::RunLoop().RunUntilIdle();
 
   // Error means we now no longer have a fix.
-  position = provider->GetPosition();
-  EXPECT_FALSE(ValidateGeoposition(position));
-  EXPECT_EQ("Network error. Check DevTools console for more information.",
-            position.error_message);
-  EXPECT_EQ(
-      "Network location provider at 'https://www.googleapis.com/' : "
-      "ERR_FAILED.",
-      position.error_technical);
+  {
+    const mojom::GeopositionResult* result = provider->GetPosition();
+    ASSERT_TRUE(result->is_error());
+    const mojom::GeopositionError& error = *result->get_error();
+    EXPECT_EQ("Network error. Check DevTools console for more information.",
+              error.error_message);
+    EXPECT_EQ(
+        "Network location provider at 'https://www.googleapis.com/' : "
+        "ERR_FAILED.",
+        error.error_technical);
+  }
 
   // 7. Wifi scan returns to original set: should be serviced from cache.
   wifi_data_provider_->SetData(CreateReferenceWifiScanData(kFirstScanAps));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 
-  position = provider->GetPosition();
-  EXPECT_EQ(51.0, position.latitude);
-  EXPECT_EQ(-0.1, position.longitude);
-  EXPECT_TRUE(ValidateGeoposition(position));
+  {
+    const mojom::GeopositionResult* result = provider->GetPosition();
+    ASSERT_TRUE(result->is_position());
+    const mojom::Geoposition& position = *result->get_position();
+    EXPECT_EQ(51.0, position.latitude);
+    EXPECT_EQ(-0.1, position.longitude);
+    EXPECT_TRUE(ValidateGeoposition(position));
+  }
 }
 
 // Tests that, if no Wifi scan data is available at startup, the provider
@@ -600,26 +621,28 @@ TEST_F(GeolocationNetworkProviderTest, NetworkRequestServiceBadRequest) {
   provider->StartProvider(false);
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
 
-  RepeatingTestFuture<mojom::GeopositionPtr> future;
+  RepeatingTestFuture<mojom::GeopositionResultPtr> future;
   provider->SetUpdateCallback(
       base::BindLambdaForTesting([&future](const LocationProvider* provider,
-                                           const mojom::Geoposition& position) {
-        future.AddValue(position.Clone());
+                                           mojom::GeopositionResultPtr result) {
+        future.AddValue(std::move(result));
       }));
   const std::string& request_url =
       test_url_loader_factory_.pending_requests()->back().request.url.spec();
   test_url_loader_factory_.AddResponse(request_url, std::string(),
                                        net::HTTP_BAD_REQUEST);
 
-  auto position = future.Take();
+  auto result = future.Take();
+  ASSERT_TRUE(result->is_error());
+  const mojom::GeopositionError& error = *result->get_error();
   EXPECT_EQ(
       "Failed to query location from network service. Check the DevTools "
       "console for more information.",
-      position->error_message);
+      error.error_message);
   EXPECT_EQ(
       "Network location provider at 'https://www.googleapis.com/' : Returned "
       "error code 400.",
-      position->error_technical);
+      error.error_technical);
 }
 
 TEST_F(GeolocationNetworkProviderTest, NetworkRequestResponseMalformed) {
@@ -627,11 +650,11 @@ TEST_F(GeolocationNetworkProviderTest, NetworkRequestResponseMalformed) {
   provider->StartProvider(false);
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
 
-  RepeatingTestFuture<mojom::GeopositionPtr> future;
+  RepeatingTestFuture<mojom::GeopositionResultPtr> future;
   provider->SetUpdateCallback(
       base::BindLambdaForTesting([&future](const LocationProvider* provider,
-                                           const mojom::Geoposition& position) {
-        future.AddValue(position.Clone());
+                                           mojom::GeopositionResultPtr result) {
+        future.AddValue(std::move(result));
       }));
   const std::string& request_url =
       test_url_loader_factory_.pending_requests()->back().request.url.spec();
@@ -641,9 +664,11 @@ TEST_F(GeolocationNetworkProviderTest, NetworkRequestResponseMalformed) {
       "}";
   test_url_loader_factory_.AddResponse(request_url, kMalformedResponse);
 
-  auto position = future.Take();
-  EXPECT_EQ("Response was malformed", position->error_message);
-  EXPECT_TRUE(position->error_technical.empty());
+  auto result = future.Take();
+  ASSERT_TRUE(result->is_error());
+  const mojom::GeopositionError& error = *result->get_error();
+  EXPECT_EQ("Response was malformed", error.error_message);
+  EXPECT_TRUE(error.error_technical.empty());
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -654,11 +679,12 @@ TEST_F(GeolocationNetworkProviderTest, MacOSSystemPermissionsTest) {
   grant_system_permission_by_default_ = false;
 
   LocationUpdateListener listener;
-  mojom::Geoposition last_position = CreateReferencePosition(0);
-  EXPECT_TRUE(ValidateGeoposition(last_position));
+  mojom::GeopositionResultPtr last_result = CreateReferencePosition(0);
+  ASSERT_TRUE(last_result->is_position());
+  EXPECT_TRUE(ValidateGeoposition(*last_result->get_position()));
   // Set up a fake cached position so the NetworkLocationProvider would be able
   // to call the update callback if permission was allowed.
-  position_cache_.SetLastUsedNetworkPosition(last_position);
+  position_cache_.SetLastUsedNetworkPosition(*last_result);
 
   wifi_data_provider_->set_got_data(false);
 
@@ -733,13 +759,11 @@ TEST_F(GeolocationNetworkProviderTest, LastPositionCache) {
   std::unique_ptr<LocationProvider> provider(CreateProvider(true));
   provider->StartProvider(false);
 
-  // Check that the provider is initialized with an invalid position.
-  mojom::Geoposition position = provider->GetPosition();
-  EXPECT_FALSE(ValidateGeoposition(position));
+  // Check that the provider is initialized with a nullptr position.
+  EXPECT_FALSE(provider->GetPosition());
 
-  // Check that the cached value is also invalid.
-  position = position_cache_.GetLastUsedNetworkPosition();
-  EXPECT_FALSE(ValidateGeoposition(position));
+  // Check that the cached value is also nullptr.
+  EXPECT_FALSE(position_cache_.GetLastUsedNetworkPosition());
 
   // Now wifi data arrives -- SetData will notify listeners.
   const int kFirstScanAps = 6;
@@ -764,12 +788,16 @@ TEST_F(GeolocationNetworkProviderTest, LastPositionCache) {
   base::RunLoop().RunUntilIdle();
 
   // The provider should return the position as the current best estimate.
-  position = provider->GetPosition();
-  EXPECT_EQ(51.0, position.latitude);
-  EXPECT_EQ(-0.1, position.longitude);
-  EXPECT_EQ(1200.4, position.accuracy);
-  EXPECT_FALSE(position.timestamp.is_null());
-  EXPECT_TRUE(ValidateGeoposition(position));
+  {
+    const mojom::GeopositionResult* result = provider->GetPosition();
+    ASSERT_TRUE(result && result->is_position());
+    const auto& position = *result->get_position();
+    EXPECT_EQ(51.0, position.latitude);
+    EXPECT_EQ(-0.1, position.longitude);
+    EXPECT_EQ(1200.4, position.accuracy);
+    EXPECT_FALSE(position.timestamp.is_null());
+    EXPECT_TRUE(ValidateGeoposition(position));
+  }
 
   // Shut down the provider. This typically happens whenever there are no active
   // Geolocation API calls.
@@ -777,24 +805,33 @@ TEST_F(GeolocationNetworkProviderTest, LastPositionCache) {
   provider = nullptr;
 
   // The cache preserves the last estimate while the provider is inactive.
-  position = position_cache_.GetLastUsedNetworkPosition();
-  EXPECT_EQ(51.0, position.latitude);
-  EXPECT_EQ(-0.1, position.longitude);
-  EXPECT_EQ(1200.4, position.accuracy);
-  EXPECT_FALSE(position.timestamp.is_null());
-  EXPECT_TRUE(ValidateGeoposition(position));
+  {
+    const mojom::GeopositionResult* result =
+        position_cache_.GetLastUsedNetworkPosition();
+    ASSERT_TRUE(result && result->is_position());
+    const auto& position = *result->get_position();
+    EXPECT_EQ(51.0, position.latitude);
+    EXPECT_EQ(-0.1, position.longitude);
+    EXPECT_EQ(1200.4, position.accuracy);
+    EXPECT_FALSE(position.timestamp.is_null());
+    EXPECT_TRUE(ValidateGeoposition(position));
+  }
 
   // Restart the provider.
   provider = CreateProvider(true);
   provider->StartProvider(false);
 
   // Check that the most recent position estimate is retained.
-  position = provider->GetPosition();
-  EXPECT_EQ(51.0, position.latitude);
-  EXPECT_EQ(-0.1, position.longitude);
-  EXPECT_EQ(1200.4, position.accuracy);
-  EXPECT_FALSE(position.timestamp.is_null());
-  EXPECT_TRUE(ValidateGeoposition(position));
+  {
+    const mojom::GeopositionResult* result = provider->GetPosition();
+    ASSERT_TRUE(result && result->is_position());
+    const auto& position = *result->get_position();
+    EXPECT_EQ(51.0, position.latitude);
+    EXPECT_EQ(-0.1, position.longitude);
+    EXPECT_EQ(1200.4, position.accuracy);
+    EXPECT_FALSE(position.timestamp.is_null());
+    EXPECT_TRUE(ValidateGeoposition(position));
+  }
 }
 
 // Tests that when the last network position estimate is sufficiently recent and
@@ -806,9 +843,10 @@ TEST_F(GeolocationNetworkProviderTest, LastPositionCacheUsed) {
 
   // Seed the last position cache with a valid geoposition value and the
   // timestamp set to the current time.
-  mojom::Geoposition last_position = CreateReferencePosition(0);
-  EXPECT_TRUE(ValidateGeoposition(last_position));
-  position_cache_.SetLastUsedNetworkPosition(last_position);
+  mojom::GeopositionResultPtr last_result = CreateReferencePosition(0);
+  ASSERT_TRUE(last_result->is_position());
+  EXPECT_TRUE(ValidateGeoposition(*last_result->get_position()));
+  position_cache_.SetLastUsedNetworkPosition(*last_result);
 
   // Simulate no initial wifi data.
   wifi_data_provider_->set_got_data(false);
@@ -834,11 +872,15 @@ TEST_F(GeolocationNetworkProviderTest, LastPositionCacheUsed) {
   // is the same as the seeded value except for the timestamp, which should be
   // newer.
   EXPECT_EQ(1, listener.update_count);
-  EXPECT_TRUE(ValidateGeoposition(listener.last_position));
-  EXPECT_EQ(last_position.latitude, listener.last_position.latitude);
-  EXPECT_EQ(last_position.longitude, listener.last_position.longitude);
-  EXPECT_EQ(last_position.accuracy, listener.last_position.accuracy);
-  EXPECT_LT(last_position.timestamp, listener.last_position.timestamp);
+  ASSERT_TRUE(listener.last_result && listener.last_result->is_position());
+  const mojom::Geoposition& listener_last_position =
+      *listener.last_result->get_position();
+  EXPECT_TRUE(ValidateGeoposition(listener_last_position));
+  const mojom::Geoposition& last_position = *last_result->get_position();
+  EXPECT_EQ(last_position.latitude, listener_last_position.latitude);
+  EXPECT_EQ(last_position.longitude, listener_last_position.longitude);
+  EXPECT_EQ(last_position.accuracy, listener_last_position.accuracy);
+  EXPECT_LT(last_position.timestamp, listener_last_position.timestamp);
 }
 
 // Tests that the last network position estimate is not returned if the
@@ -848,10 +890,12 @@ TEST_F(GeolocationNetworkProviderTest, LastPositionNotUsedTooOld) {
 
   // Seed the last position cache with a geoposition value with the timestamp
   // set to 20 minutes ago.
-  mojom::Geoposition last_position = CreateReferencePosition(0);
+  mojom::GeopositionResultPtr last_result = CreateReferencePosition(0);
+  ASSERT_TRUE(last_result->is_position());
+  auto& last_position = *last_result->get_position();
   last_position.timestamp = base::Time::Now() - base::Minutes(20);
-  EXPECT_TRUE(ValidateGeoposition(last_position));
-  position_cache_.SetLastUsedNetworkPosition(last_position);
+  EXPECT_TRUE(ValidateGeoposition(*last_result->get_position()));
+  position_cache_.SetLastUsedNetworkPosition(*last_result);
 
   // Simulate no initial wifi data.
   wifi_data_provider_->set_got_data(false);
@@ -875,7 +919,7 @@ TEST_F(GeolocationNetworkProviderTest, LastPositionNotUsedTooOld) {
 
   // Check that the listener received no updates.
   EXPECT_EQ(0, listener.update_count);
-  EXPECT_FALSE(ValidateGeoposition(listener.last_position));
+  EXPECT_FALSE(listener.last_result);
 }
 
 // Tests that the last network position estimate is not returned if there is
@@ -885,9 +929,10 @@ TEST_F(GeolocationNetworkProviderTest, LastPositionNotUsedNewData) {
 
   // Seed the last position cache with a valid geoposition value. The timestamp
   // of the cached position is set to the current time.
-  mojom::Geoposition last_position = CreateReferencePosition(0);
-  EXPECT_TRUE(ValidateGeoposition(last_position));
-  position_cache_.SetLastUsedNetworkPosition(last_position);
+  mojom::GeopositionResultPtr last_result = CreateReferencePosition(0);
+  ASSERT_TRUE(last_result->is_position());
+  EXPECT_TRUE(ValidateGeoposition(*last_result->get_position()));
+  position_cache_.SetLastUsedNetworkPosition(*last_result);
 
   // Simulate a completed wifi scan.
   const int kFirstScanAps = 6;
@@ -907,7 +952,7 @@ TEST_F(GeolocationNetworkProviderTest, LastPositionNotUsedNewData) {
   // The listener should not receive any updates. There is a valid cached value
   // but it should not be sent while we have pending wifi data.
   EXPECT_EQ(0, listener.update_count);
-  EXPECT_FALSE(ValidateGeoposition(listener.last_position));
+  EXPECT_FALSE(listener.last_result);
 
   // Check that there is no pending network request.
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
@@ -923,7 +968,7 @@ TEST_F(GeolocationNetworkProviderTest, LastPositionNotUsedNewData) {
   // value and no new wifi data, but the cached value should not be sent while
   // we have a pending request to the geolocation service.
   EXPECT_EQ(0, listener.update_count);
-  EXPECT_FALSE(ValidateGeoposition(listener.last_position));
+  EXPECT_FALSE(listener.last_result);
 
   // Check that a network request is pending.
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());

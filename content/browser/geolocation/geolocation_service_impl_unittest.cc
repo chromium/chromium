@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/test_future.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/permission_controller.h"
@@ -27,13 +28,15 @@
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
-using blink::mojom::GeolocationService;
-using blink::mojom::PermissionStatus;
-using device::mojom::Geolocation;
-using device::mojom::GeopositionPtr;
-
 namespace content {
 namespace {
+
+using ::base::test::TestFuture;
+using ::blink::mojom::GeolocationService;
+using ::blink::mojom::PermissionStatus;
+using ::device::mojom::Geolocation;
+using ::device::mojom::GeopositionPtr;
+using ::device::mojom::GeopositionResultPtr;
 
 using PermissionCallback = base::OnceCallback<void(
     const std::vector<blink::mojom::PermissionStatus>&)>;
@@ -170,39 +173,10 @@ TEST_F(GeolocationServiceTest, PermissionGrantedPolicyViolation) {
   base::RunLoop loop;
   geolocation.set_disconnect_handler(loop.QuitClosure());
 
-  geolocation->QueryNextPosition(base::BindOnce([](GeopositionPtr geoposition) {
-    ADD_FAILURE() << "Position updated unexpectedly";
-  }));
-  loop.Run();
-}
-
-TEST_F(GeolocationServiceTest, PermissionGrantedNoPolicyViolation) {
-  // Allow the embedded frame.
-  CreateEmbeddedFrameAndGeolocationService(
-      /*allow_via_permissions_policy=*/true);
-
-  permission_manager()->SetRequestCallback(
-      base::BindRepeating([](PermissionCallback callback) {
-        std::move(callback).Run(std::vector{PermissionStatus::GRANTED});
+  geolocation->QueryNextPosition(
+      base::BindOnce([](GeopositionResultPtr result) {
+        ADD_FAILURE() << "Position updated unexpectedly";
       }));
-  mojo::Remote<Geolocation> geolocation;
-  service_remote()->CreateGeolocation(
-      geolocation.BindNewPipeAndPassReceiver(), true,
-      base::BindOnce([](blink::mojom::PermissionStatus status) {
-        EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED, status);
-      }));
-
-  base::RunLoop loop;
-  geolocation.set_disconnect_handler(base::BindOnce(
-      [] { ADD_FAILURE() << "Connection error handler called unexpectedly"; }));
-
-  geolocation->QueryNextPosition(base::BindOnce(
-      [](base::OnceClosure callback, GeopositionPtr geoposition) {
-        EXPECT_DOUBLE_EQ(kMockLatitude, geoposition->latitude);
-        EXPECT_DOUBLE_EQ(kMockLongitude, geoposition->longitude);
-        std::move(callback).Run();
-      },
-      loop.QuitClosure()));
   loop.Run();
 }
 
@@ -220,18 +194,15 @@ TEST_F(GeolocationServiceTest, PermissionGrantedSync) {
         EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED, status);
       }));
 
-  base::RunLoop loop;
   geolocation.set_disconnect_handler(base::BindOnce(
       [] { ADD_FAILURE() << "Connection error handler called unexpectedly"; }));
 
-  geolocation->QueryNextPosition(base::BindOnce(
-      [](base::OnceClosure callback, GeopositionPtr geoposition) {
-        EXPECT_DOUBLE_EQ(kMockLatitude, geoposition->latitude);
-        EXPECT_DOUBLE_EQ(kMockLongitude, geoposition->longitude);
-        std::move(callback).Run();
-      },
-      loop.QuitClosure()));
-  loop.Run();
+  TestFuture<GeopositionResultPtr> result_future;
+  geolocation->QueryNextPosition(result_future.GetCallback());
+  ASSERT_TRUE(result_future.Get()->is_position());
+  const auto& position = *result_future.Get()->get_position();
+  EXPECT_DOUBLE_EQ(kMockLatitude, position.latitude);
+  EXPECT_DOUBLE_EQ(kMockLongitude, position.longitude);
 }
 
 TEST_F(GeolocationServiceTest, PermissionDeniedSync) {
@@ -251,9 +222,10 @@ TEST_F(GeolocationServiceTest, PermissionDeniedSync) {
   base::RunLoop loop;
   geolocation.set_disconnect_handler(loop.QuitClosure());
 
-  geolocation->QueryNextPosition(base::BindOnce([](GeopositionPtr geoposition) {
-    ADD_FAILURE() << "Position updated unexpectedly";
-  }));
+  geolocation->QueryNextPosition(
+      base::BindOnce([](GeopositionResultPtr result) {
+        ADD_FAILURE() << "Position updated unexpectedly";
+      }));
   loop.Run();
 }
 
@@ -273,18 +245,15 @@ TEST_F(GeolocationServiceTest, PermissionGrantedAsync) {
         EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED, status);
       }));
 
-  base::RunLoop loop;
   geolocation.set_disconnect_handler(base::BindOnce(
       [] { ADD_FAILURE() << "Connection error handler called unexpectedly"; }));
 
-  geolocation->QueryNextPosition(base::BindOnce(
-      [](base::OnceClosure callback, GeopositionPtr geoposition) {
-        EXPECT_DOUBLE_EQ(kMockLatitude, geoposition->latitude);
-        EXPECT_DOUBLE_EQ(kMockLongitude, geoposition->longitude);
-        std::move(callback).Run();
-      },
-      loop.QuitClosure()));
-  loop.Run();
+  TestFuture<GeopositionResultPtr> result_future;
+  geolocation->QueryNextPosition(result_future.GetCallback());
+  ASSERT_TRUE(result_future.Get()->is_position());
+  const auto& position = *result_future.Get()->get_position();
+  EXPECT_DOUBLE_EQ(kMockLatitude, position.latitude);
+  EXPECT_DOUBLE_EQ(kMockLongitude, position.longitude);
 }
 
 TEST_F(GeolocationServiceTest, PermissionDeniedAsync) {
@@ -306,9 +275,10 @@ TEST_F(GeolocationServiceTest, PermissionDeniedAsync) {
   base::RunLoop loop;
   geolocation.set_disconnect_handler(loop.QuitClosure());
 
-  geolocation->QueryNextPosition(base::BindOnce([](GeopositionPtr geoposition) {
-    ADD_FAILURE() << "Position updated unexpectedly";
-  }));
+  geolocation->QueryNextPosition(
+      base::BindOnce([](GeopositionResultPtr result) {
+        ADD_FAILURE() << "Position updated unexpectedly";
+      }));
   loop.Run();
 }
 
@@ -327,9 +297,10 @@ TEST_F(GeolocationServiceTest, ServiceClosedBeforePermissionResponse) {
   base::RunLoop loop;
   service_remote().reset();
 
-  geolocation->QueryNextPosition(base::BindOnce([](GeopositionPtr geoposition) {
-    ADD_FAILURE() << "Position updated unexpectedly";
-  }));
+  geolocation->QueryNextPosition(
+      base::BindOnce([](GeopositionResultPtr result) {
+        ADD_FAILURE() << "Position updated unexpectedly";
+      }));
   loop.RunUntilIdle();
 }
 

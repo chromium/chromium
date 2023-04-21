@@ -30,7 +30,7 @@ FakePositionCache::~FakePositionCache() = default;
 
 void FakePositionCache::CachePosition(const WifiData& wifi_data,
                                       const mojom::Geoposition& position) {
-  data.push_back(std::make_pair(wifi_data, position));
+  data.emplace_back(wifi_data, position.Clone());
 }
 
 const mojom::Geoposition* FakePositionCache::FindPosition(
@@ -40,21 +40,21 @@ const mojom::Geoposition* FakePositionCache::FindPosition(
         return SetsEqual(wifi_data.access_point_data,
                          candidate_pair.first.access_point_data);
       });
-  return it == data.end() ? nullptr : &(it->second);
+  return it == data.end() ? nullptr : it->second.get();
 }
 
 size_t FakePositionCache::GetPositionCacheSize() const {
   return data.size();
 }
 
-const mojom::Geoposition& FakePositionCache::GetLastUsedNetworkPosition()
+const mojom::GeopositionResult* FakePositionCache::GetLastUsedNetworkPosition()
     const {
-  return last_used_position;
+  return last_used_result.get();
 }
 
 void FakePositionCache::SetLastUsedNetworkPosition(
-    const mojom::Geoposition& position) {
-  last_used_position = position;
+    const mojom::GeopositionResult& result) {
+  last_used_result = result.Clone();
 }
 
 }  // namespace device

@@ -197,7 +197,7 @@ class MODULES_EXPORT Geolocation final
   // See https://goo.gl/Y0ZkNV
   void RecordOriginTypeAccess() const;
 
-  void OnPositionUpdated(device::mojom::blink::GeopositionPtr);
+  void OnPositionUpdated(device::mojom::blink::GeopositionResultPtr);
 
   void OnGeolocationConnectionError();
 

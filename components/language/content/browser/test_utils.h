@@ -35,7 +35,7 @@ class MockGeoLocation : public device::mojom::Geolocation {
 
  private:
   int query_next_position_called_times_ = 0;
-  device::mojom::Geoposition position_;
+  device::mojom::GeopositionResultPtr result_;
   mojo::Receiver<device::mojom::Geolocation> receiver_{this};
 };
 

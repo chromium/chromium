@@ -22,11 +22,11 @@ LocationProviderAndroid::~LocationProviderAndroid() {
 }
 
 void LocationProviderAndroid::NotifyNewGeoposition(
-    const mojom::Geoposition& position) {
+    mojom::GeopositionResultPtr result) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  last_position_ = position;
+  last_result_ = std::move(result);
   if (!callback_.is_null())
-    callback_.Run(this, position);
+    callback_.Run(this, last_result_.Clone());
 }
 
 void LocationProviderAndroid::SetUpdateCallback(
@@ -48,9 +48,9 @@ void LocationProviderAndroid::StopProvider() {
   LocationApiAdapterAndroid::GetInstance()->Stop();
 }
 
-const mojom::Geoposition& LocationProviderAndroid::GetPosition() {
+const mojom::GeopositionResult* LocationProviderAndroid::GetPosition() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  return last_position_;
+  return last_result_.get();
 }
 
 void LocationProviderAndroid::OnPermissionGranted() {

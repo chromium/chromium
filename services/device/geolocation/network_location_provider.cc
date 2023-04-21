@@ -103,12 +103,10 @@ void NetworkLocationProvider::OnSystemPermissionUpdated(
       (new_status == LocationSystemPermissionStatus::kAllowed);
 
   if (!is_system_permission_granted_ && location_provider_update_callback_) {
-    mojom::Geoposition error_position;
-    error_position.error_code =
-        mojom::Geoposition::ErrorCode::PERMISSION_DENIED;
-    error_position.error_message =
-        "User has not allowed access to system location.";
-    location_provider_update_callback_.Run(this, error_position);
+    location_provider_update_callback_.Run(
+        this, mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
+                  mojom::GeopositionErrorCode::kPermissionDenied,
+                  "User has not allowed access to system location.", "")));
   }
   if (!was_permission_granted && is_system_permission_granted_ && IsStarted()) {
     wifi_data_provider_handle_->ForceRescan();
@@ -123,12 +121,10 @@ void NetworkLocationProvider::OnWifiDataUpdate() {
 #if BUILDFLAG(IS_MAC)
   if (!is_system_permission_granted_) {
     if (!is_awaiting_initial_permission_status_) {
-      mojom::Geoposition error_position;
-      error_position.error_code =
-          mojom::Geoposition::ErrorCode::PERMISSION_DENIED;
-      error_position.error_message =
-          "User has not allowed access to system location.";
-      location_provider_update_callback_.Run(this, error_position);
+      location_provider_update_callback_.Run(
+          this, mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
+                    mojom::GeopositionErrorCode::kPermissionDenied,
+                    "User has not allowed access to system location.", "")));
     }
     return;
   }
@@ -161,19 +157,20 @@ void NetworkLocationProvider::OnWifiDataUpdate() {
 }
 
 void NetworkLocationProvider::OnLocationResponse(
-    const mojom::Geoposition& position,
+    mojom::GeopositionResultPtr result,
     bool server_error,
     const WifiData& wifi_data) {
   DCHECK(thread_checker_.CalledOnValidThread());
   GEOLOCATION_LOG(DEBUG) << "Got new position";
   // Record the position and update our cache.
-  position_cache_->SetLastUsedNetworkPosition(position);
-  if (ValidateGeoposition(position))
-    position_cache_->CachePosition(wifi_data, position);
+  position_cache_->SetLastUsedNetworkPosition(*result);
+  if (result->is_position() && ValidateGeoposition(*result->get_position())) {
+    position_cache_->CachePosition(wifi_data, *result->get_position());
+  }
 
   // Let listeners know that we now have a position available.
   if (!location_provider_update_callback_.is_null()) {
-    location_provider_update_callback_.Run(this, position);
+    location_provider_update_callback_.Run(this, std::move(result));
   }
 }
 
@@ -206,7 +203,7 @@ void NetworkLocationProvider::StopProvider() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
-const mojom::Geoposition& NetworkLocationProvider::GetPosition() {
+const mojom::GeopositionResult* NetworkLocationProvider::GetPosition() {
   return position_cache_->GetLastUsedNetworkPosition();
 }
 
@@ -231,20 +228,22 @@ void NetworkLocationProvider::RequestPosition() {
   // expect to receive a new one soon (i.e., no new wifi data is available and
   // there is no pending network request), report the last network position
   // estimate as if it were a fresh estimate.
-  const mojom::Geoposition& last_position =
+  const mojom::GeopositionResult* last_result =
       position_cache_->GetLastUsedNetworkPosition();
   if (!is_new_data_available_ && !request_->is_request_pending() &&
-      ValidateGeoposition(last_position)) {
+      last_result && last_result->is_position() &&
+      ValidateGeoposition(*last_result->get_position())) {
     base::Time now = base::Time::Now();
-    base::TimeDelta last_position_age = now - last_position.timestamp;
+    base::TimeDelta last_position_age =
+        now - last_result->get_position()->timestamp;
     if (last_position_age.InSeconds() < kLastPositionMaxAgeSeconds &&
         !location_provider_update_callback_.is_null()) {
       GEOLOCATION_LOG(DEBUG)
           << "Updating the last network position timestamp to the current time";
       // Update the timestamp to the current time.
-      mojom::Geoposition position = last_position;
-      position.timestamp = now;
-      location_provider_update_callback_.Run(this, position);
+      mojom::GeopositionResultPtr result = last_result->Clone();
+      result->get_position()->timestamp = now;
+      location_provider_update_callback_.Run(this, std::move(result));
     }
   }
 
@@ -262,21 +261,22 @@ void NetworkLocationProvider::RequestPosition() {
                            position_cache_->GetPositionCacheSize());
 
   if (cached_position) {
-    mojom::Geoposition position(*cached_position);
-    DCHECK(ValidateGeoposition(position));
+    auto position = cached_position->Clone();
     // The timestamp of a position fix is determined by the timestamp
     // of the source data update. (The value of position.timestamp from
     // the cache could be from weeks ago!)
-    position.timestamp = wifi_timestamp_;
+    position->timestamp = wifi_timestamp_;
+    auto result =
+        device::mojom::GeopositionResult::NewPosition(std::move(position));
     is_new_data_available_ = false;
 
     GEOLOCATION_LOG(DEBUG) << "Updating the cached WiFi position: ";
     // Record the position.
-    position_cache_->SetLastUsedNetworkPosition(position);
+    position_cache_->SetLastUsedNetworkPosition(*result);
 
     // Let listeners know that we now have a position available.
     if (!location_provider_update_callback_.is_null())
-      location_provider_update_callback_.Run(this, position);
+      location_provider_update_callback_.Run(this, std::move(result));
 
     return;
   }

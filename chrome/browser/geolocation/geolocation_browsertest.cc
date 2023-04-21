@@ -43,8 +43,8 @@
 namespace {
 
 std::string GetErrorCodePermissionDenied() {
-  return base::NumberToString(static_cast<int>(
-      device::mojom::Geoposition::ErrorCode::PERMISSION_DENIED));
+  return base::NumberToString(
+      static_cast<int>(device::mojom::GeopositionErrorCode::kPermissionDenied));
 }
 
 std::string RunScript(content::RenderFrameHost* render_frame_host,

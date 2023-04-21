@@ -34,7 +34,7 @@ class NetworkLocationRequest {
   // whether there was a server error or not. It is true when there was a
   // server or network error - either no response or a 500 error code.
   using LocationResponseCallback =
-      base::RepeatingCallback<void(const mojom::Geoposition& /* position */,
+      base::RepeatingCallback<void(mojom::GeopositionResultPtr /* result */,
                                    bool /* server_error */,
                                    const WifiData& /* wifi_data */)>;
 

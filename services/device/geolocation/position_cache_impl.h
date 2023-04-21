@@ -50,8 +50,9 @@ class PositionCacheImpl
 
   size_t GetPositionCacheSize() const override;
 
-  const mojom::Geoposition& GetLastUsedNetworkPosition() const override;
-  void SetLastUsedNetworkPosition(const mojom::Geoposition& position) override;
+  const mojom::GeopositionResult* GetLastUsedNetworkPosition() const override;
+  void SetLastUsedNetworkPosition(
+      const mojom::GeopositionResult& result) override;
 
   // net::NetworkChangeNotifier::NetworkChangeObserver
   void OnNetworkChanged(
@@ -65,22 +66,21 @@ class PositionCacheImpl
   class CacheEntry {
    public:
     CacheEntry(const Hash& hash,
-               const mojom::Geoposition& position,
+               mojom::GeopositionPtr position,
                std::unique_ptr<base::OneShotTimer> eviction_timer);
 
     CacheEntry(const CacheEntry&) = delete;
     CacheEntry& operator=(const CacheEntry&) = delete;
-
-    ~CacheEntry();
     CacheEntry(CacheEntry&&);
     CacheEntry& operator=(CacheEntry&&);
+    ~CacheEntry();
 
     inline bool operator==(const Hash& hash) const { return hash_ == hash; }
-    const mojom::Geoposition* position() const { return &position_; }
+    const mojom::Geoposition* position() const { return position_.get(); }
 
    private:
     Hash hash_;
-    mojom::Geoposition position_;
+    mojom::GeopositionPtr position_;
     std::unique_ptr<base::OneShotTimer> eviction_timer_;
   };
 
@@ -89,7 +89,7 @@ class PositionCacheImpl
 
   raw_ptr<const base::TickClock> clock_;
   std::vector<CacheEntry> data_;
-  mojom::Geoposition last_used_position_;
+  mojom::GeopositionResultPtr last_used_result_;
 };
 
 }  // namespace device

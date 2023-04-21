@@ -4,6 +4,8 @@
 
 #include "components/language/content/browser/test_utils.h"
 
+#include "base/time/time.h"
+
 namespace language {
 
 MockGeoLocation::MockGeoLocation() {}
@@ -13,7 +15,7 @@ void MockGeoLocation::SetHighAccuracy(bool high_accuracy) {}
 
 void MockGeoLocation::QueryNextPosition(QueryNextPositionCallback callback) {
   ++query_next_position_called_times_;
-  std::move(callback).Run(position_.Clone());
+  std::move(callback).Run(result_.Clone());
 }
 
 void MockGeoLocation::BindGeoLocation(
@@ -22,8 +24,12 @@ void MockGeoLocation::BindGeoLocation(
 }
 
 void MockGeoLocation::MoveToLocation(float latitude, float longitude) {
-  position_.latitude = latitude;
-  position_.longitude = longitude;
+  auto position = device::mojom::Geoposition::New();
+  position->latitude = latitude;
+  position->longitude = longitude;
+  position->accuracy = 100;
+  position->timestamp = base::Time::Now();
+  result_ = device::mojom::GeopositionResult::NewPosition(std::move(position));
 }
 
 MockIpGeoLocationProvider::MockIpGeoLocationProvider(

@@ -52,7 +52,7 @@ class NetworkLocationProvider : public LocationProvider
   void SetUpdateCallback(const LocationProviderUpdateCallback& cb) override;
   void StartProvider(bool high_accuracy) override;
   void StopProvider() override;
-  const mojom::Geoposition& GetPosition() override;
+  const mojom::GeopositionResult* GetPosition() override;
   void OnPermissionGranted() override;
 
 #if BUILDFLAG(IS_MAC)
@@ -71,7 +71,7 @@ class NetworkLocationProvider : public LocationProvider
 
   bool IsStarted() const;
 
-  void OnLocationResponse(const mojom::Geoposition& position,
+  void OnLocationResponse(mojom::GeopositionResultPtr result,
                           bool server_error,
                           const WifiData& wifi_data);
 

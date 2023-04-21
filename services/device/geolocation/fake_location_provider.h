@@ -27,7 +27,7 @@ class FakeLocationProvider : public LocationProvider {
   ~FakeLocationProvider() override;
 
   // Updates listeners with the new position.
-  void HandlePositionChanged(const mojom::Geoposition& position);
+  void HandlePositionChanged(mojom::GeopositionResultPtr result);
 
   State state() const { return state_; }
   bool is_permission_granted() const { return is_permission_granted_; }
@@ -37,14 +37,14 @@ class FakeLocationProvider : public LocationProvider {
       const LocationProviderUpdateCallback& callback) override;
   void StartProvider(bool high_accuracy) override;
   void StopProvider() override;
-  const mojom::Geoposition& GetPosition() override;
+  const mojom::GeopositionResult* GetPosition() override;
   void OnPermissionGranted() override;
 
   scoped_refptr<base::SingleThreadTaskRunner> provider_task_runner_;
 
  private:
   bool is_permission_granted_ = false;
-  mojom::Geoposition position_;
+  mojom::GeopositionResultPtr result_;
   LocationProviderUpdateCallback callback_;
 };
 

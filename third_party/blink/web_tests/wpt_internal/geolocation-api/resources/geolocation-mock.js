@@ -4,7 +4,7 @@
  */
 
 import {GeolocationReceiver} from '/gen/services/device/public/mojom/geolocation.mojom.m.js';
-import {Geoposition_ErrorCode} from '/gen/services/device/public/mojom/geoposition.mojom.m.js';
+import {GeopositionErrorCode} from '/gen/services/device/public/mojom/geoposition.mojom.m.js';
 import {GeolocationService, GeolocationServiceReceiver} from '/gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.m.js';
 import {PermissionStatus} from '/gen/third_party/blink/public/mojom/permissions/permission_status.mojom.m.js';
 
@@ -17,10 +17,10 @@ export class GeolocationMock {
     this.geolocationServiceInterceptor_.start();
 
     /**
-     * The next geoposition to return in response to a queryNextPosition()
+     * The next result to return in response to a queryNextPosition()
      * call.
     */
-    this.geoposition_ = null;
+    this.result_ = null;
 
     /**
      * While true, position requests will result in a timeout error.
@@ -49,7 +49,8 @@ export class GeolocationMock {
 
     /**
      * Set by interceptQueryNextPosition() and used to resolve the promise
-     * returned by that call once the next incoming queryPosition() is received.
+     * returned by that call once the next incoming queryNextPosition() is
+     * received.
      */
     this.queryNextPositionIntercept_ = null;
 
@@ -84,7 +85,7 @@ export class GeolocationMock {
     return new Promise(resolve => {
       this.queryNextPositionIntercept_ = resolver => {
         this.queryNextPositionIntercept_ = null;
-        resolve(geoposition => { resolver({geoposition}); });
+        resolve(result => { resolver({result}); });
       };
     });
   }
@@ -96,7 +97,7 @@ export class GeolocationMock {
    */
   queryNextPosition() {
     if (this.shouldTimeout_) {
-      // Return a promise that will never be resolved. Since no geoposition is
+      // Return a promise that will never be resolved. Since no result is
       // returned, the request will eventually time out.
       return new Promise((resolve, reject) => {});
     }
@@ -107,22 +108,21 @@ export class GeolocationMock {
     }
 
     if (this.systemPermissionStatus_ != PermissionStatus.GRANTED) {
-      this.geoposition_ = {
-        valid: false,
-        timestamp: {internalValue: 0n},
+      const error = {
         errorMessage: "User has not allowed access to system location.",
-        errorCode: Geoposition_ErrorCode.PERMISSION_DENIED,
+        errorCode: GeopositionErrorCode.kPermissionDenied,
         errorTechnical: "",
       };
+      this.result_ = {error};
     }
 
-    if (!this.geoposition_) {
+    if (!this.result_) {
       this.setGeolocationPositionUnavailableError(
           'Test error: position not set before call to queryNextPosition()');
     }
-    let geoposition = this.geoposition_;
-    this.geoposition_ = null;
-    return Promise.resolve({geoposition});
+    let result = this.result_;
+    this.result_ = null;
+    return Promise.resolve({result});
   }
 
   makeGeoposition(latitude, longitude, accuracy, altitude = undefined,
@@ -139,11 +139,8 @@ export class GeolocationMock {
     const epochDeltaInMs = unixEpoch - windowsEpoch;
     const timestamp =
         {internalValue: BigInt((new Date().getTime() + epochDeltaInMs) * 1000)};
-    const errorMessage = '';
-    const errorTechnical = '';
-    const valid = true;
     return {latitude, longitude, accuracy, altitude, altitudeAccuracy, heading,
-            speed, timestamp, errorMessage, valid, errorTechnical};
+            speed, timestamp};
   }
 
   /**
@@ -153,8 +150,9 @@ export class GeolocationMock {
    */
   setGeolocationPosition(latitude, longitude, accuracy, altitude,
                          altitudeAccuracy, heading, speed) {
-    this.geoposition_ = this.makeGeoposition(latitude, longitude, accuracy,
+    const position = this.makeGeoposition(latitude, longitude, accuracy,
         altitude, altitudeAccuracy, heading, speed);
+    this.result_ = {position};
   }
 
   /**
@@ -163,13 +161,12 @@ export class GeolocationMock {
    * the error set by this call.
    */
   setGeolocationPositionUnavailableError(message) {
-    this.geoposition_ = {
-      valid: false,
-      timestamp: {internalValue: 0n},
+    const error = {
       errorMessage: message,
-      errorCode: Geoposition_ErrorCode.POSITION_UNAVAILABLE,
+      errorCode: GeopositionErrorCode.kPositionUnavailable,
       errorTechnical: "",
     };
+    this.result_ = {error};
   }
 
   /**

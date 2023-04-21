@@ -17,7 +17,7 @@ class FakeGeolocationManager : public GeolocationManager {
   void SetSystemPermission(LocationSystemPermissionStatus status);
 #if BUILDFLAG(IS_MAC)
   bool watching_position();
-  void FakePositionUpdated(const device::mojom::Geoposition& position);
+  void FakePositionUpdated(device::mojom::GeopositionResultPtr result);
 #endif  // BUILDFLAG(IS_MAC)
 };
 

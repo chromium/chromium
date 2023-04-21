@@ -84,7 +84,7 @@ class AutofillRiskFingerprintTest : public content::ContentBrowserTest {
 
     geolocation_overrider_ =
         std::make_unique<device::ScopedGeolocationOverrider>(
-            std::move(position));
+            device::mojom::GeopositionResult::NewPosition(std::move(position)));
   }
 
   void GetFingerprintTestCallback(base::OnceClosure continuation_callback,

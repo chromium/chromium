@@ -29,12 +29,12 @@ WifiData CreateUniqueWifiData(int number_of_access_points) {
   return wifi_data;
 }
 
-mojom::Geoposition CreateGeoposition(int offset) {
+mojom::GeopositionPtr CreateGeoposition(int offset) {
   DCHECK_LT(std::abs(offset), 90) << "latitudes larger than 90 degrees are not "
                                      "possible on spherical planets";
-  mojom::Geoposition position;
-  position.latitude = offset;
-  position.longitude = offset;
+  auto position = mojom::Geoposition::New();
+  position->latitude = offset;
+  position->longitude = offset;
   return position;
 }
 

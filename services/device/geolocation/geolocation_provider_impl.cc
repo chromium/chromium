@@ -80,9 +80,8 @@ GeolocationProviderImpl::AddLocationUpdateCallback(
   }
 
   OnClientsChanged();
-  if (ValidateGeoposition(position_) ||
-      position_.error_code != mojom::Geoposition::ErrorCode::NONE) {
-    callback.Run(position_);
+  if (result_) {
+    callback.Run(*result_);
   }
 
   return subscription;
@@ -93,22 +92,22 @@ bool GeolocationProviderImpl::HighAccuracyLocationInUse() {
 }
 
 void GeolocationProviderImpl::OverrideLocationForTesting(
-    const mojom::Geoposition& position) {
+    mojom::GeopositionResultPtr result) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   ignore_location_updates_ = true;
-  NotifyClients(position);
+  NotifyClients(std::move(result));
 }
 
 void GeolocationProviderImpl::OnLocationUpdate(
     const LocationProvider* provider,
-    const mojom::Geoposition& position) {
+    mojom::GeopositionResultPtr result) {
   DCHECK(OnGeolocationThread());
   // Will be true only in testing.
   if (ignore_location_updates_)
     return;
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&GeolocationProviderImpl::NotifyClients,
-                                base::Unretained(this), position));
+                                base::Unretained(this), std::move(result)));
 }
 
 // static
@@ -136,8 +135,6 @@ void GeolocationProviderImpl::UserDidOptIntoLocationServices() {
 
 GeolocationProviderImpl::GeolocationProviderImpl()
     : base::Thread("Geolocation"),
-      user_did_opt_into_location_services_(false),
-      ignore_location_updates_(false),
       main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   high_accuracy_callbacks_.set_removal_callback(base::BindRepeating(
@@ -168,7 +165,7 @@ void GeolocationProviderImpl::OnClientsChanged() {
     if (!ignore_location_updates_) {
       // We have no more observers, so we clear the cached geoposition so that
       // when the next observer is added we will not provide a stale position.
-      position_ = mojom::Geoposition();
+      result_.reset();
     }
     task = base::BindOnce(&GeolocationProviderImpl::StopProviders,
                           base::Unretained(this));
@@ -221,13 +218,15 @@ void GeolocationProviderImpl::InformProvidersPermissionGranted() {
 }
 
 void GeolocationProviderImpl::NotifyClients(
-    const mojom::Geoposition& position) {
+    mojom::GeopositionResultPtr result) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  DCHECK(ValidateGeoposition(position) ||
-         position.error_code != mojom::Geoposition::ErrorCode::NONE);
-  position_ = position;
-  high_accuracy_callbacks_.Notify(position_);
-  low_accuracy_callbacks_.Notify(position_);
+  DCHECK(result);
+  if (result->is_position() && !ValidateGeoposition(*result->get_position())) {
+    return;
+  }
+  result_ = std::move(result);
+  high_accuracy_callbacks_.Notify(*result_);
+  low_accuracy_callbacks_.Notify(*result_);
 }
 
 void GeolocationProviderImpl::Init() {

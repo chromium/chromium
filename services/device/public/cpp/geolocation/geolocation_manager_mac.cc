@@ -7,10 +7,15 @@
 namespace device {
 
 void GeolocationManager::NotifyPositionObservers(
-    const device::mojom::Geoposition& position) {
-  last_position_ = position;
+    device::mojom::GeopositionResultPtr result) {
+  last_result_ = std::move(result);
+  if (last_result_->is_error()) {
+    position_observers_->Notify(FROM_HERE, &PositionObserver::OnPositionError,
+                                *last_result_->get_error());
+    return;
+  }
   position_observers_->Notify(FROM_HERE, &PositionObserver::OnPositionUpdated,
-                              position);
+                              *last_result_->get_position());
 }
 
 void GeolocationManager::StartWatchingPosition(bool high_accuracy) {
@@ -21,8 +26,9 @@ void GeolocationManager::StopWatchingPosition() {
   system_geolocation_source_->StopWatchingPosition();
 }
 
-device::mojom::Geoposition GeolocationManager::GetLastPosition() const {
-  return last_position_;
+const device::mojom::GeopositionResult* GeolocationManager::GetLastPosition()
+    const {
+  return last_result_.get();
 }
 
 scoped_refptr<GeolocationManager::PositionObserverList>

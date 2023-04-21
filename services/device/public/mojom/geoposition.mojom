@@ -19,15 +19,6 @@ const double kBadSpeed = -1;
 // A Geoposition represents a position fix. It was originally derived from:
 // http://gears.googlecode.com/svn/trunk/gears/geolocation/geolocation.h
 struct Geoposition {
-  // These values follow the W3C geolocation specification and can be returned
-  // to JavaScript without the need for a conversion.
-  enum ErrorCode {
-    NONE = 0,  // Chrome addition.
-    PERMISSION_DENIED = 1,
-    POSITION_UNAVAILABLE = 2,
-    LAST = POSITION_UNAVAILABLE
-  };
-
   // These properties correspond to those of the JavaScript Position object
   // although their types may differ.
   // Latitude in decimal degrees north (WGS84 coordinate frame).
@@ -48,11 +39,30 @@ struct Geoposition {
   // (1601-01-01 00:00:00 UTC). This is taken from the host computer's system
   // clock (i.e. from Time::Now(), not the source device's clock).
   mojo_base.mojom.Time timestamp;
+};
 
+// These values follow the W3C geolocation specification and can be returned
+// to JavaScript without the need for a conversion.
+enum GeopositionErrorCode {
+  kPermissionDenied = 1,
+  kPositionUnavailable = 2
+};
+
+// A GeopositionError communicates the reason why the Geolocation service could
+// not return a position estimate.
+struct GeopositionError {
   // Error code, see enum above.
-  ErrorCode error_code = NONE;
+  GeopositionErrorCode error_code;
   // Human-readable error message.
   string error_message;
   // Technical detail of the error.
   string error_technical;
+};
+
+// The result from querying the Geolocation service for the next position
+// estimate. A GeopositionResult contains either a position estimate or an
+// error, but not both.
+union GeopositionResult {
+  Geoposition position;
+  GeopositionError error;
 };

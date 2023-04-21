@@ -22,7 +22,7 @@ interface GeolocationContext {
   // Enables geolocation override. This method can be used to trigger possible
   // location-specific behavior in GeolocationImpl created by this
   // GeolocationContext.
-  SetOverride(Geoposition geoposition);
+  SetOverride(GeopositionResult result);
 
   // Disables geolocation override.
   ClearOverride();

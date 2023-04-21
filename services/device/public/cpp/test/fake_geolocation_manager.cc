@@ -33,8 +33,9 @@ class FakeGeolocationSource : public SystemGeolocationSource {
   }
   void StopWatchingPosition() override { watching_position_ = false; }
   bool watching_position() { return watching_position_; }
-  void FakePositionUpdated(const mojom::Geoposition& position) {
-    position_callback_.Run(position);
+
+  void FakePositionUpdated(mojom::GeopositionResultPtr result) {
+    position_callback_.Run(std::move(result));
   }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -66,9 +67,9 @@ bool FakeGeolocationManager::watching_position() {
 }
 
 void FakeGeolocationManager::FakePositionUpdated(
-    const mojom::Geoposition& position) {
+    mojom::GeopositionResultPtr position) {
   return static_cast<FakeGeolocationSource&>(SystemGeolocationSourceForTest())
-      .FakePositionUpdated(position);
+      .FakePositionUpdated(std::move(position));
 }
 #endif  // BUILDFLAG(IS_MAC)
 

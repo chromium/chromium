@@ -50,6 +50,7 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   class PositionObserver : public base::CheckedObserver {
    public:
     virtual void OnPositionUpdated(const mojom::Geoposition& position) = 0;
+    virtual void OnPositionError(const mojom::GeopositionError& error) = 0;
   };
 
   using PositionObserverList = base::ObserverListThreadSafe<PositionObserver>;
@@ -88,7 +89,7 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   // Returns the list of position observers.
   scoped_refptr<PositionObserverList> GetPositionObserverList() const;
   // Returns the last position
-  mojom::Geoposition GetLastPosition() const;
+  const mojom::GeopositionResult* GetLastPosition() const;
 #endif
 
  protected:
@@ -98,7 +99,7 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   void UpdateSystemPermission(LocationSystemPermissionStatus status);
   void NotifyPermissionObservers();
 #if BUILDFLAG(IS_APPLE)
-  void NotifyPositionObservers(const mojom::Geoposition& position);
+  void NotifyPositionObservers(mojom::GeopositionResultPtr result);
 #endif
 
   // Using scoped_refptr so objects can hold a reference and ensure this list
@@ -110,7 +111,7 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
       LocationSystemPermissionStatus::kNotDetermined;
 
 #if BUILDFLAG(IS_APPLE)
-  mojom::Geoposition last_position_;
+  mojom::GeopositionResultPtr last_result_;
   // Using scoped_refptr so objects can hold a reference and ensure this list
   // is not destroyed on shutdown before it had a chance to remove itself from
   // the list

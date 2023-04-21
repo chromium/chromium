@@ -33,7 +33,7 @@ namespace device {
 class LocationApiAdapterAndroid {
  public:
   using OnGeopositionCB =
-      base::RepeatingCallback<void(const mojom::Geoposition&)>;
+      base::RepeatingCallback<void(mojom::GeopositionResultPtr)>;
 
   // Starts the underlying location provider.
   // Called on |task_runner_|.
@@ -65,7 +65,7 @@ class LocationApiAdapterAndroid {
   ~LocationApiAdapterAndroid();
 
   // Calls |on_geoposition_callback_| with the new location.
-  void NotifyNewGeoposition(const mojom::Geoposition& geoposition);
+  void NotifyNewGeoposition(mojom::GeopositionResultPtr result);
 
   base::android::ScopedJavaGlobalRef<jobject> java_location_provider_adapter_;
 

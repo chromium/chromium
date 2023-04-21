@@ -91,40 +91,41 @@ void LocationApiAdapterAndroid::OnNewLocationAvailable(double latitude,
                                                        double heading,
                                                        bool has_speed,
                                                        double speed) {
-  mojom::Geoposition position;
-  position.latitude = latitude;
-  position.longitude = longitude;
-  position.timestamp = base::Time::FromDoubleT(time_stamp);
+  auto position = mojom::Geoposition::New();
+  position->latitude = latitude;
+  position->longitude = longitude;
+  position->timestamp = base::Time::FromDoubleT(time_stamp);
   if (has_altitude)
-    position.altitude = altitude;
+    position->altitude = altitude;
   if (has_accuracy)
-    position.accuracy = accuracy;
+    position->accuracy = accuracy;
   if (has_heading)
-    position.heading = heading;
+    position->heading = heading;
   if (has_speed)
-    position.speed = speed;
+    position->speed = speed;
 
   LocationApiAdapterAndroid* self = GetInstance();
   self->task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&LocationApiAdapterAndroid::NotifyNewGeoposition,
-                     base::Unretained(self), position));
+      base::BindOnce(
+          &LocationApiAdapterAndroid::NotifyNewGeoposition,
+          base::Unretained(self),
+          mojom::GeopositionResult::NewPosition(std::move(position))));
 }
 
 // static
 void LocationApiAdapterAndroid::OnNewErrorAvailable(JNIEnv* env,
                                                     jstring message) {
-  mojom::Geoposition position_error;
-  position_error.error_code =
-      mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE;
-  position_error.error_message =
-      base::android::ConvertJavaStringToUTF8(env, message);
-
   LocationApiAdapterAndroid* self = GetInstance();
   self->task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&LocationApiAdapterAndroid::NotifyNewGeoposition,
-                     base::Unretained(self), position_error));
+      base::BindOnce(
+          &LocationApiAdapterAndroid::NotifyNewGeoposition,
+          base::Unretained(self),
+          mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
+              mojom::GeopositionErrorCode::kPositionUnavailable,
+              base::android::ConvertJavaStringToUTF8(env, message),
+              /*error_technical=*/""))));
 }
 
 // static
@@ -140,10 +141,10 @@ LocationApiAdapterAndroid::~LocationApiAdapterAndroid() {
 }
 
 void LocationApiAdapterAndroid::NotifyNewGeoposition(
-    const mojom::Geoposition& geoposition) {
+    mojom::GeopositionResultPtr result) {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (on_geoposition_callback_)
-    on_geoposition_callback_.Run(geoposition);
+    on_geoposition_callback_.Run(std::move(result));
 }
 
 }  // namespace device

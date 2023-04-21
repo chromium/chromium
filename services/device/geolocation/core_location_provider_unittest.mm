@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
@@ -14,6 +15,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
+
+using ::base::test::RepeatingTestFuture;
 
 class CoreLocationProviderTest : public testing::Test {
  public:
@@ -32,11 +35,12 @@ class CoreLocationProviderTest : public testing::Test {
   bool IsUpdating() { return fake_geolocation_manager_->watching_position(); }
 
   // updates the position synchronously
-  void FakeUpdatePosition(const mojom::Geoposition position) {
-    fake_geolocation_manager_->FakePositionUpdated(position);
+  void FakeUpdatePosition(const mojom::Geoposition& result) {
+    fake_geolocation_manager_->FakePositionUpdated(
+        mojom::GeopositionResult::NewPosition(result.Clone()));
   }
 
-  const mojom::Geoposition& GetLatestPosition() {
+  const mojom::GeopositionResult* GetLatestPosition() {
     return provider_->GetPosition();
   }
 
@@ -103,25 +107,25 @@ TEST_F(CoreLocationProviderTest, GetPositionUpdates) {
   double accuracy = 10.5;
   double altitude_accuracy = 15.5;
 
-  mojom::Geoposition test_position;
-  test_position.latitude = latitude;
-  test_position.longitude = longitude;
-  test_position.altitude = altitude;
-  test_position.accuracy = accuracy;
-  test_position.altitude_accuracy = altitude_accuracy;
-  test_position.timestamp = base::Time::Now();
+  auto test_position = mojom::Geoposition::New();
+  test_position->latitude = latitude;
+  test_position->longitude = longitude;
+  test_position->altitude = altitude;
+  test_position->accuracy = accuracy;
+  test_position->altitude_accuracy = altitude_accuracy;
+  test_position->timestamp = base::Time::Now();
 
-  base::RunLoop loop;
-  provider_->SetUpdateCallback(
-      base::BindLambdaForTesting([&](const LocationProvider* provider,
-                                     const mojom::Geoposition& position) {
-        EXPECT_TRUE(test_position.Equals(position));
-        loop.Quit();
-      }));
-  FakeUpdatePosition(test_position);
-  loop.Run();
-
-  EXPECT_TRUE(GetLatestPosition().Equals(test_position));
+  RepeatingTestFuture<const LocationProvider*, mojom::GeopositionResultPtr>
+      location_update_future;
+  provider_->SetUpdateCallback(location_update_future.GetCallback());
+  FakeUpdatePosition(*test_position);
+  auto [provider, result] = location_update_future.Take();
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_position());
+  EXPECT_TRUE(test_position.Equals(result->get_position()));
+  ASSERT_TRUE(GetLatestPosition());
+  ASSERT_TRUE(GetLatestPosition()->is_position());
+  EXPECT_TRUE(GetLatestPosition()->get_position().Equals(test_position));
 
   provider_->StopProvider();
   EXPECT_FALSE(IsUpdating());

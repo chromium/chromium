@@ -166,7 +166,7 @@ void LocationProviderWinrt::StartProvider(bool high_accuracy) {
     hr = GetGeolocator(&geo_locator_);
     if (FAILED(hr)) {
       HandleErrorCondition(
-          mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE,
+          mojom::GeopositionErrorCode::kPositionUnavailable,
           "Unable to create instance of Geolocation API. HRESULT: " +
               base::NumberToString(hr));
       return;
@@ -197,7 +197,7 @@ void LocationProviderWinrt::StopProvider() {
   // Reset the reference location state (provider+position)
   // so that future starts use fresh locations from
   // the newly constructed providers.
-  last_position_ = mojom::Geoposition();
+  last_result_.reset();
   if (!geo_locator_) {
     return;
   }
@@ -207,9 +207,9 @@ void LocationProviderWinrt::StopProvider() {
   geo_locator_.Reset();
 }
 
-const mojom::Geoposition& LocationProviderWinrt::GetPosition() {
+const mojom::GeopositionResult* LocationProviderWinrt::GetPosition() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return last_position_;
+  return last_result_.get();
 }
 
 void LocationProviderWinrt::OnPermissionGranted() {
@@ -222,31 +222,32 @@ void LocationProviderWinrt::OnPermissionGranted() {
 }
 
 void LocationProviderWinrt::HandleErrorCondition(
-    mojom::Geoposition::ErrorCode position_error_code,
+    mojom::GeopositionErrorCode position_error_code,
     const std::string& position_error_message) {
   WindowsRTLocationRequestEvent event;
   switch (position_error_code) {
-    case mojom::Geoposition::ErrorCode::PERMISSION_DENIED:
+    case mojom::GeopositionErrorCode::kPermissionDenied:
       event = WindowsRTLocationRequestEvent::
           WINDOWS_RT_LOCATION_CALLBACK_EVENT_PERMISSION_DENIED;
       break;
-    case mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE:
+    case mojom::GeopositionErrorCode::kPositionUnavailable:
       event = WindowsRTLocationRequestEvent::
           WINDOWS_RT_LOCATION_CALLBACK_EVENT_POSITION_UNAVAILABLE;
       break;
-    default:
-      event = WindowsRTLocationRequestEvent::
-          WINDOWS_RT_LOCATION_CALLBACK_EVENT_UNKNOWN_ERROR_CONDITION;
   }
   RecordUmaEvent(event);
 
-  last_position_ = mojom::Geoposition();
-  last_position_.error_code = position_error_code;
-  last_position_.error_message = position_error_message;
-
+  last_result_ =
+      mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
+          position_error_code, position_error_message, /*error_technical=*/""));
   if (location_update_callback_) {
-    location_update_callback_.Run(this, last_position_);
+    location_update_callback_.Run(this, last_result_.Clone());
   }
+}
+
+bool LocationProviderWinrt::HasValidLastPosition() const {
+  return last_result_ && last_result_->is_position() &&
+         ValidateGeoposition(*last_result_->get_position());
 }
 
 void LocationProviderWinrt::RegisterCallbacks() {
@@ -279,9 +280,9 @@ void LocationProviderWinrt::RegisterCallbacks() {
     if (FAILED(hr)) {
       RecordUmaEvent(WindowsRTLocationRequestEvent::
                          WINDOWS_RT_LOCATION_CALLBACK_EVENT_FAILURE);
-      if (!ValidateGeoposition(last_position_)) {
+      if (!HasValidLastPosition()) {
         HandleErrorCondition(
-            mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE,
+            mojom::GeopositionErrorCode::kPositionUnavailable,
             "Unable to add a callback to retrieve position for Geolocation "
             "API. HRESULT: " +
                 base::NumberToString(hr));
@@ -357,24 +358,24 @@ void LocationProviderWinrt::OnPositionChanged(
   if (FAILED(hr)) {
     RecordUmaEvent(WindowsRTLocationRequestEvent::
                        WINDOWS_RT_LOCATION_CALLBACK_EVENT_FAILURE);
-    if (!ValidateGeoposition(last_position_)) {
+    if (!HasValidLastPosition()) {
       HandleErrorCondition(
-          mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE,
+          mojom::GeopositionErrorCode::kPositionUnavailable,
           "Unable to get position from Geolocation API. HRESULT: " +
               base::NumberToString(hr));
     }
     return;
   }
 
-  mojom::Geoposition location_data;
-  PopulateLocationData(position.Get(), &location_data);
-  if (!ValidateGeoposition(location_data)) {
+  mojom::GeopositionPtr location_data = CreateGeoposition(position.Get());
+  if (!location_data || !ValidateGeoposition(*location_data)) {
     RecordUmaEvent(WindowsRTLocationRequestEvent::
                        WINDOWS_RT_LOCATION_CALLBACK_EVENT_INVALID_POSITION);
     return;
   }
 
-  last_position_ = location_data;
+  last_result_ =
+      mojom::GeopositionResult::NewPosition(std::move(location_data));
 
   if (!position_received_) {
     const base::TimeDelta time_to_first_position =
@@ -389,7 +390,7 @@ void LocationProviderWinrt::OnPositionChanged(
                      WINDOWS_RT_LOCATION_CALLBACK_EVENT_SUCCESS);
 
   if (location_update_callback_) {
-    location_update_callback_.Run(this, last_position_);
+    location_update_callback_.Run(this, last_result_.Clone());
   }
 }
 
@@ -409,12 +410,12 @@ void LocationProviderWinrt::OnStatusChanged(
 
   switch (status) {
     case PositionStatus::PositionStatus_Disabled:
-      HandleErrorCondition(mojom::Geoposition::ErrorCode::PERMISSION_DENIED,
+      HandleErrorCondition(mojom::GeopositionErrorCode::kPermissionDenied,
                            "User has not allowed access to Windows Location.");
       break;
     case PositionStatus::PositionStatus_NotAvailable:
       HandleErrorCondition(
-          mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE,
+          mojom::GeopositionErrorCode::kPositionUnavailable,
           "Location API is not available on this version of Windows.");
       break;
     default:
@@ -422,30 +423,26 @@ void LocationProviderWinrt::OnStatusChanged(
   }
 }
 
-void LocationProviderWinrt::PopulateLocationData(
-    IGeoposition* geoposition,
-    mojom::Geoposition* location_data) {
+mojom::GeopositionPtr LocationProviderWinrt::CreateGeoposition(
+    IGeoposition* geoposition) {
   ComPtr<IGeocoordinate> coordinate;
   HRESULT hr = geoposition->get_Coordinate(&coordinate);
   if (FAILED(hr)) {
     VLOG(1) << "Failed to get a coordinate from getposition from windows "
                "geolocation API. HRESULT: "
             << hr;
-    return;
+    return nullptr;
   }
 
   const absl::optional<BasicGeoposition> position =
       GetPositionFromCoordinate(coordinate);
-  if (position) {
-    location_data->latitude = position->Latitude;
-    location_data->longitude = position->Longitude;
-    location_data->altitude = position->Altitude;
-  } else {
-    location_data->latitude = device::mojom::kBadLatitudeLongitude;
-    location_data->longitude = device::mojom::kBadLatitudeLongitude;
-    location_data->altitude = device::mojom::kBadAltitude;
+  if (!position) {
+    return nullptr;
   }
-
+  auto location_data = mojom::Geoposition::New();
+  location_data->latitude = position->Latitude;
+  location_data->longitude = position->Longitude;
+  location_data->altitude = position->Altitude;
   location_data->accuracy = GetOptionalDouble([&](DOUBLE* value) -> HRESULT {
                               return coordinate->get_Accuracy(value);
                             }).value_or(device::mojom::kBadAccuracy);
@@ -467,6 +464,8 @@ void LocationProviderWinrt::PopulateLocationData(
   if (location_data->altitude_accuracy == device::mojom::kBadAccuracy) {
     location_data->altitude = device::mojom::kBadAltitude;
   }
+
+  return location_data;
 }
 
 HRESULT LocationProviderWinrt::GetGeolocator(IGeolocator** geo_locator) {
