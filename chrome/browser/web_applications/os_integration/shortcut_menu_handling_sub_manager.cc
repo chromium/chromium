@@ -87,6 +87,13 @@ void ShortcutMenuHandlingSubManager::Execute(
           std::move(execute_complete)));
 }
 
+// TODO(b/279068663): Implement if needed.
+void ShortcutMenuHandlingSubManager::ForceUnregister(
+    const AppId& app_id,
+    base::OnceClosure callback) {
+  std::move(callback).Run();
+}
+
 void ShortcutMenuHandlingSubManager::StoreShortcutMenuData(
     const AppId& app_id,
     proto::ShortcutMenus* shortcut_menus,

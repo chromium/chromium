@@ -208,6 +208,12 @@ void ShortcutSubManager::Execute(
   std::move(callback_for_no_update).Run();
 }
 
+// TODO(b/279068663): Implement if needed.
+void ShortcutSubManager::ForceUnregister(const AppId& app_id,
+                                         base::OnceClosure callback) {
+  std::move(callback).Run();
+}
+
 void ShortcutSubManager::CreateShortcut(
     const AppId& app_id,
     absl::optional<SynchronizeOsOptions> synchronize_options,

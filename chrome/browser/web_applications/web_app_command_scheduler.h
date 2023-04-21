@@ -44,6 +44,7 @@ class WebAppProvider;
 struct IsolationData;
 class WebApp;
 enum class ApiApprovalState;
+struct SynchronizeOsOptions;
 
 // The command scheduler is the main API to access the web app system. The
 // scheduler internally ensures:
@@ -271,9 +272,11 @@ class WebAppCommandScheduler {
 
   // Used to schedule a synchronization of a web app's OS states with the
   // current DB states.
-  void SynchronizeOsIntegration(const AppId& app_id,
-                                base::OnceClosure synchronize_callback,
-                                const base::Location& location = FROM_HERE);
+  void SynchronizeOsIntegration(
+      const AppId& app_id,
+      base::OnceClosure synchronize_callback,
+      absl::optional<SynchronizeOsOptions> synchronize_options = absl::nullopt,
+      const base::Location& location = FROM_HERE);
 
   // TODO(https://crbug.com/1298130): expose all commands for web app
   // operations.

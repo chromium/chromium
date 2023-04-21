@@ -35,6 +35,8 @@ class ShortcutMenuHandlingSubManager : public OsIntegrationSubManager {
                const proto::WebAppOsIntegrationState& desired_state,
                const proto::WebAppOsIntegrationState& current_state,
                base::OnceClosure execute_complete) override;
+  void ForceUnregister(const AppId& app_id,
+                       base::OnceClosure callback) override;
 
  private:
   void StoreShortcutMenuData(const AppId& app_id,

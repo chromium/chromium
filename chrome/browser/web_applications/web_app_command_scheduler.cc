@@ -39,6 +39,7 @@
 #include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -542,6 +543,7 @@ void WebAppCommandScheduler::LaunchAppWithCustomParams(
 void WebAppCommandScheduler::SynchronizeOsIntegration(
     const AppId& app_id,
     base::OnceClosure synchronize_callback,
+    absl::optional<SynchronizeOsOptions> synchronize_options,
     const base::Location& location) {
   if (IsShuttingDown()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -551,7 +553,7 @@ void WebAppCommandScheduler::SynchronizeOsIntegration(
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<OsIntegrationSynchronizeCommand>(
-          app_id, std::move(synchronize_callback)),
+          app_id, synchronize_options, std::move(synchronize_callback)),
       location);
 }
 

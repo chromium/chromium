@@ -227,9 +227,22 @@ void OsIntegrationManager::Synchronize(
     base::OnceClosure callback,
     absl::optional<SynchronizeOsOptions> options) {
   first_synchronize_called_ = true;
+
+  // This is usually called whenever the app is missing in the web app registry,
+  // to clean up left over OS integration states.
+  if (options.has_value() && options.value().force_unregister_on_app_missing) {
+    ForceUnregisterOsIntegrationOnSubManager(app_id, /*index=*/0,
+                                             std::move(callback));
+    return;
+  }
+
+  // If the app does not exist in the DB and an unregistration is required, it
+  // should have been done in the past Synchronize call.
   CHECK(registrar_->GetAppById(app_id))
       << "Can't perform OS integration without the app existing in the "
-         "registrar.";
+         "registrar. If the use-case requires an app to not be installed, "
+         "consider setting the force_unregister_on_app_missing flag inside "
+         "SynchronizeOsOptions";
 
   CHECK(set_subsystems_called_);
 
@@ -993,6 +1006,23 @@ void OsIntegrationManager::WriteStateToDB(
   }
 
   std::move(callback).Run();
+}
+
+void OsIntegrationManager::ForceUnregisterOsIntegrationOnSubManager(
+    const AppId& app_id,
+    size_t index,
+    base::OnceClosure final_callback) {
+  CHECK(index < sub_managers_.size());
+  base::OnceClosure next_callback = base::OnceClosure();
+  if (index == sub_managers_.size() - 1) {
+    next_callback = std::move(final_callback);
+  } else {
+    next_callback = base::BindOnce(
+        &OsIntegrationManager::ForceUnregisterOsIntegrationOnSubManager,
+        weak_ptr_factory_.GetWeakPtr(), app_id, index + 1,
+        std::move(final_callback));
+  }
+  sub_managers_[index]->ForceUnregister(app_id, std::move(next_callback));
 }
 
 void OsIntegrationManager::OnShortcutsCreated(

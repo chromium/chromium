@@ -30,6 +30,8 @@ class ProtocolHandlingSubManager : public OsIntegrationSubManager {
                const proto::WebAppOsIntegrationState& desired_state,
                const proto::WebAppOsIntegrationState& current_state,
                base::OnceClosure callback) override;
+  void ForceUnregister(const AppId& app_id,
+                       base::OnceClosure callback) override;
 
  private:
   const base::FilePath profile_path_;

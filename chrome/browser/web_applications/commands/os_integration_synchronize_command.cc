@@ -19,10 +19,12 @@ namespace web_app {
 
 OsIntegrationSynchronizeCommand::OsIntegrationSynchronizeCommand(
     const AppId& app_id,
+    absl::optional<SynchronizeOsOptions> synchronize_options,
     base::OnceClosure synchronize_callback)
     : WebAppCommandTemplate<AppLock>("OsIntegrationSynchronizeCommand"),
       app_lock_description_(std::make_unique<AppLockDescription>(app_id)),
       app_id_(app_id),
+      synchronize_options_(synchronize_options),
       synchronize_callback_(std::move(synchronize_callback)) {}
 
 OsIntegrationSynchronizeCommand::~OsIntegrationSynchronizeCommand() = default;
@@ -39,7 +41,8 @@ void OsIntegrationSynchronizeCommand::StartWithLock(
   app_lock_->os_integration_manager().Synchronize(
       app_id_,
       base::BindOnce(&OsIntegrationSynchronizeCommand::OnSynchronizeComplete,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr()),
+      synchronize_options_);
 }
 
 void OsIntegrationSynchronizeCommand::OnSynchronizeComplete() {

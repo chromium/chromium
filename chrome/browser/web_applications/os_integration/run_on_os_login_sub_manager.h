@@ -41,6 +41,9 @@ class RunOnOsLoginSubManager : public OsIntegrationSubManager {
                const proto::WebAppOsIntegrationState& current_state,
                base::OnceClosure execute_done) override;
 
+  void ForceUnregister(const AppId& app_id,
+                       base::OnceClosure callback) override;
+
  private:
   // Unregistration logic.
   void StartUnregistration(const AppId& app_id,

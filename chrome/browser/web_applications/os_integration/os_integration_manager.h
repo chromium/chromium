@@ -334,6 +334,14 @@ class OsIntegrationManager : public AppRegistrarObserver {
       std::unique_ptr<proto::WebAppOsIntegrationState> desired_states,
       base::OnceClosure callback);
 
+  // Used to call ForceUnregister() on all sub managers to remove any
+  // OS integrations from the OS. This runs synchronously in the order
+  // that the sub managers are stored inside the sub_managers_ vector.
+  void ForceUnregisterOsIntegrationOnSubManager(
+      const AppId& app_id,
+      size_t index,
+      base::OnceClosure final_callback);
+
   void OnShortcutsCreated(const AppId& app_id,
                           std::unique_ptr<WebAppInstallInfo> web_app_info,
                           InstallOsHooksOptions options,
