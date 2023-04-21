@@ -97,17 +97,9 @@ void NetworkChangeNotifierPassive::GetCurrentMaxBandwidthAndConnectionType(
 }
 
 #if BUILDFLAG(IS_LINUX)
-void NetworkChangeNotifierPassive::InitializeAddressMapCache(
-    AddressMapOwnerLinux::AddressMap initial_address_map,
-    std::unordered_set<int> initial_online_links) {
-  DCHECK(!address_map_cache_.has_value());
-  address_map_cache_.emplace(std::move(initial_address_map),
-                             std::move(initial_online_links));
-}
-
-const AddressMapOwnerLinux*
-NetworkChangeNotifierPassive::GetAddressMapOwnerInternal() const {
-  return &address_map_cache_.value();
+AddressMapOwnerLinux*
+NetworkChangeNotifierPassive::GetAddressMapOwnerInternal() {
+  return &address_map_cache_;
 }
 #endif
 

@@ -81,8 +81,7 @@ class AddressTrackerLinuxTest : public testing::Test {
 #if BUILDFLAG(IS_LINUX)
       const auto& [address_map, online_links] =
           tracker_->GetInitialDataAndStartRecordingDiffs();
-      address_map_cache_ =
-          std::make_unique<AddressMapCacheLinux>(address_map, online_links);
+      address_map_cache_.SetCachedInfo(address_map, online_links);
 #endif  // BUILDFLAG(IS_LINUX)
     } else {
       tracker_ = std::make_unique<AddressTrackerLinux>();
@@ -157,17 +156,17 @@ class AddressTrackerLinuxTest : public testing::Test {
       return;
     }
 #if BUILDFLAG(IS_LINUX)
-    address_map_cache_->ApplyDiffs(tracker_->address_map_diff_for_testing(),
-                                   tracker_->online_links_diff_for_testing());
-    EXPECT_EQ(address_map_cache_->GetAddressMap(), tracker_->GetAddressMap());
-    EXPECT_EQ(address_map_cache_->GetOnlineLinks(), tracker_->GetOnlineLinks());
+    address_map_cache_.ApplyDiffs(tracker_->address_map_diff_for_testing(),
+                                  tracker_->online_links_diff_for_testing());
+    EXPECT_EQ(address_map_cache_.GetAddressMap(), tracker_->GetAddressMap());
+    EXPECT_EQ(address_map_cache_.GetOnlineLinks(), tracker_->GetOnlineLinks());
     tracker_->address_map_diff_for_testing().clear();
     tracker_->online_links_diff_for_testing().clear();
 #endif  // BUILDFLAG(IS_LINUX)
   }
 
 #if BUILDFLAG(IS_LINUX)
-  std::unique_ptr<AddressMapCacheLinux> address_map_cache_;
+  AddressMapCacheLinux address_map_cache_;
 #endif
   bool tracking_;
 };

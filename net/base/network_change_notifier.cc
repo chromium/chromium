@@ -522,7 +522,7 @@ const char* NetworkChangeNotifier::ConnectionTypeToString(
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // static
-const AddressMapOwnerLinux* NetworkChangeNotifier::GetAddressMapOwner() {
+AddressMapOwnerLinux* NetworkChangeNotifier::GetAddressMapOwner() {
   return g_network_change_notifier
              ? g_network_change_notifier->GetAddressMapOwnerInternal()
              : nullptr;
@@ -875,8 +875,7 @@ NetworkChangeNotifier::NetworkChangeNotifier(
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-const AddressMapOwnerLinux* NetworkChangeNotifier::GetAddressMapOwnerInternal()
-    const {
+AddressMapOwnerLinux* NetworkChangeNotifier::GetAddressMapOwnerInternal() {
   return nullptr;
 }
 #endif

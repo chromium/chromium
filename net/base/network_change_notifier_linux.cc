@@ -32,9 +32,7 @@ class NetworkChangeNotifierLinux::BlockingThreadObjects {
     return address_tracker_.GetCurrentConnectionType();
   }
 
-  const internal::AddressTrackerLinux* address_tracker() const {
-    return &address_tracker_;
-  }
+  internal::AddressTrackerLinux* address_tracker() { return &address_tracker_; }
 
   // Begin watching for netlink changes.
   void Init();
@@ -170,8 +168,7 @@ NetworkChangeNotifierLinux::GetCurrentConnectionType() const {
   return blocking_thread_objects_->GetCurrentConnectionType();
 }
 
-const AddressMapOwnerLinux*
-NetworkChangeNotifierLinux::GetAddressMapOwnerInternal() const {
+AddressMapOwnerLinux* NetworkChangeNotifierLinux::GetAddressMapOwnerInternal() {
   return blocking_thread_objects_->address_tracker();
 }
 

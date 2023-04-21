@@ -402,11 +402,10 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
     // Network service should be out of process or it's unsandboxed and can just
     // use AddressTrackerLinux.
     DCHECK(registry_);
-    static_cast<net::NetworkChangeNotifierPassive*>(
-        network_change_notifier.get())
-        ->InitializeAddressMapCache(
-            std::move(params->initial_address_map->address_map),
-            std::move(params->initial_address_map->online_links));
+    network_change_notifier->GetAddressMapOwner()
+        ->GetAddressMapCacheLinux()
+        ->SetCachedInfo(std::move(params->initial_address_map->address_map),
+                        std::move(params->initial_address_map->online_links));
   }
 #endif  // BUILDFLAG(IS_LINUX)
 

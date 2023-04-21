@@ -10,11 +10,7 @@
 
 namespace net {
 
-AddressMapCacheLinux::AddressMapCacheLinux(
-    AddressMap initial_address_map,
-    std::unordered_set<int> initial_online_links)
-    : cached_address_map_(std::move(initial_address_map)),
-      cached_online_links_(std::move(initial_online_links)) {}
+AddressMapCacheLinux::AddressMapCacheLinux() = default;
 AddressMapCacheLinux::~AddressMapCacheLinux() = default;
 
 AddressMapOwnerLinux::AddressMap AddressMapCacheLinux::GetAddressMap() const {
@@ -25,6 +21,17 @@ AddressMapOwnerLinux::AddressMap AddressMapCacheLinux::GetAddressMap() const {
 std::unordered_set<int> AddressMapCacheLinux::GetOnlineLinks() const {
   base::AutoLock autolock(lock_);
   return cached_online_links_;
+}
+
+AddressMapCacheLinux* AddressMapCacheLinux::GetAddressMapCacheLinux() {
+  return this;
+}
+
+void AddressMapCacheLinux::SetCachedInfo(AddressMap address_map,
+                                         std::unordered_set<int> online_links) {
+  base::AutoLock autolock(lock_);
+  cached_address_map_ = std::move(address_map);
+  cached_online_links_ = std::move(online_links);
 }
 
 void AddressMapCacheLinux::ApplyDiffs(const AddressMapDiff& addr_diff,

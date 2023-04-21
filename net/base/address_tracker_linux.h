@@ -6,6 +6,7 @@
 #define NET_BASE_ADDRESS_TRACKER_LINUX_H_
 
 #include <sys/socket.h>  // Needed to include netlink.
+#include "base/task/sequenced_task_runner.h"
 
 // Mask superfluous definition of |struct net|. This is fixed in Linux 2.6.38.
 
@@ -88,6 +89,8 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
   // Returns set of interface indices for online interfaces.
   std::unordered_set<int> GetOnlineLinks() const override;
 
+  AddressTrackerLinux* GetAddressTrackerLinux() override;
+
   // This returns the current AddressMap and set of online links, and atomically
   // starts recording diffs to those structures. This can be called on any
   // thread, and must be called called before SetDiffCallback() below. Available
@@ -104,10 +107,13 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
   // GetInitialDataAndStartRecordingDiffs() was called. If there are none,
   // |diff_callback| won't be called.
   //
-  // This is only available in tracking mode, and must be called on
-  // AddressTrackerLinux's sequence. Note that other threads may see updated
-  // AddressMaps by calling GetAddressMap() before |diff_callback| is ever
-  // called.
+  // This is only available in tracking mode. It can be called on any thread,
+  // but it will post a task to the AddressTrackerLinux's sequence and therefore
+  // will finish asynchronously. The caller MUST ENSURE that the
+  // AddressTrackerLinux is not deleted until this task finishes.
+  //
+  // Note that other threads may see updated AddressMaps by calling
+  // GetAddressMap() before |diff_callback| is ever called.
   void SetDiffCallback(DiffCallback diff_callback);
 
   // Implementation of NetworkChangeNotifierLinux::GetCurrentConnectionType().
@@ -260,7 +266,13 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
 
   const bool tracking_;
 
+  // Will be set in tracking mode with whichever sequence Init() is called on.
+  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+  // This SequenceChecker is still useful so instance variables above can be
+  // marked GUARDED_BY_CONTEXT(sequence_checker_).
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<AddressTrackerLinux> weak_ptr_factory_{this};
 };
 
 }  // namespace net::internal

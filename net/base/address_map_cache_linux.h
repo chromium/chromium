@@ -21,8 +21,7 @@ namespace net {
 // This class is thread-safe.
 class NET_EXPORT AddressMapCacheLinux : public AddressMapOwnerLinux {
  public:
-  AddressMapCacheLinux(AddressMap initial_address_map,
-                       std::unordered_set<int> initial_online_links);
+  AddressMapCacheLinux();
 
   AddressMapCacheLinux(const AddressMapCacheLinux&) = delete;
   AddressMapCacheLinux& operator=(const AddressMapCacheLinux&) = delete;
@@ -32,6 +31,13 @@ class NET_EXPORT AddressMapCacheLinux : public AddressMapOwnerLinux {
   // AddressMapOwnerLinux implementation:
   AddressMap GetAddressMap() const override;
   std::unordered_set<int> GetOnlineLinks() const override;
+
+  AddressMapCacheLinux* GetAddressMapCacheLinux() override;
+
+  // Sets `cached_address_map_` and `cached_online_links_`. This should normally
+  // only be used to set the initial AddressMap and set of online links.
+  void SetCachedInfo(AddressMap address_map,
+                     std::unordered_set<int> online_links);
 
   // Takes the diffs and applies them (atomically) to `cached_address_map_` and
   // `cached_online_links_`.

@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
@@ -252,6 +253,10 @@ std::unordered_set<int> AddressTrackerLinux::GetOnlineLinks() const {
   return online_links_;
 }
 
+AddressTrackerLinux* AddressTrackerLinux::GetAddressTrackerLinux() {
+  return this;
+}
+
 std::pair<AddressTrackerLinux::AddressMap, std::unordered_set<int>>
 AddressTrackerLinux::GetInitialDataAndStartRecordingDiffs() {
   DCHECK(tracking_);
@@ -263,8 +268,18 @@ AddressTrackerLinux::GetInitialDataAndStartRecordingDiffs() {
 }
 
 void AddressTrackerLinux::SetDiffCallback(DiffCallback diff_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(tracking_);
+  DCHECK(sequenced_task_runner_);
+
+  if (!sequenced_task_runner_->RunsTasksInCurrentSequence()) {
+    sequenced_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&AddressTrackerLinux::SetDiffCallback,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  std::move(diff_callback)));
+    return;
+  }
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if DCHECK_IS_ON()
   {
     // GetInitialDataAndStartRecordingDiffs() must be called before
@@ -358,6 +373,8 @@ void AddressTrackerLinux::DumpInitialAddressesAndWatch() {
   }
 
   if (tracking_) {
+    sequenced_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
+
     watcher_ = base::FileDescriptorWatcher::WatchReadable(
         netlink_fd_.get(),
         base::BindRepeating(&AddressTrackerLinux::OnFileCanReadWithoutBlocking,
