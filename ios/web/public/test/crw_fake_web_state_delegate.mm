@@ -61,14 +61,13 @@
   return nil;
 }
 
-- (BOOL)webState:(web::WebState*)webState
+- (void)webState:(web::WebState*)webState
     handlePermissions:(NSArray<NSNumber*>*)permissions
-      decisionHandler:(void (^)(BOOL allow))decisionHandler
+      decisionHandler:(web::WebStatePermissionDecisionHandler)decisionHandler
     API_AVAILABLE(ios(15.0)) {
   _webState = webState;
   _permissionsRequestHandled = YES;
-  decisionHandler(YES);
-  return YES;
+  decisionHandler(web::PermissionDecisionGrant);
 }
 
 - (void)webState:(web::WebState*)webState

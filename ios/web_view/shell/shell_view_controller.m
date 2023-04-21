@@ -1160,6 +1160,13 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 
   [alertController
       addAction:[UIAlertAction
+                    actionWithTitle:@"Show Default Prompt"
+                              style:UIAlertActionStyleDefault
+                            handler:^(UIAlertAction* action) {
+                              decisionHandler(CWVPermissionDecisionPrompt);
+                            }]];
+  [alertController
+      addAction:[UIAlertAction
                     actionWithTitle:@"Grant"
                               style:UIAlertActionStyleDefault
                             handler:^(UIAlertAction* action) {

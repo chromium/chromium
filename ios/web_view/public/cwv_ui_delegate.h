@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class CWVNavigationAction;
 
 typedef NS_ENUM(NSInteger, CWVPermissionDecision) {
+  CWVPermissionDecisionPrompt,
   CWVPermissionDecisionGrant,
   CWVPermissionDecisionDeny,
 } API_AVAILABLE(ios(15.0));

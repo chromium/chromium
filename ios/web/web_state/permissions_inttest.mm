@@ -132,7 +132,7 @@ TEST_F(PermissionsInttest,
     EXPECT_CALL(observer_,
                 PermissionStateChanged(web_state(), PermissionMicrophone))
         .Times(0);
-    delegate_.SetShouldGrantPermissions(YES);
+    delegate_.SetPermissionDecision(PermissionDecisionGrant);
 
     // Initial load.
     test::LoadUrl(web_state(), test_server_->GetURL("/camera_only.html"));
@@ -165,7 +165,7 @@ TEST_F(PermissionsInttest,
                                         PermissionStateAllowed));
 
     // Initial load.
-    delegate_.SetShouldGrantPermissions(YES);
+    delegate_.SetPermissionDecision(PermissionDecisionGrant);
     test::LoadUrl(web_state(), test_server_->GetURL("/microphone_only.html"));
     SpinRunLoopWithMinDelay(kWaitForPageLoadTimeout);
     ExpectThatLastRequestedPermissionsMatchesPermissions(
@@ -197,7 +197,7 @@ TEST_F(PermissionsInttest,
                                         PermissionStateAllowed));
 
     // Initial load.
-    delegate_.SetShouldGrantPermissions(YES);
+    delegate_.SetPermissionDecision(PermissionDecisionGrant);
     test::LoadUrl(web_state(),
                   test_server_->GetURL("/camera_and_microphone.html"));
     SpinRunLoopWithMinDelay(kWaitForPageLoadTimeout);
@@ -224,7 +224,7 @@ TEST_F(PermissionsInttest,
                 PermissionStateChanged(web_state(), PermissionCamera))
         .Times(0);
 
-    delegate_.SetShouldGrantPermissions(NO);
+    delegate_.SetPermissionDecision(PermissionDecisionDeny);
     test::LoadUrl(web_state(), test_server_->GetURL("/camera_only.html"));
     SpinRunLoopWithMinDelay(kWaitForPageLoadTimeout);
     ExpectThatLastRequestedPermissionsMatchesPermissions(
@@ -239,7 +239,7 @@ TEST_F(PermissionsInttest,
 TEST_F(PermissionsInttest,
        TestsThatWebStateShouldNotAlterPermissionIfNotAccessible) {
   if (@available(iOS 15.0, *)) {
-    delegate_.SetShouldGrantPermissions(NO);
+    delegate_.SetPermissionDecision(PermissionDecisionDeny);
     test::LoadUrl(web_state(), test_server_->GetURL("/camera_only.html"));
     SpinRunLoopWithMinDelay(kWaitForPageLoadTimeout);
     ExpectThatLastRequestedPermissionsMatchesPermissions(
@@ -272,7 +272,7 @@ TEST_F(PermissionsInttest,
 TEST_F(PermissionsInttest, TestsThatPageReloadResetsPermissionState) {
   if (@available(iOS 15.0, *)) {
     // Initial load should allow permission.
-    delegate_.SetShouldGrantPermissions(YES);
+    delegate_.SetPermissionDecision(PermissionDecisionGrant);
     test::LoadUrl(web_state(), test_server_->GetURL("/camera_only.html"));
     SpinRunLoopWithMinDelay(kWaitForPageLoadTimeout);
     EXPECT_EQ(web_state()->GetStateForPermission(PermissionCamera),
@@ -283,7 +283,7 @@ TEST_F(PermissionsInttest, TestsThatPageReloadResetsPermissionState) {
     // Reload should reset permission. Handler should be called again, and
     // permission state should be NotAccessible.
     delegate_.ClearLastRequestedPermissions();
-    delegate_.SetShouldGrantPermissions(NO);
+    delegate_.SetPermissionDecision(PermissionDecisionDeny);
     web_state()->GetNavigationManager()->Reload(ReloadType::NORMAL,
                                                 /*check_for_repost=*/false);
     SpinRunLoopWithMinDelay(kWaitForPageLoadTimeout);
@@ -301,7 +301,7 @@ TEST_F(PermissionsInttest, TestsThatPageReloadResetsPermissionState) {
 TEST_F(PermissionsInttest, TestsThatWebStateDoesNotPreservePermissionState) {
   if (@available(iOS 15.0, *)) {
     // Initial load should allow permission.
-    delegate_.SetShouldGrantPermissions(YES);
+    delegate_.SetPermissionDecision(PermissionDecisionGrant);
     test::LoadUrl(web_state(), test_server_->GetURL("/camera_only.html"));
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
       return web_state()->GetStateForPermission(PermissionCamera) ==
@@ -314,7 +314,7 @@ TEST_F(PermissionsInttest, TestsThatWebStateDoesNotPreservePermissionState) {
     // called again, permission state should be NotAccessible and the observer
     // should NOT be invoked.
     delegate_.ClearLastRequestedPermissions();
-    delegate_.SetShouldGrantPermissions(NO);
+    delegate_.SetPermissionDecision(PermissionDecisionDeny);
     test::LoadUrl(web_state(),
                   test_server_->GetURL("/camera_and_microphone.html"));
     SpinRunLoopWithMinDelay(kWaitForPageLoadTimeout);
@@ -335,7 +335,7 @@ TEST_F(PermissionsInttest,
        TestsThatMovingBackwardOrForwardResetsPermissionState) {
   if (@available(iOS 15.0, *)) {
     // Initial load for both pages should allow permission.
-    delegate_.SetShouldGrantPermissions(YES);
+    delegate_.SetPermissionDecision(PermissionDecisionGrant);
     test::LoadUrl(web_state(), test_server_->GetURL("/microphone_only.html"));
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
       return web_state()->GetStateForPermission(PermissionMicrophone) ==
@@ -371,7 +371,7 @@ TEST_F(PermissionsInttest,
     // WKMediaCaptureStateNone. The two following lines of code should be
     // uncommented when this is fixed.
 
-    // delegate_.SetShouldGrantPermissions(NO);
+    // delegate_.SetPermissionDecision(PermissionDecisionDeny);
     // handler_.decision = WKPermissionDecisionDeny;
     web_state()->GetNavigationManager()->GoBack();
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {

@@ -87,7 +87,7 @@ class FakeWebStateDelegate : public WebStateDelegate {
                       NSURLProtectionSpace* protection_space,
                       NSURLCredential* proposed_credential,
                       AuthCallback callback) override;
-  bool HandlePermissionsDecisionRequest(
+  void HandlePermissionsDecisionRequest(
       WebState* source,
       NSArray<NSNumber*>* permissions,
       WebStatePermissionDecisionHandler handler) override
@@ -153,10 +153,10 @@ class FakeWebStateDelegate : public WebStateDelegate {
   // `HandlePermissionsDecisionRequest`.
   void ClearLastRequestedPermissions() { last_requested_permissions_ = nil; }
 
-  // Sets that whether permissions should be granted or denied the next time
+  // Sets that permission decision the for next time
   // `HandlePermissionsDecisionRequest` is called.
-  void SetShouldGrantPermissions(bool should_grant_permissions) {
-    should_grant_permissions_ = should_grant_permissions;
+  void SetPermissionDecision(PermissionDecision permission_decision) {
+    permission_decision_ = permission_decision;
   }
 
   // Sets the return value of `ShouldAllowAppLaunching`.
@@ -181,7 +181,7 @@ class FakeWebStateDelegate : public WebStateDelegate {
   std::unique_ptr<FakeAuthenticationRequest> last_authentication_request_;
   NSArray<NSNumber*>* last_requested_permissions_;
   bool should_allow_app_launching_ = false;
-  bool should_grant_permissions_ = false;
+  PermissionDecision permission_decision_ = PermissionDecisionDeny;
 };
 
 }  // namespace web

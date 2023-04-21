@@ -47,16 +47,11 @@
     (web::WebState*)webState;
 
 // Called when the media permission is requested and to acquire the decision
-// handler needed to process the user's decision to grant or deny media
-// permissions.
-//
-// If the delegate doesn't implement this method or delegate returned `NO`, the
-// web state would still show the default prompt that asks for permissions. If
-// delegate returned `YES`, the delegate must use the `handler` function to
-// answer to the permissions access request;
-- (BOOL)webState:(web::WebState*)webState
+// handler needed to process the user's decision to grant, deny media
+// permissions or show the default prompt that asks for permissions.
+- (void)webState:(web::WebState*)webState
     handlePermissions:(NSArray<NSNumber*>*)permissions
-      decisionHandler:(void (^)(BOOL allow))decisionHandler
+      decisionHandler:(web::WebStatePermissionDecisionHandler)decisionHandler
     API_AVAILABLE(ios(15.0));
 
 // Called when a request receives an authentication challenge specified by
@@ -115,7 +110,7 @@ class WebStateDelegateBridge : public web::WebStateDelegate {
       base::OnceCallback<void(bool)> callback) override;
   JavaScriptDialogPresenter* GetJavaScriptDialogPresenter(
       WebState* source) override;
-  bool HandlePermissionsDecisionRequest(
+  void HandlePermissionsDecisionRequest(
       WebState* source,
       NSArray<NSNumber*>* permissions,
       WebStatePermissionDecisionHandler handler)

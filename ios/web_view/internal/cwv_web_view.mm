@@ -582,9 +582,9 @@ BOOL gChromeContextMenuEnabled = NO;
   return _javaScriptDialogPresenter.get();
 }
 
-- (BOOL)webState:(web::WebState*)webState
+- (void)webState:(web::WebState*)webState
     handlePermissions:(NSArray<NSNumber*>*)permissions
-      decisionHandler:(void (^)(BOOL allow))decisionHandler
+      decisionHandler:(web::WebStatePermissionDecisionHandler)decisionHandler
     API_AVAILABLE(ios(15.0)) {
   DCHECK(decisionHandler);
   CWVMediaCaptureType mediaCaptureType;
@@ -609,17 +609,22 @@ BOOL gChromeContextMenuEnabled = NO;
         requestMediaCapturePermissionForType:mediaCaptureType
                              decisionHandler:^(CWVPermissionDecision decision) {
                                switch (decision) {
+                                 case CWVPermissionDecisionPrompt:
+                                   decisionHandler(
+                                       web::
+                                           PermissionDecisionShowDefaultPrompt);
+                                   break;
                                  case CWVPermissionDecisionGrant:
-                                   decisionHandler(YES);
+                                   decisionHandler(
+                                       web::PermissionDecisionGrant);
                                    break;
                                  case CWVPermissionDecisionDeny:
-                                   decisionHandler(NO);
+                                   decisionHandler(web::PermissionDecisionDeny);
                                    break;
                                }
                              }];
-    return YES;
   } else {
-    return NO;
+    decisionHandler(web::PermissionDecisionShowDefaultPrompt);
   }
 }
 

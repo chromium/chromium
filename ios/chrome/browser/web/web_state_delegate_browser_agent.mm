@@ -233,19 +233,17 @@ WebStateDelegateBrowserAgent::GetJavaScriptDialogPresenter(
   return &java_script_dialog_presenter_;
 }
 
-bool WebStateDelegateBrowserAgent::HandlePermissionsDecisionRequest(
+void WebStateDelegateBrowserAgent::HandlePermissionsDecisionRequest(
     web::WebState* source,
     NSArray<NSNumber*>* permissions,
-    web::WebStatePermissionDecisionHandler handler) {
-  if (@available(iOS 15.0, *)) {
-    if (web::features::IsMediaPermissionsControlEnabled()) {
-      PermissionsTabHelper::FromWebState(source)
-          ->PresentPermissionsDecisionDialogWithCompletionHandler(permissions,
-                                                                  handler);
-      return true;
-    }
+    web::WebStatePermissionDecisionHandler handler) API_AVAILABLE(ios(15.0)) {
+  if (web::features::IsMediaPermissionsControlEnabled()) {
+    PermissionsTabHelper::FromWebState(source)
+        ->PresentPermissionsDecisionDialogWithCompletionHandler(permissions,
+                                                                handler);
+  } else {
+    handler(web::PermissionDecisionShowDefaultPrompt);
   }
-  return false;
 }
 
 void WebStateDelegateBrowserAgent::OnAuthRequired(

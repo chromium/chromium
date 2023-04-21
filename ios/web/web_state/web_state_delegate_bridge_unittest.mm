@@ -142,14 +142,13 @@ TEST_F(WebStateDelegateBridgeTest, HandlePermissionsDecisionRequest) {
     __block bool callback_called = false;
     EXPECT_FALSE([delegate_ permissionsRequestHandled]);
     EXPECT_FALSE([delegate_ webState]);
-    bool useHandlerAnswerTheRequest = bridge_->HandlePermissionsDecisionRequest(
-        &fake_web_state_, @[], ^(bool allow) {
-          EXPECT_TRUE(allow);
+    bridge_->HandlePermissionsDecisionRequest(
+        &fake_web_state_, @[], ^(PermissionDecision decision) {
+          EXPECT_EQ(decision, PermissionDecisionGrant);
           callback_called = true;
         });
     EXPECT_TRUE([delegate_ permissionsRequestHandled]);
     EXPECT_EQ(&fake_web_state_, [delegate_ webState]);
-    EXPECT_TRUE(useHandlerAnswerTheRequest);
     EXPECT_TRUE(callback_called);
   }
 }
@@ -160,13 +159,16 @@ TEST_F(WebStateDelegateBridgeTest,
        HandlePermissionsDecisionRequestWithNoDelegateMethod) {
   if (@available(iOS 15.0, *)) {
     __block bool callback_called = false;
-    bool useHandlerAnswerTheRequest =
-        empty_delegate_bridge_->HandlePermissionsDecisionRequest(
-            nullptr, @[], ^(bool allow) {
-              callback_called = true;
-            });
-    EXPECT_FALSE(useHandlerAnswerTheRequest);
-    EXPECT_FALSE(callback_called);
+    empty_delegate_bridge_->HandlePermissionsDecisionRequest(
+        nullptr, @[], ^(PermissionDecision decision) {
+          // Default decision `PermissionDecisionShowDefaultPrompt` will be used
+          // when delegate doesn't implement
+          // `webState:handlePermissions:decisionHandler:` method to handle the
+          // permissions.
+          EXPECT_EQ(decision, PermissionDecisionShowDefaultPrompt);
+          callback_called = true;
+        });
+    EXPECT_TRUE(callback_called);
   }
 }
 

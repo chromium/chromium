@@ -851,17 +851,24 @@ void WebStateImpl::RealizedWebState::OnStateChangedForPermission(
 void WebStateImpl::RealizedWebState::RequestPermissionsWithDecisionHandler(
     NSArray<NSNumber*>* permissions,
     PermissionDecisionHandler web_view_decision_handler) {
-  bool delegate_can_handle_decision = false;
   if (delegate_) {
     WebStatePermissionDecisionHandler web_state_decision_handler =
-        ^(BOOL allowed) {
-          allowed ? web_view_decision_handler(WKPermissionDecisionGrant)
-                  : web_view_decision_handler(WKPermissionDecisionDeny);
+        ^(PermissionDecision decision) {
+          switch (decision) {
+            case PermissionDecisionShowDefaultPrompt:
+              web_view_decision_handler(WKPermissionDecisionPrompt);
+              break;
+            case PermissionDecisionGrant:
+              web_view_decision_handler(WKPermissionDecisionGrant);
+              break;
+            case PermissionDecisionDeny:
+              web_view_decision_handler(WKPermissionDecisionDeny);
+              break;
+          }
         };
-    delegate_can_handle_decision = delegate_->HandlePermissionsDecisionRequest(
-        owner_, permissions, web_state_decision_handler);
-  }
-  if (!delegate_can_handle_decision) {
+    delegate_->HandlePermissionsDecisionRequest(owner_, permissions,
+                                                web_state_decision_handler);
+  } else {
     web_view_decision_handler(WKPermissionDecisionPrompt);
   }
 }

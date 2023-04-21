@@ -46,11 +46,11 @@ JavaScriptDialogPresenter* WebStateDelegate::GetJavaScriptDialogPresenter(
   return nullptr;
 }
 
-bool WebStateDelegate::HandlePermissionsDecisionRequest(
+void WebStateDelegate::HandlePermissionsDecisionRequest(
     WebState* source,
     NSArray<NSNumber*>* permissions,
     WebStatePermissionDecisionHandler handler) {
-  return false;
+  handler(PermissionDecisionShowDefaultPrompt);
 }
 
 void WebStateDelegate::OnAuthRequired(WebState* source,

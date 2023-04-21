@@ -93,7 +93,7 @@ class WebStateDelegateBrowserAgent
       base::OnceCallback<void(bool)> callback) override;
   web::JavaScriptDialogPresenter* GetJavaScriptDialogPresenter(
       web::WebState* source) override;
-  bool HandlePermissionsDecisionRequest(
+  void HandlePermissionsDecisionRequest(
       web::WebState* source,
       NSArray<NSNumber*>* permissions,
       web::WebStatePermissionDecisionHandler handler) override
