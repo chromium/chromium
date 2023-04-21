@@ -139,7 +139,9 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   bool IsDesynchronized() const final {
     return CreationAttributes().desynchronized;
   }
-  bool isContextLost() const override;
+  bool isContextLost() const final {
+    return context_lost_mode_ != kNotLostContext;
+  }
   void LoseContext(LostContextMode) override;
 
   ImageBitmap* TransferToImageBitmap(ScriptState*) final;

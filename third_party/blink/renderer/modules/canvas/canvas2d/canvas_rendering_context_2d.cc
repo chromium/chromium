@@ -212,15 +212,11 @@ bool CanvasRenderingContext2D::IsComposited() const {
 }
 
 void CanvasRenderingContext2D::Stop() {
-  if (!isContextLost()) {
+  if (LIKELY(!isContextLost())) {
     // Never attempt to restore the context because the page is being torn down.
     context_restorable_ = false;
     LoseContext(kSyntheticLostContext);
   }
-}
-
-bool CanvasRenderingContext2D::isContextLost() const {
-  return context_lost_mode_ != kNotLostContext;
 }
 
 void CanvasRenderingContext2D::SendContextLostEventIfNeeded() {
@@ -355,8 +351,9 @@ void CanvasRenderingContext2D::scrollPathIntoView(Path2D* path2d) {
 }
 
 void CanvasRenderingContext2D::ScrollPathIntoViewInternal(const Path& path) {
-  if (!IsTransformInvertible() || path.IsEmpty())
+  if (UNLIKELY(!IsTransformInvertible() || path.IsEmpty())) {
     return;
+  }
 
   canvas()->GetDocument().UpdateStyleAndLayout(
       DocumentUpdateReason::kJavaScript);
@@ -1187,8 +1184,9 @@ void CanvasRenderingContext2D::DrawFocusIfNeededInternal(
 bool CanvasRenderingContext2D::FocusRingCallIsValid(const Path& path,
                                                     Element* element) {
   DCHECK(element);
-  if (!IsTransformInvertible())
+  if (UNLIKELY(!IsTransformInvertible())) {
     return false;
+  }
   if (path.IsEmpty())
     return false;
   if (!element->IsDescendantOf(canvas()))

@@ -52,7 +52,7 @@ void CanvasPath::closePath() {
     return;
   }
   UpdatePathFromLineIfNecessaryForMutation();
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kClosePath);
   }
   path_.CloseSubpath();
@@ -63,7 +63,7 @@ void CanvasPath::moveTo(double double_x, double double_y) {
   float y = base::saturated_cast<float>(double_y);
   if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y)))
     return;
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kMoveTo, double_x,
                                                 double_y);
   }
@@ -84,7 +84,7 @@ void CanvasPath::lineTo(double double_x, double double_y) {
   float y = base::saturated_cast<float>(double_y);
   if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y)))
     return;
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kLineTo, double_x,
                                                 double_y);
   }
@@ -123,7 +123,7 @@ void CanvasPath::quadraticCurveTo(double double_cpx,
                !std::isfinite(x) || !std::isfinite(y)))
     return;
   UpdatePathFromLineIfNecessaryForMutation();
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kQuadradicCurveTo,
                                                 double_cpx, double_cpy,
                                                 double_x, double_y);
@@ -159,7 +159,7 @@ void CanvasPath::bezierCurveTo(double double_cp1x,
                !std::isfinite(x) || !std::isfinite(y)))
     return;
   UpdatePathFromLineIfNecessaryForMutation();
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kBezierCurveTo, double_cp1x, double_cp1y, double_cp2x,
         double_cp2y, double_x, double_y);
@@ -202,7 +202,7 @@ void CanvasPath::arcTo(double double_x1,
     return;
   }
   UpdatePathFromLineIfNecessaryForMutation();
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kArcTo, double_x1,
                                                 double_y1, double_x2, double_y2,
                                                 double_r);
@@ -419,7 +419,7 @@ void CanvasPath::arc(double double_x,
     return;
 
   UpdatePathFromLineIfNecessaryForMutation();
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kArc, double_x, double_y, double_radius, double_start_angle,
         double_end_angle, anticlockwise);
@@ -477,7 +477,7 @@ void CanvasPath::ellipse(double double_x,
     return;
 
   UpdatePathFromLineIfNecessaryForMutation();
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kEllipse, double_x, double_y, double_radius_x,
         double_radius_y, double_rotation, double_start_angle, double_end_angle,
@@ -514,7 +514,7 @@ void CanvasPath::rect(double double_x,
                !std::isfinite(width) || !std::isfinite(height)))
     return;
   UpdatePathFromLineIfNecessaryForMutation();
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kRect, double_x, double_y, double_width, double_height);
   }

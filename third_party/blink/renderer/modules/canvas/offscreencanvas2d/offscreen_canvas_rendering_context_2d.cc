@@ -341,10 +341,6 @@ void OffscreenCanvasRenderingContext2D::ValidateStateStackWithCanvas(
 #endif
 }
 
-bool OffscreenCanvasRenderingContext2D::isContextLost() const {
-  return context_lost_mode_ != kNotLostContext;
-}
-
 void OffscreenCanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   if (context_lost_mode_ != kNotLostContext)
     return;
