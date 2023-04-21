@@ -81,7 +81,7 @@ constexpr base::TimeDelta kForcibleTerminationDelay = base::Seconds(2);
 }  // namespace
 
 base::Lock& WorkerThread::ThreadSetLock() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ("WorkerThread::ThreadSetLock"));
   return lock;
 }
 
@@ -153,9 +153,10 @@ class WorkerThread::InterruptData {
 };
 
 WorkerThread::~WorkerThread() {
-  if (!recordreplay::AreEventsDisallowed()) {
-    recordreplay::Assert("[RUN-1537-1689] WorkerThread::~WorkerThread %d", recordreplay::PointerId(this));
-  }
+  recordreplay::Assert(
+      "[RUN-1537-1689] WorkerThread::~WorkerThread %d %d (%d %d %d)",
+      recordreplay::PointerId(this), worker_thread_id_, requested_to_terminate_,
+      (int)exit_code_, (int)thread_state_);
 
   recordreplay::UnregisterPointer(this);
   DCHECK_CALLED_ON_VALID_THREAD(parent_thread_checker_);
@@ -528,6 +529,8 @@ WorkerThread::TerminationState WorkerThread::ShouldTerminateScriptExecution() {
 void WorkerThread::EnsureScriptExecutionTerminates(ExitCode exit_code) {
   DCHECK_CALLED_ON_VALID_THREAD(parent_thread_checker_);
   base::AutoLock locker(lock_);
+  recordreplay::Assert(
+      "[RUN-1537-1779] WorkerThread::EnsureScriptExecutionTerminates %d %d", (int)ShouldTerminateScriptExecution(), (int)exit_code);
   switch (ShouldTerminateScriptExecution()) {
     case TerminationState::kTerminationUnnecessary:
       return;
