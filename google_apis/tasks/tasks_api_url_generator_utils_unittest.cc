@@ -13,14 +13,14 @@ namespace google_apis::tasks {
 TEST(TasksApiUrlGeneratorUtilsTest, ReturnsListTaskListsUrl) {
   EXPECT_EQ(GetListTaskListsUrl(/*max_results=*/absl::nullopt,
                                 /*page_token=*/""),
-            "https://www.googleapis.com/tasks/v1/users/@me/lists"
+            "https://tasks.googleapis.com/tasks/v1/users/@me/lists"
             "?fields=kind%2Citems(id%2Ctitle%2Cupdated)%2CnextPageToken");
 }
 
 TEST(TasksApiUrlGeneratorUtilsTest, ReturnsListTaskListsUrlWithOptionalArgs) {
   EXPECT_EQ(GetListTaskListsUrl(/*max_results=*/100,
                                 /*page_token=*/"qwerty"),
-            "https://www.googleapis.com/tasks/v1/users/@me/lists"
+            "https://tasks.googleapis.com/tasks/v1/users/@me/lists"
             "?fields=kind%2Citems(id%2Ctitle%2Cupdated)%2CnextPageToken"
             "&maxResults=100"
             "&pageToken=qwerty");
@@ -31,7 +31,7 @@ TEST(TasksApiUrlGeneratorUtilsTest, ReturnsListTasksUrl) {
       GetListTasksUrl("task-list-id", /*include_completed=*/false,
                       /*max_results=*/absl::nullopt,
                       /*page_token=*/""),
-      "https://www.googleapis.com/tasks/v1/lists/task-list-id/tasks"
+      "https://tasks.googleapis.com/tasks/v1/lists/task-list-id/tasks"
       "?fields=kind%2Citems(id%2Ctitle%2Cstatus%2Cparent%2Cdue)%2CnextPageToken"
       "&showCompleted=false");
 }
@@ -41,7 +41,7 @@ TEST(TasksApiUrlGeneratorUtilsTest, ReturnsListTasksUrlWithOptionalArgs) {
       GetListTasksUrl("task-list-id", /*include_completed=*/true,
                       /*max_results=*/100,
                       /*page_token=*/"qwerty"),
-      "https://www.googleapis.com/tasks/v1/lists/task-list-id/tasks"
+      "https://tasks.googleapis.com/tasks/v1/lists/task-list-id/tasks"
       "?fields=kind%2Citems(id%2Ctitle%2Cstatus%2Cparent%2Cdue)%2CnextPageToken"
       "&showCompleted=true"
       "&maxResults=100"
@@ -49,9 +49,9 @@ TEST(TasksApiUrlGeneratorUtilsTest, ReturnsListTasksUrlWithOptionalArgs) {
 }
 
 TEST(TasksApiUrlGeneratorUtilsTest, ReturnsPatchTaskUrl) {
-  EXPECT_EQ(
-      GetPatchTaskUrl("task-list-id", "task-id"),
-      "https://www.googleapis.com/tasks/v1/lists/task-list-id/tasks/task-id");
+  EXPECT_EQ(GetPatchTaskUrl("task-list-id", "task-id"),
+            "https://tasks.googleapis.com/tasks/v1/"
+            "lists/task-list-id/tasks/task-id");
 }
 
 }  // namespace google_apis::tasks

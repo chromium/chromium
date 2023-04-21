@@ -77,6 +77,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaConfig {
       const base::CommandLine* command_line);
 
  private:
+  friend class GaiaUrlsOverriderForTesting;
   friend class GaiaUrlsTest;
   FRIEND_TEST_ALL_PREFIXES(GoogleAPIKeysTest, OverrideAllKeysUsingConfig);
 

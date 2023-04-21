@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/check.h"
-#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -18,6 +17,7 @@
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/base_requests.h"
 #include "google_apis/common/request_sender.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
@@ -25,8 +25,6 @@
 namespace google_apis::classroom {
 namespace {
 
-constexpr char kBaseUrlCommandLineSwitch[] = "classroom-api-base-url";
-constexpr char kDefaultBaseUrl[] = "https://classroom.googleapis.com";
 constexpr char kListCoursesUrlPath[] = "v1/courses";
 
 constexpr char kFieldsParameterName[] = "fields";
@@ -37,22 +35,6 @@ constexpr char kCourseStatesParameterName[] = "courseStates";
 constexpr char kPageTokenParameterName[] = "pageToken";
 constexpr char kStudentIdParameterName[] = "studentId";
 constexpr char kTeacherIdParameterName[] = "teacherId";
-
-// Classroom API is on `googleapis.com` subdomain.
-// TODO(b/278270549): Move outside of this file to reuse in other classroom
-// requests. Add to `GaiaUrls`?
-GURL GetApiBaseUrl() {
-  const auto* const command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kBaseUrlCommandLineSwitch)) {
-    const auto base_url =
-        GURL(command_line->GetSwitchValueASCII(kBaseUrlCommandLineSwitch));
-    if (base_url.is_valid()) {
-      return base_url;
-    }
-  }
-
-  return GURL(kDefaultBaseUrl);
-}
 
 std::unique_ptr<Courses> ParseResponse(std::string json) {
   std::unique_ptr<base::Value> raw_value = ParseJson(json);
@@ -77,7 +59,8 @@ ListCoursesRequest::ListCoursesRequest(RequestSender* sender,
 ListCoursesRequest::~ListCoursesRequest() = default;
 
 GURL ListCoursesRequest::GetURL() const {
-  auto url = GetApiBaseUrl().Resolve(kListCoursesUrlPath);
+  auto url = GaiaUrls::GetInstance()->classroom_api_origin_url().Resolve(
+      kListCoursesUrlPath);
   url = net::AppendOrReplaceQueryParameter(url, kFieldsParameterName,
                                            kRequestedFields);
   if (!student_id_.empty()) {

@@ -11,11 +11,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/tasks/glanceables_tasks_types.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/repeating_test_future.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -24,8 +24,8 @@
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/common/time_util.h"
-#include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/gaia_urls_overrider_for_testing.h"
 #include "google_apis/tasks/tasks_api_requests.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -99,16 +99,6 @@ constexpr char kDefaultTasksResponseContent[] = R"(
     }
   )";
 
-// Helper class to temporary override `GaiaUrls` singleton.
-class GaiaUrlsOverrider {
- public:
-  GaiaUrlsOverrider() { GaiaUrls::SetInstanceForTesting(&test_gaia_urls_); }
-  ~GaiaUrlsOverrider() { GaiaUrls::SetInstanceForTesting(nullptr); }
-
- private:
-  GaiaUrls test_gaia_urls_;
-};
-
 // Helper class to simplify mocking `net::EmbeddedTestServer` responses,
 // especially useful for subsequent responses when testing pagination logic.
 class TestRequestHandler {
@@ -165,10 +155,11 @@ class GlanceablesTasksClientImplTest : public testing::Test {
         base::BindRepeating(&TestRequestHandler::HandleRequest,
                             base::Unretained(&request_handler_)));
     ASSERT_TRUE(test_server_.Start());
-    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-        switches::kGoogleApisUrl, test_server_.base_url().spec());
-    gaia_urls_overrider_ = std::make_unique<GaiaUrlsOverrider>();
-    ASSERT_EQ(GaiaUrls::GetInstance()->google_apis_origin_url(),
+
+    gaia_urls_overrider_ = std::make_unique<GaiaUrlsOverriderForTesting>(
+        base::CommandLine::ForCurrentProcess(), "tasks_api_origin_url",
+        test_server_.base_url().spec());
+    ASSERT_EQ(GaiaUrls::GetInstance()->tasks_api_origin_url(),
               test_server_.base_url().spec());
   }
 
@@ -178,14 +169,13 @@ class GlanceablesTasksClientImplTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
-  base::test::ScopedCommandLine command_line_;
   net::EmbeddedTestServer test_server_;
   base::test::ScopedFeatureList feature_list_{features::kGlanceablesV2};
   scoped_refptr<network::TestSharedURLLoaderFactory> url_loader_factory_ =
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>(
           /*network_service=*/nullptr,
           /*is_trusted=*/true);
-  std::unique_ptr<GaiaUrlsOverrider> gaia_urls_overrider_;
+  std::unique_ptr<GaiaUrlsOverriderForTesting> gaia_urls_overrider_;
   testing::StrictMock<TestRequestHandler> request_handler_;
   std::unique_ptr<GlanceablesTasksClientImpl> client_;
 };

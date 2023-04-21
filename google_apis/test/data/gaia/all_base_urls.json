@@ -17,6 +17,12 @@
     },
     "account_capabilities_origin_url": {
       "url": "https://accountcapabilities.exampleapis.com"
+    },
+    "classroom_api_origin_url": {
+      "url": "https://classroom.exampleapis.com"
+    },
+    "tasks_api_origin_url": {
+      "url": "https://tasks.exampleapis.com"
     }
   }
 }

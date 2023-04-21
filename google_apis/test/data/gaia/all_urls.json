@@ -21,6 +21,12 @@
     "account_capabilities_origin_url": {
       "url": "https://accountcapabilities.will-be-overridden.com"
     },
+    "classroom_api_origin_url": {
+      "url": "https://classroom.will-be-overridden.com"
+    },
+    "tasks_api_origin_url": {
+      "url": "https://tasks.will-be-overridden.com"
+    },
     "embedded_setup_chromeos_url_v2": {
       "url": "https://accounts.example.com/embedded/setup/v2/chromeos"
     },

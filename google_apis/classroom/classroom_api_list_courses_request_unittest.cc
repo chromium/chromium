@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -17,6 +16,8 @@
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/common/test_util.h"
+#include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/gaia_urls_overrider_for_testing.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -84,8 +85,12 @@ class ClassroomApiListCoursesRequestsTest : public testing::Test {
         base::BindRepeating(&TestRequestHandler::HandleRequest,
                             base::Unretained(&request_handler_)));
     ASSERT_TRUE(test_server_.Start());
-    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-        "classroom-api-base-url", test_server_.base_url().spec());
+
+    gaia_urls_overrider_ = std::make_unique<GaiaUrlsOverriderForTesting>(
+        base::CommandLine::ForCurrentProcess(), "classroom_api_origin_url",
+        test_server_.base_url().spec());
+    ASSERT_EQ(GaiaUrls::GetInstance()->classroom_api_origin_url(),
+              test_server_.base_url().spec());
   }
 
   TestRequestHandler& request_handler() { return request_handler_; }
@@ -94,11 +99,11 @@ class ClassroomApiListCoursesRequestsTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
-  base::test::ScopedCommandLine command_line_;
   net::EmbeddedTestServer test_server_;
   std::unique_ptr<RequestSender> request_sender_;
   scoped_refptr<network::TestSharedURLLoaderFactory>
       test_shared_loader_factory_;
+  std::unique_ptr<GaiaUrlsOverriderForTesting> gaia_urls_overrider_;
   testing::StrictMock<TestRequestHandler> request_handler_;
 };
 
