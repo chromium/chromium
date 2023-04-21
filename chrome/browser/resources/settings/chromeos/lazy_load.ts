@@ -25,7 +25,7 @@ import './internet_page/internet_detail_subpage.js';
 import './internet_page/internet_known_networks_subpage.js';
 import './internet_page/internet_subpage.js';
 import './internet_page/passpoint_subpage.js';
-import './os_a11y_page/manage_a11y_page.js';
+import './os_a11y_page/manage_a11y_subpage.js';
 import './os_a11y_page/text_to_speech_page.js';
 import './os_a11y_page/display_and_magnification_page.js';
 import './os_a11y_page/keyboard_and_text_input_page.js';
@@ -124,7 +124,7 @@ export {SettingsChromeVoxSubpageElement} from './os_a11y_page/chromevox_subpage.
 export {SettingsCursorAndTouchpadPageElement} from './os_a11y_page/cursor_and_touchpad_page.js';
 export {SettingsDisplayAndMagnificationElement} from './os_a11y_page/display_and_magnification_page.js';
 export {SettingsKeyboardAndTextInputPageElement} from './os_a11y_page/keyboard_and_text_input_page.js';
-export {SettingsManageA11yPageElement} from './os_a11y_page/manage_a11y_page.js';
+export {SettingsManageA11ySubpageElement} from './os_a11y_page/manage_a11y_subpage.js';
 export {SettingsTextToSpeechPageElement} from './os_a11y_page/text_to_speech_page.js';
 export {SettingsTtsSubpageElement} from './os_a11y_page/tts_subpage.js';
 export {SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_subpage.js';

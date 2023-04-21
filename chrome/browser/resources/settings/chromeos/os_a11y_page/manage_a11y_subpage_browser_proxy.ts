@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export interface ManageA11yPageBrowserProxy {
+export interface ManageA11ySubpageBrowserProxy {
   /**
    * Opens the options page for Chrome Vox.
    */
@@ -35,15 +35,15 @@ export interface ManageA11yPageBrowserProxy {
   showChromeVoxTutorial(): void;
 }
 
-let instance: ManageA11yPageBrowserProxy|null = null;
+let instance: ManageA11ySubpageBrowserProxy|null = null;
 
-export class ManageA11yPageBrowserProxyImpl implements
-    ManageA11yPageBrowserProxy {
-  static getInstance(): ManageA11yPageBrowserProxy {
-    return instance || (instance = new ManageA11yPageBrowserProxyImpl());
+export class ManageA11ySubpageBrowserProxyImpl implements
+    ManageA11ySubpageBrowserProxy {
+  static getInstance(): ManageA11ySubpageBrowserProxy {
+    return instance || (instance = new ManageA11ySubpageBrowserProxyImpl());
   }
 
-  static setInstanceForTesting(obj: ManageA11yPageBrowserProxy): void {
+  static setInstanceForTesting(obj: ManageA11ySubpageBrowserProxy): void {
     instance = obj;
   }
 

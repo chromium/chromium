@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {SettingsManageA11yPageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {SettingsManageA11ySubpageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {DevicePageBrowserProxyImpl, Router, routes, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
@@ -15,8 +15,8 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestDevicePageBrowserProxy} from '../device_page/test_device_page_browser_proxy.js';
 
-suite('<settings-manage-a11y-page>', () => {
-  let page: SettingsManageA11yPageElement;
+suite('<settings-manage-a11y-subpage>', () => {
+  let page: SettingsManageA11ySubpageElement;
   let deviceBrowserProxy: TestDevicePageBrowserProxy;
   const defaultPrefs = {
     'settings': {
@@ -46,7 +46,7 @@ suite('<settings-manage-a11y-page>', () => {
   };
 
   function initPage() {
-    page = document.createElement('settings-manage-a11y-page');
+    page = document.createElement('settings-manage-a11y-subpage');
     page.prefs = defaultPrefs;
     document.body.appendChild(page);
   }
@@ -71,7 +71,7 @@ suite('<settings-manage-a11y-page>', () => {
       'Page loads without crashing when prefs are not yet initialized in kiosk mode',
       () => {
         loadTimeData.overrideValues({isKioskModeActive: true});
-        page = document.createElement('settings-manage-a11y-page');
+        page = document.createElement('settings-manage-a11y-subpage');
         document.body.appendChild(page);
 
         // Intentionally set prefs after page is appended to DOM to simulate

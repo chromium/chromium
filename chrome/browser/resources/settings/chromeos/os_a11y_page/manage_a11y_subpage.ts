@@ -4,7 +4,7 @@
 
 /**
  * @fileoverview
- * 'settings-manage-a11y-page' is the subpage with the accessibility
+ * 'settings-manage-a11y-subpage' is the subpage with the accessibility
  * settings.
  */
 
@@ -35,8 +35,8 @@ import {routes} from '../os_settings_routes.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router} from '../router.js';
 
-import {getTemplate} from './manage_a11y_page.html.js';
-import {ManageA11yPageBrowserProxy, ManageA11yPageBrowserProxyImpl} from './manage_a11y_page_browser_proxy.js';
+import {getTemplate} from './manage_a11y_subpage.html.js';
+import {ManageA11ySubpageBrowserProxy, ManageA11ySubpageBrowserProxyImpl} from './manage_a11y_subpage_browser_proxy.js';
 
 interface Option {
   name: string;
@@ -53,20 +53,20 @@ interface LocaleInfo {
 
 const DEFAULT_BLACK_CURSOR_COLOR: number = 0;
 
-export interface SettingsManageA11yPageElement {
+export interface SettingsManageA11ySubpageElement {
   $: {
     pointerSubpageButton: CrLinkRowElement,
     startupSoundEnabled: CrToggleElement,
   };
 }
 
-const SettingsManageA11yPageElementBase = PrefsMixin(DeepLinkingMixin(
+const SettingsManageA11ySubpageElementBase = PrefsMixin(DeepLinkingMixin(
     RouteOriginMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
-export class SettingsManageA11yPageElement extends
-    SettingsManageA11yPageElementBase {
+export class SettingsManageA11ySubpageElement extends
+    SettingsManageA11ySubpageElementBase {
   static get is() {
-    return 'settings-manage-a11y-page' as const;
+    return 'settings-manage-a11y-subpage' as const;
   }
 
   static get template() {
@@ -403,7 +403,7 @@ export class SettingsManageA11yPageElement extends
   private isAccessibilitySelectToSpeakPageMigrationEnabled_: boolean;
   private isGuest_: boolean;
   private isKioskModeActive_: boolean;
-  private manageBrowserProxy_: ManageA11yPageBrowserProxy;
+  private manageBrowserProxy_: ManageA11ySubpageBrowserProxy;
   private route_: Route;
   private screenMagnifierMouseFollowingModePrefValues_: Record<string, number>;
   private screenMagnifierZoomOptions_: Option[];
@@ -420,7 +420,7 @@ export class SettingsManageA11yPageElement extends
     /** RouteOriginMixin override */
     this.route_ = routes.MANAGE_ACCESSIBILITY;
 
-    this.manageBrowserProxy_ = ManageA11yPageBrowserProxyImpl.getInstance();
+    this.manageBrowserProxy_ = ManageA11ySubpageBrowserProxyImpl.getInstance();
 
     this.deviceBrowserProxy_ = DevicePageBrowserProxyImpl.getInstance();
 
@@ -787,9 +787,9 @@ export class SettingsManageA11yPageElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    [SettingsManageA11yPageElement.is]: SettingsManageA11yPageElement;
+    [SettingsManageA11ySubpageElement.is]: SettingsManageA11ySubpageElement;
   }
 }
 
 customElements.define(
-    SettingsManageA11yPageElement.is, SettingsManageA11yPageElement);
+    SettingsManageA11ySubpageElement.is, SettingsManageA11ySubpageElement);
