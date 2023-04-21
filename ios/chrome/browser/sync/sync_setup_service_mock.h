@@ -27,7 +27,6 @@ class SyncSetupServiceMock : public SyncSetupService {
   MOCK_METHOD(bool, IsSyncingAllDataTypes, (), (const override));
   MOCK_METHOD(bool, IsDataTypePreferred, (syncer::ModelType), (const override));
   MOCK_METHOD(bool, IsDataTypeActive, (syncer::ModelType), (const override));
-  MOCK_METHOD(bool, IsInitialSetupOngoing, (), (override));
   MOCK_METHOD(void, PrepareForFirstSyncSetup, (), (override));
   MOCK_METHOD(void,
               SetFirstSetupComplete,

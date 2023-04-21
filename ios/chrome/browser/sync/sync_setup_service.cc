@@ -128,20 +128,6 @@ bool SyncSetupService::IsEncryptEverythingEnabled() const {
   return sync_service_->GetUserSettings()->IsEncryptEverythingEnabled();
 }
 
-bool SyncSetupService::IsInitialSetupOngoing() {
-  // Sync initial setup is considered to finished iff:
-  //   1. User is signed in with sync enabled and the sync setup was completed.
-  //   OR
-  //   2. User is not signed in or has disabled sync.
-  // Otherwise we consider that the initial setup is still pending.
-  // Note that if the user visits the Advanced Settings during the opt-in flow,
-  // the Sync consent is not granted yet. In this case, IsSyncRequested() is
-  // set to true, indicating that the sync was requested but the initial setup
-  // has not been finished yet.
-  return IsSyncRequested() &&
-         !sync_service_->GetUserSettings()->IsFirstSetupComplete();
-}
-
 void SyncSetupService::PrepareForFirstSyncSetup() {
   if (!sync_blocker_)
     sync_blocker_ = sync_service_->GetSetupInProgressHandle();
