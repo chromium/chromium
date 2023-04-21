@@ -5195,7 +5195,7 @@ LayoutRectOutsets LayoutBox::ComputeVisualEffectOverflowOutsets() {
   const ComputedStyle& style = StyleRef();
   DCHECK(style.HasVisualOverflowingEffect());
 
-  LayoutRectOutsets outsets = style.BoxDecorationOutsets();
+  NGPhysicalBoxStrut outsets = style.BoxDecorationOutsets();
 
   if (style.HasOutline()) {
     OutlineInfo info;
@@ -5206,12 +5206,12 @@ LayoutRectOutsets LayoutBox::ComputeVisualEffectOverflowOutsets() {
     bool outline_affected = rect.size != PhysicalSizeToBeNoop(Size());
     SetOutlineMayBeAffectedByDescendants(outline_affected);
     rect.Inflate(LayoutUnit(OutlinePainter::OutlineOutsetExtent(style, info)));
-    outsets.Unite(LayoutRectOutsets(-rect.Y(), rect.Right() - Size().Width(),
-                                    rect.Bottom() - Size().Height(),
-                                    -rect.X()));
+    outsets.Unite(NGPhysicalBoxStrut(-rect.Y(), rect.Right() - Size().Width(),
+                                     rect.Bottom() - Size().Height(),
+                                     -rect.X()));
   }
 
-  return outsets;
+  return outsets.ToLayoutRectOutsets();
 }
 
 void LayoutBox::AddVisualOverflowFromChild(const LayoutBox& child,

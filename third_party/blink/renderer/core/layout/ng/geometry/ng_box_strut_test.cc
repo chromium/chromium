@@ -94,6 +94,30 @@ TEST(NGGeometryUnitsTest, ConvertLogicalStrutToPhysical) {
   EXPECT_EQ(logical, converted);
 }
 
+TEST(NGPhysicalBoxStrutTest, Enclosing) {
+  ASSERT_LT(0.01f, LayoutUnit::Epsilon());
+  auto result = NGPhysicalBoxStrut::Enclosing(
+      gfx::OutsetsF()
+          .set_top(3.00f)
+          .set_right(5.01f)
+          .set_bottom(-7.001f)
+          .set_left(LayoutUnit::Max().ToFloat() + 1));
+  EXPECT_EQ(LayoutUnit(3), result.top);
+  EXPECT_EQ(LayoutUnit(5 + LayoutUnit::Epsilon()), result.right);
+  EXPECT_EQ(LayoutUnit(-7), result.bottom);
+  EXPECT_EQ(LayoutUnit::Max(), result.left);
+}
+
+TEST(NGPhysicalBoxStrutTest, Unite) {
+  NGPhysicalBoxStrut strut(LayoutUnit(10));
+  strut.Unite(
+      {LayoutUnit(10), LayoutUnit(11), LayoutUnit(0), LayoutUnit::Max()});
+  EXPECT_EQ(LayoutUnit(10), strut.top);
+  EXPECT_EQ(LayoutUnit(11), strut.right);
+  EXPECT_EQ(LayoutUnit(10), strut.bottom);
+  EXPECT_EQ(LayoutUnit::Max(), strut.left);
+}
+
 }  // namespace
 
 }  // namespace blink

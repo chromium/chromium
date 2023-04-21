@@ -47,4 +47,12 @@ std::ostream& operator<<(std::ostream& stream, const NGLineBoxStrut& value) {
                 << ") ";
 }
 
+NGPhysicalBoxStrut& NGPhysicalBoxStrut::Unite(const NGPhysicalBoxStrut& other) {
+  top = std::max(top, other.top);
+  right = std::max(right, other.right);
+  bottom = std::max(bottom, other.bottom);
+  left = std::max(left, other.left);
+  return *this;
+}
+
 }  // namespace blink

@@ -152,6 +152,16 @@ struct CORE_EXPORT NGPhysicalBoxStrut {
                      LayoutUnit left)
       : top(top), right(right), bottom(bottom), left(left) {}
 
+  // Creates new NGPhysicalBoxStrut instance from the specified `outsets`.
+  // A data member of `outsets` is rounded up to the minimum LayoutUnit value
+  // which is equal or lager than the data member.
+  static NGPhysicalBoxStrut Enclosing(const gfx::OutsetsF& outsets) {
+    return {LayoutUnit::FromFloatCeil(outsets.top()),
+            LayoutUnit::FromFloatCeil(outsets.right()),
+            LayoutUnit::FromFloatCeil(outsets.bottom()),
+            LayoutUnit::FromFloatCeil(outsets.left())};
+  }
+
   PhysicalOffset Offset() const { return {left, top}; }
 
   void TruncateSides(const PhysicalBoxSides& sides_to_include) {
@@ -207,6 +217,10 @@ struct CORE_EXPORT NGPhysicalBoxStrut {
     left += diff;
     return *this;
   }
+
+  // Update each of data members with std::max(this->member, other.member).
+  // This function returns `*this`.
+  NGPhysicalBoxStrut& Unite(const NGPhysicalBoxStrut& other);
 
   NGPhysicalBoxStrut& operator+=(const NGPhysicalBoxStrut& other) {
     top += other.top;

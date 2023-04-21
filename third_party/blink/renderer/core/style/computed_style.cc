@@ -2255,17 +2255,16 @@ TextEmphasisMark ComputedStyle::GetTextEmphasisMark() const {
   return TextEmphasisMark::kSesame;
 }
 
-LayoutRectOutsets ComputedStyle::ImageOutsets(
+NGPhysicalBoxStrut ComputedStyle::ImageOutsets(
     const NinePieceImage& image) const {
-  return LayoutRectOutsets(
-      NinePieceImage::ComputeOutset(image.Outset().Top(),
-                                    BorderTopWidth().ToInt()),
-      NinePieceImage::ComputeOutset(image.Outset().Right(),
-                                    BorderRightWidth().ToInt()),
-      NinePieceImage::ComputeOutset(image.Outset().Bottom(),
-                                    BorderBottomWidth().ToInt()),
-      NinePieceImage::ComputeOutset(image.Outset().Left(),
-                                    BorderLeftWidth().ToInt()));
+  return {NinePieceImage::ComputeOutset(image.Outset().Top(),
+                                        BorderTopWidth().ToInt()),
+          NinePieceImage::ComputeOutset(image.Outset().Right(),
+                                        BorderRightWidth().ToInt()),
+          NinePieceImage::ComputeOutset(image.Outset().Bottom(),
+                                        BorderBottomWidth().ToInt()),
+          NinePieceImage::ComputeOutset(image.Outset().Left(),
+                                        BorderLeftWidth().ToInt())};
 }
 
 bool ComputedStyle::BorderObscuresBackground() const {
@@ -2293,13 +2292,13 @@ bool ComputedStyle::BorderObscuresBackground() const {
   return true;
 }
 
-LayoutRectOutsets ComputedStyle::BoxDecorationOutsets() const {
+NGPhysicalBoxStrut ComputedStyle::BoxDecorationOutsets() const {
   DCHECK(HasVisualOverflowingEffect());
-  LayoutRectOutsets outsets;
+  NGPhysicalBoxStrut outsets;
 
   if (const ShadowList* box_shadow = BoxShadow()) {
-    outsets =
-        EnclosingLayoutRectOutsets(box_shadow->RectOutsetsIncludingOriginal());
+    outsets = NGPhysicalBoxStrut::Enclosing(
+        box_shadow->RectOutsetsIncludingOriginal());
   }
 
   if (HasBorderImageOutsets()) {

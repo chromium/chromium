@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
+#include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_type.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/style/border_value.h"
@@ -57,7 +58,6 @@
 #include "third_party/blink/renderer/core/style/style_cached_data.h"
 #include "third_party/blink/renderer/core/style/style_highlight_data.h"
 #include "third_party/blink/renderer/core/style/transform_origin.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/geometry/length_box.h"
 #include "third_party/blink/renderer/platform/geometry/length_point.h"
@@ -770,7 +770,7 @@ class ComputedStyle : public ComputedStyleBase,
   bool HasMaskBoxImageOutsets() const {
     return MaskBoxImageInternal().HasImage() && MaskBoxImageOutset().NonZero();
   }
-  LayoutRectOutsets MaskBoxImageOutsets() const {
+  NGPhysicalBoxStrut MaskBoxImageOutsets() const {
     return ImageOutsets(MaskBoxImageInternal());
   }
   const BorderImageLengthBox& MaskBoxImageOutset() const {
@@ -1298,11 +1298,11 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // Border utility functions
-  LayoutRectOutsets ImageOutsets(const NinePieceImage&) const;
+  NGPhysicalBoxStrut ImageOutsets(const NinePieceImage&) const;
   bool HasBorderImageOutsets() const {
     return BorderImage().HasImage() && BorderImage().Outset().NonZero();
   }
-  LayoutRectOutsets BorderImageOutsets() const {
+  NGPhysicalBoxStrut BorderImageOutsets() const {
     return ImageOutsets(BorderImage());
   }
   bool BorderImageSlicesFill() const { return BorderImage().Fill(); }
@@ -2388,7 +2388,7 @@ class ComputedStyle : public ComputedStyleBase,
            HasEffectiveAppearance() || BoxShadow();
   }
 
-  LayoutRectOutsets BoxDecorationOutsets() const;
+  NGPhysicalBoxStrut BoxDecorationOutsets() const;
 
   // Background utility functions.
   const FillLayer& BackgroundLayers() const { return BackgroundInternal(); }
