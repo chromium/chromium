@@ -106,7 +106,7 @@ class FakePhoneHubManager : public PhoneHubManager {
     host_last_seen_timestamp_ = timestamp;
   }
 
-  void set_eche_connection_hander(
+  void set_eche_connection_handler(
       eche_app::EcheConnectionStatusHandler* handler) {
     eche_connection_status_handler_ = handler;
   }

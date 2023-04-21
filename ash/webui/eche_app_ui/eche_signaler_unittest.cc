@@ -9,7 +9,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/system/eche/eche_tray.h"
+#include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_ash_web_view_factory.h"
 #include "ash/webui/eche_app_ui/apps_launch_info_provider.h"
 #include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
@@ -20,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -27,6 +30,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace ash::eche_app {
 
@@ -42,7 +46,6 @@ class TaskRunner {
   void Finish() { run_loop_.Quit(); }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
   base::RunLoop run_loop_;
 };
 
@@ -157,15 +160,24 @@ class FakeSystemInfoProvider : public SystemInfoProvider {
 
 }  // namespace
 
-class EcheSignalerTest : public testing::Test {
+class EcheSignalerTest : public AshTestBase {
  protected:
   EcheSignalerTest() = default;
   EcheSignalerTest(const EcheSignalerTest&) = delete;
   EcheSignalerTest& operator=(const EcheSignalerTest&) = delete;
   ~EcheSignalerTest() override = default;
 
-  // testing::Test:
+  // AshTestBase:
   void SetUp() override {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kEcheNetworkConnectionState},
+        /*disabled_features=*/{});
+    DCHECK(test_web_view_factory_.get());
+    ui::ResourceBundle::CleanupSharedInstance();
+    AshTestSuite::LoadTestResources();
+    AshTestBase::SetUp();
+
+    eche_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()->eche_tray();
     eche_connection_status_handler_ =
         std::make_unique<eche_app::EcheConnectionStatusHandler>();
     apps_launch_info_provider_ = std::make_unique<AppsLaunchInfoProvider>(
@@ -175,6 +187,15 @@ class EcheSignalerTest : public testing::Test {
         apps_launch_info_provider_.get(),
         eche_connection_status_handler_.get());
   }
+
+  void TearDown() override {
+    signaler_.reset();
+    apps_launch_info_provider_.reset();
+    eche_connection_status_handler_.reset();
+    AshTestBase::TearDown();
+  }
+
+  EcheSignaler* signaler() { return signaler_.get(); }
 
   EcheConnectionStatusHandler* eche_connection_status_handler() {
     return eche_connection_status_handler_.get();
@@ -225,17 +246,22 @@ class EcheSignalerTest : public testing::Test {
 
   TaskRunner task_runner_;
   FakeEcheConnector fake_connector_{&task_runner_};
+  base::test::ScopedFeatureList feature_list_;
+
+ private:
+  EcheTray* eche_tray_ = nullptr;
   secure_channel::FakeConnectionManager fake_connection_manager_;
   std::unique_ptr<EcheConnectionStatusHandler> eche_connection_status_handler_;
   std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
   std::unique_ptr<EcheSignaler> signaler_;
-  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =
+      std::make_unique<TestAshWebViewFactory>();
 };
 
 // Tests SendSignalingMessage.
 TEST_F(EcheSignalerTest, TestSendSignalingMessage) {
   FakeExchangerClient fake_exchanger_client;
-  signaler_->Bind(fake_exchanger_client.CreatePendingReceiver());
+  signaler()->Bind(fake_exchanger_client.CreatePendingReceiver());
   std::vector<uint8_t> signal = getSignal("123");
 
   fake_exchanger_client.SendSignalingMessage(signal);
@@ -247,7 +273,7 @@ TEST_F(EcheSignalerTest, TestSendSignalingMessage) {
 // Tests TearDownSignaling.
 TEST_F(EcheSignalerTest, TestTearDownSignaling) {
   FakeExchangerClient fake_exchanger_client;
-  signaler_->Bind(fake_exchanger_client.CreatePendingReceiver());
+  signaler()->Bind(fake_exchanger_client.CreatePendingReceiver());
   proto::ExoMessage tear_down_signaling_message = getTearDownSignalingMessage();
 
   fake_exchanger_client.TearDownSignaling();
@@ -264,8 +290,8 @@ TEST_F(EcheSignalerTest, TestSetSignalingMessageObserverAndReceiveMessage) {
   FakeObserver fake_observer(&observer, &task_runner_);
   proto::ExoMessage message = getExoMessage("123");
 
-  signaler_->SetSignalingMessageObserver(std::move(observer));
-  signaler_->OnMessageReceived(message.SerializeAsString());
+  signaler()->SetSignalingMessageObserver(std::move(observer));
+  signaler()->OnMessageReceived(message.SerializeAsString());
   task_runner_.WaitForResult();
 
   EXPECT_GT(fake_observer.received_signals().size(), (unsigned long)0);
@@ -281,8 +307,8 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenNoReceiveAnyMessage) {
       "Eche.StreamEvent.ConnectionFail",
       EcheTray::ConnectionFailReason::kSignalingNotTriggered, 0);
 
-  signaler_->SetSignalingMessageObserver(std::move(observer));
-  signaler_->RecordSignalingTimeout();
+  signaler()->SetSignalingMessageObserver(std::move(observer));
+  signaler()->RecordSignalingTimeout();
 
   histograms.ExpectUniqueSample(
       "Eche.StreamEvent.ConnectionFail",
@@ -301,10 +327,10 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenSignalingHasLateRequest) {
       "Eche.StreamEvent.ConnectionFail",
       EcheTray::ConnectionFailReason::kSignalingHasLateRequest, 0);
 
-  signaler_->SetSignalingMessageObserver(std::move(observer));
-  signaler_->OnMessageReceived(message.SerializeAsString());
+  signaler()->SetSignalingMessageObserver(std::move(observer));
+  signaler()->OnMessageReceived(message.SerializeAsString());
   task_runner_.WaitForResult();
-  signaler_->RecordSignalingTimeout();
+  signaler()->RecordSignalingTimeout();
 
   histograms.ExpectUniqueSample(
       "Eche.StreamEvent.ConnectionFail",
@@ -322,8 +348,8 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenSecurityChannelDisconnected) {
       "Eche.StreamEvent.ConnectionFail",
       EcheTray::ConnectionFailReason::kSecurityChannelDisconnected, 0);
 
-  signaler_->SetSignalingMessageObserver(std::move(observer));
-  signaler_->RecordSignalingTimeout();
+  signaler()->SetSignalingMessageObserver(std::move(observer));
+  signaler()->RecordSignalingTimeout();
 
   histograms.ExpectUniqueSample(
       "Eche.StreamEvent.ConnectionFail",
@@ -331,12 +357,6 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenSecurityChannelDisconnected) {
 }
 
 TEST_F(EcheSignalerTest, TestConnectionFailWhenWiFiNetworksDifferent) {
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/
-      {
-          ash::features::kEcheSWACheckAndroidNetworkInfo,
-      },
-      /*disabled_features=*/{});
   base::HistogramTester histograms;
   mojo::PendingRemote<mojom::SignalingMessageObserver> observer;
   FakeObserver fake_observer(&observer, &task_runner_);
@@ -350,11 +370,11 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenWiFiNetworksDifferent) {
       "Eche.StreamEvent.ConnectionFail",
       EcheTray::ConnectionFailReason::kConnectionFailSsidDifferent, 0);
 
-  signaler_->SetSignalingMessageObserver(std::move(observer));
-  signaler_->SetSystemInfoProvider(&fake_system_info_provider);
-  signaler_->OnMessageReceived(message.SerializeAsString());
+  signaler()->SetSignalingMessageObserver(std::move(observer));
+  signaler()->SetSystemInfoProvider(&fake_system_info_provider);
+  signaler()->OnMessageReceived(message.SerializeAsString());
   task_runner_.WaitForResult();
-  signaler_->RecordSignalingTimeout();
+  signaler()->RecordSignalingTimeout();
 
   histograms.ExpectUniqueSample(
       "Eche.StreamEvent.ConnectionFail",
@@ -363,12 +383,6 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenWiFiNetworksDifferent) {
 }
 
 TEST_F(EcheSignalerTest, TestConnectionFailWhenWiFiNetworksSame) {
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/
-      {
-          ash::features::kEcheSWACheckAndroidNetworkInfo,
-      },
-      /*disabled_features=*/{});
   base::HistogramTester histograms;
   mojo::PendingRemote<mojom::SignalingMessageObserver> observer;
   FakeObserver fake_observer(&observer, &task_runner_);
@@ -382,11 +396,11 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenWiFiNetworksSame) {
       "Eche.StreamEvent.ConnectionFail",
       EcheTray::ConnectionFailReason::kConnectionFailSsidDifferent, 0);
 
-  signaler_->SetSignalingMessageObserver(std::move(observer));
-  signaler_->SetSystemInfoProvider(&fake_system_info_provider);
-  signaler_->OnMessageReceived(message.SerializeAsString());
+  signaler()->SetSignalingMessageObserver(std::move(observer));
+  signaler()->SetSystemInfoProvider(&fake_system_info_provider);
+  signaler()->OnMessageReceived(message.SerializeAsString());
   task_runner_.WaitForResult();
-  signaler_->RecordSignalingTimeout();
+  signaler()->RecordSignalingTimeout();
 
   histograms.ExpectUniqueSample(
       "Eche.StreamEvent.ConnectionFail",
@@ -395,12 +409,6 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenWiFiNetworksSame) {
 }
 
 TEST_F(EcheSignalerTest, TestConnectionFailWhenRemoteDeviceOnCellular) {
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/
-      {
-          ash::features::kEcheSWACheckAndroidNetworkInfo,
-      },
-      /*disabled_features=*/{});
   base::HistogramTester histograms;
   mojo::PendingRemote<mojom::SignalingMessageObserver> observer;
   FakeObserver fake_observer(&observer, &task_runner_);
@@ -412,11 +420,11 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenRemoteDeviceOnCellular) {
       "Eche.StreamEvent.ConnectionFail",
       EcheTray::ConnectionFailReason::kConnectionFailRemoteDeviceOnCellular, 0);
 
-  signaler_->SetSignalingMessageObserver(std::move(observer));
-  signaler_->SetSystemInfoProvider(&fake_system_info_provider);
-  signaler_->OnMessageReceived(message.SerializeAsString());
+  signaler()->SetSignalingMessageObserver(std::move(observer));
+  signaler()->SetSystemInfoProvider(&fake_system_info_provider);
+  signaler()->OnMessageReceived(message.SerializeAsString());
   task_runner_.WaitForResult();
-  signaler_->RecordSignalingTimeout();
+  signaler()->RecordSignalingTimeout();
 
   histograms.ExpectUniqueSample(
       "Eche.StreamEvent.ConnectionFail",
@@ -438,11 +446,11 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenSignalingHasLateResponse) {
       "Eche.StreamEvent.ConnectionFail",
       EcheTray::ConnectionFailReason::kSignalingHasLateResponse, 0);
 
-  signaler_->SetSignalingMessageObserver(std::move(observer));
-  signaler_->SetSystemInfoProvider(&fake_system_info_provider);
-  signaler_->OnMessageReceived(message.SerializeAsString());
+  signaler()->SetSignalingMessageObserver(std::move(observer));
+  signaler()->SetSystemInfoProvider(&fake_system_info_provider);
+  signaler()->OnMessageReceived(message.SerializeAsString());
   task_runner_.WaitForResult();
-  signaler_->RecordSignalingTimeout();
+  signaler()->RecordSignalingTimeout();
 
   histograms.ExpectUniqueSample(
       "Eche.StreamEvent.ConnectionFail",
@@ -451,10 +459,6 @@ TEST_F(EcheSignalerTest, TestConnectionFailWhenSignalingHasLateResponse) {
 }
 
 TEST_F(EcheSignalerTest, OnRequestCloseConnnectionDoesNotStreamEventFailures) {
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kEcheSWA,
-                            features::kEcheNetworkConnectionState},
-      /*disabled_features=*/{});
   base::HistogramTester histograms;
   mojo::PendingRemote<mojom::SignalingMessageObserver> observer;
   FakeObserver fake_observer(&observer, &task_runner_);
@@ -466,14 +470,14 @@ TEST_F(EcheSignalerTest, OnRequestCloseConnnectionDoesNotStreamEventFailures) {
 
   histograms.ExpectTotalCount("Eche.StreamEvent.ConnectionFail", 0);
 
-  signaler_->SetSignalingMessageObserver(std::move(observer));
-  signaler_->SetSystemInfoProvider(&fake_system_info_provider);
-  signaler_->OnMessageReceived(message.SerializeAsString());
+  signaler()->SetSignalingMessageObserver(std::move(observer));
+  signaler()->SetSystemInfoProvider(&fake_system_info_provider);
+  signaler()->OnMessageReceived(message.SerializeAsString());
   eche_connection_status_handler()->NotifyRequestCloseConnection();
   task_runner_.WaitForResult();
 
   histograms.ExpectTotalCount("Eche.StreamEvent.ConnectionFail", 0);
-  EXPECT_FALSE(signaler_->signaling_timeout_timer_for_test());
+  EXPECT_FALSE(signaler()->signaling_timeout_timer_for_test());
 }
 
 }  // namespace ash::eche_app
