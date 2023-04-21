@@ -411,11 +411,6 @@ non_web_component_files = [
   "chromeos/search/personalization_search_handler.ts",
   "chromeos/search/settings_search_handler.ts",
   "chromeos/setting_id_param_util.ts",
-
-  # Files below are from Browser Settings and shared with ChromeOS Settings
-  "controls/cr_policy_pref_mixin.ts",
-  "controls/pref_control_mixin.ts",
-  "controls/settings_boolean_control_mixin.ts",
 ]
 
 mojom_webui_files = [
