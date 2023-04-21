@@ -101,7 +101,8 @@ class KioskPixelTest : public WebKioskBaseTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(KioskPixelTest, AccessibilitySettings) {
+// TODO(b/278898101): disable due to flakiness.
+IN_PROC_BROWSER_TEST_F(KioskPixelTest, DISABLED_AccessibilitySettings) {
   if (!IsPixelTestEnabled()) {
     return;
   }
