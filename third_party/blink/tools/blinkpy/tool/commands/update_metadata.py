@@ -597,8 +597,9 @@ class MetadataUpdater:
                     metadata.create_test_tree(paths['metadata_path'],
                                               manifest))
                 for _, _, tests in manifest:
-                    slow_tests.update(test.id for test in tests
-                                      if getattr(test, 'timeout') == 'long')
+                    slow_tests.update(
+                        test.id for test in tests
+                        if getattr(test, 'timeout', None) == 'long')
             finally:
                 manifest.itertypes = itertypes
         return cls(test_files, slow_tests, configs, fs, **options)
