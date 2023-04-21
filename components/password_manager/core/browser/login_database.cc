@@ -61,7 +61,7 @@ using autofill::GaiaIdHash;
 namespace password_manager {
 
 // The current version number of the login database schema.
-constexpr int kCurrentVersionNumber = 33;
+constexpr int kCurrentVersionNumber = 34;
 // The oldest version of the schema such that a legacy Chrome client using that
 // version can still read/write the current database.
 constexpr int kCompatibleVersionNumber = 33;
@@ -496,6 +496,12 @@ void InitializeBuilders(SQLTableBuilders builders) {
   builders.password_notes->AddColumn("date_created", "INTEGER NOT NULL");
   builders.password_notes->AddColumn("confidential", "INTEGER");
   SealVersion(builders, /*expected_version=*/33u);
+
+  // Version 34. Add `trigger_notification_from_backend` column to the
+  // `insecure_credentials_table`.
+  builders.insecure_credentials->AddColumn("trigger_notification_from_backend",
+                                           "INTEGER NOT NULL DEFAULT 0");
+  SealVersion(builders, /*expected_version=*/34u);
 
   DCHECK_EQ(static_cast<size_t>(COLUMN_NUM), builders.logins->NumberOfColumns())
       << "Adjust LoginDatabaseTableColumns if you change column definitions "
@@ -2034,7 +2040,8 @@ void LoginDatabase::PopulateFormWithPasswordIssues(PasswordForm* form) const {
   base::flat_map<InsecureType, InsecurityMetadata> issues;
   for (const auto& insecure_credential : insecure_credentials) {
     issues[insecure_credential.insecure_type] = InsecurityMetadata(
-        insecure_credential.create_time, insecure_credential.is_muted);
+        insecure_credential.create_time, insecure_credential.is_muted,
+        insecure_credential.trigger_notification_from_backend);
   }
   form->password_issues = std::move(issues);
 }

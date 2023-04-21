@@ -245,13 +245,20 @@ std::ostream& operator<<(std::ostream& os, const AlternativeElement& element) {
 }
 
 InsecurityMetadata::InsecurityMetadata() = default;
-InsecurityMetadata::InsecurityMetadata(base::Time create_time, IsMuted is_muted)
-    : create_time(create_time), is_muted(is_muted) {}
+InsecurityMetadata::InsecurityMetadata(
+    base::Time create_time,
+    IsMuted is_muted,
+    TriggerBackendNotification trigger_notification_from_backend)
+    : create_time(create_time),
+      is_muted(is_muted),
+      trigger_notification_from_backend(trigger_notification_from_backend) {}
 InsecurityMetadata::InsecurityMetadata(const InsecurityMetadata& rhs) = default;
 InsecurityMetadata::~InsecurityMetadata() = default;
 
 bool operator==(const InsecurityMetadata& lhs, const InsecurityMetadata& rhs) {
-  return lhs.create_time == rhs.create_time && *lhs.is_muted == *rhs.is_muted;
+  return lhs.create_time == rhs.create_time && *lhs.is_muted == *rhs.is_muted &&
+         *lhs.trigger_notification_from_backend ==
+             *rhs.trigger_notification_from_backend;
 }
 
 PasswordNote::PasswordNote() = default;

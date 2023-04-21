@@ -28,8 +28,11 @@ std::vector<InsecureCredential> StatementToInsecureCredential(
     base::Time create_time = base::Time::FromDeltaSinceWindowsEpoch(
         (base::Microseconds(s->ColumnInt64(4))));
     bool is_muted = !!s->ColumnInt64(5);
-    InsecureCredential issue(std::move(signon_realm), std::move(username),
-                             create_time, insecurity_type, IsMuted(is_muted));
+    bool trigger_notification_from_backend = !!s->ColumnInt64(6);
+    InsecureCredential issue(
+        std::move(signon_realm), std::move(username), create_time,
+        insecurity_type, IsMuted(is_muted),
+        TriggerBackendNotification(trigger_notification_from_backend));
     issue.parent_key = FormPrimaryKey(parent_key);
     results.emplace_back(std::move(issue));
   }
@@ -40,16 +43,20 @@ std::vector<InsecureCredential> StatementToInsecureCredential(
 
 InsecureCredential::InsecureCredential() = default;
 
-InsecureCredential::InsecureCredential(std::string signon_realm,
-                                       std::u16string username,
-                                       base::Time create_time,
-                                       InsecureType insecurity_type,
-                                       IsMuted is_muted)
+InsecureCredential::InsecureCredential(
+    std::string signon_realm,
+    std::u16string username,
+    base::Time create_time,
+    InsecureType insecurity_type,
+    IsMuted is_muted,
+    TriggerBackendNotification trigger_notification_from_backend)
+
     : signon_realm(std::move(signon_realm)),
       username(std::move(username)),
       create_time(create_time),
       insecure_type(insecurity_type),
-      is_muted(is_muted) {}
+      is_muted(is_muted),
+      trigger_notification_from_backend(trigger_notification_from_backend) {}
 
 InsecureCredential::InsecureCredential(const InsecureCredential& rhs) = default;
 
@@ -65,14 +72,18 @@ InsecureCredential::~InsecureCredential() = default;
 
 bool InsecureCredential::SameMetadata(
     const InsecurityMetadata& metadata) const {
-  return create_time == metadata.create_time && is_muted == metadata.is_muted;
+  return create_time == metadata.create_time && is_muted == metadata.is_muted &&
+         trigger_notification_from_backend ==
+             metadata.trigger_notification_from_backend;
 }
 
 bool operator==(const InsecureCredential& lhs, const InsecureCredential& rhs) {
   return lhs.signon_realm == rhs.signon_realm && lhs.username == rhs.username &&
          lhs.create_time == rhs.create_time &&
          lhs.insecure_type == rhs.insecure_type &&
-         *lhs.is_muted == *rhs.is_muted;
+         *lhs.is_muted == *rhs.is_muted &&
+         *lhs.trigger_notification_from_backend ==
+             *rhs.trigger_notification_from_backend;
 }
 
 const char InsecureCredentialsTable::kTableName[] = "insecure_credentials";
@@ -90,8 +101,9 @@ bool InsecureCredentialsTable::InsertOrReplace(FormPrimaryKey parent_key,
   sql::Statement s(db_->GetCachedStatement(
       SQL_FROM_HERE,
       base::StringPrintf("INSERT OR REPLACE INTO %s (parent_id, "
-                         "insecurity_type, create_time, is_muted) "
-                         "VALUES (?, ?, ?, ?)",
+                         "insecurity_type, create_time, is_muted, "
+                         "trigger_notification_from_backend) "
+                         "VALUES (?, ?, ?, ?, ?)",
                          kTableName)
           .c_str()));
   s.BindInt(0, parent_key.value());
@@ -99,6 +111,7 @@ bool InsecureCredentialsTable::InsertOrReplace(FormPrimaryKey parent_key,
   s.BindInt64(2,
               metadata.create_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   s.BindBool(3, metadata.is_muted.value());
+  s.BindBool(4, metadata.trigger_notification_from_backend.value());
 
   bool result = s.Run();
   return result && db_->GetLastChangeCount();
@@ -130,7 +143,8 @@ std::vector<InsecureCredential> InsecureCredentialsTable::GetRows(
   sql::Statement s(db_->GetCachedStatement(
       SQL_FROM_HERE,
       base::StringPrintf("SELECT parent_id, signon_realm, username_value, "
-                         "insecurity_type, create_time, is_muted FROM %s "
+                         "insecurity_type, create_time, is_muted, "
+                         "trigger_notification_from_backend FROM %s "
                          "INNER JOIN logins ON parent_id = logins.id "
                          "WHERE parent_id = ? ",
                          kTableName)

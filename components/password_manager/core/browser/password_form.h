@@ -63,6 +63,8 @@ std::ostream& operator<<(std::ostream& os, const AlternativeElement& form);
 using AlternativeElementVector = std::vector<AlternativeElement>;
 
 using IsMuted = base::StrongAlias<class IsMutedTag, bool>;
+using TriggerBackendNotification =
+    base::StrongAlias<class TriggerBackendNotificationTag, bool>;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -81,7 +83,14 @@ enum class InsecureType {
 // Metadata for insecure credentials
 struct InsecurityMetadata {
   InsecurityMetadata();
-  InsecurityMetadata(base::Time create_time, IsMuted is_muted);
+  // TODO(crbug.com/1413209): Remove the default value from the
+  // `trigger_notification_from_backend` param to ensure it's set explicitly
+  // and prevent accidentally setting it to false.
+  InsecurityMetadata(
+      base::Time create_time,
+      IsMuted is_muted,
+      TriggerBackendNotification trigger_notification_from_backend =
+          TriggerBackendNotification(false));
   InsecurityMetadata(const InsecurityMetadata& rhs);
   ~InsecurityMetadata();
 
@@ -89,6 +98,9 @@ struct InsecurityMetadata {
   base::Time create_time;
   // Whether the problem was explicitly muted by the user.
   IsMuted is_muted{false};
+  // Whether the backend should send a notification about the issue. True if
+  // the user hasn't already been notified (e.g. via a leak check prompt).
+  TriggerBackendNotification trigger_notification_from_backend{false};
 };
 
 bool operator==(const InsecurityMetadata& lhs, const InsecurityMetadata& rhs);

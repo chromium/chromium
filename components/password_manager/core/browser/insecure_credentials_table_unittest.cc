@@ -45,7 +45,8 @@ PasswordForm TestForm() {
 }
 
 InsecurityMetadata ToInsecurityMetadata(const InsecureCredential& insecure) {
-  return InsecurityMetadata(insecure.create_time, insecure.is_muted);
+  return InsecurityMetadata(insecure.create_time, insecure.is_muted,
+                            insecure.trigger_notification_from_backend);
 }
 
 class InsecureCredentialsTableTest : public testing::Test {
@@ -88,9 +89,9 @@ class InsecureCredentialsTableTest : public testing::Test {
   // Required for iOS.
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<LoginDatabase> login_db_;
-  InsecureCredential test_data_{kTestDomain, kUsername,
-                                base::Time::FromTimeT(1), InsecureType::kLeaked,
-                                IsMuted(false)};
+  InsecureCredential test_data_{
+      kTestDomain,           kUsername,      base::Time::FromTimeT(1),
+      InsecureType::kLeaked, IsMuted(false), TriggerBackendNotification(true)};
   PasswordForm test_form_ = TestForm();
 };
 
@@ -208,6 +209,8 @@ TEST_F(InsecureCredentialsTableTest, UpdateRow) {
 
   InsecureCredential insecure_credential = test_data();
   insecure_credential.is_muted = IsMuted(false);
+  insecure_credential.trigger_notification_from_backend =
+      TriggerBackendNotification(true);
   insecure_credential.parent_key = FormPrimaryKey(1);
   EXPECT_TRUE(db()->InsertOrReplace(FormPrimaryKey(1),
                                     insecure_credential.insecure_type,
@@ -216,10 +219,12 @@ TEST_F(InsecureCredentialsTableTest, UpdateRow) {
   EXPECT_THAT(db()->GetRows(FormPrimaryKey(1)),
               UnorderedElementsAre(insecure_credential));
 
-  InsecurityMetadata new_metadata(insecure_credential.create_time,
-                                  IsMuted(true));
   InsecureCredential new_insecure_credential = insecure_credential;
   new_insecure_credential.is_muted = IsMuted(true);
+  new_insecure_credential.trigger_notification_from_backend =
+      TriggerBackendNotification(false);
+  InsecurityMetadata new_metadata(
+      ToInsecurityMetadata(new_insecure_credential));
   EXPECT_TRUE(db()->InsertOrReplace(insecure_credential.parent_key,
                                     insecure_credential.insecure_type,
                                     new_metadata));
