@@ -98,6 +98,8 @@ void FillInSystemEnvironment(base::Value::Dict& ds) {
   processor = "x86";
 #elif defined(ARCH_CPU_X86_64)
   processor = "x86_64";
+#elif defined(ARCH_CPU_ARM64)
+  processor = "Arm64";
 #else
   LOG(WARNING) << "Unknown Processor.";
 #endif
