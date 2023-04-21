@@ -190,6 +190,8 @@ enum class AccessPoint : int {
   ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE = 49,
   // Access point for the search companion sign-in promo.
   ACCESS_POINT_SEARCH_COMPANION = 50,
+  // Access point for the IOS Set Up List on the NTP.
+  ACCESS_POINT_SET_UP_LIST = 51,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml

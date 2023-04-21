@@ -474,6 +474,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromSearchCompanion"));
       break;
+    case AccessPoint::ACCESS_POINT_SET_UP_LIST:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromSetUpList"));
+      break;
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED();
       break;
@@ -591,6 +595,10 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromSearchCompanion"));
+      break;
+    case AccessPoint::ACCESS_POINT_SET_UP_LIST:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Impression_FromSetUpList"));
       break;
     case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case AccessPoint::ACCESS_POINT_CONTENT_AREA:
