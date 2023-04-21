@@ -34,7 +34,6 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ash/file_manager/url_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/fake_provided_file_system.h"
@@ -48,9 +47,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_process.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
@@ -67,7 +64,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -772,33 +768,10 @@ class TestAccountBrowserTest : public MixinBasedInProcessBrowserTest {
         /*should_launch_browser=*/true, account_id);
   }
 
-  // Launch Files app and return its NativeWindow.
-  gfx::NativeWindow LaunchFilesAppAndWait() {
-    GURL files_swa_url = util::GetFileManagerMainPageUrlWithParams(
-        ui::SelectFileDialog::SELECT_NONE, /*title=*/std::u16string(),
-        /*current_directory_url=*/{},
-        /*selection_url=*/GURL(),
-        /*target_name=*/{}, /*file_types=*/{},
-        /*file_type_index=*/0,
-        /*search_query=*/{},
-        /*show_android_picker_apps=*/false,
-        /*volume_filter=*/{});
-    ash::SystemAppLaunchParams params;
-    params.url = files_swa_url;
-    ash::LaunchSystemWebAppAsync(browser()->profile(),
-                                 ash::SystemWebAppType::FILE_MANAGER, params);
-    Browser* files_app = ui_test_utils::WaitForBrowserToOpen();
-    return files_app->window()->GetNativeWindow();
-  }
-
  protected:
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
     logged_in_user_mixin_->LogInUser();
-
-    // Needed to launch Files app as the dialog's modal parent.
-    ash::SystemWebAppManager::GetForTest(browser()->profile())
-        ->InstallSystemAppsForTesting();
   }
 
  private:
@@ -817,7 +790,6 @@ class NonManagedAccount : public TestAccountBrowserTest {
     TestAccountBrowserTest::SetUpOnMainThread();
     app_service_test_.SetUp(browser()->profile());
   }
-
   apps::AppServiceProxy* app_service_proxy() {
     apps::AppServiceProxy* app_service_proxy =
         apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
@@ -1218,10 +1190,8 @@ IN_PROC_BROWSER_TEST_F(DriveTest, FileInDriveOpensSetUpDialog) {
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
 
-  gfx::NativeWindow modal_parent = LaunchFilesAppAndWait();
-
   // Triggers setup flow.
-  ExecuteFileTask(profile(), web_drive_office_task, file_urls, modal_parent,
+  ExecuteFileTask(profile(), web_drive_office_task, file_urls, nullptr,
                   base::DoNothing());
 
   // Wait for setup flow dialog to open.
@@ -1251,11 +1221,9 @@ IN_PROC_BROWSER_TEST_F(DriveTest, FileNotInDriveOpensSetUpDialog) {
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
 
-  gfx::NativeWindow modal_parent = LaunchFilesAppAndWait();
-
   // Triggers setup flow.
   ExecuteFileTask(
-      profile(), web_drive_office_task, file_urls, modal_parent,
+      profile(), web_drive_office_task, file_urls, nullptr,
       base::BindOnce(
           [](extensions::api::file_manager_private::TaskResult result,
              std::string error_message) {}));
@@ -1662,12 +1630,10 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileNotFromODFS) {
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
 
-  gfx::NativeWindow modal_parent = LaunchFilesAppAndWait();
-
   // Triggers Move Confirmation dialog.
   auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
       profile(), file_urls, ash::cloud_upload::CloudProvider::kOneDrive,
-      modal_parent));
+      nullptr));
   task->OpenOrMoveFiles();
 
   // Wait for setup flow dialog to open.
@@ -1814,10 +1780,6 @@ IN_PROC_BROWSER_TEST_F(
 // will be run when an Open in Office task tries to open an office file
 // already in ODFS.
 IN_PROC_BROWSER_TEST_F(OneDriveTest, FileInOneDriveOpensSetUpDialog) {
-  // Do this before SetUpTest creates a FakeWebAppPublisher which would
-  // intercept Files app launching.
-  gfx::NativeWindow modal_parent = LaunchFilesAppAndWait();
-
   // Creates a fake ODFS with a test file.
   SetUpTest();
 
@@ -1835,7 +1797,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FileInOneDriveOpensSetUpDialog) {
   navigation_observer_dialog.StartWatchingNewWebContents();
 
   // Triggers setup flow.
-  ExecuteFileTask(profile(), open_in_office_task, file_urls, modal_parent,
+  ExecuteFileTask(profile(), open_in_office_task, file_urls, nullptr,
                   base::DoNothing());
 
   // Wait for setup flow dialog to open.
@@ -1861,11 +1823,9 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FileNotInOneDriveOpensSetUpDialog) {
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
 
-  gfx::NativeWindow modal_parent = LaunchFilesAppAndWait();
-
   // Triggers setup flow.
   ExecuteFileTask(
-      profile(), open_in_office_task, file_urls, modal_parent,
+      profile(), open_in_office_task, file_urls, nullptr,
       base::BindOnce(
           [](extensions::api::file_manager_private::TaskResult result,
              std::string error_message) {}));
