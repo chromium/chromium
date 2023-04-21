@@ -71107,6 +71107,8 @@ Called by update_use_counter_css.py.-->
   <int value="7" label="Firewall Hole Factory"/>
   <int value="8" label="TCP Socket Factory"/>
   <int value="9" label="Nearby Presence"/>
+  <int value="10" label="Nearby Share Decoder"/>
+  <int value="11" label="Quick Start Decoder"/>
 </enum>
 
 <enum name="NearbyConnectionsUtilityProcessShutdownReason">

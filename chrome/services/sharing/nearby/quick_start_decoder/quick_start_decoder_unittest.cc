@@ -90,7 +90,7 @@ class QuickStartDecoderTest : public testing::Test {
   QuickStartDecoderTest() {
     QuickStartMessage::DisableSandboxCheckForTesting();
     decoder_ = std::make_unique<QuickStartDecoder>(
-        remote_.BindNewPipeAndPassReceiver());
+        remote_.BindNewPipeAndPassReceiver(), base::DoNothing());
   }
 
   mojom::GetAssertionResponsePtr DoDecodeGetAssertionResponse(
