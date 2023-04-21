@@ -8370,6 +8370,729 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
+function newSplice(index, removed, addedCount) {
+  return {
+    index: index,
+    removed: removed,
+    addedCount: addedCount
+  };
+}
+
+const EDIT_LEAVE = 0;
+const EDIT_UPDATE = 1;
+const EDIT_ADD = 2;
+const EDIT_DELETE = 3;
+
+// Note: This function is *based* on the computation of the Levenshtein
+// "edit" distance. The one change is that "updates" are treated as two
+// edits - not one. With Array splices, an update is really a delete
+// followed by an add. By retaining this, we optimize for "keeping" the
+// maximum array items in the original array. For example:
+//
+//   'xxxx123' -> '123yyyy'
+//
+// With 1-edit updates, the shortest path would be just to update all seven
+// characters. With 2-edit updates, we delete 4, leave 3, and add 4. This
+// leaves the substring '123' intact.
+function calcEditDistances(current, currentStart, currentEnd,
+                            old, oldStart, oldEnd) {
+  // "Deletion" columns
+  let rowCount = oldEnd - oldStart + 1;
+  let columnCount = currentEnd - currentStart + 1;
+  let distances = new Array(rowCount);
+
+  // "Addition" rows. Initialize null column.
+  for (let i = 0; i < rowCount; i++) {
+    distances[i] = new Array(columnCount);
+    distances[i][0] = i;
+  }
+
+  // Initialize null row
+  for (let j = 0; j < columnCount; j++)
+    distances[0][j] = j;
+
+  for (let i = 1; i < rowCount; i++) {
+    for (let j = 1; j < columnCount; j++) {
+      if (equals(current[currentStart + j - 1], old[oldStart + i - 1]))
+        distances[i][j] = distances[i - 1][j - 1];
+      else {
+        let north = distances[i - 1][j] + 1;
+        let west = distances[i][j - 1] + 1;
+        distances[i][j] = north < west ? north : west;
+      }
+    }
+  }
+
+  return distances;
+}
+
+// This starts at the final weight, and walks "backward" by finding
+// the minimum previous weight recursively until the origin of the weight
+// matrix.
+function spliceOperationsFromEditDistances(distances) {
+  let i = distances.length - 1;
+  let j = distances[0].length - 1;
+  let current = distances[i][j];
+  let edits = [];
+  while (i > 0 || j > 0) {
+    if (i == 0) {
+      edits.push(EDIT_ADD);
+      j--;
+      continue;
+    }
+    if (j == 0) {
+      edits.push(EDIT_DELETE);
+      i--;
+      continue;
+    }
+    let northWest = distances[i - 1][j - 1];
+    let west = distances[i - 1][j];
+    let north = distances[i][j - 1];
+
+    let min;
+    if (west < north)
+      min = west < northWest ? west : northWest;
+    else
+      min = north < northWest ? north : northWest;
+
+    if (min == northWest) {
+      if (northWest == current) {
+        edits.push(EDIT_LEAVE);
+      } else {
+        edits.push(EDIT_UPDATE);
+        current = northWest;
+      }
+      i--;
+      j--;
+    } else if (min == west) {
+      edits.push(EDIT_DELETE);
+      i--;
+      current = west;
+    } else {
+      edits.push(EDIT_ADD);
+      j--;
+      current = north;
+    }
+  }
+
+  edits.reverse();
+  return edits;
+}
+
+/**
+ * Splice Projection functions:
+ *
+ * A splice map is a representation of how a previous array of items
+ * was transformed into a new array of items. Conceptually it is a list of
+ * tuples of
+ *
+ *   <index, removed, addedCount>
+ *
+ * which are kept in ascending index order of. The tuple represents that at
+ * the |index|, |removed| sequence of items were removed, and counting forward
+ * from |index|, |addedCount| items were added.
+ */
+
+/**
+ * Lacking individual splice mutation information, the minimal set of
+ * splices can be synthesized given the previous state and final state of an
+ * array. The basic approach is to calculate the edit distance matrix and
+ * choose the shortest path through it.
+ *
+ * Complexity: O(l * p)
+ *   l: The length of the current array
+ *   p: The length of the old array
+ *
+ * @param {!Array} current The current "changed" array for which to
+ * calculate splices.
+ * @param {number} currentStart Starting index in the `current` array for
+ * which splices are calculated.
+ * @param {number} currentEnd Ending index in the `current` array for
+ * which splices are calculated.
+ * @param {!Array} old The original "unchanged" array to compare `current`
+ * against to determine splices.
+ * @param {number} oldStart Starting index in the `old` array for
+ * which splices are calculated.
+ * @param {number} oldEnd Ending index in the `old` array for
+ * which splices are calculated.
+ * @return {!Array} Returns an array of splice record objects. Each of these
+ * contains: `index` the location where the splice occurred; `removed`
+ * the array of removed items from this location; `addedCount` the number
+ * of items added at this location.
+ */
+function calcSplices(current, currentStart, currentEnd,
+                      old, oldStart, oldEnd) {
+  let prefixCount = 0;
+  let suffixCount = 0;
+  let splice;
+
+  let minLength = Math.min(currentEnd - currentStart, oldEnd - oldStart);
+  if (currentStart == 0 && oldStart == 0)
+    prefixCount = sharedPrefix(current, old, minLength);
+
+  if (currentEnd == current.length && oldEnd == old.length)
+    suffixCount = sharedSuffix(current, old, minLength - prefixCount);
+
+  currentStart += prefixCount;
+  oldStart += prefixCount;
+  currentEnd -= suffixCount;
+  oldEnd -= suffixCount;
+
+  if (currentEnd - currentStart == 0 && oldEnd - oldStart == 0)
+    return [];
+
+  if (currentStart == currentEnd) {
+    splice = newSplice(currentStart, [], 0);
+    while (oldStart < oldEnd)
+      splice.removed.push(old[oldStart++]);
+
+    return [ splice ];
+  } else if (oldStart == oldEnd)
+    return [ newSplice(currentStart, [], currentEnd - currentStart) ];
+
+  let ops = spliceOperationsFromEditDistances(
+      calcEditDistances(current, currentStart, currentEnd,
+                             old, oldStart, oldEnd));
+
+  splice = undefined;
+  let splices = [];
+  let index = currentStart;
+  let oldIndex = oldStart;
+  for (let i = 0; i < ops.length; i++) {
+    switch(ops[i]) {
+      case EDIT_LEAVE:
+        if (splice) {
+          splices.push(splice);
+          splice = undefined;
+        }
+
+        index++;
+        oldIndex++;
+        break;
+      case EDIT_UPDATE:
+        if (!splice)
+          splice = newSplice(index, [], 0);
+
+        splice.addedCount++;
+        index++;
+
+        splice.removed.push(old[oldIndex]);
+        oldIndex++;
+        break;
+      case EDIT_ADD:
+        if (!splice)
+          splice = newSplice(index, [], 0);
+
+        splice.addedCount++;
+        index++;
+        break;
+      case EDIT_DELETE:
+        if (!splice)
+          splice = newSplice(index, [], 0);
+
+        splice.removed.push(old[oldIndex]);
+        oldIndex++;
+        break;
+    }
+  }
+
+  if (splice) {
+    splices.push(splice);
+  }
+  return splices;
+}
+
+function sharedPrefix(current, old, searchLength) {
+  for (let i = 0; i < searchLength; i++)
+    if (!equals(current[i], old[i]))
+      return i;
+  return searchLength;
+}
+
+function sharedSuffix(current, old, searchLength) {
+  let index1 = current.length;
+  let index2 = old.length;
+  let count = 0;
+  while (count < searchLength && equals(current[--index1], old[--index2]))
+    count++;
+
+  return count;
+}
+
+/**
+ * Returns an array of splice records indicating the minimum edits required
+ * to transform the `previous` array into the `current` array.
+ *
+ * Splice records are ordered by index and contain the following fields:
+ * - `index`: index where edit started
+ * - `removed`: array of removed items from this index
+ * - `addedCount`: number of items added at this index
+ *
+ * This function is based on the Levenshtein "minimum edit distance"
+ * algorithm. Note that updates are treated as removal followed by addition.
+ *
+ * The worst-case time complexity of this algorithm is `O(l * p)`
+ *   l: The length of the current array
+ *   p: The length of the previous array
+ *
+ * However, the worst-case complexity is reduced by an `O(n)` optimization
+ * to detect any shared prefix & suffix between the two arrays and only
+ * perform the more expensive minimum edit distance calculation over the
+ * non-shared portions of the arrays.
+ *
+ * @function
+ * @param {!Array} current The "changed" array for which splices will be
+ * calculated.
+ * @param {!Array} previous The "unchanged" original array to compare
+ * `current` against to determine the splices.
+ * @return {!Array} Returns an array of splice record objects. Each of these
+ * contains: `index` the location where the splice occurred; `removed`
+ * the array of removed items from this location; `addedCount` the number
+ * of items added at this location.
+ */
+function calculateSplices(current, previous) {
+  return calcSplices(current, 0, current.length, previous, 0,
+                          previous.length);
+}
+
+function equals(currentValue, previousValue) {
+  return currentValue === previousValue;
+}
+
+/**
+@license
+Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+*/
+
+/**
+ * Element mixin for recording dynamic associations between item paths in a
+ * master `items` array and a `selected` array such that path changes to the
+ * master array (at the host) element or elsewhere via data-binding) are
+ * correctly propagated to items in the selected array and vice-versa.
+ *
+ * The `items` property accepts an array of user data, and via the
+ * `select(item)` and `deselect(item)` API, updates the `selected` property
+ * which may be bound to other parts of the application, and any changes to
+ * sub-fields of `selected` item(s) will be kept in sync with items in the
+ * `items` array.  When `multi` is false, `selected` is a property
+ * representing the last selected item.  When `multi` is true, `selected`
+ * is an array of multiply selected items.
+ *
+ * @polymer
+ * @mixinFunction
+ * @appliesMixin ElementMixin
+ * @summary Element mixin for recording dynamic associations between item paths in a
+ * master `items` array and a `selected` array
+ */
+let ArraySelectorMixin = dedupingMixin(superClass => {
+
+  /**
+   * @constructor
+   * @implements {Polymer_ElementMixin}
+   * @private
+   */
+  let elementBase = ElementMixin(superClass);
+
+  /**
+   * @polymer
+   * @mixinClass
+   * @implements {Polymer_ArraySelectorMixin}
+   * @unrestricted
+   */
+  class ArraySelectorMixin extends elementBase {
+
+    static get properties() {
+      return {
+
+        /**
+         * An array containing items from which selection will be made.
+         */
+        items: {
+          type: Array,
+        },
+
+        /**
+         * When `true`, multiple items may be selected at once (in this case,
+         * `selected` is an array of currently selected items).  When `false`,
+         * only one item may be selected at a time.
+         */
+        multi: {
+          type: Boolean,
+          value: false,
+        },
+
+        /**
+         * When `multi` is true, this is an array that contains any selected.
+         * When `multi` is false, this is the currently selected item, or `null`
+         * if no item is selected.
+         * @type {?Object|?Array<!Object>}
+         */
+        selected: {type: Object, notify: true},
+
+        /**
+         * When `multi` is false, this is the currently selected item, or `null`
+         * if no item is selected.
+         * @type {?Object}
+         */
+        selectedItem: {type: Object, notify: true},
+
+        /**
+         * When `true`, calling `select` on an item that is already selected
+         * will deselect the item.
+         */
+        toggle: {type: Boolean, value: false}
+
+      };
+    }
+
+    static get observers() {
+      return ['__updateSelection(multi, items.*)'];
+    }
+
+    constructor() {
+      super();
+      this.__lastItems = null;
+      this.__lastMulti = null;
+      this.__selectedMap = null;
+    }
+
+    __updateSelection(multi, itemsInfo) {
+      let path = itemsInfo.path;
+      if (path == JSCompiler_renameProperty('items', this)) {
+        // Case 1 - items array changed, so diff against previous array and
+        // deselect any removed items and adjust selected indices
+        let newItems = itemsInfo.base || [];
+        let lastItems = this.__lastItems;
+        let lastMulti = this.__lastMulti;
+        if (multi !== lastMulti) {
+          this.clearSelection();
+        }
+        if (lastItems) {
+          let splices = calculateSplices(newItems, lastItems);
+          this.__applySplices(splices);
+        }
+        this.__lastItems = newItems;
+        this.__lastMulti = multi;
+      } else if (itemsInfo.path == `${JSCompiler_renameProperty('items', this)}.splices`) {
+        // Case 2 - got specific splice information describing the array mutation:
+        // deselect any removed items and adjust selected indices
+        this.__applySplices(itemsInfo.value.indexSplices);
+      } else {
+        // Case 3 - an array element was changed, so deselect the previous
+        // item for that index if it was previously selected
+        let part = path.slice(`${JSCompiler_renameProperty('items', this)}.`.length);
+        let idx = parseInt(part, 10);
+        if ((part.indexOf('.') < 0) && part == idx) {
+          this.__deselectChangedIdx(idx);
+        }
+      }
+    }
+
+    __applySplices(splices) {
+      let selected = this.__selectedMap;
+      // Adjust selected indices and mark removals
+      for (let i=0; i<splices.length; i++) {
+        let s = splices[i];
+        selected.forEach((idx, item) => {
+          if (idx < s.index) ; else if (idx >= s.index + s.removed.length) {
+            // adjust index
+            selected.set(item, idx + s.addedCount - s.removed.length);
+          } else {
+            // remove index
+            selected.set(item, -1);
+          }
+        });
+        for (let j=0; j<s.addedCount; j++) {
+          let idx = s.index + j;
+          if (selected.has(this.items[idx])) {
+            selected.set(this.items[idx], idx);
+          }
+        }
+      }
+      // Update linked paths
+      this.__updateLinks();
+      // Remove selected items that were removed from the items array
+      let sidx = 0;
+      selected.forEach((idx, item) => {
+        if (idx < 0) {
+          if (this.multi) {
+            this.splice(JSCompiler_renameProperty('selected', this), sidx, 1);
+          } else {
+            this.selected = this.selectedItem = null;
+          }
+          selected.delete(item);
+        } else {
+          sidx++;
+        }
+      });
+    }
+
+    __updateLinks() {
+      this.__dataLinkedPaths = {};
+      if (this.multi) {
+        let sidx = 0;
+        this.__selectedMap.forEach(idx => {
+          if (idx >= 0) {
+            this.linkPaths(
+                `${JSCompiler_renameProperty('items', this)}.${idx}`,
+                `${JSCompiler_renameProperty('selected', this)}.${sidx++}`);
+          }
+        });
+      } else {
+        this.__selectedMap.forEach(idx => {
+          this.linkPaths(
+              JSCompiler_renameProperty('selected', this),
+              `${JSCompiler_renameProperty('items', this)}.${idx}`);
+          this.linkPaths(
+              JSCompiler_renameProperty('selectedItem', this),
+              `${JSCompiler_renameProperty('items', this)}.${idx}`);
+        });
+      }
+    }
+
+    /**
+     * Clears the selection state.
+     * @override
+     * @return {void}
+     */
+    clearSelection() {
+      // Unbind previous selection
+      this.__dataLinkedPaths = {};
+      // The selected map stores 3 pieces of information:
+      // key: items array object
+      // value: items array index
+      // order: selected array index
+      this.__selectedMap = new Map();
+      // Initialize selection
+      this.selected = this.multi ? [] : null;
+      this.selectedItem = null;
+    }
+
+    /**
+     * Returns whether the item is currently selected.
+     *
+     * @override
+     * @param {*} item Item from `items` array to test
+     * @return {boolean} Whether the item is selected
+     */
+    isSelected(item) {
+      return this.__selectedMap.has(item);
+    }
+
+    /**
+     * Returns whether the item is currently selected.
+     *
+     * @override
+     * @param {number} idx Index from `items` array to test
+     * @return {boolean} Whether the item is selected
+     */
+    isIndexSelected(idx) {
+      return this.isSelected(this.items[idx]);
+    }
+
+    __deselectChangedIdx(idx) {
+      let sidx = this.__selectedIndexForItemIndex(idx);
+      if (sidx >= 0) {
+        let i = 0;
+        this.__selectedMap.forEach((idx, item) => {
+          if (sidx == i++) {
+            this.deselect(item);
+          }
+        });
+      }
+    }
+
+    __selectedIndexForItemIndex(idx) {
+      let selected = this.__dataLinkedPaths[`${JSCompiler_renameProperty('items', this)}.${idx}`];
+      if (selected) {
+        return parseInt(selected.slice(`${JSCompiler_renameProperty('selected', this)}.`.length), 10);
+      }
+    }
+
+    /**
+     * Deselects the given item if it is already selected.
+     *
+     * @override
+     * @param {*} item Item from `items` array to deselect
+     * @return {void}
+     */
+    deselect(item) {
+      let idx = this.__selectedMap.get(item);
+      if (idx >= 0) {
+        this.__selectedMap.delete(item);
+        let sidx;
+        if (this.multi) {
+          sidx = this.__selectedIndexForItemIndex(idx);
+        }
+        this.__updateLinks();
+        if (this.multi) {
+          this.splice(JSCompiler_renameProperty('selected', this), sidx, 1);
+        } else {
+          this.selected = this.selectedItem = null;
+        }
+      }
+    }
+
+    /**
+     * Deselects the given index if it is already selected.
+     *
+     * @override
+     * @param {number} idx Index from `items` array to deselect
+     * @return {void}
+     */
+    deselectIndex(idx) {
+      this.deselect(this.items[idx]);
+    }
+
+    /**
+     * Selects the given item.  When `toggle` is true, this will automatically
+     * deselect the item if already selected.
+     *
+     * @override
+     * @param {*} item Item from `items` array to select
+     * @return {void}
+     */
+    select(item) {
+      this.selectIndex(this.items.indexOf(item));
+    }
+
+    /**
+     * Selects the given index.  When `toggle` is true, this will automatically
+     * deselect the item if already selected.
+     *
+     * @override
+     * @param {number} idx Index from `items` array to select
+     * @return {void}
+     */
+    selectIndex(idx) {
+      let item = this.items[idx];
+      if (!this.isSelected(item)) {
+        if (!this.multi) {
+          this.__selectedMap.clear();
+        }
+        this.__selectedMap.set(item, idx);
+        this.__updateLinks();
+        if (this.multi) {
+          this.push(JSCompiler_renameProperty('selected', this), item);
+        } else {
+          this.selected = this.selectedItem = item;
+        }
+      } else if (this.toggle) {
+        this.deselectIndex(idx);
+      }
+    }
+
+  }
+
+  return ArraySelectorMixin;
+
+});
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {Polymer_ArraySelectorMixin}
+ * @private
+ */
+let baseArraySelector = ArraySelectorMixin(PolymerElement);
+
+/**
+ * Element implementing the `ArraySelector` mixin, which records
+ * dynamic associations between item paths in a master `items` array and a
+ * `selected` array such that path changes to the master array (at the host)
+ * element or elsewhere via data-binding) are correctly propagated to items
+ * in the selected array and vice-versa.
+ *
+ * The `items` property accepts an array of user data, and via the
+ * `select(item)` and `deselect(item)` API, updates the `selected` property
+ * which may be bound to other parts of the application, and any changes to
+ * sub-fields of `selected` item(s) will be kept in sync with items in the
+ * `items` array.  When `multi` is false, `selected` is a property
+ * representing the last selected item.  When `multi` is true, `selected`
+ * is an array of multiply selected items.
+ *
+ * Example:
+ *
+ * ```js
+ * import {PolymerElement} from '@polymer/polymer';
+ * import '@polymer/polymer/polymer_bundled.min.js';
+ *
+ * class EmployeeList extends PolymerElement {
+ *   static get _template() {
+ *     return html`
+ *         <div> Employee list: </div>
+ *         <dom-repeat id="employeeList" items="{{employees}}">
+ *           <template>
+ *             <div>First name: <span>{{item.first}}</span></div>
+ *               <div>Last name: <span>{{item.last}}</span></div>
+ *               <button on-click="toggleSelection">Select</button>
+ *           </template>
+ *         </dom-repeat>
+ *
+ *         <array-selector id="selector"
+ *                         items="{{employees}}"
+ *                         selected="{{selected}}"
+ *                         multi toggle></array-selector>
+ *
+ *         <div> Selected employees: </div>
+ *         <dom-repeat items="{{selected}}">
+ *           <template>
+ *             <div>First name: <span>{{item.first}}</span></div>
+ *             <div>Last name: <span>{{item.last}}</span></div>
+ *           </template>
+ *         </dom-repeat>`;
+ *   }
+ *   static get is() { return 'employee-list'; }
+ *   static get properties() {
+ *     return {
+ *       employees: {
+ *         value() {
+ *           return [
+ *             {first: 'Bob', last: 'Smith'},
+ *             {first: 'Sally', last: 'Johnson'},
+ *             ...
+ *           ];
+ *         }
+ *       }
+ *     };
+ *   }
+ *   toggleSelection(e) {
+ *     const item = this.$.employeeList.itemForElement(e.target);
+ *     this.$.selector.select(item);
+ *   }
+ * }
+ * ```
+ *
+ * @polymer
+ * @customElement
+ * @extends {baseArraySelector}
+ * @appliesMixin ArraySelectorMixin
+ * @summary Custom element that links paths between an input `items` array and
+ *   an output `selected` item or array based on calls to its selection API.
+ */
+class ArraySelector extends baseArraySelector {
+  // Not needed to find template; can be removed once the analyzer
+  // can find the tag name from customElements.define call
+  static get is() { return 'array-selector'; }
+  static get template() { return null; }
+}
+customElements.define(ArraySelector.is, ArraySelector);
+
+/**
+@license
+Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+*/
+
 /**
  * Forces several classes of asynchronously queued tasks to flush:
  * - Debouncers added via `enqueueDebouncer`
@@ -10712,305 +11435,6 @@ if (document.readyState === 'interactive' || document.readyState === 'complete')
   resolve();
 } else {
   window.addEventListener('DOMContentLoaded', resolve);
-}
-
-/**
-@license
-Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/
-
-function newSplice(index, removed, addedCount) {
-  return {
-    index: index,
-    removed: removed,
-    addedCount: addedCount
-  };
-}
-
-const EDIT_LEAVE = 0;
-const EDIT_UPDATE = 1;
-const EDIT_ADD = 2;
-const EDIT_DELETE = 3;
-
-// Note: This function is *based* on the computation of the Levenshtein
-// "edit" distance. The one change is that "updates" are treated as two
-// edits - not one. With Array splices, an update is really a delete
-// followed by an add. By retaining this, we optimize for "keeping" the
-// maximum array items in the original array. For example:
-//
-//   'xxxx123' -> '123yyyy'
-//
-// With 1-edit updates, the shortest path would be just to update all seven
-// characters. With 2-edit updates, we delete 4, leave 3, and add 4. This
-// leaves the substring '123' intact.
-function calcEditDistances(current, currentStart, currentEnd,
-                            old, oldStart, oldEnd) {
-  // "Deletion" columns
-  let rowCount = oldEnd - oldStart + 1;
-  let columnCount = currentEnd - currentStart + 1;
-  let distances = new Array(rowCount);
-
-  // "Addition" rows. Initialize null column.
-  for (let i = 0; i < rowCount; i++) {
-    distances[i] = new Array(columnCount);
-    distances[i][0] = i;
-  }
-
-  // Initialize null row
-  for (let j = 0; j < columnCount; j++)
-    distances[0][j] = j;
-
-  for (let i = 1; i < rowCount; i++) {
-    for (let j = 1; j < columnCount; j++) {
-      if (equals(current[currentStart + j - 1], old[oldStart + i - 1]))
-        distances[i][j] = distances[i - 1][j - 1];
-      else {
-        let north = distances[i - 1][j] + 1;
-        let west = distances[i][j - 1] + 1;
-        distances[i][j] = north < west ? north : west;
-      }
-    }
-  }
-
-  return distances;
-}
-
-// This starts at the final weight, and walks "backward" by finding
-// the minimum previous weight recursively until the origin of the weight
-// matrix.
-function spliceOperationsFromEditDistances(distances) {
-  let i = distances.length - 1;
-  let j = distances[0].length - 1;
-  let current = distances[i][j];
-  let edits = [];
-  while (i > 0 || j > 0) {
-    if (i == 0) {
-      edits.push(EDIT_ADD);
-      j--;
-      continue;
-    }
-    if (j == 0) {
-      edits.push(EDIT_DELETE);
-      i--;
-      continue;
-    }
-    let northWest = distances[i - 1][j - 1];
-    let west = distances[i - 1][j];
-    let north = distances[i][j - 1];
-
-    let min;
-    if (west < north)
-      min = west < northWest ? west : northWest;
-    else
-      min = north < northWest ? north : northWest;
-
-    if (min == northWest) {
-      if (northWest == current) {
-        edits.push(EDIT_LEAVE);
-      } else {
-        edits.push(EDIT_UPDATE);
-        current = northWest;
-      }
-      i--;
-      j--;
-    } else if (min == west) {
-      edits.push(EDIT_DELETE);
-      i--;
-      current = west;
-    } else {
-      edits.push(EDIT_ADD);
-      j--;
-      current = north;
-    }
-  }
-
-  edits.reverse();
-  return edits;
-}
-
-/**
- * Splice Projection functions:
- *
- * A splice map is a representation of how a previous array of items
- * was transformed into a new array of items. Conceptually it is a list of
- * tuples of
- *
- *   <index, removed, addedCount>
- *
- * which are kept in ascending index order of. The tuple represents that at
- * the |index|, |removed| sequence of items were removed, and counting forward
- * from |index|, |addedCount| items were added.
- */
-
-/**
- * Lacking individual splice mutation information, the minimal set of
- * splices can be synthesized given the previous state and final state of an
- * array. The basic approach is to calculate the edit distance matrix and
- * choose the shortest path through it.
- *
- * Complexity: O(l * p)
- *   l: The length of the current array
- *   p: The length of the old array
- *
- * @param {!Array} current The current "changed" array for which to
- * calculate splices.
- * @param {number} currentStart Starting index in the `current` array for
- * which splices are calculated.
- * @param {number} currentEnd Ending index in the `current` array for
- * which splices are calculated.
- * @param {!Array} old The original "unchanged" array to compare `current`
- * against to determine splices.
- * @param {number} oldStart Starting index in the `old` array for
- * which splices are calculated.
- * @param {number} oldEnd Ending index in the `old` array for
- * which splices are calculated.
- * @return {!Array} Returns an array of splice record objects. Each of these
- * contains: `index` the location where the splice occurred; `removed`
- * the array of removed items from this location; `addedCount` the number
- * of items added at this location.
- */
-function calcSplices(current, currentStart, currentEnd,
-                      old, oldStart, oldEnd) {
-  let prefixCount = 0;
-  let suffixCount = 0;
-  let splice;
-
-  let minLength = Math.min(currentEnd - currentStart, oldEnd - oldStart);
-  if (currentStart == 0 && oldStart == 0)
-    prefixCount = sharedPrefix(current, old, minLength);
-
-  if (currentEnd == current.length && oldEnd == old.length)
-    suffixCount = sharedSuffix(current, old, minLength - prefixCount);
-
-  currentStart += prefixCount;
-  oldStart += prefixCount;
-  currentEnd -= suffixCount;
-  oldEnd -= suffixCount;
-
-  if (currentEnd - currentStart == 0 && oldEnd - oldStart == 0)
-    return [];
-
-  if (currentStart == currentEnd) {
-    splice = newSplice(currentStart, [], 0);
-    while (oldStart < oldEnd)
-      splice.removed.push(old[oldStart++]);
-
-    return [ splice ];
-  } else if (oldStart == oldEnd)
-    return [ newSplice(currentStart, [], currentEnd - currentStart) ];
-
-  let ops = spliceOperationsFromEditDistances(
-      calcEditDistances(current, currentStart, currentEnd,
-                             old, oldStart, oldEnd));
-
-  splice = undefined;
-  let splices = [];
-  let index = currentStart;
-  let oldIndex = oldStart;
-  for (let i = 0; i < ops.length; i++) {
-    switch(ops[i]) {
-      case EDIT_LEAVE:
-        if (splice) {
-          splices.push(splice);
-          splice = undefined;
-        }
-
-        index++;
-        oldIndex++;
-        break;
-      case EDIT_UPDATE:
-        if (!splice)
-          splice = newSplice(index, [], 0);
-
-        splice.addedCount++;
-        index++;
-
-        splice.removed.push(old[oldIndex]);
-        oldIndex++;
-        break;
-      case EDIT_ADD:
-        if (!splice)
-          splice = newSplice(index, [], 0);
-
-        splice.addedCount++;
-        index++;
-        break;
-      case EDIT_DELETE:
-        if (!splice)
-          splice = newSplice(index, [], 0);
-
-        splice.removed.push(old[oldIndex]);
-        oldIndex++;
-        break;
-    }
-  }
-
-  if (splice) {
-    splices.push(splice);
-  }
-  return splices;
-}
-
-function sharedPrefix(current, old, searchLength) {
-  for (let i = 0; i < searchLength; i++)
-    if (!equals(current[i], old[i]))
-      return i;
-  return searchLength;
-}
-
-function sharedSuffix(current, old, searchLength) {
-  let index1 = current.length;
-  let index2 = old.length;
-  let count = 0;
-  while (count < searchLength && equals(current[--index1], old[--index2]))
-    count++;
-
-  return count;
-}
-
-/**
- * Returns an array of splice records indicating the minimum edits required
- * to transform the `previous` array into the `current` array.
- *
- * Splice records are ordered by index and contain the following fields:
- * - `index`: index where edit started
- * - `removed`: array of removed items from this index
- * - `addedCount`: number of items added at this index
- *
- * This function is based on the Levenshtein "minimum edit distance"
- * algorithm. Note that updates are treated as removal followed by addition.
- *
- * The worst-case time complexity of this algorithm is `O(l * p)`
- *   l: The length of the current array
- *   p: The length of the previous array
- *
- * However, the worst-case complexity is reduced by an `O(n)` optimization
- * to detect any shared prefix & suffix between the two arrays and only
- * perform the more expensive minimum edit distance calculation over the
- * non-shared portions of the arrays.
- *
- * @function
- * @param {!Array} current The "changed" array for which splices will be
- * calculated.
- * @param {!Array} previous The "unchanged" original array to compare
- * `current` against to determine the splices.
- * @return {!Array} Returns an array of splice record objects. Each of these
- * contains: `index` the location where the splice occurred; `removed`
- * the array of removed items from this location; `addedCount` the number
- * of items added at this location.
- */
-function calculateSplices(current, previous) {
-  return calcSplices(current, 0, current.length, previous, 0,
-                          previous.length);
-}
-
-function equals(currentValue, previousValue) {
-  return currentValue === previousValue;
 }
 
 /**
@@ -14207,430 +14631,6 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-/**
- * Element mixin for recording dynamic associations between item paths in a
- * master `items` array and a `selected` array such that path changes to the
- * master array (at the host) element or elsewhere via data-binding) are
- * correctly propagated to items in the selected array and vice-versa.
- *
- * The `items` property accepts an array of user data, and via the
- * `select(item)` and `deselect(item)` API, updates the `selected` property
- * which may be bound to other parts of the application, and any changes to
- * sub-fields of `selected` item(s) will be kept in sync with items in the
- * `items` array.  When `multi` is false, `selected` is a property
- * representing the last selected item.  When `multi` is true, `selected`
- * is an array of multiply selected items.
- *
- * @polymer
- * @mixinFunction
- * @appliesMixin ElementMixin
- * @summary Element mixin for recording dynamic associations between item paths in a
- * master `items` array and a `selected` array
- */
-let ArraySelectorMixin = dedupingMixin(superClass => {
-
-  /**
-   * @constructor
-   * @implements {Polymer_ElementMixin}
-   * @private
-   */
-  let elementBase = ElementMixin(superClass);
-
-  /**
-   * @polymer
-   * @mixinClass
-   * @implements {Polymer_ArraySelectorMixin}
-   * @unrestricted
-   */
-  class ArraySelectorMixin extends elementBase {
-
-    static get properties() {
-      return {
-
-        /**
-         * An array containing items from which selection will be made.
-         */
-        items: {
-          type: Array,
-        },
-
-        /**
-         * When `true`, multiple items may be selected at once (in this case,
-         * `selected` is an array of currently selected items).  When `false`,
-         * only one item may be selected at a time.
-         */
-        multi: {
-          type: Boolean,
-          value: false,
-        },
-
-        /**
-         * When `multi` is true, this is an array that contains any selected.
-         * When `multi` is false, this is the currently selected item, or `null`
-         * if no item is selected.
-         * @type {?Object|?Array<!Object>}
-         */
-        selected: {type: Object, notify: true},
-
-        /**
-         * When `multi` is false, this is the currently selected item, or `null`
-         * if no item is selected.
-         * @type {?Object}
-         */
-        selectedItem: {type: Object, notify: true},
-
-        /**
-         * When `true`, calling `select` on an item that is already selected
-         * will deselect the item.
-         */
-        toggle: {type: Boolean, value: false}
-
-      };
-    }
-
-    static get observers() {
-      return ['__updateSelection(multi, items.*)'];
-    }
-
-    constructor() {
-      super();
-      this.__lastItems = null;
-      this.__lastMulti = null;
-      this.__selectedMap = null;
-    }
-
-    __updateSelection(multi, itemsInfo) {
-      let path = itemsInfo.path;
-      if (path == JSCompiler_renameProperty('items', this)) {
-        // Case 1 - items array changed, so diff against previous array and
-        // deselect any removed items and adjust selected indices
-        let newItems = itemsInfo.base || [];
-        let lastItems = this.__lastItems;
-        let lastMulti = this.__lastMulti;
-        if (multi !== lastMulti) {
-          this.clearSelection();
-        }
-        if (lastItems) {
-          let splices = calculateSplices(newItems, lastItems);
-          this.__applySplices(splices);
-        }
-        this.__lastItems = newItems;
-        this.__lastMulti = multi;
-      } else if (itemsInfo.path == `${JSCompiler_renameProperty('items', this)}.splices`) {
-        // Case 2 - got specific splice information describing the array mutation:
-        // deselect any removed items and adjust selected indices
-        this.__applySplices(itemsInfo.value.indexSplices);
-      } else {
-        // Case 3 - an array element was changed, so deselect the previous
-        // item for that index if it was previously selected
-        let part = path.slice(`${JSCompiler_renameProperty('items', this)}.`.length);
-        let idx = parseInt(part, 10);
-        if ((part.indexOf('.') < 0) && part == idx) {
-          this.__deselectChangedIdx(idx);
-        }
-      }
-    }
-
-    __applySplices(splices) {
-      let selected = this.__selectedMap;
-      // Adjust selected indices and mark removals
-      for (let i=0; i<splices.length; i++) {
-        let s = splices[i];
-        selected.forEach((idx, item) => {
-          if (idx < s.index) ; else if (idx >= s.index + s.removed.length) {
-            // adjust index
-            selected.set(item, idx + s.addedCount - s.removed.length);
-          } else {
-            // remove index
-            selected.set(item, -1);
-          }
-        });
-        for (let j=0; j<s.addedCount; j++) {
-          let idx = s.index + j;
-          if (selected.has(this.items[idx])) {
-            selected.set(this.items[idx], idx);
-          }
-        }
-      }
-      // Update linked paths
-      this.__updateLinks();
-      // Remove selected items that were removed from the items array
-      let sidx = 0;
-      selected.forEach((idx, item) => {
-        if (idx < 0) {
-          if (this.multi) {
-            this.splice(JSCompiler_renameProperty('selected', this), sidx, 1);
-          } else {
-            this.selected = this.selectedItem = null;
-          }
-          selected.delete(item);
-        } else {
-          sidx++;
-        }
-      });
-    }
-
-    __updateLinks() {
-      this.__dataLinkedPaths = {};
-      if (this.multi) {
-        let sidx = 0;
-        this.__selectedMap.forEach(idx => {
-          if (idx >= 0) {
-            this.linkPaths(
-                `${JSCompiler_renameProperty('items', this)}.${idx}`,
-                `${JSCompiler_renameProperty('selected', this)}.${sidx++}`);
-          }
-        });
-      } else {
-        this.__selectedMap.forEach(idx => {
-          this.linkPaths(
-              JSCompiler_renameProperty('selected', this),
-              `${JSCompiler_renameProperty('items', this)}.${idx}`);
-          this.linkPaths(
-              JSCompiler_renameProperty('selectedItem', this),
-              `${JSCompiler_renameProperty('items', this)}.${idx}`);
-        });
-      }
-    }
-
-    /**
-     * Clears the selection state.
-     * @override
-     * @return {void}
-     */
-    clearSelection() {
-      // Unbind previous selection
-      this.__dataLinkedPaths = {};
-      // The selected map stores 3 pieces of information:
-      // key: items array object
-      // value: items array index
-      // order: selected array index
-      this.__selectedMap = new Map();
-      // Initialize selection
-      this.selected = this.multi ? [] : null;
-      this.selectedItem = null;
-    }
-
-    /**
-     * Returns whether the item is currently selected.
-     *
-     * @override
-     * @param {*} item Item from `items` array to test
-     * @return {boolean} Whether the item is selected
-     */
-    isSelected(item) {
-      return this.__selectedMap.has(item);
-    }
-
-    /**
-     * Returns whether the item is currently selected.
-     *
-     * @override
-     * @param {number} idx Index from `items` array to test
-     * @return {boolean} Whether the item is selected
-     */
-    isIndexSelected(idx) {
-      return this.isSelected(this.items[idx]);
-    }
-
-    __deselectChangedIdx(idx) {
-      let sidx = this.__selectedIndexForItemIndex(idx);
-      if (sidx >= 0) {
-        let i = 0;
-        this.__selectedMap.forEach((idx, item) => {
-          if (sidx == i++) {
-            this.deselect(item);
-          }
-        });
-      }
-    }
-
-    __selectedIndexForItemIndex(idx) {
-      let selected = this.__dataLinkedPaths[`${JSCompiler_renameProperty('items', this)}.${idx}`];
-      if (selected) {
-        return parseInt(selected.slice(`${JSCompiler_renameProperty('selected', this)}.`.length), 10);
-      }
-    }
-
-    /**
-     * Deselects the given item if it is already selected.
-     *
-     * @override
-     * @param {*} item Item from `items` array to deselect
-     * @return {void}
-     */
-    deselect(item) {
-      let idx = this.__selectedMap.get(item);
-      if (idx >= 0) {
-        this.__selectedMap.delete(item);
-        let sidx;
-        if (this.multi) {
-          sidx = this.__selectedIndexForItemIndex(idx);
-        }
-        this.__updateLinks();
-        if (this.multi) {
-          this.splice(JSCompiler_renameProperty('selected', this), sidx, 1);
-        } else {
-          this.selected = this.selectedItem = null;
-        }
-      }
-    }
-
-    /**
-     * Deselects the given index if it is already selected.
-     *
-     * @override
-     * @param {number} idx Index from `items` array to deselect
-     * @return {void}
-     */
-    deselectIndex(idx) {
-      this.deselect(this.items[idx]);
-    }
-
-    /**
-     * Selects the given item.  When `toggle` is true, this will automatically
-     * deselect the item if already selected.
-     *
-     * @override
-     * @param {*} item Item from `items` array to select
-     * @return {void}
-     */
-    select(item) {
-      this.selectIndex(this.items.indexOf(item));
-    }
-
-    /**
-     * Selects the given index.  When `toggle` is true, this will automatically
-     * deselect the item if already selected.
-     *
-     * @override
-     * @param {number} idx Index from `items` array to select
-     * @return {void}
-     */
-    selectIndex(idx) {
-      let item = this.items[idx];
-      if (!this.isSelected(item)) {
-        if (!this.multi) {
-          this.__selectedMap.clear();
-        }
-        this.__selectedMap.set(item, idx);
-        this.__updateLinks();
-        if (this.multi) {
-          this.push(JSCompiler_renameProperty('selected', this), item);
-        } else {
-          this.selected = this.selectedItem = item;
-        }
-      } else if (this.toggle) {
-        this.deselectIndex(idx);
-      }
-    }
-
-  }
-
-  return ArraySelectorMixin;
-
-});
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {Polymer_ArraySelectorMixin}
- * @private
- */
-let baseArraySelector = ArraySelectorMixin(PolymerElement);
-
-/**
- * Element implementing the `ArraySelector` mixin, which records
- * dynamic associations between item paths in a master `items` array and a
- * `selected` array such that path changes to the master array (at the host)
- * element or elsewhere via data-binding) are correctly propagated to items
- * in the selected array and vice-versa.
- *
- * The `items` property accepts an array of user data, and via the
- * `select(item)` and `deselect(item)` API, updates the `selected` property
- * which may be bound to other parts of the application, and any changes to
- * sub-fields of `selected` item(s) will be kept in sync with items in the
- * `items` array.  When `multi` is false, `selected` is a property
- * representing the last selected item.  When `multi` is true, `selected`
- * is an array of multiply selected items.
- *
- * Example:
- *
- * ```js
- * import {PolymerElement} from '@polymer/polymer';
- * import '@polymer/polymer/polymer_bundled.min.js';
- *
- * class EmployeeList extends PolymerElement {
- *   static get _template() {
- *     return html`
- *         <div> Employee list: </div>
- *         <dom-repeat id="employeeList" items="{{employees}}">
- *           <template>
- *             <div>First name: <span>{{item.first}}</span></div>
- *               <div>Last name: <span>{{item.last}}</span></div>
- *               <button on-click="toggleSelection">Select</button>
- *           </template>
- *         </dom-repeat>
- *
- *         <array-selector id="selector"
- *                         items="{{employees}}"
- *                         selected="{{selected}}"
- *                         multi toggle></array-selector>
- *
- *         <div> Selected employees: </div>
- *         <dom-repeat items="{{selected}}">
- *           <template>
- *             <div>First name: <span>{{item.first}}</span></div>
- *             <div>Last name: <span>{{item.last}}</span></div>
- *           </template>
- *         </dom-repeat>`;
- *   }
- *   static get is() { return 'employee-list'; }
- *   static get properties() {
- *     return {
- *       employees: {
- *         value() {
- *           return [
- *             {first: 'Bob', last: 'Smith'},
- *             {first: 'Sally', last: 'Johnson'},
- *             ...
- *           ];
- *         }
- *       }
- *     };
- *   }
- *   toggleSelection(e) {
- *     const item = this.$.employeeList.itemForElement(e.target);
- *     this.$.selector.select(item);
- *   }
- * }
- * ```
- *
- * @polymer
- * @customElement
- * @extends {baseArraySelector}
- * @appliesMixin ArraySelectorMixin
- * @summary Custom element that links paths between an input `items` array and
- *   an output `selected` item or array based on calls to its selection API.
- */
-class ArraySelector extends baseArraySelector {
-  // Not needed to find template; can be removed once the analyzer
-  // can find the tag name from customElements.define call
-  static get is() { return 'array-selector'; }
-  static get template() { return null; }
-}
-customElements.define(ArraySelector.is, ArraySelector);
-
-/**
-@license
-Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/
-
 const attr = 'include';
 
 /**
@@ -14739,4 +14739,4 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 // bc
 const Base = LegacyElementMixin(HTMLElement).prototype;
 
-export { Base, Debouncer, DomIf, DomRepeat, FlattenedNodesObserver, OptionalMutableDataBehavior, Polymer, PolymerElement, TemplateInstanceBase, Templatizer, afterNextRender, animationFrame, beforeNextRender, calculateSplices, dashToCamelCase, dedupingMixin, dom, enqueueDebouncer, flush, gestures$1 as gestures, get, html, idlePeriod, matches, microTask, mixinBehaviors, templatize, timeOut, translate, useShadow };
+export { ArraySelector, Base, Debouncer, DomIf, DomRepeat, FlattenedNodesObserver, OptionalMutableDataBehavior, Polymer, PolymerElement, TemplateInstanceBase, Templatizer, afterNextRender, animationFrame, beforeNextRender, calculateSplices, dashToCamelCase, dedupingMixin, dom, enqueueDebouncer, flush, gestures$1 as gestures, get, html, idlePeriod, matches, microTask, mixinBehaviors, templatize, timeOut, translate, useShadow };
