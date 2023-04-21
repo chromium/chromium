@@ -108,6 +108,7 @@ target(_libcxx_target_type, "libc++") {
     "trunk/src/system_error.cpp",
     "trunk/src/thread.cpp",
     "trunk/src/typeinfo.cpp",
+    "trunk/src/utility.cpp",
     "trunk/src/valarray.cpp",
     "trunk/src/variant.cpp",
     "trunk/src/vector.cpp",
