@@ -300,8 +300,10 @@ bool ConsumeAnimationRangeItemInto(CSSParserTokenRange& range,
   if (start_range && start_range->IsValueList() && !end_range) {
     CSSValueList* implied_end = CSSValueList::CreateSpaceSeparated();
     const CSSValue& name = To<CSSValueList>(start_range)->First();
-    implied_end->Append(name);
-    end_range = implied_end;
+    if (name.IsIdentifierValue()) {
+      implied_end->Append(name);
+      end_range = implied_end;
+    }
   }
 
   if (!start_range) {

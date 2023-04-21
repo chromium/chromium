@@ -484,12 +484,19 @@ absl::optional<TimelineOffset> MapAnimationRange(StyleResolverState& state,
   const auto& list = To<CSSValueList>(value);
   DCHECK_GE(list.length(), 1u);
   DCHECK_LE(list.length(), 2u);
-  const auto& range_name = To<CSSIdentifierValue>(list.Item(0));
-  Length percent = (list.length() == 2u) ? StyleBuilderConverter::ConvertLength(
-                                               state, list.Item(1))
-                                         : Length::Percent(default_percent);
-  return TimelineOffset(range_name.ConvertTo<TimelineOffset::NamedRange>(),
-                        percent);
+  TimelineOffset::NamedRange range_name = TimelineOffset::NamedRange::kNone;
+  Length offset = Length::Percent(default_percent);
+  if (list.Item(0).IsIdentifierValue()) {
+    range_name = To<CSSIdentifierValue>(list.Item(0))
+                     .ConvertTo<TimelineOffset::NamedRange>();
+    if (list.length() == 2u) {
+      offset = StyleBuilderConverter::ConvertLength(state, list.Item(1));
+    }
+  } else {
+    offset = StyleBuilderConverter::ConvertLength(state, list.Item(0));
+  }
+
+  return TimelineOffset(range_name, offset);
 }
 
 }  // namespace

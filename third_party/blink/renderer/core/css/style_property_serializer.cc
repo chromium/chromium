@@ -959,19 +959,21 @@ std::pair<CSSValueID, double> GetTimelineRangePercent(
   }
   DCHECK_GE(list->length(), 1u);
   DCHECK_LE(list->length(), 2u);
-  const auto& name = To<CSSIdentifierValue>(list->Item(0));
-  double offset_percent = -1.0;
+  CSSValueID name = CSSValueID::kNormal;
+  double offset_percent = default_offset_percent;
 
-  if (list->length() == 1u) {
-    // <ident>
-    offset_percent = default_offset_percent;
+  if (list->Item(0).IsIdentifierValue()) {
+    name = To<CSSIdentifierValue>(list->Item(0)).GetValueID();
+    if (list->length() == 2u) {
+      const auto& offset = To<CSSPrimitiveValue>(list->Item(1));
+      offset_percent = offset.IsPercentage() ? offset.GetValue<double>() : -1.0;
+    }
   } else {
-    // <ident> <length-percentage>
-    const auto& offset = To<CSSPrimitiveValue>(list->Item(1));
+    const auto& offset = To<CSSPrimitiveValue>(list->Item(0));
     offset_percent = offset.IsPercentage() ? offset.GetValue<double>() : -1.0;
   }
 
-  return {name.GetValueID(), offset_percent};
+  return {name, offset_percent};
 }
 
 CSSValue* AnimationRangeShorthandValueItem(wtf_size_t index,

@@ -4354,16 +4354,17 @@ CSSValue* ConsumeAnimationRange(CSSParserTokenRange& range,
   }
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   CSSValue* range_name = ConsumeTimelineRangeName(range);
-  if (!range_name) {
-    return nullptr;
+  if (range_name) {
+    list->Append(*range_name);
   }
-  list->Append(*range_name);
   CSSPrimitiveValue* percentage = ConsumeLengthOrPercent(
       range, context, CSSPrimitiveValue::ValueRange::kAll);
   if (percentage &&
-      !(percentage->IsPercentage() &&
+      !(range_name && percentage->IsPercentage() &&
         percentage->GetValue<double>() == default_offset_percent)) {
     list->Append(*percentage);
+  } else if (!range_name) {
+    return nullptr;
   }
   return list;
 }
