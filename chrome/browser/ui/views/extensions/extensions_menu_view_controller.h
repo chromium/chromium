@@ -94,6 +94,15 @@ class ExtensionsMenuViewController
   // Updates current_page for the given `web_contents`.
   void UpdatePage(content::WebContents* web_contents);
 
+  // Updates `main_page` for the given `web_contents`.
+  void UpdateMainPage(ExtensionsMenuMainPageView* main_page,
+                      content::WebContents* web_contents);
+
+  // Updates `site_permissions_page` for the given `web_contents`.
+  void UpdateSitePermissionsPage(
+      ExtensionsMenuSitePermissionsPageView* site_permissions_page,
+      content::WebContents* web_contents);
+
   // Populates menu items in `main_page`.
   void PopulateMainPage(ExtensionsMenuMainPageView* main_page);
 
