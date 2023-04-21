@@ -267,10 +267,10 @@ void ShellWebContentsViewDelegate::ActionPerformed(int tag) {
 }
 
 NSObject<RenderWidgetHostViewMacDelegate>*
-ShellWebContentsViewDelegate::CreateRenderWidgetHostViewDelegate(
+ShellWebContentsViewDelegate::CreateRenderWidgetHostViewMacDelegate(
     content::RenderWidgetHost* render_widget_host,
     bool is_popup) {
-  return [[ShellRenderWidgetHostViewMacDelegate alloc] init];
+  return [[[ShellRenderWidgetHostViewMacDelegate alloc] init] autorelease];
 }
 
 }  // namespace content
