@@ -706,7 +706,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosPrivacyHubV1Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCryptauthAttestationSyncingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCryptohomeRecoveryEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDarkLightModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeepLinkingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeskButtonEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeskTemplateSyncEnabled();

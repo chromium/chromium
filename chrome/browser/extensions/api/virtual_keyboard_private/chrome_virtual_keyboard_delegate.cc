@@ -510,9 +510,6 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       "stylushandwriting",
       base::FeatureList::IsEnabled(ash::features::kImeStylusHandwriting)));
   features.Append(GenerateFeatureFlag(
-      "darkmode",
-      base::FeatureList::IsEnabled(chromeos::features::kDarkLightMode)));
-  features.Append(GenerateFeatureFlag(
       "newheader",
       base::FeatureList::IsEnabled(ash::features::kVirtualKeyboardNewHeader)));
   features.Append(GenerateFeatureFlag(

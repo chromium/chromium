@@ -10,7 +10,6 @@ GEN('#include "chrome/browser/ash/web_applications/personalization_app/personali
 
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "ash/public/cpp/ambient/ambient_client.h"');
-GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 const ROOT_PAGE = 'chrome://personalization/';
@@ -82,7 +81,6 @@ class PersonalizationAppBrowserTest extends testing.Test {
   get featureList() {
     return {
       enabled: [
-        'chromeos::features::kDarkLightMode',
         'ash::features::kWallpaperGooglePhotosSharedAlbums',
       ],
     };

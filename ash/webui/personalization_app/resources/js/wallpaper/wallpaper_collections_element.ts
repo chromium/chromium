@@ -22,7 +22,7 @@ import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_b
 
 import {GooglePhotosEnablementState, OnlineImageType, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
 import {dismissTimeOfDayBanner} from '../ambient/ambient_controller.js';
-import {isDarkLightModeEnabled, isGooglePhotosIntegrationEnabled} from '../load_time_booleans.js';
+import {isGooglePhotosIntegrationEnabled} from '../load_time_booleans.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getCountText, isImageDataUrl, isNonEmptyArray, isSelectionEvent} from '../utils.js';
@@ -391,10 +391,8 @@ export class WallpaperCollections extends WithPersonalizationStore {
       }
       const count = getCountText(imageCounts[collection.id] || 0);
       if (tile.type !== TileType.IMAGE_ONLINE || count !== tile.count) {
-        // Return all the previews in D/L mode to display the split view.
-        // Otherwise, only the first preview is needed.
-        const preview = isDarkLightModeEnabled() ? collection.previews :
-                                                   [collection.previews[0]];
+        // Return all the previews to display the split view.
+        const preview = collection.previews;
 
         const newTile: OnlineTile = {
           count,

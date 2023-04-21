@@ -444,9 +444,6 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
   source->AddBoolean("isGooglePhotosSharedAlbumsEnabled",
                      features::IsWallpaperGooglePhotosSharedAlbumsEnabled());
 
-  source->AddBoolean("isDarkLightModeEnabled",
-                     features::IsDarkLightModeEnabled());
-
   source->AddBoolean("isAmbientModeAllowed", IsAmbientModeAllowed());
 
   source->AddBoolean(

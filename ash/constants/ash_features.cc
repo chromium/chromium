@@ -2573,10 +2573,6 @@ bool IsCryptohomeRecoveryEnabled() {
   return base::FeatureList::IsEnabled(kCryptohomeRecovery);
 }
 
-bool IsDarkLightModeEnabled() {
-  return chromeos::features::IsDarkLightModeEnabled();
-}
-
 bool IsDeskButtonEnabled() {
   return base::FeatureList::IsEnabled(kDeskButton);
 }
@@ -3282,8 +3278,7 @@ bool IsSettingsAppNotificationSettingsEnabled() {
 }
 
 bool IsSettingsAppThemeChangeAnimationEnabled() {
-  return IsDarkLightModeEnabled() &&
-         base::FeatureList::IsEnabled(kSettingsAppThemeChangeAnimation);
+  return base::FeatureList::IsEnabled(kSettingsAppThemeChangeAnimation);
 }
 
 bool IsShelfLauncherNudgeEnabled() {

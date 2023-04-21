@@ -24,9 +24,6 @@ BASE_FEATURE(kCloudGamingDevice,
              "CloudGamingDevice",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables dark/light mode feature.
-BASE_FEATURE(kDarkLightMode, "DarkLightMode", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Demo Mode System Web App migration
 BASE_FEATURE(kDemoModeSWA, "DemoModeSWA", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -95,10 +92,6 @@ bool IsCloudGamingDeviceEnabled() {
 #else
   return base::FeatureList::IsEnabled(kCloudGamingDevice);
 #endif
-}
-
-bool IsDarkLightModeEnabled() {
-  return base::FeatureList::IsEnabled(kDarkLightMode);
 }
 
 bool IsDemoModeSWAEnabled() {

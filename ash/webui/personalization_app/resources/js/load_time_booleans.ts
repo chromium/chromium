@@ -19,10 +19,6 @@ export function isGooglePhotosSharedAlbumsEnabled() {
   return loadTimeData.getBoolean('isGooglePhotosSharedAlbumsEnabled');
 }
 
-export function isDarkLightModeEnabled() {
-  return loadTimeData.getBoolean('isDarkLightModeEnabled');
-}
-
 export function isAmbientModeAllowed() {
   return loadTimeData.getBoolean('isAmbientModeAllowed');
 }
