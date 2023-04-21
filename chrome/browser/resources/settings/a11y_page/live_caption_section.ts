@@ -227,10 +227,6 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     }
   }
 
-  private hasSome_(list: any[]): boolean {
-    return !!list.length;
-  }
-
   private onLanguagesAdded_(e: CustomEvent<string[]>) {
     this.installLanguagePacks_(e.detail);
   }
