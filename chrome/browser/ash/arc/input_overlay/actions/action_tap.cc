@@ -154,7 +154,6 @@ class ActionTap::ActionTapView : public ActionView {
 
   void ChildPreferredSizeChanged(View* child) override {
     DCHECK_EQ(1u, labels_.size());
-    UpdateTrashButtonPosition();
     if (allow_reposition_) {
       MayUpdateLabelPosition(false);
     } else {

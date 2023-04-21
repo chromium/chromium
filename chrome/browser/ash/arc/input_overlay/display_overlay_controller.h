@@ -82,7 +82,6 @@ class DisplayOverlayController : public ui::EventHandler,
   void OnActionAdded(Action* action);
   // Remove the action view when removing |action|.
   void OnActionRemoved(Action* action);
-  void OnActionTrashButtonPressed(Action* action);
 
   // For menu entry hover state:
   void SetMenuEntryHoverState(bool curr_hover_state);
@@ -143,15 +142,6 @@ class DisplayOverlayController : public ui::EventHandler,
   // Remove |EducationalView| and its references.
   void RemoveEducationalView();
   void OnEducationalViewDismissed();
-
-  // TODO(b/250900717): Below are used temporarily. It will be updated/removed
-  // when the final UX/UI is ready.
-  void AddButtonForAddActionTap();
-  void RemoveButtonForAddActionTap();
-  void OnAddActionTapButtonPressed();
-  void AddButtonForAddActionMove();
-  void RemoveButtonForAddActionMove();
-  void OnAddActionMoveButtonPressed();
 
   views::Widget* GetOverlayWidget();
   gfx::Point CalculateMenuEntryPosition();

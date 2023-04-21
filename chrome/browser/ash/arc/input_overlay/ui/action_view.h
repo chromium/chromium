@@ -111,8 +111,6 @@ class ActionView : public views::View {
  protected:
   virtual void MayUpdateLabelPosition(bool moving = true) = 0;
 
-  void UpdateTrashButtonPosition();
-
   void AddTouchPoint(ActionType action_type);
 
   // Reference to the action of this UI.
@@ -146,7 +144,6 @@ class ActionView : public views::View {
   void AddEditButton();
   void RemoveEditButton();
 
-  void AddTrashButton();
   void RemoveTrashButton();
   void OnTrashButtonPressed();
 

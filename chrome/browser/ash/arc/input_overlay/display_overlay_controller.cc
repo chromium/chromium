@@ -360,84 +360,6 @@ void DisplayOverlayController::OnEducationalViewDismissed() {
   touch_injector_->set_first_launch(false);
 }
 
-void DisplayOverlayController::AddButtonForAddActionTap() {
-  if (add_action_tap_) {
-    return;
-  }
-  auto add_action_tap = std::make_unique<ash::PillButton>(
-      base::BindRepeating(
-          &DisplayOverlayController::OnAddActionTapButtonPressed,
-          base::Unretained(this)),
-      u"Add Action Tap", ash::PillButton::Type::kDefaultWithoutIcon,
-      /*icon=*/nullptr);
-  add_action_tap->SetSize(add_action_tap->GetPreferredSize());
-
-  auto* overlay_widget = GetOverlayWidget();
-  DCHECK(overlay_widget);
-  auto* parent_view = overlay_widget->GetContentsView();
-  DCHECK(parent_view);
-  add_action_tap_ = parent_view->AddChildView(std::move(add_action_tap));
-  add_action_tap_->SetButtonTextColor(cros_styles::ResolveColor(
-      cros_styles::ColorName::kButtonLabelColorPrimary, IsDarkModeEnabled()));
-  add_action_tap_->SetBackgroundColor(cros_styles::ResolveColor(
-      cros_styles::ColorName::kButtonBackgroundColorPrimary,
-      IsDarkModeEnabled()));
-  add_action_tap_->SetPosition(
-      gfx::Point(parent_view->width() - add_action_tap_->width(), 0));
-}
-
-void DisplayOverlayController::RemoveButtonForAddActionTap() {
-  if (!add_action_tap_) {
-    return;
-  }
-  add_action_tap_->parent()->RemoveChildViewT(add_action_tap_);
-  add_action_tap_ = nullptr;
-}
-
-void DisplayOverlayController::OnAddActionTapButtonPressed() {
-  touch_injector_->AddNewAction(ActionType::TAP);
-}
-
-void DisplayOverlayController::AddButtonForAddActionMove() {
-  auto add_action_move = std::make_unique<ash::PillButton>(
-      base::BindRepeating(
-          &DisplayOverlayController::OnAddActionMoveButtonPressed,
-          base::Unretained(this)),
-      u"Add Action Move", ash::PillButton::Type::kDefaultWithoutIcon,
-      /*icon=*/nullptr);
-  add_action_move->SetSize(add_action_move->GetPreferredSize());
-
-  auto* overlay_widget = GetOverlayWidget();
-  DCHECK(overlay_widget);
-  auto* parent_view = overlay_widget->GetContentsView();
-  DCHECK(parent_view);
-  add_action_move_ = parent_view->AddChildView(std::move(add_action_move));
-  add_action_move_->SetButtonTextColor(cros_styles::ResolveColor(
-      cros_styles::ColorName::kButtonLabelColorPrimary, IsDarkModeEnabled()));
-  add_action_move_->SetBackgroundColor(cros_styles::ResolveColor(
-      cros_styles::ColorName::kButtonBackgroundColorPrimary,
-      IsDarkModeEnabled()));
-  add_action_move_->SetPosition(
-      gfx::Point(parent_view->width() - add_action_move_->width(),
-                 add_action_tap_->height()));
-}
-
-void DisplayOverlayController::RemoveButtonForAddActionMove() {
-  if (!add_action_move_) {
-    return;
-  }
-  add_action_move_->parent()->RemoveChildViewT(add_action_move_);
-  add_action_move_ = nullptr;
-}
-
-void DisplayOverlayController::OnAddActionMoveButtonPressed() {
-  touch_injector_->AddNewAction(ActionType::MOVE);
-}
-
-void DisplayOverlayController::OnActionTrashButtonPressed(Action* action) {
-  touch_injector_->RemoveAction(action);
-}
-
 views::Widget* DisplayOverlayController::GetOverlayWidget() {
   auto* shell_surface_base =
       exo::GetShellSurfaceBaseForWindow(touch_injector_->window());
@@ -518,10 +440,6 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       RemoveEditFinishView();
       RemoveEducationalView();
       RemoveNudgeView();
-      if (ash::features::IsArcInputOverlayBetaEnabled()) {
-        RemoveButtonForAddActionTap();
-        RemoveButtonForAddActionMove();
-      }
       AddInputMappingView(overlay_widget);
       AddMenuEntryView(overlay_widget);
       if (touch_injector_->show_nudge()) {
@@ -538,10 +456,6 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       RemoveEducationalView();
       RemoveNudgeView();
       AddEditFinishView(overlay_widget);
-      if (ash::features::IsArcInputOverlayBetaEnabled()) {
-        AddButtonForAddActionTap();
-        AddButtonForAddActionMove();
-      }
       SetEventTarget(overlay_widget, /*on_overlay=*/true);
       break;
     case DisplayMode::kPreMenu:

@@ -22,10 +22,6 @@ namespace arc::input_overlay {
 namespace {
 constexpr int kMenuEntryOffset = 4;
 
-// TODO(b/250900717): Update according to UX/UI spec.
-constexpr int kTrashButtonSize = 20;
-constexpr SkColor kTrashIconColor = SK_ColorRED;
-
 // For the keys that are caught by display overlay, check if they are reserved
 // for special use.
 bool IsReservedDomCode(ui::DomCode code) {
@@ -98,7 +94,6 @@ void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
     if (!IsInputBound(*action_->current_input())) {
       SetVisible(true);
     }
-    AddTrashButton();
     AddEditButton();
   }
 }
@@ -314,25 +309,6 @@ void ActionView::RemoveEditButton() {
   menu_entry_ = nullptr;
 }
 
-void ActionView::AddTrashButton() {
-  if (!beta_ || !editable_) {
-    return;
-  }
-
-  auto trash_icon = ui::ImageModel::FromVectorIcon(
-      kTrashCanIcon, kTrashIconColor, kTrashButtonSize);
-  trash_button_ =
-      AddChildView(std::make_unique<views::ImageButton>(base::BindRepeating(
-          &ActionView::OnTrashButtonPressed, base::Unretained(this))));
-  trash_button_->SetImageModel(views::Button::STATE_NORMAL, trash_icon);
-  trash_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  trash_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  // TODO(b/253337606): Update the tooltip text.
-  trash_button_->SetTooltipText(u"Delete Action");
-  trash_button_->SetSize(gfx::Size(kTrashButtonSize, kTrashButtonSize));
-  UpdateTrashButtonPosition();
-}
-
 void ActionView::RemoveTrashButton() {
   if (!editable_ || !trash_button_) {
     return;
@@ -340,14 +316,6 @@ void ActionView::RemoveTrashButton() {
 
   RemoveChildViewT(trash_button_);
   trash_button_ = nullptr;
-}
-
-void ActionView::OnTrashButtonPressed() {
-  if (!display_overlay_controller_) {
-    return;
-  }
-
-  display_overlay_controller_->OnActionTrashButtonPressed(action_);
 }
 
 void ActionView::AddTouchPoint(ActionType action_type) {
@@ -366,17 +334,6 @@ void ActionView::RemoveTouchPoint() {
 
   RemoveChildViewT(touch_point_);
   touch_point_ = nullptr;
-}
-
-void ActionView::UpdateTrashButtonPosition() {
-  if (!trash_button_) {
-    return;
-  }
-
-  DCHECK(touch_point_center_);
-  trash_button_->SetPosition(
-      gfx::Point(std::max(0, touch_point_center_->x() - kTrashButtonSize / 2),
-                 std::max(0, touch_point_center_->y() - kTrashButtonSize / 2)));
 }
 
 void ActionView::OnDragStart(const ui::LocatedEvent& event) {

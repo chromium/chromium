@@ -87,7 +87,6 @@ class ActionMove::ActionMoveMouseView : public ActionView {
       return;
     }
 
-    UpdateTrashButtonPosition();
     SetSize(labels_[0]->size());
     SetPositionFromCenterPosition(action_->GetUICenterPosition());
   }
@@ -110,7 +109,6 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     auto* action_move = static_cast<ActionMove*>(action_);
     action_move->set_move_distance(radius / 2);
     SetTouchPointCenter(gfx::Point(radius, radius));
-    UpdateTrashButtonPosition();
 
     InputElement* input_binding =
         GetInputBindingByBindingOption(action_, binding_option);
