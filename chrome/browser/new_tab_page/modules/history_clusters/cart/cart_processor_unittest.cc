@@ -71,7 +71,7 @@ TEST_F(CartProcessorTest, TestFindCartForCluster) {
   // Create a fake cluster with one visit.
   auto cluster_mojom = history_clusters::mojom::Cluster::New();
   auto visit_mojom = history_clusters::mojom::URLVisit::New();
-  visit_mojom->url_for_display = kMockMerchantPageURL;
+  visit_mojom->normalized_url = GURL(kMockMerchantPageURL);
   cluster_mojom->visits.push_back(std::move(visit_mojom));
 
   // Mock a fake cart that belongs to the same domain as the visit.
@@ -108,7 +108,7 @@ TEST_F(CartProcessorTest, TestNoCartForCluster) {
   // Create a fake cluster with one visit.
   auto cluster_mojom = history_clusters::mojom::Cluster::New();
   auto visit_mojom = history_clusters::mojom::URLVisit::New();
-  visit_mojom->url_for_display = kMockMerchantPageURL;
+  visit_mojom->normalized_url = GURL(kMockMerchantPageURL);
   cluster_mojom->visits.push_back(std::move(visit_mojom));
 
   // Mock a fake cart that belongs to a different domain as the visit.
@@ -145,7 +145,7 @@ TEST_F(CartProcessorTest, TestNoCartForFailedLoad) {
   // Create a fake cluster with one visit.
   auto cluster_mojom = history_clusters::mojom::Cluster::New();
   auto visit_mojom = history_clusters::mojom::URLVisit::New();
-  visit_mojom->url_for_display = kMockMerchantPageURL;
+  visit_mojom->normalized_url = GURL(kMockMerchantPageURL);
   cluster_mojom->visits.push_back(std::move(visit_mojom));
 
   // Mock the DB load fails.
@@ -181,7 +181,7 @@ TEST_F(CartProcessorTest, TestCartToMojom) {
   // Create a fake cluster with one visit.
   auto cluster_mojom = history_clusters::mojom::Cluster::New();
   auto visit_mojom = history_clusters::mojom::URLVisit::New();
-  visit_mojom->url_for_display = kMockMerchantPageURL;
+  visit_mojom->normalized_url = GURL(kMockMerchantPageURL);
   cluster_mojom->visits.push_back(std::move(visit_mojom));
 
   // Mock a fake cart that belongs to the same domain as the visit, and add full

@@ -90,7 +90,7 @@ void CartProcessor::OnLoadCart(
   }
   for (auto cart : carts) {
     for (auto& visit : cluster->visits) {
-      if (cart.first == eTLDPlusOne(GURL(visit->url_for_display))) {
+      if (cart.first == eTLDPlusOne(visit->normalized_url)) {
         std::move(callback).Run(CartToMojom(cart));
         return;
       }
