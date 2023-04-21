@@ -31,7 +31,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -113,7 +112,6 @@ public class TouchToFillCreditCardTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1433074")
     public void testSelectingLocalCard() throws TimeoutException {
         // Focus the field to bring up the touch to fill for credit cards.
         DOMUtils.clickNode(mWebContents, CREDIT_CARD_NUMBER_FIELD_ID);
