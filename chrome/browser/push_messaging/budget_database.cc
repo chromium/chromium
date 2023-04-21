@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
@@ -193,9 +192,6 @@ void BudgetDatabase::SpendBudgetAfterSync(const url::Origin& origin,
     return;
   }
 
-  // Get the current SES score, to generate UMA.
-  double score = GetSiteEngagementScoreForOrigin(origin);
-
   // Walk the list of budget chunks to see if the origin has enough budget.
   double total = 0;
   BudgetInfo& info = budget_map_[origin];
@@ -203,11 +199,8 @@ void BudgetDatabase::SpendBudgetAfterSync(const url::Origin& origin,
     total += chunk.amount;
 
   if (total < amount) {
-    UMA_HISTOGRAM_COUNTS_100("PushMessaging.SESForNoBudgetOrigin", score);
     std::move(callback).Run(false /* success */);
     return;
-  } else if (total < amount * 2) {
-    UMA_HISTOGRAM_COUNTS_100("PushMessaging.SESForLowBudgetOrigin", score);
   }
 
   // Walk the chunks and remove enough budget to cover the needed amount.
@@ -355,11 +348,6 @@ void BudgetDatabase::AddEngagementBudget(const url::Origin& origin) {
   base::Time expiration = clock_->Now() + base::Days(kBudgetDurationInDays);
   budget_map_[origin].chunks.emplace_back(elapsed.InHours() * hourly_budget,
                                           expiration);
-
-  // Any time we award engagement budget, which is done at most once an hour
-  // whenever any budget action is taken, record the budget.
-  double budget = GetBudget(origin);
-  UMA_HISTOGRAM_COUNTS_100("PushMessaging.BackgroundBudget", budget);
 }
 
 // Cleans up budget in the cache. Relies on the caller eventually writing the

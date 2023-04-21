@@ -9803,17 +9803,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PushMessaging.BackgroundBudget" units="units"
-    expires_after="2018-08-30">
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Whenever a Service Worker receives a push message, this records the budget
-    available to the service worker, which is an internal Chrome value for the
-    amount of background processing a service worker is allowed to do without
-    visibly alerting the user. Scale for the budget is 0 to 100.
-  </summary>
-</histogram>
-
 <histogram name="PushMessaging.CheckOriginForAbuseTime" units="ms"
     expires_after="2022-06-19">
   <owner>knollr@chromium.org</owner>
@@ -9902,24 +9891,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     When a webpage registers for push messaging, this records whether the
     request is successful, or otherwise the type of error encountered.
-  </summary>
-</histogram>
-
-<histogram name="PushMessaging.SESForLowBudgetOrigin" units="units"
-    expires_after="2018-08-30">
-  <owner>peter@chromium.org</owner>
-  <summary>
-    When a Service Worker hits low budget when servicing a push message, this
-    records what the Site Engagement Service score is at that time.
-  </summary>
-</histogram>
-
-<histogram name="PushMessaging.SESForNoBudgetOrigin" units="units"
-    expires_after="2018-08-30">
-  <owner>peter@chromium.org</owner>
-  <summary>
-    When a Service Worker hits zero budget when servicing a push message, this
-    records what the Site Engagement Service score is at that time.
   </summary>
 </histogram>
 
