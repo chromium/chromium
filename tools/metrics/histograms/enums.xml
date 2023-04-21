@@ -27566,21 +27566,6 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="2" label="Mobile-friendly distillable"/>
 </enum>
 
-<enum name="DistillableType2">
-  <int value="0" label="Non-mobile-friendly, not distillable"/>
-  <int value="1" label="Mobile-friendly, not distillable"/>
-  <int value="2" label="Non-mobile-friendly, distillable"/>
-  <int value="3" label="Mobile-friendly, distillable"/>
-</enum>
-
-<enum name="DistillRejection">
-  <int value="0" label="Not an article"/>
-  <int value="1" label="Mobile-friendly"/>
-  <int value="2" label="Domain is filtered"/>
-  <int value="3" label="Predicted to be short"/>
-  <int value="4" label="Not rejected"/>
-</enum>
-
 <enum name="DlcService.InstallResult">
   <int value="0" label="Unknown error"/>
   <int value="1" label="Success - New install"/>

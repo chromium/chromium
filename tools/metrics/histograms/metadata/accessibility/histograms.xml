@@ -2001,32 +2001,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="DomDistiller.DistillabilityRejection" enum="DistillRejection"
-    expires_after="M85">
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    The reason to reject distillability at PageDistillableAfterParsing time.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.DistillabilityScoreNMF.Negative" units="score"
-    expires_after="M77">
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Score of distillability from AdaBoost model, non-mobile-friendly only. The
-    score shown here is multiplied by 100.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.DistillabilityScoreNMF.Positive" units="score"
-    expires_after="M77">
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Score of distillability from AdaBoost model, non-mobile-friendly only. The
-    score shown here is multiplied by 100.
-  </summary>
-</histogram>
-
 <histogram name="DomDistiller.InfoBarUsage" enum="BooleanUsage"
     expires_after="2023-06-25">
   <obsolete>
@@ -2042,24 +2016,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DomDistiller.LongArticleScoreNMF.Negative" units="score"
-    expires_after="M85">
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Score of long article from AdaBoost model, distillable and
-    non-mobile-friendly only. The score shown here is multiplied by 100.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.LongArticleScoreNMF.Positive" units="score"
-    expires_after="M85">
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Score of long article from AdaBoost model, distillable and
-    non-mobile-friendly only. The score shown here is multiplied by 100.
-  </summary>
-</histogram>
-
 <histogram name="DomDistiller.MessageDismissalCondition"
     enum="ReaderModeMessageDismissalCondition" expires_after="2023-09-10">
   <owner>twellington@chromium.org</owner>
@@ -2068,26 +2024,6 @@ chromium-metrics-reviews@google.com.
     Records whether the user accepted or ignored/dismissed the Reader Mode
     message prompt in conjunction with the Reader Mode accessibility setting.
     Recorded for Android only.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.PageDistillableAfterLoading"
-    enum="DistillableType2" expires_after="M85">
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Records the &quot;Distillable Type&quot; (mobile-friendly not distillable,
-    mobile-friendly distillable, non-mobile-friendly not distillable,
-    non-mobile-friendly distillable) for each analyzed page after loading.
-  </summary>
-</histogram>
-
-<histogram name="DomDistiller.PageDistillableAfterParsing"
-    enum="DistillableType2" expires_after="M85">
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    Records the &quot;Distillable Type&quot; (mobile-friendly not distillable,
-    mobile-friendly distillable, non-mobile-friendly not distillable,
-    non-mobile-friendly distillable) for each analyzed page after parsing.
   </summary>
 </histogram>
 
