@@ -7,7 +7,6 @@
 #include "base/android/library_loader/library_loader_hooks.h"
 #include "base/functional/bind.h"
 #include "base/test/test_support_android.h"
-#include "chrome/android/chrome_jni_for_test_registration_generated.h"
 #include "chrome/app/android/chrome_jni_onload.h"
 #include "chrome/utility/chrome_content_utility_client.h"
 #include "content/public/test/network_service_test_helper.h"
@@ -29,9 +28,6 @@ bool NativeInit(base::android::LibraryProcessType) {
 // This is called by the VM when the shared library is first loaded.
 JNI_EXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   base::android::InitVM(vm);
-  if (!RegisterNatives(base::android::AttachCurrentThread())) {
-    return -1;
-  }
   base::android::SetNativeInitializationHook(NativeInit);
   return JNI_VERSION_1_4;
 }
