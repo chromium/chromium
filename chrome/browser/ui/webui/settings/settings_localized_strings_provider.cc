@@ -52,6 +52,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/locale_settings.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
@@ -66,6 +67,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/browsing_data/core/features.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -906,6 +908,17 @@ bool IsFidoAuthenticationAvailable(autofill::PersonalDataManager* personal_data,
   return ::autofill::IsCreditCardFidoAuthenticationEnabled();
 }
 
+bool CheckDeviceAuthAvailability(content::WebContents* web_contents) {
+  // If `client` is not available, then don't show toggle switch.
+  autofill::ContentAutofillClient* client =
+      autofill::ContentAutofillClient::FromWebContents(web_contents);
+  if (!client) {
+    return false;
+  }
+
+  return autofill::IsDeviceAuthAvailable(client->GetDeviceAuthenticator());
+}
+
 void AddAutofillStrings(content::WebUIDataSource* html_source,
                         Profile* profile,
                         content::WebContents* web_contents) {
@@ -972,6 +985,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
     {"enableCreditCardFIDOAuthLabel", IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_LABEL},
     {"enableCreditCardFIDOAuthSublabel",
      IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_SUBLABEL},
+    {"enableMandatoryAuthToggleLabel",
+     IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_PAYMENT_METHOD_MANDATORY_REAUTH_LABEL},
+    {"enableMandatoryAuthToggleSublabel",
+     IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_PAYMENT_METHOD_MANDATORY_REAUTH_SUBLABEL},
     {"addresses", IDS_AUTOFILL_ADDRESSES},
     {"addressesTableAriaLabel", IDS_AUTOFILL_ADDRESSES_TABLE_ARIA_LABEL},
     {"addressesTitle", IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE},
@@ -1363,6 +1380,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                           autofill::ShouldShowIbanOnSettingsPage(
                               personal_data->GetCountryCodeForExperimentGroup(),
                               profile->GetPrefs()));
+
+  html_source->AddBoolean("deviceAuthAvailable",
+                          CheckDeviceAuthAvailability(web_contents));
 
   html_source->AddBoolean(
       "fidoAuthenticationAvailableForAutofill",

@@ -13,11 +13,15 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/device_reauth/mock_device_authenticator.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using device_reauth::MockDeviceAuthenticator;
+using testing::Return;
 
 namespace autofill {
 
@@ -32,6 +36,8 @@ class AutofillExperimentsTest : public testing::Test {
     pref_service_.registry()->RegisterBooleanPref(prefs::kAutofillHasSeenIban,
                                                   false);
     log_manager_ = LogManager::Create(nullptr, base::NullCallback());
+    mock_device_authenticator_ =
+        base::MakeRefCounted<MockDeviceAuthenticator>();
   }
 
   bool IsCreditCardUploadEnabled(const AutofillSyncSigninState sync_state) {
@@ -56,6 +62,8 @@ class AutofillExperimentsTest : public testing::Test {
   syncer::TestSyncService sync_service_;
   base::HistogramTester histogram_tester;
   std::unique_ptr<LogManager> log_manager_;
+  scoped_refptr<device_reauth::MockDeviceAuthenticator>
+      mock_device_authenticator_;
 };
 
 // Testing each scenario, followed by logging the metrics for various
@@ -368,6 +376,31 @@ TEST_F(AutofillExperimentsTest, ShouldShowIbanOnSettingsPage_FeatureEnabled) {
   // kAutofillHasSeenIban in pref is set to true.
   prefs::SetAutofillHasSeenIban(&pref_service_);
   EXPECT_TRUE(ShouldShowIbanOnSettingsPage("US", &pref_service_));
+}
+
+TEST_F(AutofillExperimentsTest,
+       IsDeviceAuthAvailable_FeatureEnabledAndBiometricAvailableForMacAndWin) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillEnablePaymentsMandatoryReauth);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometrics)
+      .WillByDefault(Return(true));
+
+  EXPECT_TRUE(IsDeviceAuthAvailable(mock_device_authenticator_));
+#else
+  EXPECT_FALSE(IsDeviceAuthAvailable(mock_device_authenticator_));
+#endif
+}
+
+TEST_F(AutofillExperimentsTest,
+       IsDeviceAuthAvailable_FeatureDisabledAndBiometricAvailableForMacAndWin) {
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kAutofillEnablePaymentsMandatoryReauth);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometrics)
+      .WillByDefault(Return(true));
+#endif
+  EXPECT_FALSE(IsDeviceAuthAvailable(mock_device_authenticator_));
 }
 
 }  // namespace autofill

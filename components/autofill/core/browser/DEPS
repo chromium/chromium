@@ -40,6 +40,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*test.(cc|h)": [
+    "+components/device_reauth",
     "+content/public/test",
   ],
   "autofill_download_manager_unittest\.cc": [

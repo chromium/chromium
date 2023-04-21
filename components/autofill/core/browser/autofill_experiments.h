@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/sync_utils.h"
 
@@ -14,6 +15,10 @@ class PrefService;
 
 namespace syncer {
 class SyncService;
+}
+
+namespace device_reauth {
+class DeviceAuthenticator;
 }
 
 namespace autofill {
@@ -56,6 +61,11 @@ bool IsCreditCardFidoAuthenticationEnabled();
 //    settings page in the past.
 bool ShouldShowIbanOnSettingsPage(const std::string& user_country_code,
                                   PrefService* pref_service);
+
+// Returns true if we can use device authentication to authenticate the user.
+// We currently only support biometric authentication for the same.
+bool IsDeviceAuthAvailable(
+    scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator);
 
 }  // namespace autofill
 
