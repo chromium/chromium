@@ -2903,10 +2903,6 @@ const char kBrowserProfilePickerShown[] = "profile.picker_shown";
 const char kBrowserShowProfilePickerOnStartup[] =
     "profile.show_picker_on_startup";
 
-// Boolean which indicates if the user is allowed to sign into Chrome on the
-// next startup.
-const char kSigninAllowedOnNextStartup[] = "signin.allowed_on_next_startup";
-
 // Boolean which indicate if signin interception is enabled.
 const char kSigninInterceptionEnabled[] = "signin.interception_enabled";
 
