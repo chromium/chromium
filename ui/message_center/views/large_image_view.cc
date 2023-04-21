@@ -12,6 +12,10 @@
 #include "ui/message_center/views/notification_view_base.h"
 #include "ui/views/background.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace message_center {
 namespace {
 
@@ -19,7 +23,9 @@ namespace {
 // if rounded corners are not required.
 absl::optional<SkScalar> GetLargeImageCornerRadius() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return SkIntToScalar(kImageCornerRadius);
+  return SkIntToScalar(chromeos::features::IsJellyEnabled()
+                           ? kJellyImageCornerRadius
+                           : kImageCornerRadius);
 #else
   return absl::nullopt;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

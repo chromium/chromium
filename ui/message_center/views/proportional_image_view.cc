@@ -12,6 +12,10 @@
 #include "ui/message_center/message_center_style.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace message_center {
 
 ProportionalImageView::ProportionalImageView(const gfx::Size& view_size) {
@@ -48,8 +52,14 @@ void ProportionalImageView::OnPaint(gfx::Canvas* canvas) {
 
   if (apply_rounded_corners_) {
     SkPath path;
-    const SkScalar corner_radius =
-        SkIntToScalar(message_center::kImageCornerRadius);
+    SkScalar corner_radius = SkIntToScalar(message_center::kImageCornerRadius);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (chromeos::features::IsJellyEnabled()) {
+      corner_radius = SkIntToScalar(message_center::kJellyImageCornerRadius);
+    }
+#endif
+
     const SkScalar kRadius[8] = {corner_radius, corner_radius, corner_radius,
                                  corner_radius, corner_radius, corner_radius,
                                  corner_radius, corner_radius};

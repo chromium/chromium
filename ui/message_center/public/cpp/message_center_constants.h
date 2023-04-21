@@ -31,6 +31,7 @@ const int kSmallImagePadding = 4;
 
 // Rounded corners are applied to large and small images in ash
 constexpr int kImageCornerRadius = 8;
+constexpr int kJellyImageCornerRadius = 12;
 
 // Limits.
 const size_t kMaxVisibleMessageCenterNotifications = 100;

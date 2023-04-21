@@ -139,6 +139,9 @@ component("message_center") {
       if (is_mac) {
         frameworks = [ "Foundation.framework" ]
       }
+      if (is_chromeos) {
+        deps += [ "//chromeos/constants:constants" ]
+      }
     }
     if (is_chromeos_ash) {
       deps += [ "//ash/constants" ]
