@@ -8,6 +8,8 @@
 
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
@@ -227,7 +229,17 @@ void LayoutNGSVGText::UpdateBlockLayout(bool relayout_children) {
 
   gfx::RectF old_boundaries = ObjectBoundingBox();
 
-  UpdateNGBlockLayout();
+  if (RuntimeEnabledFeatures::LayoutNewSVGTextEntryEnabled()) {
+    const ComputedStyle& style = StyleRef();
+    NGConstraintSpaceBuilder builder(
+        style.GetWritingMode(), style.GetWritingDirection(),
+        /* is_new_fc */ true, /* adjust_inline_size_if_needed */ false);
+    builder.SetAvailableSize(LogicalSize());
+    NGBlockNode(this).Layout(builder.ToConstraintSpace());
+  } else {
+    UpdateNGBlockLayout();
+  }
+
   needs_update_bounding_box_ = true;
 
   gfx::RectF boundaries = ObjectBoundingBox();
