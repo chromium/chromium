@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
+import("//ios/web_view/features.gni")
 
 declare_args() {
   # The bundle identifier. Overriding this will affect the provisioning profile
@@ -35,6 +37,11 @@ declare_args() {
   ios_web_view_shell_entitlements_path = "//build/config/ios/entitlements.plist"
 }
 
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "IOS_WEB_VIEW_INCLUDE_CRONET=$ios_web_view_include_cronet" ]
+}
+
 ios_app_bundle("ios_web_view_shell") {
   info_plist = "Info.plist"
 
@@ -54,10 +61,19 @@ ios_app_bundle("ios_web_view_shell") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+source_set("cwv_framework") {
+  sources = [ "cwv_framework.h" ]
+
+  deps = [
+    ":buildflags",
+    "//ios/web_view:web_view+link",
+  ]
+}
+
 source_set("shell_auth_service_interface") {
   sources = [ "shell_auth_service.h" ]
 
-  deps = [ "//ios/web_view:web_view+link" ]
+  deps = [ ":cwv_framework" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -66,8 +82,8 @@ source_set("shell_auth_service_fake_impl") {
   sources = [ "shell_auth_service_fake.m" ]
 
   deps = [
+    ":cwv_framework",
     ":shell_auth_service_interface",
-    "//ios/web_view:web_view+link",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -76,7 +92,7 @@ source_set("shell_auth_service_fake_impl") {
 source_set("shell_risk_data_loader_interface") {
   sources = [ "shell_risk_data_loader.h" ]
 
-  deps = [ "//ios/web_view:web_view+link" ]
+  deps = [ ":cwv_framework" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -85,8 +101,8 @@ source_set("shell_risk_data_loader_fake_impl") {
   sources = [ "shell_risk_data_loader_fake.m" ]
 
   deps = [
+    ":cwv_framework",
     ":shell_risk_data_loader_interface",
-    "//ios/web_view:web_view+link",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -96,8 +112,8 @@ source_set("shell_trusted_vault_provider_interface") {
   sources = [ "shell_trusted_vault_provider.h" ]
 
   deps = [
+    ":cwv_framework",
     ":shell_auth_service_interface",
-    "//ios/web_view:web_view+link",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -107,8 +123,8 @@ source_set("shell_trusted_vault_provider_fake_impl") {
   sources = [ "shell_trusted_vault_provider_fake.m" ]
 
   deps = [
+    ":cwv_framework",
     ":shell_trusted_vault_provider_interface",
-    "//ios/web_view:web_view+link",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -128,12 +144,12 @@ source_set("shell") {
   ]
 
   deps = [
+    ":cwv_framework",
     ":shell_auth_service_interface",
     ":shell_risk_data_loader_interface",
     ":shell_trusted_vault_provider_interface",
     "//base",
     "//ios/third_party/webkit",
-    "//ios/web_view:web_view+link",
     ios_web_view_shell_auth_service,
     ios_web_view_shell_risk_data_loader,
     ios_web_view_shell_trusted_vault_provider,
