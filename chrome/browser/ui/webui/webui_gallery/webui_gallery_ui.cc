@@ -37,6 +37,10 @@ void CreateAndAddWebuiGalleryUIHtmlSource(Profile* profile) {
       "chromeRefresh2023Attribute",
       features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
 
+  // TODO(colehorvitz): Promote to a place where it can be easily registered
+  // by many WebUIs.
+  source->AddString("opensInNewTab", "Opens in new tab");
+
   // Add shared SidePanel resources so that those elements can be demonstrated
   // as well.
   source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
