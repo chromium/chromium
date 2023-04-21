@@ -1002,6 +1002,33 @@ void LayoutBox::UpdateFromStyle() {
 
 void LayoutBox::LayoutSubtreeRoot() {
   NOT_DESTROYED();
+  const auto* previous_result = GetSingleCachedLayoutResult();
+  DCHECK(previous_result);
+  auto space = previous_result->GetConstraintSpaceForCaching();
+  DCHECK_EQ(space.GetWritingMode(), StyleRef().GetWritingMode());
+  const NGLayoutResult* result = NGBlockNode(this).Layout(space);
+  GetDocument().GetFrame()->GetInputMethodController().DidLayoutSubtree(*this);
+
+  // Even if we are a layout root, our baseline may have shifted. In this
+  // (rare) case, mark our containing-block for layout.
+  //
+  // NOTE: We could weaken the constraints in ObjectIsRelayoutBoundary, and use
+  // this technique to detect size-changes, etc if we wanted to expand this
+  // optimization.
+  const auto& previous_fragment =
+      To<NGPhysicalBoxFragment>(previous_result->PhysicalFragment());
+  const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+  if (previous_fragment.FirstBaseline() != fragment.FirstBaseline() ||
+      previous_fragment.LastBaseline() != fragment.LastBaseline()) {
+    if (auto* containing_block = ContainingBlock()) {
+      containing_block->SetNeedsLayout(
+          layout_invalidation_reason::kChildChanged, kMarkContainerChain);
+    }
+  }
+}
+
+void LayoutBox::LayoutSubtreeRootOld() {
+  NOT_DESTROYED();
   if (!IsLayoutNGObject() && GetSingleCachedLayoutResult()) {
     // If this object is laid out by the legacy engine, while its containing
     // block is laid out by NG, it means that we normally (when laying out
