@@ -4631,7 +4631,7 @@ chromium-metrics-reviews@google.com.
     that have not also returned a decoded video frame. The metric is emitted
     once per RTCVideoDecoderStreamAdapter instance, as the max observed value
     over that instance's lifetime. Warning: this histogram was expired between
-    2023-08-14 to 2023-04-20; data may be missing.
+    2022-08-14 to 2023-04-20; data may be missing.
   </summary>
 </histogram>
 
