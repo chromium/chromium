@@ -559,7 +559,7 @@
 // Called when a user changes the syncing state.
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
-  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
       if (!_signinPromoViewMediator.signinInProgress) {
         self.shouldShowSignInPromo = NO;

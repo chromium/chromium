@@ -18,6 +18,8 @@
 #error "This file requires ARC support."
 #endif
 
+using chrome_test_util::PrimarySignInButton;
+
 // Reading List integration tests for Chrome with account storage and UI
 // enabled.
 @interface ReadingListAccountStorageTestCase : WebHttpServerChromeTestCase
@@ -36,6 +38,35 @@
 
 #pragma mark - ReadingListAccountStorageTestCase Tests
 
+// Tests that the sign-in is re-shown after the user signs-in and then signs-out
+// while the reading list screen is still shown.
+// See http://crbug.com/1432611.
+- (void)testPromoReshowAfterSignInAndSignOut {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+  // Sign-in with identity1 with the promo.
+  [ReadingListEarlGreyUI openReadingList];
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Verify that identity1 is signed-in and the promo is hidden.
+  [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity1.userEmail
+                                        consent:signin::ConsentLevel::kSignin];
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+  // Sign-out without changing the UI and verify that the promo is shown,
+  // without spinner.
+  [SigninEarlGrey signOut];
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kSigninPromoActivityIndicatorId),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+}
 // Tests to sign-in in incognito mode with the promo.
 // See http://crbug.com/1432747.
 - (void)testSignInPromoInIncognito {
