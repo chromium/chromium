@@ -478,6 +478,28 @@ public class TabImpl implements Tab {
         return mInteractableState;
     }
 
+    /**
+     * The parent tab for the current tab is set and the DelegateFactory is updated if it is not set
+     * already. This happens only if the tab has been detached and the parent has not been set yet,
+     * for example, for the spare tab before loading url.
+     * @param parent The tab that caused this tab to be opened.
+     */
+    @Override
+    public void reparentTab(Tab parent) {
+        // When parent is null, no action is taken since it is the same as the default setting (no
+        // parent).
+        if (parent != null) {
+            CriticalPersistedTabData.from(this).setParentId(parent.getId());
+
+            // Update the DelegateFactory if it is not already set, since it is associated with the
+            // parent tab.
+            if (mDelegateFactory == null) {
+                mDelegateFactory = ((TabImpl) parent).getDelegateFactory();
+                setDelegateFactory(mDelegateFactory);
+            }
+        }
+    }
+
     @Override
     public int loadUrl(LoadUrlParams params) {
         try {

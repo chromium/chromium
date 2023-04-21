@@ -224,12 +224,13 @@ public class WarmupManager {
      * Returns a spare Tab or null, depending on the availability of one.
      *
      * @param incognito whether tab is used in incognito mode or not.
+     * @param type TabLaunchType of the requested tab.
      *
      * @return a Tab, or null.
      */
-    public Tab takeSpareTab(boolean incognito) {
+    public Tab takeSpareTab(boolean incognito, @TabLaunchType int type) {
         try (TraceEvent e = TraceEvent.scoped("WarmupManager.takeSpareTab")) {
-            if (mSpareTab == null) return null;
+            if (!canUseSpareTab(type)) return null;
 
             // We should only invoke this when the spare tab feature is enabled.
             assert isSpareTabEnabled();
@@ -258,6 +259,24 @@ public class WarmupManager {
      */
     public boolean hasSpareTab() {
         return mSpareTab != null;
+    }
+
+    /**
+     * Various conditions are checked to determine whether the spare tab can be used to load a URL.
+     * In order to load a URL, the tab properties must match the tab that is being used.
+     *
+     * @param type TabLaunchType of the requested tab.
+     *
+     * @return Whether a spare tab can be used for next navigation or false otherwise.
+     */
+    public boolean canUseSpareTab(@TabLaunchType int type) {
+        // If there is no spareTab return false.
+        if (!hasSpareTab()) return false;
+
+        // Ensure that TabLaunchType matches when using spareTab for navigation.
+        if (mSpareTab.getLaunchType() != type) return false;
+
+        return true;
     }
 
     /**

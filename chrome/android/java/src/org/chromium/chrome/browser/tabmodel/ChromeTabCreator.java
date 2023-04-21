@@ -20,6 +20,7 @@ import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ServiceTabLauncher;
+import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFactory;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -326,6 +327,23 @@ public class ChromeTabCreator extends TabCreator {
                               .setInitiallyHidden(!openInForeground)
                               .build();
                 creationState = TabCreationState.FROZEN_FOR_LAZY_LOAD;
+            } else if ((tab = WarmupManager.getInstance().takeSpareTab(mIncognito, type)) != null) {
+                // Load URL using spare tab if available. This occurs only if a spare tab has been
+                // created beforehand. The creation of a spare tab is a costly operation that should
+                // not be performed without testing. Spare tab is only used for navigations in the
+                // foreground and for high-end devices.
+                TraceEvent.end("ChromeTabCreator.loadUrlWithSpareTab");
+
+                // Reparent the tab to its parent, updating the DelegateFactory and NativeWindow.
+                tab.reparentTab(parent);
+                ReparentingTask.from(tab).finish(
+                        ReparentingDelegateFactory.createReparentingTaskDelegate(
+                                mCompositorViewHolderSupplier.get(), mNativeWindow,
+                                createDefaultTabDelegateFactory()),
+                        null);
+
+                tab.loadUrl(loadUrlParams);
+                TraceEvent.end("ChromeTabCreator.loadUrlWithSpareTab");
             } else {
                 TraceEvent.begin("ChromeTabCreator.loadUrl");
                 tab = TabBuilder.createLiveTab(!openInForeground)
