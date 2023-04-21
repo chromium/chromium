@@ -24,6 +24,7 @@ import static org.chromium.chrome.browser.browserservices.intents.BrowserService
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBottomSheetStrategy.BOTTOM_SHEET_MAX_WIDTH_DP_LANDSCAPE;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_HEIGHT;
+import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_HEIGHT_LANDSCAPE;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_WIDTH;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.FULL_HEIGHT;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.NAVBAR_HEIGHT;
@@ -1043,6 +1044,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 mPCCTTestRule.mLayoutParams.topMargin);
     }
 
+    @Config(sdk = Build.VERSION_CODES.Q)
     @Test
     @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void sideShadowsWith900dpBottomSheet() {
@@ -1063,6 +1065,14 @@ public class PartialCustomTabBottomSheetStrategyTest {
         mPCCTTestRule.configLandscapeMode();
         strategy = createPcctAtHeight(800);
         handleStrategy = strategy.createHandleStrategyForTesting();
+
+        assertNotEquals("Left margin should be non-zero for the shadow", 0,
+                mPCCTTestRule.mLayoutParams.leftMargin);
+        assertNotEquals("Right margin should be non-zero for the shadow", 0,
+                mPCCTTestRule.mLayoutParams.rightMargin);
+
+        // Drag to the top
+        assertEquals(DEVICE_HEIGHT_LANDSCAPE, dragTab(handleStrategy, 1500, 1000, 0).height);
 
         assertNotEquals("Left margin should be non-zero for the shadow", 0,
                 mPCCTTestRule.mLayoutParams.leftMargin);
@@ -1110,6 +1120,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
                 "Bottom sheet width should be the screen width", 6000, getWindowAttributes().width);
     }
 
+    @Config(sdk = Build.VERSION_CODES.Q)
     @Test
     @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void largeDeviceInLandscape_900dpWidth() {
