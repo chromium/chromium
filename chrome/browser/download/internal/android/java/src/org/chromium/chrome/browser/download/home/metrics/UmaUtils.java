@@ -144,16 +144,8 @@ public class UmaUtils {
             if (item.filter == OfflineItemFilter.PAGE) {
                 RecordUserAction.record("OfflinePages.Sharing.SharePageFromDownloadHome");
             }
-
-            @Filters.FilterType
-            int filterType = Filters.fromOfflineItem(item);
-
-            RecordHistogram.recordEnumeratedHistogram("Android.DownloadManager.Share.FileTypes",
-                    filterType, Filters.FilterType.NUM_ENTRIES);
         }
 
-        RecordHistogram.recordLinearCountHistogram(
-                "Android.DownloadManager.Share.Count", items.size(), 1, 20, 20);
         ShareHelper.recordShareSource(ShareHelper.ShareSourceAndroid.ANDROID_SHARE_SHEET);
     }
 
