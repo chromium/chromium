@@ -233,7 +233,9 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
     // This config has no urn:uuid. It will later be set when being read into
     // `nested_urn_config_pairs` in `GenerateURNConfigVectorForConfigs()`.
     // For an ad component, the `fenced_frame_reporter` from its parent fenced
-    // frame is reused.
+    // frame is reused. The pointer to its parent's fenced frame reporter is
+    // copied to each ad component. This has the advantage that we do not need
+    // to traverse to its parent every time we need its parent's reporter.
     // TODO(crbug.com/1420638): Once the representation of size in fenced frame
     // config is finalized, pass the ad component size from the winning bid to
     // its fenced frame config.
@@ -243,10 +245,12 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
       nested_configs.emplace_back(
           /*mapped_url=*/SubstituteSizeIntoURL(ad_component_descriptor),
           /*content_size=*/component_content_size,
+          /*fenced_frame_reporter=*/fenced_frame_reporter,
           /*is_ad_component=*/true);
     } else {
       nested_configs.emplace_back(
           /*mapped_url=*/SubstituteSizeIntoURL(ad_component_descriptor),
+          /*fenced_frame_reporter=*/fenced_frame_reporter,
           /*is_ad_component=*/true);
     }
   }
