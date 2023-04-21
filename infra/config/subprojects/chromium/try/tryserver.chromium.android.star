@@ -69,8 +69,7 @@ try_.orchestrator_builder(
         "chromium_rts.inverted_rts": 100,
     },
     main_list_view = "try",
-    # TODO(crbug.com/1434402): Restore to the CQ when bot pools are back.
-    tryjob = try_.job(experiment_percentage = 100),
+    tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
