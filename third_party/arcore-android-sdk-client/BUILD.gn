@@ -24,3 +24,11 @@ android_aar_prebuilt("com_google_ar_core_java") {
 java_group("arcore_base_manifest_java") {
   mergeable_android_manifests = [ "AndroidManifest_basesplit.xml" ]
 }
+
+# WebLayer uses this to remove ARCore tags, since it is the embedder that
+# requires them and not the webview apk.
+java_group("arcore_remove_manifest_java") {
+  # The _0 prefix is needed to have this manifest have a higher priority than
+  # the others.
+  mergeable_android_manifests = [ "AndroidManifest_0_remove.xml" ]
+}

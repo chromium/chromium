@@ -2133,10 +2133,15 @@ def main(argv):
         GetDepConfig(p) for p in GetAllDepsConfigsInOrder(
             deps_configs_paths, filter_func=ExcludeRecursiveResourcesDeps)
     ]
+    # Manifests are listed from highest priority to lowest priority.
+    # Ensure directly manfifests come first, and then sort the rest by name.
+    # https://developer.android.com/build/manage-manifests#merge_priorities
     config['extra_android_manifests'] = list(mergeable_android_manifests)
+    manifests_from_deps = []
     for c in extra_manifest_deps:
-      config['extra_android_manifests'].extend(
-          c.get('mergeable_android_manifests', []))
+      manifests_from_deps += c.get('mergeable_android_manifests', [])
+    manifests_from_deps.sort(key=lambda p: (os.path.basename(p), p))
+    config['extra_android_manifests'] += manifests_from_deps
 
     config['assets'], config['uncompressed_assets'], locale_paks = (
         _MergeAssets(deps.All('android_assets')))
