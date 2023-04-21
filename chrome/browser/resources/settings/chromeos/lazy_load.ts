@@ -25,6 +25,15 @@ import './internet_page/internet_detail_subpage.js';
 import './internet_page/internet_known_networks_subpage.js';
 import './internet_page/internet_subpage.js';
 import './internet_page/passpoint_subpage.js';
+import './os_a11y_page/manage_a11y_page.js';
+import './os_a11y_page/text_to_speech_page.js';
+import './os_a11y_page/display_and_magnification_page.js';
+import './os_a11y_page/keyboard_and_text_input_page.js';
+import './os_a11y_page/cursor_and_touchpad_page.js';
+import './os_a11y_page/chromevox_subpage.js';
+import './os_a11y_page/select_to_speak_subpage.js';
+import './os_a11y_page/switch_access_subpage.js';
+import './os_a11y_page/tts_subpage.js';
 import './os_about_page/detailed_build_info_subpage.js';
 import './os_search_page/google_assistant_subpage.js';
 import './os_search_page/search_subpage.js';
@@ -59,21 +68,6 @@ import './guest_os/guest_os_shared_usb_devices.js';
 import './guest_os/guest_os_shared_usb_devices_add_dialog.js';
 import './guest_os/guest_os_shared_paths.js';
 import './keyboard_shortcut_banner/keyboard_shortcut_banner.js';
-import './os_a11y_page/manage_a11y_page.js';
-import './os_a11y_page/text_to_speech_page.js';
-import './os_a11y_page/display_and_magnification_page.js';
-import './os_a11y_page/keyboard_and_text_input_page.js';
-import './os_a11y_page/cursor_and_touchpad_page.js';
-import './os_a11y_page/chromevox_subpage.js';
-import './os_a11y_page/bluetooth_braille_display_manager.js';
-import './os_a11y_page/bluetooth_braille_display_ui.js';
-import './os_a11y_page/select_to_speak_subpage.js';
-import './os_a11y_page/switch_access_action_assignment_dialog.js';
-import './os_a11y_page/switch_access_action_assignment_pane.js';
-import './os_a11y_page/switch_access_setup_guide_dialog.js';
-import './os_a11y_page/switch_access_setup_guide_warning_dialog.js';
-import './os_a11y_page/switch_access_subpage.js';
-import './os_a11y_page/tts_subpage.js';
 import './os_files_page/google_drive_subpage.js';
 import './os_files_page/google_drive_confirmation_dialog.js';
 import './os_files_page/office_page.js';
@@ -102,6 +96,11 @@ import './os_files_page/smb_shares_page.js';
 import '../privacy_page/secure_dns.js';
 import '../privacy_page/secure_dns_input.js';
 
+/**
+ * With the optimize_webui() build step, the generated JS files are bundled
+ * into a single JS file. The exports below are necessary so they can be
+ * imported into browser tests.
+ */
 export {LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.js';
 export {AddSmbShareDialogElement} from 'chrome://resources/ash/common/smb_shares/add_smb_share_dialog.js';
 export {SmbBrowserProxy, SmbBrowserProxyImpl, SmbMountResult} from 'chrome://resources/ash/common/smb_shares/smb_browser_proxy.js';

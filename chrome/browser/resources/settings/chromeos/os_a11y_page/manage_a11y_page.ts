@@ -17,6 +17,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../../controls/settings_slider.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
+import './change_dictation_locale_dialog.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';

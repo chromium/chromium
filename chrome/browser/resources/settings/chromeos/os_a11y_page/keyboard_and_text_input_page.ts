@@ -8,6 +8,7 @@
  * for keyboard and text input accessibility settings.
  */
 
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/icons.html.js';
@@ -15,7 +16,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../../controls/settings_slider.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
+import './change_dictation_locale_dialog.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';

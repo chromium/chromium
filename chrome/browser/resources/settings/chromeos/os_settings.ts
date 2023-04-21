@@ -48,8 +48,6 @@ import './nearby_share_page/nearby_share_receive_dialog.js';
 import './nearby_share_page/nearby_share_subpage.js';
 import './os_files_page/google_drive_subpage.js';
 import './personalization_page/personalization_page.js';
-import './os_a11y_page/change_dictation_locale_dialog.js';
-import './os_a11y_page/os_a11y_page.js';
 import './os_apps_page/android_apps_subpage.js';
 import './os_apps_page/app_notifications_page/app_notifications_subpage.js';
 import './os_apps_page/app_management_page/app_detail_view.js';

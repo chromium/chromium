@@ -12,16 +12,6 @@ import '../../controls/settings_toggle_button.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../../settings_shared.css.js';
-import './manage_a11y_page.js';
-import './text_to_speech_page.js';
-import './display_and_magnification_page.js';
-import './keyboard_and_text_input_page.js';
-import './cursor_and_touchpad_page.js';
-import './audio_and_captions_page.js';
-import './chromevox_subpage.js';
-import './select_to_speak_subpage.js';
-import './switch_access_subpage.js';
-import './tts_subpage.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';

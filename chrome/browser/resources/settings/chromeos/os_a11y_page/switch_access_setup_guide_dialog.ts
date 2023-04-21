@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../../controls/settings_slider.js';
 import '../os_settings_icons.html.js';
+import './switch_access_action_assignment_pane.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';

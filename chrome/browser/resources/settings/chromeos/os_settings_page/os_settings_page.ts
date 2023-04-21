@@ -13,6 +13,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './settings_idle_load.js';
+import '../os_a11y_page/os_a11y_page.js';
 import '../os_about_page/eol_offer_section.js';
 import '../os_apps_page/os_apps_page.js';
 import '../os_people_page/os_people_page.js';
