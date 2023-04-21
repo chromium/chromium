@@ -302,12 +302,6 @@ class UserCloudPolicyManagerAsh
   // called later.
   std::string access_token_;
 
-  // Timestamps for collecting timing UMA stats.
-  base::Time time_init_started_;
-  base::Time time_init_completed_;
-  base::Time time_token_available_;
-  base::Time time_client_registered_;
-
   // The AccountId associated with the user whose policy is being loaded.
   const AccountId account_id_;
 

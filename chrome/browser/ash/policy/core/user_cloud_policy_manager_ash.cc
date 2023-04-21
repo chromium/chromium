@@ -67,22 +67,8 @@ namespace policy {
 namespace {
 
 // UMA histogram names.
-const char kUMADelayInitialization[] =
-    "Enterprise.UserPolicyChromeOS.DelayInitialization";
-const char kUMAInitialFetchClientError[] =
-    "Enterprise.UserPolicyChromeOS.InitialFetch.ClientError";
-const char kUMAInitialFetchDelayClientRegister[] =
-    "Enterprise.UserPolicyChromeOS.InitialFetch.DelayClientRegister";
-const char kUMAInitialFetchDelayOAuth2Token[] =
-    "Enterprise.UserPolicyChromeOS.InitialFetch.DelayOAuth2Token";
-const char kUMAInitialFetchDelayPolicyFetch[] =
-    "Enterprise.UserPolicyChromeOS.InitialFetch.DelayPolicyFetch";
-const char kUMAInitialFetchDelayTotal[] =
-    "Enterprise.UserPolicyChromeOS.InitialFetch.DelayTotal";
 const char kUMAInitialFetchOAuth2Error[] =
     "Enterprise.UserPolicyChromeOS.InitialFetch.OAuth2Error";
-const char kUMAInitialFetchOAuth2NetworkError[] =
-    "Enterprise.UserPolicyChromeOS.InitialFetch.OAuth2NetworkError";
 const char kUMAReregistrationResult[] =
     "Enterprise.UserPolicyChromeOS.ReregistrationResult";
 
@@ -169,7 +155,6 @@ UserCloudPolicyManagerAsh::UserCloudPolicyManagerAsh(
       fatal_error_callback_(std::move(fatal_error_callback)) {
   DCHECK(profile_);
   DCHECK(local_state_);
-  time_init_started_ = base::Time::Now();
 
   // Some tests don't want to complete policy initialization until they have
   // manually injected policy even though the profile itself is synchronously
@@ -370,10 +355,6 @@ bool UserCloudPolicyManagerAsh::IsInitializationComplete(
 void UserCloudPolicyManagerAsh::OnCloudPolicyServiceInitializationCompleted() {
   service()->RemoveObserver(this);
 
-  time_init_completed_ = base::Time::Now();
-  UMA_HISTOGRAM_MEDIUM_TIMES(kUMADelayInitialization,
-                             time_init_completed_ - time_init_started_);
-
   // If the CloudPolicyClient isn't registered at this stage then it needs an
   // OAuth token for the initial registration (there's no cached policy).
   //
@@ -440,13 +421,6 @@ void UserCloudPolicyManagerAsh::OnRegistrationStateChanged(
   }
 
   if (waiting_for_policy_fetch_) {
-    time_client_registered_ = base::Time::Now();
-    if (!time_token_available_.is_null()) {
-      UMA_HISTOGRAM_MEDIUM_TIMES(
-          kUMAInitialFetchDelayClientRegister,
-          time_client_registered_ - time_token_available_);
-    }
-
     // If we're blocked on the policy fetch, now is a good time to issue it.
     if (client()->is_registered()) {
       service()->RefreshPolicy(base::BindOnce(
@@ -463,10 +437,6 @@ void UserCloudPolicyManagerAsh::OnRegistrationStateChanged(
 void UserCloudPolicyManagerAsh::OnClientError(
     CloudPolicyClient* cloud_policy_client) {
   DCHECK_EQ(client(), cloud_policy_client);
-  if (waiting_for_policy_fetch_) {
-    base::UmaHistogramSparse(kUMAInitialFetchClientError,
-                             cloud_policy_client->last_dm_status());
-  }
   switch (client()->last_dm_status()) {
     case DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED:
       // If management is not supported for this user, then a registration
@@ -634,11 +604,6 @@ void UserCloudPolicyManagerAsh::OnOAuth2PolicyTokenFetched(
     const std::string& policy_token,
     const GoogleServiceAuthError& error) {
   DCHECK(!client()->is_registered());
-  time_token_available_ = base::Time::Now();
-  if (waiting_for_policy_fetch_) {
-    UMA_HISTOGRAM_MEDIUM_TIMES(kUMAInitialFetchDelayOAuth2Token,
-                               time_token_available_ - time_init_completed_);
-  }
 
   if (error.state() == GoogleServiceAuthError::NONE) {
     if (RequiresOAuthTokenForChildUser())
@@ -659,12 +624,6 @@ void UserCloudPolicyManagerAsh::OnOAuth2PolicyTokenFetched(
   } else {
     UMA_HISTOGRAM_ENUMERATION(kUMAInitialFetchOAuth2Error, error.state(),
                               GoogleServiceAuthError::NUM_STATES);
-    if (error.state() == GoogleServiceAuthError::CONNECTION_FAILED) {
-      // Network errors are negative in the code, but the histogram data type
-      // expects the corresponding positive value.
-      base::UmaHistogramSparse(kUMAInitialFetchOAuth2NetworkError,
-                               -error.network_error());
-    }
     // Failed to get a token, stop waiting if policy is not required for this
     // user.
     CancelWaitForPolicyFetch(
@@ -675,11 +634,6 @@ void UserCloudPolicyManagerAsh::OnOAuth2PolicyTokenFetched(
 }
 
 void UserCloudPolicyManagerAsh::OnInitialPolicyFetchComplete(bool success) {
-  const base::Time now = base::Time::Now();
-  UMA_HISTOGRAM_MEDIUM_TIMES(kUMAInitialFetchDelayPolicyFetch,
-                             now - time_client_registered_);
-  UMA_HISTOGRAM_MEDIUM_TIMES(kUMAInitialFetchDelayTotal,
-                             now - time_init_started_);
   CancelWaitForPolicyFetch(
       success,
       "policy fetch complete"
