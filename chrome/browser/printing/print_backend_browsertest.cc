@@ -19,6 +19,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -40,6 +41,7 @@
 #include "printing/print_settings_conversion.h"
 #include "printing/printing_context.h"
 #include "printing/printing_context_factory_for_test.h"
+#include "printing/printing_features.h"
 #include "printing/test_printing_context.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -114,6 +116,11 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
   ~PrintBackendBrowserTest() override = default;
 
   void SetUp() override {
+    // Tests of the Print Backend service always imply out-of-process.
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kEnableOopPrintDrivers,
+        {{features::kEnableOopPrintDriversJobPrint.name, "true"}});
+
     // Do local setup before calling base class, since the base class enters
     // the main run loop.
     PrintBackend::SetPrintBackendForTesting(test_print_backend_.get());
@@ -402,6 +409,7 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
         remote_, test_print_backend_, /*sandboxed=*/true);
   }
 
+  base::test::ScopedFeatureList feature_list_;
   bool received_message_ = false;
   base::OnceClosure quit_callback_;
 
