@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ui/partial_translate/partial_translate_mediator.h"
 
+#import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -226,12 +227,20 @@ class PartialTranslateMediatorTest : public PlatformTest {
 
 // Tests the behavior if partial translate is not supported.
 TEST_F(PartialTranslateMediatorTest, NotSupported) {
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
+    // Partial translate not supported before iOS16.
+    return;
+  }
   EXPECT_FALSE([mediator_ shouldInstallPartialTranslate]);
   EXPECT_FALSE([mediator_ canHandlePartialTranslateSelection]);
 }
 
 // Tests the behavior if partial translate is disabled by policy.
 TEST_F(PartialTranslateMediatorTest, EnterpriseDisabled) {
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
+    // Partial translate not supported before iOS16.
+    return;
+  }
   LoadPageAndSelectSize(10);
   auto factory = SetupTranslateControllerFactory(true);
 
@@ -244,6 +253,10 @@ TEST_F(PartialTranslateMediatorTest, EnterpriseDisabled) {
 
 // Tests the behavior in incognito.
 TEST_F(PartialTranslateMediatorTest, IncognitoSupportedSuccess) {
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
+    // Partial translate not supported before iOS16.
+    return;
+  }
   PartialTranslateMediator* mediator = [[PartialTranslateMediator alloc]
         initWithWebStateList:web_state_list_.AsWeakPtr()
       withBaseViewController:base_view_controller_
@@ -267,6 +280,10 @@ TEST_F(PartialTranslateMediatorTest, IncognitoSupportedSuccess) {
 
 // Tests the behavior in incognito if not supported.
 TEST_F(PartialTranslateMediatorTest, IncognitoNotSupported) {
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
+    // Partial translate not supported before iOS16.
+    return;
+  }
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       kIOSEditMenuPartialTranslate,
@@ -282,6 +299,10 @@ TEST_F(PartialTranslateMediatorTest, IncognitoNotSupported) {
 
 // Tests the behavior if partial translate is supported.
 TEST_F(PartialTranslateMediatorTest, SupportedSuccess) {
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
+    // Partial translate not supported before iOS16.
+    return;
+  }
   base::HistogramTester histogram_tester;
   LoadPageAndSelectSize(10);
   auto factory = SetupTranslateControllerFactory(true);
@@ -299,6 +320,10 @@ TEST_F(PartialTranslateMediatorTest, SupportedSuccess) {
 
 // Tests the behavior if selection is too long.
 TEST_F(PartialTranslateMediatorTest, StringTooLongCancel) {
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
+    // Partial translate not supported before iOS16.
+    return;
+  }
   base::HistogramTester histogram_tester;
   LoadPageAndSelectSize(1001);
   auto factory = SetupTranslateControllerFactory(true);
@@ -317,6 +342,10 @@ TEST_F(PartialTranslateMediatorTest, StringTooLongCancel) {
 
 // Tests the behavior if selection is too long.
 TEST_F(PartialTranslateMediatorTest, StringTooLongFullTranslate) {
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
+    // Partial translate not supported before iOS16.
+    return;
+  }
   base::HistogramTester histogram_tester;
   LoadPageAndSelectSize(1001);
   auto factory = SetupTranslateControllerFactory(true);
@@ -337,6 +366,10 @@ TEST_F(PartialTranslateMediatorTest, StringTooLongFullTranslate) {
 
 // Tests the behavior if selection is empty.
 TEST_F(PartialTranslateMediatorTest, StringEmptyCancel) {
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
+    // Partial translate not supported before iOS16.
+    return;
+  }
   base::HistogramTester histogram_tester;
   LoadPageAndSelectSize(0);
   auto factory = SetupTranslateControllerFactory(true);
@@ -355,6 +388,10 @@ TEST_F(PartialTranslateMediatorTest, StringEmptyCancel) {
 
 // Tests the behavior if selection is only spaces.
 TEST_F(PartialTranslateMediatorTest, StringSpacesCancel) {
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
+    // Partial translate not supported before iOS16.
+    return;
+  }
   base::HistogramTester histogram_tester;
   LoadPageAndSelectSize(5, @" ");
   auto factory = SetupTranslateControllerFactory(true);
@@ -373,6 +410,10 @@ TEST_F(PartialTranslateMediatorTest, StringSpacesCancel) {
 
 // Tests the behavior if selection is empty.
 TEST_F(PartialTranslateMediatorTest, StringEmptyFullTranslate) {
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
+    // Partial translate not supported before iOS16.
+    return;
+  }
   base::HistogramTester histogram_tester;
   LoadPageAndSelectSize(0);
   auto factory = SetupTranslateControllerFactory(true);
@@ -393,6 +434,10 @@ TEST_F(PartialTranslateMediatorTest, StringEmptyFullTranslate) {
 
 // Tests the behavior if an error occurs.
 TEST_F(PartialTranslateMediatorTest, InternalErrorCancel) {
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
+    // Partial translate not supported before iOS16.
+    return;
+  }
   base::HistogramTester histogram_tester;
   LoadPageAndSelectSize(10);
   auto factory = SetupTranslateControllerFactory(false);
@@ -411,6 +456,10 @@ TEST_F(PartialTranslateMediatorTest, InternalErrorCancel) {
 
 // Tests the behavior if an error occurs.
 TEST_F(PartialTranslateMediatorTest, InternalErrorFullTranslate) {
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
+    // Partial translate not supported before iOS16.
+    return;
+  }
   base::HistogramTester histogram_tester;
   LoadPageAndSelectSize(10);
   auto factory = SetupTranslateControllerFactory(false);
