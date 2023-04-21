@@ -159,7 +159,7 @@ void TabletProductivityUserModel::ExecuteModelWithInput(
   int device_tier_score;
   float device_ram_in_gb = inputs[0] / 1024;
   float device_os_version = inputs[1];
-  int device_ppi = inputs[2];
+  float device_ppi = inputs[2];
   if ((device_ram_in_gb >= 8 && device_os_version >= 10 && device_ppi > 370) ||
       (device_ram_in_gb >= 6 && device_os_version >= 11 && device_ppi > 370)) {
     device_tier_score = 3;  // High-Tier Device

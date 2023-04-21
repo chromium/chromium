@@ -291,7 +291,7 @@ bool CustomInputProcessor::AddDeviceRAMInMB(
   if (custom_input.tensor_length() != 1) {
     return false;
   }
-  int device_ram_in_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
+  float device_ram_in_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
   out_tensor.emplace_back(device_ram_in_mb);
   return true;
 }
@@ -303,7 +303,7 @@ bool CustomInputProcessor::AddDeviceOSVersionNumber(
     return false;
   }
   std::string os_version = base::SysInfo::OperatingSystemVersion();
-  int device_os_version = processing::ProcessOsVersionString(os_version);
+  float device_os_version = processing::ProcessOsVersionString(os_version);
   out_tensor.emplace_back(device_os_version);
   return true;
 }
@@ -315,7 +315,7 @@ bool CustomInputProcessor::AddDevicePPI(
     return false;
   }
 #if BUILDFLAG(IS_ANDROID)
-  int device_ppi = CustomDeviceUtils::GetDevicePPI();
+  float device_ppi = CustomDeviceUtils::GetDevicePPI();
   out_tensor.emplace_back(device_ppi);
   return true;
 #else

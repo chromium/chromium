@@ -13,14 +13,12 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "components/segmentation_platform/embedder/default_model/cross_device_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
-#include "components/segmentation_platform/embedder/default_model/device_tier_segment.h"
 #include "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/frequent_feature_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
 #include "components/segmentation_platform/embedder/default_model/resume_heavy_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/search_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/shopping_user_model.h"
-#include "components/segmentation_platform/embedder/default_model/tablet_productivity_user_model.h"
 #include "components/segmentation_platform/internal/config_parser.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
@@ -38,9 +36,11 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/segmentation_platform/embedder/default_model/contextual_page_actions_model.h"
+#include "components/segmentation_platform/embedder/default_model/device_tier_segment.h"
 #include "components/segmentation_platform/embedder/default_model/intentional_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/power_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/query_tiles_model.h"
+#include "components/segmentation_platform/embedder/default_model/tablet_productivity_user_model.h"
 #endif
 
 namespace segmentation_platform {
