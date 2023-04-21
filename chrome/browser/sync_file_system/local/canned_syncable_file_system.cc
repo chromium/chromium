@@ -13,12 +13,12 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/uuid.h"
 #include "chrome/browser/sync_file_system/file_change.h"
 #include "chrome/browser/sync_file_system/local/local_file_change_tracker.h"
 #include "chrome/browser/sync_file_system/local/local_file_sync_context.h"
@@ -172,9 +172,10 @@ class WriteHelper {
               const std::string& blob_data)
       : bytes_written_(0),
         blob_storage_context_(std::move(blob_storage_context)),
-        blob_data_(new ScopedTextBlob(blob_storage_context_.get(),
-                                      base::GenerateGUID(),
-                                      blob_data)) {}
+        blob_data_(new ScopedTextBlob(
+            blob_storage_context_.get(),
+            base::Uuid::GenerateRandomV4().AsLowercaseString(),
+            blob_data)) {}
 
   WriteHelper(const WriteHelper&) = delete;
   WriteHelper& operator=(const WriteHelper&) = delete;
