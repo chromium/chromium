@@ -124,9 +124,11 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
       const std::vector<device_signals::FileSystemItem>& items);
 
   // Determines if the authenticity of the agent specified by the given config
-  // has been verified.  This method virtual so that tests can override the
-  // dependency on SystemsignalsServiceHost.
+  // has been or is being verified.  This method virtual so that tests can
+  // override the dependency on SystemsignalsServiceHost.
   virtual bool IsAgentVerified(
+      const content_analysis::sdk::Client::Config& config);
+  virtual bool IsAgentBeingVerified(
       const content_analysis::sdk::Client::Config& config);
 
  private:
@@ -194,7 +196,8 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   // active and pending requests.  No more attempts will be made to reconnect
   // to the agent and that all subsequent deep scan requests should fail
   // automatically.
-  void RetryActiveRequestsSoonOrFailAllRequests();
+  void RetryActiveRequestsSoonOrFailAllRequests(
+      const content_analysis::sdk::Client::Config& config);
 
   // Attempts to reconnect to agent if a connection is not already in progress.
   void StartConnectionRetry();
@@ -203,6 +206,9 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   // requests to the agent.  This method is called by the timer set in
   // RetryRequest().
   void OnConnectionRetry();
+
+  // This method returns true when a connection retry timer is in progress.
+  bool ConnectionRetryInProgress();
 
   void RecordRequestMetrics(
       const RequestInfo& info,

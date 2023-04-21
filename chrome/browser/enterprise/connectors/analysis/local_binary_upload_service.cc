@@ -117,6 +117,7 @@ int SendCancelToSDK(
 absl::optional<content_analysis::sdk::ContentAnalysisResponse> SendRequestToSDK(
     scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
     content_analysis::sdk::ContentAnalysisRequest sdk_request) {
+  DVLOG(1) << __func__ << ": token=" << sdk_request.request_token();
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -249,10 +250,18 @@ void LocalBinaryUploadService::MaybeUploadForDeepScanning(
   auto info = RequestInfo(std::move(request),
                           base::BindOnce(&LocalBinaryUploadService::OnTimeout,
                                          factory_.GetWeakPtr(), key));
-  DVLOG(1) << __func__ << ": key=" << key
-           << " active-size=" << active_requests_.size();
   pending_requests_.push_back(std::move(info));
-  if (active_requests_.size() < kMaxActiveCount) {
+
+  bool connection_retry_in_progress = ConnectionRetryInProgress();
+
+  DVLOG(1) << __func__ << ": key=" << key
+           << " active-size=" << active_requests_.size()
+           << " retry-in-prog=" << connection_retry_in_progress;
+
+  // If the active list is not full and the service is not in the process
+  // of reconnecting to the agent, process it now.
+  if (active_requests_.size() < kMaxActiveCount &&
+      !connection_retry_in_progress) {
     ProcessNextPendingRequest();
   }
 }
@@ -320,7 +329,7 @@ void LocalBinaryUploadService::StartAgentVerification(
   }
 
   // If the agent is already in the process of being verified, just wait.
-  if (IsAgentVerified(config)) {
+  if (IsAgentBeingVerified(config)) {
     return;
   }
 
@@ -388,11 +397,9 @@ void LocalBinaryUploadService::OnFileSystemSignals(
                            : std::string("<Agent path unknown>");
     SYSLOG(ERROR) << "Cannot verify content analysis agent: " << path;
 
-    ResetClient(config);
-
     // Force all active requests to fail.
     retry_count_ = kMaxRetryCount;
-    RetryActiveRequestsSoonOrFailAllRequests();
+    RetryActiveRequestsSoonOrFailAllRequests(config);
   }
 }
 
@@ -403,9 +410,16 @@ bool LocalBinaryUploadService::IsAgentVerified(
   return it != is_agent_verified_.end() && it->second;
 }
 
+bool LocalBinaryUploadService::IsAgentBeingVerified(
+    const content_analysis::sdk::Client::Config& config) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return is_agent_verified_.find(config) != is_agent_verified_.end();
+}
+
 void LocalBinaryUploadService::ResetClient(
     const content_analysis::sdk::Client::Config& config) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DVLOG(1) << __func__;
 
   ContentAnalysisSdkManager::Get()->ResetClient(config);
   is_agent_verified_.erase(config);
@@ -493,16 +507,12 @@ void LocalBinaryUploadService::HandleResponse(
     absl::optional<content_analysis::sdk::ContentAnalysisResponse>
         sdk_response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DVLOG(1) << __func__;
 
   if (!sdk_response.has_value()) {
-    DVLOG(1) << __func__ << ": reset client";
-    // An error occurred trying to send to agent.  Reset the client so that the
-    // next request attempts to reconnect to the agent.
-    ResetClient(wrapped->client()->GetConfig());
-
     // Put the request into the pending queue.  Queue up a call to retry
     // connecting to the agent in order to start processing requests again.
-    RetryActiveRequestsSoonOrFailAllRequests();
+    RetryActiveRequestsSoonOrFailAllRequests(wrapped->client()->GetConfig());
     return;
   }
 
@@ -520,6 +530,9 @@ void LocalBinaryUploadService::HandleResponse(
     auto response = ConvertSDKResponseToChromeResponse(sdk_response.value());
     FinishRequest(key, Result::SUCCESS, std::move(response));
     ProcessNextPendingRequest();
+  } else {
+    DVLOG(1) << __func__ << ": key not found token="
+             << sdk_response.value().request_token();
   }
 }
 
@@ -603,7 +616,7 @@ bool LocalBinaryUploadService::ProcessRequest(RequestKey key) {
 
   auto wrapped = ContentAnalysisSdkManager::Get()->GetClient(config);
   if (!wrapped || !wrapped->client()) {
-    RetryActiveRequestsSoonOrFailAllRequests();
+    RetryActiveRequestsSoonOrFailAllRequests(config);
     return false;
   }
 
@@ -670,9 +683,19 @@ void LocalBinaryUploadService::OnTimeout(RequestKey key) {
   ProcessNextPendingRequest();
 }
 
-void LocalBinaryUploadService::RetryActiveRequestsSoonOrFailAllRequests() {
+void LocalBinaryUploadService::RetryActiveRequestsSoonOrFailAllRequests(
+    const content_analysis::sdk::Client::Config& config) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DVLOG(1) << __func__ << ": current-retry-count=" << retry_count_;
+
+  if (ConnectionRetryInProgress()) {
+    DVLOG(1) << __func__ << ": retry already in progress, ignore";
+    return;
+  }
+
+  // An error occurred talking to the agent.  Reset the client so that the
+  // next request attempts to reconnect to the agent.
+  ResetClient(config);
 
   // True if requests should be marked as failed.  Otherwise active requests
   // should be moved to the pending list.
@@ -703,7 +726,7 @@ void LocalBinaryUploadService::RetryActiveRequestsSoonOrFailAllRequests() {
 
 void LocalBinaryUploadService::StartConnectionRetry() {
   DVLOG(1) << __func__;
-  if (!connection_retry_timer_.IsRunning()) {
+  if (!ConnectionRetryInProgress()) {
     ++retry_count_;
     connection_retry_timer_.Start(
         FROM_HERE, retry_count_ * base::Milliseconds(100),
@@ -726,6 +749,10 @@ void LocalBinaryUploadService::OnConnectionRetry() {
   for (size_t i = 0; i < num_requests_to_process; ++i) {
     ProcessNextPendingRequest();
   }
+}
+
+bool LocalBinaryUploadService::ConnectionRetryInProgress() {
+  return connection_retry_timer_.IsRunning();
 }
 
 void LocalBinaryUploadService::RecordRequestMetrics(
