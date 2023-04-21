@@ -7,12 +7,11 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash, "Nearby Share is CrOS only")
 
-preprocess_src_manifest = "preprocessed_src_manifest.json"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 preprocess_folder = "preprocessed"
 
 grit("resources") {
@@ -29,25 +28,6 @@ grit("resources") {
     "nearby_share_dialog_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome"
-}
-
-generate_grd("build_grd") {
-  grd_prefix = "nearby_share_dialog"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  deps = [
-    ":preprocess_gen",
-    ":preprocess_src",
-    "shared:build_json_grdp",
-    "shared:build_v3_grdp",
-  ]
-  grdp_files = [
-    "$target_gen_dir/shared/nearby_share_json_resources.grdp",
-    "$target_gen_dir/shared/nearby_share_resources_v3.grdp",
-  ]
-  manifest_files = [
-    "$target_gen_dir/$preprocess_src_manifest",
-    "$target_gen_dir/$preprocess_gen_manifest",
-  ]
 }
 
 web_component_files = [
@@ -77,17 +57,46 @@ html_to_wrapper("html_wrapper_files") {
 
 preprocess_if_expr("preprocess_src") {
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_src_manifest"
-  in_files = web_component_files + non_web_component_files +
-             [ "nearby_share_dialog.html" ]
+  in_files = web_component_files + non_web_component_files
 }
 
 preprocess_if_expr("preprocess_gen") {
   deps = [ ":html_wrapper_files" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = html_wrapper_files
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  in_files = web_component_files + non_web_component_files + html_wrapper_files
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_elements:build_ts",
+  ]
+  extra_deps = [
+    ":preprocess_gen",
+    ":preprocess_src",
+  ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "nearby_share_dialog"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  input_files = [ "nearby_share_dialog.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [
+    ":build_ts",
+    "shared:build_json_grdp",
+    "shared:build_v3_grdp",
+  ]
+  grdp_files = [
+    "$target_gen_dir/shared/nearby_share_json_resources.grdp",
+    "$target_gen_dir/shared/nearby_share_resources_v3.grdp",
+  ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }
 
 js_type_check("closure_compile") {
