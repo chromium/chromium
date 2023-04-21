@@ -9,6 +9,9 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/dcheck_is_on.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -800,7 +803,18 @@ absl::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
   // Private Network Access warning: ignore net and CORS errors.
   if (net_error == net::OK || sending_pna_only_warning_preflight_) {
     CHECK(ShouldIgnorePrivateNetworkAccessErrors());
-    CHECK_EQ(*reason, PreflightRequiredReason::kPrivateNetworkAccess);
+
+    // TODO(https://crbug.com/1432684): Upgrade to a CHECK once the reason for
+    // crashes in the wild is understood and fixed, or remove/replace.
+    SCOPED_CRASH_KEY_NUMBER("network", "preflight_reason",
+                            static_cast<int>(*reason));
+#if DCHECK_IS_ON()
+    DCHECK_EQ(*reason, PreflightRequiredReason::kPrivateNetworkAccess);
+#else
+    if (*reason != PreflightRequiredReason::kPrivateNetworkAccess) {
+      base::debug::DumpWithoutCrashing();
+    }
+#endif
 
     // Record the existence of the warning so that we can report it to
     // `forwarding_client_` in the next `URLResponseHead` we construct.
