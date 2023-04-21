@@ -31,6 +31,8 @@ void UserManager::Observer::OnUserProfileImageUpdated(
 
 void UserManager::Observer::OnUsersSignInConstraintsChanged() {}
 
+void UserManager::Observer::OnUserAffiliationUpdated(const User& user) {}
+
 void UserManager::Observer::OnUserRemoved(const AccountId& account_id,
                                           UserRemovalReason reason) {}
 

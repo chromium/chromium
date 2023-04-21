@@ -874,6 +874,13 @@ void UserManagerBase::NotifyUsersSignInConstraintsChanged() {
     observer.OnUsersSignInConstraintsChanged();
 }
 
+void UserManagerBase::NotifyUserAffiliationUpdated(const User& user) {
+  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  for (auto& observer : observer_list_) {
+    observer.OnUserAffiliationUpdated(user);
+  }
+}
+
 void UserManagerBase::NotifyUserToBeRemoved(const AccountId& account_id) {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
   for (auto& observer : observer_list_)
@@ -1196,7 +1203,6 @@ User* UserManagerBase::RemoveRegularOrSupervisedUserFromList(
     }
   }
   if (notify) {
-    OnUserRemoved(account_id);
     NotifyLocalStateChanged();
   }
   return user;

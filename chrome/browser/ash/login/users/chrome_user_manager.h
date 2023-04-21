@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
+#include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/users/user_manager_interface.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
@@ -75,6 +76,10 @@ class ChromeUserManager : public user_manager::UserManagerBase,
   // TODO(b/267685577): Move this out to DeviceCloudPolicyManagerAsh.
   friend policy::ReportingUserTrackerTest;
   policy::ReportingUserTracker reporting_user_tracker_;
+
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      reporting_user_tracker_observation_{&reporting_user_tracker_};
 
  private:
   LoginState::LoggedInUserType GetLoggedInUserType(

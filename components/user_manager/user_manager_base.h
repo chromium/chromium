@@ -157,6 +157,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
       const User& user,
       const gfx::ImageSkia& profile_image) override;
   void NotifyUsersSignInConstraintsChanged() override;
+  void NotifyUserAffiliationUpdated(const User& user) override;
   void NotifyUserToBeRemoved(const AccountId& account_id) override;
   void NotifyUserRemoved(const AccountId& account_id,
                          UserRemovalReason reason) override;
@@ -276,10 +277,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // Indicates that a regular user just logged in as ephemeral.
   virtual void RegularUserLoggedInAsEphemeral(const AccountId& account_id,
                                               const UserType user_type);
-
-  // Should be called when regular user was removed.
-  // DEPRECATED: TODO(b/267685577): replace this by Observer::OnUserRemoved.
-  virtual void OnUserRemoved(const AccountId& account_id) = 0;
 
   // Update the global LoginState.
   virtual void UpdateLoginState(const User* active_user,

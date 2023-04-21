@@ -44,7 +44,7 @@ bool ReportingUserTracker::ShouldReportUser(
   return base::Contains(reporting_users, user_email_value);
 }
 
-void ReportingUserTracker::OnSetUserAffiliation(
+void ReportingUserTracker::OnUserAffiliationUpdated(
     const user_manager::User& user) {
   if (!local_state_) {
     // On unittests, |LocalState| may not be initialized.
@@ -65,7 +65,9 @@ void ReportingUserTracker::OnSetUserAffiliation(
   }
 }
 
-void ReportingUserTracker::OnUserRemoved(const AccountId& account_id) {
+void ReportingUserTracker::OnUserRemoved(
+    const AccountId& account_id,
+    user_manager::UserRemovalReason reason) {
   if (!local_state_) {
     // On unittests, |LocalState| may not be initialized.
     // TODO(b/267685577): Consider getting rid of this.

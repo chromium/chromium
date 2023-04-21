@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 
 class AccountId;
 class PrefService;
@@ -18,12 +19,12 @@ namespace policy {
 
 // Keeps maintaining the list of users to be reported.
 // This maintains persistent data in the given |local_state|.
-class ReportingUserTracker {
+class ReportingUserTracker : public user_manager::UserManager::Observer {
  public:
   explicit ReportingUserTracker(PrefService* local_state);
   ReportingUserTracker(const ReportingUserTracker&) = delete;
   ReportingUserTracker& operator=(const ReportingUserTracker&) = delete;
-  ~ReportingUserTracker();
+  ~ReportingUserTracker() override;
 
   // Registers prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -36,10 +37,10 @@ class ReportingUserTracker {
   // See also policy::DeviceStatusCollector.
   bool ShouldReportUser(const std::string& user_email) const;
 
-  // TODO(b/267685577): Make them to user_manager::UserManager::Observer's
-  // methods.
-  void OnSetUserAffiliation(const user_manager::User& user);
-  void OnUserRemoved(const AccountId& account_id);
+  // user_manager::UserManager::Observer:
+  void OnUserAffiliationUpdated(const user_manager::User& user) override;
+  void OnUserRemoved(const AccountId& account_id,
+                     user_manager::UserRemovalReason reasonx) override;
 
  private:
   // Adds user to the list of the users who should be reported.

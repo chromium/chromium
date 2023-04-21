@@ -72,6 +72,9 @@ class USER_MANAGER_EXPORT UserManager {
     // user sign in are changed.
     virtual void OnUsersSignInConstraintsChanged();
 
+    // Called when the user affiliation is updated.
+    virtual void OnUserAffiliationUpdated(const User& user);
+
     // Called just before a user of the device will be removed.
     virtual void OnUserToBeRemoved(const AccountId& account_id);
 
@@ -380,6 +383,7 @@ class USER_MANAGER_EXPORT UserManager {
       const User& user,
       const gfx::ImageSkia& profile_image) = 0;
   virtual void NotifyUsersSignInConstraintsChanged() = 0;
+  virtual void NotifyUserAffiliationUpdated(const User& user) = 0;
   virtual void NotifyUserToBeRemoved(const AccountId& account_id) = 0;
   virtual void NotifyUserRemoved(const AccountId& account_id,
                                  UserRemovalReason reason) = 0;

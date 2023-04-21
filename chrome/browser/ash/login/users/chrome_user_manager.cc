@@ -31,7 +31,9 @@ ChromeUserManager::ChromeUserManager(
           std::move(task_runner),
           g_browser_process ? g_browser_process->local_state() : nullptr),
       reporting_user_tracker_(
-          g_browser_process ? g_browser_process->local_state() : nullptr) {}
+          g_browser_process ? g_browser_process->local_state() : nullptr) {
+  reporting_user_tracker_observation_.Observe(this);
+}
 
 ChromeUserManager::~ChromeUserManager() = default;
 

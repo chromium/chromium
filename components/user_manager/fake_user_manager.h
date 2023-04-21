@@ -161,7 +161,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
       const AccountId& account_id) const override;
   void KioskAppLoggedIn(User* user) override {}
   void PublicAccountUserLoggedIn(User* user) override {}
-  void OnUserRemoved(const AccountId& account_id) override {}
 
  protected:
   // If set this is the active user. If empty, the first created user is the

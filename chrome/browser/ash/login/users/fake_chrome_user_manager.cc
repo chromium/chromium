@@ -132,7 +132,7 @@ FakeChromeUserManager::AddUserWithAffiliationAndTypeAndProfile(
     ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
   }
 
-  reporting_user_tracker_.OnSetUserAffiliation(*user);
+  NotifyUserAffiliationUpdated(*user);
 
   return user;
 }
@@ -297,7 +297,6 @@ void FakeChromeUserManager::RemoveUser(const AccountId& account_id,
   // TODO(b/278643115): Unify the implementation with the real one.
   NotifyUserToBeRemoved(account_id);
   RemoveUserFromList(account_id);
-  reporting_user_tracker_.OnUserRemoved(account_id);
   NotifyUserRemoved(account_id, reason);
 }
 
@@ -719,10 +718,6 @@ void FakeChromeUserManager::PublicAccountUserLoggedIn(
   NOTREACHED();
 }
 
-void FakeChromeUserManager::OnUserRemoved(const AccountId& account_id) {
-  NOTREACHED();
-}
-
 void FakeChromeUserManager::SetUserAffiliation(
     const AccountId& account_id,
     const base::flat_set<std::string>& user_affiliation_ids) {}
@@ -735,7 +730,7 @@ void FakeChromeUserManager::SetUserAffiliationForTesting(
     return;
   }
   user->SetAffiliation(is_affiliated);
-  reporting_user_tracker_.OnSetUserAffiliation(*user);
+  NotifyUserAffiliationUpdated(*user);
 }
 
 bool FakeChromeUserManager::IsFullManagementDisclosureNeeded(

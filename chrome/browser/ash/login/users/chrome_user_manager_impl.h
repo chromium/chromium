@@ -129,9 +129,6 @@ class ChromeUserManagerImpl
   void OnProfileAdded(Profile* profile) override;
   void OnProfileManagerDestroying() override;
 
-  // UserManagerBase:
-  void OnUserRemoved(const AccountId& account_id) override;
-
   // ChromeUserManager:
   bool IsEnterpriseManaged() const override;
   void SetUserAffiliation(

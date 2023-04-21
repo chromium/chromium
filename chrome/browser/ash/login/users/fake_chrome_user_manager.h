@@ -157,7 +157,6 @@ class FakeChromeUserManager : public ChromeUserManager {
       const AccountId& account_id) const override;
   void KioskAppLoggedIn(user_manager::User* user) override;
   void PublicAccountUserLoggedIn(user_manager::User* user) override;
-  void OnUserRemoved(const AccountId& account_id) override;
   void SetOwnerId(const AccountId& account_id) override;
 
   // UserManagerInterface override.

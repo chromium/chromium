@@ -680,10 +680,6 @@ bool ChromeUserManagerImpl::IsEphemeralAccountId(
           GetOwnerAccountId().is_valid());
 }
 
-void ChromeUserManagerImpl::OnUserRemoved(const AccountId& account_id) {
-  reporting_user_tracker_.OnUserRemoved(account_id);
-}
-
 const std::string& ChromeUserManagerImpl::GetApplicationLocale() const {
   return g_browser_process->GetApplicationLocale();
 }
@@ -1273,7 +1269,7 @@ void ChromeUserManagerImpl::SetUserAffiliation(
         user_affiliation_ids, connector->device_affiliation_ids(),
         account_id.GetUserEmail());
     user->SetAffiliation(is_affiliated);
-    reporting_user_tracker_.OnSetUserAffiliation(*user);
+    NotifyUserAffiliationUpdated(*user);
   }
 }
 
