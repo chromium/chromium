@@ -18,6 +18,15 @@ namespace printing {
 
 const char kDummyPrinterName[] = "DefaultPrinter";
 
+const PrinterSemanticCapsAndDefaults::Paper kTestPaperLetter{
+    /*display_name=*/"Letter", /*vendor_id=*/"45",
+    /*size_um=*/gfx::Size(215900, 279400),
+    /*printable_area_um=*/gfx::Rect(1764, 1764, 212372, 275872)};
+const PrinterSemanticCapsAndDefaults::Paper kTestPaperLegal{
+    /*display_name=*/"Legal", /*vendor_id=*/"46",
+    /*size_um=*/gfx::Size(215900, 355600),
+    /*printable_area_um=*/gfx::Rect(1764, 1764, 212372, 352072)};
+
 const std::vector<gfx::Size> kTestPrinterCapabilitiesDefaultDpis{
     kTestPrinterCapabilitiesDpi};
 const PrinterBasicInfoOptions kTestDummyPrintInfoOptions{{"opt1", "123"},

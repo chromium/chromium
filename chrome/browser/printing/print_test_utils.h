@@ -24,6 +24,10 @@ enum class PrinterType;
 extern const char kDummyPrinterName[];
 constexpr int kTestPrinterDpi = 600;
 
+// Some common paper sizes that can be used for fake device configurations.
+extern const PrinterSemanticCapsAndDefaults::Paper kTestPaperLetter;
+extern const PrinterSemanticCapsAndDefaults::Paper kTestPaperLegal;
+
 // Support values for `MakeDefaultPrintSettings()`.
 constexpr int kTestPrinterDefaultRenderDpi = 72;
 constexpr gfx::Size kTestPrinterCapabilitiesDpi(kTestPrinterDefaultRenderDpi,
