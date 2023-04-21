@@ -25,7 +25,6 @@
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "ash/wallpaper/online_wallpaper_variant_info_fetcher.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
-#include "ash/wallpaper/wallpaper_utils/wallpaper_resizer_observer.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/containers/flat_map.h"
@@ -79,7 +78,6 @@ class ASH_EXPORT WallpaperControllerImpl
     : public WallpaperController,
       public WindowTreeHostManager::Observer,
       public ShellObserver,
-      public WallpaperResizerObserver,
       public SessionObserver,
       public TabletModeObserver,
       public OverviewObserver,
@@ -337,9 +335,6 @@ class ASH_EXPORT WallpaperControllerImpl
   void OnShellInitialized() override;
   void OnShellDestroying() override;
 
-  // WallpaperResizerObserver:
-  void OnWallpaperResized() override;
-
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
@@ -415,6 +410,10 @@ class ASH_EXPORT WallpaperControllerImpl
     gfx::ImageSkia image;
     base::FilePath file_path;
   };
+
+  // Callback after `WallpaperResizer` is done scaling the current wallpaper to
+  // the current display size.
+  void OnWallpaperResized();
 
   // Gets wallpaper info of |account_id| from local state, or memory if the user
   // is ephemeral. Returns false if wallpaper info is not found.

@@ -52,21 +52,18 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece_forward.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
-#include "net/http/http_request_headers.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -538,9 +535,6 @@ WallpaperControllerImpl::WallpaperControllerImpl(
 }
 
 WallpaperControllerImpl::~WallpaperControllerImpl() {
-  if (current_wallpaper_)
-    current_wallpaper_->RemoveObserver(this);
-
   Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
 }
@@ -686,9 +680,10 @@ void WallpaperControllerImpl::ShowWallpaperImage(const gfx::ImageSkia& image,
 
   is_first_wallpaper_ = !current_wallpaper_;
   current_wallpaper_ = std::make_unique<WallpaperResizer>(
-      image, GetMaxDisplaySizeInNative(), info, sequenced_task_runner_);
-  current_wallpaper_->AddObserver(this);
-  current_wallpaper_->StartResize();
+      image, GetMaxDisplaySizeInNative(), info);
+  // `this` owns `current_wallpaper_` and therefore can use `base::Unretained`.
+  current_wallpaper_->StartResize(base::BindOnce(
+      &WallpaperControllerImpl::OnWallpaperResized, base::Unretained(this)));
 
   if (is_first_wallpaper_) {
     for (auto& observer : observers_)
