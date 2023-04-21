@@ -97,7 +97,13 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
 - (void)dismissWithCompletion:(ProceduralBlock)completion {
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
-  authService->ApproveAccountList();
+
+  // `authService` expects the user to be signed in when approving the account
+  // list (see crbug.com/1432369).
+  if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    authService->ApproveAccountList();
+  }
+
   [self.presentingViewController dismissViewControllerAnimated:YES
                                                     completion:completion];
 }
@@ -189,10 +195,11 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   [_primaryButton addTarget:self
                      action:@selector(onPrimaryButtonPressed:)
            forControlEvents:UIControlEventTouchUpInside];
-  NSString* primaryButtonTitle =
-      l10n_util::GetNSString(IDS_IOS_SIGNED_IN_ACCOUNTS_VIEW_OK_BUTTON)
-          .uppercaseString;
-  [_primaryButton setTitle:primaryButtonTitle forState:UIControlStateNormal];
+  NSString* primaryButtonString =
+      l10n_util::GetNSString(IDS_IOS_SIGNED_IN_ACCOUNTS_VIEW_OK_BUTTON);
+  [_primaryButton setTitle:primaryButtonString.uppercaseString
+                  forState:UIControlStateNormal];
+  _primaryButton.accessibilityLabel = primaryButtonString;
   _primaryButton.backgroundColor = [UIColor colorNamed:kBlueColor];
   [_primaryButton setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
                        forState:UIControlStateNormal];
@@ -222,11 +229,11 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   [_secondaryButton addTarget:self
                        action:@selector(onSecondaryButtonPressed:)
              forControlEvents:UIControlEventTouchUpInside];
-  NSString* secondaryButtonTitle =
-      l10n_util::GetNSString(IDS_IOS_SIGNED_IN_ACCOUNTS_VIEW_SETTINGS_BUTTON)
-          .uppercaseString;
-  [_secondaryButton setTitle:secondaryButtonTitle
+  NSString* secondaryButtonString =
+      l10n_util::GetNSString(IDS_IOS_SIGNED_IN_ACCOUNTS_VIEW_SETTINGS_BUTTON);
+  [_secondaryButton setTitle:secondaryButtonString.uppercaseString
                     forState:UIControlStateNormal];
+  _secondaryButton.accessibilityLabel = secondaryButtonString;
   [_secondaryButton setTitleColor:[UIColor colorNamed:kBlueColor]
                          forState:UIControlStateNormal];
   _secondaryButton.titleLabel.font =

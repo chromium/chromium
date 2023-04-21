@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -149,6 +150,16 @@
       chrome_test_util::GetForegroundActiveSceneController();
   [sceneController showWebSigninPromoFromViewController:baseViewController
                                                     URL:gURL];
+}
+
++ (void)clearLastSignedInAccounts {
+  PrefService* prefService =
+      chrome_test_util::GetOriginalBrowserState()->GetPrefs();
+  prefService->ClearPref(prefs::kSigninLastAccounts);
+}
+
++ (void)presentSignInAccountsViewControllerIfNecessary {
+  chrome_test_util::PresentSignInAccountsViewControllerIfNecessary();
 }
 
 @end

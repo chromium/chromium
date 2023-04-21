@@ -15,10 +15,10 @@ struct UrlLoadParams;
 
 @property(nonatomic, strong) TabGridCoordinator* mainCoordinator;
 
-- (void)showLegacyFirstRunUI;
-
 - (void)addANewTabAndPresentBrowser:(Browser*)browser
                   withURLLoadParams:(const UrlLoadParams&)urlLoadParams;
+
+- (void)presentSignInAccountsViewControllerIfNecessary;
 
 // Dismisses all modal dialogs, excluding the omnibox if `dismissOmnibox` is
 // NO, then call `completion`.

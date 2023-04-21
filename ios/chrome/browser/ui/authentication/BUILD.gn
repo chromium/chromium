@@ -186,6 +186,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",

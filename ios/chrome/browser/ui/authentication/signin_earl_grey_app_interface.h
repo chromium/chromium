@@ -64,6 +64,13 @@ enum class ConsentLevel;
 // `url` that triggered the web sign-in/consistency dialog.
 + (void)triggerConsistencyPromoSigninDialogWithURL:(NSURL*)url;
 
+// Clears the signed-in accounts preference, used to verify if the signed-in
+// accounts view should be presented.
++ (void)clearLastSignedInAccounts;
+
+// Presents the signed-in accounts view controller if it needs to be presented.
++ (void)presentSignInAccountsViewControllerIfNecessary;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_EARL_GREY_APP_INTERFACE_H_

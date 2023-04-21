@@ -58,3 +58,21 @@ source_set("unit_tests") {
     "//ios/web/public/test",
   ]
 }
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "signed_in_accounts_egtest.mm" ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
