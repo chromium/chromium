@@ -209,7 +209,8 @@ void OhttpKeyService::NotifyLookupResponse(
     return;
   }
 
-  if (response_code == net::HTTP_OK && headers->HasHeader(kKeyRotatedHeader)) {
+  if (response_code == net::HTTP_OK && headers &&
+      headers->HasHeader(kKeyRotatedHeader)) {
     server_triggered_fetch_scheduled_ = true;
     // The key is still valid, but it is close to expiration. It is a soft
     // failure, so do not clear the key immediately.

@@ -451,8 +451,7 @@ class HashRealTimeServiceTest : public PlatformTest {
       absl::optional<int> inner_response_code,
       int expected_prefix_count,
       int expected_network_result,
-      HashRealTimeService::OperationResult expected_operation_result,
-      bool expected_lookup_response_called) {
+      HashRealTimeService::OperationResult expected_operation_result) {
     auto num_requests = network_context_.total_requests();
 
     // Set up request and response.
@@ -494,8 +493,7 @@ class HashRealTimeServiceTest : public PlatformTest {
     ResetMetrics();
 
     EXPECT_EQ(network_context_.total_requests(), num_requests + 1u);
-    EXPECT_EQ(ohttp_key_service_->lookup_response_notified(),
-              expected_lookup_response_called);
+    EXPECT_TRUE(ohttp_key_service_->lookup_response_notified());
   }
   // Starts a lookup on |url| that should already be found entirely in the cache
   // and therefore not require a request to be sent. Confirms that the lookup's
@@ -991,8 +989,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetError) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::ERR_FAILED,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kNetworkError,
-      /*expected_lookup_response_called=*/false);
+      HashRealTimeService::OperationResult::kNetworkError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetErrorHttpCodeFailure) {
   GURL url = GURL("https://example.test");
@@ -1005,8 +1002,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetErrorHttpCodeFailure) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/0,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kHttpError,
-      /*expected_lookup_response_called=*/false);
+      HashRealTimeService::OperationResult::kHttpError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_OuterResponseCodeError) {
   GURL url = GURL("https://example.test");
@@ -1019,8 +1015,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_OuterResponseCodeError) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_NOT_FOUND,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kHttpError,
-      /*expected_lookup_response_called=*/false);
+      HashRealTimeService::OperationResult::kHttpError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_InnerResponseCodeError) {
   GURL url = GURL("https://example.test");
@@ -1032,8 +1027,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_InnerResponseCodeError) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_UNAUTHORIZED,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kHttpError,
-      /*expected_lookup_response_called=*/true);
+      HashRealTimeService::OperationResult::kHttpError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_ParseResponse) {
   GURL url = GURL("https://example.test");
@@ -1044,8 +1038,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_ParseResponse) {
       /*inner_response_code=*/absl::nullopt, /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_OK,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kParseError,
-      /*expected_lookup_response_called=*/true);
+      HashRealTimeService::OperationResult::kParseError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_IncorrectFullHashLength) {
   GURL url = GURL("https://example.test");
@@ -1059,8 +1052,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_IncorrectFullHashLength) {
       /*inner_response_code=*/absl::nullopt, /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_OK,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kIncorrectFullHashLengthError,
-      /*expected_lookup_response_called=*/true);
+      HashRealTimeService::OperationResult::kIncorrectFullHashLengthError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_MissingCacheDuration) {
   GURL url = GURL("https://example.test");
@@ -1076,8 +1068,7 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_MissingCacheDuration) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_OK,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kNoCacheDurationError,
-      /*expected_lookup_response_called=*/true);
+      HashRealTimeService::OperationResult::kNoCacheDurationError);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_MissingOhttpKey) {
   GURL url = GURL("https://example.test");

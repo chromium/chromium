@@ -423,9 +423,8 @@ TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_HeaderHintWithError) {
 TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_KeyRelatedHttpFailure) {
   SetupOldKeyAndPendingNewKey();
 
-  ohttp_key_service_->NotifyLookupResponse(kTestOldOhttpKey,
-                                           net::HTTP_UNPROCESSABLE_CONTENT,
-                                           CreateSuccessHeaders());
+  ohttp_key_service_->NotifyLookupResponse(
+      kTestOldOhttpKey, net::HTTP_UNPROCESSABLE_CONTENT, /*headers=*/nullptr);
   // HTTP status error is a hard failure, the key should be cleared immediately.
   EXPECT_FALSE(ohttp_key_service_->get_ohttp_key_for_testing().has_value());
 

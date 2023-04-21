@@ -414,9 +414,7 @@ void HashRealTimeService::OnOhttpComplete(
     int net_error,
     int response_code,
     scoped_refptr<net::HttpResponseHeaders> headers) {
-  if (headers) {
-    ohttp_key_service_->NotifyLookupResponse(ohttp_key, response_code, headers);
-  }
+  ohttp_key_service_->NotifyLookupResponse(ohttp_key, response_code, headers);
 
   auto response_body_ptr =
       std::make_unique<std::string>(response_body.value_or(""));
