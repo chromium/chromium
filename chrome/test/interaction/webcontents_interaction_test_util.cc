@@ -104,7 +104,8 @@ content::EvalJsResult EvalJsLocal(
   //   [ <token>, [<result>, <error>] ]
   // The values <token> and <error> will be strings, while <result> can be any
   // type.
-  std::string token = "EvalJsLocal-" + base::GenerateGUID();
+  std::string token =
+      "EvalJsLocal-" + base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string runner_script = base::StringPrintf(
       R"(Promise.resolve(%s)
          .then(func => [func()])
