@@ -345,11 +345,13 @@ void AppListControllerImpl::OpenSearchBoxIphUrl() {
   client_->OpenSearchBoxIphUrl();
 }
 
-void AppListControllerImpl::SetActiveModel(int profile_id,
-                                           AppListModel* model,
-                                           SearchModel* search_model) {
+void AppListControllerImpl::SetActiveModel(
+    int profile_id,
+    AppListModel* model,
+    SearchModel* search_model,
+    QuickAppAccessModel* quick_app_access_model) {
   profile_id_ = profile_id;
-  model_provider_->SetActiveModel(model, search_model);
+  model_provider_->SetActiveModel(model, search_model, quick_app_access_model);
   UpdateSearchBoxUiVisibilities();
 }
 

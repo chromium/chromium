@@ -31,9 +31,11 @@ class TestAppListController : public ash::AppListController {
   ash::AppListClient* GetClient() override;
   void AddObserver(ash::AppListControllerObserver* observer) override;
   void RemoveObserver(ash::AppListControllerObserver* obsever) override;
-  void SetActiveModel(int profile_id,
-                      ash::AppListModel* model,
-                      ash::SearchModel* search_model) override {}
+  void SetActiveModel(
+      int profile_id,
+      ash::AppListModel* model,
+      ash::SearchModel* search_model,
+      ash::QuickAppAccessModel* quick_app_access_model) override {}
   void ClearActiveModel() override {}
   void ShowAppList(ash::AppListShowSource source) override;
   ash::AppListShowSource LastAppListShowSource() override;

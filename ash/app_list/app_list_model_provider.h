@@ -53,7 +53,9 @@ class ASH_EXPORT AppListModelProvider {
   // Both `model` and `search_model` can be null, in which case active models
   // will fallback to default models. This should generally only be done during
   // shutdown.
-  void SetActiveModel(AppListModel* model, SearchModel* search_model);
+  void SetActiveModel(AppListModel* model,
+                      SearchModel* search_model,
+                      QuickAppAccessModel* quick_app_access_model);
 
   // Resets active app list and search model to the default one.
   void ClearActiveModel();

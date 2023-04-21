@@ -99,7 +99,8 @@ class ASH_EXPORT AppListControllerImpl
   void RemoveObserver(AppListControllerObserver* obsever) override;
   void SetActiveModel(int profile_id,
                       AppListModel* model,
-                      SearchModel* search_model) override;
+                      SearchModel* search_model,
+                      QuickAppAccessModel* quick_app_access_model) override;
   void ClearActiveModel() override;
   void DismissAppList() override;
   void ShowAppList(AppListShowSource source) override;

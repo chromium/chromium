@@ -1111,9 +1111,11 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchClearedOnModelUpdate) {
   // hidden.
   auto app_list_model_override = std::make_unique<test::AppListTestModel>();
   auto search_model_override = std::make_unique<SearchModel>();
+  auto quick_app_access_model_override =
+      std::make_unique<QuickAppAccessModel>();
   Shell::Get()->app_list_controller()->SetActiveModel(
       /*profile_id=*/1, app_list_model_override.get(),
-      search_model_override.get());
+      search_model_override.get(), quick_app_access_model_override.get());
 
   EXPECT_FALSE(IsSearchResultPageVisible());
   EXPECT_EQ(u"", GetSearchBoxView()->search_box()->GetText());

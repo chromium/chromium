@@ -21,6 +21,7 @@
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
+#include "ash/app_list/quick_app_access_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_search_page.h"
@@ -4961,9 +4962,11 @@ TEST_P(AppsGridViewClamshellAndTabletTest, RootGridUpdatesOnModelChange) {
   model_override->PopulateApps(3);
 
   auto search_model_override = std::make_unique<SearchModel>();
+  auto quick_app_access_model = std::make_unique<QuickAppAccessModel>();
 
   Shell::Get()->app_list_controller()->SetActiveModel(
-      /*profile_id=*/1, model_override.get(), search_model_override.get());
+      /*profile_id=*/1, model_override.get(), search_model_override.get(),
+      quick_app_access_model.get());
   UpdateLayout();
 
   // Verify that the view model size matches the new model.
@@ -4986,7 +4989,8 @@ TEST_P(AppsGridViewClamshellAndTabletTest, RootGridUpdatesOnModelChange) {
 
   // Switch model to original one, and verify the folder view gets closed.
   Shell::Get()->app_list_controller()->SetActiveModel(
-      /*profile_id=*/1, GetTestModel(), GetAppListTestHelper()->search_model());
+      /*profile_id=*/1, GetTestModel(), GetAppListTestHelper()->search_model(),
+      GetAppListTestHelper()->quick_app_access_model());
   UpdateLayout();
   EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
   EXPECT_EQ(2u, view_model->view_size());

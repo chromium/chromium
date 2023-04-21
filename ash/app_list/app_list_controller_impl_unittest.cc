@@ -5,10 +5,12 @@
 #include "ash/app_list/app_list_controller_impl.h"
 
 #include <string>
+#include <vector>
 
 #include "ash/app_list/app_list_badge_controller.h"
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_presenter_impl.h"
+#include "ash/app_list/quick_app_access_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
@@ -481,8 +483,10 @@ TEST_F(AppListControllerImplTest, SimulateProfileSwapNoCrashOnDestruct) {
   // should cleanly drop the reference to the folder added earlier.
   auto updated_model = std::make_unique<test::AppListTestModel>();
   auto update_search_model = std::make_unique<SearchModel>();
+  auto update_quick_app_access_model = std::make_unique<QuickAppAccessModel>();
   Shell::Get()->app_list_controller()->SetActiveModel(
-      /*profile_id=*/1, updated_model.get(), update_search_model.get());
+      /*profile_id=*/1, updated_model.get(), update_search_model.get(),
+      update_quick_app_access_model.get());
 
   Shell::Get()->app_list_controller()->ClearActiveModel();
   updated_model.reset();

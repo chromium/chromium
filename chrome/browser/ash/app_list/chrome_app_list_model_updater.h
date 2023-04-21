@@ -13,6 +13,7 @@
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/app_list_model_observer.h"
 #include "ash/app_list/model/search/search_model.h"
+#include "ash/app_list/quick_app_access_model.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -216,6 +217,7 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
 
   ash::AppListModel model_;
   ash::SearchModel search_model_;
+  ash::QuickAppAccessModel quick_app_access_model_;
 
   bool is_active_ = false;
 

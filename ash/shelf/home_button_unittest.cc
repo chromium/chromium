@@ -474,6 +474,35 @@ TEST_F(HomeButtonWithQuickAppAccess, RightShelf) {
   EXPECT_FALSE(IsQuickAppVisible());
 }
 
+// Change the quick app access model and test that the quick app button is
+// updated.
+TEST_F(HomeButtonWithQuickAppAccess, ModelChange) {
+  EXPECT_FALSE(IsQuickAppVisible());
+
+  const std::string quick_app_id = "Quick App Item";
+  GetAppListTestHelper()->model()->CreateAndAddItem(quick_app_id);
+  EXPECT_TRUE(
+      Shell::Get()->app_list_controller()->SetHomeButtonQuickApp(quick_app_id));
+  EXPECT_TRUE(IsQuickAppVisible());
+
+  auto model_override = std::make_unique<test::AppListTestModel>();
+  auto search_model_override = std::make_unique<SearchModel>();
+  auto quick_app_access_model = std::make_unique<QuickAppAccessModel>();
+
+  // Switch to new models, and verify that the quick app button is hidden.
+  Shell::Get()->app_list_controller()->SetActiveModel(
+      /*profile_id=*/1, model_override.get(), search_model_override.get(),
+      quick_app_access_model.get());
+  EXPECT_FALSE(IsQuickAppVisible());
+
+  // Switch to original models, and verify the quick app button is shown again.
+  Shell::Get()->app_list_controller()->SetActiveModel(
+      /*profile_id=*/1, GetAppListTestHelper()->model(),
+      GetAppListTestHelper()->search_model(),
+      GetAppListTestHelper()->quick_app_access_model());
+  EXPECT_TRUE(IsQuickAppVisible());
+}
+
 enum class TestAccessibilityFeature {
   kTabletModeShelfNavigationButtons,
   kSpokenFeedback,
