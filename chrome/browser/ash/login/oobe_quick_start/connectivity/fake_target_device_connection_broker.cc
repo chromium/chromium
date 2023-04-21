@@ -24,6 +24,12 @@ constexpr std::array<uint8_t, 32> kSharedSecret = {
     0xcf, 0xf3, 0xeb, 0x31, 0x08, 0x90, 0x73, 0xef, 0xda, 0x87, 0xd4,
     0x23, 0xc0, 0x55, 0xd5, 0x83, 0x5b, 0x04, 0x28, 0x49, 0xf2};
 
+// 32 random bytes to use as the secondary shared secret.
+constexpr std::array<uint8_t, 32> kSecondarySharedSecret = {
+    0x50, 0xfe, 0xd7, 0x14, 0x1c, 0x93, 0xf6, 0x92, 0xaf, 0x7b, 0x4d,
+    0xab, 0xa0, 0xe3, 0xfc, 0xd3, 0x5a, 0x04, 0x01, 0x63, 0xf6, 0xf5,
+    0xeb, 0x40, 0x7f, 0x4b, 0xac, 0xe4, 0xd1, 0xbf, 0x20, 0x19};
+
 // Arbitrary string to use as the connection's authentication token when
 // deriving PIN.
 constexpr char kAuthenticationToken[] = "auth_token";
@@ -68,6 +74,12 @@ void FakeTargetDeviceConnectionBroker::StopAdvertising(
   on_stop_advertising_callback_ = std::move(on_stop_advertising_callback);
 }
 
+base::Value::Dict FakeTargetDeviceConnectionBroker::GetPrepareForUpdateInfo() {
+  base::Value::Dict dict;
+  dict.Set("test-key", "test-value");
+  return dict;
+}
+
 void FakeTargetDeviceConnectionBroker::InitiateConnection(
     const std::string& source_device_id) {
   if (use_pin_authentication_) {
@@ -89,7 +101,8 @@ void FakeTargetDeviceConnectionBroker::AuthenticateConnection(
   auto random_session_id = RandomSessionId();
   auto connection_factory = std::make_unique<Connection::Factory>();
   auto connection = connection_factory->Create(
-      nearby_connection, random_session_id, kSharedSecret, base::DoNothing(),
+      nearby_connection, random_session_id, kSharedSecret,
+      kSecondarySharedSecret, base::DoNothing(),
       base::BindOnce(
           &FakeTargetDeviceConnectionBroker::OnConnectionAuthenticated,
           weak_ptr_factory_.GetWeakPtr()));

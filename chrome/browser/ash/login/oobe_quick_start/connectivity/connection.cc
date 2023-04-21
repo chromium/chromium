@@ -36,12 +36,14 @@ std::unique_ptr<Connection> Connection::Factory::Create(
     NearbyConnection* nearby_connection,
     RandomSessionId session_id,
     SharedSecret shared_secret,
+    SharedSecret secondary_shared_secret,
     base::OnceClosure on_connection_closed,
     ConnectionAuthenticatedCallback on_connection_authenticated) {
   auto nonce_generator = std::make_unique<NonceGenerator>();
   return std::make_unique<Connection>(
-      nearby_connection, session_id, shared_secret, std::move(nonce_generator),
-      std::move(on_connection_closed), std::move(on_connection_authenticated));
+      nearby_connection, session_id, shared_secret, secondary_shared_secret,
+      std::move(nonce_generator), std::move(on_connection_closed),
+      std::move(on_connection_authenticated));
 }
 
 Connection::Nonce Connection::NonceGenerator::Generate() {
@@ -54,16 +56,17 @@ Connection::Connection(
     NearbyConnection* nearby_connection,
     RandomSessionId session_id,
     SharedSecret shared_secret,
+    SharedSecret secondary_shared_secret,
     std::unique_ptr<NonceGenerator> nonce_generator,
     base::OnceClosure on_connection_closed,
     ConnectionAuthenticatedCallback on_connection_authenticated)
     : nearby_connection_(nearby_connection),
       random_session_id_(session_id),
       shared_secret_(shared_secret),
+      secondary_shared_secret_(secondary_shared_secret),
       nonce_generator_(std::move(nonce_generator)),
       on_connection_closed_(std::move(on_connection_closed)),
       on_connection_authenticated_(std::move(on_connection_authenticated)) {
-  crypto::RandBytes(secondary_shared_secret_);
   nearby_connection->SetDisconnectionListener(base::BindOnce(
       &Connection::OnConnectionClosed, weak_ptr_factory_.GetWeakPtr()));
 }

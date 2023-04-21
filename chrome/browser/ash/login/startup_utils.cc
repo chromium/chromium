@@ -113,6 +113,8 @@ void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
                                std::string());
   registry->RegisterBooleanPref(
       ash::quick_start::prefs::kShouldResumeQuickStartAfterReboot, false);
+  registry->RegisterDictionaryPref(
+      ash::quick_start::prefs::kResumeQuickStartAfterRebootInfo);
 }
 
 // static

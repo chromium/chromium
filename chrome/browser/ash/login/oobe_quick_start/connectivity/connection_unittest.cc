@@ -62,6 +62,12 @@ constexpr std::array<uint8_t, 32> kSharedSecret = {
     0xcf, 0xf3, 0xeb, 0x31, 0x08, 0x90, 0x73, 0xef, 0xda, 0x87, 0xd4,
     0x23, 0xc0, 0x55, 0xd5, 0x83, 0x5b, 0x04, 0x28, 0x49, 0xf2};
 
+// 32 random bytes to use as the secondary shared secret.
+constexpr std::array<uint8_t, 32> kSecondarySharedSecret = {
+    0x50, 0xfe, 0xd7, 0x14, 0x1c, 0x93, 0xf6, 0x92, 0xaf, 0x7b, 0x4d,
+    0xab, 0xa0, 0xe3, 0xfc, 0xd3, 0x5a, 0x04, 0x01, 0x63, 0xf6, 0xf5,
+    0xeb, 0x40, 0x7f, 0x4b, 0xac, 0xe4, 0xd1, 0xbf, 0x20, 0x19};
+
 // 12 random bytes to use as the nonce.
 constexpr std::array<uint8_t, 12> kNonce = {0x60, 0x3e, 0x87, 0x69, 0xa3, 0x55,
                                             0xd3, 0x49, 0xbd, 0x0a, 0x63, 0xed};
@@ -101,7 +107,7 @@ class ConnectionTest : public testing::Test {
     NearbyConnection* nearby_connection = fake_nearby_connection_.get();
     fake_quick_start_decoder_ = std::make_unique<FakeQuickStartDecoder>();
     connection_ = std::make_unique<Connection>(
-        nearby_connection, session_id_, kSharedSecret,
+        nearby_connection, session_id_, kSharedSecret, kSecondarySharedSecret,
         std::make_unique<ConstantNonceGenerator>(),
         /*on_connection_closed=*/base::DoNothing(),
         /*on_connection_authenticated=*/
@@ -193,9 +199,13 @@ TEST_F(ConnectionTest, RequestWifiCredentials) {
 
   EXPECT_TRUE(wifi_request_payload.FindBool("request_wifi"));
   EXPECT_EQ(wifi_request_payload.FindInt("SESSION_ID"), session_id);
-  // TODO(b/234655072): Create kSecondarySharedSecret const and check value
-  // equals after AuthenticatedConnection refactor is merged.
-  EXPECT_TRUE(wifi_request_payload.FindString("shared_secret"));
+
+  std::string shared_secret_str(kSecondarySharedSecret.begin(),
+                                kSecondarySharedSecret.end());
+  std::string shared_secret_base64;
+  base::Base64Encode(shared_secret_str, &shared_secret_base64);
+  EXPECT_EQ(*wifi_request_payload.FindString("shared_secret"),
+            shared_secret_base64);
 
   const absl::optional<WifiCredentials>& credentials = future.Get();
   EXPECT_TRUE(credentials.has_value());
@@ -379,7 +389,7 @@ TEST_F(ConnectionTest, TestDisconnectionTriggersListener) {
   std::unique_ptr<Connection> connection_under_test =
       std::make_unique<Connection>(
           fake_nearby_connection_.get(), session_id_, kSharedSecret,
-          std::make_unique<ConstantNonceGenerator>(),
+          kSecondarySharedSecret, std::make_unique<ConstantNonceGenerator>(),
           /*on_connection_closed=*/future.GetCallback(),
           /*on_connection_authenticated=*/base::DoNothing());
 

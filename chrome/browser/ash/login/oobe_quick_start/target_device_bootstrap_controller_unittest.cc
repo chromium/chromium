@@ -226,6 +226,9 @@ TEST_F(TargetDeviceBootstrapControllerTest, GetPhoneInstanceId) {
 TEST_F(TargetDeviceBootstrapControllerTest, PrepareForUpdate_NotConnected) {
   ASSERT_FALSE(
       GetLocalState()->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot));
+  ASSERT_TRUE(GetLocalState()
+                  ->GetDict(prefs::kResumeQuickStartAfterRebootInfo)
+                  .empty());
 
   // PrepareForUpdate() shouldn't do anything if the connection is not
   // established.
@@ -236,11 +239,17 @@ TEST_F(TargetDeviceBootstrapControllerTest, PrepareForUpdate_NotConnected) {
   bootstrap_controller_->PrepareForUpdate();
   EXPECT_FALSE(
       GetLocalState()->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot));
+  EXPECT_TRUE(GetLocalState()
+                  ->GetDict(prefs::kResumeQuickStartAfterRebootInfo)
+                  .empty());
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, PrepareForUpdate) {
   ASSERT_FALSE(
       GetLocalState()->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot));
+  ASSERT_TRUE(GetLocalState()
+                  ->GetDict(prefs::kResumeQuickStartAfterRebootInfo)
+                  .empty());
 
   bootstrap_controller_->StartAdvertising();
   connection_broker()->on_start_advertising_callback().Run(/*success=*/true);
@@ -252,10 +261,17 @@ TEST_F(TargetDeviceBootstrapControllerTest, PrepareForUpdate) {
   // Pref shouldn't change until the connection is closed.
   EXPECT_FALSE(
       GetLocalState()->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot));
+  EXPECT_TRUE(GetLocalState()
+                  ->GetDict(prefs::kResumeQuickStartAfterRebootInfo)
+                  .empty());
   connection_broker()->CloseConnection(ConnectionClosedReason::kConnectionLost);
   EXPECT_TRUE(
       GetLocalState()->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot));
+  EXPECT_FALSE(GetLocalState()
+                   ->GetDict(prefs::kResumeQuickStartAfterRebootInfo)
+                   .empty());
   GetLocalState()->ClearPref(prefs::kShouldResumeQuickStartAfterReboot);
+  GetLocalState()->ClearPref(prefs::kResumeQuickStartAfterRebootInfo);
 }
 
 }  // namespace ash::quick_start

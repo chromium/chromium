@@ -72,6 +72,11 @@ constexpr char kAuthenticationToken[] = "auth_token";
 // Expected PIN corresponding to |kAuthenticationToken|.
 constexpr char kAuthenticationTokenPin[] = "6229";
 
+// The keys expected to be in the dict returned by PrepareForUpdate().
+constexpr char kPrepareForUpdateRandomSessionIdKey[] = "random_session_id";
+constexpr char kPrepareForUpdateSecondarySharedSecretKey[] =
+    "secondary_shared_secret";
+
 // Perform base64 decoding with the kForgiving option to allow for missing
 // padding.
 std::vector<uint8_t> Base64DecodeForgiving(base::span<uint8_t> input) {
@@ -283,10 +288,11 @@ class FakeConnection : public Connection {
         NearbyConnection* nearby_connection,
         RandomSessionId session_id,
         SharedSecret shared_secret,
+        SharedSecret secondary_shared_secret,
         base::OnceClosure on_connection_closed,
         ConnectionAuthenticatedCallback on_connection_authenticated) override {
       auto connection = std::make_unique<FakeConnection>(
-          nearby_connection, session_id, shared_secret,
+          nearby_connection, session_id, shared_secret, secondary_shared_secret,
           std::move(on_connection_closed),
           std::move(on_connection_authenticated));
       instance_ = connection->weak_ptr_factory_.GetWeakPtr();
@@ -299,10 +305,12 @@ class FakeConnection : public Connection {
   FakeConnection(NearbyConnection* nearby_connection,
                  RandomSessionId session_id,
                  SharedSecret shared_secret,
+                 SharedSecret secondary_shared_secret,
                  base::OnceClosure on_connection_closed,
                  ConnectionAuthenticatedCallback on_connection_authenticated)
       : Connection(nearby_connection,
                    session_id,
+                   secondary_shared_secret,
                    shared_secret,
                    std::make_unique<Connection::NonceGenerator>(),
                    std::move(on_connection_closed),
@@ -416,6 +424,18 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
     return static_cast<TargetDeviceConnectionBrokerImpl*>(
                connection_broker_.get())
         ->random_session_id_;
+  }
+
+  std::string GetSecondarySharedSecretString() {
+    TargetDeviceConnectionBroker::SharedSecret secondary_shared_secret =
+        static_cast<TargetDeviceConnectionBrokerImpl*>(connection_broker_.get())
+            ->secondary_shared_secret_;
+    std::string secondary_shared_secret_bytes(secondary_shared_secret.begin(),
+                                              secondary_shared_secret.end());
+    std::string secondary_shared_secret_base64;
+    base::Base64Encode(secondary_shared_secret_bytes,
+                       &secondary_shared_secret_base64);
+    return secondary_shared_secret_base64;
   }
 
   const std::vector<uint8_t> GetQrCodeData() {
@@ -790,6 +810,18 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   ASSERT_TRUE(connection());
   EXPECT_TRUE(connection_lifecycle_listener_.connection_authenticated_);
   EXPECT_NE(connection_lifecycle_listener_.authenticated_connection_, nullptr);
+}
+
+TEST_F(TargetDeviceConnectionBrokerImplTest, GetPrepareForUpdateInfo) {
+  base::Value::Dict prepare_for_update_info =
+      connection_broker_->GetPrepareForUpdateInfo();
+  EXPECT_FALSE(prepare_for_update_info.empty());
+  EXPECT_EQ(
+      GetRandomSessionId().ToString(),
+      *prepare_for_update_info.FindString(kPrepareForUpdateRandomSessionIdKey));
+  EXPECT_EQ(GetSecondarySharedSecretString(),
+            *prepare_for_update_info.FindString(
+                kPrepareForUpdateSecondarySharedSecretKey));
 }
 
 }  // namespace ash::quick_start

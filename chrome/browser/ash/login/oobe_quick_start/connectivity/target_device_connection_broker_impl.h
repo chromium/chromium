@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_TARGET_DEVICE_CONNECTION_BROKER_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
@@ -59,6 +60,7 @@ class TargetDeviceConnectionBrokerImpl
                         bool use_pin_authentication,
                         ResultCallback on_start_advertising_callback) override;
   void StopAdvertising(base::OnceClosure on_stop_advertising_callback) override;
+  base::Value::Dict GetPrepareForUpdateInfo() override;
 
  private:
   // Used to access the |random_session_id_| in tests, and to allow testing
@@ -103,7 +105,8 @@ class TargetDeviceConnectionBrokerImpl
 
   std::unique_ptr<FastPairAdvertiser> fast_pair_advertiser_;
   RandomSessionId random_session_id_;
-  Connection::SharedSecret shared_secret_;
+  SharedSecret shared_secret_;
+  SharedSecret secondary_shared_secret_;
 
   base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager_;
   std::unique_ptr<Connection::Factory> connection_factory_;

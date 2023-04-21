@@ -47,6 +47,7 @@ class Connection
         NearbyConnection* nearby_connection,
         RandomSessionId session_id,
         SharedSecret shared_secret,
+        SharedSecret secondary_shared_secret,
         base::OnceClosure on_connection_closed,
         ConnectionAuthenticatedCallback on_connection_authenticated);
   };
@@ -64,6 +65,7 @@ class Connection
   Connection(NearbyConnection* nearby_connection,
              RandomSessionId session_id,
              SharedSecret shared_secret,
+             SharedSecret secondary_shared_secret,
              std::unique_ptr<NonceGenerator> nonce_generator,
              base::OnceClosure on_connection_closed,
              ConnectionAuthenticatedCallback on_connection_authenticated);

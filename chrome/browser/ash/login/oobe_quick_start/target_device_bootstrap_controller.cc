@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
@@ -164,8 +165,8 @@ void TargetDeviceBootstrapController::OnConnectionClosed(
   if (prepare_for_update_on_connection_closed_) {
     PrefService* prefs = g_browser_process->local_state();
     prefs->SetBoolean(prefs::kShouldResumeQuickStartAfterReboot, true);
-    // TODO(b/234655072): Get RandomSessionID and secondary SharedSecret from
-    // connection_broker_ and persist to local state as well.
+    base::Value::Dict info = connection_broker_->GetPrepareForUpdateInfo();
+    prefs->SetDict(prefs::kResumeQuickStartAfterRebootInfo, std::move(info));
   }
 }
 

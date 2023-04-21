@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -162,6 +163,13 @@ class TargetDeviceConnectionBroker {
   // desired connection, or in error/edge cases, e.g., the user exits the UI.
   virtual void StopAdvertising(
       base::OnceClosure on_stop_advertising_callback) = 0;
+
+  // Returns Dict that can be persisted to a local state Dict pref if the target
+  // device is going to update. This Dict contains the RandomSessionId and
+  // secondary SharedSecret represented as base64-encoded strings. These values
+  // are needed to resume the Quick Start connection after the target device
+  // reboots.
+  virtual base::Value::Dict GetPrepareForUpdateInfo() = 0;
 
  protected:
   void MaybeNotifyFeatureStatus();

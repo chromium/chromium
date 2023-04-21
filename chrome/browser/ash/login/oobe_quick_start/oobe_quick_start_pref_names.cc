@@ -14,4 +14,9 @@ namespace ash::quick_start::prefs {
 const char kShouldResumeQuickStartAfterReboot[] =
     "oobe.should_resume_quick_start_after_reboot";
 
+// Dict pref containing all info required to resume a Quick Start connection
+// with the source device after the target device reboots.
+const char kResumeQuickStartAfterRebootInfo[] =
+    "oobe.resume_quick_start_after_reboot_info";
+
 }  // namespace ash::quick_start::prefs
