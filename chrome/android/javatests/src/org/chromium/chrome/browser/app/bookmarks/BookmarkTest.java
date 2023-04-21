@@ -191,16 +191,6 @@ public class BookmarkTest {
         mTestPageFoo = new GURL(mTestServer.getURL(TEST_PAGE_URL_FOO));
     }
 
-    /**
-     * Loads a non-empty partner bookmarks folder for testing. The partner bookmarks folder will
-     * appear in the mobile bookmarks folder.
-     */
-    private void loadFakePartnerBookmarkShimForTesting() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mBookmarkModel.loadFakePartnerBookmarkShimForTesting(); });
-        BookmarkTestUtil.waitForBookmarkModelLoaded();
-    }
-
     @After
     public void tearDown() throws Exception {
         if (mBookmarkActivity != null) ApplicationTestUtils.finishActivity(mBookmarkActivity);
@@ -209,50 +199,6 @@ public class BookmarkTest {
     @AfterClass
     public static void tearDownAfterActivityDestroyed() {
         ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
-    }
-
-    private void openBookmarkManager() throws InterruptedException {
-        if (mActivityTestRule.getActivity().isTablet()) {
-            mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_URL);
-            mItemsContainer = mActivityTestRule.getActivity().findViewById(
-                    R.id.selectable_list_recycler_view);
-            mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
-            mBookmarkManagerCoordinator = ((BookmarkPage) mActivityTestRule.getActivity()
-                                                   .getActivityTab()
-                                                   .getNativePage())
-                                                  .getManagerForTesting();
-        } else {
-            // phone
-            mBookmarkActivity = ActivityTestUtils.waitForActivity(
-                    InstrumentationRegistry.getInstrumentation(), BookmarkActivity.class,
-                    new MenuUtils.MenuActivityTrigger(InstrumentationRegistry.getInstrumentation(),
-                            mActivityTestRule.getActivity(), R.id.all_bookmarks_menu_id));
-            mItemsContainer = mBookmarkActivity.findViewById(R.id.selectable_list_recycler_view);
-            mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
-            mBookmarkManagerCoordinator = mBookmarkActivity.getManagerForTesting();
-        }
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> getBookmarkDelegate().getDragStateDelegate().setA11yStateForTesting(false));
-    }
-
-    private boolean isItemPresentInBookmarkList(final String expectedTitle) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                for (int i = 0; i < mItemsContainer.getAdapter().getItemCount(); i++) {
-                    BookmarkId item = getIdByPosition(i);
-
-                    if (item == null) continue;
-
-                    String actualTitle = mBookmarkModel.getBookmarkTitle(item);
-                    if (TextUtils.equals(actualTitle, expectedTitle)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
     }
 
     @Test
@@ -1894,6 +1840,60 @@ public class BookmarkTest {
                                        .findViewHolderForAdapterPosition(0)
                                        .itemView;
         Assert.assertNotEquals(PowerBookmarkShoppingItemRow.class, itemView.getClass());
+    }
+
+    /**
+     * Loads a non-empty partner bookmarks folder for testing. The partner bookmarks folder will
+     * appear in the mobile bookmarks folder.
+     */
+    private void loadFakePartnerBookmarkShimForTesting() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mBookmarkModel.loadFakePartnerBookmarkShimForTesting(); });
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+    }
+
+    private void openBookmarkManager() throws InterruptedException {
+        if (mActivityTestRule.getActivity().isTablet()) {
+            mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_URL);
+            mItemsContainer = mActivityTestRule.getActivity().findViewById(
+                    R.id.selectable_list_recycler_view);
+            mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
+            mBookmarkManagerCoordinator = ((BookmarkPage) mActivityTestRule.getActivity()
+                                                   .getActivityTab()
+                                                   .getNativePage())
+                                                  .getManagerForTesting();
+        } else {
+            // phone
+            mBookmarkActivity = ActivityTestUtils.waitForActivity(
+                    InstrumentationRegistry.getInstrumentation(), BookmarkActivity.class,
+                    new MenuUtils.MenuActivityTrigger(InstrumentationRegistry.getInstrumentation(),
+                            mActivityTestRule.getActivity(), R.id.all_bookmarks_menu_id));
+            mItemsContainer = mBookmarkActivity.findViewById(R.id.selectable_list_recycler_view);
+            mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
+            mBookmarkManagerCoordinator = mBookmarkActivity.getManagerForTesting();
+        }
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> getBookmarkDelegate().getDragStateDelegate().setA11yStateForTesting(false));
+    }
+
+    private boolean isItemPresentInBookmarkList(final String expectedTitle) {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Boolean>() {
+            @Override
+            public Boolean call() {
+                for (int i = 0; i < mItemsContainer.getAdapter().getItemCount(); i++) {
+                    BookmarkId item = getIdByPosition(i);
+
+                    if (item == null) continue;
+
+                    String actualTitle = mBookmarkModel.getBookmarkTitle(item);
+                    if (TextUtils.equals(actualTitle, expectedTitle)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
     }
 
     /**
