@@ -627,6 +627,63 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
                     nullptr);
     }
   }
+
+  if (policy.has_device_screensaver_login_screen_enabled()) {
+    const em::DeviceScreensaverLoginScreenEnabledProto& container(
+        policy.device_screensaver_login_screen_enabled());
+    if (container.has_device_screensaver_login_screen_enabled()) {
+      policies->Set(
+          key::kDeviceScreensaverLoginScreenEnabled, POLICY_LEVEL_MANDATORY,
+          POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+          base::Value(container.device_screensaver_login_screen_enabled()),
+          nullptr);
+    }
+  }
+
+  if (policy.has_device_screensaver_login_screen_idle_timeout_seconds()) {
+    const em::DeviceScreensaverLoginScreenIdleTimeoutSecondsProto& container(
+        policy.device_screensaver_login_screen_idle_timeout_seconds());
+    if (container.has_device_screensaver_login_screen_idle_timeout_seconds()) {
+      std::unique_ptr<base::Value> idle_timeout_seconds = DecodeIntegerValue(
+          container.device_screensaver_login_screen_idle_timeout_seconds());
+      policies->Set(key::kDeviceScreensaverLoginScreenIdleTimeoutSeconds,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, std::move(*idle_timeout_seconds),
+                    nullptr);
+    }
+  }
+
+  if (policy
+          .has_device_screensaver_login_screen_image_display_interval_seconds()) {
+    const em::DeviceScreensaverLoginScreenImageDisplayIntervalSecondsProto&
+        container(
+            policy
+                .device_screensaver_login_screen_image_display_interval_seconds());
+    if (container
+            .has_device_screensaver_login_screen_image_display_interval_seconds()) {
+      std::unique_ptr<base::Value> interval_seconds = DecodeIntegerValue(
+          container
+              .device_screensaver_login_screen_image_display_interval_seconds());
+      policies->Set(
+          key::kDeviceScreensaverLoginScreenImageDisplayIntervalSeconds,
+          POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+          std::move(*interval_seconds), nullptr);
+    }
+  }
+
+  if (policy.has_device_screensaver_login_screen_images()) {
+    const em::DeviceScreensaverLoginScreenImagesProto& container(
+        policy.device_screensaver_login_screen_images());
+    base::Value::List image_urls;
+    for (const auto& entry :
+         container.device_screensaver_login_screen_images()) {
+      image_urls.Append(entry);
+    }
+    policies->Set(key::kDeviceScreensaverLoginScreenImages,
+                  POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                  POLICY_SOURCE_CLOUD, base::Value(std::move(image_urls)),
+                  nullptr);
+  }
 }
 
 void DecodeNetworkPolicies(const em::ChromeDeviceSettingsProto& policy,
