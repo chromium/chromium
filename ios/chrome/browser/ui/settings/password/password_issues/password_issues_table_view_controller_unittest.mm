@@ -132,8 +132,14 @@ class PasswordIssuesTableViewControllerTest
 };
 
 // Tests PasswordIssuesViewController is set up with appropriate items
-// and sections.
-TEST_F(PasswordIssuesTableViewControllerTest, TestModel) {
+// and sections when kIOSPasswordCheckup feature is disabled.
+TEST_F(PasswordIssuesTableViewControllerTest,
+       TestModelWithoutKIOSPasswordCheckup) {
+  // Disable Password Checkup feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kIOSPasswordCheckup);
+
   CreateController();
   CheckController();
   EXPECT_EQ(1, NumberOfSections());
@@ -141,14 +147,51 @@ TEST_F(PasswordIssuesTableViewControllerTest, TestModel) {
   EXPECT_EQ(0, NumberOfItemsInSection(0));
 }
 
-// Test verifies password issue is displayed correctly.
-TEST_F(PasswordIssuesTableViewControllerTest, TestPasswordIssue) {
+// Tests PasswordIssuesViewController is set up with appropriate items
+// and sections when kIOSPasswordCheckup feature is enabled.
+TEST_F(PasswordIssuesTableViewControllerTest,
+       TestModelWithKIOSPasswordCheckup) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  CreateController();
+  CheckController();
+  EXPECT_EQ(0, NumberOfSections());
+}
+
+// Test verifies password issue is displayed correctly when kIOSPasswordCheckup
+// feature is disabled.
+TEST_F(PasswordIssuesTableViewControllerTest,
+       TestPasswordIssueWithoutKIOSPasswordCheckup) {
+  // Disable Password Checkup feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kIOSPasswordCheckup);
+
   CreateController();
   AddPasswordIssue();
   EXPECT_EQ(1, NumberOfSections());
 
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   CheckURLCellTitleAndDetailText(@"example.com", @"test@egmail.com", 0, 0);
+}
+
+// Test verifies password issue is displayed correctly when kIOSPasswordCheckup
+// feature is enabled.
+TEST_F(PasswordIssuesTableViewControllerTest,
+       TestPasswordIssueWithKIOSPasswordCheckup) {
+  // Enable Password Checkup feature.
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kIOSPasswordCheckup);
+
+  CreateController();
+  AddPasswordIssue();
+  EXPECT_EQ(1, NumberOfSections());
+
+  EXPECT_EQ(2, NumberOfItemsInSection(0));
+  CheckURLCellTitleAndDetailText(@"example.com", @"test@egmail.com", 0, 0);
+  CheckTextCellTextWithId(IDS_IOS_CHANGE_COMPROMISED_PASSWORD, 0, 1);
 }
 
 // Test verifies tapping item triggers function in presenter.

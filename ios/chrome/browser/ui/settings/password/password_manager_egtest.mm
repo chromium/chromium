@@ -466,6 +466,10 @@ id<GREYMatcher> EditDoneButton() {
   return YES;
 }
 
+- (BOOL)passwordCheckupEnabled {
+  return YES;
+}
+
 - (GREYElementInteraction*)
     interactionForSinglePasswordEntryWithDomain:(NSString*)domain
                                        username:(NSString*)username {
@@ -553,6 +557,14 @@ id<GREYMatcher> EditDoneButton() {
     config.features_enabled.push_back(syncer::kPasswordNotesWithBackup);
   } else {
     config.features_disabled.push_back(syncer::kPasswordNotesWithBackup);
+  }
+
+  if ([self passwordCheckupEnabled]) {
+    config.features_enabled.push_back(
+        password_manager::features::kIOSPasswordCheckup);
+  } else {
+    config.features_disabled.push_back(
+        password_manager::features::kIOSPasswordCheckup);
   }
 
   return config;
@@ -2969,6 +2981,11 @@ id<GREYMatcher> EditDoneButton() {
 // Checks that deleting a compromised password from password issues goes back
 // to the list-of-issues which doesn't display that password anymore.
 - (void)testDeletePasswordIssue {
+  if ([self passwordCheckupEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"This test isn't implemented for Password Checkup yet.");
+  }
+
   GREYAssert([PasswordSettingsAppInterface
                  saveInsecurePassword:@"concrete password"
                              userName:@"concrete username"
@@ -2980,10 +2997,7 @@ id<GREYMatcher> EditDoneButton() {
   NSString* text = l10n_util::GetNSString(IDS_IOS_CHECK_PASSWORDS);
   NSString* detailText =
       base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-          password_manager::features::IsPasswordCheckupEnabled()
-              ? IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT
-              : IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT,
-          1));
+          IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT, 1));
 
   [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel([NSString
                                           stringWithFormat:@"%@, %@", text,
@@ -3630,6 +3644,27 @@ id<GREYMatcher> EditDoneButton() {
 @implementation PasswordManagerNotesDisabledTestCase
 
 - (BOOL)notesEnabled {
+  return NO;
+}
+
+// This causes the test case to actually be detected as a test case. The actual
+// tests are all inherited from the parent class.
+- (void)testEmpty {
+}
+
+@end
+
+// Rerun all the tests in this file but with kIOSPasswordCheckup disabled.
+// This will be removed once that feature launches fully, but ensures
+// regressions aren't introduced in the meantime.
+@interface PasswordManagerPasswordCheckupDisabledTestCase
+    : PasswordManagerTestCase
+
+@end
+
+@implementation PasswordManagerPasswordCheckupDisabledTestCase
+
+- (BOOL)passwordCheckupEnabled {
   return NO;
 }
 
