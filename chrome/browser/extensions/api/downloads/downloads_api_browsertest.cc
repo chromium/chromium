@@ -22,6 +22,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -74,6 +75,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "net/base/data_url.h"
+#include "net/base/mime_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -2407,14 +2409,22 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                           "  \"paused\": false,"
                           "  \"url\": \"%s\"}]",
                           download_url.c_str())));
-  // Extension for file URLs will not change even if the mime type is text/html.
+  // Extension cannot change generated file names for file URLs. Some of the
+  // platform may use .htm instead of .html.
+  base::FilePath::StringType extension;
+  net::GetPreferredExtensionForMimeType("text/html", &extension);
+  base::FilePath expected_name =
+      base::FilePath(FILE_PATH_LITERAL("download")).AddExtension(extension);
+
   ASSERT_TRUE(
       WaitFor(downloads::OnChanged::kEventName,
-              base::StringPrintf("[{\"id\": %d,"
-                                 "  \"filename\": {"
-                                 "    \"previous\": \"\","
-                                 "    \"current\": \"%s\"}}]",
-                                 result_id, GetFilename("file.txt").c_str())));
+              base::StringPrintf(
+                  "[{\"id\": %d,"
+                  "  \"filename\": {"
+                  "    \"previous\": \"\","
+                  "    \"current\": \"%s\"}}]",
+                  result_id,
+                  GetFilename(expected_name.AsUTF8Unsafe().c_str()).c_str())));
   ASSERT_TRUE(WaitFor(downloads::OnChanged::kEventName,
                       base::StringPrintf(
                           "[{\"id\": %d,"

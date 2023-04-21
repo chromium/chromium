@@ -1840,8 +1840,7 @@ TEST_F(DownloadTargetDeterminerTest, NotifyExtensionsLocalFile) {
 #endif  // BUILDFLAG(IS_WIN)
        "text/plain", FILE_PATH_LITERAL(""),
 
-       FILE_PATH_LITERAL("overridden/xyz"),
-       DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+       FILE_PATH_LITERAL("xyz.txt"), DownloadItem::TARGET_DISPOSITION_OVERWRITE,
 
        EXPECT_CRDOWNLOAD}};
 
