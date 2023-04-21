@@ -14,14 +14,6 @@ namespace features {
 BASE_DECLARE_FEATURE(kVideoTutorials);
 
 }  // namespace features
-
-namespace switches {
-
-// If set, the video tutorials will be fetched on startup.
-extern const char kVideoTutorialsInstantFetch[];
-
-}  // namespace switches
-
 }  // namespace video_tutorials
 
 #endif  // CHROME_BROWSER_VIDEO_TUTORIALS_SWITCHES_H_

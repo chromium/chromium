@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
@@ -14,7 +13,6 @@
 #include "chrome/browser/video_tutorials/internal/config.h"
 #include "chrome/browser/video_tutorials/internal/proto_conversions.h"
 #include "chrome/browser/video_tutorials/prefs.h"
-#include "chrome/browser/video_tutorials/switches.h"
 #include "components/language/core/browser/pref_names.h"
 
 namespace video_tutorials {
@@ -64,8 +62,6 @@ void TutorialServiceImpl::GetTutorial(FeatureType feature_type,
 void TutorialServiceImpl::StartFetchIfNecessary() {
   base::Time last_update_time = pref_service_->GetTime(kLastUpdatedTimeKey);
   bool ttl_expired =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kVideoTutorialsInstantFetch) ||
       ((base::Time::Now() - last_update_time) > Config::GetFetchFrequency());
   std::string accept_languages =
       pref_service_->GetString(language::prefs::kAcceptLanguages);

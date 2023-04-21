@@ -2497,8 +2497,6 @@ extern const char kUseToastManagerDescription[];
 
 extern const char kVideoTutorialsName[];
 extern const char kVideoTutorialsDescription[];
-extern const char kVideoTutorialsInstantFetchName[];
-extern const char kVideoTutorialsInstantFetchDescription[];
 
 extern const char kWebAuthnAndroidCredManName[];
 extern const char kWebAuthnAndroidCredManDescription[];

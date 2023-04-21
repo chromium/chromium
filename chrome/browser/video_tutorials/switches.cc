@@ -12,11 +12,4 @@ BASE_FEATURE(kVideoTutorials,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
-
-namespace switches {
-
-const char kVideoTutorialsInstantFetch[] = "video-tutorials-instant-fetch";
-
-}  // namespace switches
-
 }  // namespace video_tutorials
