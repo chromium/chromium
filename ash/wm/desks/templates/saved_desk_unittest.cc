@@ -22,11 +22,11 @@
 #include "ash/wm/desks/desk_action_view.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
-#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
+#include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_icon_container.h"
@@ -185,7 +185,7 @@ class SavedDeskTest : public OverviewTestBase {
   }
 
   // May return null in tablet mode.
-  const DesksBarView* GetDesksBarViewForRoot(aura::Window* root_window) {
+  const LegacyDeskBarView* GetDesksBarViewForRoot(aura::Window* root_window) {
     if (auto* overview_session = GetOverviewSession()) {
       return overview_session->GetGridWithRootWindow(root_window)
           ->desks_bar_view();
@@ -943,7 +943,7 @@ TEST_F(SavedDeskTest, SaveDeskButtonContainerAligned) {
   verify_save_desk_widget_bounds();
 
   // Create a new desk to leave zero state and verify.
-  const DesksBarView* desks_bar_view = overview_grid->desks_bar_view();
+  const LegacyDeskBarView* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view->IsZeroState());
   auto* new_desk_button = desks_bar_view->zero_state_new_desk_button();
   LeftClickOn(new_desk_button);
@@ -4158,7 +4158,7 @@ TEST_F(SavedDeskTest,
   // Pre-check whether the save desk button is in the correct state.
   EXPECT_TRUE(overview_grid->IsSaveDeskButtonContainerVisible());
 
-  const DesksBarView* desks_bar_view = overview_grid->desks_bar_view();
+  const LegacyDeskBarView* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_EQ(2u, desks_bar_view->mini_views().size());
   DeskMiniView* mini_view_to_be_removed =
       desks_bar_view->FindMiniViewForDesk(active_desk);

@@ -18,9 +18,9 @@
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desk_textfield.h"
-#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
+#include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -89,7 +89,7 @@ gfx::Rect DeskMiniView::GetDeskPreviewBounds(aura::Window* root_window) {
   return gfx::Rect(GetPreviewWidth(root_size, preview_height), preview_height);
 }
 
-DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
+DeskMiniView::DeskMiniView(LegacyDeskBarView* owner_bar,
                            aura::Window* root_window,
                            Desk* desk)
     : owner_bar_(owner_bar), root_window_(root_window), desk_(desk) {
@@ -190,7 +190,7 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
   auto* controller = DesksController::Get();
 
   // Don't show desk buttons when hovered while the dragged window is on
-  // the DesksBarView.
+  // the LegacyDeskBarView.
   // For switch access, setting desk buttons to visible allows users to
   // navigate to it.
   const bool visible =

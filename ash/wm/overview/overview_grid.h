@@ -33,7 +33,7 @@ class PresentationTimeRecorder;
 
 namespace ash {
 
-class DesksBarView;
+class LegacyDeskBarView;
 class OverviewGridEventHandler;
 class OverviewItem;
 class SavedDeskSaveDeskButton;
@@ -285,12 +285,13 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // (screen_location, and whether that location intersects with the
   // desks bar widget). |for_drop| should be set to true if this is called when
   // the item is being dropped when the drag is complete.
-  // Returns true if |screen_location| does intersect with the DesksBarView.
+  // Returns true if |screen_location| does intersect with the
+  // LegacyDeskBarView.
   bool IntersectsWithDesksBar(const gfx::Point& screen_location,
                               bool update_desks_bar_drag_details,
                               bool for_drop);
 
-  // Updates the drag details for DesksBarView to end the drag and move the
+  // Updates the drag details for LegacyDeskBarView to end the drag and move the
   // window of |drag_item| to another desk if it was dropped on a mini_view of
   // a desk that is different than that of the active desk or if dropped on the
   // new desk button. Returns true if the window was successfully moved to
@@ -420,8 +421,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   const views::Widget* desks_widget() const { return desks_widget_.get(); }
 
-  const DesksBarView* desks_bar_view() const { return desks_bar_view_; }
-  DesksBarView* desks_bar_view() { return desks_bar_view_; }
+  const LegacyDeskBarView* desks_bar_view() const { return desks_bar_view_; }
+  LegacyDeskBarView* desks_bar_view() { return desks_bar_view_; }
 
   bool should_animate_when_exiting() const {
     return should_animate_when_exiting_;
@@ -461,8 +462,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
     gfx::RectF dst;
   };
 
-  // Initializes the widget that contains the `DesksBarView` contents. Also will
-  // update the save desk buttons visibility after we initialize `DesksBarView`.
+  // Initializes the widget that contains the `LegacyDeskBarView` contents. Also
+  // will update the save desk buttons visibility after we initialize
+  // `LegacyDeskBarView`.
   void MaybeInitDesksWidget();
 
   // Gets the layout of the overview items. Layout is done in 2 stages
@@ -565,7 +567,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // feature is enabled.
   std::unique_ptr<views::Widget> desks_widget_;
   // The contents view of the above |desks_widget_| if created.
-  DesksBarView* desks_bar_view_ = nullptr;
+  LegacyDeskBarView* desks_bar_view_ = nullptr;
 
   // The drop target widget. The drop target is created when a window or
   // overview item is being dragged, and is destroyed when the drag ends or

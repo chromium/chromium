@@ -102,7 +102,7 @@ std::unique_ptr<views::Widget> DeskBarViewBase::CreateDeskWidget(
       // `root`.
       params.context = root;
       params.bounds = bounds;
-      params.name = "VirtualDesksWidget";
+      params.name = "OverviewDeskBarWidget";
 
       // Even though this widget exists on the active desk container, it should
       // not show up in the MRU list, and it should not be mirrored in the desks

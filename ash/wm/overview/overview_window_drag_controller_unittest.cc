@@ -10,11 +10,11 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_mini_view.h"
-#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -176,10 +176,12 @@ class OverviewWindowDragControllerTest : public AshTestBase {
               desks_bar_widget()->GetWindowBoundsInScreen().y());
   }
 
-  int GetDesksBarViewExpandedStateHeight(const DesksBarView* desks_bar_view) {
-    return DesksBarView::GetPreferredBarHeight(
+  int GetDesksBarViewExpandedStateHeight(
+      const LegacyDeskBarView* desks_bar_view) {
+    return LegacyDeskBarView::GetPreferredBarHeight(
         desks_bar_view->GetWidget()->GetNativeWindow()->GetRootWindow(),
-        DesksBarView::Type::kOverview, DesksBarView::State::kExpanded);
+        LegacyDeskBarView::Type::kOverview,
+        LegacyDeskBarView::State::kExpanded);
   }
 };
 

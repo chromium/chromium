@@ -27,11 +27,11 @@
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
-#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
+#include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_animations.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
@@ -1457,7 +1457,7 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
   const bool dragged_window_is_visible_on_all_desks =
       dragged_window &&
       desks_util::IsWindowVisibleOnAllWorkspaces(dragged_window);
-  // End the drag for the DesksBarView.
+  // End the drag for the LegacyDeskBarView.
   if (!IntersectsWithDesksBar(screen_location,
                               /*update_desks_bar_drag_details=*/
                               !dragged_window_is_visible_on_all_desks,
@@ -1753,11 +1753,11 @@ void OverviewGrid::ShowSavedDeskLibrary() {
     // bar. `GetGridEffectiveBounds` will not be the correct bounds for the
     // library if we are currently in the zero state mode.
     gfx::Rect library_bounds = bounds_;
-    library_bounds.Inset(gfx::Insets::TLBR(
-        DesksBarView::GetPreferredBarHeight(root_window_,
-                                            DesksBarView::Type::kOverview,
-                                            DesksBarView::State::kExpanded),
-        0, 0, 0));
+    library_bounds.Inset(
+        gfx::Insets::TLBR(LegacyDeskBarView::GetPreferredBarHeight(
+                              root_window_, LegacyDeskBarView::Type::kOverview,
+                              LegacyDeskBarView::State::kExpanded),
+                          0, 0, 0));
 
     saved_desk_library_widget_->SetBounds(library_bounds);
   }
@@ -2195,11 +2195,11 @@ void OverviewGrid::MaybeInitDesksWidget() {
       root_window_, GetDesksWidgetBounds(), DeskBarViewBase::Type::kOverview);
 
   // The following order of function calls is significant: SetContentsView()
-  // must be called before DesksBarView:: Init(). This is needed because the
-  // desks mini views need to access the widget to get the root window in order
-  // to know how to layout themselves.
+  // must be called before LegacyDeskBarView:: Init(). This is needed because
+  // the desks mini views need to access the widget to get the root window in
+  // order to know how to layout themselves.
   desks_bar_view_ =
-      desks_widget_->SetContentsView(std::make_unique<DesksBarView>(this));
+      desks_widget_->SetContentsView(std::make_unique<LegacyDeskBarView>(this));
   desks_bar_view_->Init();
 
   desks_widget_->Show();
@@ -2592,12 +2592,12 @@ void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(aura::Window* window,
 }
 
 int OverviewGrid::GetDesksBarHeight() const {
-  DeskBarViewBase::State state =
-      desks_bar_view_
-          ? desks_bar_view_->state()
-          : DesksBarView::GetPerferredState(DesksBarView::Type::kOverview);
-  return DesksBarView::GetPreferredBarHeight(
-      root_window_, DesksBarView::Type::kOverview, state);
+  DeskBarViewBase::State state = desks_bar_view_
+                                     ? desks_bar_view_->state()
+                                     : LegacyDeskBarView::GetPerferredState(
+                                           LegacyDeskBarView::Type::kOverview);
+  return LegacyDeskBarView::GetPreferredBarHeight(
+      root_window_, LegacyDeskBarView::Type::kOverview, state);
 }
 
 }  // namespace ash

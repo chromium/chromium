@@ -4,7 +4,7 @@
 
 #include "ash/wm/desks/cros_next_desk_button_base.h"
 
-#include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -24,7 +24,7 @@ constexpr int kFocusRingRadius = 16;
 CrOSNextDeskButtonBase::CrOSNextDeskButtonBase(
     const std::u16string& text,
     bool set_text,
-    DesksBarView* bar_view,
+    LegacyDeskBarView* bar_view,
     base::RepeatingClosure pressed_callback)
     : LabelButton(pressed_callback),
       bar_view_(bar_view),

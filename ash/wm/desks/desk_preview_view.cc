@@ -16,9 +16,9 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
-#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_constants.h"
@@ -523,7 +523,7 @@ void DeskPreviewView::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void DeskPreviewView::OnGestureEvent(ui::GestureEvent* event) {
-  DesksBarView* owner_bar = mini_view_->owner_bar();
+  LegacyDeskBarView* owner_bar = mini_view_->owner_bar();
 
   switch (event->type()) {
     // Only long press can trigger drag & drop.

@@ -5,8 +5,6 @@
 #ifndef ASH_WM_DESKS_DESKS_TEST_API_H_
 #define ASH_WM_DESKS_DESKS_TEST_API_H_
 
-#include <vector>
-
 #include "base/time/clock.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -33,7 +31,8 @@ class DeskMiniView;
 class ScrollArrowButton;
 
 // Helper class used by tests to access desks' internal elements. Including
-// elements of multiple different objects of desks. E.g, DesksBarView, Desk.
+// elements of multiple different objects of desks. E.g, LegacyDeskBarView,
+// Desk.
 class DesksTestApi {
  public:
   // Don't instantiate, just use the static helpers below.

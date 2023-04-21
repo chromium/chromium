@@ -13,7 +13,7 @@
 
 namespace ash {
 
-class DesksBarView;
+class LegacyDeskBarView;
 
 // The base class of buttons that appear in the desk bar view classes. It's
 // guaranteed this button always lives under a desk bar view.
@@ -29,7 +29,7 @@ class ASH_EXPORT DeskButtonBase : public views::LabelButton,
   // hierarchy.
   DeskButtonBase(const std::u16string& text,
                  bool set_text,
-                 DesksBarView* bar_view,
+                 LegacyDeskBarView* bar_view,
                  base::RepeatingClosure pressed_callback,
                  int corner_radius);
   ~DeskButtonBase() override;
@@ -68,7 +68,7 @@ class ASH_EXPORT DeskButtonBase : public views::LabelButton,
 
  protected:
   // The desk bar view instance above this button in the view hierarchy.
-  DesksBarView* bar_view_;
+  LegacyDeskBarView* bar_view_;
 
  private:
   friend class DesksTestApi;

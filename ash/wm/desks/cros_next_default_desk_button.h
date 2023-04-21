@@ -20,7 +20,7 @@ class CrOSNextDefaultDeskButton : public CrOSNextDeskButtonBase {
  public:
   METADATA_HEADER(CrOSNextDefaultDeskButton);
 
-  explicit CrOSNextDefaultDeskButton(DesksBarView* bar_view);
+  explicit CrOSNextDefaultDeskButton(LegacyDeskBarView* bar_view);
   CrOSNextDefaultDeskButton(const CrOSNextDefaultDeskButton&) = delete;
   CrOSNextDefaultDeskButton& operator=(const CrOSNextDefaultDeskButton&) =
       delete;

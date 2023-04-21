@@ -19,7 +19,7 @@ class View;
 namespace ash {
 
 class CrOSNextDeskIconButton;
-class DesksBarView;
+class LegacyDeskBarView;
 class DeskMiniView;
 class ExpandedDesksBarButton;
 
@@ -38,7 +38,7 @@ class ExpandedDesksBarButton;
 //   mini_views (new and existing) have already been laid out in their final
 //   positions.
 void PerformNewDeskMiniViewAnimation(
-    DesksBarView* bar_view,
+    LegacyDeskBarView* bar_view,
     std::vector<DeskMiniView*> new_mini_views,
     std::vector<DeskMiniView*> mini_views_left,
     std::vector<DeskMiniView*> mini_views_right,
@@ -58,7 +58,7 @@ void PerformNewDeskMiniViewAnimation(
 // have been laid out in their final positions as if the removed mini_view no
 // longer exists.
 void PerformRemoveDeskMiniViewAnimation(
-    DesksBarView* bar_view,
+    LegacyDeskBarView* bar_view,
     DeskMiniView* removed_mini_view,
     std::vector<DeskMiniView*> mini_views_left,
     std::vector<DeskMiniView*> mini_views_right,
@@ -68,10 +68,11 @@ void PerformRemoveDeskMiniViewAnimation(
 // state desks bar. It scales up and fades in the current mini views and the
 // ExpandedDesksBarButton. Also animates the desks bar view from the zero state
 // bar's height to the expanded bar's height.
-void PerformZeroStateToExpandedStateMiniViewAnimation(DesksBarView* bar_view);
+void PerformZeroStateToExpandedStateMiniViewAnimation(
+    LegacyDeskBarView* bar_view);
 
 void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
-    DesksBarView* bar_view);
+    LegacyDeskBarView* bar_view);
 
 // Performs the animation of switching from expanded state desks bar to zero
 // state desks bar. This happens when a desk is removed such that a single desk
@@ -86,7 +87,7 @@ void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
 //   laid out at their previous positions before the bar state transition.
 // - Layout will be done once the animation is completed.
 void PerformExpandedStateToZeroStateMiniViewAnimation(
-    DesksBarView* bar_view,
+    LegacyDeskBarView* bar_view,
     std::vector<DeskMiniView*> removed_mini_views);
 
 // Performs the mini_view reorder animation. It moves the desks to make space at
@@ -124,7 +125,7 @@ void PerformLibraryButtonVisibilityAnimation(
 // button have been laid out in their final positions.
 void PerformDeskIconButtonScaleAnimationCrOSNext(
     CrOSNextDeskIconButton* button,
-    DesksBarView* bar_view,
+    LegacyDeskBarView* bar_view,
     const gfx::Transform& new_desk_button_rects_transform,
     int shift_x);
 

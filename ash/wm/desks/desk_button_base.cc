@@ -7,7 +7,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
-#include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -24,7 +24,7 @@ constexpr int kFocusRingRadius = 8;
 
 DeskButtonBase::DeskButtonBase(const std::u16string& text,
                                bool set_text,
-                               DesksBarView* bar_view,
+                               LegacyDeskBarView* bar_view,
                                base::RepeatingClosure pressed_callback,
                                int corner_radius)
     : LabelButton(pressed_callback, std::u16string()),

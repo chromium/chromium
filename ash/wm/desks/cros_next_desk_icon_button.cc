@@ -10,8 +10,8 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
-#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "base/check_op.h"
@@ -58,7 +58,7 @@ int GetFocusRingRadiusForState(CrOSNextDeskIconButton::State state) {
 }  // namespace
 
 CrOSNextDeskIconButton::CrOSNextDeskIconButton(
-    DesksBarView* bar_view,
+    LegacyDeskBarView* bar_view,
     const gfx::VectorIcon* button_icon,
     const std::u16string& text,
     ui::ColorId icon_color_id,

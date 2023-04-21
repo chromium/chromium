@@ -11,7 +11,7 @@
 
 namespace ash {
 
-class DesksBarView;
+class LegacyDeskBarView;
 
 // The base class of buttons (default desk button, new desk button and library
 // button) on desks bar. It's guaranteed this button always lives under a desk
@@ -25,7 +25,7 @@ class CrOSNextDeskButtonBase : public views::LabelButton,
 
   explicit CrOSNextDeskButtonBase(const std::u16string& text,
                                   bool set_text,
-                                  DesksBarView* bar_view,
+                                  LegacyDeskBarView* bar_view,
                                   base::RepeatingClosure pressed_callback);
   CrOSNextDeskButtonBase(const CrOSNextDeskButtonBase&) = delete;
   CrOSNextDeskButtonBase& operator=(const CrOSNextDeskButtonBase&) = delete;
@@ -47,7 +47,7 @@ class CrOSNextDeskButtonBase : public views::LabelButton,
   virtual void UpdateFocusState();
 
   // Owned by the views hierarchy.
-  DesksBarView* const bar_view_;
+  LegacyDeskBarView* const bar_view_;
 
  private:
   base::RepeatingClosure pressed_callback_;

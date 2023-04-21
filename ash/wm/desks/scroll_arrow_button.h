@@ -11,7 +11,7 @@
 
 namespace ash {
 
-class DesksBarView;
+class LegacyDeskBarView;
 
 // The scroll button used by scrollable desks bar in Bento. An arrow icon will
 // be added to the button. But Button used here instead of ImageButton since we
@@ -21,7 +21,7 @@ class ASH_EXPORT ScrollArrowButton : public views::Button {
  public:
   ScrollArrowButton(base::RepeatingClosure on_scroll,
                     bool is_left_arrow,
-                    DesksBarView* bar_view);
+                    LegacyDeskBarView* bar_view);
   ScrollArrowButton(const ScrollArrowButton&) = delete;
   ScrollArrowButton& operator=(const ScrollArrowButton&) = delete;
   ~ScrollArrowButton() override;
@@ -44,7 +44,7 @@ class ASH_EXPORT ScrollArrowButton : public views::Button {
   // The subscription of button state change callback.
   base::CallbackListSubscription state_change_subscription_;
   const bool is_left_arrow_;
-  DesksBarView* const bar_view_;  // Not owned.
+  LegacyDeskBarView* const bar_view_;  // Not owned.
   // If the button is kept pressed, trigger scroll every one second.
   base::RepeatingTimer timer_;
 };

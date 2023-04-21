@@ -21,7 +21,7 @@ class DeskActionContextMenu;
 class DeskActionView;
 class DeskNameView;
 class DeskPreviewView;
-class DesksBarView;
+class LegacyDeskBarView;
 
 // A view that acts as a mini representation (a.k.a. desk thumbnail) of a
 // virtual desk in the desk bar view when overview mode is active. This view
@@ -41,7 +41,9 @@ class ASH_EXPORT DeskMiniView : public views::View,
   // which it resides.
   static gfx::Rect GetDeskPreviewBounds(aura::Window* root_window);
 
-  DeskMiniView(DesksBarView* owner_bar, aura::Window* root_window, Desk* desk);
+  DeskMiniView(LegacyDeskBarView* owner_bar,
+               aura::Window* root_window,
+               Desk* desk);
 
   DeskMiniView(const DeskMiniView&) = delete;
   DeskMiniView& operator=(const DeskMiniView&) = delete;
@@ -57,7 +59,7 @@ class ASH_EXPORT DeskMiniView : public views::View,
   const DeskActionView* desk_action_view() const { return desk_action_view_; }
   DeskActionView* desk_action_view() { return desk_action_view_; }
 
-  DesksBarView* owner_bar() { return owner_bar_; }
+  LegacyDeskBarView* owner_bar() { return owner_bar_; }
   const DeskPreviewView* desk_preview() const { return desk_preview_; }
   DeskPreviewView* desk_preview() { return desk_preview_; }
 
@@ -148,7 +150,7 @@ class ASH_EXPORT DeskMiniView : public views::View,
   // Layout |desk_name_view_| given the current bounds of the desk preview.
   void LayoutDeskNameView(const gfx::Rect& preview_bounds);
 
-  DesksBarView* const owner_bar_;
+  LegacyDeskBarView* const owner_bar_;
 
   // The root window on which this mini_view is created.
   aura::Window* const root_window_;

@@ -725,7 +725,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
       // Overview mode should allow selections.
       if (isDesktop) {
         let walker = target;
-        while (walker && walker.className !== 'VirtualDesksWidget' &&
+        while (walker && walker.className !== 'OverviewDeskBarWidget' &&
                walker.className !== 'OverviewModeLabel' &&
                walker.className !== 'Desk_Container_A') {
           walker = walker.parent;

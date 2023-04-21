@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_DESKS_DESKS_BAR_VIEW_H_
-#define ASH_WM_DESKS_DESKS_BAR_VIEW_H_
+#ifndef ASH_WM_DESKS_LEGACY_DESK_BAR_VIEW_H_
+#define ASH_WM_DESKS_LEGACY_DESK_BAR_VIEW_H_
 
 #include <memory>
 #include <vector>
@@ -32,16 +32,17 @@ class ScrollArrowButton;
 class ZeroStateDefaultDeskButton;
 class ZeroStateIconButton;
 
-// A bar that resides at the top portion of the overview mode's ShieldView,
-// which contains the virtual desks mini_views, as well as the new desk button.
-class ASH_EXPORT DesksBarView : public DeskBarViewBase {
+// A bar that resides at the top portion of the overview, which contains desk
+// mini views, the new desk button, the library button, and the scroll arrow
+// buttons.
+class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
  public:
-  explicit DesksBarView(OverviewGrid* overview_grid);
+  explicit LegacyDeskBarView(OverviewGrid* overview_grid);
 
-  DesksBarView(const DesksBarView&) = delete;
-  DesksBarView& operator=(const DesksBarView&) = delete;
+  LegacyDeskBarView(const LegacyDeskBarView&) = delete;
+  LegacyDeskBarView& operator=(const LegacyDeskBarView&) = delete;
 
-  ~DesksBarView() override;
+  ~LegacyDeskBarView() override;
 
   void set_is_bounds_animation_on_going(bool value) {
     is_bounds_animation_on_going_ = value;
@@ -169,7 +170,7 @@ class ASH_EXPORT DesksBarView : public DeskBarViewBase {
   // If a desk is in a drag & drop cycle.
   bool IsDraggingDesk() const;
 
-  // Called when the saved desk library is hidden. Transitions the desks bar
+  // Called when the saved desk library is hidden. Transitions the desk bar
   // view to zero state if necessary.
   void OnSavedDeskLibraryHidden();
 
@@ -225,11 +226,11 @@ class ASH_EXPORT DesksBarView : public DeskBarViewBase {
   // and the `zero_state_default_desk_button_`.
   void UpdateButtonsForSavedDeskGrid();
 
-  // Updates the visibility of the two buttons inside the zero state desks bar
-  // and the ExpandedDesksBarButton on the desk bar's state.
+  // Updates the visibility of the two buttons inside the zero state desk bar
+  // and the `ExpandedDesksBarButton` on the desk bar's state.
   void UpdateDeskButtonsVisibility();
 
-  // Udates the visibility of the `default_desk_button_` on the desks bar's
+  // Udates the visibility of the `default_desk_button_` on the desk bar's
   // state.
   // TODO(conniekxu): Remove `UpdateDeskButtonsVisibility`, replace it with this
   // function, and rename this function by removing the prefix CrOSNext.
@@ -237,7 +238,7 @@ class ASH_EXPORT DesksBarView : public DeskBarViewBase {
 
   // Updates the visibility of the saved desk library button based on whether
   // the saved desk feature is enabled, the user has any saved desks and the
-  // state of the desks bar.
+  // state of the desk bar.
   void UpdateLibraryButtonVisibility();
 
   // Updates the visibility of the saved desk library button based on whether
@@ -301,7 +302,7 @@ class ASH_EXPORT DesksBarView : public DeskBarViewBase {
   // the corresponding scroll button is visible.
   void UpdateGradientMask();
 
-  // Scrolls the desks bar to the previous or next page. The page size is the
+  // Scrolls the desk bar to the previous or next page. The page size is the
   // width of the scroll view, the contents that are outside of the scroll view
   // will be clipped and can not be seen.
   void ScrollToPreviousPage();
@@ -324,7 +325,7 @@ class ASH_EXPORT DesksBarView : public DeskBarViewBase {
   // The views representing desks mini_views. They're owned by views hierarchy.
   std::vector<DeskMiniView*> mini_views_;
 
-  // Observes mouse events on the desks bar widget and updates the states of the
+  // Observes mouse events on the desk bar widget and updates the states of the
   // mini_views accordingly.
   std::unique_ptr<DeskBarHoverObserver> hover_observer_;
 
@@ -391,4 +392,4 @@ class ASH_EXPORT DesksBarView : public DeskBarViewBase {
 
 }  // namespace ash
 
-#endif  // ASH_WM_DESKS_DESKS_BAR_VIEW_H_
+#endif  // ASH_WM_DESKS_LEGACY_DESK_BAR_VIEW_H_

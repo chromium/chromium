@@ -12,12 +12,12 @@ namespace ash {
 
 class DeskMiniView;
 class DeskPreviewView;
-class DesksBarView;
+class LegacyDeskBarView;
 
 // A helper class includes a widget whose content is the preview of the dragged
 // desk.
 // TODO(zxdan): Consider adding a DeskDragController to handle the communication
-// between DeskPreviewView and DesksBarView after M89.
+// between DeskPreviewView and LegacyDeskBarView after M89.
 class DeskDragProxy : public ui::ImplicitAnimationObserver {
  public:
   enum class State {
@@ -28,7 +28,7 @@ class DeskDragProxy : public ui::ImplicitAnimationObserver {
     kEnded,         // The drag and drop finished.
   };
 
-  DeskDragProxy(DesksBarView* desks_bar_view,
+  DeskDragProxy(LegacyDeskBarView* desks_bar_view,
                 DeskMiniView* drag_view,
                 float init_offset_x);
   DeskDragProxy(const DeskDragProxy&) = delete;
@@ -53,7 +53,7 @@ class DeskDragProxy : public ui::ImplicitAnimationObserver {
   State state() const { return state_; }
 
  private:
-  DesksBarView* desks_bar_view_ = nullptr;
+  LegacyDeskBarView* desks_bar_view_ = nullptr;
   // The desk's mini view being dragged.
   DeskMiniView* drag_view_ = nullptr;
   // The desk preview view generated based on the `drag_view_`.

@@ -10,8 +10,8 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
-#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -193,7 +193,7 @@ bool IsDraggingAnyDesk() {
     return false;
 
   for (auto& grid : overview_session->grid_list()) {
-    const DesksBarView* desks_bar_view = grid->desks_bar_view();
+    const LegacyDeskBarView* desks_bar_view = grid->desks_bar_view();
     if (desks_bar_view && desks_bar_view->IsDraggingDesk())
       return true;
   }

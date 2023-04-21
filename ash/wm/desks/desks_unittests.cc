@@ -52,13 +52,13 @@
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desk_textfield.h"
-#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/desks_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
+#include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "ash/wm/desks/scroll_arrow_button.h"
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
@@ -420,7 +420,8 @@ class DesksTest : public AshTestBase,
     scoped_feature_list_.Reset();
   }
 
-  const views::LabelButton* GetDefaultDeskButton(const DesksBarView* bar_view) {
+  const views::LabelButton* GetDefaultDeskButton(
+      const LegacyDeskBarView* bar_view) {
     if (GetParam().enable_jellyroll) {
       return bar_view->default_desk_button();
     }
@@ -429,7 +430,7 @@ class DesksTest : public AshTestBase,
   }
 
   const views::LabelButton* GetZeroStateNewDeskButton(
-      const DesksBarView* bar_view) {
+      const LegacyDeskBarView* bar_view) {
     if (GetParam().enable_jellyroll) {
       return bar_view->new_desk_button();
     }
@@ -438,7 +439,7 @@ class DesksTest : public AshTestBase,
   }
 
   const views::View* GetExpandedStateNewDeskButton(
-      const DesksBarView* bar_view) {
+      const LegacyDeskBarView* bar_view) {
     if (GetParam().enable_jellyroll) {
       return bar_view->new_desk_button();
     }
@@ -447,7 +448,7 @@ class DesksTest : public AshTestBase,
   }
 
   const views::LabelButton* GetExpandedStateInnerNewDeskButton(
-      const DesksBarView* bar_view) {
+      const LegacyDeskBarView* bar_view) {
     if (GetParam().enable_jellyroll) {
       return bar_view->new_desk_button();
     }
@@ -455,7 +456,7 @@ class DesksTest : public AshTestBase,
     return bar_view->expanded_state_new_desk_button()->GetInnerButton();
   }
 
-  void VerifyZeroStateNewDeskButtonVisibility(const DesksBarView* bar_view,
+  void VerifyZeroStateNewDeskButtonVisibility(const LegacyDeskBarView* bar_view,
                                               bool expected_visibility) {
     // If `Jellyroll` is enabled, new desk button is always visible no matter
     // what's the current desks bar's state. Thus check the button's state
@@ -472,8 +473,9 @@ class DesksTest : public AshTestBase,
               bar_view->zero_state_new_desk_button()->GetVisible());
   }
 
-  void VerifyExpandedStateNewDeskButtonVisibility(const DesksBarView* bar_view,
-                                                  bool expected_visibility) {
+  void VerifyExpandedStateNewDeskButtonVisibility(
+      const LegacyDeskBarView* bar_view,
+      bool expected_visibility) {
     // If `Jellyroll` is enabled, new desk button is always visible no matter
     // what's the current desks bar's state. Thus verify the button's state
     // instead of the visibility.
@@ -493,7 +495,7 @@ class DesksTest : public AshTestBase,
     PressAndReleaseKey(key_code, flags);
   }
 
-  SkColor GetNewDeskButtonBackgroundColor(const DesksBarView* bar_view) {
+  SkColor GetNewDeskButtonBackgroundColor(const LegacyDeskBarView* bar_view) {
     return GetParam().enable_jellyroll
                ? bar_view->new_desk_button()->background()->get_color()
                : bar_view->expanded_state_new_desk_button()
@@ -2814,7 +2816,7 @@ class DesksEditableNamesTest : public DesksTest {
 
   DesksController* controller() { return controller_; }
   OverviewGrid* overview_grid() { return overview_grid_; }
-  const DesksBarView* desks_bar_view() { return desks_bar_view_; }
+  const LegacyDeskBarView* desks_bar_view() { return desks_bar_view_; }
 
   // DesksTest:
   void SetUp() override {
@@ -2844,7 +2846,7 @@ class DesksEditableNamesTest : public DesksTest {
  private:
   DesksController* controller_ = nullptr;
   OverviewGrid* overview_grid_ = nullptr;
-  const DesksBarView* desks_bar_view_ = nullptr;
+  const LegacyDeskBarView* desks_bar_view_ = nullptr;
 };
 
 TEST_P(DesksEditableNamesTest, DefaultNameChangeAborted) {
@@ -5542,8 +5544,8 @@ TEST_P(DesksTest, NameNudges) {
 
 // Tests that name nudges works with multiple displays. When a user
 // clicks/touches the new desk button, the newly created DeskNameView that
-// resides on the same DesksBarView as the clicked button should be focused.
-// See crbug.com/1206013.
+// resides on the same LegacyDeskBarView as the clicked button should be
+// focused. See crbug.com/1206013.
 TEST_P(DesksTest, NameNudgesMultiDisplay) {
   UpdateDisplay("800x700,800x700");
 
@@ -8111,7 +8113,7 @@ TEST_P(DesksCloseAllTest, CombineDesksTooltipIsUpdatedOnUserActions) {
   EnterOverview();
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 
-  const DesksBarView* desks_bar_view = GetPrimaryRootDesksBarView();
+  const LegacyDeskBarView* desks_bar_view = GetPrimaryRootDesksBarView();
 
   // Cache the mini views and their name views and combine desks buttons.
   DeskMiniView* mini_view_1 = desks_bar_view->mini_views()[0];

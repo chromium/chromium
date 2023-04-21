@@ -13,9 +13,9 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desk.h"
-#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
@@ -379,7 +379,7 @@ void SavedDeskPresenter::UpdateUIForSavedDeskLibrary() {
     should_show_saved_desk_library_ =
         !in_tablet_mode && (is_showing_library || has_saved_desks);
 
-    if (DesksBarView* desks_bar_view = overview_grid->desks_bar_view()) {
+    if (LegacyDeskBarView* desks_bar_view = overview_grid->desks_bar_view()) {
       desks_bar_view->UpdateLibraryButtonVisibility();
       desks_bar_view->UpdateButtonsForSavedDeskGrid();
       overview_grid->UpdateSaveDeskButtons();
@@ -563,7 +563,7 @@ void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
       OverviewGrid* overview_grid =
           overview_session->GetGridWithRootWindow(root_window);
 
-      const DesksBarView* desks_bar_view = overview_grid->desks_bar_view();
+      const LegacyDeskBarView* desks_bar_view = overview_grid->desks_bar_view();
       DCHECK(desks_bar_view);
       DeskMiniView* mini_view = desks_bar_view->FindMiniViewForDesk(new_desk);
       DCHECK(mini_view);
