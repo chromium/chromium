@@ -923,7 +923,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                         Profile* profile,
                         content::WebContents* web_contents) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-    {"autofillPageTitle", IDS_SETTINGS_AUTOFILL},
+    {"autofillPageTitle", IDS_SETTINGS_AUTOFILL_AND_PASSWORDS},
     {"passwordsDescription", IDS_SETTINGS_PASSWORD_MANAGER_DESCRIPTION},
     {"passwordsDevice", IDS_SETTINGS_DEVICE_PASSWORDS},
     {"checkPasswords", IDS_SETTINGS_CHECK_PASSWORDS},
