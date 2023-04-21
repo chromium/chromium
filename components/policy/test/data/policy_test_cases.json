@@ -22607,9 +22607,6 @@
   },
   "RealTimeDownloadProtectionRequestAllowed": {
     "os": [
-      "win",
-      "linux",
-      "mac",
       "chromeos_ash",
       "chromeos_lacros"
     ],
@@ -22720,13 +22717,8 @@
   },
   "ClientSidePhishingProtectionAllowed": {
     "os": [
-      "win",
-      "linux",
-      "mac",
       "chromeos_ash",
-      "chromeos_lacros",
-      "android",
-      "fuchsia"
+      "chromeos_lacros"
     ],
     "policy_pref_mapping_tests": [
       {

@@ -5,12 +5,10 @@ desc: |-
 default: true
 example_value: true
 features:
+  cloud_only: true
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome.*
-- chrome_os
-- fuchsia
+  unlisted: true
 items:
 - caption: Real Time Download Protection is controlled by <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME">SafeBrowsingProtectionLevel</ph> policy
   value: true
@@ -21,6 +19,8 @@ owners:
 - file://components/safe_browsing/OWNERS
 schema:
   type: boolean
+supported_on:
+- chrome_os:114-
 tags:
 - google-sharing
 type: main
