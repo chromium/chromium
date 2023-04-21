@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -39,7 +40,7 @@ const char* kBlockedEventsByTriggerProperty[] = {"Content Protection"};
 struct DrmDisplayParams {
   scoped_refptr<DrmDevice> drm;
   std::unique_ptr<HardwareDisplayControllerInfo> display_info;
-  display::DisplaySnapshot* snapshot;
+  raw_ptr<display::DisplaySnapshot, ExperimentalAsh> snapshot;
 };
 
 class DisplayComparator {

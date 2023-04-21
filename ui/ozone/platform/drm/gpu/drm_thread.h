@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -202,7 +203,7 @@ class DrmThread : public base::Thread,
  private:
   struct TaskInfo {
     base::OnceClosure task;
-    base::WaitableEvent* done;
+    raw_ptr<base::WaitableEvent, ExperimentalAsh> done;
 
     TaskInfo(base::OnceClosure task, base::WaitableEvent* done);
     TaskInfo(TaskInfo&& other);

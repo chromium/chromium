@@ -5,6 +5,7 @@
 #ifndef UI_DISPLAY_MANAGER_TEST_TOUCH_DEVICE_MANAGER_TEST_API_H_
 #define UI_DISPLAY_MANAGER_TEST_TOUCH_DEVICE_MANAGER_TEST_API_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/display/manager/touch_device_manager.h"
 
@@ -51,7 +52,7 @@ class DISPLAY_MANAGER_EXPORT TouchDeviceManagerTestApi {
 
  private:
   // Not owned
-  TouchDeviceManager* touch_device_manager_;
+  raw_ptr<TouchDeviceManager, ExperimentalAsh> touch_device_manager_;
 };
 
 }  // namespace test

@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/display/types/display_constants.h"
@@ -45,7 +46,7 @@ class DrmPropertyBlobMetadata {
   uint32_t id() const { return id_; }
 
  private:
-  DrmWrapper* drm_;  // Not owned;
+  raw_ptr<DrmWrapper, ExperimentalAsh> drm_;  // Not owned;
   uint32_t id_;
 };
 

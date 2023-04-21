@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/display/types/native_display_delegate.h"
 
@@ -59,7 +60,8 @@ class DrmNativeDisplayDelegate : public display::NativeDisplayDelegate {
   display::FakeDisplayController* GetFakeDisplayController() override;
 
  private:
-  DrmDisplayHostManager* const display_manager_;  // Not owned.
+  const raw_ptr<DrmDisplayHostManager, ExperimentalAsh>
+      display_manager_;  // Not owned.
 
   base::ObserverList<display::NativeDisplayObserver>::Unchecked observers_;
 };

@@ -13,6 +13,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
 
@@ -171,7 +172,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
   using EnglishToIDMap = base::flat_map<std::string, int>;
   EnglishToIDMap english_to_resource_id_;
 
-  InputMethodDelegate* delegate_;
+  raw_ptr<InputMethodDelegate, ExperimentalAsh> delegate_;
 
   base::ThreadChecker thread_checker_;
   std::vector<std::string> hardware_layouts_;

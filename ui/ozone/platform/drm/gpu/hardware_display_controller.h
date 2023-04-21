@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
@@ -232,7 +233,7 @@ class HardwareDisplayController {
   std::unique_ptr<DrmDumbBuffer> cursor_buffers_[2];
   gfx::Point cursor_location_;
   int cursor_frontbuffer_ = 0;
-  DrmDumbBuffer* current_cursor_ = nullptr;
+  raw_ptr<DrmDumbBuffer, ExperimentalAsh> current_cursor_ = nullptr;
 
   // Maps each fourcc_format to its preferred modifier which was generated
   // through modeset-test and updated in UpdatePreferredModifierForFormat().

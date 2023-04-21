@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/char_iterator.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -389,7 +390,7 @@ class InputMethodAshTest : public ui::ImeKeyEventDispatcher,
 
   bool stop_propagation_post_ime_;
 
-  TestInputMethodManager* input_method_manager_;
+  raw_ptr<TestInputMethodManager, ExperimentalAsh> input_method_manager_;
 
   base::test::TaskEnvironment task_environment_;
 };

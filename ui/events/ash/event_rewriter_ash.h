@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/devices/input_device.h"
@@ -327,7 +328,7 @@ class EventRewriterAsh : public EventRewriter {
   // used to interpret modifiers on pointer events.
   int last_keyboard_device_id_;
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   // For each pair, the first element is the rewritten key state and the second
   // one is the original key state. If no key event rewriting happens, the first
@@ -336,7 +337,7 @@ class EventRewriterAsh : public EventRewriter {
 
   // The sticky keys controller is not owned here;
   // at time of writing it is a singleton in ash::Shell.
-  EventRewriter* const sticky_keys_controller_;
+  const raw_ptr<EventRewriter, ExperimentalAsh> sticky_keys_controller_;
 
   // Some drallion devices have digital privacy screens and a corresponding
   // privacy screen toggle key in the top row.
@@ -370,8 +371,8 @@ class EventRewriterAsh : public EventRewriter {
   // latches. See b/216049965 for more details.
   base::flat_map<DomCode, ui::EventFlags> previous_non_modifier_latches_;
 
-  KeyboardCapability* const keyboard_capability_;
-  ash::input_method::ImeKeyboard* const ime_keyboard_;
+  const raw_ptr<KeyboardCapability, ExperimentalAsh> keyboard_capability_;
+  const raw_ptr<ash::input_method::ImeKeyboard, ExperimentalAsh> ime_keyboard_;
 
   // True if alt + key and mouse event remapping is allowed. In some scenario,
   // such as clicking a button in the Alt-Tab UI, this remapping undesirably

@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/ozone/public/swap_completion_callback.h"
@@ -42,7 +43,7 @@ class DrmWindowProxy {
  private:
   const gfx::AcceleratedWidget widget_;
 
-  DrmThread* const drm_thread_;
+  const raw_ptr<DrmThread, ExperimentalAsh> drm_thread_;
 };
 
 }  // namespace ui

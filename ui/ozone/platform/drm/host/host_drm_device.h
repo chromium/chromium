@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
@@ -117,8 +118,9 @@ class HostDrmDevice : public base::RefCountedThreadSafe<HostDrmDevice>,
   // Mojo implementation of the DrmDevice. Will be bound on the "main" thread.
   mojo::Remote<ui::ozone::mojom::DrmDevice> drm_device_;
 
-  DrmDisplayHostManager* display_manager_;  // Not owned.
-  DrmCursor* const cursor_;                 // Not owned.
+  raw_ptr<DrmDisplayHostManager, ExperimentalAsh>
+      display_manager_;                               // Not owned.
+  const raw_ptr<DrmCursor, ExperimentalAsh> cursor_;  // Not owned.
 
   std::unique_ptr<HostCursorProxy> cursor_proxy_;
 

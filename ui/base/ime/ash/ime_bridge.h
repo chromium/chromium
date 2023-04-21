@@ -6,6 +6,7 @@
 #define UI_BASE_IME_ASH_IME_BRIDGE_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/base/ime/ash/ime_assistive_window_handler_interface.h"
 #include "ui/base/ime/ash/ime_bridge_observer.h"
@@ -78,14 +79,17 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEBridge {
   IMEBridge();
 
   // TODO(b/245020074): Rename this member.
-  TextInputTarget* input_context_handler_ = nullptr;
+  raw_ptr<TextInputTarget, ExperimentalAsh> input_context_handler_ = nullptr;
   // TODO(b/245020074): Rename this member.
-  TextInputMethod* engine_handler_ = nullptr;
+  raw_ptr<TextInputMethod, ExperimentalAsh> engine_handler_ = nullptr;
   base::ObserverList<IMEBridgeObserver> observers_;
   TextInputMethod::InputContext current_input_context_;
 
-  IMECandidateWindowHandlerInterface* candidate_window_handler_ = nullptr;
-  IMEAssistiveWindowHandlerInterface* assistive_window_handler_ = nullptr;
+  raw_ptr<IMECandidateWindowHandlerInterface, ExperimentalAsh>
+      candidate_window_handler_ = nullptr;
+  raw_ptr<IMEAssistiveWindowHandlerInterface,
+          DanglingUntriaged | ExperimentalAsh>
+      assistive_window_handler_ = nullptr;
 };
 
 }  // namespace ash

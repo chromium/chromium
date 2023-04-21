@@ -6,6 +6,7 @@
 #define UI_BASE_IME_ASH_IME_KEYBOARD_IMPL_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 
 namespace ui {
@@ -37,7 +38,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) ImeKeyboardImpl : public ImeKeyboard {
   bool CapsLockIsEnabled() override;
 
  private:
-  ui::InputController* const input_controller_;
+  const raw_ptr<ui::InputController, ExperimentalAsh> input_controller_;
 };
 
 }  // namespace input_method

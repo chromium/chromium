@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/manager/default_touch_transform_setter.h"
@@ -160,7 +161,7 @@ class TouchTransformControllerTest : public testing::Test {
  private:
   std::unique_ptr<DisplayManager> display_manager_;
   std::unique_ptr<TouchTransformController> touch_transform_controller_;
-  TouchDeviceManager* touch_device_manager_;
+  raw_ptr<TouchDeviceManager, ExperimentalAsh> touch_device_manager_;
 };
 
 TEST_F(TouchTransformControllerTest, MirrorModeLetterboxing) {

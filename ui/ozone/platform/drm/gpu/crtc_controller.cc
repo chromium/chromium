@@ -51,9 +51,9 @@ bool CrtcController::AssignOverlayPlanes(HardwareDisplayPlaneList* plane_list,
 
   const DrmOverlayPlane* primary = DrmOverlayPlane::GetPrimaryPlane(overlays);
   if (primary &&
-      !drm_->plane_manager()->ValidatePrimarySize(*primary, state_.mode)) {
+      !drm_->plane_manager()->ValidatePrimarySize(*primary, state_->mode)) {
     VLOG(2) << "Trying to pageflip a buffer with the wrong size. Expected "
-            << ModeSize(state_.mode).ToString() << " got "
+            << ModeSize(state_->mode).ToString() << " got "
             << primary->buffer->size().ToString() << " for"
             << " crtc=" << crtc_ << " connector=" << connector_;
     return true;
@@ -93,7 +93,7 @@ void CrtcController::WriteIntoTrace(perfetto::TracedValue context) const {
   dict.Add("crtc_id", crtc_);
   dict.Add("connector", connector_);
 
-  DrmWriteIntoTraceHelper(state_.mode, dict.AddItem("mode"));
+  DrmWriteIntoTraceHelper(state_->mode, dict.AddItem("mode"));
 }
 
 }  // namespace ui

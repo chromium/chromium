@@ -20,6 +20,7 @@
 #include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/chromeos_buildflags.h"
@@ -517,7 +518,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
     ~BeginEndNotifier();
 
    private:
-    DisplayManager* display_manager_;
+    raw_ptr<DisplayManager, ExperimentalAsh> display_manager_;
   };
 
   void set_change_display_upon_host_resize(bool value) {
@@ -586,7 +587,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
 
   void UpdateLayoutForMixedMode();
 
-  Delegate* delegate_ = nullptr;  // not owned.
+  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;  // not owned.
 
   // When set to true, DisplayManager will use DisplayConfigurator to configure
   // displays. By default, this is set to true when running on device and false

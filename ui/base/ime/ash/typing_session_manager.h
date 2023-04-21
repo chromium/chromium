@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 
@@ -38,7 +39,7 @@ class TypingSessionManager {
 
   base::Time last_user_action_time_;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
 
   bool is_active_;
 };

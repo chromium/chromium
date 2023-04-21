@@ -11,6 +11,7 @@
 
 #include "base/containers/queue.h"
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/display/types/native_display_delegate.h"
 #include "ui/events/ozone/device/device_event.h"
@@ -108,11 +109,13 @@ class DrmDisplayHostManager : public DeviceEventObserver, GpuThreadObserver {
 
   void NotifyDisplayDelegate() const;
 
-  GpuThreadAdapter* const proxy_;                 // Not owned.
-  DeviceManager* const device_manager_;           // Not owned.
-  InputControllerEvdev* const input_controller_;  // Not owned.
+  const raw_ptr<GpuThreadAdapter, ExperimentalAsh> proxy_;        // Not owned.
+  const raw_ptr<DeviceManager, ExperimentalAsh> device_manager_;  // Not owned.
+  const raw_ptr<InputControllerEvdev, ExperimentalAsh>
+      input_controller_;  // Not owned.
 
-  DrmNativeDisplayDelegate* delegate_ = nullptr;  // Not owned.
+  raw_ptr<DrmNativeDisplayDelegate, ExperimentalAsh> delegate_ =
+      nullptr;  // Not owned.
 
   // File path for the primary graphics card which is opened by default in the
   // GPU process. We'll avoid opening this in hotplug events since it will race
