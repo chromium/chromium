@@ -7,7 +7,6 @@
 #include "build/chromeos_buildflags.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
-#include "third_party/blink/renderer/core/layout/line/line_orientation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_text_decoration_offset.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -472,13 +471,15 @@ absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
 
   const WritingMode writing_mode = style.GetWritingMode();
   if (ShadowList* text_shadow = style.TextShadow()) {
-    LayoutRectOutsets text_shadow_logical_outsets =
-        LineOrientationLayoutRectOutsets(
-            EnclosingLayoutRectOutsets(
-                text_shadow->RectOutsetsIncludingOriginal()),
-            writing_mode);
-    text_shadow_logical_outsets.ClampNegativeToZero();
-    ink_overflow.Expand(text_shadow_logical_outsets);
+    NGLineBoxStrut text_shadow_logical_outsets =
+        NGPhysicalBoxStrut::Enclosing(
+            text_shadow->RectOutsetsIncludingOriginal())
+            .ConvertToLineLogical({writing_mode, TextDirection::kLtr});
+    ink_overflow.ExpandEdges(
+        text_shadow_logical_outsets.line_over.ClampNegativeToZero(),
+        text_shadow_logical_outsets.inline_end.ClampNegativeToZero(),
+        text_shadow_logical_outsets.line_under.ClampNegativeToZero(),
+        text_shadow_logical_outsets.inline_start.ClampNegativeToZero());
   }
 
   PhysicalRect local_ink_overflow =
