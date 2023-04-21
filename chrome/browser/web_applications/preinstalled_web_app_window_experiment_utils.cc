@@ -13,13 +13,21 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/clamped_math.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
 // TODO(crbug.com/1402146): Allow web apps to depend on app service.
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"  // nogncheck
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -30,6 +38,10 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif
 
 namespace web_app::preinstalled_web_app_window_experiment_utils {
 
@@ -193,10 +205,39 @@ bool AppsAreInstallingFromSync(WebAppRegistrar& registrar) {
   return false;
 }
 
-bool DetermineEligibility(WebAppRegistrar& registrar) {
+bool AnyWebAppsInstalledByPolicy(WebAppRegistrar& registrar) {
+  for (const WebApp& web_app : registrar.GetAppsIncludingStubs()) {
+    if (web_app.IsPolicyInstalledApp()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Managed Guest Sessions and ephemeral profiles are not eligible.
+bool ProfileIsEligible(Profile* profile) {
+  if (profiles::IsPublicSession()) {
+    return false;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::ProfileHelper::IsEphemeralUserProfile(profile)) {
+    return false;
+  }
+#endif
+
+  ProfileAttributesStorage& storage =
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile->GetPath());
+  return entry && !entry->IsEphemeral();
+}
+
+bool DetermineEligibility(Profile* profile, WebAppRegistrar& registrar) {
   return AllWebAppsInstalledRecently(registrar) &&
          AllWebAppsHaveNonSyncInstallSurface(registrar) &&
-         !AppsAreInstallingFromSync(registrar);
+         !AppsAreInstallingFromSync(registrar) &&
+         !AnyWebAppsInstalledByPolicy(registrar) && ProfileIsEligible(profile);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

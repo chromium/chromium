@@ -12,6 +12,7 @@
 #include "chrome/common/chrome_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class Profile;
 class PrefService;
 
 namespace apps {
@@ -63,8 +64,8 @@ absl::optional<bool> GetEligibilityPref(const PrefService* pref_service);
 void SetEligibilityPref(PrefService* pref_service, bool eligible);
 
 // Returns whether the user is currently eligible to join the experiment based
-// on installed apps state.
-bool DetermineEligibility(WebAppRegistrar& registrar);
+// on profile and installed apps state.
+bool DetermineEligibility(Profile* profile, WebAppRegistrar& registrar);
 
 // Apps launched before experiment:
 

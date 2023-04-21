@@ -53,6 +53,7 @@
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/user_manager/user_names.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -60,6 +61,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/web_applications/app_service/test/loopback_crosapi_app_service_proxy.h"
@@ -308,6 +314,42 @@ class PreinstalledWebAppWindowExperimentBrowserTestWindow
 
   base::test::ScopedFeatureList features_;
 };
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// WebAppProvider exists in Guest sessions on Ash only, so it is sufficient to
+// test Guest sessions on Ash only.
+class PreinstalledWebAppWindowExperimentBrowserTestWindowGuest
+    : public PreinstalledWebAppWindowExperimentBrowserTestWindow {
+ public:
+  PreinstalledWebAppWindowExperimentBrowserTestWindowGuest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PreinstalledWebAppWindowExperimentBrowserTestWindow::SetUpCommandLine(
+        command_line);
+
+    command_line->AppendSwitch(::switches::kIncognito);
+    command_line->AppendSwitch(ash::switches::kGuestSession);
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
+    command_line->AppendSwitchASCII(ash::switches::kLoginUser,
+                                    user_manager::kGuestUserName);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppWindowExperimentBrowserTestWindowGuest,
+                       IneligibleDueToGuestProfile) {
+  Profile& guest_profile = *browser()->profile();
+  EXPECT_TRUE(guest_profile.IsGuestSession());
+
+  // Allow eligibility check to happen.
+  SimulateSyncReady();
+  AwaitExperimentSetup();
+
+  // User is ineligible.
+  EXPECT_EQ(preinstalled_web_app_window_experiment_utils::GetUserGroupPref(
+                browser()->profile()->GetPrefs()),
+            UserGroup::kUnknown);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppWindowExperimentBrowserTestWindow,
                        IneligibleDueToNonRecentApp) {
