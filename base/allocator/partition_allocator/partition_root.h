@@ -290,6 +290,9 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     bool use_configurable_pool;
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
+    bool memory_tagging_enabled_;
+#endif
 
 #if BUILDFLAG(ENABLE_PKEYS)
     int pkey;
@@ -549,8 +552,6 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_ALWAYS_INLINE size_t
   AllocationCapacityFromRequestedSize(size_t size) const;
 
-  PA_ALWAYS_INLINE bool IsMemoryTaggingEnabled() const;
-
   // Frees memory from this partition, if possible, by decommitting pages or
   // even entire slot spans. |flags| is an OR of base::PartitionPurgeFlags.
   void PurgeMemory(int flags);
@@ -676,7 +677,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     // If quarantine is enabled and the tag overflows, move the containing slot
     // to quarantine, to prevent the attacker from exploiting a pointer that has
     // an old tag.
-    if (PA_LIKELY(IsMemoryTaggingEnabled())) {
+    if (PA_LIKELY(memory_tagging_enabled())) {
       return internal::HasOverflowTag(object);
     }
     // Default behaviour if MTE is not enabled for this PartitionRoot.
@@ -808,6 +809,19 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   PA_ALWAYS_INLINE bool uses_configurable_pool() const {
     return flags.use_configurable_pool;
+  }
+
+  // Returns whether MTE is supported for this partition root. Because MTE
+  // stores tagging information in the high bits of the pointer, it causes
+  // issues with components like V8's ArrayBuffers which use custom pointer
+  // representations. All custom representations encountered so far rely on an
+  // "is in configurable pool?" check, so we use that as a proxy.
+  bool memory_tagging_enabled() const {
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
+    return flags.memory_tagging_enabled_;
+#else
+    return false;
+#endif
   }
 
   // To make tests deterministic, it is necessary to uncap the amount of memory
@@ -1195,21 +1209,6 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeWithFlags(
   FreeNoHooks(object);
 }
 
-// Returns whether MTE is supported for this partition root. Because MTE stores
-// tagging information in the high bits of the pointer, it causes issues with
-// components like V8's ArrayBuffers which use custom pointer representations.
-// All custom representations encountered so far rely on an "is in configurable
-// pool?" check, so we use that as a proxy.
-template <bool thread_safe>
-PA_ALWAYS_INLINE bool PartitionRoot<thread_safe>::IsMemoryTaggingEnabled()
-    const {
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
-  return !flags.use_configurable_pool;
-#else
-  return false;
-#endif
-}
-
 // static
 template <bool thread_safe>
 PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
@@ -1254,7 +1253,7 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
   PA_DCHECK(slot_span == SlotSpan::FromSlotStart(slot_start));
 
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
-  if (PA_LIKELY(root->IsMemoryTaggingEnabled())) {
+  if (PA_LIKELY(root->memory_tagging_enabled())) {
     const size_t slot_size = slot_span->bucket->slot_size;
     if (PA_LIKELY(slot_size <= internal::kMaxMemoryTaggingSize)) {
       // slot_span is untagged at this point, so we have to recover its tag
@@ -1760,7 +1759,7 @@ PartitionRoot<thread_safe>::GetPageAccessibility() const {
   PageAccessibilityConfiguration::Permissions permissions =
       PageAccessibilityConfiguration::kReadWrite;
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
-  if (IsMemoryTaggingEnabled()) {
+  if (memory_tagging_enabled()) {
     permissions = PageAccessibilityConfiguration::kReadWriteTagged;
   }
 #endif
