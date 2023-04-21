@@ -11,6 +11,7 @@ export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 export {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 export {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
+export {PluralStringProxy, PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 export {AddPasswordDialogElement} from './dialogs/add_password_dialog.js';
 export {AuthTimedOutDialogElement} from './dialogs/auth_timed_out_dialog.js';
 export {EditPasswordDialogElement} from './dialogs/edit_password_dialog.js';
