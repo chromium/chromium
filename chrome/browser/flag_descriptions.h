@@ -2955,9 +2955,6 @@ extern const char kAudioHFPOffloadDescription[];
 extern const char kAudioSettingsPageName[];
 extern const char kAudioSettingsPageDescription[];
 
-extern const char kAudioUrlName[];
-extern const char kAudioUrlDescription[];
-
 extern const char kAutoFramingOverrideName[];
 extern const char kAutoFramingOverrideDescription[];
 

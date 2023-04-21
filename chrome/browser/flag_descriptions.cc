@@ -5144,11 +5144,6 @@ const char kAudioSettingsPageDescription[] =
     "Enables the dedicated Audio Settings Page in system settings, which "
     "allows for greater audio configuration.";
 
-const char kAudioUrlName[] = "Enable chrome://audio";
-const char kAudioUrlDescription[] =
-    "Enable chrome://audio that is designed for debugging ChromeOS audio "
-    "issues";
-
 const char kAutoFramingOverrideName[] = "Auto-framing control override";
 const char kAutoFramingOverrideDescription[] =
     "Overrides the default to forcibly enable or disable the auto-framing "

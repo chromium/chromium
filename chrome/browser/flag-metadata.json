@@ -464,11 +464,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "audio-url",
-    "owners": [ "enshuo", "chromeos-audio@google.com" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "auto-framing-override",
     "owners": [ "kamesan", "chromeos-camera-eng@google.com" ],
     "expiry_milestone": 116
