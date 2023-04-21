@@ -41,6 +41,7 @@ public class PartialCustomTabDisplayManager
     private final Activity mActivity;
     private final int mBreakPointDp;
     private final int mDecorationType;
+    private final int mRoundedCornersPosition;
     private final @Px int mUnclampedInitialHeight;
     private final @Px int mUnclampedInitialWidth;
     private final int mUnclampedBreakPointDp;
@@ -77,7 +78,8 @@ public class PartialCustomTabDisplayManager
             OnResizedCallback onResizedCallback, OnActivityLayoutCallback onActivityLayoutCallback,
             ActivityLifecycleDispatcher lifecycleDispatcher, FullscreenManager fullscreenManager,
             boolean isTablet, boolean interactWithBackground, boolean showMaximizeButton,
-            int decorationType, int sideSheetPosition, int sideSheetAnimation) {
+            int decorationType, int sideSheetPosition, int sideSheetAnimation,
+            int roundedCornersPosition) {
         mActivity = activity;
         mUnclampedInitialHeight = initialHeight;
         mUnclampedInitialWidth = initialWidth;
@@ -90,6 +92,7 @@ public class PartialCustomTabDisplayManager
         mInteractWithBackground = interactWithBackground;
         mShowMaximizeButton = showMaximizeButton;
         mDecorationType = decorationType;
+        mRoundedCornersPosition = roundedCornersPosition;
         mSideSheetPosition = sideSheetPosition;
         mSideSheetAnimation = sideSheetAnimation;
 
@@ -303,7 +306,7 @@ public class PartialCustomTabDisplayManager
                         mOnResizedCallback, mOnActivityLayoutCallback, mFullscreenManager,
                         mIsTablet, mInteractWithBackground, mShowMaximizeButton, maximized,
                         sideSheetPosition, sideSheetAnimation, mHandleStrategyFactory,
-                        mDecorationType);
+                        mDecorationType, mRoundedCornersPosition);
             }
             case PartialCustomTabType.FULL_SIZE: {
                 return new PartialCustomTabFullSizeStrategy(mActivity, mOnResizedCallback,

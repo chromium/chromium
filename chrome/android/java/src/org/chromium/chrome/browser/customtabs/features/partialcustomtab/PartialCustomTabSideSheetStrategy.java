@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.browserservices.intents.BrowserService
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW;
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE;
 
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
@@ -49,6 +50,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     private final @Px int mUnclampedInitialWidth;
     private final boolean mShowMaximizeButton;
+    private final int mRoundedCornersPosition;
 
     private boolean mIsMaximized;
     private int mDecorationType;
@@ -60,7 +62,8 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             CustomTabHeightStrategy.OnActivityLayoutCallback onActivityLayoutCallback,
             FullscreenManager fullscreenManager, boolean isTablet, boolean interactWithBackground,
             boolean showMaximizeButton, boolean startMaximized, int position, int slideInBehavior,
-            PartialCustomTabHandleStrategyFactory handleStrategyFactory, int decorationType) {
+            PartialCustomTabHandleStrategyFactory handleStrategyFactory, int decorationType,
+            int roundedCornersPosition) {
         super(activity, onResizedCallback, onActivityLayoutCallback, fullscreenManager, isTablet,
                 interactWithBackground, handleStrategyFactory);
 
@@ -68,6 +71,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         mShowMaximizeButton = showMaximizeButton;
         mPositionUpdater = this::updatePosition;
         mDecorationType = decorationType;
+        mRoundedCornersPosition = roundedCornersPosition;
         mIsMaximized = startMaximized;
         mSheetOnRight = isSheetOnRight(position);
         mSlideDownAnimation = slideInBehavior
@@ -204,10 +208,9 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     @Override
     protected int getHandleHeight() {
-        // TODO(crbug.com/1408288) by default the side-sheet will have no round corners so this will
-        // just return 0. We will implement the handle height logic as part of adding customization
-        // support.
-        return 0;
+        return mRoundedCornersPosition == ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE
+                ? 0
+                : mToolbarCornerRadius;
     }
 
     @Override
@@ -260,9 +263,23 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     @Override
     protected void adjustCornerRadius(GradientDrawable d, int radius) {
+        if (mRoundedCornersPosition == ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE) {
+            radius = 0;
+        }
+
+        int topLeftCornerRadius = mSheetOnRight ? radius : 0;
+        int topRightCornerRadius = !mSheetOnRight ? radius : 0;
+
+        View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
+        View dragBar = handleView.findViewById(R.id.drag_bar);
+        ViewGroup.LayoutParams dragBarLayoutParams = dragBar.getLayoutParams();
+        dragBarLayoutParams.height = radius;
+        dragBar.setLayoutParams(dragBarLayoutParams);
+
         d.mutate();
-        // Left top corner rounded.
-        d.setCornerRadii(new float[] {radius, radius, 0, 0, 0, 0, 0, 0});
+        // Inner top rounded corner (depends on side sheet positioning)
+        d.setCornerRadii(new float[] {topLeftCornerRadius, topLeftCornerRadius,
+                topRightCornerRadius, topRightCornerRadius, 0, 0, 0, 0});
     }
 
     @Override

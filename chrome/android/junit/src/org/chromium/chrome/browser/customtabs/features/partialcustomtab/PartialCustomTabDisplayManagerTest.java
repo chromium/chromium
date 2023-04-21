@@ -21,6 +21,7 @@ import static org.chromium.chrome.browser.browserservices.intents.BrowserService
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_END;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE;
 
@@ -82,7 +83,7 @@ public class PartialCustomTabDisplayManagerTest {
                 mPCCTTestRule.mOnResizedCallback, mPCCTTestRule.mOnActivityLayoutCallback,
                 mPCCTTestRule.mActivityLifecycleDispatcher, mPCCTTestRule.mFullscreenManager, false,
                 true, /*showMaximizeButton=*/true, decorationType, ACTIVITY_SIDE_SHEET_POSITION_END,
-                ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE);
+                ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE, ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE);
         var sizeStrategyCreator = displayManager.getSizeStrategyCreatorForTesting();
         SizeStrategyCreator testSizeStrategyCreator =
                 (type, maximized, sideSheetPosition, sideSheetAnimation) -> {

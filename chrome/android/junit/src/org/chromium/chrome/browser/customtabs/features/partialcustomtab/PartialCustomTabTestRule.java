@@ -163,6 +163,8 @@ public class PartialCustomTabTestRule implements TestRule {
             FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
     FrameLayout.LayoutParams mCoordinatorLayoutParams = new FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+    ViewGroup.LayoutParams mDragBarLayoutParams = new ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
     private void setUp() {
         ShadowLog.stream = System.out;
@@ -205,6 +207,7 @@ public class PartialCustomTabTestRule implements TestRule {
         when(mToolbarView.getLayoutParams()).thenReturn(mLayoutParams);
         when(mColorDrawable.getColor()).thenReturn(2);
         when(mDragBar.getBackground()).thenReturn(mDragBarBackground);
+        when(mDragBar.getLayoutParams()).thenReturn(mDragBarLayoutParams);
         when(mHandleStrategyFactory.create(anyInt(), any(Context.class), any(BooleanSupplier.class),
                      any(Supplier.class),
                      any(PartialCustomTabHandleStrategy.DragEventCallback.class)))

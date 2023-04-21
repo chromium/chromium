@@ -302,6 +302,13 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_DECORATION_TYPE";
 
     /**
+     *  Extra that, if set, allows you to choose which side sheet corners should be rounded, if any
+     *  at all. Options include top or none.
+     */
+    public static final String EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION =
+            "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION";
+
+    /**
      * Extra that, if set, makes the toolbar's top corner radii to be x pixels. This will only have
      * effect if the custom tab is behaving as a bottom sheet. Currently, this is capped at 16dp.
      * TODO(jinsukkim): Deprecate this.
@@ -364,6 +371,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private RemoteViews mRemoteViews;
     @SideSheetDecorationType
     private int mSideSheetDecorationType;
+    @SideSheetRoundedCornersPosition
+    private int mSideSheetRoundedCornersPosition;
     private int[] mClickableViewIds;
     private PendingIntent mRemoteViewsPendingIntent;
     private PendingIntent mSecondaryToolbarSwipeUpPendingIntent;
@@ -500,6 +509,17 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 : decorationType;
     }
 
+    private static int getActivitySideSheetRoundedCornersPositionFromIntent(Intent intent) {
+        int roundedCornersPosition = IntentUtils.safeGetIntExtra(intent,
+                EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
+                ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_DEFAULT);
+        return roundedCornersPosition == ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_DEFAULT
+                        || roundedCornersPosition < 0
+                        || roundedCornersPosition > ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_MAX
+                ? ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE
+                : roundedCornersPosition;
+    }
+
     /**
      * Get the package name from {@link #getReferrerUriString(Activity)}. If the referrer format
      * is invalid, return an empty string.
@@ -634,6 +654,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 intent, EXTRA_ENABLE_BACKGROUND_INTERACTION, BACKGROUND_INTERACT_DEFAULT);
         mInteractWithBackground = backgroundInteractBehavior != BACKGROUND_INTERACT_OFF;
         mSideSheetDecorationType = getActivitySideSheetDecorationTypeFromIntent(intent);
+        mSideSheetRoundedCornersPosition =
+                getActivitySideSheetRoundedCornersPositionFromIntent(intent);
 
         logCustomTabFeatures(intent, colorScheme, usingDynamicFeatures);
     }
@@ -920,6 +942,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (IntentUtils.safeHasExtra(intent,
                     CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE)) {
             featureUsage.log(CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE);
+        }
+        if (IntentUtils.safeHasExtra(intent,
+                    CustomTabIntentDataProvider
+                            .EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION);
         }
         if (mEnableEmbeddedMediaExperience) {
             featureUsage.log(CustomTabsFeature.EXTRA_ENABLE_EMBEDDED_MEDIA_EXPERIENCE);
@@ -1301,6 +1328,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     public int getActivitySideSheetDecorationType() {
         return mSideSheetDecorationType;
+    }
+
+    @SideSheetRoundedCornersPosition
+    @Override
+    public int getActivitySideSheetRoundedCornersPosition() {
+        return mSideSheetRoundedCornersPosition;
     }
 
     @Override

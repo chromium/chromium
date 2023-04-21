@@ -753,6 +753,42 @@ public class CustomTabIntentDataProviderTest {
                 dataProvider.getActivitySideSheetDecorationType());
     }
 
+    @Test
+    public void testActivityRoundedCornersPosition_Default() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_DEFAULT);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Rounded corners positions do not match",
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE,
+                dataProvider.getActivitySideSheetRoundedCornersPosition());
+    }
+
+    @Test
+    public void testActivityRoundedCornersPosition_None() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Rounded corners positions do not match",
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_NONE,
+                dataProvider.getActivitySideSheetRoundedCornersPosition());
+    }
+
+    @Test
+    public void testActivityRoundedCornersPosition_Top() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Rounded corners positions do not match",
+                CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP,
+                dataProvider.getActivitySideSheetRoundedCornersPosition());
+    }
+
     private Bundle createActionButtonInToolbarBundle() {
         Bundle bundle = new Bundle();
         bundle.putInt(CustomTabsIntent.KEY_ID, CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID);

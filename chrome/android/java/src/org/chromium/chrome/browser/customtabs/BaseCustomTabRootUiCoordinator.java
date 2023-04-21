@@ -300,7 +300,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 intentDataProvider.showSideSheetMaximizeButton(),
                 intentDataProvider.getActivitySideSheetDecorationType(),
                 intentDataProvider.getSideSheetPosition(),
-                intentDataProvider.getSideSheetSlideInBehavior());
+                intentDataProvider.getSideSheetSlideInBehavior(),
+                intentDataProvider.getActivitySideSheetRoundedCornersPosition());
     }
 
     @Override

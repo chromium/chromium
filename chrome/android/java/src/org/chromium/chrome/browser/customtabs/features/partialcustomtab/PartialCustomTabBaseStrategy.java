@@ -78,6 +78,7 @@ public abstract class PartialCustomTabBaseStrategy
     protected View mToolbarView;
     protected View mToolbarCoordinator;
     protected int mToolbarColor;
+    protected int mToolbarCornerRadius;
     protected PartialCustomTabHandleStrategyFactory mHandleStrategyFactory;
 
     protected int mShadowOffset;
@@ -152,8 +153,10 @@ public abstract class PartialCustomTabBaseStrategy
     @Override
     public void onToolbarInitialized(
             View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
+        // The radius should not be bigger than the handle view default height of 16dp.
+        mToolbarCornerRadius = Math.min(toolbarCornerRadius, mCachedHandleHeight);
         setToolbar(coordinatorView, toolbar);
-        roundCorners(toolbar, toolbarCornerRadius);
+        roundCorners(toolbar, mToolbarCornerRadius);
     }
 
     public void setToolbar(View toolbarCoordinator, CustomTabToolbar toolbar) {
@@ -364,7 +367,6 @@ public abstract class PartialCustomTabBaseStrategy
         handleView.setElevation(
                 mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation));
         updateShadowOffset();
-
         GradientDrawable cctBackground = (GradientDrawable) handleView.getBackground();
         adjustCornerRadius(cctBackground, toolbarCornerRadius);
         handleView.setBackground(cctBackground);
@@ -374,12 +376,12 @@ public abstract class PartialCustomTabBaseStrategy
         // covers the entire client area for rendering outline shadow around the CCT.
         View dragBar = handleView.findViewById(R.id.drag_bar);
         GradientDrawable dragBarBackground = getDragBarBackground();
+        adjustCornerRadius(dragBarBackground, toolbarCornerRadius);
         if (dragBar.getBackground() instanceof InsetDrawable) resetCoordinatorLayoutInsets();
 
         if (shouldDrawDividerLine()) {
             drawDividerLine();
         } else {
-            adjustCornerRadius(dragBarBackground, toolbarCornerRadius);
             dragBar.setBackground(dragBarBackground);
         }
 
@@ -401,7 +403,8 @@ public abstract class PartialCustomTabBaseStrategy
         cctBackground.setStroke(width, SemanticColorUtils.getDividerLineBgColor(mActivity));
 
         // We need an inset to make the outline shadow visible.
-        dragBar.setBackground(new InsetDrawable(dragBarBackground, width, width, width, 0));
+        dragBar.setBackground(
+                new InsetDrawable(dragBarBackground, leftInset, topInset, rightInset, 0));
         getCoordinatorLayout().setBackground(
                 new InsetDrawable(cctBackground, leftInset, topInset, rightInset, 0));
     }

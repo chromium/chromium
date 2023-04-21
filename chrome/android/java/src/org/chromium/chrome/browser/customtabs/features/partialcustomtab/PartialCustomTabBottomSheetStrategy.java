@@ -338,6 +338,12 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
     @Override
     protected void adjustCornerRadius(GradientDrawable d, int radius) {
+        View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
+        View dragBar = handleView.findViewById(R.id.drag_bar);
+        ViewGroup.LayoutParams dragBarLayoutParams = dragBar.getLayoutParams();
+        dragBarLayoutParams.height = mCachedHandleHeight;
+        dragBar.setLayoutParams(dragBarLayoutParams);
+
         d.mutate();
         d.setCornerRadii(new float[] {radius, radius, radius, radius, 0, 0, 0, 0});
     }

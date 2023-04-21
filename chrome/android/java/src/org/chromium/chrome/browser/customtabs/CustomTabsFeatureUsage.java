@@ -54,7 +54,9 @@ public class CustomTabsFeatureUsage {
             CustomTabsFeature.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION,
             CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE,
             CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_POSITION,
-            CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR, CustomTabsFeature.COUNT})
+            CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR,
+            CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION,
+            CustomTabsFeature.COUNT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface CustomTabsFeature {
         /** Special enum for the start of a session. */
@@ -110,9 +112,10 @@ public class CustomTabsFeatureUsage {
         int EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE = 49;
         int EXTRA_ACTIVITY_SIDE_SHEET_POSITION = 50;
         int EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR = 51;
+        int EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION = 52;
 
         /** Total count of entries. */
-        int COUNT = 52;
+        int COUNT = 53;
     }
 
     // Whether flag-enabled or not.
