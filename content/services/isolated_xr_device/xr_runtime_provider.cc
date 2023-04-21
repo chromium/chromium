@@ -169,12 +169,11 @@ void IsolatedXRRuntimeProvider::SetOpenXrRuntimeStatus(RuntimeStatus status) {
 // task with this callback onto the main thread's task runner while it is
 // running on the render loop thread's task runner. The context provider and its
 // supporting object, viz::Gpu, are required to be created on the main thread's
-// task runner. Upon creating the context provider, CreateContextProviderAsync
-// posts a callback back to the render loop's thread runner with the newly
-// created context provider.
+// task runner. The RenderLoop is expected to use BindPostTask to ensure that
+// the VizContextProviderCallback sends the ContextProvider to the appropriate
+// thread.
 void IsolatedXRRuntimeProvider::CreateContextProviderAsync(
-    VizContextProviderCallback viz_context_provider_callback,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    VizContextProviderCallback viz_context_provider_callback) {
   // viz_gpu_ must be kept alive so long as there are outstanding context
   // providers attached to it, otherwise the GPU process channel gets closed out
   // from under it.
@@ -199,9 +198,8 @@ void IsolatedXRRuntimeProvider::CreateContextProviderAsync(
           gpu::SharedMemoryLimits::ForMailboxContext(),
           gpu::ContextCreationAttribs(),
           viz::command_buffer_metrics::ContextType::XR_COMPOSITING);
-  task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(std::move(viz_context_provider_callback),
-                                       std::move(context_provider)));
+
+  std::move(viz_context_provider_callback).Run(context_provider);
 }
 
 #endif  // BUILDFLAG(ENABLE_OPENXR)

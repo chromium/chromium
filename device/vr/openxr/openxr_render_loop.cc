@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/bind_post_task.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_input_helper.h"
@@ -472,14 +473,15 @@ void OpenXrRenderLoop::StartContextProviderIfNeeded(
   // If openxr_ has been torn down the context provider is unnecessary as
   // there is nothing to connect to the GPU process.
   if (openxr_) {
+    auto created_callback = base::BindOnce(
+        &OpenXrRenderLoop::OnContextProviderCreated,
+        weak_ptr_factory_.GetWeakPtr(), std::move(start_runtime_callback));
+
     main_thread_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             context_provider_factory_async_,
-            base::BindOnce(&OpenXrRenderLoop::OnContextProviderCreated,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           std::move(start_runtime_callback)),
-            task_runner()));
+            base::BindPostTask(task_runner(), std::move(created_callback))));
   }
 }
 

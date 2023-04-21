@@ -50,8 +50,7 @@ class IsolatedXRRuntimeProvider final
   bool IsOpenXrHardwareAvailable();
   void SetOpenXrRuntimeStatus(RuntimeStatus status);
   void CreateContextProviderAsync(
-      VizContextProviderCallback viz_context_provider_callback,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      VizContextProviderCallback viz_context_provider_callback);
 
   bool should_check_openxr_ = false;
 
