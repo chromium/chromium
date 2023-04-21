@@ -18,12 +18,6 @@ namespace sharing_hub {
 
 namespace {
 
-// These values are all directly from the Figma redlines. See
-// https://crbug.com/1314486 and https://crbug.com/1316473.
-constexpr gfx::Insets kInteriorMargin = gfx::Insets::VH(8, 8);
-constexpr gfx::Insets kDefaultMargin = gfx::Insets::VH(0, 16);
-constexpr gfx::Size kImageSize{16, 16};
-
 class UrlLabel : public views::Label {
  public:
   UrlLabel(GURL url, int context, int style)
@@ -65,6 +59,12 @@ class UrlLabel : public views::Label {
 //       Label (title)
 //       Label (URL)
 PreviewView::PreviewView(share::ShareAttempt attempt) {
+  // These values are all directly from the Figma redlines. See
+  // https://crbug.com/1314486 and https://crbug.com/1316473.
+  constexpr gfx::Insets kInteriorMargin = gfx::Insets::VH(8, 8);
+  constexpr gfx::Insets kDefaultMargin = gfx::Insets::VH(0, 16);
+  constexpr gfx::Size kImageSize{16, 16};
+
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
@@ -105,15 +105,5 @@ PreviewView::PreviewView(share::ShareAttempt attempt) {
 }
 
 PreviewView::~PreviewView() = default;
-
-void PreviewView::TakeCallbackSubscription(
-    base::CallbackListSubscription subscription) {
-  subscription_ = std::move(subscription);
-}
-
-void PreviewView::OnImageChanged(ui::ImageModel model) {
-  image_->SetImage(model);
-  image_->SetImageSize(kImageSize);
-}
 
 }  // namespace sharing_hub

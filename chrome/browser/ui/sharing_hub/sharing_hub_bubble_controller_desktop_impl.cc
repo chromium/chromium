@@ -39,50 +39,6 @@
 
 namespace sharing_hub {
 
-namespace {
-
-constexpr char kPreviewUmaClient[] = "SharePreview";
-
-constexpr net::NetworkTrafficAnnotationTag kPreviewImageNetworkAnnotationTag =
-    net::DefineNetworkTrafficAnnotation("share_preview_image_fetch",
-                                        R"(
-      semantics {
-        sender: "Share bubble"
-        description:
-            "The share bubble offers a preview of the site or image being "
-            "shared. For sites, this image is specified by the site author "
-            "using OpenGraph metadata. If this metadata is present on the "
-            "site being shared and specifies a preview image, the share "
-            "bubble fetches the image to display it."
-        trigger:
-            "User presses 'Share' on a page that has OpenGraph metadata."
-        data:
-            "The image URL being requested from the site. Since the user has "
-            "already visited the site to trigger the sharing flow, this "
-            "request is similar to a request for any other part of the page."
-        destination: WEBSITE
-      }
-      policy {
-        cookies_allowed: NO
-        setting:
-          "Administrators can disable this feature by disabling the share "
-          "bubble altogether, which can be done via policy. There is no "
-          "specific way to disable loading the preview image."
-        chrome_policy: {
-          DesktopSharingHubEnabled: {
-            DesktopSharingHubEnabled: false
-          }
-        }
-      }
-  )");
-
-bool ShouldUseHQPreviewImage() {
-  // TODO(https://crbug.com/1427551): Remove this method and its callers.
-  return false;
-}
-
-}  // namespace
-
 // static
 // SharingHubBubbleController:
 SharingHubBubbleController*
@@ -110,12 +66,14 @@ void SharingHubBubbleControllerDesktopImpl::HideBubble() {
 
 void SharingHubBubbleControllerDesktopImpl::ShowBubble(
     share::ShareAttempt attempt) {
+  ui::ImageModel preview_image = GetPreviewImage();
+  if (!preview_image.IsEmpty()) {
+    attempt.preview_image = preview_image;
+  }
+
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
 
   sharing_hub_bubble_view_ = browser->window()->ShowSharingHubBubble(attempt);
-
-  if (ShouldUsePreview())
-    FetchImageForPreview();
 
   share::LogShareSourceDesktop(share::ShareSourceDesktop::kOmniboxSharingHub);
 }
@@ -142,23 +100,11 @@ SharingHubBubbleControllerDesktopImpl::GetFirstPartyActions() {
   std::vector<SharingHubAction> actions;
 
   SharingHubModel* model = GetSharingHubModel();
-  if (model)
+  if (model) {
     model->GetFirstPartyActionList(&GetWebContents(), &actions);
+  }
 
   return actions;
-}
-
-bool SharingHubBubbleControllerDesktopImpl::ShouldUsePreview() {
-  // TODO(https://crbug.com/1427551): Remove this method and its callers, and
-  // remove all the async behavior and preview-image-changed logic from this
-  // class.
-  return true;  // XXX
-}
-
-base::CallbackListSubscription
-SharingHubBubbleControllerDesktopImpl::RegisterPreviewImageChangedCallback(
-    PreviewImageChangedCallback callback) {
-  return preview_image_changed_callbacks_.Add(callback);
 }
 
 base::WeakPtr<SharingHubBubbleController>
@@ -170,8 +116,9 @@ void SharingHubBubbleControllerDesktopImpl::OnActionSelected(
     const SharingHubAction& action) {
   Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
   // Can be null in tests.
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   base::RecordComputedAction(action.feature_name_for_metrics);
 
@@ -207,25 +154,20 @@ SharingHubModel* SharingHubBubbleControllerDesktopImpl::GetSharingHubModel() {
   if (!sharing_hub_model_) {
     SharingHubService* const service =
         SharingHubServiceFactory::GetForProfile(GetProfile());
-    if (!service)
+    if (!service) {
       return nullptr;
+    }
     sharing_hub_model_ = service->GetSharingHubModel();
   }
   return sharing_hub_model_;
 }
 
-void SharingHubBubbleControllerDesktopImpl::FetchImageForPreview() {
-  if (ShouldUseHQPreviewImage())
-    FetchHQImageForPreview();
-  else
-    FetchFaviconForPreview();
-}
-
-void SharingHubBubbleControllerDesktopImpl::FetchFaviconForPreview() {
+ui::ImageModel SharingHubBubbleControllerDesktopImpl::GetPreviewImage() {
   content::WebContents* web_contents = &GetWebContents();
   gfx::Image favicon = favicon::TabFaviconFromWebContents(web_contents);
-  if (favicon.IsEmpty())
-    return;
+  if (favicon.IsEmpty()) {
+    return {};
+  }
 
   content::NavigationController& controller = web_contents->GetController();
   content::NavigationEntry* entry = controller.GetLastCommittedEntry();
@@ -240,53 +182,7 @@ void SharingHubBubbleControllerDesktopImpl::FetchFaviconForPreview() {
         color_provider.GetColor(kColorTabBackgroundInactiveFrameActive)));
   }
 
-  preview_image_changed_callbacks_.Notify(ui::ImageModel::FromImage(favicon));
-}
-
-void SharingHubBubbleControllerDesktopImpl::FetchHQImageForPreview() {
-  content::RenderFrameHost& main_frame =
-      GetWebContents().GetPrimaryPage().GetMainDocument();
-  main_frame.GetOpenGraphMetadata(base::BindOnce(
-      &SharingHubBubbleControllerDesktopImpl::OnGetOpenGraphMetadata,
-      internal_weak_factory_.GetWeakPtr()));
-}
-
-void SharingHubBubbleControllerDesktopImpl::OnGetOpenGraphMetadata(
-    blink::mojom::OpenGraphMetadataPtr metadata) {
-  if (!metadata->image) {
-    FetchFaviconForPreview();
-    return;
-  }
-
-  auto* profile =
-      Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
-  if (!profile) {
-    // No fallback to the favicon for this case: if the profile's gone, the
-    // favicon service will be too. Just use the default page icon for the
-    // preview.
-    return;
-  }
-
-  image_fetcher_ = std::make_unique<image_fetcher::ImageFetcherImpl>(
-      std::make_unique<ImageDecoderImpl>(),
-      profile->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess());
-
-  image_fetcher_->FetchImage(
-      *metadata->image,
-      base::BindOnce(&SharingHubBubbleControllerDesktopImpl::OnGetHQImage,
-                     internal_weak_factory_.GetWeakPtr()),
-      image_fetcher::ImageFetcherParams(kPreviewImageNetworkAnnotationTag,
-                                        kPreviewUmaClient));
-}
-
-void SharingHubBubbleControllerDesktopImpl::OnGetHQImage(
-    const gfx::Image& image,
-    const image_fetcher::RequestMetadata& metadata) {
-  if (!image.IsEmpty())
-    preview_image_changed_callbacks_.Notify(ui::ImageModel::FromImage(image));
-  else
-    FetchFaviconForPreview();
+  return ui::ImageModel::FromImage(favicon);
 }
 
 SharingHubBubbleControllerDesktopImpl::SharingHubBubbleControllerDesktopImpl(

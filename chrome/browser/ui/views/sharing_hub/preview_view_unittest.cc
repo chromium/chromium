@@ -65,20 +65,9 @@ TEST_F(PreviewViewTest, IncludesURL) {
 
 TEST_F(PreviewViewTest, IncludesImage) {
   auto view = BuildTestPreview();
-  ASSERT_TRUE(FindImage(view.get()));
-}
-
-TEST_F(PreviewViewTest, OnImageChangedReplacesImage) {
-  auto view = BuildTestPreview();
-
-  auto* old_image = FindImage(view.get());
-  ASSERT_TRUE(old_image);
-  EXPECT_EQ(ImageTopLeftColor(old_image->GetImageModel()), SK_ColorRED);
-
-  view->OnImageChanged(BuildTestImage(SK_ColorGREEN));
-  auto* new_image = FindImage(view.get());
-  ASSERT_TRUE(new_image);
-  EXPECT_EQ(ImageTopLeftColor(new_image->GetImageModel()), SK_ColorGREEN);
+  auto* image = FindImage(view.get());
+  ASSERT_TRUE(image);
+  EXPECT_EQ(ImageTopLeftColor(image->GetImageModel()), SK_ColorRED);
 }
 
 }  // namespace
