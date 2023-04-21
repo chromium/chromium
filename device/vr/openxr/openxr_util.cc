@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/strings/string_util.h"
 #include "base/version.h"
 #include "base/win/scoped_handle.h"
 #include "build/build_config.h"
@@ -94,11 +95,12 @@ XrResult CreateInstance(
 
   std::string application_name = version_info::GetProductName() + " " +
                                  version_info::GetMajorVersionNumber();
-  errno_t error =
-      strcpy_s(instance_create_info.applicationInfo.applicationName,
-               std::size(instance_create_info.applicationInfo.applicationName),
-               application_name.c_str());
-  DCHECK_EQ(error, 0);
+  size_t dest_size =
+      std::size(instance_create_info.applicationInfo.applicationName);
+  size_t src_size =
+      base::strlcpy(instance_create_info.applicationInfo.applicationName,
+                    application_name.c_str(), dest_size);
+  DCHECK_LT(src_size, dest_size);
 
   base::Version version = version_info::GetVersion();
   DCHECK_EQ(version.components().size(), 4uLL);
@@ -107,10 +109,10 @@ XrResult CreateInstance(
   // application version will be the build number of each vendor
   instance_create_info.applicationInfo.applicationVersion = build;
 
-  error = strcpy_s(instance_create_info.applicationInfo.engineName,
-                   std::size(instance_create_info.applicationInfo.engineName),
-                   "Chromium");
-  DCHECK_EQ(error, 0);
+  dest_size = std::size(instance_create_info.applicationInfo.engineName);
+  src_size = base::strlcpy(instance_create_info.applicationInfo.engineName,
+                           "Chromium", dest_size);
+  DCHECK_LT(src_size, dest_size);
 
   // engine version should be the build number of chromium
   instance_create_info.applicationInfo.engineVersion = build;
