@@ -42,7 +42,8 @@ ScriptContextSet::~ScriptContextSet() {
 ScriptContext* ScriptContextSet::Register(
     blink::WebLocalFrame* frame,
     const v8::Local<v8::Context>& v8_context,
-    int32_t world_id) {
+    int32_t world_id,
+    bool is_webview) {
   const Extension* extension =
       GetExtensionFromFrameAndWorld(frame, world_id, false);
   const Extension* effective_extension =
@@ -62,11 +63,11 @@ ScriptContext* ScriptContextSet::Register(
   GURL frame_url = ScriptContext::GetDocumentLoaderURLForFrame(frame);
   Feature::Context context_type = ClassifyJavaScriptContext(
       extension, world_id, frame_url, frame->GetDocument().GetSecurityOrigin(),
-      view_type);
+      view_type, is_webview);
   Feature::Context effective_context_type = ClassifyJavaScriptContext(
       effective_extension, world_id,
       ScriptContext::GetEffectiveDocumentURLForContext(frame, frame_url, true),
-      frame->GetDocument().GetSecurityOrigin(), view_type);
+      frame->GetDocument().GetSecurityOrigin(), view_type, is_webview);
 
   ScriptContext* context =
       new ScriptContext(v8_context, frame, extension, context_type,
@@ -196,9 +197,10 @@ Feature::Context ScriptContextSet::ClassifyJavaScriptContext(
     int32_t world_id,
     const GURL& url,
     const blink::WebSecurityOrigin& origin,
-    mojom::ViewType view_type) {
-  // WARNING: This logic must match ProcessMap::GetContextType, as much as
-  // possible.
+    mojom::ViewType view_type,
+    bool is_webview) {
+  // WARNING: This logic must match `ProcessMap::GetMostLikelyContextType()`
+  // as much as possible.
 
   // Worlds not within this range are not for content scripts, so ignore them.
   // TODO(devlin): Isolated worlds with a non-zero id could belong to
@@ -246,8 +248,14 @@ Feature::Context ScriptContextSet::ClassifyJavaScriptContext(
 
     if (is_lock_screen_context_)
       return Feature::LOCK_SCREEN_EXTENSION_CONTEXT;
+
+    if (is_webview) {
+      return Feature::UNBLESSED_EXTENSION_CONTEXT;
+    }
+
     if (view_type == mojom::ViewType::kOffscreenDocument)
       return Feature::OFFSCREEN_EXTENSION_CONTEXT;
+
     return Feature::BLESSED_EXTENSION_CONTEXT;
   }
 

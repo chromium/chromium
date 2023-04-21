@@ -60,7 +60,8 @@ class ScriptContextSet : public ScriptContextSetIterable {
   // Returns a weak reference to the new ScriptContext.
   ScriptContext* Register(blink::WebLocalFrame* frame,
                           const v8::Local<v8::Context>& v8_context,
-                          int32_t world_id);
+                          int32_t world_id,
+                          bool is_webview);
 
   // If the specified context is contained in this set, remove it, then delete
   // it asynchronously. After this call returns the context object will still
@@ -124,7 +125,8 @@ class ScriptContextSet : public ScriptContextSetIterable {
       int32_t world_id,
       const GURL& url,
       const blink::WebSecurityOrigin& origin,
-      mojom::ViewType view_type);
+      mojom::ViewType view_type,
+      bool is_webview);
 
   // Weak reference to all installed Extensions that are also active in this
   // process.

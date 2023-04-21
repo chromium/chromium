@@ -9,6 +9,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/process_map_factory.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
@@ -146,9 +147,25 @@ Feature::Context ProcessMap::GetMostLikelyContextType(
   }
 
   if (!Contains(extension->id(), process_id)) {
-    // This could equally be UNBLESSED_EXTENSION_CONTEXT, but we don't record
-    // which processes have extension frames in them.
-    // TODO(kalman): Investigate this.
+    // If the process map doesn't contain the process, it might be an extension
+    // frame in a webview.
+    // We (deliberately) don't add webview-hosted frames to the process map and
+    // don't classify them as BLESSED_EXTENSION_CONTEXTs.
+    WebViewRendererState* web_view_state = WebViewRendererState::GetInstance();
+    if (url && extension->origin().IsSameOriginWith(*url) &&
+        web_view_state->IsGuest(process_id)) {
+      std::string webview_owner;
+      int owner_process_id = -1;
+      bool found_info = web_view_state->GetOwnerInfo(
+          process_id, &owner_process_id, &webview_owner);
+      if (found_info && webview_owner == extension->id()) {
+        // Yep, it's an extension frame in a webview.
+        return Feature::UNBLESSED_EXTENSION_CONTEXT;
+      }
+    }
+
+    // Otherwise, it's a content script (the context in which an extension can
+    // run in an unassociated, non-webview process).
     return Feature::CONTENT_SCRIPT_CONTEXT;
   }
 

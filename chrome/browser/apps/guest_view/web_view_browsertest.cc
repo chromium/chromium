@@ -4405,7 +4405,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, NavigateGuestToWebviewAccessibleResource) {
       extensions::ExtensionRegistry::Get(browser()->profile());
   const extensions::Extension* extension =
       registry->enabled_extensions().GetByID(guest_url.host());
-  EXPECT_NE(extensions::Feature::BLESSED_EXTENSION_CONTEXT,
+  EXPECT_EQ(extensions::Feature::UNBLESSED_EXTENSION_CONTEXT,
             process_map->GetMostLikelyContextType(
                 extension, guest_process->GetID(), &guest_url));
 }
@@ -4506,28 +4506,18 @@ IN_PROC_BROWSER_TEST_F(WebViewTest,
 
   // Finally, try accessing a privileged API, which shouldn't be available to
   // the embedded resource.
-  // TODO(https://crbug.com/1430991): Even though the API call should fail, the
-  // bindings are unexpectedly available here. Instead, we should just be able
-  // to test `!chrome.app.window`.
+  std::string app_window_result;
   static constexpr char kCallAppWindowCreate[] =
-      R"(if (chrome.app && chrome.app.window && chrome.app.window.create) {
-           new Promise(resolve => {
-             chrome.app.window.create('embedder.html', {}, (res) => {
-               let reply = 'success';
-               if (!chrome.runtime.lastError) {
-                 reply = 'No last error found. Result Type: ' + typeof res;
-               } else if (chrome.runtime.lastError.message !=
-                              'Access to extension API denied.') {
-                 reply = 'Unexpected last error: ' +
-                         chrome.runtime.lastError.message;
-               }
-               resolve(reply);
-             });
-           });
+      R"(var message;
+         if (chrome.app && chrome.app.window) {
+           message = 'chrome.app.window unexpectedly available.';
          } else {
-            'Unexpectedly missing `chrome.app.window.create`';
-         })";
-  EXPECT_EQ("success", content::EvalJs(web_view_frame, kCallAppWindowCreate));
+           message = 'success';
+         }
+         domAutomationController.send(message);)";
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      web_view_frame, kCallAppWindowCreate, &app_window_result));
+  EXPECT_EQ("success", app_window_result);
 }
 
 // Tests that a WebView can navigate an iframe to a blob URL that it creates

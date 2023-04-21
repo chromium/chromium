@@ -44,8 +44,8 @@ TEST(ScriptContextSetTest, Lifecycle) {
 
   ExtensionIdSet active_extensions;
   ScriptContextSet context_set(&active_extensions);
-  ScriptContext* context =
-      context_set.Register(web_frame.frame(), v8_context, 0);  // no world ID
+  ScriptContext* context = context_set.Register(
+      web_frame.frame(), v8_context, /*world_id=*/0, /*is_webview=*/false);
 
   // Context is valid and resembles correctness.
   EXPECT_TRUE(context->is_valid());

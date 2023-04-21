@@ -376,8 +376,9 @@ void Dispatcher::DidCreateScriptContext(
     int32_t world_id) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
 
-  ScriptContext* context =
-      script_context_set_->Register(frame, v8_context, world_id);
+  ScriptContext* context = script_context_set_->Register(
+      frame, v8_context, world_id,
+      /*is_webview=*/webview_partition_id_.has_value());
 
   // Initialize origin permissions for content scripts, which can't be
   // initialized in |ActivateExtension|.
@@ -1209,7 +1210,7 @@ void Dispatcher::SetSystemFont(const std::string& font_family,
 
 void Dispatcher::SetWebViewPartitionID(const std::string& partition_id) {
   // |webview_partition_id_| cannot be changed once set.
-  CHECK(webview_partition_id_.empty() || webview_partition_id_ == partition_id);
+  CHECK(!webview_partition_id_ || webview_partition_id_ == partition_id);
   webview_partition_id_ = partition_id;
 }
 

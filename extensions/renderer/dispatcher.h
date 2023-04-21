@@ -103,7 +103,9 @@ class Dispatcher : public content::RenderThreadObserver,
 
   V8SchemaRegistry* v8_schema_registry() { return v8_schema_registry_.get(); }
 
-  const std::string& webview_partition_id() { return webview_partition_id_; }
+  const absl::optional<std::string>& webview_partition_id() {
+    return webview_partition_id_;
+  }
 
   bool activity_logging_enabled() const { return activity_logging_enabled_; }
 
@@ -376,9 +378,10 @@ class Dispatcher : public content::RenderThreadObserver,
   bool activity_logging_enabled_;
 
   // The WebView partition ID associated with this process's storage partition,
-  // if this renderer is a WebView guest render process. Otherwise, this will be
-  // empty.
-  std::string webview_partition_id_;
+  // if this renderer is a WebView guest render process, otherwise unset.
+  // Note that this may be an empty string, even if it's set (if the webview
+  // doesn't have a set partition ID).
+  absl::optional<std::string> webview_partition_id_;
 
   // Extensions renderer receiver. This is an associated receiver because
   // it is dependent on other messages sent on other associated channels.
