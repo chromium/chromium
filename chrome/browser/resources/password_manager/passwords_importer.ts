@@ -112,6 +112,7 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
   accountEmail: string;
 
   private enablePasswordsImportM2_: boolean;
+  // TODO(crbug/1432962): Add DialogState.IN_PROGRESS instead.
   private inProgress_: boolean;
   private dialogState_: DialogState = DialogState.NO_DIALOG;
   // Refers both to syncing users with sync enabled for passwords and account
@@ -127,6 +128,20 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
   private showRowsWithUnknownErrorsSummary_: boolean;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
+
+
+  launchImport() {
+    this.inProgress_ = true;
+    // Timeout is needed to allow Polymer to render the Settings page before the
+    // system file picker has been opened.
+    setTimeout(() => {
+      if (this.isAccountStoreUser) {
+        this.dialogState_ = DialogState.STORE_PICKER;
+      } else {
+        this.onSelectFileClick_();
+      }
+    }, 200);
+  }
 
   private updateDefaultStore_() {
     if (this.isAccountStoreUser) {
@@ -170,6 +185,7 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
   private onBannerClick_() {
     if (this.isAccountStoreUser && !this.inProgress_ &&
         this.isState_(DialogState.NO_DIALOG)) {
+      this.inProgress_ = true;
       this.dialogState_ = DialogState.STORE_PICKER;
     }
   }
@@ -198,6 +214,7 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
   private async onCloseClick_() {
     await this.resetImporter();
     this.closeDialog_();
+    this.inProgress_ = false;
   }
 
   private async onViewPasswordsClick_() {

@@ -56,6 +56,13 @@
 
 namespace {
 
+std::u16string InsertBrandedPasswordManager(int message_id) {
+  return l10n_util::GetStringFUTF16(
+      message_id,
+      l10n_util::GetStringUTF16(
+          IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE));
+}
+
 content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     Profile* profile,
     content::WebUI* web_ui) {
@@ -145,7 +152,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"editPasswordFootnote", IDS_PASSWORD_MANAGER_UI_PASSWORD_EDIT_FOOTNOTE},
     {"editPasswordTitle", IDS_PASSWORD_MANAGER_UI_EDIT_PASSWORD},
     {"emptyNote", IDS_PASSWORD_MANAGER_UI_NO_NOTE_SAVED},
-    {"emptyState", IDS_PASSWORD_MANAGER_UI_EMPTY_STATE},
+    {"emptyStateImportSyncing",
+     IDS_PASSWORD_MANAGER_UI_EMPTY_STATE_SYNCING_USERS},
     {"exportPasswords", IDS_PASSWORD_MANAGER_UI_EXPORT_TITLE},
     {"exportPasswordsDescription",
      IDS_PASSWORD_MANAGER_UI_EXPORT_BANNER_DESCRIPTION},
@@ -362,31 +370,30 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
   source->AddString("trustedVaultLearnMoreUrl",
                     chrome::kSyncTrustedVaultLearnMoreURL);
 
+  source->AddString("addShortcutDescription",
+                    InsertBrandedPasswordManager(
+                        IDS_PASSWORD_MANAGER_UI_ADD_SHORTCUT_DESCRIPTION));
+
   source->AddString(
-      "addShortcutDescription",
-      l10n_util::GetStringFUTF16(
-          IDS_PASSWORD_MANAGER_UI_ADD_SHORTCUT_DESCRIPTION,
-          l10n_util::GetStringUTF16(
-              IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE)));
+      "emptyStateImportAccountStore",
+      InsertBrandedPasswordManager(
+          IDS_PASSWORD_MANAGER_UI_EMPTY_STATE_ACCOUNT_STORE_USERS));
+  source->AddString("emptyStateImportDevice",
+                    InsertBrandedPasswordManager(
+                        IDS_PASSWORD_MANAGER_UI_EMPTY_STATE_SIGNEDOUT_USERS));
 
   source->AddString(
       "importPasswordsGenericDescription",
-      l10n_util::GetStringFUTF16(
-          IDS_PASSWORD_MANAGER_UI_IMPORT_DESCRIPTION_ACCOUNT_STORE_USERS,
-          l10n_util::GetStringUTF16(
-              IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE)));
+      InsertBrandedPasswordManager(
+          IDS_PASSWORD_MANAGER_UI_IMPORT_DESCRIPTION_ACCOUNT_STORE_USERS));
   source->AddString(
       "importPasswordsDescriptionDevice",
-      l10n_util::GetStringFUTF16(
-          IDS_PASSWORD_MANAGER_UI_IMPORT_DESCRIPTION_SIGNEDOUT_USERS,
-          l10n_util::GetStringUTF16(
-              IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE)));
-  source->AddString(
-      "passwordsStoreOptionDevice",
-      l10n_util::GetStringFUTF16(
-          IDS_PASSWORD_MANAGER_UI_STORE_PICKER_OPTION_DEVICE,
-          l10n_util::GetStringUTF16(
-              IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE)));
+      InsertBrandedPasswordManager(
+          IDS_PASSWORD_MANAGER_UI_IMPORT_DESCRIPTION_SIGNEDOUT_USERS));
+  source->AddString("passwordsStoreOptionDevice",
+                    InsertBrandedPasswordManager(
+                        IDS_PASSWORD_MANAGER_UI_STORE_PICKER_OPTION_DEVICE));
+
   source->AddString(
       "importPasswordsLimitExceeded",
       l10n_util::GetStringFUTF16(

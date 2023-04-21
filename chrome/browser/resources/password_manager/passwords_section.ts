@@ -35,7 +35,7 @@ import {getTemplate} from './passwords_section.html.js';
 import {PromoCardId} from './promo_cards/promo_card.js';
 import {PromoCard, PromoCardsProxyImpl} from './promo_cards/promo_cards_browser_proxy.js';
 // </if>
-import {Page, Route, RouteObserverMixin, UrlParam} from './router.js';
+import {Page, Route, RouteObserverMixin, Router, UrlParam} from './router.js';
 import {UserUtilMixin} from './user_utils_mixin.js';
 
 export interface PasswordsSectionElement {
@@ -95,6 +95,12 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
       movePasswordsText_: String,
 
+      importPasswordsText_: {
+        type: String,
+        computed: 'computeImportPasswordsText_(isAccountStoreUser, ' +
+            'isSyncingPasswords, accountEmail)',
+      },
+
       passwordsOnDevice_: {
         type: Number,
         computed: 'computePasswordsOnDevice_(groups_)',
@@ -133,7 +139,14 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     };
   }
 
+  static get observers() {
+    return [
+      'updateImportPasswordsLink_(importPasswordsText_)',
+    ];
+  }
+
   focusConfig: FocusConfig;
+
   private groups_: chrome.passwordsPrivate.CredentialGroup[] = [];
   private searchTerm_: string;
   private shownGroupsCount_: number;
@@ -297,13 +310,34 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     return this.groups_.length === 0;
   }
 
-  private getImportPasswordsText_(): TrustedHTML {
-    return this.i18nAdvanced('emptyState');
+  private computeImportPasswordsText_(): TrustedHTML {
+    if (this.isAccountStoreUser) {
+      return this.i18nAdvanced('emptyStateImportAccountStore');
+    }
+    if (this.isSyncingPasswords) {
+      return this.i18nAdvanced('emptyStateImportSyncing', {
+        substitutions: [
+          this.i18n('localPasswordManager'),
+          this.accountEmail,
+        ],
+      });
+    }
+    return this.i18nAdvanced('emptyStateImportDevice');
   }
 
-  private onImportPasswordsClicked_(e: Event) {
-    e.preventDefault();
-    // TODO(crbug.com/1420548): Show import passwords dialog.
+  private updateImportPasswordsLink_() {
+    const importLink = this.$.importPasswords.querySelector('a');
+    // Add an event listener to the import link, points to the import flow.
+    assert(importLink);
+    importLink!.addEventListener('click', (event: Event) => {
+      // The action is triggered from a dummy anchor element poining to "#".
+      // For that case preventing the default behaviour is required here.
+      event.preventDefault();
+
+      const params = new URLSearchParams();
+      params.set(UrlParam.START_IMPORT, 'true');
+      Router.getInstance().navigateTo(Page.SETTINGS, null, params);
+    });
   }
 
   // <if expr="_google_chrome">

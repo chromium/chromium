@@ -21,6 +21,7 @@ import {PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
 // </if>
 import {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordManagerImpl} from './password_manager_proxy.js';
 import {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
+import {Route, RouteObserverMixin, Router, UrlParam} from './router.js';
 import {getTemplate} from './settings_section.html.js';
 import {SyncBrowserProxyImpl, TrustedVaultBannerState} from './sync_browser_proxy.js';
 import {UserUtilMixin} from './user_utils_mixin.js';
@@ -35,8 +36,8 @@ export interface SettingsSectionElement {
   };
 }
 
-const SettingsSectionElementBase =
-    PrefsMixin(UserUtilMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
+const SettingsSectionElementBase = RouteObserverMixin(
+    PrefsMixin(UserUtilMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
 
 export class SettingsSectionElement extends SettingsSectionElementBase {
   static get is() {
@@ -155,6 +156,17 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     PasswordManagerImpl.getInstance().removeSavedPasswordListChangedListener(
         this.setCredentialsChangedListener_);
     this.setCredentialsChangedListener_ = null;
+  }
+
+  override currentRouteChanged(route: Route): void {
+    const param = route.queryParameters.get(UrlParam.START_IMPORT) || '';
+    if (param === 'true') {
+      const importer = this.shadowRoot!.querySelector('passwords-importer');
+      assert(importer);
+      importer.launchImport();
+      const params = new URLSearchParams();
+      Router.getInstance().updateRouterParams(params);
+    }
   }
 
   private getBlockedSitesDescription_() {

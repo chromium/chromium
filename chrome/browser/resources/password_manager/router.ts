@@ -32,6 +32,8 @@ export enum UrlParam {
   // If this parameter is true, password check will start automatically when
   // navigating to Checkup section.
   START_CHECK = 'start',
+  // Triggers import on the Settings page.
+  START_IMPORT = 'import',
 }
 
 export class Route {
