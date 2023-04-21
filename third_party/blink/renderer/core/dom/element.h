@@ -612,6 +612,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     RebuildMarkerLayoutTree(whitespace_attacher);
     HandleSubtreeModifications();
   }
+  void RebuildLayoutTreeForSizeContainerAncestor() {
+    RebuildFirstLetterLayoutTree();
+  }
   bool NeedsRebuildChildLayoutTrees(
       const WhitespaceAttacher& whitespace_attacher) const {
     return ChildNeedsReattachLayoutTree() || NeedsWhitespaceChildrenUpdate() ||

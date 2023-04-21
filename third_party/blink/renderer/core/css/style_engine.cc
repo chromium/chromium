@@ -3133,7 +3133,7 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
       DCHECK(FlatTreeTraversal::ContainsIncludingPseudoElement(
           container, *layout_tree_rebuild_root_.GetRootNode()));
     }
-    RebuildLayoutTree(RebuildTransitionPseudoTree::kNo);
+    RebuildLayoutTree(&container);
   }
 
   if (container == GetDocument().documentElement()) {
@@ -3210,17 +3210,27 @@ void StyleEngine::ClearEnsuredDescendantStyles(Element& root) {
   }
 }
 
-void StyleEngine::RebuildLayoutTreeForTraversalRootAncestors(Element* parent) {
+void StyleEngine::RebuildLayoutTreeForTraversalRootAncestors(
+    Element* parent,
+    Element* container_parent) {
+  bool is_container_ancestor = false;
+
   for (auto* ancestor = parent; ancestor;
        ancestor = ancestor->GetReattachParent()) {
-    ancestor->RebuildLayoutTreeForTraversalRootAncestor();
+    if (ancestor == container_parent) {
+      is_container_ancestor = true;
+    }
+    if (is_container_ancestor) {
+      ancestor->RebuildLayoutTreeForSizeContainerAncestor();
+    } else {
+      ancestor->RebuildLayoutTreeForTraversalRootAncestor();
+    }
     ancestor->ClearChildNeedsStyleRecalc();
     ancestor->ClearChildNeedsReattachLayoutTree();
   }
 }
 
-void StyleEngine::RebuildLayoutTree(
-    RebuildTransitionPseudoTree rebuild_transition_pseudo_tree) {
+void StyleEngine::RebuildLayoutTree(Element* size_container) {
   bool propagate_to_root = false;
   {
     DCHECK(GetDocument().documentElement());
@@ -3237,9 +3247,11 @@ void StyleEngine::RebuildLayoutTree(
       root_element.RebuildLayoutTree(whitespace_attacher);
     }
 
-    RebuildLayoutTreeForTraversalRootAncestors(
-        root_element.GetReattachParent());
-    if (rebuild_transition_pseudo_tree == RebuildTransitionPseudoTree::kYes) {
+    Element* container_parent =
+        size_container ? size_container->GetReattachParent() : nullptr;
+    RebuildLayoutTreeForTraversalRootAncestors(root_element.GetReattachParent(),
+                                               container_parent);
+    if (size_container == nullptr) {
       document_->documentElement()->RebuildTransitionPseudoLayoutTree(
           view_transition_names_);
     }
@@ -3250,7 +3262,7 @@ void StyleEngine::RebuildLayoutTree(
   if (propagate_to_root) {
     PropagateWritingModeAndDirectionToHTMLRoot();
     if (NeedsLayoutTreeRebuild()) {
-      RebuildLayoutTree(rebuild_transition_pseudo_tree);
+      RebuildLayoutTree(size_container);
     }
   }
 }
@@ -3269,7 +3281,8 @@ void StyleEngine::ReattachContainerSubtree(Element& container) {
 
   base::AutoReset<bool> rebuild_scope(&in_layout_tree_rebuild_, true);
   container.ReattachLayoutTreeChildren(base::PassKey<StyleEngine>());
-  RebuildLayoutTreeForTraversalRootAncestors(&container);
+  RebuildLayoutTreeForTraversalRootAncestors(&container,
+                                             container.GetReattachParent());
   layout_tree_rebuild_root_.Clear();
 }
 
@@ -3299,7 +3312,7 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
     if (NeedsLayoutTreeRebuild()) {
       TRACE_EVENT0("blink,blink_style", "Document::rebuildLayoutTree");
       SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES("Style.RebuildLayoutTreeTime");
-      RebuildLayoutTree(RebuildTransitionPseudoTree::kYes);
+      RebuildLayoutTree();
     }
   } else {
     style_recalc_root_.Clear();

@@ -585,9 +585,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void RecalcStyle();
 
   void ClearEnsuredDescendantStyles(Element& element);
-  enum class RebuildTransitionPseudoTree { kYes, kNo };
-  void RebuildLayoutTree(
-      RebuildTransitionPseudoTree rebuild_transition_pseudo_tree);
+  void RebuildLayoutTree(Element* size_container = nullptr);
   bool InRebuildLayoutTree() const { return in_layout_tree_rebuild_; }
   bool InDOMRemoval() const { return in_dom_removal_; }
   bool InContainerQueryStyleRecalc() const {
@@ -799,7 +797,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // removal which caused a layout subtree to be detached.
   void MarkForLayoutTreeChangesAfterDetach();
 
-  void RebuildLayoutTreeForTraversalRootAncestors(Element* parent);
+  void RebuildLayoutTreeForTraversalRootAncestors(Element* parent,
+                                                  Element* container_parent);
 
   // Separate path for layout tree rebuild for re-attaching children of a
   // fieldset size query container, or a size query container which must use
