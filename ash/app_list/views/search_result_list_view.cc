@@ -274,7 +274,7 @@ SearchResultListView::ScheduleResultAnimations(
   // Collect current container animation info.
   ResultsAnimationInfo current_animation_info;
 
-  if (num_results_ < 1 || !enabled_) {
+  if (num_results() < 1 || !enabled_) {
     SetVisible(false);
     for (auto* result_view : search_result_views_)
       result_view->SetVisible(false);
@@ -312,9 +312,9 @@ SearchResultListView::ScheduleResultAnimations(
 
   for (size_t i = 0; i < search_result_views_.size(); ++i) {
     SearchResultView* result_view = GetResultViewAt(i);
-    result_view->SetVisible(i < num_results_);
+    result_view->SetVisible(i < num_results());
 
-    if (i < num_results_) {
+    if (i < num_results()) {
       // Checks whether the index of the current result view is greater than
       // or equal to the index of the first result view that should be animated.
       // Force animations if true.
@@ -338,8 +338,9 @@ void SearchResultListView::AppendShownResultMetadata(
     std::vector<SearchResultAimationMetadata>* result_metadata_) {
   for (size_t i = 0; i < search_result_views_.size(); ++i) {
     SearchResultView* result_view = GetResultViewAt(i);
-    if (i >= num_results_ || !result_view->result())
+    if (i >= num_results() || !result_view->result()) {
       return;
+    }
     SearchResultAimationMetadata metadata;
     metadata.result_id = result_view->result()->id();
     metadata.skip_animations = result_view->result()->skip_update_animation();
@@ -570,8 +571,7 @@ std::vector<SearchResult*> SearchResultListView::GetCategorizedSearchResults() {
 
 std::vector<SearchResult*> SearchResultListView::UpdateResultViews() {
   std::vector<SearchResult*> display_results = GetCategorizedSearchResults();
-  size_t num_results = display_results.size();
-  num_results_ = num_results;
+  const size_t num_results = display_results.size();
   for (size_t i = 0; i < search_result_views_.size(); ++i) {
     SearchResultView* result_view = GetResultViewAt(i);
     if (i < num_results) {

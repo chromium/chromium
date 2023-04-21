@@ -214,12 +214,18 @@ double FileResult::CalculateRelevance(
 }
 
 void FileResult::RequestThumbnail(ash::ThumbnailLoader* thumbnail_loader) {
-  // Thumbnails are only available for list results.
-  DCHECK_EQ(display_type(), DisplayType::kList);
+  // Thumbnails are only available for list results or image results.
+  gfx::Size size;
+  if (display_type() == DisplayType::kList) {
+    size = gfx::Size(kThumbnailDimension, kThumbnailDimension);
+  } else if (display_type() == DisplayType::kImage) {
+    size = gfx::Size(kImageSearchWidth, kImageSearchHeight);
+  } else {
+    NOTREACHED();
+  }
 
   // Request a thumbnail for all file types. For unsupported types, this will
   // just call OnThumbnailLoaded with an error.
-  const gfx::Size size = gfx::Size(kThumbnailDimension, kThumbnailDimension);
   thumbnail_loader->Load({filepath_, size},
                          base::BindOnce(&FileResult::OnThumbnailLoaded,
                                         weak_factory_.GetWeakPtr()));
@@ -241,11 +247,16 @@ void FileResult::OnThumbnailLoaded(const SkBitmap* bitmap,
 
   DCHECK_EQ(error, base::File::Error::FILE_OK);
 
-  const int dimension = kThumbnailDimension;
+  const bool is_list_display_type = display_type() == DisplayType::kList;
+
+  const int dimension =
+      is_list_display_type ? kThumbnailDimension : kImageSearchWidth;
+  const auto shape = is_list_display_type
+                         ? ash::SearchResultIconShape::kCircle
+                         : ash::SearchResultIconShape::kRoundedRectangle;
   const auto image = gfx::ImageSkia::CreateFromBitmap(*bitmap, 1.0f);
 
-  SetIcon(ChromeSearchResult::IconInfo(image, dimension,
-                                       ash::SearchResultIconShape::kCircle));
+  SetIcon(ChromeSearchResult::IconInfo(image, dimension, shape));
 }
 
 void FileResult::UpdateIcon() {

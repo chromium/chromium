@@ -419,6 +419,7 @@ enum class SearchResultDisplayType {
   // kChip = 5,        // No longer used, Displays in suggestion chips
   kContinue = 6,    // Displays in the Continue section
   kRecentApps = 7,  // Displays in recent apps row
+  kImage = 8,       // Displays in a list of image results
   // Add new values here
   kLast,  // Don't use over IPC
 };

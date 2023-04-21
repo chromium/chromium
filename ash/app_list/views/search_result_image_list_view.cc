@@ -5,10 +5,12 @@
 #include "ash/app_list/views/search_result_image_list_view.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/views/search_result_image_view.h"
+#include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -29,8 +31,6 @@ namespace {
 constexpr int kPreferredTitleHorizontalMargins = 16;
 constexpr int kPreferredTitleTopMargins = 12;
 constexpr int kPreferredTitleBottomMargins = 4;
-
-constexpr size_t kMaxImageResults = 4;
 
 }  // namespace
 
@@ -58,7 +58,8 @@ SearchResultImageListView::SearchResultImageListView(
 
   // TODO(crbug.com/1352636) replace mock results with real results.
   int dummy_search_result_id = 0;
-  for (size_t i = 0; i < kMaxImageResults; ++i) {
+  for (size_t i = 0;
+       i < SharedAppListConfig::instance().image_search_max_results(); ++i) {
     image_views_.emplace_back(new SearchResultImageView(
         "dummy id" + base::NumberToString(++dummy_search_result_id)));
     image_views_.back()->SetPaintToLayer();
@@ -110,9 +111,31 @@ void SearchResultImageListView::OnSelectedResultChanged() {
   // TODO(crbug.com/1352636) once result selection spec is available.
   return;
 }
+
 int SearchResultImageListView::DoUpdate() {
   // TODO(crbug.com/1352636) once backend results are available.
-  return -1;
+  std::vector<SearchResult*> display_results =
+      SearchModel::FilterSearchResultsByFunction(
+          results(), base::BindRepeating([](const SearchResult& result) {
+            return result.display_type() == SearchResultDisplayType::kImage;
+          }),
+          ash::SharedAppListConfig::instance().image_search_max_results());
+
+  const size_t num_results = display_results.size();
+
+  for (size_t i = 0; i < image_views_.size(); ++i) {
+    SearchResultImageView* result_view = GetResultViewAt(i);
+    if (i < num_results) {
+      result_view->SetVisible(true);
+      result_view->SetResult(display_results[i]);
+      result_view->SizeToPreferredSize();
+    } else {
+      result_view->SetVisible(false);
+      result_view->SetResult(nullptr);
+    }
+  }
+  SetVisible(num_results > 0);
+  return num_results;
 }
 
 BEGIN_METADATA(SearchResultImageListView, SearchResultContainerView)

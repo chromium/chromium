@@ -4,6 +4,8 @@
 
 #include "ash/app_list/views/search_result_image_view.h"
 
+#include <algorithm>
+
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/app_list/views/search_result_image_view_delegate.h"
 #include "ash/style/ash_color_id.h"
@@ -11,9 +13,11 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/fill_layout.h"
 
 namespace ash {
@@ -22,21 +26,39 @@ namespace {
 
 // Sizing and spacing values for `result_image_`.
 constexpr int kTopBottomMargin = 10;
-constexpr int kLeftRightMargin = 25;
-constexpr int kIconSize = 100;
+constexpr int kLeftRightMargin = 15;
+constexpr int kRoundedCornerRadius = 8;
+
+class ImagePreviewView : public views::ImageButton {
+ public:
+  ImagePreviewView() = default;
+  ImagePreviewView(const ImagePreviewView&) = delete;
+  ImagePreviewView& operator=(const ImagePreviewView&) = delete;
+  ~ImagePreviewView() override = default;
+
+ private:
+  // views::ImageView:
+  void PaintButtonContents(gfx::Canvas* canvas) override {
+    if (GetImage(views::Button::STATE_NORMAL).isNull()) {
+      return;
+    }
+
+    SkPath mask;
+    mask.addRoundRect(gfx::RectToSkRect(GetContentsBounds()),
+                      kRoundedCornerRadius, kRoundedCornerRadius);
+    canvas->ClipPath(mask, true);
+    views::ImageButton::PaintButtonContents(canvas);
+  }
+};
 
 }  // namespace
 
 SearchResultImageView::SearchResultImageView(std::string dummy_result_id) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  result_image_ = AddChildView(std::make_unique<views::ImageView>());
+  result_image_ = AddChildView(std::make_unique<ImagePreviewView>());
   result_image_->SetCanProcessEventsWithinSubtree(false);
   result_image_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kTopBottomMargin, kLeftRightMargin, kTopBottomMargin, kLeftRightMargin)));
-
-  dummy_result_ptr = std::make_unique<SearchResult>();
-  dummy_result_ptr->set_id(dummy_result_id);
-  SetResult(dummy_result_ptr.get());
 
   set_context_menu_controller(SearchResultImageViewDelegate::Get());
   set_drag_controller(SearchResultImageViewDelegate::Get());
@@ -44,18 +66,9 @@ SearchResultImageView::SearchResultImageView(std::string dummy_result_id) {
 
 void SearchResultImageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kListBoxOption;
-  node_data->SetName("Search Result Image View");
+  node_data->SetName(result() ? result()->title() : u"");
   // TODO(crbug.com/1352636) update with internationalized accessible name if we
   // launch this feature.
-}
-
-void SearchResultImageView::OnThemeChanged() {
-  SearchResultBaseView::OnThemeChanged();
-
-  // TODO(crbug.com/1352636) remove placeholder image.
-  result_image_->SetImage(gfx::CreateVectorIcon(
-      vector_icons::kGoogleColorIcon, kIconSize,
-      GetColorProvider()->GetColor(kColorAshButtonIconColor)));
 }
 
 void SearchResultImageView::OnGestureEvent(ui::GestureEvent* event) {
@@ -68,6 +81,23 @@ void SearchResultImageView::OnMouseEvent(ui::MouseEvent* event) {
   SearchResultImageViewDelegate::Get()->HandleSearchResultImageViewMouseEvent(
       this, *event);
   SearchResultBaseView::OnMouseEvent(event);
+}
+
+void SearchResultImageView::OnResultChanged() {
+  OnMetadataChanged();
+  SchedulePaint();
+}
+
+void SearchResultImageView::OnMetadataChanged() {
+  if (!result() || result()->icon().icon.isNull()) {
+    result_image_->SetImage(views::Button::STATE_NORMAL, gfx::ImageSkia());
+    return;
+  }
+
+  const gfx::ImageSkia& image = result()->icon().icon;
+  result_image_->SetImage(views::Button::STATE_NORMAL, image);
+  result_image_->SetTooltipText(result()->title());
+  result_image_->SetAccessibleName(result()->title());
 }
 
 SearchResultImageView::~SearchResultImageView() = default;

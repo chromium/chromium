@@ -92,6 +92,8 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
 
   int answer_card_max_results() const { return answer_card_max_results_; }
 
+  size_t image_search_max_results() const { return image_search_max_results_; }
+
   // Returns the maximum number of items allowed in a page in the apps grid.
   int GetMaxNumOfItemsPerPage() const;
 
@@ -146,6 +148,9 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
   // The maximum number of filtered results of type answer card within
   // categorical search
   const int answer_card_max_results_ = 1;
+
+  // The maximum number of results shown in the launcher image search category.
+  const size_t image_search_max_results_ = 3;
 };
 
 // Contains app list layout information for an app list view. `AppListConfig`

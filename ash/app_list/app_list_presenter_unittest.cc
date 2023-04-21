@@ -3125,7 +3125,7 @@ TEST_F(AppListPresenterTest, SearchClearedOnModelChange) {
 
   SearchResultContainerView* item_list_container =
       GetDefaultSearchResultListView();
-  ASSERT_EQ(1, item_list_container->num_results());
+  ASSERT_EQ(1u, item_list_container->num_results());
   EXPECT_EQ("test_list",
             item_list_container->GetResultViewAt(0)->result()->id());
 
@@ -3162,7 +3162,7 @@ TEST_F(AppListPresenterTest, SearchClearedOnModelChange) {
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
 
   item_list_container = GetDefaultSearchResultListView();
-  ASSERT_EQ(1, item_list_container->num_results());
+  ASSERT_EQ(1u, item_list_container->num_results());
   EXPECT_EQ("test_list_override",
             item_list_container->GetResultViewAt(0)->result()->id());
 

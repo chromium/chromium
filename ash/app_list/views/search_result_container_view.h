@@ -55,7 +55,7 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
   void SetResults(SearchModel::SearchResults* results);
   SearchModel::SearchResults* results() { return results_; }
 
-  int num_results() const { return num_results_; }
+  size_t num_results() const { return num_results_; }
 
   virtual SearchResultBaseView* GetResultViewAt(size_t index) = 0;
 
@@ -166,7 +166,7 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
 
   Delegate* delegate_ = nullptr;
 
-  int num_results_ = 0;
+  size_t num_results_ = 0;
 
   // If true, left/right key events will traverse this container
   bool horizontally_traversable_ = false;

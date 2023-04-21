@@ -53,7 +53,7 @@ void SearchResultContainerView::SetActive(bool active) {
 void SearchResultContainerView::ResetAndHide() {
   SetVisible(false);
 
-  for (int i = 0; i < num_results(); ++i) {
+  for (size_t i = 0; i < num_results(); ++i) {
     SearchResultBaseView* const result_view = GetResultViewAt(i);
     result_view->SetResult(nullptr);
     result_view->SetVisible(false);

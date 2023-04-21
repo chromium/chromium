@@ -14,7 +14,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
-class ImageView;
+class ImageButton;
 }  // namespace views
 
 namespace ash {
@@ -32,12 +32,17 @@ class ASH_EXPORT SearchResultImageView : public SearchResultBaseView {
 
   // Overridden from views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void OnThemeChanged() override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
 
+  // SearchResultBaseView overrides:
+  void OnResultChanged() override;
+
  private:
-  base::raw_ptr<views::ImageView> result_image_ =
+  // SearchResultObserver overrides:
+  void OnMetadataChanged() override;
+
+  base::raw_ptr<views::ImageButton> result_image_ =
       nullptr;  // Owned by views hierarchy.
 
   // TODO(crbug.com/1352636) remove once backend service is available.

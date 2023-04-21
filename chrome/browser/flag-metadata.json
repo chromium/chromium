@@ -6305,7 +6305,7 @@
   {
     "name": "productivity-launcher-image-search",
     "owners": [ "yulunwu","cros-system-ui-eng@google.com" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 118
   },
   {
     "name": "promise-icons",

@@ -99,7 +99,7 @@ std::unique_ptr<FileResult> LocalImageSearchProvider::MakeResult(
   auto result = std::make_unique<FileResult>(
       /*id=*/kFileSearchSchema + path.path.value(), path.path, parent_dir_name,
       ash::AppListSearchResultType::kImageSearch,
-      ash::SearchResultDisplayType::kList, path.relevance, last_query_,
+      ash::SearchResultDisplayType::kImage, path.relevance, last_query_,
       FileResult::Type::kFile, profile_);
   result->RequestThumbnail(&thumbnail_loader_);
   return result;

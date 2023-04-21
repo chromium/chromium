@@ -185,9 +185,6 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   // search result actions. Used to filter those results out from the list of
   // shown results until results in the search model get refreshed.
   std::set<std::string> removed_results_;
-
-  // The number of results shown by the list view.
-  size_t num_results_ = 0;
 };
 
 }  // namespace ash

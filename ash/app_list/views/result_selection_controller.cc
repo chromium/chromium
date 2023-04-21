@@ -304,7 +304,7 @@ ResultSelectionController::FindResultWithId(const std::string& id) {
        container_index < result_selection_model_->size(); ++container_index) {
     SearchResultContainerView* const container =
         result_selection_model_->at(container_index);
-    for (int result_index = 0; result_index < container->num_results();
+    for (size_t result_index = 0; result_index < container->num_results();
          ++result_index) {
       const SearchResult* const result =
           container->GetResultViewAt(result_index)->result();

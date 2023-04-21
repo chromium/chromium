@@ -20,6 +20,8 @@
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/bind.h"
@@ -39,7 +41,6 @@
 namespace {
 
 int kDefaultSearchItems = 3;
-const uint64_t kSearchResultImageViewResultCount = 4;
 // SearchResultListViewType is 0 indexed so we need to add 1 here.
 const int kResultContainersCount =
     static_cast<int>(
@@ -88,6 +89,24 @@ class AppListSearchViewTest : public AshTestBase {
       result->SetDetails(u"Detail");
       result->set_best_match(best_match);
       result->set_category(category);
+      results->Add(std::move(result));
+    }
+  }
+
+  void SetUpImageSearchResults(SearchModel::SearchResults* results,
+                               int init_id,
+                               int new_result_count) {
+    for (int i = 0; i < new_result_count; ++i) {
+      std::unique_ptr<TestSearchResult> result =
+          std::make_unique<TestSearchResult>();
+      result->set_result_id(base::NumberToString(init_id + i));
+      result->set_display_type(ash::SearchResultDisplayType::kImage);
+      result->SetTitle(
+          base::UTF8ToUTF16(base::StringPrintf("Result %d", init_id + i)));
+      result->set_display_score(100);
+      result->SetDetails(u"Detail");
+      result->set_best_match(false);
+      result->set_category(SearchResult::Category::kFiles);
       results->Add(std::move(result));
     }
   }
@@ -165,7 +184,7 @@ class AppListSearchViewTest : public AshTestBase {
   }
 
   SearchResultView* GetSearchResultView(size_t container_index,
-                                        int view_index) {
+                                        size_t view_index) {
     std::vector<SearchResultContainerView*> result_containers =
         GetSearchView()->result_container_views_for_test();
     if (container_index >= result_containers.size()) {
@@ -229,6 +248,9 @@ INSTANTIATE_TEST_SUITE_P(Tablet, SearchResultImageViewTest, testing::Bool());
 
 TEST_P(SearchResultImageViewTest, ImageListViewVisible) {
   GetAppListTestHelper()->ShowAppList();
+  const size_t image_max_results =
+      SharedAppListConfig::instance().image_search_max_results();
+  const size_t num_results = image_max_results - 1;
 
   TestAppListClient* const client = GetAppListTestHelper()->app_list_client();
   client->set_search_callback(
@@ -242,6 +264,9 @@ TEST_P(SearchResultImageViewTest, ImageListViewVisible) {
         auto* test_helper = GetAppListTestHelper();
         SearchModel::SearchResults* results = test_helper->GetSearchResults();
         SetUpAnswerCardResult(results, 1, 1);
+        // Create some image search results that won't fill up the result
+        // container.
+        SetUpImageSearchResults(results, 1, num_results);
       }));
 
   // Press a key to start a search.
@@ -266,11 +291,16 @@ TEST_P(SearchResultImageViewTest, ImageListViewVisible) {
       static_cast<SearchResultImageListView*>(result_containers[2])
           ->GetSearchResultImageViews();
 
-  // The SearchResultImageListView should have four visible result views.
-  EXPECT_EQ(kSearchResultImageViewResultCount,
-            search_result_image_views.size());
-  for (auto* search_result_image_view : search_result_image_views) {
-    EXPECT_TRUE(search_result_image_view->GetVisible());
+  // The SearchResultImageListView should have 3 result views.
+  EXPECT_EQ(image_max_results, search_result_image_views.size());
+
+  // Verify that only the image views that contain results are visible.
+  for (size_t i = 0; i < image_max_results; ++i) {
+    if (i < num_results) {
+      EXPECT_TRUE(search_result_image_views[i]->GetVisible());
+    } else {
+      EXPECT_FALSE(search_result_image_views[i]->GetVisible());
+    }
   }
 
   client->set_search_callback(TestAppListClient::SearchCallback());
@@ -284,8 +314,8 @@ TEST_P(SearchResultImageViewTest, ShowContextMenu) {
   PressAndReleaseKey(ui::VKEY_A);
 
   SearchModel::SearchResults* results = test_helper->GetSearchResults();
-  SetUpSearchResults(results, 1, kDefaultSearchItems, 100, false,
-                     SearchResult::Category::kApps);
+  SetUpImageSearchResults(
+      results, 1, SharedAppListConfig::instance().image_search_max_results());
 
   // Check result container visibility.
   std::vector<SearchResultContainerView*> result_containers =
@@ -510,11 +540,11 @@ TEST_P(SearchViewClamshellAndTabletTest,
   ui::LayerAnimationStoppedWaiter().Wait(GetSearchPageAnimationLayer());
 
   EXPECT_FALSE(result_containers[2]->GetVisible());
-  EXPECT_EQ(0, result_containers[2]->num_results());
+  EXPECT_EQ(0u, result_containers[2]->num_results());
   EXPECT_FALSE(app_result->get_title_container_for_test()->GetVisible());
 
   EXPECT_FALSE(result_containers[3]->GetVisible());
-  EXPECT_EQ(0, result_containers[3]->num_results());
+  EXPECT_EQ(0u, result_containers[3]->num_results());
   EXPECT_FALSE(web_result->get_title_container_for_test()->GetVisible());
 
   client->set_search_callback(TestAppListClient::SearchCallback());
@@ -1131,7 +1161,7 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchClearedOnModelUpdate) {
 
   ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
   EXPECT_TRUE(result_containers[1]->GetVisible());
-  EXPECT_EQ(1, result_containers[1]->num_results());
+  EXPECT_EQ(1u, result_containers[1]->num_results());
   EXPECT_EQ(u"Result 2", GetSearchResultView(1, 0)->result()->title());
 
   Shell::Get()->app_list_controller()->ClearActiveModel();
