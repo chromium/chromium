@@ -349,15 +349,6 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   return UITableViewAutomaticDimension;
 }
 
-- (CGFloat)tableView:(UITableView*)tableView
-    heightForFooterInSection:(NSInteger)section {
-  if ([self.tableViewModel sectionIdentifierForSectionIndex:section] ==
-      SectionIdentifierSignInPromo) {
-    return 0;
-  }
-  return UITableViewAutomaticDimension;
-}
-
 #pragma mark - TableViewURLDragDataSource
 
 - (URLInfo*)tableView:(UITableView*)tableView
