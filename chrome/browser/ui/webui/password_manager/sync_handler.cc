@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/password_manager/sync_handler.h"
 
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -84,6 +85,12 @@ base::Value::Dict SyncHandler::GetSyncInfo() const {
   base::Value::Dict dict;
 
   syncer::SyncService* sync_service = GetSyncService();
+  // sync_service might be nullptr if SyncServiceFactory::IsSyncAllowed is
+  // false.
+  if (!sync_service) {
+    return dict;
+  }
+
   PrefService* pref_service = profile_->GetPrefs();
   syncer::UserSelectableTypeSet types =
       sync_service->GetUserSettings()->GetSelectedTypes();
