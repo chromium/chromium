@@ -1489,6 +1489,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"sf-symbols-follow-up", flag_descriptions::kSFSymbolsFollowupName,
      flag_descriptions::kSFSymbolsFollowupDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSFSymbolsFollowup)},
+    {"feed-disable-hot-start-refresh-ios",
+     flag_descriptions::kFeedDisableHotStartRefreshName,
+     flag_descriptions::kFeedDisableHotStartRefreshDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kFeedDisableHotStartRefresh)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
