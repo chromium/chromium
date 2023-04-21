@@ -26,15 +26,11 @@ const std::vector<int> ConvertRangeToTabGroupIndices(const gfx::Range& range) {
 
 namespace chrome_desks_util {
 
-absl::optional<std::vector<tab_groups::TabGroupInfo>>
-ConvertTabGroupsToTabGroupInfos(const TabGroupModel* group_model) {
+std::vector<tab_groups::TabGroupInfo> ConvertTabGroupsToTabGroupInfos(
+    const TabGroupModel* group_model) {
   DCHECK(group_model);
   const std::vector<tab_groups::TabGroupId>& listed_group_ids =
       group_model->ListTabGroups();
-
-  if (listed_group_ids.size() == 0) {
-    return absl::nullopt;
-  }
 
   std::vector<tab_groups::TabGroupInfo> tab_groups;
   for (const tab_groups::TabGroupId& group_id : listed_group_ids) {

@@ -85,18 +85,17 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
   bool operator!=(const AppRestoreData& other) const;
 
   // App launch parameters.
-  // TODO(crbug.com/1326250): Remove optional wrappers around vector fields.
   absl::optional<int32_t> event_flag;
   absl::optional<int32_t> container;
   absl::optional<int32_t> disposition;
   absl::optional<GURL> override_url;
   absl::optional<int64_t> display_id;
   absl::optional<std::string> handler_id;
-  absl::optional<std::vector<GURL>> urls;
+  std::vector<GURL> urls;
   absl::optional<int32_t> active_tab_index;
   absl::optional<int32_t> first_non_pinned_tab_index;
   apps::IntentPtr intent = nullptr;
-  absl::optional<std::vector<base::FilePath>> file_paths;
+  std::vector<base::FilePath> file_paths;
   absl::optional<bool> app_type_browser;
   absl::optional<std::string> app_name;
   absl::optional<std::u16string> title;
@@ -116,7 +115,7 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
   // instance if there are any. This is only used in Desks Storage, tab groups
   // in full restore are persistsed by sessions.  This field is not converted to
   // base::value in base value conversions.
-  absl::optional<std::vector<tab_groups::TabGroupInfo>> tab_group_infos;
+  std::vector<tab_groups::TabGroupInfo> tab_group_infos;
   // The GUID of the desk that this window was on.
   base::Uuid desk_guid;
 

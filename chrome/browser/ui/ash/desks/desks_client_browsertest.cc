@@ -621,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserUrlsTest) {
   ASSERT_TRUE(app_restore_data_iter != iter->second.end());
   const auto& data = app_restore_data_iter->second;
   // Check the urls are captured correctly in the |desk_template|.
-  EXPECT_EQ(data->urls.value(), urls);
+  EXPECT_EQ(data->urls, urls);
 }
 
 // Tests that a browser's tab groups can be captured correctly in a saved desk.
@@ -660,11 +660,11 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserTabGroupsTest) {
   ASSERT_TRUE(app_restore_data_iter != iter->second.end());
   const auto& data = app_restore_data_iter->second;
   // Check the urls are captured correctly in the `desk_template`.
-  EXPECT_EQ(urls, data->urls.value());
+  EXPECT_EQ(urls, data->urls);
 
   // We don't care about the order of the tab groups.
-  EXPECT_THAT(expected_tab_groups, testing::UnorderedElementsAreArray(
-                                       data->tab_group_infos.value()));
+  EXPECT_THAT(expected_tab_groups,
+              testing::UnorderedElementsAreArray(data->tab_group_infos));
 }
 
 // Tests that a browser's pinned tabs can be captured correctly in a saved desk.
@@ -703,7 +703,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserWithPinnedTabs) {
   ASSERT_TRUE(app_restore_data_iter != iter->second.end());
   const auto& data = app_restore_data_iter->second;
   // Check the urls are captured correctly in the `desk_template`.
-  EXPECT_EQ(urls, data->urls.value());
+  EXPECT_EQ(urls, data->urls);
 
   // Assert number of pinned tabs is correct.
   EXPECT_TRUE(data->first_non_pinned_tab_index.has_value());
@@ -1160,15 +1160,15 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   Browser* new_browser = FindLaunchedBrowserByURLs(urls);
   ASSERT_TRUE(new_browser);
 
-  absl::optional<std::vector<tab_groups::TabGroupInfo>> got_tab_groups =
+  std::vector<tab_groups::TabGroupInfo> got_tab_groups =
       chrome_desks_util::ConvertTabGroupsToTabGroupInfos(
           new_browser->tab_strip_model()->group_model());
 
-  EXPECT_TRUE(got_tab_groups.has_value());
+  EXPECT_FALSE(got_tab_groups.empty());
 
   // We don't care about the order of the tab groups.
   EXPECT_THAT(expected_tab_groups,
-              testing::UnorderedElementsAreArray(got_tab_groups.value()));
+              testing::UnorderedElementsAreArray(got_tab_groups));
 }
 
 // Tests that a browser's pinned tabs can be launched correctly in a saved desk.
@@ -1590,7 +1590,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUICaptureBrowserUrlsTest) {
   ASSERT_TRUE(app_restore_data_iter != iter->second.end());
   const auto& data = app_restore_data_iter->second;
   // Check the urls are captured correctly in the `desk_template`.
-  EXPECT_EQ(data->urls.value(), urls);
+  EXPECT_EQ(data->urls, urls);
 }
 
 // Tests that snapped window's snap ratio/percentage is maintained when
@@ -2697,7 +2697,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SaveEmptyDesk) {
   ASSERT_TRUE(app_restore_data_iter != iter->second.end());
   const auto& data = app_restore_data_iter->second;
   // Check the urls are captured correctly in the `saved_desk`.
-  EXPECT_EQ(data->urls.value(), urls);
+  EXPECT_EQ(data->urls, urls);
 
   // Exit overview.
   ash::ToggleOverview();
@@ -2732,7 +2732,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SaveActiveDesk) {
   ASSERT_TRUE(app_restore_data_iter != iter->second.end());
   const auto& data = app_restore_data_iter->second;
   // Check the urls are captured correctly in the `saved_desk`.
-  EXPECT_EQ(data->urls.value(), urls);
+  EXPECT_EQ(data->urls, urls);
 
   // Exit overview.
   ash::ToggleOverview();

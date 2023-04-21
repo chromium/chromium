@@ -115,11 +115,11 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplate) {
   EXPECT_EQ(ali->active_tab_index.value(), 1);
   EXPECT_TRUE(ali->first_non_pinned_tab_index.has_value());
   EXPECT_EQ(ali->first_non_pinned_tab_index.value(), 1);
-  EXPECT_TRUE(ali->urls.has_value());
-  EXPECT_EQ(ali->urls.value()[0].spec(), kBrowserUrl1);
-  EXPECT_EQ(ali->urls.value()[1].spec(), kBrowserUrl2);
-  EXPECT_TRUE(ali->tab_group_infos.has_value());
-  EXPECT_EQ(ali->tab_group_infos.value()[0], MakeSampleTabGroup());
+  EXPECT_FALSE(ali->urls.empty());
+  EXPECT_EQ(ali->urls[0].spec(), kBrowserUrl1);
+  EXPECT_EQ(ali->urls[1].spec(), kBrowserUrl2);
+  EXPECT_FALSE(ali->tab_group_infos.empty());
+  EXPECT_EQ(ali->tab_group_infos[0], MakeSampleTabGroup());
   EXPECT_TRUE(wi->window_state_type.has_value());
   EXPECT_EQ(wi->window_state_type.value(), chromeos::WindowStateType::kNormal);
   EXPECT_TRUE(wi->current_bounds.has_value());
@@ -172,11 +172,11 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplateMinimized) {
   EXPECT_EQ(ali->active_tab_index.value(), 1);
   EXPECT_TRUE(ali->first_non_pinned_tab_index.has_value());
   EXPECT_EQ(ali->first_non_pinned_tab_index.value(), 1);
-  EXPECT_TRUE(ali->urls.has_value());
-  EXPECT_EQ(ali->urls.value()[0].spec(), kBrowserUrl1);
-  EXPECT_EQ(ali->urls.value()[1].spec(), kBrowserUrl2);
-  EXPECT_TRUE(ali->tab_group_infos.has_value());
-  EXPECT_EQ(ali->tab_group_infos.value()[0], MakeSampleTabGroup());
+  EXPECT_FALSE(ali->urls.empty());
+  EXPECT_EQ(ali->urls[0].spec(), kBrowserUrl1);
+  EXPECT_EQ(ali->urls[1].spec(), kBrowserUrl2);
+  EXPECT_FALSE(ali->tab_group_infos.empty());
+  EXPECT_EQ(ali->tab_group_infos[0], MakeSampleTabGroup());
   EXPECT_TRUE(wi->window_state_type.has_value());
   EXPECT_EQ(wi->window_state_type.value(),
             chromeos::WindowStateType::kMinimized);
@@ -238,7 +238,7 @@ TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
   EXPECT_TRUE(ali_chrome->display_id.has_value());
   EXPECT_EQ(ali_chrome->display_id.value(), 100L);
   EXPECT_FALSE(ali_chrome->active_tab_index.has_value());
-  EXPECT_FALSE(ali_chrome->urls.has_value());
+  EXPECT_TRUE(ali_chrome->urls.empty());
 
   EXPECT_TRUE(ali_pwa != nullptr);
 
@@ -248,7 +248,7 @@ TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
   EXPECT_TRUE(ali_pwa->display_id.has_value());
   EXPECT_EQ(ali_pwa->display_id.value(), 100L);
   EXPECT_FALSE(ali_pwa->active_tab_index.has_value());
-  EXPECT_FALSE(ali_pwa->urls.has_value());
+  EXPECT_TRUE(ali_pwa->urls.empty());
 
   EXPECT_TRUE(wi_chrome != nullptr);
   EXPECT_TRUE(wi_chrome->window_state_type.has_value());

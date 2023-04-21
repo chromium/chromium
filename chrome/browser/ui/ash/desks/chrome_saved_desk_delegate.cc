@@ -445,7 +445,8 @@ void ChromeSavedDeskDelegate::OnLacrosChromeInfoReturned(
     return;
   }
 
-  app_launch_info->tab_group_infos = state->groups;
+  app_launch_info->tab_group_infos =
+      state->groups.value_or(std::vector<tab_groups::TabGroupInfo>());
   app_launch_info->urls = state->urls;
   app_launch_info->active_tab_index = state->active_index;
   app_launch_info->first_non_pinned_tab_index = state->first_non_pinned_index;

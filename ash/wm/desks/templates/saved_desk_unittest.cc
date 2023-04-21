@@ -1422,7 +1422,7 @@ TEST_F(SavedDeskTest, IconsOrderWithInactiveTabs) {
   auto app_launch_info_1 =
       std::make_unique<app_restore::AppLaunchInfo>(kAppId1, kWindowId1);
   app_launch_info_1->active_tab_index = kActiveTabIndex1;
-  app_launch_info_1->urls = absl::make_optional(kTabs1);
+  app_launch_info_1->urls = kTabs1;
   restore_data->AddAppLaunchInfo(std::move(app_launch_info_1));
   app_restore::WindowInfo window_info_1;
   window_info_1.activation_index = absl::make_optional<int32_t>(kWindowId1);
@@ -1432,7 +1432,7 @@ TEST_F(SavedDeskTest, IconsOrderWithInactiveTabs) {
   auto app_launch_info_2 =
       std::make_unique<app_restore::AppLaunchInfo>(kAppId2, kWindowId2);
   app_launch_info_2->active_tab_index = kActiveTabIndex2;
-  app_launch_info_2->urls = absl::make_optional(kTabs2);
+  app_launch_info_2->urls = kTabs2;
   restore_data->AddAppLaunchInfo(std::move(app_launch_info_2));
   app_restore::WindowInfo window_info_2;
   window_info_2.activation_index = absl::make_optional<int32_t>(kWindowId2);
@@ -1482,7 +1482,7 @@ TEST_F(SavedDeskTest, IdenticalURL) {
   auto app_launch_info =
       std::make_unique<app_restore::AppLaunchInfo>(kAppId, kWindowId);
   app_launch_info->active_tab_index = kActiveTabIndex;
-  app_launch_info->urls = absl::make_optional(kTabs);
+  app_launch_info->urls = kTabs;
   restore_data->AddAppLaunchInfo(std::move(app_launch_info));
   app_restore::WindowInfo window_info;
   window_info.activation_index = absl::make_optional<int32_t>(kWindowId);
@@ -3083,7 +3083,7 @@ TEST_F(SavedDeskTest, SaveDeskRecordsWindowAndTabCountMetrics) {
   auto app_launch_info_1 =
       std::make_unique<app_restore::AppLaunchInfo>(kAppId1, kWindowId1);
   app_launch_info_1->active_tab_index = kActiveTabIndex1;
-  app_launch_info_1->urls = absl::make_optional(kTabs1);
+  app_launch_info_1->urls = kTabs1;
   restore_data->AddAppLaunchInfo(std::move(app_launch_info_1));
   app_restore::WindowInfo window_info_1;
   window_info_1.activation_index = absl::make_optional<int32_t>(kWindowId1);
@@ -3093,7 +3093,7 @@ TEST_F(SavedDeskTest, SaveDeskRecordsWindowAndTabCountMetrics) {
   auto app_launch_info_2 =
       std::make_unique<app_restore::AppLaunchInfo>(kAppId2, kWindowId2);
   app_launch_info_2->active_tab_index = kActiveTabIndex2;
-  app_launch_info_2->urls = absl::make_optional(kTabs2);
+  app_launch_info_2->urls = kTabs2;
   restore_data->AddAppLaunchInfo(std::move(app_launch_info_2));
   app_restore::WindowInfo window_info_2;
   window_info_2.activation_index = absl::make_optional<int32_t>(kWindowId2);

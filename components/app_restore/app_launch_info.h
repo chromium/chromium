@@ -58,7 +58,6 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppLaunchInfo {
 
   ~AppLaunchInfo();
 
-  // TODO(1326250): Remove optional wrappers around vector fields.
   std::string app_id;
   absl::optional<int32_t> window_id;
   absl::optional<int32_t> event_flag;
@@ -68,10 +67,10 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppLaunchInfo {
   absl::optional<int32_t> arc_session_id;
   absl::optional<int64_t> display_id;
   absl::optional<std::string> handler_id;
-  absl::optional<std::vector<GURL>> urls;
+  std::vector<GURL> urls;
   absl::optional<int32_t> active_tab_index;
   absl::optional<int32_t> first_non_pinned_tab_index;
-  absl::optional<std::vector<base::FilePath>> file_paths;
+  std::vector<base::FilePath> file_paths;
   apps::IntentPtr intent = nullptr;
   absl::optional<bool> app_type_browser;
   absl::optional<std::string> app_name;
@@ -79,7 +78,7 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppLaunchInfo {
   // instance if there are any. This is only used in Desks Storage, tab groups
   // in full restore are persistsed by sessions. This field is not converted to
   // base::Value in base value conversions.
-  absl::optional<std::vector<tab_groups::TabGroupInfo>> tab_group_infos;
+  std::vector<tab_groups::TabGroupInfo> tab_group_infos;
 };
 
 }  // namespace app_restore

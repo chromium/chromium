@@ -275,7 +275,7 @@ BuiltApp SavedDeskBrowserBuilder::Build() {
       continue;
     DCHECK(built_group.tab_group);
 
-    generic_app.launch_info->tab_group_infos.value().push_back(
+    generic_app.launch_info->tab_group_infos.push_back(
         *built_group.tab_group.release());
   }
 

@@ -21,10 +21,8 @@ std::string TabGroupDataToString(const app_restore::RestoreData* restore_data) {
 
   for (const auto& app : restore_data->app_id_to_launch_list()) {
     for (const auto& window : app.second) {
-      if (window.second->tab_group_infos.has_value()) {
-        for (const auto& tab_group : window.second->tab_group_infos.value()) {
-          result += "\n" + tab_group.ToString() + ",";
-        }
+      for (const auto& tab_group : window.second->tab_group_infos) {
+        result += "\n" + tab_group.ToString() + ",";
       }
     }
   }
