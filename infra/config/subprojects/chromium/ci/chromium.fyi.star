@@ -1509,13 +1509,28 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
 # Build Perf builders use CQ reclient instance and high reclient jobs/cores and
 # SSD to represent CQ build performance.
 
-ci.builder(
+def build_perf_builder(**kwargs):
+    kwargs.setdefault("executable", "recipe:chrome_build/build_perf")
+    return ci.builder(
+        reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+        reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+        service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+        # rely on the builder dimension for the bot selection.
+        builderless = False,
+        cores = None,
+        siso_enable_cloud_profiler = True,
+        siso_enable_cloud_trace = True,
+        siso_project = siso.project.DEFAULT_UNTRUSTED,
+        use_clang_coverage = True,
+        **kwargs
+    )
+
+build_perf_builder(
     name = "build-perf-android",
     description_html = """\
 This builder measures Android build performance with and without remote caches.<br/>\
 The build configs and the bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/android-arm64-rel-compilator">android-arm64-rel-compilator</a>.\
 """,
-    executable = "recipe:chrome_build/build_perf",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1537,21 +1552,14 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             config = "main_builder",
         ),
     ),
-    builderless = False,
-    cores = None,  # rely on the builder dimension for the bot selection.
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "buildperf",
         short_name = "and",
     ),
-    execution_timeout = 10 * time.hour,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
-    use_clang_coverage = True,
 )
 
-ci.builder(
+build_perf_builder(
     name = "build-perf-android-siso",
     description_html = """\
 This builder measures Android build performance with Siso<br/>\
@@ -1580,30 +1588,19 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             config = "main_builder",
         ),
     ),
-    builderless = False,
-    cores = None,  # rely on the builder dimension for the bot selection.
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "buildperf",
         short_name = "andss",
     ),
-    execution_timeout = 10 * time.hour,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
-    siso_enable_cloud_profiler = True,
-    siso_enable_cloud_trace = True,
-    siso_project = siso.project.DEFAULT_UNTRUSTED,
-    use_clang_coverage = True,
 )
 
-ci.builder(
+build_perf_builder(
     name = "build-perf-linux",
     description_html = """\
 This builder measures Linux build performance with and without remote caches.<br/>\
 The build configs and the bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/linux-rel-compilator">linux-rel-compilator</a>.\
 """,
-    executable = "recipe:chrome_build/build_perf",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1618,21 +1615,14 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             ],
         ),
     ),
-    builderless = False,
-    cores = None,  # rely on the builder dimension for the bot selection.
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "buildperf",
         short_name = "lnx",
     ),
-    execution_timeout = 6 * time.hour,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
-    use_clang_coverage = True,
 )
 
-ci.builder(
+build_perf_builder(
     name = "build-perf-linux-siso",
     description_html = """\
 This builder measures Linux build performance with Siso.<br/>\
@@ -1654,30 +1644,19 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             ],
         ),
     ),
-    builderless = False,
-    cores = None,  # rely on the builder dimension for the bot selection.
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "buildperf",
         short_name = "lnxss",
     ),
-    execution_timeout = 6 * time.hour,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
-    siso_enable_cloud_profiler = True,
-    siso_enable_cloud_trace = True,
-    siso_project = siso.project.DEFAULT_UNTRUSTED,
-    use_clang_coverage = True,
 )
 
-ci.builder(
+build_perf_builder(
     name = "build-perf-windows",
     description_html = """\
 This builder measures Windows build performance with and without remote caches.<br/>\
 The build configs and the bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/win-rel-compilator">win-rel-compilator</a>.\
 """,
-    executable = "recipe:chrome_build/build_perf",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1692,21 +1671,14 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             ],
         ),
     ),
-    builderless = False,
-    cores = None,  # rely on the builder dimension for the bot selection.
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "buildperf",
         short_name = "win",
     ),
-    execution_timeout = 6 * time.hour,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
-    use_clang_coverage = True,
 )
 
-ci.builder(
+build_perf_builder(
     name = "build-perf-windows-siso",
     description_html = """\
 This builder measures Windows build performance with Siso.<br/>\
@@ -1728,21 +1700,11 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             ],
         ),
     ),
-    builderless = False,
-    cores = None,  # rely on the builder dimension for the bot selection.
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "buildperf",
         short_name = "winss",
     ),
-    execution_timeout = 6 * time.hour,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
-    siso_enable_cloud_profiler = True,
-    siso_enable_cloud_trace = True,
-    siso_project = siso.project.DEFAULT_UNTRUSTED,
-    use_clang_coverage = True,
 )
 
 ci.builder(
