@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
@@ -182,6 +183,8 @@ void AccountManagerMojoService::ReportAuthError(
     mojom::GoogleServiceAuthErrorPtr mojo_error) {
   absl::optional<account_manager::AccountKey> maybe_account_key =
       account_manager::FromMojoAccountKey(mojo_account_key);
+  base::UmaHistogramBoolean("AccountManager.ReportAuthError.IsAccountKeyEmpty",
+                            !maybe_account_key.has_value());
   if (!maybe_account_key) {
     LOG(ERROR) << "Can't unmarshal account with id: " << mojo_account_key->id
                << " and type: " << mojo_account_key->account_type;
