@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.base.PageTransition;
 
 import java.lang.annotation.Retention;
@@ -232,14 +231,6 @@ public class NewTabPageUma {
     public void monitorNTPCreation() {
         mTabCreationRecorder = new TabCreationRecorder();
         mTabModelSelector.addObserver(mTabCreationRecorder);
-    }
-
-    /**
-     * Records the network status of the user.
-     */
-    public void recordIsUserOnline() {
-        RecordHistogram.recordBooleanHistogram(
-                "NewTabPage.MobileIsUserOnline", NetworkChangeNotifier.isOnline());
     }
 
     /**
