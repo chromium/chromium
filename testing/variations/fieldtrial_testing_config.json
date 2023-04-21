@@ -2959,6 +2959,26 @@
             ]
         }
     ],
+    "CodeBasedRBD": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230420",
+                    "params": {
+                        "code-based-rbd": "true"
+                    },
+                    "enable_features": [
+                        "CodeBasedRBD"
+                    ]
+                }
+            ]
+        }
+    ],
     "Collections": [
         {
             "platforms": [
