@@ -83,6 +83,8 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
     const IsolatedWebAppLocation& location,
     std::unique_ptr<content::WebContents> web_contents,
     std::unique_ptr<WebAppUrlLoader> url_loader,
+    std::unique_ptr<ScopedKeepAlive> keep_alive,
+    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
     base::OnceCallback<void(base::expected<InstallIsolatedWebAppCommandSuccess,
                                            InstallIsolatedWebAppCommandError>)>
         callback,
@@ -96,11 +98,15 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
       response_reader_factory_(std::move(response_reader_factory)),
       web_contents_(std::move(web_contents)),
       url_loader_(std::move(url_loader)),
+      keep_alive_(std::move(keep_alive)),
+      profile_keep_alive_(std::move(profile_keep_alive)),
       data_retriever_(std::make_unique<WebAppDataRetriever>()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
-  DCHECK(web_contents_ != nullptr);
-  DCHECK(!callback.is_null());
+  CHECK(web_contents_ != nullptr);
+  CHECK(!callback.is_null());
+  CHECK(profile_keep_alive_ == nullptr ||
+        &profile() == profile_keep_alive_->profile());
 
   callback_ =
       base::BindOnce(

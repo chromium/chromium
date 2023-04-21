@@ -161,10 +161,13 @@ class WebAppCommandScheduler {
 
   // Schedules a command that installs the Isolated Web App described by the
   // given IsolatedWebAppUrlInfo and IsolationData.
-  void InstallIsolatedWebApp(const IsolatedWebAppUrlInfo& url_info,
-                             const IsolatedWebAppLocation& location,
-                             InstallIsolatedWebAppCallback callback,
-                             const base::Location& call_location = FROM_HERE);
+  void InstallIsolatedWebApp(
+      const IsolatedWebAppUrlInfo& url_info,
+      const IsolatedWebAppLocation& location,
+      std::unique_ptr<ScopedKeepAlive> keep_alive,
+      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
+      InstallIsolatedWebAppCallback callback,
+      const base::Location& call_location = FROM_HERE);
 
   // Computes the browsing data size of all installed Isolated Web Apps.
   void GetIsolatedWebAppBrowsingData(

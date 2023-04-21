@@ -314,8 +314,13 @@ void WebAppCommandScheduler::FetchInstallabilityForChromeManagement(
 void WebAppCommandScheduler::InstallIsolatedWebApp(
     const IsolatedWebAppUrlInfo& url_info,
     const IsolatedWebAppLocation& location,
+    std::unique_ptr<ScopedKeepAlive> keep_alive,
+    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
     InstallIsolatedWebAppCallback callback,
     const base::Location& call_location) {
+  DCHECK(profile_keep_alive == nullptr ||
+         profile_keep_alive->profile() == &*profile_);
+
   if (IsShuttingDown()) {
     InstallIsolatedWebAppCommandError error;
     error.message = "The profile and/or browser are shutting down.";
@@ -328,7 +333,8 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
   provider_->command_manager().ScheduleCommand(
       std::make_unique<InstallIsolatedWebAppCommand>(
           url_info, location, CreateIsolatedWebAppWebContents(*profile_),
-          std::make_unique<WebAppUrlLoader>(), std::move(callback),
+          std::make_unique<WebAppUrlLoader>(), std::move(keep_alive),
+          std::move(profile_keep_alive), std::move(callback),
           InstallIsolatedWebAppCommand::CreateDefaultResponseReaderFactory(
               *profile_->GetPrefs())),
       call_location);

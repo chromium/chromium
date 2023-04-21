@@ -16,6 +16,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
@@ -87,6 +89,8 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
       const IsolatedWebAppLocation& location,
       std::unique_ptr<content::WebContents> web_contents,
       std::unique_ptr<WebAppUrlLoader> url_loader,
+      std::unique_ptr<ScopedKeepAlive> keep_alive,
+      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       base::OnceCallback<
           void(base::expected<InstallIsolatedWebAppCommandSuccess,
                               InstallIsolatedWebAppCommandError>)> callback,
@@ -162,6 +166,9 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
   std::unique_ptr<content::WebContents> web_contents_;
 
   std::unique_ptr<WebAppUrlLoader> url_loader_;
+
+  std::unique_ptr<ScopedKeepAlive> keep_alive_;
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
 

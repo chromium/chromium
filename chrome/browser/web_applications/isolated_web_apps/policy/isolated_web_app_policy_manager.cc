@@ -51,8 +51,13 @@ void IsolatedWebAppPolicyManager::IwaInstallCommandWrapperImpl::Install(
     const IsolatedWebAppLocation& location,
     const IsolatedWebAppUrlInfo& url_info,
     WebAppCommandScheduler::InstallIsolatedWebAppCallback callback) {
-  provider_->scheduler().InstallIsolatedWebApp(url_info, location,
-                                               std::move(callback));
+  // There is no need to keep the browser or profile alive when
+  // policy-installing an IWA. If the browser or profile shut down, installation
+  // will be re-attempted the next time they start, assuming that the policy is
+  // still set.
+  provider_->scheduler().InstallIsolatedWebApp(
+      url_info, location, /*keep_alive=*/nullptr,
+      /*profile_keep_alive=*/nullptr, std::move(callback));
 }
 
 IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(

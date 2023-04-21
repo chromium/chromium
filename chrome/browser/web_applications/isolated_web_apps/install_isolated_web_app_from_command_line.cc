@@ -105,8 +105,11 @@ void OnGetIsolatedWebAppUrlInfo(
     return;
   }
 
+  // TODO(cmfcmf): Keep alives need to be set here.
   provider->scheduler().InstallIsolatedWebApp(
-      url_info.value(), location, base::BindOnce(&ReportInstallationResult));
+      url_info.value(), location, /*keep_alive=*/nullptr,
+      /*profile_keep_alive=*/nullptr,
+      base::BindOnce(&ReportInstallationResult));
 }
 
 base::expected<absl::optional<IsolatedWebAppLocation>, std::string>
