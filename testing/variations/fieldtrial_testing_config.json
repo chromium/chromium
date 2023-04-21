@@ -5126,25 +5126,6 @@
             ]
         }
     ],
-    "ExtendFamilyLinkUserLogSegmentToAllPlatforms": [
-        {
-            "platforms": [
-                "android",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ExtendFamilyLinkUserLogSegmentToAllPlatforms"
-                    ]
-                }
-            ]
-        }
-    ],
     "ExtendScriptResourceLifetime": [
         {
             "platforms": [

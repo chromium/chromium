@@ -35,6 +35,8 @@ class FamilyLinkUserMetricsProviderTestLegacy : public testing::Test {
 
   void SetUp() override {
     EnableAccountCapabilitiesFetches(identity_manager());
+    feature_list_.InitAndDisableFeature(
+        kExtendFamilyLinkUserLogSegmentToAllPlatforms);
   }
 
   void TearDown() override {
@@ -57,6 +59,7 @@ class FamilyLinkUserMetricsProviderTestLegacy : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
   FamilyLinkUserMetricsProvider metrics_provider_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(FamilyLinkUserMetricsProviderTestLegacy, UserWithUnknownCapabilities) {

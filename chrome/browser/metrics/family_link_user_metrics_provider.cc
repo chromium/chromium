@@ -40,7 +40,7 @@ bool AreParentalSupervisionCapabilitiesKnown(
 
 BASE_FEATURE(kExtendFamilyLinkUserLogSegmentToAllPlatforms,
              "ExtendFamilyLinkUserLogSegmentToAllPlatforms",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 FamilyLinkUserMetricsProvider::FamilyLinkUserMetricsProvider() {
   auto* factory = IdentityManagerFactory::GetInstance();

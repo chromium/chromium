@@ -210,8 +210,8 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
 
 #if BUILDFLAG(IS_ANDROID)
   // AndroidMetricsProvider, ChromeAndroidMetricsProvider,
-  // FamilyLinkUserMetricsProvider, and PageLoadMetricsProvider.
-  expected_providers += 4;
+  // and PageLoadMetricsProvider.
+  expected_providers += 3;
 #else
   // performance_manager::MetricsProvider
   expected_providers += 1;
@@ -267,6 +267,11 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // BluetoothMetricsProvider
   expected_providers += 1;
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_ANDROID)
+  expected_providers++;  // FamilyLinkUserMetricsProvider
 #endif
 
   std::unique_ptr<TestChromeMetricsServiceClient>
