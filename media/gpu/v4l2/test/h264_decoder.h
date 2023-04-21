@@ -65,7 +65,7 @@ class H264DPB : public std::map<uint64_t, H264SliceMetadata> {
   void MarkAllUnusedRef();
   // Updates each H264SliceMetadata object in DPB's frame num wrap
   // based on the max frame num.
-  void UpdateFrameNumWrap(const int curr_frame_num, const int max_frame_num);
+  void UpdatePicNums(const int curr_frame_num, const int max_frame_num);
 
   // Maximum number of elements in the DPB. This is utilized by the
   // decoder for updating elements in the DPB.
@@ -163,6 +163,9 @@ class H264Decoder : public VideoDecoder {
   gfx::Size pic_size_;
   VideoCodecProfile profile_;
   uint8_t bit_depth_ = -1;
+
+  int prev_frame_num_ = -1;
+  int prev_frame_num_offset_ = -1;
 
   std::unique_ptr<H264NALU> pending_nalu_;
   std::unique_ptr<H264SliceHeader> pending_slice_header_;

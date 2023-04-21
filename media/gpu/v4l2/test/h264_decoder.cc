@@ -27,6 +27,7 @@ struct H264SliceMetadata {
   int frame_num_offset = 0;
   int frame_num_wrap = 0;
   uint64_t ref_ts_nsec = 0;  // Reference Timestamp in nanoseconds.
+  int pic_num = -1;
   int pic_order_cnt = 0;
   int pic_order_cnt_lsb = 0;
   int pic_order_cnt_msb = 0;
@@ -267,10 +268,9 @@ void SetupDecodeParams(const H264SliceHeader& slice,
   if (slice.idr_pic_flag)
     v4l2_decode_param->flags |= V4L2_H264_DECODE_PARAM_FLAG_IDR_PIC;
 
-  v4l2_decode_param->top_field_order_cnt =
-      slice_metadata.pic_order_cnt_lsb + slice_metadata.pic_order_cnt_msb;
+  v4l2_decode_param->top_field_order_cnt = slice_metadata.top_field_order_cnt;
   v4l2_decode_param->bottom_field_order_cnt =
-      v4l2_decode_param->top_field_order_cnt + slice.delta_pic_order_cnt_bottom;
+      slice_metadata.bottom_field_order_cnt;
 }
 
 // Determines whether the current slice is part of the same
@@ -408,8 +408,7 @@ void H264DPB::MarkAllUnusedRef() {
   }
 }
 
-void H264DPB::UpdateFrameNumWrap(const int curr_frame_num,
-                                 const int max_frame_num) {
+void H264DPB::UpdatePicNums(const int curr_frame_num, const int max_frame_num) {
   for (auto& i : *this) {
     if (i.second.ref) {
       continue;
@@ -501,6 +500,7 @@ VideoDecoder::Result H264Decoder::InitializeSliceMetadata(
   slice_metadata->ref_ts_nsec = global_pic_count_;
   slice_metadata->ref = slice_hdr.nal_ref_idc != 0;
   slice_metadata->frame_num = slice_hdr.frame_num;
+  slice_metadata->pic_num = slice_hdr.frame_num;
   slice_metadata->pic_order_cnt_lsb = slice_hdr.pic_order_cnt_lsb;
 
   // Calculate H264 slice order counts.
@@ -544,8 +544,32 @@ VideoDecoder::Result H264Decoder::InitializeSliceMetadata(
       break;
     }
     case 2: {
-      // TODO(b/234752983): Implement pic ordering for pic order count type 2
-      // as defined in H.264 section 8.2.1.3.
+      // Implements pic ordering for pic order count type 2 as defined
+      // in H.264 section 8.2.1.3.
+      if (slice_metadata->slice_header.idr_pic_flag) {
+        slice_metadata->frame_num_offset = 0;
+      } else if (prev_frame_num_ > slice_metadata->pic_num) {
+        slice_metadata->frame_num_offset =
+            prev_frame_num_offset_ +
+            (1 << (sps->log2_max_frame_num_minus4 + 4));
+      } else {
+        slice_metadata->frame_num_offset = prev_frame_num_offset_;
+      }
+
+      int temp_pic_order_cnt;
+      if (slice_metadata->slice_header.idr_pic_flag) {
+        temp_pic_order_cnt = 0;
+      } else if (!slice_metadata->slice_header.nal_ref_idc) {
+        temp_pic_order_cnt =
+            2 * (slice_metadata->frame_num_offset + slice_metadata->frame_num) -
+            1;
+      } else {
+        temp_pic_order_cnt =
+            2 * (slice_metadata->frame_num_offset + slice_metadata->frame_num);
+      }
+
+      slice_metadata->top_field_order_cnt = temp_pic_order_cnt;
+      slice_metadata->bottom_field_order_cnt = temp_pic_order_cnt;
       break;
     }
     default: {
@@ -581,7 +605,7 @@ VideoDecoder::Result H264Decoder::StartNewFrame(
   }
 
   const int max_frame_num = 1 << (sps->log2_max_frame_num_minus4 + 4);
-  dpb_.UpdateFrameNumWrap(slice_hdr->frame_num, max_frame_num);
+  dpb_.UpdatePicNums(slice_hdr->frame_num, max_frame_num);
 
   struct v4l2_ctrl_h264_sps v4l2_sps = SetupSPSCtrl(sps);
   struct v4l2_ctrl_h264_pps v4l2_pps = SetupPPSCtrl(pps);
@@ -609,6 +633,7 @@ VideoDecoder::Result H264Decoder::StartNewFrame(
   for (const auto& element : dpb_) {
     struct v4l2_h264_dpb_entry& entry = v4l2_decode_param->dpb[i++];
     entry = {.reference_ts = element.second.ref_ts_nsec * kTimestampToNanoSecs,
+             .pic_num = static_cast<unsigned short>(element.second.pic_num),
              .frame_num = static_cast<unsigned short>(element.second.frame_num),
              .fields = V4L2_H264_FRAME_REF,
              .top_field_order_cnt = element.second.top_field_order_cnt,
@@ -816,6 +841,9 @@ VideoDecoder::Result H264Decoder::FinishFrame(
       }
     }
   }
+
+  prev_frame_num_ = slice_metadata.frame_num;
+  prev_frame_num_offset_ = slice_metadata.frame_num_offset;
 
   dpb_.DeleteUnused();
 
