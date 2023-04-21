@@ -44,6 +44,6 @@ TEST_F(AmbientInfoViewTest, ShowAmbientInfoView) {
   FastForwardToRefreshWeather();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "ambient_info_view", /*revision_number=*/0, GetAmbientInfoView()));
+      "ambient_info_view", /*revision_number=*/1, GetAmbientInfoView()));
 }
 }  // namespace ash
