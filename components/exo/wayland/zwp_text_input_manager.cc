@@ -99,6 +99,27 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     pending_surrounding_text_supported_ = is_supported;
   }
 
+  void SetPendingGrammarFragment(
+      const absl::optional<ui::GrammarFragment>& grammar_fragment) {
+    pending_grammar_fragment_ = grammar_fragment;
+  }
+
+  absl::optional<ui::GrammarFragment> TakeGrammarFragment() {
+    auto result = pending_grammar_fragment_;
+    pending_grammar_fragment_.reset();
+    return result;
+  }
+
+  void SetPendingAutocorrectInfo(const ui::AutocorrectInfo& autocorrect_info) {
+    pending_autocorrect_info_ = autocorrect_info;
+  }
+
+  absl::optional<ui::AutocorrectInfo> TakeAutocorrectInfo() {
+    auto result = pending_autocorrect_info_;
+    pending_autocorrect_info_.reset();
+    return result;
+  }
+
  private:
   wl_client* client() { return wl_resource_get_client(text_input_); }
 
@@ -381,6 +402,8 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
 
   // Pending surrounding text supported flag.
   bool pending_surrounding_text_supported_ = true;
+  absl::optional<ui::GrammarFragment> pending_grammar_fragment_;
+  absl::optional<ui::AutocorrectInfo> pending_autocorrect_info_;
 
   base::WeakPtrFactory<WaylandTextInputDelegate> weak_factory_{this};
 };
@@ -461,14 +484,34 @@ void text_input_set_surrounding_text(wl_client* client,
                                      uint32_t cursor,
                                      uint32_t anchor) {
   TextInput* text_input = GetUserDataAs<TextInput>(resource);
+  auto* delegate =
+      static_cast<WaylandTextInputDelegate*>(text_input->delegate());
+  auto grammar_fragment = delegate->TakeGrammarFragment();
+  auto autocorrect_info = delegate->TakeAutocorrectInfo();
+
   // TODO(crbug.com/1227590): Selection range should keep cursor/anchor
   // relationship.
   auto minmax = std::minmax(cursor, anchor);
   std::vector<size_t> offsets{minmax.first, minmax.second};
+  if (grammar_fragment.has_value()) {
+    offsets.push_back(grammar_fragment->range.start());
+    offsets.push_back(grammar_fragment->range.end());
+  } else {
+    offsets.insert(offsets.end(), {0u, 0u});
+  }
+  // TODO(https://crbug.com/952757): Convert to UTF-16 offsets once the
+  // surrounding text is no longer stale.
+
   std::u16string u16_text = base::UTF8ToUTF16AndAdjustOffsets(text, &offsets);
-  if (offsets[0] == std::u16string::npos || offsets[1] == std::u16string::npos)
+  if (offsets[0] == std::u16string::npos ||
+      offsets[1] == std::u16string::npos) {
     return;
-  text_input->SetSurroundingText(u16_text, gfx::Range(offsets[0], offsets[1]));
+  }
+  if (grammar_fragment.has_value()) {
+    grammar_fragment->range = gfx::Range(offsets[2], offsets[3]);
+  }
+  text_input->SetSurroundingText(u16_text, gfx::Range(offsets[0], offsets[1]),
+                                 grammar_fragment, autocorrect_info);
 }
 
 void text_input_set_content_type(wl_client* client,
@@ -686,16 +729,14 @@ void extended_text_input_set_grammar_fragment_at_cursor(
     const char* suggestion) {
   auto* delegate =
       GetUserDataAs<WaylandExtendedTextInput>(resource)->delegate();
-  if (!delegate)
+  if (!delegate) {
     return;
-
-  auto* text_input = GetUserDataAs<TextInput>(delegate->resource());
-  if (start == end) {
-    text_input->SetGrammarFragmentAtCursor(absl::nullopt);
-  } else {
-    text_input->SetGrammarFragmentAtCursor(
-        ui::GrammarFragment(gfx::Range(start, end), suggestion));
   }
+
+  delegate->SetPendingGrammarFragment(
+      start == end ? absl::nullopt
+                   : absl::make_optional(ui::GrammarFragment(
+                         gfx::Range(start, end), suggestion)));
 }
 
 void extended_text_input_set_autocorrect_info(wl_client* client,
@@ -708,15 +749,14 @@ void extended_text_input_set_autocorrect_info(wl_client* client,
                                               uint32_t height) {
   auto* delegate =
       GetUserDataAs<WaylandExtendedTextInput>(resource)->delegate();
-  if (!delegate)
+  if (!delegate) {
     return;
+  }
 
-  auto* text_input = GetUserDataAs<TextInput>(delegate->resource());
-  // TODO(https://crbug.com/952757): Convert to UTF-16 offsets once the
-  // surrounding text is no longer stale.
-  gfx::Range autocorrect_range(start, end);
-  gfx::Rect autocorrect_bounds(x, y, width, height);
-  text_input->SetAutocorrectInfo(autocorrect_range, autocorrect_bounds);
+  delegate->SetPendingAutocorrectInfo(ui::AutocorrectInfo{
+      gfx::Range(start, end),
+      gfx::Rect(x, y, width, height),
+  });
 }
 
 void extended_text_input_finalize_virtual_keyboard_changes(
