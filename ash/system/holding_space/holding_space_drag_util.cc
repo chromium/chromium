@@ -253,7 +253,7 @@ class DragImageItemScreenCaptureView : public DragImageItemView {
   DragImageItemScreenCaptureView(const HoldingSpaceItem* item,
                                  const ui::ColorProvider* color_provider)
       : DragImageItemView(color_provider) {
-    DCHECK(HoldingSpaceItem::IsScreenCapture(item->type()));
+    DCHECK(HoldingSpaceItem::IsScreenCaptureType(item->type()));
     InitLayout(item);
   }
 
@@ -441,7 +441,7 @@ class DragImageView : public views::View {
 
     const bool contains_only_screen_captures =
         base::ranges::all_of(items, [](const HoldingSpaceItem* item) {
-          return HoldingSpaceItem::IsScreenCapture(item->type());
+          return HoldingSpaceItem::IsScreenCaptureType(item->type());
         });
 
     // Show at most `kDragImageViewMaxItemsToPaint` items in the drag image. If

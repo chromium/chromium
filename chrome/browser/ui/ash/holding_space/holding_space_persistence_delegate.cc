@@ -178,7 +178,7 @@ void HoldingSpacePersistenceDelegate::MaybeRemoveItemsFromPersistence() {
   update->EraseIf([&](const base::Value& persisted_item) {
     auto type = HoldingSpaceItem::DeserializeType(persisted_item.GetDict());
     if ((remove_camera_app_items && HoldingSpaceItem::IsCameraAppType(type)) ||
-        (remove_suggestion_items && HoldingSpaceItem::IsSuggestion(type))) {
+        (remove_suggestion_items && HoldingSpaceItem::IsSuggestionType(type))) {
       return true;
     }
     return false;

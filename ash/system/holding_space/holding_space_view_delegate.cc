@@ -513,8 +513,9 @@ void HoldingSpaceViewDelegate::ExecuteCommand(int command, int event_flags) {
              const HoldingSpaceItem* item) {
             const bool remove = base::Contains(items, item);
             if (remove) {
-              if (HoldingSpaceItem::IsSuggestion(item->type()))
+              if (HoldingSpaceItem::IsSuggestionType(item->type())) {
                 suggested_file_paths.push_back(item->file_path());
+              }
               holding_space_metrics::RecordItemAction(
                   {item}, holding_space_metrics::ItemAction::kRemove);
             }

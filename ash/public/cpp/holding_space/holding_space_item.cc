@@ -136,7 +136,7 @@ bool HoldingSpaceItem::IsCameraAppType(HoldingSpaceItem::Type type) {
 }
 
 // static
-bool HoldingSpaceItem::IsDownload(HoldingSpaceItem::Type type) {
+bool HoldingSpaceItem::IsDownloadType(HoldingSpaceItem::Type type) {
   switch (type) {
     case Type::kArcDownload:
     case Type::kDownload:
@@ -163,7 +163,7 @@ bool HoldingSpaceItem::IsDownload(HoldingSpaceItem::Type type) {
 }
 
 // static
-bool HoldingSpaceItem::IsScreenCapture(HoldingSpaceItem::Type type) {
+bool HoldingSpaceItem::IsScreenCaptureType(HoldingSpaceItem::Type type) {
   switch (type) {
     case Type::kScreenRecording:
     case Type::kScreenRecordingGif:
@@ -190,7 +190,7 @@ bool HoldingSpaceItem::IsScreenCapture(HoldingSpaceItem::Type type) {
 }
 
 // static
-bool HoldingSpaceItem::IsSuggestion(HoldingSpaceItem::Type type) {
+bool HoldingSpaceItem::IsSuggestionType(HoldingSpaceItem::Type type) {
   switch (type) {
     case Type::kDriveSuggestion:
     case Type::kLocalSuggestion:

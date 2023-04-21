@@ -1707,7 +1707,7 @@ TEST_F(HoldingSpaceTrayTest, SelectionUi) {
   for (HoldingSpaceItemView* item_view : item_views) {
     EXPECT_TRUE(item_view->selected());
     expect_checkmark_visible(item_view, true);
-    expect_image_visible(item_view, HoldingSpaceItem::IsScreenCapture(
+    expect_image_visible(item_view, HoldingSpaceItem::IsScreenCaptureType(
                                         item_view->item()->type()));
   }
 
@@ -3961,7 +3961,7 @@ TEST_P(HoldingSpaceTrayPrimaryAndSecondaryActionsTest, HasExpectedActions) {
                                    HoldingSpaceProgress(0, 100));
 
   // In-progress download items typically support in-progress commands.
-  if (HoldingSpaceItem::IsDownload(item->type())) {
+  if (HoldingSpaceItem::IsDownloadType(item->type())) {
     EXPECT_TRUE(item->SetInProgressCommands(
         {CreateInProgressCommand(HoldingSpaceCommandId::kCancelItem,
                                  IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_CANCEL),
@@ -3982,7 +3982,7 @@ TEST_P(HoldingSpaceTrayPrimaryAndSecondaryActionsTest, HasExpectedActions) {
   EXPECT_FALSE(IsShowingPrimaryAction(item_views.front()));
   EXPECT_FALSE(IsShowingSecondaryAction(item_views.front()));
 
-  if (!HoldingSpaceItem::IsScreenCapture(item->type())) {
+  if (!HoldingSpaceItem::IsScreenCaptureType(item->type())) {
     // For non-screen capture items, the inner icon of the progress indicator
     // should be shown when the secondary action container is hidden.
     EXPECT_TRUE(IsProgressIndicatorInnerIconVisible(item_views.front()));
@@ -4001,11 +4001,11 @@ TEST_P(HoldingSpaceTrayPrimaryAndSecondaryActionsTest, HasExpectedActions) {
   // holding space items. In-progress items of other types do not currently
   // support primary and secondary actions.
   EXPECT_EQ(IsShowingPrimaryAction(item_views.front()),
-            HoldingSpaceItem::IsDownload(item->type()));
+            HoldingSpaceItem::IsDownloadType(item->type()));
   EXPECT_EQ(IsShowingSecondaryAction(item_views.front()),
-            HoldingSpaceItem::IsDownload(item->type()));
+            HoldingSpaceItem::IsDownloadType(item->type()));
 
-  if (!HoldingSpaceItem::IsScreenCapture(item->type())) {
+  if (!HoldingSpaceItem::IsScreenCaptureType(item->type())) {
     // For non-screen capture items, the inner icon of the progress indicator
     // should only be shown if the secondary action container is hidden.
     EXPECT_NE(IsProgressIndicatorInnerIconVisible(item_views.front()),
@@ -4032,7 +4032,7 @@ TEST_P(HoldingSpaceTrayPrimaryAndSecondaryActionsTest, HasExpectedActions) {
       case HoldingSpaceCommandId::kCancelItem:
       case HoldingSpaceCommandId::kPauseItem:
         expect_context_menu_command =
-            HoldingSpaceItem::IsDownload(item->type());
+            HoldingSpaceItem::IsDownloadType(item->type());
         break;
       default:
         // No action necessary.
@@ -4180,7 +4180,7 @@ TEST_P(HoldingSpaceTrayVisibilityTest, TrayShowsForCorrectItemTypes) {
   } else {
     // A suggestion alone should not show the tray.
     EXPECT_NE(test_api()->IsShowingInShelf(),
-              HoldingSpaceItem::IsSuggestion(GetType()));
+              HoldingSpaceItem::IsSuggestionType(GetType()));
   }
 }
 

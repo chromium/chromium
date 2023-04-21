@@ -16,8 +16,9 @@ GetSuggestionsInModel(const HoldingSpaceModel& model) {
   std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>
       model_suggestions;
   for (const auto& item : model.items()) {
-    if (HoldingSpaceItem::IsSuggestion(item->type()))
+    if (HoldingSpaceItem::IsSuggestionType(item->type())) {
       model_suggestions.emplace_back(item->type(), item->file_path());
+    }
   }
   return model_suggestions;
 }

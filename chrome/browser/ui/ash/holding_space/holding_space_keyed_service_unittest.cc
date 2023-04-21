@@ -144,7 +144,7 @@ bool ShouldRestoreFromPersistence(HoldingSpaceItem::Type type) {
       !features::IsHoldingSpaceCameraAppIntegrationEnabled()) {
     return false;
   }
-  if (HoldingSpaceItem::IsSuggestion(type) &&
+  if (HoldingSpaceItem::IsSuggestionType(type) &&
       !features::IsHoldingSpaceSuggestionsEnabled()) {
     return false;
   }
@@ -2731,7 +2731,7 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
 
   ASSERT_EQ(model->items().size(), 1u);
 
-  const bool is_suggestion = HoldingSpaceItem::IsSuggestion(GetType());
+  const bool is_suggestion = HoldingSpaceItem::IsSuggestionType(GetType());
   if (is_suggestion) {
     // For suggestion items, the new suggestions should always replace old ones.
     EXPECT_NE(model->items()[0].get(), item);

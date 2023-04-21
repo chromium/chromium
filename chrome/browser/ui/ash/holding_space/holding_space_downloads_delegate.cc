@@ -627,7 +627,7 @@ HoldingSpaceDownloadsDelegate::~HoldingSpaceDownloadsDelegate() {
 
 absl::optional<holding_space_metrics::ItemFailureToLaunchReason>
 HoldingSpaceDownloadsDelegate::OpenWhenComplete(const HoldingSpaceItem* item) {
-  DCHECK(HoldingSpaceItem::IsDownload(item->type()));
+  DCHECK(HoldingSpaceItem::IsDownloadType(item->type()));
   for (const auto& in_progress_download : in_progress_downloads_) {
     if (in_progress_download->GetHoldingSpaceItem() == item)
       return in_progress_download->OpenWhenComplete();
@@ -901,7 +901,7 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
 
 void HoldingSpaceDownloadsDelegate::Cancel(const HoldingSpaceItem* item,
                                            HoldingSpaceCommandId command_id) {
-  DCHECK(HoldingSpaceItem::IsDownload(item->type()));
+  DCHECK(HoldingSpaceItem::IsDownloadType(item->type()));
   DCHECK_EQ(HoldingSpaceCommandId::kCancelItem, command_id);
   for (const auto& in_progress_download : in_progress_downloads_) {
     if (in_progress_download->GetHoldingSpaceItem() == item) {
@@ -915,7 +915,7 @@ void HoldingSpaceDownloadsDelegate::Cancel(const HoldingSpaceItem* item,
 
 void HoldingSpaceDownloadsDelegate::Pause(const HoldingSpaceItem* item,
                                           HoldingSpaceCommandId command_id) {
-  DCHECK(HoldingSpaceItem::IsDownload(item->type()));
+  DCHECK(HoldingSpaceItem::IsDownloadType(item->type()));
   DCHECK_EQ(HoldingSpaceCommandId::kPauseItem, command_id);
   for (const auto& in_progress_download : in_progress_downloads_) {
     if (in_progress_download->GetHoldingSpaceItem() == item) {
@@ -929,7 +929,7 @@ void HoldingSpaceDownloadsDelegate::Pause(const HoldingSpaceItem* item,
 
 void HoldingSpaceDownloadsDelegate::Resume(const HoldingSpaceItem* item,
                                            HoldingSpaceCommandId command_id) {
-  DCHECK(HoldingSpaceItem::IsDownload(item->type()));
+  DCHECK(HoldingSpaceItem::IsDownloadType(item->type()));
   DCHECK_EQ(HoldingSpaceCommandId::kResumeItem, command_id);
   for (const auto& in_progress_download : in_progress_downloads_) {
     if (in_progress_download->GetHoldingSpaceItem() == item) {

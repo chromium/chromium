@@ -124,17 +124,14 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // Returns `true` if `type` is a Camera app type, `false` otherwise.
   static bool IsCameraAppType(HoldingSpaceItem::Type type);
 
-  // TODO(http://b/278147195): Rename to `IsDownloadType()`.
   // Returns `true` if `type` is a download type, `false` otherwise.
-  static bool IsDownload(HoldingSpaceItem::Type type);
+  static bool IsDownloadType(HoldingSpaceItem::Type type);
 
-  // TODO(http://b/278147195): Rename to `IsScreenCaptureType()`.
   // Returns `true` if `type` is a screen capture type, `false` otherwise.
-  static bool IsScreenCapture(HoldingSpaceItem::Type type);
+  static bool IsScreenCaptureType(HoldingSpaceItem::Type type);
 
-  // TODO(http://b/278147195): Rename to `IsSuggestionType()`.
   // Returns `true` if `type` is a suggestion type, `false` otherwise.
-  static bool IsSuggestion(HoldingSpaceItem::Type type);
+  static bool IsSuggestionType(HoldingSpaceItem::Type type);
 
   // Deserializes from `base::Value::Dict` to `HoldingSpaceItem`.
   // This creates a partially initialized item with an empty file system URL.

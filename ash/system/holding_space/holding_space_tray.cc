@@ -172,7 +172,8 @@ bool IsPreviewsEnabled() {
 // being initialized, what makes an `item` previewable is having been created by
 // a user action.
 bool IsPreviewable(const std::unique_ptr<HoldingSpaceItem>& item) {
-  return item->IsInitialized() && !HoldingSpaceItem::IsSuggestion(item->type());
+  return item->IsInitialized() &&
+         !HoldingSpaceItem::IsSuggestionType(item->type());
 }
 
 // Creates the default tray icon.

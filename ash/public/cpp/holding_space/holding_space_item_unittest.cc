@@ -192,7 +192,7 @@ TEST_P(HoldingSpaceItemTest, IsScreenCapture) {
     case HoldingSpaceItem::Type::kScreenRecording:
     case HoldingSpaceItem::Type::kScreenRecordingGif:
     case HoldingSpaceItem::Type::kScreenshot:
-      EXPECT_TRUE(HoldingSpaceItem::IsScreenCapture(type));
+      EXPECT_TRUE(HoldingSpaceItem::IsScreenCaptureType(type));
       return;
     case HoldingSpaceItem::Type::kArcDownload:
     case HoldingSpaceItem::Type::kCameraAppPhoto:
@@ -210,7 +210,7 @@ TEST_P(HoldingSpaceItemTest, IsScreenCapture) {
     case HoldingSpaceItem::Type::kPinnedFile:
     case HoldingSpaceItem::Type::kPrintedPdf:
     case HoldingSpaceItem::Type::kScan:
-      EXPECT_FALSE(HoldingSpaceItem::IsScreenCapture(type));
+      EXPECT_FALSE(HoldingSpaceItem::IsScreenCaptureType(type));
       return;
   }
 }
