@@ -52,7 +52,8 @@ OsFeedbackUntrustedUIConfig::OsFeedbackUntrustedUIConfig()
 OsFeedbackUntrustedUIConfig::~OsFeedbackUntrustedUIConfig() = default;
 
 std::unique_ptr<content::WebUIController>
-OsFeedbackUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui) {
+OsFeedbackUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                                   const GURL& url) {
   return std::make_unique<OsFeedbackUntrustedUI>(web_ui);
 }
 

@@ -21,7 +21,8 @@ class UntrustedEcheAppUIConfig : public content::WebUIConfig {
   UntrustedEcheAppUIConfig();
   ~UntrustedEcheAppUIConfig() override;
   std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui) override;
+      content::WebUI* web_ui,
+      const GURL& url) override;
 };
 
 // WebUI controller for chrome-untrusted://eche-app

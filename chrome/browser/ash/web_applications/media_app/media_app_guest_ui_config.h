@@ -35,7 +35,8 @@ class MediaAppGuestUIConfig : public content::WebUIConfig {
   ~MediaAppGuestUIConfig() override;
 
   std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui) override;
+      content::WebUI* web_ui,
+      const GURL& url) override;
 };
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_MEDIA_APP_GUEST_UI_CONFIG_H_

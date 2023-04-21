@@ -72,7 +72,8 @@ bool UntrustedProjectorUIConfig::IsWebUIEnabled(
 }
 
 std::unique_ptr<content::WebUIController>
-UntrustedProjectorUIConfig::CreateWebUIController(content::WebUI* web_ui) {
+UntrustedProjectorUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                                  const GURL& url) {
   ChromeUntrustedProjectorUIDelegate delegate;
   return std::make_unique<ash::UntrustedProjectorUI>(web_ui, &delegate);
 }

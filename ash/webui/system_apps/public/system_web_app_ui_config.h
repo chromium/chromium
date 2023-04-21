@@ -46,17 +46,19 @@ template <typename T>
 class SystemWebAppUIConfig : public internal::BaseSystemWebAppUIConfig {
  public:
   using CreateWebUIControllerFunc =
-      std::unique_ptr<content::WebUIController> (*)(content::WebUI*);
+      std::unique_ptr<content::WebUIController> (*)(content::WebUI*,
+                                                    const GURL& url);
 
   // Constructs a WebUIConfig for chrome://`host` and enables it if
   // System Web Apps are enabled and `swa_type` is enabled.
   SystemWebAppUIConfig(base::StringPiece host, SystemWebAppType swa_type)
-      : SystemWebAppUIConfig(host,
-                             swa_type,
-                             [](content::WebUI* web_ui)
-                                 -> std::unique_ptr<content::WebUIController> {
-                               return std::make_unique<T>(web_ui);
-                             }) {}
+      : SystemWebAppUIConfig(
+            host,
+            swa_type,
+            [](content::WebUI* web_ui,
+               const GURL& url) -> std::unique_ptr<content::WebUIController> {
+              return std::make_unique<T>(web_ui);
+            }) {}
 
   // Same as above, but takes in an extra `create_controller_func` argument that
   // can be used to pass a function to construct T. Used when we need to inject
@@ -76,8 +78,9 @@ class SystemWebAppUIConfig : public internal::BaseSystemWebAppUIConfig {
   ~SystemWebAppUIConfig() override = default;
 
   std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui) override {
-    return create_controller_func_(web_ui);
+      content::WebUI* web_ui,
+      const GURL& url) override {
+    return create_controller_func_(web_ui, url);
   }
 
  private:
@@ -107,7 +110,8 @@ class SystemWebAppUntrustedUIConfig
   ~SystemWebAppUntrustedUIConfig() override = default;
 
   std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui) override {
+      content::WebUI* web_ui,
+      const GURL& url) override {
     return std::make_unique<T>(web_ui);
   }
 };

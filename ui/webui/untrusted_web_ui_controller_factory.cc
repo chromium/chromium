@@ -42,7 +42,7 @@ UntrustedWebUIControllerFactory::CreateWebUIControllerForURL(
   if (!config)
     return nullptr;
 
-  return config->CreateWebUIController(web_ui);
+  return config->CreateWebUIController(web_ui, url);
 }
 
 content::WebUIConfig* UntrustedWebUIControllerFactory::GetConfigIfWebUIEnabled(

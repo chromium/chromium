@@ -153,7 +153,8 @@ HelpAppUntrustedUIConfig::HelpAppUntrustedUIConfig()
 HelpAppUntrustedUIConfig::~HelpAppUntrustedUIConfig() = default;
 
 std::unique_ptr<content::WebUIController>
-HelpAppUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui) {
+HelpAppUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                                const GURL& url) {
   base::RepeatingCallback<void(content::WebUIDataSource*)> callback =
       base::BindRepeating(&PopulateLoadTimeData, web_ui);
 

@@ -34,7 +34,8 @@ DemoModeAppUntrustedUIConfig::DemoModeAppUntrustedUIConfig(
 DemoModeAppUntrustedUIConfig::~DemoModeAppUntrustedUIConfig() = default;
 
 std::unique_ptr<content::WebUIController>
-DemoModeAppUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui) {
+DemoModeAppUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                                    const GURL& url) {
   return std::make_unique<DemoModeAppUntrustedUI>(
       web_ui, component_path_producer_.Run());
 }

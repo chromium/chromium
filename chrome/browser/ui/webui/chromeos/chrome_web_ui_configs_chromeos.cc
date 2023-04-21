@@ -6,6 +6,7 @@
 
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/webui_config_map.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Headers that are part of the //chrome/browser target.
@@ -88,12 +89,14 @@ class WebUIController;
 
 namespace {
 using CreateWebUIControllerFunc =
-    std::unique_ptr<content::WebUIController> (*)(content::WebUI*);
+    std::unique_ptr<content::WebUIController> (*)(content::WebUI*,
+                                                  const GURL& url);
 
 template <class Config, class Controller, class Delegate>
 std::unique_ptr<content::WebUIConfig> MakeComponentConfig() {
   CreateWebUIControllerFunc create_controller_func =
-      [](content::WebUI* web_ui) -> std::unique_ptr<content::WebUIController> {
+      [](content::WebUI* web_ui,
+         const GURL& url) -> std::unique_ptr<content::WebUIController> {
     auto delegate = std::make_unique<Delegate>(web_ui);
     return std::make_unique<Controller>(web_ui, std::move(delegate));
   };
@@ -104,7 +107,8 @@ std::unique_ptr<content::WebUIConfig> MakeComponentConfig() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<content::WebUIConfig> MakeConnectivityDiagnosticsUIConfig() {
   CreateWebUIControllerFunc create_controller_func =
-      [](content::WebUI* web_ui) -> std::unique_ptr<content::WebUIController> {
+      [](content::WebUI* web_ui,
+         const GURL& url) -> std::unique_ptr<content::WebUIController> {
     return std::make_unique<ash::ConnectivityDiagnosticsUI>(
         web_ui,
         /* BindNetworkDiagnosticsServiceCallback */

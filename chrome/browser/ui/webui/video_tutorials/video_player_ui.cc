@@ -20,7 +20,8 @@ VideoPlayerUIConfig::VideoPlayerUIConfig()
 VideoPlayerUIConfig::~VideoPlayerUIConfig() = default;
 
 std::unique_ptr<content::WebUIController>
-VideoPlayerUIConfig::CreateWebUIController(content::WebUI* web_ui) {
+VideoPlayerUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                           const GURL& url) {
   return std::make_unique<VideoPlayerUI>(web_ui);
 }
 

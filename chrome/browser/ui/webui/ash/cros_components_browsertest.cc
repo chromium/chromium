@@ -55,7 +55,8 @@ class CrosComponentsUIConfig : public content::WebUIConfig {
   CrosComponentsUIConfig() : WebUIConfig("chrome", kTestHost) {}
 
   std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui) override {
+      content::WebUI* web_ui,
+      const GURL& url) override {
     return std::make_unique<CrosComponentsUI>(web_ui);
   }
 };

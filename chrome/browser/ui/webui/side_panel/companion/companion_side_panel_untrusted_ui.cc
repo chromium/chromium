@@ -77,7 +77,8 @@ CompanionSidePanelUntrustedUIConfig::CompanionSidePanelUntrustedUIConfig()
 
 std::unique_ptr<content::WebUIController>
 CompanionSidePanelUntrustedUIConfig::CreateWebUIController(
-    content::WebUI* web_ui) {
+    content::WebUI* web_ui,
+    const GURL& url) {
   return std::make_unique<CompanionSidePanelUntrustedUI>(web_ui);
 }
 

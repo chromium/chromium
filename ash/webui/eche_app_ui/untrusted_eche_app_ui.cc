@@ -25,7 +25,8 @@ UntrustedEcheAppUIConfig::UntrustedEcheAppUIConfig()
 UntrustedEcheAppUIConfig::~UntrustedEcheAppUIConfig() = default;
 
 std::unique_ptr<content::WebUIController>
-UntrustedEcheAppUIConfig::CreateWebUIController(content::WebUI* web_ui) {
+UntrustedEcheAppUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                                const GURL& url) {
   return std::make_unique<UntrustedEcheAppUI>(web_ui);
 }
 

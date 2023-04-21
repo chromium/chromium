@@ -16,7 +16,8 @@ class FeedUIConfig : public content::WebUIConfig {
   ~FeedUIConfig() override = default;
 
   std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui) override;
+      content::WebUI* web_ui,
+      const GURL& url) override;
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };

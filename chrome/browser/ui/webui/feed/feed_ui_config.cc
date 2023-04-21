@@ -17,7 +17,8 @@ FeedUIConfig::FeedUIConfig()
     : WebUIConfig(content::kChromeUIUntrustedScheme, kFeedHost) {}
 
 std::unique_ptr<content::WebUIController> FeedUIConfig::CreateWebUIController(
-    content::WebUI* web_ui) {
+    content::WebUI* web_ui,
+    const GURL& url) {
   return std::make_unique<FeedUI>(web_ui);
 }
 

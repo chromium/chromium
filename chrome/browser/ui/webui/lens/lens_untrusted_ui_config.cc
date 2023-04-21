@@ -15,7 +15,8 @@ LensUntrustedUIConfig::LensUntrustedUIConfig()
                   chrome::kChromeUILensHost) {}
 
 std::unique_ptr<content::WebUIController>
-LensUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui) {
+LensUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                             const GURL& url) {
   return std::make_unique<LensUntrustedUI>(web_ui);
 }
 

@@ -1083,7 +1083,8 @@ class TestWebUIConfig : public content::WebUIConfig {
   ~TestWebUIConfig() override = default;
 
   std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui) override {
+      content::WebUI* web_ui,
+      const GURL& url) override {
     return std::make_unique<StaticWebUIController>(web_ui, data_source_key_);
   }
 

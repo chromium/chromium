@@ -70,7 +70,8 @@ MediaAppGuestUIConfig::MediaAppGuestUIConfig()
 MediaAppGuestUIConfig::~MediaAppGuestUIConfig() = default;
 
 std::unique_ptr<content::WebUIController>
-MediaAppGuestUIConfig::CreateWebUIController(content::WebUI* web_ui) {
+MediaAppGuestUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                             const GURL& url) {
   ChromeMediaAppGuestUIDelegate delegate;
   return std::make_unique<ash::MediaAppGuestUI>(web_ui, &delegate);
 }

@@ -18,7 +18,8 @@ class CameraAppUntrustedUIConfig : public content::WebUIConfig {
   ~CameraAppUntrustedUIConfig() override;
 
   std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui) override;
+      content::WebUI* web_ui,
+      const GURL& url) override;
 };
 
 }  // namespace ash
