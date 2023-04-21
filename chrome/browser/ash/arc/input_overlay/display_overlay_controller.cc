@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/vector_icons/vector_icons.h"
@@ -107,11 +108,6 @@ void DisplayOverlayController::AddOverlay(DisplayMode display_mode) {
   params.focusable = true;
   shell_surface_base->AddOverlay(std::move(params));
 
-  auto* overlay_widget = GetOverlayWidget();
-  if (overlay_widget) {
-    overlay_widget->AddObserver(this);
-  }
-
   SetDisplayMode(display_mode);
 }
 
@@ -124,11 +120,6 @@ void DisplayOverlayController::RemoveOverlayIfAny() {
   if (shell_surface_base && shell_surface_base->HasOverlay()) {
     // Call |RemoveInputMenuView| explicitly to make sure UMA stats is updated.
     RemoveInputMenuView();
-
-    auto* overlay_widget = GetOverlayWidget();
-    if (overlay_widget) {
-      overlay_widget->RemoveObserver(this);
-    }
 
     shell_surface_base->RemoveOverlay();
   }
@@ -720,25 +711,36 @@ void DisplayOverlayController::OnTouchEvent(ui::TouchEvent* event) {
   ProcessPressedEvent(*event);
 }
 
-void DisplayOverlayController::OnWidgetBoundsChanged(
-    views::Widget* widget,
-    const gfx::Rect& new_bounds) {
-  UpdateForBoundsChanged(new_bounds);
-}
-
 void DisplayOverlayController::OnWindowBoundsChanged(
     aura::Window* window,
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
+  DCHECK_EQ(window, touch_injector_->window());
   // Disregard the bounds from animation and only care final window bounds.
   if (reason == ui::PropertyChangeReason::FROM_ANIMATION) {
     return;
   }
 
-  auto bounds = CalculateWindowContentBounds(window);
-  UpdateForBoundsChanged(
-      gfx::Rect(bounds.x(), bounds.y(), bounds.width(), bounds.height()));
+  UpdateForBoundsChanged();
+}
+
+void DisplayOverlayController::OnWindowPropertyChanged(aura::Window* window,
+                                                       const void* key,
+                                                       intptr_t old) {
+  DCHECK_EQ(window, touch_injector_->window());
+  if (key != chromeos::kImmersiveIsActive) {
+    return;
+  }
+  bool is_immersive = window->GetProperty(chromeos::kImmersiveIsActive);
+  // This is to catch the corner case that when an app is launched as
+  // fullscreen/immersive mode, so it only cares when the window turns into
+  // immersive mode from non-immersive mode.
+  if (!is_immersive || is_immersive == static_cast<bool>(old)) {
+    return;
+  }
+
+  UpdateForBoundsChanged();
 }
 
 bool DisplayOverlayController::HasMenuView() const {
@@ -858,8 +860,12 @@ bool DisplayOverlayController::ShowingNudge() {
   return nudge_view_ || nudge_view_alpha_;
 }
 
-void DisplayOverlayController::UpdateForBoundsChanged(const gfx::Rect& bounds) {
-  touch_injector_->UpdateForOverlayBoundsChanged(gfx::RectF(bounds));
+void DisplayOverlayController::UpdateForBoundsChanged() {
+  auto content_bounds = CalculateWindowContentBounds(touch_injector_->window());
+  if (content_bounds == touch_injector_->content_bounds()) {
+    return;
+  }
+  touch_injector_->UpdateForOverlayBoundsChanged(content_bounds);
 
   // Overlay widget is null for test.
   if (!GetOverlayWidget()) {
@@ -879,13 +885,6 @@ void DisplayOverlayController::UpdateForBoundsChanged(const gfx::Rect& bounds) {
 
 void DisplayOverlayController::DismissEducationalViewForTesting() {
   OnEducationalViewDismissed();
-}
-
-void DisplayOverlayController::TriggerWidgetBoundsChangedForTesting() {
-  auto bounds = CalculateWindowContentBounds(touch_injector_->window());
-  OnWidgetBoundsChanged(
-      /*widget=*/nullptr,
-      gfx::Rect(bounds.x(), bounds.y(), bounds.width(), bounds.height()));
 }
 
 }  // namespace arc::input_overlay

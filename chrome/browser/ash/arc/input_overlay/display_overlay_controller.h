@@ -13,7 +13,6 @@
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/widget/widget_observer.h"
 
 namespace views {
 class View;
@@ -42,7 +41,6 @@ class TouchInjector;
 // menu, and educational dialog. It also handles the visibility of the
 // |ActionEditMenu| and |MessageView| by listening to the |LocatedEvent|.
 class DisplayOverlayController : public ui::EventHandler,
-                                 public views::WidgetObserver,
                                  public aura::WindowObserver {
  public:
   DisplayOverlayController(TouchInjector* touch_injector, bool first_launch);
@@ -93,15 +91,14 @@ class DisplayOverlayController : public ui::EventHandler,
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
 
-  // views::WidgetObserver:
-  void OnWidgetBoundsChanged(views::Widget* widget,
-                             const gfx::Rect& new_bounds) override;
-
   // aura::WindowObserver:
   void OnWindowBoundsChanged(aura::Window* window,
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override;
 
   const TouchInjector* touch_injector() const { return touch_injector_; }
 
@@ -183,14 +180,13 @@ class DisplayOverlayController : public ui::EventHandler,
 
   bool ShowingNudge();
 
-  void UpdateForBoundsChanged(const gfx::Rect& bounds);
+  void UpdateForBoundsChanged();
 
   // For test:
   gfx::Rect GetInputMappingViewBoundsForTesting();
   void DismissEducationalViewForTesting();
   InputMenuView* GetInputMenuView() { return input_menu_view_; }
   MenuEntryView* GetMenuEntryView() { return menu_entry_; }
-  void TriggerWidgetBoundsChangedForTesting();
 
   const raw_ptr<TouchInjector> touch_injector_;
 
