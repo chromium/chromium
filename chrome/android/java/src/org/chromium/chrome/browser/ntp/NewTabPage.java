@@ -517,9 +517,6 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 /* overScrollDisabled= */ false, /* viewportView= */ null, actionDelegate,
                 HelpAndFeedbackLauncherImpl.getForProfile(profile), mTabModelSelector);
         mFeedSurfaceProvider = feedSurfaceCoordinator;
-
-        // Record the timestamp at which the new tab page's construction started.
-        uma.trackTimeToFirstDraw(mFeedSurfaceProvider.getView(), mConstructedTimeNs);
     }
 
     /**
