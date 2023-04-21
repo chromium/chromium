@@ -490,8 +490,7 @@ suite('PrivacySandboxDialogNoticeEEA', function() {
     await browserProxy.whenCalled('showDialog');
   });
 
-  // TODO(crbug.com/1432915): Disabled for flakiness.
-  test.skip('moreButton', async function() {
+  test('moreButton', async function() {
     await verifyActionOccured(
         browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     const noticeStep = getActiveStep();
