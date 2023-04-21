@@ -828,6 +828,9 @@ void CommerceHintAgent::MaybeExtractProducts() {
 }
 
 void CommerceHintAgent::ExtractProducts() {
+  if (!IsVisitCart(GURL(render_frame()->GetWebFrame()->GetDocument().Url()))) {
+    return;
+  }
   is_extraction_pending_ = false;
   if (is_extraction_running_) {
     DVLOG(1) << "Extraction is running. Try again later.";
