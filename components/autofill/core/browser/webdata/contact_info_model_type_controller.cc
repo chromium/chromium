@@ -6,6 +6,9 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -18,7 +21,7 @@ using PreconditionState = syncer::DataTypeController::PreconditionState;
 
 // Determines if the `finder`'s account is eligible to use the CONTACT_INFO
 // type based on its managed state. Dasher users are not supported.
-PreconditionState GetPreconditionStateFromAccountStatus(
+PreconditionState GetPreconditionStateFromAccountManagedStatus(
     const signin::AccountManagedStatusFinder* finder) {
   // If the feature is enabled, all account types are supported.
   if (base::FeatureList::IsEnabled(
@@ -47,6 +50,42 @@ PreconditionState GetPreconditionStateFromAccountStatus(
   }
 }
 
+// Determines if the `core_account_info` corresponds to a child account. Those
+// are excluded from the CONTACT_INFO data type.
+// If the status is not available yet, the data is kept to prevent redownloding
+// once the status was determined.
+PreconditionState GetPreconditionStateFromAccountChildStatus(
+    const signin::IdentityManager& identity_manager,
+    const CoreAccountInfo& core_account_info) {
+  if (!identity_manager.AreRefreshTokensLoaded()) {
+    return PreconditionState::kMustStopAndKeepData;
+  }
+  const AccountCapabilities& capabilities =
+      identity_manager.FindExtendedAccountInfo(core_account_info).capabilities;
+  // TODO(crbug.com/1423319): Multiple types of child accounts exists, and this
+  // excludes all of them. Once it becomes clear which subset of child accounts
+  // actually needs to be excluded, this logic can be relaxed.
+  return capabilities.is_subject_to_parental_controls() ==
+                 signin::Tribool::kTrue
+             ? PreconditionState::kMustStopAndClearData
+             : PreconditionState::kPreconditionsMet;
+}
+
+PreconditionState GetStricterPreconditionState(PreconditionState a,
+                                               PreconditionState b) {
+  auto strictness = [](PreconditionState state) {
+    switch (state) {
+      case PreconditionState::kPreconditionsMet:
+        return 0;
+      case PreconditionState::kMustStopAndKeepData:
+        return 1;
+      case PreconditionState::kMustStopAndClearData:
+        return 2;
+    }
+  };
+  return strictness(a) > strictness(b) ? a : b;
+}
+
 }  // namespace
 
 ContactInfoModelTypeController::ContactInfoModelTypeController(
@@ -62,6 +101,7 @@ ContactInfoModelTypeController::ContactInfoModelTypeController(
       sync_service_(sync_service),
       identity_manager_(identity_manager) {
   sync_service_observation_.Observe(sync_service_);
+  identity_manager_observer_.Observe(identity_manager_);
   // When support for Dasher users is not enabled, the managed-status of the
   // account needs to be determined.
   // Note that the controller is instantiated even when there's no signed-in
@@ -87,12 +127,18 @@ bool ContactInfoModelTypeController::ShouldRunInTransportOnlyMode() const {
 }
 
 PreconditionState ContactInfoModelTypeController::GetPreconditionState() const {
+  // Exclude explicit passphrase users.
   if (sync_service_->GetUserSettings()->IsUsingExplicitPassphrase() &&
       !base::FeatureList::IsEnabled(
           syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers)) {
     return PreconditionState::kMustStopAndClearData;
   }
-  return GetPreconditionStateFromAccountStatus(managed_status_finder_.get());
+  // Exclude child and Dasher accounts.
+  return GetStricterPreconditionState(
+      GetPreconditionStateFromAccountChildStatus(
+          *identity_manager_, sync_service_->GetAccountInfo()),
+      GetPreconditionStateFromAccountManagedStatus(
+          managed_status_finder_.get()));
 }
 
 void ContactInfoModelTypeController::OnStateChanged(syncer::SyncService* sync) {
@@ -110,6 +156,19 @@ void ContactInfoModelTypeController::OnStateChanged(syncer::SyncService* sync) {
                 base::Unretained(this)));
   }
   sync_service_->DataTypePreconditionChanged(type());
+}
+
+void ContactInfoModelTypeController::OnRefreshTokensLoaded() {
+  DCHECK(CalledOnValidThread());
+  sync_service_->DataTypePreconditionChanged(type());
+}
+
+void ContactInfoModelTypeController::OnExtendedAccountInfoUpdated(
+    const AccountInfo& info) {
+  DCHECK(CalledOnValidThread());
+  if (info.account_id == sync_service_->GetAccountInfo().account_id) {
+    sync_service_->DataTypePreconditionChanged(type());
+  }
 }
 
 void ContactInfoModelTypeController::AccountTypeDetermined() {

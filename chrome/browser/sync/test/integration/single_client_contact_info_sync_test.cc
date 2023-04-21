@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/contact_info_sync_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -60,6 +61,27 @@ MATCHER_P2(HasContactInfoWithGuidAndUnknownFields, guid, unknown_fields, "") {
          arg.specifics().contact_info().unknown_fields() == unknown_fields;
 }
 #endif
+
+// Checker to wait until the CONTACT_INFO datatype becomes (in)active, depending
+// on `expect_active`.
+// This is required because ContactInfoModelTypeController has custom logic to
+// wait, and stays temporarily stopped even after sync-the-transport is active,
+// until account capabilities are determined for eligibility.
+class ContactInfoActiveChecker : public SingleClientStatusChangeChecker {
+ public:
+  ContactInfoActiveChecker(syncer::SyncServiceImpl* service, bool expect_active)
+      : SingleClientStatusChangeChecker(service),
+        expect_active_(expect_active) {}
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    return service()->GetActiveDataTypes().Has(syncer::CONTACT_INFO) ==
+           expect_active_;
+  }
+
+ private:
+  const bool expect_active_;
+};
 
 // Helper class to wait until the fake server's ContactInfoSpecifics match a
 // given predicate.
@@ -232,9 +254,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientContactInfoPassphraseSyncTest, Passphrase) {
   ASSERT_TRUE(
       ServerPassphraseTypeChecker(syncer::PassphraseType::kCustomPassphrase)
           .Wait());
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-  EXPECT_EQ(GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO),
-            EnabledForPassphraseUsersTestParam());
+  EXPECT_TRUE(ContactInfoActiveChecker(
+                  GetSyncService(0),
+                  /*expect_active=*/EnabledForPassphraseUsersTestParam())
+                  .Wait());
 }
 
 // Specialized fixture that enables AutofillAccountProfilesOnSignIn.
@@ -250,9 +273,9 @@ class SingleClientContactInfoTransportSyncTest
   base::test::ScopedFeatureList transport_feature_;
 };
 
-// When AutofillAccountProfilesOnSignIn is enabled, the CONTACT_INFO type should
-// run in transport mode and the availability of account profiles should depend
-// on the signed-in state.
+// When SyncEnableContactInfoDataTypeInTransportMode is enabled, the
+// CONTACT_INFO type should run in transport mode and the availability of
+// account profiles should depend on the signed-in state.
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
                        TransportMode) {
   AutofillProfile profile = BuildTestAccountProfile();
@@ -364,6 +387,32 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoManagedAccountTest,
 
   EXPECT_FALSE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
+}
+
+// TODO(crbug.com/1435411): Enable this test on Android.
+IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
+                       DisableForChildAccounts) {
+  ASSERT_TRUE(SetupClients());
+  // Sign in with a child account.
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile(0));
+  AccountInfo account = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
+  AccountCapabilitiesTestMutator mutator(&account.capabilities);
+  mutator.set_is_subject_to_parental_controls(true);
+  signin::UpdateAccountInfoForAccount(identity_manager, account);
+  ASSERT_TRUE(SetupSync());
+
+  EXPECT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
+
+  // "Graduate" the account.
+  mutator.set_is_subject_to_parental_controls(false);
+  signin::UpdateAccountInfoForAccount(identity_manager, account);
+  EXPECT_TRUE(ContactInfoActiveChecker(GetSyncService(0),
+                                       /*expect_active=*/true)
+                  .Wait());
 }
 #endif
 
