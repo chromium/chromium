@@ -591,6 +591,7 @@ void Surface::SetClipRect(const absl::optional<gfx::RectF>& clip_rect) {
   if (pending_state_.clip_rect == clip_rect) {
     return;
   }
+  has_pending_contents_ = true;
   pending_state_.clip_rect = clip_rect;
 }
 
