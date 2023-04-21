@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -95,10 +96,12 @@ class CameraRollManagerImpl
   bool is_android_storage_granted_ = false;
   absl::optional<base::TimeTicks> fetch_items_request_start_timestamp_;
 
-  MessageReceiver* message_receiver_;
-  MessageSender* message_sender_;
-  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
-  secure_channel::ConnectionManager* connection_manager_;
+  raw_ptr<MessageReceiver, ExperimentalAsh> message_receiver_;
+  raw_ptr<MessageSender, ExperimentalAsh> message_sender_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
+      multidevice_setup_client_;
+  raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
+      connection_manager_;
 
   std::unique_ptr<CameraRollDownloadManager> camera_roll_download_manager_;
   std::unique_ptr<CameraRollThumbnailDecoder> thumbnail_decoder_;

@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "dbus/mock_bus.h"
@@ -74,7 +75,7 @@ class HibermanClientTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> dbus_service_proxy_;
 
   // Convenience pointer to the global instance.
-  HibermanClient* client_ = nullptr;
+  raw_ptr<HibermanClient, ExperimentalAsh> client_ = nullptr;
 
  private:
   // Handles calls to |proxy_|'s `CallMethod()`.

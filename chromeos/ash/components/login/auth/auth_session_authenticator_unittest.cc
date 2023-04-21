@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -303,7 +304,7 @@ class AuthSessionAuthenticatorTest : public ::testing::Test {
       /*quit_closure=*/base::DoNothing()};
   scoped_refptr<AuthSessionAuthenticator> authenticator_;
   // Unowned (points to the object owned by `authenticator_`).
-  MockSafeModeDelegate* safe_mode_delegate_ = nullptr;
+  raw_ptr<MockSafeModeDelegate, ExperimentalAsh> safe_mode_delegate_ = nullptr;
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<AuthMetricsRecorder> auth_metrics_recorder_;
 };

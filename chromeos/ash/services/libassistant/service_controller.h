@@ -6,6 +6,8 @@
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_SERVICE_CONTROLLER_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
@@ -80,9 +82,10 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   mojom::ServiceState state_ = mojom::ServiceState::kStopped;
 
   // Called during |Initialize| to apply boot configuration.
-  mojom::SettingsController* settings_controller_ = nullptr;
+  raw_ptr<mojom::SettingsController, ExperimentalAsh> settings_controller_ =
+      nullptr;
 
-  LibassistantFactory& libassistant_factory_;
+  const raw_ref<LibassistantFactory, ExperimentalAsh> libassistant_factory_;
 
   std::unique_ptr<AssistantClient> assistant_client_;
   std::unique_ptr<ChromiumApiDelegate> chromium_api_delegate_;

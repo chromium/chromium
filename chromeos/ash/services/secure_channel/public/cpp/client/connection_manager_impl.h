@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/client_channel.h"
@@ -88,9 +89,10 @@ class ConnectionManagerImpl : public ConnectionManager,
   void OnStatusChanged();
   void RecordMetrics();
 
-  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
-  device_sync::DeviceSyncClient* device_sync_client_;
-  SecureChannelClient* secure_channel_client_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
+      multidevice_setup_client_;
+  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
+  raw_ptr<SecureChannelClient, ExperimentalAsh> secure_channel_client_;
   std::unique_ptr<ConnectionAttempt> connection_attempt_;
   std::unique_ptr<ClientChannel> channel_;
   std::unique_ptr<base::OneShotTimer> timer_;
@@ -98,7 +100,7 @@ class ConnectionManagerImpl : public ConnectionManager,
   std::unique_ptr<NearbyMetricsRecorder> metrics_recorder_;
   Status last_status_;
   base::Time status_change_timestamp_;
-  base::Clock* clock_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
   base::WeakPtrFactory<ConnectionManagerImpl> weak_ptr_factory_{this};
 };
 

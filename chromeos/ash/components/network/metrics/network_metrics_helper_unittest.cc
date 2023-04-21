@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/debug/debugging_buildflags.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -230,7 +231,8 @@ class NetworkMetricsHelperTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
-  ShillServiceClient::TestInterface* shill_service_client_;
+  raw_ptr<ShillServiceClient::TestInterface, ExperimentalAsh>
+      shill_service_client_;
   TestingPrefServiceSimple profile_prefs_;
   TestingPrefServiceSimple local_state_;
 };

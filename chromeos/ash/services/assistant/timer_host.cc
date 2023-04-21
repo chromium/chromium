@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/assistant/timer_host.h"
 
 #include "ash/public/cpp/assistant/controller/assistant_alarm_timer_controller.h"
+#include "base/memory/raw_ref.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/assistant/service_context.h"
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_timer.h"
@@ -34,7 +35,7 @@ class TimerHost::TimerDelegateImpl : public libassistant::mojom::TimerDelegate {
   }
 
   AssistantAlarmTimerController& assistant_alarm_timer_controller() {
-    auto* result = context_.assistant_alarm_timer_controller();
+    auto* result = context_->assistant_alarm_timer_controller();
     DCHECK(result);
     return *result;
   }
@@ -42,7 +43,7 @@ class TimerHost::TimerDelegateImpl : public libassistant::mojom::TimerDelegate {
   mojo::Receiver<TimerDelegate> receiver_;
 
   // Owned by the parent |Service|.
-  ServiceContext& context_;
+  const raw_ref<ServiceContext, ExperimentalAsh> context_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -61,7 +62,7 @@ void TimerHost::Initialize(
   DCHECK(!libassistant_controller_);
 
   timer_delegate_ =
-      std::make_unique<TimerDelegateImpl>(std::move(delegate), &context_);
+      std::make_unique<TimerDelegateImpl>(std::move(delegate), &*context_);
   libassistant_controller_ = libassistant_controller;
 }
 

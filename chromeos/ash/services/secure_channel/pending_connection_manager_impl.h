@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/secure_channel/ble_initiator_failure_type.h"
 #include "chromeos/ash/services/secure_channel/ble_listener_failure_type.h"
 #include "chromeos/ash/services/secure_channel/client_connection_parameters.h"
@@ -142,8 +143,8 @@ class PendingConnectionManagerImpl : public PendingConnectionManager,
   base::flat_map<ConnectionDetails, base::flat_set<ConnectionAttemptDetails>>
       details_to_attempt_details_map_;
 
-  BleConnectionManager* ble_connection_manager_;
-  NearbyConnectionManager* nearby_connection_manager_;
+  raw_ptr<BleConnectionManager, ExperimentalAsh> ble_connection_manager_;
+  raw_ptr<NearbyConnectionManager, ExperimentalAsh> nearby_connection_manager_;
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 };
 

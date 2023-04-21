@@ -13,6 +13,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -227,10 +228,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
       network_handler::ErrorCallback error_callback);
 
   // Unowned associated Network*Handlers (global or test instance).
-  NetworkStateHandler* network_state_handler_;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
-  NetworkDeviceHandler* network_device_handler_;
+  raw_ptr<NetworkDeviceHandler, ExperimentalAsh> network_device_handler_;
 
   // Map of in-progress deleter instances.
   std::map<std::string, std::unique_ptr<ProfileEntryDeleter>>

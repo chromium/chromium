@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_ipconfig_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
@@ -83,7 +84,7 @@ class ShillIPConfigClientImpl : public ShillIPConfigClient {
     return helper_ptr;
   }
 
-  dbus::Bus* bus_;
+  raw_ptr<dbus::Bus, ExperimentalAsh> bus_;
   HelperMap helpers_;
 };
 

@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -1654,7 +1655,7 @@ class PpdMetadataManagerBase : public ::testing::Test {
   base::SimpleTestClock clock_;
   // Class under test.
   std::unique_ptr<PpdMetadataManager> manager_;
-  FakePrinterConfigCache* cache_;
+  raw_ptr<FakePrinterConfigCache, ExperimentalAsh> cache_;
 };
 
 class PpdMetadataManagerForStagingChannelTest : public PpdMetadataManagerBase {

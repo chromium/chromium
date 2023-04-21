@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/secure_channel/ble_listener_failure_type.h"
 #include "chromeos/ash/services/secure_channel/connection_attempt_base.h"
 
@@ -64,7 +65,7 @@ class BleListenerConnectionAttempt
   void ProcessSuccessfulConnectionDuration(
       const base::TimeDelta& duration) override;
 
-  BleConnectionManager* ble_connection_manager_;
+  raw_ptr<BleConnectionManager, ExperimentalAsh> ble_connection_manager_;
 };
 
 }  // namespace ash::secure_channel

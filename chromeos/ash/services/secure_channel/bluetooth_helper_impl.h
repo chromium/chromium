@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/secure_channel/bluetooth_helper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -71,7 +72,7 @@ class BluetoothHelperImpl : public BluetoothHelper {
       std::unique_ptr<BackgroundEidGenerator> background_eid_generator,
       std::unique_ptr<ForegroundEidGenerator> foreground_eid_generator);
 
-  multidevice::RemoteDeviceCache* remote_device_cache_;
+  raw_ptr<multidevice::RemoteDeviceCache, ExperimentalAsh> remote_device_cache_;
   std::unique_ptr<BackgroundEidGenerator> background_eid_generator_;
   std::unique_ptr<ForegroundEidGenerator> foreground_eid_generator_;
 };

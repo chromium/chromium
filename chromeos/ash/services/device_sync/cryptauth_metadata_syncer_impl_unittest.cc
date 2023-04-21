@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/timer/mock_timer.h"
 #include "base/types/optional_util.h"
@@ -448,7 +449,7 @@ class DeviceSyncCryptAuthMetadataSyncerImplTest
   TestingPrefServiceSimple pref_service_;
 
   std::unique_ptr<MockCryptAuthClientFactory> client_factory_;
-  base::MockOneShotTimer* timer_;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> timer_;
 
   std::unique_ptr<FakeCryptAuthKeyCreatorFactory>
       fake_cryptauth_key_creator_factory_;

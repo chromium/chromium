@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/human_presence/fake_human_presence_dbus_client.h"
@@ -206,7 +207,7 @@ class HumanPresenceDBusClientImpl : public HumanPresenceDBusClient {
                                       base::DoNothing());
   }
 
-  dbus::ObjectProxy* const human_presence_proxy_;
+  const raw_ptr<dbus::ObjectProxy, ExperimentalAsh> human_presence_proxy_;
 
   base::ObserverList<Observer> observers_;
 

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_ASSISTANT_MEDIA_SESSION_ASSISTANT_MEDIA_SESSION_H_
 #define CHROMEOS_ASH_SERVICES_ASSISTANT_MEDIA_SESSION_ASSISTANT_MEDIA_SESSION_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
@@ -111,7 +112,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantMediaSession
   // The current metadata associated with the current media session.
   media_session::MediaMetadata metadata_;
 
-  MediaHost* const host_;
+  const raw_ptr<MediaHost, ExperimentalAsh> host_;
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   // Binding for Mojo pointer to |this| held by AudioFocusManager.

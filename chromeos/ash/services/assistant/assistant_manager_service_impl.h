@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -246,7 +247,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   base::ObserverList<AssistantInteractionSubscriber> interaction_subscribers_;
 
   // Owned by the parent |Service| which will destroy |this| before |context_|.
-  ServiceContext* const context_;
+  const raw_ptr<ServiceContext, ExperimentalAsh> context_;
 
   std::unique_ptr<LibassistantServiceHost> libassistant_service_host_;
   std::unique_ptr<DeviceSettingsHost> device_settings_host_;

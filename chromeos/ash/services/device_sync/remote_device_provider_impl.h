@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_manager.h"
 #include "chromeos/ash/services/device_sync/cryptauth_v2_device_manager.h"
 #include "chromeos/ash/services/device_sync/remote_device_provider.h"
@@ -104,11 +105,11 @@ class RemoteDeviceProviderImpl : public RemoteDeviceProvider,
 
   // To get cryptauth::ExternalDeviceInfo needed to retrieve RemoteDevices. Null
   // if v1 DeviceSync is disabled.
-  CryptAuthDeviceManager* v1_device_manager_;
+  raw_ptr<CryptAuthDeviceManager, ExperimentalAsh> v1_device_manager_;
 
   // Used to retrieve CryptAuthDevices from the last v2 DeviceSync. Null if v2
   // DeviceSync is disabled.
-  CryptAuthV2DeviceManager* v2_device_manager_;
+  raw_ptr<CryptAuthV2DeviceManager, ExperimentalAsh> v2_device_manager_;
 
   // The email of the current user.
   const std::string user_email_;

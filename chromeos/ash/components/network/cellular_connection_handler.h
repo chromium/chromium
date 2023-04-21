@@ -9,6 +9,7 @@
 
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -204,11 +205,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
 
   base::OneShotTimer timer_;
 
-  NetworkStateHandler* network_state_handler_ = nullptr;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
+      nullptr;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
-  CellularInhibitor* cellular_inhibitor_ = nullptr;
-  CellularESimProfileHandler* cellular_esim_profile_handler_ = nullptr;
+  raw_ptr<CellularInhibitor, ExperimentalAsh> cellular_inhibitor_ = nullptr;
+  raw_ptr<CellularESimProfileHandler, ExperimentalAsh>
+      cellular_esim_profile_handler_ = nullptr;
 
   ConnectionState state_ = ConnectionState::kIdle;
   base::queue<std::unique_ptr<ConnectionRequestMetadata>> request_queue_;

@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/libassistant/libassistant_factory.h"
 #include "chromeos/ash/services/libassistant/libassistant_loader_impl.h"
 #include "chromeos/ash/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
@@ -45,7 +46,7 @@ class LibassistantFactoryImpl : public LibassistantFactory {
   }
 
  private:
-  assistant_client::PlatformApi* const platform_api_;
+  const raw_ptr<assistant_client::PlatformApi, ExperimentalAsh> platform_api_;
 };
 
 std::unique_ptr<LibassistantFactory> FactoryOrDefault(

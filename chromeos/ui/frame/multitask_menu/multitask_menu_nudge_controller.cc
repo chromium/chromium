@@ -332,7 +332,7 @@ void MultitaskMenuNudgeController::OnGetPreferences(
   }
 
   window_ = window;
-  window_observation_.Observe(window_);
+  window_observation_.Observe(window_.get());
 
   nudge_widget_ = CreateWidget(window_);
   nudge_widget_->Show();

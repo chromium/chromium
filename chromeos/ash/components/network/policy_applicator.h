@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
@@ -153,8 +154,9 @@ class PolicyApplicator {
   // |handler_|.
   void NotifyConfigurationHandlerAndFinish();
 
-  ConfigurationHandler* const handler_;
-  ManagedCellularPrefHandler* managed_cellular_pref_handler_ = nullptr;
+  const raw_ptr<ConfigurationHandler, ExperimentalAsh> handler_;
+  raw_ptr<ManagedCellularPrefHandler, ExperimentalAsh>
+      managed_cellular_pref_handler_ = nullptr;
   NetworkProfile profile_;
   base::flat_map<std::string, base::Value::Dict> all_policies_;
   base::Value::Dict global_network_config_;

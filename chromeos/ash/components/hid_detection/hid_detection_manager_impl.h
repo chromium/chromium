@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/hid_detection/hid_detection_manager.h"
 
 #include "base/functional/callback.h"
@@ -103,7 +104,8 @@ class HidDetectionManagerImpl : public HidDetectionManager,
   absl::optional<std::string> connected_pointer_id_;
   absl::optional<std::string> connected_keyboard_id_;
 
-  device::mojom::DeviceService* device_service_ = nullptr;
+  raw_ptr<device::mojom::DeviceService, ExperimentalAsh> device_service_ =
+      nullptr;
   std::unique_ptr<BluetoothHidDetector> bluetooth_hid_detector_;
   mojo::Remote<device::mojom::InputDeviceManager> input_device_manager_;
   mojo::AssociatedReceiver<device::mojom::InputDeviceManagerClient>

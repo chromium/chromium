@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_clock.h"
 #include "chromeos/ash/services/device_sync/cryptauth_enrollment_manager.h"
@@ -141,12 +142,12 @@ class CryptAuthV2EnrollmentManagerImpl
   void AddV1UserKeyPairToRegistryIfNecessary();
 
   cryptauthv2::ClientAppMetadata client_app_metadata_;
-  CryptAuthKeyRegistry* key_registry_;
-  CryptAuthClientFactory* client_factory_;
-  CryptAuthGCMManager* gcm_manager_;
-  CryptAuthScheduler* scheduler_;
-  PrefService* pref_service_;
-  base::Clock* clock_;
+  raw_ptr<CryptAuthKeyRegistry, ExperimentalAsh> key_registry_;
+  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> client_factory_;
+  raw_ptr<CryptAuthGCMManager, ExperimentalAsh> gcm_manager_;
+  raw_ptr<CryptAuthScheduler, ExperimentalAsh> scheduler_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
 
   bool initial_v1_and_v2_user_key_pairs_disagree_ = false;
 

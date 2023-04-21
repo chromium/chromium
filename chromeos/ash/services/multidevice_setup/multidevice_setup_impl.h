@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/multidevice_setup/feature_state_manager.h"
 #include "chromeos/ash/services/multidevice_setup/global_state_feature_manager.h"
 #include "chromeos/ash/services/multidevice_setup/host_status_provider.h"
@@ -160,7 +161,7 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
   std::unique_ptr<FeatureStateManager> feature_state_manager_;
   std::unique_ptr<AndroidSmsAppInstallingStatusObserver>
       android_sms_app_installing_host_observer_;
-  AuthTokenValidator* auth_token_validator_;
+  raw_ptr<AuthTokenValidator, ExperimentalAsh> auth_token_validator_;
   std::string qs_phone_instance_id_;
 
   mojo::RemoteSet<mojom::HostStatusObserver> host_status_observers_;

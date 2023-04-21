@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chromeos/ash/services/secure_channel/ble_initiator_failure_type.h"
@@ -75,8 +76,9 @@ class TestConnectionAttempt
     return fake_operation;
   }
 
-  FakeConnectToDeviceOperation<BleInitiatorFailureType>* fake_operation_ =
-      nullptr;
+  raw_ptr<FakeConnectToDeviceOperation<BleInitiatorFailureType>,
+          ExperimentalAsh>
+      fake_operation_ = nullptr;
 };
 
 }  // namespace

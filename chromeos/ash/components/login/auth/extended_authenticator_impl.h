@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/login/auth/extended_authenticator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -62,7 +63,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   std::string system_salt_;
   std::vector<base::OnceClosure> system_salt_callbacks_;
 
-  AuthStatusConsumer* consumer_;
+  raw_ptr<AuthStatusConsumer, ExperimentalAsh> consumer_;
 };
 
 }  // namespace ash

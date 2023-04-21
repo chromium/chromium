@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_MANAGED_CELLULAR_PREF_HANDLER_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/prefs/pref_service.h"
@@ -69,9 +70,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedCellularPrefHandler {
  private:
   void NotifyManagedCellularPrefChanged();
 
-  NetworkStateHandler* network_state_handler_ = nullptr;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
+      nullptr;
   // Initialized to null and set once SetDevicePrefs() is called.
-  PrefService* device_prefs_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> device_prefs_ = nullptr;
 
   base::ObserverList<Observer> observer_list_;
 };

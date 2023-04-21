@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -51,7 +52,8 @@ class ShillServiceClientTest : public ShillClientUnittestBase {
   }
 
  protected:
-  ShillServiceClient* client_ = nullptr;  // Unowned convenience pointer.
+  raw_ptr<ShillServiceClient, ExperimentalAsh> client_ =
+      nullptr;  // Unowned convenience pointer.
 };
 
 TEST_F(ShillServiceClientTest, PropertyChanged) {

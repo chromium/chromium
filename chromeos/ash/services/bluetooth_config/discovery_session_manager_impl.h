@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -57,7 +58,7 @@ class DiscoverySessionManagerImpl : public DiscoverySessionManager,
   void DestroyDiscoverySession();
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  FastPairDelegate* fast_pair_delegate_;
+  raw_ptr<FastPairDelegate, ExperimentalAsh> fast_pair_delegate_;
 
   base::ScopedObservation<device::BluetoothAdapter,
                           device::BluetoothAdapter::Observer>

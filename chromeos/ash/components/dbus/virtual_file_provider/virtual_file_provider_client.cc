@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/virtual_file_provider/fake_virtual_file_provider_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -100,7 +101,7 @@ class VirtualFileProviderClientImpl : public VirtualFileProviderClient {
     std::move(callback).Run(std::move(fd));
   }
 
-  dbus::ObjectProxy* proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
 
   base::WeakPtrFactory<VirtualFileProviderClientImpl> weak_ptr_factory_{this};
 };

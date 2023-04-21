@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/components/tether/active_host.h"
@@ -86,11 +87,13 @@ class ConnectionPreserverImpl
 
   void SetTimerForTesting(std::unique_ptr<base::OneShotTimer> timer_for_test);
 
-  device_sync::DeviceSyncClient* device_sync_client_;
-  secure_channel::SecureChannelClient* secure_channel_client_;
-  NetworkStateHandler* network_state_handler_;
-  ActiveHost* active_host_;
-  TetherHostResponseRecorder* tether_host_response_recorder_;
+  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
+  raw_ptr<secure_channel::SecureChannelClient, ExperimentalAsh>
+      secure_channel_client_;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<ActiveHost, ExperimentalAsh> active_host_;
+  raw_ptr<TetherHostResponseRecorder, ExperimentalAsh>
+      tether_host_response_recorder_;
 
   std::unique_ptr<base::OneShotTimer> preserved_connection_timer_;
 

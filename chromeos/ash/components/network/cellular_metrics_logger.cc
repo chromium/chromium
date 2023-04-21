@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -407,7 +408,8 @@ class ESimFeatureUsageMetrics
   void StopUsage() { feature_usage_metrics_->StopSuccessfulUsage(); }
 
  private:
-  CellularESimProfileHandler* cellular_esim_profile_handler_;
+  raw_ptr<CellularESimProfileHandler, ExperimentalAsh>
+      cellular_esim_profile_handler_;
   std::unique_ptr<feature_usage::FeatureUsageMetrics> feature_usage_metrics_;
 };
 
@@ -473,7 +475,7 @@ void CellularMetricsLogger::Init(
   cellular_esim_profile_handler_ = cellular_esim_profile_handler;
   managed_network_configuration_handler_ =
       managed_network_configuration_handler;
-  network_state_handler_observer_.Observe(network_state_handler_);
+  network_state_handler_observer_.Observe(network_state_handler_.get());
 
   if (network_connection_handler) {
     network_connection_handler_ = network_connection_handler;

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
@@ -99,10 +100,10 @@ class HostVerifierImpl : public HostVerifier,
   void OnNotifyDevicesFinished(device_sync::mojom::NetworkRequestResult result);
   void OnSyncTimerFired();
 
-  HostBackendDelegate* host_backend_delegate_;
-  device_sync::DeviceSyncClient* device_sync_client_;
-  PrefService* pref_service_;
-  base::Clock* clock_;
+  raw_ptr<HostBackendDelegate, ExperimentalAsh> host_backend_delegate_;
+  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
   std::unique_ptr<base::OneShotTimer> retry_timer_;
   std::unique_ptr<base::OneShotTimer> sync_timer_;
   base::WeakPtrFactory<HostVerifierImpl> weak_ptr_factory_{this};

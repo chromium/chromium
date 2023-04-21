@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -377,7 +378,7 @@ class DriveFsHost::MountState : public DriveFsSession,
   }
 
   // Owns |this|.
-  DriveFsHost* const host_;
+  const raw_ptr<DriveFsHost, ExperimentalAsh> host_;
 
   std::unique_ptr<DriveFsSearch> search_;
   std::unique_ptr<DriveFsHttpClient> http_client_;

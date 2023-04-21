@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/nearby/common/scheduling/fake_nearby_scheduler.h"
 #include "chromeos/ash/components/nearby/common/scheduling/nearby_expiration_scheduler.h"
@@ -32,29 +33,29 @@ class FakeNearbySchedulerFactory : public NearbySchedulerFactory {
     ExpirationInstance(ExpirationInstance&&);
     ~ExpirationInstance();
 
-    FakeNearbyScheduler* fake_scheduler = nullptr;
+    raw_ptr<FakeNearbyScheduler, ExperimentalAsh> fake_scheduler = nullptr;
     NearbyExpirationScheduler::ExpirationTimeFunctor expiration_time_functor;
     bool retry_failures;
     bool require_connectivity;
-    PrefService* pref_service = nullptr;
-    const base::Clock* clock = nullptr;
+    raw_ptr<PrefService, ExperimentalAsh> pref_service = nullptr;
+    raw_ptr<const base::Clock, ExperimentalAsh> clock = nullptr;
   };
 
   struct OnDemandInstance {
-    FakeNearbyScheduler* fake_scheduler = nullptr;
+    raw_ptr<FakeNearbyScheduler, ExperimentalAsh> fake_scheduler = nullptr;
     bool retry_failures;
     bool require_connectivity;
-    PrefService* pref_service = nullptr;
-    const base::Clock* clock = nullptr;
+    raw_ptr<PrefService, ExperimentalAsh> pref_service = nullptr;
+    raw_ptr<const base::Clock, ExperimentalAsh> clock = nullptr;
   };
 
   struct PeriodicInstance {
-    FakeNearbyScheduler* fake_scheduler = nullptr;
+    raw_ptr<FakeNearbyScheduler, ExperimentalAsh> fake_scheduler = nullptr;
     base::TimeDelta request_period;
     bool retry_failures;
     bool require_connectivity;
-    PrefService* pref_service = nullptr;
-    const base::Clock* clock = nullptr;
+    raw_ptr<PrefService, ExperimentalAsh> pref_service = nullptr;
+    raw_ptr<const base::Clock, ExperimentalAsh> clock = nullptr;
   };
 
   FakeNearbySchedulerFactory();

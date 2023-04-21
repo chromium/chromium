@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/secure_channel/ble_advertiser.h"
@@ -134,9 +135,9 @@ class BleAdvertiserImpl : public BleAdvertiser {
   void AttemptToNotifyFailureToGenerateAdvertisement(
       const DeviceIdPair& device_id_pair);
 
-  BluetoothHelper* bluetooth_helper_;
-  BleSynchronizerBase* ble_synchronizer_base_;
-  TimerFactory* timer_factory_;
+  raw_ptr<BluetoothHelper, ExperimentalAsh> bluetooth_helper_;
+  raw_ptr<BleSynchronizerBase, ExperimentalAsh> ble_synchronizer_base_;
+  raw_ptr<TimerFactory, ExperimentalAsh> timer_factory_;
 
   // For posting tasks to the current base::SequencedTaskRunner.
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;

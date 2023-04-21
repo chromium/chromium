@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/arc/fake_arc_keymaster_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -57,7 +58,7 @@ class ArcKeymasterClientImpl : public ArcKeymasterClient {
 
  private:
   // Owned by the D-Bus implementation, who outlives this class.
-  dbus::ObjectProxy* proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
 };
 
 }  // namespace

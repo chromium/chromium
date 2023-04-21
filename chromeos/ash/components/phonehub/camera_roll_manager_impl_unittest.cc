@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/phonehub/camera_roll_manager_impl.h"
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -321,7 +322,8 @@ class CameraRollManagerImplTest : public testing::Test {
   FakeMessageSender fake_message_sender_;
   std::unique_ptr<secure_channel::FakeConnectionManager>
       fake_connection_manager_;
-  FakeCameraRollDownloadManager* fake_camera_roll_download_manager_;
+  raw_ptr<FakeCameraRollDownloadManager, ExperimentalAsh>
+      fake_camera_roll_download_manager_;
   std::unique_ptr<CameraRollManagerImpl> camera_roll_manager_;
   FakeObserver fake_observer_;
 

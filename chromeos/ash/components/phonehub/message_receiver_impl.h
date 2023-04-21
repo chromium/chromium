@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_MESSAGE_RECEIVER_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_MESSAGE_RECEIVER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/message_receiver.h"
 
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
@@ -25,7 +26,8 @@ class MessageReceiverImpl : public MessageReceiver,
   // secure_channel::ConnectionManager::Observer:
   void OnMessageReceived(const std::string& payload) override;
 
-  secure_channel::ConnectionManager* connection_manager_;
+  raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
+      connection_manager_;
 };
 
 }  // namespace phonehub

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/shill/modem_messaging_client.h"
@@ -100,8 +101,9 @@ class NetworkSmsHandlerTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  ShillDeviceClient::TestInterface* device_test_;
-  ModemMessagingClient::TestInterface* modem_messaging_test_;
+  raw_ptr<ShillDeviceClient::TestInterface, ExperimentalAsh> device_test_;
+  raw_ptr<ModemMessagingClient::TestInterface, ExperimentalAsh>
+      modem_messaging_test_;
   std::unique_ptr<NetworkSmsHandler> network_sms_handler_;
   std::unique_ptr<TestObserver> test_observer_;
 };

@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/libassistant/public/mojom/timer_controller.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -51,12 +53,13 @@ class TimerHost {
   bool IsStopped() const;
 
   // Owned by our parent |AssistantManagerServiceImpl|.
-  libassistant::mojom::TimerController* libassistant_controller_ = nullptr;
+  raw_ptr<libassistant::mojom::TimerController, ExperimentalAsh>
+      libassistant_controller_ = nullptr;
   std::unique_ptr<TimerDelegateImpl> timer_delegate_;
 
   // Owned by the parent |Service| which will destroy |this| before
   // |context_|.
-  ServiceContext& context_;
+  const raw_ref<ServiceContext, ExperimentalAsh> context_;
 };
 
 }  // namespace assistant

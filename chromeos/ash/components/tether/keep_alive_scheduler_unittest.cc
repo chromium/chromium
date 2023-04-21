@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/tether/device_id_tether_network_guid_map.h"
@@ -56,7 +57,7 @@ class FakeKeepAliveOperation : public KeepAliveOperation {
   multidevice::RemoteDeviceRef remote_device() { return remote_device_; }
 
  private:
-  OperationDeletedHandler* handler_;
+  raw_ptr<OperationDeletedHandler, ExperimentalAsh> handler_;
   const multidevice::RemoteDeviceRef remote_device_;
 };
 
@@ -83,13 +84,13 @@ class FakeKeepAliveOperationFactory final : public KeepAliveOperation::Factory,
     num_created_++;
     last_created_ = new FakeKeepAliveOperation(
         device_to_connect, device_sync_client, secure_channel_client, this);
-    return base::WrapUnique(last_created_);
+    return base::WrapUnique(last_created_.get());
   }
 
  private:
   uint32_t num_created_;
   uint32_t num_deleted_;
-  FakeKeepAliveOperation* last_created_;
+  raw_ptr<FakeKeepAliveOperation, ExperimentalAsh> last_created_;
 };
 
 }  // namespace
@@ -123,7 +124,7 @@ class KeepAliveSchedulerTest : public testing::Test {
         fake_device_sync_client_.get(), fake_secure_channel_client_.get(),
         fake_active_host_.get(), fake_host_scan_cache_.get(),
         device_id_tether_network_guid_map_.get(),
-        base::WrapUnique(mock_timer_)));
+        base::WrapUnique(mock_timer_.get())));
   }
 
   void VerifyTimerRunning(bool is_running) {
@@ -167,7 +168,7 @@ class KeepAliveSchedulerTest : public testing::Test {
   // TODO(hansberry): Use a fake for this when a real mapping scheme is created.
   std::unique_ptr<DeviceIdTetherNetworkGuidMap>
       device_id_tether_network_guid_map_;
-  base::MockRepeatingTimer* mock_timer_;
+  raw_ptr<base::MockRepeatingTimer, ExperimentalAsh> mock_timer_;
 
   std::unique_ptr<FakeKeepAliveOperationFactory> fake_operation_factory_;
 

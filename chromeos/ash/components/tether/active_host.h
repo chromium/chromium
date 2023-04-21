@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
@@ -153,8 +154,8 @@ class ActiveHost {
       ActiveHostCallback active_host_callback,
       absl::optional<multidevice::RemoteDeviceRef> active_host);
 
-  TetherHostFetcher* tether_host_fetcher_;
-  PrefService* pref_service_;
+  raw_ptr<TetherHostFetcher, ExperimentalAsh> tether_host_fetcher_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 

@@ -9,6 +9,7 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
@@ -63,7 +64,7 @@ class ServiceProvider
   mojo::Receiver<chromeos::mojo_service_manager::mojom::ServiceProvider>
       provider_{this};
   // The pointer to the implementation of the mojo interface.
-  MojoInterfaceType* const impl_;
+  const raw_ptr<MojoInterfaceType, ExperimentalAsh> impl_;
   // The receiver set to keeps the connections from clients to access the mojo
   // service.
   mojo::ReceiverSet<MojoInterfaceType> service_receiver_set_;

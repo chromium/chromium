@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
@@ -160,7 +161,8 @@ class ProximityAuthRemoteDeviceLifeCycleImplTest
       fake_secure_channel_client_;
   TestableRemoteDeviceLifeCycleImpl life_cycle_;
 
-  ash::secure_channel::FakeConnectionAttempt* fake_connection_attempt_;
+  raw_ptr<ash::secure_channel::FakeConnectionAttempt, ExperimentalAsh>
+      fake_connection_attempt_;
 
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::SingleThreadTaskRunner::CurrentDefaultHandle

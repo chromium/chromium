@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_SYSTEM_TOKEN_CERT_DB_STORAGE_TEST_UTIL_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_SYSTEM_TOKEN_CERT_DB_STORAGE_TEST_UTIL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
 
 #include "memory"
@@ -43,7 +44,7 @@ class GetSystemTokenCertDbCallbackWrapper {
 
   base::RunLoop run_loop_;
   bool done_ = false;
-  net::NSSCertDatabase* nss_cert_database_ = nullptr;
+  raw_ptr<net::NSSCertDatabase, ExperimentalAsh> nss_cert_database_ = nullptr;
 
   base::WeakPtrFactory<GetSystemTokenCertDbCallbackWrapper> weak_ptr_factory_{
       this};

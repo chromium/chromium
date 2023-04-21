@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -107,9 +108,9 @@ class LanguagePackManagerTest : public testing::Test {
   }
 
  protected:
-  LanguagePackManager* manager_;
+  raw_ptr<LanguagePackManager, ExperimentalAsh> manager_;
   PackResult pack_result_;
-  FakeDlcserviceClient* dlcservice_client_;
+  raw_ptr<FakeDlcserviceClient, ExperimentalAsh> dlcservice_client_;
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;

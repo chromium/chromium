@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_delegate.h"
@@ -145,7 +146,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) HeaderView
   void UpdateCaptionButtonsVisibility();
 
   // The widget that the caption buttons act on.
-  views::Widget* target_widget_;
+  raw_ptr<views::Widget, ExperimentalAsh> target_widget_;
 
   // A callback to run when |in_immersive_mode_| changes.
   base::RepeatingClosure immersive_mode_changed_callback_;
@@ -157,14 +158,14 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) HeaderView
   // windows will use DefaultFrameHeader.
   std::unique_ptr<chromeos::DefaultFrameHeader> frame_header_;
 
-  views::ImageView* avatar_icon_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> avatar_icon_ = nullptr;
 
   // View which draws the content of the frame.
-  HeaderContentView* header_content_view_ = nullptr;
+  raw_ptr<HeaderContentView, ExperimentalAsh> header_content_view_ = nullptr;
 
   // View which contains the window caption buttons.
-  chromeos::FrameCaptionButtonContainerView* caption_button_container_ =
-      nullptr;
+  raw_ptr<chromeos::FrameCaptionButtonContainerView, ExperimentalAsh>
+      caption_button_container_ = nullptr;
 
   // The fraction of the header's height which is visible while in fullscreen.
   // This value is meaningless when not in fullscreen.

@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_CELLULAR_SETUP_EUICC_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
@@ -102,7 +103,7 @@ class Euicc : public mojom::Euicc {
       const std::vector<CellularESimProfile>& esim_profile_states);
 
   // Reference to ESimManager that owns this Euicc.
-  ESimManager* esim_manager_;
+  raw_ptr<ESimManager, ExperimentalAsh> esim_manager_;
   mojo::ReceiverSet<mojom::Euicc> receiver_set_;
   mojom::EuiccPropertiesPtr properties_;
   dbus::ObjectPath path_;

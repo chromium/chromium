@@ -59,7 +59,7 @@ HotspotCapabilitiesProvider::~HotspotCapabilitiesProvider() {
 void HotspotCapabilitiesProvider::Init(
     NetworkStateHandler* network_state_handler) {
   network_state_handler_ = network_state_handler;
-  network_state_handler_observer_.Observe(network_state_handler_);
+  network_state_handler_observer_.Observe(network_state_handler_.get());
 
   // Add as an observer here so that new hotspot state updated after this call
   // are recognized.

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -140,8 +141,9 @@ class ConversationController::GrpcEventsObserver
           AssistantQuerySource::kLibAssistantInitiated;
     }
 
-    for (auto& observer : parent_.observers_)
+    for (auto& observer : parent_->observers_) {
       observer->OnInteractionStarted(interaction_metadata);
+    }
   }
 
   // Invoked when a device state event has been received.
@@ -162,20 +164,21 @@ class ConversationController::GrpcEventsObserver
       if (event.on_communication_error().error_code() ==
           ::assistant::api::events::DeviceStateEvent::OnCommunicationError::
               AUTH_TOKEN_FAIL) {
-        for (auto& observer : parent_.authentication_state_observers_)
+        for (auto& observer : parent_->authentication_state_observers_) {
           observer->OnAuthenticationError();
+        }
       }
     }
   }
 
  private:
   void RemoveAllNotifications() {
-    parent_.notification_delegate_->RemoveAllNotifications(
+    parent_->notification_delegate_->RemoveAllNotifications(
         /*from_server=*/true);
   }
 
   void RemoveNotification(const std::string& id) {
-    parent_.notification_delegate_->RemoveNotificationByGroupingKey(
+    parent_->notification_delegate_->RemoveNotificationByGroupingKey(
         id, /*from_server=*/true);
   }
 
@@ -190,7 +193,7 @@ class ConversationController::GrpcEventsObserver
 
   int next_interaction_id_ = 1;
   std::map<std::string, AssistantInteractionMetadata> pending_interactions_;
-  ConversationController& parent_;
+  const raw_ref<ConversationController, ExperimentalAsh> parent_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

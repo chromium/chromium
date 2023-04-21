@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_CELLULAR_SETUP_ESIM_PROFILE_H_
 #define CHROMEOS_ASH_SERVICES_CELLULAR_SETUP_ESIM_PROFILE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
@@ -108,9 +109,9 @@ class ESimProfile : public mojom::ESimProfile {
   bool IsProfileManaged();
 
   // Reference to Euicc that owns this profile.
-  Euicc* euicc_;
+  raw_ptr<Euicc, ExperimentalAsh> euicc_;
   // Reference to ESimManager that owns Euicc of this profile.
-  ESimManager* esim_manager_;
+  raw_ptr<ESimManager, ExperimentalAsh> esim_manager_;
   UninstallProfileCallback uninstall_callback_;
   SetProfileNicknameCallback set_profile_nickname_callback_;
   InstallProfileCallback install_callback_;

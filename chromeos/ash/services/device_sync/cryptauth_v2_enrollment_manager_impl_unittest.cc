@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -98,8 +99,9 @@ class FakeCryptAuthV2EnrollerFactory : public CryptAuthV2EnrollerImpl::Factory {
     return instance;
   }
 
-  const CryptAuthKeyRegistry* expected_key_registry_;
-  const CryptAuthClientFactory* expected_client_factory_;
+  raw_ptr<const CryptAuthKeyRegistry, ExperimentalAsh> expected_key_registry_;
+  raw_ptr<const CryptAuthClientFactory, ExperimentalAsh>
+      expected_client_factory_;
 
   std::vector<FakeCryptAuthV2Enroller*> created_instances_;
 };

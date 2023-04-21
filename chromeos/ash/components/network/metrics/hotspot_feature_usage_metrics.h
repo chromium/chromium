@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_METRICS_HOTSPOT_FEATURE_USAGE_METRICS_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
@@ -46,8 +47,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotFeatureUsageMetrics
   void RecordHotspotEnableAttempt(bool was_enabled_successfully);
 
  private:
-  EnterpriseManagedMetadataStore* enterprise_managed_metadata_store_ = nullptr;
-  HotspotCapabilitiesProvider* hotspot_capabilities_provider_ = nullptr;
+  raw_ptr<EnterpriseManagedMetadataStore, ExperimentalAsh>
+      enterprise_managed_metadata_store_ = nullptr;
+  raw_ptr<HotspotCapabilitiesProvider, ExperimentalAsh>
+      hotspot_capabilities_provider_ = nullptr;
   std::unique_ptr<feature_usage::FeatureUsageMetrics> feature_usage_metrics_;
 };
 

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/tether/asynchronous_shutdown_object_container.h"
 #include "chromeos/ash/components/tether/disconnect_tethering_request_sender.h"
 
@@ -104,7 +105,7 @@ class AsynchronousShutdownObjectContainerImpl
   void SetTestDoubles(std::unique_ptr<DisconnectTetheringRequestSender>
                           disconnect_tethering_request_sender);
 
-  TetherHostFetcher* tether_host_fetcher_;
+  raw_ptr<TetherHostFetcher, ExperimentalAsh> tether_host_fetcher_;
   std::unique_ptr<DisconnectTetheringRequestSender>
       disconnect_tethering_request_sender_;
   std::unique_ptr<NetworkConfigurationRemover> network_configuration_remover_;

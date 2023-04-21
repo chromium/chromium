@@ -5,6 +5,7 @@
 #include <deque>
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -219,7 +220,7 @@ class HermesEuiccClientTest : public HermesClientTestBase {
  protected:
   scoped_refptr<dbus::MockObjectProxy> proxy_;
 
-  HermesEuiccClient* client_;
+  raw_ptr<HermesEuiccClient, ExperimentalAsh> client_;
   TestHermesEuiccClientObserver test_observer_;
 };
 

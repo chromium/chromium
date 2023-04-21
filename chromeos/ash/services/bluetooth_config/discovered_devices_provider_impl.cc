@@ -15,7 +15,7 @@ const base::TimeDelta DiscoveredDevicesProviderImpl::kNotificationDelay =
 DiscoveredDevicesProviderImpl::DiscoveredDevicesProviderImpl(
     DeviceCache* device_cache)
     : device_cache_(device_cache) {
-  device_cache_observation_.Observe(device_cache_);
+  device_cache_observation_.Observe(device_cache_.get());
 }
 
 DiscoveredDevicesProviderImpl::~DiscoveredDevicesProviderImpl() = default;

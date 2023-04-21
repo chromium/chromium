@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/secure_message_delegate.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
@@ -55,7 +56,8 @@ struct CreateResponderAuthMessageContext {
   std::string session_private_key;
   std::string persistent_private_key;
   std::string persistent_symmetric_key;
-  multidevice::SecureMessageDelegate* secure_message_delegate;
+  raw_ptr<multidevice::SecureMessageDelegate, ExperimentalAsh>
+      secure_message_delegate;
   std::string hello_public_key;
   std::string middle_message;
 };
@@ -203,7 +205,8 @@ void OnSessionSymmetricKeyDerivedForResponderAuth(
 struct ValidateInitiatorAuthMessageContext {
   std::string persistent_symmetric_key;
   std::string responder_auth_message;
-  multidevice::SecureMessageDelegate* secure_message_delegate;
+  raw_ptr<multidevice::SecureMessageDelegate, ExperimentalAsh>
+      secure_message_delegate;
 };
 
 // Called after the inner-most layer of [Initiator Auth] is unwrapped.

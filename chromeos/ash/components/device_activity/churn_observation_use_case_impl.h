@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_CHURN_OBSERVATION_USE_CASE_IMPL_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/device_activity/churn_active_status.h"
 #include "chromeos/ash/components/device_activity/device_active_use_case.h"
@@ -118,7 +119,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   absl::optional<ChurnObservationMetadata::FirstActiveDuringCohort>
   GetFirstActiveDuringCohort(const ObservationWindow& observation_window) const;
 
-  ChurnActiveStatus* const churn_active_status_ptr_;
+  const raw_ptr<ChurnActiveStatus, ExperimentalAsh> churn_active_status_ptr_;
 
   ObservationWindow observation_window_0_;
   ObservationWindow observation_window_1_;

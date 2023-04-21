@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/system_clock/fake_system_clock_client.h"
 #include "dbus/bus.h"
@@ -185,7 +186,7 @@ class SystemClockClientImpl : public SystemClockClient {
   // CanSetTime response is received.
   bool can_set_time_;
   bool can_set_time_initialized_;
-  dbus::ObjectProxy* system_clock_proxy_;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> system_clock_proxy_;
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<SystemClockClientImpl> weak_ptr_factory_{this};

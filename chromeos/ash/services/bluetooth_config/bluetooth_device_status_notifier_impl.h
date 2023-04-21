@@ -7,6 +7,7 @@
 
 #include <unordered_map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -78,9 +79,9 @@ class BluetoothDeviceStatusNotifierImpl
   base::OneShotTimer suspend_cooldown_timer_;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  DeviceCache* device_cache_;
+  raw_ptr<DeviceCache, ExperimentalAsh> device_cache_;
 
-  chromeos::PowerManagerClient* power_manager_client_;
+  raw_ptr<chromeos::PowerManagerClient, ExperimentalAsh> power_manager_client_;
 
   base::ScopedObservation<DeviceCache, DeviceCache::Observer>
       device_cache_observation_{this};

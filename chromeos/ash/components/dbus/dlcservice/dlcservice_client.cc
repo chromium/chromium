@@ -19,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -450,7 +451,7 @@ class DlcserviceClientImpl : public DlcserviceClient {
   // DLC ID to `InstallationHolder` mapping.
   std::map<std::string, std::vector<InstallationHolder>> installation_holder_;
 
-  dbus::ObjectProxy* dlcservice_proxy_;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> dlcservice_proxy_;
 
   // TODO(crbug.com/928805): Once platform dlcservice batches, can be removed.
   // Specifically when platform dlcservice doesn't return a busy status.

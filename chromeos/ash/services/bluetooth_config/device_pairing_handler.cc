@@ -70,7 +70,8 @@ DevicePairingHandler::DevicePairingHandler(
     mojo::PendingReceiver<mojom::DevicePairingHandler> pending_receiver,
     AdapterStateController* adapter_state_controller)
     : adapter_state_controller_(adapter_state_controller) {
-  adapter_state_controller_observation_.Observe(adapter_state_controller_);
+  adapter_state_controller_observation_.Observe(
+      adapter_state_controller_.get());
   receiver_.Bind(std::move(pending_receiver));
 }
 

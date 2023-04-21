@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_PAIRING_HANDLER_IMPL_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/device_pairing_handler.h"
@@ -93,7 +94,7 @@ class DevicePairingHandlerImpl
   bool is_canceling_pairing_ = false;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  FastPairDelegate* fast_pair_delegate_;
+  raw_ptr<FastPairDelegate, ExperimentalAsh> fast_pair_delegate_;
 
   base::WeakPtrFactory<DevicePairingHandlerImpl> weak_ptr_factory_{this};
 };

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -69,7 +70,8 @@ class ShillManagerClientTest : public ShillClientUnittestBase {
   }
 
  protected:
-  ShillManagerClient* client_ = nullptr;  // Unowned convenience pointer.
+  raw_ptr<ShillManagerClient, ExperimentalAsh> client_ =
+      nullptr;  // Unowned convenience pointer.
 };
 
 TEST_F(ShillManagerClientTest, PropertyChanged) {

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/recording/gif_encoding_types.h"
 
 namespace recording {
@@ -108,7 +109,7 @@ class LzwPixelColorIndicesWriter {
 
   // Used for writing bytes to the GIF file and takes care of handling IO errors
   // and disk space / DriveFS quota issues.
-  GifFileWriter* const gif_file_writer_;
+  const raw_ptr<GifFileWriter, ExperimentalAsh> gif_file_writer_;
 
   // See above background, we don't write the generated LZW codes directly to
   // the file, however we try to do further compression by writing only the bits

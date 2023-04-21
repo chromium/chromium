@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -125,15 +126,20 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   void OnWaitTimeout();
   bool HasNonCellularInternetConnectivity();
 
-  CellularESimProfileHandler* cellular_esim_profile_handler_ = nullptr;
-  CellularESimInstaller* cellular_esim_installer_ = nullptr;
-  NetworkProfileHandler* network_profile_handler_ = nullptr;
-  NetworkStateHandler* network_state_handler_ = nullptr;
+  raw_ptr<CellularESimProfileHandler, ExperimentalAsh>
+      cellular_esim_profile_handler_ = nullptr;
+  raw_ptr<CellularESimInstaller, ExperimentalAsh> cellular_esim_installer_ =
+      nullptr;
+  raw_ptr<NetworkProfileHandler, ExperimentalAsh> network_profile_handler_ =
+      nullptr;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
+      nullptr;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
-  ManagedCellularPrefHandler* managed_cellular_pref_handler_ = nullptr;
-  ManagedNetworkConfigurationHandler* managed_network_configuration_handler_ =
-      nullptr;
+  raw_ptr<ManagedCellularPrefHandler, DanglingUntriaged | ExperimentalAsh>
+      managed_cellular_pref_handler_ = nullptr;
+  raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
+      managed_network_configuration_handler_ = nullptr;
 
   bool is_installing_ = false;
   bool need_refresh_profile_list_ = true;

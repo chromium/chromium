@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/fake_modem_messaging_client.h"
@@ -127,7 +128,7 @@ class ModemMessagingProxy {
         << "Connect to " << interface << " " << signal << " failed.";
   }
 
-  dbus::ObjectProxy* proxy_;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_;
   std::string service_name_;
   SmsReceivedHandler sms_received_handler_;
 
@@ -192,7 +193,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) ModemMessagingClientImpl
     return proxy_ptr;
   }
 
-  dbus::Bus* bus_;
+  raw_ptr<dbus::Bus, ExperimentalAsh> bus_;
   ProxyMap proxies_;
 };
 

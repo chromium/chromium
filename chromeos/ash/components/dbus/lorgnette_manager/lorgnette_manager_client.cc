@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -516,7 +517,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
         << "Failed to connect to ScanStatusChanged signal.";
   }
 
-  dbus::ObjectProxy* lorgnette_daemon_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> lorgnette_daemon_proxy_ = nullptr;
 
   // Map from scan UUIDs to ScanDataReader and callbacks for reporting scan
   // progress and completion.

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_ENROLLER_FACTORY_IMPL_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_ENROLLER_FACTORY_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/device_sync/cryptauth_enroller.h"
 
 namespace ash {
@@ -24,7 +25,7 @@ class CryptAuthEnrollerFactoryImpl : public CryptAuthEnrollerFactory {
   std::unique_ptr<CryptAuthEnroller> CreateInstance() override;
 
  private:
-  CryptAuthClientFactory* cryptauth_client_factory_;
+  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> cryptauth_client_factory_;
 };
 
 }  // namespace device_sync

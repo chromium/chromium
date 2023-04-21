@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_CACHE_IMPL_H_
 #define CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_CACHE_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/services/bluetooth_config/adapter_state_controller.h"
@@ -137,8 +138,8 @@ class DeviceCacheImpl : public DeviceCache,
       const device::BluetoothDevice* device);
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  DeviceNameManager* device_name_manager_;
-  FastPairDelegate* fast_pair_delegate_;
+  raw_ptr<DeviceNameManager, ExperimentalAsh> device_name_manager_;
+  raw_ptr<FastPairDelegate, ExperimentalAsh> fast_pair_delegate_;
 
   // Sorted by connection status.
   std::vector<mojom::PairedBluetoothDevicePropertiesPtr> paired_devices_;

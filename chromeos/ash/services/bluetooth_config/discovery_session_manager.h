@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DISCOVERY_SESSION_MANAGER_H_
 #define CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DISCOVERY_SESSION_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/services/bluetooth_config/adapter_state_controller.h"
@@ -89,8 +90,9 @@ class DiscoverySessionManager : public AdapterStateController::Observer,
                  std::unique_ptr<DevicePairingHandler>>
       id_to_pairing_handler_map_;
 
-  AdapterStateController* adapter_state_controller_;
-  DiscoveredDevicesProvider* discovered_devices_provider_;
+  raw_ptr<AdapterStateController, ExperimentalAsh> adapter_state_controller_;
+  raw_ptr<DiscoveredDevicesProvider, ExperimentalAsh>
+      discovered_devices_provider_;
 
   base::ScopedObservation<AdapterStateController,
                           AdapterStateController::Observer>

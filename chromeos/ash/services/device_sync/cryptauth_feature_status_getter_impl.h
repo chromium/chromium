@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_sync_result.h"
@@ -81,7 +82,7 @@ class CryptAuthFeatureStatusGetterImpl : public CryptAuthFeatureStatusGetter {
   // time metrics.
   base::TimeTicks start_get_feature_statuses_timestamp_;
 
-  CryptAuthClientFactory* client_factory_ = nullptr;
+  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> client_factory_ = nullptr;
   std::unique_ptr<base::OneShotTimer> timer_;
 };
 

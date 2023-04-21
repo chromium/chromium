@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/assistant/controller/assistant_alarm_timer_controller.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -93,7 +94,7 @@ class FakeLibassistantServiceHost : public LibassistantServiceHost {
   void Stop() override { service_->Unbind(); }
 
  private:
-  FakeLibassistantService* service_;
+  raw_ptr<FakeLibassistantService, ExperimentalAsh> service_;
 };
 
 class StateObserverMock : public AssistantManagerService::StateObserver {

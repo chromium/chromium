@@ -46,7 +46,8 @@ const base::TimeDelta DeviceOperationHandler::kOperationTimeout =
 DeviceOperationHandler::DeviceOperationHandler(
     AdapterStateController* adapter_state_controller)
     : adapter_state_controller_(adapter_state_controller) {
-  adapter_state_controller_observation_.Observe(adapter_state_controller_);
+  adapter_state_controller_observation_.Observe(
+      adapter_state_controller_.get());
 }
 
 DeviceOperationHandler::~DeviceOperationHandler() = default;

@@ -15,6 +15,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -547,7 +548,7 @@ class FirmwareUpdateManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   // `FwupdClient` must be be before `FirmwareUpdateManager`.
-  FwupdClient* dbus_client_ = nullptr;
+  raw_ptr<FwupdClient, ExperimentalAsh> dbus_client_ = nullptr;
   std::unique_ptr<FakeFwupdDownloadClient> fake_fwupd_download_client_;
   std::unique_ptr<FirmwareUpdateManager> firmware_update_manager_;
   // `FirmwareUpdateNotificationController` must be be after

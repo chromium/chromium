@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_ASSISTANT_TEST_SUPPORT_SCOPED_ASSISTANT_BROWSER_DELEGATE_H_
 #define CHROMEOS_ASH_SERVICES_ASSISTANT_TEST_SUPPORT_SCOPED_ASSISTANT_BROWSER_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
@@ -61,7 +62,8 @@ class ScopedAssistantBrowserDelegate : AssistantBrowserDelegate {
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
  private:
-  mojo::Receiver<media_session::mojom::MediaControllerManager>*
+  raw_ptr<mojo::Receiver<media_session::mojom::MediaControllerManager>,
+          ExperimentalAsh>
       media_controller_manager_receiver_ = nullptr;
 };
 

@@ -247,7 +247,7 @@ void NetworkConnectionHandlerImpl::Init(
 
   if (network_state_handler) {
     network_state_handler_ = network_state_handler;
-    network_state_handler_observer_.Observe(network_state_handler_);
+    network_state_handler_observer_.Observe(network_state_handler_.get());
   }
   configuration_handler_ = network_configuration_handler;
   managed_configuration_handler_ = managed_network_configuration_handler;

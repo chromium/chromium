@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_MULTIDEVICE_FEATURE_ACCESS_MANAGER_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_MULTIDEVICE_FEATURE_ACCESS_MANAGER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/multidevice_feature_access_manager.h"
 
 #include "chromeos/ash/components/phonehub/feature_status_provider.h"
@@ -77,11 +78,12 @@ class MultideviceFeatureAccessManagerImpl
                               AccessProhibitedReason reason);
 
   FeatureStatus current_feature_status_;
-  PrefService* pref_service_;
-  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
-  FeatureStatusProvider* feature_status_provider_;
-  MessageSender* message_sender_;
-  ConnectionScheduler* connection_scheduler_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
+      multidevice_setup_client_;
+  raw_ptr<FeatureStatusProvider, ExperimentalAsh> feature_status_provider_;
+  raw_ptr<MessageSender, ExperimentalAsh> message_sender_;
+  raw_ptr<ConnectionScheduler, ExperimentalAsh> connection_scheduler_;
 
   // Registers preference value change listeners.
   PrefChangeRegistrar pref_change_registrar_;

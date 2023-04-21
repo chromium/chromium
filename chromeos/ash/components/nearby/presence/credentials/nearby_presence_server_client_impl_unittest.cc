@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/null_task_runner.h"
@@ -206,7 +207,7 @@ class NearbyPresenceServerClientImplTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_environment_;
-  FakeNearbyApiCallFlow* api_call_flow_;
+  raw_ptr<FakeNearbyApiCallFlow, ExperimentalAsh> api_call_flow_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
   std::unique_ptr<NearbyPresenceServerClient> client_;
 };

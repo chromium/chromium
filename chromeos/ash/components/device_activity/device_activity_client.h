@@ -9,6 +9,7 @@
 #include <queue>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -304,12 +305,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // status for the device active churn use cases.
   // |churn_active_status_ptr_| outlives the lifetime of this class and is owned
   // by the DeviceActivityController class.
-  ChurnActiveStatus* const churn_active_status_ptr_;
+  const raw_ptr<ChurnActiveStatus, ExperimentalAsh> churn_active_status_ptr_;
 
   // Used by client to store and retrieve values stored in local state prefs.
   // |local_state_| outlives the lifetime of this class and interacts with the
   // churn active status, and churn observation period statuses.
-  PrefService* const local_state_;
+  const raw_ptr<PrefService, ExperimentalAsh> local_state_;
 
   // Keep track of whether the device is connected to the network.
   bool network_connected_ = false;
@@ -327,7 +328,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // |ChromeBrowserMainPartsAsh| initializes the network_state object as
   // part of the |dbus_services_|, before |DeviceActivityClient| is initialized.
   // Similarly, |DeviceActivityClient| is destructed before |dbus_services_|.
-  NetworkStateHandler* const network_state_handler_;
+  const raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
 
   // Shared |url_loader_| object used to handle ongoing network requests.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;

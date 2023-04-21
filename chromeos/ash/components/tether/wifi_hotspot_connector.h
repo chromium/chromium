@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_TETHER_WIFI_HOTSPOT_CONNECTOR_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
@@ -80,14 +81,15 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
                       base::Clock* test_clock,
                       scoped_refptr<base::TaskRunner> test_task_runner);
 
-  NetworkStateHandler* network_state_handler_;
-  TechnologyStateController* technology_state_controller_;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<TechnologyStateController, ExperimentalAsh>
+      technology_state_controller_;
 
   NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 
-  NetworkConnect* network_connect_;
+  raw_ptr<NetworkConnect, ExperimentalAsh> network_connect_;
   std::unique_ptr<base::OneShotTimer> timer_;
-  base::Clock* clock_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
 
   std::string ssid_;
   std::string password_;

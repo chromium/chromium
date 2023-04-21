@@ -122,7 +122,7 @@ void AssistantClientImpl::AddExperimentIds(
       ::assistant::api::UpdateExperimentIdsRequest_Operation_MERGE);
   *request.mutable_experiment_ids() = {exp_ids.begin(), exp_ids.end()};
 
-  libassistant_client_.CallServiceMethod(
+  libassistant_client_->CallServiceMethod(
       request,
       GetLoggingCallback<::assistant::api::UpdateExperimentIdsResponse>(
           /*request_name=*/__func__),
@@ -141,7 +141,7 @@ void AssistantClientImpl::RemoveSpeakerIdEnrollmentEventObserver(
 
 void AssistantClientImpl::StartSpeakerIdEnrollment(
     const StartSpeakerIdEnrollmentRequest& request) {
-  libassistant_client_.CallServiceMethod(
+  libassistant_client_->CallServiceMethod(
       request,
       GetLoggingCallback<::assistant::api::StartSpeakerIdEnrollmentResponse>(
           /*request_name=*/__func__),
@@ -150,7 +150,7 @@ void AssistantClientImpl::StartSpeakerIdEnrollment(
 
 void AssistantClientImpl::CancelSpeakerIdEnrollment(
     const CancelSpeakerIdEnrollmentRequest& request) {
-  libassistant_client_.CallServiceMethod(
+  libassistant_client_->CallServiceMethod(
       request,
       GetLoggingCallback<::assistant::api::CancelSpeakerIdEnrollmentResponse>(
           /*request_name=*/__func__),
@@ -160,7 +160,7 @@ void AssistantClientImpl::CancelSpeakerIdEnrollment(
 void AssistantClientImpl::GetSpeakerIdEnrollmentInfo(
     const GetSpeakerIdEnrollmentInfoRequest& request,
     base::OnceCallback<void(bool user_model_exists)> on_done) {
-  libassistant_client_.CallServiceMethod(
+  libassistant_client_->CallServiceMethod(
       request,
       base::BindOnce(
           [](base::OnceCallback<void(bool user_model_exists)> on_done,
@@ -187,7 +187,7 @@ void AssistantClientImpl::ResetAllDataAndShutdown() {
   // recommendation is to set proper deadlines for every RPC.
   constexpr int kResetAllDataAndShutdownTimeoutMs = 10000;
   StateConfig custom_config(kMaxRpcRetries, kResetAllDataAndShutdownTimeoutMs);
-  libassistant_client_.CallServiceMethod(
+  libassistant_client_->CallServiceMethod(
       ::assistant::api::ResetAllDataAndShutdownRequest(),
       GetLoggingCallback<::assistant::api::ResetAllDataAndShutdownResponse>(
           /*request_name=*/__func__),
@@ -196,7 +196,7 @@ void AssistantClientImpl::ResetAllDataAndShutdown() {
 
 void AssistantClientImpl::SendDisplayRequest(
     const OnDisplayRequestRequest& request) {
-  libassistant_client_.CallServiceMethod(
+  libassistant_client_->CallServiceMethod(
       request,
       GetLoggingCallback<::assistant::api::OnDisplayRequestResponse>(
           /*request_name=*/__func__),
@@ -227,7 +227,7 @@ void AssistantClientImpl::SendVoicelessInteraction(
   chromeos::libassistant::PopulateSendQueryRequest(interaction, description,
                                                    options, &request);
 
-  libassistant_client_.CallServiceMethod(
+  libassistant_client_->CallServiceMethod(
       request,
       base::BindOnce(
           [](base::OnceCallback<void(bool)> on_done, const grpc::Status& status,
@@ -244,7 +244,7 @@ void AssistantClientImpl::RegisterActionModule(
 }
 
 void AssistantClientImpl::StartVoiceInteraction() {
-  libassistant_client_.CallServiceMethod(
+  libassistant_client_->CallServiceMethod(
       ::assistant::api::StartVoiceQueryRequest(),
       GetLoggingCallback<::assistant::api::StartVoiceQueryResponse>(
           /*request_name=*/__func__),
@@ -256,7 +256,7 @@ void AssistantClientImpl::StopAssistantInteraction(bool cancel_conversation) {
   request.set_type(::assistant::api::StopQueryRequest::ACTIVE_INTERNAL);
   request.set_cancel_conversation(cancel_conversation);
 
-  libassistant_client_.CallServiceMethod(
+  libassistant_client_->CallServiceMethod(
       request,
       GetLoggingCallback<::assistant::api::StopQueryResponse>(
           /*request_name=*/__func__),
@@ -277,7 +277,7 @@ void AssistantClientImpl::SetAuthenticationInfo(const AuthTokens& tokens) {
     proto->set_auth_token(token.second);
   }
 
-  libassistant_client_.CallServiceMethod(
+  libassistant_client_->CallServiceMethod(
       request,
       GetLoggingCallback<::assistant::api::SetAuthInfoResponse>(
           /*request_name=*/__func__),
@@ -296,7 +296,7 @@ void AssistantClientImpl::SetInternalOptions(const std::string& locale,
   constexpr int kAssistantReconfigureInternalDefaultTimeoutMs = 20000;
   StateConfig custom_config(kMaxRpcRetries,
                             kAssistantReconfigureInternalDefaultTimeoutMs);
-  libassistant_client_.CallServiceMethod(
+  libassistant_client_->CallServiceMethod(
       request,
       GetLoggingCallback<::assistant::api::SetInternalOptionsResponse>(
           /*request_name=*/__func__),
@@ -327,8 +327,8 @@ void AssistantClientImpl::UpdateAssistantSettings(
         std::move(on_done).Run(response);
       },
       std::move(on_done));
-  libassistant_client_.CallServiceMethod(request, std::move(cb),
-                                         kDefaultStateConfig);
+  libassistant_client_->CallServiceMethod(request, std::move(cb),
+                                          kDefaultStateConfig);
 }
 
 void AssistantClientImpl::GetAssistantSettings(
@@ -352,15 +352,15 @@ void AssistantClientImpl::GetAssistantSettings(
       },
       std::move(on_done));
 
-  libassistant_client_.CallServiceMethod(request, std::move(cb),
-                                         kDefaultStateConfig);
+  libassistant_client_->CallServiceMethod(request, std::move(cb),
+                                          kDefaultStateConfig);
 }
 
 void AssistantClientImpl::SetLocaleOverride(const std::string& locale) {
   SetLocaleOverrideRequest request;
   request.set_locale(locale);
 
-  libassistant_client_.CallServiceMethod(
+  libassistant_client_->CallServiceMethod(
       request, GetLoggingCallback<SetLocaleOverrideResponse>(__func__),
       kDefaultStateConfig);
 }
@@ -369,7 +369,7 @@ void AssistantClientImpl::EnableListening(bool listening_enabled) {
   EnableListeningRequest request;
   request.set_enable(listening_enabled);
 
-  libassistant_client_.CallServiceMethod(
+  libassistant_client_->CallServiceMethod(
       request, GetLoggingCallback<EnableListeningResponse>(__func__),
       kDefaultStateConfig);
 }
@@ -379,7 +379,7 @@ void AssistantClientImpl::AddTimeToTimer(const std::string& id,
   ::assistant::api::AddTimeToTimerRequest request;
   request.set_timer_id(id);
   request.set_extra_time_seconds(duration.InSeconds());
-  libassistant_client_.CallServiceMethod(
+  libassistant_client_->CallServiceMethod(
       request,
       GetLoggingCallback<::assistant::api::AddTimeToTimerResponse>(
           /*request_name=*/__func__),
@@ -389,7 +389,7 @@ void AssistantClientImpl::AddTimeToTimer(const std::string& id,
 void AssistantClientImpl::PauseTimer(const std::string& timer_id) {
   ::assistant::api::PauseTimerRequest request;
   request.set_timer_id(timer_id);
-  libassistant_client_.CallServiceMethod(
+  libassistant_client_->CallServiceMethod(
       request,
       GetLoggingCallback<::assistant::api::PauseTimerResponse>(
           /*request_name=*/__func__),
@@ -399,7 +399,7 @@ void AssistantClientImpl::PauseTimer(const std::string& timer_id) {
 void AssistantClientImpl::RemoveTimer(const std::string& timer_id) {
   ::assistant::api::RemoveTimerRequest request;
   request.set_timer_id(timer_id);
-  libassistant_client_.CallServiceMethod(
+  libassistant_client_->CallServiceMethod(
       request,
       GetLoggingCallback<::assistant::api::RemoveTimerResponse>(
           /*request_name=*/__func__),
@@ -409,7 +409,7 @@ void AssistantClientImpl::RemoveTimer(const std::string& timer_id) {
 void AssistantClientImpl::ResumeTimer(const std::string& timer_id) {
   ::assistant::api::ResumeTimerRequest request;
   request.set_timer_id(timer_id);
-  libassistant_client_.CallServiceMethod(
+  libassistant_client_->CallServiceMethod(
       request,
       GetLoggingCallback<::assistant::api::ResumeTimerResponse>(
           /*request_name=*/__func__),
@@ -421,7 +421,7 @@ void AssistantClientImpl::GetTimers(
         on_done) {
   ::assistant::api::GetTimersResponse response;
 
-  libassistant_client_.CallServiceMethod(
+  libassistant_client_->CallServiceMethod(
       ::assistant::api::GetTimersRequest(),
       base::BindOnce(
           [](base::OnceCallback<void(

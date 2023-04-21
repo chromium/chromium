@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
@@ -71,7 +72,7 @@ class DeviceSettingsController
   void AddSetting(std::unique_ptr<Setting> setting);
 
   std::vector<std::unique_ptr<Setting>> settings_;
-  AssistantClient* assistant_client_ = nullptr;
+  raw_ptr<AssistantClient, ExperimentalAsh> assistant_client_ = nullptr;
   mojo::Remote<mojom::DeviceSettingsDelegate> remote_;
   scoped_refptr<base::SequencedTaskRunner> mojom_task_runner_;
   base::WeakPtrFactory<DeviceSettingsController> weak_factory_{this};

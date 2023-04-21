@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/network/client_cert_util.h"
@@ -318,14 +319,22 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   UserToPoliciesMap policies_by_user_;
 
   // Local references to the associated handler instances.
-  CellularPolicyHandler* cellular_policy_handler_ = nullptr;
-  ManagedCellularPrefHandler* managed_cellular_pref_handler_ = nullptr;
-  NetworkStateHandler* network_state_handler_ = nullptr;
-  NetworkProfileHandler* network_profile_handler_ = nullptr;
-  NetworkConfigurationHandler* network_configuration_handler_ = nullptr;
-  NetworkDeviceHandler* network_device_handler_ = nullptr;
-  ProhibitedTechnologiesHandler* prohibited_technologies_handler_ = nullptr;
-  UIProxyConfigService* ui_proxy_config_service_ = nullptr;
+  raw_ptr<CellularPolicyHandler, DanglingUntriaged | ExperimentalAsh>
+      cellular_policy_handler_ = nullptr;
+  raw_ptr<ManagedCellularPrefHandler, DanglingUntriaged | ExperimentalAsh>
+      managed_cellular_pref_handler_ = nullptr;
+  raw_ptr<NetworkStateHandler, DanglingUntriaged | ExperimentalAsh>
+      network_state_handler_ = nullptr;
+  raw_ptr<NetworkProfileHandler, ExperimentalAsh> network_profile_handler_ =
+      nullptr;
+  raw_ptr<NetworkConfigurationHandler, DanglingUntriaged | ExperimentalAsh>
+      network_configuration_handler_ = nullptr;
+  raw_ptr<NetworkDeviceHandler, DanglingUntriaged | ExperimentalAsh>
+      network_device_handler_ = nullptr;
+  raw_ptr<ProhibitedTechnologiesHandler, DanglingUntriaged | ExperimentalAsh>
+      prohibited_technologies_handler_ = nullptr;
+  raw_ptr<UIProxyConfigService, DanglingUntriaged | ExperimentalAsh>
+      ui_proxy_config_service_ = nullptr;
 
   UserToPolicyApplicationInfo policy_application_info_map_;
 

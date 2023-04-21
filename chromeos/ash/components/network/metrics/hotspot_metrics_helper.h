@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_METRICS_HOTSPOT_METRICS_HELPER_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
@@ -224,12 +225,18 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   // due to device is not cellular capable.
   absl::optional<HotspotMetricsAllowStatus> GetMetricsAllowStatus();
 
-  EnterpriseManagedMetadataStore* enterprise_managed_metadata_store_ = nullptr;
-  HotspotCapabilitiesProvider* hotspot_capabilities_provider_ = nullptr;
-  HotspotStateHandler* hotspot_state_handler_ = nullptr;
-  HotspotConfigurationHandler* hotspot_configuration_handler_ = nullptr;
-  HotspotEnabledStateNotifier* hotspot_enabled_state_notifier_ = nullptr;
-  NetworkStateHandler* network_state_handler_ = nullptr;
+  raw_ptr<EnterpriseManagedMetadataStore, ExperimentalAsh>
+      enterprise_managed_metadata_store_ = nullptr;
+  raw_ptr<HotspotCapabilitiesProvider, ExperimentalAsh>
+      hotspot_capabilities_provider_ = nullptr;
+  raw_ptr<HotspotStateHandler, ExperimentalAsh> hotspot_state_handler_ =
+      nullptr;
+  raw_ptr<HotspotConfigurationHandler, ExperimentalAsh>
+      hotspot_configuration_handler_ = nullptr;
+  raw_ptr<HotspotEnabledStateNotifier, ExperimentalAsh>
+      hotspot_enabled_state_notifier_ = nullptr;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
+      nullptr;
 
   // A timer to wait for user connecting to their upstream cellular network
   // after login.

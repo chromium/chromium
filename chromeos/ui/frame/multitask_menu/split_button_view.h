@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_UI_FRAME_MULTITASK_MENU_SPLIT_BUTTON_VIEW_H_
 #define CHROMEOS_UI_FRAME_MULTITASK_MENU_SPLIT_BUTTON_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_constants.h"
 
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
@@ -53,8 +54,8 @@ class SplitButtonView : public views::BoxLayoutView {
   // Pointers to the buttons that are owned by the views hierarchy. The names
   // refer to the physical location of the button, which do not change in RTL
   // languages.
-  SplitButton* left_top_button_ = nullptr;
-  SplitButton* right_bottom_button_ = nullptr;
+  raw_ptr<SplitButton, ExperimentalAsh> left_top_button_ = nullptr;
+  raw_ptr<SplitButton, ExperimentalAsh> right_bottom_button_ = nullptr;
 
   const SplitButtonType type_;
 

@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -180,11 +181,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
       bool success,
       absl::optional<InhibitOperationResult> result);
 
-  NetworkStateHandler* network_state_handler_ = nullptr;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
+      nullptr;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
-  NetworkDeviceHandler* network_device_handler_ = nullptr;
+  raw_ptr<NetworkDeviceHandler, ExperimentalAsh> network_device_handler_ =
+      nullptr;
 
   State state_ = State::kIdle;
   base::queue<std::unique_ptr<InhibitRequest>> inhibit_requests_;

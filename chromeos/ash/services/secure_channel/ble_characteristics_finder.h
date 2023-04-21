@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -108,7 +109,7 @@ class BluetoothLowEnergyCharacteristicsFinder
   scoped_refptr<device::BluetoothAdapter> adapter_;
 
   // The Bluetooth device to which the connection was established.
-  device::BluetoothDevice* bluetooth_device_;
+  raw_ptr<device::BluetoothDevice, ExperimentalAsh> bluetooth_device_;
 
   // Remote service the |connection_| was established with.
   RemoteAttribute remote_service_;

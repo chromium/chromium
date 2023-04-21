@@ -12,6 +12,7 @@
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
 #include "chromeos/ash/services/device_sync/feature_status_change.h"
@@ -147,10 +148,11 @@ class SoftwareFeatureManagerImpl : public SoftwareFeatureManager {
   void OnErrorResponse(NetworkRequestError response);
   void OnSetFeatureStatusError(NetworkRequestError response);
 
-  CryptAuthClientFactory* crypt_auth_client_factory_;
+  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> crypt_auth_client_factory_;
 
   // Non-null only when v2 DeviceSync is enabled.
-  CryptAuthFeatureStatusSetter* feature_status_setter_ = nullptr;
+  raw_ptr<CryptAuthFeatureStatusSetter, ExperimentalAsh>
+      feature_status_setter_ = nullptr;
 
   std::unique_ptr<CryptAuthClient> current_cryptauth_client_;
   std::unique_ptr<Request> current_request_;

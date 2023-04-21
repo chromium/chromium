@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/secure_channel/ble_advertiser.h"
@@ -90,7 +91,7 @@ class BleConnectionManagerImpl : public BleConnectionManager,
     void RecordEffectiveSuccessRateMetrics(bool will_continue_to_retry);
 
     const ConnectionRole connection_role_;
-    base::Clock* clock_;
+    raw_ptr<base::Clock, ExperimentalAsh> clock_;
 
     // Set to the current time when this object is created and updated whenever
     // Reset() is called.
@@ -204,9 +205,10 @@ class BleConnectionManagerImpl : public BleConnectionManager,
       const std::string& remote_device_id);
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  base::Clock* clock_;
-  BleScanner* ble_scanner_;
-  SecureChannelDisconnector* secure_channel_disconnector_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<BleScanner, ExperimentalAsh> ble_scanner_;
+  raw_ptr<SecureChannelDisconnector, ExperimentalAsh>
+      secure_channel_disconnector_;
 
   std::unique_ptr<BleAdvertiser> ble_advertiser_;
 

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_FEATURE_STATUS_PROVIDER_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_FEATURE_STATUS_PROVIDER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/phonehub/feature_status_provider.h"
@@ -77,11 +78,13 @@ class FeatureStatusProviderImpl
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
-  device_sync::DeviceSyncClient* device_sync_client_;
-  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
-  secure_channel::ConnectionManager* connection_manager_;
-  session_manager::SessionManager* session_manager_;
-  chromeos::PowerManagerClient* power_manager_client_;
+  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
+      multidevice_setup_client_;
+  raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
+      connection_manager_;
+  raw_ptr<session_manager::SessionManager, ExperimentalAsh> session_manager_;
+  raw_ptr<chromeos::PowerManagerClient, ExperimentalAsh> power_manager_client_;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   absl::optional<FeatureStatus> status_;

@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -120,8 +121,10 @@ class DisplaySystemDelegateImpl
   }
 
  private:
-  display::ContentProtectionManager* content_protection_manager_;  // Not owned.
-  display::DisplayConfigurator* display_configurator_;             // Not owned.
+  raw_ptr<display::ContentProtectionManager, ExperimentalAsh>
+      content_protection_manager_;  // Not owned.
+  raw_ptr<display::DisplayConfigurator, ExperimentalAsh>
+      display_configurator_;  // Not owned.
 };
 
 // These are reported to UMA server. Do not renumber or reuse values.

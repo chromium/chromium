@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/proximity_auth/proximity_monitor.h"
@@ -86,7 +87,7 @@ class ProximityMonitorImpl : public ProximityMonitor {
 
   // Used to communicate with the remote device to gauge its proximity via RSSI
   // measurement.
-  ash::secure_channel::ClientChannel* channel_;
+  raw_ptr<ash::secure_channel::ClientChannel, ExperimentalAsh> channel_;
 
   // The Bluetooth adapter that will be polled for connection info.
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;

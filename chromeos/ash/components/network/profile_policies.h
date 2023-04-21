@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/client_cert_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -72,7 +73,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProfilePolicies {
     // Applies the runtime values.
     ChangeEffect ReapplyRuntimeValues();
 
-    const ProfilePolicies* parent_;
+    raw_ptr<const ProfilePolicies, ExperimentalAsh> parent_;
 
     client_cert::ResolvedCert resolved_cert_ =
         client_cert::ResolvedCert::NotKnownYet();

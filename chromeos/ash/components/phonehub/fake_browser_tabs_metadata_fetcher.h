@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_BROWSER_TABS_METADATA_FETCHER_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_BROWSER_TABS_METADATA_FETCHER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/browser_tabs_metadata_fetcher.h"
 
 namespace ash {
@@ -37,8 +38,9 @@ class FakeBrowserTabsMetadataFetcher : public BrowserTabsMetadataFetcher {
   const ash::ForeignSyncedSessionAsh* GetForeignSyncedSession() const;
 
  private:
-  const sync_sessions::SyncedSession* session_;
-  const ForeignSyncedSessionAsh* foreign_synced_session_;
+  raw_ptr<const sync_sessions::SyncedSession, ExperimentalAsh> session_;
+  raw_ptr<const ForeignSyncedSessionAsh, ExperimentalAsh>
+      foreign_synced_session_;
   base::OnceCallback<void(BrowserTabsMetadataResponse)> callback_;
 };
 

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/secure_channel/session_keys.h"
 #include "third_party/ukey2/proto/device_to_device_messages.pb.h"
@@ -141,7 +142,8 @@ class DeviceToDeviceInitiatorHelper {
     std::string persistent_symmetric_key;
     std::string session_private_key;
     std::string hello_message;
-    multidevice::SecureMessageDelegate* secure_message_delegate;
+    raw_ptr<multidevice::SecureMessageDelegate, ExperimentalAsh>
+        secure_message_delegate;
     std::string responder_session_public_key;
     std::string session_symmetric_key;
   };

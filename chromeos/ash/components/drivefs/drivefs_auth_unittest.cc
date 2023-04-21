@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -57,7 +58,7 @@ class AuthDelegateImpl : public DriveFsAuth::Delegate {
 
   bool IsMetricsCollectionEnabled() override { return false; }
 
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
   const AccountId account_id_;
 };
 
@@ -106,7 +107,7 @@ class DriveFsAuthTest : public ::testing::Test {
 
   std::unique_ptr<AuthDelegateImpl> delegate_;
   std::unique_ptr<DriveFsAuth> auth_;
-  base::MockOneShotTimer* timer_ = nullptr;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> timer_ = nullptr;
 };
 
 TEST_F(DriveFsAuthTest, GetAccessToken_Success) {

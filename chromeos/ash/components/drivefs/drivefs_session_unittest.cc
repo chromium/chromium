@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -195,7 +196,7 @@ class MockDriveFsConnection : public DriveFsConnection,
     return nullptr;
   }
 
-  mojom::DriveFsDelegate* delegate_ = nullptr;
+  raw_ptr<mojom::DriveFsDelegate, ExperimentalAsh> delegate_ = nullptr;
   base::OnceClosure on_disconnected_;
 };
 
@@ -309,9 +310,9 @@ class DriveFsSessionTest : public ::testing::Test,
   base::test::TaskEnvironment task_environment_;
 
   struct PointerHolder {
-    MockDiskMounter* mounter = nullptr;
-    MockDriveFsConnection* connection = nullptr;
-    mojom::DriveFsDelegate* delegate = nullptr;
+    raw_ptr<MockDiskMounter, ExperimentalAsh> mounter = nullptr;
+    raw_ptr<MockDriveFsConnection, ExperimentalAsh> connection = nullptr;
+    raw_ptr<mojom::DriveFsDelegate, ExperimentalAsh> delegate = nullptr;
   };
   base::MockOneShotTimer timer_;
   std::unique_ptr<PointerHolder> holder_;

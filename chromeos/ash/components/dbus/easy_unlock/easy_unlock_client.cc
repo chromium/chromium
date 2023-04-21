@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/easy_unlock/fake_easy_unlock_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -171,7 +172,7 @@ class EasyUnlockClientImpl : public EasyUnlockClient {
     std::move(callback).Run(private_key, public_key);
   }
 
-  dbus::ObjectProxy* proxy_;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

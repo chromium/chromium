@@ -260,7 +260,7 @@ bool UIProxyConfigService::MergeEnforcedProxyConfig(
   DCHECK(local_state_prefs_);
   DCHECK(network_profile_handler_);
   PrefService* top_pref_service =
-      profile_prefs_ ? profile_prefs_ : local_state_prefs_;
+      profile_prefs_ ? profile_prefs_.get() : local_state_prefs_.get();
 
   // Get prefs proxy config if available.
   net::ProxyConfigWithAnnotation pref_config;

@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/libassistant/power_manager_provider_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/libassistant/test_support/fake_platform_delegate.h"
@@ -33,7 +34,8 @@ class FakePlatformDelegateImpl : public assistant::FakePlatformDelegate {
   }
 
  private:
-  device::TestWakeLockProvider* const wake_lock_provider_;
+  const raw_ptr<device::TestWakeLockProvider, ExperimentalAsh>
+      wake_lock_provider_;
 };
 
 }  // namespace

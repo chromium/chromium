@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_LIBASSISTANT_DISPLAY_CONTROLLER_H_
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_DISPLAY_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
@@ -78,13 +80,15 @@ class DisplayController
   std::unique_ptr<DisplayConnection> display_connection_;
 
   // Owned by |LibassistantService|.
-  mojo::RemoteSet<mojom::SpeechRecognitionObserver>&
+  const raw_ref<mojo::RemoteSet<mojom::SpeechRecognitionObserver>,
+                ExperimentalAsh>
       speech_recognition_observers_;
 
-  AssistantClient* assistant_client_ = nullptr;
+  raw_ptr<AssistantClient, ExperimentalAsh> assistant_client_ = nullptr;
 
   // Owned by |ConversationController|.
-  chromeos::assistant::action::CrosActionModule* action_module_ = nullptr;
+  raw_ptr<chromeos::assistant::action::CrosActionModule, ExperimentalAsh>
+      action_module_ = nullptr;
 
   // The callbacks from Libassistant are called on a different sequence,
   // so this sequence checker ensures that no other methods are called on the

@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/tether/disconnect_tethering_operation.h"
 #include "chromeos/ash/components/tether/disconnect_tethering_request_sender.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -72,9 +73,10 @@ class DisconnectTetheringRequestSenderImpl
       const std::string& device_id,
       absl::optional<multidevice::RemoteDeviceRef> tether_host);
 
-  device_sync::DeviceSyncClient* device_sync_client_;
-  secure_channel::SecureChannelClient* secure_channel_client_;
-  TetherHostFetcher* tether_host_fetcher_;
+  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
+  raw_ptr<secure_channel::SecureChannelClient, ExperimentalAsh>
+      secure_channel_client_;
+  raw_ptr<TetherHostFetcher, ExperimentalAsh> tether_host_fetcher_;
 
   int num_pending_host_fetches_ = 0;
   std::map<std::string, std::unique_ptr<DisconnectTetheringOperation>>

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_GRPC_HTTP_CONNECTION_DELEGATE_H_
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_GRPC_HTTP_CONNECTION_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/libassistant/grpc/grpc_http_connection_client.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
@@ -33,7 +34,8 @@ class GrpcHttpConnectionDelegate
 
  private:
   const int id_;
-  GrpcHttpConnectionClient* const grpc_http_connection_client_ = nullptr;
+  const raw_ptr<GrpcHttpConnectionClient, ExperimentalAsh>
+      grpc_http_connection_client_ = nullptr;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 

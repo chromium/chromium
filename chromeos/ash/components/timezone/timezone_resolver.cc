@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/rand_util.h"
@@ -128,7 +129,7 @@ class TimeZoneResolver::TimeZoneResolverImpl
   bool ShouldSendCellularGeolocationData();
 
  private:
-  const TimeZoneResolver* resolver_;
+  raw_ptr<const TimeZoneResolver, ExperimentalAsh> resolver_;
 
   // Helper to check timezone detection policy against expected value
   bool CheckTimezoneManagementSetting(int expected_policy_value);
@@ -182,7 +183,8 @@ class TZRequest {
   // This is called by network detector when network is available.
   void StartRequestOnNetworkAvailable();
 
-  TimeZoneResolver::TimeZoneResolverImpl* const resolver_;
+  const raw_ptr<TimeZoneResolver::TimeZoneResolverImpl, ExperimentalAsh>
+      resolver_;
 
   base::WeakPtrFactory<TZRequest> weak_ptr_factory_{this};
 };

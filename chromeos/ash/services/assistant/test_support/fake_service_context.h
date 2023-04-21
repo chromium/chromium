@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/assistant/service_context.h"
@@ -52,12 +53,15 @@ class FakeServiceContext : public ServiceContext {
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-  AssistantStateBase* assistant_state_ = nullptr;
-  chromeos::PowerManagerClient* power_manager_client_ = nullptr;
+  raw_ptr<AssistantStateBase, ExperimentalAsh> assistant_state_ = nullptr;
+  raw_ptr<chromeos::PowerManagerClient, ExperimentalAsh> power_manager_client_ =
+      nullptr;
   std::string gaia_id_ = kGaiaId;
-  AssistantAlarmTimerController* assistant_alarm_timer_controller_ = nullptr;
-  AssistantNotificationController* assistant_notification_controller_ = nullptr;
-  CrasAudioHandler* cras_audio_handler_ = nullptr;
+  raw_ptr<AssistantAlarmTimerController, ExperimentalAsh>
+      assistant_alarm_timer_controller_ = nullptr;
+  raw_ptr<AssistantNotificationController, ExperimentalAsh>
+      assistant_notification_controller_ = nullptr;
+  raw_ptr<CrasAudioHandler, ExperimentalAsh> cras_audio_handler_ = nullptr;
 };
 
 }  // namespace ash::assistant

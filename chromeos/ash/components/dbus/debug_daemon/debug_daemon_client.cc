@@ -21,6 +21,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_split.h"
@@ -1182,7 +1183,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
       observer.OnPacketCaptureStopped();
   }
 
-  dbus::ObjectProxy* debugdaemon_proxy_;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> debugdaemon_proxy_;
   std::unique_ptr<chromeos::PipeReader> pipe_reader_;
   StopAgentTracingCallback callback_;
   scoped_refptr<base::TaskRunner> stop_agent_tracing_task_runner_;

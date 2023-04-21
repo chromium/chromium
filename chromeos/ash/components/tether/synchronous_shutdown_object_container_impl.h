@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/tether/synchronous_shutdown_object_container.h"
 
 class PrefService;
@@ -127,7 +128,7 @@ class SynchronousShutdownObjectContainerImpl
       secure_channel::SecureChannelClient* secure_channel_client);
 
  private:
-  NetworkStateHandler* network_state_handler_;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
 
   std::unique_ptr<NetworkListSorter> network_list_sorter_;
   std::unique_ptr<TetherHostResponseRecorder> tether_host_response_recorder_;

@@ -14,6 +14,7 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
@@ -453,13 +454,14 @@ class LorgnetteManagerClientTest : public testing::Test {
   // Holds the client's kScanStatusChangedSignal callback.
   dbus::ObjectProxy::SignalCallback scan_status_changed_signal_callback_;
   // Used to respond to kListScannersMethod D-Bus calls.
-  dbus::Response* list_scanners_response_ = nullptr;
+  raw_ptr<dbus::Response, ExperimentalAsh> list_scanners_response_ = nullptr;
   // Used to respond to kGetScannerCapabilitiesMethod D-Bus calls.
-  dbus::Response* get_scanner_capabilities_response_ = nullptr;
+  raw_ptr<dbus::Response, ExperimentalAsh> get_scanner_capabilities_response_ =
+      nullptr;
   // Used to respond to kStartScanMethod D-Bus calls.
-  dbus::Response* start_scan_response_ = nullptr;
+  raw_ptr<dbus::Response, ExperimentalAsh> start_scan_response_ = nullptr;
   // Used to respond to kCancelScanMethod D-Bus calls.
-  dbus::Response* cancel_scan_response_ = nullptr;
+  raw_ptr<dbus::Response, ExperimentalAsh> cancel_scan_response_ = nullptr;
   // Used to respond to kGetNextImageMethod D-Bus calls. A single call to some
   // of LorgnetteManagerClient's methods can result in multiple
   // kGetNextImageMethod D-Bus calls, so we need to queue the responses. Also

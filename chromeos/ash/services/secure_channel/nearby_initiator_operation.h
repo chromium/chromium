@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/secure_channel/connect_to_device_operation.h"
@@ -81,7 +82,7 @@ class NearbyInitiatorOperation
       std::unique_ptr<AuthenticatedChannel> authenticated_channel);
   void OnConnectionFailure(NearbyInitiatorFailureType failure_type);
 
-  NearbyConnectionManager* nearby_connection_manager_;
+  raw_ptr<NearbyConnectionManager, ExperimentalAsh> nearby_connection_manager_;
   base::WeakPtrFactory<NearbyInitiatorOperation> weak_ptr_factory_{this};
 };
 

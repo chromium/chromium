@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "chromeos/ash/components/proximity_auth/public/mojom/auth_type.mojom.h"
@@ -176,7 +177,7 @@ class ScreenlockBridge {
   ScreenlockBridge();
   ~ScreenlockBridge();
 
-  LockHandler* lock_handler_ = nullptr;  // Not owned
+  raw_ptr<LockHandler, ExperimentalAsh> lock_handler_ = nullptr;  // Not owned
 
   // The last focused user's id.
   AccountId focused_account_id_;

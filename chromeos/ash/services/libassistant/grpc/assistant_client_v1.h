@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
@@ -152,7 +153,8 @@ class AssistantClientV1 : public AssistantClient {
       GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>>
       timer_event_observer_list_;
 
-  ServicesStatusObserver* services_status_observer_ = nullptr;
+  raw_ptr<ServicesStatusObserver, ExperimentalAsh> services_status_observer_ =
+      nullptr;
 
   base::WeakPtrFactory<AssistantClientV1> weak_factory_{this};
 };

@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/timer/timer.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -143,11 +144,11 @@ class MultitaskMenuView::MenuPreTargetHandler : public ui::EventHandler {
   // The widget of the multitask menu that is currently shown. Guaranteed to
   // outlive `this`, which will get destroyed when the menu is destructed in
   // `close_callback_`.
-  views::Widget* const menu_widget_;
+  const raw_ptr<views::Widget, ExperimentalAsh> menu_widget_;
 
   // The anchor of the menu's widget if it exists. Set if there is an anchor and
   // we want the menu to close if the mouse has exited the menu bounds.
-  views::View* anchor_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> anchor_view_ = nullptr;
 
   base::OneShotTimer exit_timer_;
 

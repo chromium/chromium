@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
@@ -65,10 +66,12 @@ class CrosActionModuleHelper {
  private:
   const std::vector<chromeos::assistant::action::AssistantActionObserver*>&
   action_observers() {
-    return action_module_.GetActionObserversForTesting();
+    return action_module_->GetActionObserversForTesting();
   }
 
-  const chromeos::assistant::action::CrosActionModule& action_module_;
+  const raw_ref<const chromeos::assistant::action::CrosActionModule,
+                ExperimentalAsh>
+      action_module_;
 };
 
 }  // namespace

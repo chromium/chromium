@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -206,8 +207,8 @@ class NetworkConnectTest : public testing::Test {
   std::unique_ptr<FakeTetherDelegate> fake_tether_delegate_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   NetworkHandlerTestHelper network_handler_test_helper_;
-  ShillDeviceClient::TestInterface* device_test_;
-  ShillServiceClient::TestInterface* service_test_;
+  raw_ptr<ShillDeviceClient::TestInterface, ExperimentalAsh> device_test_;
+  raw_ptr<ShillServiceClient::TestInterface, ExperimentalAsh> service_test_;
 };
 
 TEST_F(NetworkConnectTest, ConnectToNetworkId_NoConfiguration) {

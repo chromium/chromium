@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
@@ -109,7 +110,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) Authenticator
  protected:
   virtual ~Authenticator();
 
-  AuthStatusConsumer* consumer_;
+  raw_ptr<AuthStatusConsumer, ExperimentalAsh> consumer_;
 
  private:
   friend class base::RefCountedThreadSafe<Authenticator>;

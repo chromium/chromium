@@ -34,7 +34,7 @@ DeviceCacheImpl::DeviceCacheImpl(
       fast_pair_delegate_(fast_pair_delegate) {
   adapter_state_controller_observation_.Observe(adapter_state_controller());
   adapter_observation_.Observe(bluetooth_adapter_.get());
-  device_name_manager_observation_.Observe(device_name_manager_);
+  device_name_manager_observation_.Observe(device_name_manager_.get());
 
   FetchInitialDeviceLists();
 }

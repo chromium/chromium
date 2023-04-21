@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation_traits.h"
 #include "chromeos/ash/services/libassistant/grpc/external_services/grpc_services_observer.h"
 #include "chromeos/ash/services/libassistant/grpc/services_status_observer.h"
@@ -232,8 +233,8 @@ class AssistantClient {
 
  private:
   std::unique_ptr<assistant_client::AssistantManager> assistant_manager_;
-  assistant_client::AssistantManagerInternal* assistant_manager_internal_ =
-      nullptr;
+  raw_ptr<assistant_client::AssistantManagerInternal, ExperimentalAsh>
+      assistant_manager_internal_ = nullptr;
 };
 
 }  // namespace ash::libassistant

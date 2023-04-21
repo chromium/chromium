@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_METRICS_CELLULAR_NETWORK_METRICS_LOGGER_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/network/metrics/connection_info_metrics_logger.h"
@@ -92,8 +93,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
       const std::string& guid,
       const absl::optional<std::string>& shill_error) override;
 
-  NetworkStateHandler* network_state_handler_ = nullptr;
-  NetworkMetadataStore* network_metadata_store_ = nullptr;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
+      nullptr;
+  raw_ptr<NetworkMetadataStore, DanglingUntriaged | ExperimentalAsh>
+      network_metadata_store_ = nullptr;
 
   base::ScopedObservation<ConnectionInfoMetricsLogger,
                           ConnectionInfoMetricsLogger::Observer>

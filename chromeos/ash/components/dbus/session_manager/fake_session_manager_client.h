@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/arc/arc.pb.h"
@@ -450,7 +451,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   // Contains last request passed to StartArcInstance
   arc::UpgradeArcContainerRequest last_upgrade_arc_request_;
 
-  StubDelegate* delegate_ = nullptr;
+  raw_ptr<StubDelegate, ExperimentalAsh> delegate_ = nullptr;
 
   bool session_stopped_ = false;
 

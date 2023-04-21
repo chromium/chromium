@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -49,7 +50,7 @@ struct ValueEquals {
   bool operator()(const base::Value* second) const {
     return *first_ == *second;
   }
-  const base::Value* first_;
+  raw_ptr<const base::Value, ExperimentalAsh> first_;
 };
 
 bool GetBoolValue(const base::Value::Dict& dict, const char* key) {

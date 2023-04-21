@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/audio/fake_floss_media_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -110,7 +111,7 @@ class FlossMediaClientImpl : public FlossMediaClient {
   }
 
  private:
-  dbus::ObjectProxy* floss_media_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> floss_media_proxy_ = nullptr;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

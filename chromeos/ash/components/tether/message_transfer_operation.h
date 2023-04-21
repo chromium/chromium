@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/components/tether/message_wrapper.h"
@@ -120,7 +121,7 @@ class MessageTransferOperation {
         std::unique_ptr<secure_channel::ClientChannel> channel) override;
 
    private:
-    MessageTransferOperation* operation_;
+    raw_ptr<MessageTransferOperation, ExperimentalAsh> operation_;
     multidevice::RemoteDeviceRef remote_device_;
     std::unique_ptr<secure_channel::ConnectionAttempt> connection_attempt_;
   };
@@ -140,7 +141,7 @@ class MessageTransferOperation {
     secure_channel::ClientChannel* channel() { return client_channel_.get(); }
 
    private:
-    MessageTransferOperation* operation_;
+    raw_ptr<MessageTransferOperation, ExperimentalAsh> operation_;
     multidevice::RemoteDeviceRef remote_device_;
     std::unique_ptr<secure_channel::ClientChannel> client_channel_;
   };
@@ -183,8 +184,9 @@ class MessageTransferOperation {
       std::unique_ptr<TimerFactory> timer_factory_for_test);
 
   multidevice::RemoteDeviceRefList remote_devices_;
-  device_sync::DeviceSyncClient* device_sync_client_;
-  secure_channel::SecureChannelClient* secure_channel_client_;
+  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
+  raw_ptr<secure_channel::SecureChannelClient, ExperimentalAsh>
+      secure_channel_client_;
   const secure_channel::ConnectionPriority connection_priority_;
 
   std::unique_ptr<TimerFactory> timer_factory_;

@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "dbus/mock_bus.h"
@@ -108,7 +109,7 @@ class TpmManagerClientTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> proxy_;
 
   // Convenience pointer to the global instance.
-  TpmManagerClient* client_;
+  raw_ptr<TpmManagerClient, ExperimentalAsh> client_;
 
   // The expected replies to the respective D-Bus calls.
   ::tpm_manager::GetTpmNonsensitiveStatusReply expected_status_reply_;

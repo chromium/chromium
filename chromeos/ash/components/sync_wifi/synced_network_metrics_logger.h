@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_SYNC_WIFI_SYNCED_NETWORK_METRICS_LOGGER_H_
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -135,8 +136,10 @@ class SyncedNetworkMetricsLogger : public NetworkConnectionObserver,
 
   bool IsEligible(const NetworkState* network);
 
-  NetworkStateHandler* network_state_handler_ = nullptr;
-  NetworkConnectionHandler* network_connection_handler_ = nullptr;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
+      nullptr;
+  raw_ptr<NetworkConnectionHandler, ExperimentalAsh>
+      network_connection_handler_ = nullptr;
 
   NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 

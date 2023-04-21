@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/secure_channel/connection.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
@@ -97,7 +98,7 @@ class NearbyConnection : public Connection,
   // Called when a FilePayloadListener remote endpoint is disconnected.
   void OnFilePayloadListenerRemoteDisconnected();
 
-  mojom::NearbyConnector* nearby_connector_;
+  raw_ptr<mojom::NearbyConnector, ExperimentalAsh> nearby_connector_;
   mojo::Receiver<mojom::NearbyMessageReceiver> message_receiver_{this};
   mojo::Remote<mojom::NearbyMessageSender> message_sender_;
   mojo::Remote<mojom::NearbyFilePayloadHandler> file_payload_handler_;

@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -218,10 +219,11 @@ class RmadClientTest : public testing::Test {
   // |client_|.
   std::map<std::string, dbus::ObjectProxy::SignalCallback> signal_callbacks_;
 
-  RmadClient* client_ = nullptr;  // Unowned convenience pointer.
+  raw_ptr<RmadClient, ExperimentalAsh> client_ =
+      nullptr;  // Unowned convenience pointer.
   // A message loop to emulate asynchronous behavior.
   base::test::SingleThreadTaskEnvironment task_environment_;
-  dbus::Response* response_ = nullptr;
+  raw_ptr<dbus::Response, ExperimentalAsh> response_ = nullptr;
   // Mock D-Bus objects for |client_| to interact with.
   scoped_refptr<dbus::MockBus> mock_bus_;
   scoped_refptr<dbus::MockObjectProxy> mock_proxy_;
@@ -364,7 +366,7 @@ class TestObserver : public RmadClient::Observer {
   }
 
  private:
-  RmadClient* client_;  // Not owned.
+  raw_ptr<RmadClient, ExperimentalAsh> client_;  // Not owned.
   int num_error_ = 0;
   rmad::RmadErrorCode last_error_ = rmad::RmadErrorCode::RMAD_ERROR_NOT_SET;
   int num_calibration_progress_ = 0;

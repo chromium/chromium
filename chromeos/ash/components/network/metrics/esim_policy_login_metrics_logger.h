@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -92,9 +93,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ESimPolicyLoginMetricsLogger
       bool has_non_managed_cellular);
   void LogESimPolicyStatusAtLogin();
 
-  NetworkStateHandler* network_state_handler_ = nullptr;
-  ManagedNetworkConfigurationHandler* managed_network_configuration_handler_ =
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
       nullptr;
+  raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
+      managed_network_configuration_handler_ = nullptr;
 
   NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 

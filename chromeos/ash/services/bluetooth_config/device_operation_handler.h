@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_OPERATION_HANDLER_H_
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -116,7 +117,7 @@ class DeviceOperationHandler : public AdapterStateController::Observer {
 
   base::queue<PendingOperation> queue_;
 
-  AdapterStateController* adapter_state_controller_;
+  raw_ptr<AdapterStateController, ExperimentalAsh> adapter_state_controller_;
 
   base::ScopedObservation<AdapterStateController,
                           AdapterStateController::Observer>

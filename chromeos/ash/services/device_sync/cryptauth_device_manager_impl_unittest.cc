@@ -12,6 +12,7 @@
 #include "base/base64url.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -410,8 +411,8 @@ class TestCryptAuthDeviceManager : public CryptAuthDeviceManagerImpl {
                                    gcm_manager,
                                    pref_service),
         scoped_sync_scheduler_(new NiceMock<MockSyncScheduler>()),
-        weak_sync_scheduler_factory_(scoped_sync_scheduler_) {
-    SetSyncSchedulerForTest(base::WrapUnique(scoped_sync_scheduler_));
+        weak_sync_scheduler_factory_(scoped_sync_scheduler_.get()) {
+    SetSyncSchedulerForTest(base::WrapUnique(scoped_sync_scheduler_.get()));
   }
 
   TestCryptAuthDeviceManager(const TestCryptAuthDeviceManager&) = delete;
@@ -427,7 +428,7 @@ class TestCryptAuthDeviceManager : public CryptAuthDeviceManagerImpl {
  private:
   // Ownership is passed to |CryptAuthDeviceManager| super class when
   // SetSyncSchedulerForTest() is called.
-  MockSyncScheduler* scoped_sync_scheduler_;
+  raw_ptr<MockSyncScheduler, ExperimentalAsh> scoped_sync_scheduler_;
 
   // Stores the pointer of |scoped_sync_scheduler_| after ownership is passed to
   // the super class.

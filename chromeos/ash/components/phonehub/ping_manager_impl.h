@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_PING_MANAGER_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_PING_MANAGER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/phonehub/feature_status.h"
 #include "chromeos/ash/components/phonehub/feature_status_provider.h"
@@ -69,10 +70,11 @@ class PingManagerImpl : public PingManager,
 
   base::OneShotTimer ping_timeout_timer_;
   base::TimeTicks ping_sent_timestamp_;
-  secure_channel::ConnectionManager* connection_manager_;
-  FeatureStatusProvider* feature_status_provider_;
-  MessageReceiver* message_receiver_;
-  MessageSender* message_sender_;
+  raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
+      connection_manager_;
+  raw_ptr<FeatureStatusProvider, ExperimentalAsh> feature_status_provider_;
+  raw_ptr<MessageReceiver, ExperimentalAsh> message_receiver_;
+  raw_ptr<MessageSender, ExperimentalAsh> message_sender_;
   bool is_ping_supported_by_phone_ = false;
   bool is_waiting_for_response_ = false;
 };

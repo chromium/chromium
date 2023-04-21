@@ -8,6 +8,7 @@
 
 #include <base/logging.h>
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/featured/fake_featured_client.h"
 #include "chromeos/ash/components/dbus/featured/featured.pb.h"
 #include "dbus/bus.h"
@@ -65,7 +66,7 @@ class FeaturedClientImpl : public FeaturedClient {
   }
 
  private:
-  dbus::ObjectProxy* featured_service_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> featured_service_proxy_ = nullptr;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

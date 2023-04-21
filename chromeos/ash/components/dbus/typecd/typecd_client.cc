@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/dbus/typecd/typecd_client.h"
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/typecd/fake_typecd_client.h"
 #include "dbus/bus.h"
@@ -38,7 +39,7 @@ class TypecdClientImpl : public TypecdClient {
                          const std::string& signal_name,
                          bool success);
 
-  dbus::ObjectProxy* typecd_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> typecd_proxy_ = nullptr;
   base::WeakPtrFactory<TypecdClientImpl> weak_ptr_factory_{this};
 };
 

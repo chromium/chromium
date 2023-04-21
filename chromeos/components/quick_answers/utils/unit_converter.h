@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ref.h"
 #include "base/values.h"
 
 namespace quick_answers {
@@ -42,7 +43,7 @@ class UnitConverter {
  private:
   // Conversion rule set for supported unit types.
   // |rules_set_| needs to outlive the converter.
-  const base::Value::List& rule_set_;
+  const raw_ref<const base::Value::List, ExperimentalAsh> rule_set_;
 };
 
 }  // namespace quick_answers

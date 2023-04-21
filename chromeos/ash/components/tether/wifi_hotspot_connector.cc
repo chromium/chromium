@@ -34,7 +34,7 @@ WifiHotspotConnector::WifiHotspotConnector(
       timer_(std::make_unique<base::OneShotTimer>()),
       clock_(base::DefaultClock::GetInstance()),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
-  network_state_handler_observer_.Observe(network_state_handler_);
+  network_state_handler_observer_.Observe(network_state_handler_.get());
 }
 
 WifiHotspotConnector::~WifiHotspotConnector() {

@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
@@ -464,7 +465,7 @@ class DeviceSyncCryptAuthDeviceSyncerImplTest : public testing::Test {
       fake_attestation_certificates_syncer_;
   std::unique_ptr<FakeSyncedBluetoothAddressTracker>
       fake_synced_bluetooth_address_tracker_;
-  base::MockOneShotTimer* timer_;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> timer_;
 
   absl::optional<CryptAuthDeviceSyncResult> device_sync_result_;
 

@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -382,7 +383,7 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   void OnDiskImageProgress(
       const vm_tools::concierge::DiskImageStatusResponse& signal);
 
-  FakeCiceroneClient* const fake_cicerone_client_;
+  const raw_ptr<FakeCiceroneClient, ExperimentalAsh> fake_cicerone_client_;
 
   int wait_for_service_to_be_available_call_count_ = 0;
   int create_disk_image_call_count_ = 0;

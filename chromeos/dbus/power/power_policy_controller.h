@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/policy.pb.h"
@@ -251,7 +252,7 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerPolicyController
   // Sends a policy based on |prefs_policy_| to the power manager.
   void SendCurrentPolicy();
 
-  PowerManagerClient* client_;  // weak
+  raw_ptr<PowerManagerClient, ExperimentalAsh> client_;  // weak
 
   // Policy derived from values passed to ApplyPrefs().
   power_manager::PowerManagementPolicy prefs_policy_;

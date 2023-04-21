@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/timer/mock_timer.h"
@@ -275,8 +276,8 @@ class MultiDeviceSetupHostVerifierImplTest
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>
       test_pref_service_;
   std::unique_ptr<base::SimpleTestClock> test_clock_;
-  base::MockOneShotTimer* mock_retry_timer_ = nullptr;
-  base::MockOneShotTimer* mock_sync_timer_ = nullptr;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_retry_timer_ = nullptr;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_sync_timer_ = nullptr;
 
   std::unique_ptr<HostVerifier> host_verifier_;
 

@@ -456,7 +456,7 @@ void ClientCertResolver::Init(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(network_state_handler);
   network_state_handler_ = network_state_handler;
-  network_state_handler_observer_.Observe(network_state_handler_);
+  network_state_handler_observer_.Observe(network_state_handler_.get());
 
   DCHECK(managed_network_config_handler);
   managed_network_config_handler_ = managed_network_config_handler;

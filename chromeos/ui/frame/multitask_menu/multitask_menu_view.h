@@ -91,12 +91,12 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   raw_ptr<MultitaskButton> float_button_for_testing_ = nullptr;
 
   // The window which the buttons act on. It is guaranteed to outlive `this`.
-  aura::Window* const window_;
+  const raw_ptr<aura::Window, ExperimentalAsh> window_;
 
   // The view the menu is anchored to if any. This is only passed if we want to
   // close the menu when the mouse moves out of the multitask menu or its anchor
   // view.
-  views::View* const anchor_view_;
+  const raw_ptr<views::View, ExperimentalAsh> anchor_view_;
 
   // Runs after any of the buttons are pressed, or a press out of the menu
   // bounds.

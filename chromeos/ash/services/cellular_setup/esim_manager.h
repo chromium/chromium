@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_CELLULAR_SETUP_ESIM_MANAGER_H_
 #define CHROMEOS_ASH_SERVICES_CELLULAR_SETUP_ESIM_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
@@ -116,14 +117,18 @@ class ESimManager : public mojom::ESimManager,
   // exist. Returns true if a new object was created.
   bool CreateEuiccIfNew(const dbus::ObjectPath& euicc_path);
 
-  CellularConnectionHandler* cellular_connection_handler_;
-  CellularESimInstaller* cellular_esim_installer_;
-  CellularESimProfileHandler* cellular_esim_profile_handler_;
-  CellularESimUninstallHandler* cellular_esim_uninstall_handler_;
-  CellularInhibitor* cellular_inhibitor_;
+  raw_ptr<CellularConnectionHandler, ExperimentalAsh>
+      cellular_connection_handler_;
+  raw_ptr<CellularESimInstaller, ExperimentalAsh> cellular_esim_installer_;
+  raw_ptr<CellularESimProfileHandler, ExperimentalAsh>
+      cellular_esim_profile_handler_;
+  raw_ptr<CellularESimUninstallHandler, ExperimentalAsh>
+      cellular_esim_uninstall_handler_;
+  raw_ptr<CellularInhibitor, ExperimentalAsh> cellular_inhibitor_;
 
-  NetworkConnectionHandler* network_connection_handler_;
-  NetworkStateHandler* network_state_handler_;
+  raw_ptr<NetworkConnectionHandler, ExperimentalAsh>
+      network_connection_handler_;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
 
   std::vector<std::unique_ptr<Euicc>> available_euiccs_;
   mojo::RemoteSet<mojom::ESimManagerObserver> observers_;

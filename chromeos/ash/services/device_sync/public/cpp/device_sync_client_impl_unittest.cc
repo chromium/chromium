@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
@@ -565,7 +566,7 @@ class DeviceSyncClientImplTest : public testing::Test {
   std::unique_ptr<FakeGcmDeviceInfoProvider> fake_gcm_device_info_provider_;
   std::unique_ptr<FakeClientAppMetadataProvider>
       fake_client_app_metadata_provider_;
-  FakeDeviceSync* fake_device_sync_;
+  raw_ptr<FakeDeviceSync, ExperimentalAsh> fake_device_sync_;
   std::unique_ptr<FakeDeviceSyncImplFactory> fake_device_sync_impl_factory_;
   std::unique_ptr<TestingPrefServiceSimple> test_pref_service_;
   std::unique_ptr<DeviceSyncBase> device_sync_;

@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
@@ -61,7 +62,7 @@ class SecureChannelBleAdvertisementGeneratorTest : public testing::Test {
 
     mock_eid_generator_ = new MockForegroundEidGenerator();
     generator_->SetEidGeneratorForTesting(
-        base::WrapUnique(mock_eid_generator_));
+        base::WrapUnique(mock_eid_generator_.get()));
   }
 
   void TearDown() override { generator_.reset(); }
@@ -76,7 +77,7 @@ class SecureChannelBleAdvertisementGeneratorTest : public testing::Test {
   const multidevice::RemoteDeviceRef test_remote_device_;
   const DataWithTimestamp fake_advertisement_;
 
-  MockForegroundEidGenerator* mock_eid_generator_;
+  raw_ptr<MockForegroundEidGenerator, ExperimentalAsh> mock_eid_generator_;
 
   std::unique_ptr<BleAdvertisementGenerator> generator_;
 };

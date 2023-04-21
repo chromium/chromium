@@ -135,7 +135,7 @@ void AutoConnectHandler::Init(
 
   network_state_handler_ = network_state_handler;
   if (network_state_handler_) {
-    network_state_handler_observer_.Observe(network_state_handler_);
+    network_state_handler_observer_.Observe(network_state_handler_.get());
   }
 
   managed_configuration_handler_ = managed_network_configuration_handler;

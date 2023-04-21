@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PROXIMITY_AUTH_FAKE_REMOTE_DEVICE_LIFE_CYCLE_H_
 #define CHROMEOS_ASH_COMPONENTS_PROXIMITY_AUTH_FAKE_REMOTE_DEVICE_LIFE_CYCLE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/proximity_auth/remote_device_life_cycle.h"
@@ -58,8 +59,8 @@ class FakeRemoteDeviceLifeCycle : public RemoteDeviceLifeCycle {
   base::ObserverList<Observer>::Unchecked observers_;
   bool started_;
   State state_;
-  ash::secure_channel::ClientChannel* channel_;
-  Messenger* messenger_;
+  raw_ptr<ash::secure_channel::ClientChannel, ExperimentalAsh> channel_;
+  raw_ptr<Messenger, ExperimentalAsh> messenger_;
 };
 
 }  // namespace proximity_auth

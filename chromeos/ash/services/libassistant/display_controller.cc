@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/display_connection.h"
@@ -37,12 +38,13 @@ class DisplayController::EventObserver : public DisplayConnectionObserver {
   ~EventObserver() override = default;
 
   void OnSpeechLevelUpdated(const float speech_level) override {
-    for (auto& observer : parent_->speech_recognition_observers_)
+    for (auto& observer : *parent_->speech_recognition_observers_) {
       observer->OnSpeechLevelUpdated(speech_level);
+    }
   }
 
  private:
-  DisplayController* const parent_;
+  const raw_ptr<DisplayController, ExperimentalAsh> parent_;
 };
 
 DisplayController::DisplayController(

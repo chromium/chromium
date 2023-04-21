@@ -18,7 +18,7 @@ NotificationRemover::NotificationRemover(
       notification_presenter_(notification_presenter),
       host_scan_cache_(host_scan_cache),
       active_host_(active_host) {
-  network_state_handler_observer_.Observe(network_state_handler_);
+  network_state_handler_observer_.Observe(network_state_handler_.get());
   host_scan_cache_->AddObserver(this);
   active_host_->AddObserver(this);
 }

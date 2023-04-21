@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/login/hibernate/hibernate_manager.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/hiberman/fake_hiberman_client.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
@@ -46,7 +47,7 @@ class HibernateManagerTest : public testing::Test {
   }
 
  protected:
-  FakeHibermanClient* hiberman_client_;
+  raw_ptr<FakeHibermanClient, ExperimentalAsh> hiberman_client_;
   HibernateManager hibernate_manager_;
   std::unique_ptr<UserContext> user_context_;
   int successful_callbacks_ = 0;

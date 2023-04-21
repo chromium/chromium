@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -80,7 +81,7 @@ class TestCertResolveObserver : public ClientCertResolver::Observer {
 
  private:
   bool changed_network_properties_;
-  ClientCertResolver* cert_resolver_;
+  raw_ptr<ClientCertResolver, ExperimentalAsh> cert_resolver_;
 };
 
 class TestNetworkConnectionHandler : public NetworkConnectionHandler {

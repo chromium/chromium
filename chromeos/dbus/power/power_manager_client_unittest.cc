@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -163,7 +164,7 @@ class TestObserver : public PowerManagerClient::Observer {
   }
 
  private:
-  PowerManagerClient* client_;  // Not owned.
+  raw_ptr<PowerManagerClient, ExperimentalAsh> client_;  // Not owned.
 
   // Number of times SuspendImminent(), SuspendDone(), DarkSuspendImminent() and
   // RestartRequested() have been called.
@@ -367,7 +368,7 @@ class PowerManagerClientTest : public testing::Test {
   scoped_refptr<dbus::MockBus> bus_;
   scoped_refptr<dbus::MockObjectProxy> proxy_;
 
-  PowerManagerClient* client_ = nullptr;
+  raw_ptr<PowerManagerClient, ExperimentalAsh> client_ = nullptr;
 
   // Maps from powerd signal name to the corresponding callback provided by
   // |client_|.

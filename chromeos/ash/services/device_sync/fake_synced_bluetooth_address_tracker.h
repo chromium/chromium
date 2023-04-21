@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_FAKE_SYNCED_BLUETOOTH_ADDRESS_TRACKER_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_FAKE_SYNCED_BLUETOOTH_ADDRESS_TRACKER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/device_sync/cryptauth_v2_device_sync_test_devices.h"
 #include "chromeos/ash/services/device_sync/synced_bluetooth_address_tracker.h"
 #include "chromeos/ash/services/device_sync/synced_bluetooth_address_tracker_impl.h"
@@ -50,7 +51,8 @@ class FakeSyncedBluetoothAddressTrackerFactory
       CryptAuthScheduler* cryptauth_scheduler,
       PrefService* pref_service) override;
 
-  SyncedBluetoothAddressTracker* last_created_ = nullptr;
+  raw_ptr<SyncedBluetoothAddressTracker, ExperimentalAsh> last_created_ =
+      nullptr;
 };
 
 }  // namespace device_sync

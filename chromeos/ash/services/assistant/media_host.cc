@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/assistant/media_host.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/services/assistant/media_session/assistant_media_session.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
@@ -115,7 +116,7 @@ class MediaHost::ChromeosMediaStateObserver
                               std::move(media_state));
   }
 
-  MediaHost* const parent_;
+  const raw_ptr<MediaHost, ExperimentalAsh> parent_;
   mojo::Receiver<media_session::mojom::MediaControllerObserver> receiver_{this};
 
   // Info associated to the active media session.
@@ -196,7 +197,7 @@ class MediaHost::LibassistantMediaDelegate
     return *parent_->chromeos_media_controller_;
   }
 
-  MediaHost* const parent_;
+  const raw_ptr<MediaHost, ExperimentalAsh> parent_;
   mojo::Receiver<MediaDelegate> receiver_;
 };
 

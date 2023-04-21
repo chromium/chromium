@@ -11,6 +11,7 @@
 #include <unordered_set>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/tether/host_scan_cache.h"
@@ -69,9 +70,9 @@ class TopLevelHostScanCache : public HostScanCache {
   void OnTimerFired(const std::string& tether_network_guid);
 
   std::unique_ptr<TimerFactory> timer_factory_;
-  ActiveHost* active_host_;
-  HostScanCache* network_host_scan_cache_;
-  PersistentHostScanCache* persistent_host_scan_cache_;
+  raw_ptr<ActiveHost, ExperimentalAsh> active_host_;
+  raw_ptr<HostScanCache, ExperimentalAsh> network_host_scan_cache_;
+  raw_ptr<PersistentHostScanCache, ExperimentalAsh> persistent_host_scan_cache_;
 
   bool is_initializing_ = false;
   bool is_shutting_down_ = false;

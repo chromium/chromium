@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_MESSAGE_SENDER_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_MESSAGE_SENDER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/message_sender.h"
 
 #include <stdint.h>
@@ -52,7 +53,8 @@ class MessageSenderImpl : public MessageSender {
   void SendMessage(proto::MessageType message_type,
                    const google::protobuf::MessageLite* request);
 
-  secure_channel::ConnectionManager* connection_manager_;
+  raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
+      connection_manager_;
 };
 
 }  // namespace phonehub

@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
@@ -194,7 +195,8 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) FakeCrosDisksClient
   bool rename_success_ = true;
   std::set<base::FilePath> mounted_paths_;
   std::vector<CustomMountPointCallback> custom_mount_point_callbacks_;
-  const DiskInfo* next_get_device_properties_disk_info_ = nullptr;
+  raw_ptr<const DiskInfo, ExperimentalAsh>
+      next_get_device_properties_disk_info_ = nullptr;
   int get_device_properties_success_count_ = 0;
   bool block_mount_ = false;
 

@@ -53,7 +53,7 @@ HostScanSchedulerImpl::HostScanSchedulerImpl(
       clock_(base::DefaultClock::GetInstance()),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       is_screen_locked_(session_manager_->IsScreenLocked()) {
-  network_state_handler_observer_.Observe(network_state_handler_);
+  network_state_handler_observer_.Observe(network_state_handler_.get());
   host_scanner_->AddObserver(this);
   session_manager_->AddObserver(this);
 }

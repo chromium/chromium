@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
@@ -498,7 +499,7 @@ class ConciergeClientImpl : public ConciergeClient {
     }
   }
 
-  dbus::ObjectProxy* concierge_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> concierge_proxy_ = nullptr;
 
   base::ObserverList<Observer> observer_list_{
       ConciergeClient::kObserverListPolicy};

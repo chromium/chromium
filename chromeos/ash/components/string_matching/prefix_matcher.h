@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_PREFIX_MATCHER_H_
 #define CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_PREFIX_MATCHER_H_
 
+#include "base/memory/raw_ref.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "ui/gfx/range/range.h"
 
@@ -108,8 +109,8 @@ class PrefixMatcher {
                                      size_t text_pos,
                                      MatchInfo& token_match_info);
 
-  const TokenizedString& query_;
-  const TokenizedString& text_;
+  const raw_ref<const TokenizedString, ExperimentalAsh> query_;
+  const raw_ref<const TokenizedString, ExperimentalAsh> text_;
 
   double relevance_ = prefix_matcher_constants::kNoMatchScore;
   Hits hits_;

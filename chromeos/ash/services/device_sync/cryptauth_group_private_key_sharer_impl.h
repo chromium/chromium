@@ -9,6 +9,7 @@
 #include <ostream>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_sync_result.h"
@@ -105,7 +106,7 @@ class CryptAuthGroupPrivateKeySharerImpl
 
   bool did_non_fatal_error_occur_ = false;
   State state_ = State::kNotStarted;
-  CryptAuthClientFactory* client_factory_ = nullptr;
+  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> client_factory_ = nullptr;
   std::unique_ptr<base::OneShotTimer> timer_;
 };
 

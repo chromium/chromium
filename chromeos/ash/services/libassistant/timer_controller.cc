@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/libassistant/timer_controller.h"
 
+#include "base/memory/raw_ref.h"
 #include "base/thread_annotations.h"
 #include "build/buildflag.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
@@ -37,10 +38,10 @@ class TimerController::TimerListener
     // Register as an observer of |AlarmTimerEvent| to get notified on
     // alarm/timer status change, i.e. when timers are scheduled, updated,
     // and/or removed. Status change will be reflected on UI correspondingly.
-    assistant_client_.AddAlarmTimerEventObserver(this);
+    assistant_client_->AddAlarmTimerEventObserver(this);
 
     // Force sync the initial timer state.
-    assistant_client_.GetTimers(base::BindOnce(
+    assistant_client_->GetTimers(base::BindOnce(
         &TimerListener::NotifyTimerStatusChanged, weak_factory_.GetWeakPtr()));
   }
 
@@ -76,13 +77,15 @@ class TimerController::TimerListener
       const std::vector<assistant::AssistantTimer>& timers) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    delegate_.OnTimerStateChanged(timers);
+    delegate_->OnTimerStateChanged(timers);
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  AssistantClient& assistant_client_ GUARDED_BY_CONTEXT(sequence_checker_);
-  mojom::TimerDelegate& delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const raw_ref<AssistantClient, ExperimentalAsh> assistant_client_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  const raw_ref<mojom::TimerDelegate, ExperimentalAsh> delegate_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<TimerListener> weak_factory_{this};
 };

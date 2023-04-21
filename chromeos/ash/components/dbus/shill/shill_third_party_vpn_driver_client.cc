@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_third_party_vpn_driver_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_observer.h"
@@ -94,7 +95,7 @@ class ShillThirdPartyVpnDriverClientImpl
 
    private:
     ShillClientHelper helper_;
-    ShillThirdPartyVpnObserver* observer_;
+    raw_ptr<ShillThirdPartyVpnObserver, ExperimentalAsh> observer_;
 
     base::WeakPtrFactory<HelperInfo> weak_ptr_factory_{this};
   };
@@ -123,7 +124,7 @@ class ShillThirdPartyVpnDriverClientImpl
   // Deletes the helper object corresponding to |object_path|.
   void DeleteHelper(const dbus::ObjectPath& object_path);
 
-  dbus::Bus* bus_;
+  raw_ptr<dbus::Bus, ExperimentalAsh> bus_;
   HelperMap helpers_;
   std::set<std::string> valid_keys_;
 };

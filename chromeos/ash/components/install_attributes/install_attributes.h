@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/userdataauth/install_attributes_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
@@ -231,7 +232,8 @@ class COMPONENT_EXPORT(ASH_INSTALL_ATTRIBUTES) InstallAttributes {
   void OnClearStoredOwnerPassword(
       const ::tpm_manager::ClearStoredOwnerPasswordReply& reply);
 
-  InstallAttributesClient* install_attributes_client_;
+  raw_ptr<InstallAttributesClient, DanglingUntriaged | ExperimentalAsh>
+      install_attributes_client_;
 
   base::WeakPtrFactory<InstallAttributes> weak_ptr_factory_{this};
 };

@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/anomaly_detector/fake_anomaly_detector_client.h"
 #include "dbus/bus.h"
@@ -89,7 +90,7 @@ class AnomalyDetectorClientImpl : public AnomalyDetectorClient {
     }
   }
 
-  dbus::ObjectProxy* anomaly_detector_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> anomaly_detector_proxy_ = nullptr;
 
   base::ObserverList<Observer> observer_list_;
 

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/ash/services/libassistant/public/mojom/timer_controller.mojom.h"
@@ -45,7 +46,7 @@ class TimerController : public mojom::TimerController,
 
   // Owned by |ServiceController|, set in OnAssistantClientRunning() and reset
   // in OnDestroyingAssistantClient().
-  AssistantClient* assistant_client_ = nullptr;
+  raw_ptr<AssistantClient, ExperimentalAsh> assistant_client_ = nullptr;
 
   mojo::Receiver<mojom::TimerController> receiver_{this};
   mojo::Remote<mojom::TimerDelegate> delegate_;

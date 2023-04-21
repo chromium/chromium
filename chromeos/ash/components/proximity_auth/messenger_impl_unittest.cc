@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
@@ -56,7 +57,7 @@ class MockMessengerObserver : public MessengerObserver {
 
  private:
   // The messenger that |this| instance observes.
-  Messenger* const messenger_;
+  const raw_ptr<Messenger, ExperimentalAsh> messenger_;
 };
 
 class TestMessenger : public MessengerImpl {
@@ -103,7 +104,8 @@ class ProximityAuthMessengerImplTest : public testing::Test {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  ash::secure_channel::FakeClientChannel* fake_channel_;
+  raw_ptr<ash::secure_channel::FakeClientChannel, ExperimentalAsh>
+      fake_channel_;
 
   std::unique_ptr<TestMessenger> messenger_;
 

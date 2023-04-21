@@ -9,6 +9,7 @@
 #include <string>
 #include <unordered_set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/tether/host_scan_cache.h"
 #include "chromeos/ash/components/tether/tether_host_response_recorder.h"
@@ -55,9 +56,11 @@ class NetworkHostScanCache : public HostScanCache,
 
   bool HasConnectedToHost(const std::string& tether_network_guid);
 
-  NetworkStateHandler* network_state_handler_;
-  TetherHostResponseRecorder* tether_host_response_recorder_;
-  DeviceIdTetherNetworkGuidMap* device_id_tether_network_guid_map_;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<TetherHostResponseRecorder, ExperimentalAsh>
+      tether_host_response_recorder_;
+  raw_ptr<DeviceIdTetherNetworkGuidMap, ExperimentalAsh>
+      device_id_tether_network_guid_map_;
 };
 
 }  // namespace tether

@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -136,7 +137,7 @@ class DeviceToDeviceAuthenticatorForTest : public DeviceToDeviceAuthenticator {
   }
 
   // This instance is owned by the super class.
-  base::MockOneShotTimer* timer_;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> timer_;
 
   base::test::SingleThreadTaskEnvironment env_;
 };
@@ -150,7 +151,7 @@ class SecureChannelDeviceToDeviceAuthenticatorTest : public testing::Test {
         connection_(remote_device_),
         secure_message_delegate_(new multidevice::FakeSecureMessageDelegate),
         authenticator_(&connection_,
-                       base::WrapUnique(secure_message_delegate_)) {}
+                       base::WrapUnique(secure_message_delegate_.get())) {}
 
   SecureChannelDeviceToDeviceAuthenticatorTest(
       const SecureChannelDeviceToDeviceAuthenticatorTest&) = delete;
@@ -245,7 +246,8 @@ class SecureChannelDeviceToDeviceAuthenticatorTest : public testing::Test {
 
   // The SecureMessageDelegate used by the authenticator.
   // Owned by |authenticator_|.
-  multidevice::FakeSecureMessageDelegate* secure_message_delegate_;
+  raw_ptr<multidevice::FakeSecureMessageDelegate, ExperimentalAsh>
+      secure_message_delegate_;
 
   // The DeviceToDeviceAuthenticator under test.
   DeviceToDeviceAuthenticatorForTest authenticator_;

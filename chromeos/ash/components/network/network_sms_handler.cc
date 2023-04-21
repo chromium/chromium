@@ -14,6 +14,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/modem_messaging_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
@@ -67,7 +68,7 @@ class NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler
   void GetMessages();
   void MessageReceived(const base::Value::Dict& dictionary);
 
-  NetworkSmsHandler* host_;
+  raw_ptr<NetworkSmsHandler, ExperimentalAsh> host_;
   std::string service_name_;
   dbus::ObjectPath object_path_;
   bool deleting_messages_ = false;

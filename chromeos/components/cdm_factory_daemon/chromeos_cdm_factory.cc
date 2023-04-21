@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
@@ -96,7 +97,7 @@ class SingletonCdmContextRef : public media::CdmContextRef {
   }
 
  private:
-  media::CdmContext* cdm_context_;
+  raw_ptr<media::CdmContext, ExperimentalAsh> cdm_context_;
 };
 
 void GetHwKeyDataProxy(const std::string& key_id,

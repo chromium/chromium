@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -322,7 +323,7 @@ class MockConnectionObserver : public ConnectionObserver {
   }
 
  private:
-  Connection* connection_;
+  raw_ptr<Connection, ExperimentalAsh> connection_;
   std::string last_deserialized_message_;
   bool last_send_success_;
   int num_send_completed_;
@@ -422,9 +423,9 @@ class SecureChannelBluetoothLowEnergyWeaveClientConnectionTest
     test_timer_ = new base::MockOneShotTimer();
     generator_ = new NiceMock<MockBluetoothLowEnergyWeavePacketGenerator>();
     receiver_ = new NiceMock<MockBluetoothLowEnergyWeavePacketReceiver>();
-    connection->SetupTestDoubles(task_runner_, base::WrapUnique(test_timer_),
-                                 base::WrapUnique(generator_),
-                                 base::WrapUnique(receiver_));
+    connection->SetupTestDoubles(
+        task_runner_, base::WrapUnique(test_timer_.get()),
+        base::WrapUnique(generator_.get()), base::WrapUnique(receiver_.get()));
 
     return connection;
   }
@@ -673,7 +674,7 @@ class SecureChannelBluetoothLowEnergyWeaveClientConnectionTest
   const multidevice::ScopedDisableLoggingForTesting disable_logging_;
 
   scoped_refptr<device::MockBluetoothAdapter> adapter_;
-  base::MockOneShotTimer* test_timer_;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> test_timer_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
 
   std::unique_ptr<device::MockBluetoothDevice> mock_bluetooth_device_;
@@ -685,8 +686,10 @@ class SecureChannelBluetoothLowEnergyWeaveClientConnectionTest
   int32_t rssi_for_channel_ = device::BluetoothDevice::kUnknownPower;
   bool last_wire_message_success_;
   bool has_verified_connection_result_;
-  NiceMock<MockBluetoothLowEnergyWeavePacketGenerator>* generator_;
-  NiceMock<MockBluetoothLowEnergyWeavePacketReceiver>* receiver_;
+  raw_ptr<NiceMock<MockBluetoothLowEnergyWeavePacketGenerator>, ExperimentalAsh>
+      generator_;
+  raw_ptr<NiceMock<MockBluetoothLowEnergyWeavePacketReceiver>, ExperimentalAsh>
+      receiver_;
   std::unique_ptr<MockConnectionObserver> connection_observer_;
 
   // Callbacks

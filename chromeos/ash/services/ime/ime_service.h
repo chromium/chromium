@@ -12,6 +12,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/ime/decoder/decoder_engine.h"
@@ -124,7 +125,8 @@ class ImeService : public mojom::ImeService,
   mojo::Remote<mojom::PlatformAccessProvider> platform_access_;
   mojo::ReceiverSet<mojom::InputEngineManager> manager_receivers_;
 
-  ImeSharedLibraryWrapper* ime_shared_library_ = nullptr;
+  raw_ptr<ImeSharedLibraryWrapper, ExperimentalAsh> ime_shared_library_ =
+      nullptr;
 
   std::unique_ptr<FieldTrialParamsRetriever> field_trial_params_retriever_;
 };

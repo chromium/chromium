@@ -15,6 +15,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/tick_clock.h"
@@ -330,7 +331,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   base::RepeatingClosure user_activity_callback_;
 
   // Clock to use to calculate time ticks. Used for ArcTimer related APIs.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
 
   // If set then |StartArcTimer| returns failure.
   bool simulate_start_arc_timer_failure_ = false;

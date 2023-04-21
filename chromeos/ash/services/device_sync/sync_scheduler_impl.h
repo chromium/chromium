@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/device_sync/sync_scheduler.h"
@@ -68,7 +69,7 @@ class SyncSchedulerImpl : public SyncScheduler {
   base::TimeDelta GetPeriod();
 
   // The delegate handling sync requests when they are fired.
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   // The time to wait until the next refresh when the last sync attempt was
   // successful.

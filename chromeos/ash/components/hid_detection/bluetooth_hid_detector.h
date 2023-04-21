@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::hid_detection {
@@ -115,7 +116,7 @@ class BluetoothHidDetector {
   void NotifyBluetoothHidDetectionStatusChanged();
 
  private:
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
 };
 
 }  // namespace ash::hid_detection

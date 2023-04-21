@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_LIBASSISTANT_SPEAKER_ID_ENROLLMENT_CONTROLLER_H_
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_SPEAKER_ID_ENROLLMENT_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/libassistant/abortable_task_list.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/ash/services/libassistant/public/mojom/audio_input_controller.mojom-forward.h"
@@ -48,13 +49,13 @@ class SpeakerIdEnrollmentController
   class GetStatusWaiter;
 
   mojo::Receiver<mojom::SpeakerIdEnrollmentController> receiver_{this};
-  mojom::AudioInputController* const audio_input_;
+  const raw_ptr<mojom::AudioInputController, ExperimentalAsh> audio_input_;
 
   std::unique_ptr<EnrollmentSession> active_enrollment_session_;
   // Contains all pending callbacks for GetSpeakerIdEnrollmentStatus requests.
   AbortableTaskList pending_response_waiters_;
 
-  AssistantClient* assistant_client_ = nullptr;
+  raw_ptr<AssistantClient, ExperimentalAsh> assistant_client_ = nullptr;
 };
 
 }  // namespace ash::libassistant

@@ -8,6 +8,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -249,8 +250,8 @@ class NetworkMetadataStoreTest : public ::testing::Test {
     AssertCustomApnListFirstValue();
   }
 
-  const user_manager::User* primary_user_;
-  const user_manager::User* secondary_user_;
+  raw_ptr<const user_manager::User, ExperimentalAsh> primary_user_;
+  raw_ptr<const user_manager::User, ExperimentalAsh> secondary_user_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
@@ -287,7 +288,7 @@ class NetworkMetadataStoreTest : public ::testing::Test {
   NetworkStateTestHelper helper_{false /* use_default_devices_and_services */};
   std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
   std::unique_ptr<NetworkConnectionHandler> network_connection_handler_;
-  NetworkStateHandler* network_state_handler_;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
   std::unique_ptr<TestingPrefServiceSimple> device_prefs_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> user_prefs_;
   std::unique_ptr<NetworkMetadataStore> metadata_store_;

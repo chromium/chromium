@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_KEY_CREATOR_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key_bundle.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key_creator.h"
@@ -65,7 +66,7 @@ class FakeCryptAuthKeyCreatorFactory : public CryptAuthKeyCreatorImpl::Factory {
   // CryptAuthKeyCreatorImpl::Factory:
   std::unique_ptr<CryptAuthKeyCreator> CreateInstance() override;
 
-  FakeCryptAuthKeyCreator* instance_ = nullptr;
+  raw_ptr<FakeCryptAuthKeyCreator, ExperimentalAsh> instance_ = nullptr;
 };
 
 }  // namespace device_sync

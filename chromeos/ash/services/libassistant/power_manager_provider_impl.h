@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -109,10 +110,11 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) PowerManagerProviderImpl
   const scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
 
   // Owned by |PlatformApi|. Used to initialize |wake_lock_|.
-  mojom::PlatformDelegate* platform_delegate_ = nullptr;
+  raw_ptr<mojom::PlatformDelegate, ExperimentalAsh> platform_delegate_ =
+      nullptr;
 
   // Clock to use to calculate time ticks. Set and used only for testing.
-  const base::TickClock* tick_clock_ = nullptr;
+  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_ = nullptr;
 
   base::WeakPtrFactory<PowerManagerProviderImpl> weak_factory_;
 };

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_LIBASSISTANT_TEST_SUPPORT_LIBASSISTANT_SERVICE_TESTER_H_
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_TEST_SUPPORT_LIBASSISTANT_SERVICE_TESTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_path_override.h"
 #include "chromeos/ash/services/libassistant/libassistant_service.h"
 #include "chromeos/ash/services/libassistant/public/mojom/audio_input_controller.mojom.h"
@@ -94,7 +95,8 @@ class LibassistantServiceTester {
   mojo::Remote<mojom::LibassistantService> service_remote_;
   // Our file provider requires the home dir to be overridden.
   base::ScopedPathOverride home_dir_override_;
-  FakeLibassistantFactory* libassistant_factory_ = nullptr;
+  raw_ptr<FakeLibassistantFactory, ExperimentalAsh> libassistant_factory_ =
+      nullptr;
   std::unique_ptr<LibassistantService> service_;
 };
 

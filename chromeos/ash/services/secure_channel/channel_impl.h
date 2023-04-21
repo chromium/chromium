@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
@@ -80,7 +81,7 @@ class ChannelImpl : public mojom::Channel {
   void NotifyFileTransferUpdate(mojo::RemoteSetElementId listener_remote_id,
                                 mojom::FileTransferUpdatePtr update);
 
-  Delegate* delegate_;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
   mojo::Receiver<mojom::Channel> receiver_{this};
 
   // Set of FilePayloadListener remote endpoints passed from

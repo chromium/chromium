@@ -12,6 +12,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/secure_channel/connection_details.h"
@@ -89,7 +90,8 @@ class FakeSingleClientProxyImplFactory : public SingleClientProxyImpl::Factory {
     EXPECT_EQ(1u, num_deleted);
   }
 
-  SingleClientProxy::Delegate* expected_delegate_ = nullptr;
+  raw_ptr<SingleClientProxy::Delegate, ExperimentalAsh> expected_delegate_ =
+      nullptr;
   std::unordered_map<base::UnguessableToken,
                      FakeSingleClientProxy*,
                      base::UnguessableTokenHash>
@@ -311,7 +313,8 @@ class SecureChannelMultiplexedChannelImplTest : public testing::Test {
 
   std::vector<std::unique_ptr<ClientConnectionParameters>> initial_client_list_;
 
-  FakeAuthenticatedChannel* fake_authenticated_channel_ = nullptr;
+  raw_ptr<FakeAuthenticatedChannel, ExperimentalAsh>
+      fake_authenticated_channel_ = nullptr;
   std::unique_ptr<FakeMultiplexedChannelDelegate> fake_delegate_;
 
   std::unique_ptr<MultiplexedChannel> multiplexed_channel_;

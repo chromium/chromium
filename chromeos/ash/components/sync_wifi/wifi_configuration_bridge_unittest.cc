@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -280,7 +281,7 @@ class WifiConfigurationBridgeTest : public testing::Test {
   std::unique_ptr<TestingPrefServiceSimple> device_prefs_;
   std::unique_ptr<SyncedNetworkMetricsLogger> metrics_logger_;
   std::unique_ptr<NetworkTestHelper> network_test_helper_;
-  NetworkMetadataStore* network_metadata_store_;
+  raw_ptr<NetworkMetadataStore, ExperimentalAsh> network_metadata_store_;
 
   const NetworkIdentifier woof_network_id_ = GeneratePskNetworkId(kSsidWoof);
   const NetworkIdentifier meow_network_id_ = GeneratePskNetworkId(kSsidMeow);

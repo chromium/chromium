@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_AUDIO_VOLUME_CONTROL_IMPL_H_
 
 #include "ash/public/mojom/assistant_volume_control.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/libassistant/public/mojom/audio_output_delegate.mojom.h"
 #include "chromeos/ash/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
@@ -49,7 +50,8 @@ class VolumeControlImpl : public assistant_client::VolumeControl,
   void SetSystemMutedOnMainThread(bool muted);
 
   // Owned by |AudioOutputProviderImpl|.
-  mojom::AudioOutputDelegate* audio_output_delegate_ = nullptr;
+  raw_ptr<mojom::AudioOutputDelegate, ExperimentalAsh> audio_output_delegate_ =
+      nullptr;
   mojo::Remote<ash::mojom::AssistantVolumeControl> volume_control_;
   mojo::Receiver<ash::mojom::VolumeObserver> receiver_{this};
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;

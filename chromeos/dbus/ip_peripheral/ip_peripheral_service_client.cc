@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/dbus/ip_peripheral/fake_ip_peripheral_service_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -151,7 +152,8 @@ class IpPeripheralServiceClientImpl : public IpPeripheralServiceClient {
   }
 
  private:
-  dbus::ObjectProxy* ip_peripheral_service_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> ip_peripheral_service_proxy_ =
+      nullptr;
 };
 
 }  // namespace

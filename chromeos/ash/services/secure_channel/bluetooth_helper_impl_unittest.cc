@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -157,8 +158,10 @@ class SecureChannelBluetoothHelperImplTest : public testing::Test {
 
   std::unique_ptr<FakeBleAdvertisementGenerator>
       fake_ble_advertisement_generator_;
-  MockForegroundEidGenerator* mock_foreground_eid_generator_;
-  FakeBackgroundEidGenerator* fake_background_eid_generator_;
+  raw_ptr<MockForegroundEidGenerator, ExperimentalAsh>
+      mock_foreground_eid_generator_;
+  raw_ptr<FakeBackgroundEidGenerator, ExperimentalAsh>
+      fake_background_eid_generator_;
 
   std::unique_ptr<multidevice::RemoteDeviceCache> remote_device_cache_;
 

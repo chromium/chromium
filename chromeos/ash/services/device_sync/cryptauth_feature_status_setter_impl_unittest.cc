@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/services/device_sync/cryptauth_client.h"
@@ -242,7 +243,7 @@ class DeviceSyncCryptAuthFeatureStatusSetterImplTest
   std::vector<absl::optional<NetworkRequestError>> results_;
 
   MockCryptAuthClientFactory mock_client_factory_;
-  base::MockOneShotTimer* mock_timer_ = nullptr;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_ = nullptr;
 
   std::unique_ptr<CryptAuthFeatureStatusSetter> feature_status_setter_;
 };

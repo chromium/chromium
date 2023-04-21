@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -275,7 +276,7 @@ class TestObserver final : public NetworkStateHandlerObserver {
   }
 
  private:
-  NetworkStateHandler* handler_;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> handler_;
   size_t active_network_change_count_ = 0;
   size_t default_network_change_count_ = 0;
   size_t portal_state_change_count_ = 0;
@@ -469,10 +470,10 @@ class NetworkStateHandlerTest : public testing::Test {
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<TestObserver> test_observer_;
   FakeStubCellularNetworksProvider fake_stub_cellular_networks_provider_;
-  ShillDeviceClient::TestInterface* device_test_;
-  ShillManagerClient::TestInterface* manager_test_;
-  ShillProfileClient::TestInterface* profile_test_;
-  ShillServiceClient::TestInterface* service_test_;
+  raw_ptr<ShillDeviceClient::TestInterface, ExperimentalAsh> device_test_;
+  raw_ptr<ShillManagerClient::TestInterface, ExperimentalAsh> manager_test_;
+  raw_ptr<ShillProfileClient::TestInterface, ExperimentalAsh> profile_test_;
+  raw_ptr<ShillServiceClient::TestInterface, ExperimentalAsh> service_test_;
 };
 
 TEST_F(NetworkStateHandlerTest, NetworkStateHandlerStub) {

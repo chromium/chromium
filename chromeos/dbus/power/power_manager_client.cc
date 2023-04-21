@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_device_source.h"
@@ -1362,7 +1363,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
   // Origin thread (i.e. the UI thread in production).
   base::PlatformThreadId origin_thread_id_;
 
-  dbus::ObjectProxy* power_manager_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> power_manager_proxy_ = nullptr;
   base::ObserverList<Observer>::Unchecked observers_;
 
   absl::optional<bool> service_available_;

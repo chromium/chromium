@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/hermes/constants.h"
 #include "chromeos/ash/components/dbus/hermes/fake_hermes_profile_client.h"
@@ -201,7 +202,7 @@ class HermesProfileClientImpl : public HermesProfileClient {
     std::move(callback).Run(HermesResponseStatus::kSuccess);
   }
 
-  dbus::Bus* bus_;
+  raw_ptr<dbus::Bus, ExperimentalAsh> bus_;
   ObjectMap object_map_;
   base::WeakPtrFactory<HermesProfileClientImpl> weak_ptr_factory_{this};
 };

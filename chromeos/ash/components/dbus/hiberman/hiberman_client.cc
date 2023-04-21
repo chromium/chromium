@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/hiberman/fake_hiberman_client.h"
 #include "dbus/bus.h"
@@ -128,7 +129,7 @@ class HibermanClientImpl : public HibermanClient {
   bool alive_ = false;
 
   // D-Bus proxy for hiberman, not owned.
-  dbus::ObjectProxy* proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
   base::WeakPtrFactory<HibermanClientImpl> weak_factory_{this};
 };
 

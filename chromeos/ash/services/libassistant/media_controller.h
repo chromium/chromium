@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_LIBASSISTANT_MEDIA_CONTROLLER_H_
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_MEDIA_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/ash/services/libassistant/public/mojom/media_controller.mojom.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
@@ -41,7 +42,7 @@ class MediaController : public mojom::MediaController,
  private:
   class GrpcEventsObserver;
 
-  AssistantClient* assistant_client_ = nullptr;
+  raw_ptr<AssistantClient, ExperimentalAsh> assistant_client_ = nullptr;
 
   mojo::Receiver<mojom::MediaController> receiver_{this};
   mojo::Remote<mojom::MediaDelegate> delegate_;

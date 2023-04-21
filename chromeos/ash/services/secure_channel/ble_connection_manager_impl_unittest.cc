@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -81,11 +82,11 @@ class FakeBleAdvertiserFactory : public BleAdvertiserImpl::Factory {
     return instance;
   }
 
-  FakeBleAdvertiser* instance_ = nullptr;
+  raw_ptr<FakeBleAdvertiser, ExperimentalAsh> instance_ = nullptr;
 
-  FakeBluetoothHelper* expected_fake_bluetooth_helper_;
-  FakeBleSynchronizer* expected_fake_ble_synchronizer_;
-  FakeTimerFactory* expected_fake_timer_factory_;
+  raw_ptr<FakeBluetoothHelper, ExperimentalAsh> expected_fake_bluetooth_helper_;
+  raw_ptr<FakeBleSynchronizer, ExperimentalAsh> expected_fake_ble_synchronizer_;
+  raw_ptr<FakeTimerFactory, ExperimentalAsh> expected_fake_timer_factory_;
 };
 
 class FakeWeaveClientConnectionFactory
@@ -129,9 +130,10 @@ class FakeWeaveClientConnectionFactory
 
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>>
       expected_mock_adapter_;
-  device::MockBluetoothDevice* expected_bluetooth_device_;
+  raw_ptr<device::MockBluetoothDevice, ExperimentalAsh>
+      expected_bluetooth_device_;
 
-  FakeConnection* last_created_instance_ = nullptr;
+  raw_ptr<FakeConnection, ExperimentalAsh> last_created_instance_ = nullptr;
 };
 
 class FakeSecureChannelFactory : public SecureChannel::Factory {
@@ -163,7 +165,8 @@ class FakeSecureChannelFactory : public SecureChannel::Factory {
     return instance;
   }
 
-  FakeWeaveClientConnectionFactory* fake_weave_client_connection_factory_;
+  raw_ptr<FakeWeaveClientConnectionFactory, ExperimentalAsh>
+      fake_weave_client_connection_factory_;
 
   FakeSecureChannelConnection* last_created_instance_ = nullptr;
 };

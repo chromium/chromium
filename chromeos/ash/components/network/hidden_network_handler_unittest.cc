@@ -8,6 +8,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -197,8 +198,9 @@ class HiddenNetworkHandlerTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
-  HiddenNetworkHandler* hidden_network_handler_;
-  NetworkConfigurationHandler* network_configuration_handler_;
+  raw_ptr<HiddenNetworkHandler, ExperimentalAsh> hidden_network_handler_;
+  raw_ptr<NetworkConfigurationHandler, ExperimentalAsh>
+      network_configuration_handler_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<FakeNetworkConfigurationObserver>
       network_configuration_observer_;

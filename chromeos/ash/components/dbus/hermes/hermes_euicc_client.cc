@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/hermes/constants.h"
@@ -278,7 +279,7 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
     }
   }
 
-  dbus::Bus* bus_;
+  raw_ptr<dbus::Bus, ExperimentalAsh> bus_;
   ObjectMap object_map_;
   base::WeakPtrFactory<HermesEuiccClientImpl> weak_ptr_factory_{this};
 };

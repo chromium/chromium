@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
@@ -298,7 +299,7 @@ class MultiDeviceSetupGlobalStateFeatureManagerImplTest
       test_pref_service_;
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
 
-  base::MockOneShotTimer* mock_timer_;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_;
 
   std::unique_ptr<GlobalStateFeatureManager> delegate_;
 

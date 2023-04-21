@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client_impl.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -83,7 +84,7 @@ class FakeClientChannelImplFactory : public ClientChannelImpl::Factory {
   }
 
  private:
-  ClientChannel* last_client_channel_created_;
+  raw_ptr<ClientChannel, ExperimentalAsh> last_client_channel_created_;
 };
 
 class TestConnectionAttemptDelegate : public ConnectionAttempt::Delegate {
@@ -211,7 +212,7 @@ class SecureChannelClientImplTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  FakeSecureChannel* fake_secure_channel_;
+  raw_ptr<FakeSecureChannel, ExperimentalAsh> fake_secure_channel_;
   std::unique_ptr<FakeSecureChannelInitializerFactory>
       fake_secure_channel_initializer_factory_;
   std::unique_ptr<FakeConnectionAttemptFactory>

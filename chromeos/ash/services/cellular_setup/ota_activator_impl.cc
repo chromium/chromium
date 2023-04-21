@@ -150,7 +150,7 @@ const NetworkState* OtaActivatorImpl::GetCellularNetworkState() const {
 }
 
 void OtaActivatorImpl::StartActivation() {
-  network_state_handler_observer_.Observe(network_state_handler_);
+  network_state_handler_observer_.Observe(network_state_handler_.get());
 
   // If |activation_delegate_| becomes disconnected, the activation request is
   // considered canceled.

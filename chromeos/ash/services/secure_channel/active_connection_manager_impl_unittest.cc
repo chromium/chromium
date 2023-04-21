@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
@@ -80,9 +81,11 @@ class FakeMultiplexedChannelFactory : public MultiplexedChannelImpl::Factory {
     EXPECT_EQ(1u, num_deleted);
   }
 
-  const MultiplexedChannel::Delegate* expected_delegate_;
+  raw_ptr<const MultiplexedChannel::Delegate, ExperimentalAsh>
+      expected_delegate_;
 
-  AuthenticatedChannel* next_expected_authenticated_channel_ = nullptr;
+  raw_ptr<AuthenticatedChannel, ExperimentalAsh>
+      next_expected_authenticated_channel_ = nullptr;
 
   base::flat_map<ConnectionDetails, FakeMultiplexedChannel*>
       connection_details_to_active_channel_map_;

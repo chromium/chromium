@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/dbus/shill/shill_client_unittest_base.h"
@@ -61,7 +62,8 @@ class ShillThirdPartyVpnDriverClientTest : public ShillClientUnittestBase {
   }
 
  protected:
-  ShillThirdPartyVpnDriverClient* client_ = nullptr;  // Unowned
+  raw_ptr<ShillThirdPartyVpnDriverClient, ExperimentalAsh> client_ =
+      nullptr;  // Unowned
 };
 
 TEST_F(ShillThirdPartyVpnDriverClientTest, PlatformSignal) {

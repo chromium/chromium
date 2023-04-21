@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/services/device_sync/cryptauth_client.h"
@@ -285,7 +286,7 @@ class DeviceSyncCryptAuthGroupPrivateKeySharerImplTest
   std::unique_ptr<MockCryptAuthClientFactory> client_factory_;
   std::unique_ptr<FakeCryptAuthEciesEncryptorFactory>
       fake_cryptauth_ecies_encryptor_factory_;
-  base::MockOneShotTimer* timer_;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> timer_;
 
   std::unique_ptr<CryptAuthGroupPrivateKeySharer> sharer_;
 };

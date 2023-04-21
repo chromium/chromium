@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/libassistant/grpc/external_services/grpc_services_observer.h"
 #include "chromeos/ash/services/libassistant/public/cpp/android_app_info.h"
@@ -57,10 +58,10 @@ class DisplayConnection
 
   void FillDisplayRequest(::assistant::display::DisplayRequest& dr);
 
-  AssistantClient* assistant_client_ = nullptr;
+  raw_ptr<AssistantClient, ExperimentalAsh> assistant_client_ = nullptr;
 
   // Owned by the parent which also owns `this`.
-  DisplayConnectionObserver* const observer_;
+  const raw_ptr<DisplayConnectionObserver, ExperimentalAsh> observer_;
 
   // Whether Assistant feedback UI is enabled.
   const bool feedback_ui_enabled_;

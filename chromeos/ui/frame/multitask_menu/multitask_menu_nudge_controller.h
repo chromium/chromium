@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
@@ -141,11 +142,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
   std::unique_ptr<ui::Layer> pulse_layer_;
 
   // The app window that the nudge is associated with.
-  aura::Window* window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
 
   // The view that the nudge will be anchored to. It is the maximize or resize
   // button on `window_`'s frame. Null in tablet mode.
-  views::View* anchor_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> anchor_view_ = nullptr;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};

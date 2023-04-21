@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -239,7 +240,7 @@ class WifiHotspotConnectorTest : public testing::Test {
     }
 
    private:
-    NetworkStateTestHelper* helper_;
+    raw_ptr<NetworkStateTestHelper, ExperimentalAsh> helper_;
     // Has type base::Value::Type::NONE if no configuration has been passed to
     // TestNetworkConnect yet.
     base::Value::Dict last_configuration_;
@@ -305,7 +306,7 @@ class WifiHotspotConnectorTest : public testing::Test {
     mock_timer_ = new base::MockOneShotTimer();
     test_clock_.SetNow(base::Time::UnixEpoch());
     test_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
-    wifi_hotspot_connector_->SetTestDoubles(base::WrapUnique(mock_timer_),
+    wifi_hotspot_connector_->SetTestDoubles(base::WrapUnique(mock_timer_.get()),
                                             &test_clock_, test_task_runner_);
     helper_.network_state_handler()->AddObserver(&scan_observer_);
   }
@@ -414,7 +415,7 @@ class WifiHotspotConnectorTest : public testing::Test {
   std::vector<std::string> connection_callback_responses_;
   TestNetworkStateHandlerObserver scan_observer_;
 
-  base::MockOneShotTimer* mock_timer_;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_;
   base::SimpleTestClock test_clock_;
   scoped_refptr<base::TestSimpleTaskRunner> test_task_runner_;
   std::unique_ptr<TestNetworkConnect> test_network_connect_;

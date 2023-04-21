@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_LIBASSISTANT_AUDIO_AUDIO_STREAM_HANDLER_H_
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_AUDIO_AUDIO_STREAM_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -67,7 +68,7 @@ class AudioStreamHandler : public assistant::mojom::AssistantAudioDecoderClient,
   void Decode();
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
-  assistant_client::AudioOutput::Delegate* delegate_;
+  raw_ptr<assistant_client::AudioOutput::Delegate, ExperimentalAsh> delegate_;
 
   mojo::Receiver<AssistantAudioDecoderClient> client_receiver_{this};
   std::unique_ptr<AudioMediaDataSource> media_data_source_;
@@ -82,7 +83,7 @@ class AudioStreamHandler : public assistant::mojom::AssistantAudioDecoderClient,
   bool stopped_ = false;
 
   // Temporary storage of |buffer| passed by |FillBuffer|.
-  void* buffer_to_copy_ = nullptr;
+  raw_ptr<void, ExperimentalAsh> buffer_to_copy_ = nullptr;
   // Temporary storage of |buffer_size| passed by |FillBuffer|.
   int size_to_copy_ = 0;
   // Temporary storage of |on_filled| passed by |FillBuffer|.

@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/dbus/os_install/os_install_client.h"
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/os_install/fake_os_install_client.h"
 #include "dbus/bus.h"
@@ -56,7 +57,7 @@ class OsInstallClientImpl : public OsInstallClient {
                              const std::string& signal_name,
                              bool success);
 
-  dbus::ObjectProxy* proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
   base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<OsInstallClientImpl> weak_factory_{this};

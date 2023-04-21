@@ -7,6 +7,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/cdm_factory_daemon/fake_cdm_factory_daemon_client.h"
 #include "dbus/bus.h"
@@ -66,7 +67,7 @@ class CdmFactoryDaemonClientImpl : public CdmFactoryDaemonClient {
   }
 
   // D-Bus proxy for the CdmFactoryDaemon, not owned.
-  dbus::ObjectProxy* proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
 
   base::WeakPtrFactory<CdmFactoryDaemonClientImpl> weak_factory_{this};
 };

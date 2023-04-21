@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -337,9 +338,11 @@ class SecureChannelBleScannerImplTest : public testing::Test {
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
 
   std::unique_ptr<device::BluetoothDiscoverySession> discovery_session_;
-  FakeServiceDataProvider* fake_service_data_provider_ = nullptr;
+  raw_ptr<FakeServiceDataProvider, ExperimentalAsh>
+      fake_service_data_provider_ = nullptr;
   base::WeakPtr<device::BluetoothDiscoverySession> discovery_session_weak_ptr_;
-  device::BluetoothLowEnergyScanSession* scan_session_ptr_ = nullptr;
+  raw_ptr<device::BluetoothLowEnergyScanSession, ExperimentalAsh>
+      scan_session_ptr_ = nullptr;
   base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate>
       le_scan_delegate_;
 

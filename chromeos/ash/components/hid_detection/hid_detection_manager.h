@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 
 #include "chromeos/ash/components/hid_detection/bluetooth_hid_detector.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -108,7 +109,7 @@ class HidDetectionManager {
   // types to notify observers of status changes.
   void NotifyHidDetectionStatusChanged();
 
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
 };
 
 }  // namespace ash::hid_detection

@@ -148,7 +148,7 @@ void CellularConnectionHandler::Init(
   cellular_inhibitor_ = cellular_inhibitor;
   cellular_esim_profile_handler_ = cellular_esim_profile_handler;
 
-  network_state_handler_observer_.Observe(network_state_handler_);
+  network_state_handler_observer_.Observe(network_state_handler_.get());
 }
 
 void CellularConnectionHandler::PrepareExistingCellularNetworkForConnection(

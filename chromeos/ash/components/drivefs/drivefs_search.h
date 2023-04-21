@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -49,9 +50,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsSearch {
       drive::FileError error,
       absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
 
-  mojom::DriveFs* const drivefs_;
-  network::NetworkConnectionTracker* const network_connection_tracker_;
-  const base::Clock* const clock_;
+  const raw_ptr<mojom::DriveFs, ExperimentalAsh> drivefs_;
+  const raw_ptr<network::NetworkConnectionTracker, ExperimentalAsh>
+      network_connection_tracker_;
+  const raw_ptr<const base::Clock, ExperimentalAsh> clock_;
   base::Time last_shared_with_me_response_;
 
   base::WeakPtrFactory<DriveFsSearch> weak_ptr_factory_{this};

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -138,9 +139,10 @@ class HostScannerOperation : public MessageTransferOperation {
                       scoped_refptr<base::TaskRunner> test_task_runner);
   void RecordTetherAvailabilityResponseDuration(const std::string device_id);
 
-  TetherHostResponseRecorder* tether_host_response_recorder_;
-  ConnectionPreserver* connection_preserver_;
-  base::Clock* clock_;
+  raw_ptr<TetherHostResponseRecorder, ExperimentalAsh>
+      tether_host_response_recorder_;
+  raw_ptr<ConnectionPreserver, ExperimentalAsh> connection_preserver_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
   scoped_refptr<base::TaskRunner> task_runner_;
   base::ObserverList<Observer>::Unchecked observer_list_;
 

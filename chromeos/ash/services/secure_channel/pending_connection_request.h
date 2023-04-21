@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/ash/services/secure_channel/pending_connection_request_delegate.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
@@ -64,7 +65,7 @@ class PendingConnectionRequest {
   }
 
  private:
-  PendingConnectionRequestDelegate* delegate_;
+  raw_ptr<PendingConnectionRequestDelegate, ExperimentalAsh> delegate_;
   ConnectionPriority connection_priority_;
 };
 

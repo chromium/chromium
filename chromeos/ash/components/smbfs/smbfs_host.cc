@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -71,7 +72,7 @@ class SmbFsDelegateImpl : public mojom::SmbFsDelegate {
   }
 
   mojo::Receiver<mojom::SmbFsDelegate> receiver_;
-  SmbFsHost::Delegate* const delegate_;
+  const raw_ptr<SmbFsHost::Delegate, ExperimentalAsh> delegate_;
 
   base::WeakPtrFactory<SmbFsDelegateImpl> weak_factory_{this};
 };

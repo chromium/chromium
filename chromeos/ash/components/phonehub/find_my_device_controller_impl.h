@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_FIND_MY_DEVICE_CONTROLLER_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_FIND_MY_DEVICE_CONTROLLER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/do_not_disturb_controller.h"
 #include "chromeos/ash/components/phonehub/find_my_device_controller.h"
 
@@ -32,8 +33,8 @@ class FindMyDeviceControllerImpl : public FindMyDeviceController {
 
   Status phone_ringing_status_ = Status::kRingingOff;
 
-  MessageSender* message_sender_;
-  UserActionRecorder* user_action_recorder_;
+  raw_ptr<MessageSender, ExperimentalAsh> message_sender_;
+  raw_ptr<UserActionRecorder, ExperimentalAsh> user_action_recorder_;
 };
 
 }  // namespace phonehub

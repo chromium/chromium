@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_BLE_ADVERTISER_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_BLE_ADVERTISER_H_
 
+#include "base/memory/raw_ptr.h"
+
 namespace ash::secure_channel {
 
 class DeviceIdPair;
@@ -65,7 +67,7 @@ class BleAdvertiser {
   void NotifyFailureToGenerateAdvertisement(const DeviceIdPair& device_id_pair);
 
  private:
-  Delegate* delegate_;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
 };
 
 }  // namespace ash::secure_channel

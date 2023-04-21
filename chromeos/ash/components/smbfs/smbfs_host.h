@@ -11,6 +11,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/disks/mount_point.h"
 #include "chromeos/ash/components/smbfs/mojom/smbfs.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -86,7 +87,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SMBFS) SmbFsHost {
                                smbfs::mojom::DeleteRecursivelyError error);
 
   const std::unique_ptr<ash::disks::MountPoint> mount_point_;
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   mojo::Remote<mojom::SmbFs> smbfs_;
   std::unique_ptr<mojom::SmbFsDelegate> delegate_impl_;

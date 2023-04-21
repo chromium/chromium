@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromeos/ash/services/libassistant/public/mojom/audio_input_controller.mojom-forward.h"
 #include "chromeos/ash/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
@@ -48,8 +49,9 @@ class AudioInputStream {
   std::string device_id_;
   bool detect_dead_stream_;
   assistant_client::BufferFormat buffer_format_;
-  mojom::PlatformDelegate* const delegate_;
-  media::AudioCapturerSource::CaptureCallback* const capture_callback_;
+  const raw_ptr<mojom::PlatformDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<media::AudioCapturerSource::CaptureCallback, ExperimentalAsh>
+      capture_callback_;
   scoped_refptr<media::AudioCapturerSource> source_;
 };
 

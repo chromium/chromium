@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/memory/zram_writeback_controller.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chromeos/ash/components/memory/zram_writeback_backend.h"
@@ -103,8 +104,8 @@ class ZramWritebackControllerTest : public testing::Test {
 
  private:
   // Capture only for the mock.
-  MockZramWritebackPolicy* policy_;
-  MockZramWritebackBackend* backend_;
+  raw_ptr<MockZramWritebackPolicy, ExperimentalAsh> policy_;
+  raw_ptr<MockZramWritebackBackend, ExperimentalAsh> backend_;
 
   std::unique_ptr<ZramWritebackController> controller_;
 

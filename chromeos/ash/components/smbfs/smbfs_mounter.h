@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
@@ -127,8 +128,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SMBFS) SmbFsMounter {
   const std::string share_path_;
   const std::string mount_dir_name_;
   const MountOptions options_;
-  SmbFsHost::Delegate* const delegate_;
-  ash::disks::DiskMountManager* const disk_mount_manager_;
+  const raw_ptr<SmbFsHost::Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<ash::disks::DiskMountManager, ExperimentalAsh>
+      disk_mount_manager_;
   const base::UnguessableToken token_;
   const std::string mount_url_;
   bool mojo_fd_pending_ = false;

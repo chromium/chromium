@@ -9,6 +9,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/assistant/public/cpp/conversation_observer.h"
@@ -118,7 +119,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   // Owned by ServiceController.
   // Set in `OnAssistantClientCreated()` and unset in
   // `OnDestroyingAssistantClient()`.
-  AssistantClient* assistant_client_ = nullptr;
+  raw_ptr<AssistantClient, ExperimentalAsh> assistant_client_ = nullptr;
 
   // False until libassistant is running for the first time.
   // Any request that comes in before that is an error and will be DCHECK'ed.

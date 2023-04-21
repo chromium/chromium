@@ -9,6 +9,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
@@ -100,7 +101,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) SystemTokenCertDbStorage {
 
   // Global NSSCertDatabase which sees the system token. Owned by
   // SystemTokenCertDbInitializer.
-  net::NSSCertDatabase* system_token_cert_database_ = nullptr;
+  raw_ptr<net::NSSCertDatabase, ExperimentalAsh> system_token_cert_database_ =
+      nullptr;
 
   bool system_token_cert_db_retrieval_failed_ = false;
 

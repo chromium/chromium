@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -147,8 +148,9 @@ class ConnectTetheringOperation : public MessageTransferOperation {
   static const uint32_t kSetupRequiredResponseTimeoutSeconds;
 
   multidevice::RemoteDeviceRef remote_device_;
-  TetherHostResponseRecorder* tether_host_response_recorder_;
-  base::Clock* clock_;
+  raw_ptr<TetherHostResponseRecorder, ExperimentalAsh>
+      tether_host_response_recorder_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
   int connect_message_sequence_number_ = -1;
   bool setup_required_;
 

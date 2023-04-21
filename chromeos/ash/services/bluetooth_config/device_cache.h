@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
@@ -74,7 +75,7 @@ class DeviceCache {
  private:
   bool IsBluetoothEnabledOrEnabling() const;
 
-  AdapterStateController* adapter_state_controller_;
+  raw_ptr<AdapterStateController, ExperimentalAsh> adapter_state_controller_;
 
   base::ObserverList<Observer> observers_;
 };

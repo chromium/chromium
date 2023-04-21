@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/tether/active_host.h"
 #include "chromeos/ash/components/tether/crash_recovery_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -69,9 +70,9 @@ class CrashRecoveryManagerImpl : public CrashRecoveryManager {
       const std::string& tether_network_guid,
       const std::string& wifi_network_guid);
 
-  NetworkStateHandler* network_state_handler_;
-  ActiveHost* active_host_;
-  HostScanCache* host_scan_cache_;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<ActiveHost, ExperimentalAsh> active_host_;
+  raw_ptr<HostScanCache, ExperimentalAsh> host_scan_cache_;
 
   base::WeakPtrFactory<CrashRecoveryManagerImpl> weak_ptr_factory_{this};
 };

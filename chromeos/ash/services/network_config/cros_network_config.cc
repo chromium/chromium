@@ -2255,7 +2255,7 @@ void CrosNetworkConfig::BindReceiver(
 void CrosNetworkConfig::AddObserver(
     mojo::PendingRemote<mojom::CrosNetworkConfigObserver> observer) {
   if (!network_state_handler_observer_.IsObserving()) {
-    network_state_handler_observer_.Observe(network_state_handler_);
+    network_state_handler_observer_.Observe(network_state_handler_.get());
   }
   if (network_certificate_handler_ &&
       !network_certificate_handler_->HasObserver(this)) {

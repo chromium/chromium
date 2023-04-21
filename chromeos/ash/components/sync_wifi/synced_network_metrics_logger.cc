@@ -117,7 +117,7 @@ SyncedNetworkMetricsLogger::SyncedNetworkMetricsLogger(
 
   if (network_state_handler) {
     network_state_handler_ = network_state_handler;
-    network_state_handler_observer_.Observe(network_state_handler_);
+    network_state_handler_observer_.Observe(network_state_handler_.get());
   }
 
   if (network_connection_handler) {

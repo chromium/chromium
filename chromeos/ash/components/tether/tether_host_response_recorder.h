@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 
@@ -86,7 +87,7 @@ class TetherHostResponseRecorder {
   std::vector<std::string> GetDeviceIdsForPref(
       const std::string& pref_name) const;
 
-  PrefService* pref_service_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   base::ObserverList<Observer>::Unchecked observer_list_;
 };
 

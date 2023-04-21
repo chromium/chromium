@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/secure_channel/ble_scanner.h"
 #include "chromeos/ash/services/secure_channel/device_id_pair.h"
 
@@ -50,7 +51,7 @@ class FakeBleScannerObserver : public BleScanner::Observer {
     ~Result();
 
     multidevice::RemoteDeviceRef remote_device;
-    device::BluetoothDevice* bluetooth_device;
+    raw_ptr<device::BluetoothDevice, ExperimentalAsh> bluetooth_device;
     ConnectionMedium connection_medium;
     ConnectionRole connection_role;
   };

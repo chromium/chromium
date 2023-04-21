@@ -36,7 +36,7 @@ bool TokenizedStringCharIterator::NextChar() {
 }
 
 bool TokenizedStringCharIterator::NextToken() {
-  if (current_token_ < tokens_.size()) {
+  if (current_token_ < tokens_->size()) {
     ++current_token_;
     CreateTokenCharIterator();
   }
@@ -50,7 +50,8 @@ int32_t TokenizedStringCharIterator::Get() const {
 
 int32_t TokenizedStringCharIterator::GetArrayPos() const {
   DCHECK(current_token_iter_);
-  return mappings_[current_token_].start() + current_token_iter_->array_pos();
+  return (*mappings_)[current_token_].start() +
+         current_token_iter_->array_pos();
 }
 
 size_t TokenizedStringCharIterator::GetCharSize() const {
@@ -81,13 +82,13 @@ void TokenizedStringCharIterator::SetState(const State& state) {
 }
 
 void TokenizedStringCharIterator::CreateTokenCharIterator() {
-  if (current_token_ == tokens_.size()) {
+  if (current_token_ == tokens_->size()) {
     current_token_iter_.reset();
     return;
   }
 
-  current_token_iter_ =
-      std::make_unique<base::i18n::UTF16CharIterator>(tokens_[current_token_]);
+  current_token_iter_ = std::make_unique<base::i18n::UTF16CharIterator>(
+      (*tokens_)[current_token_]);
 }
 
 }  // namespace ash::string_matching

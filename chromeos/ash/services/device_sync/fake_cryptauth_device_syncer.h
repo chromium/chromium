@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_syncer.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_syncer_impl.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
@@ -95,12 +96,14 @@ class FakeCryptAuthDeviceSyncerFactory
       std::unique_ptr<base::OneShotTimer> timer) override;
 
   std::vector<FakeCryptAuthDeviceSyncer*> instances_;
-  CryptAuthDeviceRegistry* last_device_registry_ = nullptr;
-  CryptAuthKeyRegistry* last_key_registry_ = nullptr;
-  CryptAuthClientFactory* last_client_factory_ = nullptr;
-  SyncedBluetoothAddressTracker* last_synced_bluetooth_address_tracker_ =
+  raw_ptr<CryptAuthDeviceRegistry, ExperimentalAsh> last_device_registry_ =
       nullptr;
-  PrefService* last_pref_service_ = nullptr;
+  raw_ptr<CryptAuthKeyRegistry, ExperimentalAsh> last_key_registry_ = nullptr;
+  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> last_client_factory_ =
+      nullptr;
+  raw_ptr<SyncedBluetoothAddressTracker, ExperimentalAsh>
+      last_synced_bluetooth_address_tracker_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> last_pref_service_ = nullptr;
 };
 
 }  // namespace device_sync

@@ -8,6 +8,7 @@
 #include <ostream>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -88,7 +89,7 @@ class NotificationAccessSetupOperation {
 
   absl::optional<Status> current_status_;
   const base::TimeTicks start_timestamp_ = base::TimeTicks::Now();
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
   base::OnceClosure destructor_callback_;
 };
 
