@@ -895,7 +895,7 @@
       'lorenz-graph-dbg': 'android_debug_bot_reclient_external_fastbuild',
       'mac-arm64-finch-smoke-chrome': 'official_reclient_mac_arm',
       'win-arm64-dbg': 'gpu_tests_arm64_debug_reclient',
-      'win-arm64-rel': 'gpu_tests_arm64_release_reclient',
+      'win-arm64-rel': 'gpu_tests_arm64_release_minimal_symbol_reclient',
       'win-celab-rel': 'official_celab_release_bot',
       'win-finch-smoke-chrome': 'official_reclient',
     },
@@ -2699,8 +2699,8 @@
       'gpu_tests', 'arm64', 'debug_bot_reclient'
     ],
 
-    'gpu_tests_arm64_release_reclient': [
-      'gpu_tests', 'arm64', 'release_bot_reclient'
+    'gpu_tests_arm64_release_minimal_symbol_reclient': [
+      'gpu_tests', 'arm64', 'release_bot_reclient', 'minimal_symbols'
     ],
 
     'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols_reclient': [
