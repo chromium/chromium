@@ -1269,6 +1269,7 @@ extern const char kDeviceHindiInscriptLayoutEnabled[];
 
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kHighEfficiencyChipExpandedCount[];
+extern const char kLastHighEfficiencyChipExpandedTimestamp[];
 
 extern const char kShouldShowPriceTrackFUEBubble[];
 extern const char kShouldShowSidePanelBookmarkTab[];

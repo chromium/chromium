@@ -114,13 +114,16 @@ void HighEfficiencyChipView::UpdateImpl() {
         tab_helper->SetWasAnimated();
         pref_service->SetInteger(prefs::kHighEfficiencyChipExpandedCount,
                                  times_rendered + 1);
-      } else if (ShouldHighlightMemorySavingsWithExpandedChip(tab_helper)) {
+      } else if (ShouldHighlightMemorySavingsWithExpandedChip(tab_helper,
+                                                              pref_service)) {
         int const memory_savings = tab_helper->GetMemorySavingsInBytes();
         SetLabel(
             l10n_util::GetStringFUTF16(IDS_HIGH_EFFICIENCY_CHIP_SAVINGS_LABEL,
                                        {ui::FormatBytes(memory_savings)}));
         AnimateIn(absl::nullopt);
         tab_helper->SetWasAnimated();
+        pref_service->SetTime(prefs::kLastHighEfficiencyChipExpandedTimestamp,
+                              base::Time::Now());
       }
     } else if (tab_helper->HasChipBeenHidden()) {
       UnpauseAnimation();
@@ -171,14 +174,25 @@ void HighEfficiencyChipView::OnHighEfficiencyModeChanged() {
 }
 
 bool HighEfficiencyChipView::ShouldHighlightMemorySavingsWithExpandedChip(
-    HighEfficiencyChipTabHelper* high_efficiency_tab_helper) {
-  int const memory_savings =
-      high_efficiency_tab_helper->GetMemorySavingsInBytes();
-  return base::FeatureList::IsEnabled(
-             performance_manager::features::
-                 kMemorySavingsReportingImprovements) &&
-         memory_savings > performance_manager::features::
-                              kExpandedHighEfficiencyChipThresholdBytes.Get();
+    HighEfficiencyChipTabHelper* high_efficiency_tab_helper,
+    PrefService* pref_service) {
+  if (!base::FeatureList::IsEnabled(
+          performance_manager::features::kMemorySavingsReportingImprovements)) {
+    return false;
+  }
+
+  bool const savings_over_threshold =
+      (int)high_efficiency_tab_helper->GetMemorySavingsInBytes() >
+      performance_manager::features::kExpandedHighEfficiencyChipThresholdBytes
+          .Get();
+
+  base::Time const last_expanded_timestamp =
+      pref_service->GetTime(prefs::kLastHighEfficiencyChipExpandedTimestamp);
+  bool const expanded_chip_not_shown_recently =
+      (base::Time::Now() - last_expanded_timestamp) >
+      performance_manager::features::kExpandedHighEfficiencyChipFrequency.Get();
+
+  return savings_over_threshold && expanded_chip_not_shown_recently;
 }
 
 BEGIN_METADATA(HighEfficiencyChipView, PageActionIconView)

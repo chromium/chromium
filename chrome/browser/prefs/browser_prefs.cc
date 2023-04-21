@@ -1737,6 +1737,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(prefs::kHighEfficiencyChipExpandedCount, 0);
+  registry->RegisterTimePref(prefs::kLastHighEfficiencyChipExpandedTimestamp,
+                             base::Time());
   permissions::PermissionHatsTriggerHelper::RegisterProfilePrefs(registry);
 #endif
 

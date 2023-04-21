@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_chip_view.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
 #include "chrome/browser/profiles/profile.h"
@@ -107,6 +108,11 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
         prefs::kHighEfficiencyChipExpandedCount, count);
   }
 
+  void SetChipExpandedTimeToNow() {
+    browser_view()->browser()->profile()->GetPrefs()->SetTime(
+        prefs::kLastHighEfficiencyChipExpandedTimestamp, base::Time::Now());
+  }
+
   PageActionIconView* GetPageActionIconView() {
     return browser_view()
         ->GetLocationBarView()
@@ -203,6 +209,35 @@ TEST_F(HighEfficiencyChipViewTest, ShouldExpandForSavingsAboveThreshold) {
 TEST_F(HighEfficiencyChipViewTest, ShouldNotExpandForSavingsBelowThreshold) {
   SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
   SetHighEfficiencyModeEnabled(true);
+  SetTabDiscardState(0, true);
+
+  PageActionIconView* view = GetPageActionIconView();
+  EXPECT_TRUE(view->GetVisible());
+  EXPECT_FALSE(view->ShouldShowLabel());
+}
+
+// When the savings chip hasn't been expanded recently (based on a pref) then it
+// expands to highlight savings.
+TEST_F(HighEfficiencyChipViewTest, ShouldExpandWhenChipHasntExpandedRecently) {
+  SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
+  SetHighEfficiencyModeEnabled(true);
+  AddNewTab(kHighMemorySavingsKilobytes,
+            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+  SetTabDiscardState(0, true);
+
+  PageActionIconView* view = GetPageActionIconView();
+  EXPECT_TRUE(view->GetVisible());
+  EXPECT_TRUE(view->ShouldShowLabel());
+}
+
+// When the savings chip has been expanded recently then it does not show in
+// the expanded mode.
+TEST_F(HighEfficiencyChipViewTest, ShouldNotExpandWhenChipHasExpandedRecently) {
+  SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
+  SetHighEfficiencyModeEnabled(true);
+  SetChipExpandedTimeToNow();
+  AddNewTab(kHighMemorySavingsKilobytes,
+            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
   SetTabDiscardState(0, true);
 
   PageActionIconView* view = GetPageActionIconView();

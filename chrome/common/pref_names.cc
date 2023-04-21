@@ -3573,6 +3573,11 @@ const char kDeviceHindiInscriptLayoutEnabled[] =
 const char kHighEfficiencyChipExpandedCount[] =
     "high_efficiency.chip_expanded_count";
 
+// Stores the timestamp of the last time the high efficiency chip was shown
+// expanded to highlight memory savings.
+const char kLastHighEfficiencyChipExpandedTimestamp[] =
+    "high_efficiency.last_chip_expanded_timestamp";
+
 // A boolean indicating whether the price track first user experience bubble
 // should show. This is set to false if the user has clicked the "Price track"
 // button in the FUE bubble once.
