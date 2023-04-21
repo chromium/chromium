@@ -280,7 +280,7 @@ int Node::ClosePort(const PortRef& port_ref) {
   if (recordreplay::AreEventsDisallowed()) {
     return OK;
   }
-  recordreplay::Assert("[RUN-1307-1539] Node::ClosePort");
+  recordreplay::Assert("[RUN-1307-1539] Node::ClosePort A");
 
   std::vector<std::unique_ptr<UserMessageEvent>> undelivered_messages;
   NodeName peer_node_name;
@@ -323,6 +323,7 @@ int Node::ClosePort(const PortRef& port_ref) {
 
   ErasePort(port_ref.name());
 
+  recordreplay::Assert("[RUN-1307-1773] Node::ClosePort B %d %zu", was_initialized, undelivered_messages.size());
   if (was_initialized) {
     DVLOG(2) << "Sending ObserveClosure from " << port_ref.name() << "@"
              << name_ << " to " << peer_port_name << "@" << peer_node_name;
@@ -338,6 +339,8 @@ int Node::ClosePort(const PortRef& port_ref) {
       }
     }
   }
+
+  recordreplay::Assert("[RUN-1307-1773] Node::ClosePort C");
   return OK;
 }
 
@@ -427,6 +430,7 @@ int Node::GetMessage(const PortRef& port_ref,
 
 int Node::SendUserMessage(const PortRef& port_ref,
                           std::unique_ptr<UserMessageEvent> message) {
+  recordreplay::Assert("[RUN-1307-1773] Node::SendUserMessage");
   int rv = SendUserMessageInternal(port_ref, &message);
   if (rv != OK) {
     // If send failed, close all carried ports. Note that we're careful not to

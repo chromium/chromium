@@ -118,16 +118,21 @@ NamedPropertySetterResult StorageArea::setItem(
     const String& key,
     const String& value,
     ExceptionState& exception_state) {
+  recordreplay::Assert("[RUN-1307-1773] StorageArea::setItem A %s", key.Utf8().c_str());
   if (!CanAccessStorage()) {
     exception_state.ThrowSecurityError("access is denied for this document.");
     return NamedPropertySetterResult::kIntercepted;
   }
   if (!cached_area_->SetItem(key, value, this)) {
+    recordreplay::Assert("[RUN-1307-1773] StorageArea::setItem B %s",
+                         key.Utf8().c_str());
     exception_state.ThrowDOMException(
         DOMExceptionCode::kQuotaExceededError,
         "Setting the value of '" + key + "' exceeded the quota.");
     return NamedPropertySetterResult::kIntercepted;
   }
+  recordreplay::Assert("[RUN-1307-1773] StorageArea::setItem C %s",
+                       key.Utf8().c_str());
   RecordModificationInMetrics();
   return NamedPropertySetterResult::kIntercepted;
 }
