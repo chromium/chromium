@@ -56,6 +56,7 @@ suite('CrSettingsRecentSitePermissionsTest', function() {
       await flushTasks();
       const mockData = [{
         origin,
+        displayName: 'bar.com',
         incognito: false,
         recentPermissions: [createRawSiteException(origin, {
           setting: ContentSetting.BLOCK,
@@ -78,6 +79,7 @@ suite('CrSettingsRecentSitePermissionsTest', function() {
     const mockData = [
       {
         origin: origin1,
+        displayName: host1,
         incognito: true,
         recentPermissions: [
           createRawSiteException(origin1, {
@@ -108,19 +110,8 @@ suite('CrSettingsRecentSitePermissionsTest', function() {
         ],
       },
       {
-        // When isolatedWebAppName is defined, it will override the origin.
-        origin: origin1,
-        isolatedWebAppName: 'Isolated Web App',
-        incognito: false,
-        recentPermissions: [
-          createRawSiteException(origin1, {
-            setting: ContentSetting.ALLOW,
-            type: ContentSettingsTypes.PROTOCOL_HANDLERS,
-          }),
-        ],
-      },
-      {
         origin: origin2,
+        displayName: host2,
         incognito: false,
         recentPermissions: [
           createRawSiteException(origin2, {
@@ -145,19 +136,15 @@ suite('CrSettingsRecentSitePermissionsTest', function() {
 
     const siteEntries =
         testElement.shadowRoot!.querySelectorAll('.link-button');
-    assertEquals(3, siteEntries.length);
+    assertEquals(2, siteEntries.length);
 
     assertEquals(
         host1,
         siteEntries[0]!.querySelector(
                            '.url-directionality')!.textContent!.trim());
     assertEquals(
-        mockData[1]!.isolatedWebAppName,
-        siteEntries[1]!.querySelector(
-                           '.url-directionality')!.textContent!.trim());
-    assertEquals(
         host2,
-        siteEntries[2]!.querySelector(
+        siteEntries[1]!.querySelector(
                            '.url-directionality')!.textContent!.trim());
 
     const incognitoIcons =
@@ -165,7 +152,6 @@ suite('CrSettingsRecentSitePermissionsTest', function() {
             '.incognito-icon');
     assertTrue(isVisible(incognitoIcons[0]!));
     assertFalse(isVisible(incognitoIcons[1]!));
-    assertFalse(isVisible(incognitoIcons[2]!));
 
     // Check that the text describing the changed permissions is correct.
     const i18n = testElement.i18n.bind(testElement);
@@ -184,10 +170,6 @@ suite('CrSettingsRecentSitePermissionsTest', function() {
     const expectedPermissionString1 = `${allowed}${i18n('sentenceEnd')} ${
         autoBlocked}${i18n('sentenceEnd')} ${blocked}${i18n('sentenceEnd')}`;
 
-    const expectedPermissionString2 = i18n(
-        'recentPermissionAllowedOneItem',
-        i18n('siteSettingsHandlersMidSentence'));
-
     allowed = i18n(
         'recentPermissionAutoBlockedOneItem',
         i18n('siteSettingsClipboardMidSentence'));
@@ -202,10 +184,7 @@ suite('CrSettingsRecentSitePermissionsTest', function() {
         expectedPermissionString1,
         siteEntries[0]!.querySelector('.second-line')!.textContent!.trim());
     assertEquals(
-        expectedPermissionString2,
-        siteEntries[1]!.querySelector('.second-line')!.textContent!.trim());
-    assertEquals(
         expectedPermissionString3,
-        siteEntries[2]!.querySelector('.second-line')!.textContent!.trim());
+        siteEntries[1]!.querySelector('.second-line')!.textContent!.trim());
   });
 });

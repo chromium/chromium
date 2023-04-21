@@ -497,6 +497,7 @@ export class AllSitesElement extends AllSitesElementBase {
 
     const updatedSiteGroup: SiteGroup = {
       etldPlus1: siteGroupToUpdate.etldPlus1,
+      displayName: siteGroupToUpdate.displayName,
       hasInstalledPWA: siteGroupToUpdate.hasInstalledPWA,
       numCookies: siteGroupToUpdate.numCookies,
       fpsOwner: siteGroupToUpdate.fpsOwner,
@@ -634,7 +635,7 @@ export class AllSitesElement extends AllSitesElementBase {
       return loadTimeData.substituteString(this.i18n(
           'siteSettingsRemoveSiteOriginPartitionedDialogTitle',
           this.originRepresentation(this.actionMenuModel_.origin),
-          this.originRepresentation(this.actionMenuModel_.item.etldPlus1)));
+          this.actionMenuModel_.item.displayName));
     }
 
     const numInstalledApps =
@@ -669,7 +670,7 @@ export class AllSitesElement extends AllSitesElementBase {
     } else if (singleOriginSite) {
       displayOrigin = this.actionMenuModel_.item.origins[0].origin;
     } else {
-      displayOrigin = this.actionMenuModel_.item.etldPlus1;
+      displayOrigin = this.actionMenuModel_.item.displayName;
     }
 
     return loadTimeData.substituteString(
@@ -788,6 +789,7 @@ export class AllSitesElement extends AllSitesElementBase {
     const siteGroupToUpdate = this.filteredList_[index];
     const updatedSiteGroup: SiteGroup = {
       etldPlus1: siteGroupToUpdate.etldPlus1,
+      displayName: siteGroupToUpdate.displayName,
       hasInstalledPWA: siteGroupToUpdate.hasInstalledPWA,
       numCookies: 0,
       fpsOwner: siteGroupToUpdate.fpsOwner,

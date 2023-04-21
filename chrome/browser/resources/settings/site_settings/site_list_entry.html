@@ -55,12 +55,12 @@
             on-focus="onShowIncognitoTooltip_"></cr-tooltip-icon>
       </template>
       <cr-icon-button id="resetSite" class="icon-delete-gray"
-          hidden="[[shouldHideResetButton_(model, readOnlyList)]]"
+          hidden="[[!shouldShowResetButton_(model, readOnlyList)]]"
           on-click="onResetButtonClick_"
           aria-label="$i18n{siteSettingsActionReset}" focus-row-control
           focus-type="reset"></cr-icon-button>
       <cr-icon-button id="actionMenuButton" class="icon-more-vert"
-          hidden="[[shouldHideActionMenu_(model, readOnlyList)]]"
+          hidden="[[!shouldShowActionMenu_(model, readOnlyList)]]"
           on-click="onShowActionMenuClick_" title="$i18n{moreActions}"
           focus-row-control focus-type="menu"></cr-icon-button>
     </div>

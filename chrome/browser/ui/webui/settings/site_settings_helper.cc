@@ -295,14 +295,15 @@ bool PatternAppliesToWebUISchemes(const ContentSettingPatternSource& pattern) {
              ContentSettingsPattern::SchemeType::SCHEME_DEVTOOLS;
 }
 
-// If the given |pattern| represents an individual origin or extension, retrieve
-// a string to display it as such. If not, return the pattern as a string.
+// If the given |pattern| represents an individual origin, Isolated Web App, or
+// extension, retrieve a string to display it as such. If not, return the
+// pattern as a string.
 std::string GetDisplayNameForPattern(Profile* profile,
                                      const ContentSettingsPattern& pattern) {
-  absl::optional<std::string> extension_display_name =
-      GetExtensionDisplayName(profile, GURL(pattern.ToString()));
-  if (extension_display_name.has_value()) {
-    return extension_display_name.value();
+  GURL url(pattern.ToString());
+  if (url.SchemeIs(extensions::kExtensionScheme) ||
+      url.SchemeIs(chrome::kIsolatedAppScheme)) {
+    return GetDisplayNameForGURL(profile, url, /*hostname_only=*/false);
   }
   return pattern.ToString();
 }
@@ -414,6 +415,17 @@ const ChooserTypeNameEntry kChooserTypeGroupNames[] = {
     {&GetSerialChooserContext, kSerialChooserDataGroupType},
     {&GetHidChooserContext, kHidChooserDataGroupType},
     {&GetBluetoothChooserContext, kBluetoothChooserDataGroupType}};
+
+// There are two FormatOptions to support both hostname-only and schemeful URL
+// formatting, both of which are used in Site Settings.
+constexpr UrlIdentity::FormatOptions kUrlIdentityOptionsWithScheme = {
+    .default_options = {
+        UrlIdentity::DefaultFormatOptions::kOmitCryptographicScheme}};
+constexpr UrlIdentity::FormatOptions kUrlIdentityOptionsHostnameOnly = {
+    .default_options = {UrlIdentity::DefaultFormatOptions::kHostname}};
+constexpr UrlIdentity::TypeSet kUrlIdentityAllowedTypes = {
+    UrlIdentity::Type::kDefault, UrlIdentity::Type::kFile,
+    UrlIdentity::Type::kIsolatedWebApp, UrlIdentity::Type::kChromeExtension};
 
 }  // namespace
 
@@ -576,11 +588,6 @@ base::Value::Dict GetFileSystemExceptionForPage(
   exception.Set(kSource, provider_name);
   exception.Set(kIncognito, incognito);
   exception.Set(kIsEmbargoed, is_embargoed);
-  absl::optional<std::string> isolated_web_app_name =
-      GetIsolatedWebAppName(profile, GURL(origin));
-  if (isolated_web_app_name.has_value()) {
-    exception.Set(kIsolatedWebAppName, isolated_web_app_name.value());
-  }
   return exception;
 }
 
@@ -612,34 +619,22 @@ base::Value::Dict GetExceptionForPage(
   exception.Set(kSource, provider_name);
   exception.Set(kIncognito, incognito);
   exception.Set(kIsEmbargoed, is_embargoed);
-  absl::optional<std::string> isolated_web_app_name =
-      GetIsolatedWebAppName(profile, GURL(pattern.ToString()));
-  if (isolated_web_app_name.has_value()) {
-    exception.Set(kIsolatedWebAppName, isolated_web_app_name.value());
-  }
   return exception;
 }
 
-// Takes |url| and converts it into an individual origin string or retrieves
-// name of the extension it belongs to.
-std::string GetDisplayNameForGURL(Profile* profile, const GURL& url) {
-  const url::Origin origin = url::Origin::Create(url);
-  if (origin.opaque())
+std::string GetDisplayNameForGURL(Profile* profile,
+                                  const GURL& url,
+                                  bool hostname_only) {
+  auto origin = url::Origin::Create(url);
+  if (origin.opaque()) {
     return url.spec();
-
-  absl::optional<std::string> extension_display_name =
-      GetExtensionDisplayName(profile, url);
-  if (extension_display_name.has_value()) {
-    return extension_display_name.value();
   }
-  auto url_16 = url_formatter::FormatUrl(
-      url,
-      url_formatter::kFormatUrlOmitDefaults |
-          url_formatter::kFormatUrlOmitHTTPS |
-          url_formatter::kFormatUrlOmitTrailingSlashOnBareHostname,
-      base::UnescapeRule::NONE, nullptr, nullptr, nullptr);
-  auto url_string = base::UTF16ToUTF8(url_16);
-  return url_string;
+
+  auto url_identity = UrlIdentity::CreateFromUrl(
+      profile, origin.GetURL(), kUrlIdentityAllowedTypes,
+      hostname_only ? kUrlIdentityOptionsHostnameOnly
+                    : kUrlIdentityOptionsWithScheme);
+  return base::UTF16ToUTF8(url_identity.name);
 }
 
 void GetExceptionsForContentType(ContentSettingsType type,
@@ -839,7 +834,8 @@ ContentSetting GetContentSettingForOrigin(Profile* profile,
   // Retrieve the source of the content setting.
   *source_string = SiteSettingSourceToString(
       CalculateSiteSettingSource(profile, content_type, origin, info, result));
-  *display_name = GetDisplayNameForGURL(profile, origin);
+  *display_name =
+      GetDisplayNameForGURL(profile, origin, /*hostname_only=*/false);
 
   if (info.metadata.session_model == content_settings::SessionModel::OneTime) {
     DCHECK(
@@ -1034,17 +1030,6 @@ base::Value::List GetChooserExceptionListFromProfile(
   }
 
   return exceptions;
-}
-
-absl::optional<std::string> GetIsolatedWebAppName(Profile* profile,
-                                                  GURL origin) {
-  if (!origin.SchemeIs(chrome::kIsolatedAppScheme)) {
-    return absl::nullopt;
-  }
-  auto identity = UrlIdentity::CreateFromUrl(
-      profile, origin,
-      /*allowed_types=*/{UrlIdentity::Type::kIsolatedWebApp}, /*options=*/{});
-  return base::UTF16ToUTF8(identity.name);
 }
 
 absl::optional<std::string> GetExtensionDisplayName(Profile* profile,

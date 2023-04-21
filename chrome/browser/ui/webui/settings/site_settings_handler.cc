@@ -548,6 +548,19 @@ std::map<std::string, std::pair<std::string, int>> GetFpsMap(
   return fps_map;
 }
 
+// Resolves |origin| to the correct value for its site group if it is a
+// placeholder origin.
+url::Origin ResolveOriginInSiteGroup(const GroupingKey& grouping_key,
+                                     const url::Origin& origin) {
+  if (origin != GetPlaceholderOrigin()) {
+    return origin;
+  }
+  if (auto etld_plus1 = grouping_key.GetEtldPlusOne(); etld_plus1.has_value()) {
+    return ConvertEtldToOrigin(*etld_plus1, /*secure=*/false);
+  }
+  return *grouping_key.GetOrigin();
+}
+
 // Converts a given |site_group_map| to a list of base::Value::Dicts, adding
 // the site engagement score for each origin.
 void ConvertSiteGroupMapToList(
@@ -565,28 +578,20 @@ void ConvertSiteGroupMapToList(
   site_engagement::SiteEngagementService* engagement_service =
       site_engagement::SiteEngagementService::Get(profile);
   for (const auto& entry : site_group_map) {
-    // eTLD+1 is the effective top level domain + 1.
-    const GroupingKey& grouping_key = entry.first;
-    std::string grouping_host = grouping_key.Serialize();
     base::Value::Dict site_group;
-    site_group.Set(kEffectiveTopLevelDomainPlus1Name, grouping_host);
+    const GroupingKey& grouping_key = entry.first;
+    site_group.Set(kEffectiveTopLevelDomainPlus1Name, grouping_key.Serialize());
 
-    // Isolated Web Apps and extensions do not support sub domains, so the
-    // origin set always contains only 1 entry.
-    const url::Origin primary_origin(entry.second.begin()->first);
-    absl::optional<std::string> isolated_web_app_name =
-        site_settings::GetIsolatedWebAppName(profile, primary_origin.GetURL());
-    if (isolated_web_app_name.has_value()) {
-      site_group.Set(site_settings::kIsolatedWebAppName,
-                     isolated_web_app_name.value());
-    }
-
-    absl::optional<std::string> extension_name =
-        site_settings::GetExtensionDisplayName(profile,
-                                               primary_origin.GetURL());
-    if (extension_name.has_value() && !extension_name.value().empty()) {
-      site_group.Set(site_settings::kExtensionName, extension_name.value());
-    }
+    // eTLD+1 is the effective top level domain + 1.
+    absl::optional<std::string> etld_plus1 = grouping_key.GetEtldPlusOne();
+    absl::optional<url::Origin> group_origin = grouping_key.GetOrigin();
+    CHECK(etld_plus1 || group_origin);
+    site_group.Set(site_settings::kDisplayName,
+                   etld_plus1.has_value()
+                       ? *etld_plus1
+                       : site_settings::GetDisplayNameForGURL(
+                             profile, group_origin->GetURL(),
+                             /*hostname_only=*/false));
 
     bool has_installed_pwa = false;
     base::Value::List origin_list;
@@ -596,11 +601,8 @@ void ConvertSiteGroupMapToList(
       base::Value::Dict origin_object;
       // If origin is placeholder, use the grouping key for the origin.
       origin_object.Set(
-          "origin", (origin == GetPlaceholderOrigin()
-                         ? ConvertEtldToOrigin(grouping_host, /*secure=*/false)
-                         : origin)
-                        .GetURL()
-                        .spec());
+          "origin",
+          ResolveOriginInSiteGroup(grouping_key, origin).GetURL().spec());
       origin_object.Set("isPartitioned", is_partitioned);
       origin_object.Set("engagement",
                         engagement_service->GetScore(origin.GetURL()));
@@ -619,10 +621,10 @@ void ConvertSiteGroupMapToList(
     site_group.Set(kHasInstalledPWA, has_installed_pwa);
     site_group.Set(kNumCookies, 0);
     site_group.Set(kOriginList, std::move(origin_list));
-    if (fps_map.count(grouping_host)) {
-      site_group.Set(kFpsOwner, fps_map[grouping_host].first);
-      site_group.Set(kFpsNumMembers, fps_map[grouping_host].second);
-      auto schemeful_site = ConvertEtldToSchemefulSite(grouping_host);
+    if (etld_plus1.has_value() && fps_map.count(*etld_plus1)) {
+      site_group.Set(kFpsOwner, fps_map[*etld_plus1].first);
+      site_group.Set(kFpsNumMembers, fps_map[*etld_plus1].second);
+      auto schemeful_site = ConvertEtldToSchemefulSite(*etld_plus1);
       site_group.Set(kFpsEnterpriseManaged,
                      privacy_sandbox_service->IsPartOfManagedFirstPartySet(
                          schemeful_site));
@@ -692,6 +694,13 @@ std::string GroupingKey::Serialize() const {
 absl::optional<std::string> GroupingKey::GetEtldPlusOne() const {
   if (absl::holds_alternative<std::string>(value_)) {
     return absl::get<std::string>(value_);
+  }
+  return absl::nullopt;
+}
+
+absl::optional<url::Origin> GroupingKey::GetOrigin() const {
+  if (absl::holds_alternative<url::Origin>(value_)) {
+    return absl::get<url::Origin>(value_);
   }
   return absl::nullopt;
 }
@@ -1360,11 +1369,8 @@ void SiteSettingsHandler::HandleGetRecentSitePermissions(
     DCHECK(!site_permissions.settings.empty());
     base::Value::Dict recent_site;
     recent_site.Set(site_settings::kOrigin, site_permissions.origin.spec());
+    recent_site.Set(site_settings::kDisplayName, site_permissions.display_name);
     recent_site.Set(site_settings::kIncognito, site_permissions.incognito);
-    if (site_permissions.isolated_web_app_name.has_value()) {
-      recent_site.Set(site_settings::kIsolatedWebAppName,
-                      site_permissions.isolated_web_app_name.value());
-    }
 
     base::Value::List permissions_list;
     for (const auto& p : site_permissions.settings) {
@@ -1552,12 +1558,6 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
     raw_site_exception.Set(site_settings::kIncognito,
                            profile_->IsOffTheRecord());
     raw_site_exception.Set(site_settings::kOrigin, origin);
-    absl::optional<std::string> isolated_web_app_name =
-        site_settings::GetIsolatedWebAppName(profile_, origin_url);
-    if (isolated_web_app_name.has_value()) {
-      raw_site_exception.Set(site_settings::kIsolatedWebAppName,
-                             isolated_web_app_name.value());
-    }
     absl::optional<std::string> extension_name =
         site_settings::GetExtensionDisplayName(profile_, origin_url);
     if (extension_name.has_value()) {
@@ -2392,9 +2392,7 @@ void SiteSettingsHandler::HandleClearEtldPlus1DataAndCookies(
         // A placeholder origin may have been created, in this case the
         // grouping key itself should be used as the origin, the same as it
         // would have been for display.
-        origin_is_partitioned.first == GetPlaceholderOrigin()
-            ? ConvertEtldToOrigin(etld_plus1, /*secure=*/false)
-            : origin_is_partitioned.first);
+        ResolveOriginInSiteGroup(grouping_key, origin_is_partitioned.first));
   }
 
   // Cookies may have associated with the entry for the grouping url itself.

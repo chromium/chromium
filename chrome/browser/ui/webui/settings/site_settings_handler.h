@@ -61,6 +61,10 @@ class SiteSettingsHandler
     // doesn't represent an eTLD+1.
     absl::optional<std::string> GetEtldPlusOne() const;
 
+    // Returns the origin that this GroupingKey represents, or nullopt if it
+    // doesn't represent an origin.
+    absl::optional<url::Origin> GetOrigin() const;
+
     bool operator<(const GroupingKey& other) const;
 
    private:

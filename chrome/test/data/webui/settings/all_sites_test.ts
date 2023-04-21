@@ -546,6 +546,7 @@ suite('AllSites_DisableFirstPartySets', function() {
       {
         // Test merging an existing site works, with overlapping origin lists.
         etldPlus1: fooEtldPlus1,
+        displayName: fooEtldPlus1,
         origins: [
           createOriginInfo(fooOrigin),
           createOriginInfo('https://foo.com'),
@@ -556,6 +557,7 @@ suite('AllSites_DisableFirstPartySets', function() {
       {
         // Test adding a new site entry works.
         etldPlus1: addEtldPlus1,
+        displayName: addEtldPlus1,
         origins: [createOriginInfo(addOrigin)],
         hasInstalledPWA: false,
         numCookies: 0,
@@ -991,6 +993,7 @@ suite('AllSites_EnableFirstPartySets', function() {
   const TEST_SITE_GROUPS: SiteGroup[] = [
     {
       etldPlus1: 'foo.com',
+      displayName: 'foo.com',
       origins: [createOriginInfo('https://foo.com')],
       numCookies: 0,
       fpsOwner: 'foo.com',
@@ -998,12 +1001,14 @@ suite('AllSites_EnableFirstPartySets', function() {
     },
     {
       etldPlus1: 'bar.com',
+      displayName: 'bar.com',
       origins: [createOriginInfo('https://bar.com')],
       numCookies: 0,
       hasInstalledPWA: false,
     },
     {
       etldPlus1: 'example.com',
+      displayName: 'example.com',
       origins: [createOriginInfo('https://example.com')],
       numCookies: 0,
       hasInstalledPWA: false,
@@ -1016,6 +1021,7 @@ suite('AllSites_EnableFirstPartySets', function() {
   const TEST_FPS_SITE_GROUPS: SiteGroup[] = [
     {
       etldPlus1: 'google.com',
+      displayName: 'google.com',
       origins: [
         createOriginInfo('https://google.com'),
         createOriginInfo('https://translate.google.com'),
@@ -1027,6 +1033,7 @@ suite('AllSites_EnableFirstPartySets', function() {
     },
     {
       etldPlus1: 'youtube.com',
+      displayName: 'youtube.com',
       origins: [createOriginInfo('https://youtube.com')],
       numCookies: 0,
       fpsOwner: 'google.com',

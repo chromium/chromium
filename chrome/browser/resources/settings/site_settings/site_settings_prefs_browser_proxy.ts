@@ -62,14 +62,13 @@ export interface OriginInfo {
  */
 export interface SiteGroup {
   etldPlus1: string;
+  displayName: string;
   numCookies: number;
   origins: OriginInfo[];
   fpsOwner?: string;
   fpsNumMembers?: number;
   fpsEnterpriseManaged?: boolean;
   hasInstalledPWA: boolean;
-  isolatedWebAppName?: string;
-  extensionName?: string;
 }
 
 /**
@@ -82,7 +81,6 @@ export interface RawSiteException {
   isEmbargoed: boolean;
   origin: string;
   displayName: string;
-  isolatedWebAppName?: string;
   extensionNameWithId?: string;
   type: string;
   setting: ContentSetting;
@@ -100,7 +98,6 @@ export interface SiteException {
   isEmbargoed: boolean;
   origin: string;
   displayName: string;
-  isolatedWebAppName?: string;
   setting: ContentSetting;
   enforcement: chrome.settingsPrivate.Enforcement|null;
   controlledBy: chrome.settingsPrivate.ControlledBy;
@@ -116,7 +113,7 @@ export interface SiteException {
  */
 export interface RecentSitePermissions {
   origin: string;
-  isolatedWebAppName?: string;
+  displayName: string;
   incognito: boolean;
   recentPermissions: RawSiteException[];
 }

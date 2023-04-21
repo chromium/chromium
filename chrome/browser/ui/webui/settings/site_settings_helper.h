@@ -70,7 +70,6 @@ constexpr char kFileReadGrants[] = "fileReadGrants";
 constexpr char kFileWriteGrants[] = "fileWriteGrants";
 constexpr char kNotificationInfoString[] = "notificationInfoString";
 constexpr char kPermissions[] = "permissions";
-constexpr char kExtensionName[] = "extensionName";
 constexpr char kExtensionNameWithId[] = "extensionNameWithId";
 
 enum class SiteSettingSource {
@@ -200,14 +199,19 @@ base::Value::List GetChooserExceptionListFromProfile(
     Profile* profile,
     const ChooserTypeNameEntry& chooser_type);
 
-// Returns the short name of a web app in case of an Isolated Web App.
-absl::optional<std::string> GetIsolatedWebAppName(Profile* profile,
-                                                  GURL origin);
-
 // Returns the short name of a browser extension, or nullopt if `origin` is not
 // an extension URL.
 absl::optional<std::string> GetExtensionDisplayName(Profile* profile,
                                                     GURL origin);
+
+// Takes |url| and converts it into an individual origin string or retrieves
+// name of the extension or Isolated Web App it belongs to. If |hostname_only|
+// is true, returns |url|'s hostname for HTTP/HTTPS pages or unknown
+// extension/IWA URLs, otherwise an origin string will be returned that
+// includes the scheme if it's non-cryptographic.
+std::string GetDisplayNameForGURL(Profile* profile,
+                                  const GURL& url,
+                                  bool hostname_only);
 
 }  // namespace site_settings
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 
+#include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_piece.h"
@@ -1112,6 +1113,30 @@ TEST_F(SiteSettingsHelperExtensionTest, CreateChooserExceptionObject) {
         /*source=*/kPreferenceSource,
         /*incognito=*/false);
   }
+}
+
+TEST_F(SiteSettingsHelperExtensionTest,
+       ExceptionsUseExtensionNameAsDisplayName) {
+  const std::string extension_name = "Test Extension";
+  auto extension = LoadExtension(extension_name);
+
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  GURL extension_origin = extension->origin().GetURL();
+  map->SetContentSettingDefaultScope(extension_origin, extension_origin,
+                                     kContentTypeNotifications,
+                                     CONTENT_SETTING_BLOCK);
+
+  base::Value::List exceptions;
+  site_settings::GetExceptionsForContentType(kContentTypeNotifications,
+                                             profile(),
+                                             /*web_ui=*/nullptr,
+                                             /*incognito=*/false, &exceptions);
+
+  ASSERT_EQ(exceptions.size(), 1u);
+  const base::Value::Dict& exception = exceptions[0].GetDict();
+  EXPECT_EQ(CHECK_DEREF(exception.FindString(kOrigin)), extension_origin);
+  EXPECT_EQ(CHECK_DEREF(exception.FindString(kDisplayName)), extension_name);
 }
 #endif  // #if BUILDFLAG(ENABLE_EXTENSIONS)
 

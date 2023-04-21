@@ -153,6 +153,10 @@ TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {
     EXPECT_EQ(url2.spec(), recent_permissions[1].origin);
     EXPECT_EQ(url1.spec(), recent_permissions[0].origin);
 
+    EXPECT_EQ("example.com", recent_permissions[0].display_name);
+    EXPECT_EQ("example.com", recent_permissions[1].display_name);
+    EXPECT_EQ("example.com", recent_permissions[2].display_name);
+
     EXPECT_TRUE(recent_permissions[0].incognito);
     EXPECT_FALSE(recent_permissions[1].incognito);
     EXPECT_FALSE(recent_permissions[2].incognito);

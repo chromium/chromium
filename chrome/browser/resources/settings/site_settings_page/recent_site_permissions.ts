@@ -130,8 +130,7 @@ export class SettingsRecentSitePermissionsElement extends
    */
   private getDisplayName_(recentSitePermissions: RecentSitePermissions):
       string {
-    return recentSitePermissions.isolatedWebAppName ??
-        this.toUrl(recentSitePermissions.origin)!.host;
+    return recentSitePermissions.displayName;
   }
 
   /**

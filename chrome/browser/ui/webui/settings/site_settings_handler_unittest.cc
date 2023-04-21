@@ -131,6 +131,9 @@
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "services/device/public/cpp/test/fake_serial_port_manager.h"
 #include "services/device/public/mojom/hid.mojom.h"
@@ -226,14 +229,11 @@ apps::AppPtr MakeApp(const std::string& app_id,
   return app;
 }
 
-void InstallWebApp(Profile* profile, const GURL& start_url) {
+void RegisterWebApp(Profile* profile, apps::AppPtr app) {
   apps::AppRegistryCache& cache =
       apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
   std::vector<apps::AppPtr> deltas;
-  deltas.push_back(
-      MakeApp(web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url),
-              apps::AppType::kWeb, start_url.spec(), apps::Readiness::kReady,
-              apps::InstallReason::kSync));
+  deltas.push_back(std::move(app));
   cache.OnApps(std::move(deltas), apps::AppType::kWeb,
                /*should_notify_initialized=*/true);
 }
@@ -1491,7 +1491,12 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
 }
 
 TEST_F(SiteSettingsHandlerTest, InstalledApps) {
-  InstallWebApp(profile(), GURL("http://abc.example.com/path"));
+  GURL start_url("http://abc.example.com/path");
+  RegisterWebApp(
+      profile(),
+      MakeApp(web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url),
+              apps::AppType::kWeb, start_url.spec(), apps::Readiness::kReady,
+              apps::InstallReason::kSync));
 
   SetupModels();
 
@@ -1538,6 +1543,50 @@ TEST_F(SiteSettingsHandlerTest, InstalledApps) {
     }
   }
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(SiteSettingsHandlerTest, AllSitesDisplaysIsolatedWebAppName) {
+  std::string iwa_hostname =
+      "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+  GURL iwa_url("isolated-app://" + iwa_hostname);
+  GURL https_url("https://" + iwa_hostname);
+
+  // Install an IWA at |iwa_url|.
+  web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+  web_app::AppId app_id =
+      web_app::AddDummyIsolatedAppToRegistry(profile(), iwa_url, "IWA Name");
+  RegisterWebApp(profile(),
+                 MakeApp(app_id, apps::AppType::kWeb, iwa_url.spec(),
+                         apps::Readiness::kReady, apps::InstallReason::kUser));
+
+  SetupModels(base::DoNothing());
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  map->SetContentSettingDefaultScope(iwa_url, iwa_url,
+                                     ContentSettingsType::NOTIFICATIONS,
+                                     CONTENT_SETTING_BLOCK);
+  map->SetContentSettingDefaultScope(https_url, https_url,
+                                     ContentSettingsType::NOTIFICATIONS,
+                                     CONTENT_SETTING_BLOCK);
+
+  base::Value::List site_groups = GetOnStorageFetchedSentList();
+
+  ASSERT_EQ(site_groups.size(), 2u);
+  const base::Value::Dict& group1 = site_groups[0].GetDict();
+  const base::Value::Dict& origin1 =
+      CHECK_DEREF(group1.FindList("origins"))[0].GetDict();
+  EXPECT_EQ(CHECK_DEREF(group1.FindString("etldPlus1")), iwa_url);
+  EXPECT_EQ(CHECK_DEREF(group1.FindString("displayName")), "IWA Name");
+  EXPECT_EQ(CHECK_DEREF(origin1.FindString("origin")), iwa_url);
+
+  const base::Value::Dict& group2 = site_groups[1].GetDict();
+  const base::Value::Dict& origin2 =
+      CHECK_DEREF(group2.FindList("origins"))[0].GetDict();
+  EXPECT_EQ(CHECK_DEREF(group2.FindString("etldPlus1")), iwa_hostname);
+  EXPECT_EQ(CHECK_DEREF(group2.FindString("displayName")), iwa_hostname);
+  EXPECT_EQ(CHECK_DEREF(origin2.FindString("origin")), https_url);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(SiteSettingsHandlerTest, IncognitoExceptions) {
   constexpr char kOriginToBlock[] = "https://www.blocked.com:443";

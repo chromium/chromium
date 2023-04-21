@@ -175,6 +175,7 @@ export function createSiteGroup(
       originList.map((origin) => createOriginInfo(origin, {usage: mockUsage}));
   return {
     etldPlus1: eTLDPlus1Name,
+    displayName: eTLDPlus1Name,
     origins: originInfoList,
     numCookies: 0,
     hasInstalledPWA: false,
