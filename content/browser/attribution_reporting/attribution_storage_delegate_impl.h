@@ -76,6 +76,9 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const override;
   void ShuffleReports(std::vector<AttributionReport>& reports) override;
+  double GetRandomizedResponseRate(
+      attribution_reporting::mojom::SourceType,
+      base::TimeDelta expiry_deadline) const override;
   RandomizedResponse GetRandomizedResponse(
       const CommonSourceInfo& source,
       base::Time event_report_window_time) override;
@@ -106,8 +109,17 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   // Exposed for testing.
   std::vector<FakeReport> GetFakeReportsForSequenceIndex(
       const CommonSourceInfo& source,
-      base::Time event_report_window_time,
+      const std::vector<base::TimeDelta>& deadlines,
       int random_stars_and_bars_sequence_index) const;
+
+  // Returns all deadlines for the source determined by its `source_type` and
+  // its `expiry_deadline`, this includes both the early and last deadlines for
+  // the source.
+  //
+  // Exposed for testing.
+  std::vector<base::TimeDelta> EffectiveDeadlines(
+      attribution_reporting::mojom::SourceType source_type,
+      base::TimeDelta expiry_deadline) const;
 
  protected:
   AttributionStorageDelegateImpl(AttributionNoiseMode noise_mode,
@@ -120,9 +132,8 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
  private:
   std::vector<base::TimeDelta> EarlyDeadlines(
       attribution_reporting::mojom::SourceType source_type) const;
-  int NumReportWindows(attribution_reporting::mojom::SourceType) const;
   base::Time ReportTimeAtWindow(const CommonSourceInfo&,
-                                base::Time event_report_window_time,
+                                const std::vector<base::TimeDelta>& deadlines,
                                 int window_index) const;
 };
 

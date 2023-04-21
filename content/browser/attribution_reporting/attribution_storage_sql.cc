@@ -1348,8 +1348,9 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
   // values for the particular IDs. Because such an approach would entail
   // complicating the DB schema, we hardcode the values for now and will wait
   // for the first time the values are changed before complicating the codebase.
-  const double randomized_response_rate =
-      delegate_->GetRandomizedResponseRate(source_type);
+  const double randomized_response_rate = delegate_->GetRandomizedResponseRate(
+      source_type, ExpiryDeadline(source.common_info().source_time(),
+                                  source.event_report_window_time()));
 
   // TODO(apaseltiner): Consider informing the manager if the trigger
   // data was out of range for DevTools issue reporting.
@@ -1524,11 +1525,15 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
       if (!DeserializeReportMetadata(metadata, trigger_data, priority)) {
         return absl::nullopt;
       }
-      data = AttributionReport::EventLevelData(
-          trigger_data, priority,
-          delegate_->GetRandomizedResponseRate(
-              source_data->source.common_info().source_type()),
-          std::move(source_data->source));
+      base::TimeDelta expiry_deadline =
+          ExpiryDeadline(source_data->source.common_info().source_time(),
+                         source_data->source.event_report_window_time());
+      double randomized_response_rate = delegate_->GetRandomizedResponseRate(
+          source_data->source.common_info().source_type(), expiry_deadline);
+
+      data = AttributionReport::EventLevelData(trigger_data, priority,
+                                               randomized_response_rate,
+                                               std::move(source_data->source));
       break;
     }
     case AttributionReport::Type::kAggregatableAttribution: {

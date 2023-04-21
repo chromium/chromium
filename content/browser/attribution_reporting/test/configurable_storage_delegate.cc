@@ -116,6 +116,13 @@ void ConfigurableStorageDelegate::ShuffleReports(
   }
 }
 
+double ConfigurableStorageDelegate::GetRandomizedResponseRate(
+    attribution_reporting::mojom::SourceType,
+    base::TimeDelta expiry_deadline) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return randomized_response_rate_;
+}
+
 AttributionStorageDelegate::RandomizedResponse
 ConfigurableStorageDelegate::GetRandomizedResponse(
     const CommonSourceInfo& source,
@@ -216,10 +223,9 @@ void ConfigurableStorageDelegate::set_reverse_reports_on_shuffle(bool reverse) {
   reverse_reports_on_shuffle_ = reverse;
 }
 
-void ConfigurableStorageDelegate::set_randomized_response_epsilon(
-    double epsilon) {
+void ConfigurableStorageDelegate::set_randomized_response_rate(double rate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  config_.event_level_limit.randomized_response_epsilon = epsilon;
+  randomized_response_rate_ = rate;
 }
 
 void ConfigurableStorageDelegate::set_randomized_response(

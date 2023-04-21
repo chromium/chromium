@@ -35,45 +35,21 @@ base::Time ReportTimeFromDeadline(base::Time source_time,
   return source_time + deadline + kWindowDeadlineOffset;
 }
 
-base::Time ComputeReportTime(
-    base::Time source_time,
-    base::Time event_report_window_time,
-    base::Time trigger_time,
-    base::span<const base::TimeDelta> early_deadlines) {
-  base::TimeDelta expiry_deadline =
-      ExpiryDeadline(source_time, event_report_window_time);
-
-  // After the initial impression, a schedule of reporting windows and deadlines
-  // associated with that impression begins. The time between impression time
-  // and impression expiry is split into multiple reporting windows whose values
-  // are defined in `kEarlyDeadlinesNavigation`. At the end of each window, the
-  // browser will send all scheduled reports for that impression.
-  //
-  // Each reporting window has a deadline and only conversions registered before
-  // that deadline are sent in that window. Each deadline is at the window
-  // report time. The deadlines relative to impression time are <first report
-  // window, second report window, impression expiry>. The impression expiry
-  // window is only used for conversions that occur after the second report
-  // window. For example, a conversion which happens one hour after an
-  // impression with an expiry of two hours, is still reported in the first
-  // report window.
-  //
-  // Note that only navigation (not event) sources have early reporting
-  // deadlines.
-  base::TimeDelta deadline_to_use = expiry_deadline;
-
-  // Given a conversion that happened at `trigger_time`, find the first
-  // applicable reporting window this conversion should be reported at.
-  for (base::TimeDelta early_deadline : early_deadlines) {
-    // If this window is valid for the conversion, use it.
-    // |trigger_time| is roughly ~now.
-    if (source_time + early_deadline >= trigger_time &&
-        early_deadline < deadline_to_use) {
-      deadline_to_use = early_deadline;
-      break;
+base::Time ComputeReportTime(base::Time source_time,
+                             base::Time trigger_time,
+                             base::span<const base::TimeDelta> deadlines) {
+  // Follows the steps detailed in
+  // https://wicg.github.io/attribution-reporting-api/#obtain-an-event-level-report-delivery-time
+  // Starting from step 2.
+  DCHECK(!deadlines.empty());
+  base::TimeDelta deadline_to_use = deadlines.back();
+  for (base::TimeDelta deadline : deadlines) {
+    if (source_time + deadline < trigger_time) {
+      continue;
     }
+    deadline_to_use = deadline;
+    break;
   }
-
   return ReportTimeFromDeadline(source_time, deadline_to_use);
 }
 

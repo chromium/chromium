@@ -4,8 +4,6 @@
 
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 
-#include <cmath>
-
 #include "base/check.h"
 #include "base/notreached.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -63,24 +61,6 @@ AttributionConfig::RateLimitConfig AttributionStorageDelegate::GetRateLimits()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return config_.rate_limit;
-}
-
-double AttributionStorageDelegate::GetRandomizedResponseRate(
-    SourceType source_type) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  int num_combinations = 0;
-  switch (source_type) {
-    case SourceType::kNavigation:
-      num_combinations = 2925;
-      break;
-    case SourceType::kEvent:
-      num_combinations = 3;
-      break;
-  }
-  double exp_epsilon =
-      exp(config_.event_level_limit.randomized_response_epsilon);
-  return num_combinations / (num_combinations - 1 + exp_epsilon);
 }
 
 int64_t AttributionStorageDelegate::GetAggregatableBudgetPerSource() const {

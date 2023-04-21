@@ -14,6 +14,7 @@
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
+#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/combinatorics.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -362,10 +363,14 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
                             .SetSourceType(test_case.source_type)
                             .SetExpiry(kExpiry)
                             .BuildStored();
+    base::TimeDelta expiry_deadline = ExpiryDeadline(
+        source.common_info().source_time(), source.event_report_window_time());
+    std::vector<base::TimeDelta> deadlines =
+        AttributionStorageDelegateImpl().EffectiveDeadlines(
+            source.common_info().source_type(), expiry_deadline);
     EXPECT_EQ(test_case.expected,
               AttributionStorageDelegateImpl().GetFakeReportsForSequenceIndex(
-                  source.common_info(), source.event_report_window_time(),
-                  test_case.sequence_index))
+                  source.common_info(), deadlines, test_case.sequence_index))
         << test_case.sequence_index;
   }
 }

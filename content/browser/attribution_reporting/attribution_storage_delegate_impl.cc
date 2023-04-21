@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <cmath>
 #include <cstdlib>
 #include <utility>
 #include <vector>
@@ -145,11 +146,13 @@ base::Time AttributionStorageDelegateImpl::GetEventLevelReportTime(
 
   const CommonSourceInfo& common_info = source.common_info();
 
+  base::TimeDelta expiry_deadline = ExpiryDeadline(
+      common_info.source_time(), source.event_report_window_time());
   switch (delay_mode_) {
     case AttributionDelayMode::kDefault:
-      return ComputeReportTime(common_info.source_time(),
-                               source.event_report_window_time(), trigger_time,
-                               EarlyDeadlines(common_info.source_type()));
+      return ComputeReportTime(
+          common_info.source_time(), trigger_time,
+          EffectiveDeadlines(common_info.source_type(), expiry_deadline));
     case AttributionDelayMode::kNone:
       return trigger_time;
   }
@@ -214,6 +217,21 @@ void AttributionStorageDelegateImpl::ShuffleReports(
   }
 }
 
+double AttributionStorageDelegateImpl::GetRandomizedResponseRate(
+    SourceType source_type,
+    base::TimeDelta expiry_deadline) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const int num_combinations = GetNumberOfStarsAndBarsSequences(
+      /*num_stars=*/GetMaxAttributionsPerSource(source_type),
+      /*num_bars=*/TriggerDataCardinality(source_type) *
+          EffectiveDeadlines(source_type, expiry_deadline).size());
+
+  double exp_epsilon =
+      std::exp(config_.event_level_limit.randomized_response_epsilon);
+  return num_combinations / (num_combinations - 1 + exp_epsilon);
+}
+
 AttributionStorageDelegate::RandomizedResponse
 AttributionStorageDelegateImpl::GetRandomizedResponse(
     const CommonSourceInfo& source,
@@ -222,8 +240,9 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
 
   switch (noise_mode_) {
     case AttributionNoiseMode::kDefault: {
-      double randomized_trigger_rate =
-          GetRandomizedResponseRate(source.source_type());
+      double randomized_trigger_rate = GetRandomizedResponseRate(
+          source.source_type(),
+          ExpiryDeadline(source.source_time(), event_report_window_time));
       DCHECK_GE(randomized_trigger_rate, 0);
       DCHECK_LE(randomized_trigger_rate, 1);
 
@@ -244,22 +263,25 @@ AttributionStorageDelegateImpl::GetRandomFakeReports(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(noise_mode_, AttributionNoiseMode::kDefault);
 
+  std::vector<base::TimeDelta> deadlines = EffectiveDeadlines(
+      source.source_type(),
+      ExpiryDeadline(source.source_time(), event_report_window_time));
+
   const int num_combinations = GetNumberOfStarsAndBarsSequences(
       /*num_stars=*/GetMaxAttributionsPerSource(source.source_type()),
       /*num_bars=*/TriggerDataCardinality(source.source_type()) *
-          NumReportWindows(source.source_type()));
+          deadlines.size());
 
   // Subtract 1 because `AttributionRandomGenerator::RandInt()` is inclusive.
   const int sequence_index = base::RandInt(0, num_combinations - 1);
 
-  return GetFakeReportsForSequenceIndex(source, event_report_window_time,
-                                        sequence_index);
+  return GetFakeReportsForSequenceIndex(source, deadlines, sequence_index);
 }
 
 std::vector<AttributionStorageDelegate::FakeReport>
 AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
     const CommonSourceInfo& source,
-    base::Time event_report_window_time,
+    const std::vector<base::TimeDelta>& deadlines,
     int random_stars_and_bars_sequence_index) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(noise_mode_, AttributionNoiseMode::kDefault);
@@ -270,8 +292,7 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
   const std::vector<int> bars_preceding_each_star =
       GetBarsPrecedingEachStar(GetStarIndices(
           /*num_stars=*/GetMaxAttributionsPerSource(source.source_type()),
-          /*num_bars=*/trigger_data_cardinality *
-              NumReportWindows(source.source_type()),
+          /*num_bars=*/trigger_data_cardinality * deadlines.size(),
           /*sequence_index=*/random_stars_and_bars_sequence_index));
 
   std::vector<FakeReport> fake_reports;
@@ -292,14 +313,12 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
     DCHECK_GE(trigger_data, 0);
     DCHECK_LT(trigger_data, trigger_data_cardinality);
 
-    base::Time report_time = ReportTimeAtWindow(
-        source, event_report_window_time, /*window_index=*/result.quot);
+    base::Time report_time = ReportTimeAtWindow(source, deadlines,
+                                                /*window_index=*/result.quot);
     base::Time trigger_time = LastTriggerTimeForReportTime(report_time);
 
-    DCHECK_EQ(
-        ComputeReportTime(source.source_time(), event_report_window_time,
-                          trigger_time, EarlyDeadlines(source.source_type())),
-        report_time);
+    DCHECK_EQ(ComputeReportTime(source.source_time(), trigger_time, deadlines),
+              report_time);
 
     fake_reports.push_back({
         .trigger_data = static_cast<uint64_t>(trigger_data),
@@ -339,6 +358,17 @@ absl::optional<base::Time> AttributionStorageDelegateImpl::GetReportWindowTime(
              : absl::nullopt;
 }
 
+std::vector<base::TimeDelta> AttributionStorageDelegateImpl::EffectiveDeadlines(
+    SourceType source_type,
+    base::TimeDelta expiry_deadline) const {
+  std::vector<base::TimeDelta> deadlines = EarlyDeadlines(source_type);
+  while (deadlines.size() > 0 && deadlines.back() >= expiry_deadline) {
+    deadlines.pop_back();
+  }
+  deadlines.push_back(expiry_deadline);
+  return deadlines;
+}
+
 std::vector<base::TimeDelta> AttributionStorageDelegateImpl::EarlyDeadlines(
     SourceType source_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -352,28 +382,13 @@ std::vector<base::TimeDelta> AttributionStorageDelegateImpl::EarlyDeadlines(
   }
 }
 
-int AttributionStorageDelegateImpl::NumReportWindows(
-    SourceType source_type) const {
-  // Add 1 for the expiry deadline.
-  return 1 + EarlyDeadlines(source_type).size();
-}
-
 base::Time AttributionStorageDelegateImpl::ReportTimeAtWindow(
     const CommonSourceInfo& source,
-    base::Time event_report_window_time,
+    const std::vector<base::TimeDelta>& deadlines,
     int window_index) const {
   DCHECK_GE(window_index, 0);
-  DCHECK_LT(window_index, NumReportWindows(source.source_type()));
-
-  std::vector<base::TimeDelta> early_deadlines =
-      EarlyDeadlines(source.source_type());
-
-  base::TimeDelta deadline =
-      static_cast<size_t>(window_index) < early_deadlines.size()
-          ? early_deadlines[window_index]
-          : ExpiryDeadline(source.source_time(), event_report_window_time);
-
-  return ReportTimeFromDeadline(source.source_time(), deadline);
+  DCHECK_LT(static_cast<size_t>(window_index), deadlines.size());
+  return ReportTimeFromDeadline(source.source_time(), deadlines[window_index]);
 }
 
 }  // namespace content

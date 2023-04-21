@@ -119,11 +119,12 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   virtual void ShuffleReports(std::vector<AttributionReport>& reports) = 0;
 
   // Returns the rate used to determine whether to randomize the response to a
-  // source with the given source type, as implemented by
+  // source with the given source type and expiry deadline, as implemented by
   // `GetRandomizedResponse()`. Must be in the range [0, 1] and remain constant
-  // for the lifetime of the delegate.
-  double GetRandomizedResponseRate(
-      attribution_reporting::mojom::SourceType) const;
+  // for the lifetime of the delegate for calls with identical inputs.
+  virtual double GetRandomizedResponseRate(
+      attribution_reporting::mojom::SourceType,
+      base::TimeDelta expiry_deadline) const = 0;
 
   // Returns a randomized response for the given source, consisting of zero or
   // more fake reports. Returns `absl::nullopt` to indicate that the response

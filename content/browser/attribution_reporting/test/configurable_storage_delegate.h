@@ -31,6 +31,9 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const override;
   void ShuffleReports(std::vector<AttributionReport>&) override;
+  double GetRandomizedResponseRate(
+      attribution_reporting::mojom::SourceType,
+      base::TimeDelta expiry_deadline) const override;
   RandomizedResponse GetRandomizedResponse(
       const CommonSourceInfo&,
       base::Time event_report_window_time) override;
@@ -66,7 +69,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   // Note that this is *not* used to produce a randomized response; that
   // is controlled deterministically by `set_randomized_response()`.
-  void set_randomized_response_epsilon(double epsilon);
+  void set_randomized_response_rate(double rate);
 
   void set_randomized_response(RandomizedResponse);
 
@@ -91,6 +94,8 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   // proper call from `AttributionStorage::GetAttributionReports()`.
   bool reverse_reports_on_shuffle_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
+
+  double randomized_response_rate_ = 0.0;
 
   RandomizedResponse randomized_response_
       GUARDED_BY_CONTEXT(sequence_checker_) = absl::nullopt;

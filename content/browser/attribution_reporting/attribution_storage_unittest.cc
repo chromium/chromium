@@ -2863,8 +2863,7 @@ TEST_F(AttributionStorageTest, BudgetConsumedAfterTriggerIsRetrieved) {
 
 TEST_F(AttributionStorageTest,
        GetAttributionReports_SetsRandomizedTriggerRate) {
-  delegate()->set_randomized_response_epsilon(
-      std::numeric_limits<double>::infinity());
+  delegate()->set_randomized_response_rate(0.1);
 
   const auto origin1 = *SuitableOrigin::Deserialize("https://r1.test");
   const auto origin2 = *SuitableOrigin::Deserialize("https://r2.test");
@@ -2886,38 +2885,9 @@ TEST_F(AttributionStorageTest,
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
               UnorderedElementsAre(
                   AllOf(ReportSourceIs(SourceTypeIs(SourceType::kNavigation)),
-                        EventLevelDataIs(RandomizedTriggerRateIs(0))),
+                        EventLevelDataIs(RandomizedTriggerRateIs(0.1))),
                   AllOf(ReportSourceIs(SourceTypeIs(SourceType::kEvent)),
-                        EventLevelDataIs(RandomizedTriggerRateIs(0)))));
-}
-
-TEST_F(AttributionStorageTest,
-       GetAttributionReports_SetsRandomizedTriggerRateNonZero) {
-  delegate()->set_randomized_response_epsilon(0);
-
-  const auto origin1 = *SuitableOrigin::Deserialize("https://r1.test");
-  const auto origin2 = *SuitableOrigin::Deserialize("https://r2.test");
-
-  storage()->StoreSource(SourceBuilder()
-                             .SetReportingOrigin(origin1)
-                             .SetSourceType(SourceType::kNavigation)
-                             .Build());
-  MaybeCreateAndStoreEventLevelReport(
-      TriggerBuilder().SetReportingOrigin(origin1).Build());
-
-  storage()->StoreSource(SourceBuilder()
-                             .SetReportingOrigin(origin2)
-                             .SetSourceType(SourceType::kEvent)
-                             .Build());
-  MaybeCreateAndStoreEventLevelReport(
-      TriggerBuilder().SetReportingOrigin(origin2).Build());
-
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
-              UnorderedElementsAre(
-                  AllOf(ReportSourceIs(SourceTypeIs(SourceType::kNavigation)),
-                        EventLevelDataIs(RandomizedTriggerRateIs(1))),
-                  AllOf(ReportSourceIs(SourceTypeIs(SourceType::kEvent)),
-                        EventLevelDataIs(RandomizedTriggerRateIs(1)))));
+                        EventLevelDataIs(RandomizedTriggerRateIs(0.1)))));
 }
 
 // Will return minimum of next event-level report and next aggregatable report
