@@ -96,6 +96,7 @@ build_webui_tests("build") {
     "os_settings_page_test.js",
     "os_settings_search_box_test.js",
     "os_sync_controls_subpage_test.js",
+    "passpoint_subpage_test.js",
     "people_page_account_manager_subpage_test.js",
     "personalization_page_with_personalization_hub_test.js",
     "privacy_hub_subpage_tests.js",

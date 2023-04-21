@@ -528,6 +528,14 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'ParentalControlsPage',
    'parental_controls_page/parental_controls_page_test.js'
  ],
+ [
+   'PasspointSubpage', 'passpoint_subpage_test.js', {
+     enabled: [
+       'ash::features::kPasspointARCSupport',
+       'ash::features::kPasspointSettings',
+     ]
+   }
+ ],
  ['PeoplePage', 'os_people_page_test.js'],
  [
    'PeoplePageAccountManagerSubpage',
