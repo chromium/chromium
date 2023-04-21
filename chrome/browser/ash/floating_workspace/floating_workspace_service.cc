@@ -379,7 +379,7 @@ void FloatingWorkspaceService::HandleTemplateUploadErrors(
 
 void FloatingWorkspaceService::OnTemplateLaunched(
     absl::optional<DesksClient::DeskActionError> error,
-    const base::GUID& desk_uuid) {
+    const base::Uuid& desk_uuid) {
   // Disable future floating workspace restore.
   should_run_restore_ = false;
   if (error) {

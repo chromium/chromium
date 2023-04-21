@@ -70,7 +70,7 @@ std::unique_ptr<ash::DeskTemplate> MakeTestFloatingWorkspaceDeskTemplate(
     std::string name) {
   std::unique_ptr<ash::DeskTemplate> desk_template =
       std::make_unique<ash::DeskTemplate>(
-          base::GUID::ParseCaseInsensitive(
+          base::Uuid::ParseCaseInsensitive(
               "c098bdcf-5803-484b-9bfd-d3a9a4b497ab"),
           ash::DeskTemplateSource::kUser, name, base::Time::Now(),
           DeskTemplateType::kFloatingWorkspace);

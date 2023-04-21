@@ -73,7 +73,7 @@ class FloatingWorkspaceService : public KeyedService,
   void OnDeskModelDestroying() override;
   void EntriesAddedOrUpdatedRemotely(
       const std::vector<const DeskTemplate*>& new_entries) override;
-  void EntriesRemovedRemotely(const std::vector<base::GUID>& uuids) override {}
+  void EntriesRemovedRemotely(const std::vector<base::Uuid>& uuids) override {}
 
  private:
   void InitForV1();
@@ -122,7 +122,7 @@ class FloatingWorkspaceService : public KeyedService,
   // Callback function that is run after a floating workspace template
   // is downloaded and launched.
   void OnTemplateLaunched(absl::optional<DesksClient::DeskActionError> error,
-                          const base::GUID& desk_uuid);
+                          const base::Uuid& desk_uuid);
 
   // Callback function that is run after a floating workspace template is
   // captured by `desks_storage::DeskSyncBridge`.
