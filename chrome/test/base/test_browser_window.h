@@ -145,6 +145,9 @@ class TestBrowserWindow : public BrowserWindow {
   bool IsLocationBarVisible() const override;
   bool IsToolbarShowing() const override;
   bool IsBorderlessModeEnabled() const override;
+  void ShowSidePanel(
+      absl::optional<SidePanelEntryId> entry_id,
+      absl::optional<SidePanelOpenTrigger> open_trigger) override {}
   SharingDialog* ShowSharingDialog(content::WebContents* contents,
                                    SharingDialogData data) override;
   void ShowUpdateChromeDialog() override {}

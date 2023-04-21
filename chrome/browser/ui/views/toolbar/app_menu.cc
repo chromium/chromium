@@ -919,10 +919,17 @@ bool AppMenu::IsShowing() const {
 }
 
 const gfx::FontList* AppMenu::GetLabelFontList(int command_id) const {
-  return IsRecentTabsCommand(command_id)
-             ? recent_tabs_menu_model_delegate_->GetLabelFontListForCommandId(
-                   command_id)
-             : nullptr;
+  if (IsRecentTabsCommand(command_id)) {
+    return recent_tabs_menu_model_delegate_->GetLabelFontListForCommandId(
+        command_id);
+  }
+
+  if (command_id == IDC_BOOKMARKS_LIST_TITLE) {
+    return &ui::ResourceBundle::GetSharedInstance().GetFontList(
+        ui::ResourceBundle::BoldFont);
+  }
+
+  return nullptr;
 }
 
 absl::optional<SkColor> AppMenu::GetLabelColor(int command_id) const {
@@ -1038,6 +1045,10 @@ bool AppMenu::IsItemChecked(int command_id) const {
 }
 
 bool AppMenu::IsCommandEnabled(int command_id) const {
+  if (command_id == IDC_BOOKMARKS_LIST_TITLE) {
+    return false;
+  }
+
   if (IsBookmarkCommand(command_id))
     return true;
 
@@ -1062,7 +1073,12 @@ bool AppMenu::IsCommandEnabled(int command_id) const {
   if (command_id == IDC_EDIT_MENU || command_id == IDC_ZOOM_MENU)
     return true;
 
-  const Entry& entry = command_id_to_entry_.find(command_id)->second;
+  // If `command_id` is not added to App Menu via MenuModel, you should handle
+  // it in the code above. `command_id_to_entry_` traces only MenuModel entries.
+  auto it = command_id_to_entry_.find(command_id);
+  CHECK(it != command_id_to_entry_.end());
+
+  const Entry& entry = it->second;
   return entry.first->IsEnabledAt(entry.second);
 }
 
@@ -1091,6 +1107,11 @@ bool AppMenu::GetAccelerator(int command_id,
                              ui::Accelerator* accelerator) const {
   if (IsBookmarkCommand(command_id))
     return false;
+
+  if (command_id == IDC_BOOKMARKS_LIST_TITLE) {
+    // This is a non-interactive title.
+    return false;
+  }
 
   if (command_id == IDC_EDIT_MENU || command_id == IDC_ZOOM_MENU) {
     // These have special child views; don't show the accelerator for them.

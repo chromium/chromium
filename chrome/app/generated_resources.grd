@@ -7498,6 +7498,30 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Delete
       </message>
 
+      <!-- Reading List submenu in App Menu -->
+      <if expr="not use_titlecase">
+        <message name="IDS_READING_LIST_MENU" desc="The title of the Reading List submenu in the App Menu">
+          &amp;Reading list
+        </message>
+        <message name="IDS_READING_LIST_MENU_ADD_TAB" desc="">
+          Add tab to reading list
+        </message>
+        <message name="IDS_READING_LIST_MENU_SHOW_UI">
+          Show reading list
+        </message>
+      </if>
+      <if expr="use_titlecase">
+        <message name="IDS_READING_LIST_MENU" desc="The title of the Reading List submenu in the App Menu">
+          &amp;Reading List
+        </message>
+        <message name="IDS_READING_LIST_MENU_ADD_TAB" desc="">
+          Add Tab to Reading List
+        </message>
+        <message name="IDS_READING_LIST_MENU_SHOW_UI">
+          Show Reading List
+        </message>
+      </if>
+
       <!-- Side panel strings -->
       <message name="IDS_ACCNAME_SIDE_PANEL_RESIZE" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the side panel resize handle is focused.">
         Side Panel Resize Handle

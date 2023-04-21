@@ -520,6 +520,9 @@ class BrowserView : public BrowserWindow,
   bool IsToolbarShowing() const override;
   bool IsLocationBarVisible() const override;
   bool IsBorderlessModeEnabled() const override;
+  void ShowSidePanel(
+      absl::optional<SidePanelEntryId> entry_id,
+      absl::optional<SidePanelOpenTrigger> open_trigger) override;
 
   SharingDialog* ShowSharingDialog(content::WebContents* contents,
                                    SharingDialogData data) override;

@@ -122,6 +122,9 @@
       <message name="IDS_SHOW_BOOKMARK_BAR" desc="The toggle to show the bookmark bar">
         &amp;Show bookmarks bar
       </message>
+      <message name="IDS_HIDE_BOOKMARK_BAR" desc="The toggle to hide the bookmark bar">
+        &amp;Hide bookmarks bar
+      </message>
     </if>
   </if>
   <if expr="use_titlecase">
@@ -179,6 +182,9 @@
     <if expr="not is_android">
       <message name="IDS_SHOW_BOOKMARK_BAR" desc="In Title Case: The toggle to show the bookmark bar">
         &amp;Show Bookmarks Bar
+      </message>
+      <message name="IDS_HIDE_BOOKMARK_BAR" desc="The toggle to hide the bookmark bar">
+        &amp;Hide Bookmarks Bar
       </message>
     </if>
   </if>
@@ -495,6 +501,26 @@
     &amp;Bookmarks
   </message>
   <if expr="not use_titlecase">
+    <message name="IDS_BOOKMARKS_AND_LISTS_MENU" desc="The title of the 'Bookmarks and lists' menu in the App Menu.">
+      &amp;Bookmarks and lists
+    </message>
+  </if>
+  <if expr="use_titlecase">
+    <message name="IDS_BOOKMARKS_AND_LISTS_MENU" desc="The title of the 'Bookmarks and lists' menu in the App Menu.">
+      &amp;Bookmarks and Lists
+    </message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_SHOW_BOOKMARK_SIDE_PANEL" desc="Title of the menu item that opens the bookmark side panel.">
+      Show all bookmarks
+    </message>
+  </if>
+  <if expr="use_titlecase">
+    <message name="IDS_SHOW_BOOKMARK_SIDE_PANEL" desc="Title of the menu item that opens the bookmark side panel.">
+      Show All Bookmarks
+    </message>
+  </if>
+  <if expr="not use_titlecase">
     <message name="IDS_BOOKMARK_THIS_TAB" desc="Title of the menu item that bookmarks the current tab.">
       Bookmark this tab...
     </message>
@@ -514,6 +540,9 @@
       Bookmark All Tabs...
     </message>
   </if>
+  <message name="IDS_BOOKMARKS_LIST_TITLE" desc="Title of the bookmarks list in App Menu's Bookmark submenu">
+    Bookmarks
+  </message>
   <!-- End of Bookmarks Menu (in the Main Menu) strings. -->
 
   <!-- Begin of Bookmark Star button strings. -->

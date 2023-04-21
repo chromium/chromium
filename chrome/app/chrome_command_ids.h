@@ -238,6 +238,11 @@
 #define IDC_EXTENSIONS_SUBMENU                         40267
 #define IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS       40268
 #define IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE  40269
+#define IDC_READING_LIST_MENU           40270
+#define IDC_READING_LIST_MENU_ADD_TAB   40271
+#define IDC_READING_LIST_MENU_SHOW_UI   40272
+#define IDC_BOOKMARKS_LIST_TITLE        40273
+#define IDC_SHOW_BOOKMARK_SIDE_PANEL    40274
 
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.

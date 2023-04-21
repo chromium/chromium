@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UTIL_H_
 
 #include "base/time/time.h"
+#include "chrome/browser/ui/side_panel/side_panel_open_trigger.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -19,26 +20,7 @@ class View;
 
 class SidePanelUtil {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused. SidePanelOpenTrigger in
-  // tools/metrics/histograms/enums.xml should also be updated when changed
-  // here.
-  enum class SidePanelOpenTrigger {
-    kToolbarButton = 0,
-    kLensContextMenu = 1,
-    kSideSearchPageAction = 2,
-    kNotesInPageContextMenu = 3,
-    kComboboxSelected = 4,
-    kTabChanged = 5,
-    kSidePanelEntryDeregistered = 6,
-    kIPHSideSearchAutoTrigger = 7,
-    kContextMenuSearchOption = 8,
-    kReadAnythingContextMenu = 9,
-    kExtensionEntryRegistered = 10,
-    kBookmarkBar = 11,
-    kPinnedEntryToolbarButton = 12,
-    kMaxValue = kPinnedEntryToolbarButton,
-  };
+  using SidePanelOpenTrigger = ::SidePanelOpenTrigger;
 
   static void PopulateGlobalEntries(Browser* browser,
                                     SidePanelRegistry* global_registry);

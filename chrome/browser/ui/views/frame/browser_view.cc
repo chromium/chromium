@@ -2201,6 +2201,12 @@ bool BrowserView::IsBorderlessModeEnabled() const {
   return borderless_mode_enabled_ && window_management_permission_granted_;
 }
 
+void BrowserView::ShowSidePanel(
+    absl::optional<SidePanelEntry::Id> entry_id,
+    absl::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) {
+  side_panel_coordinator_->Show(entry_id, open_trigger);
+}
+
 bool BrowserView::AppUsesBorderlessMode() const {
   return browser()->app_controller() &&
          browser()->app_controller()->AppUsesBorderlessMode();

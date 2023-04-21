@@ -1009,7 +1009,11 @@ void AppMenuModel::Build() {
   if (!browser_->profile()->IsGuestSession()) {
     bookmark_sub_menu_model_ =
         std::make_unique<BookmarkSubMenuModel>(this, browser_);
-    AddSubMenuWithStringId(IDC_BOOKMARKS_MENU, IDS_BOOKMARKS_MENU,
+
+    AddSubMenuWithStringId(IDC_BOOKMARKS_MENU,
+                           features::IsChromeRefresh2023()
+                               ? IDS_BOOKMARKS_AND_LISTS_MENU
+                               : IDS_BOOKMARKS_MENU,
                            bookmark_sub_menu_model_.get());
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_BOOKMARKS_MENU).value(),
                            kBookmarksMenuItem);

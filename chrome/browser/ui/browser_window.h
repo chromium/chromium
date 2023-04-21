@@ -25,6 +25,8 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_open_trigger.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/common/buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -642,6 +644,12 @@ class BrowserWindow : public ui::BaseWindow {
   // Returns true when the borderless mode should be displayed instead
   // of a full titlebar. This is only supported for desktop web apps.
   virtual bool IsBorderlessModeEnabled() const = 0;
+
+  // Shows the side panel. If `entry_id` is not provided, shows the last active
+  // entry.
+  virtual void ShowSidePanel(
+      absl::optional<SidePanelEntryId> entry_id = absl::nullopt,
+      absl::optional<SidePanelOpenTrigger> open_trigger = absl::nullopt) = 0;
 
  protected:
   friend class BrowserCloseManager;

@@ -39,6 +39,8 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/commander/commander.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_open_trigger.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
@@ -777,9 +779,12 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_CARET_BROWSING_TOGGLE:
       ToggleCaretBrowsing(browser_);
       break;
-
     case IDC_SHOW_BOOKMARK_MANAGER:
       ShowBookmarkManager(browser_->GetBrowserForOpeningWebUi());
+      break;
+    case IDC_SHOW_BOOKMARK_SIDE_PANEL:
+      browser_->window()->ShowSidePanel(SidePanelEntryId::kBookmarks,
+                                        SidePanelOpenTrigger::kAppMenu);
       break;
     case IDC_SHOW_APP_MENU:
       base::RecordAction(base::UserMetricsAction("Accel_Show_App_Menu"));
@@ -980,6 +985,15 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ExecLensRegionSearch(browser_);
       break;
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+
+    case IDC_READING_LIST_MENU_ADD_TAB:
+      chrome::MoveCurrentTabToReadLater(browser_);
+      break;
+
+    case IDC_READING_LIST_MENU_SHOW_UI:
+      browser_->window()->ShowSidePanel(SidePanelEntryId::kReadingList,
+                                        SidePanelOpenTrigger::kAppMenu);
+      break;
 
     default:
       LOG(WARNING) << "Received Unimplemented Command: " << id;
@@ -1270,6 +1284,18 @@ void BrowserCommandController::InitCommandState() {
         IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, true);
   }
 #endif
+
+  if (features::IsChromeRefresh2023()) {
+    if (browser_->is_type_normal()) {
+      command_updater_.UpdateCommandEnabled(IDC_SHOW_BOOKMARK_SIDE_PANEL, true);
+      // Reading list commands.
+      command_updater_.UpdateCommandEnabled(IDC_READING_LIST_MENU, true);
+      command_updater_.UpdateCommandEnabled(IDC_READING_LIST_MENU_ADD_TAB,
+                                            true);
+      command_updater_.UpdateCommandEnabled(IDC_READING_LIST_MENU_SHOW_UI,
+                                            true);
+    }
+  }
 
   // Initialize other commands whose state changes based on various conditions.
   UpdateCommandsForFullscreenMode();

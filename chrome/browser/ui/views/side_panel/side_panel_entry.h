@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
@@ -24,28 +25,7 @@ class SidePanelEntryObserver;
 // a SidePanelRegistry (either a per-tab or a per-window registry).
 class SidePanelEntry final {
  public:
-  // Note this order matches that of the combobox options in the side panel.
-  // If adding a new Id here, you must also update id_to_histogram_name_map
-  // in side_panel_util.cc and SidePanelEntry in browser/histograms.xml.
-  enum class Id {
-    // Global Entries
-    kReadingList,
-    kBookmarks,
-    kHistoryClusters,
-    kReadAnything,
-    kUserNote,
-    kFeed,
-    kWebView,
-    // Contextual Entries
-    kSideSearch,
-    kLens,
-    kAssistant,
-    kAboutThisSite,
-    kCustomizeChrome,
-    kSearchCompanion,
-    // Extensions (nothing more should be added below here)
-    kExtension
-  };
+  using Id = SidePanelEntryId;
 
   // Container for entry identification related information.
   class Key {
