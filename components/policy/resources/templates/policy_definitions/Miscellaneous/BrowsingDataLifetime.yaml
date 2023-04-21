@@ -1,12 +1,14 @@
 caption: Browsing Data Lifetime Settings
 desc: |-
-  Configures browsing data lifetime settings for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. This policy allows admins to configure (per data-type) when data is deleted by the browser. This is useful for customers that work with sensitive customer data. The policy will only take effect if <ph name="SYNC_DISABLED_POLICY_NAME">SyncDisabled</ph> is set to true.
+  Configures browsing data lifetime settings for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. This policy allows admins to configure (per data-type) when data is deleted by the browser. This is useful for customers that work with sensitive customer data.
 
         The available data types are <ph name="DATA_TYPE_BROWSING_HISTORY">'browsing_history'</ph>, <ph name="DATA_TYPE_DOWNLOAD_HISTORY">'download_history'</ph>, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA">'cookies_and_other_site_data'</ph>, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES">'cached_images_and_files'</ph>, <ph name="DATA_TYPE_PASSWORD">'password_signin'</ph>, <ph name="DATA_TYPE_AUTOFILL">'autofill'</ph>, <ph name="DATA_TYPE_SITE_SETTINGS">'site_settings'</ph> and <ph name="DATA_TYPE_HOSTED_APP_DATA">'hosted_app_data'</ph>.
 
         The browser will automatically remove data of selected types that is older than <ph name="TIME_TO_LIVE_IN_HOURS">'time_to_live_in_hours'</ph>. The minimum value that can be set is 1 hour.
 
         The deletion of expired data will happen 15 seconds after the browser starts then every hour while the browser is running.
+
+        Setting this policy will disable sync for the respective data types if neither `<ph name="CHROME_SYNC_NAME">Chrome Sync</ph>` is disabled by setting the <ph name="SYNC_DISABLED_POLICY_NAME">SyncDisabled</ph> policy nor <ph name="BROWSER_SIGNIN_POLICY_NAME">BrowserSignin</ph> is disabled.
 example_value:
 - data_types:
   - browsing_history
