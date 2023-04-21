@@ -4149,10 +4149,6 @@ crbug.com/1018177 http/tests/devtools/tracing/timeline-style/timeline-recalculat
 
 crbug.com/910979 http/tests/html/validation-bubble-oopif-clip.html [ Crash Failure Pass Timeout ]
 
-# Temporarily disable style test for icon update
-crbug.com/1427397 http/tests/devtools/elements/styles-4/styles-do-not-detach-sourcemap-on-edits.js [ Failure Pass ]
-crbug.com/1427397 http/tests/devtools/elements/styles/styles-parse-invalid-properties.js [ Failure Pass ]
-
 # Sheriff 2019-02-01, 2019-02-19
 # These are crashy on Win10, and seem to leave processes lying around, causing the swarming
 # task to hang.
@@ -4215,8 +4211,7 @@ crbug.com/1021627 [ Mac ] fast/dom/rtl-scroll-to-leftmost-and-resize.html [ Fail
 
 # Sheriff 2019-03-28
 crbug.com/946711 http/tests/devtools/editor/text-editor-search-switch-editor.js [ Failure Pass ]
-# Also crbug.com/1427397
-crbug.com/946712 http/tests/devtools/elements/styles-2/paste-property.js [ Crash Failure Pass Timeout ]
+crbug.com/946712 http/tests/devtools/elements/styles-2/paste-property.js [ Crash Pass Timeout ]
 
 # Sheriff 2019-04-09
 crbug.com/946335 [ Linux ] fast/filesystem/file-writer-abort-depth.html [ Crash Pass ]
@@ -4229,8 +4224,7 @@ crbug.com/1220891 virtual/portals/external/wpt/portals/csp/frame-src.sub.html [ 
 # Sheriff 2019-04-17
 crbug.com/953591 [ Win ] fast/forms/datalist/input-appearance-range-with-transform.html [ Failure Pass ]
 crbug.com/953591 [ Win ] transforms/matrix-02.html [ Failure Pass ]
-# The following test also increased in flakiness due to icon rework: crbug.com/1427397 (but was flaky before)
-crbug.com/938884 http/tests/devtools/elements/styles-3/styles-add-blank-property.js [ Failure Pass Timeout ]
+crbug.com/938884 http/tests/devtools/elements/styles-3/styles-add-blank-property.js [ Pass Timeout ]
 
 # Sheriff 2019-04-30
 crbug.com/948785 fast/events/pointerevents/pointer-event-consumed-touchstart-in-slop-region.html [ Crash Failure Pass Timeout ]
@@ -6858,10 +6852,6 @@ crbug.com/1432448 external/wpt/webnn/* [ Failure ]
 
 # Sheriff 2023-04-13
 crbug.com/1432763 [ Linux ] external/wpt/fetch/metadata/generated/element-picture.https.sub.html [ Crash Pass Timeout ]
-
-# Sheriff 2023-04-19
-crbug.com/1434731 http/tests/devtools/elements/styles-4/styles-overriden-properties.js [ Failure Pass ]
-crbug.com/1434731 http/tests/devtools/elements/styles-2/parse-declaration-with-quote.js [ Failure Pass ]
 
 # Sheriff 2023-04-20
 crbug.com/1432703 [ Win10.20h2 ] external/wpt/long-animation-frame/tentative/loaf-blocking-duration.html [ Failure Pass ]
