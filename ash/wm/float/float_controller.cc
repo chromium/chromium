@@ -304,6 +304,27 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
       MaybeRecordFloatWindowDuration();
   }
 
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override {
+    CHECK_EQ(floated_window_, window);
+    if (key != aura::client::kResizeBehaviorKey) {
+      return;
+    }
+
+    // The minimum size could change and as a result, the floated window might
+    // not be floatable anymore. In this case, unfloat it.
+    if (!chromeos::wm::CanFloatWindow(floated_window_)) {
+      Shell::Get()->float_controller()->ResetFloatedWindow(floated_window_);
+      return;
+    }
+
+    if (Shell::Get()->IsInTabletMode()) {
+      UpdateWindowBoundsForTablet(
+          floated_window_, WindowState::BoundsChangeAnimationType::kNone);
+    }
+  }
+
  private:
   // The `floated_window` this object is hosting information for.
   aura::Window* floated_window_;
@@ -829,7 +850,7 @@ void FloatController::ToggleFloat(aura::Window* window) {
 
 void FloatController::FloatForTablet(aura::Window* window,
                                      chromeos::WindowStateType old_state_type) {
-  DCHECK(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  CHECK(Shell::Get()->IsInTabletMode());
 
   FloatImpl(window);
 
