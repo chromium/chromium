@@ -177,8 +177,9 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   bool IsFillingCorrect(const FormStructure& submitted_form) const;
 
   // Checks if the credit card form is already filled with values. The form is
-  // considered to be filled if the credit card number and the expiry date
-  // fields are non-empty.
+  // considered to be filled if the credit card number field is non-empty. The
+  // expiration date fields are not checked because they might have arbitrary
+  // placeholders.
   // TODO(crbug.com/1331312): FormData is used here to ensure that we check the
   // most recent form values. FormStructure knows only about the initial values.
   bool IsFormPrefilled(const FormData& form);

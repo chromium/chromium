@@ -43,22 +43,18 @@ TEST_P(FormTypesTest, FormHasFillableCreditCardFields) {
   FormStructure form_structure(form);
   FormStructureTestApi(&form_structure).SetFieldTypes(test_case.field_types);
 
-  EXPECT_THAT(FormHasAllEmtyCreditCardFields(form_structure),
+  EXPECT_THAT(FormHasAllCreditCardFields(form_structure),
               testing::Eq(test_case.expected_result));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     FormTypesTest,
-    testing::Values(
-        FormTypesTestCase{{CREDIT_CARD_NUMBER, CREDIT_CARD_EXP_MONTH,
-                           CREDIT_CARD_EXP_2_DIGIT_YEAR},
-                          {u"", u"", u""},
-                          true},
-        FormTypesTestCase{{CREDIT_CARD_NUMBER}, {u""}, false},
-        FormTypesTestCase{{CREDIT_CARD_NUMBER, CREDIT_CARD_EXP_MONTH,
-                           CREDIT_CARD_EXP_2_DIGIT_YEAR},
-                          {u"411111111111", u"", u""},
-                          false}));
+    testing::Values(FormTypesTestCase{{CREDIT_CARD_NUMBER,
+                                       CREDIT_CARD_EXP_MONTH,
+                                       CREDIT_CARD_EXP_2_DIGIT_YEAR},
+                                      {u"", u"", u""},
+                                      true},
+                    FormTypesTestCase{{CREDIT_CARD_NUMBER}, {u""}, false}));
 
 }  // namespace autofill

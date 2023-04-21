@@ -51,18 +51,16 @@ base::StringPiece FormTypeToStringPiece(FormType form_type) {
   return "UnknownFormType";
 }
 
-bool FormHasAllEmtyCreditCardFields(const FormStructure& form_structure) {
+bool FormHasAllCreditCardFields(const FormStructure& form_structure) {
   bool has_card_number_field = base::ranges::any_of(
       form_structure, [](const std::unique_ptr<AutofillField>& autofill_field) {
         return autofill_field->Type().GetStorableType() ==
-                   ServerFieldType::CREDIT_CARD_NUMBER &&
-               SanitizedFieldIsEmpty(autofill_field->value);
+               ServerFieldType::CREDIT_CARD_NUMBER;
       });
 
   bool has_expiration_date_field = base::ranges::any_of(
       form_structure, [](const std::unique_ptr<AutofillField>& autofill_field) {
-        return autofill_field->HasExpirationDateType() &&
-               SanitizedFieldIsEmpty(autofill_field->value);
+        return autofill_field->HasExpirationDateType();
       });
 
   return has_card_number_field && has_expiration_date_field;

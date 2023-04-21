@@ -70,9 +70,9 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
     return {TriggerOutcome::kUnsupportedFieldType, {}};
   }
 
-  // Trigger only for complete forms (contining the fields for the card number
+  // Trigger only for complete forms (containing the fields for the card number
   // and the card expiration date).
-  if (!FormHasAllEmtyCreditCardFields(*form)) {
+  if (!FormHasAllCreditCardFields(*form)) {
     return {TriggerOutcome::kIncompleteForm, {}};
   }
   if (optional_received_form != nullptr &&
@@ -284,16 +284,14 @@ bool TouchToFillDelegateAndroidImpl::IsFillingCorrect(
 }
 
 bool TouchToFillDelegateAndroidImpl::IsFormPrefilled(const FormData& form) {
-  return base::ranges::any_of(
-      form.fields.begin(), form.fields.end(), [&](const FormFieldData& field) {
-        AutofillField* autofill_field = manager_->GetAutofillField(form, field);
-        if (!autofill_field->HasExpirationDateType() &&
-            autofill_field->Type().GetStorableType() !=
-                ServerFieldType::CREDIT_CARD_NUMBER) {
-          return false;
-        }
-        return !SanitizedFieldIsEmpty(field.value);
-      });
+  return base::ranges::any_of(form.fields, [&](const FormFieldData& field) {
+    AutofillField* autofill_field = manager_->GetAutofillField(form, field);
+    if (autofill_field->Type().GetStorableType() !=
+        ServerFieldType::CREDIT_CARD_NUMBER) {
+      return false;
+    }
+    return !SanitizedFieldIsEmpty(field.value);
+  });
 }
 
 base::WeakPtr<TouchToFillDelegateAndroidImpl>
