@@ -12,7 +12,6 @@ extern const char kEasyUnlockEnabledStateSet[];
 extern const char kProximityAuthLastPromotionCheckTimestampMs[];
 extern const char kProximityAuthPromotionShownCount[];
 extern const char kProximityAuthRemoteBleDevices[];
-extern const char kProximityAuthHasShownLoginDisabledMessage[];
 
 }  // namespace prefs
 }  // namespace proximity_auth

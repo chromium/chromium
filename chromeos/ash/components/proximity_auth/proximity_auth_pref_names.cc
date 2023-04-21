@@ -23,11 +23,5 @@ const char kProximityAuthPromotionShownCount[] =
 const char kProximityAuthRemoteBleDevices[] =
     "proximity_auth.remote_ble_devices";
 
-// The dictionary containing remote BLE devices.
-// TODO(b/227674947): Delete this pref now that Sign in with Smart Lock is
-// deprecated.
-const char kProximityAuthHasShownLoginDisabledMessage[] =
-    "proximity_auth.has_shown_login_disabled_message";
-
 }  // namespace prefs
 }  // namespace proximity_auth

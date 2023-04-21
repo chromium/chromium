@@ -52,8 +52,6 @@ class ProximityAuthProfilePrefManager
   int64_t GetLastPromotionCheckTimestampMs() const override;
   void SetPromotionShownCount(int count) override;
   int GetPromotionShownCount() const override;
-  void SetHasShownLoginDisabledMessage(bool has_shown) override;
-  bool HasShownLoginDisabledMessage() const override;
 
   // ash::multidevice_setup::MultiDeviceSetupClient::Observer:
   void OnFeatureStatesChanged(
