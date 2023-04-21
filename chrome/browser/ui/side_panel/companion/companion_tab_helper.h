@@ -51,6 +51,7 @@ class CompanionTabHelper
       const std::string& additional_query_params_modified,
       const std::vector<uint8_t>& thumbnail_data,
       const gfx::Size& original_size,
+      const gfx::Size& downscaled_size,
       const std::string& image_extension,
       const std::string& content_type);
 

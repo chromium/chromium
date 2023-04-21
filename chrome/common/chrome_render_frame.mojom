@@ -46,7 +46,8 @@ interface ChromeRenderFrame {
                              ImageFormat image_format,
                              int32 quality)
       => (array<uint8> image_data, gfx.mojom.Size original_size,
-      string encoded_extension, array<lens.mojom.LatencyLog> log_data);
+      gfx.mojom.Size downscaled_size, string encoded_extension,
+      array<lens.mojom.LatencyLog> log_data);
 
   // For WebUI testing, this message requests JavaScript to be executed at a
   // time which is late enough to not be thrown out, and early enough to be

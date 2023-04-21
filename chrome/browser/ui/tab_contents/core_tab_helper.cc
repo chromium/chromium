@@ -268,11 +268,17 @@ void CoreTabHelper::SearchByImageImpl(
     companion_helper->ShowCompanionSidePanelForImage(
         /*src_url=*/GURL(), /*is_image_translate=*/false,
         additional_query_params_modified, encoded_image_bytes,
-        image_original_size,
+        image_original_size, image.Size(),
         /*image_extension=*/std::string(), content_type);
     return;
   }
 #endif
+
+  if (search::DefaultSearchProviderIsGoogle(template_url_service)) {
+    search_args.processed_image_dimensions =
+        base::NumberToString(image.Size().width()) + "," +
+        base::NumberToString(image.Size().height());
+  }
 
   search_args.image_original_size = image_original_size;
   search_args.additional_query_params = additional_query_params_modified;
@@ -487,6 +493,7 @@ void CoreTabHelper::DoSearchByImage(
     const std::string& thumbnail_content_type,
     const std::vector<uint8_t>& thumbnail_data,
     const gfx::Size& original_size,
+    const gfx::Size& downscaled_size,
     const std::string& image_extension,
     const std::vector<lens::mojom::LatencyLogPtr> log_data) {
   if (thumbnail_data.empty())
@@ -510,13 +517,20 @@ void CoreTabHelper::DoSearchByImage(
   if (companion_helper && IsImageSearchSupportedForCompanion()) {
     companion_helper->ShowCompanionSidePanelForImage(
         src_url, is_image_translate, additional_query_params_modified,
-        thumbnail_data, original_size, image_extension, thumbnail_content_type);
+        thumbnail_data, original_size, downscaled_size, image_extension,
+        thumbnail_content_type);
     return;
   }
 #endif
 
   TemplateURLRef::SearchTermsArgs search_args =
       TemplateURLRef::SearchTermsArgs(std::u16string());
+  if (search::DefaultSearchProviderIsGoogle(template_url_service)) {
+    search_args.processed_image_dimensions =
+        base::NumberToString(downscaled_size.width()) + "," +
+        base::NumberToString(downscaled_size.height());
+  }
+
   search_args.image_thumbnail_content.assign(thumbnail_data.begin(),
                                              thumbnail_data.end());
   search_args.image_thumbnail_content_type = thumbnail_content_type;

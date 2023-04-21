@@ -723,6 +723,9 @@ bool TemplateURLRef::ParseParameter(size_t start,
   } else if (parameter == "google:imageThumbnailBase64") {
     replacements->push_back(
         Replacement(TemplateURLRef::GOOGLE_IMAGE_THUMBNAIL_BASE64, start));
+  } else if (parameter == "google:processedImageDimensions") {
+    replacements->emplace_back(
+        Replacement(TemplateURLRef::GOOGLE_PROCESSED_IMAGE_DIMENSIONS, start));
   } else if (parameter == "google:imageURL") {
     replacements->push_back(Replacement(TemplateURLRef::GOOGLE_IMAGE_URL,
                                         start));
@@ -1356,6 +1359,14 @@ std::string TemplateURLRef::HandleReplacements(
           } else {
             post_params_[replacement.index].content_type = "image/jpeg";
           }
+        }
+        break;
+      }
+
+      case GOOGLE_PROCESSED_IMAGE_DIMENSIONS: {
+        std::string dimensions = search_terms_args.processed_image_dimensions;
+        if (!dimensions.empty()) {
+          HandleReplacement(std::string(), dimensions, replacement, &url);
         }
         break;
       }

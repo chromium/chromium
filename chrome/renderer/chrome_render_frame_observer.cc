@@ -409,7 +409,10 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
       };
 
   if (context_node.IsNull() || !context_node.IsElementNode()) {
-    std::move(callback).Run(image_data, original_size, image_extension,
+    // The downscaled size is the original size, since no downscaling was
+    // required.
+    std::move(callback).Run(image_data, original_size,
+                            /*downscaled_size=*/original_size, image_extension,
                             std::move(latency_logs));
     return;
   }
@@ -423,8 +426,11 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
                       IsAnimatedWebp(web_element.CopyOfImageData());
   if (!needs_encode && !needs_downscale) {
     image_data = web_element.CopyOfImageData();
+    // The downscaled size is the original size, since no downscaling was
+    // required.
     std::move(callback).Run(std::move(image_data), original_size,
-                            image_extension, std::move(latency_logs));
+                            /*downscaled_size=*/original_size, image_extension,
+                            std::move(latency_logs));
     return;
   }
   SkBitmap image = web_element.ImageContents();
@@ -497,8 +503,8 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
         image_format_conversion.at(image_format), base::Time::Now()));
   }
 
-  std::move(callback).Run(image_data, original_size, image_extension,
-                          std::move(latency_logs));
+  std::move(callback).Run(image_data, original_size, downscaled_size,
+                          image_extension, std::move(latency_logs));
 }
 
 void ChromeRenderFrameObserver::RequestReloadImageForContextNode() {

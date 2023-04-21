@@ -86,11 +86,15 @@ function initialize() {
             document.getElementById('image-width') as HTMLInputElement;
         const heightInput =
             document.getElementById('image-height') as HTMLInputElement;
+        const downscaledDimensionsInput =
+            document.getElementById('image-downscaled-dimensions') as
+            HTMLInputElement;
         assert(queryForm);
         assert(imageDataInput);
         assert(imageUrlInput);
         assert(widthInput);
         assert(heightInput);
+        assert(downscaledDimensionsInput);
         queryForm.setAttribute('action', imageQuery.uploadUrl.url);
         // The original Uint8Array that gets passed does not have an array
         // buffer due to how it is initialized. Thus, we have to create a
@@ -112,6 +116,8 @@ function initialize() {
         imageUrlInput.value = imageQuery.imageUrl.url;
         widthInput.value = String(imageQuery.width);
         heightInput.value = String(imageQuery.height);
+        downscaledDimensionsInput.value =
+            `${imageQuery.downscaledWidth},${imageQuery.downscaledHeight}`;
         queryForm.submit();
         queryForm.reset();
       });

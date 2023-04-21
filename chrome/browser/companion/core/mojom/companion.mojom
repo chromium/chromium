@@ -66,6 +66,10 @@ struct ImageQuery {
   uint32 height;
   // Width of the image before transformations.
   uint32 width;
+  // Height of the image after transformations.
+  uint32 downscaled_height;
+  // Width of the image after transformations.
+  uint32 downscaled_width;
 };
 
 // Factory method for creating a new WebUI page handler.

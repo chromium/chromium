@@ -77,6 +77,7 @@ void OnRetrieveImageForShare(
     const JavaRef<jobject>& jcallback,
     const std::vector<uint8_t>& thumbnail_data,
     const gfx::Size& original_size,
+    const gfx::Size& downscaled_size,
     const std::string& image_extension,
     const std::vector<lens::mojom::LatencyLogPtr>) {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -94,6 +95,7 @@ void OnRetrieveImageForContextMenu(
     const JavaRef<jobject>& jcallback,
     const std::vector<uint8_t>& thumbnail_data,
     const gfx::Size& original_size,
+    const gfx::Size& downscaled_size,
     const std::string& filename_extension,
     const std::vector<lens::mojom::LatencyLogPtr>) {
   ContextMenuImageRequest::Start(jcallback, thumbnail_data);

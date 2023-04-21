@@ -316,13 +316,16 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
     auto callback =
         [](std::vector<uint8_t>* response_image_data,
            gfx::Size* response_original_size,
+           gfx::Size* response_downscaled_size,
            std::string* response_file_extension,
            std::vector<lens::mojom::LatencyLogPtr>* response_log_data,
            base::OnceClosure quit, const std::vector<uint8_t>& image_data,
-           const gfx::Size& original_size, const std::string& file_extension,
+           const gfx::Size& original_size, const gfx::Size& downscaled_size,
+           const std::string& file_extension,
            std::vector<lens::mojom::LatencyLogPtr> log_data) {
           *response_image_data = image_data;
           *response_original_size = original_size;
+          *response_downscaled_size = downscaled_size;
           *response_file_extension = file_extension;
           *response_log_data = std::move(log_data);
           std::move(quit).Run();
@@ -331,17 +334,20 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
     base::RunLoop run_loop;
     std::vector<uint8_t> response_image_data;
     gfx::Size response_original_size;
+    gfx::Size response_downscaled_size;
     std::string response_file_extension;
     std::vector<lens::mojom::LatencyLogPtr> response_log_data;
     chrome_render_frame->RequestImageForContextNode(
         0, request_size, request_image_format, chrome::mojom::kDefaultQuality,
         base::BindOnce(callback, &response_image_data, &response_original_size,
-                       &response_file_extension, &response_log_data,
-                       run_loop.QuitClosure()));
+                       &response_downscaled_size, &response_file_extension,
+                       &response_log_data, run_loop.QuitClosure()));
     run_loop.Run();
 
     ASSERT_EQ(expected_original_size.width(), response_original_size.width());
     ASSERT_EQ(expected_original_size.height(), response_original_size.height());
+    ASSERT_EQ(expected_size.width(), response_downscaled_size.width());
+    ASSERT_EQ(expected_size.height(), response_downscaled_size.height());
     ASSERT_EQ(expected_extension, response_file_extension);
 
     SkBitmap decoded_bitmap;
