@@ -685,6 +685,16 @@ class CONTENT_EXPORT ServiceWorkerVersion
   void ExecuteScriptForTest(const std::string& script,
                             ServiceWorkerScriptExecutionCallback callback);
 
+  // Returns true if this SW is going to warm-up. This function can be called
+  // anytime. If the `running_status()` is `RUNNING`, `STOPPING` or `STOPPED`,
+  // this function returns false.
+  bool IsWarmingUp() const;
+
+  // Returns true if this SW already warmed-up. This function can be called
+  // anytime. If the `running_status()` is `RUNNING`, `STOPPING` or `STOPPED`,
+  // this function returns false.
+  bool IsWarmedUp() const;
+
   blink::mojom::AncestorFrameType ancestor_frame_type() const {
     return ancestor_frame_type_;
   }

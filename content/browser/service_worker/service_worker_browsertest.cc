@@ -4563,8 +4563,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpAndStartServiceWorker) {
 
   // Warm-up ServiceWorker. The script should be loaded without evaluating the
   // script.
+  EXPECT_FALSE(version->IsWarmedUp());
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             WarmUpServiceWorker(version.get()));
+  EXPECT_TRUE(version->IsWarmedUp());
   EXPECT_EQ(EmbeddedWorkerStatus::STARTING, version->running_status());
   EXPECT_EQ(EmbeddedWorkerInstance::StartingPhase::SCRIPT_LOADED,
             version->embedded_worker()->starting_phase());
@@ -4576,8 +4578,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpAndStartServiceWorker) {
   base::TimeTicks warm_up_start_time = version->start_time_;
 
   // 2nd ServiceWorker warm-up doesn't change anything except `start_time_`.
+  EXPECT_TRUE(version->IsWarmedUp());
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             WarmUpServiceWorker(version.get()));
+  EXPECT_TRUE(version->IsWarmedUp());
   EXPECT_EQ(EmbeddedWorkerStatus::STARTING, version->running_status());
   EXPECT_EQ(EmbeddedWorkerInstance::StartingPhase::SCRIPT_LOADED,
             version->embedded_worker()->starting_phase());
@@ -4639,8 +4643,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, WarmUpWorkerAndTimeout) {
 
   // Warm-up ServiceWorker. The script should be loaded without evaluating the
   // script.
+  EXPECT_FALSE(version->IsWarmedUp());
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             WarmUpServiceWorker(version.get()));
+  EXPECT_TRUE(version->IsWarmedUp());
   EXPECT_EQ(EmbeddedWorkerStatus::STARTING, version->running_status());
   EXPECT_EQ(EmbeddedWorkerInstance::StartingPhase::SCRIPT_LOADED,
             version->embedded_worker()->starting_phase());

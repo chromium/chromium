@@ -325,15 +325,12 @@ ServiceWorkerVersion::~ServiceWorkerVersion() {
   // to be more complicated and could result in various methods being called.
   in_dtor_ = true;
 
-  // Record UMA if the worker was trying to start. One way we get here is if the
-  // user closed the tab before the SW could start up.
-  // TODO(chikamune): Check if all the start_callbacks_ should be run or not.
-  if (!start_callbacks_.empty()) {
-    // RecordStartWorkerResult must be the first element of start_callbacks_.
-    StatusCallback record_start_worker_result = std::move(start_callbacks_[0]);
-    start_callbacks_.clear();
-    std::move(record_start_worker_result)
-        .Run(blink::ServiceWorkerStatusCode::kErrorAbort);
+  // One way we get here is if the user closed the tab before the SW
+  // could start up.
+  std::vector<StatusCallback> start_callbacks;
+  start_callbacks.swap(start_callbacks_);
+  for (auto& callback : start_callbacks) {
+    std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorAbort);
   }
 
   // One way we get here is if the user closed the tab before the SW
@@ -1178,6 +1175,33 @@ void ServiceWorkerVersion::ExecuteScriptForTest(
       base::UTF8ToUTF16(script), wants_result, std::move(callback));
 }
 
+bool ServiceWorkerVersion::IsWarmingUp() const {
+  if (running_status() != EmbeddedWorkerStatus::STARTING) {
+    return false;
+  }
+  return !warm_up_callbacks_.empty();
+}
+
+bool ServiceWorkerVersion::IsWarmedUp() const {
+  if (running_status() != EmbeddedWorkerStatus::STARTING) {
+    return false;
+  }
+  switch (embedded_worker_->starting_phase()) {
+    case EmbeddedWorkerInstance::StartingPhase::NOT_STARTING:
+    case EmbeddedWorkerInstance::StartingPhase::ALLOCATING_PROCESS:
+    case EmbeddedWorkerInstance::StartingPhase::SENT_START_WORKER:
+    case EmbeddedWorkerInstance::StartingPhase::SCRIPT_STREAMING:
+    case EmbeddedWorkerInstance::StartingPhase::SCRIPT_DOWNLOADING:
+      return false;
+    case EmbeddedWorkerInstance::StartingPhase::SCRIPT_LOADED:
+    case EmbeddedWorkerInstance::StartingPhase::SCRIPT_EVALUATION:
+      CHECK(warm_up_callbacks_.empty());
+      return true;
+    case EmbeddedWorkerInstance::StartingPhase::STARTING_PHASE_MAX_VALUE:
+      NOTREACHED_NORETURN();
+  }
+}
+
 void ServiceWorkerVersion::SetValidOriginTrialTokens(
     const blink::TrialTokenValidator::FeatureToTokensMap& tokens) {
   origin_trial_tokens_ =
@@ -1855,7 +1879,8 @@ void ServiceWorkerVersion::OpenWindow(
 }
 
 bool ServiceWorkerVersion::HasWorkInBrowser() const {
-  return !inflight_requests_.IsEmpty() || !start_callbacks_.empty();
+  return !inflight_requests_.IsEmpty() || !start_callbacks_.empty() ||
+         !warm_up_callbacks_.empty();
 }
 
 void ServiceWorkerVersion::OnSimpleEventFinished(
@@ -2022,6 +2047,7 @@ void ServiceWorkerVersion::DidEnsureLiveRegistrationForStartWorker(
     case EmbeddedWorkerStatus::STARTING:
       DCHECK(!start_callbacks_.empty());
       if (embedded_worker_->pause_initializing_global_scope()) {
+        CHECK(IsWarmingUp() || IsWarmedUp());
         // Extend timeout.
         if (!start_time_.is_null()) {
           RestartTick(&start_time_);
