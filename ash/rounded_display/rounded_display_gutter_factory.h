@@ -35,12 +35,6 @@ class ASH_EXPORT RoundedDisplayGutterFactory {
       const gfx::Size& panel_size,
       const gfx::RoundedCornersF& panel_radii,
       bool create_vertical_gutters);
-
-  // Creates drawable non-overlay gutters. A non-overlay gutter is considered
-  // drawable if it has at least one RoundedDisplayCorners with non-zero radius.
-  std::vector<std::unique_ptr<RoundedDisplayGutter>> CreateNonOverlayGutters(
-      const gfx::Size& panel_size,
-      const gfx::RoundedCornersF& panel_radii);
 };
 
 }  // namespace ash

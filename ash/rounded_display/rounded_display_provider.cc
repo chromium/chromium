@@ -184,10 +184,6 @@ void RoundedDisplayProvider::GetGuttersInDrawOrder(Gutters& gutters) const {
   for (const auto& gutter : overlay_gutters_) {
     gutters.push_back(gutter.get());
   }
-
-  for (const auto& gutter : non_overlay_gutters_) {
-    gutters.push_back(gutter.get());
-  }
 }
 
 bool RoundedDisplayProvider::CreateGutters(
@@ -202,9 +198,6 @@ bool RoundedDisplayProvider::CreateGutters(
 
   overlay_gutters_ = gutter_factory_->CreateOverlayGutters(
       panel_size, panel_radii, create_vertical_gutters);
-
-  non_overlay_gutters_ =
-      gutter_factory_->CreateNonOverlayGutters(panel_size, panel_radii);
 
   return true;
 }

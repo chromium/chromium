@@ -101,17 +101,6 @@ class RoundedDisplayFrameFactoryTest : public AshTestBase {
     }
   }
 
-  // Creates non overlay gutters and appends them to `gutters_`.
-  void AppendNonOverlayGutters(const gfx::Size& display_size_in_pixels,
-                               const gfx::RoundedCornersF& panel_radii) {
-    auto non_overlay_gutters = gutter_factory_->CreateNonOverlayGutters(
-        display_size_in_pixels, panel_radii);
-
-    for (auto& gutter : non_overlay_gutters) {
-      gutters_.push_back(std::move(gutter));
-    }
-  }
-
  protected:
   std::unique_ptr<RoundedDisplayGutterFactory> gutter_factory_;
   std::unique_ptr<RoundedDisplayFrameFactory> frame_factory_;
@@ -212,9 +201,9 @@ TEST_F(RoundedDisplayFrameFactoryTest,
 TEST_F(RoundedDisplayFrameFactoryTest,
        CorrectRoundedDisplayInfo_GuttersWithOneCorner) {
   const auto panel_radii = gfx::RoundedCornersF(10, 0, 0, 0);
-  AppendNonOverlayGutters(kTestDisplaySize, panel_radii);
+  AppendHorizontalOverlayGutters(kTestDisplaySize, panel_radii);
 
-  // `gutter_factory_` will only create upper-left non-overlay gutter.
+  // `gutter_factory_` will only create upper overlay gutter.
   EXPECT_EQ(gutters_.size(), 1u);
 
   auto frame = frame_factory_->CreateCompositorFrame(
@@ -235,7 +224,6 @@ TEST_F(RoundedDisplayFrameFactoryTest,
 
 TEST_F(RoundedDisplayFrameFactoryTest, OnlyCreateNewResourcesWhenNecessary) {
   AppendVerticalOverlayGutters(kTestDisplaySize, kTestPanelRadii);
-  AppendNonOverlayGutters(kTestDisplaySize, kTestPanelRadii);
 
   const auto& gutters = GetGutters();
 
@@ -248,7 +236,7 @@ TEST_F(RoundedDisplayFrameFactoryTest, OnlyCreateNewResourcesWhenNecessary) {
                                                      /*is_overlay=*/false));
   }
 
-  EXPECT_EQ(resource_manager_.available_resources_count(), 6u);
+  EXPECT_EQ(resource_manager_.available_resources_count(), 2u);
 
   frame_factory_->CreateCompositorFrame(
       viz::BeginFrameAck::CreateManualAckWithDamage(), *host_window_,
@@ -256,13 +244,13 @@ TEST_F(RoundedDisplayFrameFactoryTest, OnlyCreateNewResourcesWhenNecessary) {
 
   // Should have reused all the resources.
   EXPECT_EQ(resource_manager_.available_resources_count(), 0u);
-  // Should have exported six resources as we have six gutters.
-  EXPECT_EQ(resource_manager_.exported_resources_count(), 6u);
+  // Should have exported two resources as we have two gutters.
+  EXPECT_EQ(resource_manager_.exported_resources_count(), 2u);
 
   resource_manager_.LostExportedResources();
 
   // Adding more resources.
-  for (int index : {0, 0, 4, 5}) {
+  for (int index : {0, 0}) {
     const auto* gutter = gutters.at(index);
     resource_manager_.OfferResource(
         RoundedDisplayFrameFactory::CreateUiResource(gutter->bounds().size(),
@@ -271,7 +259,7 @@ TEST_F(RoundedDisplayFrameFactoryTest, OnlyCreateNewResourcesWhenNecessary) {
                                                      /*is_overlay=*/false));
   }
 
-  EXPECT_EQ(resource_manager_.available_resources_count(), 4u);
+  EXPECT_EQ(resource_manager_.available_resources_count(), 2u);
 
   frame_factory_->CreateCompositorFrame(
       viz::BeginFrameAck::CreateManualAckWithDamage(), *host_window_,
@@ -279,11 +267,11 @@ TEST_F(RoundedDisplayFrameFactoryTest, OnlyCreateNewResourcesWhenNecessary) {
 
   // We end up using the available resources and are left with the extra
   // resource that was available. We also must have created resources for
-  // gutters for which we did not have any available resources.
+  // gutter for which we did not have any available resources.
   EXPECT_EQ(resource_manager_.available_resources_count(), 1u);
 
-  // Should have exported six resources as we have six gutters.
-  EXPECT_EQ(resource_manager_.exported_resources_count(), 6u);
+  // Should have exported two resources as we have two gutters.
+  EXPECT_EQ(resource_manager_.exported_resources_count(), 2u);
 }
 
 }  // namespace

@@ -126,28 +126,4 @@ RoundedDisplayGutterFactory::CreateOverlayGutters(
   return gutters;
 }
 
-std::vector<std::unique_ptr<RoundedDisplayGutter>>
-RoundedDisplayGutterFactory::CreateNonOverlayGutters(
-    const gfx::Size& panel_size,
-    const gfx::RoundedCornersF& panel_radii) {
-  std::vector<std::unique_ptr<RoundedDisplayGutter>> gutters;
-
-  MaybeAppendGutter(gutters, CreateGutter(panel_size, panel_radii,
-                                          0 | RoundedCornerPosition::kUpperLeft,
-                                          /*is_overlay_gutter=*/false));
-  MaybeAppendGutter(gutters,
-                    CreateGutter(panel_size, panel_radii,
-                                 0 | RoundedCornerPosition::kUpperRight,
-                                 /*is_overlay_gutter=*/false));
-  MaybeAppendGutter(gutters, CreateGutter(panel_size, panel_radii,
-                                          0 | RoundedCornerPosition::kLowerLeft,
-                                          /*is_overlay_gutter=*/false));
-  MaybeAppendGutter(gutters,
-                    CreateGutter(panel_size, panel_radii,
-                                 0 | RoundedCornerPosition::kLowerRight,
-                                 /*is_overlay_gutter=*/false));
-
-  return gutters;
-}
-
 }  // namespace ash
