@@ -67,7 +67,8 @@ class PasswordGenerationController {
   // Notifies the UI that automatic password generation is available.
   // A button should be displayed in the accessory bar.
   virtual void OnAutomaticGenerationAvailable(
-      const password_manager::PasswordManagerDriver* target_frame_driver,
+      base::WeakPtr<password_manager::PasswordManagerDriver>
+          target_frame_driver,
       const autofill::password_generation::PasswordGenerationUIData& ui_data,
       gfx::RectF element_bounds_in_screen_space) = 0;
 

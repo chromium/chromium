@@ -242,9 +242,7 @@ public class PasswordGenerationIntegrationTest {
     }
 
     private void focusField(String node) throws TimeoutException, InterruptedException {
-        DOMUtils.focusNode(mHelper.getWebContents(), node);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mHelper.getWebContents().scrollFocusedEditableNodeIntoView(); });
+        DOMUtils.clickNode(mHelper.getWebContents(), node);
     }
 
     private void clickNode(String node) throws InterruptedException, TimeoutException {

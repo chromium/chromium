@@ -49,7 +49,8 @@ class PasswordGenerationControllerImpl
       autofill::mojom::FocusedFieldType focused_field_type,
       base::WeakPtr<password_manager::PasswordManagerDriver> driver) override;
   void OnAutomaticGenerationAvailable(
-      const password_manager::PasswordManagerDriver* target_frame_driver,
+      base::WeakPtr<password_manager::PasswordManagerDriver>
+          target_frame_driver,
       const autofill::password_generation::PasswordGenerationUIData& ui_data,
       gfx::RectF element_bounds_in_screen_space) override;
   void ShowManualGenerationDialog(
