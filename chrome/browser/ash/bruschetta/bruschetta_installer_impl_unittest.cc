@@ -45,7 +45,7 @@ using testing::InvokeWithoutArgs;
 using testing::Sequence;
 
 // Total number of stopping points in ::ExpectStopOnStepN
-constexpr int kMaxSteps = 24;
+constexpr int kMaxSteps = 26;
 
 // Total number of stopping points in ::ExpectStopOnStepN when we don't install
 // a pflash file.
@@ -295,15 +295,14 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
       }
     }
 
-    // Tools DLC install step
+    // DLC install step
     {
       if (out_result) {
-        *out_result = BruschettaInstallResult::kToolsDlcInstallError;
+        *out_result = BruschettaInstallResult::kDlcInstallError;
       }
       auto& expectation =
-          EXPECT_CALL(
-              observer_,
-              StateChanged(BruschettaInstaller::State::kToolsDlcInstall))
+          EXPECT_CALL(observer_,
+                      StateChanged(BruschettaInstaller::State::kDlcInstall))
               .Times(1)
               .InSequence(seq);
 
@@ -320,15 +319,15 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
           InvokeWithoutArgs(DlcCallback(dlcservice::kErrorNone)));
     }
 
-    // UEFI DLC install step
+    // Firmware image download step
     {
       if (out_result) {
-        *out_result = BruschettaInstallResult::kFirmwareDlcInstallError;
+        *out_result = BruschettaInstallResult::kDownloadError;
       }
       auto& expectation =
           EXPECT_CALL(
               observer_,
-              StateChanged(BruschettaInstaller::State::kFirmwareDlcInstall))
+              StateChanged(BruschettaInstaller::State::kFirmwareDownload))
               .Times(1)
               .InSequence(seq);
 
@@ -337,12 +336,22 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
         return false;
       }
       if (!n--) {
-        MakeErrorPoint(expectation, seq, DlcCallback("Install Error"));
+        MakeErrorPoint(expectation, seq, DownloadErrorCallback(true));
+        return true;
+      }
+      if (!n--) {
+        MakeErrorPoint(expectation, seq, DownloadErrorCallback(false));
+        return true;
+      }
+      if (out_result) {
+        *out_result = BruschettaInstallResult::kInvalidFirmware;
+      }
+      if (!n--) {
+        MakeErrorPoint(expectation, seq, DownloadBadHashCallback());
         return true;
       }
 
-      expectation.WillOnce(
-          InvokeWithoutArgs(DlcCallback(dlcservice::kErrorNone)));
+      expectation.WillOnce(InvokeWithoutArgs(DownloadSuccessCallback()));
     }
 
     // Boot disk download step

@@ -16,15 +16,15 @@ const char16_t* BruschettaInstallResultString(
     ENTRY(kUnknown);
     ENTRY(kSuccess);
     ENTRY(kInstallationProhibited);
-    ENTRY(kToolsDlcInstallError);
+    ENTRY(kDlcInstallError);
     ENTRY(kDownloadError);
+    ENTRY(kInvalidFirmware);
     ENTRY(kInvalidBootDisk);
     ENTRY(kInvalidPflash);
     ENTRY(kUnableToOpenImages);
     ENTRY(kCreateDiskError);
     ENTRY(kStartVmFailed);
     ENTRY(kInstallPflashError);
-    ENTRY(kFirmwareDlcInstallError);
   }
 #undef ENTRY
 #undef USTR

@@ -34,7 +34,6 @@ absl::optional<const base::Value::Dict*> GetConfigWithEnabledLevel(
 }  // namespace
 
 const char kToolsDlc[] = "termina-tools-dlc";
-const char kUefiDlc[] = "edk2-ovmf-dlc";
 
 const char kBruschettaVmName[] = "bru";
 const char kBruschettaDisplayName[] = "Bruschetta";
