@@ -25,12 +25,12 @@
 #include "ash/wm/overview/overview_session.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -157,7 +157,7 @@ class DesksClient::LaunchPerformanceTracker
     : public app_restore::AppRestoreInfo::Observer {
  public:
   LaunchPerformanceTracker(const std::set<int>& window_ids,
-                           base::GUID template_id,
+                           base::Uuid template_id,
                            DesksClient* templates_client)
       : tracked_window_ids_(window_ids),
         time_launch_started_(base::Time::Now()),
@@ -214,7 +214,7 @@ class DesksClient::LaunchPerformanceTracker
 
   std::set<int> tracked_window_ids_;
   base::Time time_launch_started_;
-  base::GUID template_id_;
+  base::Uuid template_id_;
   std::unique_ptr<base::OneShotTimer> timeout_timer_;
 
   // Pointer back to the owning templates client. This is done to facilitate
@@ -319,7 +319,7 @@ void DesksClient::CaptureActiveDesk(
       /*root_window_to_show=*/nullptr);
 }
 
-void DesksClient::DeleteDeskTemplate(const base::GUID& template_uuid,
+void DesksClient::DeleteDeskTemplate(const base::Uuid& template_uuid,
                                      DeleteDeskTemplateCallback callback) {
   if (!active_profile_) {
     std::move(callback).Run(DeskActionError::kNoCurrentUserError);
@@ -349,7 +349,7 @@ void DesksClient::GetDeskTemplates(GetDeskTemplatesCallback callback) {
       result.entries);
 }
 
-void DesksClient::GetTemplateJson(const base::GUID& uuid,
+void DesksClient::GetTemplateJson(const base::Uuid& uuid,
                                   Profile* profile,
                                   GetTemplateJsonCallback callback) {
   if (!active_profile_ || active_profile_ != profile) {
@@ -368,7 +368,7 @@ void DesksClient::GetTemplateJson(const base::GUID& uuid,
 }
 
 void DesksClient::LaunchDeskTemplate(
-    const base::GUID& template_uuid,
+    const base::Uuid& template_uuid,
     LaunchDeskCallback callback,
     const std::u16string& customized_desk_name) {
   if (!active_profile_) {
@@ -391,7 +391,7 @@ void DesksClient::LaunchDeskTemplate(
                              result.status, std::move(result.entry));
 }
 
-base::expected<const base::GUID, DesksClient::DeskActionError>
+base::expected<const base::Uuid, DesksClient::DeskActionError>
 DesksClient::LaunchEmptyDesk(const std::u16string& customized_desk_name) {
   if (!desks_controller_->CanCreateDesks()) {
     return base::unexpected(DeskActionError::kDesksCountCheckFailedError);
@@ -408,7 +408,7 @@ DesksClient::LaunchEmptyDesk(const std::u16string& customized_desk_name) {
 }
 
 absl::optional<DesksClient::DeskActionError> DesksClient::RemoveDesk(
-    const base::GUID& desk_uuid,
+    const base::Uuid& desk_uuid,
     bool combine_desk) {
   // Return error if `desk_uuid` is invalid.
   if (!desk_uuid.is_valid()) {
@@ -577,12 +577,12 @@ DesksClient::SetAllDeskPropertyByBrowserSessionId(SessionID browser_session_id,
   return absl::nullopt;
 }
 
-base::GUID DesksClient::GetActiveDesk() {
+base::Uuid DesksClient::GetActiveDesk() {
   return desks_controller_->GetTargetActiveDesk()->uuid();
 }
 
 base::expected<const ash::Desk*, DesksClient::DeskActionError>
-DesksClient::GetDeskByID(const base::GUID& desk_uuid) const {
+DesksClient::GetDeskByID(const base::Uuid& desk_uuid) const {
   ash::Desk* desk = desks_controller_->GetDeskByUuid(desk_uuid);
   if (!desk) {
     return base::unexpected(DeskActionError::kResourceNotFoundError);
@@ -591,7 +591,7 @@ DesksClient::GetDeskByID(const base::GUID& desk_uuid) const {
 }
 
 absl::optional<DesksClient::DeskActionError> DesksClient::SwitchDesk(
-    const base::GUID& desk_uuid) {
+    const base::Uuid& desk_uuid) {
   ash::Desk* desk = desks_controller_->GetDeskByUuid(desk_uuid);
   if (!desk) {
     return DeskActionError::kResourceNotFoundError;
@@ -726,7 +726,7 @@ void DesksClient::OnDeleteDeskTemplate(
 
 void DesksClient::OnRecallSavedDesk(
     DesksClient::LaunchDeskCallback callback,
-    const base::GUID& desk_id,
+    const base::Uuid& desk_id,
     desks_storage::DeskModel::DeleteEntryStatus status) {
   std::move(callback).Run(
       status != desks_storage::DeskModel::DeleteEntryStatus::kOk
@@ -771,7 +771,7 @@ void DesksClient::OnLaunchComplete(int32_t launch_id) {
 }
 
 void DesksClient::RemoveLaunchPerformanceTracker(
-    const base::GUID& tracker_uuid) {
+    const base::Uuid& tracker_uuid) {
   template_ids_to_launch_performance_trackers_.erase(tracker_uuid);
 }
 

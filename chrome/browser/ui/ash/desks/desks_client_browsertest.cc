@@ -36,12 +36,12 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "base/value_iterators.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -214,13 +214,13 @@ std::vector<const ash::DeskTemplate*> GetDeskTemplates() {
 // Search `desk_templates` for a template with `uuid` and returns true if found,
 // false if not.
 bool ContainUuidInTemplates(
-    const base::GUID& uuid,
+    const base::Uuid& uuid,
     const std::vector<const ash::DeskTemplate*>& desk_templates) {
   DCHECK(uuid.is_valid());
   return base::Contains(desk_templates, uuid, &ash::DeskTemplate::uuid);
 }
 
-std::string GetTemplateJson(const base::GUID& uuid, Profile* profile) {
+std::string GetTemplateJson(const base::Uuid& uuid, Profile* profile) {
   base::RunLoop run_loop;
   std::string template_json_result;
   DesksClient::Get()->GetTemplateJson(
@@ -236,7 +236,7 @@ std::string GetTemplateJson(const base::GUID& uuid, Profile* profile) {
   return template_json_result;
 }
 
-void DeleteDeskTemplate(const base::GUID& uuid) {
+void DeleteDeskTemplate(const base::Uuid& uuid) {
   base::RunLoop run_loop;
   DesksClient::Get()->DeleteDeskTemplate(
       uuid, base::BindLambdaForTesting(
@@ -486,12 +486,12 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
     DesksClient::Get()->launch_template_for_test_ = std::move(launch_template);
   }
 
-  void LaunchTemplate(const base::GUID& uuid) {
+  void LaunchTemplate(const base::Uuid& uuid) {
     base::RunLoop waiter;
     DesksClient::Get()->LaunchDeskTemplate(
         uuid, base::BindLambdaForTesting(
                   [&](absl::optional<DesksClient::DeskActionError> error,
-                      const base::GUID& desk_uuid) { waiter.Quit(); }));
+                      const base::Uuid& desk_uuid) { waiter.Quit(); }));
     waiter.Run();
   }
 
@@ -827,7 +827,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
 // Tests that launching the same desk template multiple times creates desks with
 // different/incremented names.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchMultipleDeskTemplates) {
-  const base::GUID kDeskUuid = base::GUID::GenerateRandomV4();
+  const base::Uuid kDeskUuid = base::Uuid::GenerateRandomV4();
   const std::u16string kDeskName(u"Test Desk Name");
 
   auto* desks_controller = ash::DesksController::Get();
@@ -2359,7 +2359,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
 // Tests that launching the same desk template multiple times creates desks with
 // different/incremented names.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchMultipleDeskTemplates) {
-  const base::GUID kDeskUuid = base::GUID::GenerateRandomV4();
+  const base::Uuid kDeskUuid = base::Uuid::GenerateRandomV4();
   const std::u16string kDeskName(u"Test Desk Name");
 
   auto* desks_controller = ash::DesksController::Get();
@@ -2476,12 +2476,12 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateAndCleanUpDesk) {
   // Retrieve the `desk_uuid` from `LaunchDeskTemplate` operation and
   // `closeAll` on it.
   base::RunLoop loop;
-  base::GUID desk_id;
+  base::Uuid desk_id;
   // Launch one template, desk size should increase by 1.
   DesksClient::Get()->LaunchDeskTemplate(
-      base::GUID(), base::BindLambdaForTesting(
+      base::Uuid(), base::BindLambdaForTesting(
                         [&](absl::optional<DesksClient::DeskActionError> error,
-                            const base::GUID& desk_uuid) {
+                            const base::Uuid& desk_uuid) {
                           EXPECT_EQ(2u, desks_controller->desks().size());
                           desk_id = desk_uuid;
                           loop.Quit();
@@ -2556,7 +2556,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, RemoveWithInvalidDeskId) {
   // Should have 1 default desk.
   EXPECT_EQ(1u, desks_controller->desks().size());
   // Construct an empty invalid desk_id.
-  base::GUID desk_id;
+  base::Uuid desk_id;
   EXPECT_THAT(DesksClient::Get()->RemoveDesk(desk_id, false),
               testing::Optional(DesksClient::DeskActionError::kInvalidIdError));
   EXPECT_EQ(1u, desks_controller->desks().size());
@@ -2571,7 +2571,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, GetAllDesksAndRemove) {
 
   base::RunLoop loop;
   // Retrieve desk id;
-  base::GUID desk_id;
+  base::Uuid desk_id;
   auto desks = DesksClient::Get()->GetAllDesks();
   ASSERT_TRUE(desks.has_value());
   ASSERT_EQ(1u, desks.value().size());
@@ -2653,7 +2653,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SetWindowProperties) {
 
 // Tests immediate desk action should be throttled.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, ThrottleImmediateDeskAction) {
-  base::GUID new_desk_id;
+  base::Uuid new_desk_id;
   ash::DeskSwitchAnimationWaiter waiter;
   auto result = DesksClient::Get()->LaunchEmptyDesk();
   ASSERT_TRUE(result.has_value());
@@ -2780,7 +2780,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, RecallSavedDesk) {
       base::BindLambdaForTesting(
           [desk_model, &loop](
               absl::optional<DesksClient::DeskActionError> error,
-              const base::GUID& desk_uuid) {
+              const base::Uuid& desk_uuid) {
             EXPECT_EQ(ash::DesksController::Get()->GetNumberOfDesks(), 2);
             EXPECT_EQ(0u, desk_model->GetEntryCount());
             loop.Quit();
@@ -2790,13 +2790,13 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, RecallSavedDesk) {
 
 // Tests switch to current desk should be no ops.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, SwitchToCurrentDesk) {
-  base::GUID current_desk_uuid;
+  base::Uuid current_desk_uuid;
   current_desk_uuid = DesksClient::Get()->GetActiveDesk();
 
   // Expect no error message.
   EXPECT_FALSE(DesksClient::Get()->SwitchDesk(current_desk_uuid));
 
-  base::GUID desk_uuid = DesksClient::Get()->GetActiveDesk();
+  base::Uuid desk_uuid = DesksClient::Get()->GetActiveDesk();
   EXPECT_EQ(current_desk_uuid, desk_uuid);
 }
 
@@ -2809,7 +2809,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SwitchToInvalidDesk) {
 
 // Tests switch to different desk should be trigger desk animation.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, SwitchToDifferentDesk) {
-  base::GUID desk_uuid = DesksClient::Get()->GetActiveDesk();
+  base::Uuid desk_uuid = DesksClient::Get()->GetActiveDesk();
 
   // Launches a new desk.
   auto result = DesksClient::Get()->LaunchEmptyDesk();
@@ -2825,13 +2825,13 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SwitchToDifferentDesk) {
   // Wait for desk switch animation.
   ash::DeskSwitchAnimationWaiter waiter_;
   waiter_.Wait();
-  base::GUID desk_uuid_ = DesksClient::Get()->GetActiveDesk();
+  base::Uuid desk_uuid_ = DesksClient::Get()->GetActiveDesk();
   EXPECT_EQ(desk_uuid_, desk_uuid);
 }
 
 // Tests retrieve an existing desk.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, GetDeskByValidDeskId) {
-  base::GUID desk_uuid = DesksClient::Get()->GetActiveDesk();
+  base::Uuid desk_uuid = DesksClient::Get()->GetActiveDesk();
   auto result = DesksClient::Get()->GetDeskByID(desk_uuid);
 
   ASSERT_TRUE(result.has_value());
@@ -2840,7 +2840,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, GetDeskByValidDeskId) {
 
 // Tests retrieve an non-exist desk should return error.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, GetDeskByInvalidDeskId) {
-  auto result = DesksClient::Get()->GetDeskByID(base::GUID::GenerateRandomV4());
+  auto result = DesksClient::Get()->GetDeskByID(base::Uuid::GenerateRandomV4());
 
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
@@ -2857,7 +2857,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureFloatingWorkspaceTemplateTest) {
   EXPECT_TRUE(desk_template->uuid().is_valid());
   EXPECT_EQ(
       desk_template->uuid(),
-      base::GUID::ParseLowercase(
+      base::Uuid::ParseLowercase(
           desks_storage::desk_template_util::kFloatingWorkspaceTemplateUuid));
 }
 
@@ -2872,7 +2872,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, FloatingWorkspaceOnSavedDesksUI) {
   EXPECT_TRUE(desk_template->uuid().is_valid());
   EXPECT_EQ(
       desk_template->uuid(),
-      base::GUID::ParseLowercase(
+      base::Uuid::ParseLowercase(
           desks_storage::desk_template_util::kFloatingWorkspaceTemplateUuid));
 
   auto* desk_model = DesksClient::Get()->GetDeskModel();
@@ -3368,8 +3368,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest,
                        SetAndClearAdminTemplates) {
   EXPECT_TRUE(DesksClient::Get());
 
-  base::GUID admin_template_uuid =
-      base::GUID::ParseCaseInsensitive(kTestAdminTemplateUuid);
+  base::Uuid admin_template_uuid =
+      base::Uuid::ParseCaseInsensitive(kTestAdminTemplateUuid);
 
   // Set an admin template policy.
   DesksClient::Get()->SetPolicyPreconfiguredTemplate(
@@ -3436,7 +3436,7 @@ class AdminTemplateTest : public extensions::PlatformAppBrowserTest {
     root.Set(app_constants::kChromeAppId, std::move(windows));
 
     auto admin_template = std::make_unique<ash::DeskTemplate>(
-        base::GUID::GenerateRandomV4(), ash::DeskTemplateSource::kPolicy,
+        base::Uuid::GenerateRandomV4(), ash::DeskTemplateSource::kPolicy,
         "Admin template", base::Time::Now(), ash::DeskTemplateType::kTemplate);
 
     admin_template->set_desk_restore_data(
@@ -3458,7 +3458,7 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, LaunchAdminTemplate) {
       CreateAdminTemplate({.windows = {{.urls = {kExampleUrl1}}}});
   ASSERT_NE(admin_template, nullptr);
 
-  base::GUID template_uuid = admin_template->uuid();
+  base::Uuid template_uuid = admin_template->uuid();
 
   auto* saved_desk_controller = ash::Shell::Get()->saved_desk_controller();
   ash::SavedDeskControllerTestApi(saved_desk_controller)
