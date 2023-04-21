@@ -7982,16 +7982,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPrerenderBrowserTest,
   EXPECT_TRUE(activated_rwhi->IsContentRenderingTimeoutRunning());
 }
 
-// TODO(vmpstr): Android takes the new timeout timer from the fallback render
-// widget host impl. This causes us to clear the surface on showing it. See
-// crbug.com/1423006 for the investigation.
-#if BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPrerenderBrowserTest,
-                       DISABLED_ActivationSurfaceRangeIncludesFallback) {
-#else
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPrerenderBrowserTest,
                        ActivationSurfaceRangeIncludesFallback) {
-#endif
   GURL url_a = embedded_test_server()->GetURL("/title1.html");
   GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
   EXPECT_TRUE(NavigateToURL(shell(), url_a));

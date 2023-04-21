@@ -2342,17 +2342,6 @@ bool RenderWidgetHostImpl::IsContentRenderingTimeoutRunning() const {
          new_content_rendering_timeout_->IsRunning();
 }
 
-void RenderWidgetHostImpl::GetContentRenderingTimeoutFrom(
-    RenderWidgetHostImpl* other) {
-  // TODO(vmpstr): Android is the only caller of this function, and it isn't
-  // clear why we should be taking a timer from the fallback surface's timer.
-  // See crbug.com/1423006 for the investigation.
-  if (other->IsContentRenderingTimeoutRunning()) {
-    new_content_rendering_timeout_->Start(
-        other->new_content_rendering_timeout_->GetCurrentDelay());
-  }
-}
-
 void RenderWidgetHostImpl::OnMouseEventAck(
     const MouseEventWithLatencyInfo& mouse_event,
     blink::mojom::InputEventResultSource ack_source,

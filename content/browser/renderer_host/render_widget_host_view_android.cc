@@ -2867,7 +2867,6 @@ void RenderWidgetHostViewAndroid::TakeFallbackContentFrom(
     return;
   delegated_frame_host_->TakeFallbackContentFrom(
       view_android->delegated_frame_host_.get());
-  host()->GetContentRenderingTimeoutFrom(view_android->host());
 }
 
 void RenderWidgetHostViewAndroid::OnSynchronizedDisplayPropertiesChanged(
