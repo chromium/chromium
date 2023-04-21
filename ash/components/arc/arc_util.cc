@@ -556,4 +556,9 @@ uint64_t GetRequiredFreeDiskSpaceForArcVmDataMigrationInBytes(
          kRequiredFreeDiskSpaceMaskInBytes;
 }
 
+bool IsReadOnlyPermissionsEnabled() {
+  return base::FeatureList::IsEnabled(arc::kEnableReadOnlyPermissions) &&
+         GetArcAndroidSdkVersionAsInt() >= kArcVersionT;
+}
+
 }  // namespace arc

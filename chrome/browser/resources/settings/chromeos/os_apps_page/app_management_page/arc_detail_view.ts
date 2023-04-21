@@ -14,13 +14,15 @@ import 'chrome://resources/cr_elements/icons.html.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {getPermission, getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './arc_detail_view.html.js';
 import {AppManagementStoreMixin} from './store_mixin.js';
 
 const AppManagementArcDetailViewElementBase =
-    AppManagementStoreMixin(PolymerElement);
+    AppManagementStoreMixin(I18nMixin(PolymerElement));
 
 class AppManagementArcDetailViewElement extends
     AppManagementArcDetailViewElementBase {
@@ -62,6 +64,12 @@ class AppManagementArcDetailViewElement extends
       }
     }
     return true;
+  }
+
+  private getMorePermissionsLabel_(): string {
+    return loadTimeData.getBoolean('appManagementArcReadOnlyPermissions') ?
+        this.i18n('appManagementArcManagePermissionsLabel') :
+        this.i18n('appManagementMorePermissionsLabel');
   }
 }
 
