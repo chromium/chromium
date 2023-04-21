@@ -160,7 +160,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       const gfx::QuadF* draw_region) const;
 
   DrawRPDQParams CalculateRPDQParams(const AggregatedRenderPassDrawQuad* quad,
-                                     DrawQuadParams* params);
+                                     const DrawQuadParams* params);
   // Modifies |params| and |rpdq_params| to apply correctly when drawing the
   // RenderPass directly via |bypass_quad|.
   BypassMode CalculateBypassParams(const DrawQuad* bypass_quad,

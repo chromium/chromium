@@ -24,6 +24,7 @@
 #include "cc/paint/skia_paint_canvas.h"
 #include "cc/test/fake_raster_source.h"
 #include "cc/test/fake_recording_source.h"
+#include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test.h"
 #include "cc/test/render_pass_test_utils.h"
 #include "cc/test/resource_provider_test_utils.h"
@@ -1117,6 +1118,161 @@ TEST_P(RendererPixelTest,
       &pass_list,
       base::FilePath(FILE_PATH_LITERAL("offset_inset_top_left.png")),
       cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
+}
+
+TEST_P(RendererPixelTest, BypassableTextureQuad_ClipRect) {
+  gfx::Rect root_pass_rect(device_viewport_size_);
+  gfx::Rect child_pass_rect(180, 180);
+
+  AggregatedRenderPassId root_pass_id{1};
+  AggregatedRenderPassId child_pass_id{2};
+
+  gfx::Transform transform_root_to_child_pass;
+  transform_root_to_child_pass.Translate(10, 10);
+
+  AggregatedRenderPassList pass_list;
+  {
+    // The child render pass has a single TextureDrawQuad so it will be bypassed
+    // by SkiaRenderer. There is a clip_rect that clips the rightmost 10 pixels
+    // in the x-axis only.
+    auto child_pass = std::make_unique<AggregatedRenderPass>();
+    child_pass->SetNew(child_pass_id, child_pass_rect, child_pass_rect,
+                       transform_root_to_child_pass.GetCheckedInverse());
+
+    auto* sqs =
+        CreateTestSharedQuadState(gfx::Transform(), child_pass_rect,
+                                  child_pass.get(), gfx::MaskFilterInfo());
+    sqs->clip_rect = gfx::Rect(170, 200);
+
+    CreateTestTwoColoredTextureDrawQuad(
+        !is_software_renderer(), child_pass_rect,
+        /*texel_color_one=*/SkColors::kYellow,
+        /*texel_color_two=*/SkColors::kMagenta,
+        /*background_color=*/SkColors::kGreen,
+        /*premultiplied_alpha=*/true,
+        /*flipped_texture_quad=*/false,
+        /*half_and_half=*/false, sqs, resource_provider_.get(),
+        child_resource_provider_.get(), shared_bitmap_manager_.get(),
+        child_context_provider_, child_pass.get());
+    pass_list.push_back(std::move(child_pass));
+  }
+
+  {
+    // The root render pass has a blue background and draws the (bypassed)
+    // render pass into center 180x180 of the root render pass.
+    auto root_pass = CreateTestRootRenderPass(root_pass_id, root_pass_rect);
+    {
+      auto* sqs = CreateTestSharedQuadState(transform_root_to_child_pass,
+                                            child_pass_rect, root_pass.get(),
+                                            gfx::MaskFilterInfo());
+      auto* pass_quad =
+          root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
+      pass_quad->SetNew(sqs, child_pass_rect, child_pass_rect, child_pass_id,
+                        kInvalidResourceId, gfx::RectF(), gfx::Size(),
+                        gfx::Vector2dF(1.0f, 1.0f), gfx::PointF(),
+                        gfx::RectF(child_pass_rect), false, 1.0f);
+    }
+    {
+      auto* sqs =
+          CreateTestSharedQuadState(gfx::Transform(), root_pass_rect,
+                                    root_pass.get(), gfx::MaskFilterInfo());
+      auto* blue_quad =
+          root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+      blue_quad->SetNew(sqs, root_pass_rect, root_pass_rect, SkColors::kBlue,
+                        false);
+    }
+    pass_list.push_back(std::move(root_pass));
+  }
+
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list, base::FilePath(FILE_PATH_LITERAL("bypass_texture.png")),
+      cc::ExactPixelComparator()));
+}
+
+TEST_P(RendererPixelTest, BypassableTextureQuad_Rotation_ClipRect) {
+  gfx::Rect root_pass_rect(device_viewport_size_);
+  gfx::Rect child_pass_rect(120, 120);
+
+  AggregatedRenderPassId root_pass_id{1};
+  AggregatedRenderPassId child_pass_id{2};
+
+  gfx::Transform transform_root_to_child_pass;
+  transform_root_to_child_pass.RotateAboutZAxis(45.0);
+  transform_root_to_child_pass.Translate(-child_pass_rect.width() / 2,
+                                         -child_pass_rect.height() / 2);
+  transform_root_to_child_pass.PostTranslate(root_pass_rect.width() / 2,
+                                             root_pass_rect.height() / 2);
+
+  AggregatedRenderPassList pass_list;
+  {
+    // The child render pass has a single TextureDrawQuad so it will be bypassed
+    // by SkiaRenderer. The texture is drawn rotated 45° so all four corners are
+    // clipped by the render pass output_rect. There is a clip_rect that clips
+    // the rightmost 10 pixels in the x-axis only.
+    auto child_pass = std::make_unique<AggregatedRenderPass>();
+    child_pass->SetNew(child_pass_id, child_pass_rect, child_pass_rect,
+                       transform_root_to_child_pass.GetCheckedInverse());
+
+    gfx::Transform transform_texture_quad;
+    {
+      int half_length = child_pass_rect.width() / 2;
+      transform_texture_quad.RotateAboutZAxis(45.0);
+      transform_texture_quad.Translate(-half_length, -half_length);
+      transform_texture_quad.PostTranslate(half_length, half_length);
+    }
+
+    auto* sqs =
+        CreateTestSharedQuadState(transform_texture_quad, child_pass_rect,
+                                  child_pass.get(), gfx::MaskFilterInfo());
+    sqs->clip_rect = gfx::Rect(110, 140);
+
+    CreateTestTwoColoredTextureDrawQuad(
+        !is_software_renderer(), child_pass_rect,
+        /*texel_color_one=*/SkColors::kYellow,
+        /*texel_color_two=*/SkColors::kMagenta,
+        /*background_color=*/SkColors::kGreen,
+        /*premultiplied_alpha=*/true,
+        /*flipped_texture_quad=*/false,
+        /*half_and_half=*/false, sqs, resource_provider_.get(),
+        child_resource_provider_.get(), shared_bitmap_manager_.get(),
+        child_context_provider_, child_pass.get());
+    pass_list.push_back(std::move(child_pass));
+  }
+
+  {
+    // The root render pass has a blue background and draws the (bypassed)
+    // render pass rotated another 45°.
+    auto root_pass = CreateTestRootRenderPass(root_pass_id, root_pass_rect);
+    {
+      auto* sqs = CreateTestSharedQuadState(transform_root_to_child_pass,
+                                            child_pass_rect, root_pass.get(),
+                                            gfx::MaskFilterInfo());
+      auto* pass_quad =
+          root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
+      pass_quad->SetNew(sqs, child_pass_rect, child_pass_rect, child_pass_id,
+                        kInvalidResourceId, gfx::RectF(), gfx::Size(),
+                        gfx::Vector2dF(1.0f, 1.0f), gfx::PointF(),
+                        gfx::RectF(child_pass_rect), false, 1.0f);
+    }
+    {
+      auto* sqs =
+          CreateTestSharedQuadState(gfx::Transform(), root_pass_rect,
+                                    root_pass.get(), gfx::MaskFilterInfo());
+      auto* blue_quad =
+          root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+      blue_quad->SetNew(sqs, root_pass_rect, root_pass_rect, SkColors::kBlue,
+                        false);
+    }
+    pass_list.push_back(std::move(root_pass));
+  }
+
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list,
+      base::FilePath(FILE_PATH_LITERAL("bypass_texture_rotated.png")),
+      cc::FuzzyPixelComparator()
+          .SetErrorPixelsPercentageLimit(3.5f)
+          .SetAbsErrorLimit(127)
+          .SetAvgAbsErrorLimit(40)));
 }
 
 TEST_P(RendererPixelTest, TextureDrawQuadVisibleRectInsetBottomRight) {
