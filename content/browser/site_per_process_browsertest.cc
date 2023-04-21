@@ -12765,7 +12765,7 @@ IN_PROC_BROWSER_TEST_P(InnerWebContentsAttachTest, PrepareFrame) {
   if (test_beforeunload) {
     EXPECT_TRUE(ExecJs(child_node,
                        "window.addEventListener('beforeunload', (e) => {"
-                       "e.returnValue = ''; return e; });"));
+                       "e.preventDefault(); return e; });"));
   }
   auto* original_child_frame = child_node->current_frame_host();
   RenderFrameDeletedObserver original_child_frame_observer(

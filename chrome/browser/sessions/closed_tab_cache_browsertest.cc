@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTest,
   content::WebContents* a = browser()->tab_strip_model()->GetWebContentsAt(1);
   EXPECT_TRUE(ExecJs(a->GetPrimaryMainFrame(),
                      "window.addEventListener('beforeunload', function (e) "
-                     "{e.returnValue = '';});"));
+                     "{e.preventDefault();});"));
   EXPECT_TRUE(a->NeedToFireBeforeUnloadOrUnloadEvents());
   CloseTabAt(1);
   EXPECT_EQ(closed_tab_cache().EntriesCount(), 0U);

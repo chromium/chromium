@@ -3957,11 +3957,11 @@ bool Document::DispatchBeforeUnloadEvent(ChromeClient* chrome_client,
   if (!before_unload_event.defaultPrevented())
     DefaultEventHandler(before_unload_event);
 
-  if (before_unload_event.returnValue().IsNull()) {
+  if (before_unload_event.returnValue().empty()) {
     RecordBeforeUnloadUse(BeforeUnloadUse::kNoDialogNoText);
   }
   bool cancelled_by_script =
-      !before_unload_event.returnValue().IsNull() ||
+      !before_unload_event.returnValue().empty() ||
       (RuntimeEnabledFeatures::
            BeforeunloadEventCancelByPreventDefaultEnabled() &&
        before_unload_event.defaultPrevented());

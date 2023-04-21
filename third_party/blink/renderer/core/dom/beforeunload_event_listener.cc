@@ -17,7 +17,7 @@ void BeforeUnloadEventListener::Invoke(ExecutionContext* execution_context,
                                        Event* event) {
   DCHECK_EQ(event->type(), event_type_names::kBeforeunload);
   if (show_dialog_)
-    To<BeforeUnloadEvent>(event)->setReturnValue(g_empty_string);
+    To<BeforeUnloadEvent>(event)->preventDefault();
 }
 
 void BeforeUnloadEventListener::Trace(Visitor* visitor) const {
