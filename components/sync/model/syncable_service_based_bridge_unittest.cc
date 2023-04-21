@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -39,6 +40,8 @@ using testing::Pair;
 using testing::Return;
 
 const ModelType kModelType = PREFERENCES;
+const base::StringPiece kSyncableServiceStartTimeHistogramName =
+    "Sync.SyncableServiceStartTime.PREFERENCE";
 
 sync_pb::EntitySpecifics GetTestSpecifics(const std::string& name = "name") {
   sync_pb::EntitySpecifics specifics;
@@ -645,6 +648,87 @@ TEST_F(SyncableServiceBasedBridgeTest,
 
   EXPECT_THAT(bridge_->ResolveConflict("storagekey1", remote_data),
               Eq(ConflictResolution::kUseRemote));
+}
+
+TEST_F(SyncableServiceBasedBridgeTest, ShouldMeasureSyncableServiceStartTime) {
+  // The following writes data into store for the next run.
+  InitializeBridge();
+  StartSyncing();
+  worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
+  // Mimic restart.
+  ShutdownBridge();
+
+  base::RunLoop loop;
+  ON_CALL(syncable_service_, WaitUntilReadyToSync)
+      .WillByDefault(Invoke([&](base::OnceClosure done) {
+        std::move(done).Run();
+        loop.Quit();
+      }));
+
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing);
+  // Initial data is loaded from the store.
+  InitializeBridge();
+  loop.Run();
+  histogram_tester.ExpectTotalCount(kSyncableServiceStartTimeHistogramName, 1);
+}
+
+// This also covers the case where the user opts in for sync later.
+TEST_F(SyncableServiceBasedBridgeTest,
+       ShouldNotMeasureSyncableServiceStartTimeIfNoInitialData) {
+  base::HistogramTester histogram_tester;
+  // No initial data.
+  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing).Times(0);
+  InitializeBridge();
+  StartSyncing();
+  histogram_tester.ExpectTotalCount(kSyncableServiceStartTimeHistogramName, 0);
+
+  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing);
+  // Initial merge happens on response from server.
+  worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
+  histogram_tester.ExpectTotalCount(kSyncableServiceStartTimeHistogramName, 0);
+}
+
+TEST_F(SyncableServiceBasedBridgeTest,
+       ShouldNotMeasureSyncableServiceStartTimeOnSyncRestart) {
+  // The following writes data into store for the next run.
+  InitializeBridge();
+  StartSyncing();
+  worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
+  // Mimic restart, which shouldn't start syncing until OnSyncStarting() is
+  // received (exercised in StartSyncing()).
+  ShutdownBridge();
+
+  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing);
+  // Initial data is loaded from the store.
+  InitializeBridge();
+  StartSyncing();
+
+  base::HistogramTester histogram_tester;
+  // Mimic sync restart.
+  real_processor_->OnSyncStopping(CLEAR_METADATA);
+  StartSyncing();
+
+  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing);
+  worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
+  // This case shouldn't be logged into the metric.
+  histogram_tester.ExpectTotalCount(kSyncableServiceStartTimeHistogramName, 0);
+}
+
+TEST_F(SyncableServiceBasedBridgeTest,
+       ShouldNotMeasureSyncableServiceStartTimeOnError) {
+  base::HistogramTester histogram_tester;
+  InitializeBridge();
+  StartSyncing();
+  histogram_tester.ExpectTotalCount(kSyncableServiceStartTimeHistogramName, 0);
+
+  // Instrument MergeDataAndStartSyncing() to return an error.
+  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing)
+      .WillOnce(Return(ModelError(FROM_HERE, "Test error")));
+  EXPECT_CALL(mock_error_handler_, Run);
+
+  worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
+  histogram_tester.ExpectTotalCount(kSyncableServiceStartTimeHistogramName, 0);
 }
 
 }  // namespace

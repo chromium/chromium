@@ -1312,6 +1312,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.SyncableServiceStartTime.{SyncModelType}" units="ms"
+    expires_after="2024-01-31">
+  <owner>ankushkush@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    During browser startup, if sync is enabled and initial data exists, this
+    records the time until a SyncableService is ready to process changes (both
+    locally and coming from the server). The value is the duration from when
+    SyncableServiceBasedBridge was initialized to the time when SyncableService
+    has started (this comprises of loading all data from disk and
+    MergeDataAndStartSyncing()).
+  </summary>
+  <token key="SyncModelType" variants="SyncModelType"/>
+</histogram>
+
 <histogram name="Sync.SyncedHistoryFaviconAvailability.{RequestOrigin}"
     enum="FaviconAvailabilityStatus" expires_after="2023-07-10">
   <owner>victorvianna@google.com</owner>

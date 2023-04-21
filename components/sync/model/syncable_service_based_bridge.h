@@ -111,6 +111,9 @@ class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
   // provide specifics of the deleted entity to the SyncableService.
   InMemoryStore in_memory_store_;
 
+  // Time when this object was created, and store creation/loading was started.
+  base::Time init_start_time_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SyncableServiceBasedBridge> weak_ptr_factory_{this};

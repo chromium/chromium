@@ -12,6 +12,8 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/model/conflict_resolution.h"
@@ -220,6 +222,8 @@ SyncableServiceBasedBridge::SyncableServiceBasedBridge(
       syncable_service_(syncable_service),
       syncable_service_started_(false) {
   DCHECK(syncable_service_);
+
+  init_start_time_ = base::Time::Now();
 
   std::move(store_factory)
       .Run(type_, base::BindOnce(&SyncableServiceBasedBridge::OnStoreCreated,
@@ -451,7 +455,17 @@ void SyncableServiceBasedBridge::OnSyncableServiceReady(
   // possible (regardless of whether sync actually starts or not). Otherwise,
   // the SyncableService will be started from MergeFullSyncData().
   if (change_processor()->IsTrackingMetadata()) {
-    ReportErrorIfSet(StartSyncableService());
+    if (auto error = StartSyncableService()) {
+      change_processor()->ReportError(*error);
+    } else {
+      // Using the same range as Sync.ModelTypeConfigurationTime.* metric.
+      base::UmaHistogramCustomTimes(
+          base::StringPrintf("Sync.SyncableServiceStartTime.%s",
+                             ModelTypeToHistogramSuffix(type_)),
+          base::Time::Now() - init_start_time_,
+          /*min=*/base::Milliseconds(1),
+          /*max=*/base::Seconds(60), /*buckets=*/50);
+    }
   }
 }
 
