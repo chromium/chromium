@@ -304,8 +304,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.BadMessageFunctionName{IsKiosk}"
-    enum="ExtensionFunctions" expires_after="never">
+<histogram name="Extensions.BadMessageFunctionName" enum="ExtensionFunctions"
+    expires_after="never">
 <!-- expires-never: Monitoring core extension system health. -->
 
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -314,14 +314,8 @@ chromium-metrics-reviews@google.com.
     The number of times each Extension function call sends a bad message,
     killing the renderer. This may indicate a bug in that API's implementation
     on the renderer. Note a similar, aggregate metric is BadMessageTerminate_EFD
-    which counts the number of bad messages that are sent overall. In M-102 this
-    histogram was split and events from kiosk extensions are recorded in the
-    separate Extensions.BadMessageFunctionName.Kiosk histogram.
+    which counts the number of bad messages that are sent overall.
   </summary>
-  <token key="IsKiosk">
-    <variant name="" summary="from non-kiosk extension"/>
-    <variant name=".Kiosk" summary="from kiosk extension"/>
-  </token>
 </histogram>
 
 <histogram name="Extensions.BadSyncDataReason" enum="BadSyncDataReason"
