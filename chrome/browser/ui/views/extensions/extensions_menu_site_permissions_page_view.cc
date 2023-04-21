@@ -271,7 +271,7 @@ void ExtensionsMenuSitePermissionsPageView::Update(
     const std::u16string& extension_name,
     const ui::ImageModel& extension_icon,
     const std::u16string& current_site,
-    extensions::PermissionsManager::UserSiteAccess user_site_access,
+    PermissionsManager::UserSiteAccess user_site_access,
     bool is_show_requests_toggle_on) {
   extension_icon_->SetImage(extension_icon);
   extension_name_->SetText(extension_name);

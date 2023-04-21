@@ -168,9 +168,9 @@ void ExtensionsToolbarUnitTest::UpdateUserSiteAccess(
   waiter.WaitForExtensionPermissionsUpdate();
 }
 
-extensions::PermissionsManager::UserSiteSetting
+PermissionsManager::UserSiteSetting
 ExtensionsToolbarUnitTest::GetUserSiteSetting(const GURL& url) {
-  return extensions::PermissionsManager::Get(browser()->profile())
+  return PermissionsManager::Get(browser()->profile())
       ->GetUserSiteSetting(url::Origin::Create(url));
 }
 

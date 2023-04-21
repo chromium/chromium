@@ -102,9 +102,9 @@ bool IsSiteSettingsToggleVisible(const ToolbarActionsModel& toolbar_model,
 bool IsSiteSettingsToggleOn(Browser* browser,
                             content::WebContents* web_contents) {
   auto origin = web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
-  return extensions::PermissionsManager::Get(browser->profile())
+  return PermissionsManager::Get(browser->profile())
              ->GetUserSiteSetting(origin) ==
-         extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension;
+         PermissionsManager::UserSiteSetting::kCustomizeByExtension;
 }
 
 // Returns whether the site permissions button should be visible.
@@ -118,7 +118,7 @@ bool IsSitePermissionsButtonVisible(const extensions::Extension& extension,
   }
 
   PermissionsManager::UserSiteSetting user_site_setting =
-      extensions::PermissionsManager::Get(&profile)->GetUserSiteSetting(
+      PermissionsManager::Get(&profile)->GetUserSiteSetting(
           web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin());
   switch (user_site_setting) {
     case PermissionsManager::UserSiteSetting::kCustomizeByExtension: {
@@ -164,7 +164,7 @@ bool CanUserCustomizeExtensionSiteAccess(
   }
 
   // The extension wants site access if it at least wants "on click" access.
-  auto* permissions_manager = extensions::PermissionsManager::Get(&profile);
+  auto* permissions_manager = PermissionsManager::Get(&profile);
   bool extension_wants_access = permissions_manager->CanUserSelectSiteAccess(
       extension, url, PermissionsManager::UserSiteAccess::kOnClick);
   if (!extension_wants_access) {
@@ -214,7 +214,7 @@ ExtensionsMenuViewController::ExtensionsMenuViewController(
   browser_->tab_strip_model()->AddObserver(this);
   toolbar_model_observation_.Observe(toolbar_model_.get());
   permissions_manager_observation_.Observe(
-      extensions::PermissionsManager::Get(browser_->profile()));
+      PermissionsManager::Get(browser_->profile()));
 }
 
 ExtensionsMenuViewController::~ExtensionsMenuViewController() {
