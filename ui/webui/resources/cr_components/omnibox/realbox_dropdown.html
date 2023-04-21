@@ -37,6 +37,7 @@
   .header {
     align-items: center;
     box-sizing: border-box;
+    cursor: pointer;
     display: flex;
     font-size: inherit;
     font-weight: inherit;
@@ -53,10 +54,8 @@
 
   .header .text {
     color: var(--color-realbox-results-foreground-dimmed);
-    cursor: default;
     font-size: .875em;
     font-weight: 500;
-    letter-spacing: .5px;
     overflow: hidden;
     padding-inline-end: 6px;
     padding-inline-start: 6px;
@@ -69,15 +68,13 @@
           var(--color-realbox-results-icon-selected);
   }
 
-  cr-realbox-match:-webkit-any(:hover, :focus-within, [selected]),
-  .header:-webkit-any(:hover, :focus-within) {
+  cr-realbox-match:-webkit-any(:hover, :focus-within, [selected]) {
     background-color:
         var(--color-realbox-results-background-hovered);
   }
 
   @media (forced-colors: active) {
-    cr-realbox-match:-webkit-any(:hover, :focus-within, [selected]),
-    .header:-webkit-any(:hover, :focus-within) {
+    cr-realbox-match:-webkit-any(:hover, :focus-within, [selected]) {
       background-color: Highlight;
     }
   }
@@ -90,7 +87,7 @@
   .secondary-side {
     display: var(--cr-realbox-secondary-side-display, none);
     min-width: 0;
-    padding-block-end: 16px;
+    padding-block-end: 8px;
     padding-inline-end: 16px;
     width: 314px;
   }
