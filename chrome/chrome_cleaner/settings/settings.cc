@@ -10,10 +10,10 @@
 
 #include "base/command_line.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/uuid.h"
 #include "base/win/win_util.h"
 #include "chrome/chrome_cleaner/buildflags.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
@@ -121,7 +121,7 @@ bool GetAllowCrashReportUpload(const base::CommandLine& command_line) {
 std::string GetCleanerRunId(const base::CommandLine& command_line) {
   std::string cleanup_id = command_line.GetSwitchValueASCII(kCleanupIdSwitch);
   if (cleanup_id.empty()) {
-    cleanup_id = base::GenerateGUID();
+    cleanup_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
     DCHECK(!cleanup_id.empty());
   }
   return cleanup_id;
