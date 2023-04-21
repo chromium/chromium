@@ -157,6 +157,9 @@ void BroadcastChannel::ContextDestroyed() {
 void BroadcastChannel::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
+  visitor->Trace(receiver_);
+  visitor->Trace(remote_client_);
+  visitor->Trace(associated_remote_);
 }
 
 void BroadcastChannel::OnMessage(BlinkCloneableMessage message) {
@@ -215,10 +218,13 @@ BroadcastChannel::BroadcastChannel(
     : ActiveScriptWrappable<BroadcastChannel>({}),
       ExecutionContextLifecycleObserver(execution_context),
       name_(name),
+      receiver_(this, execution_context),
+      remote_client_(execution_context),
       feature_handle_for_scheduler_(
           execution_context->GetScheduler()->RegisterFeature(
               SchedulingPolicy::Feature::kBroadcastChannel,
-              {SchedulingPolicy::DisableBackForwardCache()})) {
+              {SchedulingPolicy::DisableBackForwardCache()})),
+      associated_remote_(execution_context) {
   // Note: We cannot associate per-frame task runner here, but postTask
   //       to it manually via EnqueueEvent, since the current expectation
   //       is to receive messages even after close for which queued before
@@ -242,19 +248,24 @@ BroadcastChannel::BroadcastChannel(
   //    shared remote for all BroadcastChannel objects created on that thread to
   //    ensure in-order delivery of messages to the appropriate *WorkerHost
   //    object.
+  auto receiver_task_runner =
+      execution_context->GetTaskRunner(TaskType::kInternalDefault);
+  auto client_task_runner =
+      execution_context->GetTaskRunner(TaskType::kInternalDefault);
   if (receiver.is_valid() && remote.is_valid()) {
-    receiver_.Bind(std::move(receiver));
-    remote_client_.Bind(std::move(remote));
+    receiver_.Bind(std::move(receiver), receiver_task_runner);
+    remote_client_.Bind(std::move(remote), client_task_runner);
   } else if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     LocalFrame* frame = window->GetFrame();
     if (!frame)
       return;
 
     frame->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
-        associated_remote_.BindNewEndpointAndPassReceiver());
+        associated_remote_.BindNewEndpointAndPassReceiver(
+            execution_context->GetTaskRunner(TaskType::kInternalDefault)));
     associated_remote_->ConnectToChannel(
-        name_, receiver_.BindNewEndpointAndPassRemote(),
-        remote_client_.BindNewEndpointAndPassReceiver());
+        name_, receiver_.BindNewEndpointAndPassRemote(receiver_task_runner),
+        remote_client_.BindNewEndpointAndPassReceiver(client_task_runner));
   } else if (auto* worker_global_scope =
                  DynamicTo<WorkerGlobalScope>(execution_context)) {
     if (worker_global_scope->IsClosing())
@@ -262,8 +273,9 @@ BroadcastChannel::BroadcastChannel(
 
     mojo::Remote<mojom::blink::BroadcastChannelProvider>& provider =
         GetWorkerThreadSpecificProvider(*worker_global_scope);
-    provider->ConnectToChannel(name_, receiver_.BindNewEndpointAndPassRemote(),
-                               remote_client_.BindNewEndpointAndPassReceiver());
+    provider->ConnectToChannel(
+        name_, receiver_.BindNewEndpointAndPassRemote(receiver_task_runner),
+        remote_client_.BindNewEndpointAndPassReceiver(client_task_runner));
   } else {
     NOTREACHED();
   }
