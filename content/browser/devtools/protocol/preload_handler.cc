@@ -158,6 +158,10 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
         kSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation:
       return Preload::PrerenderFinalStatusEnum::
           SameSiteCrossOriginNavigationNotOptInInMainFrameNavigation;
+    case PrerenderFinalStatus::kMemoryPressureOnTrigger:
+      return Preload::PrerenderFinalStatusEnum::MemoryPressureOnTrigger;
+    case PrerenderFinalStatus::kMemoryPressureAfterTriggered:
+      return Preload::PrerenderFinalStatusEnum::MemoryPressureAfterTriggered;
   }
 }
 

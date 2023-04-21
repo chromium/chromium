@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/memory_pressure_monitor.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
@@ -77,6 +78,21 @@ bool DeviceHasEnoughMemoryForPrerender() {
       kDefaultMemoryThresholdMb);
 
   return base::SysInfo::AmountOfPhysicalMemoryMB() > memory_threshold_mb;
+}
+
+base::MemoryPressureListener::MemoryPressureLevel
+GetCurrentMemoryPressureLevel() {
+  // Ignore the memory pressure event if the memory control is disabled.
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPrerender2MemoryControls)) {
+    return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  }
+
+  auto* monitor = base::MemoryPressureMonitor::Get();
+  if (!monitor) {
+    return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+  }
+  return monitor->GetCurrentPressureLevel();
 }
 
 // Create a resource request for `back_url` that only checks whether the
@@ -186,7 +202,11 @@ bool IsDevToolsOpen(WebContents& web_contents) {
 
 }  // namespace
 
-PrerenderHostRegistry::PrerenderHostRegistry(WebContents& web_contents) {
+PrerenderHostRegistry::PrerenderHostRegistry(WebContents& web_contents)
+    : memory_pressure_listener_(
+          FROM_HERE,
+          base::BindRepeating(&PrerenderHostRegistry::OnMemoryPressure,
+                              base::Unretained(this))) {
   Observe(&web_contents);
 }
 
@@ -305,6 +325,22 @@ int PrerenderHostRegistry::CreateAndStartHost(
       if (attempt)
         attempt->SetEligibility(PreloadingEligibility::kLowMemory);
       return RenderFrameHost::kNoFrameTreeNodeId;
+    }
+
+    // Don't prerender under critical memory pressure.
+    switch (GetCurrentMemoryPressureLevel()) {
+      case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+      case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+        break;
+      case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+        RecordFailedPrerenderFinalStatus(
+            PrerenderCancellationReason(
+                PrerenderFinalStatus::kMemoryPressureOnTrigger),
+            attributes);
+        if (attempt) {
+          attempt->SetEligibility(PreloadingEligibility::kMemoryPressure);
+        }
+        return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
     // Allow prerendering only for same-site. The initiator origin is nullopt
@@ -469,6 +505,10 @@ int PrerenderHostRegistry::CreateAndStartHostForNewTab(
 }
 
 int PrerenderHostRegistry::StartPrerendering(int frame_tree_node_id) {
+  // TODO(https://crbug.com/1424425): Don't start prerendering if the current
+  // memory pressure level is critical, and then retry prerendering when the
+  // memory pressure level goes down.
+
   if (frame_tree_node_id == RenderFrameHost::kNoFrameTreeNodeId) {
     CHECK(base::FeatureList::IsEnabled(
         blink::features::kPrerender2SequentialPrerendering));
@@ -1361,6 +1401,24 @@ void PrerenderHostRegistry::DidReceiveMemoryDump(
       acceptable_percent_of_system_memory * 0.01 *
           base::SysInfo::AmountOfPhysicalMemory()) {
     CancelHost(frame_tree_node_id, PrerenderFinalStatus::kMemoryLimitExceeded);
+  }
+}
+
+void PrerenderHostRegistry::OnMemoryPressure(
+    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+  // Ignore the memory pressure event if the memory control is disabled.
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPrerender2MemoryControls)) {
+    return;
+  }
+
+  switch (memory_pressure_level) {
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+      break;
+    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+      CancelAllHosts(PrerenderFinalStatus::kMemoryPressureAfterTriggered);
+      break;
   }
 }
 

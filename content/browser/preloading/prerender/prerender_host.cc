@@ -1014,6 +1014,8 @@ void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
         kSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation:
     case PrerenderFinalStatus::kCrossSiteNavigationInMainFrameNavigation:
     case PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation:
+    case PrerenderFinalStatus::kMemoryPressureOnTrigger:
+    case PrerenderFinalStatus::kMemoryPressureAfterTriggered:
       // SetFailureReason() will call SetTriggeringOutcome() with kFailure.
       if (initiator_devtools_navigation_token().has_value()) {
         devtools_instrumentation::DidUpdatePrerenderStatus(

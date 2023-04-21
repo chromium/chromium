@@ -12,6 +12,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -287,6 +288,9 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
       GURL back_url,
       scoped_refptr<net::HttpResponseHeaders> headers);
 
+  void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner();
 
   // Holds the frame_tree_node_id of running PrerenderHost. Reset to
@@ -337,6 +341,8 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // A pending cache-only load of a URL, used to identify whether there is an
   // entry for it in the HTTP cache.
   std::unique_ptr<network::SimpleURLLoader> http_cache_query_loader_;
+
+  base::MemoryPressureListener memory_pressure_listener_;
 
   base::ObserverList<Observer> observers_;
 

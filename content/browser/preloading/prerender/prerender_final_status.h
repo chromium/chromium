@@ -111,7 +111,10 @@ enum class PrerenderFinalStatus {
   kSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation = 65,
   kSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation = 66,
 
-  kMaxValue = kSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation,
+  kMemoryPressureOnTrigger = 67,
+  kMemoryPressureAfterTriggered = 68,
+
+  kMaxValue = kMemoryPressureAfterTriggered,
 };
 
 // Helper method to convert PrerenderFinalStatus to PreloadingFailureReason.

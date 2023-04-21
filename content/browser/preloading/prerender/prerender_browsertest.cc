@@ -14,6 +14,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/metrics_hashes.h"
@@ -149,6 +150,23 @@ ukm::SourceId ToSourceId(int64_t navigation_id) {
   return ukm::ConvertToSourceId(navigation_id,
                                 ukm::SourceIdType::NAVIGATION_ID);
 }
+
+// A fake implementation of base::MemoryPressureMonitor. An instance of this
+// class is used via a global variable. The base class sets itself in the
+// global variable on the constructor and unsets it on the destructor.
+// base::MemoryPressureMonitor::Get() provides access to the instance.
+class FakeMemoryPressureMonitor : public base::MemoryPressureMonitor {
+ public:
+  FakeMemoryPressureMonitor(MemoryPressureLevel level) : level_(level) {}
+
+  MemoryPressureLevel GetCurrentPressureLevel() const override {
+    return level_;
+  }
+
+ private:
+  const MemoryPressureLevel level_ =
+      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE;
+};
 
 // Example class which inherits the DocumentUserData, all the data is
 // associated to the lifetime of the document.
@@ -7699,6 +7717,119 @@ class MultiplePrerendersWithLimitedMemoryBrowserTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+// Tests that moderate-level memory pressure doesn't cancel prerendering on
+// trigger.
+IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
+                       MemoryPressureOnTrigger_Moderate) {
+  GURL initial_url = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Emulate moderate-level memory pressure state.
+  FakeMemoryPressureMonitor memory_pressure_monitor(
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  ASSERT_EQ(base::MemoryPressureMonitor::Get()->GetCurrentPressureLevel(),
+            base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  // Triggering prerendering should not be canceled due to the moderate level
+  // memory pressure.
+  GURL prerender_url = GetUrl("/empty.html?prerender");
+  AddPrerender(prerender_url);
+  EXPECT_TRUE(HasHostForUrl(prerender_url));
+
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderFinalStatus::kMemoryPressureOnTrigger, 0);
+}
+
+// Tests that critical-level memory pressure cancels prerendering on trigger.
+IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
+                       MemoryPressureOnTrigger_Critical) {
+  GURL initial_url = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Emulate critical-level memory pressure state.
+  FakeMemoryPressureMonitor memory_pressure_monitor(
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  ASSERT_EQ(base::MemoryPressureMonitor::Get()->GetCurrentPressureLevel(),
+            base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+
+  // Triggering prerendering should be canceled due to the critical level memory
+  // pressure.
+  GURL prerender_url = GetUrl("/empty.html?prerender");
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+  AddPrerenderAsync(prerender_url);
+  registry_observer.WaitForTrigger(prerender_url);
+  EXPECT_FALSE(HasHostForUrl(prerender_url));
+
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderFinalStatus::kMemoryPressureOnTrigger, 1);
+}
+
+// Tests that moderate-level memory pressure doesn't cancel prerendering after
+// triggered.
+IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
+                       MemoryPressureAfterTriggered_Moderate) {
+  GURL initial_url = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  std::vector<GURL> prerender_urls = {
+      GetUrl("/empty.html?prerender0"),
+      GetUrl("/empty.html?prerender1"),
+      GetUrl("/empty.html?prerender2"),
+  };
+
+  for (const GURL& prerender_url : prerender_urls) {
+    AddPrerender(prerender_url);
+  }
+
+  // Emulate moderate-level memory pressure event. This shouldn't cancel
+  // prerendering.
+  base::MemoryPressureListener::NotifyMemoryPressure(
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  // Run the message loop to give a chance to unexpectedly cancel prerendering
+  // due to some bug.
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderFinalStatus::kMemoryPressureAfterTriggered, 0);
+}
+
+// Tests that critical-level memory pressure cancels prerendering after
+// triggered.
+IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
+                       MemoryPressureAfterTriggered_Critical) {
+  GURL initial_url = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  std::vector<GURL> prerender_urls = {
+      GetUrl("/empty.html?prerender0"),
+      GetUrl("/empty.html?prerender1"),
+      GetUrl("/empty.html?prerender2"),
+  };
+
+  std::vector<std::unique_ptr<test::PrerenderHostObserver>> observers;
+  for (const GURL& prerender_url : prerender_urls) {
+    int host_id = AddPrerender(prerender_url);
+    observers.push_back(std::make_unique<test::PrerenderHostObserver>(
+        *web_contents(), host_id));
+  }
+
+  // Emulate critical-level memory pressure event. This should cancel
+  // prerendering.
+  base::MemoryPressureListener::NotifyMemoryPressure(
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  for (auto& observer : observers) {
+    observer->WaitForDestroyed();
+  }
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderFinalStatus::kMemoryPressureAfterTriggered,
+      prerender_urls.size());
+}
 
 // Tests that PrerenderHostRegistry only starts prerender speculation rules
 // up to `max_num_of_running_speculation_rules` defined by a Finch param.

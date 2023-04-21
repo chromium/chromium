@@ -10950,6 +10950,8 @@ experimental domain Preload
       CrossSiteNavigationInMainFrameNavigation
       SameSiteCrossOriginRedirectNotOptInInMainFrameNavigation
       SameSiteCrossOriginNavigationNotOptInInMainFrameNavigation
+      MemoryPressureOnTrigger
+      MemoryPressureAfterTriggered
 
   # Fired when a prerender attempt is completed.
   event prerenderAttemptCompleted
