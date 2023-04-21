@@ -31,7 +31,7 @@ constexpr char kAdminTemplateResultPrefix[] = "admin-template://";
 DesksAdminTemplateResult::DesksAdminTemplateResult(
     Profile* profile,
     AppListControllerDelegate* list_controller,
-    const base ::GUID& template_uuid,
+    const base ::Uuid& template_uuid,
     const std::u16string& title,
     const ui::ImageModel& icon)
     : profile_(profile),

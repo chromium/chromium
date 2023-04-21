@@ -37,7 +37,7 @@ class MockSavedDeskController : public ash::SavedDeskController {
               (const, override));
   MOCK_METHOD(bool,
               LaunchAdminTemplate,
-              (const base::GUID& template_uuid, int64_t default_display_id),
+              (const base::Uuid& template_uuid, int64_t default_display_id),
               (override));
 };
 
@@ -110,7 +110,7 @@ TEST_F(DesksAdminTemplateProviderTest, Basic) {
   MockSavedDeskController mock;
 
   std::vector<ash::AdminTemplateMetadata> results = {ash::AdminTemplateMetadata{
-      .uuid = base::GUID::GenerateRandomV4(), .name = u"test admin template"}};
+      .uuid = base::Uuid::GenerateRandomV4(), .name = u"test admin template"}};
 
   EXPECT_CALL(mock, GetAdminTemplateMetadata()).WillOnce(Return(results));
   EXPECT_CALL(mock, LaunchAdminTemplate(results[0].uuid, _))
