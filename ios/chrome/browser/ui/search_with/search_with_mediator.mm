@@ -8,6 +8,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
@@ -31,6 +32,38 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 
 // Character limit for the search with feature.
 const NSUInteger kSearchWithCharacterLimit = 200;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SearchWithContext {
+  kNormalGoogle = 0,
+  kNormalOther = 1,
+  kIncognitoGoogle = 2,
+  kIncognitoOther = 3,
+  kMaxValue = kIncognitoOther
+};
+
+// Log an event when user triggers search with.
+void LogTrigger(bool incognito, bool search_engine_google) {
+  if (!incognito) {
+    if (search_engine_google) {
+      base::UmaHistogramEnumeration("IOS.SearchWith.Trigger",
+                                    SearchWithContext::kNormalGoogle);
+    } else {
+      base::UmaHistogramEnumeration("IOS.SearchWith.Trigger",
+                                    SearchWithContext::kNormalOther);
+    }
+  } else {
+    if (search_engine_google) {
+      base::UmaHistogramEnumeration("IOS.SearchWith.Trigger",
+                                    SearchWithContext::kIncognitoGoogle);
+    } else {
+      base::UmaHistogramEnumeration("IOS.SearchWith.Trigger",
+                                    SearchWithContext::kIncognitoOther);
+    }
+  }
+}
+
 }  // namespace
 
 @interface SearchWithMediator ()
@@ -161,6 +194,13 @@ const NSUInteger kSearchWithCharacterLimit = 200;
   if (!searchURL.is_valid()) {
     return;
   }
+  const TemplateURL* defaultSearchEngine =
+      _templateURLService->GetDefaultSearchProvider();
+  const BOOL isDefaultSearchEngineGoogle =
+      defaultSearchEngine->GetEngineType(
+          _templateURLService->search_terms_data()) ==
+      SearchEngineType::SEARCH_ENGINE_GOOGLE;
+  LogTrigger(self.incognito, isDefaultSearchEngineGoogle);
   OpenNewTabCommand* command =
       [[OpenNewTabCommand alloc] initWithURL:searchURL
                                     referrer:web::Referrer()

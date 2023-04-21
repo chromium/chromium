@@ -53688,6 +53688,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="40" label="UnknownMenuAction"/>
   <int value="41" label="OpenURL"/>
   <int value="42" label="AddToReadingList"/>
+  <int value="43" label="SearchWith"/>
 </enum>
 
 <enum name="IOSEditMenuError">
@@ -54036,6 +54037,13 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="6" label="Search Text"/>
   <int value="7" label="Search Image"/>
   <int value="8" label="Search Image with Lens"/>
+</enum>
+
+<enum name="IOSSearchWithContext">
+  <int value="0" label="Normal Mode, Google Search engine"/>
+  <int value="1" label="Normal Mode, Other Search engine"/>
+  <int value="2" label="Incognito Mode, Google Search engine"/>
+  <int value="3" label="Incognito Mode, Other Search engine"/>
 </enum>
 
 <enum name="IOSSessionMigration">

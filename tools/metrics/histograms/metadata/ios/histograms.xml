@@ -2003,6 +2003,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SearchWith.Trigger" enum="IOSSearchWithContext"
+    expires_after="2024-04-21">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>The context in which Search With has been triggered.</summary>
+</histogram>
+
 <histogram name="IOS.SessionMigration" enum="IOSSessionMigration"
     expires_after="2021-12-11">
   <owner>mrefaat@chromium.org</owner>
