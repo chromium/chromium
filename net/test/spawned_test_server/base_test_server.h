@@ -144,7 +144,6 @@ class BaseTestServer {
   const HostPortPair& host_port_pair() const;
 
   const base::FilePath& document_root() const { return document_root_; }
-  const base::Value& server_data() const;
   std::string GetScheme() const;
   [[nodiscard]] bool GetAddressList(AddressList* address_list) const;
 
@@ -241,9 +240,6 @@ class BaseTestServer {
   // RemoteTestServer it may be different from the address on which the server
   // listens on.
   HostPortPair host_port_pair_;
-
-  // Holds the data sent from the server (e.g., port number).
-  absl::optional<base::Value> server_data_;
 
   // If |UsingSSL(type_)|, the TLS settings to use for the test server.
   SSLOptions ssl_options_;

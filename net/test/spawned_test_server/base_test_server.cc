@@ -132,11 +132,6 @@ const HostPortPair& BaseTestServer::host_port_pair() const {
   return host_port_pair_;
 }
 
-const base::Value& BaseTestServer::server_data() const {
-  DCHECK(server_data_);
-  return *server_data_;
-}
-
 std::string BaseTestServer::GetScheme() const {
   switch (type_) {
     case TYPE_WS:
@@ -290,9 +285,7 @@ bool BaseTestServer::SetAndParseServerData(const std::string& server_data,
     return false;
   }
 
-  server_data_ = std::move(*parsed_json);
-
-  absl::optional<int> port_value = server_data_->FindIntKey("port");
+  absl::optional<int> port_value = parsed_json->GetDict().FindInt("port");
   if (!port_value) {
     LOG(ERROR) << "Could not find port value";
     return false;
