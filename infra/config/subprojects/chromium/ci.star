@@ -129,6 +129,8 @@ consoles.console_view(
     ("fuchsia-fyi-arm64-size", "gardener|p/chrome|arm64", "size"),
     ("fuchsia-fyi-astro", "gardener|hardware", "ast"),
     ("fuchsia-fyi-sherlock", "gardener|hardware", "sher"),
+    ("fuchsia-smoke-astro", "gardener|hardware|smoke", "ast"),
+    ("fuchsia-smoke-sherlock", "gardener|hardware|smoke", "sher"),
     ("fuchsia-perf-ast", "gardener|hardware|perf", "ast"),
     ("fuchsia-perf-nsn", "gardener|hardware|perf", "nsn"),
     ("fuchsia-perf-shk", "gardener|hardware|perf", "sher"),
