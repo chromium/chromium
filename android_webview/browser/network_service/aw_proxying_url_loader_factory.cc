@@ -75,7 +75,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
  public:
   InterceptedRequest(
       int frame_tree_node_id,
-      uint64_t request_id,
+      int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& request,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
@@ -164,7 +164,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
   void SendErrorCallback(int error_code, bool safebrowsing_hit);
 
   const int frame_tree_node_id_;
-  const uint64_t request_id_;
+  const int32_t request_id_;
   const uint32_t options_;
   bool input_stream_previously_failed_ = false;
   bool request_was_redirected_ = false;
@@ -282,7 +282,7 @@ class ProtocolResponseDelegate
 
 InterceptedRequest::InterceptedRequest(
     int frame_tree_node_id,
-    uint64_t request_id,
+    int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
