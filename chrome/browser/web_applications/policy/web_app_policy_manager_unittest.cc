@@ -313,6 +313,7 @@ enum class TestLacrosParam { kLacrosDisabled, kLacrosEnabled };
 struct TestParam {
   TestLacrosParam lacros_params;
   test::ExternalPrefMigrationTestCases pref_migration_test_param;
+  bool prevent_close_enabled;
 };
 
 class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
@@ -453,7 +454,22 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
             features::kUseWebAppDBInsteadOfExternalPrefs);
         break;
     }
+
+    if (GetParam().prevent_close_enabled) {
+      enabled_features.push_back(
+          features::kDesktopPWAsEnforceWebAppSettingsPolicy);
+      enabled_features.push_back(features::kDesktopPWAsPreventClose);
+    }
+
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  void InstallPwa(const std::string& url) {
+    std::unique_ptr<WebAppInstallInfo> web_app_info =
+        std::make_unique<WebAppInstallInfo>();
+    web_app_info->start_url = GURL(url);
+    web_app_info->manifest_id = "";
+    web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   }
 
   bool ShouldSkipPWASpecificTest() {
@@ -519,6 +535,11 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
       const std::string& unhashed_app_id) {
     return policy_manager().GetUrlRunOnOsLoginPolicyByUnhashedAppId(
         unhashed_app_id);
+  }
+
+  bool IsPreventCloseEnabled(const std::string& unhashed_app_id) {
+    return policy_manager().IsPreventCloseEnabled(
+        web_app::GenerateAppIdFromUnhashed(unhashed_app_id));
   }
 
   void WaitForAppsToSynchronize() {
@@ -1391,6 +1412,61 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsForceInstallNewApps) {
   app_registrar().RemoveObserver(&mock_observer);
 }
 
+TEST_P(WebAppPolicyManagerTest, WebAppSettingsPreventClose) {
+  if (ShouldSkipPWASpecificTest()) {
+    return;
+  }
+  const char kWebAppSettingNoDefaultConfiguration[] = R"([
+    {
+      "manifest_id": "https://windowed.example/",
+      "run_on_os_login": "run_windowed",
+      "prevent_close": true
+    },
+    {
+      "manifest_id": "https://tabbed.example/",
+      "run_on_os_login": "blocked",
+      "prevent_close": true
+    },
+    {
+      "manifest_id": "https://no-container.example/",
+      "run_on_os_login": "unsupported_value",
+      "prevent_close": true
+    },
+    {
+      "manifest_id": "bad.uri",
+      "run_on_os_login": "allowed",
+      "prevent_close": true
+    }
+  ])";
+
+  // Make sure that WebAppRegistrar::GetComputedUnhashedAppId does not fail.
+  InstallPwa(kWindowedUrl);
+  InstallPwa(kTabbedUrl);
+  InstallPwa(kNoContainerUrl);
+
+  base::RunLoop loop;
+  policy_manager().SetRefreshPolicySettingsCompletedCallbackForTesting(
+      loop.QuitClosure());
+  SetWebAppSettingsListPref(kWebAppSettingNoDefaultConfiguration);
+  loop.Run();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (GetParam().prevent_close_enabled) {
+    EXPECT_TRUE(IsPreventCloseEnabled(kWindowedUrl));
+    EXPECT_FALSE(IsPreventCloseEnabled(kTabbedUrl));
+    EXPECT_FALSE(IsPreventCloseEnabled(kNoContainerUrl));
+  } else {
+    EXPECT_FALSE(IsPreventCloseEnabled(kWindowedUrl));
+    EXPECT_FALSE(IsPreventCloseEnabled(kTabbedUrl));
+    EXPECT_FALSE(IsPreventCloseEnabled(kNoContainerUrl));
+  }
+#else
+  EXPECT_FALSE(IsPreventCloseEnabled(kWindowedUrl));
+  EXPECT_FALSE(IsPreventCloseEnabled(kTabbedUrl));
+  EXPECT_FALSE(IsPreventCloseEnabled(kNoContainerUrl));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
 INSTANTIATE_TEST_SUITE_P(
     WebAppPolicyManagerTestWithParams,
     WebAppPolicyManagerTest,
@@ -1398,29 +1474,67 @@ INSTANTIATE_TEST_SUITE_P(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         TestParam(
             {TestLacrosParam::kLacrosDisabled,
-             test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref}),
+             test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref,
+             /*prevent_close_enabled=*/false}),
         TestParam(
             {TestLacrosParam::kLacrosDisabled,
-             test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB}),
+             test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB,
+             /*prevent_close_enabled=*/false}),
         TestParam(
             {TestLacrosParam::kLacrosDisabled,
-             test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref}),
-        TestParam(
-            {TestLacrosParam::kLacrosDisabled,
-             test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB}),
+             test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref,
+             /*prevent_close_enabled=*/false}),
+        TestParam({TestLacrosParam::kLacrosDisabled,
+                   test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB,
+                   /*prevent_close_enabled=*/false}),
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
         TestParam(
             {TestLacrosParam::kLacrosEnabled,
-             test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref}),
+             test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref,
+             /*prevent_close_enabled=*/false}),
         TestParam(
             {TestLacrosParam::kLacrosEnabled,
-             test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB}),
+             test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB,
+             /*prevent_close_enabled=*/false}),
         TestParam(
             {TestLacrosParam::kLacrosEnabled,
-             test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref}),
+             test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref,
+             /*prevent_close_enabled=*/false}),
+        TestParam({TestLacrosParam::kLacrosEnabled,
+                   test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB,
+                   /*prevent_close_enabled=*/false}),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        TestParam(
+            {TestLacrosParam::kLacrosDisabled,
+             test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref,
+             /*prevent_close_enabled=*/true}),
+        TestParam(
+            {TestLacrosParam::kLacrosDisabled,
+             test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB,
+             /*prevent_close_enabled=*/true}),
+        TestParam(
+            {TestLacrosParam::kLacrosDisabled,
+             test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref,
+             /*prevent_close_enabled=*/true}),
+        TestParam({TestLacrosParam::kLacrosDisabled,
+                   test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB,
+                   /*prevent_close_enabled=*/true}),
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
         TestParam(
             {TestLacrosParam::kLacrosEnabled,
-             test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB})),
+             test::ExternalPrefMigrationTestCases::kDisableMigrationReadPref,
+             /*prevent_close_enabled=*/true}),
+        TestParam(
+            {TestLacrosParam::kLacrosEnabled,
+             test::ExternalPrefMigrationTestCases::kDisableMigrationReadDB,
+             /*prevent_close_enabled=*/true}),
+        TestParam(
+            {TestLacrosParam::kLacrosEnabled,
+             test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref,
+             /*prevent_close_enabled=*/true}),
+        TestParam({TestLacrosParam::kLacrosEnabled,
+                   test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB,
+                   /*prevent_close_enabled=*/true})),
     [](const ::testing::TestParamInfo<TestParam>& info) {
       std::string test_name = "Test_";
       if (info.param.lacros_params == TestLacrosParam::kLacrosEnabled)
@@ -1441,6 +1555,12 @@ INSTANTIATE_TEST_SUITE_P(
         case test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB:
           test_name.append("EnableMigration_ReadFromDB");
           break;
+      }
+
+      if (info.param.prevent_close_enabled) {
+        test_name.append("PreventCloseEnabled");
+      } else {
+        test_name.append("PreventCloseDisabled");
       }
       return test_name;
     });
