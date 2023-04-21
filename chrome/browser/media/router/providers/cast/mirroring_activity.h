@@ -75,6 +75,7 @@ class MirroringActivity : public CastActivity,
   void LogInfoMessage(const std::string& message) override;
   void LogErrorMessage(const std::string& message) override;
   void OnSourceChanged() override;
+  void OnRemotingStateChanged(bool is_remoting) override;
 
   // CastMessageChannel implementation
   void OnMessage(mirroring::mojom::CastMessagePtr message) override;
@@ -122,6 +123,9 @@ class MirroringActivity : public CastActivity,
   FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, OnSourceChanged);
   FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, ReportsNotEnabledByDefault);
   FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, EnableRtcpReports);
+  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, Pause);
+  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, Play);
+  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, OnRemotingStateChanged);
 
   void HandleParseJsonResult(const std::string& route_id,
                              data_decoder::DataDecoder::ValueOrError result);
@@ -132,6 +136,10 @@ class MirroringActivity : public CastActivity,
     DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
     host_ = std::move(host);
   }
+
+  void SetPlayState(mojom::MediaStatus::PlayState play_state);
+
+  void NotifyMediaStatusObserver();
 
   // Scrubs AES related data in messages with type "OFFER".
   static std::string GetScrubbedLogMessage(const base::Value::Dict& message);
@@ -186,6 +194,8 @@ class MirroringActivity : public CastActivity,
   // Sends media status updates with mirroring information needed for freezing
   // the session.
   mojo::Remote<mojom::MediaStatusObserver> media_status_observer_;
+
+  mojom::MediaStatusPtr media_status_;
 
   // Set before and after a mirroring session is established, for metrics.
   absl::optional<base::Time> will_start_mirroring_timestamp_;

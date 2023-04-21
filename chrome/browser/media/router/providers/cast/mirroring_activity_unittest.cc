@@ -17,6 +17,7 @@
 #include "chrome/browser/media/router/providers/cast/cast_activity_test_base.h"
 #include "chrome/browser/media/router/providers/cast/mock_mirroring_service_host.h"
 #include "chrome/browser/media/router/providers/cast/test_util.h"
+#include "chrome/browser/media/router/test/media_router_mojo_test.h"
 #include "chrome/browser/media/router/test/mock_mojo_media_router.h"
 #include "components/media_router/common/mojom/debugger.mojom.h"
 #include "components/media_router/common/providers/cast/channel/cast_test_util.h"
@@ -535,16 +536,91 @@ TEST_F(MirroringActivityTest, EnableRtcpReports) {
 
 TEST_F(MirroringActivityTest, Pause) {
   MakeActivity();
+  mojo::PendingRemote<mojom::MediaStatusObserver> observer_pending_remote;
+  NiceMock<MockMediaStatusObserver> media_status_observer =
+      NiceMock<MockMediaStatusObserver>(
+          observer_pending_remote.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<mojom::MediaController> media_controller;
+  activity_->CreateMediaController(
+      media_controller.BindNewPipeAndPassReceiver(),
+      std::move(observer_pending_remote));
+  RunUntilIdle();
 
-  EXPECT_CALL(*mirroring_service_, Pause()).Times(testing::Exactly(1));
+  mojom::MediaStatusPtr expected_status = mojom::MediaStatus::New();
+  expected_status->play_state = mojom::MediaStatus::PlayState::PAUSED;
+  auto cb = [&](base::OnceClosure callback) { std::move(callback).Run(); };
+  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(testing::Invoke(cb));
+  EXPECT_CALL(media_status_observer, OnMediaStatusUpdated(_))
+      .WillOnce([&](mojom::MediaStatusPtr status) {
+        EXPECT_EQ(expected_status->play_state, status->play_state);
+      });
+
   activity_->Pause();
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&media_status_observer);
 }
 
 TEST_F(MirroringActivityTest, Play) {
   MakeActivity();
+  mojo::PendingRemote<mojom::MediaStatusObserver> observer_pending_remote;
+  NiceMock<MockMediaStatusObserver> media_status_observer =
+      NiceMock<MockMediaStatusObserver>(
+          observer_pending_remote.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<mojom::MediaController> media_controller;
+  activity_->CreateMediaController(
+      media_controller.BindNewPipeAndPassReceiver(),
+      std::move(observer_pending_remote));
+  RunUntilIdle();
 
-  EXPECT_CALL(*mirroring_service_, Resume()).Times(testing::Exactly(1));
+  mojom::MediaStatusPtr expected_status = mojom::MediaStatus::New();
+  expected_status->play_state = mojom::MediaStatus::PlayState::PLAYING;
+  auto cb = [&](base::OnceClosure callback) { std::move(callback).Run(); };
+  EXPECT_CALL(*mirroring_service_, Resume(_)).WillOnce(testing::Invoke(cb));
+  EXPECT_CALL(media_status_observer, OnMediaStatusUpdated(_))
+      .WillOnce([&](mojom::MediaStatusPtr status) {
+        EXPECT_EQ(expected_status->play_state, status->play_state);
+      });
+
   activity_->Play();
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&media_status_observer);
+}
+
+TEST_F(MirroringActivityTest, OnRemotingStateChanged) {
+  MakeActivity();
+  mojo::PendingRemote<mojom::MediaStatusObserver> observer_pending_remote;
+  NiceMock<MockMediaStatusObserver> media_status_observer =
+      NiceMock<MockMediaStatusObserver>(
+          observer_pending_remote.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<mojom::MediaController> media_controller;
+  activity_->CreateMediaController(
+      media_controller.BindNewPipeAndPassReceiver(),
+      std::move(observer_pending_remote));
+  RunUntilIdle();
+
+  mojom::MediaStatusPtr expected_status = mojom::MediaStatus::New();
+  expected_status->play_state = mojom::MediaStatus::PlayState::PLAYING;
+  expected_status->can_play_pause = false;
+  EXPECT_CALL(media_status_observer, OnMediaStatusUpdated(_))
+      .WillOnce([&](mojom::MediaStatusPtr status) {
+        EXPECT_EQ(expected_status->play_state, status->play_state);
+        EXPECT_EQ(expected_status->can_play_pause, status->can_play_pause);
+      });
+
+  activity_->OnRemotingStateChanged(/*is_remoting*/ true);
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&media_status_observer);
+
+  expected_status->can_play_pause = true;
+  EXPECT_CALL(media_status_observer, OnMediaStatusUpdated(_))
+      .WillOnce([&](mojom::MediaStatusPtr status) {
+        EXPECT_EQ(expected_status->play_state, status->play_state);
+        EXPECT_EQ(expected_status->can_play_pause, status->can_play_pause);
+      });
+
+  activity_->OnRemotingStateChanged(/*is_remoting*/ false);
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&media_status_observer);
 }
 
 }  // namespace media_router

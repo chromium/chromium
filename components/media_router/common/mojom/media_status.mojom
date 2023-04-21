@@ -21,6 +21,9 @@ struct MediaImage {
 struct MediaStatus {
   enum PlayState {
     PLAYING,
+    // When used during a mirroring session, PAUSED represents that the
+    // mirroring session is not currently send frames to the receiver and
+    // displaying its last frame.
     PAUSED,
     BUFFERING
   };
@@ -37,7 +40,8 @@ struct MediaStatus {
   string secondary_title;
 
   // If this is true, the media can be played and paused through its
-  // MediaController.
+  // MediaController. During a mirroring casting session, a value of true means
+  // the media is currently mirroring. When false, it is remoting.
   bool can_play_pause;
 
   // If this is true, the media can be muted and unmuted through its

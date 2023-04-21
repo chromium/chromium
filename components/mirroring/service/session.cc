@@ -1000,6 +1000,10 @@ void Session::CreateAndSendOffer() {
       kOfferAnswerExchangeTimeout,
       base::BindOnce(&Session::OnAnswer, base::Unretained(this), audio_configs,
                      video_configs));
+
+  if (observer_) {
+    observer_->OnRemotingStateChanged(state_ == REMOTING);
+  }
 }
 
 void Session::ConnectToRemotingSource(

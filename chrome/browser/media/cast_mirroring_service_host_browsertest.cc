@@ -230,19 +230,13 @@ class CastMirroringServiceHostBrowserTest
 
   void PauseMirroring() {
     base::RunLoop run_loop;
-    host_->Pause();
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindPostTaskToCurrentDefault(run_loop.QuitWhenIdleClosure()));
+    host_->Pause(run_loop.QuitClosure());
     run_loop.Run();
   }
 
   void ResumeMirroring() {
     base::RunLoop run_loop;
-    host_->Resume();
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindPostTaskToCurrentDefault(run_loop.QuitWhenIdleClosure()));
+    host_->Resume(run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -292,6 +286,7 @@ class CastMirroringServiceHostBrowserTest
   MOCK_METHOD(void, LogInfoMessage, (const std::string&));
   MOCK_METHOD(void, LogErrorMessage, (const std::string&));
   MOCK_METHOD(void, OnSourceChanged, ());
+  MOCK_METHOD(void, OnRemotingStateChanged, (bool is_remoting));
 
   // mojom::CastMessageChannel mock implementation (inbound messages).
   MOCK_METHOD(void, OnMessage, (mojom::CastMessagePtr));

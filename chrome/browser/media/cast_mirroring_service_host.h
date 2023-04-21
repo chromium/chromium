@@ -138,15 +138,17 @@ class CastMirroringServiceHost final : public MirroringServiceHost,
       mojo::SelfOwnedReceiverRef<media::mojom::VideoCaptureHost>);
 
   // Send request to current video capture host to pause the stream, if
-  // active. media::mojom::VideoCaptureHost implementations |device_id| is
+  // active. media::mojom::VideoCaptureHost implementations `device_id` is
   // ignored since there will be only one device and one client.
-  void Pause() override;
+  // `on_paused_callback` is invoked once the playback has paused.
+  void Pause(base::OnceClosure on_paused_callback) override;
 
   // Send request to current video capture host to resume the stream, if
   // paused. media::mojom::VideoCaptureHost implementations
-  // |device_id| and |session_id| are ignored since there will be only one
-  // device and one client.
-  void Resume() override;
+  // `device_id` and `session_id` are ignored since there will be only one
+  // device and one client. `on_resumed_callback` is invoked once the playback
+  // has been resumed.
+  void Resume(base::OnceClosure on_resumed_callback) override;
 
   // Describes the media source for this mirroring session.
   content::DesktopMediaID source_media_id_;
@@ -166,7 +168,7 @@ class CastMirroringServiceHost final : public MirroringServiceHost,
   mojo::Remote<media::mojom::AudioStreamFactory> audio_stream_factory_;
 
   // Used to mute local audio from the WebContents being mirrored (in the tab
-  // mirrorng case). See the comments in the implementation of
+  // mirroring case). See the comments in the implementation of
   // CreateAudioStream() for further explanation.
   mojo::AssociatedRemote<media::mojom::LocalMuter> web_contents_audio_muter_;
 

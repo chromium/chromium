@@ -1071,6 +1071,10 @@ void OpenscreenSessionHost::NegotiateMirroring() {
 
   DCHECK(!audio_configs.empty() || !video_configs.empty());
   session_->Negotiate(audio_configs, video_configs);
+
+  if (observer_) {
+    observer_->OnRemotingStateChanged(false);
+  }
 }
 
 void OpenscreenSessionHost::NegotiateRemoting() {
@@ -1086,6 +1090,10 @@ void OpenscreenSessionHost::NegotiateRemoting() {
 
   session_->NegotiateRemoting(ToOpenscreenAudioConfig(audio_config),
                               ToOpenscreenVideoConfig(video_config));
+
+  if (observer_) {
+    observer_->OnRemotingStateChanged(true);
+  }
 }
 
 void OpenscreenSessionHost::InitMediaRemoter(

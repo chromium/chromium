@@ -131,6 +131,7 @@ class SessionTest : public mojom::ResourceProvider,
   MOCK_METHOD(void, LogInfoMessage, (const std::string&));
   MOCK_METHOD(void, LogErrorMessage, (const std::string&));
   MOCK_METHOD(void, OnSourceChanged, ());
+  MOCK_METHOD(void, OnRemotingStateChanged, (bool is_remoting));
 
   MOCK_METHOD(void, OnGetVideoCaptureHost, ());
   MOCK_METHOD(void, OnGetNetworkContext, ());
@@ -288,6 +289,7 @@ class SessionTest : public mojom::ResourceProvider,
     EXPECT_CALL(*this, OnGetNetworkContext()).Times(1);
     EXPECT_CALL(*this, OnError(_)).Times(0);
     EXPECT_CALL(*this, OnOutboundMessage("OFFER")).Times(1);
+    EXPECT_CALL(*this, OnRemotingStateChanged(false)).Times(1);
     EXPECT_CALL(*this, OnInitDone()).Times(1);
 
     session_ = std::make_unique<Session>(
@@ -360,6 +362,7 @@ class SessionTest : public mojom::ResourceProvider,
       EXPECT_CALL(*this, OnError(SessionError::ANSWER_TIME_OUT)).Times(0);
       // Expect to send OFFER message to fallback on mirroring.
       EXPECT_CALL(*this, OnOutboundMessage("OFFER")).Times(1);
+      EXPECT_CALL(*this, OnRemotingStateChanged(false)).Times(1);
       // The start of remoting is expected to fail.
       EXPECT_CALL(remoting_source_,
                   OnStartFailed(RemotingStartFailReason::INVALID_ANSWER_MESSAGE))
@@ -397,6 +400,7 @@ class SessionTest : public mojom::ResourceProvider,
     EXPECT_CALL(*this, OnOutboundMessage("GET_CAPABILITIES")).Times(0);
     EXPECT_CALL(*this, OnOutboundMessage("OFFER"))
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    EXPECT_CALL(*this, OnRemotingStateChanged(true)).Times(1);
     if (is_remote_playback_) {
       EXPECT_TRUE(video_host_ && video_host_->paused());
     }
@@ -422,6 +426,7 @@ class SessionTest : public mojom::ResourceProvider,
     // Expect to send OFFER message to fallback on mirroring.
     EXPECT_CALL(*this, OnOutboundMessage("OFFER")).Times(1);
     EXPECT_CALL(remoting_source_, OnStopped(reason)).Times(1);
+    EXPECT_CALL(*this, OnRemotingStateChanged(false)).Times(1);
     remoter_->Stop(reason);
     task_environment_.RunUntilIdle();
     cast_mode_ = "mirroring";

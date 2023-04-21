@@ -86,7 +86,29 @@ TEST_F(MirroringMediaControllerHostTest, OnMediaStatusUpdated) {
   MockMirroringMediaControllerHostObserver observer(host_.get());
 
   EXPECT_CALL(observer, OnFreezeInfoChanged);
-  host_->OnMediaStatusUpdated({});
+  host_->OnMediaStatusUpdated(mojom::MediaStatus::New());
+}
+
+TEST_F(MirroringMediaControllerHostTest, OnMediaStatusUpdatedCanFreeze) {
+  media_router::mojom::MediaStatusPtr status = mojom::MediaStatus::New();
+  status->can_play_pause = true;
+
+  EXPECT_FALSE(host_->can_freeze());
+  host_->OnMediaStatusUpdated(std::move(status));
+  EXPECT_TRUE(host_->can_freeze());
+}
+
+TEST_F(MirroringMediaControllerHostTest, OnMediaStatusUpdatedIsFrozen) {
+  media_router::mojom::MediaStatusPtr status = mojom::MediaStatus::New();
+  status->play_state = mojom::MediaStatus::PlayState::PAUSED;
+
+  EXPECT_FALSE(host_->is_frozen());
+  host_->OnMediaStatusUpdated(status.Clone());
+  EXPECT_FALSE(host_->is_frozen());
+
+  status->can_play_pause = true;
+  host_->OnMediaStatusUpdated(std::move(status));
+  EXPECT_TRUE(host_->is_frozen());
 }
 
 TEST_F(MirroringMediaControllerHostTest, Freeze) {

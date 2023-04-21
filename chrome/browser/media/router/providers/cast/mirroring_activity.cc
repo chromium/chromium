@@ -164,6 +164,7 @@ MirroringActivity::MirroringActivity(
     OnStopCallback callback,
     OnSourceChangedCallback source_changed_callback)
     : CastActivity(route, app_id, message_handler, session_tracker),
+      media_status_(mojom::MediaStatus::New()),
       mirroring_type_(GetMirroringType(route)),
       frame_tree_node_id_(frame_tree_node_id),
       cast_data_(cast_data),
@@ -358,6 +359,14 @@ void MirroringActivity::OnSourceChanged() {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&SwitchToFlingingIfPossible, frame_tree_node_id_));
+}
+
+void MirroringActivity::OnRemotingStateChanged(bool is_remoting) {
+  media_status_->can_play_pause = !is_remoting;
+  // Transitions to/from remoting restart the capturer. Set the state to
+  // playing.
+  media_status_->play_state = mojom::MediaStatus::PlayState::PLAYING;
+  NotifyMediaStatusObserver();
 }
 
 void MirroringActivity::OnMessage(mirroring::mojom::CastMessagePtr message) {
@@ -673,18 +682,35 @@ void MirroringActivity::OnMirroringStats(base::Value json_stats) {
 void MirroringActivity::Play() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
   if (host_) {
+    base::OnceCallback<void()> cb = base::BindOnce(
+        &MirroringActivity::SetPlayState, weak_ptr_factory_.GetWeakPtr(),
+        mojom::MediaStatus::PlayState::PLAYING);
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&mirroring::MirroringServiceHost::Resume,
-                                  host_->GetWeakPtr()));
+                                  host_->GetWeakPtr(), std::move(cb)));
   }
 }
 
 void MirroringActivity::Pause() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
   if (host_) {
+    base::OnceCallback<void()> cb = base::BindOnce(
+        &MirroringActivity::SetPlayState, weak_ptr_factory_.GetWeakPtr(),
+        mojom::MediaStatus::PlayState::PAUSED);
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&mirroring::MirroringServiceHost::Pause,
-                                  host_->GetWeakPtr()));
+                                  host_->GetWeakPtr(), std::move(cb)));
+  }
+}
+
+void MirroringActivity::SetPlayState(mojom::MediaStatus::PlayState play_state) {
+  media_status_->play_state = play_state;
+  NotifyMediaStatusObserver();
+}
+
+void MirroringActivity::NotifyMediaStatusObserver() {
+  if (media_status_observer_) {
+    media_status_observer_->OnMediaStatusUpdated(media_status_.Clone());
   }
 }
 
