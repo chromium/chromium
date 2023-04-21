@@ -35,7 +35,7 @@ class BruschettaInstallerMock : public bruschetta::BruschettaInstaller {
   MOCK_METHOD(void, AddObserver, (Observer*));
   MOCK_METHOD(void, RemoveObserver, (Observer*));
 
-  MOCK_METHOD(const base::GUID&, GetDownloadGuid, (), (const));
+  MOCK_METHOD(const base::Uuid&, GetDownloadGuid, (), (const));
 
   MOCK_METHOD(void,
               DownloadStarted,
