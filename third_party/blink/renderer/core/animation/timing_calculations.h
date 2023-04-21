@@ -135,7 +135,8 @@ static inline Timing::Phase CalculatePhase(
                AnimationTimeDelta());
   if (local_time.value() > active_after_boundary_time ||
       (direction == Timing::AnimationDirection::kForwards &&
-       local_time.value() == active_after_boundary_time &&
+       IsWithinAnimationTimeTolerance(local_time.value(),
+                                      active_after_boundary_time) &&
        !at_progress_timeline_boundary)) {
     return Timing::kPhaseAfter;
   }

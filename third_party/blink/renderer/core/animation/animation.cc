@@ -941,8 +941,9 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
 
   // Update content timing to be based on new timeline type. This ensures that
   // EffectEnd() is returning a value appropriate to the new timeline.
-  if (content_ && timeline_)
+  if (content_) {
     content_->InvalidateNormalizedTiming();
+  }
 
   reset_current_time_on_resume_ = false;
 
@@ -952,39 +953,37 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
     keyframe_effect->Model()->SetViewTimelineIfRequired(view_timeline);
   }
 
-  if (timeline) {
-    if (!timeline->IsMonotonicallyIncreasing()) {
-      ApplyPendingPlaybackRate();
-      AnimationTimeDelta boundary_time =
-          (playback_rate_ > 0) ? AnimationTimeDelta() : EffectEnd();
-      switch (old_play_state) {
-        case kIdle:
-          break;
+  if (timeline && !timeline->IsMonotonicallyIncreasing()) {
+    ApplyPendingPlaybackRate();
+    AnimationTimeDelta boundary_time =
+        (playback_rate_ > 0) ? AnimationTimeDelta() : EffectEnd();
+    switch (old_play_state) {
+      case kIdle:
+        break;
 
-        case kRunning:
-        case kFinished:
-          // A non-monotonic timeline has a fixed start time at the beginning or
-          // end of the timeline.
+      case kRunning:
+      case kFinished:
+        // A non-monotonic timeline has a fixed start time at the beginning or
+        // end of the timeline.
+        start_time_ = boundary_time;
+        break;
+
+      case kPaused:
+        if (old_current_time) {
+          reset_current_time_on_resume_ = true;
+          start_time_ = absl::nullopt;
+          hold_time_ = progress * EffectEnd();
+        } else if (PendingInternal()) {
           start_time_ = boundary_time;
-          break;
+        }
+        break;
 
-        case kPaused:
-          if (old_current_time) {
-            reset_current_time_on_resume_ = true;
-            start_time_ = absl::nullopt;
-            hold_time_ = progress * EffectEnd();
-          } else if (PendingInternal()) {
-            start_time_ = boundary_time;
-          }
-          break;
-
-        default:
-          NOTREACHED();
-      }
-    } else if (old_current_time && old_timeline &&
-               !old_timeline->IsMonotonicallyIncreasing()) {
-      SetCurrentTimeInternal(progress * EffectEnd());
+      default:
+        NOTREACHED();
     }
+  } else if (old_current_time && old_timeline &&
+             !old_timeline->IsMonotonicallyIncreasing()) {
+    SetCurrentTimeInternal(progress * EffectEnd());
   }
 
   // 4. If the start time of animation is resolved, make the animation’s hold
@@ -2293,19 +2292,32 @@ void Animation::UpdateStartTimeForViewTimeline() {
 }
 
 void Animation::OnRangeUpdate() {
+  // Change in animation range has no effect unless using a scroll-timeline.
+  ScrollTimeline* scroll_timeline = DynamicTo<ScrollTimeline>(timeline_.Get());
+  if (!scroll_timeline) {
+    return;
+  }
+
   SetOutdated();
   if (content_) {
     // Animation range affects intrinsic iteration duration, which in turn
     // affects iteration duration in normalized timing.
     content_->InvalidateNormalizedTiming();
+    content_->Invalidate();
   }
   if (start_time_) {
     UpdateStartTimeForViewTimeline();
   }
 
+  Update(kTimingUpdateOnDemand);
+
+  // Clamp current time to end time if finished. The |previous_current_time_|
+  // flag prevents current time from jumping when updating the finished state
+  // on an animation and not performing an explicit seek operation.
+  previous_current_time_ = absl::nullopt;
   UpdateFinishedState(UpdateType::kContinuous, NotificationType::kAsync);
 
-  SetCompositorPending(false);
+  SetCompositorPending(/*effect_changed=*/true);
 
   // Inform devtools of a potential change to the play state.
   NotifyProbe();

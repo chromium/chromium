@@ -37,17 +37,22 @@
 
 namespace blink {
 
+class AnimationProxy {
+ public:
+  virtual bool AtScrollTimelineBoundary() const = 0;
+  virtual absl::optional<AnimationTimeDelta> TimelineDuration() const = 0;
+  virtual AnimationTimeDelta IntrinsicIterationDuration() const = 0;
+  virtual double PlaybackRate() const = 0;
+  virtual bool Paused() const = 0;
+  virtual absl::optional<AnimationTimeDelta> InheritedTime() const = 0;
+};
+
 // Lightweight subset of KeyframeEffect.
 // Used to transport data for deferred KeyframeEffect construction and one off
 // Interpolation sampling.
 class CORE_EXPORT InertEffect final : public AnimationEffect {
  public:
-  InertEffect(KeyframeEffectModelBase*,
-              const Timing&,
-              bool paused,
-              absl::optional<AnimationTimeDelta> inherited_time,
-              absl::optional<AnimationTimeDelta> timeline_duration,
-              double playback_rate);
+  InertEffect(KeyframeEffectModelBase*, const Timing&, const AnimationProxy&);
 
   void Sample(HeapVector<Member<Interpolation>>&) const;
   KeyframeEffectModelBase* Model() const { return model_.Get(); }
@@ -66,6 +71,7 @@ class CORE_EXPORT InertEffect final : public AnimationEffect {
       absl::optional<AnimationTimeDelta> inherited_time,
       AnimationTimeDelta time_to_next_iteration) const override;
   absl::optional<AnimationTimeDelta> TimelineDuration() const override;
+  AnimationTimeDelta IntrinsicIterationDuration() const override;
 
  private:
   Member<KeyframeEffectModelBase> model_;
@@ -73,7 +79,9 @@ class CORE_EXPORT InertEffect final : public AnimationEffect {
   absl::optional<AnimationTimeDelta> inherited_time_;
   absl::optional<TimelinePhase> inherited_phase_;
   absl::optional<AnimationTimeDelta> timeline_duration_;
+  AnimationTimeDelta intrinsic_iteration_duration_;
   double playback_rate_;
+  bool at_scroll_timeline_boundary_;
 };
 
 template <>

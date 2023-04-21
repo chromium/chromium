@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/animation/effect_input.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/sampled_effect.h"
+#include "third_party/blink/renderer/core/animation/timing_calculations.h"
 #include "third_party/blink/renderer/core/animation/timing_input.h"
 #include "third_party/blink/renderer/core/animation/view_timeline.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
@@ -664,14 +665,16 @@ void KeyframeEffect::ApplyEffects() {
 }
 
 void KeyframeEffect::ClearEffects() {
-  if (!sampled_effect_)
+  if (!sampled_effect_) {
     return;
+  }
   sampled_effect_->Clear();
   sampled_effect_ = nullptr;
   if (GetAnimation())
     GetAnimation()->RestartAnimationOnCompositor();
-  if (!effect_target_->GetDocument().Lifecycle().InDetach())
+  if (!effect_target_->GetDocument().Lifecycle().InDetach()) {
     effect_target_->SetNeedsAnimationStyleRecalc();
+  }
   auto* svg_element = DynamicTo<SVGElement>(effect_target_.Get());
   if (RuntimeEnabledFeatures::WebAnimationsSVGEnabled() && svg_element)
     svg_element->ClearWebAnimatedAttributes();
@@ -683,10 +686,11 @@ void KeyframeEffect::UpdateChildrenAndEffects() const {
     return;
   DCHECK(owner_);
   if (IsInEffect() && !owner_->EffectSuppressed() &&
-      !owner_->ReplaceStateRemoved())
+      !owner_->ReplaceStateRemoved()) {
     const_cast<KeyframeEffect*>(this)->ApplyEffects();
-  else
+  } else {
     const_cast<KeyframeEffect*>(this)->ClearEffects();
+  }
 }
 
 void KeyframeEffect::Attach(AnimationEffectOwner* owner) {
@@ -717,16 +721,6 @@ void KeyframeEffect::DetachTarget(Animation* animation) {
   // the target that it needs to refresh its style, and doing any necessary
   // update on the compositor.
   ClearEffects();
-}
-
-AnimationTimeDelta KeyframeEffect::IntrinsicIterationDuration() const {
-  if (auto* animation = GetAnimation()) {
-    auto* timeline = animation->timeline();
-    if (timeline) {
-      return timeline->CalculateIntrinsicIterationDuration(animation, timing_);
-    }
-  }
-  return AnimationTimeDelta();
 }
 
 AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
@@ -766,7 +760,8 @@ AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
       }
       return {};
     case Timing::kPhaseAfter:
-      DCHECK_GE(local_time.value(), after_time);
+      DCHECK(GreaterThanOrEqualToWithinTimeTolerance(local_time.value(),
+                                                     after_time));
       if (forwards) {
         // If an animation has a positive-valued end delay, we need an
         // additional tick at the end time to ensure that the finished event is

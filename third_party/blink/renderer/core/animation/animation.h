@@ -233,6 +233,14 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
       OnRangeUpdate();
     }
   }
+  virtual void SetRange(const absl::optional<TimelineOffset>& range_start,
+                        const absl::optional<TimelineOffset>& range_end) {
+    if (range_start_ != range_start || range_end_ != range_end) {
+      range_start_ = range_start;
+      range_end_ = range_end;
+      OnRangeUpdate();
+    }
+  }
 
   void OnRangeUpdate();
 

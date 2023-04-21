@@ -79,6 +79,16 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   AnimationTimeDelta CalculateIntrinsicIterationDuration(
       const Animation*,
       const Timing&) override;
+
+  // TODO(kevers): Support range start and end for scroll-timelines that are not
+  // view timelines.
+  AnimationTimeDelta CalculateIntrinsicIterationDuration(
+      const absl::optional<TimelineOffset>& rangeStart,
+      const absl::optional<TimelineOffset>& rangeEnd,
+      const Timing& timing) override {
+    return CalculateIntrinsicIterationDuration(nullptr, timing);
+  }
+
   AnimationTimeDelta ZeroTime() override { return AnimationTimeDelta(); }
 
   void ServiceAnimations(TimingUpdateReason) override;

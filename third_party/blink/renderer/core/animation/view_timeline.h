@@ -44,6 +44,11 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
       const Animation*,
       const Timing&) override;
 
+  AnimationTimeDelta CalculateIntrinsicIterationDuration(
+      const absl::optional<TimelineOffset>& rangeStart,
+      const absl::optional<TimelineOffset>& rangeEnd,
+      const Timing&) override;
+
   // IDL API implementation.
   Element* subject() const;
 

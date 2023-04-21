@@ -72,6 +72,14 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   // Changing scroll-linked animation start_time initialization is under
   // consideration here: https://github.com/w3c/csswg-drafts/issues/2075.
   virtual absl::optional<base::TimeDelta> InitialStartTimeForAnimations() = 0;
+
+  virtual AnimationTimeDelta CalculateIntrinsicIterationDuration(
+      const absl::optional<TimelineOffset>& rangeStart,
+      const absl::optional<TimelineOffset>& rangeEnd,
+      const Timing&) {
+    return AnimationTimeDelta();
+  }
+
   virtual AnimationTimeDelta CalculateIntrinsicIterationDuration(
       const Animation*,
       const Timing&) {

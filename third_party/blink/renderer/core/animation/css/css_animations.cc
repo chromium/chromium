@@ -97,6 +97,222 @@ using PropertySet = HashSet<CSSPropertyName>;
 
 namespace {
 
+class CSSAnimationProxy : public AnimationProxy {
+ public:
+  CSSAnimationProxy(AnimationTimeline* timeline,
+                    CSSAnimation* animation,
+                    bool is_paused,
+                    const absl::optional<TimelineOffset>& range_start,
+                    const absl::optional<TimelineOffset>& range_end,
+                    const Timing& timing);
+
+  // AnimationProxy interface.
+  bool AtScrollTimelineBoundary() const override {
+    return at_scroll_timeline_boundary_;
+  }
+  absl::optional<AnimationTimeDelta> TimelineDuration() const override {
+    return timeline_duration_;
+  }
+  AnimationTimeDelta IntrinsicIterationDuration() const override {
+    return intrinsic_iteration_duration_;
+  }
+  double PlaybackRate() const override { return playback_rate_; }
+  bool Paused() const override { return is_paused_; }
+  absl::optional<AnimationTimeDelta> InheritedTime() const override {
+    return inherited_time_;
+  }
+
+ private:
+  absl::optional<AnimationTimeDelta> CalculateInheritedTime(
+      AnimationTimeline* timeline,
+      CSSAnimation* animation,
+      const absl::optional<TimelineOffset>& range_start,
+      const absl::optional<TimelineOffset>& range_end,
+      const Timing& timing);
+
+  double playback_rate_ = 1;
+  absl::optional<AnimationTimeDelta> inherited_time_;
+  AnimationTimeDelta intrinsic_iteration_duration_;
+  absl::optional<AnimationTimeDelta> timeline_duration_;
+  bool is_paused_;
+  bool at_scroll_timeline_boundary_ = false;
+};
+
+CSSAnimationProxy::CSSAnimationProxy(
+    AnimationTimeline* timeline,
+    CSSAnimation* animation,
+    bool is_paused,
+    const absl::optional<TimelineOffset>& range_start,
+    const absl::optional<TimelineOffset>& range_end,
+    const Timing& timing)
+    : is_paused_(is_paused) {
+  absl::optional<TimelineOffset> adjusted_range_start;
+  absl::optional<TimelineOffset> adjusted_range_end;
+  if (animation) {
+    playback_rate_ = animation->playbackRate();
+    adjusted_range_start = animation->GetIgnoreCSSRangeStart()
+                               ? animation->GetRangeStartInternal()
+                               : range_start;
+    adjusted_range_end = animation->GetIgnoreCSSRangeEnd()
+                             ? animation->GetRangeEndInternal()
+                             : range_end;
+  } else {
+    adjusted_range_start = range_start;
+    adjusted_range_end = range_end;
+  }
+
+  intrinsic_iteration_duration_ =
+      timeline ? timeline->CalculateIntrinsicIterationDuration(
+                     adjusted_range_start, adjusted_range_end, timing)
+               : AnimationTimeDelta();
+
+  inherited_time_ = CalculateInheritedTime(
+      timeline, animation, adjusted_range_start, adjusted_range_end, timing);
+
+  timeline_duration_ = timeline ? timeline->GetDuration() : absl::nullopt;
+  if (timeline && timeline->IsScrollTimeline() && timeline->CurrentTime()) {
+    AnimationTimeDelta timeline_time = timeline->CurrentTime().value();
+    at_scroll_timeline_boundary_ =
+        timeline_time.is_zero() ||
+        IsWithinAnimationTimeTolerance(timeline_time,
+                                       timeline_duration_.value());
+  }
+}
+
+absl::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
+    AnimationTimeline* timeline,
+    CSSAnimation* animation,
+    const absl::optional<TimelineOffset>& range_start,
+    const absl::optional<TimelineOffset>& range_end,
+    const Timing& timing) {
+  absl::optional<AnimationTimeDelta> inherited_time;
+
+  AnimationTimeline* previous_timeline = nullptr;
+  bool resets_current_time_on_resume = false;
+
+  if (animation) {
+    // A cancelled CSS animation does not become active again due to an
+    // animation update.
+    if (!animation->UnlimitedCurrentTime() && !animation->StartTimeInternal()) {
+      return absl::nullopt;
+    }
+
+    // In most cases, current time is preserved on an animation update.
+    inherited_time = animation->UnlimitedCurrentTime();
+    previous_timeline = animation->timeline();
+    resets_current_time_on_resume = animation->ResetsCurrentTimeOnResume();
+  }
+
+  bool range_changed =
+      !animation || (range_start != animation->GetRangeStartInternal() ||
+                     range_end != animation->GetRangeEndInternal());
+
+  if (timeline && timeline->IsScrollTimeline()) {
+    if (is_paused_ || ((timeline == previous_timeline) &&
+                       !resets_current_time_on_resume && !range_changed)) {
+      // Current time is unaffected by the update.
+      return inherited_time;
+    }
+
+    // Running animation with an update that potentially affects the
+    // animation's start time. Need to compute a new value for
+    // inherited_time_.
+    double relative_offset;
+    if (timeline->IsViewTimeline()) {
+      // TODO(kevers): Support animation-range for a non-view scroll-timeline.
+      if (playback_rate_ >= 0) {
+        relative_offset =
+            range_start ? DynamicTo<ViewTimeline>(timeline)->ToFractionalOffset(
+                              range_start.value())
+                        : 0;
+      } else {
+        relative_offset =
+            range_end ? DynamicTo<ViewTimeline>(timeline)->ToFractionalOffset(
+                            range_end.value())
+                      : 1;
+      }
+    } else {
+      // A non-view scroll-timeline has its start time at 0 or end time.
+      // TODO(kevers): Update once non-view scroll-timeline support animation
+      // ranges.
+      relative_offset = playback_rate_ >= 0 ? 0 : 1;
+    }
+    if (timeline->CurrentTime()) {
+      AnimationTimeDelta pending_start_time =
+          timeline->GetDuration().value() * relative_offset;
+      return (timeline->CurrentTime().value() - pending_start_time) *
+             playback_rate_;
+    }
+    return absl::nullopt;
+  }
+
+  if (previous_timeline && previous_timeline->IsScrollTimeline() &&
+      previous_timeline->CurrentTime()) {
+    // Going from a scroll timeline to a document or null timeline.
+    // In this case, we preserve the current time.
+    double progress = previous_timeline->CurrentTime().value() /
+                      previous_timeline->GetDuration().value();
+
+    AnimationTimeDelta end_time = std::max(
+        timing.start_delay.AsTimeValue() +
+            MultiplyZeroAlwaysGivesZero(
+                timing.iteration_duration.value_or(AnimationTimeDelta()),
+                timing.iteration_count) +
+            timing.end_delay.AsTimeValue(),
+        AnimationTimeDelta());
+
+    return progress * end_time;
+  }
+
+  if (!timeline) {
+    // If changing from a monotonic-timeline to a null-timeline, current time
+    // may become null.
+    // TODO(https://github.com/w3c/csswg-drafts/issues/6412): Update once the
+    // issue is resolved.
+    if (previous_timeline && previous_timeline->IsMonotonicallyIncreasing() &&
+        !is_paused_ && animation->StartTimeInternal() &&
+        animation->CalculateAnimationPlayState() == Animation::kRunning) {
+      return absl::nullopt;
+    }
+    // A new animation with a null timeline will be stuck in the play or pause
+    // pending state.
+    if (!inherited_time && !animation) {
+      return AnimationTimeDelta();
+    }
+  }
+
+  // A timeline attached to a monotonic timeline that does not currently have a
+  // time will start in either the play or paused state.
+  if (timeline && timeline->IsMonotonicallyIncreasing() && !inherited_time) {
+    return AnimationTimeDelta();
+  }
+
+  return inherited_time;
+}
+
+class CSSTransitionProxy : public AnimationProxy {
+ public:
+  explicit CSSTransitionProxy(absl::optional<AnimationTimeDelta> current_time)
+      : current_time_(current_time) {}
+
+  // AnimationProxy interface.
+  bool AtScrollTimelineBoundary() const override { return false; }
+  absl::optional<AnimationTimeDelta> TimelineDuration() const override {
+    return absl::nullopt;
+  }
+  AnimationTimeDelta IntrinsicIterationDuration() const override {
+    return AnimationTimeDelta();
+  }
+  double PlaybackRate() const override { return 1; }
+  bool Paused() const override { return false; }
+  absl::optional<AnimationTimeDelta> InheritedTime() const override {
+    return current_time_;
+  }
+
+ private:
+  absl::optional<AnimationTimeDelta> current_time_;
+};
+
 // A keyframe can have an offset as a fixed percent or as a
 // <timeline-range percent>. In the later case, we resolve as a fixed
 // percent, though this value can change as layout changes. Setting the
@@ -1483,6 +1699,8 @@ void CSSAnimations::CalculateAnimationUpdate(
               // kUnset and kPending.
               NOTREACHED();
           }
+        } else if (!animation->GetIgnoreCSSPlayState()) {
+          will_be_playing = !is_paused && play_state != Animation::kIdle;
         } else {
           will_be_playing = (play_state == Animation::kRunning) ||
                             (play_state == Animation::kFinished);
@@ -1507,46 +1725,10 @@ void CSSAnimations::CalculateAnimationUpdate(
             is_paused != was_paused || logical_property_mapping_change ||
             timeline != existing_animation->Timeline() || range_changed) {
           DCHECK(!is_animation_style_change);
-          absl::optional<AnimationTimeDelta> inherited_time;
-          absl::optional<AnimationTimeDelta> timeline_duration;
 
-          if (timeline) {
-            inherited_time = animation->UnlimitedCurrentTime();
-            timeline_duration = timeline->GetDuration();
-
-            if (will_be_playing &&
-                ((timeline != existing_animation->Timeline()) ||
-                 animation->ResetsCurrentTimeOnResume())) {
-              if (timeline->IsScrollTimeline()) {
-                inherited_time = timeline->CurrentTime();
-              } else {
-                AnimationTimeline* previous_timeline =
-                    existing_animation->Timeline();
-                // Check to see if we are switching from a scroll timeline to a
-                // document timeline.
-                if (previous_timeline &&
-                    previous_timeline->IsScrollTimeline() &&
-                    previous_timeline->CurrentTime()) {
-                  // We need to maintain current progress in the animation when
-                  // switching from scroll timeline to document timeline.
-                  double progress = previous_timeline->CurrentTime().value() /
-                                    previous_timeline->GetDuration().value();
-
-                  AnimationTimeDelta end_time = std::max(
-                      specified_timing.start_delay.AsTimeValue() +
-                          MultiplyZeroAlwaysGivesZero(
-                              specified_timing.iteration_duration.value_or(
-                                  AnimationTimeDelta()),
-                              specified_timing.iteration_count) +
-                          specified_timing.end_delay.AsTimeValue(),
-                      AnimationTimeDelta());
-
-                  inherited_time = progress * end_time;
-                }
-              }
-            }
-          }
-
+          CSSAnimationProxy animation_proxy(timeline, animation,
+                                            !will_be_playing, range_start,
+                                            range_end, timing);
           update.UpdateAnimation(
               existing_animation_index, animation,
               *MakeGarbageCollected<InertEffect>(
@@ -1554,8 +1736,7 @@ void CSSAnimations::CalculateAnimationUpdate(
                       resolver, element, animating_element, writing_direction,
                       parent_style, name, keyframe_timing_function.get(),
                       composite, i, timeline),
-                  timing, is_paused, inherited_time, timeline_duration,
-                  animation->playbackRate()),
+                  timing, animation_proxy),
               specified_timing, keyframes_rule, timeline,
               animation_data->PlayStateList(), range_start, range_end);
           if (toggle_pause_state)
@@ -1565,16 +1746,11 @@ void CSSAnimations::CalculateAnimationUpdate(
         DCHECK(!is_animation_style_change);
         AnimationTimeline* timeline = ComputeTimeline(
             &element, style_timeline, update, /* existing_timeline */ nullptr);
-        absl::optional<AnimationTimeDelta> inherited_time =
-            AnimationTimeDelta();
 
-        absl::optional<AnimationTimeDelta> timeline_duration;
-        if (timeline) {
-          timeline_duration = timeline->GetDuration();
-          if (!timeline->IsMonotonicallyIncreasing()) {
-            inherited_time = timeline->CurrentTime();
-          }
-        }
+        CSSAnimationProxy animation_proxy(timeline, /* animation */ nullptr,
+                                          is_paused, range_start, range_end,
+                                          timing);
+
         update.StartAnimation(
             name, name_index, i,
             *MakeGarbageCollected<InertEffect>(
@@ -1582,7 +1758,7 @@ void CSSAnimations::CalculateAnimationUpdate(
                                           writing_direction, parent_style, name,
                                           keyframe_timing_function.get(),
                                           composite, i, timeline),
-                timing, is_paused, inherited_time, timeline_duration, 1.0),
+                timing, animation_proxy),
             specified_timing, keyframes_rule, timeline,
             animation_data->PlayStateList(), range_start, range_end);
       }
@@ -1884,17 +2060,7 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
       css_animation.setTimeline(entry.timeline);
       css_animation.ResetIgnoreCSSTimeline();
     }
-    if (!css_animation.GetIgnoreCSSRangeStart() &&
-        css_animation.GetRangeStartInternal() != entry.range_start) {
-      css_animation.SetRangeStartInternal(entry.range_start);
-      css_animation.ResetIgnoreCSSRangeStart();
-    }
-    if (!css_animation.GetIgnoreCSSRangeEnd() &&
-        css_animation.GetRangeEndInternal() != entry.range_end) {
-      css_animation.SetRangeEndInternal(entry.range_end);
-      css_animation.ResetIgnoreCSSRangeEnd();
-    }
-
+    css_animation.SetRange(entry.range_start, entry.range_end);
     running_animations_[entry.index]->Update(entry);
     entry.animation->Update(kTimingUpdateOnDemand);
   }
@@ -1929,8 +2095,7 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     if (inert_animation->Paused())
       animation->pause();
     animation->ResetIgnoreCSSPlayState();
-    animation->SetRangeStartInternal(entry.range_start);
-    animation->SetRangeEndInternal(entry.range_end);
+    animation->SetRange(entry.range_start, entry.range_end);
     animation->ResetIgnoreCSSRangeStart();
     animation->ResetIgnoreCSSRangeEnd();
     animation->Update(kTimingUpdateOnDemand);
@@ -2274,7 +2439,7 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
       property, state.before_change_style, &state.base_style,
       reversing_adjusted_start_value, reversing_shortening_factor,
       *MakeGarbageCollected<InertEffect>(
-          model, timing, false, AnimationTimeDelta(), absl::nullopt, 1.0));
+          model, timing, CSSTransitionProxy(AnimationTimeDelta())));
   DCHECK(!state.animating_element.GetElementAnimations() ||
          !state.animating_element.GetElementAnimations()
               ->IsAnimationStyleChange());
@@ -2489,8 +2654,8 @@ scoped_refptr<const ComputedStyle> CSSAnimations::CalculateBeforeChangeStyle(
         continue;
 
       auto* inert_animation_for_sampling = MakeGarbageCollected<InertEffect>(
-          effect->Model(), effect->SpecifiedTiming(), false, current_time,
-          /* timeline_duration */ absl::nullopt, animation->playbackRate());
+          effect->Model(), effect->SpecifiedTiming(),
+          CSSTransitionProxy(current_time));
 
       HeapVector<Member<Interpolation>> sample;
       inert_animation_for_sampling->Sample(sample);

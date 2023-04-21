@@ -65,6 +65,16 @@ AnimationEffect::AnimationEffect(const Timing& timing,
   InvalidateNormalizedTiming();
 }
 
+AnimationTimeDelta AnimationEffect::IntrinsicIterationDuration() const {
+  if (auto* animation = GetAnimation()) {
+    auto* timeline = animation->timeline();
+    if (timeline) {
+      return timeline->CalculateIntrinsicIterationDuration(animation, timing_);
+    }
+  }
+  return AnimationTimeDelta();
+}
+
 // Scales all timing values so that end_time == timeline_duration
 // https://drafts.csswg.org/web-animations-2/#time-based-animation-to-a-proportional-animation
 void AnimationEffect::EnsureNormalizedTiming() const {

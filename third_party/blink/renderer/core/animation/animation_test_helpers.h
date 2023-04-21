@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_ANIMATION_TEST_HELPERS_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/core/animation/inert_effect.h"
 #include "third_party/blink/renderer/core/animation/interpolation.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -47,6 +48,28 @@ KeyframeEffectModelBase* CreateSimpleKeyframeEffectModelForTest(
 // All members of the ActiveInterpolations must be instances of
 // InvalidatableInterpolation.
 void EnsureInterpolatedValueCached(ActiveInterpolations*, Document&, Element*);
+
+class TestAnimationProxy : public AnimationProxy {
+ public:
+  // AnimationProxy interface.
+  bool AtScrollTimelineBoundary() const override { return false; }
+  absl::optional<AnimationTimeDelta> TimelineDuration() const override {
+    return absl::nullopt;
+  }
+  AnimationTimeDelta IntrinsicIterationDuration() const override {
+    return AnimationTimeDelta();
+  }
+  double PlaybackRate() const override { return playback_rate_; }
+  bool Paused() const override { return false; }
+  absl::optional<AnimationTimeDelta> InheritedTime() const override {
+    return AnimationTimeDelta();
+  }
+
+  void SetPlaybackRate(double rate) { playback_rate_ = rate; }
+
+ private:
+  double playback_rate_ = 1;
+};
 
 }  // namespace animation_test_helpers
 }  // namespace blink

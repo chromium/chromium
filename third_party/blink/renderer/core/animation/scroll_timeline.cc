@@ -252,8 +252,7 @@ AnimationTimeDelta ScrollTimeline::CalculateIntrinsicIterationDuration(
 
   // Only run calculation for progress based scroll timelines
   if (duration) {
-    // if iteration_duration == "auto" and iterations > 0
-    if (!timing.iteration_duration && timing.iteration_count > 0) {
+    if (timing.iteration_count > 0) {
       // duration represents 100% so we subtract percentage delays and divide it
       // by iteration count to calculate the iteration duration.
       double start_delay = timing.start_delay.relative_delay.value_or(0);

@@ -70,6 +70,20 @@ void CSSAnimation::setRangeEnd(const RangeBoundary* range_end,
   ignore_css_range_end_ = true;
 }
 
+void CSSAnimation::SetRange(const absl::optional<TimelineOffset>& range_start,
+                            const absl::optional<TimelineOffset>& range_end) {
+  if (GetIgnoreCSSRangeStart() && GetIgnoreCSSRangeEnd()) {
+    return;
+  }
+
+  const absl::optional<TimelineOffset>& adjusted_range_start =
+      GetIgnoreCSSRangeStart() ? GetRangeStartInternal() : range_start;
+  const absl::optional<TimelineOffset>& adjusted_range_end =
+      GetIgnoreCSSRangeEnd() ? GetRangeEndInternal() : range_end;
+
+  Animation::SetRange(adjusted_range_start, adjusted_range_end);
+}
+
 void CSSAnimation::setStartTime(const V8CSSNumberish* start_time,
                                 ExceptionState& exception_state) {
   PlayStateTransitionScope scope(*this);

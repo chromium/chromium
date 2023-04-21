@@ -261,20 +261,23 @@ ViewTimeline::ViewTimeline(Document* document,
 AnimationTimeDelta ViewTimeline::CalculateIntrinsicIterationDuration(
     const Animation* animation,
     const Timing& timing) {
+  return CalculateIntrinsicIterationDuration(animation->GetRangeStartInternal(),
+                                             animation->GetRangeEndInternal(),
+                                             timing);
+}
+
+AnimationTimeDelta ViewTimeline::CalculateIntrinsicIterationDuration(
+    const absl::optional<TimelineOffset>& rangeStart,
+    const absl::optional<TimelineOffset>& rangeEnd,
+    const Timing& timing) {
   absl::optional<AnimationTimeDelta> duration = GetDuration();
 
   // Only run calculation for progress based scroll timelines
   if (duration && timing.iteration_count > 0) {
     double active_interval = 1;
 
-    double start =
-        animation->GetRangeStartInternal()
-            ? ToFractionalOffset(animation->GetRangeStartInternal().value())
-            : 0;
-    double end =
-        animation->GetRangeEndInternal()
-            ? ToFractionalOffset(animation->GetRangeEndInternal().value())
-            : 1;
+    double start = rangeStart ? ToFractionalOffset(rangeStart.value()) : 0;
+    double end = rangeEnd ? ToFractionalOffset(rangeEnd.value()) : 1;
 
     active_interval -= start;
     active_interval -= (1 - end);
@@ -361,8 +364,9 @@ absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
     start_offset_ = start_offset;
     end_offset_ = end_offset;
 
-    for (auto animation : GetAnimations())
+    for (auto animation : GetAnimations()) {
       animation->InvalidateNormalizedTiming();
+    }
   }
 
   return absl::make_optional<ScrollOffsets>(start_offset, end_offset);
