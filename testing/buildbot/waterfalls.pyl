@@ -3410,6 +3410,9 @@
           'xcode_14_main',
           'xctest',
         ],
+        'test_suites': {
+          'isolated_scripts': 'ios15_sdk_simulator_tests'
+        },
       },
       # ios16-beta-sim compiles with xcode version n-1, but
       # runs testers with xcode n during an xcode roll.
