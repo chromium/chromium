@@ -15,7 +15,9 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/views/crostini/crostini_package_install_failure_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -69,7 +71,11 @@ CrostiniPackageNotification::CrostiniPackageNotification(
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.vector_small_image = &ash::kNotificationLinuxIcon;
   rich_notification_data.never_timeout = true;
-  rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
+  if (chromeos::features::IsJellyEnabled()) {
+    rich_notification_data.accent_color_id = cros_tokens::kCrosSysOnPrimary;
+  } else {
+    rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
+  }
 
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_PROGRESS, notification_id,
@@ -218,13 +224,18 @@ void CrostiniPackageNotification::UpdateProgress(
 
       break;
 
-    case PackageOperationStatus::FAILED:
+    case PackageOperationStatus::FAILED: {
       title = notification_settings_.failure_title;
       body = notification_settings_.failure_body;
       error_message_ = error_message;
-      notification_->set_accent_color(
-          ash::kSystemNotificationColorCriticalWarning);
+      if (chromeos::features::IsJellyEnabled()) {
+        notification_->set_accent_color_id(cros_tokens::kCrosSysError);
+      } else {
+        notification_->set_accent_color(
+            ash::kSystemNotificationColorCriticalWarning);
+      }
       break;
+    }
 
     case PackageOperationStatus::WAITING_FOR_APP_REGISTRY_UPDATE:
       // If a notification progress bar is set to a value outside of [0, 100],

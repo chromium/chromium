@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/message_center/views/message_view.h"
@@ -140,6 +141,8 @@ NotificationTypeDetailed GetNotificationTypeForCrosSystemPriority(
   // infer it from the accent color.
   absl::optional<SkColor> accent_color =
       notification.rich_notification_data().accent_color;
+  absl::optional<ui::ColorId> accent_color_id =
+      notification.rich_notification_data().accent_color_id;
   message_center::SystemNotificationWarningLevel warning_level =
       message_center::SystemNotificationWarningLevel::NORMAL;
   if (accent_color.has_value()) {
@@ -147,6 +150,13 @@ NotificationTypeDetailed GetNotificationTypeForCrosSystemPriority(
       warning_level = message_center::SystemNotificationWarningLevel::WARNING;
     } else if (accent_color.value() ==
                kSystemNotificationColorCriticalWarning) {
+      warning_level =
+          message_center::SystemNotificationWarningLevel::CRITICAL_WARNING;
+    }
+  } else if (accent_color_id.has_value()) {
+    if (accent_color_id.value() == cros_tokens::kCrosSysWarning) {
+      warning_level = message_center::SystemNotificationWarningLevel::WARNING;
+    } else if (accent_color_id.value() == cros_tokens::kCrosSysError) {
       warning_level =
           message_center::SystemNotificationWarningLevel::CRITICAL_WARNING;
     }

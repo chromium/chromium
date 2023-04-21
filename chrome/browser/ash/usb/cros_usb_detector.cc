@@ -38,12 +38,14 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/device_service.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace ash {
 
@@ -283,7 +285,12 @@ void ShowNotificationForDevice(const std::string& guid,
   std::vector<std::u16string> vm_names_in_notification;
   rich_notification_data.small_image = gfx::Image(
       gfx::CreateVectorIcon(vector_icons::kUsbIcon, 64, gfx::kGoogleBlue800));
-  rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
+
+  if (chromeos::features::IsJellyEnabled()) {
+    rich_notification_data.accent_color_id = cros_tokens::kCrosSysOnPrimary;
+  } else {
+    rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
+  }
 
   if (crostini::CrostiniFeatures::Get()->IsEnabled(profile())) {
     vm_name = l10n_util::GetStringUTF16(IDS_CROSTINI_LINUX);

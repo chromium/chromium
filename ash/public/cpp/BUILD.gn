@@ -429,6 +429,7 @@ component("cpp") {
     "//ui/aura",
     "//ui/base",
     "//ui/chromeos/strings",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/compositor_extra",
     "//ui/display",
     "//ui/events",

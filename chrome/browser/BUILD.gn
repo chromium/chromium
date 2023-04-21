@@ -5587,6 +5587,7 @@ static_library("browser") {
       "//components/webapk:proto",
       "//services/device/public/cpp/geolocation",
       "//third_party/smhasher:murmurhash2",
+      "//ui/chromeos/styles:cros_tokens_color_mappings",
       "//ui/wm/public",
     ]
 

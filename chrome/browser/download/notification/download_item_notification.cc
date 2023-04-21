@@ -41,6 +41,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
@@ -63,6 +64,7 @@
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/text/bytes_formatting.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
@@ -605,7 +607,24 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
         NOTREACHED();
     }
   }
-  notification_->set_accent_color(GetNotificationIconColor());
+  SkColor notification_color = GetNotificationIconColor();
+  if (chromeos::features::IsJellyEnabled()) {
+    ui::ColorId color_id = cros_tokens::kCrosSysOnPrimary;
+    switch (notification_color) {
+      case ash::kSystemNotificationColorNormal:
+        color_id = cros_tokens::kCrosSysOnPrimary;
+        break;
+      case ash::kSystemNotificationColorWarning:
+        color_id = cros_tokens::kCrosSysWarning;
+        break;
+      case ash::kSystemNotificationColorCriticalWarning:
+        color_id = cros_tokens::kCrosSysError;
+        break;
+    }
+    notification_->set_accent_color_id(color_id);
+  } else {
+    notification_->set_accent_color(notification_color);
+  }
 
   std::vector<message_center::ButtonInfo> notification_actions;
   std::unique_ptr<std::vector<DownloadCommands::Command>> actions(

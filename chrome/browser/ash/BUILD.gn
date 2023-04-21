@@ -3695,6 +3695,7 @@ source_set("ash") {
     "//ui/base/ime/ash",
     "//ui/base/metadata",
     "//ui/chromeos/styles:cros_styles_views",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/compositor",
     "//ui/display",
     "//ui/display/manager",

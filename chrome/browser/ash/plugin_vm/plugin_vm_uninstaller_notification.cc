@@ -14,7 +14,9 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 
 namespace {
@@ -40,7 +42,11 @@ PluginVmUninstallerNotification::PluginVmUninstallerNotification(
     : profile_(profile) {
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.vector_small_image = &kNotificationPluginVmIcon;
-  rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
+  if (chromeos::features::IsJellyEnabled()) {
+    rich_notification_data.accent_color_id = cros_tokens::kCrosSysOnPrimary;
+  } else {
+    rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
+  }
   rich_notification_data.pinned = true;
   rich_notification_data.never_timeout = true;
 
@@ -81,8 +87,12 @@ void PluginVmUninstallerNotification::SetFailed(FailedReason reason) {
   notification_->set_message(message);
   notification_->set_pinned(false);
   notification_->set_never_timeout(false);
-  notification_->set_accent_color(ash::kSystemNotificationColorCriticalWarning);
-
+  if (chromeos::features::IsJellyEnabled()) {
+    notification_->set_accent_color_id(cros_tokens::kCrosSysError);
+  } else {
+    notification_->set_accent_color(
+        ash::kSystemNotificationColorCriticalWarning);
+  }
   ForceRedisplay();
 }
 
