@@ -327,6 +327,23 @@ Go to "Preferences > Components" tab in Xcode to install other simulator images
 (this is the location the setting is in Xcode 9.2; it may be different in other
 version of the tool).
 
+### Remote debugging with DevTools (on Blink for iOS)
+
+Developers are able to remotely use DevTools in a host machine (e.g. Mac) and
+inspect `content_shell` for development.
+
+On the simulator, one just needs to pass the `--remote-debugging-port=9222`
+argument for `content_shell` and in the host machine access it via
+`chrome://inspect`. It is possible to change the default port listening (9222)
+and configure another one via the  "Configure…" button and then "Target
+discovery settings" dialog.
+
+To use DevTools in the remote device it is necessary to also pass the remote
+debugging address argument to `content-shell` so any address could bind for
+debugging: ` --remote-debugging-address=0.0.0.0 --remote-debugging-port=9222`.
+Then in the host machine one needs to configure the IP address of the device in
+the "Target discovery settings" dialog e.g. `192.168.0.102:9222`.
+
 ## Update your checkout
 
 To update an existing checkout, you can run
