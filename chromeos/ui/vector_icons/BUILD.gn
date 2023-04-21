@@ -55,9 +55,11 @@ aggregate_vector_icons("chromeos_ui_vector_icons") {
     "window_control_back.icon",
     "window_control_bottom_snapped.icon",
     "window_control_dezoom.icon",
+    "window_control_float.icon",
     "window_control_left_snapped.icon",
     "window_control_right_snapped.icon",
     "window_control_top_snapped.icon",
+    "window_control_unfloat.icon",
     "window_control_zoom.icon",
   ]
 }
