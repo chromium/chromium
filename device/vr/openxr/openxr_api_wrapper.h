@@ -16,6 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "device/vr/openxr/openxr_anchor_manager.h"
+#include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_scene_understanding_manager.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
@@ -24,7 +25,6 @@
 #include "device/vr/vr_export.h"
 #include "device/vr/windows/compositor_base.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
-#include "third_party/openxr/src/include/openxr/openxr_platform.h"
 
 namespace gfx {
 class Size;

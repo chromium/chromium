@@ -15,4 +15,19 @@ include_rules = [
   "+ui/display",
   "+ui/gfx",
   "+ui/gl/gl_bindings.h",
+  # The third_party version of openxr_platform depends on certain platform
+  # headers being included before it, so we disallow direct dependency on it.
+  # Places needing to take a dependency on code in openxr_platform.h should
+  # include "device/vr/openxr/openxr_platform.h", which ensures that these
+  # platform dependencies are included without forcing modifications on all
+  # other files that would like to include it.
+  "-third_party/openxr/src/include/openxr/openxr_platform.h"
 ]
+
+specific_include_rules = {
+  # Override the earlier restriction on third_party openxr_platform for the
+  # wrapper class.
+  "device/vr/openxr/openxr_platform\.h" : [
+    "+third_party/openxr/src/include/openxr/openxr_platform.h"
+  ]
+}

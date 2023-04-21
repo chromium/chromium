@@ -9,9 +9,9 @@
 
 #include "base/containers/contains.h"
 #include "device/vr/openxr/openxr_defs.h"
+#include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
-#include "third_party/openxr/src/include/openxr/openxr_platform.h"
 #include "third_party/openxr/src/src/common/hex_and_handles.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/transform.h"

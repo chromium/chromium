@@ -10,8 +10,8 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "device/vr/openxr/openxr_platform.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
-#include "third_party/openxr/src/include/openxr/openxr_platform.h"
 
 namespace device {
 struct OpenXrExtensionMethods {

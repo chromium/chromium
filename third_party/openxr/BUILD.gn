@@ -6,6 +6,15 @@ import("//device/vr/buildflags/buildflags.gni")
 
 if (enable_openxr) {
   source_set("openxr_headers") {
+    # This visibility is done to help enforce the dependency that
+    # openxr_platform.h requires platform headers to be included before it.
+    # If you'd like to expand this visibility, you will need to make similar
+    # DEPS rules for it as are present in the below locations.
+    visibility = [
+      "//chrome/browser/vr/*",
+      "//device/vr/*",
+    ]
+
     sources = [
       "src/include/openxr/openxr.h",
       "src/include/openxr/openxr_platform.h",
@@ -17,6 +26,14 @@ if (enable_openxr) {
     public_configs = [ ":config" ]
   }
   source_set("openxr") {
+    # This visibility is done to help enforce the dependency that
+    # openxr_platform.h requires platform headers to be included before it.
+    # If you'd like to expand this visibility, you will need to make similar
+    # DEPS rules for it as are present in the below locations.
+    visibility = [
+      "//chrome/browser/vr/*",
+      "//device/vr/*",
+    ]
     sources = [
       "src/include/openxr/openxr.h",
       "src/include/openxr/openxr_platform.h",

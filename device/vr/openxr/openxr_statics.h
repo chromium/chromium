@@ -9,10 +9,10 @@
 
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
+#include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/vr_export.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
-#include "third_party/openxr/src/include/openxr/openxr_platform.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
