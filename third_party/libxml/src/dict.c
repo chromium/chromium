@@ -431,7 +431,8 @@ static unsigned long
 xmlDictComputeFastKey(const xmlChar *name, int namelen, int seed) {
     unsigned long value = seed;
 
-    if (name == NULL) return(0);
+    if ((name == NULL) || (namelen <= 0))
+        return(value);
     value += *name;
     value <<= 5;
     if (namelen > 10) {
