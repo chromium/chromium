@@ -60,6 +60,10 @@ NSString* const kInactiveTabsUserEducationShownOnce =
 @property(nonatomic, strong) NSLayoutConstraint* hiddenConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* visibleConstraint;
 
+// Whether the view controller is shown. It is true inbetween calls to `-show`
+// and `-hide`.
+@property(nonatomic, getter=isShowing) BOOL showing;
+
 // The potential user education coordinator shown the first time Inactive Tabs
 // are displayed.
 @property(nonatomic, strong)
@@ -129,6 +133,11 @@ NSString* const kInactiveTabsUserEducationShownOnce =
 }
 
 - (void)show {
+  if (self.showing) {
+    return;
+  }
+  self.showing = YES;
+
   // Add the view controller to the hierarchy.
   UIView* baseView = self.baseViewController.view;
   UIView* view = self.viewController.view;
@@ -162,6 +171,11 @@ NSString* const kInactiveTabsUserEducationShownOnce =
 }
 
 - (void)hide {
+  if (!self.showing) {
+    return;
+  }
+  self.showing = NO;
+
   [self.userEducationCoordinator stop];
   self.userEducationCoordinator = nil;
   [self closeSettings];
@@ -225,7 +239,7 @@ NSString* const kInactiveTabsUserEducationShownOnce =
 - (void)gridViewController:(GridViewController*)gridViewController
         didChangeItemCount:(NSUInteger)count {
   // Close the Inactive Tabs view when closing the last inactive tab.
-  if (count == 0) {
+  if (self.showing && count == 0) {
     [_delegate inactiveTabsCoordinatorDidFinish:self];
   }
 }
