@@ -53,6 +53,17 @@ std::string GetCardIssuerIdSuffix(const std::string& card_issuer_id) {
   return std::string();
 }
 
+// Returns true when the card has rich card art, excluding any static card art
+// image.
+bool HasRichCardArtImageFromMetadata(const CreditCard& card) {
+  return card.card_art_url().is_valid() &&
+         card.card_art_url().spec() !=
+             (base::FeatureList::IsEnabled(
+                  features::kAutofillEnableNewCardArtAndNetworkImages)
+                  ? kCapitalOneLargeCardArtUrl
+                  : kCapitalOneCardArtUrl);
+}
+
 }  // namespace
 
 CardMetadataLoggingContext::CardMetadataLoggingContext() = default;
@@ -65,48 +76,39 @@ CardMetadataLoggingContext::~CardMetadataLoggingContext() = default;
 CardMetadataLoggingContext GetMetadataLoggingContext(
     const std::vector<CreditCard>& cards) {
   CardMetadataLoggingContext metadata_logging_context;
-  bool card_product_description_available = false;
-  bool card_art_image_available = false;
-  bool virtual_card_with_card_art_image = false;
 
   for (const CreditCard& card : cards) {
     if (card.issuer_id().empty()) {
       continue;
     }
 
+    // If there is a product description, denote in the
+    // `metadata_logging_context` that we have shown at least one product
+    // description so we can log it later.
     if (!card.product_description().empty()) {
-      card_product_description_available = true;
+      metadata_logging_context.card_product_description_shown =
+          base::FeatureList::IsEnabled(
+              features::kAutofillEnableCardProductName);
     }
 
-    if (card.card_art_url().is_valid()) {
-      card_art_image_available = true;
-      if (card.virtual_card_enrollment_state() ==
-          CreditCard::VirtualCardEnrollmentState::ENROLLED) {
-        virtual_card_with_card_art_image = true;
-      }
+    // If there is rich card art we received from the metadata for this card,
+    // denote in the `metadata_logging_context` that we have shown an enriched
+    // card art so we can log it later.
+    if (HasRichCardArtImageFromMetadata(card)) {
+      metadata_logging_context.card_art_image_shown =
+          base::FeatureList::IsEnabled(features::kAutofillEnableCardArtImage);
     }
 
-    bool card_has_metadata =
-        !card.product_description().empty() || card.card_art_url().is_valid();
+    bool card_has_metadata = !card.product_description().empty() ||
+                             HasRichCardArtImageFromMetadata(card);
     metadata_logging_context
         .issuer_to_metadata_availability[card.issuer_id()] |= card_has_metadata;
+    // If there is at least one card having product description or rich card
+    // art, denote in the `metadata_logging_context`.
+    if (card_has_metadata) {
+      metadata_logging_context.card_metadata_available = true;
+    }
   }
-
-  metadata_logging_context.card_metadata_available =
-      card_product_description_available || card_art_image_available;
-
-  metadata_logging_context.card_product_description_shown =
-      card_product_description_available &&
-      base::FeatureList::IsEnabled(features::kAutofillEnableCardProductName);
-
-  // `card_art_image_shown` is set to true if art image is available and
-  // 1. the experiment is enabled or
-  // 2. the card with art image has a linked virtual card (for virtual cards,
-  // the card art image is always shown if available).
-  metadata_logging_context.card_art_image_shown =
-      card_art_image_available &&
-      (base::FeatureList::IsEnabled(features::kAutofillEnableCardArtImage) ||
-       virtual_card_with_card_art_image);
 
   return metadata_logging_context;
 }

@@ -6,6 +6,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/test_autofill_tick_clock.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,18 +24,19 @@ constexpr char kCardGuid[] = "10000000-0000-0000-0000-000000000001";
 // Params:
 // 1. Whether card issuer is available.
 // 2. Whether card metadata is available.
+// 3. Whether card has a static card art image (instead of the rich card art
+// from metadata).
 class CardMetadataFormEventMetricsTest
     : public AutofillMetricsBaseTest,
       public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
-  CardMetadataFormEventMetricsTest()
-      : card_issuer_available_(std::get<0>(GetParam())),
-        card_metadata_available_(std::get<1>(GetParam())) {}
+  CardMetadataFormEventMetricsTest() = default;
   ~CardMetadataFormEventMetricsTest() override = default;
 
-  bool card_issuer_available() const { return card_issuer_available_; }
-  bool card_metadata_available() const { return card_metadata_available_; }
+  bool card_issuer_available() const { return std::get<0>(GetParam()); }
+  bool card_metadata_available() const { return std::get<1>(GetParam()); }
+  bool card_has_static_art_image() const { return std::get<2>(GetParam()); }
 
   FormData form() { return form_; }
 
@@ -51,12 +53,18 @@ class CardMetadataFormEventMetricsTest
                            .action = ""});
 
     // Add a masked server card.
-    CreditCard card = test::GetRandomCreditCard(CreditCard::MASKED_SERVER_CARD);
+    CreditCard card = test::GetMaskedServerCard();
     card.set_guid(kCardGuid);
     if (card_issuer_available()) {
-      card.set_issuer_id("amex");
+      card.set_issuer_id(kCapitalOneCardIssuerId);
     }
-    // Set metadata to card.
+    if (card_has_static_art_image()) {
+      card.set_card_art_url(GURL(kCapitalOneCardArtUrl));
+    }
+    // Set metadata to card. The `card_art_url` will be overriden with rich card
+    // art url regarless of `card_has_static_art_image()` in the test set-up,
+    // because rich card art, if available, is preferred by Payments server and
+    // will be sent to the client .
     if (card_metadata_available()) {
       card.set_product_description(u"card_description");
       card.set_card_art_url(GURL("https://www.example.com/cardart.png"));
@@ -68,14 +76,14 @@ class CardMetadataFormEventMetricsTest
   void TearDown() override { TearDownHelper(); }
 
  private:
-  const bool card_issuer_available_;
-  const bool card_metadata_available_;
   FormData form_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          CardMetadataFormEventMetricsTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
 
 // Test metadata shown metrics are correctly logged.
 TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
@@ -103,10 +111,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
                  !card_issuer_available() || !card_metadata_available())));
 
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.Amex.ShownWithMetadata", card_metadata_available(),
-      card_issuer_available() ? 1 : 0);
+      "Autofill.CreditCard.CapitalOne.ShownWithMetadata",
+      card_metadata_available(), card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.Amex.ShownWithMetadataOnce",
+      "Autofill.CreditCard.CapitalOne.ShownWithMetadataOnce",
       card_metadata_available(), card_issuer_available() ? 1 : 0);
 
   // Show the popup again.
@@ -114,10 +122,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogShownMetrics) {
   autofill_manager().DidShowSuggestions(/*has_autofill_suggestions=*/true,
                                         form(), form().fields.back());
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.Amex.ShownWithMetadata", card_metadata_available(),
-      card_issuer_available() ? 2 : 0);
+      "Autofill.CreditCard.CapitalOne.ShownWithMetadata",
+      card_metadata_available(), card_issuer_available() ? 2 : 0);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.Amex.ShownWithMetadataOnce",
+      "Autofill.CreditCard.CapitalOne.ShownWithMetadataOnce",
       card_metadata_available(), card_issuer_available() ? 1 : 0);
 }
 
@@ -150,10 +158,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
           Bucket(FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED,
                  !card_issuer_available() || !card_metadata_available())));
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.Amex.SelectedWithMetadata",
+      "Autofill.CreditCard.CapitalOne.SelectedWithMetadata",
       card_metadata_available(), card_issuer_available() ? 1 : 0);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.Amex.SelectedWithMetadataOnce",
+      "Autofill.CreditCard.CapitalOne.SelectedWithMetadataOnce",
       card_metadata_available(), card_issuer_available() ? 1 : 0);
 
   // Select the suggestion again.
@@ -162,10 +170,10 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
       MakeFrontendId({.credit_card_id = kCardGuid}),
       AutofillTriggerSource::kPopup);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.Amex.SelectedWithMetadata",
+      "Autofill.CreditCard.CapitalOne.SelectedWithMetadata",
       card_metadata_available(), card_issuer_available() ? 2 : 0);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.CreditCard.Amex.SelectedWithMetadataOnce",
+      "Autofill.CreditCard.CapitalOne.SelectedWithMetadataOnce",
       card_metadata_available(), card_issuer_available() ? 1 : 0);
 }
 
@@ -179,27 +187,22 @@ class CardMetadataLatencyMetricsTest
       public testing::Test,
       public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
  public:
-  CardMetadataLatencyMetricsTest()
-      : card_product_name_enabled_(std::get<0>(GetParam())),
-        card_art_image_enabled_(std::get<1>(GetParam())),
-        card_metadata_available_(std::get<2>(GetParam())),
-        card_has_linked_virtual_card_(std::get<3>(GetParam())) {
-    feature_list_card_product_name_.InitWithFeatureState(
-        features::kAutofillEnableCardProductName, card_product_name_enabled_);
-    feature_list_card_art_image_.InitWithFeatureState(
-        features::kAutofillEnableCardArtImage, card_art_image_enabled_);
-  }
+  CardMetadataLatencyMetricsTest() = default;
   ~CardMetadataLatencyMetricsTest() override = default;
 
-  bool card_product_name_enabled() { return card_product_name_enabled_; }
-  bool card_art_image_enabled() { return card_art_image_enabled_; }
-  bool card_metadata_available() { return card_metadata_available_; }
-  bool card_has_linked_virtual_card() { return card_has_linked_virtual_card_; }
+  bool card_product_name_enabled() { return std::get<0>(GetParam()); }
+  bool card_art_image_enabled() { return std::get<1>(GetParam()); }
+  bool card_metadata_available() { return std::get<2>(GetParam()); }
+  bool card_has_static_art_image() { return std::get<3>(GetParam()); }
 
   FormData form() { return form_; }
 
   void SetUp() override {
     SetUpHelper();
+    feature_list_card_product_name_.InitWithFeatureState(
+        features::kAutofillEnableCardProductName, card_product_name_enabled());
+    feature_list_card_art_image_.InitWithFeatureState(
+        features::kAutofillEnableCardArtImage, card_art_image_enabled());
     // Set up the form data. Reset form action to skip the IsFormMixedContent
     // check.
     form_ =
@@ -212,13 +215,14 @@ class CardMetadataLatencyMetricsTest
 
     CreditCard masked_server_card = test::GetMaskedServerCard();
     masked_server_card.set_guid(kTestMaskedCardId);
-    masked_server_card.set_issuer_id("capitalone");
-    if (card_has_linked_virtual_card()) {
-      masked_server_card.set_virtual_card_enrollment_state(
-          CreditCard::VirtualCardEnrollmentState::ENROLLED);
-      masked_server_card.set_card_art_url(
-          GURL("https://www.example.com/cardart.png"));
+    masked_server_card.set_issuer_id(kCapitalOneCardIssuerId);
+    if (card_has_static_art_image()) {
+      masked_server_card.set_card_art_url(GURL(kCapitalOneCardArtUrl));
     }
+    // If metadata is available, the `card_art_url` will be overriden with rich
+    // card art url regarless of `card_has_static_art_image()` in the test
+    // set-up, because rich card art, if available, is preferred by Payments
+    // server and will be sent to the client.
     if (card_metadata_available()) {
       masked_server_card.set_product_description(u"card_description");
       masked_server_card.set_card_art_url(
@@ -231,10 +235,6 @@ class CardMetadataLatencyMetricsTest
   void TearDown() override { TearDownHelper(); }
 
  private:
-  const bool card_product_name_enabled_;
-  const bool card_art_image_enabled_;
-  const bool card_metadata_available_;
-  const bool card_has_linked_virtual_card_;
   base::test::ScopedFeatureList feature_list_card_product_name_;
   base::test::ScopedFeatureList feature_list_card_art_image_;
   FormData form_;
@@ -274,20 +274,17 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
   // Card art image is shown when 1. card_has_linked_virtual_card() or
   // 2. card_metadata_available() and card_art_image_enabled() both return true.
   if (card_metadata_available()) {
-    if (card_product_name_enabled() &&
-        (card_art_image_enabled() || card_has_linked_virtual_card())) {
+    if (card_product_name_enabled() && card_art_image_enabled()) {
       latency_histogram_suffix =
           autofill_metrics::kProductNameAndArtImageBothShownSuffix;
     } else if (card_product_name_enabled()) {
       latency_histogram_suffix = autofill_metrics::kProductNameShownOnlySuffix;
-    } else if (card_art_image_enabled() || card_has_linked_virtual_card()) {
+    } else if (card_art_image_enabled()) {
       latency_histogram_suffix = autofill_metrics::kArtImageShownOnlySuffix;
     } else {
       latency_histogram_suffix =
           autofill_metrics::kProductNameAndArtImageNotShownSuffix;
     }
-  } else if (card_has_linked_virtual_card()) {
-    latency_histogram_suffix = autofill_metrics::kArtImageShownOnlySuffix;
   } else {
     latency_histogram_suffix =
         autofill_metrics::kProductNameAndArtImageNotShownSuffix;

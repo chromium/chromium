@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/image_fetcher/core/cached_image_fetcher.h"
@@ -198,18 +199,15 @@ void AutofillImageFetcherImpl::FetchImageForURL(
 
   GURL url;
   // TODO(crbug.com/1313616): There is only one gstatic card art image we are
-  // using currently. Remove this logic and append FIFE URL suffix by default
-  // when the static image is deprecated.
+  // using currently, that returns as metadata when it isn't. Remove this logic
+  // and append FIFE URL suffix by default when the static image is deprecated,
+  // and we send rich card art instead.
   // Check if the image is stored in Static Content Service. If not append the
   // FIFE URL option to fetch the correct image.
-  if (card_art_url ==
-      GURL(
-          "https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png")) {
+  if (card_art_url.spec() == kCapitalOneCardArtUrl) {
     url = base::FeatureList::IsEnabled(
               features::kAutofillEnableNewCardArtAndNetworkImages)
-              ? GURL(
-                    "https://www.gstatic.com/autofill/virtualcard/icon/"
-                    "capitalone_40_24.png")
+              ? GURL(kCapitalOneLargeCardArtUrl)
               : card_art_url;
   } else {
     // A FIFE image fetching param suffix is appended to the URL. The image

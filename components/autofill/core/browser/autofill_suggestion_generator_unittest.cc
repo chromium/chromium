@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -1060,31 +1061,22 @@ class AutofillSuggestionGeneratorTestForMetadata
     : public AutofillSuggestionGeneratorTest,
       public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
-  AutofillSuggestionGeneratorTestForMetadata()
-      : card_product_description_enabled_(std::get<0>(GetParam())),
-        card_art_image_enabled_(std::get<1>(GetParam())),
-        card_has_linked_virtual_card_(std::get<2>(GetParam())) {
+  AutofillSuggestionGeneratorTestForMetadata() {
     feature_list_card_product_description_.InitWithFeatureState(
-        features::kAutofillEnableCardProductName,
-        card_product_description_enabled_);
+        features::kAutofillEnableCardProductName, std::get<0>(GetParam()));
     feature_list_card_art_image_.InitWithFeatureState(
-        features::kAutofillEnableCardArtImage, card_art_image_enabled_);
+        features::kAutofillEnableCardArtImage, std::get<1>(GetParam()));
   }
 
   ~AutofillSuggestionGeneratorTestForMetadata() override = default;
 
   bool card_product_description_enabled() const {
-    return card_product_description_enabled_;
+    return std::get<0>(GetParam());
   }
-  bool card_art_image_enabled() const { return card_art_image_enabled_; }
-  bool card_has_linked_virtual_card() const {
-    return card_has_linked_virtual_card_;
-  }
+  bool card_art_image_enabled() const { return std::get<1>(GetParam()); }
+  bool card_has_static_art_image() const { return std::get<2>(GetParam()); }
 
  private:
-  const bool card_product_description_enabled_;
-  const bool card_art_image_enabled_;
-  const bool card_has_linked_virtual_card_;
   base::test::ScopedFeatureList feature_list_card_product_description_;
   base::test::ScopedFeatureList feature_list_card_art_image_;
 };
@@ -1198,10 +1190,9 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
   {
     // Create one server card with no metadata.
     CreditCard server_card = CreateServerCard();
-    server_card.set_issuer_id("amex");
-    if (card_has_linked_virtual_card()) {
-      server_card.set_virtual_card_enrollment_state(
-          CreditCard::VirtualCardEnrollmentState::ENROLLED);
+    server_card.set_issuer_id(kCapitalOneCardIssuerId);
+    if (card_has_static_art_image()) {
+      server_card.set_card_art_url(GURL(kCapitalOneCardArtUrl));
     }
     personal_data()->AddServerCreditCard(server_card);
 
@@ -1217,10 +1208,10 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
     EXPECT_FALSE(metadata_logging_context.card_product_description_shown);
     EXPECT_FALSE(metadata_logging_context.card_art_image_shown);
 
-    // Verify that a record is added that an American Express card suggestion
+    // Verify that a record is added that a Capital One card suggestion
     // was generated, and it did not have metadata.
     base::flat_map<std::string, bool> expected_issuer_to_metadata_availability =
-        {{"amex", false}};
+        {{kCapitalOneCardIssuerId, false}};
     EXPECT_EQ(metadata_logging_context.issuer_to_metadata_availability,
               expected_issuer_to_metadata_availability);
   }
@@ -1230,14 +1221,10 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
   {
     // Create a server card with card product description & card art image.
     CreditCard server_card_with_metadata = CreateServerCard();
-    server_card_with_metadata.set_issuer_id("amex");
+    server_card_with_metadata.set_issuer_id(kCapitalOneCardIssuerId);
     server_card_with_metadata.set_product_description(u"product_description");
     server_card_with_metadata.set_card_art_url(
         GURL("https://www.example.com/card-art.png"));
-    if (card_has_linked_virtual_card()) {
-      server_card_with_metadata.set_virtual_card_enrollment_state(
-          CreditCard::VirtualCardEnrollmentState::ENROLLED);
-    }
     personal_data()->AddServerCreditCard(server_card_with_metadata);
 
     bool should_display_gpay_logo;
@@ -1252,12 +1239,12 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
     EXPECT_EQ(metadata_logging_context.card_product_description_shown,
               card_product_description_enabled());
     EXPECT_EQ(metadata_logging_context.card_art_image_shown,
-              card_art_image_enabled() || card_has_linked_virtual_card());
+              card_art_image_enabled());
 
-    // Verify that a record is added that an American Express card suggestion
+    // Verify that a record is added that a Capital One card suggestion
     // was generated, and it had metadata.
     base::flat_map<std::string, bool> expected_issuer_to_metadata_availability =
-        {{"amex", true}};
+        {{kCapitalOneCardIssuerId, true}};
     EXPECT_EQ(metadata_logging_context.issuer_to_metadata_availability,
               expected_issuer_to_metadata_availability);
   }
