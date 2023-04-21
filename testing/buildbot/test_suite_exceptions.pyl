@@ -1498,33 +1498,6 @@
           ],
         },
       },
-      'android-12-x64-rel': {
-        'args': [
-          '--avd-config=../../tools/android/avd/proto/generic_playstore_android31.textpb',
-        ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              # TODO(crbug.com/1434504): Move this to jammy.
-              'os': 'Ubuntu-18.04',
-            },
-          ],
-          # soft affinity so that bots with caches will be picked first
-          'optional_dimensions': {
-            '60': [
-              {
-                'caches': 'generic_playstore_android31',
-              }
-            ],
-          },
-          'named_caches': [
-            {
-              'name': 'generic_playstore_android31',
-              'path': '.android_emulator/generic_playstore_android31',
-            },
-          ],
-        },
-      },
       'android-pie-x86-rel': {
         'args': [
           '--avd-config=../../tools/android/avd/proto/generic_playstore_android28.textpb',
