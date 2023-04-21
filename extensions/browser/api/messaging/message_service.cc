@@ -320,17 +320,14 @@ void MessageService::OpenChannelToExtension(
     return;
   }
 
-  bool is_web_connection =
-      source_endpoint.type == MessagingEndpoint::Type::kWebPage;
-  bool is_external_extension_connection =
-      (source_endpoint.type == MessagingEndpoint::Type::kContentScript ||
-       source_endpoint.type == MessagingEndpoint::Type::kExtension) &&
-      source_endpoint.extension_id != target_extension_id;
+  MessagingEndpoint::Relationship relationship =
+      MessagingEndpoint::GetRelationship(source_endpoint, target_extension_id);
 
-  if (is_web_connection || is_external_extension_connection) {
-    // It's an external connection. Check the externally_connectable manifest
-    // key if it's present. If it's not, we allow connection from any extension
-    // but not webpages.
+  if (relationship != MessagingEndpoint::Relationship::kInternal &&
+      relationship != MessagingEndpoint::Relationship::kExternalNativeApp) {
+    // It's an external connection (other than a native app). Check the
+    // externally_connectable manifest key if it's present. If it's not, we
+    // allow connection from any extension but not webpages.
     // TODO(devlin): We should just use ExternallyConnectableInfo::Get() here.
     // We don't currently because we don't synthesize externally-connectable
     // information (so that it's always present, even for extensions that don't
@@ -342,7 +339,7 @@ void MessageService::OpenChannelToExtension(
     bool is_externally_connectable = false;
 
     if (externally_connectable) {
-      if (is_external_extension_connection) {
+      if (relationship == MessagingEndpoint::Relationship::kExternalExtension) {
         DCHECK(source_endpoint.extension_id);
         // The source was another extension or a content script. Check that the
         // extension ID matches.
@@ -350,7 +347,8 @@ void MessageService::OpenChannelToExtension(
             externally_connectable->IdCanConnect(*source_endpoint.extension_id);
       } else {
         DCHECK(source_render_frame_host);
-        DCHECK(is_web_connection);
+        DCHECK_EQ(MessagingEndpoint::Relationship::kExternalWebPage,
+                  relationship);
 
         // Check that the web page URL matches.
         is_externally_connectable = externally_connectable->matches.MatchesURL(
@@ -358,7 +356,8 @@ void MessageService::OpenChannelToExtension(
       }
     } else {
       // Default behaviour. Any extension or content script, no webpages.
-      is_externally_connectable = is_external_extension_connection;
+      is_externally_connectable =
+          relationship == MessagingEndpoint::Relationship::kExternalExtension;
     }
 
     if (!is_externally_connectable) {
@@ -421,7 +420,8 @@ void MessageService::OpenChannelToExtension(
     // - Only for extensions that can't normally be enabled in incognito, since
     //   that surface (e.g. chrome://extensions) should be the only one for
     //   enabling in incognito. In practice this means platform apps only.
-    if (!is_web_connection || IncognitoInfo::IsSplitMode(target_extension) ||
+    if (relationship != MessagingEndpoint::Relationship::kExternalWebPage ||
+        IncognitoInfo::IsSplitMode(target_extension) ||
         util::CanBeIncognitoEnabled(target_extension)) {
       OnOpenChannelAllowed(std::move(params), false);
       return;
@@ -702,14 +702,19 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
   // built using the connect framework (see messaging.js).
   if (target_extension) {
     events::HistogramValue histogram_value = events::UNKNOWN;
-    // TODO(devlin): We should isolate these external checks; they happen both
-    // here and in `OpenChannelToExtension()`.
-    bool is_external =
-        params->source_endpoint.type == MessagingEndpoint::Type::kWebPage ||
-        ((params->source_endpoint.type == MessagingEndpoint::Type::kExtension ||
-          params->source_endpoint.type ==
-              MessagingEndpoint::Type::kContentScript) &&
-         params->source_endpoint.extension_id != params->target_extension_id);
+    MessagingEndpoint::Relationship relationship =
+        MessagingEndpoint::GetRelationship(params->source_endpoint,
+                                           params->target_extension_id);
+    bool is_external = false;
+    switch (relationship) {
+      case MessagingEndpoint::Relationship::kInternal:
+        break;
+      case MessagingEndpoint::Relationship::kExternalExtension:
+      case MessagingEndpoint::Relationship::kExternalWebPage:
+      case MessagingEndpoint::Relationship::kExternalNativeApp:
+        is_external = true;
+    }
+
     if (params->source_endpoint.type == MessagingEndpoint::Type::kNativeApp) {
       histogram_value = events::RUNTIME_ON_CONNECT_NATIVE;
     } else if (params->channel_name == "chrome.runtime.onRequest") {

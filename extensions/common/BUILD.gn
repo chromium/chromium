@@ -559,6 +559,7 @@ source_set("unit_tests") {
     "api/commands/commands_manifest_unittest.cc",
     "api/declarative/declarative_manifest_unittest.cc",
     "api/declarative_net_request/dnr_manifest_unittest.cc",
+    "api/messaging/messaging_endpoint_unittest.cc",
     "api/printer_provider/usb_printer_manifest_unittest.cc",
     "api/sockets/sockets_manifest_permission_unittest.cc",
     "command_unittest.cc",

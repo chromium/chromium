@@ -103,6 +103,24 @@ MessagingEndpoint MessagingEndpoint::ForNativeApp(std::string native_app_name) {
   return messaging_endpoint;
 }
 
+// static
+MessagingEndpoint::Relationship MessagingEndpoint::GetRelationship(
+    const MessagingEndpoint& source_endpoint,
+    const std::string& target_id) {
+  switch (source_endpoint.type) {
+    case Type::kExtension:
+    case Type::kContentScript:
+      CHECK(source_endpoint.extension_id);
+      return source_endpoint.extension_id == target_id
+                 ? Relationship::kInternal
+                 : Relationship::kExternalExtension;
+    case Type::kWebPage:
+      return Relationship::kExternalWebPage;
+    case Type::kNativeApp:
+      return Relationship::kExternalNativeApp;
+  }
+}
+
 MessagingEndpoint::MessagingEndpoint() = default;
 
 MessagingEndpoint::MessagingEndpoint(const MessagingEndpoint&) = default;

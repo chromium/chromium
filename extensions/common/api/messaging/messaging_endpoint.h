@@ -30,10 +30,28 @@ struct MessagingEndpoint {
     kLast = kNativeApp,
   };
 
+  // The relationship between two messaging endpoints.
+  enum class Relationship {
+    // The same extension, either between trusted contexts or between a trusted
+    // context and a content script.
+    kInternal,
+    // An external extension connection.
+    kExternalExtension,
+    // An external web page connection.
+    kExternalWebPage,
+    // An external native app.
+    kExternalNativeApp,
+  };
+
+  // Creation methods for different endpoint types.
   static MessagingEndpoint ForExtension(ExtensionId extension_id);
   static MessagingEndpoint ForContentScript(ExtensionId extension_id);
   static MessagingEndpoint ForWebPage();
   static MessagingEndpoint ForNativeApp(std::string native_app_name);
+
+  // Returns the `Relationship` between two endpoints.
+  static Relationship GetRelationship(const MessagingEndpoint& source_endpoint,
+                                      const std::string& target_id);
 
   MessagingEndpoint();
   MessagingEndpoint(const MessagingEndpoint&);

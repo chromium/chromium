@@ -302,25 +302,24 @@ void NativeRendererMessagingService::DispatchOnConnectToScriptContext(
 
   // First, determine the event we'll use to connect.
   std::string target_extension_id = script_context->GetExtensionID();
-  // TODO(devlin): Isolate `is_external` logic. It's duplicated in
-  // messaging_service.cc.
-  bool is_external =
-      info.source_endpoint.type == MessagingEndpoint::Type::kWebPage ||
-      ((info.source_endpoint.type == MessagingEndpoint::Type::kExtension ||
-        info.source_endpoint.type == MessagingEndpoint::Type::kContentScript) &&
-       info.source_endpoint.extension_id != target_extension_id);
+  MessagingEndpoint::Relationship relationship =
+      MessagingEndpoint::GetRelationship(info.source_endpoint,
+                                         target_extension_id);
+  bool is_external_event =
+      relationship == MessagingEndpoint::Relationship::kExternalExtension ||
+      relationship == MessagingEndpoint::Relationship::kExternalWebPage;
   std::string event_name;
   if (info.source_endpoint.type == MessagingEndpoint::Type::kNativeApp) {
     event_name = messaging_util::kOnConnectNativeEvent;
   } else if (channel_name == messaging_util::kSendRequestChannel) {
-    event_name = is_external ? messaging_util::kOnRequestExternalEvent
-                             : messaging_util::kOnRequestEvent;
+    event_name = is_external_event ? messaging_util::kOnRequestExternalEvent
+                                   : messaging_util::kOnRequestEvent;
   } else if (channel_name == messaging_util::kSendMessageChannel) {
-    event_name = is_external ? messaging_util::kOnMessageExternalEvent
-                             : messaging_util::kOnMessageEvent;
+    event_name = is_external_event ? messaging_util::kOnMessageExternalEvent
+                                   : messaging_util::kOnMessageEvent;
   } else {
-    event_name = is_external ? messaging_util::kOnConnectExternalEvent
-                             : messaging_util::kOnConnectEvent;
+    event_name = is_external_event ? messaging_util::kOnConnectExternalEvent
+                                   : messaging_util::kOnConnectEvent;
   }
 
   // If there are no listeners for the given event, then we know the port won't
