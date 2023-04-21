@@ -187,7 +187,6 @@ ci.builder(
     ),
     builderless = False,
     cores = 32,
-    sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "android",
         short_name = "off",
