@@ -71103,6 +71103,10 @@ Called by update_use_counter_css.py.-->
   <int value="3" label="MDNS Responder"/>
   <int value="4" label="ICE Config Fetcher"/>
   <int value="5" label="WebRTC Signaling Messenger"/>
+  <int value="6" label="Cros Network Config"/>
+  <int value="7" label="Firewall Hole Factory"/>
+  <int value="8" label="TCP Socket Factory"/>
+  <int value="9" label="Nearby Presence"/>
 </enum>
 
 <enum name="NearbyConnectionsUtilityProcessShutdownReason">

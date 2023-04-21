@@ -6,6 +6,7 @@ module sharing.mojom;
 
 import "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom";
 import "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom";
+import "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom";
 import "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom";
 import "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom";
 import "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom";
@@ -47,16 +48,18 @@ struct NearbyDependencies {
 // and is used by the browser process to offload unsafe protocol parsing.
 [ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface Sharing {
-  // Connects to Nearby functionality: Nearby Connections and the Nearby Share
-  // decoder. All dependencies should be provided via the |dependencies| struct.
-  // Shutdown of Nearby functionality is asynchronous; to shut down the process,
-  // call ShutDown() and wait for the operation to complete before disconnecting
-  // the Sharing Mojo connection.
+  // Connects to Nearby functionality. All dependencies should be provided via
+  // the |dependencies| struct. Shutdown of Nearby functionality is
+  // asynchronous; to shut down the process, call ShutDown() and wait for the
+  // operation to complete before disconnecting the Sharing Mojo connection.
   Connect(
       NearbyDependencies deps,
       pending_receiver<
           nearby.connections.mojom.NearbyConnections>
               nearby_connections,
+      pending_receiver<
+          ash.nearby.presence.mojom.NearbyPresence>
+              nearby_presence,
       pending_receiver<sharing.mojom.NearbySharingDecoder>
           decoder,
       pending_receiver<ash.quick_start.mojom.QuickStartDecoder>

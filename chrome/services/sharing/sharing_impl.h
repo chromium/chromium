@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/services/sharing/nearby/nearby_shared_remotes.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom-forward.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom-forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/webrtc.mojom-forward.h"
@@ -27,6 +28,10 @@ namespace nearby::connections {
 class NearbyConnections;
 }  // namespace nearby::connections
 
+namespace ash::nearby::presence {
+class NearbyPresence;
+}  // namespace ash::nearby::presence
+
 namespace sharing {
 
 class NearbySharingDecoder;
@@ -35,6 +40,8 @@ class SharingImpl : public mojom::Sharing {
  public:
   using NearbyConnectionsMojom = nearby::connections::mojom::NearbyConnections;
   using NearbyConnections = nearby::connections::NearbyConnections;
+  using NearbyPresenceMojom = ash::nearby::presence::mojom::NearbyPresence;
+  using NearbyPresence = ash::nearby::presence::NearbyPresence;
   using NearbyDependenciesPtr = sharing::mojom::NearbyDependenciesPtr;
 
   SharingImpl(mojo::PendingReceiver<mojom::Sharing> receiver,
@@ -47,6 +54,7 @@ class SharingImpl : public mojom::Sharing {
   void Connect(
       NearbyDependenciesPtr deps,
       mojo::PendingReceiver<NearbyConnectionsMojom> connections_receiver,
+      mojo::PendingReceiver<NearbyPresenceMojom> presence_receiver,
       mojo::PendingReceiver<sharing::mojom::NearbySharingDecoder>
           decoder_receiver,
       mojo::PendingReceiver<ash::quick_start::mojom::QuickStartDecoder>
@@ -69,7 +77,8 @@ class SharingImpl : public mojom::Sharing {
     kCrosNetworkConfig = 6,
     kFirewallHoleFactory = 7,
     kTcpSocketFactory = 8,
-    kMaxValue = kTcpSocketFactory
+    kNearbyPresence = 9,
+    kMaxValue = kNearbyPresence
   };
 
   void DoShutDown(bool is_expected);
@@ -83,6 +92,8 @@ class SharingImpl : public mojom::Sharing {
   std::unique_ptr<nearby::NearbySharedRemotes> nearby_shared_remotes_;
 
   std::unique_ptr<NearbyConnections> nearby_connections_;
+
+  std::unique_ptr<NearbyPresence> nearby_presence_;
 
   std::unique_ptr<NearbySharingDecoder> nearby_decoder_;
 

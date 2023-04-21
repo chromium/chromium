@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -25,6 +26,9 @@ class NearbyProcessManager : public KeyedService {
     virtual const mojo::SharedRemote<
         ::nearby::connections::mojom::NearbyConnections>&
     GetNearbyConnections() const = 0;
+    virtual const mojo::SharedRemote<
+        ::ash::nearby::presence::mojom::NearbyPresence>&
+    GetNearbyPresence() const = 0;
     virtual const mojo::SharedRemote<sharing::mojom::NearbySharingDecoder>&
     GetNearbySharingDecoder() const = 0;
     virtual const mojo::SharedRemote<quick_start::mojom::QuickStartDecoder>&
@@ -39,7 +43,8 @@ class NearbyProcessManager : public KeyedService {
     kCrash = 1,
     kDecoderMojoPipeDisconnection = 3,
     kConnectionsMojoPipeDisconnection = 4,
-    kMaxValue = kConnectionsMojoPipeDisconnection
+    kPresenceMojoPipeDisconnection = 5,
+    kMaxValue = kPresenceMojoPipeDisconnection
   };
 
   using NearbyProcessStoppedCallback =

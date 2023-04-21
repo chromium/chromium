@@ -21,6 +21,10 @@ namespace nearby {
 class MockNearbyConnections;
 class MockNearbySharingDecoder;
 
+namespace presence {
+class FakeNearbyPresence;
+}  // namespace presence
+
 class FakeNearbyProcessManager : public NearbyProcessManager {
  public:
   FakeNearbyProcessManager();
@@ -48,6 +52,8 @@ class FakeNearbyProcessManager : public NearbyProcessManager {
     FakeNearbyProcessReference(
         const mojo::SharedRemote<
             ::nearby::connections::mojom::NearbyConnections>& connections,
+        const mojo::SharedRemote<
+            ::ash::nearby::presence::mojom::NearbyPresence>& presence,
         const mojo::SharedRemote<sharing::mojom::NearbySharingDecoder>& decoder,
         const mojo::SharedRemote<quick_start::mojom::QuickStartDecoder>&
             quick_start_decoder,
@@ -58,6 +64,8 @@ class FakeNearbyProcessManager : public NearbyProcessManager {
     // NearbyProcessManager::NearbyProcessReference:
     const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
     GetNearbyConnections() const override;
+    const mojo::SharedRemote<::ash::nearby::presence::mojom::NearbyPresence>&
+    GetNearbyPresence() const override;
     const mojo::SharedRemote<sharing::mojom::NearbySharingDecoder>&
     GetNearbySharingDecoder() const override;
     const mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>&
@@ -65,6 +73,8 @@ class FakeNearbyProcessManager : public NearbyProcessManager {
 
     mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>
         connections_;
+    mojo::SharedRemote<::ash::nearby::presence::mojom::NearbyPresence>
+        presence_;
     mojo::SharedRemote<sharing::mojom::NearbySharingDecoder> decoder_;
     mojo::SharedRemote<quick_start::mojom::QuickStartDecoder>
         quick_start_decoder_;
@@ -83,12 +93,15 @@ class FakeNearbyProcessManager : public NearbyProcessManager {
 
   // Null if no outstanding references exist.
   std::unique_ptr<MockNearbyConnections> active_connections_;
+  std::unique_ptr<presence::FakeNearbyPresence> active_presence_;
   std::unique_ptr<MockNearbySharingDecoder> active_decoder_;
   std::unique_ptr<MockQuickStartDecoder> active_quick_start_decoder_;
 
   // Unbound if no outstanding references exist.
   mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>
       connections_remote_;
+  mojo::SharedRemote<::ash::nearby::presence::mojom::NearbyPresence>
+      presence_remote_;
   mojo::SharedRemote<sharing::mojom::NearbySharingDecoder> decoder_remote_;
   mojo::SharedRemote<quick_start::mojom::QuickStartDecoder>
       quick_start_decoder_remote_;

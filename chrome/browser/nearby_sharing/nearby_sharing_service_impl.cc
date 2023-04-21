@@ -1115,6 +1115,7 @@ bool NearbySharingServiceImpl::ShouldRestartNearbyProcess(
       return false;
     case NearbyProcessShutdownReason::kCrash:
     case NearbyProcessShutdownReason::kConnectionsMojoPipeDisconnection:
+    case NearbyProcessShutdownReason::kPresenceMojoPipeDisconnection:
     case NearbyProcessShutdownReason::kDecoderMojoPipeDisconnection:
       break;
   }
