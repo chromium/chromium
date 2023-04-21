@@ -53,6 +53,8 @@ struct BringAndroidTabsPromptBottomMessageView: View {
             Image(systemName: kXMarkCircleFillSymbol)
               .foregroundColor(.textQuaternary)
           }
+          .accessibilityIdentifier(
+            kBringAndroidTabsPromptBottomMessageCloseButtonAXId)
         }
         .padding(0)
         Divider().overlay(Color.separator)
@@ -71,6 +73,8 @@ struct BringAndroidTabsPromptBottomMessageView: View {
           }
         }
         .foregroundColor(.chromeBlue)
+        .accessibilityIdentifier(
+          kBringAndroidTabsPromptBottomMessageReviewButtonAXId)
       }
       .padding(.bottom, kTextVerticalSpacing)
     }
@@ -78,7 +82,6 @@ struct BringAndroidTabsPromptBottomMessageView: View {
     .background(Color.primaryBackground)
     .clipShape(RoundedRectangle(cornerRadius: kPromptCornerRadius))
     .environment(\.colorScheme, .dark)
-    .accessibilityIdentifier(kBringAndroidTabsPromptBottomMessageAXId)
     .onAppear { self.onAppear() }
     .padding(.horizontal, kPromptOuterPaddingHorizontal)
     .padding(.vertical, kPromptOuterPaddingVertical)

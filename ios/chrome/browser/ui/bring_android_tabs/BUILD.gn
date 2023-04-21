@@ -126,3 +126,65 @@ source_set("unit_tests") {
     "//testing/gtest:gtest",
   ]
 }
+
+source_set("eg_app_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "bring_android_tabs_app_interface.h",
+    "bring_android_tabs_app_interface.mm",
+  ]
+  deps = [
+    "//base/test:test_support",
+    "//components/sync_device_info",
+    "//ios/chrome/browser/synced_sessions",
+    "//ios/chrome/test/app:test_support",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//url",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "bring_android_tabs_app_interface.h",
+    "bring_android_tabs_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "bring_android_tabs_bottom_message_egtest.mm",
+    "bring_android_tabs_confirmation_alert_egtest.mm",
+    "bring_android_tabs_no_initial_alert_egtest.mm",
+    "bring_android_tabs_test_utils.h",
+    "bring_android_tabs_test_utils.mm",
+  ]
+  deps = [
+    ":constants",
+    ":eg_test_support+eg2",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bring_android_tabs:features",
+    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/common/ui/confirmation_alert:constants",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
