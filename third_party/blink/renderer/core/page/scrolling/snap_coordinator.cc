@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -278,20 +279,19 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
     PhysicalRect container_rect(snap_container.PhysicalPaddingBoxRect());
 
     const ComputedStyle* container_style = snap_container.Style();
-    LayoutRectOutsets container_padding(
-        // The percentage of scroll-padding is different from that of normal
-        // padding, as scroll-padding resolves the percentage against
-        // corresponding dimension of the scrollport[1], while the normal
-        // padding resolves that against "width".[2,3] We use
-        // MinimumValueForLength here to ensure kAuto is resolved to
-        // LayoutUnit() which is the correct behavior for padding.
-        // [1] https://drafts.csswg.org/css-scroll-snap-1/#scroll-padding
-        //     "relative to the corresponding dimension of the scroll
-        //     container’s
-        //      scrollport"
-        // [2] https://drafts.csswg.org/css-box/#padding-props
-        // [3] See for example LayoutBoxModelObject::ComputedCSSPadding where it
-        //     uses |MinimumValueForLength| but against the "width".
+    // The percentage of scroll-padding is different from that of normal
+    // padding, as scroll-padding resolves the percentage against corresponding
+    // dimension of the scrollport[1], while the normal padding resolves that
+    // against "width".[2,3] We use MinimumValueForLength here to ensure kAuto
+    // is resolved to LayoutUnit() which is the correct behavior for padding.
+    //
+    // [1] https://drafts.csswg.org/css-scroll-snap-1/#scroll-padding
+    //     "relative to the corresponding dimension of the scroll container’s
+    //      scrollport"
+    // [2] https://drafts.csswg.org/css-box/#padding-props
+    // [3] See for example LayoutBoxModelObject::ComputedCSSPadding where it
+    //     uses |MinimumValueForLength| but against the "width".
+    container_rect.ContractEdges(
         MinimumValueForLength(container_style->ScrollPaddingTop(),
                               container_rect.Height()),
         MinimumValueForLength(container_style->ScrollPaddingRight(),
@@ -300,7 +300,6 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
                               container_rect.Height()),
         MinimumValueForLength(container_style->ScrollPaddingLeft(),
                               container_rect.Width()));
-    container_rect.Contract(container_padding);
     snap_container_data.set_rect(gfx::RectF(container_rect));
 
     if (snap_container_data.scroll_snap_type().strictness ==
@@ -409,7 +408,7 @@ cc::SnapAreaData SnapCoordinator::CalculateSnapAreaData(
       area_rect, &snap_container,
       kTraverseDocumentBoundaries | kIgnoreScrollOffset);
 
-  LayoutRectOutsets area_margin(
+  NGPhysicalBoxStrut area_margin(
       area_style->ScrollMarginTop(), area_style->ScrollMarginRight(),
       area_style->ScrollMarginBottom(), area_style->ScrollMarginLeft());
   area_rect.Expand(area_margin);
