@@ -58,6 +58,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y google-chrome-unstable
       - name: Run tests
+        timeout-minutes: 20
         # For verbose logging, add --log-mach - --log-mach-level info
         run: >
           ${{ matrix.headless_command_prefix }}

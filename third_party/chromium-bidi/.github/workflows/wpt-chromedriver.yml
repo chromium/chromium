@@ -40,6 +40,7 @@ jobs:
           # browsers from @puppeteer/browsers
           echo "chromium_binary=$(npx browsers install chromium@latest | cut -f 2 -d' ')" >> $GITHUB_ENV
       - name: Run tests
+        timeout-minutes: 20
         run: >
           ./wpt/wpt run
           --binary-arg="--headless=new"
