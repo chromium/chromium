@@ -22,6 +22,15 @@ api::os_events::AudioJackEventInfo UncheckedConvertPtr(
   return result;
 }
 
+api::os_events::LidEventInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryLidEventInfoPtr ptr) {
+  api::os_events::LidEventInfo result;
+
+  result.event = Convert(ptr->state);
+
+  return result;
+}
+
 }  // namespace unchecked
 
 api::os_events::AudioJackEvent Convert(
@@ -51,6 +60,19 @@ api::os_events::AudioJackDeviceType Convert(
   NOTREACHED();
 }
 
+api::os_events::LidEvent Convert(
+    crosapi::mojom::TelemetryLidEventInfo::State state) {
+  switch (state) {
+    case crosapi::mojom::TelemetryLidEventInfo_State::kUnmappedEnumField:
+      return api::os_events::LidEvent::kNone;
+    case crosapi::mojom::TelemetryLidEventInfo_State::kClosed:
+      return api::os_events::LidEvent::kClosed;
+    case crosapi::mojom::TelemetryLidEventInfo_State::kOpened:
+      return api::os_events::LidEvent::kOpened;
+  }
+  NOTREACHED();
+}
+
 crosapi::mojom::TelemetryEventCategoryEnum Convert(
     api::os_events::EventCategory input) {
   switch (input) {
@@ -58,6 +80,8 @@ crosapi::mojom::TelemetryEventCategoryEnum Convert(
       return crosapi::mojom::TelemetryEventCategoryEnum::kUnmappedEnumField;
     case api::os_events::EventCategory::kAudioJack:
       return crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack;
+    case api::os_events::EventCategory::kLid:
+      return crosapi::mojom::TelemetryEventCategoryEnum::kLid;
   }
   NOTREACHED();
 }

@@ -20,6 +20,9 @@ namespace unchecked {
 crosapi::mojom::TelemetryAudioJackEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::AudioJackEventInfoPtr input);
 
+crosapi::mojom::TelemetryLidEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::LidEventInfoPtr input);
+
 crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::EventInfoPtr input);
 
@@ -45,6 +48,9 @@ crosapi::mojom::TelemetryAudioJackEventInfo::State Convert(
 
 crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType Convert(
     cros_healthd::mojom::AudioJackEventInfo::DeviceType input);
+
+crosapi::mojom::TelemetryLidEventInfo::State Convert(
+    cros_healthd::mojom::LidEventInfo::State input);
 
 crosapi::mojom::TelemetryExtensionException::Reason Convert(
     cros_healthd::mojom::Exception::Reason input);

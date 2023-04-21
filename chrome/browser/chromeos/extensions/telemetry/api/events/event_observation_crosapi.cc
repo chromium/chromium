@@ -50,6 +50,18 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
             browser_context_);
         break;
       }
+      case crosapi::mojom::internal::TelemetryEventInfo_Data::
+          TelemetryEventInfo_Tag::kLidEventInfo: {
+        base::Value::List args;
+        args.Append(converters::ConvertEventPtr<api::os_events::LidEventInfo>(
+                        std::move(info->get_lid_event_info()))
+                        .ToValue());
+        event = std::make_unique<extensions::Event>(
+            extensions::events::OS_EVENTS_ON_LID_EVENT,
+            api::os_events::OnLidEvent::kEventName, std::move(args),
+            browser_context_);
+        break;
+      }
     }
 
     extensions::EventRouter::Get(browser_context_)

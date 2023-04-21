@@ -47,9 +47,27 @@ struct TelemetryAudioJackEventInfo {
   [MinVersion=1] DeviceType device_type@1;
 };
 
+// Lid event info. This is emitted when the lid is closed or opened.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct TelemetryLidEventInfo {
+  [Stable, Extensible]
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // Lid closed.
+    kClosed = 1,
+    // Lid opened.
+    kOpened = 2,
+  };
+
+  State state@0;
+};
+
 // Union of event info.
 //
-// NextMinVersion: 1, NextIndex: 2
+// NextMinVersion: 2, NextIndex: 3
 [Stable, Extensible]
 union TelemetryEventInfo {
   // The default value for forward compatibility. All the unknown type will be
@@ -57,16 +75,19 @@ union TelemetryEventInfo {
   [Default] uint8 default_type@0;
   // Audio jack event info.
   TelemetryAudioJackEventInfo audio_jack_event_info@1;
+  // Lid event info.
+  [MinVersion=1] TelemetryLidEventInfo lid_event_info@2;
 };
 
 // An enumeration of event categories.
 //
-// NextMinVersion: 1, NextIndex: 2
+// NextMinVersion: 2, NextIndex: 3
 [Stable, Extensible]
 enum TelemetryEventCategoryEnum {
   // This is required for backwards compatibility, should not be used.
   [Default] kUnmappedEnumField = 0,
   kAudioJack = 1,
+  [MinVersion=1] kLid = 2,
 };
 
 // Implemented by clients who desire events.

@@ -54,6 +54,18 @@ TEST(TelemetryEventServiceConvertersTest,
       crosapi::mojom::TelemetryAudioJackEventInfo::DeviceType::kMicrophone);
 }
 
+TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryLidEventInfo_State) {
+  EXPECT_EQ(
+      Convert(cros_healthd::mojom::LidEventInfo::State::kUnmappedEnumField),
+      crosapi::mojom::TelemetryLidEventInfo::State::kUnmappedEnumField);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::LidEventInfo::State::kClosed),
+            crosapi::mojom::TelemetryLidEventInfo::State::kClosed);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::LidEventInfo::State::kOpened),
+            crosapi::mojom::TelemetryLidEventInfo::State::kOpened);
+}
+
 TEST(TelemetryEventServiceConvertersTest,
      ConvertTelemetryExtensionExceptionReason) {
   EXPECT_EQ(
@@ -90,6 +102,15 @@ TEST(TelemetryEventServiceConvertersTest,
   EXPECT_EQ(ConvertEventPtr(std::move(input)),
             crosapi::mojom::TelemetryAudioJackEventInfo::New(
                 crosapi::mojom::TelemetryAudioJackEventInfo::State::kAdd));
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryLidEventInfoPtr) {
+  auto input = cros_healthd::mojom::LidEventInfo::New();
+  input->state = cros_healthd::mojom::LidEventInfo::State::kClosed;
+
+  EXPECT_EQ(ConvertEventPtr(std::move(input)),
+            crosapi::mojom::TelemetryLidEventInfo::New(
+                crosapi::mojom::TelemetryLidEventInfo::State::kClosed));
 }
 
 TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryExtensionException) {
