@@ -154,7 +154,7 @@ public abstract class Observable<T> {
      *   // data that .equals() the most recent data that preceded it.
      *   Observable<Foo> deduped = source.accumulate(() -> new Controller<Foo>(), (a, foo) -> {
      *       a.set(foo);
-     *       return Scopes.NO_OP;
+     *       return Scope.NO_OP;
      *   });
      */
     // NOTE: This is private for now to limit how many things use it until it has better test
@@ -165,6 +165,23 @@ public abstract class Observable<T> {
             A current = factory.get();
             Subscription sub = subscribe(t -> acc.apply(current, t));
             return sub.and(current.subscribe(observer));
+        });
+    }
+
+    /**
+     * Returns an Observable that emits the most recent activation from |this|. Even if data is
+     * revoked from |this|, the distinctUntilChanged() observable does not revoke it, and will only
+     * do so once it receives a new *distinct* activation from |this|. If a new activation is
+     * equivalent to the previous one, it is ignored.
+     *
+     * This provides a way to conveniently "break seams" in streams of data. If, for example, an
+     * Observable emits `true`, `true`, `false`, `true`, in that order, the distinctUntilChanged()
+     * Observable will emit `true`, `false`, `true` (dropping the redundant `true`).
+     */
+    public final Observable<T> distinctUntilChanged() {
+        return accumulate(Controller::new, (c, t) -> {
+            c.set(t);
+            return Scope.NO_OP;
         });
     }
 
