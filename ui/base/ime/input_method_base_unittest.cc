@@ -296,5 +296,19 @@ TEST_F(InputMethodBaseTest, DetachTextInputClient) {
   }
 }
 
+TEST_F(InputMethodBaseTest, SetsPasswordWhenHasBeenPassword) {
+  FakeTextInputClient fake_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
+
+  ClientChangeVerifier verifier;
+  verifier.ExpectClientChange(nullptr, &fake_text_input_client);
+  MockInputMethodBase input_method(&verifier);
+
+  fake_text_input_client.SetFlags(ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD);
+
+  input_method.SetFocusedTextInputClient(&fake_text_input_client);
+
+  EXPECT_EQ(TEXT_INPUT_TYPE_PASSWORD, input_method.GetTextInputType());
+}
+
 }  // namespace
 }  // namespace ui
