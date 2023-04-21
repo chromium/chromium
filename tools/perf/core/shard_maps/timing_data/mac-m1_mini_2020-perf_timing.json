@@ -1760,16 +1760,8 @@
         "name": "dummy_benchmark.stable_benchmark_1/dummy_page.html"
     },
     {
-        "duration": "172.0",
-        "name": "jetstream/JetStream"
-    },
-    {
         "duration": "73.0",
         "name": "jetstream2/JetStream2"
-    },
-    {
-        "duration": "21.0",
-        "name": "kraken/http://krakenbenchmark.mozilla.org/kraken-1.1/driver.html"
     },
     {
         "duration": "12.0",

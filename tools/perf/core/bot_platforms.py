@@ -456,9 +456,7 @@ _WIN_10_LOW_END_HP_CANDIDATE_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('rendering.desktop', abridged=True),
 ])
 _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('jetstream'),
     _GetBenchmarkConfig('jetstream2'),
-    _GetBenchmarkConfig('kraken'),
     _GetBenchmarkConfig('octane'),
     _GetBenchmarkConfig('speedometer2'),
 ])
@@ -526,7 +524,6 @@ _ANDROID_PIXEL2_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('rendering.mobile'),
     _GetBenchmarkConfig('octane'),
-    _GetBenchmarkConfig('jetstream'),
     _GetBenchmarkConfig('system_health.scroll_jank_mobile')
 ])
 _CHROMEOS_KEVIN_FYI_BENCHMARK_CONFIGS = PerfSuite([
@@ -563,14 +560,12 @@ _FUCHSIA_ATLAS_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.common_desktop'),
     _GetBenchmarkConfig('speedometer'),
     _GetBenchmarkConfig('speedometer2'),
-    _GetBenchmarkConfig('jetstream'),
     _GetBenchmarkConfig('jetstream2'),
 ])
 _FUCHSIA_NUC_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.common_desktop'),
     _GetBenchmarkConfig('speedometer'),
     _GetBenchmarkConfig('speedometer2'),
-    _GetBenchmarkConfig('jetstream'),
     _GetBenchmarkConfig('jetstream2'),
 ])
 _LINUX_PERF_CALIBRATION_BENCHMARK_CONFIGS = PerfSuite([

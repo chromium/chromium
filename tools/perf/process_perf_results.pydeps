@@ -470,9 +470,7 @@ benchmarks/blink_perf.py
 benchmarks/blink_perf_unittest.py
 benchmarks/desktop_ui.py
 benchmarks/dummy_benchmark.py
-benchmarks/jetstream.py
 benchmarks/jetstream2.py
-benchmarks/kraken.py
 benchmarks/loading.py
 benchmarks/loading_metrics_category.py
 benchmarks/media.py
@@ -637,9 +635,7 @@ page_sets/intl_hi_ru.py
 page_sets/intl_ja_zh.py
 page_sets/intl_ko_th_vi.py
 page_sets/jetstream2_pages.py
-page_sets/jetstream_pages.py
 page_sets/key_mobile_sites_smooth.py
-page_sets/kraken_pages.py
 page_sets/loading_desktop.py
 page_sets/loading_mobile.py
 page_sets/login_helpers/__init__.py

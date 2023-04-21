@@ -1576,14 +1576,6 @@
         "name": "dummy_benchmark.stable_benchmark_1/dummy_page.html"
     },
     {
-        "duration": "0.0",
-        "name": "jetstream/JetStream"
-    },
-    {
-        "duration": "48.0",
-        "name": "kraken/http://krakenbenchmark.mozilla.org/kraken-1.1/driver.html"
-    },
-    {
         "duration": "17.0",
         "name": "loading.mobile/58Pic"
     },

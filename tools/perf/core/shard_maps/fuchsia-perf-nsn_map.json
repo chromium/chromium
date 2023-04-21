@@ -6,7 +6,7 @@
                     "--test-launcher-jobs=1",
                     "--test-launcher-retry-limit=0",
                     "-d",
-                    "--os-check=update",
+                    "--os-check=check",
                     "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/nelson-release/smart_display_m3_eng_paused"
                 ],
                 "path": "bin/run_base_perftests"

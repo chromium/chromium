@@ -6,7 +6,7 @@
                     "--test-launcher-jobs=1",
                     "--test-launcher-retry-limit=0",
                     "-d",
-                    "--os-check=update",
+                    "--os-check=check",
                     "--system-image-dir=workstation_eng.x64"
                 ],
                 "path": "bin/run_base_perftests"
@@ -16,9 +16,6 @@
     },
     "1": {
         "benchmarks": {
-            "jetstream": {
-                "abridged": false
-            },
             "jetstream2": {
                 "abridged": false
             },
@@ -35,7 +32,7 @@
                     "--test-launcher-jobs=1",
                     "--test-launcher-retry-limit=0",
                     "-d",
-                    "--os-check=update",
+                    "--os-check=check",
                     "--system-image-dir=workstation_eng.x64"
                 ],
                 "path": "bin/run_sync_performance_tests"
@@ -59,13 +56,13 @@
         }
     },
     "extra_infos": {
-        "num_stories": 87,
+        "num_stories": 86,
         "predicted_min_shard_time": 400,
         "predicted_min_shard_index": 3,
-        "predicted_max_shard_time": 940.0,
+        "predicted_max_shard_time": 930.0,
         "predicted_max_shard_index": 1,
         "shard #0": 900.0,
-        "shard #1": 940.0,
+        "shard #1": 930.0,
         "shard #2": 410,
         "shard #3": 400
     }

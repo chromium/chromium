@@ -9,8 +9,6 @@ UNDOCUMENTED_BENCHMARKS = {
     'components_perftests',
     'dummy_benchmark.noisy_benchmark_1',
     'dummy_benchmark.stable_benchmark_1',
-    'jetstream',
-    'kraken',
     'load_library_perf_tests',
     'memory.desktop',
     'octane',
