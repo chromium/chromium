@@ -31,6 +31,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
@@ -158,7 +159,19 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
          *
          * @param handler The handler for closing the current tab.
          */
-        void setCloseClickHandler(Runnable handler);
+        void setCloseClickHandler(OnClickListener handler);
+
+        /**
+         * Start the closing animation. This should be invoked before the close click handler
+         * set via {@link #setCloseClickHandler} to avoid seeing a blank content during
+         * the animation.
+         */
+        void startCloseAnimation();
+
+        /**
+         * Close the toolbar and the tab.
+         */
+        void close();
     }
 
     private HandleStrategy mHandleStrategy;
@@ -214,7 +227,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     @Override
     protected void setCustomTabCloseClickHandler(OnClickListener listener) {
-        mCloseButton.setOnClickListener(listener);
+        if (mHandleStrategy == null) {
+            mCloseButton.setOnClickListener(listener);
+        } else {
+            // Let the close button click initiate the closing animation first. The actual
+            // closing task will follow the animation.
+            mCloseButton.setOnClickListener(v -> mHandleStrategy.startCloseAnimation());
+            mHandleStrategy.setCloseClickHandler(listener);
+        }
     }
 
     @Override
@@ -424,7 +444,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             return;
         }
         mHandleStrategy = strategy;
-        mHandleStrategy.setCloseClickHandler(mCloseButton::callOnClick);
     }
 
     /**

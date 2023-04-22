@@ -49,8 +49,9 @@ public class PartialCustomTabFullSizeStrategy extends PartialCustomTabBaseStrate
             View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
         super.onToolbarInitialized(coordinatorView, toolbar, toolbarCornerRadius);
 
-        PartialCustomTabHandleStrategy handleStrategy = mHandleStrategyFactory.create(
-                getStrategyType(), mActivity, this::isFullHeight, () -> 0, null);
+        CustomTabToolbar.HandleStrategy handleStrategy =
+                mHandleStrategyFactory.create(getStrategyType(), mActivity, this::isFullHeight,
+                        () -> 0, null, this::handleCloseAnimation);
         toolbar.setHandleStrategy(handleStrategy);
         updateDragBarVisibility(/*dragHandlebarVisibility*/ View.GONE);
     }

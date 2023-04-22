@@ -505,6 +505,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabSideSheetStrategy.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabTabObserver.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabVersionCompat.java",
+  "java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/SimpleHandleStrategy.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/sessionrestore/SessionRestoreManager.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/sessionrestore/SessionRestoreManagerImpl.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/sessionrestore/SessionRestoreMessageController.java",
