@@ -1690,22 +1690,26 @@ void HTMLElement::HidePopoverInternal(
   auto& document = GetDocument();
   if (PopoverType() == PopoverValueType::kAuto ||
       PopoverType() == PopoverValueType::kHint) {
-    // Hide any popovers above us in the stack.
-    HideAllPopoversUntil(this, document, focus_behavior, transition_behavior,
-                         HidePopoverIndependence::kLeaveUnrelated);
-    // The 'beforetoggle' event handlers could have changed this popover, e.g.
-    // by changing its type, removing it from the document, or calling
-    // hidePopover().
     auto& stack = document.PopoverStack();
-    if (!stack.Contains(this) && this != document.PopoverHintShowing()) {
-      if (exception_state) {
-        exception_state->ThrowDOMException(
-            DOMExceptionCode::kInvalidStateError,
-            "This popover's \"beforetoggle\" event handler caused it to be "
-            "hidden (e.g. by calling hidePopover()).");
+    do {
+      // Hide any popovers above us in the stack.
+      HideAllPopoversUntil(this, document, focus_behavior, transition_behavior,
+                           HidePopoverIndependence::kLeaveUnrelated);
+      // The 'beforetoggle' event handlers could have changed this popover, e.g.
+      // by changing its type, removing it from the document, or calling
+      // hidePopover().
+      if (!stack.Contains(this) && this != document.PopoverHintShowing()) {
+        if (exception_state) {
+          exception_state->ThrowDOMException(
+              DOMExceptionCode::kInvalidStateError,
+              "This popover's \"beforetoggle\" event handler caused it to be "
+              "hidden (e.g. by calling hidePopover()).");
+        }
+        return;
       }
-      return;
-    }
+    } while (PopoverType() == PopoverValueType::kAuto
+                 ? (!stack.empty() && stack.back() != this)
+                 : (document.TopmostPopoverOrHint() != this));
 
     // Then remove this popover from the stack.
     if (PopoverType() == PopoverValueType::kAuto) {
