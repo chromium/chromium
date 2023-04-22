@@ -913,8 +913,11 @@ void WASAPIAudioOutputStream::StartAudioSessionEventListener() {
   }
 
   HRESULT hr = audio_client_->GetService(IID_PPV_ARGS(&audio_session_control_));
-  DLOG_IF(ERROR, FAILED(hr))
-      << "Failed to get IAudioSessionControl service: " << std::hex << hr;
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to get IAudioSessionControl service: " << std::hex
+                << hr;
+    return;
+  }
 
   session_listener_ = Microsoft::WRL::Make<AudioSessionEventListener>(
       base::BindPostTaskToCurrentDefault(
