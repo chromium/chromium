@@ -40,7 +40,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 #include "ui/events/event_handler.h"
@@ -306,9 +305,6 @@ class ASH_EXPORT AmbientController
 
   // Observes user profile prefs for ambient.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-
-  // Used to record Ambient mode engagement metrics.
-  absl::optional<base::Time> start_time_ = absl::nullopt;
 
   // Records the time when preview widgets are created.
   base::Time preview_widget_created_at_;

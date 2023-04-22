@@ -7,6 +7,10 @@
 #include <string>
 
 #include "ash/constants/ambient_theme.h"
+#include "ash/public/cpp/ambient/ambient_ui_model.h"
+#include "ash/shell.h"
+#include "ash/test/ash_test_base.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -24,7 +28,7 @@ namespace {
 using ::testing::Eq;
 }  // namespace
 
-class AmbientSessionMetricsRecorderTest : public ::testing::Test {
+class AmbientSessionMetricsRecorderTest : public AshTestBase {
  protected:
   struct Harness {
     static constexpr gfx::Size kTestSize = gfx::Size(100, 100);
@@ -47,8 +51,14 @@ class AmbientSessionMetricsRecorderTest : public ::testing::Test {
     gfx::Canvas canvas;
   };
 
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  AmbientSessionMetricsRecorderTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+    // Simulate the screensaver being launched in all tests.
+    AmbientUiModel::Get()->SetUiVisibility(AmbientUiVisibility::kShown);
+  }
 };
 
 class AmbientSessionMetricsRecorderTestForAllThemes
@@ -65,13 +75,74 @@ INSTANTIATE_TEST_SUITE_P(AllAnimationThemes,
                          testing::Values(AmbientTheme::kFeelTheBreeze,
                                          AmbientTheme::kFloatOnBy));
 
+TEST_P(AmbientSessionMetricsRecorderTestForAllThemes, MetricsEngagementTime) {
+  constexpr base::TimeDelta kExpectedEngagementTime = base::Minutes(5);
+  base::HistogramTester histogram_tester;
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  {
+    AmbientSessionMetricsRecorder recorder(GetParam());
+    recorder.RegisterScreen(/*animation=*/nullptr);
+    task_environment()->FastForwardBy(kExpectedEngagementTime);
+  }
+
+  histogram_tester.ExpectTimeBucketCount(
+      "Ash.AmbientMode.EngagementTime.ClamshellMode", kExpectedEngagementTime,
+      1);
+  histogram_tester.ExpectTimeBucketCount(
+      base::StrCat({"Ash.AmbientMode.EngagementTime.", ToString(GetParam())}),
+      kExpectedEngagementTime, 1);
+
+  // Now do the same sequence in tablet mode.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  {
+    AmbientSessionMetricsRecorder recorder(GetParam());
+    recorder.RegisterScreen(/*animation=*/nullptr);
+    task_environment()->FastForwardBy(kExpectedEngagementTime);
+  }
+
+  histogram_tester.ExpectTimeBucketCount(
+      "Ash.AmbientMode.EngagementTime.TabletMode", kExpectedEngagementTime, 1);
+  histogram_tester.ExpectTimeBucketCount(
+      base::StrCat({"Ash.AmbientMode.EngagementTime.", ToString(GetParam())}),
+      kExpectedEngagementTime, 2);
+}
+
+TEST_P(AmbientSessionMetricsRecorderTestForAllThemes, MetricsStartupTime) {
+  constexpr base::TimeDelta kExpectedStartupTime = base::Seconds(5);
+
+  base::HistogramTester histogram_tester;
+  AmbientSessionMetricsRecorder recorder(GetParam());
+  task_environment()->FastForwardBy(kExpectedStartupTime);
+  recorder.RegisterScreen(/*animation=*/nullptr);
+  // Should be ignored. The time that the first screen starts rendering should
+  // be when the startup time is recorded.
+  task_environment()->FastForwardBy(base::Minutes(1));
+  recorder.RegisterScreen(/*animation=*/nullptr);
+  histogram_tester.ExpectTimeBucketCount(
+      base::StrCat({"Ash.AmbientMode.StartupTime.", ToString(GetParam())}),
+      kExpectedStartupTime, 1);
+}
+
+TEST_P(AmbientSessionMetricsRecorderTestForAllThemes,
+       MetricsStartupTimeFailedToStart) {
+  constexpr base::TimeDelta kFailedStartupTime = base::Minutes(1);
+  base::HistogramTester histogram_tester;
+  {
+    AmbientSessionMetricsRecorder recorder(GetParam());
+    task_environment()->FastForwardBy(kFailedStartupTime);
+  }
+  histogram_tester.ExpectUniqueTimeSample(
+      base::StrCat({"Ash.AmbientMode.StartupTime.", ToString(GetParam())}),
+      kFailedStartupTime, 1);
+}
+
 TEST_P(AmbientSessionMetricsRecorderTestForAllThemes, RecordsScreenCount) {
   base::HistogramTester histogram_tester;
   {
     Harness harness(GetParam());
     harness.recorder.RegisterScreen(&harness.animation_1);
     harness.animation_1.Start();
-    harness.animation_1.Paint(&harness.canvas, task_environment_.NowTicks(),
+    harness.animation_1.Paint(&harness.canvas, task_environment()->NowTicks(),
                               Harness::kTestSize);
   }
   histogram_tester.ExpectUniqueSample(
@@ -82,10 +153,10 @@ TEST_P(AmbientSessionMetricsRecorderTestForAllThemes, RecordsScreenCount) {
     harness.recorder.RegisterScreen(&harness.animation_1);
     harness.recorder.RegisterScreen(&harness.animation_2);
     harness.animation_1.Start();
-    harness.animation_1.Paint(&harness.canvas, task_environment_.NowTicks(),
+    harness.animation_1.Paint(&harness.canvas, task_environment()->NowTicks(),
                               Harness::kTestSize);
     harness.animation_2.Start();
-    harness.animation_2.Paint(&harness.canvas, task_environment_.NowTicks(),
+    harness.animation_2.Paint(&harness.canvas, task_environment()->NowTicks(),
                               Harness::kTestSize);
   }
   histogram_tester.ExpectBucketCount(
@@ -102,17 +173,17 @@ TEST_P(AmbientSessionMetricsRecorderTestForAllThemes, RecordsTimestampOffset) {
   harness.recorder.RegisterScreen(&harness.animation_2);
   harness.animation_1.Start();
   harness.animation_2.Start();
-  harness.animation_1.Paint(&harness.canvas, task_environment_.NowTicks(),
+  harness.animation_1.Paint(&harness.canvas, task_environment()->NowTicks(),
                             Harness::kTestSize);
   // Offset of 0.
-  harness.animation_2.Paint(&harness.canvas, task_environment_.NowTicks(),
+  harness.animation_2.Paint(&harness.canvas, task_environment()->NowTicks(),
                             Harness::kTestSize);
-  task_environment_.FastForwardBy(kFrameInterval);
+  task_environment()->FastForwardBy(kFrameInterval);
   // Offset of |kFrameInterval|.
-  harness.animation_1.Paint(&harness.canvas, task_environment_.NowTicks(),
+  harness.animation_1.Paint(&harness.canvas, task_environment()->NowTicks(),
                             Harness::kTestSize);
   // Offset of 0.
-  harness.animation_2.Paint(&harness.canvas, task_environment_.NowTicks(),
+  harness.animation_2.Paint(&harness.canvas, task_environment()->NowTicks(),
                             Harness::kTestSize);
 
   histogram_tester.ExpectTimeBucketCount(
@@ -138,34 +209,34 @@ TEST_P(AmbientSessionMetricsRecorderTestForAllThemes,
       lottie::Animation::Style::kLoop);
   harness.animation_1.Start(playback_config);
   harness.animation_2.Start(playback_config);
-  harness.animation_1.Paint(&harness.canvas, task_environment_.NowTicks(),
+  harness.animation_1.Paint(&harness.canvas, task_environment()->NowTicks(),
                             Harness::kTestSize);
   // Offset of 0.
-  harness.animation_2.Paint(&harness.canvas, task_environment_.NowTicks(),
+  harness.animation_2.Paint(&harness.canvas, task_environment()->NowTicks(),
                             Harness::kTestSize);
 
-  task_environment_.FastForwardBy(Harness::kTotalAnimationDuration / 2);
+  task_environment()->FastForwardBy(Harness::kTotalAnimationDuration / 2);
   // Offset of kTotalAnimationDuration / 2.
-  harness.animation_1.Paint(&harness.canvas, task_environment_.NowTicks(),
+  harness.animation_1.Paint(&harness.canvas, task_environment()->NowTicks(),
                             Harness::kTestSize);
   // Offset of 0.
-  harness.animation_2.Paint(&harness.canvas, task_environment_.NowTicks(),
+  harness.animation_2.Paint(&harness.canvas, task_environment()->NowTicks(),
                             Harness::kTestSize);
 
   // Fast forward to just before end of first cycle.
-  task_environment_.FastForwardBy((Harness::kTotalAnimationDuration / 2) -
-                                  base::Milliseconds(100));
+  task_environment()->FastForwardBy((Harness::kTotalAnimationDuration / 2) -
+                                    base::Milliseconds(100));
   // Offset of kTotalAnimationDuration / 2) - 100ms
-  harness.animation_1.Paint(&harness.canvas, task_environment_.NowTicks(),
+  harness.animation_1.Paint(&harness.canvas, task_environment()->NowTicks(),
                             Harness::kTestSize);
-  task_environment_.FastForwardBy(base::Milliseconds(200));
+  task_environment()->FastForwardBy(base::Milliseconds(200));
   // Fast forward to just after start of second cycle.
   // Offset of 200 ms (100 ms before end of first cycle to 100 ms past start of
   // second cycle).
-  harness.animation_2.Paint(&harness.canvas, task_environment_.NowTicks(),
+  harness.animation_2.Paint(&harness.canvas, task_environment()->NowTicks(),
                             Harness::kTestSize);
   // Offset of 0.
-  harness.animation_1.Paint(&harness.canvas, task_environment_.NowTicks(),
+  harness.animation_1.Paint(&harness.canvas, task_environment()->NowTicks(),
                             Harness::kTestSize);
 
   histogram_tester.ExpectTimeBucketCount(
@@ -189,10 +260,10 @@ TEST_P(AmbientSessionMetricsRecorderTestForAllThemes,
   Harness harness(GetParam());
   harness.recorder.RegisterScreen(&harness.animation_1);
   harness.animation_1.Start();
-  harness.animation_1.Paint(&harness.canvas, task_environment_.NowTicks(),
+  harness.animation_1.Paint(&harness.canvas, task_environment()->NowTicks(),
                             Harness::kTestSize);
-  task_environment_.FastForwardBy(kFrameInterval);
-  harness.animation_1.Paint(&harness.canvas, task_environment_.NowTicks(),
+  task_environment()->FastForwardBy(kFrameInterval);
+  harness.animation_1.Paint(&harness.canvas, task_environment()->NowTicks(),
                             Harness::kTestSize);
   histogram_tester.ExpectTotalCount(
       "Ash.AmbientMode.MultiScreenOffset.FeelTheBreeze", 0);

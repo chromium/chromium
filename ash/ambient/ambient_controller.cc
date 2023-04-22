@@ -267,15 +267,6 @@ void AmbientController::OnAmbientUiVisibilityChanged(
     AmbientUiVisibility visibility) {
   switch (visibility) {
     case AmbientUiVisibility::kShown:
-      // Record metrics on ambient mode usage.
-      ambient::RecordAmbientModeActivation(
-          /*ui_mode=*/LockScreen::HasInstance() ? AmbientUiMode::kLockScreenUi
-                                                : AmbientUiMode::kInSessionUi,
-          /*tablet_mode=*/Shell::Get()->IsInTabletMode());
-
-      DCHECK(!start_time_);
-      start_time_ = base::Time::Now();
-
       // Cancels the timer upon shown.
       inactivity_timer_.Stop();
 
@@ -298,9 +289,6 @@ void AmbientController::OnAmbientUiVisibilityChanged(
     }
     case AmbientUiVisibility::kHidden:
     case AmbientUiVisibility::kClosed: {
-      bool ambient_ui_was_rendering =
-          Shell::GetPrimaryRootWindowController()->HasAmbientWidget();
-
       // TODO(wutao): This will clear the image cache currently. It will not
       // work with `kHidden` if the token has expired and ambient mode is shown
       // again.
@@ -318,24 +306,6 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       // Should stop observing AssistantInteractionModel when ambient screen is
       // not shown.
       AssistantInteractionController::Get()->GetModel()->RemoveObserver(this);
-
-      // |start_time_| may be empty in case of |AmbientUiVisibility::kHidden| if
-      // ambient mode has just started.
-      if (start_time_) {
-        auto elapsed = base::Time::Now() - start_time_.value();
-        AmbientTheme theme = GetCurrentUiSettings().theme();
-        DVLOG(2) << "Exit ambient mode. Elapsed time: " << elapsed;
-        ambient::RecordAmbientModeTimeElapsed(
-            elapsed, Shell::Get()->IsInTabletMode(), theme);
-
-        if (!ambient_ui_was_rendering &&
-            elapsed >= ambient::kMetricsStartupTimeMax) {
-          LOG(ERROR) << "Ambient UI completely failed to start";
-          ambient::RecordAmbientModeStartupTime(elapsed, theme);
-        }
-
-        start_time_.reset();
-      }
 
       if (visibility == AmbientUiVisibility::kHidden) {
         if (LockScreen::HasInstance()) {
@@ -1102,12 +1072,6 @@ std::unique_ptr<views::Widget> AmbientController::CreateWidget(
   ::wm::SetWindowVisibilityChangesAnimated(widget->GetNativeWindow());
 
   widget->Show();
-
-  if (ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kShown) {
-    DCHECK(start_time_);
-    ambient::RecordAmbientModeStartupTime(base::Time::Now() - *start_time_,
-                                          current_theme);
-  }
 
   // Only announce for the primary window.
   if (Shell::GetPrimaryRootWindow() == container->GetRootWindow()) {

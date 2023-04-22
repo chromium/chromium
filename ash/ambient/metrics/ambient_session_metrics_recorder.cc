@@ -6,18 +6,47 @@
 
 #include <algorithm>
 
+#include "ash/login/ui/lock_screen.h"
+#include "ash/public/cpp/ambient/ambient_metrics.h"
+#include "ash/public/cpp/ambient/ambient_ui_model.h"
+#include "ash/shell.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/tick_clock.h"
 
 namespace ash {
 
-AmbientSessionMetricsRecorder::AmbientSessionMetricsRecorder(AmbientTheme theme)
-    : theme_(theme) {}
+AmbientSessionMetricsRecorder::AmbientSessionMetricsRecorder(
+    AmbientTheme theme,
+    const base::TickClock* tick_clock)
+    : theme_(theme),
+      clock_(tick_clock ? tick_clock : base::DefaultTickClock::GetInstance()),
+      session_start_time_(clock_->NowTicks()) {
+  // Don't record this metric for `kPreview` mode.
+  if (AmbientUiModel::Get()->ui_visibility() == AmbientUiVisibility::kShown) {
+    ambient::RecordAmbientModeActivation(
+        /*ui_mode=*/LockScreen::HasInstance() ? AmbientUiMode::kLockScreenUi
+                                              : AmbientUiMode::kInSessionUi,
+        /*tablet_mode=*/Shell::Get()->IsInTabletMode());
+  }
+}
 
 AmbientSessionMetricsRecorder::~AmbientSessionMetricsRecorder() {
+  auto elapsed = clock_->NowTicks() - session_start_time_;
+  DVLOG(2) << "Exit ambient mode. Elapsed time: " << elapsed;
+  ambient::RecordAmbientModeTimeElapsed(elapsed, Shell::Get()->IsInTabletMode(),
+                                        theme_);
+
+  bool ambient_ui_was_rendering = num_registered_screens_ > 0;
+  if (!ambient_ui_was_rendering && elapsed >= ambient::kMetricsStartupTimeMax) {
+    LOG(ERROR) << "Ambient UI completely failed to start";
+    ambient::RecordAmbientModeStartupTime(elapsed, theme_);
+  }
+
   base::UmaHistogramCounts100(
       base::StrCat({"Ash.AmbientMode.ScreenCount.", ToString(theme_)}),
       num_registered_screens_);
@@ -26,6 +55,14 @@ AmbientSessionMetricsRecorder::~AmbientSessionMetricsRecorder() {
 void AmbientSessionMetricsRecorder::RegisterScreen(
     lottie::Animation* animation) {
   ++num_registered_screens_;
+  // The very first screen registered means the ambient session has finished
+  // initializing the required assets and is starting to render.
+  if (num_registered_screens_ == 1 &&
+      AmbientUiModel::Get()->ui_visibility() == AmbientUiVisibility::kShown) {
+    ambient::RecordAmbientModeStartupTime(
+        clock_->NowTicks() - session_start_time_, theme_);
+  }
+
   if (!animation) {
     return;
   }

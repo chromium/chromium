@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/constants/ambient_theme.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -27,7 +28,10 @@ namespace ash {
 class ASH_EXPORT AmbientSessionMetricsRecorder
     : public lottie::AnimationObserver {
  public:
-  explicit AmbientSessionMetricsRecorder(AmbientTheme theme);
+  // A custom `tick_clock` may be provided for testing purposes.
+  explicit AmbientSessionMetricsRecorder(
+      AmbientTheme theme,
+      const base::TickClock* tick_clock = nullptr);
   AmbientSessionMetricsRecorder(const AmbientSessionMetricsRecorder&) = delete;
   AmbientSessionMetricsRecorder& operator=(
       const AmbientSessionMetricsRecorder&) = delete;
@@ -58,6 +62,8 @@ class ASH_EXPORT AmbientSessionMetricsRecorder
       const lottie::Animation& animation_r) const;
 
   const AmbientTheme theme_;
+  const base::raw_ptr<const base::TickClock> clock_;
+  const base::TimeTicks session_start_time_;
 
   int num_registered_screens_ = 0;
   base::flat_set<const lottie::Animation*> registered_animations_;

@@ -1367,88 +1367,6 @@ TEST_F(AmbientControllerTest,
   EXPECT_TRUE(GetCachedFiles().empty());
 }
 
-TEST_P(AmbientControllerTestForAnyUiSettings, MetricsEngagementTime) {
-  // TODO(esum): Find a better way of fast forwarding time for lottie animations
-  // in unit tests. Currently, the whole compositor stack is being used in this
-  // test harness and there is no good way to control the frame rate, so
-  // FastForwardBy() blocks for long periods of time. Do not make this value
-  // too high, or the test is at risk of timing out.
-  constexpr base::TimeDelta kExpectedEngagementTime = base::Milliseconds(100);
-
-  base::HistogramTester histogram_tester;
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
-  LockScreen();
-
-  // Unlike other tests, the exact amount of time we spend in ambient mode
-  // matters to write the correct test expectation. So fast forward by the
-  // exact amount needed to trigger ambient mode.
-  // (FastForwardToLockScreenTimeout() adds on a little buffer to the timeout)
-  task_environment()->FastForwardBy(ambient_controller()
-                                        ->ambient_ui_model()
-                                        ->lock_screen_inactivity_timeout());
-  ASSERT_TRUE(ambient_controller()->IsShown());
-
-  task_environment()->FastForwardBy(kExpectedEngagementTime);
-
-  UnlockScreen();
-  ASSERT_FALSE(ambient_controller()->IsShown());
-
-  histogram_tester.ExpectTimeBucketCount(
-      "Ash.AmbientMode.EngagementTime.ClamshellMode", kExpectedEngagementTime,
-      1);
-  histogram_tester.ExpectTimeBucketCount(
-      base::StrCat(
-          {"Ash.AmbientMode.EngagementTime.", ToString(GetParam().theme())}),
-      kExpectedEngagementTime, 1);
-
-  // Now do the same sequence in tablet mode.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  LockScreen();
-
-  task_environment()->FastForwardBy(ambient_controller()
-                                        ->ambient_ui_model()
-                                        ->lock_screen_inactivity_timeout());
-  ASSERT_TRUE(ambient_controller()->IsShown());
-
-  task_environment()->FastForwardBy(kExpectedEngagementTime);
-
-  UnlockScreen();
-  ASSERT_FALSE(ambient_controller()->IsShown());
-
-  histogram_tester.ExpectTimeBucketCount(
-      "Ash.AmbientMode.EngagementTime.TabletMode", kExpectedEngagementTime, 1);
-  histogram_tester.ExpectTimeBucketCount(
-      base::StrCat(
-          {"Ash.AmbientMode.EngagementTime.", ToString(GetParam().theme())}),
-      kExpectedEngagementTime, 2);
-}
-
-TEST_P(AmbientControllerTestForAnyUiSettings, MetricsStartupTime) {
-  base::HistogramTester histogram_tester;
-  LockScreen();
-  FastForwardToLockScreenTimeout();
-  FastForwardTiny();
-  ASSERT_TRUE(ambient_controller()->IsShown());
-
-  histogram_tester.ExpectTotalCount(
-      base::StrCat(
-          {"Ash.AmbientMode.StartupTime.", ToString(GetParam().theme())}),
-      1);
-
-  UnlockScreen();
-  ASSERT_FALSE(ambient_controller()->IsShown());
-
-  LockScreen();
-  FastForwardToLockScreenTimeout();
-  FastForwardTiny();
-  ASSERT_TRUE(ambient_controller()->IsShown());
-
-  histogram_tester.ExpectTotalCount(
-      base::StrCat(
-          {"Ash.AmbientMode.StartupTime.", ToString(GetParam().theme())}),
-      2);
-}
-
 TEST_F(AmbientControllerTest,
        ANIMATION_TEST_WITH_RESOURCES(MetricsStartupTimeSuspendAfterTimeMax)) {
   SetAmbientTheme(AmbientTheme::kSlideshow);
@@ -1483,33 +1401,6 @@ TEST_F(AmbientControllerTest,
   ASSERT_FALSE(ambient_controller()->IsShown());
   histogram_tester.ExpectTotalCount("Ash.AmbientMode.StartupTime.SlideShow", 1);
   UnlockScreen();
-}
-
-TEST_P(AmbientControllerTestForAnyUiSettings, MetricsStartupTimeFailedToStart) {
-  switch (GetParam().theme()) {
-    case AmbientTheme::kVideo:
-      // Video themes have no dependency on backend photos, so we cannot test
-      // failure to start ambient mode by simulating an IMAX outage. Video
-      // themes should always start unless there is a design oversight or bug.
-      GTEST_SKIP();
-    case AmbientTheme::kSlideshow:
-    case AmbientTheme::kFeelTheBreeze:
-    case AmbientTheme::kFloatOnBy:
-      break;
-  }
-  // Simulate IMAX outage that doesn't return any photos.
-  backend_controller()->SetFetchScreenUpdateInfoResponseSize(0);
-
-  base::HistogramTester histogram_tester;
-  LockScreen();
-  FastForwardToLockScreenTimeout();
-  task_environment()->FastForwardBy(base::Minutes(1));
-  ASSERT_TRUE(GetContainerViews().empty());
-
-  UnlockScreen();
-  histogram_tester.ExpectUniqueTimeSample(
-      base::StrCat({"Ash.AmbientMode.StartupTime.", GetParam().ToString()}),
-      base::Minutes(1), 1);
 }
 
 TEST_F(AmbientControllerTest, ShouldStartScreenSaverPreview) {
