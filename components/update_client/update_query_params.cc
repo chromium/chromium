@@ -46,25 +46,25 @@ const char kOs[] =
 #endif
 
 const char kArch[] =
-#if defined(__amd64__) || defined(_WIN64)
+#if defined(ARCH_CPU_X86_64)
     "x64";
-#elif defined(__i386__) || defined(_WIN32)
+#elif defined(ARCH_CPU_X86)
     "x86";
-#elif defined(__arm__)
+#elif defined(ARCH_CPU_ARMEL)
     "arm";
-#elif defined(__aarch64__)
+#elif defined(ARCH_CPU_ARM64)
     "arm64";
-#elif defined(__mips__) && (__mips == 64)
+#elif defined(ARCH_CPU_MIPS64EL)
     "mips64el";
-#elif defined(__mips__)
+#elif defined(ARCH_CPU_MIPSEL)
     "mipsel";
 #elif defined(__powerpc64__)
     "ppc64";
-#elif defined(__loongarch32)
+#elif defined(ARCH_CPU_LOONG32)
     "loong32";
-#elif defined(__loongarch64)
+#elif defined(ARCH_CPU_LOONG64)
     "loong64";
-#elif defined(__riscv) && (__riscv_xlen == 64)
+#elif defined(ARCH_CPU_RISCV64)
     "riscv64";
 #else
 #error "unknown arch"
