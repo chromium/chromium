@@ -1610,49 +1610,49 @@ bool CSSMathExpressionAnchorQuery::operator==(
 
 namespace {
 
-AnchorValue CSSValueIDToAnchorValueEnum(CSSValueID value) {
+CSSAnchorValue CSSValueIDToAnchorValueEnum(CSSValueID value) {
   switch (value) {
     case CSSValueID::kTop:
-      return AnchorValue::kTop;
+      return CSSAnchorValue::kTop;
     case CSSValueID::kLeft:
-      return AnchorValue::kLeft;
+      return CSSAnchorValue::kLeft;
     case CSSValueID::kRight:
-      return AnchorValue::kRight;
+      return CSSAnchorValue::kRight;
     case CSSValueID::kBottom:
-      return AnchorValue::kBottom;
+      return CSSAnchorValue::kBottom;
     case CSSValueID::kStart:
-      return AnchorValue::kStart;
+      return CSSAnchorValue::kStart;
     case CSSValueID::kEnd:
-      return AnchorValue::kEnd;
+      return CSSAnchorValue::kEnd;
     case CSSValueID::kSelfStart:
-      return AnchorValue::kSelfStart;
+      return CSSAnchorValue::kSelfStart;
     case CSSValueID::kSelfEnd:
-      return AnchorValue::kSelfEnd;
+      return CSSAnchorValue::kSelfEnd;
     case CSSValueID::kCenter:
-      return AnchorValue::kCenter;
+      return CSSAnchorValue::kCenter;
     default:
       NOTREACHED();
-      return AnchorValue::kCenter;
+      return CSSAnchorValue::kCenter;
   }
 }
 
-AnchorSizeValue CSSValueIDToAnchorSizeValueEnum(CSSValueID value) {
+CSSAnchorSizeValue CSSValueIDToAnchorSizeValueEnum(CSSValueID value) {
   switch (value) {
     case CSSValueID::kWidth:
-      return AnchorSizeValue::kWidth;
+      return CSSAnchorSizeValue::kWidth;
     case CSSValueID::kHeight:
-      return AnchorSizeValue::kHeight;
+      return CSSAnchorSizeValue::kHeight;
     case CSSValueID::kBlock:
-      return AnchorSizeValue::kBlock;
+      return CSSAnchorSizeValue::kBlock;
     case CSSValueID::kInline:
-      return AnchorSizeValue::kInline;
+      return CSSAnchorSizeValue::kInline;
     case CSSValueID::kSelfBlock:
-      return AnchorSizeValue::kSelfBlock;
+      return CSSAnchorSizeValue::kSelfBlock;
     case CSSValueID::kSelfInline:
-      return AnchorSizeValue::kSelfInline;
+      return CSSAnchorSizeValue::kSelfInline;
     default:
       NOTREACHED();
-      return AnchorSizeValue::kSelfInline;
+      return CSSAnchorSizeValue::kSelfInline;
   }
 }
 
@@ -2265,46 +2265,46 @@ namespace {
 
 CSSValue* AnchorQueryValueToCSSValue(
     const CalculationExpressionAnchorQueryNode& anchor_query) {
-  if (anchor_query.Type() == AnchorQueryType::kAnchor) {
+  if (anchor_query.Type() == CSSAnchorQueryType::kAnchor) {
     switch (anchor_query.AnchorSide()) {
-      case AnchorValue::kTop:
+      case CSSAnchorValue::kTop:
         return CSSIdentifierValue::Create(CSSValueID::kTop);
-      case AnchorValue::kLeft:
+      case CSSAnchorValue::kLeft:
         return CSSIdentifierValue::Create(CSSValueID::kLeft);
-      case AnchorValue::kRight:
+      case CSSAnchorValue::kRight:
         return CSSIdentifierValue::Create(CSSValueID::kRight);
-      case AnchorValue::kBottom:
+      case CSSAnchorValue::kBottom:
         return CSSIdentifierValue::Create(CSSValueID::kBottom);
-      case AnchorValue::kStart:
+      case CSSAnchorValue::kStart:
         return CSSIdentifierValue::Create(CSSValueID::kStart);
-      case AnchorValue::kEnd:
+      case CSSAnchorValue::kEnd:
         return CSSIdentifierValue::Create(CSSValueID::kEnd);
-      case AnchorValue::kSelfStart:
+      case CSSAnchorValue::kSelfStart:
         return CSSIdentifierValue::Create(CSSValueID::kSelfStart);
-      case AnchorValue::kSelfEnd:
+      case CSSAnchorValue::kSelfEnd:
         return CSSIdentifierValue::Create(CSSValueID::kSelfEnd);
-      case AnchorValue::kCenter:
+      case CSSAnchorValue::kCenter:
         return CSSIdentifierValue::Create(CSSValueID::kCenter);
-      case AnchorValue::kPercentage:
+      case CSSAnchorValue::kPercentage:
         return CSSNumericLiteralValue::Create(
             anchor_query.AnchorSidePercentage(),
             CSSPrimitiveValue::UnitType::kPercentage);
     }
   }
 
-  DCHECK_EQ(anchor_query.Type(), AnchorQueryType::kAnchorSize);
+  DCHECK_EQ(anchor_query.Type(), CSSAnchorQueryType::kAnchorSize);
   switch (anchor_query.AnchorSize()) {
-    case AnchorSizeValue::kWidth:
+    case CSSAnchorSizeValue::kWidth:
       return CSSIdentifierValue::Create(CSSValueID::kWidth);
-    case AnchorSizeValue::kHeight:
+    case CSSAnchorSizeValue::kHeight:
       return CSSIdentifierValue::Create(CSSValueID::kHeight);
-    case AnchorSizeValue::kBlock:
+    case CSSAnchorSizeValue::kBlock:
       return CSSIdentifierValue::Create(CSSValueID::kBlock);
-    case AnchorSizeValue::kInline:
+    case CSSAnchorSizeValue::kInline:
       return CSSIdentifierValue::Create(CSSValueID::kInline);
-    case AnchorSizeValue::kSelfBlock:
+    case CSSAnchorSizeValue::kSelfBlock:
       return CSSIdentifierValue::Create(CSSValueID::kSelfBlock);
-    case AnchorSizeValue::kSelfInline:
+    case CSSAnchorSizeValue::kSelfInline:
       return CSSIdentifierValue::Create(CSSValueID::kSelfInline);
   }
 }
@@ -2322,7 +2322,7 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
 
   if (node.IsAnchorQuery()) {
     const auto& anchor_query = To<CalculationExpressionAnchorQueryNode>(node);
-    CSSAnchorQueryType type = anchor_query.Type() == AnchorQueryType::kAnchor
+    CSSAnchorQueryType type = anchor_query.Type() == CSSAnchorQueryType::kAnchor
                                   ? CSSAnchorQueryType::kAnchor
                                   : CSSAnchorQueryType::kAnchorSize;
     const CSSValue* anchor_specifier = nullptr;

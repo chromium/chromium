@@ -59,7 +59,7 @@ blink_core_sources_css = [
   "counter_style.h",
   "counter_style_map.cc",
   "counter_style_map.h",
-  "css_anchor_query_type.h",
+  "css_anchor_query_enums.h",
   "css_axis_value.cc",
   "css_axis_value.h",
   "css_basic_shape_values.cc",

@@ -13,11 +13,11 @@ namespace blink {
 scoped_refptr<const CalculationExpressionAnchorQueryNode>
 CalculationExpressionAnchorQueryNode::CreateAnchor(
     const AnchorSpecifierValue& anchor_specifier,
-    AnchorValue side,
+    CSSAnchorValue side,
     const Length& fallback) {
   AnchorQueryValue value = {.anchor_side = side};
   return base::MakeRefCounted<CalculationExpressionAnchorQueryNode>(
-      AnchorQueryType::kAnchor, anchor_specifier, value, /* percentage */ 0,
+      CSSAnchorQueryType::kAnchor, anchor_specifier, value, /* percentage */ 0,
       fallback);
 }
 
@@ -27,21 +27,22 @@ CalculationExpressionAnchorQueryNode::CreateAnchorPercentage(
     const AnchorSpecifierValue& anchor_specifier,
     float percentage,
     const Length& fallback) {
-  AnchorQueryValue value = {.anchor_side = AnchorValue::kPercentage};
+  AnchorQueryValue value = {.anchor_side = CSSAnchorValue::kPercentage};
   return base::MakeRefCounted<CalculationExpressionAnchorQueryNode>(
-      AnchorQueryType::kAnchor, anchor_specifier, value, percentage, fallback);
+      CSSAnchorQueryType::kAnchor, anchor_specifier, value, percentage,
+      fallback);
 }
 
 //  static
 scoped_refptr<const CalculationExpressionAnchorQueryNode>
 CalculationExpressionAnchorQueryNode::CreateAnchorSize(
     const AnchorSpecifierValue& anchor_specifier,
-    AnchorSizeValue size,
+    CSSAnchorSizeValue size,
     const Length& fallback) {
   AnchorQueryValue value = {.anchor_size = size};
   return base::MakeRefCounted<CalculationExpressionAnchorQueryNode>(
-      AnchorQueryType::kAnchorSize, anchor_specifier, value, /* percentage */ 0,
-      fallback);
+      CSSAnchorQueryType::kAnchorSize, anchor_specifier, value,
+      /* percentage */ 0, fallback);
 }
 
 bool CalculationExpressionAnchorQueryNode::Equals(
@@ -58,11 +59,11 @@ bool CalculationExpressionAnchorQueryNode::Equals(
                               other_anchor_query->anchor_specifier_)) {
     return false;
   }
-  if (type_ == AnchorQueryType::kAnchor) {
+  if (type_ == CSSAnchorQueryType::kAnchor) {
     if (AnchorSide() != other_anchor_query->AnchorSide()) {
       return false;
     }
-    if (AnchorSide() == AnchorValue::kPercentage &&
+    if (AnchorSide() == CSSAnchorValue::kPercentage &&
         AnchorSidePercentage() != other_anchor_query->AnchorSidePercentage()) {
       return false;
     }

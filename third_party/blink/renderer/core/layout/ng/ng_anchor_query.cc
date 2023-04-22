@@ -16,12 +16,12 @@ namespace blink {
 
 namespace {
 
-AnchorValue PhysicalAnchorValueUsing(AnchorValue x,
-                                     AnchorValue flipped_x,
-                                     AnchorValue y,
-                                     AnchorValue flipped_y,
-                                     WritingDirectionMode writing_direction,
-                                     bool is_y_axis) {
+CSSAnchorValue PhysicalAnchorValueUsing(CSSAnchorValue x,
+                                        CSSAnchorValue flipped_x,
+                                        CSSAnchorValue y,
+                                        CSSAnchorValue flipped_y,
+                                        WritingDirectionMode writing_direction,
+                                        bool is_y_axis) {
   if (is_y_axis)
     return writing_direction.IsFlippedY() ? flipped_y : y;
   return writing_direction.IsFlippedX() ? flipped_x : x;
@@ -30,26 +30,27 @@ AnchorValue PhysicalAnchorValueUsing(AnchorValue x,
 // The logical <anchor-side> keywords map to one of the physical keywords
 // depending on the property the function is being used in and the writing mode.
 // https://drafts.csswg.org/css-anchor-1/#anchor-pos
-AnchorValue PhysicalAnchorValueFromLogical(
-    AnchorValue anchor_value,
+CSSAnchorValue PhysicalAnchorValueFromLogical(
+    CSSAnchorValue anchor_value,
     WritingDirectionMode writing_direction,
     WritingDirectionMode self_writing_direction,
     bool is_y_axis) {
   switch (anchor_value) {
-    case AnchorValue::kSelfStart:
+    case CSSAnchorValue::kSelfStart:
       writing_direction = self_writing_direction;
       [[fallthrough]];
-    case AnchorValue::kStart:
-      return PhysicalAnchorValueUsing(AnchorValue::kLeft, AnchorValue::kRight,
-                                      AnchorValue::kTop, AnchorValue::kBottom,
-                                      writing_direction, is_y_axis);
-    case AnchorValue::kSelfEnd:
+    case CSSAnchorValue::kStart:
+      return PhysicalAnchorValueUsing(
+          CSSAnchorValue::kLeft, CSSAnchorValue::kRight, CSSAnchorValue::kTop,
+          CSSAnchorValue::kBottom, writing_direction, is_y_axis);
+    case CSSAnchorValue::kSelfEnd:
       writing_direction = self_writing_direction;
       [[fallthrough]];
-    case AnchorValue::kEnd:
-      return PhysicalAnchorValueUsing(AnchorValue::kRight, AnchorValue::kLeft,
-                                      AnchorValue::kBottom, AnchorValue::kTop,
-                                      writing_direction, is_y_axis);
+    case CSSAnchorValue::kEnd:
+      return PhysicalAnchorValueUsing(
+          CSSAnchorValue::kRight, CSSAnchorValue::kLeft,
+          CSSAnchorValue::kBottom, CSSAnchorValue::kTop, writing_direction,
+          is_y_axis);
     default:
       return anchor_value;
   }
@@ -273,7 +274,7 @@ void NGLogicalAnchorQuery::SetFromPhysical(
 
 absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
     const NGLogicalAnchorReference& reference,
-    AnchorValue anchor_value,
+    CSSAnchorValue anchor_value,
     float percentage,
     LayoutUnit available_size,
     const WritingModeConverter& container_converter,
@@ -287,7 +288,7 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
       self_writing_direction, is_y_axis);
   LayoutUnit value;
   switch (anchor_value) {
-    case AnchorValue::kCenter: {
+    case CSSAnchorValue::kCenter: {
       const LayoutUnit start = is_y_axis
                                    ? anchor.Y() - offset_to_padding_box.top
                                    : anchor.X() - offset_to_padding_box.left;
@@ -297,7 +298,7 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
       value = start + LayoutUnit::FromFloatRound((end - start) * 0.5);
       break;
     }
-    case AnchorValue::kLeft:
+    case CSSAnchorValue::kLeft:
       if (is_y_axis)
         return absl::nullopt;  // Wrong axis.
       // Make the offset relative to the padding box, because the containing
@@ -305,25 +306,25 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
       // https://www.w3.org/TR/CSS21/visudet.html#containing-block-details
       value = anchor.X() - offset_to_padding_box.left;
       break;
-    case AnchorValue::kRight:
+    case CSSAnchorValue::kRight:
       if (is_y_axis)
         return absl::nullopt;  // Wrong axis.
-      // See |AnchorValue::kLeft|.
+      // See |CSSAnchorValue::kLeft|.
       value = anchor.Right() - offset_to_padding_box.left;
       break;
-    case AnchorValue::kTop:
+    case CSSAnchorValue::kTop:
       if (!is_y_axis)
         return absl::nullopt;  // Wrong axis.
-      // See |AnchorValue::kLeft|.
+      // See |CSSAnchorValue::kLeft|.
       value = anchor.Y() - offset_to_padding_box.top;
       break;
-    case AnchorValue::kBottom:
+    case CSSAnchorValue::kBottom:
       if (!is_y_axis)
         return absl::nullopt;  // Wrong axis.
-      // See |AnchorValue::kLeft|.
+      // See |CSSAnchorValue::kLeft|.
       value = anchor.Bottom() - offset_to_padding_box.top;
       break;
-    case AnchorValue::kPercentage: {
+    case CSSAnchorValue::kPercentage: {
       LayoutUnit size;
       if (is_y_axis) {
         value = anchor.Y() - offset_to_padding_box.top;
@@ -343,10 +344,10 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
       value += LayoutUnit::FromFloatRound(size * percentage / 100);
       break;
     }
-    case AnchorValue::kStart:
-    case AnchorValue::kEnd:
-    case AnchorValue::kSelfStart:
-    case AnchorValue::kSelfEnd:
+    case CSSAnchorValue::kStart:
+    case CSSAnchorValue::kEnd:
+    case CSSAnchorValue::kSelfStart:
+    case CSSAnchorValue::kSelfEnd:
       // These logical values should have been converted to corresponding
       // physical values in `PhysicalAnchorValueFromLogical`.
       NOTREACHED();
@@ -362,29 +363,29 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
 
 LayoutUnit NGLogicalAnchorQuery::EvaluateSize(
     const NGLogicalAnchorReference& reference,
-    AnchorSizeValue anchor_size_value,
+    CSSAnchorSizeValue anchor_size_value,
     WritingMode container_writing_mode,
     WritingMode self_writing_mode) const {
   const LogicalSize& anchor = reference.rect.size;
   switch (anchor_size_value) {
-    case AnchorSizeValue::kInline:
+    case CSSAnchorSizeValue::kInline:
       return anchor.inline_size;
-    case AnchorSizeValue::kBlock:
+    case CSSAnchorSizeValue::kBlock:
       return anchor.block_size;
-    case AnchorSizeValue::kWidth:
+    case CSSAnchorSizeValue::kWidth:
       return IsHorizontalWritingMode(container_writing_mode)
                  ? anchor.inline_size
                  : anchor.block_size;
-    case AnchorSizeValue::kHeight:
+    case CSSAnchorSizeValue::kHeight:
       return IsHorizontalWritingMode(container_writing_mode)
                  ? anchor.block_size
                  : anchor.inline_size;
-    case AnchorSizeValue::kSelfInline:
+    case CSSAnchorSizeValue::kSelfInline:
       return IsHorizontalWritingMode(container_writing_mode) ==
                      IsHorizontalWritingMode(self_writing_mode)
                  ? anchor.inline_size
                  : anchor.block_size;
-    case AnchorSizeValue::kSelfBlock:
+    case CSSAnchorSizeValue::kSelfBlock:
       return IsHorizontalWritingMode(container_writing_mode) ==
                      IsHorizontalWritingMode(self_writing_mode)
                  ? anchor.block_size
@@ -411,11 +412,11 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::Evaluate(
   DCHECK(node.IsAnchorQuery());
   const auto& anchor_query = To<CalculationExpressionAnchorQueryNode>(node);
   switch (anchor_query.Type()) {
-    case AnchorQueryType::kAnchor:
+    case CSSAnchorQueryType::kAnchor:
       return EvaluateAnchor(anchor_query.AnchorSpecifier(),
                             anchor_query.AnchorSide(),
                             anchor_query.AnchorSidePercentageOrZero());
-    case AnchorQueryType::kAnchorSize:
+    case CSSAnchorQueryType::kAnchorSize:
       return EvaluateAnchorSize(anchor_query.AnchorSpecifier(),
                                 anchor_query.AnchorSize());
   }
@@ -444,7 +445,7 @@ const NGLogicalAnchorReference* NGAnchorEvaluatorImpl::ResolveAnchorReference(
 
 absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchor(
     const AnchorSpecifierValue& anchor_specifier,
-    AnchorValue anchor_value,
+    CSSAnchorValue anchor_value,
     float percentage) const {
   has_anchor_functions_ = true;
   const NGLogicalAnchorReference* anchor_reference =
@@ -462,7 +463,7 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchor(
 
 absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchorSize(
     const AnchorSpecifierValue& anchor_specifier,
-    AnchorSizeValue anchor_size_value) const {
+    CSSAnchorSizeValue anchor_size_value) const {
   has_anchor_functions_ = true;
   const NGLogicalAnchorReference* anchor_reference =
       ResolveAnchorReference(anchor_specifier);
