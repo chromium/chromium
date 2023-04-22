@@ -111,12 +111,6 @@ class ASH_EXPORT WallpaperControllerImpl
 
   ~WallpaperControllerImpl() override;
 
-  // Returns the maximum size of all displays combined in native
-  // resolutions.  Note that this isn't the bounds of the display who
-  // has maximum resolutions. Instead, this returns the size of the
-  // maximum width of all displays, and the maximum height of all displays.
-  static gfx::Size GetMaxDisplaySizeInNative();
-
   // Returns custom wallpaper path. Appends |sub_dir|, |wallpaper_files_id| and
   // |file_name| to custom wallpaper directory.
   static base::FilePath GetCustomWallpaperPath(

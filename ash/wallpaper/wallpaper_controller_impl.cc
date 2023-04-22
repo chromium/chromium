@@ -162,15 +162,6 @@ base::FilePath GetUserGooglePhotosWallpaperDir(const AccountId& account_id) {
       account_id.GetAccountIdKey());
 }
 
-// Returns the appropriate wallpaper resolution for all root windows.
-WallpaperResolution GetAppropriateResolution() {
-  gfx::Size size = WallpaperControllerImpl::GetMaxDisplaySizeInNative();
-  return (size.width() > kSmallWallpaperMaxWidth ||
-          size.height() > kSmallWallpaperMaxHeight)
-             ? WallpaperResolution::kLarge
-             : WallpaperResolution::kSmall;
-}
-
 // Returns the path of the online wallpaper corresponding to |url| and
 // |resolution|.
 base::FilePath GetOnlineWallpaperPath(const std::string& url,
@@ -537,19 +528,6 @@ WallpaperControllerImpl::WallpaperControllerImpl(
 WallpaperControllerImpl::~WallpaperControllerImpl() {
   Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
-}
-
-// static
-gfx::Size WallpaperControllerImpl::GetMaxDisplaySizeInNative() {
-  // Return an empty size for test environments where the screen is null.
-  if (!display::Screen::GetScreen())
-    return gfx::Size();
-
-  gfx::Size max;
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays())
-    max.SetToMax(display.GetSizeInPixel());
-
-  return max;
 }
 
 // static

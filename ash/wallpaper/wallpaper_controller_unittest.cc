@@ -919,38 +919,6 @@ TEST_F(WallpaperControllerTest, ResizeCustomWallpaper) {
   EXPECT_TRUE(resized_image.BackedBySameObjectAs(controller_->GetWallpaper()));
 }
 
-TEST_F(WallpaperControllerTest, GetMaxDisplaySize) {
-  // Device scale factor shouldn't affect the native size.
-  UpdateDisplay("1000x300*2");
-  EXPECT_EQ("1000x300",
-            WallpaperControllerImpl::GetMaxDisplaySizeInNative().ToString());
-
-  // Rotated display should return the rotated size.
-  UpdateDisplay("1000x300*2/r");
-  EXPECT_EQ("300x1000",
-            WallpaperControllerImpl::GetMaxDisplaySizeInNative().ToString());
-
-  // UI Scaling shouldn't affect the native size.
-  UpdateDisplay("1000x300*2@1.5");
-  EXPECT_EQ("1000x300",
-            WallpaperControllerImpl::GetMaxDisplaySizeInNative().ToString());
-
-  // First display has maximum size.
-  UpdateDisplay("400x300,200x100");
-  EXPECT_EQ("400x300",
-            WallpaperControllerImpl::GetMaxDisplaySizeInNative().ToString());
-
-  // Second display has maximum size.
-  UpdateDisplay("400x300,500x600");
-  EXPECT_EQ("500x600",
-            WallpaperControllerImpl::GetMaxDisplaySizeInNative().ToString());
-
-  // Maximum width and height belongs to different displays.
-  UpdateDisplay("400x300,100x500");
-  EXPECT_EQ("400x500",
-            WallpaperControllerImpl::GetMaxDisplaySizeInNative().ToString());
-}
-
 // Test that the wallpaper is always fitted to the native display resolution
 // when the layout is WALLPAPER_LAYOUT_CENTER to prevent blurry images.
 TEST_F(WallpaperControllerTest, DontScaleWallpaperWithCenterLayout) {
