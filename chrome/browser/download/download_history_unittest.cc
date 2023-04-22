@@ -14,12 +14,12 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_utils.h"
@@ -384,7 +384,7 @@ class DownloadHistoryTest : public testing::Test {
         download::DOWNLOAD_INTERRUPT_REASON_NONE);
     row->id =
         history::ToHistoryDownloadId(static_cast<uint32_t>(items_.size() + 1));
-    row->guid = base::GenerateGUID();
+    row->guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
     row->opened = false;
     row->last_access_time = now;
     row->transient = false;

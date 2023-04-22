@@ -12,13 +12,13 @@
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/uuid.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_commands.h"
@@ -125,7 +125,8 @@ class DownloadItemNotificationTest : public testing::Test {
     download_item_ = std::make_unique<NiceMock<download::MockDownloadItem>>();
     ON_CALL(*download_item_, GetId()).WillByDefault(Return(12345));
     ON_CALL(*download_item_, GetGuid())
-        .WillByDefault(ReturnRefOfCopy(base::GenerateGUID()));
+        .WillByDefault(ReturnRefOfCopy(
+            base::Uuid::GenerateRandomV4().AsLowercaseString()));
     ON_CALL(*download_item_, GetState())
         .WillByDefault(Return(download::DownloadItem::IN_PROGRESS));
     ON_CALL(*download_item_, IsDangerous()).WillByDefault(Return(false));
