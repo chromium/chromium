@@ -105,7 +105,7 @@ bool WebMVideoClient::InitializeConfig(
   } else if (codec_id == "V_VP9") {
     video_codec = VideoCodec::kVP9;
     profile = GetVP9CodecProfile(
-        codec_private, color_space.ToGfxColorSpace().IsHDR() ||
+        codec_private, color_space.GuessGfxColorSpace().IsHDR() ||
                            config->hdr_metadata().has_value() || !is_8bit);
 #if BUILDFLAG(ENABLE_AV1_DECODER)
   } else if (codec_id == "V_AV1") {

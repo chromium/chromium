@@ -203,7 +203,7 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
             webrtc::ColorSpace::MatrixID::kUnspecified)) {
     video_frame->set_color_space(
         WebRtcToMediaVideoColorSpace(*incoming_frame.color_space())
-            .ToGfxColorSpace());
+            .GuessGfxColorSpace());
   }
 
   // Run render smoothness algorithm only when we don't have to render

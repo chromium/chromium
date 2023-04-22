@@ -10,14 +10,37 @@
 
 namespace media {
 
-class VideoColorSpaceTest : public testing::Test {};
+TEST(VideoColorSpaceTest, InvalidColorSpace) {
+  auto video_cs = VideoColorSpace();
+  EXPECT_FALSE(video_cs.IsSpecified());
+  auto gfx_cs = video_cs.ToGfxColorSpace();
+  EXPECT_FALSE(gfx_cs.IsValid());
+  auto guessed_cs = video_cs.GuessGfxColorSpace();
+  EXPECT_TRUE(guessed_cs.IsValid());
+  EXPECT_EQ(guessed_cs, gfx::ColorSpace::CreateREC709());
+}
+
+TEST(VideoColorSpaceTest, PartiallyValid) {
+  auto video_cs = VideoColorSpace();
+  video_cs.primaries = VideoColorSpace::PrimaryID::BT709;
+  EXPECT_TRUE(video_cs.IsSpecified());  // Any field counts.
+  auto gfx_cs = video_cs.ToGfxColorSpace();
+  EXPECT_FALSE(gfx_cs.IsValid());
+  EXPECT_EQ(gfx_cs, gfx::ColorSpace());
+  auto guessed_cs = video_cs.GuessGfxColorSpace();
+  EXPECT_TRUE(guessed_cs.IsValid());
+  EXPECT_EQ(guessed_cs, gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                                        gfx::ColorSpace::TransferID::BT709,
+                                        gfx::ColorSpace::MatrixID::BT709,
+                                        gfx::ColorSpace::RangeID::DERIVED));
+}
 
 TEST(VideoColorSpaceTest, UnknownVideoToSRGB) {
   // Invalid video spaces should be BT709.
   VideoColorSpace invalid_video_color_space = VideoColorSpace(
       VideoColorSpace::PrimaryID::INVALID, VideoColorSpace::TransferID::INVALID,
       VideoColorSpace::MatrixID::INVALID, gfx::ColorSpace::RangeID::LIMITED);
-  gfx::ColorSpace unknown = invalid_video_color_space.ToGfxColorSpace();
+  gfx::ColorSpace unknown = invalid_video_color_space.GuessGfxColorSpace();
   gfx::ColorSpace sRGB = gfx::ColorSpace::CreateSRGB();
   std::unique_ptr<gfx::ColorTransform> t(
       gfx::ColorTransform::NewColorTransform(unknown, sRGB));

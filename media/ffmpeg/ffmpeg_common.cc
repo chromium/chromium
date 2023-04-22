@@ -49,7 +49,7 @@ VideoDecoderConfig::AlphaMode GetAlphaMode(const AVStream* stream) {
 VideoColorSpace GetGuessedColorSpace(const VideoColorSpace& color_space) {
   return VideoColorSpace::FromGfxColorSpace(
       // convert to gfx color space and make a guess.
-      color_space.ToGfxColorSpace());
+      color_space.GuessGfxColorSpace());
 }
 
 }  // namespace

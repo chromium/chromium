@@ -121,7 +121,7 @@ gfx::ColorSpace GetMediaTypeColorSpace(IMFMediaType* media_type) {
   // Convert to VideoColorSpace and back to fill in any gaps.
   VideoColorSpace guesser = VideoColorSpace::FromGfxColorSpace(
       gfx::ColorSpace(primary, transfer, matrix, range));
-  return guesser.ToGfxColorSpace();
+  return guesser.GuessGfxColorSpace();
 }
 
 }  // namespace media
