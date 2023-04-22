@@ -384,4 +384,69 @@ TEST_F(FrameCaptionButtonContainerViewWithFloatTest,
   EXPECT_TRUE(size_button->GetVisible());
 }
 
+// Test how the allowed actions affect the visibility of the float button.
+TEST_F(FrameCaptionButtonContainerViewWithFloatTest, FloatButtonVisibility) {
+  // The float button should not be visible when minimizing and maximizing are
+  // allowed.
+  auto* widget1 = CreateTestWidget(MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED,
+                                   CLOSE_BUTTON_VISIBLE);
+  widget1->GetNativeWindow()->SetProperty(aura::client::kAppType,
+                                          static_cast<int>(AppType::ARC_APP));
+  FrameCaptionButtonContainerView container1(widget1);
+  InitContainer(&container1);
+  views::test::RunScheduledLayout(&container1);
+  FrameCaptionButtonContainerView::TestApi t1(&container1);
+  EXPECT_TRUE(t1.minimize_button()->GetVisible());
+  EXPECT_TRUE(t1.size_button()->GetVisible());
+  EXPECT_TRUE(t1.close_button()->GetVisible());
+  EXPECT_FALSE(t1.float_button()->GetVisible());
+  EXPECT_TRUE(CheckButtonsAtEdges(&container1, *t1.minimize_button(),
+                                  *t1.close_button()));
+
+  // The float button should be visible when minimizing is allowed but
+  // maximizing (resizing) is disallowed.
+  auto* widget2 = CreateTestWidget(MAXIMIZE_DISALLOWED, MINIMIZE_ALLOWED,
+                                   CLOSE_BUTTON_VISIBLE);
+  widget2->GetNativeWindow()->SetProperty(aura::client::kAppType,
+                                          static_cast<int>(AppType::ARC_APP));
+  FrameCaptionButtonContainerView container2(widget2);
+  InitContainer(&container2);
+  views::test::RunScheduledLayout(&container2);
+  FrameCaptionButtonContainerView::TestApi t2(&container2);
+  EXPECT_TRUE(t2.minimize_button()->GetVisible());
+  EXPECT_FALSE(t2.size_button()->GetVisible());
+  EXPECT_TRUE(t2.close_button()->GetVisible());
+  EXPECT_TRUE(t2.float_button()->GetVisible());
+  EXPECT_TRUE(CheckButtonsAtEdges(&container2, *t2.minimize_button(),
+                                  *t2.close_button()));
+}
+
+TEST_F(FrameCaptionButtonContainerViewWithFloatTest, TestFloatButtonBehavior) {
+  auto* widget = CreateTestWidget(MAXIMIZE_DISALLOWED, MINIMIZE_ALLOWED,
+                                  CLOSE_BUTTON_VISIBLE);
+  auto* window = widget->GetNativeWindow();
+  window->SetProperty(aura::client::kAppType,
+                      static_cast<int>(AppType::BROWSER));
+  widget->Show();
+
+  FrameCaptionButtonContainerView container(widget);
+  InitContainer(&container);
+  widget->GetContentsView()->AddChildView(&container);
+  views::test::RunScheduledLayout(&container);
+  FrameCaptionButtonContainerView::TestApi test_api(&container);
+
+  LeftClickOn(test_api.float_button());
+  auto* window_state = WindowState::Get(window);
+  // Check if window is floated.
+  EXPECT_TRUE(window_state->IsFloated());
+  EXPECT_EQ(window->GetProperty(chromeos::kWindowStateTypeKey),
+            chromeos::WindowStateType::kFloated);
+
+  LeftClickOn(test_api.float_button());
+  // Check if window is unfloated.
+  EXPECT_FALSE(window_state->IsFloated());
+  EXPECT_EQ(window->GetProperty(chromeos::kWindowStateTypeKey),
+            chromeos::WindowStateType::kNormal);
+}
+
 }  // namespace ash

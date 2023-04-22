@@ -978,7 +978,10 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, MoveFloatedWindow) {
   // make it floatable.
   window()->SetProperty(aura::client::kAppType,
                         static_cast<int>(AppType::ARC_APP));
-  widget_delegate()->EnableFloat();
+  if (InTabletMode()) {
+    // Resizing must be enabled in tablet mode to float.
+    widget_delegate()->EnableFloat();
+  }
   ASSERT_TRUE(chromeos::wm::CanFloatWindow(window()));
 
   // Float window.
@@ -989,11 +992,17 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, MoveFloatedWindow) {
   EXPECT_TRUE(window_state()->IsFloated());
   EXPECT_EQ(kShellWindowId_FloatContainer, window()->parent()->GetId());
 
-  // Start dragging in the center of the header.
+  // Start dragging on the left of the minimize button.
   auto* const header_view = GetHeaderView();
   auto* const event_generator = GetEventGenerator();
+
+  chromeos::FrameCaptionButtonContainerView::TestApi test_api(
+      header_view->caption_button_container());
   event_generator->set_current_screen_location(
-      header_view->GetBoundsInScreen().CenterPoint());
+      gfx::Point(test_api.minimize_button()->GetBoundsInScreen().x() - 5,
+                 // Minimize button y coordinate is at the top of the header, so
+                 // use the center point of the header instead.
+                 header_view->GetBoundsInScreen().CenterPoint().y()));
   event_generator->PressLeftButton();
   EXPECT_TRUE(window_state_delegate()->drag_in_progress());
 
@@ -1033,21 +1042,14 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, FloatWindow) {
   // make it floatable.
   window()->SetProperty(aura::client::kAppType,
                         static_cast<int>(AppType::ARC_APP));
-
-  // Float disabled.
-  ASSERT_FALSE(chromeos::wm::CanFloatWindow(window()));
-
-  // The event should be ignored.
-  const WMEvent float_event(WM_EVENT_FLOAT);
-  window_state()->OnWMEvent(&float_event);
-  EXPECT_TRUE(delegate()->requested_bounds().IsEmpty());
-  EXPECT_EQ(WindowStateType::kDefault, delegate()->new_state());
-
-  // Float enabled.
-  widget_delegate()->EnableFloat();
+  if (InTabletMode()) {
+    // Resizing must be enabled in tablet mode to float.
+    widget_delegate()->EnableFloat();
+  }
   ASSERT_TRUE(chromeos::wm::CanFloatWindow(window()));
 
   // Test float.
+  const WMEvent float_event(WM_EVENT_FLOAT);
   window_state()->OnWMEvent(&float_event);
   EXPECT_EQ(
       InTabletMode()
