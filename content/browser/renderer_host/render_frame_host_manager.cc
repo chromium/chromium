@@ -166,20 +166,28 @@ bool DoesNavigationChangeStoragePartition(SiteInstanceImpl* current_instance,
 bool IsSiteInstanceCompatibleWithErrorIsolation(
     SiteInstanceImpl* site_instance,
     const FrameTreeNode& frame_tree_node,
-    bool is_failure) {
+    NavigationRequest::ErrorPageProcess error_page_process) {
   // With no error isolation all SiteInstances are compatible with any
-  // |is_failure|.
-  if (!frame_tree_node.IsErrorPageIsolationEnabled())
+  // |error_page_process|.
+  if (!frame_tree_node.IsErrorPageIsolationEnabled()) {
+    DCHECK_NE(error_page_process,
+              NavigationRequest::ErrorPageProcess::kIsolatedProcess);
     return true;
+  }
 
   // When error page isolation is enabled, don't reuse |site_instance| if it's
-  // an error page SiteInstance, but the navigation is not a failure.
-  // Similarly, don't reuse |site_instance| if it's not an error page
-  // SiteInstance but the navigation will fail and actually need an error page
-  // SiteInstance.
-  bool is_site_instance_for_failures =
+  // an error page SiteInstance, but the navigation is not an error page
+  // navigation. Similarly, don't reuse `site_instance` if it's not an error
+  // page SiteInstance but the navigation will fail and actually need an error
+  // page SiteInstance.
+  bool is_site_instance_for_error_page =
       site_instance->GetSiteInfo().is_error_page();
-  return is_site_instance_for_failures == is_failure;
+  bool should_be_error_page_isolated =
+      (error_page_process !=
+           NavigationRequest::ErrorPageProcess::kNotErrorPage &&
+       error_page_process !=
+           NavigationRequest::ErrorPageProcess::kPostCommitErrorPage);
+  return is_site_instance_for_error_page == should_be_error_page_isolated;
 }
 
 // Simple wrapper around WebExposedIsolationInfo::AreCompatible for easier use
@@ -1889,7 +1897,7 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
     const UrlInfo& destination_url_info,
     bool destination_is_view_source_mode,
     ui::PageTransition transition,
-    bool is_failure,
+    NavigationRequest::ErrorPageProcess error_page_process,
     bool is_reload,
     bool is_same_document,
     IsSameSiteGetter& is_same_site,
@@ -2063,12 +2071,12 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   // a speculative BrowsingInstance swap. It is not required for security and
   // needs to be treated after the history navigation block
   bool is_for_isolated_error_page =
-      is_failure && frame_tree_node_->IsErrorPageIsolationEnabled();
-
+      (error_page_process ==
+       NavigationRequest::ErrorPageProcess::kIsolatedProcess);
   if (current_instance->HasSite() &&
       !is_same_site.Get(*render_frame_host_, destination_url_info) &&
       !CanUseSourceSiteInstance(destination_url_info, source_instance,
-                                was_server_redirect, is_failure) &&
+                                was_server_redirect, error_page_process) &&
       !is_for_isolated_error_page &&
       IsBrowsingInstanceSwapAllowedForPageTransition(transition,
                                                      destination_url) &&
@@ -2244,7 +2252,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
     SiteInstanceImpl* dest_instance,
     SiteInstanceImpl* candidate_instance,
     ui::PageTransition transition,
-    bool is_failure,
+    NavigationRequest::ErrorPageProcess error_page_process,
     bool is_reload,
     bool is_same_document,
     IsSameSiteGetter& is_same_site,
@@ -2297,7 +2305,6 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   bool current_is_view_source_mode = (!current_entry->IsInitialEntry())
                                          ? current_entry->IsViewSourceMode()
                                          : dest_is_view_source_mode;
-
   *should_swap_result =
       force_new_browsing_instance
           ? BrowsingContextGroupSwap::CreateProactiveSwap(
@@ -2305,8 +2312,8 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
           : ShouldSwapBrowsingInstancesForNavigation(
                 current_effective_url, current_is_view_source_mode,
                 source_instance, current_instance, dest_instance, dest_url_info,
-                dest_is_view_source_mode, transition, is_failure, is_reload,
-                is_same_document, is_same_site, coop_swap_result,
+                dest_is_view_source_mode, transition, error_page_process,
+                is_reload, is_same_document, is_same_site, coop_swap_result,
                 was_server_redirect, should_replace_current_entry);
 
   TraceShouldSwapBrowsingInstanceResult(frame_tree_node_->frame_tree_node_id(),
@@ -2322,7 +2329,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
 
   SiteInstanceDescriptor new_instance_descriptor = DetermineSiteInstanceForURL(
       dest_url_info, source_instance, current_instance, dest_instance,
-      transition, is_failure, is_same_site, dest_is_restore,
+      transition, error_page_process, is_same_site, dest_is_restore,
       dest_is_view_source_mode, *should_swap_result, was_server_redirect,
       reason);
 
@@ -2561,7 +2568,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     SiteInstanceImpl* current_instance,
     SiteInstanceImpl* dest_instance,
     ui::PageTransition transition,
-    bool is_failure,
+    NavigationRequest::ErrorPageProcess error_page_process,
     IsSameSiteGetter& is_same_site,
     bool dest_is_restore,
     bool dest_is_view_source_mode,
@@ -2575,16 +2582,19 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
 
   // If the entry has an instance already we should usually use it, unless it is
   // no longer suitable.
-  if (dest_instance &&
-      CanUseDestinationInstance(dest_url_info, current_instance, dest_instance,
-                                is_failure, browsing_context_group_swap)) {
+
+  if (dest_instance && CanUseDestinationInstance(
+                           dest_url_info, current_instance, dest_instance,
+                           error_page_process, browsing_context_group_swap)) {
     AppendReason(reason, "DetermineSiteInstanceForURL => dest_instance");
     return SiteInstanceDescriptor(dest_instance);
   }
 
   // If error page navigations should be isolated, ensure a dedicated
   // SiteInstance is used for them.
-  if (is_failure && frame_tree_node_->IsErrorPageIsolationEnabled()) {
+  if (error_page_process ==
+      NavigationRequest::ErrorPageProcess::kIsolatedProcess) {
+    CHECK(frame_tree_node_->IsErrorPageIsolationEnabled());
     // If the target URL requires a BrowsingInstance swap, put the error page
     // in a new BrowsingInstance, since the scripting relationships would
     // have been broken anyway if there were no error. Otherwise, we keep it
@@ -2638,7 +2648,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // If a swap is required, we need to force the SiteInstance AND
   // BrowsingInstance to be different ones, using CreateForURL.
   bool can_use_source_instance = CanUseSourceSiteInstance(
-      dest_url_info, source_instance, was_server_redirect, is_failure);
+      dest_url_info, source_instance, was_server_redirect, error_page_process);
   if (browsing_context_group_swap.ShouldSwap()) {
     // In rare cases, `source_instance` maybe be already in another
     // BrowsingInstance from `current_instance` (e.g. see how the
@@ -2847,7 +2857,7 @@ bool RenderFrameHostManager::CanUseDestinationInstance(
     const UrlInfo& dest_url_info,
     SiteInstanceImpl* current_instance,
     SiteInstanceImpl* dest_instance,
-    bool is_failure,
+    NavigationRequest::ErrorPageProcess error_page_process,
     const BrowsingContextGroupSwap& browsing_context_group_swap) {
   // Start by verifying that the dest_instance is compatible with the browsing
   // context group swap decision.
@@ -2871,7 +2881,7 @@ bool RenderFrameHostManager::CanUseDestinationInstance(
   // about error page navigations, so we cannot rely on it to return correct
   // value when error pages are involved.
   if (!IsSiteInstanceCompatibleWithErrorIsolation(
-          dest_instance, *frame_tree_node_, is_failure)) {
+          dest_instance, *frame_tree_node_, error_page_process)) {
     return false;
   }
 
@@ -3003,7 +3013,7 @@ bool RenderFrameHostManager::CanUseSourceSiteInstance(
     const UrlInfo& dest_url_info,
     SiteInstanceImpl* source_instance,
     bool was_server_redirect,
-    bool is_failure) {
+    NavigationRequest::ErrorPageProcess error_page_process) {
   if (!source_instance)
     return false;
 
@@ -3042,7 +3052,7 @@ bool RenderFrameHostManager::CanUseSourceSiteInstance(
   // Make sure that error isolation is taken into account.  See also
   // ChromeNavigationBrowserTest.RedirectErrorPageReloadToAboutBlank.
   if (!IsSiteInstanceCompatibleWithErrorIsolation(
-          source_instance, *frame_tree_node_, is_failure)) {
+          source_instance, *frame_tree_node_, error_page_process)) {
     return false;
   }
 
@@ -3755,7 +3765,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
           request->GetUrlInfo(), request->GetSourceSiteInstance(),
           request->dest_site_instance(), candidate_site_instance,
           ui::PageTransitionFromInt(request->common_params().transition),
-          request->state() >= NavigationRequest::CANCELING, is_reload,
+          request->ComputeErrorPageProcess(), is_reload,
           request->IsSameDocument(), is_same_site,
           request->GetRestoreType() == RestoreType::kRestored,
           request->commit_params().is_view_source, request->WasServerRedirect(),

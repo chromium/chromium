@@ -4597,7 +4597,7 @@ void NavigationRequest::OnRequestFailedInternal(
       url::Origin(), net::NetworkAnonymizationKey::CreateTransient());
 
   RenderFrameHostImpl* render_frame_host = nullptr;
-  switch (ComputeErrorPageProcess(status.error_code)) {
+  switch (ComputeErrorPageProcess()) {
     case ErrorPageProcess::kCurrentProcess:
       // There's no way to get here with a same-document navigation, it would
       // need to be on a document that was not blocked but became blocked, but
@@ -4641,6 +4641,10 @@ void NavigationRequest::OnRequestFailedInternal(
             break;
         }
       }
+      break;
+    case ErrorPageProcess::kNotErrorPage:
+    case ErrorPageProcess::kPostCommitErrorPage:
+      NOTREACHED();
       break;
   }
   // Sanity check that we haven't changed the RenderFrameHost picked for the
@@ -4687,8 +4691,19 @@ void NavigationRequest::OnRequestFailedInternal(
   }
 }
 
-NavigationRequest::ErrorPageProcess NavigationRequest::ComputeErrorPageProcess(
-    int net_error) {
+NavigationRequest::ErrorPageProcess
+NavigationRequest::ComputeErrorPageProcess() {
+  if (net_error_ == net::OK) {
+    return ErrorPageProcess::kNotErrorPage;
+  }
+
+  if (state_ < NavigationRequest::CANCELING) {
+    CHECK(!post_commit_error_page_html_.empty());
+    // Post-commit error page normally goes through the "non-error page"
+    // navigation path, so treat them specially here too.
+    return ErrorPageProcess::kPostCommitErrorPage;
+  }
+
   // By policy we can isolate all error pages from both the current and
   // destination processes.
   if (frame_tree_node_->IsErrorPageIsolationEnabled())
@@ -4698,7 +4713,7 @@ NavigationRequest::ErrorPageProcess NavigationRequest::ComputeErrorPageProcess(
   // an unknown URL scheme (such as when navigating a guest to an external
   // protocol) in the process computed for the destination URL. Therefore,
   // leave such cases in the original process. See https://crbug.com/1366450.
-  if (net_error == net::ERR_UNKNOWN_URL_SCHEME &&
+  if (net_error_ == net::ERR_UNKNOWN_URL_SCHEME &&
       frame_tree_node_->current_frame_host()->GetSiteInstance()->IsGuest()) {
     return ErrorPageProcess::kCurrentProcess;
   }
@@ -4719,8 +4734,9 @@ NavigationRequest::ErrorPageProcess NavigationRequest::ComputeErrorPageProcess(
   //   URLs should be allowed to transfer away from the current process, which
   //   didn't request the navigation and may have a higher privilege level
   //   than the blocked destination.
-  if (net::IsRequestBlockedError(net_error) && !browser_initiated())
+  if (net::IsRequestBlockedError(net_error_) && !browser_initiated()) {
     return ErrorPageProcess::kCurrentProcess;
+  }
   return ErrorPageProcess::kDestinationProcess;
 }
 
@@ -5208,6 +5224,7 @@ void NavigationRequest::OnFailureChecksComplete(
   // The throttle may have changed the net_error_code, so we set the
   // `net_error_` again, overriding what OnRequestFailedInternal() set.
   net::Error old_net_error = net_error_;
+  ErrorPageProcess old_error_page_process = ComputeErrorPageProcess();
   net_error_ = result.net_error_code();
 
   // FIXME: Should we clear out |extended_error_code_| here?
@@ -5215,8 +5232,7 @@ void NavigationRequest::OnFailureChecksComplete(
   // Ensure that WillFailRequest() isn't changing the error code in a way that
   // switches the destination process for the error page - see
   // https://crbug.com/817881.
-  CHECK_EQ(ComputeErrorPageProcess(old_net_error),
-           ComputeErrorPageProcess(net_error_))
+  CHECK_EQ(old_error_page_process, ComputeErrorPageProcess())
       << " Unsupported error code change in WillFailRequest(): from "
       << old_net_error << " to " << net_error_;
 
