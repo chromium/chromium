@@ -268,7 +268,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   gfx::Size size_;
   gfx::BufferFormat format_;
   int sample_count_ = 1;
-  SkSurfaceCharacterization characterization_;
+  SkColorType color_type_ = kUnknown_SkColorType;
+  SkAlphaType alpha_type_ = kUnknown_SkAlphaType;
+  sk_sp<SkColorSpace> sk_color_space_;
   bool reset_ddl_recorder_on_swap_ = false;
   absl::optional<SkDeferredDisplayListRecorder> root_ddl_recorder_;
 
