@@ -73,6 +73,14 @@ class Server {
   storage::FileSystemURL ResolveFilename(Profile* profile,
                                          const std::string& filename);
 
+  // Performs the inverse of ResolveFilename. It converts a FileSystemURL like
+  // "filesystem:origin/external/mount_name/xxx/yyy/p/q.txt" to a FuseBox
+  // filename like "/media/fuse/fusebox/subdir/p/q.txt".
+  //
+  // It returns an empty base::FilePath on failure, such as when there was no
+  // previously registered (subdir, fs_url_prefix) that matched.
+  base::FilePath InverseResolveFSURL(const storage::FileSystemURL& fs_url);
+
   // Returns human-readable debugging information as a JSON value.
   base::Value GetDebugJSON();
 
