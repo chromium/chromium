@@ -52,7 +52,7 @@ const char kChallengeBase64Url[] = "testchallenge";
 const std::vector<uint8_t> kTestBytes = {0x00, 0x01, 0x02};
 const std::vector<uint8_t> kExpectedGetInfoRequest = {0x04};
 
-const char kNotifySourceOfUpdateMessageKey[] = "isForcedUpdateRequired";
+const char kNotifySourceOfUpdateMessageKey[] = "forced_update_required";
 constexpr uint8_t kSuccess = 0x00;
 constexpr char kAuthToken[] = "auth_token";
 
@@ -340,18 +340,29 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
 
 TEST_F(ConnectionTest, NotifySourceOfUpdate) {
   MarkConnectionAuthenticated();
-  authenticated_connection_->NotifySourceOfUpdate();
 
-  std::vector<uint8_t> written_payload =
+  int32_t session_id = 1;
+
+  authenticated_connection_->NotifySourceOfUpdate(session_id);
+
+  std::vector<uint8_t> notify_source_data =
       fake_nearby_connection_->GetWrittenData();
-  std::string written_payload_string(written_payload.begin(),
-                                     written_payload.end());
-  absl::optional<base::Value> parsed_json =
-      base::JSONReader::Read(written_payload_string);
-  ASSERT_TRUE(parsed_json);
-  ASSERT_TRUE(parsed_json->is_dict());
-  base::Value::Dict& parsed_json_dict = parsed_json.value().GetDict();
-  EXPECT_EQ(*parsed_json_dict.FindBool(kNotifySourceOfUpdateMessageKey), true);
+
+  std::unique_ptr<ash::quick_start::QuickStartMessage> notify_source_message =
+      ash::quick_start::QuickStartMessage::ReadMessage(
+          notify_source_data, QuickStartMessageType::kQuickStartPayload);
+  ASSERT_TRUE(notify_source_message != nullptr);
+  base::Value::Dict& parsed_payload = *notify_source_message->GetPayload();
+
+  EXPECT_EQ(parsed_payload.FindBool(kNotifySourceOfUpdateMessageKey), true);
+
+  EXPECT_EQ(parsed_payload.FindInt("SESSION_ID"), session_id);
+
+  std::string shared_secret_str(kSecondarySharedSecret.begin(),
+                                kSecondarySharedSecret.end());
+  std::string shared_secret_base64;
+  base::Base64Encode(shared_secret_str, &shared_secret_base64);
+  EXPECT_EQ(*parsed_payload.FindString("shared_secret"), shared_secret_base64);
 }
 
 TEST_F(ConnectionTest, SendPayloadAndReadResponse) {

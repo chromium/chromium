@@ -24,12 +24,6 @@
 
 namespace ash::quick_start {
 
-namespace {
-
-const char kNotifySourceOfUpdateMessageKey[] = "isForcedUpdateRequired";
-
-}  // namespace
-
 Connection::Factory::~Factory() = default;
 
 std::unique_ptr<Connection> Connection::Factory::Create(
@@ -93,10 +87,14 @@ void Connection::RequestWifiCredentials(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void Connection::NotifySourceOfUpdate() {
-  base::Value::Dict message_payload;
-  message_payload.Set(kNotifySourceOfUpdateMessageKey, true);
-  SendPayload(message_payload);
+void Connection::NotifySourceOfUpdate(int32_t session_id) {
+  // Send message to source that target device will perform an update.
+  std::string shared_secret_str(secondary_shared_secret_.begin(),
+                                secondary_shared_secret_.end());
+
+  SendMessage(
+      requests::BuildNotifySourceOfUpdateMessage(session_id, shared_secret_str),
+      absl::nullopt);
 }
 
 void Connection::RequestAccountTransferAssertion(
@@ -192,10 +190,15 @@ void Connection::GenerateFidoAssertionInfo(
   std::move(callback).Run(assertion_info);
 }
 
-void Connection::SendMessage(std::unique_ptr<QuickStartMessage> message,
-                             ConnectionResponseCallback callback) {
+void Connection::SendMessage(
+    std::unique_ptr<QuickStartMessage> message,
+    absl::optional<ConnectionResponseCallback> callback) {
   SendPayload(*message->GenerateEncodedMessage());
-  nearby_connection_->Read(std::move(callback));
+  if (!callback.has_value()) {
+    return;
+  }
+
+  nearby_connection_->Read(std::move(callback.value()));
 }
 
 void Connection::InitiateHandshake(const std::string& authentication_token,

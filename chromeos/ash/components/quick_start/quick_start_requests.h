@@ -38,6 +38,9 @@ std::vector<uint8_t> BuildTargetDeviceHandshakeMessage(
     std::array<uint8_t, 32> secret,
     std::array<uint8_t, 12> nonce);
 
+std::unique_ptr<QuickStartMessage> BuildNotifySourceOfUpdateMessage(
+    int32_t session_id,
+    std::string& shared_secret);
 }  // namespace ash::quick_start::requests
 
 #endif  // CHROMEOS_ASH_COMPONENTS_QUICK_START_QUICK_START_REQUESTS_H

@@ -61,7 +61,7 @@ class TargetDeviceConnectionBroker {
 
     // Notify Android device that the Chromebook will download an update and
     // reboot.
-    virtual void NotifySourceOfUpdate() = 0;
+    virtual void NotifySourceOfUpdate(int32_t session_id) = 0;
 
     // Begin the account transfer process and retrieve
     // an Assertion from the source device. The user will be asked to confirm

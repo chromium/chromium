@@ -59,15 +59,21 @@ const uint8_t kAuthenticatorGetInfoCommand = 0x04;
 // Credentials
 constexpr char kRequestWifiKey[] = "request_wifi";
 
-// Key in WifiCredentialsRequest including the shared secret
+// Key in WifiCredentialsRequest and NotifySourceOfUpdateMessage including the
+// shared secret to resume the connection if a reboot occurs.
 constexpr char kSharedSecretKey[] = "shared_secret";
 
-// Key in WifiCredentialsRequest for the session ID
+// Key in WifiCredentialsRequest and NotifySourceOfUpdateMessage for the session
+// ID
 constexpr char kSessionIdKey[] = "SESSION_ID";
 
 // The role that should be used for the target device. See this enum:
 // http://google3/java/com/google/android/gms/smartdevice/d2d/proto/aes_gcm_authentication_message.proto;l=26;rcl=489093041
 constexpr int32_t kAuthPayloadTargetDeviceRole = 1;
+
+// Boolean in NotifySourceOfUpdateMessage indicating target device requires an
+// update.
+constexpr char kNotifySourceOfUpdateMessageKey[] = "forced_update_required";
 
 }  // namespace
 
@@ -198,4 +204,20 @@ std::vector<uint8_t> BuildTargetDeviceHandshakeMessage(
                               auth_message_serialized.end());
 }
 
+std::unique_ptr<QuickStartMessage> BuildNotifySourceOfUpdateMessage(
+    int32_t session_id,
+    std::string& shared_secret) {
+  std::unique_ptr<QuickStartMessage> message =
+      std::make_unique<QuickStartMessage>(
+          QuickStartMessageType::kQuickStartPayload);
+  message->GetPayload()->Set(kNotifySourceOfUpdateMessageKey, true);
+
+  std::string shared_secret_str(shared_secret.begin(), shared_secret.end());
+  std::string shared_secret_base64;
+  base::Base64Encode(shared_secret_str, &shared_secret_base64);
+  message->GetPayload()->Set(kSharedSecretKey, shared_secret_base64);
+  message->GetPayload()->Set(kSessionIdKey, session_id);
+
+  return message;
+}
 }  // namespace ash::quick_start::requests

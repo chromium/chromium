@@ -99,7 +99,7 @@ class Connection
   // TargetDeviceConnectionBroker::AuthenticatedConnection
   void RequestWifiCredentials(int32_t session_id,
                               RequestWifiCredentialsCallback callback) override;
-  void NotifySourceOfUpdate() override;
+  void NotifySourceOfUpdate(int32_t session_id) override;
   void RequestAccountTransferAssertion(
       const std::string& challenge_b64url,
       RequestAccountTransferAssertionCallback callback) override;
@@ -123,7 +123,7 @@ class Connection
       ::ash::quick_start::mojom::GetAssertionResponsePtr response);
 
   void SendMessage(std::unique_ptr<QuickStartMessage> message,
-                   ConnectionResponseCallback callback);
+                   absl::optional<ConnectionResponseCallback> callback);
 
   // Reusable method to serialize a payload into JSON bytes and send via Nearby
   // Connections.
