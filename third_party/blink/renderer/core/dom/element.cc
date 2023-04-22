@@ -766,6 +766,26 @@ void Element::SetElementAttribute(const QualifiedName& name, Element* element) {
   }
 }
 
+namespace {
+Element* getElementByIdIncludingDisconnected(const Element& element,
+                                             AtomicString id) {
+  if (element.isConnected()) {
+    return element.GetTreeScope().getElementById(id);
+  }
+  // https://html.spec.whatwg.org/#attr-associated-element
+  // Attr associated element lookup does not depend on whether the element
+  // is connected. However, the TreeOrderedMap that is used for
+  // TreeScope::getElementById() only stores connected elements.
+  Node& root = element.TreeRoot();
+  for (Element& el : ElementTraversal::DescendantsOf(root)) {
+    if (el.GetIdAttribute() == id) {
+      return &el;
+    }
+  }
+  return nullptr;
+}
+}  // namespace
+
 Element* Element::GetElementAttribute(const QualifiedName& name) {
   HeapLinkedHashSet<WeakMember<Element>>* element_attribute_vector =
       GetExplicitlySetElementsForAttr(this, name);
@@ -791,7 +811,7 @@ Element* Element::GetElementAttribute(const QualifiedName& name) {
   }
 
   // Will return null if the id is empty.
-  return GetTreeScope().getElementById(id);
+  return getElementByIdIncludingDisconnected(*this, id);
 }
 
 void Element::SetElementArrayAttribute(
@@ -885,7 +905,8 @@ HeapVector<Member<Element>>* Element::GetElementArrayAttribute(
   // Since this is based on ID we know it cannot cross shadow boundaries, so we
   // don't need to include additional logic to check that.
   for (auto id : tokens) {
-    Element* candidate = GetTreeScope().getElementById(AtomicString(id));
+    Element* candidate =
+        getElementByIdIncludingDisconnected(*this, AtomicString(id));
     if (candidate) {
       result_elements->push_back(candidate);
     }
