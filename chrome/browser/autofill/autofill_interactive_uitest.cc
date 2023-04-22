@@ -2136,34 +2136,26 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, InputFiresBeforeChange) {
 
   EXPECT_EQ(2, content::EvalJs(GetWebContents(), "inputElementEvents.length;"));
 
-  std::vector<std::string> input_element_events;
-  input_element_events.resize(2);
+  std::vector<std::string> input_element_events = {
+      content::EvalJs(GetWebContents(), "inputElementEvents[0];")
+          .ExtractString(),
+      content::EvalJs(GetWebContents(), "inputElementEvents[1];")
+          .ExtractString(),
+  };
 
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "domAutomationController.send(inputElementEvents[0]);",
-      &input_element_events[0]));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "domAutomationController.send(inputElementEvents[1]);",
-      &input_element_events[1]));
-
-  EXPECT_EQ("input", input_element_events[0]);
-  EXPECT_EQ("change", input_element_events[1]);
+  EXPECT_THAT(input_element_events, testing::ElementsAre("input", "change"));
 
   EXPECT_EQ(2,
             content::EvalJs(GetWebContents(), "selectElementEvents.length;"));
 
-  std::vector<std::string> select_element_events;
-  select_element_events.resize(2);
+  std::vector<std::string> select_element_events = {
+      content::EvalJs(GetWebContents(), "selectElementEvents[0];")
+          .ExtractString(),
+      content::EvalJs(GetWebContents(), "selectElementEvents[1];")
+          .ExtractString(),
+  };
 
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "domAutomationController.send(selectElementEvents[0]);",
-      &select_element_events[0]));
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "domAutomationController.send(selectElementEvents[1]);",
-      &select_element_events[1]));
-
-  EXPECT_EQ("input", select_element_events[0]);
-  EXPECT_EQ("change", select_element_events[1]);
+  EXPECT_THAT(select_element_events, testing::ElementsAre("input", "change"));
 }
 
 // Test that we can autofill forms distinguished only by their |id| attribute.
