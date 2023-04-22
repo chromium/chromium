@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
@@ -170,7 +169,7 @@ bool ScrollbarAnimationController::Animate(base::TimeTicks now) {
 float ScrollbarAnimationController::AnimationProgressAtTime(
     base::TimeTicks now) {
   const base::TimeDelta delta = now - last_awaken_time_;
-  return base::clamp(static_cast<float>(delta / fade_duration_), 0.0f, 1.0f);
+  return std::clamp(static_cast<float>(delta / fade_duration_), 0.0f, 1.0f);
 }
 
 void ScrollbarAnimationController::RunAnimationFrame(float progress) {

@@ -17,7 +17,6 @@
 
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/json/json_writer.h"
@@ -120,8 +119,8 @@ std::pair<gfx::PointF, gfx::PointF> GetVisibleSelectionEndPoints(
     const gfx::RectF& rect,
     const gfx::PointF& top,
     const gfx::PointF& bottom) {
-  gfx::PointF start(base::clamp(top.x(), rect.x(), rect.right()),
-                    base::clamp(top.y(), rect.y(), rect.bottom()));
+  gfx::PointF start(std::clamp(top.x(), rect.x(), rect.right()),
+                    std::clamp(top.y(), rect.y(), rect.bottom()));
   gfx::PointF end = start + (bottom - top);
   return {start, end};
 }
@@ -1297,7 +1296,7 @@ bool LayerTreeImpl::ClampTopControlsShownRatio() {
         host_impl_->browser_controls_manager()->TopControlsShownRatioRange();
   }
   return top_controls_shown_ratio_->SetCurrent(
-      base::clamp(ratio, range.first, range.second));
+      std::clamp(ratio, range.first, range.second));
 }
 
 bool LayerTreeImpl::ClampBottomControlsShownRatio() {
@@ -1310,7 +1309,7 @@ bool LayerTreeImpl::ClampBottomControlsShownRatio() {
         host_impl_->browser_controls_manager()->BottomControlsShownRatioRange();
   }
   return bottom_controls_shown_ratio_->SetCurrent(
-      base::clamp(ratio, range.first, range.second));
+      std::clamp(ratio, range.first, range.second));
 }
 
 bool LayerTreeImpl::SetCurrentBrowserControlsShownRatio(float top_ratio,

@@ -5,11 +5,11 @@
 #ifndef CC_BASE_MATH_UTIL_H_
 #define CC_BASE_MATH_UTIL_H_
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "cc/base/base_export.h"
 #include "third_party/skia/include/core/SkM44.h"
@@ -69,10 +69,10 @@ struct HomogeneousCoordinate {
     SkScalar inv_w = SK_Scalar1 / w();
     // However, w may be close to 0 and we lose precision on our geometry
     // calculations if we allow scaling to extremely large values.
-    return gfx::PointF(base::clamp(x() * inv_w, -kInfiniteCoordinate,
-                                   float{kInfiniteCoordinate}),
-                       base::clamp(y() * inv_w, -kInfiniteCoordinate,
-                                   float{kInfiniteCoordinate}));
+    return gfx::PointF(std::clamp(x() * inv_w, -kInfiniteCoordinate,
+                                  float{kInfiniteCoordinate}),
+                       std::clamp(y() * inv_w, -kInfiniteCoordinate,
+                                  float{kInfiniteCoordinate}));
   }
 
   gfx::Point3F CartesianPoint3d() const {
@@ -85,12 +85,12 @@ struct HomogeneousCoordinate {
     SkScalar inv_w = SK_Scalar1 / w();
     // However, w may be close to 0 and we lose precision on our geometry
     // calculations if we allow scaling to extremely large values.
-    return gfx::Point3F(base::clamp(x() * inv_w, -kInfiniteCoordinate,
-                                    float{kInfiniteCoordinate}),
-                        base::clamp(y() * inv_w, -kInfiniteCoordinate,
-                                    float{kInfiniteCoordinate}),
-                        base::clamp(z() * inv_w, -kInfiniteCoordinate,
-                                    float{kInfiniteCoordinate}));
+    return gfx::Point3F(std::clamp(x() * inv_w, -kInfiniteCoordinate,
+                                   float{kInfiniteCoordinate}),
+                        std::clamp(y() * inv_w, -kInfiniteCoordinate,
+                                   float{kInfiniteCoordinate}),
+                        std::clamp(z() * inv_w, -kInfiniteCoordinate,
+                                   float{kInfiniteCoordinate}));
   }
 
   gfx::Point3F CartesianPoint3dUnclamped() const {
