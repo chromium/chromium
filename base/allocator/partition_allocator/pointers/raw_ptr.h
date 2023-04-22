@@ -1157,7 +1157,7 @@ constexpr auto AllowPtrArithmetic = base::RawPtrTraits::kAllowPtrArithmetic;
 //
 // This is not meant to be added manually. You can ignore this flag.
 //
-// TODO(https://crbug.com/XXXXXXX) Implement the ExperimentalAsh Trait.
+// TODO(https://crbug.com/1435441) Implement the ExperimentalAsh Trait.
 constexpr auto ExperimentalAsh = base::RawPtrTraits::kMayDangle;
 
 namespace std {
