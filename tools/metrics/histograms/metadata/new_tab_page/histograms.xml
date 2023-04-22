@@ -1280,8 +1280,20 @@ chromium-metrics-reviews@google.com.
     more button on the top of the feeds section. For omnibox: is recorded every
     time when user uses Omnibox or voice search on Omnibox to navigate. This is
     consistent with MobileOmniboxUse. For tab switcher button: is recorded every
-    time when user clicks on the tab switcher button. The histogram is logged on
-    New tab page and is Android-only.
+    time when user clicks on the tab switcher button. For home button: is
+    recorded when user clicks on the home button. The histogram is logged on New
+    tab page and is Android-only.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Module.LongClick" enum="ModuleTypeOnStartAndNTP"
+    expires_after="2023-09-10">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Record the total count of long clicks on different modules of the New tab
+    page. For home button: is recorded when user long presses on home button to
+    edit homepage. The histogram is logged on New tab page and is Android-only.
   </summary>
 </histogram>
 

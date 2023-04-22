@@ -70317,6 +70317,7 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Single tab card"/>
   <int value="3" label="Feed"/>
   <int value="4" label="Tab switcher button"/>
+  <int value="5" label="Home button"/>
 </enum>
 
 <enum name="MojoInterfaceName">

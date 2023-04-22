@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar;
 
 import android.content.ComponentCallbacks;
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Point;
@@ -143,6 +144,9 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNTP;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
@@ -1124,10 +1128,24 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         HomeButton homeButton = toolbarLayout.getHomeButton();
         if (homeButton != null) {
-            homeButton.init(mHomepageEnabledSupplier, HomepageManager.getInstance()::onMenuClick,
+            homeButton.init(mHomepageEnabledSupplier, this::onHomeButtonMenuClick,
                     mHomepageManagedByPolicySupplier);
         }
         return toolbar;
+    }
+
+    /**
+     * Menu click handler on home button and records if user long presses on home button to
+     * edit homepage on the new tab page.
+     * @param context {@link Context} used for launching a settings activity.
+     */
+    private void onHomeButtonMenuClick(Context context) {
+        boolean isNtp = getNewTabPageForCurrentTab() != null;
+        HomepageManager.getInstance().onMenuClick(context);
+        if (isNtp) {
+            BrowserUiUtils.recordModuleLongClickHistogram(
+                    HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNTP.HOME_BUTTON);
+        }
     }
 
     /**
