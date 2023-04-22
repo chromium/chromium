@@ -8,7 +8,6 @@
 #include <certdb.h>
 #include <pkcs11n.h>
 #include <prtypes.h>
-#include <secmod.h>
 
 #include <memory>
 
@@ -16,11 +15,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/test/scoped_feature_list.h"
-#include "crypto/nss_util_internal.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "net/base/features.h"
 #include "net/cert/internal/trust_store_features.h"
-#include "net/cert/known_roots_nss.h"
 #include "net/cert/pki/cert_issuer_source_sync_unittest.h"
 #include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/pki/test_helpers.h"
@@ -28,6 +25,7 @@
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_nss.h"
+#include "net/test/cert_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
@@ -61,69 +59,17 @@ unsigned TrustTypeToNSSTrust(CertificateTrustType trust) {
   }
 }
 
-// Returns true if the provided slot looks like a built-in root.
-bool IsBuiltInRootSlot(PK11SlotInfo* slot) {
-  if (!PK11_IsPresent(slot) || !PK11_HasRootCerts(slot))
-    return false;
-  crypto::ScopedCERTCertList cert_list(PK11_ListCertsInSlot(slot));
-  if (!cert_list)
-    return false;
-  bool built_in_cert_found = false;
-  for (CERTCertListNode* node = CERT_LIST_HEAD(cert_list);
-       !CERT_LIST_END(node, cert_list); node = CERT_LIST_NEXT(node)) {
-    if (IsKnownRoot(node->cert)) {
-      built_in_cert_found = true;
-      break;
-    }
-  }
-  return built_in_cert_found;
-}
-
-// Returns the slot which holds the built-in root certificates.
-crypto::ScopedPK11Slot GetBuiltInRootCertsSlot() {
-  crypto::AutoSECMODListReadLock auto_lock;
-  SECMODModuleList* head = SECMOD_GetDefaultModuleList();
-  for (SECMODModuleList* item = head; item != nullptr; item = item->next) {
-    int slot_count = item->module->loaded ? item->module->slotCount : 0;
-    for (int i = 0; i < slot_count; i++) {
-      PK11SlotInfo* slot = item->module->slots[i];
-      if (IsBuiltInRootSlot(slot))
-        return crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot));
-    }
-  }
-  return crypto::ScopedPK11Slot();
-}
-
-// Returns a built-in trusted root certificte. If multiple ones are available,
-// it is not specified which one is returned. If none are available, returns
-// nullptr.
 std::shared_ptr<const ParsedCertificate> GetASSLTrustedBuiltinRoot() {
-  crypto::ScopedPK11Slot root_certs_slot = GetBuiltInRootCertsSlot();
-  if (!root_certs_slot)
-    return nullptr;
-
-  scoped_refptr<X509Certificate> ssl_trusted_root;
-
-  crypto::ScopedCERTCertList cert_list(
-      PK11_ListCertsInSlot(root_certs_slot.get()));
-  if (!cert_list)
-    return nullptr;
-  for (CERTCertListNode* node = CERT_LIST_HEAD(cert_list);
-       !CERT_LIST_END(node, cert_list); node = CERT_LIST_NEXT(node)) {
-    CERTCertTrust trust;
-    if (CERT_GetCertTrust(node->cert, &trust) != SECSuccess)
-      continue;
-    int trust_flags = SEC_GET_TRUST_FLAGS(&trust, trustSSL);
-    if ((trust_flags & CERTDB_TRUSTED_CA) == CERTDB_TRUSTED_CA) {
-      ssl_trusted_root =
-          x509_util::CreateX509CertificateFromCERTCertificate(node->cert);
-      break;
-    }
-  }
-  if (!ssl_trusted_root)
-    return nullptr;
-
   CertErrors parsing_errors;
+  ScopedCERTCertificate nss_cert = GetAnNssBuiltinSslTrustedRoot();
+  if (!nss_cert) {
+    return nullptr;
+  }
+  scoped_refptr<X509Certificate> ssl_trusted_root =
+      x509_util::CreateX509CertificateFromCERTCertificate(nss_cert.get());
+  if (!ssl_trusted_root) {
+    return nullptr;
+  }
   return ParsedCertificate::Create(bssl::UpRef(ssl_trusted_root->cert_buffer()),
                                    x509_util::DefaultParseCertificateOptions(),
                                    &parsing_errors);

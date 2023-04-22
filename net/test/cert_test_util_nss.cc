@@ -4,7 +4,9 @@
 
 #include "net/test/cert_test_util.h"
 
+#include <certdb.h>
 #include <pk11pub.h>
+#include <secmod.h>
 #include <secmodt.h>
 #include <string.h>
 
@@ -14,11 +16,53 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "crypto/nss_key_util.h"
+#include "crypto/nss_util_internal.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/cert/cert_type.h"
+#include "net/cert/known_roots_nss.h"
 #include "net/cert/x509_util_nss.h"
 
 namespace net {
+
+namespace {
+
+// Returns true if the provided slot looks like it contains built-in root.
+bool IsNssBuiltInRootSlot(PK11SlotInfo* slot) {
+  if (!PK11_IsPresent(slot) || !PK11_HasRootCerts(slot)) {
+    return false;
+  }
+  crypto::ScopedCERTCertList cert_list(PK11_ListCertsInSlot(slot));
+  if (!cert_list) {
+    return false;
+  }
+  bool built_in_cert_found = false;
+  for (CERTCertListNode* node = CERT_LIST_HEAD(cert_list);
+       !CERT_LIST_END(node, cert_list); node = CERT_LIST_NEXT(node)) {
+    if (IsKnownRoot(node->cert)) {
+      built_in_cert_found = true;
+      break;
+    }
+  }
+  return built_in_cert_found;
+}
+
+// Returns the slot which holds the built-in root certificates.
+crypto::ScopedPK11Slot GetNssBuiltInRootCertsSlot() {
+  crypto::AutoSECMODListReadLock auto_lock;
+  SECMODModuleList* head = SECMOD_GetDefaultModuleList();
+  for (SECMODModuleList* item = head; item != nullptr; item = item->next) {
+    int slot_count = item->module->loaded ? item->module->slotCount : 0;
+    for (int i = 0; i < slot_count; i++) {
+      PK11SlotInfo* slot = item->module->slots[i];
+      if (IsNssBuiltInRootSlot(slot)) {
+        return crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot));
+      }
+    }
+  }
+  return crypto::ScopedPK11Slot();
+}
+
+}  // namespace
 
 bool ImportSensitiveKeyFromFile(const base::FilePath& dir,
                                 base::StringPiece key_filename,
@@ -129,6 +173,34 @@ ScopedCERTCertificateList CreateCERTCertificateListFromFile(
     nss_certs.push_back(std::move(nss_cert));
   }
   return nss_certs;
+}
+
+ScopedCERTCertificate GetAnNssBuiltinSslTrustedRoot() {
+  crypto::ScopedPK11Slot root_certs_slot = GetNssBuiltInRootCertsSlot();
+  if (!root_certs_slot) {
+    return nullptr;
+  }
+
+  scoped_refptr<X509Certificate> ssl_trusted_root;
+
+  crypto::ScopedCERTCertList cert_list(
+      PK11_ListCertsInSlot(root_certs_slot.get()));
+  if (!cert_list) {
+    return nullptr;
+  }
+  for (CERTCertListNode* node = CERT_LIST_HEAD(cert_list);
+       !CERT_LIST_END(node, cert_list); node = CERT_LIST_NEXT(node)) {
+    CERTCertTrust trust;
+    if (CERT_GetCertTrust(node->cert, &trust) != SECSuccess) {
+      continue;
+    }
+    int trust_flags = SEC_GET_TRUST_FLAGS(&trust, trustSSL);
+    if ((trust_flags & CERTDB_TRUSTED_CA) == CERTDB_TRUSTED_CA) {
+      return x509_util::DupCERTCertificate(node->cert);
+    }
+  }
+
+  return nullptr;
 }
 
 }  // namespace net
