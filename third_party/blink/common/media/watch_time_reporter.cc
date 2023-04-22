@@ -588,6 +588,18 @@ std::unique_ptr<WatchTimeComponent<bool>>
 WatchTimeReporter::CreateBaseComponent() {
   std::vector<media::WatchTimeKey> keys_to_finalize;
   keys_to_finalize.emplace_back(NORMAL_KEY(All));
+
+  if (properties_->has_video && properties_->has_audio && !is_background_ &&
+      !is_muted_ &&
+      properties_->renderer_type == media::RendererType::kMediaFoundation) {
+    keys_to_finalize.emplace_back(
+        media::WatchTimeKey::kAudioVideoMediaFoundationAll);
+    if (properties_->is_eme) {
+      keys_to_finalize.emplace_back(
+          media::WatchTimeKey::kAudioVideoMediaFoundationEme);
+    }
+  }
+
   if (properties_->is_mse)
     keys_to_finalize.emplace_back(NORMAL_KEY(Mse));
   else

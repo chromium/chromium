@@ -3358,7 +3358,7 @@ void WebMediaPlayerImpl::CreateWatchTimeReporter() {
           pipeline_metadata_.has_audio, has_video, false, false,
           GetDemuxerType() == media::DemuxerType::kChunkDemuxer, is_encrypted_,
           embedded_media_experience_enabled_,
-          media::mojom::MediaStreamType::kNone),
+          media::mojom::MediaStreamType::kNone, renderer_type_),
       pipeline_metadata_.natural_size,
       base::BindRepeating(&WebMediaPlayerImpl::GetCurrentTimeInternal,
                           base::Unretained(this)),

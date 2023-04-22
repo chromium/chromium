@@ -21,6 +21,7 @@ struct PlaybackProperties {
   // Type of played-back MediaStream, or kNone if the playback is not from a
   // MediaStream.
   MediaStreamType media_stream_type;
+  RendererType renderer_type;
 };
 
 // Structure describing mutable properties for the current watch time report.

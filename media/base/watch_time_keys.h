@@ -58,6 +58,8 @@ enum class WatchTimeKey : int {
   kAudioVideoMutedDisplayPictureInPicture,
   kAudioVideoMutedNativeControlsOn,
   kAudioVideoMutedNativeControlsOff,
+  kAudioVideoMediaFoundationAll,
+  kAudioVideoMediaFoundationEme,
   kVideoAll,
   kVideoMse,
   kVideoEme,

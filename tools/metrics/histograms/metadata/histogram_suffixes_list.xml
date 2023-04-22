@@ -2642,6 +2642,12 @@ chromium-metrics-reviews@google.com.
              and video track."/>
   <suffix name="AudioVideo.EME"
       label="Watch time for EME media with both an audio and video track."/>
+  <suffix name="AudioVideo.MediaFoundation.All"
+      label="MediaFoundations renderer watch time for all media with both an
+             audio and video track."/>
+  <suffix name="AudioVideo.MediaFoundation.Eme"
+      label="MediaFoundations renderer watch time for EME media with both an
+             audio and video track."/>
   <suffix name="AudioVideo.MSE"
       label="Watch time for MSE media with both an audio and video track."/>
   <suffix name="AudioVideo.Muted.All"
