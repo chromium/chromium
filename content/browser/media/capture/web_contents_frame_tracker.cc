@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -324,8 +323,8 @@ float WebContentsFrameTracker::CalculatePreferredScaleFactor(
   // Finally, we return a value bounded by [kMinCaptureScaleOverride,
   // kMaxCaptureScaleOverride] rounded to the nearest quarter.
   const float preferred_factor =
-      base::clamp(std::round(largest_factor * 4) / 4, kMinCaptureScaleOverride,
-                  kMaxCaptureScaleOverride);
+      std::clamp(std::round(largest_factor * 4) / 4, kMinCaptureScaleOverride,
+                 kMaxCaptureScaleOverride);
 
   DVLOG(3) << __func__ << ":"
            << " capture_size_=" << capture_size_.ToString()

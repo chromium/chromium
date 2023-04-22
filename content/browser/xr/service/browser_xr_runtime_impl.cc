@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
@@ -113,10 +112,10 @@ device::mojom::XRViewPtr ValidateXRView(const device::mojom::XRView* view) {
   DCHECK_GT(view->viewport.width() + view->viewport.x(), kMinSize);
   DCHECK_GT(view->viewport.height() + view->viewport.y(), kMinSize);
   ret->viewport =
-      gfx::Rect(base::clamp(view->viewport.x(), 0, kMaxSize),
-                base::clamp(view->viewport.y(), 0, kMaxSize),
-                base::clamp(view->viewport.width(), kMinSize, kMaxSize),
-                base::clamp(view->viewport.height(), kMinSize, kMaxSize));
+      gfx::Rect(std::clamp(view->viewport.x(), 0, kMaxSize),
+                std::clamp(view->viewport.y(), 0, kMaxSize),
+                std::clamp(view->viewport.width(), kMinSize, kMaxSize),
+                std::clamp(view->viewport.height(), kMinSize, kMaxSize));
   return ret;
 }
 

@@ -7,13 +7,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
@@ -55,8 +55,8 @@ const base::FeatureParam<base::TimeDelta> kAggregateReportDelaySpan{
 
 base::Time GetClampedTime(base::TimeDelta time_delta, base::Time source_time) {
   constexpr base::TimeDelta kMinDeltaTime = base::Days(1);
-  return source_time + base::clamp(time_delta, kMinDeltaTime,
-                                   kDefaultAttributionSourceExpiry);
+  return source_time +
+         std::clamp(time_delta, kMinDeltaTime, kDefaultAttributionSourceExpiry);
 }
 
 }  // namespace

@@ -7,6 +7,7 @@
 
 #include "content/browser/renderer_host/render_process_host_impl.h"
 
+#include <algorithm>
 #include <limits>
 #include <map>
 #include <memory>
@@ -20,7 +21,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -1426,8 +1426,8 @@ size_t RenderProcessHost::GetMaxRendererProcessCount() {
         RenderProcessHostImpl::GetPlatformMaxRendererProcessCount();
     DCHECK_LE(kMinRendererProcessCount, kMaxRendererProcessCount);
 
-    max_count = base::clamp(max_count, kMinRendererProcessCount,
-                            kMaxRendererProcessCount);
+    max_count = std::clamp(max_count, kMinRendererProcessCount,
+                           kMaxRendererProcessCount);
     MAYBEVLOG(1) << __func__ << ": Calculated max " << max_count;
   }
   return max_count;

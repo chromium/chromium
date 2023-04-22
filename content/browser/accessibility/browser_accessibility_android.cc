@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <unordered_map>
 
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/i18n/break_iterator.h"
 #include "base/lazy_instance.h"
@@ -1409,22 +1408,22 @@ bool BrowserAccessibilityAndroid::Scroll(int direction,
     case UP:
       if (y_initial == y_min)
         return false;
-      y = base::clamp(y_initial - page_y, y_min, y_max);
+      y = std::clamp(y_initial - page_y, y_min, y_max);
       break;
     case DOWN:
       if (y_initial == y_max)
         return false;
-      y = base::clamp(y_initial + page_y, y_min, y_max);
+      y = std::clamp(y_initial + page_y, y_min, y_max);
       break;
     case LEFT:
       if (x_initial == x_min)
         return false;
-      x = base::clamp(x_initial - page_x, x_min, x_max);
+      x = std::clamp(x_initial - page_x, x_min, x_max);
       break;
     case RIGHT:
       if (x_initial == x_max)
         return false;
-      x = base::clamp(x_initial + page_x, x_min, x_max);
+      x = std::clamp(x_initial + page_x, x_min, x_max);
       break;
     default:
       NOTREACHED();
