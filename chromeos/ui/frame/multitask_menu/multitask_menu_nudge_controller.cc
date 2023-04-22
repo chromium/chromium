@@ -332,12 +332,15 @@ void MultitaskMenuNudgeController::OnGetPreferences(
   }
 
   window_ = window;
-  window_observation_.Observe(window_.get());
 
   nudge_widget_ = CreateWidget(window_);
+  anchor_view_ = anchor_view;
+
   nudge_widget_->Show();
 
-  anchor_view_ = anchor_view;
+  // Note that order matters because in some cases, creating the widget may
+  // trigger some window observations.
+  window_observation_.Observe(window_.get());
 
   if (!tablet_mode) {
     // Create the layer which pulses on the maximize/restore button.
