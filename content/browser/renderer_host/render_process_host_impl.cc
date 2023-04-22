@@ -38,7 +38,6 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/persistent_memory_allocator.h"
@@ -1657,10 +1656,6 @@ RenderProcessHostImpl::~RenderProcessHostImpl() {
   // "Browser.RenderProcessHostImpl"
   TRACE_EVENT_END("shutdown", perfetto::Track::FromPointer(this),
                   ChromeTrackEvent::kRenderProcessHost, *this);
-
-  base::UmaHistogramPercentage(
-      "BrowserRenderProcessHost.RoutingIDSpaceUsed",
-      100. * GetNextRoutingID() / std::numeric_limits<int32_t>::max());
 }
 
 bool RenderProcessHostImpl::Init() {

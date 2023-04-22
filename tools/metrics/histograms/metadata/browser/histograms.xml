@@ -694,6 +694,10 @@ chromium-metrics-reviews@google.com.
 <histogram name="BrowserRenderProcessHost.RoutingIDSpaceUsed"
     units="% of routing ID space used for browser-allocated routing IDs"
     expires_after="2023-04-16">
+  <obsolete>
+    4/2023; the data has been collected, verifying that less than 1% of routing
+    ID space is used in practice.
+  </obsolete>
   <owner>alexmos@chromium.org</owner>
   <owner>dcheng@chromium.org</owner>
   <summary>
