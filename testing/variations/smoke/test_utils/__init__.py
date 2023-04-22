@@ -4,3 +4,4 @@
 
 from .downloader import *
 from .helper import *
+from .http import *
