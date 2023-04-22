@@ -703,6 +703,8 @@ if (is_win || is_mac || is_linux) {
       "policy/service_unittest.cc",
       "prefs_unittest.cc",
       "tag_unittest.cc",
+      "test/http_request.cc",
+      "test/http_request.h",
       "test/integration_test_commands.h",
       "test/integration_test_commands_system.cc",
       "test/integration_test_commands_user.cc",
@@ -744,6 +746,7 @@ if (is_win || is_mac || is_linux) {
       "//testing/gtest",
       "//third_party/crashpad/crashpad/client",
       "//third_party/re2",
+      "//third_party/zlib/google:compression_utils",
       "//url",
     ]
 
