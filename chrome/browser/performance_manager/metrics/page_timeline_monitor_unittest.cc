@@ -268,8 +268,10 @@ TEST_F(PageTimelineMonitorUnitTest, TestHighEfficiencyMode) {
   EXPECT_EQ(entries.size(), 2UL);
   test_ukm_recorder()->ExpectEntryMetric(entries[1], "HighEfficiencyMode", 0);
 
-  performance_manager::policies::HighEfficiencyModePolicy::GetInstance()
-      ->OnHighEfficiencyModeChanged(true);
+  performance_manager::policies::HighEfficiencyModePolicy* policy =
+      performance_manager::policies::HighEfficiencyModePolicy::GetInstance();
+  policy->SetTimeBeforeDiscard(base::Hours(2));
+  policy->OnHighEfficiencyModeChanged(true);
 
   TriggerCollectSlice();
   entries = test_ukm_recorder()->GetEntriesByName(
