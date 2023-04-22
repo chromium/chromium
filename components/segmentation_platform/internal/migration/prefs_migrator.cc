@@ -22,7 +22,7 @@ PrefsMigrator::PrefsMigrator(
 PrefsMigrator::~PrefsMigrator() = default;
 
 void PrefsMigrator::MigrateOldPrefsToNewPrefs() {
-  for (const auto& config : configs_) {
+  for (const auto& config : *configs_) {
     if (!IsPrefMigrationRequired(config.get())) {
       continue;
     }

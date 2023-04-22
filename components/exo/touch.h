@@ -7,6 +7,7 @@
 
 #include "ash/shell_observer.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "components/exo/surface_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -58,12 +59,12 @@ class Touch : public ui::EventHandler,
   void CancelAllTouches();
 
   // The delegate instance that all events are dispatched to.
-  TouchDelegate* const delegate_;
+  const raw_ptr<TouchDelegate, ExperimentalAsh> delegate_;
 
-  Seat* const seat_;
+  const raw_ptr<Seat, ExperimentalAsh> seat_;
 
   // The delegate instance that all stylus related events are dispatched to.
-  TouchStylusDelegate* stylus_delegate_ = nullptr;
+  raw_ptr<TouchStylusDelegate, ExperimentalAsh> stylus_delegate_ = nullptr;
 
   // Map of touch points to its focus surface.
   base::flat_map<int, Surface*> touch_points_surface_map_;

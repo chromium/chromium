@@ -16,6 +16,7 @@
 #include "ash/wm/window_state_observer.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -439,9 +440,11 @@ class ExitNotifier : public ui::EventHandler,
       exit_popup_->Hide(animate);
   }
 
-  aura::Window* const window_;
-  views::Widget* fullscreen_esc_notification_ = nullptr;
-  views::Widget* pointer_capture_notification_ = nullptr;
+  const raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<views::Widget, ExperimentalAsh> fullscreen_esc_notification_ =
+      nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> pointer_capture_notification_ =
+      nullptr;
   bool want_pointer_capture_notification_ = false;
   bool pointer_is_captured_ = false;
   std::unique_ptr<FullscreenControlPopup> exit_popup_;

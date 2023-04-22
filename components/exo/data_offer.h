@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "ui/base/class_property.h"
@@ -107,7 +108,7 @@ class DataOffer final : public ui::PropertyHandler {
   void OnPickledUrlsResolved(SendDataCallback callback,
                              const std::vector<GURL>& urls);
 
-  DataOfferDelegate* const delegate_;
+  const raw_ptr<DataOfferDelegate, ExperimentalAsh> delegate_;
 
   // Data for a given mime type may not ever be requested, or may be requested
   // more than once. Using callbacks and a cache allows us to delay any
@@ -142,8 +143,8 @@ class ScopedDataOffer {
   DataOffer* get() { return data_offer_; }
 
  private:
-  DataOffer* const data_offer_;
-  DataOfferObserver* const observer_;
+  const raw_ptr<DataOffer, ExperimentalAsh> data_offer_;
+  const raw_ptr<DataOfferObserver, ExperimentalAsh> observer_;
 };
 
 }  // namespace exo

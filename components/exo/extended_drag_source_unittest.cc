@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_state.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -157,7 +158,8 @@ class ExtendedDragSourceTest : public test::ExoTestBase {
         exo_test_helper()->CreateGpuMemoryBuffer(size));
   }
 
-  ash::DragDropController* drag_drop_controller_ = nullptr;
+  raw_ptr<ash::DragDropController, ExperimentalAsh> drag_drop_controller_ =
+      nullptr;
   std::unique_ptr<Seat> seat_;
   std::unique_ptr<DataSource> data_source_;
   std::unique_ptr<ExtendedDragSource> extended_drag_source_;
@@ -299,8 +301,8 @@ class WindowObserverHookChecker : public aura::WindowObserver {
               (override));
 
  private:
-  aura::Window* surface_window_ = nullptr;
-  aura::Window* dragged_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> surface_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> dragged_window_ = nullptr;
 };
 
 // Differently than the window observer class above, this one observers
@@ -320,7 +322,7 @@ class WindowObserverHookChecker2 : public aura::WindowObserver {
               (override));
 
  private:
-  aura::Window* surface_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> surface_window_ = nullptr;
 };
 
 TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet) {

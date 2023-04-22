@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 
 struct wl_client;
 struct wl_resource;
@@ -37,7 +38,7 @@ struct WaylandRemoteShellData {
   ~WaylandRemoteShellData();
 
   // Owned by WaylandServerController, which always outlives this.
-  Display* const display;
+  const raw_ptr<Display, ExperimentalAsh> display;
 
   OutputResourceProvider const output_provider;
 

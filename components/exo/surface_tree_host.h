@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/exo/layer_tree_frame_sink_holder.h"
 #include "components/exo/surface.h"
@@ -176,7 +177,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   void CleanUpCallbacks();
 
-  Surface* root_surface_ = nullptr;
+  raw_ptr<Surface, ExperimentalAsh> root_surface_ = nullptr;
 
   // Position of root surface relative to topmost, leftmost sub-surface. The
   // host window should be translated by the negation of this vector.
@@ -217,7 +218,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   bool client_submits_surfaces_in_pixel_coordinates_ = false;
 
-  SecurityDelegate* security_delegate_ = nullptr;
+  raw_ptr<SecurityDelegate, ExperimentalAsh> security_delegate_ = nullptr;
 
   std::set<gpu::SyncToken> prev_frame_verified_tokens_;
 

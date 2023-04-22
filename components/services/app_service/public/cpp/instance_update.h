@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/services/app_service/public/cpp/instance.h"
 
@@ -80,8 +81,8 @@ class InstanceUpdate {
   bool BrowserContextChanged() const;
 
  private:
-  const Instance* state_;
-  const Instance* delta_;
+  raw_ptr<const Instance, ExperimentalAsh> state_;
+  raw_ptr<const Instance, ExperimentalAsh> delta_;
 };
 
 }  // namespace apps

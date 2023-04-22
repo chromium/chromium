@@ -47,7 +47,7 @@ void ResultRefreshManager::RefreshModelResults(
     ExecutionService* execution_service) {
   result_providers_ = std::move(result_providers);
 
-  for (const auto& config : configs_) {
+  for (const auto& config : *configs_) {
     if (config->on_demand_execution ||
         metadata_utils::ConfigUsesLegacyOutput(config.get())) {
       continue;

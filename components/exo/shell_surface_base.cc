@@ -24,6 +24,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -187,7 +188,7 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
   }
 
  private:
-  ShellSurfaceBase* const shell_surface_;
+  const raw_ptr<ShellSurfaceBase, ExperimentalAsh> shell_surface_;
 };
 
 class CustomWindowTargeter : public aura::WindowTargeter {
@@ -264,8 +265,8 @@ class CustomWindowTargeter : public aura::WindowTargeter {
     return false;
   }
 
-  ShellSurfaceBase* shell_surface_;
-  views::Widget* const widget_;
+  raw_ptr<ShellSurfaceBase, ExperimentalAsh> shell_surface_;
+  const raw_ptr<views::Widget, ExperimentalAsh> widget_;
 };
 
 void CloseAllShellSurfaceTransientChildren(aura::Window* window) {

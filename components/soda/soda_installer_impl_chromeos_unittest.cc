@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -125,7 +126,7 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<SodaInstallerImplChromeOS> soda_installer_impl_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-  ash::FakeDlcserviceClient* fake_dlcservice_client_;
+  raw_ptr<ash::FakeDlcserviceClient, ExperimentalAsh> fake_dlcservice_client_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -146,10 +147,11 @@ class StorageMonitorCrosTest : public testing::Test {
     return *mock_storage_observer_;
   }
 
-  TestStorageMonitorCros* monitor_ = nullptr;
+  raw_ptr<TestStorageMonitorCros, ExperimentalAsh> monitor_ = nullptr;
 
   // Owned by DiskMountManager.
-  ash::disks::MockDiskMountManager* disk_mount_manager_mock_ = nullptr;
+  raw_ptr<ash::disks::MockDiskMountManager, ExperimentalAsh>
+      disk_mount_manager_mock_ = nullptr;
 
   StorageMonitor::EjectStatus status_ = StorageMonitor::EJECT_FAILURE;
 

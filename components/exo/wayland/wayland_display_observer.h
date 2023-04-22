@@ -9,6 +9,7 @@
 #include <wayland-server-protocol-core.h>
 
 #include "ash/shell_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
@@ -89,13 +90,14 @@ class WaylandDisplayHandler : public display::DisplayObserver,
   void OnDisplayForNewWindowsChanged() override;
 
   // Output.
-  WaylandDisplayOutput* output_;
+  raw_ptr<WaylandDisplayOutput, ExperimentalAsh> output_;
 
   // The output resource associated with the display.
-  wl_resource* const output_resource_;
+  const raw_ptr<wl_resource, DanglingUntriaged | ExperimentalAsh>
+      output_resource_;
 
   // Resource associated with a zxdg_output_v1 object.
-  wl_resource* xdg_output_resource_ = nullptr;
+  raw_ptr<wl_resource, ExperimentalAsh> xdg_output_resource_ = nullptr;
 
   base::ObserverList<WaylandDisplayObserver> observers_;
 

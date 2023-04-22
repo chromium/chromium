@@ -20,7 +20,7 @@ namespace arc {
 
 CustomTab::CustomTab(aura::Window* arc_app_window)
     : arc_app_window_(arc_app_window) {
-  arc_app_window_observation_.Observe(arc_app_window_);
+  arc_app_window_observation_.Observe(arc_app_window_.get());
   host_->set_owned_by_client();
   auto* const widget = views::Widget::GetWidgetForNativeWindow(arc_app_window_);
   DCHECK(widget);

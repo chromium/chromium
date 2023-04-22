@@ -4,6 +4,7 @@
 
 #include "components/user_manager/user.h"
 
+#include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,7 +32,7 @@ TEST(UserTest, DeviceLocalAccountAffiliation) {
     bool IsAffiliated() const { return user_ && user_->IsAffiliated(); }
 
    private:
-    const User* const user_;
+    const raw_ptr<const User, ExperimentalAsh> user_;
   };
 
   const AccountId account_id = AccountId::FromUserEmailGaiaId(kEmail, kGaiaId);

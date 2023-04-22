@@ -10,6 +10,7 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/exo/key_state.h"
@@ -110,17 +111,18 @@ class Keyboard : public ui::EventHandler,
   std::unique_ptr<KeyboardDelegate> delegate_;
 
   // Seat that the Keyboard recieves focus events from.
-  Seat* const seat_;
+  const raw_ptr<Seat, ExperimentalAsh> seat_;
 
   // The delegate instance that events about device configuration are dispatched
   // to.
-  KeyboardDeviceConfigurationDelegate* device_configuration_delegate_ = nullptr;
+  raw_ptr<KeyboardDeviceConfigurationDelegate, ExperimentalAsh>
+      device_configuration_delegate_ = nullptr;
 
   // Indicates that each key event is expected to be acknowledged.
   bool are_keyboard_key_acks_needed_ = false;
 
   // The current focus surface for the keyboard.
-  Surface* focus_ = nullptr;
+  raw_ptr<Surface, ExperimentalAsh> focus_ = nullptr;
 
   // Set of currently pressed keys. First value is a platform code and second
   // value is the code that was delivered to client. See Seat.h for more

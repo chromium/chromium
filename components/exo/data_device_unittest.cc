@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/shell.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -117,7 +118,7 @@ class TestDataDeviceDelegate : public DataDeviceDelegate {
  private:
   std::vector<DataEvent> events_;
   std::unique_ptr<DataOffer> data_offer_;
-  Surface* entered_surface_ = nullptr;
+  raw_ptr<Surface, ExperimentalAsh> entered_surface_ = nullptr;
   bool can_accept_data_events_for_surface_ = true;
 };
 
@@ -134,7 +135,7 @@ class TestSeat : public Seat {
   Surface* GetFocusedSurface() override { return surface_; }
 
  private:
-  Surface* surface_ = nullptr;
+  raw_ptr<Surface, ExperimentalAsh> surface_ = nullptr;
 };
 
 class DataDeviceTest : public test::ExoTestBase {

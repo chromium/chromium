@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -245,7 +246,7 @@ class CustomWindowDelegate : public aura::WindowDelegate {
   }
 
  private:
-  Surface* const surface_;
+  const raw_ptr<Surface, ExperimentalAsh> surface_;
 };
 
 class CustomWindowTargeter : public aura::WindowTargeter {

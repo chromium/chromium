@@ -4,6 +4,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/single_thread_task_executor.h"
 #include "components/exo/wayland/clients/client_base.h"
@@ -118,7 +119,7 @@ class ScopedVulkanRenderFrame {
   }
 
  private:
-  VulkanClient* const client_;
+  const raw_ptr<VulkanClient, ExperimentalAsh> client_;
   VkCommandBuffer command_buffer_ = VK_NULL_HANDLE;
 };
 

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/data_device.h"
 #include "components/exo/data_offer_observer.h"
 #include "components/exo/data_source_observer.h"
@@ -119,7 +120,7 @@ class DragDropOperation : public DataSourceObserver,
   std::unique_ptr<ScopedSurface> origin_;
   gfx::PointF drag_start_point_;
   std::unique_ptr<ui::OSExchangeData> os_exchange_data_;
-  ash::DragDropController* drag_drop_controller_;
+  raw_ptr<ash::DragDropController, ExperimentalAsh> drag_drop_controller_;
 
   base::RepeatingClosure counter_;
 
@@ -137,7 +138,7 @@ class DragDropOperation : public DataSourceObserver,
 
   ui::mojom::DragEventSource event_source_;
 
-  ExtendedDragSource* extended_drag_source_;
+  raw_ptr<ExtendedDragSource, ExperimentalAsh> extended_drag_source_;
 
   base::WeakPtrFactory<DragDropOperation> weak_ptr_factory_{this};
 };

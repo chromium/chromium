@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_USER_MANAGER_USER_DIRECTORY_INTEGRITY_MANAGER_H_
 #define COMPONENTS_USER_MANAGER_USER_DIRECTORY_INTEGRITY_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -51,7 +52,7 @@ class USER_MANAGER_EXPORT UserDirectoryIntegrityManager {
  private:
   absl::optional<std::string> GetMisconfiguredUserEmail();
 
-  PrefService* const local_state_;
+  const raw_ptr<PrefService, ExperimentalAsh> local_state_;
 };
 
 }  // namespace user_manager

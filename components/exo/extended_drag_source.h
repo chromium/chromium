@@ -10,6 +10,7 @@
 
 #include "ash/drag_drop/toplevel_window_drag_delegate.h"
 #include "ash/wm/toplevel_window_event_handler.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/exo/data_source_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -104,11 +105,11 @@ class ExtendedDragSource : public DataSourceObserver,
 
   static ExtendedDragSource* instance_;
 
-  DataSource* source_ = nullptr;
+  raw_ptr<DataSource, ExperimentalAsh> source_ = nullptr;
 
   // Created and destroyed at wayland/zcr_extended_drag.cc and its lifetime is
   // tied to the zcr_extended_drag_source_v1 object it's attached to.
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   // The pointer location in screen coordinates.
   gfx::PointF pointer_location_;
@@ -117,7 +118,7 @@ class ExtendedDragSource : public DataSourceObserver,
 
   std::unique_ptr<DraggedWindowHolder> dragged_window_holder_;
   std::unique_ptr<aura::ScopedWindowEventTargetingBlocker> event_blocker_;
-  aura::Window* drag_source_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> drag_source_window_ = nullptr;
   bool pending_drag_start_ = false;
 
   base::ObserverList<Observer>::Unchecked observers_;

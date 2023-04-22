@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/buffer.h"
 #include "components/exo/sub_surface.h"
 #include "components/exo/sub_surface_observer.h"
@@ -78,7 +79,7 @@ class AugmentedSurface : public SurfaceObserver {
   }
 
  private:
-  Surface* surface_;
+  raw_ptr<Surface, ExperimentalAsh> surface_;
 };
 
 void augmented_surface_destroy(wl_client* client, wl_resource* resource) {
@@ -203,7 +204,7 @@ class AugmentedSubSurface : public SubSurfaceObserver {
   }
 
  private:
-  SubSurface* sub_surface_;
+  raw_ptr<SubSurface, ExperimentalAsh> sub_surface_;
 };
 
 void augmented_sub_surface_destroy(wl_client* client, wl_resource* resource) {

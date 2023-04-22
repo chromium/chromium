@@ -10,6 +10,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/pointer.h"
 #include "components/exo/relative_pointer_delegate.h"
 #include "components/exo/wayland/server_util.h"
@@ -53,8 +54,8 @@ class WaylandRelativePointerDelegate : public RelativePointerDelegate {
   }
 
  private:
-  wl_resource* const resource_;
-  Pointer* pointer_;
+  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
+  raw_ptr<Pointer, ExperimentalAsh> pointer_;
 };
 
 void relative_pointer_destroy(wl_client* client, wl_resource* resource) {

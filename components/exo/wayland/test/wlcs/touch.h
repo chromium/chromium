@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_EXO_WAYLAND_TEST_WLCS_TOUCH_H_
 #define COMPONENTS_EXO_WAYLAND_TEST_WLCS_TOUCH_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/wlcs/src/include/wlcs/touch.h"
 
 namespace exo::wlcs {
@@ -27,7 +28,7 @@ class Touch : public WlcsTouch {
   void TouchUp();
 
  private:
-  DisplayServer* const server_;
+  const raw_ptr<DisplayServer, ExperimentalAsh> server_;
 };
 
 }  // namespace exo::wlcs

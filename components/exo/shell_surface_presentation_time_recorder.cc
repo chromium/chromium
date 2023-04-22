@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
@@ -58,7 +59,7 @@ class HistogramReporter
   }
 
  private:
-  base::HistogramBase* const latency_histogram_;
+  const raw_ptr<base::HistogramBase, ExperimentalAsh> latency_histogram_;
   const absl::optional<const char*> max_latency_histogram_name_;
   base::TimeDelta max_latency_;
 };
@@ -78,7 +79,7 @@ ShellSurfacePresentationTimeRecorder::ShellSurfacePresentationTimeRecorder(
     ShellSurface* shell_surface,
     std::unique_ptr<Reporter> reporter)
     : shell_surface_(shell_surface), reporter_(std::move(reporter)) {
-  scoped_observation_.Observe(shell_surface_);
+  scoped_observation_.Observe(shell_surface_.get());
 }
 
 ShellSurfacePresentationTimeRecorder::~ShellSurfacePresentationTimeRecorder() =

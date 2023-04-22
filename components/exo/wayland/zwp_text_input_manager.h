@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
+
 struct wl_client;
 
 namespace exo {
@@ -23,10 +25,10 @@ struct WaylandTextInputManager {
   WaylandTextInputManager& operator=(const WaylandTextInputManager&) = delete;
 
   // Owned by Seat, which also always outlives zwp_text_input_manager.
-  const XkbTracker* const xkb_tracker;
+  const raw_ptr<const XkbTracker, ExperimentalAsh> xkb_tracker;
 
   // Owned by Server, which always outlives zwp_text_input_manager.
-  SerialTracker* const serial_tracker;
+  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker;
 };
 
 struct WaylandTextInputExtension {};

@@ -6,6 +6,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
@@ -108,7 +109,7 @@ class TestSeat : public Seat {
   Surface* GetFocusedSurface() override { return surface_; }
 
  private:
-  Surface* surface_ = nullptr;
+  raw_ptr<Surface, ExperimentalAsh> surface_ = nullptr;
 };
 
 TEST_F(SeatTest, OnSurfaceFocused) {

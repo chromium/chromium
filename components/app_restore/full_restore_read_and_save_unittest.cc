@@ -9,6 +9,7 @@
 
 #include "ash/constants/app_types.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -117,7 +118,7 @@ class FullRestoreReadHandlerTestApi {
   }
 
  private:
-  FullRestoreReadHandler* read_handler_;
+  raw_ptr<FullRestoreReadHandler, ExperimentalAsh> read_handler_;
 };
 
 class FullRestoreSaveHandlerTestApi {
@@ -203,7 +204,7 @@ class FullRestoreSaveHandlerTestApi {
     return save_handler_->arc_save_handler_.get();
   }
 
-  FullRestoreSaveHandler* save_handler_;
+  raw_ptr<FullRestoreSaveHandler, ExperimentalAsh> save_handler_;
 };
 
 // Unit tests for restore data.

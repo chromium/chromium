@@ -7,6 +7,7 @@
 #include <cstdint>
 
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -41,7 +42,7 @@ class WaylandDisplayOutputTest : public test::WaylandServerTest {
 TEST_F(WaylandDisplayOutputTest, DelayedSelfDestruct) {
   class ClientData : public test::TestClient::CustomData {
    public:
-    wl_output* output = nullptr;
+    raw_ptr<wl_output, ExperimentalAsh> output = nullptr;
     uint32_t output_name = 0;
     uint32_t output_version = 0;
   };

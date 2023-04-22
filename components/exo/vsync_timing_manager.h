@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/frame_throttler/frame_throttling_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -70,7 +71,7 @@ class VSyncTimingManager : public viz::mojom::VSyncParameterObserver,
   base::TimeDelta last_interval_;
   base::TimeTicks last_timebase_;
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   std::vector<Observer*> observers_;
 

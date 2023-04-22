@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "components/exo/test/exo_test_base.h"
@@ -121,7 +122,7 @@ class ShellSurfacePresentationTimeRecorderTest : public test::ExoTestBase {
  protected:
   std::unique_ptr<ShellSurface> shell_surface_;
   std::unique_ptr<TestRecorder> recorder_;
-  TestReporter* reporter_ = nullptr;
+  raw_ptr<TestReporter, ExperimentalAsh> reporter_ = nullptr;
 };
 
 TEST_F(ShellSurfacePresentationTimeRecorderTest, Request) {

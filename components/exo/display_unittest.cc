@@ -5,6 +5,7 @@
 #include "components/exo/display.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/wm/desks/desks_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "components/exo/buffer.h"
 #include "components/exo/client_controlled_shell_surface.h"
@@ -78,7 +79,7 @@ class DisplayTest : public test::ExoTestBase {
   }
 
  private:
-  TestPropertyResolver* resolver_;
+  raw_ptr<TestPropertyResolver, ExperimentalAsh> resolver_;
 };
 
 TEST_F(DisplayTest, CreateSurface) {

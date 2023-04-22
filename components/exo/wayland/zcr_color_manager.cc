@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "components/exo/surface.h"
@@ -196,8 +197,8 @@ class ColorManagerSurface final : public SurfaceObserver {
     scoped_surface_.reset();
   }
 
-  Server* server_;
-  wl_resource* color_manager_surface_resource_;
+  raw_ptr<Server, ExperimentalAsh> server_;
+  raw_ptr<wl_resource, ExperimentalAsh> color_manager_surface_resource_;
   std::unique_ptr<ScopedSurface> scoped_surface_;
 };
 
@@ -255,9 +256,9 @@ class ColorManagerObserver : public WaylandDisplayObserver {
   void SendActiveDisplay() override {}
 
  private:
-  WaylandDisplayHandler* wayland_display_handler_;
-  wl_resource* const color_management_output_resource_;
-  wl_resource* output_resource_;
+  raw_ptr<WaylandDisplayHandler, ExperimentalAsh> wayland_display_handler_;
+  const raw_ptr<wl_resource, ExperimentalAsh> color_management_output_resource_;
+  raw_ptr<wl_resource, ExperimentalAsh> output_resource_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

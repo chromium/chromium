@@ -7,6 +7,7 @@
 
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/components/arc/session/connection_holder.h"
+#include "base/memory/raw_ptr.h"
 
 namespace arc {
 
@@ -64,8 +65,9 @@ class FakeIntentHelperHost : public mojom::IntentHelperHost {
 
  private:
   // The connection holder must outlive |this| object.
-  ConnectionHolder<arc::mojom::IntentHelperInstance,
-                   arc::mojom::IntentHelperHost>* const
+  const raw_ptr<ConnectionHolder<arc::mojom::IntentHelperInstance,
+                                 arc::mojom::IntentHelperHost>,
+                ExperimentalAsh>
       intent_helper_connection_holder_;
 };
 

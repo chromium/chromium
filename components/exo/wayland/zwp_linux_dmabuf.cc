@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/exo/wayland/zwp_linux_dmabuf.h"
+#include "base/memory/raw_ptr.h"
 
 #include <drm_fourcc.h>
 #include <linux-dmabuf-unstable-v1-server-protocol.h>
@@ -48,7 +49,7 @@ struct LinuxBufferParams {
   explicit LinuxBufferParams(WaylandDmabufFeedbackManager* feedback_manager)
       : feedback_manager(feedback_manager) {}
 
-  WaylandDmabufFeedbackManager* const feedback_manager;
+  const raw_ptr<WaylandDmabufFeedbackManager, ExperimentalAsh> feedback_manager;
   std::map<uint32_t, Plane> planes;
 };
 

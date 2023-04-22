@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/components/arc/arc_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -51,7 +52,7 @@ class ARC_EXPORT CustomTab : public aura::WindowObserver {
 
   std::unique_ptr<views::NativeViewHost> host_ =
       std::make_unique<views::NativeViewHost>();
-  aura::Window* const arc_app_window_;
+  const raw_ptr<aura::Window, ExperimentalAsh> arc_app_window_;
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       arc_app_window_observation_{this};
   base::ScopedObservation<aura::Window, aura::WindowObserver>

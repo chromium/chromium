@@ -11,6 +11,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -202,11 +203,11 @@ class PointerConstraintTest : public PointerTest {
     generator_ = std::make_unique<ui::test::EventGenerator>(
         ash::Shell::GetPrimaryRootWindow());
 
-    EXPECT_CALL(delegate_, CanAcceptPointerEventsForSurface(surface_))
+    EXPECT_CALL(delegate_, CanAcceptPointerEventsForSurface(surface_.get()))
         .WillRepeatedly(testing::Return(true));
 
     EXPECT_CALL(constraint_delegate_, GetConstrainedSurface())
-        .WillRepeatedly(testing::Return(surface_));
+        .WillRepeatedly(testing::Return(surface_.get()));
   }
 
   void TearDown() override {
@@ -237,8 +238,8 @@ class PointerConstraintTest : public PointerTest {
   testing::NiceMock<MockPointerConstraintDelegate> constraint_delegate_;
   testing::NiceMock<MockPointerDelegate> delegate_;
   std::unique_ptr<ShellSurface> shell_surface_;
-  Surface* surface_;
-  aura::client::FocusClient* focus_client_;
+  raw_ptr<Surface, ExperimentalAsh> surface_;
+  raw_ptr<aura::client::FocusClient, ExperimentalAsh> focus_client_;
 };
 
 // Instantiate the values of disabling/enabling reactive frame submission in the
@@ -1522,7 +1523,7 @@ TEST_P(PointerOrdinalMotionTest, OrdinalMotionOverridesRelativeMotion) {
 TEST_P(PointerConstraintTest, ConstrainPointer) {
   EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
 
-  EXPECT_CALL(delegate_, OnPointerEnter(surface_, gfx::PointF(), 0));
+  EXPECT_CALL(delegate_, OnPointerEnter(surface_.get(), gfx::PointF(), 0));
   EXPECT_CALL(delegate_, OnPointerFrame());
   generator_->MoveMouseTo(surface_->window()->GetBoundsInScreen().origin());
 
@@ -1542,7 +1543,7 @@ TEST_P(PointerConstraintTest, ConstrainPointer) {
   generator_->MoveMouseTo(
       child_surface->window()->GetBoundsInScreen().origin());
 
-  EXPECT_CALL(delegate_, OnPointerLeave(surface_));
+  EXPECT_CALL(delegate_, OnPointerLeave(surface_.get()));
   EXPECT_CALL(delegate_, OnPointerEnter(child_surface, gfx::PointF(), 0));
   EXPECT_CALL(delegate_, OnPointerFrame()).Times(2);
   // Moving the cursor to a different surface should change the focus when
@@ -1577,14 +1578,14 @@ TEST_P(PointerConstraintTest, OneConstraintPerSurface) {
       .WillByDefault(testing::Return(false));
   EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
 
-  EXPECT_CALL(delegate_, OnPointerEnter(surface_, gfx::PointF(), 0));
+  EXPECT_CALL(delegate_, OnPointerEnter(surface_.get(), gfx::PointF(), 0));
   EXPECT_CALL(delegate_, OnPointerFrame()).Times(testing::AtLeast(1));
   generator_->MoveMouseTo(surface_->window()->GetBoundsInScreen().origin());
 
   // Add a second constraint for the same surface, it should fail.
   MockPointerConstraintDelegate second_constraint;
   EXPECT_CALL(second_constraint, GetConstrainedSurface())
-      .WillRepeatedly(testing::Return(surface_));
+      .WillRepeatedly(testing::Return(surface_.get()));
   ON_CALL(second_constraint, IsPersistent())
       .WillByDefault(testing::Return(false));
   EXPECT_CALL(second_constraint, OnAlreadyConstrained());
@@ -1613,7 +1614,7 @@ TEST_P(PointerConstraintTest, OneShotConstraintActivatedOnFirstFocus) {
   focus_client_->FocusWindow(surface_->window());
   EXPECT_EQ(constraint_delegate_.activated_count, 1);
 
-  EXPECT_CALL(delegate_, OnPointerEnter(surface_, gfx::PointF(), 0));
+  EXPECT_CALL(delegate_, OnPointerEnter(surface_.get(), gfx::PointF(), 0));
   EXPECT_CALL(delegate_, OnPointerFrame());
   generator_->MoveMouseTo(surface_->window()->GetBoundsInScreen().origin());
 
@@ -1626,13 +1627,13 @@ TEST_P(PointerConstraintTest, OneShotConstraintActivatedOnFirstFocus) {
 TEST_P(PointerConstraintTest, UnconstrainPointerWhenSurfaceIsDestroyed) {
   EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
 
-  EXPECT_CALL(delegate_, OnPointerEnter(surface_, gfx::PointF(), 0));
+  EXPECT_CALL(delegate_, OnPointerEnter(surface_.get(), gfx::PointF(), 0));
   EXPECT_CALL(delegate_, OnPointerFrame());
   generator_->MoveMouseTo(surface_->window()->GetBoundsInScreen().origin());
 
   // Constraint should be broken if surface is destroyed.
   EXPECT_CALL(constraint_delegate_, OnConstraintBroken());
-  EXPECT_CALL(delegate_, OnPointerLeave(surface_));
+  EXPECT_CALL(delegate_, OnPointerLeave(surface_.get()));
   EXPECT_CALL(delegate_, OnPointerFrame());
   shell_surface_.reset();
 
@@ -1645,7 +1646,7 @@ TEST_P(PointerConstraintTest, UnconstrainPointerWhenWindowLosesFocus) {
       .WillByDefault(testing::Return(false));
   EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
 
-  EXPECT_CALL(delegate_, OnPointerEnter(surface_, gfx::PointF(), 0));
+  EXPECT_CALL(delegate_, OnPointerEnter(surface_.get(), gfx::PointF(), 0));
   EXPECT_CALL(delegate_, OnPointerFrame());
   generator_->MoveMouseTo(surface_->window()->GetBoundsInScreen().origin());
 
@@ -1664,7 +1665,7 @@ TEST_P(PointerConstraintTest, PersistentConstraintActivatedOnRefocus) {
       .WillByDefault(testing::Return(true));
   EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
 
-  EXPECT_CALL(delegate_, OnPointerEnter(surface_, gfx::PointF(), 0));
+  EXPECT_CALL(delegate_, OnPointerEnter(surface_.get(), gfx::PointF(), 0));
   EXPECT_CALL(delegate_, OnPointerFrame());
   generator_->MoveMouseTo(surface_->window()->GetBoundsInScreen().origin());
 
@@ -1684,7 +1685,7 @@ TEST_P(PointerConstraintTest, MultipleSurfacesCanBeConstrained) {
       .WillByDefault(testing::Return(true));
   EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
 
-  EXPECT_CALL(delegate_, OnPointerEnter(surface_, gfx::PointF(), 0));
+  EXPECT_CALL(delegate_, OnPointerEnter(surface_.get(), gfx::PointF(), 0));
   EXPECT_CALL(delegate_, OnPointerFrame());
   generator_->MoveMouseTo(surface_->window()->GetBoundsInScreen().origin());
 
@@ -1729,7 +1730,7 @@ TEST_P(PointerConstraintTest, UserActionPreventsConstraint) {
       .WillByDefault(testing::Return(false));
   EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
 
-  EXPECT_CALL(delegate_, OnPointerEnter(surface_, gfx::PointF(), 0));
+  EXPECT_CALL(delegate_, OnPointerEnter(surface_.get(), gfx::PointF(), 0));
   EXPECT_CALL(delegate_, OnPointerFrame()).Times(testing::AtLeast(1));
   generator_->MoveMouseTo(surface_->window()->GetBoundsInScreen().origin());
 
@@ -1739,7 +1740,7 @@ TEST_P(PointerConstraintTest, UserActionPreventsConstraint) {
   // New constraints are no longer permitted.
   MockPointerConstraintDelegate second_constraint;
   EXPECT_CALL(second_constraint, GetConstrainedSurface())
-      .WillRepeatedly(testing::Return(surface_));
+      .WillRepeatedly(testing::Return(surface_.get()));
   ON_CALL(second_constraint, IsPersistent())
       .WillByDefault(testing::Return(false));
   EXPECT_FALSE(pointer_->ConstrainPointer(&second_constraint));
@@ -1754,7 +1755,7 @@ TEST_P(PointerConstraintTest, UserActionPreventsConstraint) {
   // New constraints are now permitted too.
   MockPointerConstraintDelegate third_constraint;
   EXPECT_CALL(third_constraint, GetConstrainedSurface())
-      .WillRepeatedly(testing::Return(surface_));
+      .WillRepeatedly(testing::Return(surface_.get()));
   ON_CALL(third_constraint, IsPersistent())
       .WillByDefault(testing::Return(false));
   EXPECT_TRUE(pointer_->ConstrainPointer(&third_constraint));
@@ -1772,7 +1773,7 @@ TEST_P(PointerConstraintTest, UserCanBreakAndActivatePersistentConstraint) {
   EXPECT_EQ(constraint_delegate_.activated_count, 1);
   EXPECT_EQ(constraint_delegate_.broken_count, 0);
 
-  EXPECT_CALL(delegate_, OnPointerEnter(surface_, gfx::PointF(), 0));
+  EXPECT_CALL(delegate_, OnPointerEnter(surface_.get(), gfx::PointF(), 0));
   EXPECT_CALL(delegate_, OnPointerFrame()).Times(testing::AtLeast(1));
   generator_->MoveMouseTo(surface_->window()->GetBoundsInScreen().origin());
 

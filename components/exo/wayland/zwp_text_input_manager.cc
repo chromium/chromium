@@ -10,6 +10,7 @@
 #include <wayland-server-protocol-core.h>
 #include <xkbcommon/xkbcommon.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_offset_string_conversions.h"
@@ -382,16 +383,16 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     }
   }
 
-  wl_resource* text_input_;
-  wl_resource* extended_text_input_ = nullptr;
-  wl_resource* surface_ = nullptr;
+  raw_ptr<wl_resource, ExperimentalAsh> text_input_;
+  raw_ptr<wl_resource, ExperimentalAsh> extended_text_input_ = nullptr;
+  raw_ptr<wl_resource, ExperimentalAsh> surface_ = nullptr;
 
   // Owned by Seat, which is updated before calling the callbacks of this
   // class.
-  const XkbTracker* const xkb_tracker_;
+  const raw_ptr<const XkbTracker, ExperimentalAsh> xkb_tracker_;
 
   // Owned by Server, which always outlives this delegate.
-  SerialTracker* const serial_tracker_;
+  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker_;
   ui::XkbModifierConverter modifier_converter_{
       std::vector<std::string>(std::begin(kModifierNames),
                                std::end(kModifierNames))};

@@ -14,6 +14,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/cxx20_erase_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/exo/buffer.h"
 #include "components/exo/shell_surface.h"
@@ -720,7 +721,7 @@ class ZAuraOutputTest : public test::ExoTestBase {
     std::unique_ptr<WaylandDisplayOutput> output;
     std::unique_ptr<WaylandDisplayHandler> handler;
 
-    wl_client* client;
+    raw_ptr<wl_client, ExperimentalAsh> client;
 
     void CreateAuraOutput() {
       DCHECK(!aura_output);
@@ -743,7 +744,7 @@ class ZAuraOutputTest : public test::ExoTestBase {
  private:
   std::vector<std::unique_ptr<OutputHolder>> output_holder_list_;
   std::unique_ptr<wl_display, WlDisplayDeleter> wayland_display_;
-  wl_client* client_ = nullptr;
+  raw_ptr<wl_client, ExperimentalAsh> client_ = nullptr;
 };
 
 TEST_F(ZAuraOutputTest, SendInsets) {

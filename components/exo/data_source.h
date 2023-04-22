@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/exo/surface.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -124,7 +125,7 @@ class DataSource {
                           const std::string& mime_type,
                           const std::vector<uint8_t>& data);
 
-  DataSourceDelegate* const delegate_;
+  const raw_ptr<DataSourceDelegate, ExperimentalAsh> delegate_;
   base::ObserverList<DataSourceObserver>::Unchecked observers_;
 
   // Mime types which has been offered.
@@ -147,8 +148,8 @@ class ScopedDataSource {
   DataSource* get() { return data_source_; }
 
  private:
-  DataSource* const data_source_;
-  DataSourceObserver* const observer_;
+  const raw_ptr<DataSource, ExperimentalAsh> data_source_;
+  const raw_ptr<DataSourceObserver, ExperimentalAsh> observer_;
 };
 
 }  // namespace exo

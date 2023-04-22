@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "ash/public/cpp/desk_template.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/uuid.h"
 #include "components/account_id/account_id.h"
@@ -69,9 +70,10 @@ class DeskModelWrapper : public DeskModel {
   void OnDeleteAllEntries(DeskModel::DeleteEntryCallback callback,
                           desks_storage::DeskModel::DeleteEntryStatus status);
 
-  desks_storage::DeskModel* save_and_recall_desks_model_;
+  raw_ptr<desks_storage::DeskModel, ExperimentalAsh>
+      save_and_recall_desks_model_;
 
-  desks_storage::DeskSyncBridge* desk_template_model_;
+  raw_ptr<desks_storage::DeskSyncBridge, ExperimentalAsh> desk_template_model_;
 
   base::WeakPtrFactory<DeskModelWrapper> weak_ptr_factory_{this};
 };

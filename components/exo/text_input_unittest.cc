@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/test/ash_test_helper.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/exo/buffer.h"
@@ -139,7 +140,7 @@ class TestingInputMethodObserver : public ui::InputMethodObserver {
               (override));
 
  private:
-  ui::InputMethod* input_method_ = nullptr;
+  raw_ptr<ui::InputMethod, ExperimentalAsh> input_method_ = nullptr;
 };
 
 class TextInputTest : public test::ExoTestBase {

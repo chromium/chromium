@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
 #include "components/segmentation_platform/internal/selection/cached_result_writer.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
@@ -64,7 +65,8 @@ class ResultRefreshManager {
       std::unique_ptr<SegmentResultProvider::SegmentResult> result);
 
   // Configs for all registered clients.
-  const std::vector<std::unique_ptr<Config>>& configs_;
+  const raw_ref<const std::vector<std::unique_ptr<Config>>, ExperimentalAsh>
+      configs_;
 
   // Stores `SegmentResultProvider` for all clients.
   std::map<std::string, std::unique_ptr<SegmentResultProvider>>

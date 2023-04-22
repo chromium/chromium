@@ -23,6 +23,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -479,7 +481,7 @@ enum ClientState {
 };
 
 struct DecodeTask {
-  const ParsedJpegImage* image;
+  raw_ptr<const ParsedJpegImage, ExperimentalAsh> image;
   gfx::Size target_size;
 
   DecodeTask(const ParsedJpegImage* im)
@@ -540,7 +542,7 @@ class JpegClient : public MjpegDecodeAccelerator::Client {
   double GetMeanAbsoluteDifference();
 
   // JpegClient doesn't own |tasks_|.
-  const std::vector<DecodeTask>& tasks_;
+  const raw_ref<const std::vector<DecodeTask>, ExperimentalAsh> tasks_;
 
   ClientState state_;
 
@@ -687,7 +689,7 @@ void JpegClient::NotifyError(int32_t task_id,
 }
 
 void JpegClient::PrepareMemory(int32_t task_id) {
-  const DecodeTask& task = tasks_[task_id];
+  const DecodeTask& task = (*tasks_)[task_id];
 
   if (use_dmabuf_) {
     in_dmabuf_fd_ = g_env->CreateDmaBufFd(task.image->data_str.data(),
@@ -740,7 +742,7 @@ void JpegClient::SaveToFile(int32_t task_id,
                             scoped_refptr<media::VideoFrame> in_frame,
                             const std::string& suffix) {
   LOG_ASSERT(in_frame);
-  const DecodeTask& task = tasks_[task_id];
+  const DecodeTask& task = (*tasks_)[task_id];
 
   // First convert to ARGB format. Note that in our case, the coded size and the
   // visible size will be the same.
@@ -813,8 +815,8 @@ double JpegClient::GetMeanAbsoluteDifference() {
 }
 
 void JpegClient::StartDecode(int32_t task_id, bool do_prepare_memory) {
-  ASSERT_LT(base::checked_cast<size_t>(task_id), tasks_.size());
-  const DecodeTask& task = tasks_[task_id];
+  ASSERT_LT(base::checked_cast<size_t>(task_id), tasks_->size());
+  const DecodeTask& task = (*tasks_)[task_id];
 
   if (do_prepare_memory)
     PrepareMemory(task_id);
@@ -835,7 +837,7 @@ void JpegClient::StartDecode(int32_t task_id, bool do_prepare_memory) {
 }
 
 bool JpegClient::GetSoftwareDecodeResult(int32_t task_id) {
-  const DecodeTask& task = tasks_[task_id];
+  const DecodeTask& task = (*tasks_)[task_id];
   const bool do_crop_scale = task.target_size != task.image->visible_size;
   DCHECK(sw_out_frame_->IsMappable());
   DCHECK_EQ(sw_out_frame_->format(), media::PIXEL_FORMAT_I420);

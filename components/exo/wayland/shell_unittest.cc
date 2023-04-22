@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/wayland/wayland_display_output.h"
 
 #include <xdg-shell-client-protocol.h>
@@ -118,7 +119,7 @@ class ShellClientData : public test::TestClient::CustomData {
 
  private:
   bool close_called_ = false;
-  test::TestClient* const client_;
+  const raw_ptr<test::TestClient, ExperimentalAsh> client_;
   std::unique_ptr<wl_surface> surface_;
   std::unique_ptr<xdg_surface> xdg_surface_;
   std::unique_ptr<xdg_toplevel> xdg_toplevel_;

@@ -13,6 +13,7 @@
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/exo/wayland/scoped_wl.h"
 #include "ui/display/display_observer.h"
@@ -127,7 +128,7 @@ class Server : public display::DisplayObserver {
 
   // This has the server's socket inside it, so it must be deleted last.
   base::ScopedTempDir socket_dir_;
-  Display* const display_;
+  const raw_ptr<Display, ExperimentalAsh> display_;
   std::unique_ptr<SecurityDelegate> security_delegate_;
   // Deleting wl_display depends on SerialTracker.
   std::unique_ptr<SerialTracker> serial_tracker_;

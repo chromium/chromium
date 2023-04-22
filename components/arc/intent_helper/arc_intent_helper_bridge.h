@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -154,8 +155,9 @@ class ArcIntentHelperBridge : public KeyedService,
  private:
   THREAD_CHECKER(thread_checker_);
 
-  content::BrowserContext* const context_;
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
 
   ActivityIconLoader icon_loader_;
 

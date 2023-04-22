@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "components/login/login_export.h"
 
@@ -79,7 +80,7 @@ class LOGIN_EXPORT LocalizedValuesBuilder {
   std::string prefix_;
 
   // Not owned.
-  base::Value::Dict* dict_;
+  raw_ptr<base::Value::Dict, ExperimentalAsh> dict_;
 };
 
 }  // namespace login

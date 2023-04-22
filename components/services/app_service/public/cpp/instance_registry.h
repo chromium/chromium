@@ -12,6 +12,7 @@
 #include <string>
 
 #include "ash/public/cpp/shelf_types.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
@@ -36,7 +37,7 @@ struct InstanceParams {
   ~InstanceParams();
 
   const std::string app_id;
-  aura::Window* window;
+  raw_ptr<aura::Window, ExperimentalAsh> window;
   absl::optional<std::string> launch_id;
   absl::optional<std::pair<InstanceState, base::Time>> state;
   absl::optional<content::BrowserContext*> browser_context;
@@ -86,7 +87,7 @@ class InstanceRegistry {
     void Observe(InstanceRegistry* instance_registry);
 
    private:
-    InstanceRegistry* instance_registry_ = nullptr;
+    raw_ptr<InstanceRegistry, ExperimentalAsh> instance_registry_ = nullptr;
   };
 
   InstanceRegistry();

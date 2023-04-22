@@ -8,6 +8,7 @@
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/keyboard.h"
 #include "components/exo/keyboard_observer.h"
 #include "components/exo/wayland/serial_tracker.h"
@@ -75,9 +76,9 @@ class WaylandExtendedKeyboardImpl : public KeyboardObserver {
  private:
   wl_client* client() const { return wl_resource_get_client(resource_); }
 
-  wl_resource* const resource_;
-  SerialTracker* const serial_tracker_;
-  Keyboard* keyboard_;
+  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
+  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker_;
+  raw_ptr<Keyboard, ExperimentalAsh> keyboard_;
 };
 
 void extended_keyboard_destroy(wl_client* client, wl_resource* resource) {

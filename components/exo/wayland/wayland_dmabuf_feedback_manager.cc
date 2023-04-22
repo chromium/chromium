@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
 #include "components/exo/shell_surface_base.h"
@@ -255,8 +256,9 @@ class WaylandDmabufSurfaceFeedback : public SurfaceObserver {
   }
 
  private:
-  WaylandDmabufFeedbackManager* const feedback_manager_;
-  Surface* const surface_;
+  const raw_ptr<WaylandDmabufFeedbackManager, ExperimentalAsh>
+      feedback_manager_;
+  const raw_ptr<Surface, ExperimentalAsh> surface_;
   std::unique_ptr<WaylandDmabufFeedback> const feedback_;
   std::set<WaylandDmabufSurfaceFeedbackResourceWrapper*> surface_feedback_refs_;
 };
@@ -286,8 +288,8 @@ class WaylandDmabufSurfaceFeedbackResourceWrapper {
   void SetInert() { surface_feedback_ = nullptr; }
 
  private:
-  WaylandDmabufSurfaceFeedback* surface_feedback_;
-  wl_resource* resource_;
+  raw_ptr<WaylandDmabufSurfaceFeedback, ExperimentalAsh> surface_feedback_;
+  raw_ptr<wl_resource, ExperimentalAsh> resource_;
 };
 
 WaylandDmabufSurfaceFeedback::~WaylandDmabufSurfaceFeedback() {

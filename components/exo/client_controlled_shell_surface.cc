@@ -31,6 +31,7 @@
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -141,7 +142,7 @@ class ClientControlledStateDelegate
   }
 
  private:
-  ClientControlledShellSurface* shell_surface_;
+  raw_ptr<ClientControlledShellSurface, ExperimentalAsh> shell_surface_;
 };
 
 // A WindowStateDelegate that implements ToggleFullscreen behavior for
@@ -221,8 +222,8 @@ class ClientControlledWindowStateDelegate : public ash::WindowStateDelegate {
   }
 
  private:
-  ClientControlledShellSurface* shell_surface_;
-  ash::ClientControlledState::Delegate* delegate_;
+  raw_ptr<ClientControlledShellSurface, ExperimentalAsh> shell_surface_;
+  raw_ptr<ash::ClientControlledState::Delegate, ExperimentalAsh> delegate_;
 };
 
 bool IsPinned(const ash::WindowState* window_state) {
@@ -299,7 +300,7 @@ class EventTargetingBlocker : aura::WindowObserver {
   std::map<aura::Window*,
            std::unique_ptr<aura::ScopedWindowEventTargetingBlocker>>
       event_targeting_blocker_map_;
-  aura::Window* window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
 };
 
 }  // namespace
@@ -317,7 +318,7 @@ class ClientControlledShellSurface::ScopedSetBoundsLocally {
   ~ScopedSetBoundsLocally() { state_->set_bounds_locally(false); }
 
  private:
-  ash::ClientControlledState* const state_;
+  const raw_ptr<ash::ClientControlledState, ExperimentalAsh> state_;
 };
 
 class ClientControlledShellSurface::ScopedLockedToRoot {
@@ -333,7 +334,7 @@ class ClientControlledShellSurface::ScopedLockedToRoot {
   ~ScopedLockedToRoot() { window_->ClearProperty(ash::kLockedToRootKey); }
 
  private:
-  aura::Window* const window_;
+  const raw_ptr<aura::Window, ExperimentalAsh> window_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

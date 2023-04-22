@@ -7,6 +7,7 @@
 
 #include "ash/shell.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/exo/seat_observer.h"
@@ -91,7 +92,7 @@ class UILockController : public ui::EventHandler,
   void OnEscapeHeld();
   void StopTimer();
 
-  Seat* seat_;
+  raw_ptr<Seat, ExperimentalAsh> seat_;
   base::OneShotTimer exit_fullscreen_timer_;
 
   // Whether the screen brightness is low enough to make the display dark.
@@ -101,7 +102,7 @@ class UILockController : public ui::EventHandler,
   // running, or nullptr if the timer isn't running. Do not dereference; may
   // dangle if the Surface is destroyed while the timer is running. Valid only
   // for comparison purposes.
-  Surface* focused_surface_to_unlock_ = nullptr;
+  raw_ptr<Surface, ExperimentalAsh> focused_surface_to_unlock_ = nullptr;
 
   // Pointers currently being captured.
   base::flat_set<base::raw_ptr<Pointer>> captured_pointers_;

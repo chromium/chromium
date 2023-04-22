@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "cc/base/region.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -94,7 +95,7 @@ class ShellSurfaceBuilder {
   absl::optional<gfx::Rect> geometry_;
   absl::optional<cc::Region> input_region_;
   absl::optional<SurfaceFrameType> type_;
-  SecurityDelegate* security_delegate_ = nullptr;
+  raw_ptr<SecurityDelegate, ExperimentalAsh> security_delegate_ = nullptr;
   std::string application_id_;
   bool use_system_modal_container_ = false;
   bool system_modal_ = false;
@@ -106,7 +107,7 @@ class ShellSurfaceBuilder {
   bool built_ = false;
 
   // ShellSurface-specific parameters.
-  ShellSurface* parent_shell_surface_ = nullptr;
+  raw_ptr<ShellSurface, ExperimentalAsh> parent_shell_surface_ = nullptr;
   bool popup_ = false;
   bool menu_ = false;
 

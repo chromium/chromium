@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -113,7 +114,7 @@ class GuestOsEngagementMetrics : public wm::ActivationChangeObserver,
 
   bool ShouldRecordEngagementTimeToUma() const;
 
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
 
   WindowMatcher window_matcher_;
   std::string pref_prefix_;
@@ -121,8 +122,8 @@ class GuestOsEngagementMetrics : public wm::ActivationChangeObserver,
 
   // |clock_| is used for determining when to log to UMA, while |tick_clock_|
   // is used to calculate elapsed time.
-  const base::Clock* clock_;
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
   base::RepeatingTimer update_engagement_time_timer_;
   base::RepeatingTimer save_engagement_time_to_prefs_timer_;
   base::TimeTicks last_update_ticks_;

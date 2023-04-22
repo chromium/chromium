@@ -11,6 +11,7 @@
 
 #include "ash/display/window_tree_host_manager.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
@@ -420,7 +421,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   static bool IsPopupWithGrab(aura::Window* window);
 
-  views::Widget* widget_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
   bool movement_disabled_ = false;
   gfx::Point origin_;
 
@@ -479,7 +480,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // without actually updating it.
   bool CalculateCanResize() const;
 
-  aura::Window* parent_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> parent_ = nullptr;
   bool activatable_ = true;
   bool can_minimize_ = true;
   bool has_frame_colors_ = false;

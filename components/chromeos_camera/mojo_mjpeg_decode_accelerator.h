@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom.h"
 #include "components/chromeos_camera/mjpeg_decode_accelerator.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -55,7 +56,7 @@ class MojoMjpegDecodeAccelerator {
 
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
-  MjpegDecodeAccelerator::Client* client_ = nullptr;
+  raw_ptr<MjpegDecodeAccelerator::Client, ExperimentalAsh> client_ = nullptr;
 
   // Used to safely pass the
   // chromeos_mojo::Remote<camera::mojom::MjpegDecodeAccelerator> from one

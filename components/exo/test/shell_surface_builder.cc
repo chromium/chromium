@@ -9,6 +9,7 @@
 #include "ash/constants/app_types.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_positioning_utils.h"
+#include "base/memory/raw_ptr.h"
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
 #include "components/exo/security_delegate.h"
@@ -26,7 +27,7 @@ namespace {
 // Internal structure that owns buffer, surface and subsurface instances.
 // This is owned by the host window as an owned property.
 struct Holder {
-  exo::Surface* root_surface = nullptr;
+  raw_ptr<exo::Surface, ExperimentalAsh> root_surface = nullptr;
   std::vector<std::tuple<std::unique_ptr<exo::Buffer>,
                          std::unique_ptr<exo::Surface>,
                          std::unique_ptr<exo::SubSurface>>>

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "net/base/backoff_entry.h"
@@ -63,7 +64,7 @@ class QuirksClient {
   RequestFinishedCallback on_request_finished_;
 
   // Weak pointer owned by manager, guaranteed to outlive this client object.
-  QuirksManager* manager_;
+  raw_ptr<QuirksManager, ExperimentalAsh> manager_;
 
   // Full path to icc file.
   const base::FilePath icc_path_;

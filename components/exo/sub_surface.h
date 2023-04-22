@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "components/exo/surface_delegate.h"
@@ -113,8 +114,8 @@ class SubSurface : public SurfaceDelegate,
   void RemoveSubSurfaceObserver(SubSurfaceObserver* observer);
 
  private:
-  Surface* surface_;
-  Surface* parent_;
+  raw_ptr<Surface, ExperimentalAsh> surface_;
+  raw_ptr<Surface, ExperimentalAsh> parent_;
   bool is_synchronized_ = true;
 
   // Surface observer list. Surface does not own the observers.

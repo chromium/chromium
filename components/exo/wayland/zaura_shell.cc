@@ -24,6 +24,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -373,7 +374,7 @@ void AuraSurface::SetFrameColors(SkColor active_frame_color,
 
 void AuraSurface::SetParent(AuraSurface* parent, const gfx::Point& position) {
   if (surface_)
-    surface_->SetParent(parent ? parent->surface_ : nullptr, position);
+    surface_->SetParent(parent ? parent->surface_.get() : nullptr, position);
 }
 
 void AuraSurface::SetStartupId(const char* startup_id) {
@@ -1243,8 +1244,8 @@ class WaylandAuraShell : public ash::DesksController::Observer,
   }
 
   // The aura shell resource associated with observer.
-  wl_resource* const aura_shell_resource_;
-  Seat* const seat_;
+  const raw_ptr<wl_resource, ExperimentalAsh> aura_shell_resource_;
+  const raw_ptr<Seat, ExperimentalAsh> seat_;
 
   bool last_has_focused_client_ = false;
 

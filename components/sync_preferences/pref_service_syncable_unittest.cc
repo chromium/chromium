@@ -1040,7 +1040,8 @@ class PrefServiceSyncableChromeOsTest : public testing::Test {
 
  protected:
   scoped_refptr<PrefRegistrySyncable> pref_registry_;
-  PrefNotifierImpl* pref_notifier_;  // Owned by |prefs_|.
+  raw_ptr<PrefNotifierImpl, ExperimentalAsh>
+      pref_notifier_;  // Owned by |prefs_|.
   scoped_refptr<TestingPrefStore> user_prefs_;
   scoped_refptr<TestingPrefStore> standalone_browser_prefs_;
   TestPrefModelAssociatorClient client_;

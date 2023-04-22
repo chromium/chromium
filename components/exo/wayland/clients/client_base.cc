@@ -25,6 +25,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapper.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/posix/eintr_wrapper.h"
@@ -1075,7 +1076,7 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
     typedef struct VkDmaBufImageCreateInfo_ {
       VkStructureType
           sType;  // Must be VK_STRUCTURE_TYPE_DMA_BUF_IMAGE_CREATE_INFO_INTEL
-      const void* pNext;  // Pointer to next structure.
+      raw_ptr<const void, ExperimentalAsh> pNext;  // Pointer to next structure.
       int fd;
       VkFormat format;
       VkExtent3D extent;  // Depth must be 1

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "components/segmentation_platform/internal/selection/client_result_prefs.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/public/config.h"
@@ -51,7 +52,8 @@ class PrefsMigrator {
       absl::optional<SelectedSegment> old_result);
 
   // Configs for all registered clients.
-  const std::vector<std::unique_ptr<Config>>& configs_;
+  const raw_ref<const std::vector<std::unique_ptr<Config>>, ExperimentalAsh>
+      configs_;
 
   // The underlying pref backed store to read the pref values from before multi
   // output.
