@@ -4,12 +4,12 @@
 
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 
+#include <algorithm>
 #include <cmath>
 #include <map>
 #include <tuple>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -114,7 +114,7 @@ float HidePositionStartValue() {
 // animations to the expected range so that gfx::Tween::CalculateValue() can be
 // used.
 double CapAnimationValue(double value) {
-  return base::clamp(value, 0.0, 1.0);
+  return std::clamp(value, 0.0, 1.0);
 }
 
 // A default CaptionButtonModel that uses the widget delegate's state
