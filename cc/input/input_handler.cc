@@ -127,7 +127,8 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
   bool unification_enabled =
       base::FeatureList::IsEnabled(features::kScrollUnification);
 
-  if (target_element_id && !scroll_state->main_thread_hit_tested_reasons()) {
+  if (target_element_id && (!scroll_state->main_thread_hit_tested_reasons() ||
+                            scroll_state->is_scrollbar_interaction())) {
     TRACE_EVENT_INSTANT0("cc", "Latched scroll node provided",
                          TRACE_EVENT_SCOPE_THREAD);
     // If the caller passed in an element_id we can skip all the hit-testing

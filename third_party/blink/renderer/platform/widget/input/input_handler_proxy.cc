@@ -56,6 +56,9 @@ namespace {
 
 cc::ScrollState CreateScrollStateForGesture(const WebGestureEvent& event) {
   cc::ScrollStateData scroll_state_data;
+  if (event.SourceDevice() == WebGestureDevice::kScrollbar) {
+    scroll_state_data.is_scrollbar_interaction = true;
+  }
   switch (event.GetType()) {
     case WebInputEvent::Type::kGestureScrollBegin:
       scroll_state_data.position_x = event.PositionInWidget().x();
@@ -100,8 +103,6 @@ cc::ScrollState CreateScrollStateForGesture(const WebGestureEvent& event) {
           WebGestureEvent::InertialPhaseState::kMomentum;
       scroll_state_data.delta_granularity =
           event.data.scroll_update.delta_units;
-      if (event.SourceDevice() == WebGestureDevice::kScrollbar)
-        scroll_state_data.is_scrollbar_interaction = true;
       break;
     case WebInputEvent::Type::kGestureScrollEnd:
       scroll_state_data.is_ending = true;

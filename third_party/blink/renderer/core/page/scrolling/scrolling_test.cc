@@ -2660,6 +2660,82 @@ TEST_P(ScrollingSimTest, ScrollLayoutTriggers) {
   }
 }
 
+// Verifies that a composited scrollbar scroll uses the target scroller
+// specified by the widget input handler and does not bubble up.
+TEST_P(ScrollingSimTest, CompositedScrollbarScrollDoesNotBubble) {
+  String kUrl = "https://example.com/test.html";
+  SimRequest request(kUrl, "text/html");
+  LoadURL(kUrl);
+
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #scroller {
+      width: 100px;
+      height: 100px;
+      overflow: scroll;
+    }
+    .spacer {
+      height: 2000px;
+      width: 2000px;
+    }
+    </style>
+    <div id="scroller"><div class="spacer">Hello, world!</div></div>
+    <div class="spacer"></div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  Element* scroller = GetDocument().getElementById("scroller");
+  ScrollOffset max_offset = scroller->GetLayoutBoxForScrolling()
+                                ->GetScrollableArea()
+                                ->MaximumScrollOffset();
+  // Scroll to the end. A subsequent non-latched upward gesture scroll
+  // would bubble up to the root scroller; but a gesture scroll
+  // generated for a composited scrollbar scroll should not bubble up.
+  scroller->setScrollTop(max_offset.y());
+  Compositor().BeginFrame();
+
+  WebGestureEvent scroll_begin(WebInputEvent::Type::kGestureScrollBegin,
+                               WebInputEvent::kNoModifiers,
+                               WebInputEvent::GetStaticTimeStampForTests(),
+                               WebGestureDevice::kScrollbar);
+  // Location outside the scrolling div; input manager should accept the
+  // targeted element without performing a hit test.
+  scroll_begin.SetPositionInWidget(gfx::PointF(150, 150));
+  if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
+    scroll_begin.data.scroll_begin.main_thread_hit_tested_reasons =
+        cc::MainThreadScrollingReason::kScrollbarScrolling;
+  }
+  scroll_begin.data.scroll_begin.scrollable_area_element_id =
+      CompositorElementIdFromUniqueObjectId(
+          scroller->GetLayoutObject()->UniqueId(),
+          CompositorElementIdNamespace::kScroll)
+          .GetInternalValue();
+  // Specify an upward scroll
+  scroll_begin.data.scroll_begin.delta_y_hint = -1;
+  auto& widget = GetWebFrameWidget();
+  widget.DispatchThroughCcInputHandler(scroll_begin);
+
+  WebGestureEvent scroll_update(WebInputEvent::Type::kGestureScrollUpdate,
+                                WebInputEvent::kNoModifiers,
+                                WebInputEvent::GetStaticTimeStampForTests(),
+                                WebGestureDevice::kScrollbar);
+  scroll_update.SetPositionInWidget(gfx::PointF(150, 150));
+  scroll_update.data.scroll_update.delta_x = 0;
+  scroll_update.data.scroll_update.delta_y = -13;
+  widget.DispatchThroughCcInputHandler(scroll_update);
+
+  Compositor().BeginFrame();
+
+  EXPECT_EQ(GetDocument().View()->LayoutViewport()->GetScrollOffset(),
+            ScrollOffset());
+  EXPECT_EQ(scroller->GetLayoutBoxForScrolling()
+                ->GetScrollableArea()
+                ->GetScrollOffset(),
+            ScrollOffset(0, max_offset.y()));
+}
+
 class ScrollingTestWithAcceleratedContext : public ScrollingTest {
  protected:
   void SetUp() override {
