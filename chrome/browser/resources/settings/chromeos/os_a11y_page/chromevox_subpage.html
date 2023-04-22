@@ -167,7 +167,6 @@ found in the LICENSE file.
       sub-label="$i18n{chromeVoxTtsSettingsDescription}"
       on-click="onTtsSettingsClick_"
       external
-      button-aria-description="$i18n{opensInNewTab}"
       embedded>
   </cr-link-row>
 </div>
@@ -230,6 +229,13 @@ found in the LICENSE file.
 </cr-expand-button>
 <iron-collapse opened="[[developerOptionsExpanded_]]">
   <div class="sub-item">
+    <cr-link-row class="settings-box"
+        label="$i18n{chromeVoxEventLogLink}"
+        sub-label="$i18n{chromeVoxEventLogDescription}"
+        on-click="onEventLogClick_"
+        external
+        embedded>
+    </cr-link-row>
     <settings-toggle-button
         id="enableSpeechLoggingToggle"
         class="settings-box continuation"
@@ -254,14 +260,6 @@ found in the LICENSE file.
         pref="{{prefs.settings.a11y.chromevox.enable_event_stream_logging}}"
         label="$i18n{chromeVoxEnableEventStreamLogging}">
     </settings-toggle-button>
-    <cr-link-row class="settings-box"
-        label="$i18n{chromeVoxEventLogLink}"
-        sub-label="$i18n{chromeVoxEventLogDescription}"
-        on-click="onEventLogClick_"
-        external
-        button-aria-description="$i18n{opensInNewTab}"
-        embedded>
-    </cr-link-row>
     <template is="dom-if" if="[[prefs.settings.a11y.chromevox.enable_event_stream_logging.value]]">
       <div class="indented">
         <template is="dom-repeat" items="[[eventStreamFilters_]]">
