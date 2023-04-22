@@ -120,6 +120,7 @@ export {SettingsMultideviceSmartlockItemElement} from './multidevice_page/multid
 export {SettingsAudioAndCaptionsPageElement} from './os_a11y_page/audio_and_captions_page.js';
 export {BluetoothBrailleDisplayListener, BluetoothBrailleDisplayManager} from './os_a11y_page/bluetooth_braille_display_manager.js';
 export {BluetoothBrailleDisplayUiElement} from './os_a11y_page/bluetooth_braille_display_ui.js';
+export {ChangeDictationLocaleDialog, DictationLocaleOption} from './os_a11y_page/change_dictation_locale_dialog.js';
 export {SettingsChromeVoxSubpageElement} from './os_a11y_page/chromevox_subpage.js';
 export {SettingsCursorAndTouchpadPageElement} from './os_a11y_page/cursor_and_touchpad_page.js';
 export {SettingsDisplayAndMagnificationElement} from './os_a11y_page/display_and_magnification_page.js';

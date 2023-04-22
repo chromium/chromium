@@ -241,10 +241,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['CellularNetworksList', 'cellular_networks_list_test.js'],
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.js'],
  [
-   'DictationChangeLanguageLocaleDialogTest',
-   'change_dictation_locale_dialog_test.js',
- ],
- [
    'CupsPrinterEntry', 'cups_printer_entry_tests.js',
    {enabled: ['ash::features::kPrinterSettingsRevamp']}
  ],
@@ -441,6 +437,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  [
    'OsA11yPageCursorAndTouchpadPage',
    'os_a11y_page/cursor_and_touchpad_page_test.js',
+ ],
+ [
+   'OsA11yPageChangeDictationLocaleDialog',
+   'os_a11y_page/change_dictation_locale_dialog_test.js',
  ],
  [
    'OsA11yPageDisplayAndMagnificationPage',

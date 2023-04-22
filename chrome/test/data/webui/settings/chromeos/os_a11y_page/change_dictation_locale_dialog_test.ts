@@ -4,26 +4,44 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
+import {ChangeDictationLocaleDialog, DictationLocaleOption} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-suite('DictationChangeLanguageLocaleDialogTest', function() {
-  /** @type {!ChangeDictationLocaleDialog} */
-  let dialog;
+suite('<os-settings-change-dictation-locale-dialog>', () => {
+  let dialog: ChangeDictationLocaleDialog;
 
-  /** @type {!Array<!DictationLocaleOption>} */
-  const options = [
-    {name: 'English (US)', value: 'en-US', offline: true, recommended: true},
-    {name: 'English (UK)', value: 'en-GB', offline: false, recommended: true},
-    {name: 'Spanish', value: 'es-ES', offline: false, recommended: false},
+  const options: DictationLocaleOption[] = [
+    {
+      name: 'English (US)',
+      value: 'en-US',
+      worksOffline: true,
+      installed: true,
+      recommended: true,
+    },
+    {
+      name: 'English (UK)',
+      value: 'en-GB',
+      worksOffline: false,
+      installed: true,
+      recommended: true,
+    },
+    {
+      name: 'Spanish',
+      value: 'es-ES',
+      worksOffline: false,
+      installed: true,
+      recommended: false,
+    },
   ];
 
-  /** @type {!chrome.settingsPrivate.PrefObject} */
-  const pref = {
+  const pref: chrome.settingsPrivate.PrefObject<string> = {
+    key: 'test',
+    type: chrome.settingsPrivate.PrefType.STRING,
     value: 'en-US',
   };
 
-  setup(function() {
+  setup(() => {
     dialog =
         document.createElement('os-settings-change-dictation-locale-dialog');
     dialog.pref = pref;
@@ -32,7 +50,7 @@ suite('DictationChangeLanguageLocaleDialogTest', function() {
     flush();
   });
 
-  test('Cancel button closes dialog', function() {
+  test('Cancel button closes dialog', () => {
     assertTrue(dialog.$.changeDictationLocaleDialog.open);
 
     const cancelBtn = dialog.$.cancel;
@@ -49,16 +67,16 @@ suite('DictationChangeLanguageLocaleDialogTest', function() {
     const recommendedList = dialog.$.recommendedLocalesList;
     assertTrue(!!recommendedList);
     // Two possible recommended items.
-    assertEquals(2, recommendedList.items.length);
+    assertEquals(2, recommendedList.items!.length);
     // Nothing has been selected yet.
-    assertFalse(!!recommendedList.selectedItem);
+    assertEquals(null, recommendedList.selectedItem);
 
     const allList = dialog.$.allLocalesList;
     assertTrue(!!allList);
     // All three items are shown.
-    assertEquals(3, allList.items.length);
+    assertEquals(3, allList.items!.length);
     // Nothing has been selected yet.
-    assertFalse(!!allList.selectedItem);
+    assertEquals(null, allList.selectedItem);
   });
 
   test('Selects recommended option and saves', async () => {
@@ -72,8 +90,10 @@ suite('DictationChangeLanguageLocaleDialogTest', function() {
     // en-GB was selected.
     assertTrue(!!recommendedList.selectedItem);
     assertTrue(!!allList.selectedItem);
-    assertEquals('en-GB', recommendedList.selectedItem.value);
-    assertEquals('en-GB', allList.selectedItem.value);
+    assertEquals(
+        'en-GB', (recommendedList.selectedItem as DictationLocaleOption).value);
+    assertEquals(
+        'en-GB', (allList.selectedItem as DictationLocaleOption).value);
 
     // Clicking the update button updates the pref.
     const updateBtn = dialog.$.update;
@@ -94,15 +114,18 @@ suite('DictationChangeLanguageLocaleDialogTest', function() {
     // en-GB was selected.
     assertTrue(!!recommendedList.selectedItem);
     assertTrue(!!allList.selectedItem);
-    assertEquals('en-GB', recommendedList.selectedItem.value);
-    assertEquals('en-GB', allList.selectedItem.value);
+    assertEquals(
+        'en-GB', (recommendedList.selectedItem as DictationLocaleOption).value);
+    assertEquals(
+        'en-GB', (allList.selectedItem as DictationLocaleOption).value);
 
     allList.selectIndex(2);
     assertTrue(!!allList.selectedItem);
-    assertEquals('es-ES', allList.selectedItem.value);
+    assertEquals(
+        'es-ES', (allList.selectedItem as DictationLocaleOption).value);
 
     // No recommended item selected.
-    assertFalse(!!recommendedList.selectedItem);
+    assertEquals(null, recommendedList.selectedItem);
 
     // Clicking the update button updates the pref.
     const updateBtn = dialog.$.update;

@@ -22,7 +22,6 @@ build_webui_tests("build") {
     "apps_page_test.js",
     "cellular_networks_list_test.js",
     "cellular_roaming_toggle_button_test.js",
-    "change_dictation_locale_dialog_test.js",
     "crostini_extra_containers_subpage_test.js",
     "crostini_page_test.js",
     "cups_printer_entry_tests.js",
@@ -207,6 +206,7 @@ build_webui_tests("build") {
     "nearby_share_page/nearby_share_high_visibility_page_test.ts",
 
     "os_a11y_page/audio_and_captions_page_test.ts",
+    "os_a11y_page/change_dictation_locale_dialog_test.ts",
     "os_a11y_page/chromevox_subpage_test.ts",
     "os_a11y_page/cursor_and_touchpad_page_test.ts",
     "os_a11y_page/display_and_magnification_page_test.ts",
