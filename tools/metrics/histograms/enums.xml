@@ -59685,6 +59685,7 @@ from previous Chrome versions.
   <int value="-1328090640" label="DesktopPWAsAppHomePage:enabled"/>
   <int value="-1327676774" label="disable-accelerated-mjpeg-decode"/>
   <int value="-1326671705" label="TrustTokens:enabled"/>
+  <int value="-1326486858" label="ChromeWebuiRefresh2023:enabled"/>
   <int value="-1326463296" label="SSLCommittedInterstitials:disabled"/>
   <int value="-1325887476" label="NewPrintPreview:enabled"/>
   <int value="-1324982303" label="MacAddressRandomization:disabled"/>
@@ -64601,6 +64602,7 @@ from previous Chrome versions.
   <int value="1324623677"
       label="SessionRestorePrioritizesBackgroundUseCases:enabled"/>
   <int value="1325459977" label="HandwritingGestureEditing:disabled"/>
+  <int value="1326063771" label="ChromeWebuiRefresh2023:disabled"/>
   <int value="1326530782" label="AutofillParseAsync:enabled"/>
   <int value="1327883321"
       label="OmniboxHistoryQuickProviderAllowMidwordContinuations:enabled"/>

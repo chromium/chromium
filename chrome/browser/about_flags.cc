@@ -8252,6 +8252,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kChromeRefresh2023Variations,
                                     "ChromeRefresh2023")},
 
+    {"chrome-webui-refresh-2023",
+     flag_descriptions::kChromeWebuiRefresh2023Name,
+     flag_descriptions::kChromeWebuiRefresh2023Description, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kChromeWebuiRefresh2023)},
+
 #if BUILDFLAG(IS_MAC)
     {"cr2023-mac-font-smoothing",
      flag_descriptions::kCr2023MacFontSmoothingName,

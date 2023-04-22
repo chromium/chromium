@@ -1093,6 +1093,11 @@
     "expiry_milestone": 109
   },
   {
+    "name": "chrome-webui-refresh-2023",
+    "owners":["dpapad", "johntlee"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "chrome-whats-new-ui",
     "owners": [ "rbpotter" ],
     "expiry_milestone": 116

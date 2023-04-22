@@ -748,6 +748,10 @@ const char kChromeLabsDescription[] =
 const char kChromeRefresh2023Name[] = "Chrome Refresh 2023";
 const char kChromeRefresh2023Description[] = "Refresh of Chrome Desktop UI.";
 
+const char kChromeWebuiRefresh2023Name[] = "Chrome WebUI Refresh 2023";
+const char kChromeWebuiRefresh2023Description[] =
+    "Enables Chrome Refresh 2023 styles for various WebUI surfaces.";
+
 const char kCommerceHintAndroidName[] = "Commerce Hint Android";
 const char kCommerceHintAndroidDescription[] =
     "Enables commerce hint detection on Android.";

@@ -460,6 +460,15 @@ bool IsChromeRefresh2023() {
   return base::FeatureList::IsEnabled(kChromeRefresh2023);
 }
 
+BASE_FEATURE(kChromeWebuiRefresh2023,
+             "ChromeWebuiRefresh2023",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsChromeWebuiRefresh2023() {
+  return IsChromeRefresh2023() &&
+         base::FeatureList::IsEnabled(kChromeWebuiRefresh2023);
+}
+
 constexpr base::FeatureParam<ChromeRefresh2023Level>::Option
     kChromeRefresh2023LevelOption[] = {{ChromeRefresh2023Level::kLevel1, "1"},
                                        {ChromeRefresh2023Level::kLevel2, "2"}};
