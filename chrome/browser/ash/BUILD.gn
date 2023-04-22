@@ -660,8 +660,6 @@ source_set("ash") {
     "bluetooth/hats_bluetooth_revamp_trigger_impl.h",
     "boot_times_recorder.cc",
     "boot_times_recorder.h",
-    "boot_times_recorder_tab_helper.cc",
-    "boot_times_recorder_tab_helper.h",
     "borealis/borealis_app_launcher.cc",
     "borealis/borealis_app_launcher.h",
     "borealis/borealis_app_launcher_impl.cc",

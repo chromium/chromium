@@ -25,7 +25,6 @@
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/ash/boot_times_recorder_tab_helper.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen_view.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
@@ -522,12 +521,9 @@ void OobeUI::ConfigureOobeDisplay() {
   // Set up the chrome://userimage/ source.
   content::URLDataSource::Add(profile, std::make_unique<UserImageSource>());
 
-  content::WebContents* contents = web_ui()->GetWebContents();
-
   // TabHelper is required for OOBE webui to make webview working on it.
+  content::WebContents* contents = web_ui()->GetWebContents();
   extensions::TabHelper::CreateForWebContents(contents);
-
-  BootTimesRecorderTabHelper::MaybeCreateForWebContents(contents);
 
   if (ShouldUpScaleOobe())
     UpScaleOobe();
