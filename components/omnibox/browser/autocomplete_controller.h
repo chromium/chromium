@@ -307,9 +307,6 @@ class AutocompleteController : public AutocompleteProviderListener,
       const std::u16string& last_default_associated_keyword,
       bool force_notify_default_match_changed);
 
-  // Updates ML scoring signals of suggestions in the autocomplete result.
-  void UpdateScoringSignals();
-
   // Updates `result` to populate each match's `associated_keyword` if that
   // match can show a keyword hint. `result` should be sorted by relevance
   // before this is called.

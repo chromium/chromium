@@ -14,7 +14,6 @@
 class AutocompleteInput;
 class AutocompleteProviderClient;
 class AutocompleteResult;
-struct AutocompleteMatch;
 
 // History scoring signals annotator for annotating URL suggestions in
 // the autocomplete result with signals derived from history, including:
@@ -39,10 +38,6 @@ class HistoryScoringSignalsAnnotator
   // Annotates the URL suggestions of the autocomplete result.
   void AnnotateResult(const AutocompleteInput& input,
                       AutocompleteResult* result) override;
-
-  // Whether the autocomplete match is eligible to be annotated.
-  // Currently, includes only history and bookmark URLs.
-  static bool IsEligibleMatch(const AutocompleteMatch& match);
 
  private:
   // Populates signals based on the matching strings between the input text and

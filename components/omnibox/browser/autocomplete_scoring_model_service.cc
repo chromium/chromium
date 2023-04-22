@@ -36,8 +36,7 @@ AutocompleteScoringModelService::~AutocompleteScoringModelService() = default;
 
 void AutocompleteScoringModelService::ScoreAutocompleteUrlMatch(
     base::CancelableTaskTracker* tracker,
-    const metrics::OmniboxEventProto::Suggestion::ScoringSignals&
-        scoring_signals,
+    const ScoringSignals& scoring_signals,
     size_t match_index,
     GURL match_destination_url,
     ResultCallback result_callback) {

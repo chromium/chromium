@@ -114,13 +114,13 @@ TEST_F(BookmarkScoringSignalsAnnotatorTest, AnnotateResult) {
                           TestSchemeClassifier());
 
   annotator()->AnnotateResult(input, result());
-  EXPECT_EQ(result()->match_at(0)->scoring_signals.num_bookmarks_of_url(), 2);
+  EXPECT_EQ(result()->match_at(0)->scoring_signals->num_bookmarks_of_url(), 2);
   EXPECT_EQ(result()
                 ->match_at(0)
-                ->scoring_signals.total_bookmark_title_match_length(),
+                ->scoring_signals->total_bookmark_title_match_length(),
             7);
   EXPECT_EQ(result()
                 ->match_at(0)
-                ->scoring_signals.first_bookmark_title_match_position(),
+                ->scoring_signals->first_bookmark_title_match_position(),
             0);
 }

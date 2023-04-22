@@ -20,6 +20,8 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/window_open_disposition.h"
 
+using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
+
 class OmniboxMetricsProviderTest : public testing::Test {
  public:
   OmniboxMetricsProviderTest() = default;
@@ -64,8 +66,7 @@ class OmniboxMetricsProviderTest : public testing::Test {
 
   void RecordLogAndVerifyScoringSignals(
       const OmniboxLog& log,
-      metrics::OmniboxEventProto::Suggestion::ScoringSignals&
-          expected_scoring_signals) {
+      ScoringSignals& expected_scoring_signals) {
     // Clear the event cache so we start with a clean slate.
     provider_->omnibox_events_cache.clear_omnibox_event();
 
@@ -151,8 +152,7 @@ TEST_F(OmniboxMetricsProviderTest, LogScoringSignals) {
 
   // Populate a set of scoring signals with some test values. This will be used
   // to ensure the scoring signals are being propagated correctly.
-  metrics::OmniboxEventProto::Suggestion::ScoringSignals
-      expected_scoring_signals;
+  ScoringSignals expected_scoring_signals;
   expected_scoring_signals.set_first_bookmark_title_match_position(3);
   expected_scoring_signals.set_allowed_to_be_default_match(true);
   expected_scoring_signals.set_length_of_url(20);
@@ -162,7 +162,7 @@ TEST_F(OmniboxMetricsProviderTest, LogScoringSignals) {
   ACMatches matches = {
       BuildMatch(AutocompleteMatchType::Type::BOOKMARK_TITLE),
       BuildMatch(AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED)};
-  for (auto match : matches) {
+  for (auto& match : matches) {
     match.scoring_signals = expected_scoring_signals;
   }
   AutocompleteResult result;
@@ -170,10 +170,10 @@ TEST_F(OmniboxMetricsProviderTest, LogScoringSignals) {
 
   // Create the log and call simulate logging.
   OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/1);
-  RecordLogAndVerifyScoringSignals(log, matches[0].scoring_signals);
+  RecordLogAndVerifyScoringSignals(log, *matches[0].scoring_signals);
 
   // Now, "turn on" incognito mode, scoring signals should not be logged.
   log.is_incognito = true;
-  RecordLogAndVerifyScoringSignals(log, matches[0].scoring_signals);
+  RecordLogAndVerifyScoringSignals(log, *matches[0].scoring_signals);
 }
 #endif  // !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))

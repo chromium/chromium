@@ -164,12 +164,13 @@ ScoredHistoryMatch::ScoredHistoryMatch(
 
   if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled()) {
     // Populate the scoring signals available in the URL Row.
-    scoring_signals.set_typed_count(row.typed_count());
-    scoring_signals.set_visit_count(row.visit_count());
+    scoring_signals = absl::make_optional<ScoringSignals>();
+    scoring_signals->set_typed_count(row.typed_count());
+    scoring_signals->set_visit_count(row.visit_count());
     base::TimeDelta elapsed_time = now - row.last_visit();
-    scoring_signals.set_elapsed_time_last_visit_secs(elapsed_time.InSeconds());
-    scoring_signals.set_is_host_only(IsHostOnly());
-    scoring_signals.set_length_of_url(row.url().spec().length());
+    scoring_signals->set_elapsed_time_last_visit_secs(elapsed_time.InSeconds());
+    scoring_signals->set_is_host_only(IsHostOnly());
+    scoring_signals->set_length_of_url(row.url().spec().length());
   }
 
   // Figure out where each search term appears in the URL and/or page title
@@ -721,33 +722,33 @@ float ScoredHistoryMatch::GetTopicalityScore(
         adjustments, url_matches);
     if (url_matching_signals.first_url_match_position.has_value()) {
       // Not set if there is no URL match.
-      scoring_signals.set_first_url_match_position(
+      scoring_signals->set_first_url_match_position(
           *(url_matching_signals.first_url_match_position));
     }
     if (url_matching_signals.host_match_at_word_boundary.has_value()) {
       // Not set if there is no match in the host.
-      scoring_signals.set_host_match_at_word_boundary(
+      scoring_signals->set_host_match_at_word_boundary(
           *(url_matching_signals.host_match_at_word_boundary));
-      scoring_signals.set_has_non_scheme_www_match(
+      scoring_signals->set_has_non_scheme_www_match(
           *(url_matching_signals.has_non_scheme_www_match));
     }
-    scoring_signals.set_total_url_match_length(
+    scoring_signals->set_total_url_match_length(
         url_matching_signals.total_url_match_length);
-    scoring_signals.set_total_host_match_length(
+    scoring_signals->set_total_host_match_length(
         url_matching_signals.total_host_match_length);
-    scoring_signals.set_total_path_match_length(
+    scoring_signals->set_total_path_match_length(
         url_matching_signals.total_path_match_length);
-    scoring_signals.set_total_query_or_ref_match_length(
+    scoring_signals->set_total_query_or_ref_match_length(
         url_matching_signals.total_query_or_ref_match_length);
-    scoring_signals.set_num_input_terms_matched_by_url(
+    scoring_signals->set_num_input_terms_matched_by_url(
         url_matching_signals.num_input_terms_matched_by_url);
 
     // Title matching signals.
     size_t total_title_match_length = ComputeTotalMatchLength(
         terms_to_word_starts_offsets, title_matches,
         word_starts.title_word_starts_, num_title_words_to_allow_);
-    scoring_signals.set_total_title_match_length(total_title_match_length);
-    scoring_signals.set_num_input_terms_matched_by_title(
+    scoring_signals->set_total_title_match_length(total_title_match_length);
+    scoring_signals->set_num_input_terms_matched_by_title(
         CountUniqueMatchTerms(title_matches));
   }
 

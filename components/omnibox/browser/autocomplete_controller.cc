@@ -982,10 +982,16 @@ void AutocompleteController::UpdateResult(
     result_.MergeSuggestionGroupsMap(provider->suggestion_groups_map());
   }
 
-  // Update scoring signals of suggestions in the result. The updated signals in
-  // `result_` will be lost when UpdateResult() is called again. Currently,
-  // `result_` is updated in each UpdateResult() call.
-  UpdateScoringSignals();
+  // Annotate the eligible matches in `result_` with additional scoring signals.
+  // The additional signals in `result_` will be lost when `UpdateResult()` is
+  // called again. Currently, `result_` is updated in each `UpdateResult()`
+  // call.
+  if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled() &&
+      OmniboxFieldTrial::AreScoringSignalsAnnotatorsEnabled()) {
+    for (const auto& annotator : url_scoring_signals_annotators_) {
+      annotator->AnnotateResult(input_, &result_);
+    }
+  }
 
   // Conditionally preserve the default match.
   const AutocompleteMatch* preserve_default_match = nullptr;
@@ -1113,15 +1119,6 @@ void AutocompleteController::AnnotateResultAndNotifyChanged(
 
   DelayedNotifyChanged(force_notify_default_match_changed ||
                        notify_default_match);
-}
-
-void AutocompleteController::UpdateScoringSignals() {
-  // If enabled, update scoring signals of URL suggestions.
-  if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled()) {
-    for (const auto& annotator : url_scoring_signals_annotators_) {
-      annotator->AnnotateResult(input_, &result_);
-    }
-  }
 }
 
 void AutocompleteController::UpdateAssociatedKeywords(
@@ -1540,20 +1537,17 @@ void AutocompleteController::RunUrlScoringModel(
   for (size_t match_index = 0; match_index < result_.matches_.size();
        match_index++) {
     auto* match = result_.match_at(match_index);
-    // The scoring model only supports URL matches - bookmarks, history, etc.
-    // Call the model for those types and directly invoke the model callback for
-    // any other match type.
-    if (AutocompleteMatch::GetDefaultGroupId(match->type) !=
-        omnibox::GROUP_OTHER_NAVS) {
+    if (match->scoring_signals.has_value()) {
+      // Run the model for matches with scoring signals.
+      provider_client_->GetAutocompleteScoringModelService()
+          ->ScoreAutocompleteUrlMatch(&scoring_model_task_tracker_,
+                                      *match->scoring_signals, match_index,
+                                      match->destination_url, barrier_callback);
+    } else {
+      // Directly invoke the model callback for ineligible matches.
       barrier_callback.Run(
           std::make_tuple(absl::nullopt, match_index, match->destination_url));
-      continue;
     }
-
-    provider_client_->GetAutocompleteScoringModelService()
-        ->ScoreAutocompleteUrlMatch(&scoring_model_task_tracker_,
-                                    match->scoring_signals, match_index,
-                                    match->destination_url, barrier_callback);
   }
 }
 

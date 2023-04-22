@@ -366,8 +366,9 @@ AutocompleteMatch HistoryQuickProvider::QuickMatchToACMatch(
     // is constructed, rather than in ScoredHistoryMatch. We have to propagate
     // that signal to `scoring_signals` in addition to all signals calculated in
     // the ScoredHistoryMatch.
+    DCHECK(history_match.scoring_signals.has_value());
     match.scoring_signals = history_match.scoring_signals;
-    match.scoring_signals.set_allowed_to_be_default_match(
+    match.scoring_signals->set_allowed_to_be_default_match(
         match.allowed_to_be_default_match);
   }
   match.RecordAdditionalInfo("typed count", info.typed_count());

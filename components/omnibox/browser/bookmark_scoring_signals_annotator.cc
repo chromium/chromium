@@ -17,7 +17,6 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_result.h"
-#include "components/omnibox/browser/history_scoring_signals_annotator.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/titled_url_match_utils.h"
 #include "components/query_parser/query_parser.h"
@@ -51,9 +50,18 @@ void BookmarkScoringSignalsAnnotator::AnnotateResult(
       query, query_parser::MatchingAlgorithm::DEFAULT, &query_nodes);
 
   for (auto& match : *result) {
-    // Skip ineligible matches or matches already have bookmark signals.
-    if (!HistoryScoringSignalsAnnotator::IsEligibleMatch(match) ||
-        match.scoring_signals.has_num_bookmarks_of_url()) {
+    // Skip ineligible matches.
+    if (!IsEligibleMatch(match)) {
+      continue;
+    }
+
+    // Initialize the scoring signals if needed.
+    if (!match.scoring_signals) {
+      match.scoring_signals = absl::make_optional<ScoringSignals>();
+    }
+
+    // Skip this match if it already has bookmark signals.
+    if (match.scoring_signals->has_num_bookmarks_of_url()) {
       continue;
     }
 
@@ -83,24 +91,24 @@ void BookmarkScoringSignalsAnnotator::AnnotateResult(
 
       if (!title_matches.empty()) {
         // Keep the minimum of title match positions of different bookmarks.
-        if (match.scoring_signals.has_first_bookmark_title_match_position()) {
+        if (match.scoring_signals->has_first_bookmark_title_match_position()) {
           int min_first_pos = std::min(
-              match.scoring_signals.first_bookmark_title_match_position(),
+              match.scoring_signals->first_bookmark_title_match_position(),
               static_cast<int>(title_matches[0].first));
-          match.scoring_signals.set_first_bookmark_title_match_position(
+          match.scoring_signals->set_first_bookmark_title_match_position(
               min_first_pos);
         } else {
-          match.scoring_signals.set_first_bookmark_title_match_position(
+          match.scoring_signals->set_first_bookmark_title_match_position(
               title_matches[0].first);
         }
       }
 
       // Keep the maximum of title match lengths.
       int max_len =
-          std::max(match.scoring_signals.total_bookmark_title_match_length(),
+          std::max(match.scoring_signals->total_bookmark_title_match_length(),
                    bookmarks::GetTotalTitleMatchLength(title_matches));
-      match.scoring_signals.set_total_bookmark_title_match_length(max_len);
+      match.scoring_signals->set_total_bookmark_title_match_length(max_len);
     }
-    match.scoring_signals.set_num_bookmarks_of_url(nodes.size());
+    match.scoring_signals->set_num_bookmarks_of_url(nodes.size());
   }
 }

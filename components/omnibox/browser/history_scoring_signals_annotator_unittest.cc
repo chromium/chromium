@@ -108,18 +108,16 @@ TEST_F(HistoryScoringSignalsAnnotatorTest, AnnotateResult) {
                           TestSchemeClassifier());
 
   annotator()->AnnotateResult(input, result());
-  EXPECT_EQ(result()->match_at(0)->scoring_signals.typed_count(), 2);
-  EXPECT_EQ(result()->match_at(0)->scoring_signals.visit_count(), 5);
+  EXPECT_EQ(result()->match_at(0)->scoring_signals->typed_count(), 2);
+  EXPECT_EQ(result()->match_at(0)->scoring_signals->visit_count(), 5);
   EXPECT_TRUE(
-      result()->match_at(0)->scoring_signals.elapsed_time_last_visit_secs() >
+      result()->match_at(0)->scoring_signals->elapsed_time_last_visit_secs() >
       0);
-  EXPECT_EQ(result()->match_at(0)->scoring_signals.total_title_match_length(),
+  EXPECT_EQ(result()->match_at(0)->scoring_signals->total_title_match_length(),
             3);
-  EXPECT_EQ(
-      result()->match_at(0)->scoring_signals.num_input_terms_matched_by_title(),
-      2);
-  EXPECT_FALSE(result()->match_at(1)->scoring_signals.has_typed_count());
-  EXPECT_FALSE(result()
-                   ->match_at(1)
-                   ->scoring_signals.has_num_input_terms_matched_by_title());
+  EXPECT_EQ(result()
+                ->match_at(0)
+                ->scoring_signals->num_input_terms_matched_by_title(),
+            2);
+  EXPECT_FALSE(result()->match_at(1)->scoring_signals.has_value());
 }

@@ -95,6 +95,9 @@ struct RichAutocompletionParams {
 // example, a search result may say "Search for asdf" as the description, but
 // "asdf" should appear in the box.
 struct AutocompleteMatch {
+  using ScoringSignals =
+      ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
+
   // Autocomplete matches contain strings that are classified according to a
   // separate vector of styles.  This vector associates flags with particular
   // string segments, and must be in sorted order.  All text must be associated
@@ -812,7 +815,7 @@ struct AutocompleteMatch {
   std::vector<SuggestTile> suggest_tiles;
 
   // Signals for ML scoring.
-  metrics::OmniboxEventProto::Suggestion::ScoringSignals scoring_signals;
+  absl::optional<ScoringSignals> scoring_signals;
 
   // A flag to mark whether this would've been excluded from the "original" list
   // of matches. Traditionally, providers limit the number of suggestions they

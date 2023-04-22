@@ -19,7 +19,10 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
+
+using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
 
 namespace {
 
@@ -85,36 +88,37 @@ AutocompleteMatch CreateACMatchWithScoringSignals(
     float site_engagement,
     bool allowed_to_be_default_match) {
   AutocompleteMatch match;
-  match.scoring_signals.set_typed_count(typed_count);
-  match.scoring_signals.set_visit_count(visit_count);
-  match.scoring_signals.set_elapsed_time_last_visit_secs(
+  match.scoring_signals = absl::make_optional<ScoringSignals>();
+  match.scoring_signals->set_typed_count(typed_count);
+  match.scoring_signals->set_visit_count(visit_count);
+  match.scoring_signals->set_elapsed_time_last_visit_secs(
       elapsed_time_last_visit_secs);
-  match.scoring_signals.set_shortcut_visit_count(shortcut_visit_count);
-  match.scoring_signals.set_shortest_shortcut_len(shortest_shortcut_len);
-  match.scoring_signals.set_is_host_only(is_host_only);
-  match.scoring_signals.set_num_bookmarks_of_url(num_bookmarks_of_url);
-  match.scoring_signals.set_first_bookmark_title_match_position(
+  match.scoring_signals->set_shortcut_visit_count(shortcut_visit_count);
+  match.scoring_signals->set_shortest_shortcut_len(shortest_shortcut_len);
+  match.scoring_signals->set_is_host_only(is_host_only);
+  match.scoring_signals->set_num_bookmarks_of_url(num_bookmarks_of_url);
+  match.scoring_signals->set_first_bookmark_title_match_position(
       first_bookmark_title_match_position);
-  match.scoring_signals.set_total_bookmark_title_match_length(
+  match.scoring_signals->set_total_bookmark_title_match_length(
       total_bookmark_title_match_length);
-  match.scoring_signals.set_num_input_terms_matched_by_bookmark_title(
+  match.scoring_signals->set_num_input_terms_matched_by_bookmark_title(
       num_input_terms_matched_by_bookmark_title);
-  match.scoring_signals.set_first_url_match_position(first_url_match_position);
-  match.scoring_signals.set_total_url_match_length(total_url_match_length);
-  match.scoring_signals.set_host_match_at_word_boundary(
+  match.scoring_signals->set_first_url_match_position(first_url_match_position);
+  match.scoring_signals->set_total_url_match_length(total_url_match_length);
+  match.scoring_signals->set_host_match_at_word_boundary(
       host_match_at_word_boundary);
-  match.scoring_signals.set_total_path_match_length(total_path_match_length);
-  match.scoring_signals.set_total_query_or_ref_match_length(
+  match.scoring_signals->set_total_path_match_length(total_path_match_length);
+  match.scoring_signals->set_total_query_or_ref_match_length(
       total_query_or_ref_match_length);
-  match.scoring_signals.set_total_title_match_length(total_title_match_length);
-  match.scoring_signals.set_has_non_scheme_www_match(has_non_scheme_www_match);
-  match.scoring_signals.set_num_input_terms_matched_by_title(
+  match.scoring_signals->set_total_title_match_length(total_title_match_length);
+  match.scoring_signals->set_has_non_scheme_www_match(has_non_scheme_www_match);
+  match.scoring_signals->set_num_input_terms_matched_by_title(
       num_input_terms_matched_by_title);
-  match.scoring_signals.set_num_input_terms_matched_by_url(
+  match.scoring_signals->set_num_input_terms_matched_by_url(
       num_input_terms_matched_by_url);
-  match.scoring_signals.set_length_of_url(length_of_url);
-  match.scoring_signals.set_site_engagement(site_engagement);
-  match.scoring_signals.set_allowed_to_be_default_match(
+  match.scoring_signals->set_length_of_url(length_of_url);
+  match.scoring_signals->set_site_engagement(site_engagement);
+  match.scoring_signals->set_allowed_to_be_default_match(
       allowed_to_be_default_match);
 
   return match;
@@ -549,29 +553,29 @@ TEST_F(AutocompleteMatchTest, MergeScoringSignals) {
 
   match.MergeScoringSignals(other_match);
 
-  EXPECT_EQ(match.scoring_signals.typed_count(), 3);
-  EXPECT_EQ(match.scoring_signals.visit_count(), 10);
-  EXPECT_EQ(match.scoring_signals.elapsed_time_last_visit_secs(), 50);
-  EXPECT_EQ(match.scoring_signals.shortcut_visit_count(), 5);
-  EXPECT_EQ(match.scoring_signals.shortest_shortcut_len(), 2);
-  EXPECT_TRUE(match.scoring_signals.is_host_only());
-  EXPECT_EQ(match.scoring_signals.num_bookmarks_of_url(), 5);
-  EXPECT_EQ(match.scoring_signals.first_bookmark_title_match_position(), 1);
-  EXPECT_EQ(match.scoring_signals.total_bookmark_title_match_length(), 8);
-  EXPECT_EQ(match.scoring_signals.num_input_terms_matched_by_bookmark_title(),
+  EXPECT_EQ(match.scoring_signals->typed_count(), 3);
+  EXPECT_EQ(match.scoring_signals->visit_count(), 10);
+  EXPECT_EQ(match.scoring_signals->elapsed_time_last_visit_secs(), 50);
+  EXPECT_EQ(match.scoring_signals->shortcut_visit_count(), 5);
+  EXPECT_EQ(match.scoring_signals->shortest_shortcut_len(), 2);
+  EXPECT_TRUE(match.scoring_signals->is_host_only());
+  EXPECT_EQ(match.scoring_signals->num_bookmarks_of_url(), 5);
+  EXPECT_EQ(match.scoring_signals->first_bookmark_title_match_position(), 1);
+  EXPECT_EQ(match.scoring_signals->total_bookmark_title_match_length(), 8);
+  EXPECT_EQ(match.scoring_signals->num_input_terms_matched_by_bookmark_title(),
             3);
-  EXPECT_EQ(match.scoring_signals.first_url_match_position(), 2);
-  EXPECT_EQ(match.scoring_signals.total_url_match_length(), 5);
-  EXPECT_TRUE(match.scoring_signals.host_match_at_word_boundary());
-  EXPECT_EQ(match.scoring_signals.total_path_match_length(), 1);
-  EXPECT_EQ(match.scoring_signals.total_query_or_ref_match_length(), 2);
-  EXPECT_EQ(match.scoring_signals.total_title_match_length(), 5);
-  EXPECT_TRUE(match.scoring_signals.has_non_scheme_www_match());
-  EXPECT_EQ(match.scoring_signals.num_input_terms_matched_by_title(), 2);
-  EXPECT_EQ(match.scoring_signals.num_input_terms_matched_by_url(), 2);
-  EXPECT_EQ(match.scoring_signals.length_of_url(), 10);
-  EXPECT_EQ(match.scoring_signals.site_engagement(), 0.6f);
-  EXPECT_TRUE(match.scoring_signals.allowed_to_be_default_match());
+  EXPECT_EQ(match.scoring_signals->first_url_match_position(), 2);
+  EXPECT_EQ(match.scoring_signals->total_url_match_length(), 5);
+  EXPECT_TRUE(match.scoring_signals->host_match_at_word_boundary());
+  EXPECT_EQ(match.scoring_signals->total_path_match_length(), 1);
+  EXPECT_EQ(match.scoring_signals->total_query_or_ref_match_length(), 2);
+  EXPECT_EQ(match.scoring_signals->total_title_match_length(), 5);
+  EXPECT_TRUE(match.scoring_signals->has_non_scheme_www_match());
+  EXPECT_EQ(match.scoring_signals->num_input_terms_matched_by_title(), 2);
+  EXPECT_EQ(match.scoring_signals->num_input_terms_matched_by_url(), 2);
+  EXPECT_EQ(match.scoring_signals->length_of_url(), 10);
+  EXPECT_EQ(match.scoring_signals->site_engagement(), 0.6f);
+  EXPECT_TRUE(match.scoring_signals->allowed_to_be_default_match());
 }
 
 TEST_F(AutocompleteMatchTest, SetAllowedToBeDefault) {

@@ -45,6 +45,7 @@
 #include "components/url_formatter/url_fixer.h"
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "ui/base/page_transition_types.h"
@@ -53,6 +54,8 @@
 #include "url/url_util.h"
 
 namespace {
+
+using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
 
 // Acts like the > operator for URLInfo classes.
 bool CompareHistoryMatch(const history::HistoryMatch& a,
@@ -1181,15 +1184,16 @@ AutocompleteMatch HistoryURLProvider::HistoryMatchToACMatch(
 
   // Populate scoring signals for machine learning model training and scoring.
   if (populate_scoring_signals) {
-    match.scoring_signals.set_typed_count(info.typed_count());
-    match.scoring_signals.set_visit_count(info.visit_count());
-    match.scoring_signals.set_elapsed_time_last_visit_secs(
+    match.scoring_signals = absl::make_optional<ScoringSignals>();
+    match.scoring_signals->set_typed_count(info.typed_count());
+    match.scoring_signals->set_visit_count(info.visit_count());
+    match.scoring_signals->set_elapsed_time_last_visit_secs(
         (base::Time::Now() - info.last_visit()).InSeconds());
-    match.scoring_signals.set_allowed_to_be_default_match(
+    match.scoring_signals->set_allowed_to_be_default_match(
         match.allowed_to_be_default_match);
-    match.scoring_signals.set_length_of_url(info.url().spec().length());
-    match.scoring_signals.set_is_host_only(history_match.IsHostOnly());
-    match.scoring_signals.set_has_non_scheme_www_match(
+    match.scoring_signals->set_length_of_url(info.url().spec().length());
+    match.scoring_signals->set_is_host_only(history_match.IsHostOnly());
+    match.scoring_signals->set_has_non_scheme_www_match(
         history_match.innermost_match);
   }
 

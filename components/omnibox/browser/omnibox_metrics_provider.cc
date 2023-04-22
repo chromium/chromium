@@ -208,8 +208,9 @@ void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
     // Scoring signals are not logged for search suggestions or in incognito
     // mode.
     if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled() &&
-        !AutocompleteMatch::IsSearchType(i->type) && !log.is_incognito) {
-      suggestion->mutable_scoring_signals()->CopyFrom(i->scoring_signals);
+        !AutocompleteMatch::IsSearchType(i->type) && !log.is_incognito &&
+        i->scoring_signals) {
+      suggestion->mutable_scoring_signals()->CopyFrom(*i->scoring_signals);
     }
   }
   for (const auto& info : log.providers_info) {

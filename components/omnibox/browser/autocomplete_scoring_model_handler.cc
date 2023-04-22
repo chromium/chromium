@@ -75,8 +75,7 @@ AutocompleteScoringModelHandler::~AutocompleteScoringModelHandler() = default;
 
 absl::optional<std::vector<float>>
 AutocompleteScoringModelHandler::GetModelInput(
-    const metrics::OmniboxEventProto::Suggestion::ScoringSignals&
-        scoring_signals) {
+    const ScoringSignals& scoring_signals) {
   DCHECK(ModelAvailable());
   absl::optional<AutocompleteScoringModelMetadata> model_metadata =
       ParsedSupportedFeaturesForLoadedModel<AutocompleteScoringModelMetadata>();

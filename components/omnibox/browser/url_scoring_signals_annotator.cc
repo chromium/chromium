@@ -16,11 +16,11 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/history_match.h"
-#include "components/omnibox/browser/history_scoring_signals_annotator.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/scored_history_match.h"
 #include "components/omnibox/browser/url_index_private_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
 
 void UrlScoringSignalsAnnotator::AnnotateResult(const AutocompleteInput& input,
@@ -30,22 +30,28 @@ void UrlScoringSignalsAnnotator::AnnotateResult(const AutocompleteInput& input,
   auto [lower_raw_terms, lower_terms_to_word_starts_offsets] =
       URLIndexPrivateData::GetTermsAndWordStartsOffsets(lower_raw_string);
   for (auto& match : *result) {
-    if (!HistoryScoringSignalsAnnotator::IsEligibleMatch(match)) {
+    // Skip ineligible matches
+    if (!IsEligibleMatch(match)) {
       continue;
     }
 
-    match.scoring_signals.set_length_of_url(
+    // Initialize the scoring signals if needed.
+    if (!match.scoring_signals) {
+      match.scoring_signals = absl::make_optional<ScoringSignals>();
+    }
+
+    match.scoring_signals->set_length_of_url(
         match.destination_url.spec().length());
-    match.scoring_signals.set_is_host_only(
+    match.scoring_signals->set_is_host_only(
         history::HistoryMatch::IsHostOnly(match.destination_url));
-    match.scoring_signals.set_allowed_to_be_default_match(
+    match.scoring_signals->set_allowed_to_be_default_match(
         match.allowed_to_be_default_match);
 
     // Populate query-URL matching signals if not set.
-    if (!match.scoring_signals.has_total_url_match_length()) {
+    if (!match.scoring_signals->has_total_url_match_length()) {
       PopulateQueryUrlMatchingSignals(
           lower_raw_terms, lower_terms_to_word_starts_offsets,
-          match.destination_url, &match.scoring_signals);
+          match.destination_url, &*match.scoring_signals);
     }
   }
 }
