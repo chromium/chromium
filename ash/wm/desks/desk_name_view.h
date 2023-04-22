@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desk_textfield.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
@@ -32,7 +33,7 @@ class ASH_EXPORT DeskNameView : public DeskTextfield {
 
  private:
   // The mini view that associated with this name view.
-  DeskMiniView* const mini_view_;
+  const raw_ptr<DeskMiniView, ExperimentalAsh> mini_view_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, DeskNameView, DeskTextfield)

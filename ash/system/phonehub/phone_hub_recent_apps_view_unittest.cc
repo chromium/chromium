@@ -8,6 +8,7 @@
 #include "ash/system/phonehub/phone_connected_view.h"
 #include "ash/system/phonehub/phone_hub_recent_app_button.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
@@ -127,7 +128,7 @@ class RecentAppButtonsViewTest : public AshTestBase {
   phonehub::FakeRecentAppsInteractionHandler
       fake_recent_apps_interaction_handler_;
   phonehub::FakePhoneHubManager fake_phone_hub_manager_;
-  PhoneConnectedView* connected_view_;
+  raw_ptr<PhoneConnectedView, ExperimentalAsh> connected_view_;
 };
 
 TEST_F(RecentAppButtonsViewTest, TaskViewVisibility) {

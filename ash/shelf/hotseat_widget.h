@@ -13,6 +13,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/hotseat_transition_animator.h"
 #include "ash/shelf/shelf_component.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget.h"
 
@@ -62,7 +63,7 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
         delete;
 
    private:
-    HotseatWidget* hotseat_widget_ = nullptr;
+    raw_ptr<HotseatWidget, ExperimentalAsh> hotseat_widget_ = nullptr;
   };
 
   HotseatWidget();
@@ -241,15 +242,16 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
   // Indicates the type of the hotseat state transition in progress.
   absl::optional<StateTransition> state_transition_in_progress_;
 
-  Shelf* shelf_ = nullptr;
+  raw_ptr<Shelf, ExperimentalAsh> shelf_ = nullptr;
 
   // View containing the shelf items within an active user session. Owned by
   // the views hierarchy.
-  ScrollableShelfView* scrollable_shelf_view_ = nullptr;
+  raw_ptr<ScrollableShelfView, DanglingUntriaged | ExperimentalAsh>
+      scrollable_shelf_view_ = nullptr;
 
   // The contents view of this widget. Contains |shelf_view_| and the background
   // of the hotseat.
-  DelegateView* delegate_view_ = nullptr;
+  raw_ptr<DelegateView, ExperimentalAsh> delegate_view_ = nullptr;
 
   // Whether the widget is currently extended because the user has manually
   // dragged it. This will be reset with any visible shelf configuration change.

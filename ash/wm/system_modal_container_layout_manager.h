@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/wm/wm_default_layout_manager.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
@@ -111,7 +112,7 @@ class ASH_EXPORT SystemModalContainerLayoutManager
   }
 
   // The container that owns the layout manager.
-  aura::Window* container_;
+  raw_ptr<aura::Window, ExperimentalAsh> container_;
 
   // WindowDimmer used to dim windows behind the modal window(s) being shown in
   // |container_|.

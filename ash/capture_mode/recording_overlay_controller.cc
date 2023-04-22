@@ -12,6 +12,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/system/status_area_widget.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/compositor/layer_type.h"
@@ -155,7 +156,7 @@ class OverlayTargeter : public aura::WindowTargeter {
   }
 
  private:
-  aura::Window* const overlay_window_;
+  const raw_ptr<aura::Window, ExperimentalAsh> overlay_window_;
 };
 
 }  // namespace

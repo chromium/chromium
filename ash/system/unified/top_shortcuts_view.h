@@ -7,6 +7,7 @@
 
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -49,8 +50,8 @@ class TopShortcutButtonContainer : public views::View {
       std::unique_ptr<views::Button> sign_out_button);
 
  private:
-  views::View* user_avatar_button_ = nullptr;
-  views::Button* sign_out_button_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> user_avatar_button_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> sign_out_button_ = nullptr;
 };
 
 // Top shortcuts view shown on the top of UnifiedSystemTrayView.
@@ -81,13 +82,13 @@ class ASH_EXPORT TopShortcutsView : public views::View,
   void UpdateSettingsButtonState();
 
   // Owned by views hierarchy.
-  views::View* user_avatar_button_ = nullptr;
-  views::Button* sign_out_button_ = nullptr;
-  TopShortcutButtonContainer* container_ = nullptr;
-  IconButton* lock_button_ = nullptr;
-  IconButton* settings_button_ = nullptr;
-  IconButton* power_button_ = nullptr;
-  CollapseButton* collapse_button_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> user_avatar_button_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> sign_out_button_ = nullptr;
+  raw_ptr<TopShortcutButtonContainer, ExperimentalAsh> container_ = nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> lock_button_ = nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> settings_button_ = nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> power_button_ = nullptr;
+  raw_ptr<CollapseButton, ExperimentalAsh> collapse_button_ = nullptr;
 
   PrefChangeRegistrar local_state_pref_change_registrar_;
 };

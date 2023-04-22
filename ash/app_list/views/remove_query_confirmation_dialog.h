@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace views {
@@ -54,10 +55,10 @@ class RemoveQueryConfirmationDialog : public views::WidgetDelegateView {
   // Whether Jelly style feature is enabled.
   bool is_jellyroll_enabled_ = false;
 
-  views::Label* title_ = nullptr;
-  views::Label* body_ = nullptr;
-  views::Button* cancel_button_ = nullptr;
-  views::Button* accept_button_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> body_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> cancel_button_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> accept_button_ = nullptr;
 };
 
 }  // namespace ash

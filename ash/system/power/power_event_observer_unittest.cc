@@ -16,6 +16,7 @@
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/lock_state_controller_test_api.h"
 #include "ash/wm/test_session_state_animator.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
@@ -64,7 +65,7 @@ class PowerEventObserverTest : public AshTestBase {
     return Shell::Get()->session_controller()->IsScreenLocked();
   }
 
-  PowerEventObserver* observer_ = nullptr;
+  raw_ptr<PowerEventObserver, ExperimentalAsh> observer_ = nullptr;
 };
 
 TEST_F(PowerEventObserverTest, LockBeforeSuspend) {

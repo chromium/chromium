@@ -11,6 +11,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/icu_test_util.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_back_button.h"
@@ -174,7 +175,7 @@ class FramePaintWaiter : public ui::CompositorObserver {
 
  private:
   base::RunLoop run_loop_;
-  FrameHeader* frame_header_ = nullptr;
+  raw_ptr<FrameHeader, ExperimentalAsh> frame_header_ = nullptr;
 };
 
 TEST_F(DefaultFrameHeaderTest, DeleteDuringAnimation) {

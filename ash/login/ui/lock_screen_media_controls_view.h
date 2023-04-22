@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/timer/timer.h"
@@ -242,7 +243,7 @@ class ASH_EXPORT LockScreenMediaControlsView
   base::flat_set<media_session::mojom::MediaSessionAction> enabled_actions_;
 
   // Contains the visible and draggable UI of the media controls.
-  views::View* contents_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> contents_view_ = nullptr;
 
   // The reason we hid the media controls.
   absl::optional<HideReason> hide_reason_;
@@ -251,13 +252,14 @@ class ASH_EXPORT LockScreenMediaControlsView
   absl::optional<Shown> shown_;
 
   // Container views attached to |contents_view_|.
-  MediaControlsHeaderView* header_row_ = nullptr;
-  views::ImageView* session_artwork_ = nullptr;
-  views::Label* title_label_ = nullptr;
-  views::Label* artist_label_ = nullptr;
-  NonAccessibleView* button_row_ = nullptr;
-  MediaActionButton* play_pause_button_ = nullptr;
-  media_message_center::MediaControlsProgressView* progress_ = nullptr;
+  raw_ptr<MediaControlsHeaderView, ExperimentalAsh> header_row_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> session_artwork_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> artist_label_ = nullptr;
+  raw_ptr<NonAccessibleView, ExperimentalAsh> button_row_ = nullptr;
+  raw_ptr<MediaActionButton, ExperimentalAsh> play_pause_button_ = nullptr;
+  raw_ptr<media_message_center::MediaControlsProgressView, ExperimentalAsh>
+      progress_ = nullptr;
 
   std::vector<views::Button*> media_action_buttons_;
 

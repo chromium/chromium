@@ -57,6 +57,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -160,7 +161,7 @@ class BoundsAnimatorDisabler {
   // The previous animation duration.
   base::TimeDelta old_duration_;
   // The bounds animator which gets used.
-  views::BoundsAnimator* bounds_animator_;
+  raw_ptr<views::BoundsAnimator, ExperimentalAsh> bounds_animator_;
 };
 
 void ReportMoveAnimationSmoothness(int smoothness) {
@@ -263,7 +264,7 @@ class ShelfView::ViewOpacityResetter : public views::ViewObserver {
   }
 
  private:
-  views::View* view_;
+  raw_ptr<views::View, ExperimentalAsh> view_;
   base::ScopedObservation<views::View, views::ViewObserver> view_observer_{
       this};
 };
@@ -282,7 +283,7 @@ class ShelfView::FadeInAnimationDelegate
     shelf_view_->OnFadeInAnimationEnded();
   }
 
-  ShelfView* shelf_view_ = nullptr;
+  raw_ptr<ShelfView, ExperimentalAsh> shelf_view_ = nullptr;
 };
 
 // AnimationDelegate used when deleting an item. This steadily decreased the
@@ -313,7 +314,7 @@ class ShelfView::FadeOutAnimationDelegate : public gfx::AnimationDelegate {
   void AnimationCanceled(const Animation* animation) override {}
 
  private:
-  ShelfView* shelf_view_;
+  raw_ptr<ShelfView, ExperimentalAsh> shelf_view_;
   std::unique_ptr<views::View> view_;
 };
 
@@ -340,8 +341,8 @@ class ShelfView::StartFadeAnimationDelegate : public gfx::AnimationDelegate {
   }
 
  private:
-  ShelfView* shelf_view_;
-  views::View* view_;
+  raw_ptr<ShelfView, ExperimentalAsh> shelf_view_;
+  raw_ptr<views::View, ExperimentalAsh> view_;
 };
 
 // static
@@ -378,7 +379,7 @@ ShelfView::ShelfView(ShelfModel* model,
   }
 
   announcement_view_ = new views::View();
-  AddChildView(announcement_view_);
+  AddChildView(announcement_view_.get());
 
   if (base::FeatureList::IsEnabled(features::kShelfParty)) {
     const int button_size = GetButtonSize();
@@ -389,7 +390,7 @@ ShelfView::ShelfView(ShelfModel* model,
         all_pinned_items_are_partying_label_->GetPreferredSize(
             {{/* Unbounded */}, button_size}));
     all_pinned_items_are_partying_label_->SetVisible(false);
-    AddChildView(all_pinned_items_are_partying_label_);
+    AddChildView(all_pinned_items_are_partying_label_.get());
   }
 }
 
@@ -690,11 +691,11 @@ View* ShelfView::GetTooltipHandlerForPoint(const gfx::Point& point) {
 void ShelfView::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
   if (!details.is_add) {
-    if (details.child == current_ghost_view_) {
+    if (details.child == current_ghost_view_.get()) {
       current_ghost_view_ = nullptr;
       current_ghost_view_index_ = absl::nullopt;
     }
-    if (details.child == last_ghost_view_) {
+    if (details.child == last_ghost_view_.get()) {
       last_ghost_view_ = nullptr;
       current_ghost_view_index_ = absl::nullopt;
     }
@@ -1018,7 +1019,7 @@ views::View* ShelfView::CreateViewForItem(const ShelfItem& item) {
     case TYPE_UNPINNED_BROWSER_SHORTCUT:
     case TYPE_DIALOG: {
       ShelfAppButton* button = new ShelfAppButton(
-          this, shelf_button_delegate_ ? shelf_button_delegate_ : this);
+          this, shelf_button_delegate_ ? shelf_button_delegate_.get() : this);
       button->SetImage(item.image);
       button->SetNotificationBadgeColor(item.notification_badge_color);
       button->ReflectItemStatus(item);

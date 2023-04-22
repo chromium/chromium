@@ -10,6 +10,7 @@
 #include "ash/components/arc/mojom/volume_mounter.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
@@ -118,11 +119,12 @@ class ArcVolumeMounterBridge
       absl::optional<std::string> error_name,
       absl::optional<std::string> error_message);
 
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate, DanglingUntriaged | ExperimentalAsh> delegate_ = nullptr;
 
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
 
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   PrefChangeRegistrar change_registerar_;
 
   bool arcvm_external_storage_mount_points_are_ready_ = false;

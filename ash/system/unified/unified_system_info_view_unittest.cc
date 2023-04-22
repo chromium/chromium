@@ -17,6 +17,7 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -112,7 +113,7 @@ class UnifiedSystemInfoViewTest
  private:
   scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
-  UnifiedSystemInfoView* info_view_ = nullptr;
+  raw_ptr<UnifiedSystemInfoView, ExperimentalAsh> info_view_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
 };
 

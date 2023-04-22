@@ -13,6 +13,7 @@
 #include "ash/system/accessibility/floating_menu_button.h"
 #include "ash/system/unified/custom_shape_button.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/user_metrics.h"
 #include "base/timer/timer.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -143,7 +144,7 @@ class AutoclickScrollButton : public CustomShapeButton,
 
     SetImageModel(
         views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(icon_, kColorAshIconColorPrimary));
+        ui::ImageModel::FromVectorIcon(*icon_, kColorAshIconColorPrimary));
 
     SetClipPath(CreateCustomShapePath(gfx::Rect(GetPreferredSize())));
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
@@ -314,7 +315,7 @@ class AutoclickScrollButton : public CustomShapeButton,
   gfx::Size size_;
   std::unique_ptr<base::RetainingOneShotTimer> scroll_hover_timer_;
   bool active_ = false;
-  const gfx::VectorIcon& icon_;
+  const raw_ref<const gfx::VectorIcon, ExperimentalAsh> icon_;
 };
 
 BEGIN_METADATA(AutoclickScrollButton, CustomShapeButton)
@@ -382,11 +383,11 @@ AutoclickScrollView::AutoclickScrollView()
       close_scroll_button_(new AutoclickScrollCloseButton()) {
   SetPreferredSize(gfx::Size(kScrollPadButtonHypotenuseDips,
                              kScrollPadButtonHypotenuseDips));
-  AddChildView(close_scroll_button_);
-  AddChildView(scroll_up_button_);
-  AddChildView(scroll_down_button_);
-  AddChildView(scroll_left_button_);
-  AddChildView(scroll_right_button_);
+  AddChildView(close_scroll_button_.get());
+  AddChildView(scroll_up_button_.get());
+  AddChildView(scroll_down_button_.get());
+  AddChildView(scroll_left_button_.get());
+  AddChildView(scroll_right_button_.get());
 }
 
 void AutoclickScrollView::Layout() {

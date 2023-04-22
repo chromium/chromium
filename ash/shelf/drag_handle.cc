@@ -22,6 +22,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -87,7 +88,7 @@ class HideNudgeObserver : public ui::ImplicitAnimationObserver {
   }
 
  private:
-  ContextualNudge* const drag_handle_nudge_;
+  const raw_ptr<ContextualNudge, ExperimentalAsh> drag_handle_nudge_;
 };
 
 }  // namespace

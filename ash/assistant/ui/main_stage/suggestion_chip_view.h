@@ -7,6 +7,7 @@
 
 #include "ash/assistant/ui/main_stage/chip_view.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_suggestion.h"
@@ -32,7 +33,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionChipView : public ChipView {
   const base::UnguessableToken& suggestion_id() const { return suggestion_id_; }
 
  private:
-  AssistantViewDelegate* const delegate_;
+  const raw_ptr<AssistantViewDelegate, ExperimentalAsh> delegate_;
   const base::UnguessableToken suggestion_id_;
 
   base::WeakPtrFactory<SuggestionChipView> weak_factory_{this};

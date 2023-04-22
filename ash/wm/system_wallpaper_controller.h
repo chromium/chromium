@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window_observer.h"
 
@@ -45,7 +46,7 @@ class SystemWallpaperController : public aura::WindowObserver {
  private:
   class HostContentLayerDelegate;
 
-  aura::Window* root_window_;  // not owned
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_;  // not owned
 
   std::unique_ptr<ui::Layer> layer_;
 };

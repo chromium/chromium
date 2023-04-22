@@ -20,6 +20,7 @@
 #include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/focus/focus_manager.h"
@@ -314,7 +315,7 @@ class ASH_EXPORT AppsContainerView
   // cardified state ends.
   bool keep_gradient_mask_for_cardified_state_ = false;
 
-  ContentsView* const contents_view_;
+  const raw_ptr<ContentsView, ExperimentalAsh> contents_view_;
 
   // The app list config used to configure sizing and layout of apps grid items
   // within the apps container.
@@ -328,16 +329,18 @@ class ASH_EXPORT AppsContainerView
 
   // Contains the |continue_section_| and the |apps_grid_view_|, which are views
   // that are affected by paging. Owned by views hierarchy.
-  views::View* scrollable_container_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> scrollable_container_ = nullptr;
 
   // The views below are owned by views hierarchy.
-  ContinueContainer* continue_container_ = nullptr;
-  views::Separator* separator_ = nullptr;
-  AppListToastContainerView* toast_container_ = nullptr;
-  PagedAppsGridView* apps_grid_view_ = nullptr;
-  AppListFolderView* app_list_folder_view_ = nullptr;
-  PageSwitcher* page_switcher_ = nullptr;
-  FolderBackgroundView* folder_background_view_ = nullptr;
+  raw_ptr<ContinueContainer, ExperimentalAsh> continue_container_ = nullptr;
+  raw_ptr<views::Separator, ExperimentalAsh> separator_ = nullptr;
+  raw_ptr<AppListToastContainerView, ExperimentalAsh> toast_container_ =
+      nullptr;
+  raw_ptr<PagedAppsGridView, ExperimentalAsh> apps_grid_view_ = nullptr;
+  raw_ptr<AppListFolderView, ExperimentalAsh> app_list_folder_view_ = nullptr;
+  raw_ptr<PageSwitcher, ExperimentalAsh> page_switcher_ = nullptr;
+  raw_ptr<FolderBackgroundView, ExperimentalAsh> folder_background_view_ =
+      nullptr;
 
   ShowState show_state_ = SHOW_NONE;
 

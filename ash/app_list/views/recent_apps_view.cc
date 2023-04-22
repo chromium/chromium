@@ -24,6 +24,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -146,8 +147,8 @@ class RecentAppsView::GridDelegateImpl : public AppListItemView::GridDelegate {
   }
 
  private:
-  AppListViewDelegate* const view_delegate_;
-  AppListItemView* selected_view_ = nullptr;
+  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
+  raw_ptr<AppListItemView, ExperimentalAsh> selected_view_ = nullptr;
 };
 
 RecentAppsView::RecentAppsView(AppListKeyboardController* keyboard_controller,

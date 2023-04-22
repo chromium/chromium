@@ -11,6 +11,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/pill_button.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -65,7 +66,7 @@ class TrappedFocusSearch : public views::FocusSearch {
   }
 
  private:
-  views::View* const trapped_focus_;
+  const raw_ptr<views::View, ExperimentalAsh> trapped_focus_;
 };
 
 }  // namespace
@@ -107,7 +108,7 @@ class RemoveUserButton : public PillButton {
     }
   }
 
-  LoginRemoveAccountDialog* bubble_;
+  raw_ptr<LoginRemoveAccountDialog, ExperimentalAsh> bubble_;
 };
 
 LoginRemoveAccountDialog::TestApi::TestApi(LoginRemoveAccountDialog* bubble)
@@ -218,7 +219,7 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
                             base::Unretained(this)),
         this);
     remove_user_button_->SetID(kRemoveUserButtonIdForTest);
-    AddChildView(remove_user_button_);
+    AddChildView(remove_user_button_.get());
 
     // Traps the focus on the remove user button.
     focus_search_ = std::make_unique<TrappedFocusSearch>(remove_user_button_);

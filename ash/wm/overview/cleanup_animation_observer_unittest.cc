@@ -11,6 +11,7 @@
 #include "ash/wm/overview/overview_delegate.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -97,7 +98,7 @@ class CleanupAnimationObserverTest : public AshTestBase,
       widget_ = nullptr;
   }
 
-  views::Widget* widget_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
 };
 
 }  // namespace

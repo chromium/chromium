@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
@@ -131,7 +132,8 @@ class SystemRoutineController : public mojom::SystemRoutineController {
 
   void ReleaseWakeLock();
 
-  RoutineLog* routine_log_ptr_ = nullptr;  // Not Owned.
+  raw_ptr<RoutineLog, ExperimentalAsh> routine_log_ptr_ =
+      nullptr;  // Not Owned.
 
   // Keeps track of the id created by CrosHealthd for the currently running
   // routine.

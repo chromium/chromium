@@ -17,6 +17,7 @@
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
 #include "ash/webui/eche_app_ui/system_info.h"
 #include "ash/webui/eche_app_ui/system_info_provider.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -101,7 +102,7 @@ class FakeObserver : public mojom::SignalingMessageObserver {
   }
 
  private:
-  TaskRunner* task_runner_;
+  raw_ptr<TaskRunner, ExperimentalAsh> task_runner_;
   std::vector<uint8_t> received_signals_;
   mojo::Receiver<mojom::SignalingMessageObserver> receiver_;
 };
@@ -128,7 +129,7 @@ class FakeEcheConnector : public EcheConnector {
   void AttemptNearbyConnection() override {}
 
  private:
-  TaskRunner* task_runner_;
+  raw_ptr<TaskRunner, ExperimentalAsh> task_runner_;
   std::vector<proto::ExoMessage> sent_messages_;
 };
 

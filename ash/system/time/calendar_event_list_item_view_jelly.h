@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/actionable_view.h"
+#include "base/memory/raw_ptr.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "url/gurl.h"
@@ -87,7 +88,8 @@ class ASH_EXPORT CalendarEventListItemViewJelly : public ActionableView {
   friend class CalendarViewEventListViewTest;
 
   // Unowned.
-  CalendarViewController* const calendar_view_controller_;
+  const raw_ptr<CalendarViewController, DanglingUntriaged | ExperimentalAsh>
+      calendar_view_controller_;
 
   const SelectedDateParams selected_date_params_;
 

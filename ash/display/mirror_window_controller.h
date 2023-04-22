@@ -13,6 +13,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/host/ash_window_tree_host_delegate.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/display/manager/display_manager.h"
@@ -96,7 +97,8 @@ class ASH_EXPORT MirrorWindowController : public aura::WindowTreeHostObserver,
   typedef std::map<int64_t, MirroringHostInfo*> MirroringHostInfoMap;
   MirroringHostInfoMap mirroring_host_info_map_;
 
-  aura::WindowTreeHost* current_event_targeter_src_host_;
+  raw_ptr<aura::WindowTreeHost, ExperimentalAsh>
+      current_event_targeter_src_host_;
 
   display::DisplayManager::MultiDisplayMode multi_display_mode_;
 

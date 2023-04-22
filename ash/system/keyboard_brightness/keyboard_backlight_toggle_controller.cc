@@ -11,6 +11,7 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/unified_slider_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
 
@@ -60,8 +61,8 @@ class UnifiedKeyboardBacklightToggleView
   }
 
  private:
-  UnifiedSystemTrayModel* const model_;
-  views::Label* toast_label_ = nullptr;
+  const raw_ptr<UnifiedSystemTrayModel, ExperimentalAsh> model_;
+  raw_ptr<views::Label, ExperimentalAsh> toast_label_ = nullptr;
 };
 
 }  // namespace

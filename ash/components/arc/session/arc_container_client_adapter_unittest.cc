@@ -6,6 +6,7 @@
 
 #include "ash/components/arc/session/arc_container_client_adapter.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -101,7 +102,7 @@ TEST_F(ArcContainerClientAdapterTest,
     }
 
    private:
-    Observer* const child_observer_;
+    const raw_ptr<Observer, ExperimentalAsh> child_observer_;
     std::unique_ptr<ArcClientAdapter> nested_client_adapter_;
     bool stopped_called_ = false;
   };

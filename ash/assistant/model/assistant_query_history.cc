@@ -29,33 +29,34 @@ void AssistantQueryHistory::Add(const std::string& query) {
 
 AssistantQueryHistory::Iterator::Iterator(
     const base::circular_deque<std::string>& queries)
-    : queries_(queries), cur_pos_(queries_.size()) {}
+    : queries_(queries), cur_pos_(queries_->size()) {}
 
 AssistantQueryHistory::Iterator::~Iterator() = default;
 
 absl::optional<std::string> AssistantQueryHistory::Iterator::Next() {
   // queries_.size() is of type unsigned int and queries_.size() -1 will
   // overflow if it is 0.
-  if (cur_pos_ + 1 >= queries_.size()) {
-    cur_pos_ = queries_.size();
+  if (cur_pos_ + 1 >= queries_->size()) {
+    cur_pos_ = queries_->size();
     return absl::nullopt;
   }
   cur_pos_++;
-  return absl::make_optional<std::string>(queries_[cur_pos_]);
+  return absl::make_optional<std::string>((*queries_)[cur_pos_]);
 }
 
 absl::optional<std::string> AssistantQueryHistory::Iterator::Prev() {
-  if (queries_.size() == 0)
+  if (queries_->size() == 0) {
     return absl::nullopt;
+  }
 
   if (cur_pos_ != 0)
     cur_pos_--;
 
-  return absl::make_optional<std::string>(queries_[cur_pos_]);
+  return absl::make_optional<std::string>((*queries_)[cur_pos_]);
 }
 
 void AssistantQueryHistory::Iterator::ResetToLast() {
-  cur_pos_ = queries_.size();
+  cur_pos_ = queries_->size();
 }
 
 }  // namespace ash

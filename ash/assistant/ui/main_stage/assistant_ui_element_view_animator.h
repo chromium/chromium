@@ -8,6 +8,7 @@
 #include "ash/assistant/ui/main_stage/element_animator.h"
 #include "ash/assistant/util/animation_util.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ui {
 class CallbackLayerAnimationObserver;
@@ -40,7 +41,7 @@ class AssistantUiElementViewAnimator : public ElementAnimator {
   AnimationSmoothnessCallback GetAnimationSmoothnessCallback() const;
 
  private:
-  AssistantUiElementView* const view_;
+  const raw_ptr<AssistantUiElementView, ExperimentalAsh> view_;
   std::string const animation_smoothness_histogram_;
 };
 

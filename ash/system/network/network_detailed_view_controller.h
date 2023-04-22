@@ -14,6 +14,7 @@
 #include "ash/system/network/network_list_view_controller.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/unified/detailed_view_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -58,7 +59,7 @@ class ASH_EXPORT NetworkDetailedViewController
   void OnPropertiesUpdated(bluetooth_config::mojom::BluetoothSystemPropertiesPtr
                                properties) override;
 
-  TrayNetworkStateModel* const model_;
+  const raw_ptr<TrayNetworkStateModel, ExperimentalAsh> model_;
 
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
@@ -72,7 +73,8 @@ class ASH_EXPORT NetworkDetailedViewController
   bluetooth_config::mojom::BluetoothSystemState bluetooth_system_state_ =
       bluetooth_config::mojom::BluetoothSystemState::kUnavailable;
 
-  NetworkDetailedNetworkView* network_detailed_view_ = nullptr;
+  raw_ptr<NetworkDetailedNetworkView, ExperimentalAsh> network_detailed_view_ =
+      nullptr;
   std::unique_ptr<NetworkListViewController> network_list_view_controller_;
 };
 

@@ -8,6 +8,7 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -64,8 +65,9 @@ class BluetoothDisabledDetailedViewTest : public AshTestBase {
 
  private:
   std::unique_ptr<views::Widget> widget_;
-  views::View* container_;
-  BluetoothDisabledDetailedView* bluetooth_disabled_detailed_view_;
+  raw_ptr<views::View, ExperimentalAsh> container_;
+  raw_ptr<BluetoothDisabledDetailedView, ExperimentalAsh>
+      bluetooth_disabled_detailed_view_;
 };
 
 TEST_F(BluetoothDisabledDetailedViewTest, DisabledIconIsCentered) {

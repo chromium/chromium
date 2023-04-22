@@ -9,6 +9,7 @@
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/system/tray/tray_bubble_view.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -101,18 +102,20 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
   void OnKeyboardVisibilityChanged(bool visible) override;
 
   // Feature buttons:
-  TrayBackgroundView* dictation_button_ = nullptr;
-  TrayBackgroundView* select_to_speak_button_ = nullptr;
-  TrayBackgroundView* virtual_keyboard_button_ = nullptr;
+  raw_ptr<TrayBackgroundView, ExperimentalAsh> dictation_button_ = nullptr;
+  raw_ptr<TrayBackgroundView, ExperimentalAsh> select_to_speak_button_ =
+      nullptr;
+  raw_ptr<TrayBackgroundView, ExperimentalAsh> virtual_keyboard_button_ =
+      nullptr;
 
   // Button to list all available features.
-  FloatingMenuButton* a11y_tray_button_ = nullptr;
+  raw_ptr<FloatingMenuButton, ExperimentalAsh> a11y_tray_button_ = nullptr;
   // Button to move the view around corners.
-  FloatingMenuButton* position_button_ = nullptr;
+  raw_ptr<FloatingMenuButton, ExperimentalAsh> position_button_ = nullptr;
   // Button to list all available keyboard languages.
-  ImeMenuTray* ime_button_ = nullptr;
+  raw_ptr<ImeMenuTray, ExperimentalAsh> ime_button_ = nullptr;
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

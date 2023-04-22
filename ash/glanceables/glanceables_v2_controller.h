@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {
@@ -21,7 +22,7 @@ class ASH_EXPORT GlanceablesV2Controller : public SessionObserver {
  public:
   // Convenience wrapper to pass all clients from browser to ash at once.
   struct ClientsRegistration {
-    GlanceablesTasksClient* tasks_client = nullptr;
+    raw_ptr<GlanceablesTasksClient, ExperimentalAsh> tasks_client = nullptr;
   };
 
   GlanceablesV2Controller();

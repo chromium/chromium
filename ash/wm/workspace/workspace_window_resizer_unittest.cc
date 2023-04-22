@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/workspace/workspace_window_resizer.h"
+#include "base/memory/raw_ptr.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
@@ -242,7 +243,7 @@ class WorkspaceWindowResizerTest : public AshTestBase {
   TestWindowDelegate touch_resize_delegate_;
   std::unique_ptr<aura::Window> touch_resize_window_;
 
-  WorkspaceWindowResizer* workspace_resizer_ = nullptr;
+  raw_ptr<WorkspaceWindowResizer, ExperimentalAsh> workspace_resizer_ = nullptr;
 };
 
 // Assertions around attached window resize dragging from the right with 2

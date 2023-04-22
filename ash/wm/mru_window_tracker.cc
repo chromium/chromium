@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/mru_window_tracker.h"
+#include "base/memory/raw_ptr.h"
 
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -57,7 +58,7 @@ class ScopedWindowClosingObserver : public aura::WindowObserver {
   void OnWindowDestroyed(aura::Window* window) override { CHECK(false); }
 
  private:
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 };
 
 bool IsNonSysModalWindowConsideredActivatable(aura::Window* window) {

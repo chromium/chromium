@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_AUDIO_MIC_GAIN_SLIDER_VIEW_H_
 
 #include "ash/system/unified/unified_slider_view.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -47,7 +48,7 @@ class MicGainSliderView : public UnifiedSliderView,
   const bool internal_;
 
   // View used for a11y alert when mute state changes.
-  views::View* announcement_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> announcement_view_ = nullptr;
 };
 
 }  // namespace ash

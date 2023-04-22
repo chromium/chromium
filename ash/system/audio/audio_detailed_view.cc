@@ -30,6 +30,7 @@
 #include "ash/system/unified/unified_slider_view.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -153,7 +154,7 @@ class DeviceNameContainerHighlightPathGenerator
   }
 
   // Owned by views hierarchy.
-  QuickSettingsSlider* const slider_;
+  const raw_ptr<QuickSettingsSlider, ExperimentalAsh> slider_;
 };
 
 }  // namespace

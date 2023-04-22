@@ -44,6 +44,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_preview_view.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -413,8 +414,8 @@ class ScopedTransformRecordingLayerDelegate : public ui::LayerDelegate {
     max_translation_.SetToMax(end_translation_);
   }
 
-  ui::Layer* const layer_;
-  ui::LayerDelegate* const layer_delegate_;
+  const raw_ptr<ui::Layer, ExperimentalAsh> layer_;
+  const raw_ptr<ui::LayerDelegate, ExperimentalAsh> layer_delegate_;
 
   bool did_animate_ = false;
   gfx::Vector2dF start_scale_;

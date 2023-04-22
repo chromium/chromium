@@ -18,6 +18,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/style_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
@@ -66,7 +67,7 @@ class SearchResultActionButton : public IconButton {
   int GetButtonRadius() const;
   const char* GetClassName() const override;
 
-  SearchResultActionsView* parent_;
+  raw_ptr<SearchResultActionsView, ExperimentalAsh> parent_;
   bool to_be_activate_by_long_press_ = false;
 };
 

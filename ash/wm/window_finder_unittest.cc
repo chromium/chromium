@@ -12,6 +12,7 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/window_state.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_targeter.h"
@@ -149,11 +150,12 @@ class WindowDestroyingObserver : public aura::WindowObserver {
   // `window_being_observed_` is destroying.
   const gfx::Point screen_point_;
 
-  aura::Window* window_being_observed_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_being_observed_;
 
   // This is the window we find as the top-most window while
   // `window_being_observed_` is being destroyed.
-  aura::Window* top_most_window_while_destroying_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> top_most_window_while_destroying_ =
+      nullptr;
 };
 
 }  // namespace

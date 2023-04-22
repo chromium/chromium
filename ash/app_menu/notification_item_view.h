@@ -10,6 +10,7 @@
 
 #include "ash/app_menu/app_menu_export.h"
 #include "ash/app_menu/notification_menu_view.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/animation/slide_out_controller_delegate.h"
 #include "ui/views/view.h"
 
@@ -70,19 +71,20 @@ class APP_MENU_EXPORT NotificationItemView : public views::View {
 
  private:
   // Holds the title and message labels. Owned by the views hierarchy.
-  views::View* text_container_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> text_container_ = nullptr;
 
   // Holds the notification's icon. Owned by the views hierarchy.
-  message_center::ProportionalImageView* proportional_icon_view_ = nullptr;
+  raw_ptr<message_center::ProportionalImageView, ExperimentalAsh>
+      proportional_icon_view_ = nullptr;
 
   // Shows the title, owned by the views hierarchy.
-  views::Label* title_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
 
   // Shows the message, owned by the views hierarchy.
-  views::Label* message_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> message_label_ = nullptr;
 
   // Owned by AppMenuModelAdapter. Used to activate notifications.
-  NotificationMenuView::Delegate* const delegate_;
+  const raw_ptr<NotificationMenuView::Delegate, ExperimentalAsh> delegate_;
 
   // Controls the sideways gesture drag behavior.
   std::unique_ptr<views::SlideOutController> slide_out_controller_;

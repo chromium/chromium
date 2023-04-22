@@ -14,6 +14,7 @@
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -71,7 +72,7 @@ class StackingBarLabelButton : public PillButton {
   }
 
  private:
-  NotificationCenterView* notification_center_view_;
+  raw_ptr<NotificationCenterView, ExperimentalAsh> notification_center_view_;
 };
 
 BEGIN_METADATA(StackingBarLabelButton, PillButton)

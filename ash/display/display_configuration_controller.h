@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/display/display.h"
 #include "ui/display/unified_desktop_utils.h"
@@ -121,8 +122,10 @@ class ASH_EXPORT DisplayConfigurationController
   ScreenRotationAnimator* GetScreenRotationAnimatorForDisplay(
       int64_t display_id);
 
-  display::DisplayManager* display_manager_;         // weak ptr
-  WindowTreeHostManager* window_tree_host_manager_;  // weak ptr
+  raw_ptr<display::DisplayManager, ExperimentalAsh>
+      display_manager_;  // weak ptr
+  raw_ptr<WindowTreeHostManager, ExperimentalAsh>
+      window_tree_host_manager_;  // weak ptr
   std::unique_ptr<DisplayAnimator> display_animator_;
   std::unique_ptr<DisplayChangeLimiter> limiter_;
 

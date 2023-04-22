@@ -15,6 +15,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 
@@ -288,13 +289,18 @@ class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
   // mini_views accordingly.
   std::unique_ptr<DeskBarHoverObserver> hover_observer_;
 
-  ZeroStateDefaultDeskButton* zero_state_default_desk_button_ = nullptr;
-  ZeroStateIconButton* zero_state_new_desk_button_ = nullptr;
-  ExpandedDesksBarButton* expanded_state_new_desk_button_ = nullptr;
+  raw_ptr<ZeroStateDefaultDeskButton, ExperimentalAsh>
+      zero_state_default_desk_button_ = nullptr;
+  raw_ptr<ZeroStateIconButton, ExperimentalAsh> zero_state_new_desk_button_ =
+      nullptr;
+  raw_ptr<ExpandedDesksBarButton, ExperimentalAsh>
+      expanded_state_new_desk_button_ = nullptr;
 
   // Buttons to show the saved desk grid.
-  ZeroStateIconButton* zero_state_library_button_ = nullptr;
-  ExpandedDesksBarButton* expanded_state_library_button_ = nullptr;
+  raw_ptr<ZeroStateIconButton, ExperimentalAsh> zero_state_library_button_ =
+      nullptr;
+  raw_ptr<ExpandedDesksBarButton, ExperimentalAsh>
+      expanded_state_library_button_ = nullptr;
 
   // Buttons for the CrOS Next updated UI. They're added behind the feature flag
   // Jellyroll.
@@ -302,17 +308,18 @@ class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
   // `zero_state_default_desk_button_`, `zero_state_default_desk_button_`,
   // `expanded_state_new_desk_button_`, `zero_state_library_button_` and
   // `expanded_state_library_button_` with the buttons below.
-  CrOSNextDefaultDeskButton* default_desk_button_ = nullptr;
-  CrOSNextDeskIconButton* new_desk_button_ = nullptr;
-  CrOSNextDeskIconButton* library_button_ = nullptr;
+  raw_ptr<CrOSNextDefaultDeskButton, ExperimentalAsh> default_desk_button_ =
+      nullptr;
+  raw_ptr<CrOSNextDeskIconButton, ExperimentalAsh> new_desk_button_ = nullptr;
+  raw_ptr<CrOSNextDeskIconButton, ExperimentalAsh> library_button_ = nullptr;
 
   // Labels to be shown under the desk icon buttons when they're at the active
   // state.
-  views::Label* new_desk_button_label_ = nullptr;
-  views::Label* library_button_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> new_desk_button_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> library_button_label_ = nullptr;
 
-  ScrollArrowButton* left_scroll_button_ = nullptr;
-  ScrollArrowButton* right_scroll_button_ = nullptr;
+  raw_ptr<ScrollArrowButton, ExperimentalAsh> left_scroll_button_ = nullptr;
+  raw_ptr<ScrollArrowButton, ExperimentalAsh> right_scroll_button_ = nullptr;
   // Drag proxy for the dragged desk.
   std::unique_ptr<DeskDragProxy> drag_proxy_;
 

@@ -99,14 +99,14 @@ void WallpaperView::SetLockShieldEnabled(bool enabled) {
   if (enabled) {
     DCHECK(!shield_view_);
     shield_view_ = new views::View();
-    parent()->AddChildViewAt(shield_view_, 0);
+    parent()->AddChildViewAt(shield_view_.get(), 0);
     shield_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     shield_view_->layer()->SetColor(SK_ColorBLACK);
     shield_view_->layer()->SetName("WallpaperViewShield");
     shield_view_->SetBoundsRect(parent()->GetLocalBounds());
   } else {
     DCHECK(shield_view_);
-    parent()->RemoveChildViewT(shield_view_);
+    parent()->RemoveChildViewT(shield_view_.get());
     shield_view_ = nullptr;
   }
 }

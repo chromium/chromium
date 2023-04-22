@@ -34,6 +34,7 @@
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/format_macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/math_constants.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -2090,8 +2091,8 @@ class CloseDisplayHandler : public ui::EventHandler {
   }
 
  private:
-  AshTestBase* test_base_;
-  aura::Window* root_;
+  raw_ptr<AshTestBase, ExperimentalAsh> test_base_;
+  raw_ptr<aura::Window, ExperimentalAsh> root_;
 };
 
 }  // namespace

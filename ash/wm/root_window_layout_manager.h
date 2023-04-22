@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/layout_manager.h"
 
 namespace ash {
@@ -36,7 +37,7 @@ class RootWindowLayoutManager : public aura::LayoutManager {
   void AddContainer(aura::Window* window);
 
  private:
-  aura::Window* owner_;
+  raw_ptr<aura::Window, ExperimentalAsh> owner_;
   std::vector<aura::Window*> containers_;
 };
 

@@ -17,6 +17,7 @@
 #include "ash/app_list/views/apps_grid_view_folder_delegate.h"
 #include "ash/app_list/views/folder_header_view.h"
 #include "ash/app_list/views/folder_header_view_delegate.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -224,34 +225,38 @@ class ASH_EXPORT AppListFolderView : public views::View,
   void OnHideAnimationDone(bool hide_for_reparent);
 
   // Controller interface implemented by the container for this view.
-  AppListFolderController* const folder_controller_;
+  const raw_ptr<AppListFolderController, ExperimentalAsh> folder_controller_;
 
   // The root (non-folder) apps grid view.
-  AppsGridView* const root_apps_grid_view_;
+  const raw_ptr<AppsGridView, ExperimentalAsh> root_apps_grid_view_;
 
   // Used to send accessibility alerts. Owned by the parent apps container.
-  AppListA11yAnnouncer* const a11y_announcer_;
+  const raw_ptr<AppListA11yAnnouncer, ExperimentalAsh> a11y_announcer_;
 
   // The view is used to draw a background with corner radius.
-  views::View* background_view_;
-  views::View* animating_background_;
+  raw_ptr<views::View, ExperimentalAsh> background_view_;
+  raw_ptr<views::View, ExperimentalAsh> animating_background_;
 
   // The view is used as a container for all following views.
-  views::View* contents_container_;  // Owned by views hierarchy.
+  raw_ptr<views::View, ExperimentalAsh>
+      contents_container_;  // Owned by views hierarchy.
 
-  FolderHeaderView* folder_header_view_;  // Owned by views hierarchy.
-  AppsGridView* items_grid_view_;         // Owned by views hierarchy.
+  raw_ptr<FolderHeaderView, ExperimentalAsh>
+      folder_header_view_;  // Owned by views hierarchy.
+  raw_ptr<AppsGridView, ExperimentalAsh>
+      items_grid_view_;  // Owned by views hierarchy.
 
   // Owned by views hierarchy.
-  views::ScrollView* scroll_view_ = nullptr;
+  raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
 
   std::unique_ptr<SystemShadow> shadow_;
 
   // Adds fade in/out gradients to `scroll_view_`.
   std::unique_ptr<ScrollViewGradientHelper> gradient_helper_;
 
-  AppListViewDelegate* const view_delegate_;
-  AppListFolderItem* folder_item_ = nullptr;  // Not owned.
+  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
+  raw_ptr<AppListFolderItem, ExperimentalAsh> folder_item_ =
+      nullptr;  // Not owned.
 
   // Whether the folder view is currently shown, or showing.
   bool shown_ = false;
@@ -261,7 +266,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
   base::OnceClosure hide_callback_;
 
   // The folder item in the root apps grid associated with this folder.
-  AppListItemView* folder_item_view_ = nullptr;
+  raw_ptr<AppListItemView, ExperimentalAsh> folder_item_view_ = nullptr;
 
   // The bounds of the activated folder item icon relative to this view.
   gfx::Rect folder_item_icon_bounds_;

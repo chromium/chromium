@@ -23,6 +23,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
@@ -193,7 +194,8 @@ class AppListMainViewTest : public AshTestBase {
   }
 
  protected:
-  AppListView* app_list_view_ = nullptr;  // Owned by native widget.
+  raw_ptr<AppListView, ExperimentalAsh> app_list_view_ =
+      nullptr;  // Owned by native widget.
 };
 
 // Tests that the close button becomes invisible after close button is clicked.

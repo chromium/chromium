@@ -14,6 +14,7 @@
 #include "ash/system/network/network_utils.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
@@ -74,7 +75,7 @@ class NetworkTrayViewTest : public AshTestBase {
  private:
   std::unique_ptr<FakeCrosNetworkConfig> cros_network_;
   std::unique_ptr<views::Widget> widget_;
-  NetworkTrayView* network_tray_view_;
+  raw_ptr<NetworkTrayView, ExperimentalAsh> network_tray_view_;
 };
 
 TEST_F(NetworkTrayViewTest, NetworkIconTooltip) {

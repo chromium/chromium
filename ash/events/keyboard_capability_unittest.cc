@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -210,7 +211,7 @@ class KeyboardCapabilityTest : public AshTestBase {
   }
 
  protected:
-  ui::KeyboardCapability* keyboard_capability_;
+  raw_ptr<ui::KeyboardCapability, ExperimentalAsh> keyboard_capability_;
   std::unique_ptr<TestObserver> test_observer_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
 };

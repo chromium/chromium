@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/overview/scoped_overview_transform_window.h"
+#include "base/memory/raw_ptr.h"
 
 #include <algorithm>
 #include <utility>
@@ -101,7 +102,7 @@ class RemoveClipObserver : public ui::ImplicitAnimationObserver,
   }
 
   // Guaranteed to be not null for the duration of |this|.
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 };
 
 // Clips |window| to |clip_rect|. If |clip_rect| is empty and there is an
@@ -161,7 +162,7 @@ class ScopedOverviewTransformWindow::LayerCachingAndFilteringObserver
   }
 
  private:
-  ui::Layer* layer_;
+  raw_ptr<ui::Layer, ExperimentalAsh> layer_;
 };
 
 ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(

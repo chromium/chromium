@@ -9,6 +9,7 @@
 
 #include "ash/system/palette/palette_tool.h"
 #include "ash/system/tray/view_click_listener.h"
+#include "base/memory/raw_ptr.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -45,7 +46,7 @@ class CommonPaletteTool : public PaletteTool, public ViewClickListener {
   // Creates a default view implementation to be returned by CreateView.
   views::View* CreateDefaultView(const std::u16string& name);
 
-  HoverHighlightView* highlight_view_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> highlight_view_ = nullptr;
 };
 
 }  // namespace ash

@@ -13,6 +13,7 @@
 #include "ash/components/arc/test/test_browser_context.h"
 #include "ash/style/color_palette_controller.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_log.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -113,7 +114,7 @@ class ArcSystemUIBridgeTest : public testing::Test {
   TestBrowserContext context_;
   FakeSystemUiInstance system_ui_instance_;
   std::unique_ptr<TestColorPaletteController> test_palette_;
-  ArcSystemUIBridge* const bridge_;
+  const raw_ptr<ArcSystemUIBridge, ExperimentalAsh> bridge_;
   base::test::MockLog log_;
 };
 

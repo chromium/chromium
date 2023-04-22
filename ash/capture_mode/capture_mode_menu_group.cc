@@ -17,6 +17,7 @@
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -124,11 +125,11 @@ class CaptureModeMenuHeader
   views::View* GetView() override { return this; }
 
  private:
-  views::ImageView* icon_view_;
-  views::Label* label_view_;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_view_;
+  raw_ptr<views::Label, ExperimentalAsh> label_view_;
   // `nullptr` if the menu group is not for a setting that is managed by a
   // policy.
-  views::ImageView* managed_icon_view_;
+  raw_ptr<views::ImageView, ExperimentalAsh> managed_icon_view_;
 };
 
 BEGIN_METADATA(CaptureModeMenuHeader, views::View)
@@ -172,7 +173,7 @@ class CaptureModeMenuItem
   views::View* GetView() override { return this; }
 
  private:
-  views::Label* label_view_;
+  raw_ptr<views::Label, ExperimentalAsh> label_view_;
 };
 
 BEGIN_METADATA(CaptureModeMenuItem, views::Button)
@@ -244,7 +245,7 @@ class CaptureModeOption
 
     if (!option_icon_) {
       if (option_icon_view_) {
-        RemoveChildViewT(option_icon_view_);
+        RemoveChildViewT(option_icon_view_.get());
         option_icon_view_ = nullptr;
       }
       return;
@@ -332,11 +333,11 @@ class CaptureModeOption
   }
 
   // An optional icon for the option. Non-null if present.
-  const gfx::VectorIcon* option_icon_ = nullptr;
-  views::ImageView* option_icon_view_ = nullptr;
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> option_icon_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> option_icon_view_ = nullptr;
 
-  views::Label* label_view_;
-  views::ImageView* checked_icon_view_;
+  raw_ptr<views::Label, ExperimentalAsh> label_view_;
+  raw_ptr<views::ImageView, ExperimentalAsh> checked_icon_view_;
   const int id_;
 };
 

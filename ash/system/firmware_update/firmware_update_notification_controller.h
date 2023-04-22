@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_FIRMWARE_UPDATE_FIRMWARE_UPDATE_NOTIFICATION_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 
 namespace message_center {
@@ -45,7 +46,9 @@ class ASH_EXPORT FirmwareUpdateNotificationController
   bool should_show_notification_for_test_ = false;
 
   // MessageCenter for adding notifications.
-  message_center::MessageCenter* const message_center_;
+  const raw_ptr<message_center::MessageCenter,
+                DanglingUntriaged | ExperimentalAsh>
+      message_center_;
 };
 
 }  // namespace ash

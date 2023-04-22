@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/login_types.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -128,19 +129,19 @@ class AuthDialogContentsView : public views::View {
   void OnNeedHelpButtonPressed(const ui::Event& event);
 
   // Debug container which holds the entire debug UI.
-  views::View* container_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> container_ = nullptr;
 
   // Layout for |container_|.
-  views::BoxLayout* main_layout_ = nullptr;
+  raw_ptr<views::BoxLayout, ExperimentalAsh> main_layout_ = nullptr;
 
   // User avatar to indicate this is an OS dialog.
-  AnimatedRoundedImageView* avatar_view_ = nullptr;
+  raw_ptr<AnimatedRoundedImageView, ExperimentalAsh> avatar_view_ = nullptr;
 
   // Title of the auth dialog, also used to show PIN auth error message..
-  TitleLabel* title_ = nullptr;
+  raw_ptr<TitleLabel, ExperimentalAsh> title_ = nullptr;
 
   // Prompt message to the user.
-  views::Label* origin_name_view_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> origin_name_view_ = nullptr;
 
   // Whether PIN can be auto submitted.
   bool pin_autosubmit_on_ = false;
@@ -149,24 +150,24 @@ class AuthDialogContentsView : public views::View {
   bool pin_locked_out_ = false;
 
   // Text input field for PIN if PIN cannot be auto submitted.
-  LoginPasswordView* pin_text_input_view_ = nullptr;
+  raw_ptr<LoginPasswordView, ExperimentalAsh> pin_text_input_view_ = nullptr;
 
   // PIN input view that's shown if PIN can be auto submitted.
-  LoginPinInputView* pin_digit_input_view_ = nullptr;
+  raw_ptr<LoginPinInputView, ExperimentalAsh> pin_digit_input_view_ = nullptr;
 
   // Text input field for password.
-  LoginPasswordView* password_view_ = nullptr;
+  raw_ptr<LoginPasswordView, ExperimentalAsh> password_view_ = nullptr;
 
   // PIN pad view.
-  LoginPinView* pin_pad_view_ = nullptr;
+  raw_ptr<LoginPinView, ExperimentalAsh> pin_pad_view_ = nullptr;
 
-  FingerprintView* fingerprint_view_ = nullptr;
+  raw_ptr<FingerprintView, ExperimentalAsh> fingerprint_view_ = nullptr;
 
   // A button to cancel authentication and close the dialog.
-  views::MdTextButton* cancel_button_ = nullptr;
+  raw_ptr<views::MdTextButton, ExperimentalAsh> cancel_button_ = nullptr;
 
   // A button to show a help center article.
-  views::LabelButton* help_button_ = nullptr;
+  raw_ptr<views::LabelButton, ExperimentalAsh> help_button_ = nullptr;
 
   // Flags of auth methods that should be visible.
   uint32_t auth_methods_ = 0u;
@@ -177,7 +178,7 @@ class AuthDialogContentsView : public views::View {
   AuthMethodsMetadata auth_metadata_;
 
   // Container which holds action buttons.
-  views::View* action_view_container_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> action_view_container_ = nullptr;
 
   base::WeakPtrFactory<AuthDialogContentsView> weak_factory_{this};
 };

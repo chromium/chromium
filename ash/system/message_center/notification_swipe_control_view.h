@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -59,10 +60,10 @@ class ASH_EXPORT NotificationSwipeControlView : public views::View {
 
   void ButtonPressed(const ui::Event& event);
 
-  message_center::MessageView* const message_view_;
+  const raw_ptr<message_center::MessageView, ExperimentalAsh> message_view_;
 
   // Owned by views hierarchy.
-  views::ImageButton* settings_button_ = nullptr;
+  raw_ptr<views::ImageButton, ExperimentalAsh> settings_button_ = nullptr;
 
   base::WeakPtrFactory<NotificationSwipeControlView> weak_factory_{this};
 };

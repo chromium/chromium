@@ -16,6 +16,7 @@
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "base/containers/adapters.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/canvas_painter.h"
@@ -180,7 +181,7 @@ class DragImageItemView : public views::View {
                                    kDragImageItemViewCornerRadius);
   }
 
-  const ui::ColorProvider* const color_provider_;
+  const raw_ptr<const ui::ColorProvider, ExperimentalAsh> color_provider_;
 };
 
 // DragImageItemChipView -------------------------------------------------------
@@ -333,7 +334,7 @@ class DragImageOverflowBadge : public views::View {
     label->SetText(base::UTF8ToUTF16(base::NumberToString(count)));
   }
 
-  const ui::ColorProvider* const color_provider_;
+  const raw_ptr<const ui::ColorProvider, ExperimentalAsh> color_provider_;
 };
 
 // DragImageView ---------------------------------------------------------------
@@ -477,9 +478,9 @@ class DragImageView : public views::View {
     layout->SetChildViewIgnoredByLayout(drag_image_overflow_badge_, true);
   }
 
-  const ui::ColorProvider* const color_provider_;
-  views::View* first_drag_image_item_view_ = nullptr;
-  views::View* drag_image_overflow_badge_ = nullptr;
+  const raw_ptr<const ui::ColorProvider, ExperimentalAsh> color_provider_;
+  raw_ptr<views::View, ExperimentalAsh> first_drag_image_item_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> drag_image_overflow_badge_ = nullptr;
 };
 
 }  // namespace

@@ -9,6 +9,7 @@
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
 #include "ash/system/bluetooth/bluetooth_device_list_controller.h"
 #include "ash/system/tray/tray_detailed_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace views {
@@ -77,10 +78,11 @@ class ASH_EXPORT BluetoothDetailedViewLegacy : public BluetoothDetailedView,
   // Propagates user interaction with the Bluetooth toggle button.
   void OnToggleClicked();
 
-  views::Button* settings_button_ = nullptr;
-  views::ToggleButton* toggle_button_ = nullptr;
-  views::View* pair_new_device_view_ = nullptr;
-  BluetoothDisabledDetailedView* disabled_view_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> settings_button_ = nullptr;
+  raw_ptr<views::ToggleButton, ExperimentalAsh> toggle_button_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> pair_new_device_view_ = nullptr;
+  raw_ptr<BluetoothDisabledDetailedView, ExperimentalAsh> disabled_view_ =
+      nullptr;
 
   base::WeakPtrFactory<BluetoothDetailedViewLegacy> weak_factory_{this};
 };

@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window.h"
@@ -70,8 +71,8 @@ class ASH_EXPORT LayerCopyAnimator : public aura::WindowObserver,
   void EnsureFakeSequence();
   void NotifyWithFakeSequence(bool abort);
 
-  aura::Window* window_;
-  ui::LayerAnimationObserver* observer_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<ui::LayerAnimationObserver, ExperimentalAsh> observer_ = nullptr;
   AnimationCallback animation_callback_;
 
   std::unique_ptr<ui::Layer> copied_layer_;
@@ -80,7 +81,7 @@ class ASH_EXPORT LayerCopyAnimator : public aura::WindowObserver,
   ui::Layer full_layer_{ui::LAYER_SOLID_COLOR};
   bool fail_ = false;
   bool animation_requested_ = false;
-  ui::LayerAnimationSequence* last_sequence_ = nullptr;
+  raw_ptr<ui::LayerAnimationSequence, ExperimentalAsh> last_sequence_ = nullptr;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver> observation_{
       this};

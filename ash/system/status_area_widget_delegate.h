@@ -9,6 +9,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/system/status_area_widget.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -82,8 +83,8 @@ class ASH_EXPORT StatusAreaWidgetDelegate : public views::AccessiblePaneView,
   // screen.
   void SetBorderOnChild(views::View* child, bool extend_border_to_edge);
 
-  Shelf* const shelf_;
-  const FocusCycler* focus_cycler_for_testing_;
+  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  raw_ptr<const FocusCycler, ExperimentalAsh> focus_cycler_for_testing_;
   gfx::Rect target_bounds_;
 
   // When true, the default focus of the status area widget is the last

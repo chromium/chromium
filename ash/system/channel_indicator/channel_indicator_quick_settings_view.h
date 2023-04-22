@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_CHANNEL_INDICATOR_CHANNEL_INDICATOR_QUICK_SETTINGS_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "components/version_info/channel.h"
 #include "ui/views/view.h"
 
@@ -34,8 +35,8 @@ class ASH_EXPORT ChannelIndicatorQuickSettingsView : public views::View {
 
  private:
   // Refs maintained for unit test introspection methods.
-  views::View* version_button_ = nullptr;
-  views::View* feedback_button_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> version_button_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> feedback_button_ = nullptr;
 };
 
 }  // namespace ash

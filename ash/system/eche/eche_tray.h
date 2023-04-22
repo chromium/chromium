@@ -20,6 +20,7 @@
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom-shared.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/rect.h"
@@ -268,7 +269,7 @@ class ASH_EXPORT EcheTray
     void OnKeyEvent(ui::KeyEvent* event) override;
 
    private:
-    EcheTray* const eche_tray_;
+    const raw_ptr<EcheTray, ExperimentalAsh> eche_tray_;
   };
 
   // Calculates and returns the size of the Exo bubble based on the screen size
@@ -333,14 +334,14 @@ class ASH_EXPORT EcheTray
   GURL url_;
 
   // Icon of the tray. Unowned.
-  views::ImageView* const icon_;
+  const raw_ptr<views::ImageView, ExperimentalAsh> icon_;
 
   // The bubble that appears after clicking the tray button.
   std::unique_ptr<TrayBubbleWrapper> bubble_;
 
   // The webview shown in the bubble that contains the Eche SWA.
   // owned by `bubble_`
-  AshWebView* web_view_ = nullptr;
+  raw_ptr<AshWebView, ExperimentalAsh> web_view_ = nullptr;
 
   // Webview used to create a prewarming channel, before we have a video to
   // attach to.
@@ -348,8 +349,8 @@ class ASH_EXPORT EcheTray
   std::unique_ptr<base::DelayTimer> initializer_timeout_{};
   bool has_reported_initializer_result_ = false;
 
-  eche_app::EcheConnectionStatusHandler* eche_connection_status_handler_ =
-      nullptr;
+  raw_ptr<eche_app::EcheConnectionStatusHandler, ExperimentalAsh>
+      eche_connection_status_handler_ = nullptr;
 
   GracefulCloseCallback graceful_close_callback_;
   GracefulGoBackCallback graceful_go_back_callback_;
@@ -357,10 +358,10 @@ class ASH_EXPORT EcheTray
   // The unload timer to force close EcheTray in case unload error.
   std::unique_ptr<base::DelayTimer> unload_timer_;
 
-  views::View* header_view_ = nullptr;
-  views::Button* close_button_ = nullptr;
-  views::Button* minimize_button_ = nullptr;
-  views::Button* arrow_back_button_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> header_view_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> close_button_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> minimize_button_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> arrow_back_button_ = nullptr;
   std::unique_ptr<EventInterceptor> event_interceptor_;
 
   // The time a stream is initializing. Used to record the elapsed time from

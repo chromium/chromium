@@ -24,6 +24,7 @@
 #include "ash/wm/window_animations.h"
 #include "ash/wm/window_util.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
@@ -211,7 +212,7 @@ class SplitViewDragIndicators::RotatedImageLabelView
   // left/top one.
   const bool is_right_or_bottom_;
 
-  views::Label* label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
 };
 
 // View which contains two highlights on each side indicator where a user should
@@ -613,16 +614,18 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
     right_rotated_view_->layer()->SetTransform(right_rotation);
   }
 
-  SplitViewHighlightView* left_highlight_view_ = nullptr;
-  SplitViewHighlightView* right_highlight_view_ = nullptr;
-  RotatedImageLabelView* left_rotated_view_ = nullptr;
-  RotatedImageLabelView* right_rotated_view_ = nullptr;
+  raw_ptr<SplitViewHighlightView, ExperimentalAsh> left_highlight_view_ =
+      nullptr;
+  raw_ptr<SplitViewHighlightView, ExperimentalAsh> right_highlight_view_ =
+      nullptr;
+  raw_ptr<RotatedImageLabelView, ExperimentalAsh> left_rotated_view_ = nullptr;
+  raw_ptr<RotatedImageLabelView, ExperimentalAsh> right_rotated_view_ = nullptr;
 
   WindowDraggingState window_dragging_state_ = WindowDraggingState::kNoDrag;
   WindowDraggingState previous_window_dragging_state_ =
       WindowDraggingState::kNoDrag;
 
-  aura::Window* dragged_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> dragged_window_ = nullptr;
 };
 
 SplitViewDragIndicators::SplitViewDragIndicators(aura::Window* root_window) {

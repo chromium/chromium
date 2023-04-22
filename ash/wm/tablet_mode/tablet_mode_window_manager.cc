@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 
@@ -160,8 +161,8 @@ class ScopedObserveWindowAnimation {
   }
 
  private:
-  aura::Window* window_;
-  TabletModeWindowManager* manager_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<TabletModeWindowManager, ExperimentalAsh> manager_;
   bool exiting_tablet_mode_;
 };
 

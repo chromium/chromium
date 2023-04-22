@@ -9,6 +9,7 @@
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom.h"
@@ -159,7 +160,7 @@ class VPNListViewTest : public AshTestBase,
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<FakeDetailedViewDelegate> delegate_;
-  VPNListView* vpn_list_view_ = nullptr;
+  raw_ptr<VPNListView, ExperimentalAsh> vpn_list_view_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(QsRevamp, VPNListViewTest, testing::Bool());

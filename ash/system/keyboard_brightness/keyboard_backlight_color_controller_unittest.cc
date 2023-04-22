@@ -13,6 +13,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -124,7 +125,8 @@ class KeyboardBacklightColorControllerTest : public AshTestBase {
   }
 
   std::unique_ptr<KeyboardBacklightColorController> controller_;
-  WallpaperControllerImpl* wallpaper_controller_ = nullptr;
+  raw_ptr<WallpaperControllerImpl, ExperimentalAsh> wallpaper_controller_ =
+      nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

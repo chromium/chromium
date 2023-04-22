@@ -40,7 +40,7 @@ DateTray::DateTray(Shelf* shelf, UnifiedSystemTray* tray)
       /*main_axis_margin=*/kUnifiedTrayContentPadding -
           ShelfConfig::Get()->status_area_hit_region_padding(),
       /*cross_axis_margin=*/0);
-  scoped_unified_system_tray_observer_.Observe(unified_system_tray_);
+  scoped_unified_system_tray_observer_.Observe(unified_system_tray_.get());
 }
 
 DateTray::~DateTray() = default;

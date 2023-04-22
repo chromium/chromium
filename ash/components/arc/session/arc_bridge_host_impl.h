@@ -11,6 +11,7 @@
 #include "ash/components/arc/mojom/arc_bridge.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/connection_holder.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -203,7 +204,7 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   THREAD_CHECKER(thread_checker_);
 
   // Owned by ArcServiceManager.
-  ArcBridgeService* const arc_bridge_service_;
+  const raw_ptr<ArcBridgeService, ExperimentalAsh> arc_bridge_service_;
 
   mojo::Receiver<mojom::ArcBridgeHost> receiver_;
 

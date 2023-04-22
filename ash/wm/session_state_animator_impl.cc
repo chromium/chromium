@@ -16,6 +16,7 @@
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -376,7 +377,7 @@ class SessionStateAnimatorImpl::AnimationSequence
     sequences_attached_++;
   }
 
-  SessionStateAnimatorImpl* animator_;  // not owned
+  raw_ptr<SessionStateAnimatorImpl, ExperimentalAsh> animator_;  // not owned
 
   // Number of sequences this observer was attached to.
   int sequences_attached_;

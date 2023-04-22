@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
+#include "base/memory/raw_ptr.h"
 
 namespace aura {
 class Window;
@@ -66,7 +67,7 @@ class ASH_PUBLIC_EXPORT TestSavedDeskDelegate : public SavedDeskDelegate {
   bool IsAppAvailable(const std::string& app_id) const override;
 
  private:
-  desks_storage::DeskModel* desk_model_ = nullptr;
+  raw_ptr<desks_storage::DeskModel, ExperimentalAsh> desk_model_ = nullptr;
   std::vector<std::string> unavailable_app_ids_;
 };
 

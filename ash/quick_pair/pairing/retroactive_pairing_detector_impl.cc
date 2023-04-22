@@ -86,8 +86,8 @@ RetroactivePairingDetectorImpl::RetroactivePairingDetectorImpl(
       base::BindOnce(&RetroactivePairingDetectorImpl::OnGetAdapter,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  message_stream_lookup_observation_.Observe(message_stream_lookup_);
-  pairer_broker_observation_.Observe(pairer_broker_);
+  message_stream_lookup_observation_.Observe(message_stream_lookup_.get());
+  pairer_broker_observation_.Observe(pairer_broker_.get());
 }
 
 void RetroactivePairingDetectorImpl::OnLoginStatusChanged(
@@ -107,8 +107,8 @@ void RetroactivePairingDetectorImpl::OnLoginStatusChanged(
       base::BindOnce(&RetroactivePairingDetectorImpl::OnGetAdapter,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  message_stream_lookup_observation_.Observe(message_stream_lookup_);
-  pairer_broker_observation_.Observe(pairer_broker_);
+  message_stream_lookup_observation_.Observe(message_stream_lookup_.get());
+  pairer_broker_observation_.Observe(pairer_broker_.get());
 }
 
 void RetroactivePairingDetectorImpl::OnGetAdapter(

@@ -285,7 +285,7 @@ void DragDropController::SetDragImage(const gfx::ImageSkia& image,
   }
 
   auto source = current_drag_event_source_;
-  auto* source_window = drag_source_window_;
+  auto* source_window = drag_source_window_.get();
 
   float drag_image_scale = 1;
   int drag_image_vertical_offset = 0;

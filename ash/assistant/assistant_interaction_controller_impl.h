@@ -19,6 +19,7 @@
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
@@ -134,12 +135,13 @@ class AssistantInteractionControllerImpl
   AssistantVisibility GetVisibility() const;
   bool IsVisible() const;
 
-  AssistantControllerImpl* const assistant_controller_;  // Owned by Shell.
+  const raw_ptr<AssistantControllerImpl, ExperimentalAsh>
+      assistant_controller_;  // Owned by Shell.
   AssistantInteractionModel model_;
   bool has_had_interaction_ = false;
 
   // Owned by AssistantService.
-  assistant::Assistant* assistant_ = nullptr;
+  raw_ptr<assistant::Assistant, ExperimentalAsh> assistant_ = nullptr;
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};

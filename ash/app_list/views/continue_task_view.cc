@@ -292,7 +292,7 @@ void ContinueTaskView::SetResult(SearchResult* result) {
 
   result_ = result;
   if (result_) {
-    search_result_observation_.Observe(result_);
+    search_result_observation_.Observe(result_.get());
     UpdateResult();
   }
 }

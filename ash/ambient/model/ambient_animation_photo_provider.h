@@ -14,6 +14,7 @@
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -102,8 +103,9 @@ class ASH_EXPORT AmbientAnimationPhotoProvider
   void RecordDynamicAssetMetrics();
 
   // Unowned pointers. Must outlive the |AmbientAnimationPhotoProvider|.
-  const AmbientAnimationStaticResources* const static_resources_;
-  const AmbientBackendModel* const backend_model_;
+  const raw_ptr<const AmbientAnimationStaticResources, ExperimentalAsh>
+      static_resources_;
+  const raw_ptr<const AmbientBackendModel, ExperimentalAsh> backend_model_;
 
   // Map's key is hash of the static image asset's string id.
   base::flat_map<cc::SkottieResourceIdHash, scoped_refptr<StaticImageAssetImpl>>

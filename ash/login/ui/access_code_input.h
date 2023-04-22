@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -106,7 +107,7 @@ class FlexCodeInput : public AccessCodeInput {
  private:
   void OnAccessibleNameChanged(const std::u16string& new_name) override;
 
-  views::Textfield* code_field_;
+  raw_ptr<views::Textfield, ExperimentalAsh> code_field_;
 
   // To be called when access input code changes (character is inserted, deleted
   // or updated). Passes true when code non-empty.
@@ -159,7 +160,7 @@ class FixedLengthCodeInput : public AccessCodeInput {
     }
 
    private:
-    FixedLengthCodeInput* fixed_length_code_input_;
+    raw_ptr<FixedLengthCodeInput, ExperimentalAsh> fixed_length_code_input_;
   };
 
   // Builds the view for an access code that consists out of |length| digits.

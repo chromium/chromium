@@ -13,6 +13,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 
@@ -76,7 +77,7 @@ class DarkModeFeaturePodControllerTest
   std::unique_ptr<DarkModeFeaturePodController> feature_pod_controller_;
   std::unique_ptr<FeaturePodButton> button_;
   std::unique_ptr<FeatureTile> tile_;
-  UnifiedSystemTray* system_tray_ = nullptr;
+  raw_ptr<UnifiedSystemTray, ExperimentalAsh> system_tray_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(QsRevamp,

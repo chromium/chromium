@@ -40,6 +40,7 @@
 #include "ash/utility/haptics_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -188,7 +189,7 @@ class AppsGridView::FolderIconItemHider : public AppListItemObserver,
     // effectively hides the drag item image from the overall folder icon.
     item_view_->UpdateDraggedItem(item_icon_to_hide);
     folder_item_->NotifyOfDraggedItem(item_icon_to_hide);
-    folder_item_observer_.Observe(folder_item_);
+    folder_item_observer_.Observe(folder_item_.get());
   }
 
   ~FolderIconItemHider() override {
@@ -219,8 +220,8 @@ class AppsGridView::FolderIconItemHider : public AppListItemObserver,
 
  private:
   // The item view of `folder_item_`;
-  AppListItemView* item_view_;
-  AppListFolderItem* folder_item_;
+  raw_ptr<AppListItemView, ExperimentalAsh> item_view_;
+  raw_ptr<AppListFolderItem, ExperimentalAsh> folder_item_;
 
   base::ScopedObservation<AppListItem, AppListItemObserver>
       folder_item_observer_{this};
@@ -236,7 +237,7 @@ class AppsGridView::DragViewHider : public views::ViewObserver {
   explicit DragViewHider(AppListItemView* drag_view) : drag_view_(drag_view) {
     DCHECK(drag_view_->layer());
     drag_view_->layer()->SetOpacity(0.0f);
-    view_observer_.Observe(drag_view_);
+    view_observer_.Observe(drag_view_.get());
   }
 
   ~DragViewHider() override {
@@ -253,7 +254,7 @@ class AppsGridView::DragViewHider : public views::ViewObserver {
   const views::View* drag_view() const { return drag_view_; }
 
  private:
-  AppListItemView* drag_view_;
+  raw_ptr<AppListItemView, ExperimentalAsh> drag_view_;
 
   base::ScopedObservation<views::View, views::ViewObserver> view_observer_{
       this};
@@ -294,7 +295,7 @@ class AppsGridView::ScopedModelUpdate {
   }
 
  private:
-  AppsGridView* const apps_grid_view_;
+  const raw_ptr<AppsGridView, ExperimentalAsh> apps_grid_view_;
   const gfx::Size initial_grid_size_;
 };
 
@@ -1234,20 +1235,24 @@ bool AppsGridView::OnKeyReleased(const ui::KeyEvent& event) {
 
 void AppsGridView::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
-  if (!details.is_add && details.parent == items_container_) {
+  if (!details.is_add && details.parent == items_container_.get()) {
     // The view being delete should not have reference in |view_model_|.
     CHECK(!view_model_.GetIndexOfView(details.child).has_value());
 
-    if (selected_view_ == details.child)
+    if (selected_view_.get() == details.child) {
       selected_view_ = nullptr;
+    }
 
-    if (drag_view_ == details.child)
+    if (drag_view_.get() == details.child) {
       drag_view_ = nullptr;
+    }
 
-    if (current_ghost_view_ == details.child)
+    if (current_ghost_view_.get() == details.child) {
       current_ghost_view_ = nullptr;
-    if (last_ghost_view_ == details.child)
+    }
+    if (last_ghost_view_.get() == details.child) {
       last_ghost_view_ = nullptr;
+    }
 
     if (reordering_folder_view_ && *reordering_folder_view_ == details.child)
       reordering_folder_view_.reset();

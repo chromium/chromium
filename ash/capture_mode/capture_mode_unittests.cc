@@ -66,6 +66,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -5766,7 +5767,7 @@ class EventTargetCatcher : public ui::EventHandler {
   }
 
  private:
-  ui::EventTarget* last_event_target_ = nullptr;
+  raw_ptr<ui::EventTarget, ExperimentalAsh> last_event_target_ = nullptr;
 };
 
 }  // namespace

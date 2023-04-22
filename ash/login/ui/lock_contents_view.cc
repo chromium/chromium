@@ -61,6 +61,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
@@ -298,8 +299,8 @@ class UserAddingScreenIndicator : public views::View {
   }
 
  private:
-  views::ImageView* info_icon_ = nullptr;
-  views::Label* label_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> info_icon_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
 };
 
 }  // namespace
@@ -1994,7 +1995,7 @@ void LockContentsView::RemoveUser(bool is_primary) {
   }
 
   LoginBigUserView* to_remove =
-      is_primary ? primary_big_view_ : opt_secondary_big_view_;
+      is_primary ? primary_big_view_.get() : opt_secondary_big_view_.get();
   DCHECK(to_remove->GetCurrentUser().can_remove);
   AccountId user = to_remove->GetCurrentUser().basic_user_info.account_id;
 

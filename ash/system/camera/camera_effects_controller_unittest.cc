@@ -13,6 +13,7 @@
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "media/capture/video/chromeos/mojom/effects_pipeline.mojom.h"
 
@@ -98,7 +99,8 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
   }
 
  protected:
-  CameraEffectsController* camera_effects_controller_ = nullptr;
+  raw_ptr<CameraEffectsController, ExperimentalAsh> camera_effects_controller_ =
+      nullptr;
   std::unique_ptr<FakeVideoConferenceTrayController> controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

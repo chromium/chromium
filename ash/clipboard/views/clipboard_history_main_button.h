@@ -5,6 +5,7 @@
 #ifndef ASH_CLIPBOARD_VIEWS_CLIPBOARD_HISTORY_MAIN_BUTTON_H_
 #define ASH_CLIPBOARD_VIEWS_CLIPBOARD_HISTORY_MAIN_BUTTON_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
@@ -33,7 +34,7 @@ class ClipboardHistoryMainButton : public views::Button {
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
   // The parent view.
-  ClipboardHistoryItemView* const container_;
+  const raw_ptr<ClipboardHistoryItemView, ExperimentalAsh> container_;
 
   // Indicates whether the view should be highlighted.
   bool should_highlight_ = false;

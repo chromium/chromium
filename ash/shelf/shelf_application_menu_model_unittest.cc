@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,7 +46,7 @@ class ShelfApplicationMenuModelTestAPI {
 
  private:
   // The ShelfApplicationMenuModel to provide internal access to. Not owned.
-  ShelfApplicationMenuModel* menu_;
+  raw_ptr<ShelfApplicationMenuModel, ExperimentalAsh> menu_;
 };
 
 // Verifies the menu contents given an empty item list.

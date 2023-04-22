@@ -6,6 +6,7 @@
 #define ASH_DISPLAY_EXTENDED_MOUSE_WARP_CONTROLLER_H_
 
 #include "ash/display/mouse_warp_controller.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <vector>
@@ -122,7 +123,7 @@ class ASH_EXPORT ExtendedMouseWarpController : public MouseWarpController {
   void allow_non_native_event_for_test() { allow_non_native_event_ = true; }
 
   // The root window in which the dragging started.
-  aura::Window* drag_source_root_;
+  raw_ptr<aura::Window, ExperimentalAsh> drag_source_root_;
 
   bool enabled_;
 

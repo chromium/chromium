@@ -13,6 +13,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_section.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view.h"
 
@@ -141,14 +142,14 @@ class ASH_EXPORT HoldingSpaceItemViewsSection : public views::View {
   void OnAnimateInCompleted(const ui::CallbackLayerAnimationObserver&);
   void OnAnimateOutCompleted(const ui::CallbackLayerAnimationObserver&);
 
-  HoldingSpaceViewDelegate* const delegate_;
-  const HoldingSpaceSection* const section_;
+  const raw_ptr<HoldingSpaceViewDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<const HoldingSpaceSection, ExperimentalAsh> section_;
 
   // Owned by view hierarchy.
-  views::View* header_ = nullptr;
-  views::View* container_ = nullptr;
-  views::View* placeholder_ = nullptr;
-  views::ScrollView* scroll_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> header_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> container_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> placeholder_ = nullptr;
+  raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
   std::map<std::string, HoldingSpaceItemView*> views_by_item_id_;
 
   // Bit flag representation of current `AnimationState`. Note that it is

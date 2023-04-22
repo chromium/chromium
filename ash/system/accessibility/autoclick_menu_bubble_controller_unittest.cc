@@ -63,7 +63,8 @@ class AutoclickMenuBubbleControllerTest : public AshTestBase {
   }
 
   AutoclickMenuView* GetMenuView() {
-    return GetBubbleController() ? GetBubbleController()->menu_view_ : nullptr;
+    return GetBubbleController() ? GetBubbleController()->menu_view_.get()
+                                 : nullptr;
   }
 
   views::View* GetMenuButton(AutoclickMenuView::ButtonId view_id) {
@@ -81,7 +82,8 @@ class AutoclickMenuBubbleControllerTest : public AshTestBase {
 
   AutoclickScrollView* GetScrollView() {
     return GetBubbleController()->scroll_bubble_controller_
-               ? GetBubbleController()->scroll_bubble_controller_->scroll_view_
+               ? GetBubbleController()
+                     ->scroll_bubble_controller_->scroll_view_.get()
                : nullptr;
   }
 

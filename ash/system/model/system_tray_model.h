@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/system_tray.h"
 #include "ash/system/time/calendar_model.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -98,10 +99,11 @@ class SystemTrayModel : public SystemTray {
   std::unique_ptr<CalendarModel> calendar_model_;
 
   // Client interface in chrome browser. May be null in tests.
-  SystemTrayClient* client_ = nullptr;
+  raw_ptr<SystemTrayClient, ExperimentalAsh> client_ = nullptr;
 
   // Unowned.
-  phonehub::PhoneHubManager* phone_hub_manager_ = nullptr;
+  raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_ =
+      nullptr;
 };
 
 }  // namespace ash

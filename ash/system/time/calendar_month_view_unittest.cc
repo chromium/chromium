@@ -16,6 +16,7 @@
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -426,9 +427,9 @@ class CalendarMonthViewFetchTest : public AshTestBase {
   std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_overrides_;
 
   std::unique_ptr<views::Widget> widget_;
-  CalendarModel* calendar_model_;
+  raw_ptr<CalendarModel, ExperimentalAsh> calendar_model_;
   std::unique_ptr<calendar_test_utils::CalendarClientTestImpl> calendar_client_;
-  CalendarMonthView* calendar_month_view_;
+  raw_ptr<CalendarMonthView, ExperimentalAsh> calendar_month_view_;
   std::unique_ptr<CalendarViewController> controller_;
   AccountId account_id_;
 };

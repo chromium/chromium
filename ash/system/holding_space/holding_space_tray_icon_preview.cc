@@ -22,6 +22,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -369,7 +370,7 @@ class HoldingSpaceTrayIconPreview::ImageLayerOwner
     layer()->SetTransform(target_transform);
   }
 
-  const HoldingSpaceItem* item_ = nullptr;
+  raw_ptr<const HoldingSpaceItem, ExperimentalAsh> item_ = nullptr;
   base::CallbackListSubscription item_deletion_subscription_;
   base::CallbackListSubscription item_image_skia_subscription_;
   base::CallbackListSubscription progress_ring_animation_changed_subscription_;
@@ -398,7 +399,7 @@ HoldingSpaceTrayIconPreview::HoldingSpaceTrayIconPreview(
       progress_indicator_(
           holding_space_util::CreateProgressIndicatorForItem(item)),
       use_small_previews_(ShouldUseSmallPreviews()) {
-  container_observer_.Observe(container_);
+  container_observer_.Observe(container_.get());
 }
 
 HoldingSpaceTrayIconPreview::~HoldingSpaceTrayIconPreview() = default;

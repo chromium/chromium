@@ -41,7 +41,7 @@ LockActionHandlerLayoutManager::LockActionHandlerLayoutManager(
       action_background_controller_(action_background_controller) {
   TrayAction* tray_action = Shell::Get()->tray_action();
   tray_action_observation_.Observe(tray_action);
-  action_background_observation_.Observe(action_background_controller_);
+  action_background_observation_.Observe(action_background_controller_.get());
 }
 
 LockActionHandlerLayoutManager::~LockActionHandlerLayoutManager() = default;

@@ -9,6 +9,7 @@
 
 #include "ash/wallpaper/wallpaper_base_view.h"
 #include "ash/wallpaper/wallpaper_constants.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/context_menu_controller.h"
 
 namespace aura {
@@ -70,7 +71,8 @@ class WallpaperView : public WallpaperBaseView,
 
   // A view to hold solid color layer to hide desktop, in case compositor
   // failed to draw its content due to memory shortage.
-  views::View* shield_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> shield_view_ =
+      nullptr;
 
   // A cached downsampled image of the wallpaper image. It will help wallpaper
   // blur/brightness animations be more performant.

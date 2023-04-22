@@ -14,6 +14,7 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -200,7 +201,7 @@ class WallpaperPrefManagerTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
-  TestProfileHelper* profile_helper_;
+  raw_ptr<TestProfileHelper, ExperimentalAsh> profile_helper_;
 
   TestWallpaperControllerClient client_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;

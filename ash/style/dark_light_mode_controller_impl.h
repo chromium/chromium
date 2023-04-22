@@ -11,6 +11,7 @@
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 
 class AccountId;
@@ -96,7 +97,8 @@ class ASH_EXPORT DarkLightModeControllerImpl
 
   base::ObserverList<ColorModeObserver> observers_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  PrefService* active_user_pref_service_ = nullptr;  // Not owned.
+  raw_ptr<PrefService, ExperimentalAsh> active_user_pref_service_ =
+      nullptr;  // Not owned.
 };
 
 }  // namespace ash

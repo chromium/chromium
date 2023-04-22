@@ -12,6 +12,7 @@
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -162,7 +163,7 @@ class CalendarUpNextViewTest : public AshTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  CalendarUpNextView* up_next_view_;
+  raw_ptr<CalendarUpNextView, ExperimentalAsh> up_next_view_;
   std::unique_ptr<CalendarViewController> controller_;
 };
 

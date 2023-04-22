@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ui {
@@ -64,10 +65,10 @@ class ASH_EXPORT DateTray : public TrayBackgroundView,
   friend class DateTrayTest;
 
   // Owned by the views hierarchy.
-  TimeTrayItemView* time_view_ = nullptr;
+  raw_ptr<TimeTrayItemView, ExperimentalAsh> time_view_ = nullptr;
 
   // Owned by `StatusAreaWidget`.
-  UnifiedSystemTray* unified_system_tray_ = nullptr;
+  raw_ptr<UnifiedSystemTray, ExperimentalAsh> unified_system_tray_ = nullptr;
 
   // Bubble container for Glanceable UI.
   std::unique_ptr<GlanceableTrayBubble> bubble_;

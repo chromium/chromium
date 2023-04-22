@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -31,7 +32,7 @@ class Legend : public views::View {
     Entry(const Entry&);
     ~Entry();
 
-    const Graph& graph;
+    const raw_ref<const Graph, ExperimentalAsh> graph;
     std::u16string label;
     std::u16string tooltip;
     Formatter formatter;  // formatting function

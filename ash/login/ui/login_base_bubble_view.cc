@@ -13,6 +13,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
@@ -126,7 +127,7 @@ class LoginBubbleHandler : public ui::EventHandler {
     }
   }
 
-  LoginBaseBubbleView* bubble_;
+  raw_ptr<LoginBaseBubbleView, ExperimentalAsh> bubble_;
 };
 
 LoginBaseBubbleView::LoginBaseBubbleView(base::WeakPtr<views::View> anchor_view)

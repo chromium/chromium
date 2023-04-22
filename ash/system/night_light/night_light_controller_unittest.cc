@@ -24,6 +24,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/pattern.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -209,7 +210,7 @@ class NightLightTest : public NoSessionAshTestBase {
   // AshTestBase:
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
-    GetController()->SetDelegateForTesting(base::WrapUnique(delegate_));
+    GetController()->SetDelegateForTesting(base::WrapUnique(delegate_.get()));
 
     CreateTestUserSessions();
 
@@ -263,7 +264,7 @@ class NightLightTest : public NoSessionAshTestBase {
   }
 
  private:
-  TestDelegate* delegate_ = nullptr;  // Not owned.
+  raw_ptr<TestDelegate, ExperimentalAsh> delegate_ = nullptr;  // Not owned.
 };
 
 // Tests toggling NightLight on / off and makes sure the observer is updated and
@@ -1325,7 +1326,8 @@ class NightLightCrtcTest : public NightLightTest {
  private:
   std::unique_ptr<display::test::ActionLogger> logger_;
   // Not owned.
-  display::test::TestNativeDisplayDelegate* native_display_delegate_;
+  raw_ptr<display::test::TestNativeDisplayDelegate, ExperimentalAsh>
+      native_display_delegate_;
   std::unique_ptr<display::DisplayChangeObserver> display_change_observer_;
   std::unique_ptr<display::DisplayConfigurator::TestApi> test_api_;
 
@@ -1838,8 +1840,9 @@ class AmbientEQTest : public NightLightTest {
   std::unique_ptr<display::test::ActionLogger> logger_;
 
   // Not owned.
-  NightLightControllerImpl* controller_;
-  display::test::TestNativeDisplayDelegate* native_display_delegate_;
+  raw_ptr<NightLightControllerImpl, ExperimentalAsh> controller_;
+  raw_ptr<display::test::TestNativeDisplayDelegate, ExperimentalAsh>
+      native_display_delegate_;
   std::unique_ptr<display::DisplayChangeObserver> display_change_observer_;
   std::unique_ptr<display::DisplayConfigurator::TestApi> test_api_;
 };

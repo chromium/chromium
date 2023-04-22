@@ -6,6 +6,7 @@
 #define ASH_USER_EDUCATION_USER_EDUCATION_ASH_TEST_BASE_H_
 
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -30,8 +31,8 @@ class UserEducationAshTestBase : public NoSessionAshTestBase {
 
   // The mocked delegate which facilitates communication between Ash and user
   // education services in the browser. Created during `SetUp()`.
-  testing::NiceMock<MockUserEducationDelegate>* user_education_delegate_ =
-      nullptr;
+  raw_ptr<testing::NiceMock<MockUserEducationDelegate>, ExperimentalAsh>
+      user_education_delegate_ = nullptr;
 };
 
 }  // namespace ash

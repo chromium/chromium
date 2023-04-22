@@ -26,6 +26,7 @@
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/default_frame_header.h"
@@ -100,7 +101,8 @@ class NonClientFrameViewAshTestWidgetDelegate
 
  private:
   // Not owned.
-  NonClientFrameViewAsh* non_client_frame_view_ = nullptr;
+  raw_ptr<NonClientFrameViewAsh, ExperimentalAsh> non_client_frame_view_ =
+      nullptr;
 };
 
 class TestWidgetConstraintsDelegate

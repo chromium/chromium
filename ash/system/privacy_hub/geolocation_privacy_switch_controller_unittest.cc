@@ -20,6 +20,7 @@
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -70,7 +71,7 @@ class PrivacyHubGeolocationControllerTest : public AshTestBase {
         ->GetBoolean(prefs::kUserGeolocationAllowed);
   }
 
-  GeolocationPrivacySwitchController* controller_;
+  raw_ptr<GeolocationPrivacySwitchController, ExperimentalAsh> controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
   const base::HistogramTester histogram_tester_;
 };

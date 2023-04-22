@@ -12,6 +12,7 @@
 #include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/separator.h"
@@ -84,15 +85,16 @@ class ASH_EXPORT AppListAssistantMainStage
   void MaybeHideZeroState();
   void InitializeUIForStartingSession(bool from_search);
 
-  AssistantViewDelegate* const delegate_;  // Owned by Shell.
+  const raw_ptr<AssistantViewDelegate, ExperimentalAsh>
+      delegate_;  // Owned by Shell.
 
   // Owned by view hierarchy.
-  AssistantProgressIndicator* progress_indicator_;
-  views::Separator* horizontal_separator_;
-  AssistantQueryView* query_view_;
-  UiElementContainerView* ui_element_container_;
-  AssistantZeroStateView* zero_state_view_;
-  AssistantFooterView* footer_;
+  raw_ptr<AssistantProgressIndicator, ExperimentalAsh> progress_indicator_;
+  raw_ptr<views::Separator, ExperimentalAsh> horizontal_separator_;
+  raw_ptr<AssistantQueryView, ExperimentalAsh> query_view_;
+  raw_ptr<UiElementContainerView, ExperimentalAsh> ui_element_container_;
+  raw_ptr<AssistantZeroStateView, ExperimentalAsh> zero_state_view_;
+  raw_ptr<AssistantFooterView, ExperimentalAsh> footer_;
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};

@@ -13,6 +13,7 @@
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_utils.h"
@@ -111,7 +112,8 @@ class BluetoothDetailedViewImplTest : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
   FakeBluetoothDetailedViewDelegate bluetooth_detailed_view_delegate_;
   FakeDetailedViewDelegate detailed_view_delegate_;
-  BluetoothDetailedViewImpl* bluetooth_detailed_view_ = nullptr;
+  raw_ptr<BluetoothDetailedViewImpl, ExperimentalAsh> bluetooth_detailed_view_ =
+      nullptr;
 };
 
 TEST_F(BluetoothDetailedViewImplTest, PressingSettingsButtonOpensSettings) {

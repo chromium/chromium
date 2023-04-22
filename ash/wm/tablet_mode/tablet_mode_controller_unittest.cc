@@ -38,6 +38,7 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/math_constants.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1986,7 +1987,7 @@ class LayerStartAnimationWaiter : public ui::LayerAnimationObserver {
       ui::LayerAnimationSequence* sequence) override {}
 
  private:
-  ui::LayerAnimator* animator_;
+  raw_ptr<ui::LayerAnimator, ExperimentalAsh> animator_;
   base::RunLoop run_loop_;
 };
 

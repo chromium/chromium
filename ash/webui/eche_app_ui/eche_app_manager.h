@@ -16,6 +16,7 @@
 #include "ash/webui/eche_app_ui/eche_recent_app_click_handler.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/presence_monitor_client_impl.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -119,7 +120,7 @@ class EcheAppManager : public KeyedService {
   void Shutdown() override;
 
  private:
-  phonehub::PhoneHubManager* phone_hub_manager_;
+  raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_;
   std::unique_ptr<secure_channel::ConnectionManager> connection_manager_;
   std::unique_ptr<EcheConnectionStatusHandler> eche_connection_status_handler_;
   std::unique_ptr<EcheFeatureStatusProvider> feature_status_provider_;

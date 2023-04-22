@@ -17,6 +17,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -161,7 +162,8 @@ class NetworkListNetworkItemViewTest : public AshTestBase {
   std::unique_ptr<FakeNetworkDetailedNetworkView>
       fake_network_detailed_network_view_;
   CrosNetworkConfigTestHelper network_config_helper_;
-  NetworkListNetworkItemView* network_list_network_item_view_;
+  raw_ptr<NetworkListNetworkItemView, ExperimentalAsh>
+      network_list_network_item_view_;
 };
 
 TEST_F(NetworkListNetworkItemViewTest, HasCorrectLabel) {

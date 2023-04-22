@@ -17,6 +17,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_observer.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "ui/aura/client/focus_change_observer.h"
@@ -189,7 +190,7 @@ class ASH_EXPORT AppListPresenterImpl
                                                   bool aborted);
 
   // Owns |this|.
-  AppListControllerImpl* const controller_;
+  const raw_ptr<AppListControllerImpl, ExperimentalAsh> controller_;
 
   // Closes the app list when the user clicks outside its bounds.
   std::unique_ptr<AppListPresenterEventFilter> event_filter_;
@@ -205,7 +206,7 @@ class ASH_EXPORT AppListPresenterImpl
   bool is_target_visibility_show_ = false;
 
   // The AppListView this class manages, owned by its widget.
-  AppListView* view_ = nullptr;
+  raw_ptr<AppListView, ExperimentalAsh> view_ = nullptr;
 
   // Whether the presenter is currently changing app list view state to shown.
   // TODO(https://crbug.com/1307871): Remove this when the linked crash gets

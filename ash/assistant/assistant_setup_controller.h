@@ -12,6 +12,7 @@
 #include "ash/public/cpp/assistant/assistant_setup.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 
@@ -45,7 +46,8 @@ class AssistantSetupController : public AssistantControllerObserver,
  private:
   void OnOptInFlowFinished(bool relaunch, bool completed);
 
-  AssistantControllerImpl* const assistant_controller_;  // Owned by Shell.
+  const raw_ptr<AssistantControllerImpl, ExperimentalAsh>
+      assistant_controller_;  // Owned by Shell.
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};

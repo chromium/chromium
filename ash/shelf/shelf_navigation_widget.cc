@@ -21,6 +21,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -114,7 +115,7 @@ class AnimationObserverToHideView : public ui::ImplicitAnimationObserver {
   }
 
  private:
-  views::View* const view_;
+  const raw_ptr<views::View, ExperimentalAsh> view_;
 };
 
 // Tracks the animation smoothness of a view's bounds animation using
@@ -188,8 +189,8 @@ class BackgroundLayerDelegate : public ui::LayerDelegate {
     layer_->SchedulePaint(layer_->bounds());
   }
 
-  ui::Layer* const layer_;
-  views::View* const shelf_view_;
+  const raw_ptr<ui::Layer, ExperimentalAsh> layer_;
+  const raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> shelf_view_;
 
   // The background color of `layer_`. Note that this value has to be updated by
   // SetBackgroundColor() and the default value should never be drawn.
@@ -347,8 +348,8 @@ class ShelfNavigationWidget::Delegate : public views::AccessiblePaneView,
 
   void RefreshAccessibilityWidgetNextPreviousFocus(ShelfWidget* shelf);
 
-  BackButton* back_button_ = nullptr;
-  HomeButton* home_button_ = nullptr;
+  raw_ptr<BackButton, ExperimentalAsh> back_button_ = nullptr;
+  raw_ptr<HomeButton, ExperimentalAsh> home_button_ = nullptr;
   // When true, the default focus of the navigation widget is the last
   // focusable child.
   bool default_last_focusable_child_ = false;
@@ -360,7 +361,7 @@ class ShelfNavigationWidget::Delegate : public views::AccessiblePaneView,
   // `opaque_background_`.
   std::unique_ptr<BackgroundLayerDelegate> background_delegate_;
 
-  Shelf* shelf_ = nullptr;
+  raw_ptr<Shelf, ExperimentalAsh> shelf_ = nullptr;
 };
 
 ShelfNavigationWidget::Delegate::Delegate(Shelf* shelf, ShelfView* shelf_view)
@@ -552,7 +553,7 @@ void ShelfNavigationWidget::Initialize(aura::Window* container) {
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = "ShelfNavigationWidget";
-  params.delegate = delegate_;
+  params.delegate = delegate_.get();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = container;

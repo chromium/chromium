@@ -6,6 +6,7 @@
 #define ASH_SESSION_MULTIPROFILES_INTRO_DIALOG_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -35,7 +36,7 @@ class MultiprofilesIntroDialog : public views::DialogDelegateView {
 
   void InitDialog();
 
-  views::Checkbox* never_show_again_checkbox_;
+  raw_ptr<views::Checkbox, ExperimentalAsh> never_show_again_checkbox_;
   OnAcceptCallback on_accept_;
 };
 

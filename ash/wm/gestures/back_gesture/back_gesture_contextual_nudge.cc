@@ -14,6 +14,7 @@
 #include "ash/wm/gestures/back_gesture/back_gesture_util.h"
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -288,9 +289,10 @@ class BackGestureContextualNudge::ContextualNudgeView
       }
     }
 
-    views::Label* label_ = nullptr;
+    raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
     int current_animation_times_ = 0;
-    ContextualNudgeView* nudge_view_ = nullptr;  // Not owned.
+    raw_ptr<ContextualNudgeView, ExperimentalAsh> nudge_view_ =
+        nullptr;  // Not owned.
   };
 
   // Showing contextual nudge from off screen to its start position.
@@ -354,7 +356,7 @@ class BackGestureContextualNudge::ContextualNudgeView
   }
 
   // Created by ContextualNudgeView. Owned by views hierarchy.
-  SuggestionView* suggestion_view_ = nullptr;
+  raw_ptr<SuggestionView, ExperimentalAsh> suggestion_view_ = nullptr;
 
   // Timer to start show the sliding in animation.
   base::OneShotTimer show_timer_;

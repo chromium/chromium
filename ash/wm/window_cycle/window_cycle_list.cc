@@ -21,6 +21,7 @@
 #include "ash/wm/window_util.h"
 #include "base/check.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
@@ -69,7 +70,7 @@ class CustomWindowTargeter : public aura::WindowTargeter {
   }
 
  private:
-  aura::Window* tab_cycler_;
+  raw_ptr<aura::Window, ExperimentalAsh> tab_cycler_;
 };
 
 gfx::Point ConvertEventToScreen(const ui::LocatedEvent* event) {
@@ -378,7 +379,7 @@ void WindowCycleList::InitWindowCycleView() {
 
   views::Widget* widget = new views::Widget();
   views::Widget::InitParams params;
-  params.delegate = cycle_view_;
+  params.delegate = cycle_view_.get();
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.layer_type = ui::LAYER_NOT_DRAWN;

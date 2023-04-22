@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -89,7 +90,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantButton
  private:
   void OnButtonPressed();
 
-  AssistantButtonListener* listener_;
+  raw_ptr<AssistantButtonListener, ExperimentalAsh> listener_;
   const AssistantButtonId id_;
 
   // |icon_color_type_| and |icon_description_| are stored only when

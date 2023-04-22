@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/tray/tri_view.h"
 #include "ash/system/tray/view_click_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -50,8 +51,8 @@ class ASH_EXPORT NetworkListHeaderView : public views::View,
   void AddTitleView(int label_id);
 
   // Owned by the views hierarchy.
-  TriView* container_ = nullptr;
-  HoverHighlightView* entry_row_ = nullptr;
+  raw_ptr<TriView, ExperimentalAsh> container_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> entry_row_ = nullptr;
 };
 
 }  // namespace ash

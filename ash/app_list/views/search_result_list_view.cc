@@ -124,7 +124,7 @@ SearchResultListView::SearchResultListView(
   title_label_->SetPaintToLayer();
   title_label_->layer()->SetFillsBoundsOpaquely(false);
 
-  results_container_->AddChildView(title_label_);
+  results_container_->AddChildView(title_label_.get());
 
   size_t result_count =
       ash::SharedAppListConfig::instance()
@@ -140,7 +140,7 @@ SearchResultListView::SearchResultListView(
     results_container_->AddChildView(search_result_views_.back());
     AddObservedResultView(search_result_views_.back());
   }
-  AddChildView(results_container_);
+  AddChildView(results_container_.get());
 }
 
 SearchResultListView::~SearchResultListView() = default;

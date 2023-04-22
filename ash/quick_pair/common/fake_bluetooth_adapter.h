@@ -5,6 +5,7 @@
 #ifndef ASH_QUICK_PAIR_COMMON_FAKE_BLUETOOTH_ADAPTER_H_
 #define ASH_QUICK_PAIR_COMMON_FAKE_BLUETOOTH_ADAPTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -80,7 +81,8 @@ class FakeBluetoothAdapter
   bool connect_device_failure_ = false;
   bool get_device_returns_nullptr_ = false;
   bool connect_device_timeout_ = false;
-  device::BluetoothDevice::PairingDelegate* pairing_delegate_ = nullptr;
+  raw_ptr<device::BluetoothDevice::PairingDelegate, ExperimentalAsh>
+      pairing_delegate_ = nullptr;
   device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
       hardware_offloading_status_ = device::BluetoothAdapter::
           LowEnergyScanSessionHardwareOffloadingStatus::kSupported;

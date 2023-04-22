@@ -208,14 +208,14 @@ UserItemButton::UserItemButton(PressedCallback callback,
       ContentLayerType::kTextColorPrimary));
   name_->SetAutoColorReadabilityEnabled(false);
   name_->SetSubpixelRenderingEnabled(false);
-  vertical_labels->AddChildView(name_);
+  vertical_labels->AddChildView(name_.get());
 
   email_->SetText(base::UTF8ToUTF16(user_session->user_info.display_email));
   email_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       ContentLayerType::kTextColorSecondary));
   email_->SetAutoColorReadabilityEnabled(false);
   email_->SetSubpixelRenderingEnabled(false);
-  vertical_labels->AddChildView(email_);
+  vertical_labels->AddChildView(email_.get());
 
   AddChildView(vertical_labels);
   layout->SetFlexForView(vertical_labels, 1);
@@ -230,7 +230,7 @@ UserItemButton::UserItemButton(PressedCallback callback,
         0, 0, 0, kTrayItemSize + kUnifiedTopShortcutSpacing)));
   }
   capture_icon_->SetVisible(false);
-  AddChildView(capture_icon_);
+  AddChildView(capture_icon_.get());
 
   if (has_close_button) {
     AddChildView(std::make_unique<IconButton>(

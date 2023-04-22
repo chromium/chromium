@@ -50,6 +50,7 @@
 #include "ash/wm/window_state.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -148,7 +149,7 @@ class TestShelfObserver : public ShelfObserver {
   }
 
  private:
-  Shelf* const shelf_;
+  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
   bool icon_positions_changed_ = false;
   base::TimeDelta icon_positions_animation_duration_;
 };
@@ -618,10 +619,10 @@ class ShelfViewTest : public AshTestBase {
         ui::HapticTouchpadEffectStrength::kMedium);
   }
 
-  ShelfModel* model_ = nullptr;
-  ShelfView* shelf_view_ = nullptr;
-  views::View* navigation_view_ = nullptr;
-  views::View* status_area_ = nullptr;
+  raw_ptr<ShelfModel, ExperimentalAsh> model_ = nullptr;
+  raw_ptr<ShelfView, ExperimentalAsh> shelf_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> navigation_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> status_area_ = nullptr;
 
   int id_ = 0;
 
@@ -2693,11 +2694,12 @@ class ShelfViewInkDropTest : public ShelfViewTest {
         .SetInkDrop(std::move(browser_button_ink_drop));
   }
 
-  HomeButton* home_button_ = nullptr;
-  InkDropSpy* home_button_ink_drop_ = nullptr;
-  ShelfAppButton* browser_button_ = nullptr;
-  InkDropSpy* browser_button_ink_drop_ = nullptr;
-  views::InkDropImpl* browser_button_ink_drop_impl_ = nullptr;
+  raw_ptr<HomeButton, ExperimentalAsh> home_button_ = nullptr;
+  raw_ptr<InkDropSpy, ExperimentalAsh> home_button_ink_drop_ = nullptr;
+  raw_ptr<ShelfAppButton, ExperimentalAsh> browser_button_ = nullptr;
+  raw_ptr<InkDropSpy, ExperimentalAsh> browser_button_ink_drop_ = nullptr;
+  raw_ptr<views::InkDropImpl, ExperimentalAsh> browser_button_ink_drop_impl_ =
+      nullptr;
 };
 
 // Tests that changing visibility of the app list transitions home button's
@@ -3371,8 +3373,8 @@ class ShelfViewGestureTapTest : public ShelfViewTest {
   }
 
  protected:
-  ShelfAppButton* app_icon1_ = nullptr;
-  ShelfAppButton* app_icon2_ = nullptr;
+  raw_ptr<ShelfAppButton, ExperimentalAsh> app_icon1_ = nullptr;
+  raw_ptr<ShelfAppButton, ExperimentalAsh> app_icon2_ = nullptr;
 };
 
 // Verifies the shelf app button's inkdrop behavior when the mouse click

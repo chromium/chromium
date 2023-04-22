@@ -10,6 +10,7 @@
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom-shared.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "url/gurl.h"
 
@@ -57,7 +58,7 @@ class EcheTrayStreamStatusObserver
   void OnFeatureStatusChanged() override;
 
  private:
-  FeatureStatusProvider* feature_status_provider_;
+  raw_ptr<FeatureStatusProvider, ExperimentalAsh> feature_status_provider_;
 
   base::ScopedObservation<EcheStreamStatusChangeHandler,
                           EcheStreamStatusChangeHandler::Observer>

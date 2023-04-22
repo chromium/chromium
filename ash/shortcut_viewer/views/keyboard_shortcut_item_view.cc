@@ -16,6 +16,7 @@
 #include "ash/shortcut_viewer/views/bubble_view.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -73,7 +74,7 @@ class KSVSeparatorImageView : public views::ImageView {
     SetImageSize(gfx::Size(kIconSize, kIconSize));
   }
 
-  ash::ColorProvider* color_provider_;  // Not owned.
+  raw_ptr<ash::ColorProvider, ExperimentalAsh> color_provider_;  // Not owned.
 };
 
 // Creates the separator view between bubble views of modifiers and key.

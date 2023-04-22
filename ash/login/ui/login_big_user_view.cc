@@ -140,7 +140,7 @@ void LoginBigUserView::CreateAuthUser(const LoginUserInfo& user) {
   auth_user_ = new LoginAuthUserView(user, auth_user_callbacks_);
   delete public_account_;
   public_account_ = nullptr;
-  AddChildView(auth_user_);
+  AddChildView(auth_user_.get());
 }
 
 void LoginBigUserView::CreatePublicAccount(const LoginUserInfo& user) {
@@ -151,7 +151,7 @@ void LoginBigUserView::CreatePublicAccount(const LoginUserInfo& user) {
       new LoginPublicAccountUserView(user, public_account_callbacks_);
   delete auth_user_;
   auth_user_ = nullptr;
-  AddChildView(public_account_);
+  AddChildView(public_account_.get());
 }
 
 }  // namespace ash

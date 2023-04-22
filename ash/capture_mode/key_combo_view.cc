@@ -216,7 +216,7 @@ void KeyComboView::RefreshView(int modifiers,
   if (last_non_modifier_key != last_non_modifier_key_) {
     last_non_modifier_key_ = last_non_modifier_key;
     if (non_modifier_view_) {
-      RemoveChildViewT(non_modifier_view_);
+      RemoveChildViewT(non_modifier_view_.get());
       non_modifier_view_ = nullptr;
     }
 

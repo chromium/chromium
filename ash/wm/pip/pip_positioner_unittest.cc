@@ -23,6 +23,7 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/gfx/geometry/insets.h"
@@ -88,7 +89,7 @@ class PipPositionerDisplayTest : public AshTestBase,
 
  private:
   std::unique_ptr<display::ScopedDisplayForNewWindows> scoped_display_;
-  aura::Window* root_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
 };
 
 TEST_P(PipPositionerDisplayTest, PipAdjustPositionForDragClampsToMovementArea) {

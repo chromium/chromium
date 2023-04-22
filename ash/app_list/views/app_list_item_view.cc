@@ -33,6 +33,7 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -420,12 +421,12 @@ class AppListItemView::FolderIconView : public views::View,
   }
 
   // The folder item this icon view paints.
-  AppListFolderItem* folder_item_;
+  raw_ptr<AppListFolderItem, ExperimentalAsh> folder_item_;
 
   // Whether Jelly style feature is enabled.
   const bool jelly_style_;
 
-  const AppListConfig* config_;
+  raw_ptr<const AppListConfig, ExperimentalAsh> config_;
 
   // The scaling factor used for cardified states in tablet mode.
   float icon_scale_;

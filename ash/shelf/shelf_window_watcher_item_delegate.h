@@ -6,6 +6,7 @@
 #define ASH_SHELF_SHELF_WINDOW_WATCHER_ITEM_DELEGATE_H_
 
 #include "ash/public/cpp/shelf_item_delegate.h"
+#include "base/memory/raw_ptr.h"
 
 namespace aura {
 class Window;
@@ -42,7 +43,7 @@ class ShelfWindowWatcherItemDelegate : public ShelfItemDelegate {
   void Close() override;
 
   // The window associated with this item. Not owned.
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 };
 
 }  // namespace ash

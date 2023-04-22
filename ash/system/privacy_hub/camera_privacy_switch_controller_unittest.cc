@@ -21,6 +21,8 @@
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -89,7 +91,7 @@ class ScopedCameraMuteToggler {
       Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
           prefs::kUserCameraAllowed, /*value=*/false);
     } else {
-      camera_privacy_switch_controller_.OnCameraHWPrivacySwitchStateChanged(
+      camera_privacy_switch_controller_->OnCameraHWPrivacySwitchStateChanged(
           std::string(), cros::mojom::CameraPrivacySwitchState::ON);
     }
   }
@@ -99,13 +101,14 @@ class ScopedCameraMuteToggler {
       Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
           prefs::kUserCameraAllowed, /*value=*/true);
     } else {
-      camera_privacy_switch_controller_.OnCameraHWPrivacySwitchStateChanged(
+      camera_privacy_switch_controller_->OnCameraHWPrivacySwitchStateChanged(
           std::string(), cros::mojom::CameraPrivacySwitchState::OFF);
     }
   }
 
  private:
-  CameraPrivacySwitchController& camera_privacy_switch_controller_;
+  const raw_ref<CameraPrivacySwitchController, ExperimentalAsh>
+      camera_privacy_switch_controller_;
   const bool software_switch_;
 };
 
@@ -158,9 +161,9 @@ class PrivacyHubCameraControllerTestBase : public AshTestBase {
         PrivacyHubNotificationController::kCombinedNotificationId);
   }
 
-  ::testing::NiceMock<MockSwitchAPI>* mock_switch_;
+  raw_ptr<::testing::NiceMock<MockSwitchAPI>, ExperimentalAsh> mock_switch_;
 
-  CameraPrivacySwitchController* controller_;
+  raw_ptr<CameraPrivacySwitchController, ExperimentalAsh> controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
   const base::HistogramTester histogram_tester_;
   FakeSensorDisabledNotificationDelegate delegate_;

@@ -11,6 +11,7 @@
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/compositor/throughput_tracker.h"
 
@@ -99,7 +100,7 @@ class ASH_EXPORT DeskAnimationBase
   virtual LatencyReportCallback GetLatencyReportCallback() const = 0;
   virtual metrics_util::ReportCallback GetSmoothnessReportCallback() const = 0;
 
-  DesksController* const controller_;
+  const raw_ptr<DesksController, ExperimentalAsh> controller_;
 
   // An animator object per each root. Once all the animations are complete,
   // this list is cleared.

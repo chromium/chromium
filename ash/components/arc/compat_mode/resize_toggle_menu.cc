@@ -136,7 +136,7 @@ void ResizeToggleMenu::MenuButtonView::UpdateColors() {
   const auto icon_color =
       is_selected_ ? color_provider->GetColor(selection_color_id)
                    : color_provider->GetColor(ui::kColorLabelForeground);
-  icon_view_->SetImage(gfx::CreateVectorIcon(icon_, icon_color));
+  icon_view_->SetImage(gfx::CreateVectorIcon(*icon_, icon_color));
 
   const auto text_color =
       is_selected_ ? color_provider->GetColor(selection_color_id)
@@ -171,8 +171,8 @@ ResizeToggleMenu::ResizeToggleMenu(views::Widget* widget,
           widget_, GetAnchorRect(),
           base::BindRepeating(&ResizeToggleMenu::ApplyResizeCompatMode,
                               base::Unretained(this))));
-  widget_observations_.AddObservation(widget_);
-  widget_observations_.AddObservation(bubble_widget_);
+  widget_observations_.AddObservation(widget_.get());
+  widget_observations_.AddObservation(bubble_widget_.get());
   OverlayDialog::Show(widget_->GetNativeWindow(),
                       base::BindOnce(&ResizeToggleMenu::CloseBubble,
                                      weak_ptr_factory_.GetWeakPtr()),

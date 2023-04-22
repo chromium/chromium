@@ -12,6 +12,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
 #include "ash/wm/window_state.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chromeos/ui/wm/fullscreen/pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -91,7 +92,7 @@ class FullscreenControllerTest : public AshTestBase,
 
   std::unique_ptr<aura::Window> window_;
 
-  WindowState* window_state_ = nullptr;
+  raw_ptr<WindowState, ExperimentalAsh> window_state_ = nullptr;
 
   raw_ptr<TestShellDelegate> test_shell_delegate_ = nullptr;
 };

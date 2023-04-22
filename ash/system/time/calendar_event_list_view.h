@@ -9,6 +9,7 @@
 #include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/system/time/calendar_model.h"
 #include "ash/system/time/calendar_view_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/views/view.h"
 
@@ -53,18 +54,18 @@ class ASH_EXPORT CalendarEventListView
       std::list<google_apis::calendar::CalendarEvent> events);
 
   // Owned by `CalendarView`.
-  CalendarViewController* calendar_view_controller_;
+  raw_ptr<CalendarViewController, ExperimentalAsh> calendar_view_controller_;
 
   // Owned by `CalendarEventListView`.
-  views::View* const close_button_container_;
-  views::ScrollView* const scroll_view_;
+  const raw_ptr<views::View, ExperimentalAsh> close_button_container_;
+  const raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_;
 
   // Adds fade in/out gradients to `scroll_view_`.
   std::unique_ptr<ScrollViewGradientHelper> gradient_helper_;
 
   // The content of the `scroll_view_`, which carries a list of
   // `CalendarEventListItemView`. Owned by `CalendarEventListView`.
-  views::View* const content_view_;
+  const raw_ptr<views::View, ExperimentalAsh> content_view_;
 
   // views::View:
   void OnThemeChanged() override;

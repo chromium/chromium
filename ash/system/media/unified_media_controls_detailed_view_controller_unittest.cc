@@ -13,6 +13,7 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -57,7 +58,7 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
       const media_message_center::NotificationTheme& color_theme) override {}
 
  private:
-  MediaNotificationProvider* const old_provider_;
+  const raw_ptr<MediaNotificationProvider, ExperimentalAsh> old_provider_;
 };
 
 }  // namespace

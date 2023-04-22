@@ -12,6 +12,7 @@
 #include "ash/system/network/fake_network_list_network_header_view_delegate.h"
 #include "ash/system/tray/tray_toggle_button.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chromeos/ash/components/network/network_device_handler.h"
@@ -130,7 +131,8 @@ class NetworkListMobileHeaderViewTest : public AshTestBase {
   network_config::CrosNetworkConfigTestHelper network_config_helper_;
   FakeNetworkListNetworkHeaderViewDelegate
       fake_network_list_network_header_delegate_;
-  NetworkListMobileHeaderViewImpl* network_list_mobile_header_view_;
+  raw_ptr<NetworkListMobileHeaderViewImpl, ExperimentalAsh>
+      network_list_mobile_header_view_;
 };
 
 TEST_F(NetworkListMobileHeaderViewTest, HeaderLabel) {

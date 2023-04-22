@@ -27,6 +27,7 @@
 #include "ash/system/tray/tray_toggle_button.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -143,7 +144,7 @@ class ImeListItemView : public ActionableView {
   }
 
  private:
-  ImeListView* ime_list_view_;
+  raw_ptr<ImeListView, ExperimentalAsh> ime_list_view_;
   bool selected_;
 };
 
@@ -217,10 +218,10 @@ class KeyboardStatusRow : public views::View {
 
  private:
   // `ToggleButton` to toggle keyboard on or off.
-  views::ToggleButton* toggle_ = nullptr;
+  raw_ptr<views::ToggleButton, ExperimentalAsh> toggle_ = nullptr;
 
   // For QsRevamp: `KnobSwitch` to toggle keyboard on or off.
-  Switch* qs_toggle_ = nullptr;
+  raw_ptr<Switch, ExperimentalAsh> qs_toggle_ = nullptr;
 };
 
 BEGIN_METADATA(KeyboardStatusRow, views::View)
@@ -340,7 +341,7 @@ void ImeListView::PrependKeyboardStatusRow() {
   keyboard_status_row_ = new KeyboardStatusRow;
   keyboard_status_row_->Init(base::BindRepeating(
       &ImeListView::KeyboardStatusTogglePressed, base::Unretained(this)));
-  container_->AddChildViewAt(keyboard_status_row_, 0);
+  container_->AddChildViewAt(keyboard_status_row_.get(), 0);
 }
 
 void ImeListView::KeyboardStatusTogglePressed() {

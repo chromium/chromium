@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/system/human_presence/human_presence_metrics.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -96,8 +97,8 @@ class SnoopingProtectionControllerTestBase : public NoSessionAshTestBase {
   const bool service_state_;
   const std::map<std::string, std::string> params_;
 
-  FakeHumanPresenceDBusClient* dbus_client_ = nullptr;
-  SnoopingProtectionController* controller_ = nullptr;
+  raw_ptr<FakeHumanPresenceDBusClient, ExperimentalAsh> dbus_client_ = nullptr;
+  raw_ptr<SnoopingProtectionController, ExperimentalAsh> controller_ = nullptr;
 
   // Simulates a login. This will trigger a DBus call if and only if logging in
   // was the final precondition required for the feature. Hence we wait for any

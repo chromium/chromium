@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/accessibility/magnifier/magnifier_test_utils.h"
+#include "base/memory/raw_ptr.h"
 
 #include "ash/shell.h"
 #include "ui/base/ime/input_method.h"
@@ -63,8 +64,8 @@ class TestFocusView : public views::WidgetDelegateView {
                          MagnifierFocusTestHelper::kButtonHeight);
   }
 
-  views::LabelButton* button_1_;
-  views::LabelButton* button_2_;
+  raw_ptr<views::LabelButton, ExperimentalAsh> button_1_;
+  raw_ptr<views::LabelButton, ExperimentalAsh> button_2_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -75,7 +76,7 @@ class TestTextInputView : public views::WidgetDelegateView {
  public:
   TestTextInputView() : text_field_(new views::Textfield) {
     text_field_->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
-    AddChildView(text_field_);
+    AddChildView(text_field_.get());
     SetLayoutManager(std::make_unique<views::FillLayout>());
   }
   TestTextInputView(const TestTextInputView&) = delete;
@@ -89,7 +90,8 @@ class TestTextInputView : public views::WidgetDelegateView {
   void FocusOnTextInput() { text_field_->RequestFocus(); }
 
  private:
-  views::Textfield* text_field_;  // owned by views hierarchy.
+  raw_ptr<views::Textfield, ExperimentalAsh>
+      text_field_;  // owned by views hierarchy.
 };
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/ash/components/phonehub/recent_app_click_observer.h"
@@ -80,11 +81,11 @@ class ASH_EXPORT AppStreamLauncherView
   void CreateGridView(
       const std::vector<phonehub::Notification::AppMetadata>* apps_list);
 
-  views::Button* arrow_back_button_ = nullptr;
-  phonehub::PhoneHubManager* phone_hub_manager_;
+  raw_ptr<views::Button, ExperimentalAsh> arrow_back_button_ = nullptr;
+  raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_;
 
   // Contains all the apps
-  views::View* items_container_;
+  raw_ptr<views::View, ExperimentalAsh> items_container_;
 
   base::WeakPtrFactory<AppStreamLauncherView> weak_factory_{this};
 };

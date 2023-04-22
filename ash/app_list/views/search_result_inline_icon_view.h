@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/view.h"
 
@@ -40,11 +41,13 @@ class ASH_EXPORT SearchResultInlineIconView : public views::View {
   void OnThemeChanged() override;
 
   // Cached icon used to recolor icon_image_ when OnThemeChanged() is called.
-  const gfx::VectorIcon* icon_ = nullptr;
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_ = nullptr;
 
-  views::ImageView* icon_image_ = nullptr;  // Owned by views hierarchy.
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_image_ =
+      nullptr;  // Owned by views hierarchy.
 
-  views::Label* label_ = nullptr;  // Owned by views hierarchy.
+  raw_ptr<views::Label, ExperimentalAsh> label_ =
+      nullptr;  // Owned by views hierarchy.
 };
 
 }  // namespace ash

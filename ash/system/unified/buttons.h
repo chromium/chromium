@@ -8,6 +8,8 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/enterprise/enterprise_domain_observer.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/button.h"
@@ -54,10 +56,10 @@ class ASH_EXPORT ManagedStateView : public views::Button {
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
   // Owned by views hierarchy.
-  views::Label* label_ = nullptr;
-  views::ImageView* image_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> image_ = nullptr;
 
-  const gfx::VectorIcon& icon_;
+  const raw_ref<const gfx::VectorIcon, ExperimentalAsh> icon_;
 };
 
 // A view that shows whether the device is enterprise managed or not. It updates

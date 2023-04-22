@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_SESSION_SESSION_OBSERVER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "components/session_manager/session_manager_types.h"
 
@@ -73,7 +74,7 @@ class ASH_PUBLIC_EXPORT ScopedSessionObserver {
   virtual ~ScopedSessionObserver();
 
  private:
-  SessionObserver* const observer_;
+  const raw_ptr<SessionObserver, ExperimentalAsh> observer_;
 };
 
 }  // namespace ash

@@ -28,6 +28,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/scoped_window_targeter.h"
@@ -143,7 +144,7 @@ class HotseatStateTransitionAnimation : public ui::LayerAnimationElement {
 
   gfx::Tween::Type tween_type_ = gfx::Tween::LINEAR;
 
-  HotseatWidget* hotseat_widget_ = nullptr;
+  raw_ptr<HotseatWidget, ExperimentalAsh> hotseat_widget_ = nullptr;
 };
 
 // Animation implemented specifically for the transition between the home
@@ -388,7 +389,7 @@ class HotseatWindowTargeter : public aura::WindowTargeter {
 
  private:
   // Unowned and guaranteed to be not null for the duration of |this|.
-  HotseatWidget* const hotseat_widget_;
+  const raw_ptr<HotseatWidget, ExperimentalAsh> hotseat_widget_;
 };
 
 }  // namespace
@@ -470,11 +471,13 @@ class HotseatWidget::DelegateView : public HotseatTransitionAnimator::Observer,
   }
 
  private:
-  FocusCycler* focus_cycler_ = nullptr;
+  raw_ptr<FocusCycler, ExperimentalAsh> focus_cycler_ = nullptr;
   // A background layer that may be visible depending on HotseatState.
-  views::View* translucent_background_ = nullptr;
-  ScrollableShelfView* scrollable_shelf_view_ = nullptr;  // unowned.
-  HotseatWidget* hotseat_widget_ = nullptr;               // unowned.
+  raw_ptr<views::View, ExperimentalAsh> translucent_background_ = nullptr;
+  raw_ptr<ScrollableShelfView, DanglingUntriaged | ExperimentalAsh>
+      scrollable_shelf_view_ = nullptr;  // unowned.
+  raw_ptr<HotseatWidget, ExperimentalAsh> hotseat_widget_ =
+      nullptr;  // unowned.
   // Blur is disabled during animations to improve performance.
   int blur_lock_ = 0;
 
@@ -732,7 +735,7 @@ HotseatWidget::~HotseatWidget() {
   // after its destruction in ~Widget() before RootView clears.
   // TODO(pbos): This is defensive, consider having children observe
   // destruction and/or check the result of GetNativeWidget() and others.
-  GetContentsView()->RemoveChildViewT(scrollable_shelf_view_);
+  GetContentsView()->RemoveChildViewT(scrollable_shelf_view_.get());
 }
 
 bool HotseatWidget::ShouldShowHotseatBackground() {
@@ -747,7 +750,7 @@ void HotseatWidget::Initialize(aura::Window* container, Shelf* shelf) {
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = "HotseatWidget";
-  params.delegate = delegate_view_;
+  params.delegate = delegate_view_.get();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = container;

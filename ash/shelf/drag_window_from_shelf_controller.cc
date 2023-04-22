@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/shelf/drag_window_from_shelf_controller.h"
+#include "base/memory/raw_ptr.h"
 
 #include <algorithm>
 
@@ -199,7 +200,7 @@ class DragWindowFromShelfController::WindowsHider
   }
 
  private:
-  aura::Window* dragged_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> dragged_window_;
   std::vector<aura::Window*> hidden_windows_;
 };
 

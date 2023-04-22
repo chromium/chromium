@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_state_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 
 namespace ash {
@@ -60,8 +61,8 @@ class ASH_EXPORT AlwaysOnTopController : public aura::WindowObserver,
   void OnPreWindowStateTypeChange(WindowState* window_state,
                                   chromeos::WindowStateType old_type) override;
 
-  aura::Window* always_on_top_container_;
-  aura::Window* pip_container_;
+  raw_ptr<aura::Window, ExperimentalAsh> always_on_top_container_;
+  raw_ptr<aura::Window, ExperimentalAsh> pip_container_;
 };
 
 }  // namespace ash

@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_EXTERNAL_ARC_OVERLAY_ARC_OVERLAY_CONTROLLER_IMPL_H_
 
 #include "ash/public/cpp/external_arc/overlay/arc_overlay_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -56,15 +57,15 @@ class ASH_PUBLIC_EXPORT ArcOverlayControllerImpl : public ArcOverlayController,
   void ResetFocusBehavior();
   void RestoreHostCanConsumeSystemKeys();
 
-  aura::Window* host_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> host_window_ = nullptr;
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       host_window_observer_{this};
 
-  aura::Window* overlay_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> overlay_window_ = nullptr;
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       overlay_window_observer_{this};
 
-  views::NativeViewHost* overlay_container_ = nullptr;
+  raw_ptr<views::NativeViewHost, ExperimentalAsh> overlay_container_ = nullptr;
   base::ScopedObservation<views::View, views::ViewObserver>
       overlay_container_observer_{this};
 

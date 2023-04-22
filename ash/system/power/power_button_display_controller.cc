@@ -37,7 +37,8 @@ PowerButtonDisplayController::PowerButtonDisplayController(
   ui::DeviceDataManager::GetInstance()->AddObserver(this);
   Shell::Get()->AddPreTargetHandler(this, ui::EventTarget::Priority::kSystem);
 
-  backlights_forced_off_observation_.Observe(backlights_forced_off_setter_);
+  backlights_forced_off_observation_.Observe(
+      backlights_forced_off_setter_.get());
 }
 
 PowerButtonDisplayController::~PowerButtonDisplayController() {

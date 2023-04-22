@@ -6,6 +6,7 @@
 #define ASH_STYLE_OPTION_BUTTON_BASE_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
 
@@ -74,7 +75,7 @@ class ASH_EXPORT OptionButtonBase : public views::LabelButton {
   // True if the button is currently selected.
   bool selected_ = false;
 
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
 };
 
 }  // namespace ash

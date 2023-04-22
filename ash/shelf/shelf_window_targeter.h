@@ -7,6 +7,7 @@
 
 #include "ash/shelf/shelf_observer.h"
 #include "ash/shell_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/wm/core/easy_resize_window_targeter.h"
 
@@ -56,7 +57,7 @@ class ShelfWindowTargeter : public ::wm::EasyResizeWindowTargeter,
   // and the current shelf alighment.
   void UpdateInsets();
 
-  Shelf* shelf_;
+  raw_ptr<Shelf, ExperimentalAsh> shelf_;
 
   // The size of the insets above the shelf for mouse events for the current
   // shelf visibility.

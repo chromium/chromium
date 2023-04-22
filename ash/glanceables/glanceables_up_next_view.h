@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/time/calendar_model.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -53,9 +54,9 @@ class ASH_EXPORT GlanceablesUpNextView : public views::View,
   void CreateEventsListView(const SingleDayEventList& events);
   void AddNoEventsLabel();
 
-  CalendarModel* calendar_model_ = nullptr;
+  raw_ptr<CalendarModel, ExperimentalAsh> calendar_model_ = nullptr;
   std::vector<GlanceablesUpNextEventItemView*> event_item_views_;
-  views::Label* no_events_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> no_events_label_ = nullptr;
 };
 
 }  // namespace ash

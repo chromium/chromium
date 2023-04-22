@@ -12,6 +12,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -42,7 +43,7 @@ class LoginShelfViewPixelTestBase : public LoginTestBase {
             .primary_big_view();
   }
 
-  views::View* primary_big_user_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> primary_big_user_view_ = nullptr;
 };
 
 class LoginShelfViewPixelTest : public LoginShelfViewPixelTestBase {
@@ -62,25 +63,29 @@ TEST_F(LoginShelfViewPixelTest, FocusTraversalFromLockContents) {
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_login_user_expand_button",
-      /*revision_number=*/1, primary_big_user_view_, primary_shelf_window));
+      /*revision_number=*/1, primary_big_user_view_.get(),
+      primary_shelf_window));
 
   // Trigger the tab key. Check that the login shelf shutdown button is focused.
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_shutdown_button",
-      /*revision_number=*/1, primary_big_user_view_, primary_shelf_window));
+      /*revision_number=*/1, primary_big_user_view_.get(),
+      primary_shelf_window));
 
   // Trigger the tab key. Check that the browser as guest button is focused.
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_browser_as_guest_button",
-      /*revision_number=*/1, primary_big_user_view_, primary_shelf_window));
+      /*revision_number=*/1, primary_big_user_view_.get(),
+      primary_shelf_window));
 
   // Trigger the tab key. Check that the add person button is focused.
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_add_person_button",
-      /*revision_number=*/1, primary_big_user_view_, primary_shelf_window));
+      /*revision_number=*/1, primary_big_user_view_.get(),
+      primary_shelf_window));
 }
 
 // Used to verify the login shelf features with a policy wallpaper.
@@ -135,7 +140,7 @@ TEST_P(LoginShelfWithPolicyWallpaperPixelTestWithRTL, FocusOnShutdownButton) {
   FocusOnShutdownButton();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_shutdown_button",
-      /*revision_number=*/1, primary_big_user_view_,
+      /*revision_number=*/1, primary_big_user_view_.get(),
       GetPrimaryShelf()->GetWindow()));
 }
 

@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ui {
@@ -196,10 +197,10 @@ class ASH_EXPORT OverviewWindowDragController {
   // `new_desk_button_scale_up_timer_` for more information.
   void MaybeScaleUpNewDeskButton();
 
-  OverviewSession* overview_session_;
+  raw_ptr<OverviewSession, ExperimentalAsh> overview_session_;
 
   // The drag target window in the overview mode.
-  OverviewItem* item_ = nullptr;
+  raw_ptr<OverviewItem, ExperimentalAsh> item_ = nullptr;
 
   DragBehavior current_drag_behavior_ = DragBehavior::kNoDrag;
 

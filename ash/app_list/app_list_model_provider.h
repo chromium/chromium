@@ -9,6 +9,7 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/quick_app_access_model.h"
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 
 namespace ash {
@@ -83,9 +84,9 @@ class ASH_EXPORT AppListModelProvider {
   SearchModel default_search_model_;
   QuickAppAccessModel default_quick_app_access_model_;
 
-  AppListModel* model_ = &default_model_;
-  SearchModel* search_model_ = &default_search_model_;
-  QuickAppAccessModel* quick_app_access_model_ =
+  raw_ptr<AppListModel, ExperimentalAsh> model_ = &default_model_;
+  raw_ptr<SearchModel, ExperimentalAsh> search_model_ = &default_search_model_;
+  raw_ptr<QuickAppAccessModel, ExperimentalAsh> quick_app_access_model_ =
       &default_quick_app_access_model_;
 
   base::ObserverList<Observer> observers_;

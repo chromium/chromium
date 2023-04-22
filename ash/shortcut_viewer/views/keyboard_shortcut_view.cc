@@ -28,6 +28,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/functional/bind.h"
 #include "base/i18n/string_search.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_number_conversions.h"
@@ -102,7 +103,8 @@ class KSVNoResultsImageView : public views::ImageView {
   }
 
  private:
-  ash::DarkLightModeControllerImpl* const dark_light_mode_controller_;
+  const raw_ptr<ash::DarkLightModeControllerImpl, ExperimentalAsh>
+      dark_light_mode_controller_;
 };
 
 // Creates the no search result view.
@@ -308,8 +310,8 @@ void KeyboardShortcutView::Layout() {
   search_box_view_->SetBoundsRect(search_box_bounds);
 
   views::View* content_view = categories_tabbed_pane_->GetVisible()
-                                  ? categories_tabbed_pane_
-                                  : search_results_container_;
+                                  ? categories_tabbed_pane_.get()
+                                  : search_results_container_.get();
   const int search_box_used_height = search_box_bounds.height() +
                                      kSearchBoxTopPadding +
                                      kSearchBoxBottomPadding;

@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/wm/overview/overview_highlightable_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -169,8 +170,8 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   // description instead.
   views::Label* time_view_ = nullptr;
   SavedDeskIconContainer* icon_container_view_ = nullptr;
-  IconButton* delete_button_ = nullptr;
-  PillButton* launch_button_ = nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> delete_button_ = nullptr;
+  raw_ptr<PillButton, ExperimentalAsh> launch_button_ = nullptr;
   // Container used for holding all the views that appear on hover.
   views::View* hover_container_ = nullptr;
 

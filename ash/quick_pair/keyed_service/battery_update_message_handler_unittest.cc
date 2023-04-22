@@ -17,6 +17,7 @@
 #include "ash/quick_pair/message_stream/message_stream_lookup.h"
 #include "ash/quick_pair/pairing/mock_pairer_broker.h"
 #include "ash/quick_pair/pairing/pairer_broker.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -144,14 +145,15 @@ class BatteryUpdateMessageHandlerTest : public testing::Test {
       base::MakeRefCounted<FakeBluetoothSocket>();
   std::unique_ptr<MessageStream> message_stream_;
   std::unique_ptr<MessageStreamLookup> message_stream_lookup_;
-  FakeMessageStreamLookup* fake_message_stream_lookup_ = nullptr;
+  raw_ptr<FakeMessageStreamLookup, ExperimentalAsh>
+      fake_message_stream_lookup_ = nullptr;
 
   mojo::SharedRemote<mojom::FastPairDataParser> data_parser_remote_;
   mojo::PendingRemote<mojom::FastPairDataParser> fast_pair_data_parser_;
   std::unique_ptr<FastPairDataParser> data_parser_;
   std::unique_ptr<QuickPairProcessManager> process_manager_;
 
-  device::BluetoothDevice* bluetooth_device_ = nullptr;
+  raw_ptr<device::BluetoothDevice, ExperimentalAsh> bluetooth_device_ = nullptr;
   std::unique_ptr<BatteryUpdateMessageHandler> battery_update_message_handler_;
 };
 

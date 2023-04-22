@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/style/icon_button.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
@@ -125,14 +126,14 @@ class ASH_EXPORT FeatureTile : public views::Button {
                                const std::u16string& tooltip_text);
 
   // The vector icon for the tile, if one is set.
-  const gfx::VectorIcon* vector_icon_ = nullptr;
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> vector_icon_ = nullptr;
 
   // Owned by views hierarchy.
-  views::ImageView* icon_ = nullptr;
-  views::Label* label_ = nullptr;
-  views::Label* sub_label_ = nullptr;
-  views::LabelButton* drill_in_button_ = nullptr;
-  IconButton* drill_in_arrow_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> sub_label_ = nullptr;
+  raw_ptr<views::LabelButton, ExperimentalAsh> drill_in_button_ = nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> drill_in_arrow_ = nullptr;
 
   // Whether this button is togglable.
   bool is_togglable_ = false;

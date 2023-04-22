@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "ui/aura/window.h"
@@ -88,8 +89,8 @@ class CallbackRunningObserver {
     }
 
    private:
-    ui::LayerAnimator* animator_;
-    CallbackRunningObserver* observer_;
+    raw_ptr<ui::LayerAnimator, ExperimentalAsh> animator_;
+    raw_ptr<CallbackRunningObserver, ExperimentalAsh> observer_;
   };
 
   size_t completed_counter_;

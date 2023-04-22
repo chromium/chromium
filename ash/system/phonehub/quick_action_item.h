@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "base/memory/raw_ptr.h"
 
 namespace views {
 class Label;
@@ -62,9 +63,9 @@ class ASH_EXPORT QuickActionItem : public views::View {
 
  private:
   // Owned by views hierarchy.
-  FeaturePodIconButton* icon_button_ = nullptr;
-  views::Label* label_ = nullptr;
-  views::Label* sub_label_ = nullptr;
+  raw_ptr<FeaturePodIconButton, ExperimentalAsh> icon_button_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> sub_label_ = nullptr;
 
   // Enabled color of the sub label.
   SkColor sub_label_color_;

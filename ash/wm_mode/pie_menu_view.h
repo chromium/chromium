@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -52,7 +53,7 @@ class PieSubMenuContainerView : public views::View {
   explicit PieSubMenuContainerView(PieMenuView* owner_menu_view);
 
   // The parent owner pie menu that hosts this container. Not null.
-  PieMenuView* const owner_menu_view_;
+  const raw_ptr<PieMenuView, ExperimentalAsh> owner_menu_view_;
 
   // The buttons on this container, which will be painted as slices of a circle
   // in their same order in this vector.
@@ -127,12 +128,12 @@ class PieMenuView : public views::View {
 
   // The delegate of this view which takes care of handling button presses. Not
   // null.
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   // The container hosting the buttons on the main menu of this view. When this
   // is visible, `active_sub_menus_stack_` should be empty, and `back_button_`
   // should be hidden.
-  PieSubMenuContainerView* const main_menu_container_;
+  const raw_ptr<PieSubMenuContainerView, ExperimentalAsh> main_menu_container_;
 
   // Since a button on a sub menu can open another sub menu and so on, we keep
   // a stack of currently active sub menus (other than the main menu), so that
@@ -141,7 +142,7 @@ class PieMenuView : public views::View {
   // `main_menu_container_` shows up and `back_button_` hides.
   std::stack<PieSubMenuContainerView*> active_sub_menus_stack_;
 
-  views::ImageButton* const back_button_;
+  const raw_ptr<views::ImageButton, ExperimentalAsh> back_button_;
 
   // Maps all the buttons on all sub menu containers of this view by their IDs.
   base::flat_map</*button_id=*/int, PieMenuButton*> buttons_by_id_;

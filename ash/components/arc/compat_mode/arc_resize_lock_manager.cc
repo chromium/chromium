@@ -19,6 +19,7 @@
 #include "ash/wm/resize_shadow_controller.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -97,7 +98,7 @@ class WindowActivationObserver : public wm::ActivationChangeObserver,
       : window_(window), on_activated_(std::move(on_activated)) {
     DCHECK(!on_activated_.is_null());
     ash::Shell::Get()->activation_client()->AddObserver(this);
-    observer_.Observe(window_);
+    observer_.Observe(window_.get());
   }
 
   ~WindowActivationObserver() override { RemoveAllObservers(); }
@@ -107,7 +108,7 @@ class WindowActivationObserver : public wm::ActivationChangeObserver,
     ash::Shell::Get()->activation_client()->RemoveObserver(this);
   }
 
-  aura::Window* const window_;
+  const raw_ptr<aura::Window, ExperimentalAsh> window_;
   base::OnceClosure on_activated_;
   base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
 };
@@ -154,12 +155,12 @@ class AppIdObserver : public aura::WindowObserver {
                 base::OnceCallback<void(aura::Window*)> on_ready)
       : window_(window), on_ready_(std::move(on_ready)) {
     DCHECK(!on_ready_.is_null());
-    observer_.Observe(window_);
+    observer_.Observe(window_.get());
   }
 
   ~AppIdObserver() override { observer_.Reset(); }
 
-  aura::Window* const window_;
+  const raw_ptr<aura::Window, ExperimentalAsh> window_;
   base::OnceCallback<void(aura::Window*)> on_ready_;
   base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
 };

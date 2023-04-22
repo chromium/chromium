@@ -8,6 +8,7 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/views/search_box_view_delegate.h"
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/views/view.h"
@@ -68,13 +69,16 @@ class ASH_EXPORT AppListMainView : public views::View,
   void OnSearchBoxKeyEvent(ui::KeyEvent* event) override;
   bool CanSelectSearchResults() override;
 
-  AppListViewDelegate* delegate_;  // Owned by parent view (AppListView).
+  raw_ptr<AppListViewDelegate, ExperimentalAsh>
+      delegate_;  // Owned by parent view (AppListView).
 
   // Created by AppListView. Owned by views hierarchy.
-  SearchBoxView* search_box_view_ = nullptr;
+  raw_ptr<SearchBoxView, ExperimentalAsh> search_box_view_ = nullptr;
 
-  ContentsView* contents_view_ = nullptr;  // Owned by views hierarchy.
-  AppListView* const app_list_view_;       // Owned by views hierarchy.
+  raw_ptr<ContentsView, ExperimentalAsh> contents_view_ =
+      nullptr;  // Owned by views hierarchy.
+  const raw_ptr<AppListView, ExperimentalAsh>
+      app_list_view_;  // Owned by views hierarchy.
 };
 
 }  // namespace ash

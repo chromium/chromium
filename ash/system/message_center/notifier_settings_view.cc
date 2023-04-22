@@ -25,6 +25,7 @@
 #include "ash/system/tray/tray_toggle_button.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/prefs/pref_service.h"
 #include "skia/ext/image_operations.h"
@@ -137,7 +138,7 @@ class NotifierButtonWrapperView : public views::View {
   std::unique_ptr<views::Painter> focus_painter_;
 
   // NotifierButton to wrap.
-  views::View* contents_;
+  raw_ptr<views::View, ExperimentalAsh> contents_;
 };
 
 NotifierButtonWrapperView::NotifierButtonWrapperView(views::View* contents)
@@ -291,7 +292,7 @@ class EmptyNotifierView : public views::View {
         ContentLayerType::kTextColorPrimary));
   }
 
-  views::Label* label_;
+  raw_ptr<views::Label, ExperimentalAsh> label_;
 };
 
 class NotifierViewCheckbox : public views::Checkbox {

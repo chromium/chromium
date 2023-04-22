@@ -18,6 +18,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/containers/adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -80,7 +81,7 @@ class OverflowGradientBackground : public views::Background {
   }
 
  private:
-  Shelf* shelf_;
+  raw_ptr<Shelf, ExperimentalAsh> shelf_;
 };
 
 }  // namespace
@@ -185,7 +186,7 @@ bool StatusAreaWidgetDelegate::CanActivate() const {
   // We don't want mouse clicks to activate us, but we need to allow
   // activation when the user is using the keyboard (FocusCycler).
   const FocusCycler* focus_cycler = focus_cycler_for_testing_
-                                        ? focus_cycler_for_testing_
+                                        ? focus_cycler_for_testing_.get()
                                         : Shell::Get()->focus_cycler();
   return focus_cycler->widget_activating() == GetWidget();
 }

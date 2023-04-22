@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/views/view.h"
@@ -67,10 +68,10 @@ class ASH_EXPORT WindowMirrorView : public views::View,
   gfx::Rect GetClientAreaBounds() const;
 
   // The original window that is being represented by |this|.
-  aura::Window* source_;
+  raw_ptr<aura::Window, ExperimentalAsh> source_;
 
   // The window which contains this mirror view.
-  aura::Window* target_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> target_ = nullptr;
 
   // Retains ownership of the mirror layer tree. This is lazily initialized
   // the first time the view becomes visible.

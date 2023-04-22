@@ -132,7 +132,7 @@ void HoverHighlightView::AddViewAndLabel(std::unique_ptr<views::View> view,
   SetLayoutManager(std::make_unique<views::FillLayout>());
   tri_view_ = TrayPopupUtils::CreateDefaultRowView(
       /*use_wide_layout=*/features::IsQsRevampEnabled());
-  AddChildView(tri_view_);
+  AddChildView(tri_view_.get());
 
   left_view_ = view.get();
   tri_view_->AddView(TriView::Container::START, view.release());
@@ -163,7 +163,7 @@ void HoverHighlightView::AddLabelRow(const std::u16string& text) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   tri_view_ = TrayPopupUtils::CreateDefaultRowView(
       /*use_wide_layout=*/features::IsQsRevampEnabled());
-  AddChildView(tri_view_);
+  AddChildView(tri_view_.get());
 
   text_label_ = TrayPopupUtils::CreateUnfocusableLabel();
   text_label_->SetText(text);

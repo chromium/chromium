@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/frame_sink/frame_sink_host.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/canvas.h"
 
 namespace viz {
@@ -43,7 +44,7 @@ class ASH_EXPORT FastInkHost : public FrameSinkHost {
     gfx::Canvas& canvas() { return canvas_; }
 
    private:
-    gfx::GpuMemoryBuffer* gpu_memory_buffer_;
+    raw_ptr<gfx::GpuMemoryBuffer, ExperimentalAsh> gpu_memory_buffer_;
 
     // Damage rect in the buffer coordinates.
     const gfx::Rect damage_rect_;

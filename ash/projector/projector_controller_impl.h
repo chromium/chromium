@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/projector/model/projector_session_impl.h"
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -206,7 +207,7 @@ class ASH_EXPORT ProjectorControllerImpl
   // from the container folder.
   std::vector<base::FilePath> GetScreencastFilePaths() const;
 
-  ProjectorClient* client_ = nullptr;
+  raw_ptr<ProjectorClient, ExperimentalAsh> client_ = nullptr;
   std::unique_ptr<ProjectorSessionImpl> projector_session_;
   std::unique_ptr<ProjectorUiController> ui_controller_;
   std::unique_ptr<ProjectorMetadataController> metadata_controller_;

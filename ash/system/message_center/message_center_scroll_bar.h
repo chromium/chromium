@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/controls/rounded_scroll_bar.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event.h"
 
 namespace ui {
@@ -53,7 +54,7 @@ class MessageCenterScrollBar : public RoundedScrollBar {
   bool stats_recorded_ = false;
 
   // Unowned.
-  Observer* const observer_;
+  const raw_ptr<Observer, ExperimentalAsh> observer_;
 
   // Presentation time recorder for scrolling through notification list.
   std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;

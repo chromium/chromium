@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
 
@@ -57,7 +58,7 @@ class ASH_EXPORT ContextualNudge : public views::BubbleDialogDelegateView {
  private:
   base::RepeatingClosure tap_callback_;
 
-  views::Label* label_;
+  raw_ptr<views::Label, ExperimentalAsh> label_;
 };
 
 }  // namespace ash

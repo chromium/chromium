@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/cast_config_controller.h"
 #include "ash/system/unified/detailed_view_controller.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -36,7 +37,7 @@ class UnifiedCastDetailedViewController : public DetailedViewController {
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
-  CastDetailedView* view_ = nullptr;
+  raw_ptr<CastDetailedView, ExperimentalAsh> view_ = nullptr;
 };
 
 }  // namespace ash

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/views/animation/animation_delegate_views.h"
@@ -154,7 +155,7 @@ class ASH_EXPORT TrayItemView : public views::View,
   // Checks if we should use animation on visibility changes.
   bool IsAnimationEnabled() const { return disable_animation_count_ == 0u; }
 
-  Shelf* const shelf_;
+  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
 
   // When showing the item in tray, the animation is executed with 2 stages:
   // 1. Resize: The size reserved for tray item view gradually increases.
@@ -173,8 +174,8 @@ class ASH_EXPORT TrayItemView : public views::View,
   bool use_scale_in_animation_ = true;
 
   // Only one of |label_| and |image_view_| should be non-null.
-  IconizedLabel* label_ = nullptr;
-  views::ImageView* image_view_ = nullptr;
+  raw_ptr<IconizedLabel, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> image_view_ = nullptr;
 
   // Measure animation smoothness metrics for `animation_`.
   absl::optional<ui::ThroughputTracker> throughput_tracker_;

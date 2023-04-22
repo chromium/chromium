@@ -12,6 +12,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -108,7 +109,7 @@ class CalendarUpNextViewPixelTest : public AshTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  CalendarUpNextView* up_next_view_ = nullptr;
+  raw_ptr<CalendarUpNextView, ExperimentalAsh> up_next_view_ = nullptr;
   std::unique_ptr<CalendarViewController> controller_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };

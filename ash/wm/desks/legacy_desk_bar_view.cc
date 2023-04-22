@@ -40,6 +40,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -173,7 +174,7 @@ class DeskBarHoverObserver : public ui::EventObserver {
   }
 
  private:
-  LegacyDeskBarView* owner_;
+  raw_ptr<LegacyDeskBarView, ExperimentalAsh> owner_;
 
   std::unique_ptr<views::EventMonitor> event_monitor_;
 };
@@ -497,7 +498,7 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
   }
 
  private:
-  LegacyDeskBarView* bar_view_;  // Not owned.
+  raw_ptr<LegacyDeskBarView, ExperimentalAsh> bar_view_;  // Not owned.
 
   // Width of the scroll view. It is the contents' preferred width if it exceeds
   // the desk bar view's width or just the desk bar view's width if not.

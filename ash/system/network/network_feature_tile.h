@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/unified/feature_tile.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
@@ -33,7 +34,7 @@ class ASH_EXPORT NetworkFeatureTile : public FeatureTile {
   // views::Button:
   void OnThemeChanged() override;
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 };
 
 }  // namespace ash

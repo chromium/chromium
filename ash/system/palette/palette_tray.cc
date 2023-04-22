@@ -33,6 +33,7 @@
 #include "ash/system/tray/tray_utils.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -142,8 +143,8 @@ class BatteryView : public views::View {
 
  private:
   StylusBatteryDelegate stylus_battery_delegate_;
-  views::ImageView* icon_ = nullptr;
-  views::Label* label_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
 };
 
 class TitleView : public views::View {
@@ -214,9 +215,9 @@ class TitleView : public views::View {
 
   // Unowned pointers to button views so we can determine which button was
   // clicked.
-  views::View* settings_button_;
-  views::View* help_button_;
-  PaletteTray* palette_tray_;
+  raw_ptr<views::View, ExperimentalAsh> settings_button_;
+  raw_ptr<views::View, ExperimentalAsh> help_button_;
+  raw_ptr<PaletteTray, ExperimentalAsh> palette_tray_;
 };
 
 // Used as a Shell pre-target handler to notify PaletteTray of stylus events.
@@ -239,7 +240,7 @@ class StylusEventHandler : public ui::EventHandler {
   }
 
  private:
-  PaletteTray* palette_tray_;
+  raw_ptr<PaletteTray, ExperimentalAsh> palette_tray_;
 };
 
 }  // namespace

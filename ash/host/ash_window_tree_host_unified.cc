@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/host/ash_window_tree_host_unified.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <tuple>
@@ -55,7 +56,7 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
       if (in_out_event->IsLocatedEvent()) {
         ui::LocatedEvent* located_event = in_out_event->AsLocatedEvent();
         located_event->ConvertLocationToTarget(
-            static_cast<aura::Window*>(nullptr), dst_root_);
+            static_cast<aura::Window*>(nullptr), dst_root_.get());
       }
       return dst_root_->GetHost()->GetEventSink();
     }
@@ -63,9 +64,9 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
   }
 
  private:
-  aura::Window* src_root_;
-  aura::Window* dst_root_;
-  AshWindowTreeHostDelegate* delegate_;  // Not owned.
+  raw_ptr<aura::Window, ExperimentalAsh> src_root_;
+  raw_ptr<aura::Window, ExperimentalAsh> dst_root_;
+  raw_ptr<AshWindowTreeHostDelegate, ExperimentalAsh> delegate_;  // Not owned.
 };
 
 AshWindowTreeHostUnified::AshWindowTreeHostUnified(

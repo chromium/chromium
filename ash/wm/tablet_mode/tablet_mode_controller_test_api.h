@@ -9,6 +9,7 @@
 
 #include "ash/wm/tablet_mode/internal_input_devices_event_blocker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -102,7 +103,8 @@ class TabletModeControllerTestApi {
   float GetLidAngle() const { return tablet_mode_controller_->lid_angle(); }
 
  private:
-  TabletModeController* tablet_mode_controller_;
+  raw_ptr<TabletModeController, DanglingUntriaged | ExperimentalAsh>
+      tablet_mode_controller_;
 };
 
 }  // namespace ash

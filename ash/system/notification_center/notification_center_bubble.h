@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/system/screen_layout_observer.h"
+#include "base/memory/raw_ptr.h"
 
 namespace views {
 class Widget;
@@ -56,11 +57,13 @@ class NotificationCenterBubble : public ScreenLayoutObserver {
   void OnDisplayConfigurationChanged() override;
 
   // The owner of this class.
-  NotificationCenterTray* const notification_center_tray_;
+  const raw_ptr<NotificationCenterTray, ExperimentalAsh>
+      notification_center_tray_;
 
   // The main view responsible for showing all notification content in this
   // bubble. Owned by `TrayBubbleView`.
-  NotificationCenterView* notification_center_view_ = nullptr;
+  raw_ptr<NotificationCenterView, ExperimentalAsh> notification_center_view_ =
+      nullptr;
 
   std::unique_ptr<TrayBubbleWrapper> bubble_wrapper_;
 };

@@ -65,7 +65,7 @@ ArcNotificationView::ArcNotificationView(
 
   item_->AddObserver(this);
 
-  AddChildView(content_view_);
+  AddChildView(content_view_.get());
 
   if (content_view_->background()) {
     background()->SetNativeControlColor(

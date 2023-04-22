@@ -6,6 +6,7 @@
 #define ASH_WM_TEST_ACTIVATION_DELEGATE_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_handler.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_delegate.h"
@@ -50,7 +51,7 @@ class TestActivationDelegate : public ::wm::ActivationDelegate,
       aura::Window* gained_active,
       aura::Window* lost_active) override;
 
-  aura::Window* window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
   bool window_was_active_ = false;
   bool activate_ = true;
   int activated_count_ = 0;

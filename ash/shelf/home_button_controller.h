@@ -11,6 +11,7 @@
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ui {
 class GestureEvent;
@@ -75,10 +76,10 @@ class HomeButtonController : public AppListControllerObserver,
   void InitializeAssistantOverlay();
 
   // The button that owns this controller.
-  HomeButton* const button_;
+  const raw_ptr<HomeButton, ExperimentalAsh> button_;
 
   // Owned by the button's view hierarchy.
-  AssistantOverlay* assistant_overlay_ = nullptr;
+  raw_ptr<AssistantOverlay, ExperimentalAsh> assistant_overlay_ = nullptr;
   std::unique_ptr<base::OneShotTimer> assistant_animation_delay_timer_;
 };
 

@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/events/event.h"
 #include "ui/views/view_observer.h"
@@ -55,9 +56,9 @@ class ASH_EXPORT AppStreamConnectionErrorDialog : public views::WidgetObserver,
   views::Widget* widget() { return widget_; }
 
  private:
-  views::Widget* widget_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
 
-  views::View* const host_view_;
+  const raw_ptr<views::View, ExperimentalAsh> host_view_;
 
   base::OnceClosure on_close_callback_;
 

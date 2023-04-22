@@ -12,6 +12,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shelf/shelf_metrics.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
@@ -180,11 +181,11 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
   // If `show` is false, fade out the copy and destroy it after the animation.
   void ResetOtherWindow(absl::optional<bool> show);
 
-  aura::Window* window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
   // The `other_window_` refers to the window other than `window_` that is
   // visible while `window_` is being dragged. This happens when there is a
   // floated window.
-  aura::Window* other_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> other_window_ = nullptr;
   std::unique_ptr<ui::LayerTreeOwner> other_window_copy_;
   gfx::PointF initial_location_in_screen_;
   gfx::PointF previous_location_in_screen_;

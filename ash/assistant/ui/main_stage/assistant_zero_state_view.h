@@ -55,11 +55,11 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantZeroStateView
   void OnLearnMoreButtonPressed();
 
   // Owned by AssistantController.
-  AssistantViewDelegate* const delegate_;
+  const raw_ptr<AssistantViewDelegate, ExperimentalAsh> delegate_;
 
   // Owned by view hierarchy;
-  AssistantOnboardingView* onboarding_view_ = nullptr;
-  views::Label* greeting_label_ = nullptr;
+  raw_ptr<AssistantOnboardingView, ExperimentalAsh> onboarding_view_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> greeting_label_ = nullptr;
   base::raw_ptr<views::View> spacer_ = nullptr;
   base::raw_ptr<AppListToastView> learn_more_toast_ = nullptr;
 

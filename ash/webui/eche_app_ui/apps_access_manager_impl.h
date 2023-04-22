@@ -12,6 +12,7 @@
 #include "ash/webui/eche_app_ui/eche_message_receiver.h"
 #include "ash/webui/eche_app_ui/feature_status.h"
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
@@ -84,12 +85,14 @@ class AppsAccessManagerImpl
 
   FeatureStatus current_feature_status_;
   ConnectionStatus current_connection_status_;
-  EcheConnector* eche_connector_;
-  EcheMessageReceiver* message_receiver_;
-  FeatureStatusProvider* feature_status_provider_;
-  PrefService* pref_service_;
-  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
-  secure_channel::ConnectionManager* connection_manager_;
+  raw_ptr<EcheConnector, ExperimentalAsh> eche_connector_;
+  raw_ptr<EcheMessageReceiver, ExperimentalAsh> message_receiver_;
+  raw_ptr<FeatureStatusProvider, ExperimentalAsh> feature_status_provider_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
+      multidevice_setup_client_;
+  raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
+      connection_manager_;
   bool initialized_ = false;
   proto::AppStreamingPolicy current_app_policy_state_ =
       proto::AppStreamingPolicy::APP_POLICY_UNKNOWN;

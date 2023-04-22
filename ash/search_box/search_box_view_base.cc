@@ -14,6 +14,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/ime/text_input_flags.h"
@@ -269,7 +270,7 @@ class SearchBoxTextfield : public views::Textfield {
   }
 
  private:
-  SearchBoxViewBase* const search_box_view_;
+  const raw_ptr<SearchBoxViewBase, ExperimentalAsh> search_box_view_;
 };
 
 // Used to animate the transition between icon images. When a new icon is set,
@@ -391,7 +392,7 @@ SearchBoxViewBase::SearchBoxViewBase()
   content_container_->SetFlexForView(text_container_, 1,
                                      /*use_min_size=*/false);
 
-  text_container_->AddChildView(search_box_);
+  text_container_->AddChildView(search_box_.get());
   ghost_text_container_ =
       text_container_->AddChildView(std::make_unique<views::BoxLayoutView>());
   ghost_text_container_->SetCrossAxisAlignment(

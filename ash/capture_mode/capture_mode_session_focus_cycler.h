@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/views/widget/widget.h"
@@ -114,7 +115,7 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
    private:
     // A convenience pointer to the focus ring, which is owned by the views
     // hierarchy.
-    views::FocusRing* focus_ring_ = nullptr;
+    raw_ptr<views::FocusRing, ExperimentalAsh> focus_ring_ = nullptr;
 
     // True until a highlight path generator has been installed on the focus
     // ring. The path generator can be refreshed (e.g. to change the shape of
@@ -144,8 +145,8 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
     void OnWindowDestroying(aura::Window* window) override;
 
    private:
-    aura::Window* const window_;
-    CaptureModeSession* const session_;
+    const raw_ptr<aura::Window, ExperimentalAsh> window_;
+    const raw_ptr<CaptureModeSession, ExperimentalAsh> session_;
   };
 
   // Defines a type for a callback that can be called to construct a highlight
@@ -176,7 +177,7 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
         override;
 
    private:
-    views::View* const view_;
+    const raw_ptr<views::View, ExperimentalAsh> view_;
     HighlightPathGeneratorFactory highlight_path_generator_factory_;
   };
 
@@ -316,7 +317,7 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
 
   // The session that owns |this|. Guaranteed to be non null for the lifetime of
   // |this|.
-  CaptureModeSession* session_;
+  raw_ptr<CaptureModeSession, ExperimentalAsh> session_;
 
   // Accessibility features will focus on whatever window is returned by
   // GetA11yOverrideWindow(). Once `this` goes out of scope, the a11y override

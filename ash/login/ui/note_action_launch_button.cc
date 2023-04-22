@@ -14,6 +14,7 @@
 #include "ash/style/ash_color_id.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
@@ -331,7 +332,9 @@ class NoteActionLaunchButton::ActionButton : public views::ImageButton {
   }
 
   // The background view, which paints the note action bubble.
-  NoteActionLaunchButton::BackgroundView* background_;
+  raw_ptr<NoteActionLaunchButton::BackgroundView,
+          DanglingUntriaged | ExperimentalAsh>
+      background_;
 
   BubbleTargeterDelegate event_targeter_delegate_;
 
@@ -358,10 +361,10 @@ NoteActionLaunchButton::NoteActionLaunchButton(
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   background_ = new BackgroundView();
-  AddChildView(background_);
+  AddChildView(background_.get());
 
   action_button_ = new ActionButton(background_);
-  AddChildView(action_button_);
+  AddChildView(action_button_.get());
 
   UpdateVisibility(initial_note_action_state);
 }

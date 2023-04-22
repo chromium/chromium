@@ -15,6 +15,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_delegate.h"
@@ -99,7 +100,7 @@ class MockImmersiveFullscreenControllerDelegate
   double visible_fraction() const { return visible_fraction_; }
 
  private:
-  views::View* top_container_view_;
+  raw_ptr<views::View, ExperimentalAsh> top_container_view_;
   bool enabled_;
   double visible_fraction_;
 };
@@ -210,7 +211,7 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
     gfx::Size window_size = widget_->GetWindowBoundsInScreen().size();
     content_view_ = new views::NativeViewHost();
     content_view_->SetBounds(0, 0, window_size.width(), window_size.height());
-    widget_->client_view()->AddChildView(content_view_);
+    widget_->client_view()->AddChildView(content_view_.get());
 
     test_api_ =
         std::make_unique<ImmersiveFullscreenControllerTestApi>(controller());
@@ -303,8 +304,9 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
 
   std::unique_ptr<ImmersiveFullscreenControllerTestApi::GlobalAnimationDisabler>
       test_api_animation_disabler_;
-  views::Widget* widget_ = nullptr;  // Owned by the native widget.
-  views::NativeViewHost* content_view_ =
+  raw_ptr<views::Widget, ExperimentalAsh> widget_ =
+      nullptr;  // Owned by the native widget.
+  raw_ptr<views::NativeViewHost, ExperimentalAsh> content_view_ =
       nullptr;  // Owned by |widget_|'s root-view.
   std::unique_ptr<ImmersiveFullscreenControllerTestApi> test_api_;
 

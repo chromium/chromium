@@ -23,6 +23,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -93,7 +94,7 @@ class TestSessionObserver : public SessionObserver {
   AccountId active_account_id_;
   bool first_session_started_ = false;
   std::vector<AccountId> user_session_account_ids_;
-  PrefService* last_user_pref_service_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> last_user_pref_service_ = nullptr;
   int user_prefs_changed_count_ = 0;
 };
 
@@ -191,7 +192,7 @@ class SessionControllerImplWithShellTest : public AshTestBase {
   const TestSessionObserver* observer() const { return &observer_; }
 
  protected:
-  WindowState* window_state_ = nullptr;
+  raw_ptr<WindowState, ExperimentalAsh> window_state_ = nullptr;
 
  private:
   TestSessionObserver observer_;

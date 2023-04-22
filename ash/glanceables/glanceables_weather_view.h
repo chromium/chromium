@@ -7,6 +7,7 @@
 
 #include "ash/ambient/model/ambient_weather_model_observer.h"
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -32,8 +33,8 @@ class ASH_EXPORT GlanceablesWeatherView : public views::View,
  private:
   friend class GlanceablesTest;
 
-  views::ImageView* icon_ = nullptr;
-  views::Label* temperature_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> temperature_ = nullptr;
 };
 
 }  // namespace ash

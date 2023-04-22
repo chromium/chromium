@@ -10,6 +10,7 @@
 #include "ash/shelf/shelf_button_pressed_metric_tracker_test_api.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -66,7 +67,7 @@ class ShelfButtonPressedMetricTrackerTest : public AshTestBase {
 
  protected:
   // The test target. Not owned.
-  ShelfButtonPressedMetricTracker* metric_tracker_;
+  raw_ptr<ShelfButtonPressedMetricTracker, ExperimentalAsh> metric_tracker_;
 
   // The TickClock injected in to the test target.
   base::SimpleTestTickClock tick_clock_;

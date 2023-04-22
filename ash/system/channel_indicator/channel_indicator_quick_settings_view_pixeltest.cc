@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/channel_indicator/channel_indicator_quick_settings_view.h"
+#include "base/memory/raw_ptr.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
@@ -78,17 +79,18 @@ class ChannelIndicatorQuickSettingsViewPixelTest
 
   QuickSettingsHeader* header() { return header_; }
   ChannelIndicatorQuickSettingsView* view() {
-    return IsQsRevampEnabled() ? header()->channel_view_for_test() : view_;
+    return IsQsRevampEnabled() ? header()->channel_view_for_test()
+                               : view_.get();
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  TestSystemTrayClient* system_tray_client_ = nullptr;
+  raw_ptr<TestSystemTrayClient, ExperimentalAsh> system_tray_client_ = nullptr;
   scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   std::unique_ptr<views::Widget> widget_;
-  ChannelIndicatorQuickSettingsView* view_ = nullptr;
-  QuickSettingsHeader* header_ = nullptr;
+  raw_ptr<ChannelIndicatorQuickSettingsView, ExperimentalAsh> view_ = nullptr;
+  raw_ptr<QuickSettingsHeader, ExperimentalAsh> header_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(QsRevampEnabled,

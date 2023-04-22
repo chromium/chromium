@@ -27,6 +27,7 @@
 #include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "cc/paint/paint_flags.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -206,7 +207,7 @@ class PagedAppsGridView::BackgroundCardLayer : public ui::LayerOwner,
   bool is_active_page_ = false;
 
   const bool is_jelly_enabled_;
-  PagedAppsGridView* const paged_apps_grid_view_;
+  const raw_ptr<PagedAppsGridView, ExperimentalAsh> paged_apps_grid_view_;
 };
 
 PagedAppsGridView::PagedAppsGridView(

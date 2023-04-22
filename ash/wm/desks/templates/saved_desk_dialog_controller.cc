@@ -281,7 +281,7 @@ void SavedDeskDialogController::CreateDialogWidget(
       /*context=*/root_window, /*parent=*/nullptr);
   dialog_widget_->GetNativeWindow()->SetName("TemplateDialogForTesting");
   dialog_widget_->Show();
-  dialog_widget_observation_.Observe(dialog_widget_);
+  dialog_widget_observation_.Observe(dialog_widget_.get());
 
   // Ensure that if ChromeVox is enabled, it focuses on the dialog.
   AccessibilityControllerImpl* accessibility_controller =

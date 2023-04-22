@@ -12,6 +12,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf_layout_manager_observer.h"
 #include "ash/shelf/shelf_locking_manager.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 
 namespace aura {
@@ -97,7 +98,7 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
     }
 
    private:
-    Shelf* shelf_;
+    raw_ptr<Shelf, ExperimentalAsh> shelf_;
   };
 
   // Used to disable auto-hide shelf behavior while in scope. Note that
@@ -122,7 +123,7 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
     }
 
    private:
-    Shelf* const shelf_;
+    const raw_ptr<Shelf, ExperimentalAsh> shelf_;
   };
 
   Shelf();
@@ -331,7 +332,7 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
 
   // Layout manager for the shelf container window. Instances are constructed by
   // ShelfWidget and lifetimes are managed by the container windows themselves.
-  ShelfLayoutManager* shelf_layout_manager_ = nullptr;
+  raw_ptr<ShelfLayoutManager, ExperimentalAsh> shelf_layout_manager_ = nullptr;
 
   // Pointers to shelf components.
   std::unique_ptr<ShelfNavigationWidget> navigation_widget_;

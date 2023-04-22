@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
 #include "ash/system/tray/view_click_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/view.h"
@@ -61,7 +62,8 @@ class ASH_EXPORT FakeBluetoothDetailedView : public BluetoothDetailedView,
   size_t notify_device_list_changed_call_count_ = 0;
   absl::optional<bool> last_bluetooth_enabled_state_;
   std::unique_ptr<views::View> device_list_;
-  BluetoothDeviceListItemView* last_clicked_device_list_item_ = nullptr;
+  raw_ptr<BluetoothDeviceListItemView, ExperimentalAsh>
+      last_clicked_device_list_item_ = nullptr;
 };
 
 }  // namespace ash

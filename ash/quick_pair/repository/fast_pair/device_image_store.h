@@ -10,6 +10,7 @@
 
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -127,7 +128,7 @@ class DeviceImageStore {
       model_id_to_images_;
   // Used to lazily load images from prefs.
   bool loaded_images_from_prefs_ = false;
-  FastPairImageDecoder* image_decoder_;
+  raw_ptr<FastPairImageDecoder, ExperimentalAsh> image_decoder_;
   base::WeakPtrFactory<DeviceImageStore> weak_ptr_factory_{this};
 };
 

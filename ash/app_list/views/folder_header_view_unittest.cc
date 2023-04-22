@@ -18,6 +18,7 @@
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -92,8 +93,8 @@ class FolderHeaderViewTest : public AshTestBase,
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  test::AppListTestModel* model_ = nullptr;
-  FolderHeaderView* folder_header_view_ = nullptr;
+  raw_ptr<test::AppListTestModel, ExperimentalAsh> model_ = nullptr;
+  raw_ptr<FolderHeaderView, ExperimentalAsh> folder_header_view_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(Jelly, FolderHeaderViewTest, testing::Bool());

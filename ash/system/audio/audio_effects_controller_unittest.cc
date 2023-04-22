@@ -18,6 +18,7 @@
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
@@ -157,7 +158,8 @@ class AudioEffectsControllerTest : public NoSessionAshTestBase {
   base::HistogramTester histogram_tester_;
 
  private:
-  AudioEffectsController* audio_effects_controller_ = nullptr;
+  raw_ptr<AudioEffectsController, ExperimentalAsh> audio_effects_controller_ =
+      nullptr;
   std::unique_ptr<FakeVideoConferenceTrayController> tray_controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/view.h"
@@ -58,12 +59,12 @@ class ASH_EXPORT SystemToastStyle : public views::View {
   void AddedToWidget() override;
   void OnThemeChanged() override;
 
-  const gfx::VectorIcon* const leading_icon_ = nullptr;
+  const raw_ptr<const gfx::VectorIcon, ExperimentalAsh> leading_icon_ = nullptr;
 
   // Owned by views hierarchy.
-  views::Label* label_ = nullptr;
-  views::LabelButton* button_ = nullptr;
-  views::ImageView* leading_icon_view_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::LabelButton, ExperimentalAsh> button_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> leading_icon_view_ = nullptr;
 
   // Tells the toast if the dismiss button is already highlighted if one exists.
   bool is_dismiss_button_highlighted_ = false;

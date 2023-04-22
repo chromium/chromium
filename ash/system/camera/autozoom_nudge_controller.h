@@ -9,6 +9,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/camera/autozoom_observer.h"
 #include "ash/system/tray/system_nudge_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
 class PrefService;
@@ -57,7 +58,7 @@ class ASH_EXPORT AutozoomNudgeController : public SystemNudgeController,
   void OnAutozoomControlEnabledChanged(bool enabled) override;
 
   // Owned by ash/Shell.
-  AutozoomControllerImpl* const autozoom_controller_;
+  const raw_ptr<AutozoomControllerImpl, ExperimentalAsh> autozoom_controller_;
 };
 
 }  // namespace ash

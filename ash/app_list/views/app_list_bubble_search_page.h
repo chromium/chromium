@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_VIEWS_APP_LIST_BUBBLE_SEARCH_PAGE_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -51,7 +52,7 @@ class ASH_EXPORT AppListBubbleSearchPage : public views::View {
 
  private:
   // Owned by view hierarchy.
-  AppListSearchView* search_view_ = nullptr;
+  raw_ptr<AppListSearchView, ExperimentalAsh> search_view_ = nullptr;
 
   base::WeakPtrFactory<AppListBubbleSearchPage> weak_factory_{this};
 };

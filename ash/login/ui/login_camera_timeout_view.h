@@ -31,7 +31,7 @@ class ASH_EXPORT LoginCameraTimeoutView : public NonAccessibleView {
     views::View* arrow_button() const;
 
    private:
-    LoginCameraTimeoutView* const view_;
+    const raw_ptr<LoginCameraTimeoutView, ExperimentalAsh> view_;
   };
 
   using OnPublicAccountTapped = base::RepeatingClosure;

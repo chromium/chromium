@@ -19,6 +19,7 @@
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
 #include "ash/wm/lock_state_controller.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/user_manager/user_type.h"
@@ -102,7 +103,7 @@ class HighlightPathGenerator : public views::HighlightPathGenerator {
   }
 
   // Owned by views hierarchy.
-  PowerButton* const power_button_;
+  const raw_ptr<PowerButton, ExperimentalAsh> power_button_;
 };
 
 // Returns whether the user's email address should be shown in the power menu.
@@ -307,10 +308,10 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // The root menu item view of `context_menu_model_`. Cached for testing.
-  views::MenuItemView* root_menu_item_view_ = nullptr;
+  raw_ptr<views::MenuItemView, ExperimentalAsh> root_menu_item_view_ = nullptr;
 
   // Owned by views hierarchy.
-  PowerButton* power_button_ = nullptr;
+  raw_ptr<PowerButton, ExperimentalAsh> power_button_ = nullptr;
 };
 
 PowerButton::PowerButton(UnifiedSystemTrayController* tray_controller)

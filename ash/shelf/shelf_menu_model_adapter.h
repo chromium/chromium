@@ -7,6 +7,7 @@
 
 #include "ash/app_menu/app_menu_model_adapter.h"
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace views {
 class View;
@@ -40,7 +41,7 @@ class ASH_EXPORT ShelfMenuModelAdapter : public AppMenuModelAdapter {
 
  private:
   // The view showing the context menu. Not owned.
-  views::View* menu_owner_;
+  raw_ptr<views::View, ExperimentalAsh> menu_owner_;
 
   // True if this adapter was created for the shelf application menu items.
   const bool for_application_menu_items_;

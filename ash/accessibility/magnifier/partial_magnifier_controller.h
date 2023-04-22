@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "ui/events/event_handler.h"
@@ -85,7 +86,8 @@ class ASH_EXPORT PartialMagnifierController : public ui::EventHandler {
   // to pressing and holding the mouse.
   bool allow_mouse_following_ = false;
 
-  aura::Window* current_root_window_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh>
+      current_root_window_ = nullptr;
 
   std::unique_ptr<MagnifierGlass> magnifier_glass_;
 

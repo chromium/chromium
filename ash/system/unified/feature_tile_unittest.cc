@@ -12,6 +12,7 @@
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
@@ -88,7 +89,7 @@ class MockFeaturePodController : public FeaturePodControllerBase {
   bool WasLabelPressed() { return was_label_pressed_; }
 
  private:
-  FeatureTile* tile_ = nullptr;
+  raw_ptr<FeatureTile, ExperimentalAsh> tile_ = nullptr;
   bool was_icon_pressed_ = false;
   bool was_label_pressed_ = false;
   bool togglable_ = false;

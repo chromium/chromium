@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/controls/button/button.h"
 
 namespace gfx {
@@ -69,7 +70,7 @@ class ASH_EXPORT VcEffectState {
  private:
   // The icon to be displayed when enabled (for toggle effects) or at all times
   // for set-value effects.
-  gfx::VectorIcon const* enabled_icon_;
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> enabled_icon_;
 
   // Icon to display when the effect is toggled off. Only used for toggle
   // effects, which create one `VcEffectState`.
@@ -211,7 +212,7 @@ class ASH_EXPORT VcHostedEffect {
   absl::optional<int> container_id_;
 
   // The effects delegate associated with this effect.
-  VcEffectsDelegate* delegate_ = nullptr;
+  raw_ptr<VcEffectsDelegate, ExperimentalAsh> delegate_ = nullptr;
 };
 
 }  // namespace ash

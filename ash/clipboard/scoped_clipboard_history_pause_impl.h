@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/scoped_clipboard_history_pause.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/token.h"
 
@@ -34,7 +35,7 @@ class ASH_EXPORT ScopedClipboardHistoryPauseImpl
   ~ScopedClipboardHistoryPauseImpl() override;
 
  private:
-  const base::Token& pause_id_;
+  const raw_ref<const base::Token, ExperimentalAsh> pause_id_;
   base::WeakPtr<ClipboardHistory> const clipboard_history_;
 };
 

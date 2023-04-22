@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -99,7 +100,7 @@ class ASH_EXPORT AppListPage : public views::View {
   const char* GetClassName() const override;
 
  private:
-  ContentsView* contents_view_;
+  raw_ptr<ContentsView, ExperimentalAsh> contents_view_;
 };
 
 }  // namespace ash

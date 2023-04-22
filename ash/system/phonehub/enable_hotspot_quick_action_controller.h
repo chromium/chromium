@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_PHONEHUB_ENABLE_HOTSPOT_QUICK_ACTION_CONTROLLER_H_
 
 #include "ash/system/phonehub/quick_action_controller_base.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/tether_controller.h"
 
 namespace ash {
@@ -38,8 +39,9 @@ class EnableHotspotQuickActionController
   // Set the item (including icon, label and tooltips) to a certain state.
   void SetState(ActionState state);
 
-  phonehub::TetherController* tether_controller_ = nullptr;
-  QuickActionItem* item_ = nullptr;
+  raw_ptr<phonehub::TetherController, ExperimentalAsh> tether_controller_ =
+      nullptr;
+  raw_ptr<QuickActionItem, ExperimentalAsh> item_ = nullptr;
 };
 
 }  // namespace ash

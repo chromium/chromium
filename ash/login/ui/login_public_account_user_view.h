@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/login/ui/login_user_view.h"
 #include "ash/login/ui/non_accessible_view.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -28,7 +29,7 @@ class ASH_EXPORT LoginPublicAccountUserView : public NonAccessibleView {
     views::View* arrow_button() const;
 
    private:
-    LoginPublicAccountUserView* const view_;
+    const raw_ptr<LoginPublicAccountUserView, ExperimentalAsh> view_;
   };
 
   using OnPublicAccountTapped = base::RepeatingClosure;
@@ -81,10 +82,10 @@ class ASH_EXPORT LoginPublicAccountUserView : public NonAccessibleView {
   // Used to show an arrow button for public session when hovered.
   std::unique_ptr<HoverNotifier> hover_notifier_;
 
-  ArrowButtonView* arrow_button_ = nullptr;
+  raw_ptr<ArrowButtonView, ExperimentalAsh> arrow_button_ = nullptr;
   bool ignore_hover_ = false;
   bool auth_enabled_ = false;
-  LoginUserView* user_view_ = nullptr;
+  raw_ptr<LoginUserView, ExperimentalAsh> user_view_ = nullptr;
 };
 
 }  // namespace ash

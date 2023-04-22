@@ -9,6 +9,7 @@
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/human_presence/snooping_protection_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/message_center/message_center.h"
@@ -99,8 +100,8 @@ class ASH_EXPORT SnoopingProtectionNotificationBlocker
   // currently-blocked notifications.
   std::unique_ptr<message_center::Notification> CreateInfoNotification() const;
 
-  message_center::MessageCenter* const message_center_;
-  SnoopingProtectionController* const controller_;
+  const raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
+  const raw_ptr<SnoopingProtectionController, ExperimentalAsh> controller_;
 
   bool info_popup_exists_ = false;
 

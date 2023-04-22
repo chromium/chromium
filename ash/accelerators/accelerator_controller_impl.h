@@ -23,6 +23,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_map.h"
@@ -87,7 +88,8 @@ class ASH_EXPORT AcceleratorControllerImpl
                                      const std::string& side);
 
    private:
-    AcceleratorControllerImpl* controller_;  // Not owned.
+    raw_ptr<AcceleratorControllerImpl, ExperimentalAsh>
+        controller_;  // Not owned.
   };
 
   explicit AcceleratorControllerImpl(AshAcceleratorConfiguration* config);
@@ -223,7 +225,8 @@ class ASH_EXPORT AcceleratorControllerImpl
   std::unique_ptr<AcceleratorHistoryImpl> accelerator_history_;
 
   // Manages all accelerator mappings.
-  AshAcceleratorConfiguration* accelerator_configuration_;
+  raw_ptr<AshAcceleratorConfiguration, ExperimentalAsh>
+      accelerator_configuration_;
 
   // Handles the exit accelerator which requires a double press to exit and
   // shows a popup with an explanation.

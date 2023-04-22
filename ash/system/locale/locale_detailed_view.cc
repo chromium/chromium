@@ -17,6 +17,7 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/check.h"
 #include "base/i18n/case_conversion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -113,7 +114,7 @@ class LocaleItemView : public ActionableView {
   }
 
  private:
-  LocaleDetailedView* locale_detailed_view_;
+  raw_ptr<LocaleDetailedView, ExperimentalAsh> locale_detailed_view_;
   const bool checked_;
 };
 

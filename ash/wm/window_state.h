@@ -16,6 +16,7 @@
 #include "ash/wm/wm_metrics.h"
 #include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -494,7 +495,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
     void OnWindowDestroying(aura::Window* window) override;
 
    private:
-    aura::Window* window_;
+    raw_ptr<aura::Window, ExperimentalAsh> window_;
     BoundsChangeAnimationType previous_bounds_animation_type_;
   };
 
@@ -626,7 +627,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   bool has_ever_been_dragged_to_maximized_ = false;
 
   // The owner of this window settings.
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
   std::unique_ptr<WindowStateDelegate> delegate_;
 
   bool bounds_changed_by_user_;

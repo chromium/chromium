@@ -9,6 +9,7 @@
 
 #include "ash/system/tray/actionable_view.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/text_constants.h"
@@ -135,13 +136,13 @@ class ASH_EXPORT HoverHighlightView : public ActionableView {
   // be called before re-populating the view.
   bool is_populated_ = false;
 
-  ViewClickListener* const listener_ = nullptr;
-  views::Label* text_label_ = nullptr;
-  views::Label* sub_text_label_ = nullptr;
-  views::View* left_view_ = nullptr;
-  views::View* right_view_ = nullptr;
-  views::View* sub_row_ = nullptr;
-  TriView* tri_view_ = nullptr;
+  const raw_ptr<ViewClickListener, ExperimentalAsh> listener_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> text_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> sub_text_label_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> left_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> right_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> sub_row_ = nullptr;
+  raw_ptr<TriView, ExperimentalAsh> tri_view_ = nullptr;
   bool expandable_ = false;
   AccessibilityState accessibility_state_ = AccessibilityState::DEFAULT;
   base::CallbackListSubscription enabled_changed_subscription_ =

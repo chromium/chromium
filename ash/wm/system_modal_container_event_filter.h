@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_handler.h"
 
 namespace ash {
@@ -29,7 +30,7 @@ class ASH_EXPORT SystemModalContainerEventFilter : public ui::EventHandler {
   void OnEvent(ui::Event* event) override;
 
  private:
-  SystemModalContainerEventFilterDelegate* delegate_;
+  raw_ptr<SystemModalContainerEventFilterDelegate, ExperimentalAsh> delegate_;
 };
 
 }  // namespace ash

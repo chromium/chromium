@@ -19,6 +19,7 @@
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
@@ -147,8 +148,8 @@ class NonClientFrameViewAshImmersiveHelper : public WindowStateObserver,
     }
   }
 
-  views::Widget* widget_;
-  WindowState* window_state_;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_;
+  raw_ptr<WindowState, ExperimentalAsh> window_state_;
   std::unique_ptr<ImmersiveFullscreenController>
       immersive_fullscreen_controller_;
 };

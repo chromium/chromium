@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "ash/constants/app_types.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "ui/aura/window_observer.h"
@@ -157,7 +158,7 @@ class ASH_EXPORT DemoSessionMetricsRecorder
   base::flat_set<std::string> unique_apps_launched_;
 
   // Used for subscribing to window activation events.
-  wm::ActivationClient* activation_client_ = nullptr;
+  raw_ptr<wm::ActivationClient, ExperimentalAsh> activation_client_ = nullptr;
 
   // How many periods have elapsed since the last user activity.
   int periods_since_activity_ = 0;

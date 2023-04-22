@@ -12,6 +12,7 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -60,7 +61,8 @@ class ASH_EXPORT AssistantWebUiController : public views::WidgetObserver,
   AssistantWebViewDelegateImpl view_delegate_;
 
   // Owned by view hierarchy.
-  AssistantWebContainerView* web_container_view_ = nullptr;
+  raw_ptr<AssistantWebContainerView, ExperimentalAsh> web_container_view_ =
+      nullptr;
 
   // Observes key press events on the |web_container_view_|.
   std::unique_ptr<AssistantWebContainerEventObserver> event_observer_;

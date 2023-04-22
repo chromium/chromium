@@ -28,6 +28,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/audio/sounds.h"
@@ -114,7 +115,7 @@ class ScopedWindowVisibilityAnimationTypeResetter {
       const ScopedWindowVisibilityAnimationTypeResetter&) = delete;
 
  private:
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 };
 
 // -----------------------------------------------------------------------------
@@ -200,8 +201,8 @@ class BackdropController::WindowAnimationWaiter
   }
 
  private:
-  BackdropController* owner_;
-  aura::Window* animating_window_;
+  raw_ptr<BackdropController, ExperimentalAsh> owner_;
+  raw_ptr<aura::Window, ExperimentalAsh> animating_window_;
 };
 
 // -----------------------------------------------------------------------------

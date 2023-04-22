@@ -37,6 +37,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/display/screen.h"
@@ -136,7 +137,7 @@ class AppListMetricsTest : public AshTestBase {
   }
 
  private:
-  SearchModel* search_model_ = nullptr;
+  raw_ptr<SearchModel, ExperimentalAsh> search_model_ = nullptr;
   std::unique_ptr<ShelfViewTestAPI> shelf_test_api_;
 };
 

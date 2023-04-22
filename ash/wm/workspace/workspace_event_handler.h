@@ -6,6 +6,7 @@
 #define ASH_WM_WORKSPACE_WORKSPACE_EVENT_HANDLER_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_handler.h"
 
 namespace aura {
@@ -53,7 +54,7 @@ class ASH_EXPORT WorkspaceEventHandler : public ui::EventHandler {
   void HandleResizeDoubleClick(WindowState* window_state,
                                ui::MouseEvent* event);
 
-  aura::Window* workspace_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> workspace_window_;
 
   // Handles moving two windows that are side by side together at once. Not
   // created for the float container.

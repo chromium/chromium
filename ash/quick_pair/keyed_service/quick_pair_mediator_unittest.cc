@@ -34,6 +34,7 @@
 #include "ash/quick_pair/ui/ui_broker.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -193,12 +194,13 @@ class MediatorTest : public AshTestBase {
   scoped_refptr<Device> subsequent_device_;
   scoped_refptr<Device> retroactive_device_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> adapter_;
-  FakeFeatureStatusTracker* feature_status_tracker_;
-  MockScannerBroker* mock_scanner_broker_;
-  FakeRetroactivePairingDetector* fake_retroactive_pairing_detector_;
-  MockPairerBroker* mock_pairer_broker_;
-  MockUIBroker* mock_ui_broker_;
-  MockFastPairRepository* mock_fast_pair_repository_;
+  raw_ptr<FakeFeatureStatusTracker, ExperimentalAsh> feature_status_tracker_;
+  raw_ptr<MockScannerBroker, ExperimentalAsh> mock_scanner_broker_;
+  raw_ptr<FakeRetroactivePairingDetector, ExperimentalAsh>
+      fake_retroactive_pairing_detector_;
+  raw_ptr<MockPairerBroker, ExperimentalAsh> mock_pairer_broker_;
+  raw_ptr<MockUIBroker, ExperimentalAsh> mock_ui_broker_;
+  raw_ptr<MockFastPairRepository, ExperimentalAsh> mock_fast_pair_repository_;
   bluetooth_config::FakeAdapterStateController fake_adapter_state_controller_;
   std::unique_ptr<MockQuickPairBrowserDelegate> browser_delegate_;
   TestingPrefServiceSimple pref_service_;

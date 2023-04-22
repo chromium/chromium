@@ -19,6 +19,7 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -190,7 +191,7 @@ class QsRevampUnifiedSystemTrayControllerTest : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by `widget_`.
-  QuickSettingsView* quick_settings_view_;
+  raw_ptr<QuickSettingsView, ExperimentalAsh> quick_settings_view_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };

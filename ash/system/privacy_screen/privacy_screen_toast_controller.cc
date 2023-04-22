@@ -60,7 +60,7 @@ void PrivacyScreenToastController::ShowToast() {
   toast_view_ = new PrivacyScreenToastView(
       this, base::BindRepeating(&PrivacyScreenToastController::ButtonPressed,
                                 base::Unretained(this)));
-  bubble_view_->AddChildView(toast_view_);
+  bubble_view_->AddChildView(toast_view_.get());
 
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
 

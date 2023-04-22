@@ -5,6 +5,7 @@
 #ifndef ASH_HUD_DISPLAY_FPS_GRAPH_PAGE_VIEW_H_
 #define ASH_HUD_DISPLAY_FPS_GRAPH_PAGE_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "time.h"
 
 #include "ash/hud_display/graph.h"
@@ -78,7 +79,7 @@ class FPSGraphPageView : public GraphPageViewBase,
   // Active display refresh rate.
   Graph refresh_rate_;
 
-  ReferenceLines* reference_lines_;  // not owned
+  raw_ptr<ReferenceLines, ExperimentalAsh> reference_lines_;  // not owned
 
   float frame_rate_for_last_half_second_;
 

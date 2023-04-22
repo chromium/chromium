@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_PCIE_PERIPHERAL_PCIE_PERIPHERAL_NOTIFICATION_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 
 class PrefRegistrySimple;
@@ -72,7 +73,7 @@ class ASH_EXPORT PciePeripheralNotificationController
   friend class PciePeripheralNotificationControllerTest;
 
   // MessageCenter for adding notifications.
-  message_center::MessageCenter* const message_center_;
+  const raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
 };
 
 }  // namespace ash

@@ -27,6 +27,7 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/default_tick_clock.h"
@@ -142,7 +143,7 @@ class WindowCloseObserver : public aura::WindowObserver {
     desk_container_ = desks_controller->GetDeskContainer(
         root_window, desks_controller->GetDeskIndex(desk_to_remove_));
     DCHECK(desk_container_);
-    window_observer_.AddObservation(desk_container_);
+    window_observer_.AddObservation(desk_container_.get());
 
     // If any of the observed windows belong to an ARC app, we need to handle
     // things a bit differently.
@@ -164,7 +165,7 @@ class WindowCloseObserver : public aura::WindowObserver {
 
     system_modal_container_ = Shell::Get()->GetContainer(
         root_window, kShellWindowId_SystemModalContainer);
-    window_observer_.AddObservation(system_modal_container_);
+    window_observer_.AddObservation(system_modal_container_.get());
   }
 
   ~WindowCloseObserver() override {
@@ -274,12 +275,12 @@ class WindowCloseObserver : public aura::WindowObserver {
 
   void Terminate() { delete this; }
 
-  aura::Window* root_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
 
-  aura::Window* system_modal_container_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> system_modal_container_ = nullptr;
 
   // Current desk container. Will be used when monitoring for new windows.
-  aura::Window* desk_container_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> desk_container_ = nullptr;
 
   // Tracks whether a modal "confirm close" dialog has been showed.
   bool modal_dialog_showed_ = false;
@@ -296,7 +297,7 @@ class WindowCloseObserver : public aura::WindowObserver {
 
   // The desk that the user has saved and that we will remove once windows have
   // been removed.
-  const Desk* desk_to_remove_ = nullptr;
+  raw_ptr<const Desk, ExperimentalAsh> desk_to_remove_ = nullptr;
 
   // UUID and name of the saved desk.
   const base::Uuid saved_desk_uuid_;

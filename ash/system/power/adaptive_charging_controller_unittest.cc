@@ -5,6 +5,7 @@
 #include "ash/system/power/adaptive_charging_controller.h"
 
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 
 namespace ash {
@@ -29,7 +30,8 @@ class AdaptiveChargingControllerTest : public NoSessionAshTestBase {
   }
 
  protected:
-  chromeos::FakePowerManagerClient* power_manager_client_ = nullptr;
+  raw_ptr<chromeos::FakePowerManagerClient, ExperimentalAsh>
+      power_manager_client_ = nullptr;
   std::unique_ptr<AdaptiveChargingController> adaptive_charging_controller_;
 };
 

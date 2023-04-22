@@ -15,6 +15,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/repeating_test_future.h"
@@ -110,8 +111,9 @@ class ClipboardHistoryResourceManagerTest : public AshTestBase {
   }
 
  private:
-  const ClipboardHistory* clipboard_history_;
-  const ClipboardHistoryResourceManager* resource_manager_;
+  raw_ptr<const ClipboardHistory, ExperimentalAsh> clipboard_history_;
+  raw_ptr<const ClipboardHistoryResourceManager, ExperimentalAsh>
+      resource_manager_;
   std::unique_ptr<MockClipboardImageModelFactory> mock_image_factory_;
 };
 

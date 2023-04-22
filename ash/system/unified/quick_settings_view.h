@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "ash/system/brightness/unified_brightness_view.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -123,28 +124,32 @@ class ASH_EXPORT QuickSettingsView : public views::View,
   friend class UnifiedVolumeViewTest;
 
   // Owned by UnifiedSystemTrayBubble.
-  UnifiedSystemTrayController* const controller_;
+  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
 
   // Owned by views hierarchy.
-  views::FlexLayoutView* system_tray_container_ = nullptr;
-  QuickSettingsHeader* header_ = nullptr;
-  FeatureTilesContainerView* feature_tiles_container_ = nullptr;
-  PageIndicatorView* page_indicator_view_ = nullptr;
-  views::FlexLayoutView* sliders_container_ = nullptr;
-  QuickSettingsFooter* footer_ = nullptr;
-  views::View* detailed_view_container_ = nullptr;
+  raw_ptr<views::FlexLayoutView, ExperimentalAsh> system_tray_container_ =
+      nullptr;
+  raw_ptr<QuickSettingsHeader, ExperimentalAsh> header_ = nullptr;
+  raw_ptr<FeatureTilesContainerView, ExperimentalAsh> feature_tiles_container_ =
+      nullptr;
+  raw_ptr<PageIndicatorView, ExperimentalAsh> page_indicator_view_ = nullptr;
+  raw_ptr<views::FlexLayoutView, ExperimentalAsh> sliders_container_ = nullptr;
+  raw_ptr<QuickSettingsFooter, ExperimentalAsh> footer_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> detailed_view_container_ = nullptr;
 
   // Null if media::kGlobalMediaControlsForChromeOS is disabled.
-  UnifiedMediaControlsContainer* media_controls_container_ = nullptr;
+  raw_ptr<UnifiedMediaControlsContainer, ExperimentalAsh>
+      media_controls_container_ = nullptr;
 
   // Null if media::kGlobalMediaControlsCrOSUpdatedUI is disabled.
-  QuickSettingsMediaViewContainer* media_view_container_ = nullptr;
+  raw_ptr<QuickSettingsMediaViewContainer, ExperimentalAsh>
+      media_view_container_ = nullptr;
 
   // The maximum height available to the view.
   int max_height_ = 0;
 
   // The view that is saved by calling SaveFocus().
-  views::View* saved_focused_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> saved_focused_view_ = nullptr;
 
   const std::unique_ptr<ui::EventHandler> interacted_by_tap_recorder_;
 };

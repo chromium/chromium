@@ -14,6 +14,7 @@
 #include "ash/wm/window_state_observer.h"
 #include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/scoped_window_event_targeting_blocker.h"
@@ -366,7 +367,7 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   aura::Window::Windows GetWindowsForHomeGesture();
 
   // The root window this item is being displayed on.
-  aura::Window* root_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
 
   // The contained Window's wrapper.
   ScopedOverviewTransformWindow transform_window_;
@@ -393,7 +394,7 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
 
   // The view associated with |item_widget_|. Contains a title, close button and
   // maybe a backdrop. Forwards certain events to |this|.
-  OverviewItemView* overview_item_view_ = nullptr;
+  raw_ptr<OverviewItemView, ExperimentalAsh> overview_item_view_ = nullptr;
 
   // A widget with text that may show up on top of |transform_window_| to notify
   // users this window cannot be snapped.
@@ -405,11 +406,11 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
 
   // Pointer to the Overview that owns the OverviewGrid containing |this|.
   // Guaranteed to be non-null for the lifetime of |this|.
-  OverviewSession* overview_session_;
+  raw_ptr<OverviewSession, ExperimentalAsh> overview_session_;
 
   // Pointer to the OverviewGrid that contains |this|. Guaranteed to be non-null
   // for the lifetime of |this|.
-  OverviewGrid* overview_grid_;
+  raw_ptr<OverviewGrid, ExperimentalAsh> overview_grid_;
 
   // True when the item is dragged and dropped on another desk's mini view. This
   // causes it to restore its transform immediately without any animations,

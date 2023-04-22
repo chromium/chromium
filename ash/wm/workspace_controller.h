@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/workspace/workspace_event_handler.h"
 #include "ash/wm/workspace/workspace_types.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 
@@ -44,11 +45,12 @@ class ASH_EXPORT WorkspaceController : public aura::WindowObserver {
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
-  aura::Window* viewport_;
+  raw_ptr<aura::Window, ExperimentalAsh> viewport_;
   std::unique_ptr<WorkspaceEventHandler> event_handler_;
 
   // Owned by `viewport_`.
-  WorkspaceLayoutManager* layout_manager_;
+  raw_ptr<WorkspaceLayoutManager, DanglingUntriaged | ExperimentalAsh>
+      layout_manager_;
 };
 
 // Sets the given |workspace_controller| as a property of |desk_container|. Only

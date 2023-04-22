@@ -10,6 +10,7 @@
 #include "ash/quick_pair/message_stream/fake_bluetooth_socket.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -153,7 +154,8 @@ class FakeQuickPairProcessManager
   mojo::PendingRemote<ash::quick_pair::mojom::FastPairDataParser>
       fast_pair_data_parser_;
   std::unique_ptr<ash::quick_pair::FastPairDataParser> data_parser_;
-  base::test::SingleThreadTaskEnvironment* task_enviornment_;
+  raw_ptr<base::test::SingleThreadTaskEnvironment, ExperimentalAsh>
+      task_enviornment_;
   ProcessStoppedCallback on_process_stopped_callback_;
 };
 
@@ -272,7 +274,7 @@ class MessageStreamTest : public testing::Test, public MessageStream::Observer {
   mojo::SharedRemote<mojom::FastPairDataParser> data_parser_remote_;
   mojo::PendingRemote<mojom::FastPairDataParser> fast_pair_data_parser_;
   std::unique_ptr<FastPairDataParser> data_parser_;
-  FakeQuickPairProcessManager* fake_process_manager_;
+  raw_ptr<FakeQuickPairProcessManager, ExperimentalAsh> fake_process_manager_;
   bool battery_update_ = false;
   uint16_t remaining_battery_time_ = 0;
   bool enable_silence_mode_ = false;

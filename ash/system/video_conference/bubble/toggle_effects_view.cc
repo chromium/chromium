@@ -17,6 +17,7 @@
 #include "ash/system/video_conference/video_conference_utils.h"
 #include "ash/utility/haptics_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -161,11 +162,11 @@ class ButtonContainer : public views::Button {
   const VcEffectId effect_id_;
 
   // Owned by the views hierarchy.
-  views::ImageView* icon_ = nullptr;
-  views::Label* label_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
 
-  const gfx::VectorIcon* enabled_vector_icon_;
-  const gfx::VectorIcon* disabled_vector_icon_;
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> enabled_vector_icon_;
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> disabled_vector_icon_;
   const int accessible_name_id_;
 
   base::WeakPtrFactory<ButtonContainer> weak_ptr_factory_{this};

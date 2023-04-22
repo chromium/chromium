@@ -110,7 +110,8 @@ CalendarDateCellView::CalendarDateCellView(
     SetTooltipAndAccessibleName();
     is_selected_ = calendar_view_controller->selected_date_cell_view() == this;
   }
-  scoped_calendar_view_controller_observer_.Observe(calendar_view_controller_);
+  scoped_calendar_view_controller_observer_.Observe(
+      calendar_view_controller_.get());
 }
 
 CalendarDateCellView::~CalendarDateCellView() = default;
@@ -465,7 +466,7 @@ CalendarMonthView::CalendarMonthView(
   last_row_index_ = row_number - 1;
 
   // To receive the fetched events.
-  scoped_calendar_model_observer_.Observe(calendar_model_);
+  scoped_calendar_model_observer_.Observe(calendar_model_.get());
 
   // Gets the fetched status again in case the events are fetched in the middle
   // of rendering date cells.

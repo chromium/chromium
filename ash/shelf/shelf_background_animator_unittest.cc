@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -105,7 +106,7 @@ class ShelfBackgroundAnimatorTestApi {
 
  private:
   // The instance to provide internal access to.
-  ShelfBackgroundAnimator* animator_;
+  raw_ptr<ShelfBackgroundAnimator, ExperimentalAsh> animator_;
 };
 
 class ShelfBackgroundAnimatorTest : public AshTestBase {
@@ -136,7 +137,7 @@ class ShelfBackgroundAnimatorTest : public AshTestBase {
   TestShelfBackgroundObserver observer_;
 
   // Test target.
-  ShelfBackgroundAnimator* animator_;
+  raw_ptr<ShelfBackgroundAnimator, ExperimentalAsh> animator_;
 
   // Provides internal access to |animator_|.
   std::unique_ptr<ShelfBackgroundAnimatorTestApi> test_api_;

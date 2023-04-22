@@ -7,6 +7,7 @@
 
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
@@ -63,13 +64,13 @@ class CaptureButtonView : public views::View {
       views::View* view);
 
   // The button which when pressed, screen capture will be performed.
-  views::LabelButton* const capture_button_;
+  const raw_ptr<views::LabelButton, ExperimentalAsh> capture_button_;
 
   // Optional views that are created only, when multiple (i.e. more than one)
   // recording formats (e.g. webm, gif, .. etc.) are supported. They're visible
   // only if the current capture type is video recording.
-  views::Separator* separator_ = nullptr;
-  views::ImageButton* drop_down_button_ = nullptr;
+  raw_ptr<views::Separator, ExperimentalAsh> separator_ = nullptr;
+  raw_ptr<views::ImageButton, ExperimentalAsh> drop_down_button_ = nullptr;
 };
 
 }  // namespace ash

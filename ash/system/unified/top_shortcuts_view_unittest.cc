@@ -11,6 +11,7 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -86,7 +87,7 @@ class TopShortcutsViewTest : public NoSessionAshTestBase {
   std::unique_ptr<UnifiedSystemTrayController> controller_;
 
   // Owned by widget.
-  TopShortcutsView* top_shortcuts_view_;
+  raw_ptr<TopShortcutsView, ExperimentalAsh> top_shortcuts_view_;
 };
 
 // All buttons are with the correct view id, catalog name and UMA tracking.

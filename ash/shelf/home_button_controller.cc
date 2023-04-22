@@ -198,7 +198,7 @@ void HomeButtonController::OnAppListDismissed() {
 void HomeButtonController::InitializeAssistantOverlay() {
   DCHECK_EQ(nullptr, assistant_overlay_);
   assistant_overlay_ = new AssistantOverlay(button_);
-  button_->AddChildView(assistant_overlay_);
+  button_->AddChildView(assistant_overlay_.get());
   assistant_overlay_->SetVisible(false);
   assistant_animation_delay_timer_ = std::make_unique<base::OneShotTimer>();
 }

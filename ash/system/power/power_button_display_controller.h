@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -77,7 +78,8 @@ class ASH_EXPORT PowerButtonDisplayController
   // Saves the most recent timestamp that screen state changed.
   base::TimeTicks screen_state_last_changed_;
 
-  BacklightsForcedOffSetter* backlights_forced_off_setter_;  // Not owned.
+  raw_ptr<BacklightsForcedOffSetter, ExperimentalAsh>
+      backlights_forced_off_setter_;  // Not owned.
 
   base::ScopedObservation<BacklightsForcedOffSetter, ScreenBacklightObserver>
       backlights_forced_off_observation_{this};
@@ -87,7 +89,7 @@ class ASH_EXPORT PowerButtonDisplayController
   bool send_accessibility_alert_on_backlights_forced_off_change_ = false;
 
   // Time source for performed action times.
-  const base::TickClock* tick_clock_;  // Not owned.
+  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;  // Not owned.
 
   // If set, the active request passed to |backlights_forced_off_setter_| in
   // order to force the backlights off.

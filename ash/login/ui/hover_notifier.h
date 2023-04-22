@@ -6,6 +6,7 @@
 #define ASH_LOGIN_UI_HOVER_NOTIFIER_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_handler.h"
 
 namespace views {
@@ -32,7 +33,7 @@ class HoverNotifier : public ui::EventHandler {
 
  private:
   bool had_hover_ = false;
-  views::View* target_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> target_view_ = nullptr;
   OnHover on_hover_;
 };
 

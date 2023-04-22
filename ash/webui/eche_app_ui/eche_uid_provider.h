@@ -9,6 +9,7 @@
 
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -49,7 +50,7 @@ class EcheUidProvider : public mojom::UidGenerator {
 
   mojo::Receiver<mojom::UidGenerator> uid_receiver_{this};
   std::string uid_{};
-  PrefService* pref_service_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
 };
 
 }  // namespace eche_app

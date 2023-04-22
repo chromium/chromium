@@ -8,6 +8,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_color_generator.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 class ScrollableShelfView;
@@ -47,8 +48,9 @@ class ShelfTestBase : public AshTestBase {
   // Adds a shelf item of the specified type and color.
   ShelfID AddAppShortcutWithIconColor(ShelfItemType item_type, SkColor color);
 
-  ScrollableShelfView* scrollable_shelf_view_ = nullptr;
-  ShelfView* shelf_view_ = nullptr;
+  raw_ptr<ScrollableShelfView, DanglingUntriaged | ExperimentalAsh>
+      scrollable_shelf_view_ = nullptr;
+  raw_ptr<ShelfView, DanglingUntriaged | ExperimentalAsh> shelf_view_ = nullptr;
   std::unique_ptr<ShelfViewTestAPI> test_api_;
 
   // Used as the id of the next pinned app. Updates when an app is pinned.

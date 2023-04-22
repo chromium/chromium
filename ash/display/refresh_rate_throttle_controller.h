@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/power/power_status.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/display/manager/display_configurator.h"
 
@@ -33,8 +34,9 @@ class ASH_EXPORT RefreshRateThrottleController : public PowerStatus::Observer {
       power_status_observer_;
 
   // Not owned.
-  display::DisplayConfigurator* const display_configurator_;
-  PowerStatus* const power_status_;
+  const raw_ptr<display::DisplayConfigurator, ExperimentalAsh>
+      display_configurator_;
+  const raw_ptr<PowerStatus, ExperimentalAsh> power_status_;
 };
 
 }  // namespace ash

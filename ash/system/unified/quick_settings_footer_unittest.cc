@@ -14,6 +14,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -109,7 +110,7 @@ class QuickSettingsFooterTest : public NoSessionAshTestBase {
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by `widget_`.
-  QuickSettingsFooter* footer_;
+  raw_ptr<QuickSettingsFooter, ExperimentalAsh> footer_;
 
   base::test::ScopedFeatureList feature_list_;
 };

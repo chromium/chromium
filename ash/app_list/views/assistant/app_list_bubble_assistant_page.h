@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_VIEWS_ASSISTANT_APP_LIST_BUBBLE_ASSISTANT_PAGE_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -35,10 +36,10 @@ class ASH_EXPORT AppListBubbleAssistantPage : public views::View {
 
  private:
   // The text and microphone input area. Owned by views hierarchy.
-  AssistantDialogPlate* dialog_plate_;
+  raw_ptr<AssistantDialogPlate, ExperimentalAsh> dialog_plate_;
 
   // The query and response output area. Owned by views hierarchy.
-  AppListAssistantMainStage* main_stage_;
+  raw_ptr<AppListAssistantMainStage, ExperimentalAsh> main_stage_;
 };
 
 }  // namespace ash

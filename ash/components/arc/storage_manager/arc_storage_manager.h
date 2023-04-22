@@ -7,6 +7,7 @@
 
 #include "ash/components/arc/mojom/storage_manager.mojom.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -47,7 +48,7 @@ class ArcStorageManager : public KeyedService {
   static void EnsureFactoryBuilt();
 
  private:
-  ArcBridgeService* const arc_bridge_service_;
+  const raw_ptr<ArcBridgeService, ExperimentalAsh> arc_bridge_service_;
 };
 
 }  // namespace arc

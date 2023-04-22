@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/assistant/ui/assistant_view_delegate.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -46,7 +47,7 @@ class AssistantViewDelegateImpl : public AssistantViewDelegate {
   bool ShouldShowOnboarding() const override;
 
  private:
-  AssistantControllerImpl* const assistant_controller_;
+  const raw_ptr<AssistantControllerImpl, ExperimentalAsh> assistant_controller_;
   base::ObserverList<AssistantViewDelegateObserver> view_delegate_observers_;
 };
 

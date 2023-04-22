@@ -9,6 +9,7 @@
 
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/unified/unified_slider_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace ash {
@@ -45,7 +46,7 @@ class ASH_EXPORT UnifiedBrightnessSliderController
  private:
   scoped_refptr<UnifiedSystemTrayModel> model_;
   views::Button::PressedCallback const callback_;
-  UnifiedSliderView* slider_ = nullptr;
+  raw_ptr<UnifiedSliderView, ExperimentalAsh> slider_ = nullptr;
 
   // We have to store previous manually set value because |old_value| might be
   // set by UnifiedSystemTrayModel::Observer.

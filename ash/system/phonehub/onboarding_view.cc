@@ -25,6 +25,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "chromeos/ash/components/phonehub/onboarding_ui_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -104,8 +105,9 @@ class OnboardingMainView : public PhoneHubInterstitialView {
     parent_view_->ShowDismissPrompt();
   }
 
-  phonehub::OnboardingUiTracker* onboarding_ui_tracker_ = nullptr;
-  OnboardingView* parent_view_ = nullptr;
+  raw_ptr<phonehub::OnboardingUiTracker, ExperimentalAsh>
+      onboarding_ui_tracker_ = nullptr;
+  raw_ptr<OnboardingView, ExperimentalAsh> parent_view_ = nullptr;
   const OnboardingView::OnboardingFlow onboarding_flow_;
 };
 
@@ -172,7 +174,8 @@ class OnboardingDismissPromptView : public PhoneHubInterstitialView {
     return Screen::kOnboardingDismissPrompt;
   }
 
-  phonehub::OnboardingUiTracker* onboarding_ui_tracker_ = nullptr;
+  raw_ptr<phonehub::OnboardingUiTracker, ExperimentalAsh>
+      onboarding_ui_tracker_ = nullptr;
 };
 
 // OnboardingView -------------------------------------------------------------
@@ -205,7 +208,7 @@ void OnboardingView::ShowDismissPrompt() {
 
   LogInterstitialScreenEvent(InterstitialScreenEvent::kShown);
 
-  RemoveChildViewT(main_view_);
+  RemoveChildViewT(main_view_.get());
   main_view_ = AddChildView(
       std::make_unique<OnboardingDismissPromptView>(onboarding_ui_tracker_));
 

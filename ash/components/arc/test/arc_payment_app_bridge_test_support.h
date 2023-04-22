@@ -12,6 +12,7 @@
 #include "ash/components/arc/pay/arc_payment_app_bridge.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/test_browser_context.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/components/payments/mojom/payment_app_types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -62,8 +63,8 @@ class ArcPaymentAppBridgeTestSupport {
     ScopedSetInstance& operator=(const ScopedSetInstance& other) = delete;
 
    private:
-    ArcServiceManager* manager_;
-    mojom::PaymentAppInstance* instance_;
+    raw_ptr<ArcServiceManager, ExperimentalAsh> manager_;
+    raw_ptr<mojom::PaymentAppInstance, ExperimentalAsh> instance_;
   };
 
   ArcPaymentAppBridgeTestSupport();

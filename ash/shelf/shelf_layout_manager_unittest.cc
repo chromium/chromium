@@ -76,6 +76,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -2939,7 +2940,7 @@ class ShelfLayoutManagerDragDropTest
   }
 
  private:
-  ui::test::EventGenerator* generator_;
+  raw_ptr<ui::test::EventGenerator, ExperimentalAsh> generator_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -3116,7 +3117,7 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, DraggedMRUWindow) {
   const struct TestCase {
     // The shelf widget whose bounds are used as the base for gesture start and
     // end locations.
-    const views::Widget* widget;
+    raw_ptr<const views::Widget, ExperimentalAsh> widget;
     // Whether the widget bounds are completely in the left part of the split
     // view.
     const bool left_in_split_view;

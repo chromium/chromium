@@ -6,6 +6,7 @@
 #define ASH_WM_WINDOW_DIMMER_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider_source_observer.h"
@@ -91,11 +92,11 @@ class ASH_EXPORT WindowDimmer : public aura::WindowObserver,
   // `dim_color_type_`.
   void UpdateDimColor();
 
-  aura::Window* parent_;
+  raw_ptr<aura::Window, ExperimentalAsh> parent_;
   // See class description for details on ownership.
-  aura::Window* window_;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window_;
 
-  Delegate* delegate_;  // Not owned.
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;  // Not owned.
 
   // Used to get the color for the dimming `window_`'s layer. It's updated
   // through `SetDimColor`. It will be reset when SetDimOpacity() is called.

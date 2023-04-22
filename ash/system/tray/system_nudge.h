@@ -14,6 +14,7 @@
 #include "ash/shell_observer.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/system/tray/system_nudge_label.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -106,9 +107,9 @@ class ASH_EXPORT SystemNudge : public ShelfObserver, public ShellObserver {
 
   views::UniqueWidgetPtr widget_;
 
-  SystemNudgeView* nudge_view_ = nullptr;  // not_owned
+  raw_ptr<SystemNudgeView, ExperimentalAsh> nudge_view_ = nullptr;  // not_owned
 
-  aura::Window* const root_window_;
+  const raw_ptr<aura::Window, ExperimentalAsh> root_window_;
 
   SystemNudgeParams params_;
 

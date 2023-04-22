@@ -328,7 +328,7 @@ void AppListToastView::SetIconSize(int icon_size) {
 
 void AppListToastView::AddIconBackground() {
   if (icon_) {
-    RemoveChildViewT(icon_);
+    RemoveChildViewT(icon_.get());
     icon_ = nullptr;
   }
 
@@ -398,8 +398,9 @@ void AppListToastView::UpdateIconImage() {
   }
 
   const gfx::VectorIcon* themed_icon =
-      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled() ? dark_icon_
-                                                              : light_icon_;
+      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+          ? dark_icon_.get()
+          : light_icon_.get();
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
       *themed_icon, ui::kColorAshSystemUIMenuIcon,
       icon_size_.value_or(gfx::GetDefaultSizeOfVectorIcon(*themed_icon))));

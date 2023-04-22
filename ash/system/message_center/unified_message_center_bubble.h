@@ -9,6 +9,7 @@
 #include "ash/system/tray/time_to_click_recorder.h"
 #include "ash/system/tray/tray_bubble_base.h"
 #include "ash/system/tray/tray_bubble_view.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -115,17 +116,18 @@ class ASH_EXPORT UnifiedMessageCenterBubble
   void RecordTimeToClick() override;
 
   // Owned by `StatusAreaWidget`.
-  UnifiedSystemTray* const tray_;
+  const raw_ptr<UnifiedSystemTray, ExperimentalAsh> tray_;
 
   // Unowned, the widget is created by a static function in
   // `BubbleDialogDelegateView`.
-  views::Widget* bubble_widget_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
 
   // Owned by `bubble_view_`
-  NotificationCenterView* notification_center_view_ = nullptr;
+  raw_ptr<NotificationCenterView, ExperimentalAsh> notification_center_view_ =
+      nullptr;
 
   // Owned by `bubble_widget_`.
-  TrayBubbleView* bubble_view_ = nullptr;
+  raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
 
   std::unique_ptr<Border> border_;
   std::unique_ptr<SystemShadow> shadow_;

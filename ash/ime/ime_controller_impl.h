@@ -12,6 +12,7 @@
 #include "ash/public/cpp/ime_controller.h"
 #include "ash/public/cpp/ime_controller_client.h"
 #include "ash/public/cpp/ime_info.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -132,7 +133,7 @@ class ASH_EXPORT ImeControllerImpl : public ImeController {
       const ui::Accelerator& accelerator) const;
 
   // Client interface back to IME code in chrome.
-  ImeControllerClient* client_ = nullptr;
+  raw_ptr<ImeControllerClient, ExperimentalAsh> client_ = nullptr;
 
   // Copy of the current IME so we can return it by reference.
   ImeInfo current_ime_;

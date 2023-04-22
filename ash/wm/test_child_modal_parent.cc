@@ -98,8 +98,8 @@ TestChildModalParent::TestChildModalParent(aura::Window* context)
                           base::Unretained(this)),
       u"Show/Hide Child Modal Window");
   button_ = AddChildView(std::move(button));
-  AddChildView(textfield_);
-  AddChildView(host_);
+  AddChildView(textfield_.get());
+  AddChildView(host_.get());
 }
 
 TestChildModalParent::~TestChildModalParent() = default;

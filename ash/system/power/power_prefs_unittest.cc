@@ -20,6 +20,7 @@
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -299,9 +300,9 @@ class PowerPrefsTest : public NoSessionAshTestBase {
   // Start counting histogram updates before we load our first pref service.
   base::HistogramTester histogram_tester_;
 
-  chromeos::PowerPolicyController* power_policy_controller_ =
-      nullptr;                         // Not owned.
-  PowerPrefs* power_prefs_ = nullptr;  // Not owned.
+  raw_ptr<chromeos::PowerPolicyController, ExperimentalAsh>
+      power_policy_controller_ = nullptr;                       // Not owned.
+  raw_ptr<PowerPrefs, ExperimentalAsh> power_prefs_ = nullptr;  // Not owned.
   base::SimpleTestTickClock tick_clock_;
 
   scoped_refptr<TestingPrefStore> user_pref_store_ =

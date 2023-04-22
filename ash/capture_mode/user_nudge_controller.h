@@ -5,6 +5,7 @@
 #ifndef ASH_CAPTURE_MODE_USER_NUDGE_CONTROLLER_H_
 #define ASH_CAPTURE_MODE_USER_NUDGE_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/layer.h"
@@ -76,10 +77,10 @@ class UserNudgeController {
 
   // The session that owns `this`. Guaranteed to be non null for the lifetime of
   // `this`.
-  CaptureModeSession* const capture_session_;
+  const raw_ptr<CaptureModeSession, ExperimentalAsh> capture_session_;
 
   // The view to which we're trying to grab the user's attention.
-  views::View* const view_to_be_highlighted_;
+  const raw_ptr<views::View, ExperimentalAsh> view_to_be_highlighted_;
 
   // These are the two animation layers that will be used to highlight
   // `view_to_be_highlighted_` to nudge the user towards it.

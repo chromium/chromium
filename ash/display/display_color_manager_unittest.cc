@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_paths.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
@@ -157,7 +158,7 @@ class DisplayColorManagerTest : public testing::Test {
   std::unique_ptr<display::test::ActionLogger> log_;
   display::DisplayConfigurator configurator_;
   display::DisplayConfigurator::TestApi test_api_;
-  display::test::TestNativeDisplayDelegate*
+  raw_ptr<display::test::TestNativeDisplayDelegate, ExperimentalAsh>
       native_display_delegate_;  // not owned
   std::unique_ptr<DisplayColorManagerForTest> color_manager_;
 };

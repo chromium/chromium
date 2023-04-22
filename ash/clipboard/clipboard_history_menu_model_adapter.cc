@@ -11,6 +11,7 @@
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
@@ -80,7 +81,8 @@ class ClipboardHistoryMenuModelAdapter::ScopedA11yIgnore {
     }
   }
 
-  ClipboardHistoryMenuModelAdapter* const menu_model_adapter_;
+  const raw_ptr<ClipboardHistoryMenuModelAdapter, ExperimentalAsh>
+      menu_model_adapter_;
 };
 
 // ClipboardHistoryMenuModelAdapter --------------------------------------------

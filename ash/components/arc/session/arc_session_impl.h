@@ -13,6 +13,7 @@
 #include "ash/components/arc/session/arc_session.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "chromeos/ash/components/system/scheduler_configuration_manager_base.h"
@@ -281,11 +282,11 @@ class ArcSessionImpl : public ArcSession,
   std::unique_ptr<mojom::ArcBridgeHost> arc_bridge_host_;
 
   int lcd_density_ = 0;
-  ash::SchedulerConfigurationManagerBase* const
+  const raw_ptr<ash::SchedulerConfigurationManagerBase, ExperimentalAsh>
       scheduler_configuration_manager_;
 
   // Owned by ArcSessionManager.
-  AdbSideloadingAvailabilityDelegate* const
+  const raw_ptr<AdbSideloadingAvailabilityDelegate, ExperimentalAsh>
       adb_sideloading_availability_delegate_;
 
   // Callback to read system memory info.

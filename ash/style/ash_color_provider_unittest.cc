@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/test/ash_test_helper.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
@@ -71,7 +72,7 @@ class AshColorProviderBase
  protected:
   base::test::TaskEnvironment task_environment_;
   AshTestHelper ash_test_helper_;
-  AshColorProvider* color_provider_;
+  raw_ptr<AshColorProvider, ExperimentalAsh> color_provider_;
 };
 
 using AshColorProviderBaseLayerTest =

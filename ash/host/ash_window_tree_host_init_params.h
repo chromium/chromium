@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {
@@ -16,7 +17,7 @@ class AshWindowTreeHostDelegate;
 
 struct ASH_EXPORT AshWindowTreeHostInitParams {
   // Not owned.
-  AshWindowTreeHostDelegate* delegate = nullptr;
+  raw_ptr<AshWindowTreeHostDelegate, ExperimentalAsh> delegate = nullptr;
   // This corresponds to display::ManagedDisplayInfo::bounds_in_native.
   gfx::Rect initial_bounds;
   bool offscreen = false;

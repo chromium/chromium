@@ -22,6 +22,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/base64.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -252,14 +253,15 @@ class FastPairRepositoryImplTest : public AshTestBase {
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   MockQuickPairBrowserDelegate browser_delegate_;
 
-  DeviceMetadataFetcher* device_metadata_fetcher_;
-  FakeDeviceMetadataHttpFetcher* metadata_http_fetcher_;
-  FakeFootprintsFetcher* footprints_fetcher_;
-  MockFastPairImageDecoder* image_decoder_;
-  DeviceAddressMap* device_address_map_;
-  DeviceImageStore* device_image_store_;
-  PendingWriteStore* pending_write_store_;
-  SavedDeviceRegistry* saved_device_registry_;
+  raw_ptr<DeviceMetadataFetcher, ExperimentalAsh> device_metadata_fetcher_;
+  raw_ptr<FakeDeviceMetadataHttpFetcher, ExperimentalAsh>
+      metadata_http_fetcher_;
+  raw_ptr<FakeFootprintsFetcher, ExperimentalAsh> footprints_fetcher_;
+  raw_ptr<MockFastPairImageDecoder, ExperimentalAsh> image_decoder_;
+  raw_ptr<DeviceAddressMap, ExperimentalAsh> device_address_map_;
+  raw_ptr<DeviceImageStore, ExperimentalAsh> device_image_store_;
+  raw_ptr<PendingWriteStore, ExperimentalAsh> pending_write_store_;
+  raw_ptr<SavedDeviceRegistry, ExperimentalAsh> saved_device_registry_;
 
   base::WeakPtrFactory<FastPairRepositoryImplTest> weak_ptr_factory_{this};
 };

@@ -15,6 +15,7 @@
 #include "ash/host/ash_window_tree_host_delegate.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
@@ -221,7 +222,7 @@ class ASH_EXPORT WindowTreeHostManager
 
   // Store the primary window tree host temporarily while replacing
   // display.
-  AshWindowTreeHost* primary_tree_host_for_replace_;
+  raw_ptr<AshWindowTreeHost, ExperimentalAsh> primary_tree_host_for_replace_;
 
   std::unique_ptr<FocusActivationStore> focus_activation_store_;
 

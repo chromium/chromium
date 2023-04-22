@@ -25,6 +25,7 @@
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -84,7 +85,7 @@ class ToggleBubbleButton : public IconButton {
 
  private:
   // Parent view of this button. Owned by the views hierarchy.
-  VideoConferenceTray* const tray_;
+  const raw_ptr<VideoConferenceTray, ExperimentalAsh> tray_;
 };
 
 }  // namespace

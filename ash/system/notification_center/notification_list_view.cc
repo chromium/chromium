@@ -22,6 +22,7 @@
 #include "base/containers/adapters.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -126,8 +127,8 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
     }
 
     SetLayoutManager(std::make_unique<views::FillLayout>());
-    AddChildView(control_view_);
-    AddChildView(message_view_);
+    AddChildView(control_view_.get());
+    AddChildView(message_view_.get());
   }
 
   MessageViewContainer(const MessageViewContainer&) = delete;
@@ -413,16 +414,16 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
 
   // The views directly above or below this view in the list. Used to update
   // corner radius when sliding.
-  MessageViewContainer* above_view_ = nullptr;
-  MessageViewContainer* below_view_ = nullptr;
+  raw_ptr<MessageViewContainer, ExperimentalAsh> above_view_ = nullptr;
+  raw_ptr<MessageViewContainer, ExperimentalAsh> below_view_ = nullptr;
 
   // `need_update_corner_radius_` indicates that we need to update the corner
   // radius of the view when sliding.
   bool need_update_corner_radius_ = true;
 
-  MessageView* const message_view_;
-  NotificationListView* const list_view_;
-  NotificationSwipeControlView* const control_view_;
+  const raw_ptr<MessageView, ExperimentalAsh> message_view_;
+  const raw_ptr<NotificationListView, ExperimentalAsh> list_view_;
+  const raw_ptr<NotificationSwipeControlView, ExperimentalAsh> control_view_;
 };
 
 NotificationListView::NotificationListView(

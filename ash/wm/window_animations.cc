@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -173,8 +174,8 @@ class CrossFadeObserver : public aura::WindowObserver,
   // The window and the associated layer this observer is watching. The window
   // layer may be recreated during the course of the animation so |layer_| will
   // be different |window_->layer()| after construction.
-  aura::Window* window_;
-  ui::Layer* layer_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<ui::Layer, ExperimentalAsh> layer_;
 
   std::unique_ptr<ui::LayerTreeOwner> layer_owner_;
 
@@ -242,7 +243,7 @@ class CrossFadeUpdateTransformObserver
   }
 
  private:
-  ui::Compositor* compositor_ = nullptr;
+  raw_ptr<ui::Compositor, ExperimentalAsh> compositor_ = nullptr;
 };
 
 // Internal implementation of a cross fade animation. If

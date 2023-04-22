@@ -93,7 +93,7 @@ gfx::Size ImeModeIndicatorView::CalculatePreferredSize() const {
 
 void ImeModeIndicatorView::Init() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  AddChildView(label_view_);
+  AddChildView(label_view_.get());
 
   SetAnchorRect(cursor_bounds_);
 }

@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -258,13 +259,14 @@ class PieMenuButton : public views::Button,
   float sweep_angle_ = 0.0f;
 
   // If not null, the icon that paints at the center of this button.
-  const gfx::VectorIcon* const icon_ = nullptr;
+  const raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_ = nullptr;
 
   // The cached image of the above `icon_` if any.
   gfx::ImageSkia icon_image_;
 
   // The sub menu container that this button opens when it gets pressed.
-  PieSubMenuContainerView* associated_sub_menu_container_ = nullptr;
+  raw_ptr<PieSubMenuContainerView, ExperimentalAsh>
+      associated_sub_menu_container_ = nullptr;
 };
 
 BEGIN_METADATA(PieMenuButton, views::Button)

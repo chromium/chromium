@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window.h"
 #include "ui/display/display_observer.h"
@@ -74,10 +75,10 @@ class ASH_EXPORT TabletModeMultitaskMenu
  private:
   // The event handler that created this multitask menu. Guaranteed to outlive
   // `this`.
-  TabletModeMultitaskMenuEventHandler* event_handler_;
+  raw_ptr<TabletModeMultitaskMenuEventHandler, ExperimentalAsh> event_handler_;
 
   // The window that opened this multitask menu.
-  aura::Window* window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
 
   // Widget implementation that is created and maintained by `this`.
   views::UniqueWidgetPtr widget_ = std::make_unique<views::Widget>();

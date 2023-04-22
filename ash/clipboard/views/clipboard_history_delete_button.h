@@ -6,6 +6,7 @@
 #define ASH_CLIPBOARD_VIEWS_CLIPBOARD_HISTORY_DELETE_BUTTON_H_
 
 #include "ash/style/close_button.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
@@ -35,10 +36,11 @@ class ClipboardHistoryDeleteButton : public CloseButton {
 
   // Used to accommodate the ink drop layer. It ensures that the ink drop is
   // above the view background.
-  views::InkDropContainerView* ink_drop_container_ = nullptr;
+  raw_ptr<views::InkDropContainerView, ExperimentalAsh> ink_drop_container_ =
+      nullptr;
 
   // The listener of button events.
-  ClipboardHistoryItemView* const listener_;
+  const raw_ptr<ClipboardHistoryItemView, ExperimentalAsh> listener_;
 };
 }  // namespace ash
 

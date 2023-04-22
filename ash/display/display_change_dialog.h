@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -61,7 +62,7 @@ class ASH_EXPORT DisplayChangeDialog : public views::DialogDelegateView {
 
   const std::u16string timeout_message_with_placeholder_;
 
-  views::Label* label_ = nullptr;  // Not owned.
+  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;  // Not owned.
   base::OnceClosure on_accept_callback_;
   CancelCallback on_cancel_callback_;
 

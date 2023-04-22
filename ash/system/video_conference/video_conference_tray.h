@@ -13,6 +13,7 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -168,10 +169,11 @@ class ASH_EXPORT VideoConferenceTray
   void OnScreenShareButtonClicked(const ui::Event& event);
 
   // Owned by the views hierarchy.
-  VideoConferenceTrayButton* audio_icon_ = nullptr;
-  VideoConferenceTrayButton* camera_icon_ = nullptr;
-  VideoConferenceTrayButton* screen_share_icon_ = nullptr;
-  IconButton* toggle_bubble_button_ = nullptr;
+  raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> audio_icon_ = nullptr;
+  raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> camera_icon_ = nullptr;
+  raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> screen_share_icon_ =
+      nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> toggle_bubble_button_ = nullptr;
 
   // The bubble that appears after clicking the tray button.
   std::unique_ptr<TrayBubbleWrapper> bubble_;

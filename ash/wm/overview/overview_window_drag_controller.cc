@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/overview/overview_window_drag_controller.h"
+#include "base/memory/raw_ptr.h"
 
 #include <algorithm>
 #include <memory>
@@ -228,7 +229,7 @@ class OverviewItemMoveHelper : public aura::WindowObserver {
   }
 
  private:
-  aura::Window* const window_;
+  const raw_ptr<aura::Window, ExperimentalAsh> window_;
   const gfx::RectF target_item_bounds_;
 };
 

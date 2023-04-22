@@ -13,6 +13,7 @@
 #include "ash/system/unified/glanceable_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -56,7 +57,7 @@ class DateTrayTest
     date_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()->date_tray();
     unified_system_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()
                                ->unified_system_tray();
-    widget_->GetContentsView()->AddChildView(date_tray_);
+    widget_->GetContentsView()->AddChildView(date_tray_.get());
     widget_->GetContentsView()->AddChildView(unified_system_tray_);
     date_tray_->SetVisiblePreferred(true);
     date_tray_->unified_system_tray_->SetVisiblePreferred(true);
@@ -129,7 +130,7 @@ class DateTrayTest
   bool observering_activation_changes_ = false;
 
   // Owned by `widget_`.
-  DateTray* date_tray_ = nullptr;
+  raw_ptr<DateTray, ExperimentalAsh> date_tray_ = nullptr;
 
   UnifiedSystemTray* unified_system_tray_ = nullptr;
 

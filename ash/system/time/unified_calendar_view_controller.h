@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/system/unified/detailed_view_controller.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -34,10 +35,10 @@ class UnifiedCalendarViewController : public DetailedViewController {
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
   // Unowned, the object that instantiated us.
-  UnifiedSystemTrayController* const tray_controller_;
+  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
 
   // Owned by UnifiedSystemTrayView's detailed_view_container_.
-  CalendarView* view_ = nullptr;
+  raw_ptr<CalendarView, DanglingUntriaged | ExperimentalAsh> view_ = nullptr;
 };
 
 }  // namespace ash

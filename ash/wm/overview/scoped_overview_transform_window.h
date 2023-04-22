@@ -12,6 +12,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_types.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/client/transient_window_client_observer.h"
 #include "ui/aura/window_observer.h"
@@ -180,10 +181,10 @@ class ASH_EXPORT ScopedOverviewTransformWindow
 
   // A weak pointer to the overview item that owns |this|. Guaranteed to be not
   // null for the lifetime of |this|.
-  OverviewItem* overview_item_;
+  raw_ptr<OverviewItem, ExperimentalAsh> overview_item_;
 
   // A weak pointer to the real window in the overview.
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 
   // The original opacity of the window before entering overview mode.
   float original_opacity_;

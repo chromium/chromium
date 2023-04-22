@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/cast_config_controller.h"
 #include "ash/system/tray/tray_detailed_view.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
@@ -64,10 +65,10 @@ class ASH_EXPORT CastDetailedView : public TrayDetailedView,
   std::map<views::View*, std::string> view_to_sink_map_;
 
   // Special list item that, if clicked, launches the access code casting dialog
-  views::View* add_access_code_device_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> add_access_code_device_ = nullptr;
 
   // View shown when no cast devices are available (with QsRevamp).
-  views::View* zero_state_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> zero_state_view_ = nullptr;
 };
 
 }  // namespace ash

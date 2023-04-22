@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -332,7 +333,7 @@ class EventTargetTestDelegate : public aura::client::DragDropDelegate {
     output_drag_op = DragOperation::kMove;
   }
 
-  aura::Window* const window_;
+  const raw_ptr<aura::Window, ExperimentalAsh> window_;
   State state_{State::kNotInvoked};
 };
 
@@ -537,11 +538,13 @@ class DragDropControllerTest : public AshTestBase {
   }
 
   std::unique_ptr<TestDragDropController> drag_drop_controller_;
-  NiceMock<MockShellDelegate>* mock_shell_delegate_ = nullptr;
+  raw_ptr<NiceMock<MockShellDelegate>, ExperimentalAsh> mock_shell_delegate_ =
+      nullptr;
 
   std::unique_ptr<TestNewWindowDelegateProvider>
       test_new_window_delegate_provider_;
-  NiceMock<MockNewWindowDelegate>* mock_new_window_delegate_ptr_ = nullptr;
+  raw_ptr<NiceMock<MockNewWindowDelegate>, ExperimentalAsh>
+      mock_new_window_delegate_ptr_ = nullptr;
 
   bool quit_ = false;
 
@@ -2043,7 +2046,7 @@ class DragDropControllerLongTapCancelTest : public DragDropControllerTest {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  DragTestView* drag_view_ = nullptr;
+  raw_ptr<DragTestView, ExperimentalAsh> drag_view_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   bool inside_loop_task_executed_ = false;
 };

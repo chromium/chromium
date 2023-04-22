@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/view_click_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/button.h"
@@ -52,7 +53,7 @@ class SelectToSpeakSpeedView : public views::BoxLayoutView,
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* key_event) override;
 
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

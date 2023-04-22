@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/webui/web_applications/test/sandboxed_web_ui_test_base.h"
+#include "base/memory/raw_ptr.h"
 
 #include <vector>
 
@@ -101,7 +102,7 @@ class SandboxedWebUiAppTestBase::TestCodeInjector
   }
 
  private:
-  SandboxedWebUiAppTestBase* const owner_;
+  const raw_ptr<SandboxedWebUiAppTestBase, ExperimentalAsh> owner_;
 };
 
 SandboxedWebUiAppTestBase::SandboxedWebUiAppTestBase(

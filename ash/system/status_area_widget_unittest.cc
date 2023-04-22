@@ -42,6 +42,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/network/cellular_metrics_logger.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -483,13 +484,13 @@ class StatusAreaWidgetCollapseStateTest : public AshTestBase {
     return status_area_->collapse_state();
   }
 
-  StatusAreaWidget* status_area_;
-  StatusAreaOverflowButtonTray* overflow_button_;
-  TrayBackgroundView* virtual_keyboard_;
-  TrayBackgroundView* ime_menu_;
-  TrayBackgroundView* palette_;
-  TrayBackgroundView* dictation_button_;
-  TrayBackgroundView* select_to_speak_;
+  raw_ptr<StatusAreaWidget, ExperimentalAsh> status_area_;
+  raw_ptr<StatusAreaOverflowButtonTray, ExperimentalAsh> overflow_button_;
+  raw_ptr<TrayBackgroundView, ExperimentalAsh> virtual_keyboard_;
+  raw_ptr<TrayBackgroundView, ExperimentalAsh> ime_menu_;
+  raw_ptr<TrayBackgroundView, ExperimentalAsh> palette_;
+  raw_ptr<TrayBackgroundView, ExperimentalAsh> dictation_button_;
+  raw_ptr<TrayBackgroundView, ExperimentalAsh> select_to_speak_;
 };
 
 TEST_F(StatusAreaWidgetCollapseStateTest, TrayVisibility) {

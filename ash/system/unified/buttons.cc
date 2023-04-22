@@ -124,8 +124,8 @@ void ManagedStateView::OnThemeChanged() {
   label_->SetEnabledColor(GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorSecondary));
   image_->SetImage(gfx::CreateVectorIcon(
-      icon_, GetContentLayerColor(
-                 AshColorProvider::ContentLayerType::kIconColorSecondary)));
+      *icon_, GetContentLayerColor(
+                  AshColorProvider::ContentLayerType::kIconColorSecondary)));
   if (features::IsQsRevampEnabled()) {
     const std::pair<SkColor, float> base_color_and_opacity =
         AshColorProvider::Get()->GetInkDropBaseColorAndOpacity();

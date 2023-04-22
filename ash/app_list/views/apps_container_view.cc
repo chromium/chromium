@@ -32,6 +32,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "ui/color/color_id.h"
@@ -210,10 +211,10 @@ class AppsContainerView::ContinueContainer : public views::View {
                            continue_section_->GetVisible());
   }
 
-  AppListViewDelegate* const view_delegate_;
-  ContinueSectionView* continue_section_ = nullptr;
-  RecentAppsView* recent_apps_ = nullptr;
-  views::Separator* separator_ = nullptr;
+  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
+  raw_ptr<ContinueSectionView, ExperimentalAsh> continue_section_ = nullptr;
+  raw_ptr<RecentAppsView, ExperimentalAsh> recent_apps_ = nullptr;
+  raw_ptr<views::Separator, ExperimentalAsh> separator_ = nullptr;
 };
 
 const int AppsContainerView::kHorizontalMargin = 24;

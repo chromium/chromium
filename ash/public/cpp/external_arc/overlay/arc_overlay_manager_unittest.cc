@@ -6,6 +6,7 @@
 
 #include "ash/test/test_widget_builder.h"
 #include "ash/wm/window_state.h"
+#include "base/memory/raw_ptr.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/shell_surface_builder.h"
@@ -63,7 +64,7 @@ class ArcOverlayManagerTest : public exo::test::ExoTestBase {
   std::unique_ptr<views::Widget> host_widget_;
 
   std::unique_ptr<exo::ShellSurface> overlay_shell_surface_;
-  aura::Window* overlay_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> overlay_window_ = nullptr;
 
   base::ScopedClosureRunner deregister_closure_;
 };

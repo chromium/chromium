@@ -364,8 +364,8 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
   indicator_->SetPaintToLayer();
   indicator_->layer()->SetFillsBoundsOpaquely(false);
 
-  AddChildView(indicator_);
-  AddChildView(icon_view_);
+  AddChildView(indicator_.get());
+  AddChildView(icon_view_.get());
   notification_indicator_ =
       AddChildView(std::make_unique<DotIndicator>(kDefaultIndicatorColor));
 

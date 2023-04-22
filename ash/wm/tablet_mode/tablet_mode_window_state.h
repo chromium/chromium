@@ -9,6 +9,7 @@
 
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/window_state.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {
@@ -112,10 +113,10 @@ class TabletModeWindowState : public WindowState::State {
   std::unique_ptr<WindowState::State> old_state_;
 
   // The window whose WindowState owns this instance.
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 
   // The creator which needs to be informed when this state goes away.
-  TabletModeWindowManager* creator_;
+  raw_ptr<TabletModeWindowManager, ExperimentalAsh> creator_;
 
   // The state type to be established in AttachState(), unless
   // previous_state->GetType() is MAXIMIZED, MINIMIZED, FULLSCREEN, PINNED, or

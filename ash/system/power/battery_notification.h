@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/power/power_notification_controller.h"
+#include "base/memory/raw_ptr.h"
 
 namespace message_center {
 class MessageCenter;
@@ -33,7 +34,7 @@ class ASH_EXPORT BatteryNotification {
       PowerNotificationController::NotificationState notification_state);
 
  private:
-  message_center::MessageCenter* message_center_;
+  raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
 };
 
 }  // namespace ash

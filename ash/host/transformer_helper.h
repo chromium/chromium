@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace gfx {
 class Insets;
@@ -54,7 +55,7 @@ class ASH_EXPORT TransformerHelper {
   gfx::Rect GetTransformedWindowBounds(const gfx::Size& host_size) const;
 
  private:
-  AshWindowTreeHost* ash_host_;
+  raw_ptr<AshWindowTreeHost, ExperimentalAsh> ash_host_;
   std::unique_ptr<RootWindowTransformer> transformer_;
 };
 

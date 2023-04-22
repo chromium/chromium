@@ -9,6 +9,7 @@
 #include "ash/style/switch.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
 #include "ash/system/tray/tray_detailed_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -69,15 +70,15 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
   void ToggleBluetoothState(bool new_state);
 
   // Owned by views hierarchy.
-  views::Button* settings_button_ = nullptr;
-  RoundedContainer* top_container_ = nullptr;
-  HoverHighlightView* toggle_row_ = nullptr;
-  views::ImageView* toggle_icon_ = nullptr;
-  Switch* toggle_button_ = nullptr;
-  RoundedContainer* main_container_ = nullptr;
-  HoverHighlightView* pair_new_device_view_ = nullptr;
-  views::ImageView* pair_new_device_icon_ = nullptr;
-  views::View* device_list_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> settings_button_ = nullptr;
+  raw_ptr<RoundedContainer, ExperimentalAsh> top_container_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> toggle_row_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> toggle_icon_ = nullptr;
+  raw_ptr<Switch, ExperimentalAsh> toggle_button_ = nullptr;
+  raw_ptr<RoundedContainer, ExperimentalAsh> main_container_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> pair_new_device_view_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> pair_new_device_icon_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> device_list_ = nullptr;
 
   base::WeakPtrFactory<BluetoothDetailedViewImpl> weak_factory_{this};
 };

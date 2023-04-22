@@ -6,6 +6,7 @@
 #define ASH_GLANCEABLES_GLANCEABLES_UP_NEXT_EVENT_ITEM_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/views/controls/button/button.h"
 
@@ -36,8 +37,8 @@ class ASH_EXPORT GlanceablesUpNextEventItemView : public views::Button {
   void OpenEvent() const;
 
   google_apis::calendar::CalendarEvent event_;
-  views::Label* event_title_label_ = nullptr;
-  views::Label* event_time_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> event_title_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> event_time_label_ = nullptr;
 };
 
 }  // namespace ash

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_handler.h"
 
 namespace ui {
@@ -49,10 +50,10 @@ class OverviewGridEventHandler : public ui::EventHandler {
 
   // Cached value of the OverviewGrid that handles a series of gesture scroll
   // events. Guaranteed to be alive during the lifetime of |this|.
-  OverviewGrid* grid_;
+  raw_ptr<OverviewGrid, ExperimentalAsh> grid_;
 
   // Guaranteed to be alive during the lifetime of |this|.
-  OverviewSession* const overview_session_;
+  const raw_ptr<OverviewSession, ExperimentalAsh> overview_session_;
 
   // The cumulative scroll offset. This is used so that tiny scrolls will not
   // make minuscule shifts on the grid, but are not completely ignored.

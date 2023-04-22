@@ -24,6 +24,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
@@ -253,8 +254,9 @@ class SnoopingProtectionNotificationBlockerTest : public AshTestBase {
   }
 
  protected:
-  SnoopingProtectionController* controller_ = nullptr;
-  message_center::MessageCenter* message_center_ = nullptr;
+  raw_ptr<SnoopingProtectionController, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_ =
+      nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

@@ -24,6 +24,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -169,8 +170,8 @@ class RecordedWindowRootObserver : public aura::WindowObserver {
   }
 
  private:
-  aura::Window* const root_;
-  VideoRecordingWatcher* const owner_;
+  const raw_ptr<aura::Window, ExperimentalAsh> root_;
+  const raw_ptr<VideoRecordingWatcher, ExperimentalAsh> owner_;
 };
 
 // -----------------------------------------------------------------------------
@@ -316,7 +317,7 @@ aura::Window* VideoRecordingWatcher::GetOnCaptureSurfaceWidgetParentWindow()
   return window_being_recorded_->IsRootWindow()
              ? window_being_recorded_->GetChildById(
                    kShellWindowId_MenuContainer)
-             : window_being_recorded_;
+             : window_being_recorded_.get();
 }
 
 gfx::Rect VideoRecordingWatcher::GetCaptureSurfaceConfineBounds() const {

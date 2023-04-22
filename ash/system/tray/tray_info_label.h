@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_TRAY_TRAY_INFO_LABEL_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 
@@ -33,7 +34,7 @@ class ASH_EXPORT TrayInfoLabel : public views::View {
   const views::Label* label() { return label_; }
 
  private:
-  views::Label* const label_;
+  const raw_ptr<views::Label, ExperimentalAsh> label_;
 };
 
 }  // namespace ash

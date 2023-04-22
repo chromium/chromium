@@ -6,6 +6,7 @@
 #define ASH_COMPONENTS_ARC_METRICS_ARC_METRICS_ANR_H_
 
 #include "ash/components/arc/mojom/anr.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 
@@ -43,7 +44,7 @@ class ArcMetricsAnr {
   base::OneShotTimer start_timer_;
   base::OneShotTimer pending_start_timer_;
   base::RepeatingTimer period_updater_;
-  PrefService* const prefs_ = nullptr;
+  const raw_ptr<PrefService, ExperimentalAsh> prefs_ = nullptr;
 
   std::string uma_suffix_;
 

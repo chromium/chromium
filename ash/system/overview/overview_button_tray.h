@@ -12,6 +12,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_constants.h"
@@ -95,7 +96,7 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
   void UpdateIconVisibility();
 
   // Weak pointer, will be parented by TrayContainer for its lifetime.
-  views::ImageView* icon_;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_;
 
   ScopedSessionObserver scoped_session_observer_;
 

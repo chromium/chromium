@@ -28,6 +28,7 @@
 #include "ash/wm/splitview/split_view_observer.h"
 #include "ash/wm/wm_default_layout_manager.h"
 #include "ash/wm/workspace/workspace_types.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -617,8 +618,8 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
 
   float target_opacity_ = 0.0f;
 
-  ShelfWidget* const shelf_widget_;
-  Shelf* const shelf_;
+  const raw_ptr<ShelfWidget, ExperimentalAsh> shelf_widget_;
+  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
 
   // Count of pending visibility update suspensions. Skip updating the shelf
   // visibility state if it is greater than 0.

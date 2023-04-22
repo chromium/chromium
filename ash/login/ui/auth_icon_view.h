@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/login/ui/animated_rounded_image_view.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -97,7 +98,7 @@ class ASH_EXPORT AuthIconView : public views::View {
 
   base::RepeatingClosure on_tap_or_click_callback_;
 
-  AnimatedRoundedImageView* icon_;
+  raw_ptr<AnimatedRoundedImageView, ExperimentalAsh> icon_;
 
   // Time when the progress animation was enabled.
   base::TimeTicks progress_animation_start_time_;

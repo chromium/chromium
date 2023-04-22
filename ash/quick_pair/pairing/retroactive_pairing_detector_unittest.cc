@@ -24,6 +24,7 @@
 #include "ash/quick_pair/repository/fake_fast_pair_repository.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -203,13 +204,14 @@ class RetroactivePairingDetectorTest
 
   scoped_refptr<FakeBluetoothAdapter> adapter_;
   std::unique_ptr<PairerBroker> pairer_broker_;
-  MockPairerBroker* mock_pairer_broker_ = nullptr;
+  raw_ptr<MockPairerBroker, ExperimentalAsh> mock_pairer_broker_ = nullptr;
 
   scoped_refptr<FakeBluetoothSocket> fake_socket_ =
       base::MakeRefCounted<FakeBluetoothSocket>();
   std::unique_ptr<MessageStream> message_stream_;
   std::unique_ptr<MessageStreamLookup> message_stream_lookup_;
-  FakeMessageStreamLookup* fake_message_stream_lookup_ = nullptr;
+  raw_ptr<FakeMessageStreamLookup, ExperimentalAsh>
+      fake_message_stream_lookup_ = nullptr;
   FakeFastPairRepository fast_pair_repository_;
 
   mojo::SharedRemote<mojom::FastPairDataParser> data_parser_remote_;

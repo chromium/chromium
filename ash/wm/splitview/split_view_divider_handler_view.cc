@@ -9,6 +9,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_utils.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -58,7 +59,7 @@ class SplitViewDividerHandlerView::SelectionAnimation
         kSplitviewWhiteBarCornerRadius, kSplitviewWhiteBarRadius));
   }
 
-  SplitViewDividerHandlerView* white_handler_view_;
+  raw_ptr<SplitViewDividerHandlerView, ExperimentalAsh> white_handler_view_;
 };
 
 class SplitViewDividerHandlerView::SpawningAnimation
@@ -114,7 +115,7 @@ class SplitViewDividerHandlerView::SpawningAnimation
     UpdateWhiteHandlerBounds();
   }
 
-  SplitViewDividerHandlerView* white_handler_view_;
+  raw_ptr<SplitViewDividerHandlerView, ExperimentalAsh> white_handler_view_;
   int spawn_signed_offset_;
   base::OneShotTimer delay_timer_;
 };

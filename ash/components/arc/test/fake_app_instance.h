@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/components/arc/mojom/app.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -265,7 +266,7 @@ class FakeAppInstance : public mojom::AppInstance {
   arc::mojom::RawIconPngDataPtr GetFakeIcon(mojom::ScaleFactor scale_factor);
 
   // Mojo endpoints.
-  mojom::AppHost* app_host_;
+  raw_ptr<mojom::AppHost, ExperimentalAsh> app_host_;
   // Number of requests to start PAI flows.
   int start_pai_request_count_ = 0;
   // Response for PAI flow state;

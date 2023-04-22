@@ -17,6 +17,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_observer.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/gfx/geometry/rect.h"
@@ -156,19 +157,19 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
   // visibility and availability.
   bool DoesWindowCauseBackdropUpdates(aura::Window* window) const;
 
-  aura::Window* root_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
 
   // The backdrop which covers the rest of the screen.
   std::unique_ptr<views::Widget> backdrop_;
 
   // aura::Window for |backdrop_|.
-  aura::Window* backdrop_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> backdrop_window_ = nullptr;
 
   // The window for which a backdrop has been installed.
-  aura::Window* window_having_backdrop_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> window_having_backdrop_ = nullptr;
 
   // The container of the window that should have a backdrop.
-  aura::Window* container_;
+  raw_ptr<aura::Window, ExperimentalAsh> container_;
 
   // If |window_having_backdrop_| is animating while we're trying to show the
   // backdrop, we postpone showing it until the animation completes.
@@ -176,7 +177,7 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
 
   // Event hanlder used to implement actions for accessibility.
   std::unique_ptr<ui::EventHandler> backdrop_event_handler_;
-  ui::EventHandler* original_event_handler_ = nullptr;
+  raw_ptr<ui::EventHandler, ExperimentalAsh> original_event_handler_ = nullptr;
 
   // If true, skip updating background. Used to avoid recursive update
   // when updating the window stack, or delay hiding the backdrop

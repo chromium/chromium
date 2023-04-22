@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
@@ -49,7 +50,7 @@ class ASH_EXPORT ImeModeIndicatorView : public views::BubbleDialogDelegateView {
 
  private:
   gfx::Rect cursor_bounds_;
-  views::Label* label_view_;
+  raw_ptr<views::Label, ExperimentalAsh> label_view_;
   base::OneShotTimer timer_;
 };
 

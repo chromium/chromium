@@ -5,6 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_COMPAT_MODE_COMPAT_MODE_BUTTON_H_
 #define ASH_COMPONENTS_ARC_COMPAT_MODE_COMPAT_MODE_BUTTON_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ui/frame/caption_buttons/frame_center_button.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/button.h"
@@ -24,7 +25,7 @@ class CompatModeButton : public chromeos::FrameCenterButton {
   void OnGestureEvent(ui::GestureEvent* event) override;
 
  private:
-  CompatModeButtonController* const controller_;
+  const raw_ptr<CompatModeButtonController, ExperimentalAsh> controller_;
 };
 
 }  // namespace arc

@@ -10,6 +10,7 @@
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
@@ -64,7 +65,7 @@ class AudioDetailedViewTest : public AshTestBase {
 
   std::unique_ptr<views::Widget> widget_;
   FakeDetailedViewDelegate detailed_view_delegate_;
-  AudioDetailedView* audio_detailed_view_ = nullptr;
+  raw_ptr<AudioDetailedView, ExperimentalAsh> audio_detailed_view_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

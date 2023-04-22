@@ -10,6 +10,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -90,7 +91,7 @@ class ArcCameraBridge::PendingStartCameraServiceResult {
     owner_->pending_start_camera_service_results_.erase(this);
   }
 
-  ArcCameraBridge* const owner_;
+  const raw_ptr<ArcCameraBridge, ExperimentalAsh> owner_;
   mojo::Remote<mojom::CameraService> service_;
   ArcCameraBridge::StartCameraServiceCallback callback_;
   base::WeakPtrFactory<PendingStartCameraServiceResult> weak_ptr_factory_{this};

@@ -5,6 +5,7 @@
 #ifndef ASH_TEST_LAYER_ANIMATION_VERIFIER_H_
 #define ASH_TEST_LAYER_ANIMATION_VERIFIER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -53,10 +54,10 @@ class LayerAnimationVerifier : public ui::CompositorObserver {
   ui::Compositor* GetCompositor();
 
   // Indicates the layer on which an animation is going to apply.
-  ui::Layer* const layer_with_animation_;
+  const raw_ptr<ui::Layer, ExperimentalAsh> layer_with_animation_;
 
   // Indicates the view that is observed during the layer animation.
-  const views::View* const observed_view_;
+  const raw_ptr<const views::View, ExperimentalAsh> observed_view_;
 
   // The screen bounds of `observed_view_` in the most recent compositor commit.
   absl::optional<gfx::Rect> last_screen_bounds_;

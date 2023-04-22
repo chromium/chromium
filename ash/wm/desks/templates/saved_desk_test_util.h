@@ -12,6 +12,7 @@
 #include "ash/wm/desks/templates/saved_desk_icon_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 #include "ui/views/controls/scroll_view.h"
 
@@ -53,7 +54,7 @@ class SavedDeskPresenterTestApi {
   void MaybeWaitForModel();
 
  private:
-  SavedDeskPresenter* const presenter_;
+  const raw_ptr<SavedDeskPresenter, ExperimentalAsh> presenter_;
 };
 
 // Wrapper for `SavedDeskLibraryView` that exposes internal state to test
@@ -74,7 +75,8 @@ class SavedDeskLibraryViewTestApi {
   void WaitForAnimationDone();
 
  private:
-  SavedDeskLibraryView* library_view_;
+  raw_ptr<SavedDeskLibraryView, DanglingUntriaged | ExperimentalAsh>
+      library_view_;
 };
 
 // Wrapper for `SavedDeskGridView` that exposes internal state to test
@@ -89,7 +91,7 @@ class SavedDeskGridViewTestApi {
   void WaitForItemMoveAnimationDone();
 
  private:
-  SavedDeskGridView* grid_view_;
+  raw_ptr<SavedDeskGridView, ExperimentalAsh> grid_view_;
 };
 
 // Wrapper for `SavedDeskItemView` that exposes internal state to test
@@ -118,7 +120,7 @@ class SavedDeskItemViewTestApi {
   std::vector<SavedDeskIconView*> GetIconViews() const;
 
  private:
-  const SavedDeskItemView* item_view_;
+  raw_ptr<const SavedDeskItemView, ExperimentalAsh> item_view_;
 };
 
 // Wrapper for `SavedDeskIconView` that exposes internal state to test
@@ -140,7 +142,7 @@ class SavedDeskIconViewTestApi {
   }
 
  private:
-  const SavedDeskIconView* saved_desk_icon_view_;
+  raw_ptr<const SavedDeskIconView, ExperimentalAsh> saved_desk_icon_view_;
 };
 
 // Test API for `SavedDeskController`.
@@ -156,7 +158,7 @@ class SavedDeskControllerTestApi {
   void SetAdminTemplate(std::unique_ptr<DeskTemplate> admin_template);
 
  private:
-  SavedDeskController* saved_desk_controller_;
+  raw_ptr<SavedDeskController, ExperimentalAsh> saved_desk_controller_;
 };
 
 // Returns all saved desk item views from the desk library on the given

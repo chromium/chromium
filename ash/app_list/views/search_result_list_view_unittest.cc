@@ -15,6 +15,7 @@
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/views/controls/label.h"
@@ -276,7 +277,7 @@ class SearchResultListViewTest : public views::test::WidgetTest {
   AppListTestViewDelegate view_delegate_;
   std::unique_ptr<SearchResultListView> default_view_;
   std::unique_ptr<SearchResultListView> answer_card_view_;
-  views::Widget* widget_;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_;
 };
 
 TEST_F(SearchResultListViewTest, SpokenFeedback) {

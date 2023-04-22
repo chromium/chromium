@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/drag_window_controller.h"
+#include "base/memory/raw_ptr.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
@@ -150,7 +151,7 @@ class DragWindowController::DragWindowDetails {
   }
 
   // The root window of |widget_|.
-  aura::Window* root_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
 
   // Contains a WindowMirrorView which is a copy of the original window.
   std::unique_ptr<views::Widget> widget_;

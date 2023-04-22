@@ -214,7 +214,7 @@ class InputDataProvider : public mojom::InputDataProvider,
   base::Time keyboard_tester_start_timestamp_;
 
   bool logged_not_dispatching_key_events_ = false;
-  views::Widget* widget_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
 
   mojo::RemoteSet<mojom::ConnectedDevicesObserver> connected_devices_observers_;
 

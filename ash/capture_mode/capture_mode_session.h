@@ -18,6 +18,7 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shell_observer.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
@@ -447,7 +448,7 @@ class ASH_EXPORT CaptureModeSession
   // according to the current state.
   void MaybeUpdateRecordingTypeMenu();
 
-  CaptureModeController* const controller_;
+  const raw_ptr<CaptureModeController, ExperimentalAsh> controller_;
 
   // The currently active capture mode behavior for this session which will be
   // used to configure capture mode session differently with different modes.
@@ -455,18 +456,19 @@ class ASH_EXPORT CaptureModeSession
 
   // The current root window on which the capture session is active, which may
   // change if the user warps the cursor to another display in some situations.
-  aura::Window* current_root_;
+  raw_ptr<aura::Window, ExperimentalAsh> current_root_;
 
   views::UniqueWidgetPtr capture_mode_bar_widget_ =
       std::make_unique<views::Widget>();
 
   // The content view of the above widget and owned by its views hierarchy.
-  CaptureModeBarView* capture_mode_bar_view_ = nullptr;
+  raw_ptr<CaptureModeBarView, ExperimentalAsh> capture_mode_bar_view_ = nullptr;
 
   views::UniqueWidgetPtr capture_mode_settings_widget_;
 
   // The content view of the above widget and owned by its views hierarchy.
-  CaptureModeSettingsView* capture_mode_settings_view_ = nullptr;
+  raw_ptr<CaptureModeSettingsView, ExperimentalAsh>
+      capture_mode_settings_view_ = nullptr;
 
   // Widget which displays capture region size during a region capture session.
   views::UniqueWidgetPtr dimensions_label_widget_;
@@ -478,12 +480,13 @@ class ASH_EXPORT CaptureModeSession
   // starting capturing, the widget will transform into a 3-second countdown
   // timer.
   views::UniqueWidgetPtr capture_label_widget_;
-  CaptureLabelView* capture_label_view_ = nullptr;
+  raw_ptr<CaptureLabelView, ExperimentalAsh> capture_label_view_ = nullptr;
 
   // Widget that hosts the recording type menu, from which the user can pick the
   // desired recording format type.
   views::UniqueWidgetPtr recording_type_menu_widget_;
-  RecordingTypeMenuView* recording_type_menu_view_ = nullptr;
+  raw_ptr<RecordingTypeMenuView, ExperimentalAsh> recording_type_menu_view_ =
+      nullptr;
 
   // Magnifier glass used during a region capture session.
   MagnifierGlass magnifier_glass_;
@@ -557,7 +560,7 @@ class ASH_EXPORT CaptureModeSession
 
   // The window which had input capture prior to entering the session. It may be
   // null if no such window existed.
-  aura::Window* input_capture_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> input_capture_window_ = nullptr;
 
   // False only when we end the session to start recording.
   bool a11y_alert_on_session_exit_ = true;

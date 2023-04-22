@@ -15,6 +15,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -194,7 +195,7 @@ class AppListItemListTest : public testing::Test {
 
   AppListItemListWithUpdater item_updater_;
   TestObserver observer_;
-  AppListItemList* item_list_ = nullptr;
+  raw_ptr<AppListItemList, ExperimentalAsh> item_list_ = nullptr;
 };
 
 TEST_F(AppListItemListTest, FindItemIndex) {

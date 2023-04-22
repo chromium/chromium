@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desk_mini_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/views/controls/button/button.h"
 
@@ -45,7 +46,7 @@ class ASH_EXPORT ScrollArrowButton : public views::Button {
   // The subscription of button state change callback.
   base::CallbackListSubscription state_change_subscription_;
   const bool is_left_arrow_;
-  DeskBarViewBase* const bar_view_;  // Not owned.
+  const raw_ptr<DeskBarViewBase, ExperimentalAsh> bar_view_;  // Not owned.
   // If the button is kept pressed, trigger scroll every one second.
   base::RepeatingTimer timer_;
 };

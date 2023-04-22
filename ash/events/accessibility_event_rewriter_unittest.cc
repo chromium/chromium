@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -166,7 +167,7 @@ class ChromeVoxAccessibilityEventRewriterTest
   // A test accessibility event delegate; simulates ChromeVox and Switch Access.
   ChromeVoxTestDelegate delegate_;
   // Generates ui::Events from simulated user input.
-  ui::test::EventGenerator* generator_ = nullptr;
+  raw_ptr<ui::test::EventGenerator, ExperimentalAsh> generator_ = nullptr;
   // Records events delivered to the next event rewriter after spoken feedback.
   ui::test::TestEventRewriter event_recorder_;
 
@@ -613,9 +614,9 @@ class SwitchAccessAccessibilityEventRewriterTest
   std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
 
  protected:
-  ui::test::EventGenerator* generator_ = nullptr;
+  raw_ptr<ui::test::EventGenerator, ExperimentalAsh> generator_ = nullptr;
   EventCapturer event_capturer_;
-  AccessibilityControllerImpl* controller_ = nullptr;
+  raw_ptr<AccessibilityControllerImpl, ExperimentalAsh> controller_ = nullptr;
   std::unique_ptr<SwitchAccessTestDelegate> delegate_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_;
@@ -935,9 +936,9 @@ class MagnifierAccessibilityEventRewriterTest : public AshTestBase {
   }
 
  protected:
-  ui::test::EventGenerator* generator_ = nullptr;
+  raw_ptr<ui::test::EventGenerator, ExperimentalAsh> generator_ = nullptr;
   EventCapturer event_capturer_;
-  AccessibilityControllerImpl* controller_ = nullptr;
+  raw_ptr<AccessibilityControllerImpl, ExperimentalAsh> controller_ = nullptr;
   std::unique_ptr<MagnifierTestDelegate> delegate_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_;

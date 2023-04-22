@@ -26,6 +26,7 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/unguessable_token.h"
@@ -282,7 +283,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedSuggestions) {
     VectorIconWithColor(const gfx::VectorIcon& icon, SkColor color)
         : icon(icon), color(color) {}
 
-    const gfx::VectorIcon& icon;
+    const raw_ref<const gfx::VectorIcon, ExperimentalAsh> icon;
     SkColor color;
   };
 
@@ -385,7 +386,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedSuggestions) {
 
       ASSERT_PIXELS_EQ(
           suggestion_view->GetIcon(),
-          gfx::CreateVectorIcon(expected_suggestion.icon_with_color->icon,
+          gfx::CreateVectorIcon(*expected_suggestion.icon_with_color->icon,
                                 /*size=*/24,
                                 expected_suggestion.icon_with_color->color));
     }

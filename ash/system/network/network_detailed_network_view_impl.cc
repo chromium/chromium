@@ -113,7 +113,7 @@ NetworkDetailedNetworkViewImpl::AddWifiSectionHeader() {
     wifi_top_container_->SetProperty(views::kMarginsKey,
                                      gfx::Insets::TLBR(6, 0, 0, 0));
   }
-  return (features::IsQsRevampEnabled() ? wifi_top_container_
+  return (features::IsQsRevampEnabled() ? wifi_top_container_.get()
                                         : scroll_content())
       ->AddChildView(
           std::make_unique<NetworkListWifiHeaderViewImpl>(/*delegate=*/this));
@@ -127,7 +127,7 @@ NetworkDetailedNetworkViewImpl::AddMobileSectionHeader() {
             RoundedContainer::Behavior::kTopRounded));
     mobile_top_container_->SetBorderInsets(kTopContainerBorder);
   }
-  return (features::IsQsRevampEnabled() ? mobile_top_container_
+  return (features::IsQsRevampEnabled() ? mobile_top_container_.get()
                                         : scroll_content())
       ->AddChildView(
           std::make_unique<NetworkListMobileHeaderViewImpl>(/*delegate=*/this));
@@ -210,7 +210,7 @@ void NetworkDetailedNetworkViewImpl::ReorderMobileListView(size_t index) {
 
 void NetworkDetailedNetworkViewImpl::MaybeRemoveFirstListView() {
   if (first_list_view_ && first_list_view_->children().empty()) {
-    scroll_content()->RemoveChildViewT(first_list_view_);
+    scroll_content()->RemoveChildViewT(first_list_view_.get());
     first_list_view_ = nullptr;
   }
 }

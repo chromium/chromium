@@ -18,6 +18,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_session.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_elider.h"
@@ -99,7 +100,7 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
   void UpdateFocusState() override { outer_button_->UpdateFocusColor(); }
 
  private:
-  ExpandedDesksBarButton* outer_button_;
+  raw_ptr<ExpandedDesksBarButton, ExperimentalAsh> outer_button_;
   absl::optional<ui::ColorId> focus_color_id_;
 };
 

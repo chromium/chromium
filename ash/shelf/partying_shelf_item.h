@@ -5,6 +5,7 @@
 #ifndef ASH_SHELF_PARTYING_SHELF_ITEM_H_
 #define ASH_SHELF_PARTYING_SHELF_ITEM_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -99,7 +100,7 @@ class PartyingShelfItem : public gfx::LinearAnimation,
   // The bounds are always at the top left of the parent, and the animation only
   // sets the transform, because if you change the bounds then you incur the
   // performance penalty of contents view relayout and repaint.
-  views::Widget* widget_;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_;
   // The item is square, with width and height both equal to `icon_size_`.
   const float icon_size_;
   // The animation duration in mockup frames, depending on how far the item must

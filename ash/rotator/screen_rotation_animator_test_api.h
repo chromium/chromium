@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller_delegate.h"
 
@@ -40,7 +41,7 @@ class ScreenRotationAnimatorTestApi
   // MultiLayerAnimatorTestControllerDelegate:
   std::vector<ui::LayerAnimator*> GetLayerAnimators() override;
 
-  ScreenRotationAnimator* animator_;
+  raw_ptr<ScreenRotationAnimator, ExperimentalAsh> animator_;
 };
 
 }  // namespace ash

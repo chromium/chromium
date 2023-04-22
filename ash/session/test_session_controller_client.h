@@ -12,6 +12,7 @@
 
 #include "ash/public/cpp/session/session_controller_client.h"
 #include "ash/public/cpp/session/session_types.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/token.h"
 #include "components/user_manager/user_type.h"
@@ -164,8 +165,9 @@ class TestSessionControllerClient : public SessionControllerClient {
  private:
   void DoSwitchUser(const AccountId& account_id, bool switch_user);
 
-  SessionControllerImpl* const controller_;
-  TestPrefServiceProvider* const prefs_provider_;
+  const raw_ptr<SessionControllerImpl, DanglingUntriaged | ExperimentalAsh>
+      controller_;
+  const raw_ptr<TestPrefServiceProvider, ExperimentalAsh> prefs_provider_;
 
   int fake_session_id_ = 0;
   SessionInfo session_info_;

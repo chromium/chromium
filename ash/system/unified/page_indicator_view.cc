@@ -138,7 +138,7 @@ PageIndicatorView::PageIndicatorView(UnifiedSystemTrayController* controller,
   buttons_container_->SetPaintToLayer();
   buttons_container_->layer()->SetFillsBoundsOpaquely(false);
 
-  AddChildView(buttons_container_);
+  AddChildView(buttons_container_.get());
 
   TotalPagesChanged(0, model_->total_pages());
 

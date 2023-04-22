@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/webui/projector_app/projector_oauth_token_fetcher.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -99,7 +100,8 @@ class ProjectorXhrSender {
   bool IsValidEmail(const std::string& email);
 
   ProjectorOAuthTokenFetcher oauth_token_fetcher_;
-  network::mojom::URLLoaderFactory* url_loader_factory_ = nullptr;
+  raw_ptr<network::mojom::URLLoaderFactory, ExperimentalAsh>
+      url_loader_factory_ = nullptr;
 
   // Next request ID.
   int next_request_id_ = 0;

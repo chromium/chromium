@@ -11,6 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/events/event_handler.h"
@@ -82,9 +83,9 @@ class ASH_EXPORT TouchObserverHud
   friend class TouchHudTestBase;
 
   const int64_t display_id_;
-  aura::Window* root_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
 
-  views::Widget* widget_;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_;
 
   display::ScopedDisplayObserver display_observer_{this};
 };

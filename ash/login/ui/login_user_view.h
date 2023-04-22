@@ -10,6 +10,7 @@
 #include "ash/login/ui/login_display_style.h"
 #include "ash/login/ui/login_remove_account_dialog.h"
 #include "ash/public/cpp/login_types.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/views/view.h"
@@ -45,7 +46,7 @@ class ASH_EXPORT LoginUserView : public views::View,
     bool is_opaque() const;
 
    private:
-    LoginUserView* const view_;
+    const raw_ptr<LoginUserView, ExperimentalAsh> view_;
   };
 
   using OnTap = base::RepeatingClosure;
@@ -126,16 +127,17 @@ class ASH_EXPORT LoginUserView : public views::View,
   std::unique_ptr<HoverNotifier> hover_notifier_;
 
   LoginDisplayStyle display_style_;
-  UserImage* user_image_ = nullptr;
-  UserLabel* user_label_ = nullptr;
-  LoginButton* dropdown_ = nullptr;
-  TapButton* tap_button_ = nullptr;
+  raw_ptr<UserImage, ExperimentalAsh> user_image_ = nullptr;
+  raw_ptr<UserLabel, ExperimentalAsh> user_label_ = nullptr;
+  raw_ptr<LoginButton, ExperimentalAsh> dropdown_ = nullptr;
+  raw_ptr<TapButton, ExperimentalAsh> tap_button_ = nullptr;
 
   // Bubble used for displaying the user remove account dialog. Its parent is
   // the top level view, either LockContentsView or LockDebugView. This allows
   // the remove account dialog to be clicked outside the bounds of the user
   // view.
-  LoginRemoveAccountDialog* remove_account_dialog_ = nullptr;
+  raw_ptr<LoginRemoveAccountDialog, DanglingUntriaged | ExperimentalAsh>
+      remove_account_dialog_ = nullptr;
 
   // True iff the view is currently opaque (ie, opacity = 1).
   bool is_opaque_ = false;

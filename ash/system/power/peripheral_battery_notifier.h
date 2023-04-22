@@ -12,6 +12,7 @@
 #include "ash/system/power/peripheral_battery_listener.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -95,7 +96,8 @@ class ASH_EXPORT PeripheralBatteryNotifier
   // provided by PeripheralBatteryListener.
   std::map<std::string, NotificationInfo> battery_notifications_;
 
-  PeripheralBatteryListener* peripheral_battery_listener_;
+  raw_ptr<PeripheralBatteryListener, ExperimentalAsh>
+      peripheral_battery_listener_;
 };
 
 }  // namespace ash

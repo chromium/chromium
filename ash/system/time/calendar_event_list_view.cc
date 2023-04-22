@@ -21,6 +21,7 @@
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -117,7 +118,7 @@ class CalendarEmptyEventListView : public PillButton {
 
  private:
   // Owned by the parent view. Guaranteed to outlive this.
-  CalendarViewController* const controller_;
+  const raw_ptr<CalendarViewController, ExperimentalAsh> controller_;
 };
 
 CalendarEventListView::CalendarEventListView(
@@ -183,7 +184,8 @@ CalendarEventListView::CalendarEventListView(
 
   UpdateListItems();
 
-  scoped_calendar_view_controller_observer_.Observe(calendar_view_controller_);
+  scoped_calendar_view_controller_observer_.Observe(
+      calendar_view_controller_.get());
   scoped_calendar_model_observer_.Observe(
       Shell::Get()->system_tray_model()->calendar_model());
 }

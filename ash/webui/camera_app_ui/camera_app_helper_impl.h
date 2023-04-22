@@ -13,6 +13,7 @@
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/camera_app_ui/camera_app_window_state_controller.h"
 #include "ash/webui/camera_app_ui/document_scanner_service_client.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/machine_learning/public/mojom/document_scanner.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -135,7 +136,7 @@ class CameraAppHelperImpl : public TabletModeObserver,
   // it. For SWA, since CameraAppUI owns CameraAppHelperImpl, it is safe to
   // assume that the |camera_app_ui_| is always valid during the whole lifetime
   // of CameraAppHelperImpl.
-  CameraAppUI* camera_app_ui_;
+  raw_ptr<CameraAppUI, ExperimentalAsh> camera_app_ui_;
 
   CameraResultCallback camera_result_callback_;
 
@@ -145,7 +146,7 @@ class CameraAppHelperImpl : public TabletModeObserver,
 
   absl::optional<uint32_t> pending_intent_id_;
 
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 
   mojo::Remote<TabletModeMonitor> tablet_mode_monitor_;
   mojo::Remote<ScreenStateMonitor> screen_state_monitor_;

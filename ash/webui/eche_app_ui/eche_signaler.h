@@ -12,6 +12,7 @@
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "ash/webui/eche_app_ui/system_info_provider.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "eche_app_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -84,11 +85,14 @@ class EcheSignaler : public mojom::SignalingMessageExchanger,
   EcheTray::ConnectionFailReason probably_connection_failed_reason_ =
       EcheTray::ConnectionFailReason::kUnknown;
 
-  SystemInfoProvider* system_info_provider_ = nullptr;
-  EcheConnector* eche_connector_ = nullptr;
-  AppsLaunchInfoProvider* apps_launch_info_provider_ = nullptr;
+  raw_ptr<SystemInfoProvider, DanglingUntriaged | ExperimentalAsh>
+      system_info_provider_ = nullptr;
+  raw_ptr<EcheConnector, ExperimentalAsh> eche_connector_ = nullptr;
+  raw_ptr<AppsLaunchInfoProvider, ExperimentalAsh> apps_launch_info_provider_ =
+      nullptr;
   EcheConnectionStatusHandler* eche_connection_status_handler_ = nullptr;
-  secure_channel::ConnectionManager* connection_manager_ = nullptr;
+  raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
+      connection_manager_ = nullptr;
   mojo::Remote<mojom::SignalingMessageObserver> observer_;
   mojo::Receiver<mojom::SignalingMessageExchanger> exchanger_{this};
 };

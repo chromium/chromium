@@ -21,6 +21,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/animation_throughput_reporter.h"
@@ -145,7 +146,7 @@ class ScrollableShelfView::ScrollableShelfArrowView
   }
 
  private:
-  Shelf* const shelf_;
+  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -169,7 +170,7 @@ class ScrollableShelfView::ScopedActiveInkDropCountImpl
       const ScopedActiveInkDropCountImpl& rhs) = delete;
 
  private:
-  ScrollableShelfView* owner_ = nullptr;
+  raw_ptr<ScrollableShelfView, ExperimentalAsh> owner_ = nullptr;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -202,7 +203,8 @@ class ScrollableShelfContainerView : public ShelfContainerView,
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
 
-  ScrollableShelfView* scrollable_shelf_view_ = nullptr;
+  raw_ptr<ScrollableShelfView, ExperimentalAsh> scrollable_shelf_view_ =
+      nullptr;
 };
 
 void ScrollableShelfContainerView::TranslateShelfView(
@@ -303,7 +305,8 @@ class ScrollableShelfFocusSearch : public views::FocusSearch {
   }
 
  private:
-  ScrollableShelfView* scrollable_shelf_view_ = nullptr;
+  raw_ptr<ScrollableShelfView, ExperimentalAsh> scrollable_shelf_view_ =
+      nullptr;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -863,8 +866,9 @@ void ScrollableShelfView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 
 void ScrollableShelfView::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
-  if (details.parent != shelf_view_)
+  if (details.parent != shelf_view_.get()) {
     return;
+  }
 
   shelf_view_->UpdateShelfItemViewsVisibility();
 
@@ -2204,6 +2208,7 @@ bool ScrollableShelfView::ShouldCountActivatedInkDrop(
 }
 
 void ScrollableShelfView::EnableShelfRoundedCorners(bool enable) {
+  LOG(ERROR) << __func__ << " " << __LINE__;
   // Only enable shelf rounded corners in tablet mode. Note that we allow
   // disabling rounded corners in clamshell. Because when switching to clamshell
   // from tablet, this method may be called after tablet mode ends.
@@ -2214,12 +2219,15 @@ void ScrollableShelfView::EnableShelfRoundedCorners(bool enable) {
   if (enable && !is_in_tablet_mode)
     return;
 
+  LOG(ERROR) << __func__ << " " << __LINE__;
   ui::Layer* layer = shelf_container_view_->layer();
+  LOG(ERROR) << __func__ << " " << __LINE__;
 
   const bool has_rounded_corners = !(layer->rounded_corner_radii().IsEmpty());
   if (enable == has_rounded_corners)
     return;
 
+  LOG(ERROR) << __func__ << " " << __LINE__;
   // In non-overflow mode, only apply layer clip on |shelf_container_view_|
   // when the ripple ring of the first/last shelf icon shows.
   // Note that |layout_strategy_| may update while EnableShelfRoundedCorners()
@@ -2228,14 +2236,18 @@ void ScrollableShelfView::EnableShelfRoundedCorners(bool enable) {
   // |layer_clip_in_non_overflow_| updates regardless of |layout_strategy_|.
   layer_clip_in_non_overflow_ = enable;
 
+  LOG(ERROR) << __func__ << " " << __LINE__;
   if (layout_strategy_ == kNotShowArrowButtons)
     EnableLayerClipOnShelfContainerView(layer_clip_in_non_overflow_);
 
+  LOG(ERROR) << __func__ << " " << __LINE__;
   layer->SetRoundedCornerRadius(enable ? CalculateShelfContainerRoundedCorners()
                                        : gfx::RoundedCornersF());
+  LOG(ERROR) << __func__ << " " << __LINE__;
 
   if (!layer->is_fast_rounded_corner())
     layer->SetIsFastRoundedCorner(/*enable=*/true);
+  LOG(ERROR) << __func__ << " " << __LINE__;
 }
 
 void ScrollableShelfView::OnActiveInkDropChange(bool increase) {

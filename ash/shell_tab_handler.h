@@ -5,6 +5,7 @@
 #ifndef ASH_SHELL_TAB_HANDLER_H_
 #define ASH_SHELL_TAB_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_handler.h"
 
 namespace ash {
@@ -25,7 +26,7 @@ class ShellTabHandler : public ui::EventHandler {
   void OnKeyEvent(ui::KeyEvent* key_event) override;
 
  private:
-  Shell* const shell_;
+  const raw_ptr<Shell, ExperimentalAsh> shell_;
 };
 
 }  // namespace ash

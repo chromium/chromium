@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -172,7 +173,8 @@ class NotificationCenterTestApi {
       const message_center::RichNotificationData& optional_fields);
 
   int notification_id_ = 0;
-  NotificationCenterTray* const notification_center_tray_;
+  const raw_ptr<NotificationCenterTray, ExperimentalAsh>
+      notification_center_tray_;
 
   const int64_t primary_display_id_;
 };

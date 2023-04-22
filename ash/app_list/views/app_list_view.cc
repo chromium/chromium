@@ -24,6 +24,7 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -71,7 +72,7 @@ class SearchBoxFocusHost : public views::View {
   const char* GetClassName() const override { return "SearchBoxFocusHost"; }
 
  private:
-  views::Widget* search_box_widget_;
+  raw_ptr<views::Widget, ExperimentalAsh> search_box_widget_;
 };
 
 float ComputeSubpixelOffset(const display::Display& display, float value) {

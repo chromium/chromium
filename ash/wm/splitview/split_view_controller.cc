@@ -51,6 +51,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -366,7 +367,7 @@ class SplitViewController::DividerSnapAnimation
       tracker_->Cancel();
   }
 
-  SplitViewController* split_view_controller_;
+  raw_ptr<SplitViewController, ExperimentalAsh> split_view_controller_;
   int starting_position_;
   int ending_position_;
   absl::optional<ui::ThroughputTracker> tracker_;
@@ -576,7 +577,7 @@ class SplitViewController::AutoSnapController
     observed_windows_.erase(window);
   }
 
-  SplitViewController* split_view_controller_;
+  raw_ptr<SplitViewController, ExperimentalAsh> split_view_controller_;
 
   // Tracks observed windows.
   base::flat_set<aura::Window*> observed_windows_;
@@ -699,7 +700,7 @@ class SplitViewController::ToBeSnappedWindowsObserver
     return to_be_snapped_windows_.end();
   }
 
-  SplitViewController* const split_view_controller_;
+  const raw_ptr<SplitViewController, ExperimentalAsh> split_view_controller_;
   // Tracks to-be-snapped windows.
   std::map<SnapPosition, aura::Window*> to_be_snapped_windows_;
 };
@@ -822,7 +823,7 @@ bool SplitViewController::CanSnapWindow(aura::Window* window,
 
   if (!WindowState::Get(window)->CanSnapOnDisplay(
           display::Screen::GetScreen()->GetDisplayNearestWindow(
-              const_cast<aura::Window*>(root_window_)))) {
+              const_cast<aura::Window*>(root_window_.get())))) {
     return false;
   }
 
@@ -934,8 +935,8 @@ void SplitViewController::OnWMEvent(aura::Window* window,
       NotifyDividerPositionChanged();
     } else if (primary_window_ && secondary_window_) {
       auto* other_window = event_type == WM_EVENT_SNAP_PRIMARY
-                               ? secondary_window_
-                               : primary_window_;
+                               ? secondary_window_.get()
+                               : primary_window_.get();
       DCHECK(other_window);
       const int other_window_length =
           GetMinimumWindowLength(other_window, IsLayoutHorizontal(window));
@@ -1131,8 +1132,8 @@ SplitViewController::GetPositionOfSnappedWindow(
 
 aura::Window* SplitViewController::GetSnappedWindow(SnapPosition position) {
   DCHECK_NE(SnapPosition::kNone, position);
-  return position == SnapPosition::kPrimary ? primary_window_
-                                            : secondary_window_;
+  return position == SnapPosition::kPrimary ? primary_window_.get()
+                                            : secondary_window_.get();
 }
 
 aura::Window* SplitViewController::GetDefaultSnappedWindow() {
@@ -1510,7 +1511,8 @@ void SplitViewController::EndSplitView(EndReason end_reason) {
   // handed in `OnWindowDestroying` of snap_group.cc.
   if (IsSnapGroupEnabledInClamshellMode()) {
     Shell::Get()->snap_group_controller()->RemoveSnapGroupContainingWindow(
-        primary_window_ == nullptr ? secondary_window_ : primary_window_);
+        primary_window_ == nullptr ? secondary_window_.get()
+                                   : primary_window_.get());
   }
 
   StopObserving(SnapPosition::kPrimary);
@@ -1656,8 +1658,8 @@ bool SplitViewController::BoundsChangeIsFromVKAndAllowed(
     aura::Window* window) const {
   // Make sure that it is the bottom window who is requiring bounds change.
   return features::IsAdjustSplitViewForVKEnabled() && changing_bounds_by_vk_ &&
-         window ==
-             (IsLayoutPrimary(window) ? secondary_window_ : primary_window_);
+         window == (IsLayoutPrimary(window) ? secondary_window_.get()
+                                            : primary_window_.get());
 }
 
 void SplitViewController::AddObserver(SplitViewObserver* observer) {
@@ -2261,12 +2263,14 @@ void SplitViewController::OnSnapGroupRemoved() {
 
 aura::Window* SplitViewController::GetPhysicalLeftOrTopWindow() {
   DCHECK(root_window_);
-  return IsLayoutPrimary(root_window_) ? primary_window_ : secondary_window_;
+  return IsLayoutPrimary(root_window_) ? primary_window_.get()
+                                       : secondary_window_.get();
 }
 
 aura::Window* SplitViewController::GetPhysicalRightOrBottomWindow() {
   DCHECK(root_window_);
-  return IsLayoutPrimary(root_window_) ? secondary_window_ : primary_window_;
+  return IsLayoutPrimary(root_window_) ? secondary_window_.get()
+                                       : primary_window_.get();
 }
 
 void SplitViewController::StartObserving(aura::Window* window) {
@@ -2703,8 +2707,8 @@ void SplitViewController::OnWindowSnapped(
   // snapped window, we should update the other's snapped bounds to account for
   // the newly snapped `window`.
   if (primary_window_ && secondary_window_) {
-    UpdateSnappedBounds(window == primary_window_ ? secondary_window_
-                                                  : primary_window_);
+    UpdateSnappedBounds(window == primary_window_ ? secondary_window_.get()
+                                                  : primary_window_.get());
   }
 }
 

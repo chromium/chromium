@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -125,7 +126,8 @@ class ASH_EXPORT SplitViewDragIndicators {
   class SplitViewDragIndicatorsView;
 
   // The root content view of |widget_|.
-  SplitViewDragIndicatorsView* indicators_view_ = nullptr;
+  raw_ptr<SplitViewDragIndicatorsView, DanglingUntriaged | ExperimentalAsh>
+      indicators_view_ = nullptr;
 
   WindowDraggingState current_window_dragging_state_ =
       WindowDraggingState::kNoDrag;

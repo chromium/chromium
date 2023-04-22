@@ -31,6 +31,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -341,7 +342,7 @@ class CameraPreviewTargeter : public aura::WindowTargeter {
   }
 
  private:
-  aura::Window* const camera_preview_window_;
+  const raw_ptr<aura::Window, ExperimentalAsh> camera_preview_window_;
 };
 
 capture_mode_util::AnimationParams BuildCameraVisibilityAnimationParams(

@@ -13,6 +13,7 @@
 #include "ash/app_list/model/app_list_item_observer.h"
 #include "ash/app_list/model/app_list_model_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "ui/gfx/image/image_skia.h"
@@ -101,17 +102,17 @@ class APP_LIST_MODEL_EXPORT FolderImage : public AppListItemListObserver,
   void RedrawIconAndNotify();
 
   // The app list config for which this folder image is created.
-  const AppListConfig* app_list_config_;
+  raw_ptr<const AppListConfig, ExperimentalAsh> app_list_config_;
 
   // The unclipped icon image. This will be clipped in AppListItemView before
   // being shown in apps grid.
   gfx::ImageSkia icon_;
 
   // List of top-level app list items (to display small in the icon).
-  AppListItemList* item_list_;
+  raw_ptr<AppListItemList, ExperimentalAsh> item_list_;
 
   // Item being dragged, if any.
-  const AppListItem* dragged_item_ = nullptr;
+  raw_ptr<const AppListItem, ExperimentalAsh> dragged_item_ = nullptr;
 
   // Top items for generating folder icon.
   std::vector<AppListItem*> top_items_;

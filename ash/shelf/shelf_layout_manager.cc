@@ -61,6 +61,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/prefs/pref_service.h"
@@ -410,7 +411,8 @@ class HotseatEventHandler : public ui::EventHandler,
  private:
   // Whether events should get forwarded to ShelfLayoutManager.
   bool should_forward_event_ = false;
-  ShelfLayoutManager* const shelf_layout_manager_;  // unowned.
+  const raw_ptr<ShelfLayoutManager, ExperimentalAsh>
+      shelf_layout_manager_;  // unowned.
 };
 
 }  // namespace

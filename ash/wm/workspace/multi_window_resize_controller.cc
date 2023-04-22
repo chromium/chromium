@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/workspace/multi_window_resize_controller.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 
@@ -216,7 +217,7 @@ class MultiWindowResizeController::ResizeView : public views::View {
   static constexpr int kLongSide = 64;
   static constexpr int kShortSide = 28;
 
-  MultiWindowResizeController* controller_;
+  raw_ptr<MultiWindowResizeController, ExperimentalAsh> controller_;
   const Direction direction_;
 };
 
@@ -245,7 +246,7 @@ class MultiWindowResizeController::ResizeMouseWatcherHost
   }
 
  private:
-  MultiWindowResizeController* host_;
+  raw_ptr<MultiWindowResizeController, ExperimentalAsh> host_;
 };
 
 MultiWindowResizeController::ResizeWindows::ResizeWindows()

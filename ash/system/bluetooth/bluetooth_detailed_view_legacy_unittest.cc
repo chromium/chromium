@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 
@@ -173,7 +174,7 @@ class BluetoothDetailedViewLegacyTest : public AshTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  BluetoothDetailedView* bluetooth_detailed_view_;
+  raw_ptr<BluetoothDetailedView, ExperimentalAsh> bluetooth_detailed_view_;
   FakeBluetoothDetailedViewDelegate fake_bluetooth_detailed_view_delegate_;
   FakeDetailedViewDelegate fake_detailed_view_delegate_;
 };

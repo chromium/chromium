@@ -15,6 +15,7 @@
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -45,7 +46,7 @@ class LocaleDetailedViewTest : public AshTestBase {
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<DetailedViewDelegate> delegate_;
-  LocaleDetailedView* detailed_view_ = nullptr;
+  raw_ptr<LocaleDetailedView, ExperimentalAsh> detailed_view_ = nullptr;
 };
 
 TEST_F(LocaleDetailedViewTest, CreatesRoundedContainer) {

@@ -6,6 +6,7 @@
 #define ASH_QUICK_PAIR_UI_FAST_PAIR_FAST_PAIR_NOTIFICATION_CONTROLLER_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/image/image.h"
@@ -97,7 +98,7 @@ class FastPairNotificationController {
   // pairing/saving to their account.
   base::OneShotTimer expire_notification_timer_;
 
-  message_center::MessageCenter* message_center_;
+  raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
 
   base::WeakPtrFactory<FastPairNotificationController> weak_ptr_factory_{this};
 };

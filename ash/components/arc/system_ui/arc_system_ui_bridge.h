@@ -12,6 +12,7 @@
 #include "ash/style/color_palette_controller.h"
 #include "base/check_is_test.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -90,9 +91,10 @@ class ArcSystemUIBridge : public KeyedService,
 
   // The most recent seed sent to ARC.
   absl::optional<const ash::ColorPaletteSeed> previous_seed_;
-  ash::ColorPaletteController* color_palette_controller_ =
-      nullptr;                                  // Owned by Shell.
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  raw_ptr<ash::ColorPaletteController, ExperimentalAsh>
+      color_palette_controller_ = nullptr;  // Owned by Shell.
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
 };
 
 }  // namespace arc

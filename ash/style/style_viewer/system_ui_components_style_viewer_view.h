@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -71,11 +72,11 @@ class SystemUIComponentsStyleViewerView : public views::WidgetDelegateView,
   class ComponentButton;
 
   // The scroll views.
-  views::ScrollView* menu_scroll_view_;
-  views::ScrollView* component_instances_scroll_view_;
+  raw_ptr<views::ScrollView, ExperimentalAsh> menu_scroll_view_;
+  raw_ptr<views::ScrollView, ExperimentalAsh> component_instances_scroll_view_;
   // The contents of the scroll views.
-  views::View* menu_contents_view_;
-  views::View* components_grid_view_;
+  raw_ptr<views::View, ExperimentalAsh> menu_contents_view_;
+  raw_ptr<views::View, ExperimentalAsh> components_grid_view_;
   // Buttons used to toggle the component instances.
   std::vector<ComponentButton*> buttons_;
   // Factories of `SystemUIComponentsGridView` for different

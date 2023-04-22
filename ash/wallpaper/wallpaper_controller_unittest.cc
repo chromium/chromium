@@ -41,6 +41,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -356,7 +357,7 @@ class TestWallpaperControllerObserver : public WallpaperControllerObserver {
   bool is_in_wallpaper_preview() const { return is_in_wallpaper_preview_; }
 
  private:
-  WallpaperController* controller_;
+  raw_ptr<WallpaperController, ExperimentalAsh> controller_;
 
   base::RepeatingClosure resize_callback_;
   base::RepeatingClosure colors_calculated_callback_;
@@ -733,8 +734,9 @@ class WallpaperControllerTest : public AshTestBase {
     RunAllTasksUntilIdle();
   }
 
-  WallpaperControllerImpl* controller_;
-  WallpaperPrefManager* pref_manager_ = nullptr;  // owned by controller
+  raw_ptr<WallpaperControllerImpl, ExperimentalAsh> controller_;
+  raw_ptr<WallpaperPrefManager, ExperimentalAsh> pref_manager_ =
+      nullptr;  // owned by controller
 
   base::ScopedTempDir user_data_dir_;
   base::ScopedTempDir online_wallpaper_dir_;

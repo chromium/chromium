@@ -16,6 +16,7 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_id.h"
@@ -95,8 +96,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     friend class HoldingSpaceModel;
     ScopedItemUpdate(HoldingSpaceModel* model, HoldingSpaceItem* item);
 
-    HoldingSpaceModel* const model_;
-    HoldingSpaceItem* const item_;
+    const raw_ptr<HoldingSpaceModel, ExperimentalAsh> model_;
+    const raw_ptr<HoldingSpaceItem, ExperimentalAsh> item_;
 
     absl::optional<absl::optional<std::u16string>> accessible_name_;
     absl::optional<base::FilePath> file_path_;

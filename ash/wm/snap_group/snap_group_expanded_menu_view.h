@@ -5,6 +5,7 @@
 #ifndef ASH_WM_SNAP_GROUP_SNAP_GROUP_EXPANDED_MENU_VIEW_H_
 #define ASH_WM_SNAP_GROUP_SNAP_GROUP_EXPANDED_MENU_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -59,14 +60,14 @@ class SnapGroupExpandedMenuView : public views::View {
   // `snap_group_` is guaranteed to be non nullptr during `this` lifetime.
   // TODO(michelefan): revisit this comment and related logic if we decided to
   // show divider on one window snapped in clamshell.
-  SnapGroup* const snap_group_;
+  const raw_ptr<SnapGroup, ExperimentalAsh> snap_group_;
 
   // Child views of this class, which are listed from top to bottom (horizontal
   // screen orientation) or left to right (vertical screen orientation).
-  IconButton* swap_windows_button_;
-  IconButton* update_primary_window_button_;
-  IconButton* update_secondary_window_button_;
-  IconButton* unlock_button_;
+  raw_ptr<IconButton, ExperimentalAsh> swap_windows_button_;
+  raw_ptr<IconButton, ExperimentalAsh> update_primary_window_button_;
+  raw_ptr<IconButton, ExperimentalAsh> update_secondary_window_button_;
+  raw_ptr<IconButton, ExperimentalAsh> unlock_button_;
 };
 
 }  // namespace ash

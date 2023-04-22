@@ -5,6 +5,7 @@
 #include "ash/system/eche/eche_icon_loading_indicator_view.h"
 
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -55,7 +56,8 @@ class EcheIconLoadingIndicatorViewTest : public AshTestBase {
   }
 
  private:
-  EcheIconLoadingIndicatorView* eche_icon_loading_indicatior_view_;
+  raw_ptr<EcheIconLoadingIndicatorView, ExperimentalAsh>
+      eche_icon_loading_indicatior_view_;
   std::unique_ptr<views::Widget> test_widget_;
   std::unique_ptr<views::ImageView> icon_;
 };

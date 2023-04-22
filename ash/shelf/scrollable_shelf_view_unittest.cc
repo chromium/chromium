@@ -24,6 +24,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -68,7 +69,8 @@ class PageFlipWaiter : public ScrollableShelfView::TestObserver {
     run_loop_->Quit();
   }
 
-  ScrollableShelfView* scrollable_shelf_view_ = nullptr;
+  raw_ptr<ScrollableShelfView, ExperimentalAsh> scrollable_shelf_view_ =
+      nullptr;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
@@ -99,7 +101,7 @@ class InkDropAnimationWaiter : public views::InkDropObserver {
     }
   }
 
-  views::Button* button_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> button_ = nullptr;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 

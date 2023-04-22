@@ -9,6 +9,7 @@
 #include "ash/detachable_base/detachable_base_handler.h"
 #include "ash/detachable_base/detachable_base_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 
 namespace ash {
@@ -64,7 +65,7 @@ class ASH_EXPORT DetachableBaseNotificationController
   // Removes kBaseRequiresUpdateNotificationId if it was previously shown.
   void RemoveUpdateRequiredNotification();
 
-  DetachableBaseHandler* detachable_base_handler_;
+  raw_ptr<DetachableBaseHandler, ExperimentalAsh> detachable_base_handler_;
 
   base::ScopedObservation<DetachableBaseHandler, DetachableBaseObserver>
       detachable_base_observation_{this};

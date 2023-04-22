@@ -10,6 +10,7 @@
 #include "ash/login_status.h"
 #include "ash/system/network/tray_network_state_observer.h"
 #include "ash/system/tray/tray_detailed_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
@@ -111,13 +112,13 @@ class ASH_EXPORT NetworkStateListDetailedView
   // Track login state.
   LoginStatus login_;
 
-  TrayNetworkStateModel* model_;
+  raw_ptr<TrayNetworkStateModel, ExperimentalAsh> model_;
 
-  views::Button* info_button_;
-  views::Button* settings_button_;
+  raw_ptr<views::Button, ExperimentalAsh> info_button_;
+  raw_ptr<views::Button, ExperimentalAsh> settings_button_;
 
   // A small bubble for displaying network info.
-  InfoBubble* info_bubble_;
+  raw_ptr<InfoBubble, ExperimentalAsh> info_bubble_;
 
   // Timer for starting and stopping network scans.
   base::RepeatingTimer network_scan_repeating_timer_;

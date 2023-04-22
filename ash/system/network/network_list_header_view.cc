@@ -41,7 +41,7 @@ NetworkListHeaderView::NetworkListHeaderView(int label_id) {
   container_->AddView(
       TriView::Container::START,
       TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false));
-  AddChildView(container_);
+  AddChildView(container_.get());
   AddTitleView(label_id);
 }
 

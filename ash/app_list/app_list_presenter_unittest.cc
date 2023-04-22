@@ -72,6 +72,7 @@
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "ui/aura/client/aura_constants.h"
@@ -521,7 +522,7 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
   const bool tablet_mode_;
 
   std::unique_ptr<test::AppsGridViewTestApi> grid_test_api_;
-  AppsGridView* apps_grid_view_ = nullptr;
+  raw_ptr<AppsGridView, ExperimentalAsh> apps_grid_view_ = nullptr;
 };
 
 // Parameterized by tablet/clamshell mode.
@@ -641,8 +642,10 @@ class PopulatedAppListTest : public AshTestBase {
   }
 
   std::unique_ptr<test::AppsGridViewTestApi> apps_grid_test_api_;
-  AppListView* app_list_view_ = nullptr;         // Owned by native widget.
-  PagedAppsGridView* apps_grid_view_ = nullptr;  // Owned by |app_list_view_|.
+  raw_ptr<AppListView, ExperimentalAsh> app_list_view_ =
+      nullptr;  // Owned by native widget.
+  raw_ptr<PagedAppsGridView, ExperimentalAsh> apps_grid_view_ =
+      nullptr;  // Owned by |app_list_view_|.
 };
 
 // Subclass of PopulatedAppListTest which enables the virtual keyboard.

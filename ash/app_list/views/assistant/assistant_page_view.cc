@@ -25,6 +25,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkTypes.h"
@@ -133,7 +134,7 @@ class AssistantPageViewLayout : public views::LayoutManagerBase {
   }
 
  private:
-  AssistantPageView* const assistant_page_view_;
+  const raw_ptr<AssistantPageView, ExperimentalAsh> assistant_page_view_;
 };
 
 }  // namespace

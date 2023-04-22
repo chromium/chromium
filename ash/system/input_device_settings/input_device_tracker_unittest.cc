@@ -95,7 +95,7 @@ class InputDeviceTrackerTest
 
  protected:
   std::unique_ptr<InputDeviceTracker> tracker_;
-  base::raw_ptr<PrefService> pref_service_;
+  base::raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> pref_service_;
 
   InputDeviceCategory category_;
   base::StringPiece pref_path_;

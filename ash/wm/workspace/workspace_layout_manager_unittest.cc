@@ -55,6 +55,7 @@
 #include "ash/wm/workspace/workspace_window_resizer.h"
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/audio/sounds.h"
@@ -164,7 +165,8 @@ class ScopedStickyKeyboardEnabler {
   }
 
  private:
-  AccessibilityControllerImpl* accessibility_controller_;
+  raw_ptr<AccessibilityControllerImpl, ExperimentalAsh>
+      accessibility_controller_;
   const bool enabled_;
 };
 
@@ -399,7 +401,7 @@ class DontClobberRestoreBoundsWindowObserver : public aura::WindowObserver {
   }
 
  private:
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 };
 
 // Creates a window, maximized the window and from within the maximized
@@ -1141,7 +1143,7 @@ class FocusDuringUnminimizeWindowObserver : public aura::WindowObserver {
   }
 
  private:
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
   ui::WindowShowState show_state_;
 };
 
@@ -1576,7 +1578,7 @@ class WorkspaceLayoutManagerBackdropTest : public AshTestBase {
 
  private:
   // The default container.
-  aura::Window* default_container_;
+  raw_ptr<aura::Window, ExperimentalAsh> default_container_;
 };
 
 constexpr absl::optional<Sound> kNoSoundKey = absl::nullopt;
@@ -2024,7 +2026,7 @@ class WorkspaceLayoutManagerKeyboardTest : public AshTestBase {
  private:
   gfx::Insets restore_work_area_insets_;
   gfx::Rect keyboard_bounds_;
-  WorkspaceLayoutManager* layout_manager_;
+  raw_ptr<WorkspaceLayoutManager, ExperimentalAsh> layout_manager_;
 };
 
 // Tests that when a child window gains focus the top level window containing it
@@ -2320,8 +2322,8 @@ class WorkspaceLayoutManagerSystemUiAreaTest : public AshTestBase {
   TestState* test_state() { return test_state_; }
 
  private:
-  aura::Window* window_ = nullptr;
-  TestState* test_state_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
+  raw_ptr<TestState, ExperimentalAsh> test_state_ = nullptr;
 };
 
 // Expect that showing and hiding the unified system tray triggers a system ui

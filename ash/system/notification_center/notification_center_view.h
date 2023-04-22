@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/message_center/message_center_scroll_bar.h"
 #include "ash/system/notification_center/notification_list_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/background.h"
@@ -197,15 +198,16 @@ class ASH_EXPORT NotificationCenterView
   View* GetFirstFocusableChild();
   View* GetLastFocusableChild();
 
-  UnifiedSystemTrayView* const parent_;
+  const raw_ptr<UnifiedSystemTrayView, ExperimentalAsh> parent_;
   scoped_refptr<UnifiedSystemTrayModel> model_;
-  UnifiedMessageCenterBubble* const message_center_bubble_;
-  StackedNotificationBar* const notification_bar_;
-  views::ScrollBar* scroll_bar_;
-  views::ScrollView* const scroller_;
-  NotificationListView* const notification_list_view_;
+  const raw_ptr<UnifiedMessageCenterBubble, ExperimentalAsh>
+      message_center_bubble_;
+  const raw_ptr<StackedNotificationBar, ExperimentalAsh> notification_bar_;
+  raw_ptr<views::ScrollBar, ExperimentalAsh> scroll_bar_;
+  const raw_ptr<views::ScrollView, ExperimentalAsh> scroller_;
+  const raw_ptr<NotificationListView, ExperimentalAsh> notification_list_view_;
 
-  views::BoxLayout* layout_manager_ = nullptr;
+  raw_ptr<views::BoxLayout, ExperimentalAsh> layout_manager_ = nullptr;
 
   // Position from the bottom of scroll contents in dip.
   int last_scroll_position_from_bottom_;
@@ -225,7 +227,7 @@ class ASH_EXPORT NotificationCenterView
 
   const std::unique_ptr<views::FocusSearch> focus_search_;
 
-  views::FocusManager* focus_manager_ = nullptr;
+  raw_ptr<views::FocusManager, ExperimentalAsh> focus_manager_ = nullptr;
 
   base::CallbackListSubscription on_contents_scrolled_subscription_;
 };

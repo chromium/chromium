@@ -18,6 +18,7 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -144,10 +145,10 @@ class BluetoothNotificationControllerTest : public AshTestBase {
   TestMessageCenter test_message_center_;
   scoped_refptr<device::MockBluetoothAdapter> mock_adapter_;
   std::unique_ptr<BluetoothNotificationController> notification_controller_;
-  TestSystemTrayClient* system_tray_client_;
+  raw_ptr<TestSystemTrayClient, ExperimentalAsh> system_tray_client_;
   std::unique_ptr<device::MockBluetoothDevice> bluetooth_device_1_;
   std::unique_ptr<device::MockBluetoothDevice> bluetooth_device_2_;
-  ToastManagerImpl* toast_manager_ = nullptr;
+  raw_ptr<ToastManagerImpl, ExperimentalAsh> toast_manager_ = nullptr;
 };
 
 TEST_F(BluetoothNotificationControllerTest, DiscoverableToast) {

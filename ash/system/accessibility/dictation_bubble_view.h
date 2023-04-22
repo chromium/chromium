@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/metadata/view_factory.h"
@@ -64,8 +65,8 @@ class ASH_EXPORT DictationBubbleView : public views::BubbleDialogDelegateView {
  private:
   friend class DictationBubbleControllerTest;
 
-  TopRowView* top_row_view_ = nullptr;
-  HintView* hint_view_ = nullptr;
+  raw_ptr<TopRowView, ExperimentalAsh> top_row_view_ = nullptr;
+  raw_ptr<HintView, ExperimentalAsh> hint_view_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

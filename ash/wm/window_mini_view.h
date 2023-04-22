@@ -6,6 +6,7 @@
 #define ASH_WM_WINDOW_MINI_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -98,19 +99,19 @@ class ASH_EXPORT WindowMiniView : public views::View,
  private:
   // The window this class is meant to be a header for. This class also may
   // optionally show a mirrored view of this window.
-  aura::Window* source_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> source_window_;
 
   // Views for the icon and title.
-  views::View* header_view_ = nullptr;
-  views::Label* title_label_ = nullptr;
-  views::ImageView* icon_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> header_view_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_view_ = nullptr;
 
   // A view that covers the area except the header. It is null when the window
   // associated is not pillar or letter boxed.
-  views::View* backdrop_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> backdrop_view_ = nullptr;
 
   // Optionally shows a preview of |window_|.
-  WindowPreviewView* preview_view_ = nullptr;
+  raw_ptr<WindowPreviewView, ExperimentalAsh> preview_view_ = nullptr;
 
   // True if the window mini view is focused when using keyboard navigation.
   bool is_focused_ = false;

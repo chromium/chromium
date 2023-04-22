@@ -7,6 +7,7 @@
 
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/system/tray/tray_bubble_view.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/controls/button/button.h"
 
 namespace ash {
@@ -76,11 +77,12 @@ class AutoclickScrollView : public views::View {
   void Layout() override;
 
   // Unowned. Owned by views hierarchy.
-  AutoclickScrollButton* const scroll_up_button_;
-  AutoclickScrollButton* const scroll_down_button_;
-  AutoclickScrollButton* const scroll_left_button_;
-  AutoclickScrollButton* const scroll_right_button_;
-  AutoclickScrollCloseButton* const close_scroll_button_;
+  const raw_ptr<AutoclickScrollButton, ExperimentalAsh> scroll_up_button_;
+  const raw_ptr<AutoclickScrollButton, ExperimentalAsh> scroll_down_button_;
+  const raw_ptr<AutoclickScrollButton, ExperimentalAsh> scroll_left_button_;
+  const raw_ptr<AutoclickScrollButton, ExperimentalAsh> scroll_right_button_;
+  const raw_ptr<AutoclickScrollCloseButton, ExperimentalAsh>
+      close_scroll_button_;
 };
 
 }  // namespace ash

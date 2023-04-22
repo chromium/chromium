@@ -9,6 +9,7 @@
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 #include "components/user_manager/user_type.h"
@@ -143,7 +144,7 @@ class FirmwareUpdateStartupNotificationTest : public NoSessionAshTestBase {
     FirmwareUpdateManager::Get()->RequestAllUpdates();
   }
 
-  FwupdClient* dbus_client_ = nullptr;
+  raw_ptr<FwupdClient, ExperimentalAsh> dbus_client_ = nullptr;
   std::unique_ptr<FirmwareUpdateManager> firmware_update_manager_;
   std::unique_ptr<FirmwareUpdateNotificationController>
       firmware_update_notification_controller_;

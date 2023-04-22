@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/workspace/multi_window_resize_controller.h"
+#include "base/memory/raw_ptr.h"
 
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -107,7 +108,8 @@ class MultiWindowResizeControllerTest : public AshTestBase {
                MultiWindowResizeController::kShowDelay;
   }
 
-  MultiWindowResizeController* resize_controller_ = nullptr;
+  raw_ptr<MultiWindowResizeController, ExperimentalAsh> resize_controller_ =
+      nullptr;
 };
 
 // Assertions around moving mouse over 2 windows.

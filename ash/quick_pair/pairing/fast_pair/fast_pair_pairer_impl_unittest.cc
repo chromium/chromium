@@ -32,6 +32,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
@@ -183,7 +184,7 @@ class FakeBluetoothDevice
  protected:
   base::OnceCallback<void(absl::optional<ConnectErrorCode> error_code)>
       pair_callback_;
-  ash::quick_pair::FakeBluetoothAdapter* fake_adapter_;
+  raw_ptr<ash::quick_pair::FakeBluetoothAdapter, ExperimentalAsh> fake_adapter_;
   bool pair_failure_ = false;
   bool pair_timeout_ = false;
   bool connect_failure_ = false;
@@ -216,7 +217,7 @@ class FakeFastPairGattServiceClientImplFactory
     return fake_fast_pair_gatt_service_client;
   }
 
-  ash::quick_pair::FakeFastPairGattServiceClient*
+  raw_ptr<ash::quick_pair::FakeFastPairGattServiceClient, ExperimentalAsh>
       fake_fast_pair_gatt_service_client_ = nullptr;
 };
 
@@ -474,7 +475,8 @@ class FastPairPairerImplTest : public AshTestBase {
   bool on_ble_rotation_callback_called_ = false;
   absl::optional<PairFailure> failure_ = absl::nullopt;
   std::unique_ptr<FakeBluetoothDevice> fake_bluetooth_device_;
-  FakeBluetoothDevice* fake_bluetooth_device_ptr_ = nullptr;
+  raw_ptr<FakeBluetoothDevice, ExperimentalAsh> fake_bluetooth_device_ptr_ =
+      nullptr;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
   scoped_refptr<Device> device_;
   base::MockCallback<base::OnceCallback<void(scoped_refptr<Device>)>>
@@ -491,8 +493,9 @@ class FastPairPairerImplTest : public AshTestBase {
   std::unique_ptr<FastPairGattServiceClient> gatt_service_client_;
   FakeFastPairGattServiceClientImplFactory fast_pair_gatt_service_factory_;
   std::unique_ptr<FakeFastPairDataEncryptor> data_encryptor_unique_;
-  FakeFastPairDataEncryptor* data_encryptor_ = nullptr;
-  FakeFastPairHandshake* fake_fast_pair_handshake_ = nullptr;
+  raw_ptr<FakeFastPairDataEncryptor, ExperimentalAsh> data_encryptor_ = nullptr;
+  raw_ptr<FakeFastPairHandshake, ExperimentalAsh> fake_fast_pair_handshake_ =
+      nullptr;
   std::unique_ptr<FastPairPairer> pairer_;
   base::WeakPtrFactory<FastPairPairerImplTest> weak_ptr_factory_{this};
 };

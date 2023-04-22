@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+
 namespace views {
 class View;
 }
@@ -71,7 +73,7 @@ class AppListA11yAnnouncer {
  private:
   // The view used to send accessibility announcements. Owned by the parent's
   // views hierarchy.
-  views::View* announcement_view_;
+  raw_ptr<views::View, ExperimentalAsh> announcement_view_;
 };
 
 }  // namespace ash

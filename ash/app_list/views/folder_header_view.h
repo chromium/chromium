@@ -10,6 +10,7 @@
 
 #include "ash/app_list/model/app_list_item_observer.h"
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/view.h"
@@ -93,14 +94,14 @@ class ASH_EXPORT FolderHeaderView : public views::View,
   // AppListItemObserver overrides:
   void ItemNameChanged() override;
 
-  AppListFolderItem* folder_item_;  // Not owned.
+  raw_ptr<AppListFolderItem, ExperimentalAsh> folder_item_;  // Not owned.
 
-  views::Textfield* folder_name_view_;
+  raw_ptr<views::Textfield, ExperimentalAsh> folder_name_view_;
   std::unique_ptr<FolderNameViewController> folder_name_controller_;
 
   const std::u16string folder_name_placeholder_text_;
 
-  FolderHeaderViewDelegate* delegate_;
+  raw_ptr<FolderHeaderViewDelegate, ExperimentalAsh> delegate_;
 
   bool folder_name_visible_;
 

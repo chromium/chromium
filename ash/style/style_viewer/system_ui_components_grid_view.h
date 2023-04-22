@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -56,7 +57,7 @@ class SystemUIComponentsGridView : public views::View {
   void AddInstanceImpl(const std::u16string& name, views::View* instance_view);
 
   // The grid layout holding the labels and instances.
-  GridLayout* grid_layout_;
+  raw_ptr<GridLayout, ExperimentalAsh> grid_layout_;
 };
 
 }  // namespace ash

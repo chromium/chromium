@@ -85,6 +85,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -2844,9 +2845,9 @@ class DesksEditableNamesTest : public DesksTest {
   }
 
  private:
-  DesksController* controller_ = nullptr;
-  OverviewGrid* overview_grid_ = nullptr;
-  const LegacyDeskBarView* desks_bar_view_ = nullptr;
+  raw_ptr<DesksController, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<OverviewGrid, ExperimentalAsh> overview_grid_ = nullptr;
+  raw_ptr<const LegacyDeskBarView, ExperimentalAsh> desks_bar_view_ = nullptr;
 };
 
 TEST_P(DesksEditableNamesTest, DefaultNameChangeAborted) {
@@ -3725,14 +3726,14 @@ TEST_P(TabletModeDesksTest, HotSeatStateAfterMovingAWindowToAnotherDesk) {
   EXPECT_EQ(HotseatState::kExtended, hotseat_widget->state());
 
   const struct {
-    aura::Window* window;
+    raw_ptr<aura::Window, ExperimentalAsh> window;
     const char* trace_message;
   } kTestTable[] = {{win0.get(), "Minimized window"},
                     {win1.get(), "Normal window"}};
 
   for (const auto& test_case : kTestTable) {
     SCOPED_TRACE(test_case.trace_message);
-    auto* win = test_case.window;
+    auto* win = test_case.window.get();
     auto* overview_item = overview_session->GetOverviewItemForWindow(win);
     ASSERT_TRUE(overview_item);
 
@@ -4474,8 +4475,8 @@ class DesksMultiUserTest : public NoSessionAshTestBase,
  private:
   std::unique_ptr<MultiUserWindowManager> multi_user_window_manager_;
 
-  TestingPrefServiceSimple* user_1_prefs_ = nullptr;
-  TestingPrefServiceSimple* user_2_prefs_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> user_1_prefs_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> user_2_prefs_ = nullptr;
 };
 
 TEST_F(DesksMultiUserTest, SwitchUsersBackAndForth) {

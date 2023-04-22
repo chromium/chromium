@@ -5,6 +5,7 @@
 #ifndef ASH_ACCESSIBILITY_SCOPED_A11Y_OVERRIDE_WINDOW_SETTER_H_
 #define ASH_ACCESSIBILITY_SCOPED_A11Y_OVERRIDE_WINDOW_SETTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 
 namespace aura {
@@ -37,7 +38,8 @@ class ScopedA11yOverrideWindowSetter : public aura::WindowObserver {
  private:
   // Caches the value of the a11y override window. It will be updated when a
   // different window should get focus from the accessibility features.
-  aura::Window* current_a11y_override_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> current_a11y_override_window_ =
+      nullptr;
 };
 
 }  // namespace ash

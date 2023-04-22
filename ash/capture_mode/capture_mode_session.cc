@@ -43,6 +43,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/aura/client/aura_constants.h"
@@ -480,7 +481,7 @@ class CaptureModeSession::CursorSetter {
   }
 
  private:
-  wm::CursorManager* const cursor_manager_;
+  const raw_ptr<wm::CursorManager, ExperimentalAsh> cursor_manager_;
   const gfx::NativeCursor original_cursor_;
   const bool original_cursor_visible_;
 
@@ -567,11 +568,11 @@ class CaptureModeSession::ParentContainerObserver
             capture_mode_session_->weak_ptr_factory_.GetWeakPtr()));
   }
 
-  aura::Window* parent_container_;
+  raw_ptr<aura::Window, ExperimentalAsh> parent_container_;
 
   // Pointer to current capture session. Not nullptr during this lifecycle.
   // Capture session owns `this`.
-  CaptureModeSession* const capture_mode_session_;
+  const raw_ptr<CaptureModeSession, ExperimentalAsh> capture_mode_session_;
 };
 
 // -----------------------------------------------------------------------------

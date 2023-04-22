@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_EXPAND_BUTTON_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_EXPAND_BUTTON_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/view_factory.h"
@@ -69,8 +70,8 @@ class AshNotificationExpandButton : public views::Button {
                            const std::string& animation_histogram_name);
 
   // Owned by views hierarchy.
-  views::Label* label_;
-  views::ImageView* image_;
+  raw_ptr<views::Label, ExperimentalAsh> label_;
+  raw_ptr<views::ImageView, ExperimentalAsh> image_;
 
   // Cached icons used to display the chevron in the button.
   gfx::ImageSkia expanded_image_;

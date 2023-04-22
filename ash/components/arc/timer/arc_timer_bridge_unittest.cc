@@ -20,6 +20,7 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/posix/unix_domain_socket.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
@@ -136,7 +137,7 @@ class ArcTimerTest : public testing::Test {
 
   ArcTimerStore arc_timer_store_;
 
-  ArcTimerBridge* timer_bridge_;
+  raw_ptr<ArcTimerBridge, ExperimentalAsh> timer_bridge_;
 };
 
 bool ArcTimerTest::StoreReadFds(const std::vector<clockid_t> clocks,

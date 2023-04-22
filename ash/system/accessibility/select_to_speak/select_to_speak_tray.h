@@ -10,6 +10,7 @@
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
@@ -60,7 +61,7 @@ class ASH_EXPORT SelectToSpeakTray : public TrayBackgroundView,
   void UpdateIconOnColorChanges();
 
   // Owned by TrayContainer for its lifetime.
-  views::ImageView* icon_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
 
   ScopedSessionObserver session_observer_{this};
 };

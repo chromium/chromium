@@ -6,6 +6,7 @@
 
 #include "ash/app_menu/notification_item_view.h"
 #include "ash/app_menu/notification_menu_view_test_api.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -211,7 +212,7 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
  private:
   std::unique_ptr<MockNotificationMenuController>
       mock_notification_menu_controller_;
-  NotificationMenuView* notification_menu_view_;
+  raw_ptr<NotificationMenuView, ExperimentalAsh> notification_menu_view_;
   std::unique_ptr<NotificationMenuViewTestAPI> test_api_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_scope_;

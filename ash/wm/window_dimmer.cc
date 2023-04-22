@@ -118,7 +118,7 @@ void WindowDimmer::OnWindowDestroying(aura::Window* window) {
 
 void WindowDimmer::OnWindowHierarchyChanging(
     const HierarchyChangeParams& params) {
-  if (params.receiver == window_ && params.target == params.receiver) {
+  if (params.receiver == window_.get() && params.target == params.receiver) {
     // This may happen on a display change or some unexpected condition. Hide
     // the window to ensure it isn't obscuring the wrong thing.
     window_->Hide();

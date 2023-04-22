@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -79,12 +80,12 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
   void OnCloseButtonPressed();
 
   // Owned by the views hierarchy.
-  CaptureModeTypeView* capture_type_view_;
-  views::Separator* separator_1_;
-  CaptureModeSourceView* capture_source_view_;
-  views::Separator* separator_2_;
-  IconButton* settings_button_;
-  IconButton* close_button_;
+  raw_ptr<CaptureModeTypeView, ExperimentalAsh> capture_type_view_;
+  raw_ptr<views::Separator, ExperimentalAsh> separator_1_;
+  raw_ptr<CaptureModeSourceView, ExperimentalAsh> capture_source_view_;
+  raw_ptr<views::Separator, ExperimentalAsh> separator_2_;
+  raw_ptr<IconButton, ExperimentalAsh> settings_button_;
+  raw_ptr<IconButton, ExperimentalAsh> close_button_;
   std::unique_ptr<SystemShadow> shadow_;
 };
 

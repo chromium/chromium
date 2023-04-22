@@ -19,6 +19,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
@@ -178,7 +179,8 @@ class FastPairScannerImplTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<FakeBluetoothAdapter> adapter_;
   scoped_refptr<FastPairScanner> scanner_;
-  device::MockBluetoothLowEnergyScanSession* mock_scan_session_ = nullptr;
+  raw_ptr<device::MockBluetoothLowEnergyScanSession, ExperimentalAsh>
+      mock_scan_session_ = nullptr;
   std::unique_ptr<FastPairScannerObserver> scanner_observer_;
   base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate_;
   base::WeakPtrFactory<FastPairScannerImplTest> weak_ptr_factory_{this};

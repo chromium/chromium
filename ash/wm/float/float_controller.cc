@@ -32,6 +32,7 @@
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -278,7 +279,8 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {
     DCHECK_EQ(floated_window_, window);
-    DCHECK(floated_window_observation_.IsObservingSource(floated_window_));
+    DCHECK(
+        floated_window_observation_.IsObservingSource(floated_window_.get()));
     // Note that `this` is deleted below in `OnFloatedWindowDestroying()` and
     // should not be accessed after this.
     Shell::Get()->float_controller()->OnFloatedWindowDestroying(window);
@@ -327,7 +329,7 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
 
  private:
   // The `floated_window` this object is hosting information for.
-  aura::Window* floated_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> floated_window_;
 
   // When a window is floated, the window position should not be auto-managed.
   // Use this value to reset the auto-managed state when unfloating a window.
@@ -349,7 +351,7 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
   // container, this Desk pointer is used to determine floating window's desk
   // ownership, since floated window should only be shown on the desk it belongs
   // to.
-  const Desk* desk_;
+  raw_ptr<const Desk, ExperimentalAsh> desk_;
 
   // The start time when the floated window is on the active desk. Used for
   // logging the amount of time a window is floated. Logged when the desk

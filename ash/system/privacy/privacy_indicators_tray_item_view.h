@@ -9,6 +9,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/throughput_tracker.h"
@@ -146,12 +147,12 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
   // Record repeated shows metric when the timer is stop.
   void RecordRepeatedShows();
 
-  views::BoxLayout* layout_manager_ = nullptr;
+  raw_ptr<views::BoxLayout, ExperimentalAsh> layout_manager_ = nullptr;
 
   // Owned by the views hierarchy.
-  views::ImageView* camera_icon_ = nullptr;
-  views::ImageView* microphone_icon_ = nullptr;
-  views::ImageView* screen_share_icon_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> camera_icon_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> microphone_icon_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> screen_share_icon_ = nullptr;
 
   // Keep track of the current screen sharing state.
   bool is_screen_sharing_ = false;

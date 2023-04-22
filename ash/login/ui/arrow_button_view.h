@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/login/ui/login_button.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -66,7 +67,7 @@ class ArrowButtonView : public LoginButton {
     void AnimationProgressed(const gfx::Animation* animation) override;
 
    private:
-    ArrowButtonView* const owner_;
+    const raw_ptr<ArrowButtonView, ExperimentalAsh> owner_;
   };
 
   LoadingAnimationDelegate loading_animation_delegate_{this};

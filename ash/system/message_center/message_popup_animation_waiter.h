@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_POPUP_ANIMATION_WAITER_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_POPUP_ANIMATION_WAITER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 
@@ -30,7 +31,8 @@ class MessagePopupAnimationWaiter {
   void OnPopupAnimationFinished();
 
   // The message popup collection whose animations are being waited for.
-  AshMessagePopupCollection* const message_popup_collection_;
+  const raw_ptr<AshMessagePopupCollection, ExperimentalAsh>
+      message_popup_collection_;
 
   base::RunLoop run_loop_;
 

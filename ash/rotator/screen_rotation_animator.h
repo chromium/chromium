@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/display/display_configuration_controller.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -171,7 +172,7 @@ class ASH_EXPORT ScreenRotationAnimator {
 
   void StopAnimating();
 
-  aura::Window* root_window_;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> root_window_;
 
   // For current slow rotation animation, there are two states |ROTATING| and
   // |IDLE|. For the smooth rotation animation, we need to send copy request

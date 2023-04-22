@@ -29,6 +29,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -228,12 +229,12 @@ class FocusActivationStore {
   }
 
  private:
-  ::wm::ActivationClient* activation_client_;
-  aura::client::CaptureClient* capture_client_;
-  aura::client::FocusClient* focus_client_;
+  raw_ptr<::wm::ActivationClient, ExperimentalAsh> activation_client_;
+  raw_ptr<aura::client::CaptureClient, ExperimentalAsh> capture_client_;
+  raw_ptr<aura::client::FocusClient, ExperimentalAsh> focus_client_;
   aura::WindowTracker tracker_;
-  aura::Window* focused_;
-  aura::Window* active_;
+  raw_ptr<aura::Window, ExperimentalAsh> focused_;
+  raw_ptr<aura::Window, ExperimentalAsh> active_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

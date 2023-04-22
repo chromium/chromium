@@ -11,6 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/power/power_status.h"
+#include "base/memory/raw_ptr.h"
 
 namespace message_center {
 class MessageCenter;
@@ -37,7 +38,7 @@ class ASH_EXPORT DualRoleNotification {
   // Creates the notification using the updated status.
   std::unique_ptr<message_center::Notification> CreateNotification();
 
-  message_center::MessageCenter* message_center_;
+  raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
   std::unique_ptr<PowerStatus::PowerSource> dual_role_source_;
   std::unique_ptr<PowerStatus::PowerSource> dual_role_sink_;
   size_t num_dual_role_sinks_;

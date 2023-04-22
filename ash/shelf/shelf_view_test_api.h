@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/shelf_item.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 
@@ -129,7 +130,7 @@ class ShelfViewTestAPI {
   bool IsSeparatorVisible() const;
 
  private:
-  ShelfView* shelf_view_;
+  raw_ptr<ShelfView, DanglingUntriaged | ExperimentalAsh> shelf_view_;
   int id_ = 0;
 };
 

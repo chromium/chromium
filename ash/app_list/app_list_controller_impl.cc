@@ -64,6 +64,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
@@ -156,7 +157,8 @@ class WindowAnimationsCallback : public ui::LayerAnimationObserver {
   }
 
   base::OnceClosure callback_;
-  ui::LayerAnimator* animator_;  // Owned by the layer that is animating.
+  raw_ptr<ui::LayerAnimator, ExperimentalAsh>
+      animator_;  // Owned by the layer that is animating.
   base::CallbackListSubscription subscription_;
 };
 

@@ -9,6 +9,7 @@
 
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/scoped_window_event_targeting_blocker.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -63,7 +64,7 @@ class ScopedWindowTucker : public wm::ActivationChangeObserver,
 
   // The window that is being tucked. Will be tucked and untucked by the tuck
   // handle.
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 
   // True iff the window is tucked to the left screen edge, false otherwise.
   bool left_ = false;

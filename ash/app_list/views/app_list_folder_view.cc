@@ -36,6 +36,7 @@
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -111,7 +112,7 @@ class BackgroundAnimation : public AppListFolderView::Animation,
         folder_view_(folder_view),
         animating_view_(animating_view),
         shadow_(folder_view->shadow()) {
-    background_view_observer_.Observe(animating_view_);
+    background_view_observer_.Observe(animating_view_.get());
   }
 
   BackgroundAnimation(const BackgroundAnimation&) = delete;
@@ -211,9 +212,9 @@ class BackgroundAnimation : public AppListFolderView::Animation,
   const bool show_;
   bool is_animating_ = false;
 
-  AppListFolderView* const folder_view_;
-  views::View* const animating_view_;
-  SystemShadow* const shadow_;
+  const raw_ptr<AppListFolderView, ExperimentalAsh> folder_view_;
+  const raw_ptr<views::View, ExperimentalAsh> animating_view_;
+  const raw_ptr<SystemShadow, ExperimentalAsh> shadow_;
 
   // Observes the rect clip change of background view.
   base::ScopedObservation<views::View, views::ViewObserver>
@@ -263,9 +264,9 @@ class FolderItemTitleAnimation : public AppListFolderView::Animation {
 
   const bool show_;
 
-  AppListFolderView* const folder_view_;  // Not owned.
+  const raw_ptr<AppListFolderView, ExperimentalAsh> folder_view_;  // Not owned.
 
-  views::View* const folder_title_;
+  const raw_ptr<views::View, ExperimentalAsh> folder_title_;
 
   base::OnceClosure completion_callback_;
 
@@ -471,15 +472,15 @@ class TopIconAnimation : public AppListFolderView::Animation,
   // True if opening the folder.
   const bool show_;
 
-  AppListFolderView* const folder_view_;  // Not owned.
+  const raw_ptr<AppListFolderView, ExperimentalAsh> folder_view_;  // Not owned.
 
   // The scroll view that contains the apps grid.
-  views::ScrollView* const scroll_view_;
+  const raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_;
 
   // The app list item view with which the folder view is associated.
   // NOTE: Users of `TopIconAnimation` should ensure the animation does
   // not outlive the `folder_item_view_`.
-  AppListItemView* const folder_item_view_;
+  const raw_ptr<AppListItemView, ExperimentalAsh> folder_item_view_;
 
   std::vector<TopIconAnimationView*> top_icon_views_;
 
@@ -571,7 +572,7 @@ class ContentsContainerAnimation : public AppListFolderView::Animation,
   // True if an item in the folder is being reparented to root grid view.
   const bool hide_for_reparent_;
 
-  AppListFolderView* const folder_view_;
+  const raw_ptr<AppListFolderView, ExperimentalAsh> folder_view_;
 
   bool is_animation_running_ = false;
 
@@ -602,7 +603,7 @@ class ScrollViewWithMaxHeight : public views::ScrollView {
   }
 
  private:
-  AppListFolderView* const folder_view_;
+  const raw_ptr<AppListFolderView, ExperimentalAsh> folder_view_;
 };
 
 }  // namespace

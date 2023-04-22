@@ -50,6 +50,7 @@
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/user_education/user_education_class_properties.h"
 #include "ash/user_education/user_education_constants.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -115,7 +116,7 @@ class UnifiedSystemTray::UiDelegate : public MessageCenterUiDelegate {
   std::unique_ptr<MessageCenterUiController> const ui_controller_;
   std::unique_ptr<AshMessagePopupCollection> message_popup_collection_;
 
-  UnifiedSystemTray* const owner_;
+  const raw_ptr<UnifiedSystemTray, ExperimentalAsh> owner_;
 
   std::unique_ptr<NotificationGroupingController> grouping_controller_;
 };

@@ -24,6 +24,7 @@
 #include "ash/wm/wm_event.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/window.h"
 #include "ui/display/scoped_display_for_new_windows.h"
@@ -194,7 +195,7 @@ class CollisionDetectionUtilsDisplayTest
 
  private:
   std::unique_ptr<display::ScopedDisplayForNewWindows> scoped_display_;
-  aura::Window* root_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
 };
 
 TEST_P(CollisionDetectionUtilsDisplayTest, MovementAreaIsInset) {

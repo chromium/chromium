@@ -673,7 +673,7 @@ void CaptureModeSessionFocusCycler::OnWidgetDestroying(views::Widget* widget) {
     // Similarly, if the recording type menu is closed while focus is in or
     // about to be in it, we manually focus the drop down button as long as it
     // still exists.
-    auto* capture_label_view = session_->capture_label_view_;
+    auto* capture_label_view = session_->capture_label_view_.get();
     if (capture_label_view && capture_label_view->GetWidget()->IsVisible() &&
         capture_label_view->IsRecordingTypeDropDownButtonVisible()) {
       current_focus_group_ = FocusGroup::kCaptureButton;
@@ -763,7 +763,7 @@ bool CaptureModeSessionFocusCycler::IsGroupAvailable(FocusGroup group) const {
       // interactable, meaning it has buttons that can be pressed. The capture
       // label widget can be hidden when it intersects with other capture UIs.
       // In that case, we shouldn't navigate to it via the keyboard.
-      auto* capture_label_view = session_->capture_label_view_;
+      auto* capture_label_view = session_->capture_label_view_.get();
       return capture_label_view &&
              capture_label_view->GetWidget()->IsVisible() &&
              capture_label_view->IsViewInteractable();
@@ -815,7 +815,7 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
       break;
     }
     case FocusGroup::kCaptureButton: {
-      auto* capture_label_view = session_->capture_label_view_;
+      auto* capture_label_view = session_->capture_label_view_.get();
       DCHECK(capture_label_view);
       items = capture_label_view->capture_button_container()
                   ->GetHighlightableItems();
@@ -943,7 +943,7 @@ void CaptureModeSessionFocusCycler::UpdateA11yAnnotation() {
     a11y_widgets.push_back(bar_widget);
 
   // Add the label widget only if the button is visible.
-  if (auto* capture_label_view = session_->capture_label_view_;
+  if (auto* capture_label_view = session_->capture_label_view_.get();
       capture_label_view && capture_label_view->IsViewInteractable() &&
       capture_label_view->GetWidget()->IsVisible()) {
     a11y_widgets.push_back(capture_label_view->GetWidget());

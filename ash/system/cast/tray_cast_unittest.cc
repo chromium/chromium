@@ -14,6 +14,7 @@
 #include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/view.h"
@@ -128,7 +129,7 @@ class CastDetailedViewTest : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
   TestCastConfigController cast_config_;
   std::unique_ptr<FakeDetailedViewDelegate> delegate_;
-  CastDetailedView* detailed_view_ = nullptr;
+  raw_ptr<CastDetailedView, ExperimentalAsh> detailed_view_ = nullptr;
 };
 
 TEST_F(CastDetailedViewTest, ViewsCreatedForCastDevices) {

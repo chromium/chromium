@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -73,11 +74,12 @@ class ASH_EXPORT PaletteWelcomeBubble : public SessionObserver,
 
   // The PaletteTray this bubble is associated with. Serves as the anchor for
   // the bubble. Not owned.
-  PaletteTray* tray_ = nullptr;
+  raw_ptr<PaletteTray, ExperimentalAsh> tray_ = nullptr;
 
-  PrefService* active_user_pref_service_ = nullptr;  // Not owned.
+  raw_ptr<PrefService, ExperimentalAsh> active_user_pref_service_ =
+      nullptr;  // Not owned.
 
-  WelcomeBubbleView* bubble_view_ = nullptr;
+  raw_ptr<WelcomeBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
 };
 
 }  // namespace ash

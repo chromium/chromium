@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/animation/ink_drop_observer.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -56,7 +57,7 @@ class ASH_EXPORT LockScreenActionBackgroundView
   base::OnceClosure animation_end_callback_;
   views::InkDropState animating_to_state_;
 
-  NoteBackground* background_ = nullptr;
+  raw_ptr<NoteBackground, ExperimentalAsh> background_ = nullptr;
 };
 
 }  // namespace ash

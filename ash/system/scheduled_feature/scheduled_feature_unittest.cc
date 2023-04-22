@@ -117,7 +117,7 @@ class PrefChangeObserver {
   }
 
   PrefChangeRegistrar pref_registrar_;
-  const base::Clock* const clock_;
+  const raw_ptr<const base::Clock, ExperimentalAsh> clock_;
   std::vector<std::pair<TimeOfDay, bool>> changes_;
 };
 
@@ -375,13 +375,13 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
 
  private:
   std::unique_ptr<TestScheduledFeature> feature_;
-  GeolocationController* geolocation_controller_;
+  raw_ptr<GeolocationController, ExperimentalAsh> geolocation_controller_;
   // The `test_clock_` and `tick_clock_` are advanced in unison so that the
   // ScheduledFeature sees time progressing consistently in all facets.
   base::SimpleTestClock test_clock_;
   base::SimpleTestTickClock tick_clock_;
-  base::OneShotTimer* timer_ptr_;
-  TestGeolocationUrlLoaderFactory* factory_;
+  raw_ptr<base::OneShotTimer, ExperimentalAsh> timer_ptr_;
+  raw_ptr<TestGeolocationUrlLoaderFactory, ExperimentalAsh> factory_;
   Geoposition position_;
 };
 

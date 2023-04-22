@@ -6,6 +6,7 @@
 #define ASH_CAPTURE_MODE_STOP_RECORDING_BUTTON_TRAY_H_
 
 #include "ash/system/tray/tray_background_view.h"
+#include "base/memory/raw_ptr.h"
 
 namespace views {
 class ImageView;
@@ -35,7 +36,7 @@ class StopRecordingButtonTray : public TrayBackgroundView {
   void OnThemeChanged() override;
 
   // Image view of the stop recording icon.
-  views::ImageView* const image_view_;
+  const raw_ptr<views::ImageView, ExperimentalAsh> image_view_;
 };
 
 }  // namespace ash

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/host/ash_window_tree_host_platform.h"
+#include "base/memory/raw_ptr.h"
 
 #include <utility>
 
@@ -41,7 +42,7 @@ class ScopedEnableUnadjustedMouseEventsOzone
   }
 
  private:
-  ui::InputController* input_controller_;
+  raw_ptr<ui::InputController, ExperimentalAsh> input_controller_;
 };
 
 AshWindowTreeHostPlatform::AshWindowTreeHostPlatform(

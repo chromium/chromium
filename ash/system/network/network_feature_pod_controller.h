@@ -13,6 +13,7 @@
 #include "ash/system/network/network_icon_animation_observer.h"
 #include "ash/system/network/tray_network_state_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 
@@ -72,9 +73,9 @@ class ASH_EXPORT NetworkFeaturePodController
   void UpdateButtonStateIfExists();
 
   // Owned by the views hierarchy.
-  FeaturePodButton* button_ = nullptr;
-  FeatureTile* tile_ = nullptr;
-  UnifiedSystemTrayController* tray_controller_;
+  raw_ptr<FeaturePodButton, ExperimentalAsh> button_ = nullptr;
+  raw_ptr<FeatureTile, ExperimentalAsh> tile_ = nullptr;
+  raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
 
   base::WeakPtrFactory<NetworkFeaturePodController> weak_ptr_factory_{this};
 };

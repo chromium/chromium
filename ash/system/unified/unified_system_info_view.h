@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -47,14 +48,15 @@ class ASH_EXPORT UnifiedSystemInfoView : public views::View {
 
   // Raw pointer to the combo view (owned by `UnifiedSystemInfoView`) that
   // facilitates introspection needed for unit tests.
-  ManagementPowerDateComboView* combo_view_ = nullptr;
+  raw_ptr<ManagementPowerDateComboView, ExperimentalAsh> combo_view_ = nullptr;
 
   // Raw pointer to the channel indicator quick settings view (owned by
   // `UnifiedSystemInfoView`) that facilitates introspection needed for unit
   // tests.
-  ChannelIndicatorQuickSettingsView* channel_view_ = nullptr;
+  raw_ptr<ChannelIndicatorQuickSettingsView, ExperimentalAsh> channel_view_ =
+      nullptr;
 
-  views::View* eol_notice_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> eol_notice_ = nullptr;
 
   // Introspection methods needed for unit tests.
   views::View* GetDateViewForTesting();

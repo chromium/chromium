@@ -201,8 +201,9 @@ void AssistantCardElementView::InitLayout() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   // Contents view.
-  contents_view_ = AddChildView(
-      const_cast<AssistantCardElement*>(card_element_)->MoveContentsView());
+  contents_view_ =
+      AddChildView(const_cast<AssistantCardElement*>(card_element_.get())
+                       ->MoveContentsView());
 }
 
 std::unique_ptr<ElementAnimator> AssistantCardElementView::CreateAnimator() {

@@ -10,6 +10,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/user_nudge_controller.h"
 #include "ash/public/cpp/test/mock_projector_client.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/events/event_constants.h"
@@ -180,7 +181,7 @@ class ViewVisibilityChangeWaiter : public views::ViewObserver {
                                views::View* starting_view) override;
 
  private:
-  views::View* const view_;
+  const raw_ptr<views::View, ExperimentalAsh> view_;
   base::RunLoop wait_loop_;
 };
 

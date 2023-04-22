@@ -7,6 +7,7 @@
 
 #include "ash/system/accessibility/autoclick_scroll_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/bubble/bubble_border.h"
 
 namespace ash {
@@ -49,9 +50,9 @@ class AutoclickScrollBubbleController : public TrayBubbleView::Delegate {
   friend class AutoclickTest;
 
   // Owned by views hierarchy.
-  AutoclickScrollBubbleView* bubble_view_ = nullptr;
-  AutoclickScrollView* scroll_view_ = nullptr;
-  views::Widget* bubble_widget_ = nullptr;
+  raw_ptr<AutoclickScrollBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
+  raw_ptr<AutoclickScrollView, ExperimentalAsh> scroll_view_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
 
   // Whether the scroll bubble should be positioned based on a fixed rect
   // or just relative to the rect passed in UpdateAnchorRect.

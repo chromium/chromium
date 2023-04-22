@@ -22,6 +22,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -231,9 +232,9 @@ class SessionLogHandlerTest : public NoSessionAshTestBase {
   content::TestWebUI web_ui_;
   std::unique_ptr<SessionLogHandler> session_log_handler_;
   base::ScopedTempDir temp_dir_;
-  TelemetryLog* telemetry_log_;
-  RoutineLog* routine_log_;
-  NetworkingLog* networking_log_;
+  raw_ptr<TelemetryLog, ExperimentalAsh> telemetry_log_;
+  raw_ptr<RoutineLog, ExperimentalAsh> routine_log_;
+  raw_ptr<NetworkingLog, ExperimentalAsh> networking_log_;
   testing::NiceMock<ash::MockHoldingSpaceClient> holding_space_client_;
 };
 

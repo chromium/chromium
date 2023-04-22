@@ -9,6 +9,7 @@
 
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/system/unified/detailed_view_controller.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -45,7 +46,7 @@ class UnifiedAccessibilityDetailedViewController
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
-  AccessibilityDetailedView* view_ = nullptr;
+  raw_ptr<AccessibilityDetailedView, ExperimentalAsh> view_ = nullptr;
 };
 
 }  // namespace ash

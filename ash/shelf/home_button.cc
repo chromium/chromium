@@ -777,13 +777,13 @@ void HomeButton::OnLabelFadeOutAnimationEnded() {
 }
 
 void HomeButton::RemoveNudgeLabel() {
-  RemoveChildViewT(expandable_container_);
+  RemoveChildViewT(expandable_container_.get());
   expandable_container_ = nullptr;
   nudge_label_ = nullptr;
 }
 
 void HomeButton::RemoveQuickAppButton() {
-  RemoveChildViewT(expandable_container_);
+  RemoveChildViewT(expandable_container_.get());
   expandable_container_ = nullptr;
   quick_app_button_ = nullptr;
 }

@@ -12,6 +12,7 @@
 #include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/ambient/ui/ambient_background_image_view.h"
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -70,7 +71,7 @@ class ASH_EXPORT PhotoView : public views::View,
 
   // Note that we should be careful when using |delegate_|, as there is no
   // strong guarantee on the life cycle.
-  AmbientViewDelegateImpl* const delegate_ = nullptr;
+  const raw_ptr<AmbientViewDelegateImpl, ExperimentalAsh> delegate_ = nullptr;
 
   // Image containers used for animation. Owned by view hierarchy.
   std::array<AmbientBackgroundImageView*, 2> image_views_{nullptr, nullptr};

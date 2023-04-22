@@ -13,6 +13,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/shell_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -97,9 +98,9 @@ class ASH_EXPORT TouchExplorationManager
 
   std::unique_ptr<TouchExplorationController> touch_exploration_controller_;
   std::unique_ptr<TouchAccessibilityEnabler> touch_accessibility_enabler_;
-  RootWindowController* root_window_controller_;
-  CrasAudioHandler* audio_handler_;
-  aura::Window* observing_window_;
+  raw_ptr<RootWindowController, ExperimentalAsh> root_window_controller_;
+  raw_ptr<CrasAudioHandler, ExperimentalAsh> audio_handler_;
+  raw_ptr<aura::Window, ExperimentalAsh> observing_window_;
   display::ScopedDisplayObserver display_observer_{this};
 };
 

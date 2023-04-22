@@ -27,6 +27,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
@@ -236,8 +237,8 @@ class DeskContainerObserver : public aura::WindowObserver {
   }
 
  private:
-  Desk* const owner_;
-  aura::Window* const container_;
+  const raw_ptr<Desk, ExperimentalAsh> owner_;
+  const raw_ptr<aura::Window, ExperimentalAsh> container_;
 };
 
 // -----------------------------------------------------------------------------

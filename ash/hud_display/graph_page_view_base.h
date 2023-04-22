@@ -7,6 +7,7 @@
 
 #include "ash/hud_display/data_source.h"
 #include "ash/hud_display/legend.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "ui/views/view.h"
 
@@ -55,12 +56,15 @@ class GraphPageViewBase : public views::View {
   void OnButtonPressed();
 
   // Container for the |ReferenceLines| object.
-  views::View* reference_lines_container_ = nullptr;  // not owned
+  raw_ptr<views::View, ExperimentalAsh> reference_lines_container_ =
+      nullptr;  // not owned
 
   // Container for the legend object.
-  views::View* legend_container_ = nullptr;              // not owned
-  views::ImageButton* legend_min_max_button_ = nullptr;  // not owned
-  Legend* legend_ = nullptr;                             // not owned
+  raw_ptr<views::View, ExperimentalAsh> legend_container_ =
+      nullptr;  // not owned
+  raw_ptr<views::ImageButton, ExperimentalAsh> legend_min_max_button_ =
+      nullptr;                                         // not owned
+  raw_ptr<Legend, ExperimentalAsh> legend_ = nullptr;  // not owned
 
   SEQUENCE_CHECKER(ui_sequence_checker_);
 };

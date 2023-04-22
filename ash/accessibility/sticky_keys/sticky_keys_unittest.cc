@@ -8,6 +8,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/event_source.h"
@@ -164,9 +165,9 @@ class StickyKeysTest : public AshTestBase {
 
  private:
   // Owned by root window of shell, but we can still delete |target_| safely.
-  aura::Window* target_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> target_ = nullptr;
   // The root window of |target_|. Not owned.
-  aura::Window* root_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_ = nullptr;
 };
 
 TEST_F(StickyKeysTest, BasicOneshotScenarioTest) {

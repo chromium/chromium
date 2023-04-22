@@ -5,6 +5,7 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_MENU_TOGGLE_BUTTON_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_MENU_TOGGLE_BUTTON_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/toggle_button.h"
 
@@ -40,11 +41,11 @@ class CaptureModeMenuToggleButton : public views::View {
   void OnThemeChanged() override;
 
  private:
-  views::ImageView* icon_view_;
-  views::Label* label_view_;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_view_;
+  raw_ptr<views::Label, ExperimentalAsh> label_view_;
 
   // Toggles between enabling and disabling the capture mode demo tools feature.
-  views::ToggleButton* toggle_button_;
+  raw_ptr<views::ToggleButton, ExperimentalAsh> toggle_button_;
 };
 
 }  // namespace ash

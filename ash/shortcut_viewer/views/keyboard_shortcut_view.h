@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -96,12 +97,12 @@ class KeyboardShortcutView : public views::WidgetDelegateView {
 
   // Owned by views hierarchy.
   // The container for category tabs and lists of KeyboardShortcutItemViews.
-  views::TabbedPane* categories_tabbed_pane_ = nullptr;
+  raw_ptr<views::TabbedPane, ExperimentalAsh> categories_tabbed_pane_ = nullptr;
   // The container for KeyboardShortcutItemViews matching a user's query.
-  views::View* search_results_container_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> search_results_container_ = nullptr;
 
   // Owned by views hierarchy.
-  KSVSearchBoxView* search_box_view_ = nullptr;
+  raw_ptr<KSVSearchBoxView, ExperimentalAsh> search_box_view_ = nullptr;
 
   // Contains all the shortcut item views from all categories. This list is also
   // used for searching. The views are not owned by the Views hierarchy to avoid

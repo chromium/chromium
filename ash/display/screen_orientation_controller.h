@@ -15,6 +15,7 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ui/base/display_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -173,7 +174,7 @@ class ASH_EXPORT ScreenOrientationController
         chromeos::OrientationType::kAny;
     // Tracks the requesting window's root window and is updated whenever it
     // changes.
-    aura::Window* root_window = nullptr;
+    raw_ptr<aura::Window, ExperimentalAsh> root_window = nullptr;
     LockCompletionBehavior lock_completion_behavior =
         LockCompletionBehavior::None;
   };

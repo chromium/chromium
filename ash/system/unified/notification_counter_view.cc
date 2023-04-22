@@ -15,6 +15,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/notification_icons_controller.h"
 #include "base/i18n/number_formatting.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
@@ -116,7 +117,7 @@ class NumberIconImageSource : public gfx::CanvasImageSource {
   }
 
  private:
-  NotificationCounterView* notification_counter_view_;
+  raw_ptr<NotificationCounterView, ExperimentalAsh> notification_counter_view_;
   size_t count_;
 };
 

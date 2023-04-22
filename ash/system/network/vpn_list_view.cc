@@ -33,6 +33,7 @@
 #include "ash/system/tray/view_click_listener.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/network/network_connect.h"
@@ -313,7 +314,7 @@ class VPNListNetworkEntry : public HoverHighlightView,
   void OnGetNetworkState(NetworkStatePropertiesPtr result);
   void UpdateFromNetworkState(const NetworkStateProperties* network);
 
-  TrayNetworkStateModel* model_;
+  raw_ptr<TrayNetworkStateModel, ExperimentalAsh> model_;
   const std::string guid_;
 
   base::WeakPtrFactory<VPNListNetworkEntry> weak_ptr_factory_{this};

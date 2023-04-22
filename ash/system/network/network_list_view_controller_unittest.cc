@@ -26,6 +26,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -532,7 +533,8 @@ class NetworkListViewControllerTest : public AshTestBase,
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by `widget_`.
-  NetworkDetailedNetworkViewImpl* network_detailed_network_view_ = nullptr;
+  raw_ptr<NetworkDetailedNetworkViewImpl, ExperimentalAsh>
+      network_detailed_network_view_ = nullptr;
 
   std::unique_ptr<NetworkListViewControllerImpl>
       network_list_view_controller_impl_;

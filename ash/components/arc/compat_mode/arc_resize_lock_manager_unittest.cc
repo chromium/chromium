@@ -16,6 +16,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -150,7 +151,8 @@ class ArcResizeLockManagerTest : public CompatModeTestBase {
   TestArcResizeLockManager arc_resize_lock_manager_;
 
   // Owned by |arc_resize_lock_manager_|.
-  TestCompatModeButtonController* test_compat_mode_button_controller_;
+  raw_ptr<TestCompatModeButtonController, ExperimentalAsh>
+      test_compat_mode_button_controller_;
 };
 
 TEST_F(ArcResizeLockManagerTest, ConstructDestruct) {}

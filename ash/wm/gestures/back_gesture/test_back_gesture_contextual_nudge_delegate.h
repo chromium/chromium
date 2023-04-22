@@ -6,6 +6,7 @@
 #define ASH_WM_GESTURES_BACK_GESTURE_TEST_BACK_GESTURE_CONTEXTUAL_NUDGE_DELEGATE_H_
 
 #include "ash/public/cpp/back_gesture_contextual_nudge_delegate.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -27,7 +28,8 @@ class TestBackGestureContextualNudgeDelegate
   void MaybeStartTrackingNavigation(aura::Window* window) override;
 
  private:
-  BackGestureContextualNudgeController* const controller_;
+  const raw_ptr<BackGestureContextualNudgeController, ExperimentalAsh>
+      controller_;
 };
 
 }  // namespace ash

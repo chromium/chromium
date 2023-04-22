@@ -11,6 +11,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/system/message_center/message_center_ui_delegate.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/message_center/message_center_export.h"
@@ -97,10 +98,10 @@ class ASH_EXPORT MessageCenterUiController
   void NotifyUiControllerChanged();
   void HidePopupBubbleInternal();
 
-  message_center::MessageCenter* const message_center_;
+  const raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
   bool message_center_visible_ = false;
   bool popups_visible_ = false;
-  MessageCenterUiDelegate* const delegate_;
+  const raw_ptr<MessageCenterUiDelegate, ExperimentalAsh> delegate_;
 
   // Set true to hide MessageCenterView when the last notification is dismissed.
   bool hide_on_last_notification_ = true;

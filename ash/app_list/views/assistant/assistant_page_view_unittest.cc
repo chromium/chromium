@@ -17,6 +17,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
@@ -117,7 +118,7 @@ class FocusChangeListenerStub : public views::FocusChangeListener {
 
  private:
   std::vector<views::View*> focused_views_;
-  views::FocusManager* focus_manager_;
+  raw_ptr<views::FocusManager, ExperimentalAsh> focus_manager_;
 };
 
 // |ViewObserver| that simply remembers whether the given view was drawn
@@ -149,7 +150,7 @@ class VisibilityObserver : public views::ViewObserver {
       was_drawn_ = true;
   }
 
-  views::View* const observed_view_;
+  const raw_ptr<views::View, ExperimentalAsh> observed_view_;
   bool was_drawn_ = false;
 };
 

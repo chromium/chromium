@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_ACCESSIBILITY_SWITCH_ACCESS_SWITCH_ACCESS_MENU_BUBBLE_CONTROLLER_H_
 
 #include "ash/system/tray/tray_bubble_view.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -45,10 +46,10 @@ class ASH_EXPORT SwitchAccessMenuBubbleController
   bool menu_open_ = false;
 
   // Owned by views hierarchy.
-  SwitchAccessMenuView* menu_view_ = nullptr;
-  TrayBubbleView* bubble_view_ = nullptr;
+  raw_ptr<SwitchAccessMenuView, ExperimentalAsh> menu_view_ = nullptr;
+  raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
 
-  views::Widget* widget_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
 };
 
 }  // namespace ash

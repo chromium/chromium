@@ -29,6 +29,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -200,10 +201,13 @@ class ProjectorControllerTest : public AshTestBase {
     CrasAudioHandler::Get()->SetActiveInputNodes({kInternalMic->id});
   }
 
-  MockProjectorUiController* mock_ui_controller_ = nullptr;
-  MockProjectorMetadataController* mock_metadata_controller_ = nullptr;
-  ProjectorMetadataControllerForTest* metadata_controller_;
-  ProjectorControllerImpl* controller_;
+  raw_ptr<MockProjectorUiController, ExperimentalAsh> mock_ui_controller_ =
+      nullptr;
+  raw_ptr<MockProjectorMetadataController, ExperimentalAsh>
+      mock_metadata_controller_ = nullptr;
+  raw_ptr<ProjectorMetadataControllerForTest, ExperimentalAsh>
+      metadata_controller_;
+  raw_ptr<ProjectorControllerImpl, ExperimentalAsh> controller_;
   MockProjectorClient mock_client_;
   base::HistogramTester histogram_tester_;
   base::ScopedTempDir temp_dir_;

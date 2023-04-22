@@ -12,6 +12,7 @@
 #include "ash/ambient/ui/jitter_calculator.h"
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -88,9 +89,12 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
   std::unique_ptr<AmbientAnimationAttributionProvider>
       animation_attribution_provider_;
 
-  views::AnimatedImageView* animated_image_view_ = nullptr;
-  views::BoxLayoutView* glanceable_info_container_ = nullptr;
-  views::BoxLayoutView* media_string_container_ = nullptr;
+  raw_ptr<views::AnimatedImageView, ExperimentalAsh> animated_image_view_ =
+      nullptr;
+  raw_ptr<views::BoxLayoutView, ExperimentalAsh> glanceable_info_container_ =
+      nullptr;
+  raw_ptr<views::BoxLayoutView, ExperimentalAsh> media_string_container_ =
+      nullptr;
   std::unique_ptr<AmbientAnimationShieldController> shield_view_controller_;
   std::unique_ptr<AmbientAnimationPlayer> animation_player_;
   base::ScopedObservation<View, ViewObserver> animated_image_view_observer_{

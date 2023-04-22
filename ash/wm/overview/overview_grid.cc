@@ -64,6 +64,7 @@
 #include "ash/wm/workspace_controller.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -271,7 +272,7 @@ class ShutdownAnimationMetricsTrackerObserver : public OverviewObserver,
   }
 
  private:
-  ui::Compositor* compositor_;
+  raw_ptr<ui::Compositor, ExperimentalAsh> compositor_;
   OverviewExitMetricsTracker metrics_tracker_;
 };
 
@@ -305,7 +306,7 @@ class DropTargetView : public views::View {
   }
 
  private:
-  views::View* background_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> background_view_ = nullptr;
 };
 
 BEGIN_METADATA(DropTargetView, views::View)

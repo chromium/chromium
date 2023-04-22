@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/phonehub/mutable_phone_model.h"
@@ -52,7 +53,7 @@ class PhoneStatusViewTest : public AshTestBase,
 
  protected:
   std::unique_ptr<views::Widget> widget_;
-  PhoneStatusView* status_view_ = nullptr;
+  raw_ptr<PhoneStatusView, ExperimentalAsh> status_view_ = nullptr;
   phonehub::MutablePhoneModel phone_model_;
   base::test::ScopedFeatureList feature_list_;
   bool can_open_connected_device_settings_ = false;

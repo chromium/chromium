@@ -9,6 +9,7 @@
 #include "ash/style/switch.h"
 #include "ash/system/network/network_list_header_view.h"
 #include "ash/system/tray/tri_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -71,15 +72,15 @@ class ASH_EXPORT NetworkListNetworkHeaderView : public NetworkListHeaderView {
   // NetworkListHeaderView:
   void UpdateToggleState(bool has_new_state) override;
 
-  TrayNetworkStateModel* model_;
+  raw_ptr<TrayNetworkStateModel, ExperimentalAsh> model_;
   int const enabled_label_id_;
 
   // `ToggleButton` to toggle section on or off.
-  views::ToggleButton* toggle_ = nullptr;
+  raw_ptr<views::ToggleButton, ExperimentalAsh> toggle_ = nullptr;
   // `KnobSwitch` to toggle section on or off.
-  Switch* qs_toggle_ = nullptr;
+  raw_ptr<Switch, ExperimentalAsh> qs_toggle_ = nullptr;
 
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
 
   base::WeakPtrFactory<NetworkListNetworkHeaderView> weak_factory_{this};
 };

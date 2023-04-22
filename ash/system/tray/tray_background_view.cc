@@ -32,6 +32,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/task/sequenced_task_runner.h"
@@ -151,7 +152,7 @@ class HighlightPathGenerator : public views::HighlightPathGenerator {
   }
 
  private:
-  TrayBackgroundView* const tray_background_view_;
+  const raw_ptr<TrayBackgroundView, ExperimentalAsh> tray_background_view_;
   const gfx::Insets insets_;
 };
 
@@ -178,7 +179,7 @@ class TrayBackgroundView::TrayWidgetObserver : public views::WidgetObserver {
   void Add(views::Widget* widget) { observations_.AddObservation(widget); }
 
  private:
-  TrayBackgroundView* host_;
+  raw_ptr<TrayBackgroundView, ExperimentalAsh> host_;
   base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
       observations_{this};
 };
@@ -214,7 +215,7 @@ class TrayBackgroundView::TrayBackgroundViewSessionChangeHandler
         FROM_HERE, callback.Release());
   }
 
-  TrayBackgroundView* const tray_;
+  const raw_ptr<TrayBackgroundView, ExperimentalAsh> tray_;
   ScopedSessionObserver session_observer_{this};
 };
 
@@ -259,7 +260,7 @@ TrayBackgroundView::TrayBackgroundView(
   views::HighlightPathGenerator::Install(
       this, std::make_unique<HighlightPathGenerator>(this));
 
-  AddChildView(tray_container_);
+  AddChildView(tray_container_.get());
 
   tray_event_filter_ = std::make_unique<TrayEventFilter>();
 

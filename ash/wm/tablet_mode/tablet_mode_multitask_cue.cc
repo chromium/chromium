@@ -80,7 +80,7 @@ void TabletModeMultitaskCue::MaybeShowCue(aura::Window* active_window) {
 
   // Observe `window_` to update the cue if the window gets destroyed, its
   // bounds change, or its state type changes (e.g., is floated).
-  window_observation_.Observe(window_);
+  window_observation_.Observe(window_.get());
   WindowState::Get(window_)->AddObserver(this);
 
   // Because `DismissCue()` is called beforehand, there should not be any

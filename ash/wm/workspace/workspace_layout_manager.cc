@@ -262,8 +262,8 @@ void WorkspaceLayoutManager::OnKeyboardDisplacingBoundsChanged(
 void WorkspaceLayoutManager::OnWindowHierarchyChanged(
     const HierarchyChangeParams& params) {
   if (params.new_parent) {
-    if (params.new_parent == settings_bubble_container_ ||
-        params.new_parent == accessibility_bubble_container_ ||
+    if (params.new_parent == settings_bubble_container_.get() ||
+        params.new_parent == accessibility_bubble_container_.get() ||
         IsPopupNotificationWindow(params.target)) {
       floating_window_observer_.ObserveWindow(params.target);
     }

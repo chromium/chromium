@@ -11,6 +11,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/tray_action/test_tray_action_client.h"
 #include "ash/tray_action/tray_action_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 
 using ash::mojom::TrayActionState;
@@ -43,7 +44,7 @@ class ScopedTestStateObserver : public TrayActionObserver {
   void ClearObservedStates() { observed_states_.clear(); }
 
  private:
-  TrayAction* tray_action_;
+  raw_ptr<TrayAction, ExperimentalAsh> tray_action_;
 
   std::vector<TrayActionState> observed_states_;
 };

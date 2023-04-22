@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_VIEWS_PAGE_SWITCHER_H_
 
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/view.h"
 
@@ -43,8 +44,8 @@ class PageSwitcher : public views::View,
   void TotalPagesChanged(int previous_page_count, int new_page_count) override;
   void SelectedPageChanged(int old_selected, int new_selected) override;
 
-  PaginationModel* model_;       // Owned by AppsGridView.
-  views::View* buttons_;         // Owned by views hierarchy.
+  raw_ptr<PaginationModel, ExperimentalAsh> model_;  // Owned by AppsGridView.
+  raw_ptr<views::View, ExperimentalAsh> buttons_;  // Owned by views hierarchy.
 };
 
 }  // namespace ash

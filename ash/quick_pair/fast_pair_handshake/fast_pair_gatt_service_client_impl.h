@@ -13,6 +13,7 @@
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -201,11 +202,12 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
   base::TimeTicks notify_keybased_start_time_;
   base::TimeTicks notify_passkey_start_time_;
 
-  device::BluetoothRemoteGattCharacteristic* key_based_characteristic_ =
-      nullptr;
-  device::BluetoothRemoteGattCharacteristic* passkey_characteristic_ = nullptr;
-  device::BluetoothRemoteGattCharacteristic* account_key_characteristic_ =
-      nullptr;
+  raw_ptr<device::BluetoothRemoteGattCharacteristic, ExperimentalAsh>
+      key_based_characteristic_ = nullptr;
+  raw_ptr<device::BluetoothRemoteGattCharacteristic, ExperimentalAsh>
+      passkey_characteristic_ = nullptr;
+  raw_ptr<device::BluetoothRemoteGattCharacteristic, ExperimentalAsh>
+      account_key_characteristic_ = nullptr;
 
   // Initialize with zero failures.
   int num_gatt_connection_attempts_ = 0;
@@ -214,7 +216,8 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
   std::unique_ptr<device::BluetoothGattNotifySession> passkey_notify_session_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   std::unique_ptr<device::BluetoothGattConnection> gatt_connection_;
-  device::BluetoothRemoteGattService* gatt_service_ = nullptr;
+  raw_ptr<device::BluetoothRemoteGattService, ExperimentalAsh> gatt_service_ =
+      nullptr;
 
   base::ScopedObservation<device::BluetoothAdapter,
                           device::BluetoothAdapter::Observer>

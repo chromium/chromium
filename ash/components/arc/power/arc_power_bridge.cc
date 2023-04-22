@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
@@ -107,7 +108,7 @@ class ArcPowerBridge::WakeLockRequestor {
   const device::mojom::WakeLockType type_;
 
   // The WakeLockProvider implementation we use to request WakeLocks. Not owned.
-  device::mojom::WakeLockProvider* const provider_;
+  const raw_ptr<device::mojom::WakeLockProvider, ExperimentalAsh> provider_;
 
   // Number of outstanding Android requests.
   int num_android_requests_ = 0;

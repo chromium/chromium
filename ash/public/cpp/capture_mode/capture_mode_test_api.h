@@ -9,6 +9,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace aura {
@@ -161,7 +162,7 @@ class ASH_EXPORT CaptureModeTestApi {
   // image capture otherwise.
   void SetType(bool for_video);
 
-  CaptureModeController* const controller_;
+  const raw_ptr<CaptureModeController, ExperimentalAsh> controller_;
 };
 
 }  // namespace ash

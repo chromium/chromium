@@ -5,6 +5,7 @@
 #ifndef ASH_WM_SNAP_GROUP_SNAP_GROUP_H_
 #define ASH_WM_SNAP_GROUP_SNAP_GROUP_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 
 namespace aura {
@@ -44,8 +45,8 @@ class SnapGroup : public aura::WindowObserver {
   // `SplitViewController`.
   void RestoreWindowsBoundsOnSnapGroupRemoved();
 
-  aura::Window* window1_;
-  aura::Window* window2_;
+  raw_ptr<aura::Window, ExperimentalAsh> window1_;
+  raw_ptr<aura::Window, ExperimentalAsh> window2_;
 };
 
 }  // namespace ash

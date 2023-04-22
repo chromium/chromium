@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/multi_user/multi_user_window_manager_impl.h"
+#include "base/memory/raw_ptr.h"
 
 #include <set>
 #include <vector>
@@ -81,7 +82,7 @@ class AnimationSetter {
 
  private:
   // The window which gets used.
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 
   // Previous animation type.
   const int previous_animation_type_;

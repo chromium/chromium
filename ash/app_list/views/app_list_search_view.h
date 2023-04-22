@@ -12,6 +12,7 @@
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -76,7 +77,9 @@ class ASH_EXPORT AppListSearchView : public views::View,
     return result_selection_controller_.get();
   }
 
-  raw_ptr<SearchBoxView> search_box_view() { return search_box_view_; }
+  raw_ptr<SearchBoxView, ExperimentalAsh> search_box_view() {
+    return search_box_view_.get();
+  }
 
  private:
   // Passed to |result_selection_controller_| as a callback that gets called
@@ -111,12 +114,15 @@ class ASH_EXPORT AppListSearchView : public views::View,
   // result view unless overridden by |ignore_result_changes_for_a11y_|.
   void MaybeNotifySelectedResultChanged();
 
-  SearchResultPageDialogController* const dialog_controller_;
+  const raw_ptr<SearchResultPageDialogController,
+                DanglingUntriaged | ExperimentalAsh>
+      dialog_controller_;
 
-  SearchBoxView* const search_box_view_;
+  const raw_ptr<SearchBoxView, DanglingUntriaged | ExperimentalAsh>
+      search_box_view_;
 
   // The scroll view that contains all the result_container_views_.
-  views::ScrollView* scroll_view_ = nullptr;
+  raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
 
   // Whether changes in search result containers are hidden from the
   // accessibility framework.

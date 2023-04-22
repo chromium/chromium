@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
@@ -184,30 +185,34 @@ class ASH_EXPORT UnifiedSystemTrayView : public views::View,
   double expanded_amount_;
 
   // Unowned.
-  UnifiedSystemTrayController* const controller_;
+  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
 
   // Owned by views hierarchy.
-  NotificationHiddenView* const notification_hidden_view_;
-  TopShortcutsView* const top_shortcuts_view_;
-  FeaturePodsContainerView* const feature_pods_container_;
-  PageIndicatorView* const page_indicator_view_;
-  UnifiedSlidersContainerView* const sliders_container_;
-  UnifiedSystemInfoView* const system_info_view_;
-  SystemTrayContainer* const system_tray_container_;
-  views::View* const detailed_view_container_;
+  const raw_ptr<NotificationHiddenView, ExperimentalAsh>
+      notification_hidden_view_;
+  const raw_ptr<TopShortcutsView, ExperimentalAsh> top_shortcuts_view_;
+  const raw_ptr<FeaturePodsContainerView, ExperimentalAsh>
+      feature_pods_container_;
+  const raw_ptr<PageIndicatorView, ExperimentalAsh> page_indicator_view_;
+  const raw_ptr<UnifiedSlidersContainerView, ExperimentalAsh>
+      sliders_container_;
+  const raw_ptr<UnifiedSystemInfoView, ExperimentalAsh> system_info_view_;
+  const raw_ptr<SystemTrayContainer, ExperimentalAsh> system_tray_container_;
+  const raw_ptr<views::View, ExperimentalAsh> detailed_view_container_;
 
   // Null if media::kGlobalMediaControlsForChromeOS is disabled.
-  UnifiedMediaControlsContainer* media_controls_container_ = nullptr;
+  raw_ptr<UnifiedMediaControlsContainer, ExperimentalAsh>
+      media_controls_container_ = nullptr;
 
   // The maximum height available to the view.
   int max_height_ = 0;
 
   // The view that is saved by calling SaveFocus().
-  views::View* saved_focused_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> saved_focused_view_ = nullptr;
 
   const std::unique_ptr<views::FocusSearch> focus_search_;
 
-  views::FocusManager* focus_manager_ = nullptr;
+  raw_ptr<views::FocusManager, ExperimentalAsh> focus_manager_ = nullptr;
 
   const std::unique_ptr<ui::EventHandler> interacted_by_tap_recorder_;
 };

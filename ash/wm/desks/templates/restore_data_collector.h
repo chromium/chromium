@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "ui/aura/window_tracker.h"
@@ -58,7 +59,7 @@ class RestoreDataCollector {
 
     DeskTemplateType template_type;
     std::string template_name;
-    aura::Window* root_window_to_show;
+    raw_ptr<aura::Window, ExperimentalAsh> root_window_to_show;
     std::vector<aura::Window*> unsupported_apps;
     size_t incognito_window_count = 0;
     std::unique_ptr<app_restore::RestoreData> data;

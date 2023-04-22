@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desk_button_base.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace gfx {
@@ -65,7 +66,7 @@ class ASH_EXPORT ZeroStateIconButton : public DeskButtonBase {
   void OnMouseExited(const ui::MouseEvent& event) override;
 
  private:
-  const gfx::VectorIcon* const button_icon_;
+  const raw_ptr<const gfx::VectorIcon, ExperimentalAsh> button_icon_;
 };
 
 }  // namespace ash

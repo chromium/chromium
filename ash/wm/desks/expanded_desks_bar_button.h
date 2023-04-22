@@ -6,6 +6,7 @@
 #define ASH_WM_DESKS_EXPANDED_DESKS_BAR_BUTTON_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/views/view.h"
@@ -65,11 +66,11 @@ class ASH_EXPORT ExpandedDesksBarButton : public views::View {
   absl::optional<ui::ColorId> GetFocusColorIdForTesting();
 
  private:
-  DeskBarViewBase* const bar_view_;  // Not owned.
-  const gfx::VectorIcon* const button_icon_;
+  const raw_ptr<DeskBarViewBase, ExperimentalAsh> bar_view_;  // Not owned.
+  const raw_ptr<const gfx::VectorIcon, ExperimentalAsh> button_icon_;
   const std::u16string button_label_;
-  InnerExpandedDesksBarButton* inner_button_;
-  views::Label* label_;
+  raw_ptr<InnerExpandedDesksBarButton, ExperimentalAsh> inner_button_;
+  raw_ptr<views::Label, ExperimentalAsh> label_;
 
   // If `active_` is true, then the border of `inner_button_` will be
   // highlighted if it's not already focused.

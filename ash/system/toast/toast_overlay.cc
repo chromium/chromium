@@ -19,6 +19,7 @@
 #include "ash/style/system_toast_style.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -89,7 +90,7 @@ class ToastOverlay::ToastDisplayObserver : public display::DisplayObserver {
   }
 
  private:
-  ToastOverlay* const overlay_;
+  const raw_ptr<ToastOverlay, ExperimentalAsh> overlay_;
 
   display::ScopedDisplayObserver display_observer_{this};
 };
@@ -256,7 +257,7 @@ gfx::Rect ToastOverlay::CalculateOverlayBounds() {
   // to handle multiple monitors properly.
   auto* window = overlay_widget_->IsNativeWidgetInitialized()
                      ? overlay_widget_->GetNativeWindow()
-                     : root_window_;
+                     : root_window_.get();
   auto* window_controller = RootWindowController::ForWindow(window);
   auto* hotseat_widget = window_controller->shelf()->hotseat_widget();
 

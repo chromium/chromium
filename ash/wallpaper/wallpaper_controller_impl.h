@@ -30,6 +30,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -778,7 +779,8 @@ class ASH_EXPORT WallpaperControllerImpl
   WallpaperMode wallpaper_mode_ = WALLPAPER_NONE;
 
   // Client interface in chrome browser.
-  WallpaperControllerClient* wallpaper_controller_client_ = nullptr;
+  raw_ptr<WallpaperControllerClient, ExperimentalAsh>
+      wallpaper_controller_client_ = nullptr;
 
   base::ObserverList<WallpaperControllerObserver>::Unchecked observers_;
 

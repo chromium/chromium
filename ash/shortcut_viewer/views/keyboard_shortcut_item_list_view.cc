@@ -7,6 +7,7 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/shortcut_viewer/views/keyboard_shortcut_item_view.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/default_style.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
@@ -61,7 +62,7 @@ class HorizontalSeparator : public views::View {
 
  private:
   const int preferred_width_;
-  ash::ColorProvider* color_provider_;
+  raw_ptr<ash::ColorProvider, ExperimentalAsh> color_provider_;
 };
 
 }  // namespace

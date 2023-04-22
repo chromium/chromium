@@ -12,6 +12,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/public/cpp/system_tray_observer.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -333,7 +334,7 @@ class ASH_EXPORT CaptureModeCameraController
 
   // Owned by CaptureModeController and guaranteed to be not null and to outlive
   // `this`.
-  CaptureModeDelegate* const delegate_;
+  const raw_ptr<CaptureModeDelegate, ExperimentalAsh> delegate_;
 
   // The remote end to the video source provider that exists in the video
   // capture service.
@@ -357,7 +358,7 @@ class ASH_EXPORT CaptureModeCameraController
 
   // The camera preview widget and its contents view.
   views::UniqueWidgetPtr camera_preview_widget_;
-  CameraPreviewView* camera_preview_view_ = nullptr;
+  raw_ptr<CameraPreviewView, ExperimentalAsh> camera_preview_view_ = nullptr;
 
   // A timer used to give a `selected_camera_` that got disconnected a grace
   // period, so if it reconnects again within this period, its ID is kept around

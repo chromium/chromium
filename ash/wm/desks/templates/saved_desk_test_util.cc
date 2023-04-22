@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
+#include "base/memory/raw_ref.h"
 
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
@@ -42,17 +43,18 @@ class BoundsAnimatorWaiter : public views::BoundsAnimatorObserver {
  public:
   explicit BoundsAnimatorWaiter(views::BoundsAnimator& animator)
       : animator_(animator) {
-    animator_.AddObserver(this);
+    animator_->AddObserver(this);
   }
 
   BoundsAnimatorWaiter(const BoundsAnimatorWaiter&) = delete;
   BoundsAnimatorWaiter& operator=(const BoundsAnimatorWaiter&) = delete;
 
-  ~BoundsAnimatorWaiter() override { animator_.RemoveObserver(this); }
+  ~BoundsAnimatorWaiter() override { animator_->RemoveObserver(this); }
 
   void Wait() {
-    if (!animator_.IsAnimating())
+    if (!animator_->IsAnimating()) {
       return;
+    }
 
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
@@ -66,7 +68,7 @@ class BoundsAnimatorWaiter : public views::BoundsAnimatorObserver {
       run_loop_->Quit();
   }
 
-  views::BoundsAnimator& animator_;
+  const raw_ref<views::BoundsAnimator, ExperimentalAsh> animator_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 

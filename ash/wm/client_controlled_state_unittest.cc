@@ -28,6 +28,7 @@
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -187,7 +188,7 @@ class ClientControlledStateTest : public AshTestBase {
     params.parent = Shell::GetPrimaryRootWindow()->GetChildById(
         desks_util::GetActiveDeskContainerId());
     params.bounds = kInitialBounds;
-    params.delegate = widget_delegate_;
+    params.delegate = widget_delegate_.get();
 
     widget_ = std::make_unique<views::Widget>();
     widget_->Init(std::move(params));
@@ -236,10 +237,13 @@ class ClientControlledStateTest : public AshTestBase {
   }
 
  private:
-  ClientControlledState* state_ = nullptr;
-  TestClientControlledStateDelegate* state_delegate_ = nullptr;
-  TestWidgetDelegate* widget_delegate_ = nullptr;  // owned by itself.
-  TestWindowStateDelegate* window_state_delegate_ = nullptr;
+  raw_ptr<ClientControlledState, ExperimentalAsh> state_ = nullptr;
+  raw_ptr<TestClientControlledStateDelegate, ExperimentalAsh> state_delegate_ =
+      nullptr;
+  raw_ptr<TestWidgetDelegate, ExperimentalAsh> widget_delegate_ =
+      nullptr;  // owned by itself.
+  raw_ptr<TestWindowStateDelegate, ExperimentalAsh> window_state_delegate_ =
+      nullptr;
   std::unique_ptr<views::Widget> widget_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

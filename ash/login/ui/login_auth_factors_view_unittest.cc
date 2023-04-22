@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -74,7 +75,7 @@ class FakeAuthFactorModel : public AuthFactorModel {
 
   AuthFactorType type_;
   AuthFactorState state_ = AuthFactorState::kReady;
-  AuthIconView* icon_ = nullptr;
+  raw_ptr<AuthIconView, ExperimentalAsh> icon_ = nullptr;
   bool do_handle_tap_or_click_called_ = false;
   bool should_announce_label_ = false;
   int do_handle_error_timeout_num_calls_ = 0;
@@ -102,7 +103,7 @@ class ScopedAXEventObserver : public views::AXEventObserver {
     }
   }
 
-  views::View* view_;
+  raw_ptr<views::View, ExperimentalAsh> view_;
   ax::mojom::Event event_type_;
 };
 
@@ -209,8 +210,9 @@ class LoginAuthFactorsViewUnittest : public LoginTestBase {
     EXPECT_FALSE(view_->GetFocusManager()->GetFocusedView());
   }
 
-  views::View* container_ = nullptr;
-  LoginAuthFactorsView* view_ = nullptr;  // Owned by container.
+  raw_ptr<views::View, ExperimentalAsh> container_ = nullptr;
+  raw_ptr<LoginAuthFactorsView, ExperimentalAsh> view_ =
+      nullptr;  // Owned by container.
   std::vector<FakeAuthFactorModel*> auth_factors_;
   bool click_to_enter_called_ = false;
   bool auth_factor_is_hiding_password_ = false;

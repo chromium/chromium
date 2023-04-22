@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -62,7 +63,7 @@ class ASH_EXPORT StatusAreaAnimationController
   // are currently disabled.
   std::list<base::ScopedClosureRunner>
       notification_center_tray_item_animation_enablers_;
-  NotificationCenterTray* notification_center_tray_;
+  raw_ptr<NotificationCenterTray, ExperimentalAsh> notification_center_tray_;
 
   base::WeakPtrFactory<StatusAreaAnimationController> weak_factory_{this};
 };

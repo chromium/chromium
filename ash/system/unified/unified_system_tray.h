@@ -16,6 +16,7 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -311,16 +312,19 @@ class ASH_EXPORT UnifiedSystemTray
       notification_icons_controller_;
 
   // Owned by the views hierarchy.
-  CurrentLocaleView* current_locale_view_ = nullptr;
-  ImeModeView* ime_mode_view_ = nullptr;
-  ManagedDeviceTrayItemView* managed_device_view_ = nullptr;
-  CameraMicTrayItemView* camera_view_ = nullptr;
-  CameraMicTrayItemView* mic_view_ = nullptr;
-  TimeTrayItemView* time_view_ = nullptr;
-  PrivacyIndicatorsTrayItemView* privacy_indicators_view_ = nullptr;
+  raw_ptr<CurrentLocaleView, ExperimentalAsh> current_locale_view_ = nullptr;
+  raw_ptr<ImeModeView, ExperimentalAsh> ime_mode_view_ = nullptr;
+  raw_ptr<ManagedDeviceTrayItemView, ExperimentalAsh> managed_device_view_ =
+      nullptr;
+  raw_ptr<CameraMicTrayItemView, ExperimentalAsh> camera_view_ = nullptr;
+  raw_ptr<CameraMicTrayItemView, ExperimentalAsh> mic_view_ = nullptr;
+  raw_ptr<TimeTrayItemView, ExperimentalAsh> time_view_ = nullptr;
+  raw_ptr<PrivacyIndicatorsTrayItemView, ExperimentalAsh>
+      privacy_indicators_view_ = nullptr;
 
-  NetworkTrayView* network_tray_view_ = nullptr;
-  ChannelIndicatorView* channel_indicator_view_ = nullptr;
+  raw_ptr<NetworkTrayView, ExperimentalAsh> network_tray_view_ = nullptr;
+  raw_ptr<ChannelIndicatorView, ExperimentalAsh> channel_indicator_view_ =
+      nullptr;
 
   // Contains all tray items views added to tray_container().
   std::list<TrayItemView*> tray_items_;

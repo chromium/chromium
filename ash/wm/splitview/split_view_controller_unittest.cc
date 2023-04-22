@@ -58,6 +58,7 @@
 #include "ash/wm/wm_event.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -121,7 +122,7 @@ class OverviewStatesObserver : public OverviewObserver {
 
  private:
   bool overview_animate_when_exiting_ = true;
-  aura::Window* root_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
 };
 
 // The test BubbleDialogDelegateView for bubbles.
@@ -184,7 +185,7 @@ class TestTextInputClient : public ui::DummyTextInputClient {
 
  private:
   // The window to which the text client attaches to.
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
   // The bounds of the caret.
   gfx::Rect caret_bounds_;
 };

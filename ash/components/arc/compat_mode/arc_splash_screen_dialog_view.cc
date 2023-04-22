@@ -218,8 +218,8 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
       anchor_->AddChildView(std::make_unique<HighlightBorder>());
 
   // Observe anchor and its highlight to be notified when it's destroyed.
-  anchor_highlight_observations_.AddObservation(anchor_);
-  anchor_highlight_observations_.AddObservation(highlight_border_);
+  anchor_highlight_observations_.AddObservation(anchor_.get());
+  anchor_highlight_observations_.AddObservation(highlight_border_.get());
 
   // Add window observer.
   window_observer_ = std::make_unique<ArcSplashScreenWindowObserver>(
@@ -305,7 +305,7 @@ void ArcSplashScreenDialogView::OnCloseButtonClicked() {
     return;
 
   if (anchor_ && highlight_border_)
-    anchor_->RemoveChildViewT(highlight_border_);
+    anchor_->RemoveChildViewT(highlight_border_.get());
 
   std::move(close_callback_).Run();
 

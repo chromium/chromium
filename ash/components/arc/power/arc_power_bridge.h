@@ -13,6 +13,7 @@
 #include "ash/components/arc/mojom/power.mojom.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/session/connection_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -140,7 +141,8 @@ class ArcPowerBridge : public KeyedService,
   // Sends a PowerInstance::Resume mojo call to Android.
   void DispatchAndroidResume();
 
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
 
   std::string user_id_hash_;
 

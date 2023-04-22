@@ -192,7 +192,7 @@ void AppListToastContainerView::RemoveReorderNudgeView() {
 
 void AppListToastContainerView::RemoveCurrentView() {
   if (toast_view_)
-    RemoveChildViewT(toast_view_);
+    RemoveChildViewT(toast_view_.get());
 
   toast_view_ = nullptr;
   current_toast_ = AppListToastType::kNone;

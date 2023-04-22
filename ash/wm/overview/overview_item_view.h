@@ -7,6 +7,7 @@
 
 #include "ash/wm/overview/overview_highlightable_view.h"
 #include "ash/wm/window_mini_view.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
@@ -99,9 +100,9 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView,
  private:
   // The OverviewItem which owns the widget which houses this view. Non-null
   // until `OnOverviewItemWindowRestoring` is called.
-  OverviewItem* overview_item_;
+  raw_ptr<OverviewItem, ExperimentalAsh> overview_item_;
 
-  CloseButton* close_button_;
+  raw_ptr<CloseButton, ExperimentalAsh> close_button_;
 
   HeaderVisibility current_header_visibility_ = HeaderVisibility::kVisible;
 };

@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -129,7 +130,8 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
   std::unique_ptr<MenuModelWithWillCloseCallback> const model_;
   // The root MenuItemView which contains all child MenuItemViews. Owned by
   // |menu_runner_|.
-  views::MenuItemView* root_view_ = nullptr;
+  raw_ptr<views::MenuItemView, DanglingUntriaged | ExperimentalAsh> root_view_ =
+      nullptr;
   // Responsible for showing |root_view_|.
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
@@ -148,11 +150,12 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
   // It updates synchronously when a item is removed.
   ItemViewsByCommandId item_views_by_command_id_;
 
-  const ClipboardHistory* const clipboard_history_;
+  const raw_ptr<const ClipboardHistory, ExperimentalAsh> clipboard_history_;
 
   // Resource manager used to fetch image models. Owned by
   // ClipboardHistoryController.
-  const ClipboardHistoryResourceManager* const resource_manager_;
+  const raw_ptr<const ClipboardHistoryResourceManager, ExperimentalAsh>
+      resource_manager_;
 
   // Indicates the number of item deletion operations in progress. Note that
   // a `ClipboardHistoryItemView` instance is deleted asynchronously.

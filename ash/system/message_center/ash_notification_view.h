@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/message_center/message_center.h"
@@ -153,7 +154,8 @@ class ASH_EXPORT AshNotificationView
         AshNotificationView* parent_notification_view);
 
    private:
-    AshNotificationView* parent_notification_view_ = nullptr;
+    raw_ptr<AshNotificationView, ExperimentalAsh> parent_notification_view_ =
+        nullptr;
   };
   BEGIN_VIEW_BUILDER(/*no export*/,
                      GroupedNotificationsContainer,
@@ -200,11 +202,11 @@ class ASH_EXPORT AshNotificationView
    private:
     friend class AshNotificationViewTestBase;
     // Showing notification title.
-    views::Label* const title_view_;
+    const raw_ptr<views::Label, ExperimentalAsh> title_view_;
 
     // Timestamp view shown alongside the title in collapsed state.
-    views::Label* const title_row_divider_;
-    views::Label* const timestamp_in_collapsed_view_;
+    const raw_ptr<views::Label, ExperimentalAsh> title_row_divider_;
+    const raw_ptr<views::Label, ExperimentalAsh> timestamp_in_collapsed_view_;
 
     // The maximum width available to the title row.
     int max_available_width_ = 0;
@@ -307,16 +309,19 @@ class ASH_EXPORT AshNotificationView
   views::View* collapsed_summary_view_ = nullptr;
   message_center::NotificationControlButtonsView* control_buttons_view_ =
       nullptr;
-  views::LabelButton* turn_off_notifications_button_ = nullptr;
-  views::LabelButton* inline_settings_cancel_button_ = nullptr;
+  raw_ptr<views::LabelButton, ExperimentalAsh> turn_off_notifications_button_ =
+      nullptr;
+  raw_ptr<views::LabelButton, ExperimentalAsh> inline_settings_cancel_button_ =
+      nullptr;
   views::View* snooze_button_spacer_ = nullptr;
-  IconButton* snooze_button_ = nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> snooze_button_ = nullptr;
 
   // These views below are dynamically created inside view hierarchy.
-  NotificationTitleRow* title_row_ = nullptr;
+  raw_ptr<NotificationTitleRow, ExperimentalAsh> title_row_ = nullptr;
 
   // Layout manager for the container of header and left content.
-  views::BoxLayout* header_left_content_layout_ = nullptr;
+  raw_ptr<views::BoxLayout, ExperimentalAsh> header_left_content_layout_ =
+      nullptr;
 
   // Corner radius of the notification view.
   int top_radius_ = 0;

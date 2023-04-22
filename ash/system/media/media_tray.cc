@@ -24,6 +24,7 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "components/media_message_center/notification_theme.h"
@@ -154,8 +155,8 @@ class GlobalMediaControlsTitleView : public views::View {
   views::Button* pin_button() { return pin_button_; }
 
  private:
-  views::ImageButton* pin_button_ = nullptr;
-  views::Label* title_label_ = nullptr;
+  raw_ptr<views::ImageButton, ExperimentalAsh> pin_button_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
 };
 
 }  // namespace

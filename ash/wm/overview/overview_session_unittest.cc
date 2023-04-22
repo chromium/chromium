@@ -75,6 +75,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -154,7 +155,7 @@ class TweenTester : public ui::LayerAnimationObserver {
 
  private:
   gfx::Tween::Type tween_type_ = gfx::Tween::LINEAR;
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
   bool will_animate_ = false;
 };
 

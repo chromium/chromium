@@ -15,6 +15,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -420,7 +421,7 @@ class ASH_EXPORT TabletModeController
   base::TimeTicks first_unstable_lid_angle_time_;
 
   // Source for the current time in base::TimeTicks.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
 
   // The state in which the UI mode is forced in via command-line flags, such as
   // `--force-tablet-mode=touch_view` or `--force-tablet-mode=clamshell`.
@@ -499,7 +500,7 @@ class ASH_EXPORT TabletModeController
 
   // The layer that animates duraing tablet mode <-> clamshell
   // transition. It's observed to take an action after its animation ends.
-  ui::Layer* animating_layer_ = nullptr;
+  raw_ptr<ui::Layer, ExperimentalAsh> animating_layer_ = nullptr;
 
   // When in scope, hides the shelf and float containers. Used to temporarily
   // hide shelf while taking a screenshot during tablet mode transition (so the

@@ -40,6 +40,7 @@
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -648,7 +649,8 @@ class TransitionAnimationWaiter
     run_loop_->Quit();
   }
 
-  HotseatTransitionAnimator* hotseat_transition_animator_ = nullptr;
+  raw_ptr<HotseatTransitionAnimator, ExperimentalAsh>
+      hotseat_transition_animator_ = nullptr;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
@@ -1125,8 +1127,8 @@ class ShelfWidgetViewsVisibilityTest : public AshTestBase {
   }
 
  private:
-  ShelfWidget* primary_shelf_widget_ = nullptr;
-  ShelfWidget* secondary_shelf_widget_ = nullptr;
+  raw_ptr<ShelfWidget, ExperimentalAsh> primary_shelf_widget_ = nullptr;
+  raw_ptr<ShelfWidget, ExperimentalAsh> secondary_shelf_widget_ = nullptr;
 };
 
 TEST_F(ShelfWidgetViewsVisibilityTest, LoginViewsLockViews) {

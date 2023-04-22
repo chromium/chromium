@@ -14,6 +14,7 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -180,7 +181,7 @@ class FirstNonAnimatedFrameStartedWaiter : public ui::CompositorObserver {
   }
 
  private:
-  ui::Compositor* compositor_;
+  raw_ptr<ui::Compositor, ExperimentalAsh> compositor_;
   bool done_ = false;
   std::unique_ptr<base::RunLoop> run_loop_;
 };

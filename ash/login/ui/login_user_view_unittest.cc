@@ -7,6 +7,7 @@
 #include "ash/login/ui/login_test_base.h"
 #include "ash/login/ui/login_test_utils.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
@@ -67,7 +68,7 @@ class LoginUserViewUnittest : public LoginTestBase {
     auto* root = new views::View();
     root->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal));
-    root->AddChildView(container_);
+    root->AddChildView(container_.get());
     SetWidget(CreateWidgetWithContent(root));
   }
 
@@ -75,7 +76,8 @@ class LoginUserViewUnittest : public LoginTestBase {
   int remove_show_warning_count_ = 0;
   int remove_count_ = 0;
 
-  views::View* container_ = nullptr;  // Owned by test widget view hierarchy.
+  raw_ptr<views::View, ExperimentalAsh> container_ =
+      nullptr;  // Owned by test widget view hierarchy.
 
  private:
   void OnTapped() { ++tap_count_; }

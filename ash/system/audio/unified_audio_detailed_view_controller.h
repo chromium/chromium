@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/unified/detailed_view_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 
 namespace ash {
@@ -48,7 +49,7 @@ class ASH_EXPORT UnifiedAudioDetailedViewController
 
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
-  AudioDetailedView* view_ = nullptr;
+  raw_ptr<AudioDetailedView, ExperimentalAsh> view_ = nullptr;
 };
 
 }  // namespace ash

@@ -15,6 +15,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -86,7 +87,7 @@ class AppListItemViewTest : public AshTestBase,
   bool IsUsingDragDropController() { return GetParam(); }
 
   int drag_started_on_controller_ = 0;
-  AppListItemView* drag_view_;
+  raw_ptr<AppListItemView, ExperimentalAsh> drag_view_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 INSTANTIATE_TEST_SUITE_P(All, AppListItemViewTest, testing::Bool());

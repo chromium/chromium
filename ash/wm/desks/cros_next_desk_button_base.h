@@ -7,6 +7,7 @@
 
 #include "ash/wm/overview/overview_highlightable_view.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/controls/button/label_button.h"
 
 namespace ash {
@@ -47,7 +48,7 @@ class CrOSNextDeskButtonBase : public views::LabelButton,
   virtual void UpdateFocusState();
 
   // Owned by the views hierarchy.
-  DeskBarViewBase* const bar_view_;
+  const raw_ptr<DeskBarViewBase, ExperimentalAsh> bar_view_;
 
  private:
   base::RepeatingClosure pressed_callback_;

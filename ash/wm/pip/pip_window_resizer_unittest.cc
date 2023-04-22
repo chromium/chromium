@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/pip/pip_window_resizer.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <string>
@@ -72,7 +73,7 @@ class FakeWindowState : public WindowState::State {
  private:
   WindowStateType state_type_;
   gfx::Rect last_bounds_;
-  WindowState* last_window_state_ = nullptr;
+  raw_ptr<WindowState, ExperimentalAsh> last_window_state_ = nullptr;
 };
 
 }  // namespace
@@ -184,8 +185,8 @@ class PipWindowResizerTest : public AshTestBase,
 
  private:
   std::unique_ptr<views::Widget> widget_;
-  aura::Window* window_;
-  FakeWindowState* test_state_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<FakeWindowState, ExperimentalAsh> test_state_;
   base::HistogramTester histograms_;
   std::unique_ptr<display::ScopedDisplayForNewWindows> scoped_display_;
 

@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/network/network_icon.h"
 #include "ash/system/network/tray_network_state_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
@@ -95,7 +96,7 @@ class ASH_EXPORT ActiveNetworkIcon : public TrayNetworkStateObserver {
   const chromeos::network_config::mojom::NetworkStateProperties*
   GetNetworkForType(Type type);
 
-  TrayNetworkStateModel* model_;
+  raw_ptr<TrayNetworkStateModel, ExperimentalAsh> model_;
 
   int cellular_uninitialized_msg_ = 0;
   base::Time uninitialized_state_time_;

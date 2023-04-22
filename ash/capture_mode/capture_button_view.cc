@@ -18,6 +18,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -60,7 +61,7 @@ constexpr gfx::Insets kFocusRingPathInsets(
 // selected.
 struct CaptureButtonState {
   const int label_id;
-  const gfx::VectorIcon& vector_icon;
+  const raw_ref<const gfx::VectorIcon, ExperimentalAsh> vector_icon;
 };
 
 // Based on the current state of capture mode, returns the state with which the
@@ -69,19 +70,19 @@ CaptureButtonState GetCaptureButtonState() {
   const auto* const controller = CaptureModeController::Get();
   if (controller->type() == CaptureModeType::kImage) {
     return CaptureButtonState{IDS_ASH_SCREEN_CAPTURE_LABEL_IMAGE_CAPTURE,
-                              kCaptureModeImageIcon};
+                              raw_ref(kCaptureModeImageIcon)};
   }
 
   if (controller->recording_type() == RecordingType::kWebM) {
     return CaptureButtonState{IDS_ASH_SCREEN_CAPTURE_LABEL_VIDEO_RECORD,
-                              kCaptureModeVideoIcon};
+                              raw_ref(kCaptureModeVideoIcon)};
   }
 
   DCHECK(features::IsGifRecordingEnabled());
   DCHECK_EQ(controller->recording_type(), RecordingType::kGif);
 
   return CaptureButtonState{IDS_ASH_SCREEN_CAPTURE_LABEL_GIF_RECORD,
-                            kCaptureGifIcon};
+                            raw_ref(kCaptureGifIcon)};
 }
 
 }  // namespace
@@ -154,7 +155,7 @@ void CaptureButtonView::UpdateViewVisuals() {
       GetColorProvider()->GetColor(kColorAshIconColorPrimary);
   capture_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(button_state.vector_icon, icon_color));
+      ui::ImageModel::FromVectorIcon(*button_state.vector_icon, icon_color));
 
   if (should_invalidate_focus_ring) {
     // Note that we don't need to invalidate the focus ring of the

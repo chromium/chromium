@@ -13,6 +13,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/presentation_time_recorder.h"
@@ -284,11 +285,11 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   int GetPaddingBetweenPages() const;
 
   // Created by AppListMainView, owned by views hierarchy.
-  ContentsView* const contents_view_;
+  const raw_ptr<ContentsView, ExperimentalAsh> contents_view_;
 
   // Used to get information about whether a point is within the page flip drag
   // buffer area around this view.
-  ContainerDelegate* const container_delegate_;
+  const raw_ptr<ContainerDelegate, ExperimentalAsh> container_delegate_;
 
   // Depends on |pagination_model_|.
   std::unique_ptr<PaginationController> pagination_controller_;

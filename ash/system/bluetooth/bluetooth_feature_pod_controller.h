@@ -9,6 +9,7 @@
 
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -91,9 +92,11 @@ class ASH_EXPORT BluetoothFeaturePodController
       bluetooth_config::mojom::BluetoothModificationState::
           kCannotModifyBluetooth;
   bluetooth_config::mojom::BluetoothSystemState system_state_;
-  FeaturePodButton* button_ = nullptr;  // Owned by views hierarchy.
-  FeatureTile* tile_ = nullptr;         // Owned by views hierarchy.
-  UnifiedSystemTrayController* tray_controller_;
+  raw_ptr<FeaturePodButton, ExperimentalAsh> button_ =
+      nullptr;  // Owned by views hierarchy.
+  raw_ptr<FeatureTile, ExperimentalAsh> tile_ =
+      nullptr;  // Owned by views hierarchy.
+  raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
 
   base::WeakPtrFactory<BluetoothFeaturePodController> weak_factory_{this};
 };

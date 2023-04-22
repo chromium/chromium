@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -64,7 +65,7 @@ class TimeViewTest : public AshTestBase {
   VerticalDateView* vertical_date() { return time_view_->date_view_; }
 
   views::Label* vertical_date_label() {
-    return time_view_->date_view_ ? time_view_->date_view_->text_label_
+    return time_view_->date_view_ ? time_view_->date_view_->text_label_.get()
                                   : nullptr;
   }
 
@@ -80,7 +81,7 @@ class TimeViewTest : public AshTestBase {
  private:
   std::unique_ptr<views::Widget> widget_;
   // Owned by `widget_`.
-  TimeView* time_view_;
+  raw_ptr<TimeView, ExperimentalAsh> time_view_;
   base::WeakPtrFactory<TimeViewTest> weak_factory_{this};
 };
 

@@ -18,6 +18,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -81,7 +82,7 @@ class ProjectorUiControllerTest : public AshTestBase {
   }
 
  protected:
-  ProjectorUiController* controller_;
+  raw_ptr<ProjectorUiController, ExperimentalAsh> controller_;
   MockProjectorClient projector_client_;
 
  private:

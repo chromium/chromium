@@ -23,6 +23,7 @@
 #include "ash/public/cpp/assistant/controller/assistant_suggestions_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
@@ -96,7 +97,8 @@ class SuggestionChipAnimator : public ElementAnimator {
         0.f, kChipFadeOutDuration, gfx::Tween::Type::FAST_OUT_SLOW_IN));
   }
 
-  const SuggestionContainerView* const parent_;  // |parent_| owns |this|.
+  const raw_ptr<const SuggestionContainerView, ExperimentalAsh>
+      parent_;  // |parent_| owns |this|.
 };
 
 // SuggestionContainerView -----------------------------------------------------

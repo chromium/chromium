@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/drag_window_resizer.h"
+#include "base/memory/raw_ptr.h"
 
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -168,7 +169,7 @@ class DragWindowResizerTest : public AshTestBase {
   std::unique_ptr<aura::Window> window_;
   std::unique_ptr<aura::Window> always_on_top_window_;
   std::unique_ptr<aura::Window> system_modal_window_;
-  aura::Window* transient_child_;
+  raw_ptr<aura::Window, ExperimentalAsh> transient_child_;
   std::unique_ptr<aura::Window> transient_parent_;
 };
 

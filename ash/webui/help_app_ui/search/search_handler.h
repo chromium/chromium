@@ -11,6 +11,7 @@
 #include "ash/webui/help_app_ui/search/search.mojom.h"
 #include "ash/webui/help_app_ui/search/search_concept.h"
 #include "ash/webui/help_app_ui/search/search_tag_registry.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
@@ -84,7 +85,7 @@ class SearchHandler : public mojom::SearchHandler,
   mojom::SearchResultPtr ResultToSearchResult(
       const local_search_service::Result& result) const;
 
-  SearchTagRegistry* search_tag_registry_;
+  raw_ptr<SearchTagRegistry, ExperimentalAsh> search_tag_registry_;
   mojo::Remote<local_search_service::mojom::Index> index_remote_;
 
   CacheStatus cache_status_;

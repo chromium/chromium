@@ -210,7 +210,7 @@ ScrollableUsersListView::ScrollableUsersListView(
       ->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical))
       ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
-  ensure_min_height->AddChildView(user_view_host_);
+  ensure_min_height->AddChildView(user_view_host_.get());
   SetContents(std::move(ensure_min_height));
   SetBackgroundColor(absl::nullopt);
   SetDrawOverflowIndicator(false);

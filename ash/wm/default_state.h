@@ -7,6 +7,7 @@
 
 #include "ash/wm/base_state.h"
 #include "ash/wm/window_state.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -82,7 +83,7 @@ class DefaultState : public BaseState {
   display::Display stored_display_state_;
 
   // The window state only gets remembered for DCHECK reasons.
-  WindowState* stored_window_state_ = nullptr;
+  raw_ptr<WindowState, ExperimentalAsh> stored_window_state_ = nullptr;
 };
 
 }  // namespace ash

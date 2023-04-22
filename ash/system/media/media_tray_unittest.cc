@@ -12,6 +12,7 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "media/base/media_switches.h"
@@ -70,7 +71,7 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
  private:
   bool has_active_notifications_ = false;
   bool has_frozen_notifications_ = false;
-  MediaNotificationProvider* const old_provider_;
+  const raw_ptr<MediaNotificationProvider, ExperimentalAsh> old_provider_;
 };
 
 // Mock tray button used to test media tray bubble's anchor update.
@@ -167,7 +168,7 @@ class MediaTrayTest : public AshTestBase {
 
  private:
   std::unique_ptr<MockMediaNotificationProvider> provider_;
-  MediaTray* media_tray_;
+  raw_ptr<MediaTray, ExperimentalAsh> media_tray_;
   std::unique_ptr<MockTrayBackgroundView> mock_tray_;
 
   base::test::ScopedFeatureList feature_list_;

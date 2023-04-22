@@ -6,6 +6,7 @@
 
 #include "ash/accessibility/autoclick/autoclick_drag_event_rewriter.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/base_event_utils.h"
@@ -92,7 +93,7 @@ class AutoclickDragEventRewriterTest : public AshTestBase {
 
  protected:
   // Generates ui::Events from simulated user input.
-  ui::test::EventGenerator* generator_ = nullptr;
+  raw_ptr<ui::test::EventGenerator, ExperimentalAsh> generator_ = nullptr;
   // Records events delivered to the next event rewriter after
   // AutoclickDragEventRewriter.
   EventRecorder event_recorder_;

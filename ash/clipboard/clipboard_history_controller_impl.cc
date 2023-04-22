@@ -32,6 +32,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -228,7 +229,7 @@ class ClipboardHistoryControllerImpl::AcceleratorTarget
   }
 
   // The controller responsible for showing the Clipboard History menu.
-  ClipboardHistoryControllerImpl* const controller_;
+  const raw_ptr<ClipboardHistoryControllerImpl, ExperimentalAsh> controller_;
 
   // The accelerator to delete the selected menu item. It is only registered
   // while the menu is showing.
@@ -258,7 +259,7 @@ class ClipboardHistoryControllerImpl::MenuDelegate
 
  private:
   // The controller responsible for showing the Clipboard History menu.
-  ClipboardHistoryControllerImpl* const controller_;
+  const raw_ptr<ClipboardHistoryControllerImpl, ExperimentalAsh> controller_;
 };
 
 // ClipboardHistoryControllerImpl ----------------------------------------------

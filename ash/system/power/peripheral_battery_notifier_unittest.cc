@@ -13,6 +13,7 @@
 #include "ash/system/power/peripheral_battery_listener.h"
 #include "ash/system/power/peripheral_battery_tests.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -129,8 +130,8 @@ class PeripheralBatteryNotifierTest : public AshTestBase {
   }
 
  protected:
-  message_center::MessageCenter* message_center_;
-  TestSystemTrayClient* system_tray_client_;
+  raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
+  raw_ptr<TestSystemTrayClient, ExperimentalAsh> system_tray_client_;
   std::unique_ptr<PeripheralBatteryNotifier> battery_notifier_;
   std::unique_ptr<PeripheralBatteryListener> battery_listener_;
 

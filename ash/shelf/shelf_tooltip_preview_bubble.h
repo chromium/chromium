@@ -13,6 +13,7 @@
 #include "ash/shelf/shelf_tooltip_manager.h"
 #include "ash/shelf/window_preview.h"
 #include "ash/wm/window_mirror_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window.h"
 #include "ui/views/controls/label.h"
@@ -55,7 +56,7 @@ class ASH_EXPORT ShelfTooltipPreviewBubble : public ShelfBubble,
 
   std::vector<WindowPreview*> previews_;
 
-  ShelfTooltipManager* manager_;
+  raw_ptr<ShelfTooltipManager, ExperimentalAsh> manager_;
   base::OneShotTimer dismiss_timer_;
 };
 

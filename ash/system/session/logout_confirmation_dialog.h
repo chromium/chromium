@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_SESSION_LOGOUT_CONFIRMATION_DIALOG_H_
 #define ASH_SYSTEM_SESSION_LOGOUT_CONFIRMATION_DIALOG_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -46,10 +47,10 @@ class LogoutConfirmationDialog : public views::DialogDelegateView {
   void UpdateLabel();
   void OnDialogAccepted();
 
-  LogoutConfirmationController* controller_;
+  raw_ptr<LogoutConfirmationController, ExperimentalAsh> controller_;
   base::TimeTicks logout_time_;
 
-  views::Label* label_;
+  raw_ptr<views::Label, ExperimentalAsh> label_;
 
   base::RepeatingTimer update_timer_;
 };

@@ -10,6 +10,7 @@
 #include "ash/quick_pair/ui/fast_pair/fast_pair_presenter_impl.h"
 #include "ash/quick_pair/ui/ui_broker.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
@@ -91,7 +92,8 @@ class FakeFastPairPresenterFactory
   }
 
  protected:
-  FakeFastPairPresenter* fake_fast_pair_presenter_ = nullptr;
+  raw_ptr<FakeFastPairPresenter, ExperimentalAsh> fake_fast_pair_presenter_ =
+      nullptr;
 };
 
 }  // namespace

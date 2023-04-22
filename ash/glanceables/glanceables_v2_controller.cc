@@ -34,7 +34,8 @@ void GlanceablesV2Controller::UpdateClientsRegistration(
 
 GlanceablesTasksClient* GlanceablesV2Controller::GetTasksClient() const {
   const auto iter = clients_registry_.find(active_account_id_);
-  return iter != clients_registry_.end() ? iter->second.tasks_client : nullptr;
+  return iter != clients_registry_.end() ? iter->second.tasks_client.get()
+                                         : nullptr;
 }
 
 }  // namespace ash

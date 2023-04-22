@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/view.h"
@@ -47,11 +48,11 @@ class ASH_EXPORT PhoneHubInterstitialView : public PhoneHubContentView {
  private:
   // A progress bar will be shown under the title row if |show_progress| is
   // true.
-  views::ProgressBar* progress_bar_ = nullptr;
-  views::ImageView* image_ = nullptr;
-  views::Label* title_ = nullptr;
-  views::Label* description_ = nullptr;
-  views::BoxLayoutView* button_container_ = nullptr;
+  raw_ptr<views::ProgressBar, ExperimentalAsh> progress_bar_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> image_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> description_ = nullptr;
+  raw_ptr<views::BoxLayoutView, ExperimentalAsh> button_container_ = nullptr;
 };
 
 }  // namespace ash

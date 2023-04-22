@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -30,7 +31,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantUiElementViewFactory {
 
  private:
   // Owned by AssistantController.
-  AssistantViewDelegate* const delegate_;
+  const raw_ptr<AssistantViewDelegate, ExperimentalAsh> delegate_;
 };
 
 }  // namespace ash

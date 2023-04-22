@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -108,16 +109,16 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   void StartObservingTransientChild(aura::Window* transient);
   void StopObservingTransientChild(aura::Window* transient);
 
-  SplitViewController* controller_;
+  raw_ptr<SplitViewController, ExperimentalAsh> controller_;
 
   // Split view divider widget. It's a black bar stretching from one edge of the
   // screen to the other, containing a small white drag bar in the middle. As
   // the user presses on it and drag it to left or right, the left and right
   // window will be resized accordingly.
-  views::Widget* divider_widget_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> divider_widget_ = nullptr;
 
   // The contents view of the `divider_widget_`.
-  SplitViewDividerView* divider_view_ = nullptr;
+  raw_ptr<SplitViewDividerView, ExperimentalAsh> divider_view_ = nullptr;
 
   // This variable indicates the dragging state and records the window being
   // dragged which will be used to refresh the stacking order of the

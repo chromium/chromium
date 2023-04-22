@@ -11,6 +11,7 @@
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -59,9 +60,9 @@ class AmbientSlideshowPeripheralUi : public views::View,
   // Never null. Always points to the `JitterCalculator` to use.
   const base::raw_ptr<JitterCalculator> jitter_calculator_;
 
-  AmbientInfoView* ambient_info_view_ = nullptr;
+  raw_ptr<AmbientInfoView, ExperimentalAsh> ambient_info_view_ = nullptr;
 
-  MediaStringView* media_string_view_ = nullptr;
+  raw_ptr<MediaStringView, ExperimentalAsh> media_string_view_ = nullptr;
 };
 
 }  // namespace ash

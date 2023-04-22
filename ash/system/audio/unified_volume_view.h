@@ -12,6 +12,7 @@
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/unified/quick_settings_slider.h"
 #include "ash/system/unified/unified_slider_view.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -76,16 +77,16 @@ class ASH_EXPORT UnifiedVolumeView : public UnifiedSliderView,
   void ChildVisibilityChanged(views::View* child) override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
 
-  IconButton* const more_button_;
+  const raw_ptr<IconButton, ExperimentalAsh> more_button_;
 
   // Whether this `UnifiedVolumeView` is the view for the active output node.
   bool const is_active_output_node_;
 
   QuickSettingsSlider::Style const slider_style_;
-  AccessibilityControllerImpl* const a11y_controller_;
+  const raw_ptr<AccessibilityControllerImpl, ExperimentalAsh> a11y_controller_;
   uint64_t device_id_ = 0;
   // Owned by the views hierarchy.
-  IconButton* live_caption_button_ = nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> live_caption_button_ = nullptr;
 };
 
 }  // namespace ash

@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/lock_screen_action/lock_screen_action_background_controller_impl.h"
+#include "base/memory/raw_ptr.h"
 
 namespace views {
 class Widget;
@@ -39,7 +40,8 @@ class ASH_EXPORT LockScreenActionBackgroundControllerImplTestApi {
   }
 
  private:
-  LockScreenActionBackgroundControllerImpl* controller_;
+  raw_ptr<LockScreenActionBackgroundControllerImpl, ExperimentalAsh>
+      controller_;
 };
 
 }  // namespace ash

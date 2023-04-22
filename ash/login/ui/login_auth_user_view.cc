@@ -43,6 +43,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -277,7 +278,7 @@ class FingerprintLabel : public views::Label {
 struct LockScreenMessage {
   std::u16string title;
   std::u16string content;
-  const gfx::VectorIcon* icon;
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon;
 };
 
 // Returns the message used when the device was locked due to a time window
@@ -393,10 +394,10 @@ class LoginAuthUserView::FingerprintView : public views::View {
         gfx::Size(kFingerprintIconSizeDp, kFingerprintIconSizeDp),
         0 /*corner_radius*/);
 
-    AddChildView(icon_);
+    AddChildView(icon_.get());
 
     label_ = new FingerprintLabel();
-    AddChildView(label_);
+    AddChildView(label_.get());
 
     DisplayCurrentState();
   }
@@ -528,8 +529,8 @@ class LoginAuthUserView::FingerprintView : public views::View {
            state == FingerprintState::DISABLED_FROM_TIMEOUT;
   }
 
-  FingerprintLabel* label_ = nullptr;
-  AnimatedRoundedImageView* icon_ = nullptr;
+  raw_ptr<FingerprintLabel, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<AnimatedRoundedImageView, ExperimentalAsh> icon_ = nullptr;
   base::OneShotTimer reset_state_;
   FingerprintState state_ = FingerprintState::AVAILABLE_DEFAULT;
 
@@ -657,10 +658,10 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
 
   base::RepeatingClosure on_start_tap_;
   State state_ = State::kInitial;
-  ArrowButtonView* arrow_button_ = nullptr;
-  NonAccessibleView* arrow_to_icon_spacer_ = nullptr;
-  views::ImageView* icon_ = nullptr;
-  views::Label* label_ = nullptr;
+  raw_ptr<ArrowButtonView, ExperimentalAsh> arrow_button_ = nullptr;
+  raw_ptr<NonAccessibleView, ExperimentalAsh> arrow_to_icon_spacer_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
   base::OneShotTimer reset_state_timer_;
 };
 
@@ -682,7 +683,7 @@ class LoginAuthUserView::DisabledAuthMessageView : public views::View {
     }
 
    private:
-    DisabledAuthMessageView* const view_;
+    const raw_ptr<DisabledAuthMessageView, ExperimentalAsh> view_;
   };
 
   DisabledAuthMessageView() {
@@ -798,10 +799,11 @@ class LoginAuthUserView::DisabledAuthMessageView : public views::View {
     }
   }
 
-  views::Label* message_title_;
-  views::Label* message_contents_;
-  views::ImageView* message_icon_;
-  const gfx::VectorIcon* message_vector_icon_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> message_title_;
+  raw_ptr<views::Label, ExperimentalAsh> message_contents_;
+  raw_ptr<views::ImageView, ExperimentalAsh> message_icon_;
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> message_vector_icon_ =
+      nullptr;
 };
 
 // The message shown to user when TPM is locked.
@@ -888,9 +890,9 @@ class LoginAuthUserView::LockedTpmMessageView : public views::View {
   }
 
   base::TimeDelta prev_time_left_;
-  views::Label* message_warning_;
-  views::Label* message_description_;
-  views::ImageView* message_icon_;
+  raw_ptr<views::Label, ExperimentalAsh> message_warning_;
+  raw_ptr<views::Label, ExperimentalAsh> message_description_;
+  raw_ptr<views::ImageView, ExperimentalAsh> message_icon_;
 };
 
 LoginAuthUserView::AuthMethodsMetadata::AuthMethodsMetadata() = default;

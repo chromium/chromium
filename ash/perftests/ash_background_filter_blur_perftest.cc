@@ -6,6 +6,7 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/lap_timer.h"
 #include "testing/perf/perf_test.h"
 #include "ui/aura/window.h"
@@ -48,9 +49,9 @@ class AshBackgroundFilterBlurPerfTest : public AshTestBase {
   std::unique_ptr<ui::Layer> blur_layer_;
 
  private:
-  ui::Layer* root_layer_ = nullptr;
+  raw_ptr<ui::Layer, ExperimentalAsh> root_layer_ = nullptr;
 
-  ui::Compositor* compositor_ = nullptr;
+  raw_ptr<ui::Compositor, ExperimentalAsh> compositor_ = nullptr;
 
   base::LapTimer timer_;
 };

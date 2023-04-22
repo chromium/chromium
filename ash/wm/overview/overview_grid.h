@@ -19,6 +19,7 @@
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_observer.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -548,10 +549,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   int GetDesksBarHeight() const;
 
   // Root window the grid is in.
-  aura::Window* root_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
 
   // Pointer to the OverviewSession that spawned this grid.
-  OverviewSession* overview_session_;
+  raw_ptr<OverviewSession, ExperimentalAsh> overview_session_;
 
   // Vector containing all the windows in this grid.
   std::vector<std::unique_ptr<OverviewItem>> window_list_;
@@ -567,7 +568,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // feature is enabled.
   std::unique_ptr<views::Widget> desks_widget_;
   // The contents view of the above |desks_widget_| if created.
-  LegacyDeskBarView* desks_bar_view_ = nullptr;
+  raw_ptr<LegacyDeskBarView, ExperimentalAsh> desks_bar_view_ = nullptr;
 
   // The drop target widget. The drop target is created when a window or
   // overview item is being dragged, and is destroyed when the drag ends or
@@ -613,7 +614,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Weak pointer to the window that is being dragged from the top, if there is
   // one.
-  aura::Window* dragged_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> dragged_window_ = nullptr;
 
   // The widget that contains the view for all saved desks.
   std::unique_ptr<views::Widget> saved_desk_library_widget_;

@@ -6,6 +6,7 @@
 #define ASH_STYLE_PILL_BUTTON_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/button/label_button.h"
@@ -206,7 +207,7 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   int GetHorizontalSpacingWithIcon() const;
 
   Type type_;
-  const gfx::VectorIcon* const icon_;
+  const raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_;
 
   // Horizontal spacing of this button. `kPillButtonHorizontalSpacing` will be
   // set as the default value.

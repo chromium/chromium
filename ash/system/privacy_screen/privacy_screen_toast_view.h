@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_PRIVACY_SCREEN_PRIVACY_SCREEN_TOAST_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -37,9 +38,9 @@ class ASH_EXPORT PrivacyScreenToastView : public views::View,
   void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
 
-  PrivacyScreenToastController* controller_ = nullptr;
-  FeaturePodIconButton* button_ = nullptr;
-  PrivacyScreenToastLabelView* label_ = nullptr;
+  raw_ptr<PrivacyScreenToastController, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<FeaturePodIconButton, ExperimentalAsh> button_ = nullptr;
+  raw_ptr<PrivacyScreenToastLabelView, ExperimentalAsh> label_ = nullptr;
   bool is_enabled_ = false;
   bool is_managed_ = false;
 };

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/display/cursor_window_controller.h"
+#include "base/memory/raw_ptr.h"
 
 #include <utility>
 
@@ -104,7 +105,7 @@ class CursorWindowControllerTest : public AshTestBase {
 
  private:
   // Not owned.
-  CursorWindowController* cursor_window_controller_;
+  raw_ptr<CursorWindowController, ExperimentalAsh> cursor_window_controller_;
 };
 
 // Test that the composited cursor moves to another display when the real cursor

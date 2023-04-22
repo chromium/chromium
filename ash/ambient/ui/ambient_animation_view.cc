@@ -226,7 +226,7 @@ void AmbientAnimationView::Init(
   DCHECK(session_metrics_recorder);
   session_metrics_recorder->RegisterScreen(animation.get());
   animated_image_view_->SetAnimatedImage(std::move(animation));
-  animated_image_view_observer_.Observe(animated_image_view_);
+  animated_image_view_observer_.Observe(animated_image_view_.get());
   animation_attribution_provider_ =
       std::make_unique<AmbientAnimationAttributionProvider>(
           &animation_photo_provider_, animated_image_view_->animated_image());

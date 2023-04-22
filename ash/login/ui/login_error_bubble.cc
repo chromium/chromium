@@ -41,7 +41,7 @@ LoginErrorBubble::~LoginErrorBubble() = default;
 
 void LoginErrorBubble::SetContent(std::unique_ptr<views::View> content) {
   if (content_) {
-    RemoveChildViewT(content_);
+    RemoveChildViewT(content_.get());
   }
   content_ = AddChildView(std::move(content));
 }

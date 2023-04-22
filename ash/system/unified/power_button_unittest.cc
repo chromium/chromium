@@ -15,6 +15,7 @@
 #include "ash/system/unified/user_chooser_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -107,7 +108,7 @@ class PowerButtonTest : public NoSessionAshTestBase {
   }
 
   // Owned by view hierarchy.
-  PowerButton* button_ = nullptr;
+  raw_ptr<PowerButton, ExperimentalAsh> button_ = nullptr;
 
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;

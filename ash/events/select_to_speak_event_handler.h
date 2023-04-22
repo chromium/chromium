@@ -8,6 +8,7 @@
 #include <set>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -111,7 +112,7 @@ class ASH_EXPORT SelectToSpeakEventHandler : public ui::EventHandler {
   std::set<ui::KeyboardCode> keys_currently_down_;
 
   // The delegate used to send key events to the Select-to-Speak extension.
-  SelectToSpeakEventHandlerDelegate* delegate_;
+  raw_ptr<SelectToSpeakEventHandlerDelegate, ExperimentalAsh> delegate_;
 };
 
 }  // namespace ash

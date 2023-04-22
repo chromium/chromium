@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -104,12 +105,14 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
 
   // Pointers to the grids with saved desks of specific types. These will be set
   // depending on which features are enabled.
-  SavedDeskGridView* desk_template_grid_view_ = nullptr;
-  SavedDeskGridView* save_and_recall_grid_view_ = nullptr;
+  raw_ptr<SavedDeskGridView, ExperimentalAsh> desk_template_grid_view_ =
+      nullptr;
+  raw_ptr<SavedDeskGridView, ExperimentalAsh> save_and_recall_grid_view_ =
+      nullptr;
 
   // Used for scroll functionality of the library page. Owned by views
   // hierarchy.
-  views::ScrollView* scroll_view_ = nullptr;
+  raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
 
   // Adds a fade in/out gradient to the top/bottom of `scroll_view_`.
   std::unique_ptr<ScrollViewGradientHelper> scroll_view_gradient_helper_;
@@ -122,7 +125,7 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   std::vector<views::Label*> grid_labels_;
 
   // Label that shows up when the library has no items.
-  views::Label* no_items_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> no_items_label_ = nullptr;
 
   // Handles mouse/touch events on saved desk library widget.
   std::unique_ptr<SavedDeskLibraryEventHandler> event_handler_;

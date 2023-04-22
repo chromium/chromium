@@ -12,6 +12,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -102,7 +103,7 @@ class ASH_EXPORT LauncherNudgeController : public SessionObserver,
   // Returns the current time. The clock may be overridden for testing.
   base::Time GetNow() const;
 
-  const base::Clock* clock_for_test_ = nullptr;
+  raw_ptr<const base::Clock, ExperimentalAsh> clock_for_test_ = nullptr;
 
   // The timer that keeps track of when should the nudge be shown next time.
   std::unique_ptr<base::WallClockTimer> show_nudge_timer_;

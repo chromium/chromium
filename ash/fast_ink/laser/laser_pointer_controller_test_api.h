@@ -6,6 +6,7 @@
 #define ASH_FAST_INK_LASER_LASER_POINTER_CONTROLLER_TEST_API_H_
 
 #include "ash/system/palette/palette_tray.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/display/display.h"
 
 namespace ash {
@@ -32,7 +33,7 @@ class LaserPointerControllerTestApi {
   const FastInkPoints& predicted_laser_points() const;
 
  private:
-  LaserPointerController* instance_;
+  raw_ptr<LaserPointerController, ExperimentalAsh> instance_;
 };
 
 }  // namespace ash

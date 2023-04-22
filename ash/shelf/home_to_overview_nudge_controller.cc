@@ -17,6 +17,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
@@ -114,7 +115,7 @@ class ObserverToCloseWidget : public ui::ImplicitAnimationObserver {
   }
 
  private:
-  views::Widget* const widget_;
+  const raw_ptr<views::Widget, ExperimentalAsh> widget_;
 };
 
 }  // namespace
@@ -209,7 +210,7 @@ void HomeToOverviewNudgeController::ShowNudge() {
   UpdateNudgeAnchorBounds();
 
   widget_observations_.AddObservation(nudge_->GetWidget());
-  widget_observations_.AddObservation(hotseat_widget_);
+  widget_observations_.AddObservation(hotseat_widget_.get());
 
   nudge_->GetWidget()->Show();
   nudge_->GetWidget()->GetLayer()->SetTransform(gfx::Transform());

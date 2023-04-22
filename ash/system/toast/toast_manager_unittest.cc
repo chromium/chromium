@@ -23,6 +23,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -213,7 +214,7 @@ class ToastManagerImplTest : public AshTestBase {
   }
 
  private:
-  ToastManagerImpl* manager_ = nullptr;
+  raw_ptr<ToastManagerImpl, ExperimentalAsh> manager_ = nullptr;
   unsigned int serial_ = 0;
 };
 

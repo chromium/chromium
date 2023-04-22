@@ -14,6 +14,7 @@
 #include "ash/clipboard/scoped_clipboard_history_pause_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -153,7 +154,7 @@ class ClipboardHistoryTest : public AshTestBase {
  private:
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   // Owned by ClipboardHistoryControllerImpl.
-  ClipboardHistory* clipboard_history_ = nullptr;
+  raw_ptr<ClipboardHistory, ExperimentalAsh> clipboard_history_ = nullptr;
 };
 
 // Tests that with nothing copied, nothing is shown.

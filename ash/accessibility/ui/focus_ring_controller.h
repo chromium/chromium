@@ -9,6 +9,7 @@
 
 #include "ash/accessibility/ui/focus_ring_layer.h"
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/focus/widget_focus_manager.h"
 #include "ui/views/widget/widget_observer.h"
@@ -65,7 +66,7 @@ class ASH_EXPORT FocusRingController : public AccessibilityLayerDelegate,
 
   bool visible_ = false;
 
-  views::Widget* widget_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
   std::unique_ptr<FocusRingLayer> focus_ring_layer_;
 };
 

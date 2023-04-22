@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/button/button.h"
@@ -48,9 +49,9 @@ class VIEWS_EXPORT PhoneHubMoreAppsButton
   void LoadAppList();
 
   base::TimeTicks load_app_list_latency_ = base::TimeTicks();
-  views::TableLayout* table_layout_ = nullptr;
-  phonehub::AppStreamLauncherDataModel* app_stream_launcher_data_model_ =
-      nullptr;
+  raw_ptr<views::TableLayout, ExperimentalAsh> table_layout_ = nullptr;
+  raw_ptr<phonehub::AppStreamLauncherDataModel, ExperimentalAsh>
+      app_stream_launcher_data_model_ = nullptr;
   std::vector<AppLoadingIcon*> app_loading_icons_;
 };
 

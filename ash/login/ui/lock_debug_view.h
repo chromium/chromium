@@ -12,6 +12,7 @@
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/lock_screen.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
@@ -101,33 +102,38 @@ class LockDebugView : public views::View {
                                 views::Button::PressedCallback callback,
                                 views::View* container);
 
-  LockContentsView* lock_ = nullptr;
+  raw_ptr<LockContentsView, ExperimentalAsh> lock_ = nullptr;
 
   // Debug container which holds the entire debug UI.
-  views::View* container_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> container_ = nullptr;
 
   // Container which holds global actions.
-  views::View* global_action_view_container_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> global_action_view_container_ = nullptr;
 
   // Global add system info button. Reference is needed to dynamically disable.
-  views::LabelButton* global_action_add_system_info_ = nullptr;
+  raw_ptr<views::LabelButton, ExperimentalAsh> global_action_add_system_info_ =
+      nullptr;
 
   // Global toggle auth button. Reference is needed to update the string.
-  views::LabelButton* global_action_toggle_auth_ = nullptr;
+  raw_ptr<views::LabelButton, ExperimentalAsh> global_action_toggle_auth_ =
+      nullptr;
 
   // Row that contains buttons for debugging detachable base state.
-  views::View* global_action_detachable_base_group_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> global_action_detachable_base_group_ =
+      nullptr;
 
   // Container which contains rows of buttons, one row associated with one user.
   // Each button in the row has an id which can be used to identify it. The
   // button also has a tag which identifies which user index the button applies
   // to.
-  views::View* per_user_action_view_container_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> per_user_action_view_container_ =
+      nullptr;
 
   // Debug dispatcher and cached data for the UI.
   std::unique_ptr<DebugDataDispatcherTransformer> const debug_data_dispatcher_;
   // Reference to the detachable base model passed to (and owned by) lock_.
-  DebugLoginDetachableBaseModel* debug_detachable_base_model_ = nullptr;
+  raw_ptr<DebugLoginDetachableBaseModel, ExperimentalAsh>
+      debug_detachable_base_model_ = nullptr;
   size_t num_system_info_clicks_ = 0u;
   LoginScreenController::ForceFailAuth force_fail_auth_ =
       LoginScreenController::ForceFailAuth::kOff;

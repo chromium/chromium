@@ -24,6 +24,7 @@
 #include "base/containers/adapters.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "ui/aura/window.h"
@@ -239,7 +240,7 @@ class ScrollContentsView : public views::View {
     if (!details.is_add && details.parent == this) {
       headers_.erase(std::remove_if(headers_.begin(), headers_.end(),
                                     [details](const Header& header) {
-                                      return header.view == details.child;
+                                      return header.view.get() == details.child;
                                     }),
                      headers_.end());
     } else if (details.is_add && details.parent == this &&
@@ -268,7 +269,7 @@ class ScrollContentsView : public views::View {
         : view(view), natural_offset(view->y()), draw_separator_below(false) {}
 
     // A header View that can be decorated as sticky.
-    views::View* view;
+    raw_ptr<views::View, ExperimentalAsh> view;
 
     // Offset from the top of ScrollContentsView to |view|'s original vertical
     // position.
@@ -367,7 +368,7 @@ class ScrollContentsView : public views::View {
     canvas->DrawRect(shadowed_area, flags);
   }
 
-  views::BoxLayout* box_layout_ = nullptr;
+  raw_ptr<views::BoxLayout, ExperimentalAsh> box_layout_ = nullptr;
 
   // Header child views that stick to the top of visible viewport when scrolled.
   std::vector<Header> headers_;

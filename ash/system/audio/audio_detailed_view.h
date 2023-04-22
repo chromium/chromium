@@ -14,6 +14,7 @@
 #include "ash/style/switch.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_detailed_view.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "components/soda/soda_installer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -133,13 +134,14 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
   AudioDeviceMap device_map_;
   uint64_t focused_device_id_ = -1;
   // Owned by the views hierarchy.
-  HoverHighlightView* live_caption_view_ = nullptr;
-  views::ImageView* live_caption_icon_ = nullptr;
-  Switch* live_caption_button_ = nullptr;
-  HoverHighlightView* noise_cancellation_view_ = nullptr;
-  views::ImageView* noise_cancellation_icon_ = nullptr;
-  Switch* noise_cancellation_button_ = nullptr;
-  views::Button* settings_button_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> live_caption_view_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> live_caption_icon_ = nullptr;
+  raw_ptr<Switch, ExperimentalAsh> live_caption_button_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> noise_cancellation_view_ =
+      nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> noise_cancellation_icon_ = nullptr;
+  raw_ptr<Switch, ExperimentalAsh> noise_cancellation_button_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> settings_button_ = nullptr;
 
   base::WeakPtrFactory<AudioDetailedView> weak_factory_{this};
 };

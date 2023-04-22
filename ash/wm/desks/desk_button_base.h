@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/overview/overview_highlightable_view.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/label_button.h"
 
@@ -68,7 +69,7 @@ class ASH_EXPORT DeskButtonBase : public views::LabelButton,
 
  protected:
   // The desk bar view instance above this button in the view hierarchy.
-  DeskBarViewBase* bar_view_;
+  raw_ptr<DeskBarViewBase, ExperimentalAsh> bar_view_;
 
  private:
   friend class DesksTestApi;

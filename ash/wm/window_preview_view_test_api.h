@@ -7,6 +7,7 @@
 
 #include "ash/wm/window_mirror_view.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -38,7 +39,7 @@ class WindowPreviewViewTestApi {
   WindowMirrorView* GetMirrorViewForWidget(views::Widget* widget);
 
  private:
-  WindowPreviewView* preview_view_;
+  raw_ptr<WindowPreviewView, ExperimentalAsh> preview_view_;
 };
 
 }  // namespace ash

@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_ECHE_ECHE_ICON_LOADING_INDICATOR_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -46,7 +47,7 @@ class ASH_EXPORT EcheIconLoadingIndicatorView : public views::View,
  private:
   absl::optional<base::TimeTicks> throbber_start_time_;
 
-  views::View* parent_ = nullptr;  // Unowned.
+  raw_ptr<views::View, ExperimentalAsh> parent_ = nullptr;  // Unowned.
 
   base::ScopedObservation<views::View, views::ViewObserver> observed_session_{
       this};

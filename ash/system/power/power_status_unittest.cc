@@ -8,6 +8,7 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/gfx/image/image.h"
@@ -61,7 +62,7 @@ class PowerStatusTest : public AshTestBase {
   }
 
  protected:
-  PowerStatus* power_status_ = nullptr;  // Not owned.
+  raw_ptr<PowerStatus, ExperimentalAsh> power_status_ = nullptr;  // Not owned.
   std::unique_ptr<TestObserver> test_observer_;
 };
 

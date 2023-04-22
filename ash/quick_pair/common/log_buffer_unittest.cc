@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,7 +31,7 @@ class QuickPairLogBufferTest : public testing::Test,
 
  protected:
   std::vector<LogBuffer::LogMessage> log_messages_;
-  LogBuffer* log_buffer_ = nullptr;
+  raw_ptr<LogBuffer, ExperimentalAsh> log_buffer_ = nullptr;
 };
 
 TEST_F(QuickPairLogBufferTest, ObserversNotifiedWhenLogsAdded) {

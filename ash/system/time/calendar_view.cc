@@ -24,6 +24,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -276,7 +277,7 @@ class CalendarView::MonthHeaderLabelView : public views::View {
   std::u16string month_name_;
 
   // The month label in the view.
-  views::Label* const month_label_ = nullptr;
+  const raw_ptr<views::Label, ExperimentalAsh> month_label_ = nullptr;
 };
 
 CalendarView::ScrollContentsView::ScrollContentsView(
@@ -503,8 +504,9 @@ class CalendarSurfaceLayerMask : public ui::LayerOwner,
 
  private:
   // Owned by `CalendarView`.
-  views::ScrollView* const scroll_view_;
-  CalendarSlidingSurface* const calendar_sliding_surface_;
+  const raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_;
+  const raw_ptr<CalendarSlidingSurface, ExperimentalAsh>
+      calendar_sliding_surface_;
 
   // Cache the previous y offset. Used to calculate if we need to redraw the
   // layer mask whilst animating.
@@ -665,11 +667,11 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   calendar_sliding_surface_->SetPaintToLayer();
   calendar_sliding_surface_->layer()->SetFillsBoundsOpaquely(false);
 
-  scoped_calendar_model_observer_.Observe(calendar_model_);
+  scoped_calendar_model_observer_.Observe(calendar_model_.get());
   scoped_calendar_view_controller_observer_.Observe(
       calendar_view_controller_.get());
-  scoped_view_observer_.AddObservation(scroll_view_);
-  scoped_view_observer_.AddObservation(content_view_);
+  scoped_view_observer_.AddObservation(scroll_view_.get());
+  scoped_view_observer_.AddObservation(content_view_.get());
   scoped_view_observer_.AddObservation(this);
 
   check_upcoming_events_timer_.Start(
@@ -690,7 +692,7 @@ CalendarView::~CalendarView() {
     calendar_surface_layer_mask_.reset();
   }
   if (event_list_view_) {
-    calendar_sliding_surface_->RemoveChildViewT(event_list_view_);
+    calendar_sliding_surface_->RemoveChildViewT(event_list_view_.get());
     event_list_view_ = nullptr;
   }
   check_upcoming_events_timer_.Stop();
@@ -843,14 +845,14 @@ void CalendarView::ResetToToday() {
     calendar_view_controller_->UpdateMonth(base::Time::Now());
   }
 
-  content_view_->RemoveChildViewT(previous_label_);
-  content_view_->RemoveChildViewT(previous_month_);
-  content_view_->RemoveChildViewT(current_label_);
-  content_view_->RemoveChildViewT(current_month_);
-  content_view_->RemoveChildViewT(next_label_);
-  content_view_->RemoveChildViewT(next_month_);
-  content_view_->RemoveChildViewT(next_next_label_);
-  content_view_->RemoveChildViewT(next_next_month_);
+  content_view_->RemoveChildViewT(previous_label_.get());
+  content_view_->RemoveChildViewT(previous_month_.get());
+  content_view_->RemoveChildViewT(current_label_.get());
+  content_view_->RemoveChildViewT(current_month_.get());
+  content_view_->RemoveChildViewT(next_label_.get());
+  content_view_->RemoveChildViewT(next_month_.get());
+  content_view_->RemoveChildViewT(next_next_label_.get());
+  content_view_->RemoveChildViewT(next_next_month_.get());
 
   // Before adding new label and month views, reset the `scroll_view_` to 0
   // position. Otherwise after all the views are deleted the 'scroll_view_`'s
@@ -1436,8 +1438,8 @@ void CalendarView::OnCalendarLoaded() {
 void CalendarView::ScrollUpOneMonth() {
   calendar_view_controller_->UpdateMonth(
       calendar_view_controller_->GetPreviousMonthFirstDayUTC(1));
-  content_view_->RemoveChildViewT(next_next_label_);
-  content_view_->RemoveChildViewT(next_next_month_);
+  content_view_->RemoveChildViewT(next_next_label_.get());
+  content_view_->RemoveChildViewT(next_next_month_.get());
 
   next_next_label_ = next_label_;
   next_next_month_ = next_month_;
@@ -1483,8 +1485,8 @@ void CalendarView::ScrollDownOneMonth() {
   calendar_view_controller_->UpdateMonth(
       calendar_view_controller_->GetNextMonthFirstDayUTC(1));
 
-  content_view_->RemoveChildViewT(previous_label_);
-  content_view_->RemoveChildViewT(previous_month_);
+  content_view_->RemoveChildViewT(previous_label_.get());
+  content_view_->RemoveChildViewT(previous_month_.get());
 
   previous_label_ = current_label_;
   previous_month_ = current_month_;
@@ -1985,7 +1987,7 @@ void CalendarView::OnCloseEventListAnimationComplete() {
   if (calendar_surface_layer_mask_) {
     calendar_surface_layer_mask_.reset();
   }
-  calendar_sliding_surface_->RemoveChildViewT(event_list_view_);
+  calendar_sliding_surface_->RemoveChildViewT(event_list_view_.get());
   event_list_view_ = nullptr;
   if (up_next_view_) {
     MaybeCreateLayerMask();
@@ -2204,7 +2206,7 @@ void CalendarView::RemoveUpNextView() {
     calendar_surface_layer_mask_.reset();
   }
 
-  calendar_sliding_surface_->RemoveChildViewT(up_next_view_);
+  calendar_sliding_surface_->RemoveChildViewT(up_next_view_.get());
   up_next_view_ = nullptr;
 
   SetCalendarSlidingSurfaceBounds(event_list_view_);

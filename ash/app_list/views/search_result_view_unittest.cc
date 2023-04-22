@@ -5,6 +5,7 @@
 #include "ash/app_list/views/search_result_view.h"
 
 #include "ash/app_list/model/search/test_search_result.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -132,7 +133,7 @@ class SearchResultViewWidgetTest : public views::test::WidgetTest {
   int result_id = 0;
   std::unique_ptr<SearchResultView> answer_card_view_;
   std::unique_ptr<SearchResultView> search_result_view_;
-  views::Widget* widget_;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_;
 };
 
 TEST_F(SearchResultViewWidgetTest, SearchResultTextVectorUpdate) {

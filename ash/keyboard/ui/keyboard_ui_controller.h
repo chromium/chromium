@@ -22,6 +22,7 @@
 #include "ash/keyboard/ui/queued_display_change.h"
 #include "ash/public/cpp/keyboard/keyboard_config.h"
 #include "ash/public/cpp/keyboard/keyboard_types.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -411,12 +412,12 @@ class KEYBOARD_EXPORT KeyboardUIController
   std::unique_ptr<KeyboardUIFactory> ui_factory_;
   std::unique_ptr<KeyboardUI> ui_;
   std::unique_ptr<ui::VirtualKeyboardController> virtual_keyboard_controller_;
-  KeyboardLayoutDelegate* layout_delegate_ = nullptr;
+  raw_ptr<KeyboardLayoutDelegate, ExperimentalAsh> layout_delegate_ = nullptr;
   base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
       ime_observation_{this};
 
   // Container window that the keyboard window is a child of.
-  aura::Window* parent_container_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> parent_container_ = nullptr;
 
   // CallbackAnimationObserver should be destroyed before |ui_| because it uses
   // |ui_|'s animator.

@@ -17,6 +17,7 @@
 #include "ash/components/arc/test/test_browser_context.h"
 #include "ash/constants/app_types.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -154,7 +155,7 @@ class ArcMetricsServiceTest : public testing::Test {
 
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestBrowserContext> context_;
-  ArcMetricsService* service_;
+  raw_ptr<ArcMetricsService, ExperimentalAsh> service_;
 
   std::unique_ptr<aura::Window> fake_arc_window_;
   std::unique_ptr<aura::Window> fake_non_arc_window_;

@@ -124,7 +124,7 @@ void NotificationCenterView::Init() {
   scroller_->SetContents(
       std::make_unique<ScrollerContentsView>(notification_list_view_));
   scroller_->SetBackgroundColor(absl::nullopt);
-  scroller_->SetVerticalScrollBar(base::WrapUnique(scroll_bar_));
+  scroller_->SetVerticalScrollBar(base::WrapUnique(scroll_bar_.get()));
   scroller_->SetDrawOverflowIndicator(false);
   scroller_->SetPaintToLayer();
   scroller_->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{
@@ -132,7 +132,7 @@ void NotificationCenterView::Init() {
                              ? kJellyMessageCenterScrollViewCornerRadius
                              : kMessageCenterScrollViewCornerRadius)});
 
-  AddChildView(scroller_);
+  AddChildView(scroller_.get());
 
   // Make sure the scroll view takes up the entirety of available height in the
   // revamped notification center view. With the QsRevamp we do not manually
@@ -149,7 +149,7 @@ void NotificationCenterView::Init() {
                             base::Unretained(this)));
   }
 
-  AddChildView(notification_bar_);
+  AddChildView(notification_bar_.get());
 }
 
 bool NotificationCenterView::UpdateNotificationBar() {

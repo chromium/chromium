@@ -17,6 +17,7 @@
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
@@ -250,7 +251,8 @@ class ArcNetHostImpl : public KeyedService,
                                       CreateNetworkCallback callback,
                                       base::Value::Dict eap_dict);
 
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
 
   // True if the chrome::NetworkStateHandler is currently being observed for
   // state changes.
@@ -262,8 +264,9 @@ class ArcNetHostImpl : public KeyedService,
   std::string cached_guid_;
   std::string arc_vpn_service_path_;
   // Owned by the user profile whose context was used to initialize |this|.
-  PrefService* pref_service_ = nullptr;
-  ArcAppMetadataProvider* app_metadata_provider_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
+  raw_ptr<ArcAppMetadataProvider, ExperimentalAsh> app_metadata_provider_ =
+      nullptr;
 
   std::unique_ptr<CertManager> cert_manager_;
 

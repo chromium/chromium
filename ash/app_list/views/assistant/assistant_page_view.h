@@ -15,6 +15,7 @@
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -80,10 +81,11 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
   void InitLayout();
   void UpdateBackground(bool in_tablet_mode);
 
-  AssistantViewDelegate* const assistant_view_delegate_;
+  const raw_ptr<AssistantViewDelegate, ExperimentalAsh>
+      assistant_view_delegate_;
 
   // Owned by the view hierarchy.
-  AssistantMainView* assistant_main_view_ = nullptr;
+  raw_ptr<AssistantMainView, ExperimentalAsh> assistant_main_view_ = nullptr;
 
   int min_height_dip_;
 

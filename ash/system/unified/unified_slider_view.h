@@ -7,6 +7,7 @@
 
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/style/icon_button.h"
+#include "base/memory/raw_ptr.h"
 #include "quick_settings_slider.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -86,16 +87,16 @@ class UnifiedSliderView : public views::View {
   void CreateToastLabel();
 
  private:
-  const gfx::VectorIcon* icon_;
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_;
   int accessible_name_id_;
   views::Button::PressedCallback callback_;
 
   // Unowned. Owned by views hierarchy.
-  IconButton* button_ = nullptr;
-  views::Slider* slider_ = nullptr;
-  views::Label* toast_label_ = nullptr;
-  views::ImageView* slider_icon_ = nullptr;
-  views::View* container_ = nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> button_ = nullptr;
+  raw_ptr<views::Slider, ExperimentalAsh> slider_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> toast_label_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> slider_icon_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> container_ = nullptr;
 };
 
 }  // namespace ash

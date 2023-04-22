@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/assistant/model/assistant_notification_model_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -52,7 +53,8 @@ class AssistantNotificationExpiryMonitor {
   std::vector<const AssistantNotification*> GetNotifications() const;
 
   base::OneShotTimer timer_;
-  AssistantNotificationControllerImpl* const controller_;
+  const raw_ptr<AssistantNotificationControllerImpl, ExperimentalAsh>
+      controller_;
   std::unique_ptr<Observer> observer_;
 };
 

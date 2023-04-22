@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -60,7 +61,7 @@ class ASH_EXPORT DragWindowController {
   void RequestLayerPaintForTest();
 
   // The original window.
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 
   // Indicates touch dragging, as opposed to mouse dragging.
   const bool is_touch_dragging_;

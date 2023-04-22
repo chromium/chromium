@@ -7,6 +7,7 @@
 #include <string>
 #include "ash/login/ui/login_test_base.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -72,7 +73,7 @@ class LoginPinInputViewTest
     ExpectAttribute(value, ax::mojom::StringAttribute::kValue);
   }
 
-  LoginPinInputView* view_ = nullptr;
+  raw_ptr<LoginPinInputView, ExperimentalAsh> view_ = nullptr;
   int length_ = 0;
 
   // Generated during the callback response.

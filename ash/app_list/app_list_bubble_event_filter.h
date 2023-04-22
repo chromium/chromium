@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_handler.h"
 
 namespace ui {
@@ -48,8 +49,9 @@ class ASH_EXPORT AppListBubbleEventFilter : public ui::EventHandler {
  private:
   void ProcessPressedEvent(const ui::LocatedEvent& event);
 
-  views::Widget* const widget_;
-  views::View* button_;  // May be null.
+  const raw_ptr<views::Widget, ExperimentalAsh> widget_;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh>
+      button_;  // May be null.
   base::RepeatingClosure on_click_outside_;
 };
 

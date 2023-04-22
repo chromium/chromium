@@ -6,6 +6,7 @@
 #define ASH_LOGIN_UI_LOGIN_TOOLTIP_VIEW_H_
 
 #include "ash/login/ui/login_base_bubble_view.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/view.h"
 
@@ -36,8 +37,8 @@ class LoginTooltipView : public LoginBaseBubbleView {
   views::Label* label() { return label_; }
 
  private:
-  views::Label* label_ = nullptr;
-  views::ImageView* info_icon_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> info_icon_ = nullptr;
 };
 
 }  // namespace ash

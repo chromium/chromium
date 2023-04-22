@@ -8,6 +8,7 @@
 #include "ash/public/cpp/screen_backlight_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -99,7 +100,8 @@ class SystemInfoProvider
   mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
       cros_network_config_receiver_{this};
   std::unique_ptr<SystemInfo> system_info_;
-  chromeos::network_config::mojom::CrosNetworkConfig* cros_network_config_;
+  raw_ptr<chromeos::network_config::mojom::CrosNetworkConfig, ExperimentalAsh>
+      cros_network_config_;
   chromeos::network_config::mojom::ConnectionStateType wifi_connection_state_;
 };
 

@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_item_view.h"
+#include "base/memory/raw_ptr.h"
 #include "time_view.h"
 
 namespace ash {
@@ -33,7 +34,7 @@ class ASH_EXPORT TimeTrayItemView : public TrayItemView {
  private:
   friend class TimeTrayItemViewTest;
 
-  TimeView* time_view_ = nullptr;
+  raw_ptr<TimeView, ExperimentalAsh> time_view_ = nullptr;
 };
 
 }  // namespace ash

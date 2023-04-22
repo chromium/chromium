@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/shell_observer.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/events/event_handler.h"
@@ -89,12 +90,12 @@ class ASH_EXPORT WmModeController : public ShellObserver,
 
   // The current root window the layer of `this` belongs to. It's always nullptr
   // when WM Mode is inactive.
-  aura::Window* current_root_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> current_root_ = nullptr;
 
   // The window that got selected as the top-most one at the most recent
   // received located event. This window (if available) will be the one that
   // receives all the gestures supported by this mode.
-  aura::Window* selected_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> selected_window_ = nullptr;
 
   // When WM Mode is enabled, we dim all the displays as an indication of this
   // special mode being active, which disallows the normal interaction with

@@ -9,6 +9,7 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/wm/wm_default_layout_manager.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
@@ -75,8 +76,8 @@ class ASH_EXPORT LockLayoutManager : public WmDefaultLayoutManager,
   aura::Window* root_window() { return root_window_; }
 
  private:
-  aura::Window* window_;
-  aura::Window* root_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
 
   // An observer to update position of modals when display work area changes.
   display::ScopedDisplayObserver display_observer_{this};

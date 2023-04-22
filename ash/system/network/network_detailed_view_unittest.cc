@@ -16,6 +16,7 @@
 #include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/system/tray/tri_view.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
@@ -104,7 +105,7 @@ class NetworkDetailedViewTest : public AshTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  NetworkDetailedView* network_detailed_view_;
+  raw_ptr<NetworkDetailedView, ExperimentalAsh> network_detailed_view_;
   FakeNetworkDetailedViewDelegate fake_network_detailed_view_delegate_;
   FakeDetailedViewDelegate fake_detailed_view_delegate_;
   NetworkDetailedView::ListType list_type_;

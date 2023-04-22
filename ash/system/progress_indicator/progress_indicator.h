@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
@@ -112,13 +113,15 @@ class ASH_EXPORT ProgressIndicator : public ui::LayerOwner,
   // `animation_key_`. When an animation exists, it will be painted in lieu of
   // the determinate progress indication that would otherwise be painted for the
   // cached `progress_`.
-  ProgressIndicatorAnimationRegistry* const animation_registry_;
+  const raw_ptr<ProgressIndicatorAnimationRegistry,
+                DanglingUntriaged | ExperimentalAsh>
+      animation_registry_;
 
   // The key for which to look up animations in the `animation_registry_`.
   // When an animation exists, it will be painted in lieu of the determinate
   // progress indication that would otherwise be painted for the cached
   // `progress_`.
-  const void* const animation_key_;
+  const raw_ptr<const void, ExperimentalAsh> animation_key_;
 
   // A subscription to receive events when the icon animation associated with
   // this progress indicator's `animation_key_` has changed in the

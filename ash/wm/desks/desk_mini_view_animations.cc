@@ -17,6 +17,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -200,7 +201,7 @@ class RemovedMiniViewAnimation : public ui::ImplicitAnimationObserver {
 
   ~RemovedMiniViewAnimation() override {
     DCHECK(removed_mini_view_->parent());
-    removed_mini_view_->parent()->RemoveChildViewT(removed_mini_view_);
+    removed_mini_view_->parent()->RemoveChildViewT(removed_mini_view_.get());
 
     if (Shell::Get()->overview_controller()->InOverviewSession()) {
       DCHECK(bar_view_);
@@ -213,8 +214,8 @@ class RemovedMiniViewAnimation : public ui::ImplicitAnimationObserver {
   void OnImplicitAnimationsCompleted() override { delete this; }
 
  private:
-  DeskMiniView* removed_mini_view_;
-  LegacyDeskBarView* const bar_view_;
+  raw_ptr<DeskMiniView, ExperimentalAsh> removed_mini_view_;
+  const raw_ptr<LegacyDeskBarView, ExperimentalAsh> bar_view_;
 };
 
 // A self-deleting object that performs bounds changes animation for the desks
@@ -301,7 +302,7 @@ class DesksBarBoundsAnimation : public ui::ImplicitAnimationObserver {
   void OnImplicitAnimationsCompleted() override { delete this; }
 
  private:
-  LegacyDeskBarView* const bar_view_;
+  const raw_ptr<LegacyDeskBarView, ExperimentalAsh> bar_view_;
 };
 
 // A self-deleting class that performs the scale up / down animation for the
@@ -378,7 +379,7 @@ class DeskIconButtonScaleAnimation {
   // `desk_icon_button_` is valid through the lifetime of `this `. Since when
   // the `desk_icon_button_` is destroyed, `OnAborted` will be triggered and
   // then the destructor of `this` will be triggered.
-  CrOSNextDeskIconButton* const desk_icon_button_;
+  const raw_ptr<CrOSNextDeskIconButton, ExperimentalAsh> desk_icon_button_;
 };
 
 }  // namespace

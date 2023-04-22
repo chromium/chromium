@@ -14,6 +14,7 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_content_view.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -142,7 +143,7 @@ class FakeInputMethod : public ui::DummyInputMethod {
   int count_dispatch_key_event() const { return count_dispatch_key_event_; }
 
  private:
-  ui::TextInputClient* client_;
+  raw_ptr<ui::TextInputClient, ExperimentalAsh> client_;
   int count_show_ime_if_needed_;
   int count_cancel_composition_;
   int count_set_focused_text_input_client_;
@@ -169,7 +170,7 @@ class FakeArcWindowDelegate : public ArcImeService::ArcWindowDelegate {
 
   ui::InputMethod* GetInputMethodForWindow(
       aura::Window* window) const override {
-    return window ? test_input_method_ : nullptr;
+    return window ? test_input_method_.get() : nullptr;
   }
 
   std::unique_ptr<aura::Window> CreateFakeArcWindow() {
@@ -189,7 +190,7 @@ class FakeArcWindowDelegate : public ArcImeService::ArcWindowDelegate {
   aura::test::TestWindowDelegate dummy_delegate_;
   int next_id_;
   std::set<int> arc_window_id_;
-  ui::InputMethod* test_input_method_;
+  raw_ptr<ui::InputMethod, ExperimentalAsh> test_input_method_;
 };
 
 }  // namespace
@@ -202,9 +203,11 @@ class ArcImeServiceTest : public testing::Test {
   std::unique_ptr<ArcBridgeService> arc_bridge_service_;
   std::unique_ptr<FakeInputMethod> fake_input_method_;
   std::unique_ptr<ArcImeService> instance_;
-  FakeArcImeBridge* fake_arc_ime_bridge_;  // Owned by |instance_|
+  raw_ptr<FakeArcImeBridge, ExperimentalAsh>
+      fake_arc_ime_bridge_;  // Owned by |instance_|
 
-  FakeArcWindowDelegate* fake_window_delegate_;  // Owned by |instance_|
+  raw_ptr<FakeArcWindowDelegate, ExperimentalAsh>
+      fake_window_delegate_;  // Owned by |instance_|
   std::unique_ptr<aura::Window> arc_win_;
 
   // Needed by ArcImeService.
@@ -222,7 +225,8 @@ class ArcImeServiceTest : public testing::Test {
     instance_ = base::WrapUnique(new ArcImeService(
         nullptr, arc_bridge_service_.get(), std::move(delegate)));
     fake_arc_ime_bridge_ = new FakeArcImeBridge();
-    instance_->SetImeBridgeForTesting(base::WrapUnique(fake_arc_ime_bridge_));
+    instance_->SetImeBridgeForTesting(
+        base::WrapUnique(fake_arc_ime_bridge_.get()));
 
     arc_win_ = fake_window_delegate_->CreateFakeArcWindow();
 

@@ -10,6 +10,7 @@
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -141,7 +142,8 @@ class FadeImageView : public views::ImageView,
   base::RepeatingCallback<const ClipboardHistoryItem*()> item_resolver_;
 
   // Owned by `ClipboardHistoryController`.
-  const ClipboardHistoryResourceManager* const resource_manager_;
+  const raw_ptr<const ClipboardHistoryResourceManager, ExperimentalAsh>
+      resource_manager_;
 
   // Used to notify of image changes.
   base::RepeatingClosure update_callback_;
@@ -266,11 +268,11 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
                   image_size.height() / scaling_up_ratio));
   }
 
-  ClipboardHistoryBitmapItemView* const container_;
-  views::ImageView* image_view_ = nullptr;
+  const raw_ptr<ClipboardHistoryBitmapItemView, ExperimentalAsh> container_;
+  raw_ptr<views::ImageView, ExperimentalAsh> image_view_ = nullptr;
 
   // Helps to place a border above `image_view_`.
-  views::View* border_container_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> border_container_view_ = nullptr;
 };
 
 BEGIN_METADATA(ClipboardHistoryBitmapItemView, BitmapContentsView, ContentsView)

@@ -33,6 +33,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -244,12 +245,14 @@ class SearchBoxViewTest : public views::test::WidgetTest,
   bool CanSelectSearchResults() override { return true; }
 
   AshColorProvider ash_color_provider_;
-  AppListSearchView* search_view_ = nullptr;
+  raw_ptr<AppListSearchView, ExperimentalAsh> search_view_ = nullptr;
   AppListTestViewDelegate view_delegate_;
-  views::Widget* widget_ = nullptr;
-  AppListView* app_list_view_ = nullptr;
-  SearchBoxView* view_ = nullptr;                // Owned by views hierarchy.
-  KeyPressCounterView* counter_view_ = nullptr;  // Owned by views hierarchy.
+  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  raw_ptr<AppListView, ExperimentalAsh> app_list_view_ = nullptr;
+  raw_ptr<SearchBoxView, ExperimentalAsh> view_ =
+      nullptr;  // Owned by views hierarchy.
+  raw_ptr<KeyPressCounterView, ExperimentalAsh> counter_view_ =
+      nullptr;  // Owned by views hierarchy.
   int last_result_id_ = 0;
 };
 

@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/style/tab_slider.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
@@ -63,7 +64,7 @@ class ASH_EXPORT TabSliderButton : public views::Button {
   void NotifyClick(const ui::Event& event) override;
 
   // Not owned by button.
-  TabSlider* tab_slider_ = nullptr;
+  raw_ptr<TabSlider, ExperimentalAsh> tab_slider_ = nullptr;
   // The selected state indicating if the button is selected.
   bool selected_ = false;
 };
@@ -94,7 +95,7 @@ class ASH_EXPORT IconSliderButton : public TabSliderButton {
   void OnThemeChanged() override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
-  const gfx::VectorIcon* const icon_;
+  const raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_;
 };
 
 // An extension of `TabSliderButton` which is rounded rect button with a label
@@ -128,7 +129,7 @@ class ASH_EXPORT LabelSliderButton : public TabSliderButton {
   void StateChanged(ButtonState old_state) override;
 
   // Owned by the view hierarchy.
-  views::Label* label_;
+  raw_ptr<views::Label, ExperimentalAsh> label_;
 };
 
 // A `TabSliderButton` which shows an icon above a label.
@@ -156,8 +157,8 @@ class ASH_EXPORT IconLabelSliderButton : public TabSliderButton {
   void OnSelectedChanged() override;
 
   // Owned by the views hierarchy.
-  views::ImageView* const image_view_;
-  views::Label* const label_;
+  const raw_ptr<views::ImageView, ExperimentalAsh> image_view_;
+  const raw_ptr<views::Label, ExperimentalAsh> label_;
 };
 
 }  // namespace ash

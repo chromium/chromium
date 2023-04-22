@@ -150,7 +150,7 @@ void NotificationMenuView::OnNotificationRemoved(
 
   if (overflow_view_ && overflow_view_->is_empty()) {
     // Remove and delete |overflow_view_|.
-    RemoveChildViewT(overflow_view_);
+    RemoveChildViewT(overflow_view_.get());
     overflow_view_ = nullptr;
     PreferredSizeChanged();
     notification_item_view_delegate_->OnOverflowAddedOrRemoved();

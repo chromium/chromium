@@ -9,6 +9,7 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -190,7 +191,7 @@ class NetworkInfoBubbleTest : public AshTestBase {
  private:
   network_config::CrosNetworkConfigTestHelper network_config_helper_;
   FakeNetworkInfoBubbleDelegate fake_delegate_;
-  NetworkInfoBubble* network_info_bubble_ = nullptr;
+  raw_ptr<NetworkInfoBubble, ExperimentalAsh> network_info_bubble_ = nullptr;
   std::string wifi_path_;
   std::unique_ptr<views::Widget> widget_;
 

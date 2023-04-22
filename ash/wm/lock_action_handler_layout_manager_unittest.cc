@@ -32,6 +32,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"
@@ -67,7 +68,7 @@ class TestWindowDelegate : public views::WidgetDelegate {
   void set_widget(views::Widget* widget) { widget_ = widget; }
 
  private:
-  views::Widget* widget_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
 };
 
 }  // namespace
@@ -200,7 +201,8 @@ class LockActionHandlerLayoutManagerTestWithTestBackgroundController
  private:
   // The lock screen action background controller created by
   // |CreateActionBackgroundController|.
-  TestLockScreenActionBackgroundController* background_controller_ = nullptr;
+  raw_ptr<TestLockScreenActionBackgroundController, ExperimentalAsh>
+      background_controller_ = nullptr;
 };
 
 TEST_F(LockActionHandlerLayoutManagerTest, PreserveNormalWindowBounds) {

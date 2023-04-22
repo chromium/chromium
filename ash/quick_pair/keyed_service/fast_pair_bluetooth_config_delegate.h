@@ -5,6 +5,7 @@
 #ifndef ASH_QUICK_PAIR_KEYED_SERVICE_FAST_PAIR_BLUETOOTH_CONFIG_DELEGATE_H_
 #define ASH_QUICK_PAIR_KEYED_SERVICE_FAST_PAIR_BLUETOOTH_CONFIG_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
@@ -57,8 +58,10 @@ class FastPairBluetoothConfigDelegate
 
  private:
   base::ObserverList<Observer> observers_;
-  bluetooth_config::AdapterStateController* adapter_state_controller_ = nullptr;
-  bluetooth_config::DeviceNameManager* device_name_manager_ = nullptr;
+  raw_ptr<bluetooth_config::AdapterStateController, ExperimentalAsh>
+      adapter_state_controller_ = nullptr;
+  raw_ptr<bluetooth_config::DeviceNameManager, ExperimentalAsh>
+      device_name_manager_ = nullptr;
 };
 
 }  // namespace quick_pair

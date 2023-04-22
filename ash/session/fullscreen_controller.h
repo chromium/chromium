@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
@@ -49,7 +50,8 @@ class FullscreenController : public chromeos::PowerManagerClient::Observer {
   void LidEventReceived(chromeos::PowerManagerClient::LidState state,
                         base::TimeTicks timestamp) override;
 
-  const SessionControllerImpl* const session_controller_;
+  const raw_ptr<const SessionControllerImpl, ExperimentalAsh>
+      session_controller_;
 
   std::unique_ptr<FullscreenNotificationBubble> bubble_;
 

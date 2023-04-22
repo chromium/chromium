@@ -12,6 +12,7 @@
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -211,7 +212,7 @@ class ReturnToAppExpandButton : public views::ImageView,
 
   // Owned by the views hierarchy. Will be destroyed after this view since it is
   // the parent.
-  ReturnToAppButton* const return_to_app_button_;
+  const raw_ptr<ReturnToAppButton, ExperimentalAsh> return_to_app_button_;
 };
 
 }  // namespace

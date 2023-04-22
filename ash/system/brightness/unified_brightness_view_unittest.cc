@@ -11,6 +11,7 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -81,12 +82,14 @@ class UnifiedBrightnessViewTest : public AshTestBase {
  private:
   // The `UnifiedBrightnessView` containing a `QuickSettingsSlider`, a
   // `NightLight` button, and a drill-in button.
-  UnifiedBrightnessView* unified_brightness_view_ = nullptr;
+  raw_ptr<UnifiedBrightnessView, ExperimentalAsh> unified_brightness_view_ =
+      nullptr;
 
   // The `UnifiedBrightnessView` containing only a `QuickSettingsSlider`.
   std::unique_ptr<UnifiedBrightnessView> brightness_slider_ = nullptr;
 
-  UnifiedBrightnessSliderController* brightness_slider_controller_ = nullptr;
+  raw_ptr<UnifiedBrightnessSliderController, ExperimentalAsh>
+      brightness_slider_controller_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
 };
 

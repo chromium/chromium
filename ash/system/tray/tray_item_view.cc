@@ -90,13 +90,13 @@ void TrayItemView::RemoveObserver(Observer* observer) {
 
 void TrayItemView::CreateLabel() {
   label_ = new IconizedLabel;
-  AddChildView(label_);
+  AddChildView(label_.get());
   PreferredSizeChanged();
 }
 
 void TrayItemView::CreateImageView() {
   image_view_ = new views::ImageView;
-  AddChildView(image_view_);
+  AddChildView(image_view_.get());
   PreferredSizeChanged();
 }
 
@@ -104,7 +104,7 @@ void TrayItemView::DestroyLabel() {
   if (!label_)
     return;
 
-  RemoveChildViewT(label_);
+  RemoveChildViewT(label_.get());
   label_ = nullptr;
 }
 
@@ -112,7 +112,7 @@ void TrayItemView::DestroyImageView() {
   if (!image_view_)
     return;
 
-  RemoveChildViewT(image_view_);
+  RemoveChildViewT(image_view_.get());
   image_view_ = nullptr;
 }
 

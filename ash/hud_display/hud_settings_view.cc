@@ -13,6 +13,7 @@
 #include "ash/shell_delegate.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "cc/debug/layer_tree_debug_state.h"
@@ -61,10 +62,10 @@ class HUDCheckboxHandler {
   HUDCheckboxHandler(const HUDCheckboxHandler&) = delete;
   HUDCheckboxHandler& operator=(const HUDCheckboxHandler&) = delete;
 
-  void UpdateState() const { update_state_.Run(checkbox_); }
+  void UpdateState() const { update_state_.Run(checkbox_.get()); }
 
  private:
-  views::Checkbox* const checkbox_;  // not owned.
+  const raw_ptr<views::Checkbox, ExperimentalAsh> checkbox_;  // not owned.
   base::RepeatingCallback<void(views::Checkbox*)> update_state_;
 };
 
@@ -227,8 +228,10 @@ class AnimationSpeedControl : public views::SliderListener, public views::View {
   // Map slider values to animation scale.
   using SliderValuesMap = base::flat_map<float, float>;
 
-  views::View* hints_container_ = nullptr;  // not owned.
-  AnimationSpeedSlider* slider_ = nullptr;  // not owned.
+  raw_ptr<views::View, ExperimentalAsh> hints_container_ =
+      nullptr;  // not owned.
+  raw_ptr<AnimationSpeedSlider, ExperimentalAsh> slider_ =
+      nullptr;  // not owned.
 
   SliderValuesMap slider_values_;
 };

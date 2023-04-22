@@ -13,6 +13,7 @@
 #include "ash/app_list/model/app_icon_load_helper.h"
 #include "ash/app_list/model/app_list_item_observer.h"
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -412,7 +413,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // The app list config used to layout this view. The initial values is set
   // during view construction, but can be changed by calling
   // `UpdateAppListConfig()`.
-  const AppListConfig* app_list_config_;
+  raw_ptr<const AppListConfig, ExperimentalAsh> app_list_config_;
 
   const bool is_folder_;
 
@@ -420,14 +421,15 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // requests.
   bool waiting_for_context_menu_options_ = false;
 
-  AppListItem* item_weak_;  // Owned by AppListModel. Can be nullptr.
+  raw_ptr<AppListItem, ExperimentalAsh>
+      item_weak_;  // Owned by AppListModel. Can be nullptr.
 
   // Handles dragging and item selection. Might be a stub for items that are not
   // part of an apps grid.
-  GridDelegate* const grid_delegate_;
+  const raw_ptr<GridDelegate, ExperimentalAsh> grid_delegate_;
 
   // AppListControllerImpl by another name.
-  AppListViewDelegate* const view_delegate_;
+  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
 
   // Set to true if the ImageSkia icon in AppListItem is drawn. The refreshed
   // folder icons are directly drawn on FolderIconView instead of using the
@@ -436,18 +438,18 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   // NOTE: Only one of `icon_` and `folder_icon_` is used for an item view.
   // The icon view that uses the ImageSkia in AppListItem to draw the icon.
-  views::ImageView* icon_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
   // The folder icon view used for refreshed folders.
-  FolderIconView* folder_icon_ = nullptr;
+  raw_ptr<FolderIconView, ExperimentalAsh> folder_icon_ = nullptr;
 
-  views::Label* title_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
 
   // The background layer added under the `icon_` layer to paint the background
   // of the icon.
   ui::LayerOwner icon_background_layer_;
 
   // Draws a dot next to the title for newly installed apps.
-  views::View* new_install_dot_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> new_install_dot_ = nullptr;
 
   // The context menu model adapter used for app item view.
   std::unique_ptr<AppListMenuModelAdapter> item_menu_model_adapter_;
@@ -498,7 +500,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   // Draws an indicator in the top right corner of the image to represent an
   // active notification.
-  DotIndicator* notification_indicator_ = nullptr;
+  raw_ptr<DotIndicator, ExperimentalAsh> notification_indicator_ = nullptr;
 
   // Indicates the context in which this view is shown.
   const Context context_;

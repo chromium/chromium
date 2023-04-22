@@ -12,6 +12,7 @@
 
 #include "ash/assistant/ui/main_stage/animated_container_view.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -60,7 +61,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) UiElementContainerView
       const AssistantUiElement* ui_element) override;
   void OnAllViewsAnimatedIn() override;
 
-  views::View* scroll_indicator_ = nullptr;  // Owned by view hierarchy.
+  raw_ptr<views::View, ExperimentalAsh> scroll_indicator_ =
+      nullptr;  // Owned by view hierarchy.
 
   // Factory instance used to construct views for modeled UI elements.
   std::unique_ptr<AssistantUiElementViewFactory> view_factory_;

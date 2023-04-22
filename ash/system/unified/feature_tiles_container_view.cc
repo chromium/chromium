@@ -9,6 +9,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -68,7 +69,7 @@ class FeatureTilesContainerView::RowContainer : public views::FlexLayoutView {
   }
 
  private:
-  FeatureTilesContainerView* const container_;
+  const raw_ptr<FeatureTilesContainerView, ExperimentalAsh> container_;
 };
 
 // The page container that holds `RowContainer` elements. Can hold from one up

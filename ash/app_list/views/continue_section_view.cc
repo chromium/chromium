@@ -294,7 +294,7 @@ void ContinueSectionView::AnimateShowContinueSection() {
 
 void ContinueSectionView::RemovePrivacyNotice() {
   if (privacy_toast_) {
-    RemoveChildViewT(privacy_toast_);
+    RemoveChildViewT(privacy_toast_.get());
     privacy_toast_ = nullptr;
   }
   UpdateElementsVisibility();
@@ -386,7 +386,7 @@ void ContinueSectionView::UpdateElementsVisibility() {
   if (view_delegate_->ShouldHideContinueSection()) {
     SetVisible(false);
     if (privacy_toast_) {
-      RemoveChildViewT(privacy_toast_);
+      RemoveChildViewT(privacy_toast_.get());
       privacy_toast_ = nullptr;
       nudge_controller_->SetPrivacyNoticeShown(false);
       privacy_notice_shown_timer_.AbandonAndStop();
@@ -457,7 +457,7 @@ void ContinueSectionView::OnAppListVisibilityChanged(bool shown,
       privacy_toast_->layer()->GetAnimator()->AbortAllAnimations();
 
     if (privacy_toast_) {
-      RemoveChildViewT(privacy_toast_);
+      RemoveChildViewT(privacy_toast_.get());
       privacy_toast_ = nullptr;
     }
   }

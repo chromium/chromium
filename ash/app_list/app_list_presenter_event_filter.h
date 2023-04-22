@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_APP_LIST_PRESENTER_EVENT_FILTER_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_handler.h"
 
 namespace ui {
@@ -38,9 +39,9 @@ class ASH_EXPORT AppListPresenterEventFilter : public ui::EventHandler {
  private:
   void ProcessLocatedEvent(ui::LocatedEvent* event);
 
-  AppListControllerImpl* const controller_;
-  AppListPresenterImpl* const presenter_;
-  AppListView* const view_;
+  const raw_ptr<AppListControllerImpl, ExperimentalAsh> controller_;
+  const raw_ptr<AppListPresenterImpl, ExperimentalAsh> presenter_;
+  const raw_ptr<AppListView, ExperimentalAsh> view_;
 };
 
 }  // namespace ash

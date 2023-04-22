@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/style/icon_button.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ui {
 class Event;
@@ -64,8 +65,8 @@ class ASH_EXPORT PowerButton : public views::View {
   views::MenuItemView* GetMenuViewForTesting();
 
   // Owned by views hierarchy.
-  views::View* background_view_ = nullptr;
-  IconButton* button_content_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> background_view_ = nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> button_content_ = nullptr;
 
   // The context menu, which will be set as the controller to show the power
   // button menu view.

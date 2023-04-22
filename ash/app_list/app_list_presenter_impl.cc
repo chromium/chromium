@@ -27,6 +27,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
@@ -126,7 +127,7 @@ class FullscreenLauncherAnimationObserver
   }
 
  private:
-  ui::Layer* const layer_;
+  const raw_ptr<ui::Layer, ExperimentalAsh> layer_;
   AnimationCompleteCallback complete_callback_;
 };
 

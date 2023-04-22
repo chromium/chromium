@@ -10,6 +10,7 @@
 #include "ash/public/cpp/keyboard/keyboard_config.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -45,7 +46,7 @@ class TestKeyboardControllerObserver : public KeyboardControllerObserver {
   int destroyed_count() const { return destroyed_count_; }
 
  private:
-  KeyboardController* controller_;
+  raw_ptr<KeyboardController, ExperimentalAsh> controller_;
   std::set<keyboard::KeyboardEnableFlag> enable_flags_;
   keyboard::KeyboardConfig config_;
   int destroyed_count_ = 0;

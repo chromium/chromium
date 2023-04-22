@@ -6,6 +6,7 @@
 #define ASH_STYLE_TAB_SLIDER_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -91,7 +92,7 @@ class ASH_EXPORT TabSlider : public views::View {
   void OnEnabledStateChanged();
 
   // Owned by view hierarchy.
-  SelectorView* selector_view_;
+  raw_ptr<SelectorView, ExperimentalAsh> selector_view_;
   std::vector<TabSliderButton*> buttons_;
 
   // Parameters for a custom layout. Set by either individual buttons, or

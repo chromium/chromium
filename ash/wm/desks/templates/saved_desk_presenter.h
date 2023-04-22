@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/uuid.h"
@@ -136,7 +137,7 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   static void FireWindowWatcherTimerForTesting();
 
   // Pointer to the session which owns `this`.
-  OverviewSession* const overview_session_;
+  const raw_ptr<OverviewSession, ExperimentalAsh> overview_session_;
 
   base::ScopedObservation<desks_storage::DeskModel,
                           desks_storage::DeskModelObserver>

@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/actionable_view.h"
+#include "base/memory/raw_ptr.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "url/gurl.h"
 
@@ -48,13 +49,14 @@ class ASH_EXPORT CalendarEventListItemView : public ActionableView {
   friend class CalendarViewEventListViewTest;
 
   // Unowned.
-  CalendarViewController* const calendar_view_controller_;
+  const raw_ptr<CalendarViewController, ExperimentalAsh>
+      calendar_view_controller_;
 
   // The summary (title) of the meeting event.
-  views::Label* const summary_;
+  const raw_ptr<views::Label, ExperimentalAsh> summary_;
 
   // The start time and end time of a meeting event.
-  views::Label* const time_range_;
+  const raw_ptr<views::Label, ExperimentalAsh> time_range_;
 
   // The URL for the meeting event.
   const GURL event_url_;

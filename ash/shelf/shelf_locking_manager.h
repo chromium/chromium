@@ -9,6 +9,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/wm/lock_state_observer.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -46,7 +47,7 @@ class ASH_EXPORT ShelfLockingManager : public SessionObserver,
   // Update the shelf state for session and screen lock changes.
   void UpdateLockedState();
 
-  Shelf* const shelf_;
+  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
   bool session_locked_ = false;
   bool screen_locked_ = false;
 

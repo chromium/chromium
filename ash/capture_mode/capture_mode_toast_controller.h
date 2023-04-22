@@ -6,6 +6,7 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_TOAST_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -79,11 +80,11 @@ class ASH_EXPORT CaptureModeToastController {
 
   // The session that owns `this`. Guaranteed to be not null for the lifetime of
   // `this`.
-  CaptureModeSession* const capture_session_;
+  const raw_ptr<CaptureModeSession, ExperimentalAsh> capture_session_;
 
   // The capture toast widget and its contents view.
   views::UniqueWidgetPtr capture_toast_widget_;
-  SystemToastStyle* toast_contents_view_ = nullptr;
+  raw_ptr<SystemToastStyle, ExperimentalAsh> toast_contents_view_ = nullptr;
 
   // Stores the toast type of the `capture_toast_widget_` after it's created.
   absl::optional<CaptureToastType> current_toast_type_;

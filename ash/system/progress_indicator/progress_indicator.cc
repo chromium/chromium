@@ -10,6 +10,7 @@
 #include "ash/system/progress_indicator/progress_icon_animation.h"
 #include "ash/system/progress_indicator/progress_indicator_animation_registry.h"
 #include "ash/system/progress_indicator/progress_ring_animation.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -191,7 +192,7 @@ class DefaultProgressIndicatorAnimationRegistry
                ProgressRingAnimation* animation) {
               if (!registry)
                 return;
-              auto* key = registry->progress_indicator_;
+              auto* key = registry->progress_indicator_.get();
               if (registry->GetProgressRingAnimationForKey(key) == animation)
                 registry->SetProgressRingAnimationForKey(key, nullptr);
             },
@@ -239,7 +240,7 @@ class DefaultProgressIndicatorAnimationRegistry
 
   // The progress indicator for which to manage animations and a subscription
   // to receive notification of progress change events.
-  ProgressIndicator* progress_indicator_ = nullptr;
+  raw_ptr<ProgressIndicator, ExperimentalAsh> progress_indicator_ = nullptr;
   base::CallbackListSubscription progress_changed_subscription_;
 
   // Instantiate `previous_progress_` to completion to avoid starting a pulse

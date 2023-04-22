@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_state_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
@@ -77,7 +78,7 @@ class ASH_EXPORT TabletModeMultitaskCue : aura::WindowObserver,
   void OnTimerFinished();
 
   // The app window that the cue is associated with.
-  aura::Window* window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
 
   // Handles showing the educational nudge for the tablet multitask menu.
   chromeos::MultitaskMenuNudgeController nudge_controller_;

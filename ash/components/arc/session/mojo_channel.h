@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/session/connection_holder.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -57,7 +58,8 @@ class MojoChannel : public MojoChannelBase {
   }
 
   // Externally owned ConnectionHolder instance.
-  ConnectionHolder<InstanceType, HostType>* const holder_;
+  const raw_ptr<ConnectionHolder<InstanceType, HostType>, ExperimentalAsh>
+      holder_;
 
   // Put as a last member to ensure that any callback tied to the |remote_|
   // is not invoked.

@@ -1198,8 +1198,8 @@ void Shell::Init(
   }
 
   native_cursor_manager_ = new NativeCursorManagerAsh;
-  cursor_manager_ =
-      std::make_unique<CursorManager>(base::WrapUnique(native_cursor_manager_));
+  cursor_manager_ = std::make_unique<CursorManager>(
+      base::WrapUnique(native_cursor_manager_.get()));
 
   InitializeDisplayManager();
 

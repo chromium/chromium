@@ -100,7 +100,7 @@ SnoopingProtectionNotificationBlocker::SnoopingProtectionNotificationBlocker(
     : NotificationBlocker(message_center),
       message_center_(message_center),
       controller_(controller) {
-  controller_observation_.Observe(controller_);
+  controller_observation_.Observe(controller_.get());
 
   // Session controller is instantiated before us in the shell.
   SessionControllerImpl* session_controller =
@@ -108,7 +108,7 @@ SnoopingProtectionNotificationBlocker::SnoopingProtectionNotificationBlocker(
   DCHECK(session_controller);
   session_observation_.Observe(session_controller);
 
-  message_center_observation_.Observe(message_center_);
+  message_center_observation_.Observe(message_center_.get());
 
   UpdateInfoNotificationIfNecessary();
 }

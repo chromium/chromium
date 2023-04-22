@@ -14,6 +14,7 @@
 #include "ash/wm/wm_event.h"
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -111,12 +112,13 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
           views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE,
           views::kWindowControlMaximizeIcon);
 
-      AddChildView(caption_button_container_);
+      AddChildView(caption_button_container_.get());
     }
   }
 
   // Not owned.
-  FrameCaptionButtonContainerView* caption_button_container_;
+  raw_ptr<FrameCaptionButtonContainerView, ExperimentalAsh>
+      caption_button_container_;
 };
 
 class FrameSizeButtonTest : public AshTestBase {
@@ -190,12 +192,12 @@ class FrameSizeButtonTest : public AshTestBase {
 
  private:
   // Not owned.
-  WindowState* window_state_;
-  views::Widget* widget_;
-  views::FrameCaptionButton* minimize_button_;
-  views::FrameCaptionButton* size_button_;
-  views::FrameCaptionButton* close_button_;
-  TestWidgetDelegate* widget_delegate_;
+  raw_ptr<WindowState, ExperimentalAsh> window_state_;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_;
+  raw_ptr<views::FrameCaptionButton, ExperimentalAsh> minimize_button_;
+  raw_ptr<views::FrameCaptionButton, ExperimentalAsh> size_button_;
+  raw_ptr<views::FrameCaptionButton, ExperimentalAsh> close_button_;
+  raw_ptr<TestWidgetDelegate, ExperimentalAsh> widget_delegate_;
   bool resizable_ = true;
 };
 

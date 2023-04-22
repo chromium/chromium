@@ -15,6 +15,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -251,11 +252,11 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
   StartTetheringCallback start_tethering_callback_;
   std::unique_ptr<ViewShadow> view_shadow_;
 
-  views::ImageView* icon_ = nullptr;
-  views::Label* title_ = nullptr;
-  views::StyledLabel* body_ = nullptr;
-  views::Button* cancel_button_ = nullptr;
-  views::Button* accept_button_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
+  raw_ptr<views::StyledLabel, ExperimentalAsh> body_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> cancel_button_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> accept_button_ = nullptr;
 };
 
 }  // namespace
@@ -282,10 +283,10 @@ AppStreamConnectionErrorDialog::AppStreamConnectionErrorDialog(
   widget_->Init(std::move(params));
 
   // The |dialog| ownership is passed to the window hierarchy.
-  widget_observations_.AddObservation(widget_);
+  widget_observations_.AddObservation(widget_.get());
   widget_observations_.AddObservation(parent);
 
-  view_observations_.AddObservation(host_view_);
+  view_observations_.AddObservation(host_view_.get());
   view_observations_.AddObservation(widget_->GetContentsView());
 }
 

@@ -15,6 +15,7 @@
 #include "ash/shutdown_reason.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/wm/lock_state_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -248,12 +249,14 @@ class ASH_EXPORT PowerButtonController
   bool force_off_on_button_up_ = false;
 
   // Used to force backlights off, when needed.
-  BacklightsForcedOffSetter* backlights_forced_off_setter_;  // Not owned.
+  raw_ptr<BacklightsForcedOffSetter, ExperimentalAsh>
+      backlights_forced_off_setter_;  // Not owned.
 
-  LockStateController* lock_state_controller_;  // Not owned.
+  raw_ptr<LockStateController, ExperimentalAsh>
+      lock_state_controller_;  // Not owned.
 
   // Time source for performed action times.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
 
   // Used to interact with the display.
   std::unique_ptr<PowerButtonDisplayController> display_controller_;

@@ -19,6 +19,7 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/tray/tri_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -190,7 +191,7 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // if the default network has a proxy configured or if a VPN is active.
   void MaybeShowConnectionWarningManagedIcon(bool using_proxy);
 
-  TrayNetworkStateModel* model_;
+  raw_ptr<TrayNetworkStateModel, ExperimentalAsh> model_;
 
   mojo::Remote<bluetooth_config::mojom::CrosBluetoothConfig>
       remote_cros_bluetooth_config_;
@@ -211,9 +212,11 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // otherwise the system icon.
   views::ImageView* connection_warning_icon_ = nullptr;
   // Owned by `connection_warning_`.
-  views::Label* connection_warning_label_ = nullptr;
+  raw_ptr<views::Label, DanglingUntriaged | ExperimentalAsh>
+      connection_warning_label_ = nullptr;
 
-  NetworkListWifiHeaderView* wifi_header_view_ = nullptr;
+  raw_ptr<NetworkListWifiHeaderView, ExperimentalAsh> wifi_header_view_ =
+      nullptr;
   views::Separator* wifi_separator_view_ = nullptr;
   TrayInfoLabel* wifi_status_message_ = nullptr;
 
@@ -235,7 +238,8 @@ class ASH_EXPORT NetworkListViewControllerImpl
   absl::optional<bool> is_proxy_managed_;
   absl::optional<bool> is_vpn_managed_;
 
-  NetworkDetailedNetworkView* network_detailed_network_view_;
+  raw_ptr<NetworkDetailedNetworkView, ExperimentalAsh>
+      network_detailed_network_view_;
   NetworkIdToViewMap network_id_to_view_map_;
 
   // Timer for repeatedly requesting network scans with a delay between

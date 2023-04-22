@@ -22,6 +22,7 @@
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_observer.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -441,11 +442,12 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   // Weak pointer to the overview delegate which will be called when a selection
   // is made.
-  OverviewDelegate* delegate_;
+  raw_ptr<OverviewDelegate, ExperimentalAsh> delegate_;
 
   // A weak pointer to the window which was active on starting overview. If
   // overview is canceled the activation should be restored to this window.
-  aura::Window* active_window_before_overview_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> active_window_before_overview_ =
+      nullptr;
 
   // A hidden window that receives focus while in overview mode. It is needed
   // because accessibility needs something focused for it to work and we cannot
@@ -489,7 +491,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   // The selected item when exiting overview mode. nullptr if no window
   // selected.
-  OverviewItem* selected_item_ = nullptr;
+  raw_ptr<OverviewItem, ExperimentalAsh> selected_item_ = nullptr;
 
   // The drag controller for a window in the overview mode.
   std::unique_ptr<OverviewWindowDragController> window_drag_controller_;
@@ -521,7 +523,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   bool chromevox_enabled_;
 
   // When non-null, windows changes on this desk are observed.
-  const Desk* observing_desk_ = nullptr;
+  raw_ptr<const Desk, ExperimentalAsh> observing_desk_ = nullptr;
 
   // This is true *while* an overview item is being dynamically added. It is
   // used to avoid recursively adding overview items.

@@ -14,6 +14,7 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/base/models/list_model_observer.h"
@@ -164,19 +165,20 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
   // task view, or -1 if no task view is focused.
   int GetIndexOfFocusedTaskView() const;
 
-  AppListViewDelegate* const view_delegate_;
+  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
 
   // A callback to be invoked after an Update request finishes.
   OnResultsChanged update_callback_;
-  SearchModel::SearchResults* results_ = nullptr;  // Owned by SearchModel.
+  raw_ptr<SearchModel::SearchResults, ExperimentalAsh> results_ =
+      nullptr;  // Owned by SearchModel.
 
   // Only one of the layouts is to be set.
   // `flex_layout_`  aligns the views as a single row centered in the container.
   // Used in tablet mode.
-  views::FlexLayout* flex_layout_ = nullptr;
+  raw_ptr<views::FlexLayout, ExperimentalAsh> flex_layout_ = nullptr;
   // `table_layout_`  aligns the views as a table with multiple rows stretched
   // to fill the container. Used in clamshell mode.
-  views::TableLayout* table_layout_ = nullptr;
+  raw_ptr<views::TableLayout, ExperimentalAsh> table_layout_ = nullptr;
 
   // The list of tasks views for the container.
   std::vector<ContinueTaskView*> suggestion_tasks_views_;

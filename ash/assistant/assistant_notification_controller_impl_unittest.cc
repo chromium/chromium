@@ -13,6 +13,7 @@
 #include "ash/assistant/test/assistant_ash_test_base.h"
 #include "ash/assistant/test/test_assistant_service.h"
 #include "ash/shell.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -242,7 +243,7 @@ class AssistantNotificationControllerTest : public AssistantAshTestBase {
   }
 
  private:
-  AssistantNotificationControllerImpl* controller_;
+  raw_ptr<AssistantNotificationControllerImpl, ExperimentalAsh> controller_;
   std::unique_ptr<AssistantNotificationModelObserverMock> observer_;
 };
 

@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
@@ -94,10 +95,10 @@ class ASH_EXPORT FeatureTilesContainerView : public views::View,
   void UpdateTotalPages();
 
   // Owned by `UnifiedSystemTrayBubble`.
-  UnifiedSystemTrayController* const controller_;
+  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
 
   // Owned by `UnifiedSystemTrayModel`.
-  PaginationModel* const pagination_model_;
+  const raw_ptr<PaginationModel, ExperimentalAsh> pagination_model_;
 
   // List of pages that contain `RowContainer` elements.
   // Owned by views hierarchy.

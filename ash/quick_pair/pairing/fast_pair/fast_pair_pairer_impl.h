@@ -10,6 +10,7 @@
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -185,7 +186,8 @@ class FastPairPairerImpl : public FastPairPairer,
   uint32_t expected_passkey_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   scoped_refptr<Device> device_;
-  FastPairGattServiceClient* fast_pair_gatt_service_client_;
+  raw_ptr<FastPairGattServiceClient, DanglingUntriaged | ExperimentalAsh>
+      fast_pair_gatt_service_client_;
   std::string pairing_device_address_;
   base::OnceCallback<void(scoped_refptr<Device>)> paired_callback_;
   base::OnceCallback<void(scoped_refptr<Device>, PairFailure)>
@@ -193,7 +195,8 @@ class FastPairPairerImpl : public FastPairPairer,
   base::OnceCallback<void(scoped_refptr<Device>, AccountKeyFailure)>
       account_key_failure_callback_;
   base::OnceCallback<void(scoped_refptr<Device>)> pairing_procedure_complete_;
-  FastPairHandshake* fast_pair_handshake_ = nullptr;
+  raw_ptr<FastPairHandshake, DanglingUntriaged | ExperimentalAsh>
+      fast_pair_handshake_ = nullptr;
   base::ScopedObservation<device::BluetoothAdapter,
                           device::BluetoothAdapter::Observer>
       adapter_observation_{this};

@@ -6,6 +6,7 @@
 #define ASH_KEYBOARD_UI_TEST_TEST_KEYBOARD_LAYOUT_DELEGATE_H_
 
 #include "ash/keyboard/ui/keyboard_layout_delegate.h"
+#include "base/memory/raw_ptr.h"
 
 namespace aura {
 class Window;
@@ -32,7 +33,7 @@ class TestKeyboardLayoutDelegate : public KeyboardLayoutDelegate {
   void TransferGestureEventToShelf(const ui::GestureEvent& e) override;
 
  private:
-  aura::Window* root_window_;
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
 };
 
 }  // namespace keyboard

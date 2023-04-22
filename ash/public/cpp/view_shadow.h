@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/views/view_observer.h"
 
@@ -42,7 +43,7 @@ class ASH_PUBLIC_EXPORT ViewShadow : public views::ViewObserver,
   void OnLayerTargetBoundsChanged(views::View* view) override;
   void OnViewIsDeleting(views::View* view) override;
 
-  views::View* view_;
+  raw_ptr<views::View, ExperimentalAsh> view_;
   std::unique_ptr<ui::Shadow> shadow_;
 };
 

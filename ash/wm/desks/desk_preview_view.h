@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/style/system_shadow.h"
 #include "ash/wm/overview/overview_highlightable_view.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/button/button.h"
@@ -126,26 +127,26 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
  private:
   friend class DesksTestApi;
 
-  DeskMiniView* const mini_view_;
+  const raw_ptr<DeskMiniView, ExperimentalAsh> mini_view_;
 
   // A view that paints the wallpaper in the mini_view. It avoids the dimming
   // and blur overview mode adds to the original wallpaper. Owned by the views
   // hierarchy.
   using DeskWallpaperPreview = WallpaperBaseView;
-  DeskWallpaperPreview* wallpaper_preview_;
+  raw_ptr<DeskWallpaperPreview, ExperimentalAsh> wallpaper_preview_;
 
   // A view whose layer will act as the parent of desk's mirrored contents layer
   // tree. Owned by the views hierarchy.
-  views::View* desk_mirrored_contents_view_;
+  raw_ptr<views::View, ExperimentalAsh> desk_mirrored_contents_view_;
 
   // An overlay that becomes visible on top of the
   // `desk_mirrored_contents_view_` when the `mini_view_`'s
   // `DeskActionContextMenu` is active. Owned by the views hierarchy.
-  views::View* highlight_overlay_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> highlight_overlay_ = nullptr;
 
   // Owned by this View via `View::border_`. This is just a convenient pointer
   // to it.
-  WmHighlightItemBorder* border_ptr_;
+  raw_ptr<WmHighlightItemBorder, ExperimentalAsh> border_ptr_;
 
   // Owns the layer tree of the desk's contents mirrored layers.
   std::unique_ptr<ui::LayerTreeOwner> desk_mirrored_contents_layer_tree_owner_;

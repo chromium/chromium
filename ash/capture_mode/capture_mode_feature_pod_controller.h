@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace ash {
@@ -40,9 +41,11 @@ class ASH_EXPORT CaptureModeFeaturePodController
   void OnIconPressed() override;
 
  private:
-  UnifiedSystemTrayController* const tray_controller_;
+  const raw_ptr<UnifiedSystemTrayController,
+                DanglingUntriaged | ExperimentalAsh>
+      tray_controller_;
 
-  FeaturePodButton* button_ = nullptr;
+  raw_ptr<FeaturePodButton, ExperimentalAsh> button_ = nullptr;
 
   base::WeakPtrFactory<CaptureModeFeaturePodController> weak_ptr_factory_{this};
 };

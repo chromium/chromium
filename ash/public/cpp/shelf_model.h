@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/shelf_item.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 
 class AppWindowShelfItemController;
@@ -48,7 +49,7 @@ class ASH_PUBLIC_EXPORT ShelfModel {
     }
 
    private:
-    ShelfModel* model_ = nullptr;
+    raw_ptr<ShelfModel, ExperimentalAsh> model_ = nullptr;
   };
 
   // Some classes in ash have the ability to insert an item into the ShelfModel,
@@ -238,7 +239,7 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   ShelfItems items_;
 
   // This pointer must outlive this class.
-  ShelfItemFactory* shelf_item_factory_ = nullptr;
+  raw_ptr<ShelfItemFactory, ExperimentalAsh> shelf_item_factory_ = nullptr;
 
   // The shelf ID of the currently active shelf item, or an empty ID if
   // nothing is active.

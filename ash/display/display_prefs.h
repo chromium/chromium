@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/display/display.h"
@@ -80,7 +81,8 @@ class ASH_EXPORT DisplayPrefs : public SessionObserver {
   void LoadDisplayPreferences();
 
  private:
-  PrefService* local_state_;  // Non-owned and must out-live this.
+  raw_ptr<PrefService, ExperimentalAsh>
+      local_state_;  // Non-owned and must out-live this.
   bool store_requested_ = false;
 };
 

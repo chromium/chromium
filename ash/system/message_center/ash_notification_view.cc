@@ -1259,7 +1259,7 @@ void AshNotificationView::CreateOrUpdateTitleView(
   if (notification.title().empty()) {
     if (title_row_) {
       DCHECK(left_content()->Contains(title_row_));
-      left_content()->RemoveChildViewT(title_row_);
+      left_content()->RemoveChildViewT(title_row_.get());
       title_row_ = nullptr;
     }
     return;
@@ -1583,7 +1583,7 @@ void AshNotificationView::CreateOrUpdateSnoozeButton(
     const message_center::Notification& notification) {
   if (!notification.should_show_snooze_button()) {
     if (action_buttons_row()->Contains(snooze_button_)) {
-      action_buttons_row()->RemoveChildViewT(snooze_button_);
+      action_buttons_row()->RemoveChildViewT(snooze_button_.get());
       snooze_button_ = nullptr;
       DCHECK(action_buttons_row()->Contains(snooze_button_spacer_));
       action_buttons_row()->RemoveChildViewT(snooze_button_spacer_);

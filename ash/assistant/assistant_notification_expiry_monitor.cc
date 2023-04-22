@@ -10,6 +10,7 @@
 #include "ash/assistant/model/assistant_notification_model.h"
 #include "ash/assistant/model/assistant_notification_model_observer.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 
@@ -67,7 +68,7 @@ class AssistantNotificationExpiryMonitor::Observer
   }
 
  private:
-  AssistantNotificationExpiryMonitor* const monitor_;
+  const raw_ptr<AssistantNotificationExpiryMonitor, ExperimentalAsh> monitor_;
 };
 
 AssistantNotificationExpiryMonitor::AssistantNotificationExpiryMonitor(

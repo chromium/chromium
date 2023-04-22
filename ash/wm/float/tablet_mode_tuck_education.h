@@ -6,6 +6,7 @@
 #define ASH_WM_FLOAT_TABLET_MODE_TUCK_EDUCATION_H_
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "ui/aura/window.h"
@@ -58,7 +59,7 @@ class ASH_EXPORT TabletModeTuckEducation : public aura::WindowObserver {
   // The floated window that `nudge_widget_` is a child of. Guaranteed to be
   // alive for the lifetime of `this` since the owner of `this` observes
   // `OnWindowDestroying()`.
-  aura::Window* window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};

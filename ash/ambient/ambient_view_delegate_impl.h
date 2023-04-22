@@ -6,6 +6,7 @@
 #define ASH_AMBIENT_AMBIENT_VIEW_DELEGATE_IMPL_H_
 
 #include "ash/ambient/ui/ambient_view_delegate.h"
+#include "base/memory/raw_ptr.h"
 
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "base/observer_list.h"
@@ -30,7 +31,8 @@ class AmbientViewDelegateImpl : public AmbientViewDelegate {
   void NotifyObserversMarkerHit(AmbientPhotoConfig::Marker marker);
 
  private:
-  AmbientController* const ambient_controller_;  // Owned by Shell.
+  const raw_ptr<AmbientController, ExperimentalAsh>
+      ambient_controller_;  // Owned by Shell.
 
   base::ObserverList<AmbientViewDelegateObserver> view_delegate_observers_;
 };

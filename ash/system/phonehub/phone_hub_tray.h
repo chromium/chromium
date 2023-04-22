@@ -19,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/phonehub/app_stream_manager.h"
 #include "chromeos/ash/components/phonehub/icon_decoder.h"
@@ -152,13 +153,14 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   views::View* GetPhoneStatusView();
 
   // Icon of the tray. Unowned.
-  views::ImageButton* icon_;
+  raw_ptr<views::ImageButton, ExperimentalAsh> icon_;
 
   // Icon for Eche. Unowned.
-  views::ImageButton* eche_icon_ = nullptr;
+  raw_ptr<views::ImageButton, ExperimentalAsh> eche_icon_ = nullptr;
 
   // The loading indicator, showing a throbber animation on top of the icon.
-  EcheIconLoadingIndicatorView* eche_loading_indicator_ = nullptr;
+  raw_ptr<EcheIconLoadingIndicatorView, ExperimentalAsh>
+      eche_loading_indicator_ = nullptr;
 
   // This callback is called when the Eche icon is activated.
   base::RepeatingCallback<bool(const ui::Event&)> eche_icon_callback_ =
@@ -176,13 +178,15 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   // The header status view on top of the bubble.
   // IMPORTANT: This is not owned, always access through GetPhoneStatusView
-  views::View* phone_status_view_dont_use_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> phone_status_view_dont_use_ = nullptr;
 
   // The main content view of the bubble, which changes depending on the state.
   // Unowned.
-  PhoneHubContentView* content_view_ = nullptr;
+  raw_ptr<PhoneHubContentView, DanglingUntriaged | ExperimentalAsh>
+      content_view_ = nullptr;
 
-  phonehub::PhoneHubManager* phone_hub_manager_ = nullptr;
+  raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_ =
+      nullptr;
 
   base::ScopedObservation<PhoneHubUiController, PhoneHubUiController::Observer>
       observed_phone_hub_ui_controller_{this};

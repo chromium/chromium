@@ -20,6 +20,7 @@
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/wm_event.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/aura/window_observer.h"
@@ -623,11 +624,11 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   void SwapWindowsAndUpdateBounds();
 
   // Root window the split view is in.
-  aura::Window* root_window_;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> root_window_;
 
   // The current primary/secondary snapped window.
-  aura::Window* primary_window_ = nullptr;
-  aura::Window* secondary_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> primary_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> secondary_window_ = nullptr;
 
   // Observes the windows that are to be snapped in split screen.
   std::unique_ptr<ToBeSnappedWindowsObserver> to_be_snapped_windows_observer_;
@@ -726,7 +727,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // activated, or when the to-be-snapped is from overview and was the active
   // window before entering overview, so when it's snapped in splitview, it
   // should remain to be the active window.
-  aura::Window* to_be_activated_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> to_be_activated_window_ = nullptr;
 
   // The split view resize mode for tablet mode.
   TabletResizeMode tablet_resize_mode_ = TabletResizeMode::kNormal;

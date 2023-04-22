@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/files/platform_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/trace_event/trace_config.h"
@@ -48,7 +49,7 @@ class ASH_EXPORT AshTracingHandler {
   void OnTracingStarted();
   void OnTracingFinished();
 
-  AshTracingRequest* request_ = nullptr;
+  raw_ptr<AshTracingRequest, ExperimentalAsh> request_ = nullptr;
 
   std::unique_ptr<perfetto::TracingSession> tracing_session_;
 

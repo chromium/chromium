@@ -9,6 +9,7 @@
 #include "ash/system/camera/autozoom_observer.h"
 #include "ash/system/camera/autozoom_toast_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 
 namespace ash {
@@ -80,10 +81,11 @@ class ASH_EXPORT AutozoomToastController : public TrayBubbleView::Delegate,
   void OnMouseExitedView() override;
   std::u16string GetAccessibleNameForBubble() override;
 
-  UnifiedSystemTray* const tray_;
-  TrayBubbleView* bubble_view_ = nullptr;
-  views::Widget* bubble_widget_ = nullptr;
-  AutozoomToastView* toast_view_ = nullptr;
+  const raw_ptr<UnifiedSystemTray, ExperimentalAsh> tray_;
+  raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
+  raw_ptr<AutozoomToastView, DanglingUntriaged | ExperimentalAsh> toast_view_ =
+      nullptr;
   bool mouse_hovered_ = false;
   base::OneShotTimer close_timer_;
 

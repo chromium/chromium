@@ -7,6 +7,7 @@
 
 #include "ash/ambient/model/ambient_weather_model.h"
 #include "ash/ambient/model/ambient_weather_model_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
@@ -58,14 +59,14 @@ class GlanceableInfoView : public views::View,
   std::u16string GetTemperatureText() const;
 
   // View for the time info. Owned by the view hierarchy.
-  TimeView* time_view_ = nullptr;
+  raw_ptr<TimeView, ExperimentalAsh> time_view_ = nullptr;
 
   // Views for weather icon and temperature.
-  views::ImageView* weather_condition_icon_ = nullptr;
-  views::Label* temperature_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> weather_condition_icon_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> temperature_ = nullptr;
 
   // Owned by |AmbientController|.
-  AmbientViewDelegate* const delegate_ = nullptr;
+  const raw_ptr<AmbientViewDelegate, ExperimentalAsh> delegate_ = nullptr;
 
   // Unowned. Must out live |GlancealeInfoView|.
   base::raw_ptr<GlanceableInfoView::Delegate> const

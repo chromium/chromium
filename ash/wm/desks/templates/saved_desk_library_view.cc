@@ -24,6 +24,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_event_handler.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -192,7 +193,7 @@ class SavedDeskLibraryWindowTargeter : public aura::WindowTargeter {
   }
 
  private:
-  SavedDeskLibraryView* const owner_;
+  const raw_ptr<SavedDeskLibraryView, ExperimentalAsh> owner_;
 };
 
 // -----------------------------------------------------------------------------
@@ -220,7 +221,7 @@ class SavedDeskLibraryEventHandler : public ui::EventHandler {
   void OnKeyEvent(ui::KeyEvent* event) override { owner_->OnKeyEvent(event); }
 
  private:
-  SavedDeskLibraryView* const owner_;
+  const raw_ptr<SavedDeskLibraryView, ExperimentalAsh> owner_;
 };
 
 // -----------------------------------------------------------------------------

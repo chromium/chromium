@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/ime_info.h"
 #include "ash/system/ime_menu/ime_list_view.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
@@ -48,13 +49,14 @@ class IMEDetailedView : public ImeListView {
   void CreateExtraTitleRowButtons() override;
   void ShowSettings();
 
-  ImeControllerImpl* const ime_controller_;
+  const raw_ptr<ImeControllerImpl, ExperimentalAsh> ime_controller_;
 
   // Gear icon that takes the user to IME settings.
-  views::Button* settings_button_ = nullptr;
+  raw_ptr<views::Button, DanglingUntriaged | ExperimentalAsh> settings_button_ =
+      nullptr;
 
   // This icon says that the IMEs are managed by policy.
-  views::ImageView* controlled_setting_icon_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> controlled_setting_icon_ = nullptr;
 };
 
 }  // namespace ash

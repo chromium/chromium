@@ -20,6 +20,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -37,7 +38,7 @@ class TestPowerManagerObserver : public chromeos::PowerManagerClient::Observer {
  public:
   TestPowerManagerObserver()
       : power_manager_(chromeos::FakePowerManagerClient::Get()) {
-    scoped_observation_.Observe(power_manager_);
+    scoped_observation_.Observe(power_manager_.get());
     power_manager_->set_user_activity_callback(base::BindRepeating(
         &TestPowerManagerObserver::OnUserActivity, base::Unretained(this)));
   }
@@ -69,7 +70,7 @@ class TestPowerManagerObserver : public chromeos::PowerManagerClient::Observer {
   }
 
  private:
-  chromeos::FakePowerManagerClient* power_manager_;
+  raw_ptr<chromeos::FakePowerManagerClient, ExperimentalAsh> power_manager_;
   std::vector<double> brightness_changes_;
 
   base::ScopedObservation<chromeos::PowerManagerClient,

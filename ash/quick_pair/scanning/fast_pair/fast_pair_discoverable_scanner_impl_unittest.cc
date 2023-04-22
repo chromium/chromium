@@ -16,6 +16,7 @@
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_discoverable_scanner.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -84,7 +85,8 @@ class FakeQuickPairProcessManager
   mojo::PendingRemote<ash::quick_pair::mojom::FastPairDataParser>
       fast_pair_data_parser_;
   std::unique_ptr<ash::quick_pair::FastPairDataParser> data_parser_;
-  base::test::SingleThreadTaskEnvironment* task_enviornment_;
+  raw_ptr<base::test::SingleThreadTaskEnvironment, ExperimentalAsh>
+      task_enviornment_;
   ProcessStoppedCallback on_process_stopped_callback_;
 };
 
@@ -154,7 +156,7 @@ class FastPairDiscoverableScannerImplTest : public testing::Test {
     return device_ptr;
   }
 
-  FakeQuickPairProcessManager* fake_process_manager_;
+  raw_ptr<FakeQuickPairProcessManager, ExperimentalAsh> fake_process_manager_;
   base::test::SingleThreadTaskEnvironment task_enviornment_;
   NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/true};
   scoped_refptr<FakeFastPairScanner> scanner_;

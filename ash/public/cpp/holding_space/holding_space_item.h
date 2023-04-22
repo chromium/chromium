@@ -15,6 +15,7 @@
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_id.h"
@@ -61,7 +62,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
     int label_id;
 
     // The icon to be displayed for the command.
-    const gfx::VectorIcon* icon;
+    raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon;
 
     // The handler to be invoked to perform command execution.
     Handler handler;

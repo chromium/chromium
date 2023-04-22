@@ -15,6 +15,7 @@
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/user/login_status.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/context_menu_controller.h"
@@ -310,13 +311,13 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   bool ShouldUseCustomVisibilityAnimations() const;
 
   // The shelf containing the system tray for this view.
-  Shelf* shelf_;
+  raw_ptr<Shelf, ExperimentalAsh> shelf_;
 
   // The catalog name, used to record metrics on feature integrations.
   TrayBackgroundViewCatalogName catalog_name_;
 
   // Convenience pointer to the contents view.
-  TrayContainer* tray_container_;
+  raw_ptr<TrayContainer, ExperimentalAsh> tray_container_;
 
   // Determines if the view is active. This changes how  the ink drop ripples
   // behave.

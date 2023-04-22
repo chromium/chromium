@@ -161,7 +161,7 @@ void RestoreDataCollector::SendDeskTemplate(uint32_t serial) {
       Shell::Get()->overview_controller()->InOverviewSession()) {
     // The ideal root window may have gone by now.  In that case fall back to
     // the primary root one.
-    auto* root_window_to_show = call.root_window_to_show;
+    auto* root_window_to_show = call.root_window_to_show.get();
     if (root_window_to_show && window_tracker_.Contains(root_window_to_show))
       window_tracker_.Remove(root_window_to_show);
     else

@@ -7,6 +7,7 @@
 
 #include "ash/style/ash_color_id.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
@@ -43,7 +44,7 @@ class ArcSplashScreenDialogView : public views::BubbleDialogDelegateView,
     views::View* highlight_border() const { return view_->highlight_border_; }
 
    private:
-    ArcSplashScreenDialogView* const view_;
+    const raw_ptr<ArcSplashScreenDialogView, ExperimentalAsh> view_;
   };
 
   ArcSplashScreenDialogView(base::OnceClosure close_callback,
@@ -76,8 +77,8 @@ class ArcSplashScreenDialogView : public views::BubbleDialogDelegateView,
 
   void OnCloseButtonClicked();
 
-  views::View* anchor_;
-  views::View* highlight_border_{nullptr};
+  raw_ptr<views::View, ExperimentalAsh> anchor_;
+  raw_ptr<views::View, ExperimentalAsh> highlight_border_{nullptr};
 
   base::OnceClosure close_callback_;
   views::MdTextButton* close_button_ = nullptr;

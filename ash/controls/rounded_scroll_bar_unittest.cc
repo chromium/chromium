@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "ash/controls/rounded_scroll_bar.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
@@ -80,8 +81,8 @@ class RoundedScrollBarTest : public views::ViewsTestBase {
  protected:
   views::UniqueWidgetPtr widget_;
   TestScrollBarController controller_;
-  RoundedScrollBar* scroll_bar_ = nullptr;
-  views::BaseScrollBarThumb* thumb_ = nullptr;
+  raw_ptr<RoundedScrollBar, ExperimentalAsh> scroll_bar_ = nullptr;
+  raw_ptr<views::BaseScrollBarThumb, ExperimentalAsh> thumb_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> generator_;
 };
 

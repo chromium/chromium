@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_history_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -103,10 +104,11 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
                            const gfx::Rect& rect) const override;
 
     // Owned by the view hierarchy.
-    ClipboardHistoryDeleteButton* delete_button_ = nullptr;
+    raw_ptr<ClipboardHistoryDeleteButton, ExperimentalAsh> delete_button_ =
+        nullptr;
 
     // The parent of ContentsView.
-    ClipboardHistoryItemView* const container_;
+    const raw_ptr<ClipboardHistoryItemView, ExperimentalAsh> container_;
   };
 
   ClipboardHistoryItemView(const base::UnguessableToken& item_id,
@@ -162,11 +164,11 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
   // Owned by `ClipboardHistoryControllerImpl`.
   const base::raw_ptr<const ClipboardHistory> clipboard_history_;
 
-  views::MenuItemView* const container_;
+  const raw_ptr<views::MenuItemView, ExperimentalAsh> container_;
 
-  ContentsView* contents_view_ = nullptr;
+  raw_ptr<ContentsView, ExperimentalAsh> contents_view_ = nullptr;
 
-  ClipboardHistoryMainButton* main_button_ = nullptr;
+  raw_ptr<ClipboardHistoryMainButton, ExperimentalAsh> main_button_ = nullptr;
 
   PseudoFocus pseudo_focus_ = PseudoFocus::kEmpty;
 

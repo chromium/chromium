@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -40,13 +41,13 @@ class ASH_EXPORT CaptureModeTypeView : public views::View {
 
   // Owned by the views hierarchy. The capture type switch contains image and
   // video capture type toggle buttons.
-  IconSwitch* capture_type_switch_;
+  raw_ptr<IconSwitch, ExperimentalAsh> capture_type_switch_;
 
   // In the projector-initiated sessions, only `video_toggle_button_` is
   // created. Otherwise, both toggle buttons are created. Image and video toggle
   // buttons are owned by `capture_type_switch_`.
-  IconButton* image_toggle_button_ = nullptr;
-  IconButton* video_toggle_button_;
+  raw_ptr<IconButton, ExperimentalAsh> image_toggle_button_ = nullptr;
+  raw_ptr<IconButton, ExperimentalAsh> video_toggle_button_;
 };
 
 }  // namespace ash

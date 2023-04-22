@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace ui {
@@ -49,10 +50,13 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantFooterView
   void OnAnimationStarted(const ui::CallbackLayerAnimationObserver& observer);
   bool OnAnimationEnded(const ui::CallbackLayerAnimationObserver& observer);
 
-  AssistantViewDelegate* const delegate_;  // Owned by Shell.
+  const raw_ptr<AssistantViewDelegate, ExperimentalAsh>
+      delegate_;  // Owned by Shell.
 
-  SuggestionContainerView* suggestion_container_;  // Owned by view hierarchy.
-  AssistantOptInView* opt_in_view_;                // Owned by view hierarchy.
+  raw_ptr<SuggestionContainerView, ExperimentalAsh>
+      suggestion_container_;  // Owned by view hierarchy.
+  raw_ptr<AssistantOptInView, ExperimentalAsh>
+      opt_in_view_;  // Owned by view hierarchy.
 
   std::unique_ptr<ui::CallbackLayerAnimationObserver> animation_observer_;
 };

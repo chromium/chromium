@@ -13,6 +13,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -59,7 +60,7 @@ class ClipboardNudgeControllerTest : public AshTestBase {
   }
 
   // Owned by ClipboardHistoryController.
-  ClipboardNudgeController* nudge_controller_;
+  raw_ptr<ClipboardNudgeController, ExperimentalAsh> nudge_controller_;
 
   void ShowNudgeForType(ClipboardNudgeType nudge_type) {
     switch (nudge_type) {

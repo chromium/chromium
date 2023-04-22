@@ -14,6 +14,7 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/system_tray_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
@@ -157,11 +158,12 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
 
   LoginDataDispatcher login_data_dispatcher_;
 
-  LoginScreenClient* client_ = nullptr;
+  raw_ptr<LoginScreenClient, DanglingUntriaged | ExperimentalAsh> client_ =
+      nullptr;
 
   AuthenticationStage authentication_stage_ = AuthenticationStage::kIdle;
 
-  SystemTrayNotifier* system_tray_notifier_;
+  raw_ptr<SystemTrayNotifier, ExperimentalAsh> system_tray_notifier_;
 
   SecurityTokenRequestController security_token_request_controller_;
 

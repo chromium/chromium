@@ -25,6 +25,7 @@
 #include "ash/shell_observer.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -607,10 +608,10 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   void AnimateDragImageLayer(const gfx::Rect& target_bounds_in_screen);
 
   // The model; owned by Launcher.
-  ShelfModel* const model_;
+  const raw_ptr<ShelfModel, ExperimentalAsh> model_;
 
   // The shelf controller; owned by RootWindowController.
-  Shelf* const shelf_;
+  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
 
   // Used to manage the set of active launcher buttons. There is a view per
   // item in |model_|.
@@ -627,15 +628,15 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   // The view being dragged. This is set immediately when the mouse is pressed.
   // |dragging_| is set only if the mouse is dragged far enough.
-  ShelfAppButton* drag_view_ = nullptr;
+  raw_ptr<ShelfAppButton, ExperimentalAsh> drag_view_ = nullptr;
 
   // The view showing a context menu. This can be either a ShelfView or
   // ShelfAppButton.
-  views::View* menu_owner_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> menu_owner_ = nullptr;
 
   // A reference to the view used as a separator between pinned and unpinned
   // items.
-  views::Separator* separator_ = nullptr;
+  raw_ptr<views::Separator, ExperimentalAsh> separator_ = nullptr;
 
   // Index of |separator_|. It is set to nullopt if it is invisible.
   absl::optional<size_t> separator_index_ = absl::nullopt;
@@ -708,7 +709,8 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   bool dragged_off_shelf_ = false;
 
   // The rip off view when a snap back operation is underway.
-  ShelfAppButton* snap_back_from_rip_off_view_ = nullptr;
+  raw_ptr<ShelfAppButton, ExperimentalAsh> snap_back_from_rip_off_view_ =
+      nullptr;
 
   // True if the event is a repost event from a event which has just closed the
   // menu of the same shelf item.
@@ -728,10 +730,11 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   // A view used to make accessibility announcements (changes in the shelf's
   // alignment or auto-hide state).
-  views::View* announcement_view_ = nullptr;  // Owned by ShelfView
+  raw_ptr<views::View, ExperimentalAsh> announcement_view_ =
+      nullptr;  // Owned by ShelfView
 
   // A view used to indicate that all pinned items are partying.
-  views::View* all_pinned_items_are_partying_label_ =
+  raw_ptr<views::View, ExperimentalAsh> all_pinned_items_are_partying_label_ =
       nullptr;  // Owned by ShelfView
 
   // For dragging: -1 if scrolling back, 1 if scrolling forward, 0 if neither.
@@ -752,7 +755,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // becomes y-axis)
   int app_icons_layout_offset_ = 0;
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   // Whether the shelf view is actively acting as an application drag and drop
   // host. Note that shelf view is not expected to create its own
@@ -765,19 +768,21 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   std::unique_ptr<AppDragIconProxy> drag_icon_proxy_;
 
   // Placeholder ghost icon to show where an app will drop on the shelf.
-  GhostImageView* current_ghost_view_ = nullptr;
+  raw_ptr<GhostImageView, ExperimentalAsh> current_ghost_view_ = nullptr;
   // The latest ghost icon shown set to be replaced by |current_ghost_view_|.
-  GhostImageView* last_ghost_view_ = nullptr;
+  raw_ptr<GhostImageView, ExperimentalAsh> last_ghost_view_ = nullptr;
 
   // The index in the shelf app icons where the |current_ghost_view_| will show.
   absl::optional<size_t> current_ghost_view_index_ = absl::nullopt;
 
   // When the scrollable shelf is enabled, |shelf_button_delegate_| should
   // be ScrollableShelfView.
-  ShelfButtonDelegate* shelf_button_delegate_ = nullptr;
+  raw_ptr<ShelfButtonDelegate, ExperimentalAsh> shelf_button_delegate_ =
+      nullptr;
 
   // Owned by ScrollableShelfView.
-  views::FocusSearch* focus_search_ = nullptr;
+  raw_ptr<views::FocusSearch, DanglingUntriaged | ExperimentalAsh>
+      focus_search_ = nullptr;
 
   std::unique_ptr<FadeInAnimationDelegate> fade_in_animation_delegate_;
 

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
@@ -53,7 +54,7 @@ class FullscreenNotificationBubbleTest : public AshTestBase {
   std::unique_ptr<aura::Window> window_;
   std::unique_ptr<FullscreenNotificationBubble> bubble_;
 
-  WindowState* window_state_ = nullptr;
+  raw_ptr<WindowState, ExperimentalAsh> window_state_ = nullptr;
 };
 
 TEST_F(FullscreenNotificationBubbleTest, AutoHideBubbleAfterDelay) {

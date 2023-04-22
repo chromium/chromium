@@ -31,6 +31,7 @@
 #include "ash/wm/workspace/multi_window_resize_controller.h"
 #include "ash/wm/workspace/workspace_event_handler.h"
 #include "ash/wm/workspace_controller_test_api.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -243,7 +244,7 @@ class SnapGroupTest : public AshTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  MultiWindowResizeController* resize_controller_;
+  raw_ptr<MultiWindowResizeController, ExperimentalAsh> resize_controller_;
 };
 
 // Tests that the corresponding snap group will be created when calling

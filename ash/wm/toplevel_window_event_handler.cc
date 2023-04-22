@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/toplevel_window_event_handler.h"
+#include "base/memory/raw_ptr.h"
 
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
@@ -141,7 +142,7 @@ class ToplevelWindowEventHandler::ScopedWindowResizer
                                   chromeos::WindowStateType type) override;
 
  private:
-  ToplevelWindowEventHandler* handler_;
+  raw_ptr<ToplevelWindowEventHandler, ExperimentalAsh> handler_;
   std::unique_ptr<WindowResizer> resizer_;
 
   // Whether ScopedWindowResizer grabbed capture.

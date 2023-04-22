@@ -53,6 +53,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
@@ -123,7 +124,7 @@ class AsyncWindowStateChangeObserver : public WindowStateObserver,
     window_->RemoveObserver(this);
   }
 
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 
   base::OnceCallback<void(WindowState*)> on_post_window_state_changed_;
 };
@@ -187,7 +188,7 @@ void OverviewSession::Init(const WindowList& windows,
   active_window_before_overview_ = window_util::GetActiveWindow();
   if (active_window_before_overview_) {
     active_window_before_overview_observation_.Observe(
-        active_window_before_overview_);
+        active_window_before_overview_.get());
   }
 
   // Create this before the desks bar widget.
@@ -330,7 +331,7 @@ void OverviewSession::Shutdown() {
       overview_grid->CalculateWindowListAnimationStates(
           selected_item_ &&
                   selected_item_->overview_grid() == overview_grid.get()
-              ? selected_item_
+              ? selected_item_.get()
               : nullptr,
           OverviewTransition::kExit, /*target_bounds=*/{});
     }

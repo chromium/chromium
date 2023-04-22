@@ -8,6 +8,7 @@
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/system/phonehub/continue_browsing_chip.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/phonehub/fake_user_action_recorder.h"
 #include "chromeos/ash/components/phonehub/mutable_phone_model.h"
@@ -66,7 +67,7 @@ class TaskContinuationViewTest : public AshTestBase {
   phonehub::FakeUserActionRecorder fake_user_action_recorder_;
   phonehub::MutablePhoneModel phone_model_;
   base::test::ScopedFeatureList feature_list_;
-  MockNewWindowDelegate* new_window_delegate_;
+  raw_ptr<MockNewWindowDelegate, ExperimentalAsh> new_window_delegate_;
   std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
 };
 

@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -48,7 +49,8 @@ class ASH_EXPORT BackGestureContextualNudge {
   std::unique_ptr<views::Widget> widget_;
 
   // The pointer to the contents view of |widget_|.
-  ContextualNudgeView* nudge_view_ = nullptr;  // not owned
+  raw_ptr<ContextualNudgeView, ExperimentalAsh> nudge_view_ =
+      nullptr;  // not owned
 };
 
 }  // namespace ash

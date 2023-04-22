@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace aura {
 class Window;
@@ -134,7 +135,7 @@ class ASH_EXPORT HoldingSpaceTestApi {
   bool RecentFilesPlaceholderShown() const;
 
  private:
-  HoldingSpaceTray* holding_space_tray_ = nullptr;
+  raw_ptr<HoldingSpaceTray, ExperimentalAsh> holding_space_tray_ = nullptr;
 };
 
 }  // namespace ash

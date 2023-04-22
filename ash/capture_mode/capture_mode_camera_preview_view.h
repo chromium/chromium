@@ -11,6 +11,7 @@
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/style/icon_button.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -56,7 +57,8 @@ class CameraPreviewResizeButton
   void PseudoBlur() override;
 
  private:
-  CameraPreviewView* const camera_preview_view_;  // not owned.
+  const raw_ptr<CameraPreviewView, ExperimentalAsh>
+      camera_preview_view_;  // not owned.
 };
 
 // A view that acts as the contents view of the camera preview widget. It will
@@ -170,7 +172,8 @@ class CameraPreviewView
   // window.
   void BlurA11yFocus();
 
-  CaptureModeCameraController* const camera_controller_;
+  const raw_ptr<CaptureModeCameraController, ExperimentalAsh>
+      camera_controller_;
 
   // The ID of the camera for which this preview was created.
   const CameraId camera_id_;
@@ -180,9 +183,9 @@ class CameraPreviewView
 
   // The view that hosts the native window `host_window()` of the
   // `camera_video_renderer_` into this view's hierarchy.
-  views::NativeViewHost* const camera_video_host_view_;
+  const raw_ptr<views::NativeViewHost, ExperimentalAsh> camera_video_host_view_;
 
-  CameraPreviewResizeButton* const resize_button_;
+  const raw_ptr<CameraPreviewResizeButton, ExperimentalAsh> resize_button_;
 
   // Started when the mouse exits the camera preview or after the latest tap
   // inside the camera preview. Runs RefreshResizeButtonVisibility() to fade out
