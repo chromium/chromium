@@ -5,7 +5,6 @@
 import 'chrome://nearby/shared/nearby_device.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {ShareTarget} from 'chrome://nearby/shared/mojo/nearby_share.mojom-webui.js';
 import {ShareTargetType} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-webui.js';
 
 import {assertEquals} from '../../chromeos/chai_assert.js';

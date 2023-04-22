@@ -6,7 +6,7 @@ import 'chrome://nearby/nearby_discovery_page.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {setDiscoveryManagerForTesting} from 'chrome://nearby/discovery_manager.js';
-import {SelectShareTargetResult, ShareTarget, ShareTargetListenerRemote, StartDiscoveryResult} from 'chrome://nearby/shared/mojo/nearby_share.mojom-webui.js';
+import {SelectShareTargetResult, ShareTargetListenerRemote, StartDiscoveryResult} from 'chrome://nearby/shared/mojo/nearby_share.mojom-webui.js';
 import {ShareType} from 'chrome://nearby/shared/mojo/nearby_share_share_type.mojom-webui.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {ShareTargetType} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-webui.js';

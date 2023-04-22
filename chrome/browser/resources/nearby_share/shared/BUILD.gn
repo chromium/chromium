@@ -91,12 +91,12 @@ html_to_wrapper("html_wrapper_files") {
 # listing in tools/typescript/validate_tsconfig.py.
 copy("copy_mojo") {
   deps = [
-    "//chrome/browser/ui/webui/nearby_share:mojom_webui_js",
-    "//chrome/browser/ui/webui/nearby_share:share_type_webui_js",
+    "//chrome/browser/ui/webui/nearby_share:mojom_ts__generator",
+    "//chrome/browser/ui/webui/nearby_share:share_type_ts__generator",
   ]
   sources = [
-    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-webui.js",
+    "$root_gen_dir/chrome/browser/ui/webui/nearby_share/nearby_share.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-webui.ts",
   ]
   outputs = [ "$preprocessed_dir/mojo/{{source_file_part}}" ]
 }
@@ -118,8 +118,8 @@ ts_library("build_ts") {
   root_dir = preprocessed_dir
   in_files =
       web_component_files + non_web_component_files + html_wrapper_files + [
-        "mojo/nearby_share.mojom-webui.js",
-        "mojo/nearby_share_share_type.mojom-webui.js",
+        "mojo/nearby_share.mojom-webui.ts",
+        "mojo/nearby_share_share_type.mojom-webui.ts",
       ]
   out_dir = tsc_dir
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]

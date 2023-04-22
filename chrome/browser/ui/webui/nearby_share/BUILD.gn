@@ -9,6 +9,7 @@ assert(is_chromeos, "Nearby Share is CrOS only")
 mojom("share_type") {
   sources = [ "nearby_share_share_type.mojom" ]
   webui_module_path = "/"
+  use_typescript_sources = true
 }
 
 mojom("mojom") {
@@ -22,6 +23,7 @@ mojom("mojom") {
   ]
 
   webui_module_path = "/"
+  use_typescript_sources = true
 
   cpp_typemaps = [
     {
