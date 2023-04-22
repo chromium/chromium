@@ -101,6 +101,10 @@ class H264Decoder : public VideoDecoder {
   // If decoding parameters change, this can result in flushing the DPB.
   void ProcessSPS(const int sps_id);
 
+  // Moves all non output pictures in the DPB to the slice_ready_queue.
+  // Finishes by clearing the entire DPB.
+  void FlushDPB();
+
   const std::unique_ptr<H264Parser> parser_;
 
   // Previous pic order counts from previous frame

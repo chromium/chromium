@@ -386,12 +386,25 @@ void H264Decoder::ProcessSPS(const int sps_id) {
 
   if (pic_size_ != new_pic_size || dpb_.max_dpb_size_ != max_dpb_size ||
       profile_ != new_profile || bit_depth_ != new_bit_depth) {
-    // TODO(b/234752983): Flush the DPB Here
+    FlushDPB();
     profile_ = new_profile;
     bit_depth_ = new_bit_depth;
     pic_size_ = new_pic_size;
     dpb_.max_dpb_size_ = max_dpb_size;
   }
+}
+
+void H264Decoder::FlushDPB() {
+  std::vector<H264SliceMetadata*> transmittable_slices =
+      dpb_.GetNotOutputtedPicsAppending();
+  std::sort(transmittable_slices.begin(), transmittable_slices.end(),
+            H264PicOrderCompare());
+
+  for (auto i : transmittable_slices) {
+    i->outputted = true;
+  }
+
+  dpb_.clear();
 }
 
 // Initializes H264 Slice Metadata based on slice header and
@@ -519,6 +532,9 @@ VideoDecoder::Result H264Decoder::StartNewFrame(
   global_pic_count_++;
 
   if (slice_hdr->idr_pic_flag) {
+    if (!slice_hdr->no_output_of_prior_pics_flag) {
+      FlushDPB();
+    }
     dpb_.clear();
   }
 
