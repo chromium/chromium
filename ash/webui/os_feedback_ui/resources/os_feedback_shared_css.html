@@ -1,5 +1,5 @@
 <template>
-  <style include="cr-shared-style md-select">
+  <style include="cr-shared-style md-select cros-color-overrides">
     :host {
       --feedback-footer-height: 92px;
       --feedback-google-sans-font-family: "Google Sans", Roboto, sans-serif;
@@ -15,8 +15,8 @@
       transform: rotate(180deg);
     }
 
-    html {
-      background-color: var(--cros-bg-color);
+    :host-context(body:not(jelly-enabled)) cr-checkbox {
+      --cr-checkbox-unchecked-box-color: var(--cros-icon-color-primary);
     }
 
     a {
@@ -129,7 +129,6 @@
 
     cr-checkbox {
       --cr-checkbox-label-padding-start: 10px;
-      --cr-checkbox-unchecked-box-color: var(--cros-icon-color-primary);
       margin-inline-end: 12px;
     }
 

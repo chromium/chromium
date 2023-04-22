@@ -1,4 +1,17 @@
 <style include="os-feedback-shared">
+  :host-context(body.jelly-enabled) #descriptionText {
+    background-color: var(--cros-sys-input_field_on_base);
+  }
+
+  :host-context(body.jelly-enabled) #descriptionText.has-error {
+    color: var(--cros-sys-error);
+    outline: 2px solid var(--cros-sys-error);
+  }
+
+  :host-context(body.jelly-enabled) #emptyErrorIcon {
+    --iron-icon-fill-color: var(--cros-sys-error);
+  }
+
   iframe {
     border-style: none;
     height: var(--iframe-height);
