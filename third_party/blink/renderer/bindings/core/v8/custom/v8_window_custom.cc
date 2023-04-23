@@ -250,12 +250,13 @@ void V8Window::NamedPropertyGetterCustom(
     return;
   }
 
+  auto* base_doc = To<LocalFrame>(frame)->GetDocument();
+  recordreplay::Diagnostic("[RUN-1747-1792] V8Window::NamedPropertyGetterCustom #5 %p", base_doc);
+
   // Search named items in the document.
-  auto* doc = DynamicTo<HTMLDocument>(To<LocalFrame>(frame)->GetDocument());
+  auto* doc = DynamicTo<HTMLDocument>(base_doc);
   if (!doc)
     return;
-
-  recordreplay::Diagnostic("[RUN-1747-1754] V8Window::NamedPropertyGetterCustom #5 %p", doc);
 
   bool has_named_item = doc->HasNamedItem(name);
   bool has_id_item = doc->HasElementWithId(name);
