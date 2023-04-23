@@ -95,9 +95,6 @@ KeyedService* ReadingListModelFactory::BuildServiceInstanceFor(
 
 void ReadingListModelFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(
-      reading_list::prefs::kDeprecatedReadingListHasUnseenEntries, false,
-      PrefRegistry::NO_REGISTRATION_FLAGS);
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(
       reading_list::prefs::kReadingListDesktopFirstUseExperienceShown, false,

@@ -9,10 +9,6 @@
 namespace reading_list {
 namespace prefs {
 
-// No longer used, only around for cleanup logic.
-const char kDeprecatedReadingListHasUnseenEntries[] =
-    "reading_list.has_unseen_entries";
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Boolean to track if the first-use experience has been shown on desktop.
 const char kReadingListDesktopFirstUseExperienceShown[] =

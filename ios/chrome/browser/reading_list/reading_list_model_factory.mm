@@ -12,11 +12,9 @@
 #import "base/no_destructor.h"
 #import "base/time/default_clock.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "components/pref_registry/pref_registry_syncable.h"
 #import "components/reading_list/core/dual_reading_list_model.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
 #import "components/reading_list/core/reading_list_model_storage_impl.h"
-#import "components/reading_list/core/reading_list_pref_names.h"
 #import "components/reading_list/features/reading_list_switches.h"
 #import "components/sync/base/storage_type.h"
 #import "components/sync/model/model_type_store_service.h"
@@ -51,13 +49,6 @@ ReadingListModelFactory::ReadingListModelFactory()
 }
 
 ReadingListModelFactory::~ReadingListModelFactory() {}
-
-void ReadingListModelFactory::RegisterBrowserStatePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(
-      reading_list::prefs::kDeprecatedReadingListHasUnseenEntries, false,
-      PrefRegistry::NO_REGISTRATION_FLAGS);
-}
 
 std::unique_ptr<KeyedService> ReadingListModelFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {

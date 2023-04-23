@@ -139,7 +139,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
-#include "components/reading_list/core/reading_list_pref_names.h"
 #include "components/safe_browsing/content/common/file_type_policies_prefs.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -675,6 +674,8 @@ const char kAutofillAssistantTriggerScriptsIsFirstTimeUser[] =
 // Deprecated 12/2022.
 const char kAutofillWalletImportStorageCheckboxState[] =
     "autofill.wallet_import_storage_checkbox_state";
+const char kDeprecatedReadingListHasUnseenEntries[] =
+    "reading_list.has_unseen_entries";
 
 // Deprecated 01/2023
 const char kSendDownloadToCloudPref[] =
@@ -1027,6 +1028,7 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 12/2022.
   registry->RegisterBooleanPref(kAutofillWalletImportStorageCheckboxState,
                                 true);
+  registry->RegisterBooleanPref(kDeprecatedReadingListHasUnseenEntries, false);
 
   // Deprecated 01/2023.
   registry->RegisterBooleanPref(
@@ -2073,8 +2075,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kAutofillAssistantTriggerScriptsIsFirstTimeUser);
 
   // Added 12/2022.
-  profile_prefs->ClearPref(
-      reading_list::prefs::kDeprecatedReadingListHasUnseenEntries);
+  profile_prefs->ClearPref(kDeprecatedReadingListHasUnseenEntries);
 
   // Added 12/2022.
   profile_prefs->ClearPref(kAutofillWalletImportStorageCheckboxState);
