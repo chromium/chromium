@@ -226,12 +226,19 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
   }
 }
 
-namespace {
-template <typename BuilderType>
-void BuildLongAnimationFrameUKM(ukm::UkmRecorder* recorder,
-                                ukm::SourceId source_id,
-                                const AnimationFrameTimingInfo& info) {
-  BuilderType builder(source_id);
+void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKM(
+    const AnimationFrameTimingInfo& info) {
+  if (!RuntimeEnabledFeatures::LongAnimationFrameUKMEnabled()) {
+    return;
+  }
+
+  ukm::UkmRecorder* recorder = client_.MainFrameUkmRecorder();
+  ukm::SourceId source_id = client_.MainFrameUkmSourceId();
+  if (!recorder || source_id == ukm::kInvalidSourceId) {
+    return;
+  }
+
+  ukm::builders::PerformanceAPI_LongAnimationFrame builder(source_id);
   builder.SetDuration_Total(info.Duration().InMilliseconds());
   base::TimeTicks desired_start_time = info.FrameStartTime();
   if (!info.FirstUIEventTime().is_null()) {
@@ -245,12 +252,8 @@ void BuildLongAnimationFrameUKM(ukm::UkmRecorder* recorder,
 
   builder.SetDuration_DelayDefer(
       (info.FrameStartTime() - desired_start_time).InMilliseconds());
-  base::TimeTicks effective_blocking_time = info.FrameStartTime();
-  if (desired_start_time > effective_blocking_time) {
-    effective_blocking_time = desired_start_time;
-  }
   builder.SetDuration_EffectiveBlocking(
-      (info.RenderEndTime() - effective_blocking_time).InMilliseconds());
+      info.TotalBlockingDuration().InMilliseconds());
   builder.SetDuration_StyleAndLayout_RenderPhase(
       (info.RenderEndTime() - info.StyleAndLayoutStartTime()).InMilliseconds());
   base::TimeDelta total_compilation_duration;
@@ -302,74 +305,6 @@ void BuildLongAnimationFrameUKM(ukm::UkmRecorder* recorder,
       total_forced_style_and_layout_duration.InMilliseconds());
   builder.SetDidPause(info.DidPause());
   builder.Record(recorder);
-}
-}  // namespace
-
-void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKM(
-    const AnimationFrameTimingInfo& info) {
-  if (!RuntimeEnabledFeatures::LongAnimationFrameUKMEnabled()) {
-    return;
-  }
-
-  ukm::UkmRecorder* recorder = client_.MainFrameUkmRecorder();
-  ukm::SourceId source_id = client_.MainFrameUkmSourceId();
-  if (!recorder || source_id == ukm::kInvalidSourceId) {
-    return;
-  }
-
-  constexpr base::TimeDelta kBlockingThreshold = base::Milliseconds(125);
-  bool is_blocking_ui_event = false;
-  bool is_blocking_frame = false;
-  bool is_before_load_event = !client_.IsMainFrameFullyLoaded();
-
-  if (!info.FirstUIEventTime().is_null() &&
-      (info.RenderEndTime() - info.FirstUIEventTime()) > kBlockingThreshold) {
-    is_blocking_ui_event = true;
-  } else {
-    base::TimeTicks effective_start = info.RenderStartTime();
-    if (info.DesiredRenderStartTime() > effective_start) {
-      effective_start = info.DesiredRenderStartTime();
-    }
-    if ((info.RenderEndTime() - effective_start) > kBlockingThreshold) {
-      is_blocking_frame = true;
-    }
-  }
-
-  if (is_before_load_event) {
-    if (is_blocking_ui_event) {
-      BuildLongAnimationFrameUKM<
-          ukm::builders::
-              PerformanceAPI_LongAnimationFrame_BeforeLoad_BlockingInput>(
-          recorder, source_id, info);
-    } else if (is_blocking_frame) {
-      BuildLongAnimationFrameUKM<
-          ukm::builders::
-              PerformanceAPI_LongAnimationFrame_BeforeLoad_BlockingFrame>(
-          recorder, source_id, info);
-    } else {
-      BuildLongAnimationFrameUKM<
-          ukm::builders::
-              PerformanceAPI_LongAnimationFrame_BeforeLoad_NonBlocking>(
-          recorder, source_id, info);
-    }
-  } else {
-    if (is_blocking_ui_event) {
-      BuildLongAnimationFrameUKM<
-          ukm::builders::
-              PerformanceAPI_LongAnimationFrame_AfterLoad_BlockingInput>(
-          recorder, source_id, info);
-    } else if (is_blocking_frame) {
-      BuildLongAnimationFrameUKM<
-          ukm::builders::
-              PerformanceAPI_LongAnimationFrame_AfterLoad_BlockingFrame>(
-          recorder, source_id, info);
-    } else {
-      BuildLongAnimationFrameUKM<
-          ukm::builders::
-              PerformanceAPI_LongAnimationFrame_AfterLoad_NonBlocking>(
-          recorder, source_id, info);
-    }
-  }
 }
 
 void AnimationFrameTimingMonitor::Trace(Visitor* visitor) const {
