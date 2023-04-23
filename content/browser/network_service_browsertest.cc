@@ -129,39 +129,39 @@ class NetworkServiceBrowserTest : public ContentBrowserTest {
   NetworkServiceBrowserTest& operator=(const NetworkServiceBrowserTest&) =
       delete;
 
-  bool ExecuteScript(const std::string& script) {
-    bool xhr_result = false;
-    // The JS call will fail if disallowed because the process will be killed.
-    bool execute_result =
-        ExecuteScriptAndExtractBool(shell(), script, &xhr_result);
-    return xhr_result && execute_result;
-  }
-
-  bool FetchResource(const GURL& url, bool synchronous = false) {
+  bool FetchResource(const GURL& url,
+                     bool synchronous = false,
+                     bool expect_disallowed = false) {
     if (!url.is_valid())
       return false;
     std::string script = JsReplace(
         "var xhr = new XMLHttpRequest();"
         "xhr.open('GET', $1, $2);"
-        "xhr.onload = function (e) {"
-        "  if (xhr.readyState === 4) {"
-        "    window.domAutomationController.send(xhr.status === 200);"
+        "new Promise(resolve => {"
+        "  xhr.onload = function (e) {"
+        "    if (xhr.readyState === 4) {"
+        "      resolve(xhr.status === 200);"
+        "    }"
+        "  };"
+        "  xhr.onerror = function () {"
+        "    resolve(false);"
+        "  };"
+        "  try {"
+        "    xhr.send(null);"
+        "  } catch (error) {"
+        "    resolve(false);"
         "  }"
-        "};"
-        "xhr.onerror = function () {"
-        "  window.domAutomationController.send(false);"
-        "};"
-        "try {"
-        "  xhr.send(null);"
-        "} catch (error) {"
-        "  window.domAutomationController.send(false);"
-        "}",
+        "});",
         url, !synchronous);
-    return ExecuteScript(script);
+    // EvalJs assumes that the script executes successfully, so if we expect the
+    // JS to be disallowed, we must use ExecJs instead.
+    return expect_disallowed ? ExecJs(shell(), script)
+                             : EvalJs(shell(), script).ExtractBool();
   }
 
-  bool CheckCanLoadHttp() {
-    return FetchResource(embedded_test_server()->GetURL("/echo"));
+  bool CheckCanLoadHttp(bool expect_disallowed = false) {
+    return FetchResource(embedded_test_server()->GetURL("/echo"),
+                         /*synchronous=*/false, expect_disallowed);
   }
 
   void SetUpOnMainThread() override {
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, WebUIBindingsNoHttp) {
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   RenderProcessHostBadIpcMessageWaiter kill_waiter(
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
-  ASSERT_FALSE(CheckCanLoadHttp());
+  ASSERT_FALSE(CheckCanLoadHttp(/*expect_disallowed=*/true));
   EXPECT_EQ(bad_message::RPH_MOJO_PROCESS_ERROR, kill_waiter.Wait());
 }
 

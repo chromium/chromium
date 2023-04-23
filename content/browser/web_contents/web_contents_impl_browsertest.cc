@@ -3697,11 +3697,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   WebContents* new_contents = nullptr;
   {
     ShellAddedObserver new_shell_observer;
-    bool success = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        shell(),
-        "window.domAutomationController.send(clickLinkToSelfNoOpener());",
-        &success));
+    EXPECT_TRUE(ExecJs(shell(), "clickLinkToSelfNoOpener();"));
     new_shell = new_shell_observer.GetShell();
     new_contents = new_shell->web_contents();
     // Delaying popup holds the initial load of |url|.
@@ -3741,10 +3737,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   WebContents* new_contents = nullptr;
   {
     ShellAddedObserver new_shell_observer;
-    bool success = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        shell(), "window.domAutomationController.send(clickLinkToSelf());",
-        &success));
+    EXPECT_TRUE(ExecJs(shell(), "clickLinkToSelf();"));
     new_shell = new_shell_observer.GetShell();
     new_contents = new_shell->web_contents();
     // Delaying popup holds the initial load of |url|.

@@ -311,20 +311,20 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   }
 
   bool AddTestUtilJS(RenderFrameHost* host) {
-    bool success = false;
     std::string js = R"(
         const script = document.createElement("script");
-        script.addEventListener('load', () => {
-          window.domAutomationController.send(true);
+        new Promise(resolve => {
+          script.addEventListener('load', () => {
+            resolve(true);
+          });
+          script.addEventListener('error', () => {
+            resolve(false);
+          });
+          script.src = "/prerender/test_utils.js";
+          document.body.appendChild(script);
         });
-        script.addEventListener('error', () => {
-          window.domAutomationController.send(false);
-        });
-        script.src = "/prerender/test_utils.js";
-        document.body.appendChild(script);
     )";
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(host, js, &success));
-    return success;
+    return EvalJs(host, js).ExtractBool();
   }
 
   void NavigatePrimaryPage(const GURL& url) {
