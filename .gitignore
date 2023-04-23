@@ -71,15 +71,18 @@ Thumbs.db
 rust-project.json
 v8.log
 vs-chromium-project.txt
+
 # Store android emulator artifacts, used by //tools/android/avd/avd.py
 /.android_emulator/
 /.clangd
 /.clangd/
 /.clangd-index/
+
 # Settings directories for eclipse
 /.externalToolBuilders/
 /.settings/
 /.vs/
+
 # Visual Studio Code
 # No trailing slash to also ignore symlinks, which is useful in conjunction with
 # gclient-new-workdir.
@@ -98,6 +101,7 @@ vs-chromium-project.txt
 /ash/webui/media_app_ui/resources/pkg
 /ash/webui/projector_app/resources/prod
 /base/base_unittests_run.xml
+
 # See build/.gitignore for entries covering src/build.
 
 # The Chrome OS build creates a /c and /c_icu symlink due to http://crbug.com/54866.
@@ -135,6 +139,7 @@ vs-chromium-project.txt
 /chrome/browser/resources/media_router_internal/
 /chrome/browser/resources/settings_internal/
 /chrome/browser/resources/software_rendering_list
+
 # Asset files downloaded by gclient runhooks.
 /chrome/browser/resources/vr/assets/google_chrome/*.png
 /chrome/browser/resources/vr/assets/google_chrome/*.wav
@@ -314,6 +319,7 @@ vs-chromium-project.txt
 /testing/location_tags.json
 /testing/rts/
 /testserver.log
+
 # See third_party/.gitignore for entries covering src/third_party.
 /tools/.bisect-builds-cache.json
 /tools/cygprofile/*.wprgo
