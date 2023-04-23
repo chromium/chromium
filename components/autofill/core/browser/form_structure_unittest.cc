@@ -39,6 +39,7 @@
 #include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 
 using ::base::ASCIIToUTF16;
@@ -6107,6 +6108,33 @@ TEST_F(FormStructureTestImpl, CreateForPasswordManagerUpload) {
       "" /*login_form_signature*/, true /*observed_submission*/,
       true /* is_raw_metadata_uploading_enabled */);
   ASSERT_EQ(1u, uploads.size());
+}
+
+// Milestone number must be set to correct actual value, as autofill server
+// relies on this. If this is planning to change, inform Autofill team. This
+// must be set to avoid situations similar to dropping branch number in M101,
+// which yielded cl/513794193 and cl/485660167.
+TEST_F(FormStructureTestImpl, EncodeUploadRequest_MilestoneSet) {
+  // To test |EncodeUploadRequest()|, a non-empty form is required.
+  std::unique_ptr<FormStructure> form =
+      FormStructure::CreateForPasswordManagerUpload(FormSignature(1234),
+                                                    {FieldSignature(1)});
+  for (auto& field : *form) {
+    field->host_form_signature = form->form_signature();
+  }
+  std::vector<AutofillUploadContents> uploads = form->EncodeUploadRequest(
+      {} /* available_field_types */, false /* form_was_autofilled */,
+      "" /*login_form_signature*/, true /*observed_submission*/,
+      true /* is_raw_metadata_uploading_enabled */);
+  ASSERT_EQ(1u, uploads.size());
+  static constexpr char kChromeVersionRegex[] =
+      "\\w+/([0-9]+)\\.[0-9]+\\.[0-9]+\\.[0-9]+";
+  std::string major_version;
+  ASSERT_TRUE(re2::RE2::FullMatch(uploads[0].client_version(),
+                                  kChromeVersionRegex, &major_version));
+  int major_version_as_interger;
+  ASSERT_TRUE(base::StringToInt(major_version, &major_version_as_interger));
+  EXPECT_NE(major_version_as_interger, 0);
 }
 
 // Tests if a new logical form is started with the second appearance of a field
