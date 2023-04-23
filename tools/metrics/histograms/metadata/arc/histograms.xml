@@ -1189,8 +1189,7 @@ chromium-metrics-reviews@google.com.
   <owner>youkichihosoi@chromium.org</owner>
   <summary>
     When a removable media is mounted, whether Android apps have full access to
-    the media. Users can allow full access in Settings. Changing the preference
-    in Settings is tracked by Arc.ExternalStorage.SetVisible.
+    the media. Users can allow full access in Settings.
   </summary>
 </histogram>
 
