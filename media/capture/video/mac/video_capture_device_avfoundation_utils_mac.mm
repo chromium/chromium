@@ -4,6 +4,8 @@
 
 #include "media/capture/video/mac/video_capture_device_avfoundation_utils_mac.h"
 
+#import <IOKit/audio/IOAudioTypes.h>
+
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -116,10 +118,18 @@ base::scoped_nsobject<NSDictionary> GetDeviceNames() {
         ++number_of_suspended_devices;
         continue;
       }
+
+      // Transport types are defined for Audio devices and reused for video.
+      int transport_type = [device transportType];
+      VideoCaptureTransportType device_transport_type =
+          (transport_type == kIOAudioDeviceTransportTypeBuiltIn ||
+           transport_type == kIOAudioDeviceTransportTypeUSB)
+              ? VideoCaptureTransportType::MACOSX_USB_OR_BUILT_IN
+              : VideoCaptureTransportType::OTHER_TRANSPORT;
       DeviceNameAndTransportType* nameAndTransportType =
           [[[DeviceNameAndTransportType alloc]
                initWithName:[device localizedName]
-              transportType:[device transportType]] autorelease];
+              transportType:device_transport_type] autorelease];
       deviceNames[[device uniqueID]] = nameAndTransportType;
     }
   }

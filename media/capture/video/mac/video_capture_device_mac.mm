@@ -28,7 +28,7 @@
 @implementation DeviceNameAndTransportType
 
 - (instancetype)initWithName:(NSString*)deviceName
-               transportType:(int32_t)transportType {
+               transportType:(media::VideoCaptureTransportType)transportType {
   if (self = [super init]) {
     _deviceName.reset([deviceName copy]);
     _transportType = transportType;
@@ -40,7 +40,7 @@
   return _deviceName;
 }
 
-- (int32_t)transportType {
+- (media::VideoCaptureTransportType)deviceTransportType {
   return _transportType;
 }
 

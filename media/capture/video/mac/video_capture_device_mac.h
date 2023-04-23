@@ -37,14 +37,14 @@ CAPTURE_EXPORT
   base::scoped_nsobject<NSString> _deviceName;
   // The transport type of the device (USB, PCI, etc), values are defined in
   // <IOKit/audio/IOAudioTypes.h> as kIOAudioDeviceTransportType*.
-  int32_t _transportType;
+  media::VideoCaptureTransportType _transportType;
 }
 
 - (instancetype)initWithName:(NSString*)name
-               transportType:(int32_t)transportType;
+               transportType:(media::VideoCaptureTransportType)transportType;
 
 - (NSString*)deviceName;
-- (int32_t)transportType;
+- (media::VideoCaptureTransportType)deviceTransportType;
 @end
 
 namespace media {

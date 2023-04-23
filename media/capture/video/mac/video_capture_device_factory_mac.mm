@@ -4,9 +4,7 @@
 
 #include "media/capture/video/mac/video_capture_device_factory_mac.h"
 
-#import <IOKit/audio/IOAudioTypes.h>
 #include <stddef.h>
-
 #include <memory>
 #include <utility>
 
@@ -139,13 +137,8 @@ void VideoCaptureDeviceFactoryMac::GetDevicesInfo(
   for (NSString* key in capture_devices.get()) {
     const std::string device_id = [key UTF8String];
     const VideoCaptureApi capture_api = VideoCaptureApi::MACOSX_AVFOUNDATION;
-    int transport_type = [[capture_devices valueForKey:key] transportType];
-    // Transport types are defined for Audio devices and reused for video.
     VideoCaptureTransportType device_transport_type =
-        (transport_type == kIOAudioDeviceTransportTypeBuiltIn ||
-         transport_type == kIOAudioDeviceTransportTypeUSB)
-            ? VideoCaptureTransportType::MACOSX_USB_OR_BUILT_IN
-            : VideoCaptureTransportType::OTHER_TRANSPORT;
+        [[capture_devices valueForKey:key] deviceTransportType];
     const std::string model_id = VideoCaptureDeviceMac::GetDeviceModelId(
         device_id, capture_api, device_transport_type);
     const VideoCaptureControlSupport control_support =
