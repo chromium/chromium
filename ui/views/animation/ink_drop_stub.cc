@@ -12,6 +12,8 @@ InkDropStub::~InkDropStub() = default;
 
 void InkDropStub::HostSizeChanged(const gfx::Size& new_size) {}
 
+void InkDropStub::HostViewThemeChanged() {}
+
 void InkDropStub::HostTransformChanged(const gfx::Transform& new_transform) {}
 
 InkDropState InkDropStub::GetTargetInkDropState() const {

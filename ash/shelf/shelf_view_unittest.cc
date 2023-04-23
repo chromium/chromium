@@ -2588,6 +2588,7 @@ class InkDropSpy : public views::InkDrop {
   void HostSizeChanged(const gfx::Size& new_size) override {
     ink_drop_->HostSizeChanged(new_size);
   }
+  void HostViewThemeChanged() override { ink_drop_->HostViewThemeChanged(); }
   void HostTransformChanged(const gfx::Transform& new_transform) override {
     ink_drop_->HostTransformChanged(new_transform);
   }

@@ -175,4 +175,9 @@ void InkDropEventHandler::OnViewBlurred(View* observed_view) {
   delegate_->GetInkDrop()->SetFocused(false);
 }
 
+void InkDropEventHandler::OnViewThemeChanged(View* observed_view) {
+  CHECK_EQ(host_view_, observed_view);
+  delegate_->GetInkDrop()->HostViewThemeChanged();
+}
+
 }  // namespace views
