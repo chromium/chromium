@@ -40,9 +40,9 @@
 @end
 
 @implementation ChromeRenderWidgetHostViewMacDelegate {
-  // The widget host (process + routing IDs) that this delegate is managing.
-  int32_t _widgetProcessId;
-  int32_t _widgetRoutingId;
+  // The widget host that this delegate is managing.
+  int32_t _processId;
+  int32_t _routingId;
 
   // Responsible for 2-finger swipes history navigation.
   base::scoped_nsobject<HistorySwiper> _historySwiper;
@@ -56,8 +56,8 @@
     (content::RenderWidgetHost*)renderWidgetHost {
   self = [super init];
   if (self) {
-    _widgetProcessId = renderWidgetHost->GetProcess()->GetID();
-    _widgetRoutingId = renderWidgetHost->GetRoutingID();
+    _processId = renderWidgetHost->GetProcess()->GetID();
+    _routingId = renderWidgetHost->GetRoutingID();
     _historySwiper.reset([[HistorySwiper alloc] initWithDelegate:self]);
   }
   return self;
@@ -70,7 +70,7 @@
 
 - (content::WebContents*)webContents {
   content::RenderWidgetHost* renderWidgetHost =
-      content::RenderWidgetHost::FromID(_widgetProcessId, _widgetRoutingId);
+      content::RenderWidgetHost::FromID(_processId, _routingId);
   if (!renderWidgetHost) {
     return nullptr;
   }
@@ -86,7 +86,7 @@
 
 - (NSView*)nsView {
   content::RenderWidgetHost* renderWidgetHost =
-      content::RenderWidgetHost::FromID(_widgetProcessId, _widgetRoutingId);
+      content::RenderWidgetHost::FromID(_processId, _routingId);
   if (!renderWidgetHost) {
     return nil;
   }
@@ -102,7 +102,7 @@
 
 - (PrefService*)prefService {
   content::RenderWidgetHost* renderWidgetHost =
-      content::RenderWidgetHost::FromID(_widgetProcessId, _widgetRoutingId);
+      content::RenderWidgetHost::FromID(_processId, _routingId);
   if (!renderWidgetHost) {
     return nullptr;
   }
@@ -203,11 +203,12 @@
 
 - (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item
                       isValidItem:(BOOL*)valid {
-  PrefService* pref = self.prefService;
-  if (!pref) {
+  content::WebContents* webContents = self.webContents;
+  if (!webContents) {
     return NO;
   }
 
+  PrefService* pref = self.prefService;
   const PrefService::Preference* spellCheckEnablePreference =
       pref->FindPreference(spellcheck::prefs::kSpellCheckEnable);
   DCHECK(spellCheckEnablePreference);
@@ -333,9 +334,6 @@
 
 - (void)toggleContinuousSpellChecking:(id)sender {
   PrefService* pref = self.prefService;
-  if (!pref) {
-    return;
-  }
   pref->SetBoolean(spellcheck::prefs::kSpellCheckEnable,
                    !pref->GetBoolean(spellcheck::prefs::kSpellCheckEnable));
 }
