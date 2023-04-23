@@ -338,15 +338,10 @@ class UpdateMetadata(Command):
         the same change. For this reason, avoid aborting or prompting the user
         to continue, which could be too disruptive.
         """
-        tests_present_locally = set()
-        item_types = [
-            item_type for item_type in wptmanifest.item_classes
-            if item_type != 'support'
-        ]
-        for manifest in manifests:
-            tests_present_locally.update(
-                test.id for _, _, tests in manifest.itertypes(*item_types)
-                for test in tests)
+        tests_present_locally = {
+            test.id
+            for manifest in manifests for test in _tests(manifest)
+        }
         tests_absent_locally = tests_from_builders - tests_present_locally
         if tests_absent_locally:
             _log.warning(
@@ -596,10 +591,8 @@ class MetadataUpdater:
                 test_files.update(
                     metadata.create_test_tree(paths['metadata_path'],
                                               manifest))
-                for _, _, tests in manifest:
-                    slow_tests.update(
-                        test.id for test in tests
-                        if getattr(test, 'timeout', None) == 'long')
+                slow_tests.update(test.id for test in _tests(manifest)
+                                  if getattr(test, 'timeout', None) == 'long')
             finally:
                 manifest.itertypes = itertypes
         return cls(test_files, slow_tests, configs, fs, **options)
@@ -916,6 +909,17 @@ def load_and_update_manifests(finder: path_finder.PathFinder) -> ManifestMap:
         }
     return testloader.ManifestLoader(test_paths,
                                      force_manifest_update=True).load()
+
+
+def _tests(
+        manifest: wptmanifest.Manifest) -> Iterator[wptmanifest.ManifestItem]:
+    item_types = frozenset(wptmanifest.item_classes) - {
+        'support',
+        'manual',
+        'conformancechecker',
+    }
+    for _, _, tests in manifest.itertypes(*item_types):
+        yield from tests
 
 
 def _default_expected_by_type():

@@ -75,6 +75,12 @@ class BaseUpdateMetadataTest(LoggingTestCase):
                             [None, {}],
                         ],
                     },
+                    'support': {
+                        'helper.js': [
+                            'f933fd981d4a33ba82fb2b000234859bdda1494e',
+                            [None, {}],
+                        ],
+                    },
                 },
             }))
         self.tool.filesystem.write_text_file(
