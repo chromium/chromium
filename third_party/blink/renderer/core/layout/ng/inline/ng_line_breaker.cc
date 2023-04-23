@@ -1321,7 +1321,6 @@ NGLineBreaker::BreakResult NGLineBreaker::BreakText(
     }
     item_result->text_offset.end = result.break_offset;
     item_result->text_offset.AssertNotEmpty();
-    item_result->non_hangable_run_end = result.non_hangable_run_end;
     item_result->has_only_trailing_spaces = result.has_trailing_spaces;
     item_result->shape_result = std::move(shape_result);
     break;
@@ -1694,7 +1693,6 @@ void NGLineBreaker::HandleTrailingSpaces(const NGInlineItem& item,
     DCHECK(shape_result);
     NGInlineItemResult* item_result = AddItem(item, end, line_info);
     item_result->should_create_line_box = true;
-    item_result->non_hangable_run_end = offset_;
     item_result->has_only_trailing_spaces = true;
     item_result->shape_result = ShapeResultView::Create(shape_result);
     if (item_result->StartOffset() == item.StartOffset() &&

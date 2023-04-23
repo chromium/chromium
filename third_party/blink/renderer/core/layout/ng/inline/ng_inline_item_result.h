@@ -60,9 +60,6 @@ struct CORE_EXPORT NGInlineItemResult {
   // The range of text content for this item.
   NGTextOffsetRange text_offset;
 
-  // Indicates the limits of the trailing space run.
-  absl::optional<unsigned> non_hangable_run_end;
-
   // Inline size of this item.
   LayoutUnit inline_size;
 
