@@ -7457,12 +7457,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "upgrade-center-refactor",
-    "owners": [ "pakzhygitov", "bling-flags@google.com" ],
-    // This is a temp flag and should be removed within this milestone.
-    "expiry_milestone": 104
-  },
-  {
     "name": "upload-office-to-cloud",
     "owners": [ "jboulic", "petermarshall", "simmonsjosh@google.com" ],
     "expiry_milestone": 120
