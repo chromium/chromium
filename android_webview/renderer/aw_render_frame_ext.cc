@@ -4,12 +4,10 @@
 
 #include "android_webview/renderer/aw_render_frame_ext.h"
 
-#include <map>
 #include <memory>
 
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/mojom/frame.mojom.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
@@ -144,13 +142,6 @@ void PopulateHitTestData(const GURL& absolute_link_url,
 
 }  // namespace
 
-// Registry for RenderFrame => AwRenderFrameExt lookups
-typedef std::map<content::RenderFrame*, AwRenderFrameExt*> FrameExtMap;
-FrameExtMap* GetFrameExtMap() {
-  static base::NoDestructor<FrameExtMap> map;
-  return map.get();
-}
-
 AwRenderFrameExt::AwRenderFrameExt(content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame) {
   // TODO(sgurun) do not create a password autofill agent (change
@@ -167,38 +158,9 @@ AwRenderFrameExt::AwRenderFrameExt(content::RenderFrame* render_frame)
     registry_.AddInterface<mojom::LocalMainFrame>(base::BindRepeating(
         &AwRenderFrameExt::BindLocalMainFrame, base::Unretained(this)));
   }
-
-  // Add myself to the RenderFrame => AwRenderFrameExt register.
-  GetFrameExtMap()->emplace(render_frame, this);
 }
 
-AwRenderFrameExt::~AwRenderFrameExt() {
-  // Remove myself from the RenderFrame => AwRenderFrameExt register. Ideally,
-  // we'd just use render_frame() and erase by key. However, by this time the
-  // render_frame has already been cleared so we have to iterate over all
-  // render_frames in the map and wipe the one(s) that point to this
-  // AwRenderFrameExt
-
-  auto* map = GetFrameExtMap();
-  auto it = map->begin();
-  while (it != map->end()) {
-    if (it->second == this) {
-      it = map->erase(it);
-    } else {
-      ++it;
-    }
-  }
-}
-
-AwRenderFrameExt* AwRenderFrameExt::FromRenderFrame(
-    content::RenderFrame* render_frame) {
-  DCHECK(render_frame != nullptr);
-  auto iter = GetFrameExtMap()->find(render_frame);
-  DCHECK(GetFrameExtMap()->end() != iter)
-      << "Should always exist a render_frame_ext for a render_frame";
-  AwRenderFrameExt* render_frame_ext = iter->second;
-  return render_frame_ext;
-}
+AwRenderFrameExt::~AwRenderFrameExt() = default;
 
 const mojo::AssociatedRemote<mojom::FrameHost>&
 AwRenderFrameExt::GetFrameHost() {

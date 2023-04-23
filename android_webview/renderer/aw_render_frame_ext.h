@@ -36,8 +36,6 @@ class AwRenderFrameExt : public content::RenderFrameObserver,
   AwRenderFrameExt(const AwRenderFrameExt&) = delete;
   AwRenderFrameExt& operator=(const AwRenderFrameExt&) = delete;
 
-  static AwRenderFrameExt* FromRenderFrame(content::RenderFrame* render_frame);
-
  private:
   ~AwRenderFrameExt() override;
 
