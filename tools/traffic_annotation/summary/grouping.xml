@@ -290,6 +290,7 @@ after discussions on the right group.
       <annotation id="screensaver_image_downloader"/>
       <annotation id="back_navigation_cache_query"/>
       <annotation id="cws_info_service"/>
+      <annotation id="promise_app_service"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
