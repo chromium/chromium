@@ -2208,7 +2208,6 @@ bool ScrollableShelfView::ShouldCountActivatedInkDrop(
 }
 
 void ScrollableShelfView::EnableShelfRoundedCorners(bool enable) {
-  LOG(ERROR) << __func__ << " " << __LINE__;
   // Only enable shelf rounded corners in tablet mode. Note that we allow
   // disabling rounded corners in clamshell. Because when switching to clamshell
   // from tablet, this method may be called after tablet mode ends.
@@ -2219,15 +2218,12 @@ void ScrollableShelfView::EnableShelfRoundedCorners(bool enable) {
   if (enable && !is_in_tablet_mode)
     return;
 
-  LOG(ERROR) << __func__ << " " << __LINE__;
   ui::Layer* layer = shelf_container_view_->layer();
-  LOG(ERROR) << __func__ << " " << __LINE__;
 
   const bool has_rounded_corners = !(layer->rounded_corner_radii().IsEmpty());
   if (enable == has_rounded_corners)
     return;
 
-  LOG(ERROR) << __func__ << " " << __LINE__;
   // In non-overflow mode, only apply layer clip on |shelf_container_view_|
   // when the ripple ring of the first/last shelf icon shows.
   // Note that |layout_strategy_| may update while EnableShelfRoundedCorners()
@@ -2236,18 +2232,14 @@ void ScrollableShelfView::EnableShelfRoundedCorners(bool enable) {
   // |layer_clip_in_non_overflow_| updates regardless of |layout_strategy_|.
   layer_clip_in_non_overflow_ = enable;
 
-  LOG(ERROR) << __func__ << " " << __LINE__;
   if (layout_strategy_ == kNotShowArrowButtons)
     EnableLayerClipOnShelfContainerView(layer_clip_in_non_overflow_);
 
-  LOG(ERROR) << __func__ << " " << __LINE__;
   layer->SetRoundedCornerRadius(enable ? CalculateShelfContainerRoundedCorners()
                                        : gfx::RoundedCornersF());
-  LOG(ERROR) << __func__ << " " << __LINE__;
 
   if (!layer->is_fast_rounded_corner())
     layer->SetIsFastRoundedCorner(/*enable=*/true);
-  LOG(ERROR) << __func__ << " " << __LINE__;
 }
 
 void ScrollableShelfView::OnActiveInkDropChange(bool increase) {
