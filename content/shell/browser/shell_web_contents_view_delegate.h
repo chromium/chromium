@@ -36,8 +36,7 @@ class ShellWebContentsViewDelegate : public WebContentsViewDelegate {
 
 #if BUILDFLAG(IS_MAC)
   void ActionPerformed(int id);
-  NSObject<RenderWidgetHostViewMacDelegate>*
-  CreateRenderWidgetHostViewMacDelegate(
+  NSObject<RenderWidgetHostViewMacDelegate>* CreateRenderWidgetHostViewDelegate(
       content::RenderWidgetHost* render_widget_host,
       bool is_popup) override;
 #endif

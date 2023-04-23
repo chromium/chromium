@@ -510,16 +510,16 @@ void AppShimController::CreateRenderWidgetHostNSView(
     mojo::ScopedInterfaceEndpointHandle view_request_handle) {
   remote_cocoa::RenderWidgetHostViewMacDelegateCallback
       responder_delegate_creation_callback = base::BindOnce(
-          &AppShimController::CreateRenderWidgetHostViewMacDelegate, view_id);
+          &AppShimController::CreateRenderWidgetHostViewDelegate, view_id);
   remote_cocoa::CreateRenderWidgetHostNSView(
       view_id, std::move(host_handle), std::move(view_request_handle),
       std::move(responder_delegate_creation_callback));
 }
 
 NSObject<RenderWidgetHostViewMacDelegate>*
-AppShimController::CreateRenderWidgetHostViewMacDelegate(uint64_t view_id) {
-  return [[[AppShimRenderWidgetHostViewMacDelegate alloc]
-      initWithRenderWidgetHostNSViewID:view_id] autorelease];
+AppShimController::CreateRenderWidgetHostViewDelegate(uint64_t view_id) {
+  return [[AppShimRenderWidgetHostViewMacDelegate alloc]
+      initWithRenderWidgetHostNSViewID:view_id];
 }
 
 void AppShimController::CreateCommandDispatcherForWidget(uint64_t widget_id) {

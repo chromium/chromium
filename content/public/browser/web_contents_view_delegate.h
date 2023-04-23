@@ -82,16 +82,16 @@ class CONTENT_EXPORT WebContentsViewDelegate {
   // Advance focus to the view that follows or precedes the WebContents.
   virtual bool TakeFocus(bool reverse);
 
-  // Returns a newly-created, autoreleased delegate for the
-  // RenderWidgetHostViewMac, to handle events on the responder chain.
+  // Returns a newly-created delegate for the RenderWidgetHostViewMac, to handle
+  // events on the responder chain.
 #if defined(__OBJC__)
 #if BUILDFLAG(IS_MAC)
   virtual NSObject<RenderWidgetHostViewMacDelegate>*
-  CreateRenderWidgetHostViewMacDelegate(RenderWidgetHost* render_widget_host,
-                                        bool is_popup);
+  CreateRenderWidgetHostViewDelegate(RenderWidgetHost* render_widget_host,
+                                     bool is_popup);
 #endif
 #else
-  virtual void* CreateRenderWidgetHostViewMacDelegate(
+  virtual void* CreateRenderWidgetHostViewDelegate(
       RenderWidgetHost* render_widget_host,
       bool is_popup);
 #endif

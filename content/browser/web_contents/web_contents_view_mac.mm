@@ -342,11 +342,14 @@ RenderWidgetHostViewBase* WebContentsViewMac::CreateViewForWidget(
           ? g_create_render_widget_host_view(render_widget_host)
           : new RenderWidgetHostViewMac(render_widget_host);
   if (delegate()) {
-    view->SetDelegate(delegate()->CreateRenderWidgetHostViewMacDelegate(
-        render_widget_host, /*is_popup=*/false));
+    base::scoped_nsobject<NSObject<RenderWidgetHostViewMacDelegate>>
+        rw_delegate(delegate()->CreateRenderWidgetHostViewDelegate(
+            render_widget_host, false));
+
+    view->SetDelegate(rw_delegate.get());
   }
 
-  // Add the RenderWidgetHostView to the ui::Layer hierarchy.
+  // Add the RenderWidgetHostView to the ui::Layer heirarchy.
   child_views_.push_back(view->GetWeakPtr());
   if (views_host_) {
     auto* remote_cocoa_application = views_host_->GetRemoteCocoaApplication();
@@ -386,8 +389,10 @@ RenderWidgetHostViewBase* WebContentsViewMac::CreateViewForChildWidget(
   }
 
   if (delegate()) {
-    view->SetDelegate(delegate()->CreateRenderWidgetHostViewMacDelegate(
-        render_widget_host, /*is_popup=*/true));
+    base::scoped_nsobject<NSObject<RenderWidgetHostViewMacDelegate>>
+        rw_delegate(delegate()->CreateRenderWidgetHostViewDelegate(
+            render_widget_host, true));
+    view->SetDelegate(rw_delegate.get());
   }
   return view;
 }
