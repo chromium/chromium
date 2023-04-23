@@ -9,7 +9,8 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
@@ -274,8 +275,7 @@ void TtsPlatformImplBackgroundWorker::ProcessSpeech(
     // Note that the API requires an integer value, so be sure to cast the pitch
     // value to an int before calling NumberToWString. TODO(dtseng): cleanup if
     // we ever use any other properties that require xml.
-    double adjusted_pitch =
-        base::clamp<double>(params.pitch * 10 - 10, -10, 10);
+    double adjusted_pitch = std::clamp<double>(params.pitch * 10 - 10, -10, 10);
     std::wstring adjusted_pitch_string =
         base::NumberToWString(static_cast<int>(adjusted_pitch));
     prefix = L"<pitch absmiddle=\"" + adjusted_pitch_string + L"\">";
