@@ -4123,6 +4123,18 @@
   <message name="IDS_SETTINGS_NO_HID_DEVICES_FOUND" desc="Explanation for not showing HID devices in site settings.">
     No HID devices found
   </message>
+  <message name="IDS_SETTINGS_RESET_BLUETOOTH_CONFIRMATION" desc="Text for the dialog that warns about resetting all permissions for all Bluetooth devices.">
+    Reset all Bluetooth device permissions?
+  </message>
+  <message name="IDS_SETTINGS_RESET_HID_CONFIRMATION" desc="Text for the dialog that warns about resetting all permissions for all HID devices.">
+    Reset all HID device permissions?
+  </message>
+  <message name="IDS_SETTINGS_RESET_SERIAL_PORTS_CONFIRMATION" desc="Text for the dialog that warns about resetting all permissions for all serial ports.">
+    Reset all Serial port permisions?
+  </message>
+  <message name="IDS_SETTINGS_RESET_USB_CONFIRMATION" desc="Text for the dialog that warns about resetting all permissions for all USB devices.">
+    Reset all USB device permissions?
+  </message>
   <message name="IDS_SETTINGS_ADD_SITE_TITLE" desc="Title for the Add Site dialog">
     Add a site
   </message>

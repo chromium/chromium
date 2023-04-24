@@ -14,6 +14,7 @@ import '../settings_shared.css.js';
 import '../i18n_setup.js';
 import './chooser_exception_list_entry.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -29,6 +30,7 @@ import {ChooserException, RawChooserException, SiteException} from './site_setti
 
 export interface ChooserExceptionListElement {
   $: {
+    confirmResetSettings: CrDialogElement,
     tooltip: PaperTooltipElement,
   };
 }
@@ -75,6 +77,12 @@ export class ChooserExceptionListElement extends
       },
 
       hasIncognito_: Boolean,
+
+      resetPermissionsMessage_: {
+        type: String,
+        value: '',
+      },
+
       tooltipText_: String,
     };
   }
@@ -83,6 +91,7 @@ export class ChooserExceptionListElement extends
   chooserType: ChooserType;
   private emptyListMessage_: string;
   private hasIncognito_: boolean;
+  private resetPermissionsMessage_: string;
   private tooltipText_: string;
 
   override connectedCallback() {
@@ -137,18 +146,24 @@ export class ChooserExceptionListElement extends
     switch (this.chooserType) {
       case ChooserType.USB_DEVICES:
         this.emptyListMessage_ = this.i18n('noUsbDevicesFound');
+        this.resetPermissionsMessage_ = this.i18n('resetUsbConfirmation');
         break;
       case ChooserType.SERIAL_PORTS:
         this.emptyListMessage_ = this.i18n('noSerialPortsFound');
+        this.resetPermissionsMessage_ =
+            this.i18n('resetSerialPortsConfirmation');
         break;
       case ChooserType.HID_DEVICES:
         this.emptyListMessage_ = this.i18n('noHidDevicesFound');
+        this.resetPermissionsMessage_ = this.i18n('resetHidConfirmation');
         break;
       case ChooserType.BLUETOOTH_DEVICES:
         this.emptyListMessage_ = this.i18n('noBluetoothDevicesFound');
+        this.resetPermissionsMessage_ = this.i18n('resetBluetoothConfirmation');
         break;
       default:
         this.emptyListMessage_ = '';
+        this.resetPermissionsMessage_ = '';
     }
 
     this.populateList_();
@@ -203,6 +218,32 @@ export class ChooserExceptionListElement extends
         this.updateList(propertyPath, siteUidGetter, exception.sites);
       }, this);
     }
+  }
+
+  /**
+   * Confirms the resetting of all content settings for an origin.
+   */
+  private onConfirmClearSettings_(e: Event) {
+    e.preventDefault();
+    this.$.confirmResetSettings.showModal();
+  }
+
+  private onCloseDialog_(e: Event) {
+    (e.target as HTMLElement).closest('cr-dialog')!.close();
+  }
+
+  /**
+   * Resets all permissions for the current origin.
+   */
+  private onResetSettings_(e: Event) {
+    this.chooserExceptions.forEach(exception => {
+      exception.sites.forEach(site => {
+        this.browserProxy.resetChooserExceptionForSite(
+            exception.chooserType, site.origin, exception.object);
+      });
+    });
+
+    this.onCloseDialog_(e);
   }
 }
 
