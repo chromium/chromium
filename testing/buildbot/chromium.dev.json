@@ -302,7 +302,6 @@
       }
     ]
   },
-  "linux-ssd-rel-dev": {},
   "mac-arm-rel-dev": {
     "gtest_tests": [
       {

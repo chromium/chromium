@@ -140,7 +140,7 @@ ci_builder(
 )
 
 ci_builder(
-    name = "linux-ssd-rel-dev",
+    name = "linux-local-ssd-rel-dev",
     description_html = "Ensures builders are using available local SSDs",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),
@@ -151,6 +151,21 @@ ci_builder(
         ),
     ),
     builderless = False,
+)
+
+ci_builder(
+    name = "linux-remote-ssd-rel-dev",
+    description_html = "Ensures builders are using available remote SSDs. See b/279078023 for context.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+        ),
+    ),
+    builderless = False,
+    ssd = True,
 )
 
 ci_builder(

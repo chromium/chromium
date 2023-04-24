@@ -2661,11 +2661,6 @@
            'gtest_tests': 'chromium_dev_linux_gtests',
         },
       },
-      'linux-ssd-rel-dev': {
-        'mixins': [
-          'linux-bionic',
-        ],
-      },
       'mac-arm-rel-dev': {
         'mixins': [
           'mac_12_arm64',

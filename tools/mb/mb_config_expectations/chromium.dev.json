@@ -15,6 +15,17 @@
       "use_remoteexec": true
     }
   },
+  "linux-local-ssd-rel-dev": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "devtools_skip_typecheck": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_remoteexec": true
+    }
+  },
   "linux-rel-dev": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -37,7 +48,7 @@
       "use_remoteexec": true
     }
   },
-  "linux-ssd-rel-dev": {
+  "linux-remote-ssd-rel-dev": {
     "gn_args": {
       "dcheck_always_on": false,
       "devtools_skip_typecheck": false,
