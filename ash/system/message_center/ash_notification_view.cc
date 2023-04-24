@@ -1228,10 +1228,12 @@ void AshNotificationView::UpdateWithNotification(
     }
   }
   if (inline_reply()) {
-    SkColor text_color = ash::AshColorProvider::Get()->GetContentLayerColor(
-        ash::AshColorProvider::ContentLayerType::kTextColorSecondary);
-    inline_reply()->textfield()->SetTextColor(text_color);
-    inline_reply()->textfield()->set_placeholder_text_color(text_color);
+    if (!chromeos::features::IsJellyEnabled()) {
+      SkColor text_color = ash::AshColorProvider::Get()->GetContentLayerColor(
+          ash::AshColorProvider::ContentLayerType::kTextColorSecondary);
+      inline_reply()->textfield()->SetTextColor(text_color);
+      inline_reply()->textfield()->set_placeholder_text_color(text_color);
+    }
   }
 }
 
@@ -1429,10 +1431,17 @@ void AshNotificationView::OnThemeChanged() {
           notification_id()));
 
   if (inline_reply()) {
-    SkColor text_color = ash::AshColorProvider::Get()->GetContentLayerColor(
-        ash::AshColorProvider::ContentLayerType::kTextColorSecondary);
-    inline_reply()->textfield()->SetTextColor(text_color);
-    inline_reply()->textfield()->set_placeholder_text_color(text_color);
+    if (chromeos::features::IsJellyEnabled()) {
+      inline_reply()->textfield()->SetTextColor(
+          GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
+      inline_reply()->textfield()->set_placeholder_text_color(
+          GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant));
+    } else {
+      SkColor text_color = ash::AshColorProvider::Get()->GetContentLayerColor(
+          ash::AshColorProvider::ContentLayerType::kTextColorSecondary);
+      inline_reply()->textfield()->SetTextColor(text_color);
+      inline_reply()->textfield()->set_placeholder_text_color(text_color);
+    }
   }
 
   if (icon_view() &&
