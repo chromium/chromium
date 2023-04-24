@@ -257,6 +257,8 @@ RTCVideoDecoderFactory::GetSupportedFormats() const {
 webrtc::VideoDecoderFactory::CodecSupport
 RTCVideoDecoderFactory::QueryCodecSupport(const webrtc::SdpVideoFormat& format,
                                           bool reference_scaling) const {
+  CheckAndWaitDecoderSupportStatusIfNeeded();
+
   media::VideoCodec codec =
       WebRtcToMediaVideoCodec(webrtc::PayloadStringToCodecType(format.name));
   if (reference_scaling) {
@@ -269,16 +271,13 @@ RTCVideoDecoderFactory::QueryCodecSupport(const webrtc::SdpVideoFormat& format,
     // Most HW decoders cannot handle reference scaling/spatial layers, so
     // return false if the configuration requires reference scaling unless we
     // explicitly know that the HW decoder can handle this.
-    // D3D11 supports VP9 kSVC HW Decoding. But currently the MFT doesn't
-    // support DXVA decode the VP9 kSVC stream. Keep returning the false until
-    // MFT support it.
     if (codec == media::VideoCodec::kVP9 &&
-        !RTCVideoDecoderAdapter::Vp9HwSupportForSpatialLayers()) {
+        (!gpu_factories_ ||
+         !RTCVideoDecoderAdapter::Vp9HwSupportForSpatialLayers(
+             gpu_factories_->GetDecoderType()))) {
       return {false, false};
     }
   }
-
-  CheckAndWaitDecoderSupportStatusIfNeeded();
 
   media::VideoCodecProfile codec_profile =
       WebRtcVideoFormatToMediaVideoCodecProfile(format);
