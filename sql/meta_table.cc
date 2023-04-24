@@ -94,21 +94,24 @@ bool MetaTable::SetMmapStatus(Database* db, int64_t status) {
 }
 
 // static
-void MetaTable::RazeIfIncompatible(Database* db,
+bool MetaTable::RazeIfIncompatible(Database* db,
                                    int lowest_supported_version,
                                    int current_version) {
   DCHECK(db);
 
-  if (!DoesTableExist(db))
-    return;
+  if (!DoesTableExist(db)) {
+    return true;
+  }
 
   sql::Statement select;
-  if (!PrepareGetStatement(kVersionKey, *db, select))
-    return;
+  if (!PrepareGetStatement(kVersionKey, *db, select)) {
+    return false;
+  }
   int64_t on_disk_schema_version = select.ColumnInt64(0);
 
-  if (!PrepareGetStatement(kCompatibleVersionKey, *db, select))
-    return;
+  if (!PrepareGetStatement(kCompatibleVersionKey, *db, select)) {
+    return false;
+  }
   int64_t on_disk_compatible_version = select.ColumnInt(0);
 
   select.Clear();  // Clear potential automatic transaction for Raze().
@@ -116,9 +119,9 @@ void MetaTable::RazeIfIncompatible(Database* db,
   if ((lowest_supported_version != kNoLowestSupportedVersion &&
        lowest_supported_version > on_disk_schema_version) ||
       (current_version < on_disk_compatible_version)) {
-    db->Raze();
-    return;
+    return db->Raze();
   }
+  return true;
 }
 
 bool MetaTable::Init(Database* db, int version, int compatible_version) {
@@ -144,7 +147,9 @@ bool MetaTable::Init(Database* db, int version, int compatible_version) {
 
     // Newly-created databases start out with mmap'ed I/O, but have no place to
     // store the setting.  Set here so that later opens don't need to validate.
-    SetMmapStatus(db_, kMmapSuccess);
+    if (!SetMmapStatus(db_, kMmapSuccess)) {
+      return false;
+    }
 
     // Note: there is no index over the meta table. We currently only have a
     // couple of keys, so it doesn't matter. If we start storing more stuff in

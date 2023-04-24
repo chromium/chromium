@@ -116,9 +116,15 @@ sql::InitStatus WebDatabase::Init(const base::FilePath& db_name) {
   // Clobber really old databases.
   static_assert(kDeprecatedVersionNumber < kCurrentVersionNumber,
                 "Deprecation version must be less than current");
-  sql::MetaTable::RazeIfIncompatible(
-      &db_, /*lowest_supported_version=*/kDeprecatedVersionNumber + 1,
-      kCurrentVersionNumber);
+  if (!sql::MetaTable::RazeIfIncompatible(
+          &db_, /*lowest_supported_version=*/kDeprecatedVersionNumber + 1,
+          kCurrentVersionNumber)) {
+    // TODO(crbug.com/1430313): Remove DumpWithoutCrashing when bug is fixed.
+    SCOPED_CRASH_KEY_STRING1024("db_init_error", "diagnostics",
+                                GetDiagnostics(db_));
+    base::debug::DumpWithoutCrashing();
+    return sql::INIT_FAILURE;
+  }
 
   // TODO(crbug.com/1430313): Remove DumpWithoutCrashing when bug is fixed.
   if (!db_.is_open()) {
