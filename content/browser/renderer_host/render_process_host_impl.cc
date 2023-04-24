@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <list>
 #include <map>
 #include <memory>
 #include <set>
@@ -317,9 +318,11 @@ base::IDMap<RenderProcessHost*>& GetAllHosts() {
   return *s_all_hosts;
 }
 
-// Returns the global list of RenderProcessHostCreationObserver objects.
-std::vector<RenderProcessHostCreationObserver*>& GetAllCreationObservers() {
-  static base::NoDestructor<std::vector<RenderProcessHostCreationObserver*>>
+// Returns the global list of RenderProcessHostCreationObserver objects. Uses
+// std::list to ensure iterators remain valid if observers are created or
+// removed during iteration.
+std::list<RenderProcessHostCreationObserver*>& GetAllCreationObservers() {
+  static base::NoDestructor<std::list<RenderProcessHostCreationObserver*>>
       s_all_creation_observers;
   return *s_all_creation_observers;
 }

@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -31,6 +33,7 @@
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -2183,6 +2186,94 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
     ASSERT_TRUE(renderer_result.has_value());
     EXPECT_EQ(*renderer_result, browser_result);
   }
+}
+
+class CreationObserver : public RenderProcessHostCreationObserver {
+ public:
+  explicit CreationObserver(
+      base::RepeatingClosure closure = base::RepeatingClosure())
+      : closure_(std::move(closure)) {}
+
+  // content::RenderProcessHostCreationObserver:
+  void OnRenderProcessHostCreated(RenderProcessHost* process_host) override {
+    if (closure_) {
+      closure_.Run();
+    }
+  }
+
+ private:
+  base::RepeatingClosure closure_;
+};
+
+IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, HostCreationObserved) {
+  int created_count = 0;
+  CreationObserver creation_observer(
+      base::BindLambdaForTesting([&created_count]() { ++created_count; }));
+  RenderProcessHost* process = RenderProcessHostImpl::CreateRenderProcessHost(
+      ShellContentBrowserClient::Get()->browser_context(), nullptr);
+  RenderProcessHostWatcher process_watcher(
+      process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
+  process->Init();
+  process_watcher.Wait();
+  ASSERT_TRUE(process->IsReady());
+  EXPECT_EQ(1, created_count);
+  process->Cleanup();
+}
+
+// Notification of RenderProcessHost creation should not crash if creation
+// observers are added during notification of another creation observer.
+IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
+                       HostCreationObserversAddedDuringNotification) {
+  std::vector<std::unique_ptr<CreationObserver>> added_creation_observers;
+  const int kObserversToAdd = 1000;
+  int added_observer_notification_count = 0;
+  const auto increment_added_observer_notification_count =
+      base::BindLambdaForTesting([&added_observer_notification_count]() {
+        ++added_observer_notification_count;
+      });
+  CreationObserver creation_observer1(base::BindLambdaForTesting(
+      [&added_creation_observers,
+       increment_added_observer_notification_count]() {
+        for (int i = 0; i < kObserversToAdd; ++i) {
+          added_creation_observers.push_back(std::make_unique<CreationObserver>(
+              increment_added_observer_notification_count));
+        }
+      }));
+  CreationObserver creation_observer2;
+
+  RenderProcessHost* process = RenderProcessHostImpl::CreateRenderProcessHost(
+      ShellContentBrowserClient::Get()->browser_context(), nullptr);
+  RenderProcessHostWatcher process_watcher(
+      process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
+  process->Init();
+  process_watcher.Wait();
+  EXPECT_TRUE(process->IsReady());
+  EXPECT_EQ(kObserversToAdd, added_observer_notification_count);
+  process->Cleanup();
+}
+
+// Notification of RenderProcessHost creation should not crash if a creation
+// observer is destroyed during notification of another creation observer.
+IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
+                       HostCreationObserversDestroyedDuringNotification) {
+  base::OnceClosure destroy_second_observer;
+  CreationObserver creation_observer1(
+      base::BindLambdaForTesting([&destroy_second_observer]() {
+        std::move(destroy_second_observer).Run();
+      }));
+  auto creation_observer2 = std::make_unique<CreationObserver>();
+  destroy_second_observer = base::BindLambdaForTesting(
+      [&creation_observer2]() { creation_observer2.reset(); });
+
+  RenderProcessHost* process = RenderProcessHostImpl::CreateRenderProcessHost(
+      ShellContentBrowserClient::Get()->browser_context(), nullptr);
+  RenderProcessHostWatcher process_watcher(
+      process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
+  process->Init();
+  process_watcher.Wait();
+  EXPECT_TRUE(process->IsReady());
+  EXPECT_EQ(nullptr, creation_observer2.get());
+  process->Cleanup();
 }
 
 }  // namespace content
