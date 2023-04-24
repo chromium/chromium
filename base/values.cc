@@ -1169,18 +1169,6 @@ std::string* Value::FindStringKey(StringPiece key) {
   return GetDict().FindString(key);
 }
 
-const Value* Value::FindDictKey(StringPiece key) const {
-  const Value* result = GetDict().Find(key);
-  if (!result || result->type() != Type::DICT) {
-    return nullptr;
-  }
-  return result;
-}
-
-Value* Value::FindDictKey(StringPiece key) {
-  return const_cast<Value*>(std::as_const(*this).FindDictKey(key));
-}
-
 const Value* Value::FindListKey(StringPiece key) const {
   const Value* result = GetDict().Find(key);
   if (!result || result->type() != Type::LIST) {

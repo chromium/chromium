@@ -769,9 +769,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // DEPRECATED: prefer `Value::Dict::FindString()`.
   const std::string* FindStringKey(StringPiece key) const;
   std::string* FindStringKey(StringPiece key);
-  // DEPRECATED: prefer `Value::Dict::FindDict()`.
-  const Value* FindDictKey(StringPiece key) const;
-  Value* FindDictKey(StringPiece key);
   // DEPRECATED: prefer `Value::Dict::FindList()`.
   const Value* FindListKey(StringPiece key) const;
   Value* FindListKey(StringPiece key);

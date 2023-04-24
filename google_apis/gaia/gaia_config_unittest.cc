@@ -34,7 +34,7 @@ TEST(GaiaConfigTest, ShouldGetURLIfExists) {
       base::JSONReader::Read(kTestConfigContents);
   ASSERT_TRUE(dict.has_value());
 
-  GaiaConfig config(std::move(*dict));
+  GaiaConfig config(std::move(dict->GetDict()));
   GURL url;
   EXPECT_TRUE(config.GetURLIfExists("test_url", &url));
   EXPECT_THAT(url, Eq("https://accounts.example.com/"));
@@ -45,7 +45,7 @@ TEST(GaiaConfigTest, ShouldReturnNullIfURLDoesNotExists) {
       base::JSONReader::Read(kTestConfigContents);
   ASSERT_TRUE(dict.has_value());
 
-  GaiaConfig config(std::move(*dict));
+  GaiaConfig config(std::move(dict->GetDict()));
   GURL url;
   EXPECT_FALSE(config.GetURLIfExists("missing_url", &url));
 }
@@ -55,7 +55,7 @@ TEST(GaiaConfigTest, ShouldGetAPIKeyIfExists) {
       base::JSONReader::Read(kTestConfigContents);
   ASSERT_TRUE(dict.has_value());
 
-  GaiaConfig config(std::move(*dict));
+  GaiaConfig config(std::move(dict->GetDict()));
   std::string api_key;
   EXPECT_TRUE(config.GetAPIKeyIfExists("test_api_key", &api_key));
   EXPECT_THAT(api_key, Eq("test_api_key_value"));
@@ -66,7 +66,7 @@ TEST(GaiaConfigTest, ShouldReturnNullIfAPIKeyDoesNotExists) {
       base::JSONReader::Read(kTestConfigContents);
   ASSERT_TRUE(dict.has_value());
 
-  GaiaConfig config(std::move(*dict));
+  GaiaConfig config(std::move(dict->GetDict()));
   std::string api_key;
   EXPECT_FALSE(config.GetAPIKeyIfExists("missing_api_key", &api_key));
 }
@@ -76,7 +76,7 @@ TEST(GaiaConfigTest, ShouldSerializeContentsToCommandLineSwitch) {
       base::JSONReader::Read(kTestConfigContents);
   ASSERT_TRUE(dict.has_value());
 
-  GaiaConfig config(std::move(*dict));
+  GaiaConfig config(std::move(dict->GetDict()));
   GURL url;
   ASSERT_TRUE(config.GetURLIfExists("test_url", &url));
   ASSERT_THAT(url, Eq("https://accounts.example.com/"));

@@ -293,15 +293,15 @@ bool UserPoliciesManager::GetUserPolicies(const std::wstring& sid,
     return false;
   }
 
-  const base::Value* policies =
-      policy_data->FindDictKey(kPolicyFetchResponseKeyName);
+  const base::Value::Dict* policies =
+      policy_data->GetDict().FindDict(kPolicyFetchResponseKeyName);
   if (!policies) {
     LOGFN(ERROR) << "User policies not found!";
     return false;
   }
 
   // Override policies with those we just read.
-  *user_policies = UserPolicies::FromValue(policies->GetDict());
+  *user_policies = UserPolicies::FromValue(*policies);
 
   return true;
 }

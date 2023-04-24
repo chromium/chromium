@@ -87,12 +87,12 @@ static GoogleServiceAuthError CreateAuthError(
                            "HTTP Status of the response is: %d",
                            http_response_code));
   }
-  const base::Value* error = value->FindDictKey(kError);
+  const base::Value::Dict* error = value->GetDict().FindDict(kError);
   if (!error) {
     return GoogleServiceAuthError::FromUnexpectedServiceResponse(
         "Not able to find a detailed error in a service response.");
   }
-  const std::string* message = error->FindStringKey(kMessage);
+  const std::string* message = error->FindString(kMessage);
   if (!message) {
     return GoogleServiceAuthError::FromUnexpectedServiceResponse(
         "Not able to find an error message within a service error.");
