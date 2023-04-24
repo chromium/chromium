@@ -259,6 +259,8 @@ public abstract class ChromeFeatureList {
             "CCTResizableSideSheetForThirdParties";
     public static final String CCT_RESOURCE_PREFETCH = "CCTResourcePrefetch";
     public static final String CCT_RETAINING_STATE_IN_MEMORY = "CCTRetainingStateInMemory";
+    public static final String CCT_TEXT_FRAGMENT_LOOKUP_API_ENABLED =
+            "CCTTextFragmentLookupApiEnabled";
     public static final String CCT_TOOLBAR_CUSTOMIZATIONS = "CCTToolbarCustomizations";
     public static final String CHROME_SHARING_HUB = "ChromeSharingHub";
     public static final String CHROME_SHARING_HUB_LAUNCH_ADJACENT =

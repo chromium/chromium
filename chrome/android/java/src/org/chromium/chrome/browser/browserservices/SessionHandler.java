@@ -14,6 +14,8 @@ import android.widget.RemoteViews;
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
+import org.chromium.chrome.browser.tab.Tab;
+
 /**
  * Interface to handle browser services calls whenever the session id matched.
  * TODO(yusufo): Add a way to handle mayLaunchUrl as well.
@@ -45,6 +47,12 @@ public interface SessionHandler {
      * @return Whether this update is successful.
      */
     boolean updateSecondaryToolbarSwipeUpPendingIntent(PendingIntent pendingIntent);
+
+    /**
+     * @return The current tab being displayed to the user.
+     */
+    @Nullable
+    Tab getCurrentTab();
 
     /**
      * @return The current url being displayed to the user.

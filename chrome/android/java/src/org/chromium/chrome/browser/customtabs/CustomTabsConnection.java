@@ -1909,6 +1909,24 @@ public class CustomTabsConnection {
                 : PrivacyPreferencesManagerImpl.getInstance().isUsageAndCrashReportingPermitted();
     }
 
+    /**
+     * Called when text fragment lookups on the current page has completed.
+     * @param session session object.
+     * @param stateKey unique key for the embedder to keep track of the request.
+     * @param foundTextFragments text fragments from the initial request that were found on the
+     *         page.
+     */
+    @CalledByNative
+    private static void notifyClientOfTextFragmentLookupCompletion(
+            CustomTabsSessionToken session, String stateKey, String[] foundTextFragments) {
+        getInstance().notifyClientOfTextFragmentLookupCompletionReportApp(
+                session, stateKey, new ArrayList(Arrays.asList(foundTextFragments)));
+    }
+
+    protected void notifyClientOfTextFragmentLookupCompletionReportApp(
+            CustomTabsSessionToken session, String stateKey, ArrayList<String> foundTextFragments) {
+    }
+
     @VisibleForTesting
     public static void setInstanceForTesting(CustomTabsConnection connection) {
         sInstance = connection;
@@ -1920,5 +1938,7 @@ public class CustomTabsConnection {
                 String packageName, String url, String origin, int referrerPolicy,
                 @DetachedResourceRequestMotivation int motivation);
         void setClientDataHeader(WebContents webContents, String header);
+        void textFragmentLookup(CustomTabsSessionToken session, WebContents webContents,
+                String stateKey, String[] textFragment);
     }
 }

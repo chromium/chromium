@@ -216,6 +216,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResizableSideSheetForThirdParties,
     &kCCTRetainingStateInMemory,
     &kCCTResourcePrefetch,
+    &kCCTTextFragmentLookupApiEnabled,
     &kCCTToolbarCustomizations,
     &kDontAutoHideBrowserControls,
     &kCacheDeprecatedSystemLocationSetting,
@@ -646,6 +647,10 @@ BASE_FEATURE(kCCTResourcePrefetch,
 
 BASE_FEATURE(kCCTRetainingStateInMemory,
              "CCTRetainingStateInMemory",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTTextFragmentLookupApiEnabled,
+             "CCTTextFragmentLookupApiEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTToolbarCustomizations,
