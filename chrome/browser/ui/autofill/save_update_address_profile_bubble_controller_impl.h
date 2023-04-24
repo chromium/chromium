@@ -80,6 +80,8 @@ class SaveUpdateAddressProfileBubbleControllerImpl
   friend class content::WebContentsUserData<
       SaveUpdateAddressProfileBubbleControllerImpl>;
 
+  std::u16string GetEditorFooterMessage() const;
+
   // Callback to run once the user makes a decision with respect to the saving
   // the address profile.
   AutofillClient::AddressProfileSavePromptCallback

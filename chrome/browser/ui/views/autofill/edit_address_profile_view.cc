@@ -41,7 +41,7 @@ EditAddressProfileView::EditAddressProfileView(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       views::LayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
+          views::DISTANCE_RELATED_CONTROL_VERTICAL)));
   set_margins(ChromeLayoutProvider::Get()->GetInsetsMetric(
       views::InsetsMetric::INSETS_DIALOG));
 

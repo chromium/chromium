@@ -300,7 +300,6 @@ std::u16string SaveUpdateAddressProfileBubbleControllerImpl::GetFooterMessage()
     absl::optional<AccountInfo> account =
         GetPrimaryAccountInfoFromBrowserContext(
             web_contents()->GetBrowserContext());
-    CHECK(account);
 
     int string_id =
         IsSaveBubble()
@@ -336,7 +335,7 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OnEditButtonClicked() {
   EditAddressProfileDialogControllerImpl* controller =
       EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
   controller->OfferEdit(address_profile_, GetOriginalProfile(),
-                        GetFooterMessage(),
+                        GetEditorFooterMessage(),
                         std::move(address_profile_save_prompt_callback_),
                         is_migration_to_account_);
   HideBubble();
@@ -400,6 +399,20 @@ void SaveUpdateAddressProfileBubbleControllerImpl::DoShowBubble() {
                             web_contents(), this, shown_by_user_gesture_));
   }
   DCHECK(bubble_view());
+}
+
+std::u16string
+SaveUpdateAddressProfileBubbleControllerImpl::GetEditorFooterMessage() const {
+  if (is_migration_to_account_) {
+    absl::optional<AccountInfo> account =
+        GetPrimaryAccountInfoFromBrowserContext(
+            web_contents()->GetBrowserContext());
+    return l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_SAVE_IN_ACCOUNT_PROMPT_ADDRESS_SOURCE_NOTICE,
+        base::UTF8ToUTF16(account->email));
+  }
+
+  return GetFooterMessage();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SaveUpdateAddressProfileBubbleControllerImpl);
