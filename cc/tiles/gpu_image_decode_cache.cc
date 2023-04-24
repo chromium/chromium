@@ -1802,22 +1802,23 @@ bool GpuImageDecodeCache::OnMemoryDump(
     int image_id = static_cast<int>(image_pair.first.hash());
 
     // If we have discardable decoded data, dump this here.
-    if (image_data->decode.HasData()) {
-      for (const auto aux_image : kAllAuxImages) {
-        const auto& info = image_data->GetImageInfo(aux_image);
-        std::string discardable_dump_name = base::StringPrintf(
-            "%s/discardable/image_%d%s", dump_name.c_str(), image_id,
-            aux_image == AuxImage::kDefault ? "" : AuxImageName(aux_image));
-        MemoryAllocatorDump* dump =
-            image_data->decode.data(aux_image)->CreateMemoryAllocatorDump(
-                discardable_dump_name.c_str(), pmd);
-        // Dump the "locked_size" as an additional column.
-        // This lets us see the amount of discardable which is contributing to
-        // memory pressure.
-        size_t locked_size = image_data->decode.is_locked() ? info.size : 0u;
-        dump->AddScalar("locked_size", MemoryAllocatorDump::kUnitsBytes,
-                        locked_size);
+    for (const auto aux_image : kAllAuxImages) {
+      const auto& info = image_data->GetImageInfo(aux_image);
+      const auto* data = image_data->decode.data(aux_image);
+      if (!data) {
+        continue;
       }
+      std::string discardable_dump_name = base::StringPrintf(
+          "%s/discardable/image_%d%s", dump_name.c_str(), image_id,
+          aux_image == AuxImage::kDefault ? "" : AuxImageName(aux_image));
+      MemoryAllocatorDump* dump =
+          data->CreateMemoryAllocatorDump(discardable_dump_name.c_str(), pmd);
+      // Dump the "locked_size" as an additional column.
+      // This lets us see the amount of discardable which is contributing to
+      // memory pressure.
+      size_t locked_size = image_data->decode.is_locked() ? info.size : 0u;
+      dump->AddScalar("locked_size", MemoryAllocatorDump::kUnitsBytes,
+                      locked_size);
     }
 
     // If we have an uploaded image (that is actually on the GPU, not just a
@@ -2451,9 +2452,6 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
     image_data->decode.decode_failure = true;
     return;
   }
-
-  aux_image_data[0].ValidateImagesMatchPixmaps();
-  aux_image_data[1].ValidateImagesMatchPixmaps();
 
   image_data->decode.SetLockedData(aux_image_data,
                                    task_type == TaskType::kOutOfRaster);
