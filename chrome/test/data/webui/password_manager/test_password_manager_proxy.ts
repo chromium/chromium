@@ -52,6 +52,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'addPassword',
       'cancelExportPasswords',
       'changeSavedPassword',
+      'continueImport',
       'exportPasswords',
       'extendAuthValidity',
       'importPasswords',
@@ -326,6 +327,11 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   importPasswords(toStore: chrome.passwordsPrivate.PasswordStoreSet) {
     this.methodCalled('importPasswords', toStore);
+    return Promise.resolve(this.importResults_);
+  }
+
+  continueImport(selectedIds: number[]) {
+    this.methodCalled('continueImport', selectedIds);
     return Promise.resolve(this.importResults_);
   }
 

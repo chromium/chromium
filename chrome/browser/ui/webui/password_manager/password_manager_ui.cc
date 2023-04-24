@@ -172,6 +172,9 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"hidePassword", IDS_PASSWORD_MANAGER_UI_HIDE_PASSWORD},
     {"hidePasswordA11yLabel", IDS_PASSWORD_MANAGER_UI_HIDE_PASSWORD_A11Y},
     {"importPasswords", IDS_PASSWORD_MANAGER_UI_IMPORT_BANNER_TITLE},
+    {"importPasswordsCancel", IDS_PASSWORD_MANAGER_UI_IMPORT_CANCEL},
+    {"importPasswordsSkip", IDS_PASSWORD_MANAGER_UI_IMPORT_SKIP},
+    {"importPasswordsReplace", IDS_PASSWORD_MANAGER_UI_IMPORT_REPLACE},
     {"importPasswordsAlreadyActive",
      IDS_PASSWORD_MANAGER_UI_IMPORT_ALREADY_ACTIVE},
     {"importPasswordsFileSizeExceeded",
@@ -390,6 +393,9 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       "importPasswordsDescriptionDevice",
       InsertBrandedPasswordManager(
           IDS_PASSWORD_MANAGER_UI_IMPORT_DESCRIPTION_SIGNEDOUT_USERS));
+  source->AddString("importPasswordsConflictsDescription",
+                    InsertBrandedPasswordManager(
+                        IDS_PASSWORD_MANAGER_UI_IMPORT_CONFLICTS_DESCRIPTION));
   source->AddString("passwordsStoreOptionDevice",
                     InsertBrandedPasswordManager(
                         IDS_PASSWORD_MANAGER_UI_STORE_PICKER_OPTION_DEVICE));
@@ -433,6 +439,9 @@ void AddPluralStrings(content::WebUI* web_ui) {
   plural_string_handler->AddLocalizedString(
       "importPasswordsSuccessSummaryDevice",
       IDS_PASSWORD_MANAGER_UI_IMPORT_SUCCESS_SUMMARY_DEVICE);
+  plural_string_handler->AddLocalizedString(
+      "importPasswordsConflictsTitle",
+      IDS_PASSWORD_MANAGER_UI_IMPORT_CONFLICTS_TITLE);
   plural_string_handler->AddLocalizedString(
       "numberOfAccounts", IDS_PASSWORD_MANAGER_UI_NUMBER_OF_ACCOUNTS);
   plural_string_handler->AddLocalizedString(

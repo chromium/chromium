@@ -4,10 +4,10 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {CrDialogElement, Page, PasswordManagerImpl, PasswordsImporterElement, PluralStringProxyImpl, Router} from 'chrome://password-manager/password_manager.js';
+import {CrButtonElement, CrDialogElement, Page, PasswordManagerImpl, PasswordsImporterElement, PluralStringProxyImpl, Router} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
@@ -290,6 +290,239 @@ suite('PasswordsImporterTest', function() {
     assertVisibleTextContent(dialog, '#closeButton', importer.i18n('close'));
 
     await closeDialogHelper(importer, passwordManager, dialog, '#closeButton');
+  });
+
+  test('has correct conflicts state', async function() {
+    loadTimeData.overrideValues({enablePasswordsImportM2: true});
+    const importer = createPasswordsImporter();
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.CONFLICTS,
+      numberImported: 0,
+      displayedEntries: [
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.VALID,
+          username: 'username',
+          url: 'https://google.com',
+          password: 'pwd',
+          id: 0,
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.VALID,
+          username: 'username',
+          url: 'https://test.com',
+          password: 'pwd',
+          id: 1,
+        },
+      ],
+      fileName: 'test.csv',
+    });
+    const expectedTitle = '2 existing passwords found';
+    pluralString.text = expectedTitle;
+
+    await triggerImportHelper(importer, passwordManager);
+    await pluralString.whenCalled('getPluralString');
+    await flushTasks();
+
+    const dialog =
+        importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+    assertTrue(!!dialog);
+    assertTrue(dialog.open);
+
+    assertVisibleTextContent(dialog, '#title', expectedTitle);
+
+    const passwordItems = dialog.querySelectorAll('password-preview-item');
+    assertEquals(2, passwordItems.length);
+    assertTrue(Array.from(passwordItems).every((el) => !el.checked));
+
+    const replaceButton =
+        dialog.querySelector<CrButtonElement>('#replaceButton');
+    assertTrue(!!replaceButton);
+    assertTrue(replaceButton.disabled);
+
+    assertVisibleTextContent(
+        dialog, '#cancelButton', importer.i18n('importPasswordsCancel'));
+    assertVisibleTextContent(
+        dialog, '#skipButton', importer.i18n('importPasswordsSkip'));
+    assertVisibleTextContent(
+        dialog, '#replaceButton', importer.i18n('importPasswordsReplace'));
+
+    await closeDialogHelper(importer, passwordManager, dialog, '#cancelButton');
+  });
+
+  test('can skip conflicts', async function() {
+    loadTimeData.overrideValues({enablePasswordsImportM2: true});
+    const importer = createPasswordsImporter();
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.CONFLICTS,
+      numberImported: 0,
+      displayedEntries: [
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.VALID,
+          username: 'username',
+          url: 'https://google.com',
+          password: 'pwd',
+          id: 0,
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.VALID,
+          username: 'username',
+          url: 'https://test.com',
+          password: 'pwd',
+          id: 1,
+        },
+      ],
+      fileName: 'test.csv',
+    });
+
+    await triggerImportHelper(importer, passwordManager);
+    await pluralString.whenCalled('getPluralString');
+    await flushTasks();
+
+    const dialog =
+        importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+    assertTrue(!!dialog);
+    assertTrue(dialog.open);
+
+    const skipButton = dialog.querySelector<CrButtonElement>('#skipButton');
+    assertTrue(!!skipButton);
+    skipButton.click();
+    flush();
+
+    // In progress state after the click.
+    const spinner = importer.shadowRoot!.querySelector('paper-spinner-lite');
+    assertTrue(!!spinner);
+    assertTrue(spinner.active);
+
+    assertFalse(
+        !!importer.shadowRoot!.querySelector<CrDialogElement>('#dialog'));
+
+    const selectedIds = await passwordManager.whenCalled('continueImport');
+    assertEquals(0, selectedIds.length);
+  });
+
+  test('can continue import with conflicts', async function() {
+    loadTimeData.overrideValues({enablePasswordsImportM2: true});
+    const importer = createPasswordsImporter();
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.CONFLICTS,
+      numberImported: 0,
+      displayedEntries: [
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.VALID,
+          username: 'username',
+          url: 'https://google.com',
+          password: 'pwd',
+          id: 0,
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.VALID,
+          username: 'username',
+          url: 'https://test.com',
+          password: 'pwd',
+          id: 1,
+        },
+      ],
+      fileName: 'test.csv',
+    });
+
+    await triggerImportHelper(importer, passwordManager);
+    await pluralString.whenCalled('getPluralString');
+    await flushTasks();
+
+    const dialog =
+        importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+    assertTrue(!!dialog);
+    assertTrue(dialog.open);
+
+    const passwordItems = dialog.querySelectorAll('password-preview-item');
+    passwordItems.forEach(item => item.$.checkbox.click());
+
+    const replaceButton =
+        dialog.querySelector<CrButtonElement>('#replaceButton');
+    assertTrue(!!replaceButton);
+    replaceButton.click();
+    flush();
+
+    // In progress state after the click.
+    const spinner = importer.shadowRoot!.querySelector('paper-spinner-lite');
+    assertTrue(!!spinner);
+    assertTrue(spinner.active);
+
+    assertFalse(
+        !!importer.shadowRoot!.querySelector<CrDialogElement>('#dialog'));
+
+    const selectedIds = await passwordManager.whenCalled('continueImport');
+    assertArrayEquals([0, 1], selectedIds);
+  });
+
+  test('correct conflicts state after failed re-auth', async function() {
+    loadTimeData.overrideValues({enablePasswordsImportM2: true});
+    const importer = createPasswordsImporter();
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.CONFLICTS,
+      numberImported: 0,
+      displayedEntries: [
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.VALID,
+          username: 'username',
+          url: 'https://google.com',
+          password: 'pwd',
+          id: 0,
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.VALID,
+          username: 'username',
+          url: 'https://test.com',
+          password: 'pwd',
+          id: 1,
+        },
+      ],
+      fileName: 'test.csv',
+    });
+    const expectedTitle = '2 existing passwords found';
+    pluralString.text = expectedTitle;
+
+    await triggerImportHelper(importer, passwordManager);
+    await pluralString.whenCalled('getPluralString');
+    await flushTasks();
+
+    let dialog = importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+    assertTrue(!!dialog);
+    assertTrue(dialog.open);
+
+    let passwordItems = dialog.querySelectorAll('password-preview-item');
+    // Select all rows.
+    passwordItems.forEach(item => item.$.checkbox.click());
+
+    let replaceButton = dialog.querySelector<CrButtonElement>('#replaceButton');
+    assertTrue(!!replaceButton);
+    replaceButton.click();
+    flush();
+
+    assertFalse(
+        !!importer.shadowRoot!.querySelector<CrDialogElement>('#dialog'));
+
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.DISMISSED,
+      numberImported: 0,
+      displayedEntries: [],
+      fileName: '',
+    });
+    const selectedIds = await passwordManager.whenCalled('continueImport');
+    assertArrayEquals([0, 1], selectedIds);
+    await flushTasks();
+    dialog = importer.shadowRoot!.querySelector<CrDialogElement>('#dialog');
+    assertTrue(!!dialog);
+    assertTrue(dialog.open);
+
+    assertVisibleTextContent(dialog, '#title', expectedTitle);
+
+    passwordItems = dialog.querySelectorAll('password-preview-item');
+    assertTrue(Array.from(passwordItems).every((el) => el.checked));
+
+    replaceButton = dialog.querySelector<CrButtonElement>('#replaceButton');
+    assertTrue(!!replaceButton);
+    assertFalse(replaceButton.disabled);
   });
 
   test(

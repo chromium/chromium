@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './site_favicon.js';
+import './dialogs/password_preview_item.js';
 
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
@@ -33,6 +34,7 @@ enum DialogState {
   SUCCESS,
   ERROR,
   ALREADY_ACTIVE,
+  CONFLICTS,
 }
 
 const PasswordsImporterElementBase = I18nMixin(PolymerElement);
@@ -81,6 +83,18 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
       failedImportsSummary_: String,
       rowsWithUnknownErrorsSummary_: String,
 
+      conflictsDialogTitle_: String,
+
+      conflicts_: {
+        type: Array,
+        value: [],
+      },
+
+      conflictsSelectedForReplace_: {
+        type: Array,
+        value: [],
+      },
+
       showRowsWithUnknownErrorsSummary_: {
         type: Boolean,
         value: false,
@@ -122,13 +136,15 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
   private showSelectFileButton_: boolean;
   private bannerDescription_: string;
   private results_: chrome.passwordsPrivate.ImportResults|null = null;
+  private conflicts_: chrome.passwordsPrivate.ImportEntry[];
+  private conflictsSelectedForReplace_: number[];
   private successDescription_: string;
+  private conflictsDialogTitle_: string;
   private failedImportsSummary_: string;
   private rowsWithUnknownErrorsSummary_: string;
   private showRowsWithUnknownErrorsSummary_: boolean;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
-
 
   launchImport() {
     this.inProgress_ = true;
@@ -220,10 +236,14 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
   private async onViewPasswordsClick_() {
     await this.resetImporter();
     this.closeDialog_();
+    this.inProgress_ = false;
     Router.getInstance().navigateTo(Page.PASSWORDS);
   }
 
   private async onSelectFileClick_() {
+    // Clear selected rows from previous import, so it won’t affect the
+    // following import.
+    this.conflictsSelectedForReplace_ = [];
     this.inProgress_ = true;
     // For "non-account-store-users" users passwords are stored in the "profile"
     // (DEVICE) store.
@@ -232,7 +252,8 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
       const storePicker =
           this.shadowRoot!.querySelector<HTMLSelectElement>('#storePicker');
       assert(storePicker);
-      this.passwordsSavedToAccount_ = storePicker.value ===
+      this.selectedStoreOption_ = storePicker.value;
+      this.passwordsSavedToAccount_ = this.selectedStoreOption_ ===
           chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
       if (this.passwordsSavedToAccount_) {
         destinationStore = chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
@@ -245,6 +266,46 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
         await this.passwordManager_.importPasswords(destinationStore);
     await this.processResults_();
     this.inProgress_ = false;
+  }
+
+  private async continueImportHelper_(selectedIds: number[]) {
+    this.inProgress_ = true;
+    // Close the dialog while import is in progress.
+    this.closeDialog_();
+    this.results_ = await this.passwordManager_.continueImport(selectedIds);
+    if (this.results_.status ===
+        chrome.passwordsPrivate.ImportResultsStatus.DISMISSED) {
+      // When re-auth fails, restore the conflicts dialog.
+      this.dialogState_ = DialogState.CONFLICTS;
+      return;
+    }
+    await this.processResults_();
+  }
+
+  private async onSkipClick_() {
+    await this.continueImportHelper_(/*selectedIds=*/[]);
+  }
+
+  private async onReplaceClick_() {
+    await this.continueImportHelper_(this.conflictsSelectedForReplace_);
+  }
+
+  private isPreviewItemChecked_(id: number): boolean {
+    return this.conflictsSelectedForReplace_.includes(id);
+  }
+
+  /**
+   * Handler for ticking conflicting password checkbox.
+   */
+  private onPasswordSelectedChange_(): void {
+    this.conflictsSelectedForReplace_ =
+        Array.from(this.shadowRoot!.querySelectorAll('password-preview-item'))
+            .filter(item => item.checked)
+            .map(item => item.passwordId);
+  }
+
+  private shouldDisableReplace_(): boolean {
+    return !this.conflictsSelectedForReplace_.length;
   }
 
   private async processResults_() {
@@ -261,7 +322,12 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
         this.dialogState_ = DialogState.ERROR;
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.CONFLICTS:
-        // TODO(crbug/1432962): Handle each status.
+        this.conflictsDialogTitle_ =
+            await PluralStringProxyImpl.getInstance().getPluralString(
+                'importPasswordsConflictsTitle',
+                this.results_.displayedEntries.length);
+        this.conflicts_ = this.results_.displayedEntries;
+        this.dialogState_ = DialogState.CONFLICTS;
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.IMPORT_ALREADY_ACTIVE:
         this.dialogState_ = DialogState.ALREADY_ACTIVE;
