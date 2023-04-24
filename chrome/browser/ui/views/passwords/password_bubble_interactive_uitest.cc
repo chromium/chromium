@@ -150,10 +150,16 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, CommandControlsBubble) {
   EXPECT_FALSE(IsBubbleShowing());
   ExecuteManagePasswordsCommand();
   EXPECT_TRUE(IsBubbleShowing());
-  const LocationBarBubbleDelegateView* bubble =
-      PasswordBubbleViewBase::manage_password_bubble();
-  EXPECT_TRUE(bubble->GetOkButton());
-  EXPECT_EQ(bubble->GetOkButton(), bubble->GetFocusManager()->GetFocusedView());
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kRevampedPasswordManagementBubble)) {
+    // The new management bubble does not have an OK button. This part of the
+    // test is only relevant for legacy management bubble.
+    const LocationBarBubbleDelegateView* bubble =
+        PasswordBubbleViewBase::manage_password_bubble();
+    EXPECT_TRUE(bubble->GetOkButton());
+    EXPECT_EQ(bubble->GetOkButton(),
+              bubble->GetFocusManager()->GetFocusedView());
+  }
   PasswordBubbleViewBase::CloseCurrentBubble();
   EXPECT_FALSE(IsBubbleShowing());
   // Drain message pump to ensure the bubble view is cleared so that it can be
