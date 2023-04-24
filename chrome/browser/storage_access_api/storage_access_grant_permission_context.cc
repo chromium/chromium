@@ -368,11 +368,9 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   CHECK(settings_map);
   CHECK(persist);
 
-  settings_map->SetContentSettingCustomScope(
-      URLToSchemefulSitePattern(requesting_origin),
-      URLToSchemefulSitePattern(embedding_origin),
-      ContentSettingsType::STORAGE_ACCESS, content_setting,
-      ComputeConstraints(outcome));
+  settings_map->SetContentSettingDefaultScope(
+      requesting_origin, embedding_origin, ContentSettingsType::STORAGE_ACCESS,
+      content_setting, ComputeConstraints(outcome));
 
   ContentSettingsForOneType grants;
   settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS,
