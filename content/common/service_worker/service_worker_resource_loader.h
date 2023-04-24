@@ -63,6 +63,11 @@ class ServiceWorkerResourceLoader {
   // argument of TRACE_EVENT.
   virtual void CommitCompleted(int error_code, const char* reason) = 0;
 
+  // Calls url_loader_client_->OnReceiveRedirect().
+  virtual void HandleRedirect(
+      const net::RedirectInfo& redirect_info,
+      const network::mojom::URLResponseHeadPtr& response_head) = 0;
+
  private:
   FetchResponseFrom fetch_response_from_ = FetchResponseFrom::kNoResponseYet;
 };

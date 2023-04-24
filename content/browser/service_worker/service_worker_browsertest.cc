@@ -5218,6 +5218,22 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
             return nullptr;
           }
 
+          const char kQueryForRedirect[] = "server_redirect";
+          if (base::Contains(request.GetURL().query(), kQueryForRedirect)) {
+            auto http_response =
+                std::make_unique<net::test_server::BasicHttpResponse>();
+            http_response->set_code(net::HTTP_TEMPORARY_REDIRECT);
+
+            const int pos = request.GetURL().query().find(kQueryForRedirect);
+            const int len = strlen(kQueryForRedirect);
+            const std::string new_query =
+                request.GetURL().query().erase(pos, len);
+
+            http_response->AddCustomHeader(
+                "Location", request.GetURL().path() + "?" + new_query);
+            return http_response;
+          }
+
           const bool is_slow =
               base::Contains(request.GetURL().query(), "server_slow");
 
@@ -5348,6 +5364,17 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
+                       NetworkRequest_Wins_Redirect) {
+  SetupAndRegisterServiceWorker();
+  const std::string path =
+      "/service_worker/mock_response?server_redirect&sw_slow&sw_respond";
+  NavigateToURLBlockUntilNavigationsComplete(
+      shell(), embedded_test_server()->GetURL(path), 1);
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
+            GetInnerText());
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                        FetchHandler_Wins) {
   SetupAndRegisterServiceWorker();
   // Need to navigate to the page with slow response.
@@ -5390,6 +5417,17 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
   // RaceNetworkRequest is not involved with the navigation.
   EXPECT_TRUE(NavigateToURL(shell(), slow_url));
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Not found", GetInnerText());
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
+                       FetchHandler_Wins_Redirect) {
+  SetupAndRegisterServiceWorker();
+  const std::string path =
+      "/service_worker/mock_response?server_redirect&server_slow&sw_respond";
+  NavigateToURLBlockUntilNavigationsComplete(
+      shell(), embedded_test_server()->GetURL(path), 1);
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
+            GetInnerText());
 }
 
 // TODO(crbug.com/1431421): Flaky on Fuchsia.
@@ -5480,6 +5518,17 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
+                       Subresource_NetworkRequest_Wins_Redirect) {
+  SetupAndRegisterServiceWorker();
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
+            EvalJs(GetPrimaryMainFrame(),
+                   "fetch('/service_worker/mock_response?"
+                   "server_redirect&sw_slow&sw_respond').then(response => "
+                   "response.text())"));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                        Subresource_FetchHandler_Wins) {
   SetupAndRegisterServiceWorker();
   WorkerRunningStatusObserver observer(public_context());
@@ -5522,6 +5571,17 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                    "fetch('/service_worker/mock_response?"
                    "server_slow&sw_fallback&server_notfound').then(response => "
                    "response.status)"));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
+                       Subresource_FetchHandler_Wins_Redirect) {
+  SetupAndRegisterServiceWorker();
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
+            EvalJs(GetPrimaryMainFrame(),
+                   "fetch('/service_worker/mock_response?"
+                   "server_redirect&server_slow&sw_respond').then(response => "
+                   "response.text())"));
 }
 
 class ServiceWorkerRaceNetworkRequestOriginTrialBrowserTest

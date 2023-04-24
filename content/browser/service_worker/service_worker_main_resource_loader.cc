@@ -503,13 +503,7 @@ void ServiceWorkerMainResourceLoader::StartResponse(
         "ServiceWorker", "ServiceWorkerMainResourceLoader::StartResponse", this,
         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "result",
         "redirect", "redirect url", redirect_info->new_url.spec());
-
-    response_head_->encoded_data_length = 0;
-    url_loader_client_->OnReceiveRedirect(*redirect_info,
-                                          response_head_.Clone());
-    // Our client is the navigation loader, which will start a new URLLoader for
-    // the redirect rather than calling FollowRedirect(), so we're done here.
-    TransitionToStatus(Status::kCompleted);
+    HandleRedirect(*redirect_info, response_head_);
     return;
   }
 
@@ -560,6 +554,16 @@ void ServiceWorkerMainResourceLoader::StartResponse(
                          "result", "no body");
 
   CommitEmptyResponseAndComplete();
+}
+
+void ServiceWorkerMainResourceLoader::HandleRedirect(
+    const net::RedirectInfo& redirect_info,
+    const network::mojom::URLResponseHeadPtr& response_head) {
+  response_head->encoded_data_length = 0;
+  url_loader_client_->OnReceiveRedirect(redirect_info, response_head->Clone());
+  // Our client is the navigation loader, which will start a new URLLoader for
+  // the redirect rather than calling FollowRedirect(), so we're done here.
+  TransitionToStatus(Status::kCompleted);
 }
 
 // URLLoader implementation----------------------------------------

@@ -140,6 +140,7 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
                                  absl::optional<mojo_base::BigBuffer> metadata);
   void OnBodyReadingComplete(int net_error);
 
+  // ServiceWorkerResourceLoader overrides:
   void CommitResponseHeaders(
       const network::mojom::URLResponseHeadPtr&) override;
 
@@ -157,6 +158,12 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   // Calls url_loader_client_->OnComplete(). Expected to be called after
   // CommitResponseHeaders (i.e. status_ == kSentHeader).
   void CommitCompleted(int error_code, const char* reason) override;
+
+  // Calls url_loader_client_->OnReceiveRedirect(). Sends too many redirects
+  // error if it hits the redirect limit.
+  void HandleRedirect(
+      const net::RedirectInfo& redirect_info,
+      const network::mojom::URLResponseHeadPtr& response_head) override;
 
   bool IsMainResourceLoader() override;
 
