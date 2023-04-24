@@ -45,10 +45,12 @@ import android.widget.TextView;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import com.google.android.material.appbar.AppBarLayout;
 
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -67,6 +69,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
@@ -83,6 +86,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNTP;
 import org.chromium.chrome.features.tasks.SingleTabSwitcherMediator;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -853,6 +857,28 @@ public class StartSurfaceTest {
     public void test_DoNotLoadLastSelectedTabOnStartupV2() {
         // clang-format on
         doTestNotLoadLastSelectedTabOnStartupImpl();
+    }
+
+    /**
+     * Test whether the clicking action on the profile button in {@link StartSurface} is been
+     * recorded in histogram correctly.
+     */
+    @Test
+    @SmallTest
+    @Feature({"StartSurface"})
+    @EnableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
+    public void testRecordHistogramProfileButtonClick_StartSurface() {
+        Assume.assumeTrue(mImmediateReturn);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(HISTOGRAM_START_SURFACE_MODULE_CLICK,
+                        BrowserUiUtils.ModuleTypeOnStartAndNTP.PROFILE_BUTTON);
+        onViewWaiting(withId(R.id.identity_disc_button)).perform(click());
+        histogramWatcher.assertExpected(HISTOGRAM_START_SURFACE_MODULE_CLICK
+                + " is not recorded correctly when click on the profile button.");
     }
 
     private void doTestNotLoadLastSelectedTabOnStartupImpl() {

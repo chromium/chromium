@@ -70318,6 +70318,7 @@ Called by update_use_counter_css.py.-->
   <int value="3" label="Feed"/>
   <int value="4" label="Tab switcher button"/>
   <int value="5" label="Home button"/>
+  <int value="6" label="Profile button"/>
 </enum>
 
 <enum name="MojoInterfaceName">

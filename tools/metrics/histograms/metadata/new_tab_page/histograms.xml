@@ -1281,8 +1281,9 @@ chromium-metrics-reviews@google.com.
     time when user uses Omnibox or voice search on Omnibox to navigate. This is
     consistent with MobileOmniboxUse. For tab switcher button: is recorded every
     time when user clicks on the tab switcher button. For home button: is
-    recorded when user clicks on the home button. The histogram is logged on New
-    tab page and is Android-only.
+    recorded when user clicks on the home button. For profile button: is
+    recorded when user clicks on the profile button. The histogram is logged on
+    New tab page and is Android-only.
   </summary>
 </histogram>
 
