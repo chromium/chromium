@@ -158,12 +158,16 @@ void TemplatesUriResolverImpl::UpdateFromPrefs(PrefService* pref_service) {
   std::string salt = pref_service->GetString(prefs::kDnsOverHttpsSalt);
   // TODO(acostinas, srad, b/233845305) Remove when policy is added to DPanel.
   if (salt.empty() &&
-      features::IsDnsOverHttpsWithIdentifiersReuseOldPolicyEnabled())
+      features::IsDnsOverHttpsWithIdentifiersReuseOldPolicyEnabled()) {
     salt = kFixedSaltForExperiment;
-  if (salt.size() < kMinSaltSize || salt.size() > kMaxSaltSize)
-    // If the salt size is not within the specified limits, then we ignore the
-    // config. This should have been checked upfront so no need to report here.
+  }
+  if (!salt.empty() &&
+      (salt.size() < kMinSaltSize || salt.size() > kMaxSaltSize)) {
+    // If the salt is set but the size is not within the specified limits, then
+    // we ignore the config. This should have been checked upfront so no need to
+    // report here.
     return;
+  }
 
   std::string effective_templates =
       ReplaceVariables(templates_with_identifiers, salt, attributes_.get());
