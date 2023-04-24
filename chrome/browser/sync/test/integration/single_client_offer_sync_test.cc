@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnDisableSync) {
   EXPECT_EQ(0uL, pdm->GetAutofillOffers().size());
 
   // Turn sync on again, the data should come back.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
+  GetSyncService(0)->SetSyncFeatureRequested();
   // StopAndClear() also clears the "first setup complete" flag, so set it
   // again.
   GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(

@@ -107,6 +107,7 @@ class SyncServiceImpl : public SyncService,
   void Initialize();
 
   // SyncService implementation
+  void SetSyncFeatureRequested() override;
   SyncUserSettings* GetUserSettings() override;
   const SyncUserSettings* GetUserSettings() const override;
   DisableReasonSet GetDisableReasons() const override;

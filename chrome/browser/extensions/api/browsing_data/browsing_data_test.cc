@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, Syncing) {
   // Sync is running.
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
-  sync_service->GetUserSettings()->SetSyncRequested();
+  sync_service->SetSyncFeatureRequested();
   sync_service->GetUserSettings()->SetFirstSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 

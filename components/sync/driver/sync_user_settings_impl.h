@@ -33,7 +33,6 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   ~SyncUserSettingsImpl() override;
 
   // SyncUserSettings implementation.
-  void SetSyncRequested() override;
   bool IsFirstSetupComplete() const override;
   void SetFirstSetupComplete(SyncFirstSetupCompleteSource source) override;
   bool IsSyncEverythingEnabled() const override;
@@ -79,7 +78,6 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   // This maps to DISABLE_REASON_USER_CHOICE.
   bool IsSyncRequested() const;
   void ClearSyncRequested();
-  void SetSyncRequestedIfNotSetExplicitly();
 
   ModelTypeSet GetPreferredDataTypes() const;
   bool IsEncryptedDatatypeEnabled() const;

@@ -25,6 +25,7 @@ class FakeSyncService : public SyncService {
 
   // Dummy methods.
   // SyncService implementation.
+  void SetSyncFeatureRequested() override;
   syncer::SyncUserSettings* GetUserSettings() override;
   const syncer::SyncUserSettings* GetUserSettings() const override;
   DisableReasonSet GetDisableReasons() const override;

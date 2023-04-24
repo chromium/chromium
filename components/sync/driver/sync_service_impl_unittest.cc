@@ -383,7 +383,7 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyBeforeInitThenPolicyRemoved) {
 
   // Once we mark first setup complete again (it was cleared by the policy) and
   // set SyncRequested to true, sync starts up.
-  service()->GetUserSettings()->SetSyncRequested();
+  service()->SetSyncFeatureRequested();
   service()->GetUserSettings()->SetFirstSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
   base::RunLoop().RunUntilIdle();
@@ -454,7 +454,7 @@ TEST_F(SyncServiceImplTest, EarlyRequestStop) {
   EXPECT_FALSE(service()->IsSyncFeatureEnabled());
 
   // Request start. Now Sync-the-feature should start again.
-  service()->GetUserSettings()->SetSyncRequested();
+  service()->SetSyncFeatureRequested();
   service()->GetUserSettings()->SetFirstSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
   EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
@@ -490,7 +490,7 @@ TEST_F(SyncServiceImplTest, DisableAndEnableSyncTemporarily) {
   EXPECT_FALSE(service()->IsSyncFeatureActive());
   EXPECT_FALSE(service()->IsSyncFeatureEnabled());
 
-  service()->GetUserSettings()->SetSyncRequested();
+  service()->SetSyncFeatureRequested();
   EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
   service()->GetUserSettings()->SetFirstSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);

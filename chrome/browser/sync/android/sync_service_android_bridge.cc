@@ -107,7 +107,7 @@ void SyncServiceAndroidBridge::OnStateChanged(syncer::SyncService* sync) {
 
 void SyncServiceAndroidBridge::SetSyncRequested(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  native_sync_service_->GetUserSettings()->SetSyncRequested();
+  native_sync_service_->SetSyncFeatureRequested();
 }
 
 jboolean SyncServiceAndroidBridge::CanSyncFeatureStart(JNIEnv* env) {

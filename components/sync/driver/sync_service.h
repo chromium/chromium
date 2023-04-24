@@ -220,6 +220,13 @@ class SyncService : public KeyedService {
   // USER SETTINGS
   //////////////////////////////////////////////////////////////////////////////
 
+  // Indicates the the user wants Sync-the-Feature to run. It should get invoked
+  // early in the Sync setup flow, after the user has pressed "turn on Sync" but
+  // before they have actually confirmed the settings.
+  // TODO(crbug.com/1291953): Remove this API, as SyncService can internally
+  // determine whether or not it is the case.
+  virtual void SetSyncFeatureRequested() = 0;
+
   // Returns the SyncUserSettings, which encapsulate all the user-configurable
   // bits for Sync.
   virtual SyncUserSettings* GetUserSettings() = 0;

@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
   // Mimic custom passphrase being set during initial sync setup.
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
-  GetSyncService()->GetUserSettings()->SetSyncRequested();
+  GetSyncService()->SetSyncFeatureRequested();
   GetSyncService()->GetUserSettings()->SetEncryptionPassphrase("hunter2");
   GetClient(0)->FinishSyncSetup();
 

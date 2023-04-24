@@ -63,6 +63,7 @@ class TestSyncService : public SyncService {
   void FireSyncCycleCompleted();
 
   // SyncService implementation.
+  void SetSyncFeatureRequested() override;
   TestSyncUserSettings* GetUserSettings() override;
   const TestSyncUserSettings* GetUserSettings() const override;
   DisableReasonSet GetDisableReasons() const override;

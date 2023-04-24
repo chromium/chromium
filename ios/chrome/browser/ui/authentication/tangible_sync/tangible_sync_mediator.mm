@@ -9,7 +9,6 @@
 #import "components/consent_auditor/consent_auditor.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/driver/sync_service.h"
-#import "components/sync/driver/sync_user_settings.h"
 #import "components/unified_consent/unified_consent_service.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
@@ -193,7 +192,7 @@
     // Sync has to be set as requested in order to display the preferences
     // correctly and differentiate the special state where the user is signed
     // in, but the sync feature can't start yet.
-    _syncService->GetUserSettings()->SetSyncRequested();
+    _syncService->SetSyncFeatureRequested();
   } else {
     // TODO(crbug.com/1254359): Dedupe duplicated code, here and in
     // user_signin_mediator.

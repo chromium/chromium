@@ -20,6 +20,8 @@ FakeSyncService::FakeSyncService() = default;
 
 FakeSyncService::~FakeSyncService() = default;
 
+void FakeSyncService::SetSyncFeatureRequested() {}
+
 syncer::SyncUserSettings* FakeSyncService::GetUserSettings() {
   return nullptr;
 }

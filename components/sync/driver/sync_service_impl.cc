@@ -255,7 +255,7 @@ void SyncServiceImpl::Initialize() {
   // that case.
   // TODO(crbug.com/920158): Get rid of AUTO_START and remove this workaround.
   if (start_behavior_ == AUTO_START && !IsLocalSyncEnabled()) {
-    user_settings_->SetSyncRequestedIfNotSetExplicitly();
+    sync_prefs_.SetSyncRequestedIfNotSetExplicitly();
   }
   bool force_immediate = (start_behavior_ == AUTO_START &&
                           !HasDisableReason(DISABLE_REASON_USER_CHOICE) &&
@@ -595,6 +595,11 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
       // no point in starting up again.
       break;
   }
+}
+
+void SyncServiceImpl::SetSyncFeatureRequested() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sync_prefs_.SetSyncRequested(true);
 }
 
 SyncUserSettings* SyncServiceImpl::GetUserSettings() {

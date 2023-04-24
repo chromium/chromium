@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnDisableSync) {
   EXPECT_EQ(0U, GetServerAddressesMetadata(0).size());
 
   // Turn sync on again, the data should come back.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
+  GetSyncService(0)->SetSyncFeatureRequested();
   // StopAndClear() also clears the "first setup complete" flag, so set it
   // again.
   GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
@@ -1292,7 +1292,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
   // Simulate the user opting in to full Sync, and set first-time setup to
   // complete.
   secondary_account_helper::GrantSyncConsent(profile(), "user@email.com");
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
+  GetSyncService(0)->SetSyncFeatureRequested();
   GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
       kSetSourceFromTest);
 
@@ -1361,7 +1361,7 @@ IN_PROC_BROWSER_TEST_F(
   secondary_account_helper::GrantSyncConsent(profile(), "user@email.com");
 
   // Now start actually configuring Sync.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
+  GetSyncService(0)->SetSyncFeatureRequested();
   std::unique_ptr<syncer::SyncSetupInProgressHandle> setup_handle =
       GetSyncService(0)->GetSetupInProgressHandle();
 

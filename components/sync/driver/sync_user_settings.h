@@ -36,12 +36,6 @@ class SyncUserSettings {
  public:
   virtual ~SyncUserSettings() = default;
 
-  // Indicates that the initial Sync setup has started, usually meaning that the
-  // user clicked on a UI to turn Sync (the Feature) on. NOTE: On ChromeOS, this
-  // gets set automatically, so it doesn't really mean anything. See
-  // |browser_defaults::kSyncAutoStarts|.
-  virtual void SetSyncRequested() = 0;
-
   // Whether the initial Sync Feature setup has been completed, meaning the
   // user has turned on Sync-the-Feature.
   // NOTE: On ChromeOS, this gets set automatically, so it doesn't really mean

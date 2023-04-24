@@ -111,7 +111,7 @@
     // We need to set Sync requested in order to display the preferences
     // correctly and differentiate the special state where the user is
     // signed in, but the sync feature can't start yet.
-    self.syncService->GetUserSettings()->SetSyncRequested();
+    self.syncService->SetSyncFeatureRequested();
   } else {
     [self.delegate userSigninMediatorSigninFailed];
   }
