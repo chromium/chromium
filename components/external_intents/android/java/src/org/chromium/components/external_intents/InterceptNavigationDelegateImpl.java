@@ -157,9 +157,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         mClient.onNavigationStarted(navigationHandle);
 
         RedirectHandler redirectHandler = mClient.getOrCreateRedirectHandler();
-        if (crossFrame && ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS.isEnabled()) {
-            redirectHandler.clearUserGesture();
-        }
 
         OverrideUrlLoadingResult result = shouldOverrideUrlLoading(redirectHandler, escapedUrl,
                 navigationHandle.pageTransition(), navigationHandle.isRedirect(),

@@ -196,6 +196,10 @@ public class UrlOverridingTest {
             BASE_PATH + "subframe_navigation_child.html";
     private static final String NAVIGATION_FROM_RENAVIGATE_FRAME =
             BASE_PATH + "renavigate_frame.html";
+    private static final String NAVIGATION_FROM_RENAVIGATE_FRAME_WITH_REDIRECT =
+            BASE_PATH + "renavigate_frame_with_redirect.html";
+    private static final String NAVIGATION_FROM_WINDOW_REDIRECT =
+            BASE_PATH + "navigation_from_window_redirect.html";
 
     private static final String OTHER_BROWSER_PACKAGE = "com.other.browser";
     // Needs to be a real package on the device so we can get an icon from it. It will not be
@@ -1534,6 +1538,28 @@ public class UrlOverridingTest {
                         true, true, false, finalUrl, true, null, PageTransition.LINK, true);
         Assert.assertEquals(OverrideUrlLoadingResultType.NO_OVERRIDE, result.getResultType());
         Assert.assertNull(getCurrentExternalNavigationMessage());
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS_NAME})
+    public void testWindowRenavigationServerRedirect() throws Exception {
+        String finalUrl = mTestServer.getURL(HELLO_PAGE);
+        mActivityTestRule.startMainActivityOnBlankPage();
+        OverrideUrlLoadingResult result = loadUrlAndWaitForIntentUrl(
+                mTestServer.getURL(NAVIGATION_FROM_RENAVIGATE_FRAME_WITH_REDIRECT), true, true,
+                false, finalUrl, true, null, PageTransition.LINK, true);
+        Assert.assertEquals(OverrideUrlLoadingResultType.NO_OVERRIDE, result.getResultType());
+        Assert.assertNull(getCurrentExternalNavigationMessage());
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS_NAME})
+    public void testWindowServerRedirect() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
+        loadUrlAndWaitForIntentUrl(
+                mTestServer.getURL(NAVIGATION_FROM_WINDOW_REDIRECT), true, true, true, null, true);
     }
 
     @Test
