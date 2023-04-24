@@ -8,6 +8,7 @@ import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import './strings.m.js';
 
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AppState} from './scanning_app_types.js';
@@ -33,6 +34,14 @@ Polymer({
     /** @protected {boolean} */
     isDarkModeEnabled_: {
       type: Boolean,
+    },
+
+    /** @protected {boolean} */
+    isJellyEnabled_: {
+      type: Boolean,
+      value: () => {
+        return loadTimeData.getBoolean('isJellyEnabledForScanningApp');
+      },
     },
 
     /** @private {boolean} */
@@ -75,5 +84,10 @@ Polymer({
   /** @private */
   onLearnMoreClick_() {
     this.fire('learn-more-click');
+  },
+
+  /** @param {boolean} enabled */
+  setIsJellyEnabledForTesting(enabled) {
+    this.isJellyEnabled_ = enabled;
   },
 });

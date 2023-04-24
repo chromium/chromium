@@ -43,7 +43,8 @@
     margin-bottom: 32px;
   }
 
-  img {
+  img,
+  svg {
     height: 256px;
   }
 </style>
@@ -52,8 +53,18 @@
 </iron-media-query>
 <div id="loadingContainer">
   <div id="loadingDiv" hidden="[[noScannersAvailable_]]">
-    <img src$="[[getScannersLoadingSvgSrc_(isDarkModeEnabled_)]]"
-        alt="[[i18n('scannersLoadingText')]]">
+    <!-- TODO(b/276493795): After the Jelly experiment is launched, remove
+                            used image elements and SVGs. -->
+    <template is="dom-if" if="[[!isJellyEnabled_]]">
+      <img src$="[[getScannersLoadingSvgSrc_(isDarkModeEnabled_)]]"
+          alt="[[i18n('scannersLoadingText')]]">
+    </template>
+    <template is="dom-if" if="[[isJellyEnabled_]]">
+      <svg preserveAspectRatio="xMidYMid meet" role="img" viewBox="0 0 257 256">
+        <title>[[i18n('scannersLoadingText')]]</title>
+        <use href="svg/illo_loading_scanner.svg#illo_loading_scanner"></use>
+      </svg>
+    </template>
     <h1>[[i18n('scannersLoadingText')]]</h1>
     <paper-progress indeterminate></paper-progress>
   </div>
