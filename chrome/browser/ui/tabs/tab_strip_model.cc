@@ -194,7 +194,7 @@ TabGroupModelFactory* TabGroupModelFactory::GetInstance() {
 
 std::unique_ptr<TabGroupModel> TabGroupModelFactory::Create(
     TabGroupController* controller) {
-  return absl::make_unique<TabGroupModel>(controller);
+  return std::make_unique<TabGroupModel>(controller);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

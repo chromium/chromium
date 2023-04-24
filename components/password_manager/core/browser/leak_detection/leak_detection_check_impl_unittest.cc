@@ -94,7 +94,7 @@ class LeakDetectionCheckImplTest : public testing::TestWithParam<bool> {
       identity_env().SetCookieAccounts({{info.email, info.gaia}});
       identity_env().SetRefreshTokenForAccount(info.account_id);
     }
-    leak_check_ = absl::make_unique<LeakDetectionCheckImpl>(
+    leak_check_ = std::make_unique<LeakDetectionCheckImpl>(
         &delegate_, identity_test_env_.identity_manager(),
         base::MakeRefCounted<network::TestSharedURLLoaderFactory>(), api_key);
     auto mock_request_factory =
