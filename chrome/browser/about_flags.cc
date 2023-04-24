@@ -240,6 +240,7 @@
 #include "components/browser_ui/photo_picker/android/features.h"
 #include "components/content_creation/notes/core/note_features.h"
 #include "components/translate/content/android/translate_message.h"
+#include "ui/android/ui_android_features.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -10188,6 +10189,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidExtendedKeyboardShortcutsDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kAndroidExtendedKeyboardShortcuts)},
+    {"convert-trackpad-events-to-mouse",
+     flag_descriptions::kConvertTrackpadEventsToMouseName,
+     flag_descriptions::kConvertTrackpadEventsToMouseDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(ui::kConvertTrackpadEventsToMouse)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

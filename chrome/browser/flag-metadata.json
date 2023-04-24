@@ -1268,6 +1268,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "convert-trackpad-events-to-mouse",
+    "owners": [ "mvanouwerkerk", "wbjacksonjr" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "copy-link-to-text",
     "owners": [ "johntlee" ],
     "expiry_milestone": 94

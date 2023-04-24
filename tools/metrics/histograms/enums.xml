@@ -59325,6 +59325,7 @@ from previous Chrome versions.
   <int value="-1515415104" label="top-document-isolation:disabled"/>
   <int value="-1515198913" label="AllowPolyDevicePairing:disabled"/>
   <int value="-1514943439" label="ash-enable-swipe-to-close-in-overview-mode"/>
+  <int value="-1514717827" label="ConvertTrackpadEventsToMouse:enabled"/>
   <int value="-1514611301" label="enable-data-reduction-proxy-bypass-warnings"/>
   <int value="-1513112313" label="AudioSettingsPage:enabled"/>
   <int value="-1512656386" label="disable-new-audio-rendering-mixing-strategy"/>
@@ -63443,6 +63444,7 @@ from previous Chrome versions.
   <int value="694376282" label="OmniboxReportAssistedQueryStats:enabled"/>
   <int value="694985670" label="OmniboxUIExperimentNarrowDropdown:disabled"/>
   <int value="695385040" label="enable-external-drive-rename"/>
+  <int value="695425272" label="ConvertTrackpadEventsToMouse:disabled"/>
   <int value="696261973" label="GaiaActionButtons:enabled"/>
   <int value="696600628" label="VibrateRequiresUserGesture:disabled"/>
   <int value="697503858" label="SharingPeerConnectionSender:disabled"/>

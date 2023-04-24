@@ -2188,6 +2188,9 @@ extern const char kContextualSearchForceCaptionDescription[];
 extern const char kContextualSearchSuppressShortViewName[];
 extern const char kContextualSearchSuppressShortViewDescription[];
 
+extern const char kConvertTrackpadEventsToMouseName[];
+extern const char kConvertTrackpadEventsToMouseDescription[];
+
 extern const char kCormorantName[];
 extern const char kCormorantDescription[];
 
