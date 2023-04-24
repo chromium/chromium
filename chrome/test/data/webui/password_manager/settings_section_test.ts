@@ -113,8 +113,8 @@ suite('SettingsSectionTest', function() {
     await flushTasks();
 
     assertTrue(settings.$.passwordToggle.checked);
-    assertTrue(
-        !!settings.shadowRoot!.querySelector('extension-controlled-indicator'));
+    assertTrue(!!settings.$.passwordToggle.shadowRoot!.querySelector(
+        '#extensionIcon'));
   });
 
   test('no extension control icon by default', async function() {
@@ -126,7 +126,7 @@ suite('SettingsSectionTest', function() {
     assertTrue(settings.$.passwordToggle.checked);
     settings.$.passwordToggle.click();
     assertFalse(!!settings.$.passwordToggle.shadowRoot!.querySelector(
-        'extension-controlled-indicator'));
+        '#extensionIcon'));
   });
 
   test('pref updated externally', async function() {

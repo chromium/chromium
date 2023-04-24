@@ -51,23 +51,10 @@
 </style>
 <h3 class="page-title">$i18n{settings}</h3>
 <div class="card">
-  <pref-toggle-button id="passwordToggle" no-extension-indicator
+  <pref-toggle-button id="passwordToggle"
       label="$i18n{savePasswordsLabel}"
       pref="{{prefs.credentials_enable_service}}">
   </pref-toggle-button>
-  <template is="dom-if"
-        if="[[prefs.credentials_enable_service.extensionId]]">
-    <div class="cr-row continuation">
-      <extension-controlled-indicator
-          id="passwordsExtensionIndicator"
-          extension-id="[[prefs.credentials_enable_service.extensionId]]"
-          extension-name="[[
-              prefs.credentials_enable_service.controlledByName]]"
-          extension-can-be-disabled="[[
-              prefs.credentials_enable_service.extensionCanBeDisabled]]">
-      </extension-controlled-indicator>
-    </div>
-  </template>
   <pref-toggle-button id="autosigninToggle" class="hr"
       label="$i18n{autosigninLabel}"
       sub-label="$i18n{autosigninDescription}"
