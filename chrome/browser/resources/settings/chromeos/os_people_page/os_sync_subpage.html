@@ -134,8 +134,7 @@
           label="$i18n{manageBrowserSyncedDataTitle}"
           hidden="[[!showSyncSettingsRevamp_]]"
           on-click="onManageChromeBrowserSyncClick_"
-          external
-          button-aria-description="$i18n{opensInNewTab}">
+          external>
       </cr-link-row>
 
       <cr-link-row id="syncDashboardLink" class="hr"
@@ -143,8 +142,7 @@
           sub-label="[[getManageSyncedDataSubtitle_()]]"
           on-click="onSyncDashboardLinkClick_"
           hidden="[[syncStatus.supervisedUser]]"
-          external
-          button-aria-description="$i18n{opensInNewTab}">
+          external>
       </cr-link-row>
 
       <cr-expand-button id="encryptionDescription"

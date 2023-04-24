@@ -173,20 +173,17 @@
 <cr-link-row id="myFilesSize" class="hr" on-click="onMyFilesClick_"
     label="$i18n{storageItemMyFiles}"
     sub-label="$i18n{storageSizeComputing}"
-    external
-    button-aria-description="$i18n{opensInNewTab}">
+    external>
 </cr-link-row>
 <cr-link-row id="browsingDataSize" class="hr" on-click="onBrowsingDataClick_"
     label="$i18n{storageItemBrowsingData}"
     sub-label="$i18n{storageSizeComputing}"
-    external
-    button-aria-description="$i18n{opensInNewTab}">
+    external>
 </cr-link-row>
 <cr-link-row id="appsSize" class="hr" on-click="onAppsClick_"
     label="$i18n{storageItemApps}"
     sub-label="$i18n{storageSizeComputing}"
-    external
-    button-aria-description="$i18n{opensInNewTab}">
+    external>
 </cr-link-row>
 <template is="dom-if" if="[[showDriveOfflineStorage_]]">
   <cr-link-row id="driveOfflineSize" class="hr" on-click="onDriveOfflineClick_"
