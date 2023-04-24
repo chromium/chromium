@@ -14,6 +14,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/scoped_animation_disabler.h"
+#include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_util.h"
@@ -27,7 +28,6 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_default_layout_manager.h"
 #include "ash/wm/wm_event.h"
-#include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace/workspace_event_handler.h"
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "base/check.h"
@@ -404,9 +404,8 @@ gfx::Rect FloatController::GetPreferredFloatWindowClamshellBounds(
     return window->bounds();
   }
 
-  gfx::Rect work_area = WorkAreaInsets::ForWindow(window->GetRootWindow())
-                            ->user_work_area_bounds();
-  wm::ConvertRectFromScreen(window->GetRootWindow(), &work_area);
+  const gfx::Rect work_area =
+      screen_util::GetDisplayWorkAreaBoundsInParent(window);
 
   const int padding_dp = chromeos::wm::kFloatedWindowPaddingDp;
 
@@ -468,9 +467,8 @@ gfx::Rect FloatController::GetPreferredFloatWindowTabletBounds(
   }
 #endif
 
-  gfx::Rect work_area = WorkAreaInsets::ForWindow(window->GetRootWindow())
-                            ->user_work_area_bounds();
-  wm::ConvertRectFromScreen(window->GetRootWindow(), &work_area);
+  const gfx::Rect work_area =
+      screen_util::GetDisplayWorkAreaBoundsInParent(window);
 
   // Update the origin of the floated window based on whichever corner it is
   // magnetized to.
