@@ -450,6 +450,21 @@ public class StartSurfaceTestUtils {
     }
 
     /**
+     * Perform gesture navigate back action on the start surface to put Chrome background.
+     * @param activityTestRule The ChromeTabbedActivityTestRule under test.
+     */
+    public static void gestureNavigateBackToBringChromeBackground(
+            ChromeTabbedActivityTestRule activityTestRule) {
+        AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
+        GestureNavigationUtils navUtils = new GestureNavigationUtils(activityTestRule);
+        navUtils.swipeFromLeftEdge();
+
+        // Back gesture on the start surface puts Chrome background.
+        CriteriaHelper.pollUiThread(
+                () -> AsyncInitializationActivity.wasMoveTaskToBackInterceptedForTesting());
+    }
+
+    /**
      * Click the first MV tile (Explore tile) in mv_tiles_layout.
      * @param cta The ChromeTabbedActivity under test.
      * @param currentTabCount The correct number of normal tabs.
