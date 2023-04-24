@@ -39,12 +39,13 @@ class DeviceSwitcherResultDispatcher : public base::SupportsUserData::Data,
 
   // Called to get the classification result synchronously. If none, returns
   // empty result.
-  ClassificationResult GetCachedClassificationResult();
+  virtual ClassificationResult GetCachedClassificationResult();
 
   // Called to get the classification results from prefs if it exists, else it
   // will wait for results and return when available. Handles only one request
   // at a time.
-  void WaitForClassificationResult(ClassificationResultCallback callback);
+  virtual void WaitForClassificationResult(
+      ClassificationResultCallback callback);
 
   // Registers preferences used by this class in the provided |registry|.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);

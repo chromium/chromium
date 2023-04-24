@@ -193,6 +193,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/autofill:unit_tests",
     "//ios/chrome/browser/autofill/manual_fill:unit_tests",
     "//ios/chrome/browser/bookmarks:unit_tests",
+    "//ios/chrome/browser/bring_android_tabs:unit_tests",
     "//ios/chrome/browser/browser_state:unit_tests",
     "//ios/chrome/browser/browsing_data:unit_tests",
     "//ios/chrome/browser/commerce:unit_tests",
