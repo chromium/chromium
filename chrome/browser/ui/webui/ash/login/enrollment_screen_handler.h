@@ -60,9 +60,6 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
 
   ~EnrollmentScreenHandler() override;
 
-  // Implements WebUIMessageHandler:
-  void RegisterMessages() override;
-
   // Implements EnrollmentScreenView:
   void SetEnrollmentConfig(const policy::EnrollmentConfig& config) override;
   void SetEnrollmentController(Controller* controller) override;
@@ -97,6 +94,7 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   void InitAfterJavascriptAllowed() override;
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+  void DeclareJSCallbacks() override;
   void GetAdditionalParameters(base::Value::Dict* parameters) override;
 
   void ContinueAuthenticationWhenCookiesAvailable(const std::string& user,

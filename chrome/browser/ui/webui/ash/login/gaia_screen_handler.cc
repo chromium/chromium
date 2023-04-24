@@ -657,7 +657,7 @@ void GaiaScreenHandler::InitAfterJavascriptAllowed() {
   }
 }
 
-void GaiaScreenHandler::RegisterMessages() {
+void GaiaScreenHandler::DeclareJSCallbacks() {
   AddCallback("webviewLoadAborted",
               &GaiaScreenHandler::HandleWebviewLoadAborted);
   AddCallback("completeLogin", &GaiaScreenHandler::HandleCompleteLogin);
@@ -684,8 +684,6 @@ void GaiaScreenHandler::RegisterMessages() {
   AddCallback("passwordEntered", &GaiaScreenHandler::HandlePasswordEntered);
   AddCallback("showLoadingTimeoutError",
               &GaiaScreenHandler::HandleShowLoadingTimeoutError);
-
-  BaseScreenHandler::RegisterMessages();
 }
 
 void GaiaScreenHandler::HandleIdentifierEntered(const std::string& user_email) {

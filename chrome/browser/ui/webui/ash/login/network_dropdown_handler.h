@@ -18,12 +18,10 @@ class NetworkDropdownHandler : public BaseWebUIHandler {
 
   ~NetworkDropdownHandler() override;
 
-  // BaseScreenHandler implementation:
+  // BaseWebUIHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-
-  // WebUIMessageHandler implementation:
-  void RegisterMessages() override;
+  void DeclareJSCallbacks() override;
 
  private:
   void HandleLaunchInternetDetailDialog();

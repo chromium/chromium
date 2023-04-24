@@ -204,30 +204,6 @@ EnrollmentScreenHandler::EnrollmentScreenHandler()
 
 EnrollmentScreenHandler::~EnrollmentScreenHandler() = default;
 
-// EnrollmentScreenHandler, WebUIMessageHandler implementation --
-
-void EnrollmentScreenHandler::RegisterMessages() {
-  BaseScreenHandler::RegisterMessages();
-  AddCallback("toggleFakeEnrollment",
-              &EnrollmentScreenHandler::HandleToggleFakeEnrollment);
-  AddCallback("oauthEnrollClose", &EnrollmentScreenHandler::HandleClose);
-  AddCallback("oauthEnrollCompleteLogin",
-              &EnrollmentScreenHandler::HandleCompleteLogin);
-  AddCallback("oauthEnrollAdCompleteLogin",
-              &EnrollmentScreenHandler::HandleAdCompleteLogin);
-  AddCallback("oauthEnrollAdUnlockConfiguration",
-              &EnrollmentScreenHandler::HandleAdUnlockConfiguration);
-  AddCallback("enterpriseIdentifierEntered",
-              &EnrollmentScreenHandler::HandleIdentifierEntered);
-  AddCallback("oauthEnrollRetry", &EnrollmentScreenHandler::HandleRetry);
-  AddCallback("frameLoadingCompleted",
-              &EnrollmentScreenHandler::HandleFrameLoadingCompleted);
-  AddCallback("oauthEnrollAttributes",
-              &EnrollmentScreenHandler::HandleDeviceAttributesProvided);
-  AddCallback("oauthEnrollOnLearnMore",
-              &EnrollmentScreenHandler::HandleOnLearnMore);
-}
-
 // EnrollmentScreenHandler
 //      EnrollmentScreenActor implementation -----------------------------------
 
@@ -736,6 +712,27 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
   builder->Add("selectEncryption", IDS_AD_ENCRYPTION_SELECTION_SELECT);
   builder->Add("selectConfiguration", IDS_AD_CONFIG_SELECTION_SELECT);
   /* End of Active Directory strings */
+}
+
+void EnrollmentScreenHandler::DeclareJSCallbacks() {
+  AddCallback("toggleFakeEnrollment",
+              &EnrollmentScreenHandler::HandleToggleFakeEnrollment);
+  AddCallback("oauthEnrollClose", &EnrollmentScreenHandler::HandleClose);
+  AddCallback("oauthEnrollCompleteLogin",
+              &EnrollmentScreenHandler::HandleCompleteLogin);
+  AddCallback("oauthEnrollAdCompleteLogin",
+              &EnrollmentScreenHandler::HandleAdCompleteLogin);
+  AddCallback("oauthEnrollAdUnlockConfiguration",
+              &EnrollmentScreenHandler::HandleAdUnlockConfiguration);
+  AddCallback("enterpriseIdentifierEntered",
+              &EnrollmentScreenHandler::HandleIdentifierEntered);
+  AddCallback("oauthEnrollRetry", &EnrollmentScreenHandler::HandleRetry);
+  AddCallback("frameLoadingCompleted",
+              &EnrollmentScreenHandler::HandleFrameLoadingCompleted);
+  AddCallback("oauthEnrollAttributes",
+              &EnrollmentScreenHandler::HandleDeviceAttributesProvided);
+  AddCallback("oauthEnrollOnLearnMore",
+              &EnrollmentScreenHandler::HandleOnLearnMore);
 }
 
 void EnrollmentScreenHandler::GetAdditionalParameters(

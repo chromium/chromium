@@ -73,7 +73,7 @@ class AssistantOptInFlowScreenHandler
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void RegisterMessages() override;
+  void DeclareJSCallbacks() override;
   void GetAdditionalParameters(base::Value::Dict* dict) override;
 
   // AssistantOptInFlowScreenView:

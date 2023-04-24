@@ -60,12 +60,8 @@ class CoreOobeHandler : public BaseWebUIHandler,
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-
-  // BaseScreenHandler implementation:
+  void DeclareJSCallbacks() override;
   void GetAdditionalParameters(base::Value::Dict* dict) override;
-
-  // WebUIMessageHandler implementation.
-  void RegisterMessages() override;
 
   // VersionInfoUpdater::Delegate implementation:
   void OnOSVersionLabelTextUpdated(

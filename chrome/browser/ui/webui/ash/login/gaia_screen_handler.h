@@ -208,10 +208,8 @@ class GaiaScreenHandler
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+  void DeclareJSCallbacks() override;
   void InitAfterJavascriptAllowed() override;
-
-  // WebUIMessageHandler implementation:
-  void RegisterMessages() override;
 
   // WebUI message handlers.
   void HandleWebviewLoadAborted(int error_code);

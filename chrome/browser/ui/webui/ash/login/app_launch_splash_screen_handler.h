@@ -102,9 +102,7 @@ class AppLaunchSplashScreenHandler
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-
-  // WebUIMessageHandler implementation:
-  void RegisterMessages() override;
+  void DeclareJSCallbacks() override;
 
   // AppLaunchSplashScreenView implementation:
   void Show(KioskAppManagerBase::App app_data) override;

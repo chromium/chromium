@@ -131,7 +131,7 @@ void CoreOobeHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   }
 }
 
-void CoreOobeHandler::RegisterMessages() {
+void CoreOobeHandler::DeclareJSCallbacks() {
   AddCallback("screenStateInitialize", &CoreOobeHandler::HandleInitialized);
   AddCallback("updateCurrentScreen",
               &CoreOobeHandler::HandleUpdateCurrentScreen);
