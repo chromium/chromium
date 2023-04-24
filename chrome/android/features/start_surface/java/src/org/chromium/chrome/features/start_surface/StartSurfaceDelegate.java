@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -26,7 +25,6 @@ import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -105,7 +103,6 @@ public class StartSurfaceDelegate {
      * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
      *         to detect pending re-auth when tab switcher is shown.
      * @param tabSwitcherClickHandler The {@link OnClickListener} for the tab switcher button.
-     * @param profileSupplier Supplies the {@link Profile}.
      * @return the {@link StartSurface}
      */
     public static StartSurface createStartSurface(@NonNull Activity activity,
@@ -129,8 +126,7 @@ public class StartSurfaceDelegate {
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull Supplier<Toolbar> toolbarSupplier, BackPressManager backPressManager,
             @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
-            @NonNull OnClickListener tabSwitcherClickHandler,
-            @NonNull ObservableSupplier<Profile> profileSupplier) {
+            @NonNull OnClickListener tabSwitcherClickHandler) {
         return new StartSurfaceCoordinator(activity, scrimCoordinator, sheetController,
                 startSurfaceOneshotSupplier, parentTabSupplier, hadWarmStart, windowAndroid,
                 containerView, dynamicResourceLoaderSupplier, tabModelSelector,
@@ -138,6 +134,6 @@ public class StartSurfaceDelegate {
                 tabContentManager, modalDialogManager, chromeActivityNativeDelegate,
                 activityLifecycleDispatcher, tabCreatorManager, menuOrKeyboardActionController,
                 multiWindowModeStateDispatcher, toolbarSupplier, backPressManager,
-                incognitoReauthControllerSupplier, tabSwitcherClickHandler, profileSupplier);
+                incognitoReauthControllerSupplier, tabSwitcherClickHandler);
     }
 }

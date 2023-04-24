@@ -74,7 +74,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -123,7 +122,6 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
@@ -200,8 +198,6 @@ public class StartSurfaceMediatorUnitTest {
     @Mock
     private Profile mProfile;
     @Mock
-    private ObservableSupplier<Profile> mProfileSupplier;
-    @Mock
     private TemplateUrlService mTemplateUrlService;
     @Mock
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -228,8 +224,6 @@ public class StartSurfaceMediatorUnitTest {
     @Captor
     private ArgumentCaptor<PauseResumeWithNativeObserver>
             mPauseResumeWithNativeObserverArgumentCaptor;
-    @Captor
-    private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlServiceObserverCaptor;
 
     private ObservableSupplierImpl<Boolean>
             mCarouselTabSwitcherModuleControllerBackPressStateSupplier =
@@ -246,8 +240,6 @@ public class StartSurfaceMediatorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        doReturn(false).when(mProfile).isOffTheRecord();
-        doReturn(mProfile).when(mProfileSupplier).get();
         Profile.setLastUsedProfileForTesting(mProfile);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
 
@@ -1296,6 +1288,9 @@ public class StartSurfaceMediatorUnitTest {
         when(mCarouselOrSingleTabSwitcherModuleController.overviewVisible()).thenReturn(true);
         mediator.initWithNative(
                 mOmniboxStub, mExploreSurfaceCoordinatorFactory, mPrefService, null);
+        when(mCarouselOrSingleTabSwitcherModuleController.overviewVisible()).thenReturn(true);
+        mediator.initWithNative(
+                mOmniboxStub, mExploreSurfaceCoordinatorFactory, mPrefService, null);
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
     }
 
@@ -1834,28 +1829,6 @@ public class StartSurfaceMediatorUnitTest {
         verify(mTabListDelegate).postHiding();
     }
 
-    @Test
-    public void testDefaultSearchEngineChanged() {
-        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
-
-        StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true,
-                /* isRefactorEnabled */ false, /* hadWarmStart= */ false);
-        showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
-
-        mediator.onProfileAvailable(mProfile);
-        verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserverCaptor.capture());
-        doReturn(true).when(mOmniboxStub).isLensEnabled(LensEntryPoint.TASKS_SURFACE);
-        mTemplateUrlServiceObserverCaptor.getValue().onTemplateURLServiceChanged();
-        assertTrue(mPropertyModel.get(IS_LENS_BUTTON_VISIBLE));
-
-        doReturn(false).when(mOmniboxStub).isLensEnabled(LensEntryPoint.TASKS_SURFACE);
-        mTemplateUrlServiceObserverCaptor.getValue().onTemplateURLServiceChanged();
-        assertFalse(mPropertyModel.get(IS_LENS_BUTTON_VISIBLE));
-
-        mediator.destroy();
-        verify(mTemplateUrlService).removeObserver(mTemplateUrlServiceObserverCaptor.capture());
-    }
-
     private StartSurfaceMediator createStartSurfaceMediator(boolean isStartSurfaceEnabled) {
         return createStartSurfaceMediator(isStartSurfaceEnabled, /* isRefactorEnabled */ false,
                 /* hadWarmStart= */ false);
@@ -1871,6 +1844,9 @@ public class StartSurfaceMediatorUnitTest {
             boolean isStartSurfaceEnabled, boolean isRefactorEnabled, boolean hadWarmStart) {
         StartSurfaceMediator mediator = createStartSurfaceMediatorWithoutInit(
                 isStartSurfaceEnabled, isRefactorEnabled, hadWarmStart);
+        mediator.initWithNative(mOmniboxStub,
+                isStartSurfaceEnabled ? mExploreSurfaceCoordinatorFactory : null, mPrefService,
+                null);
         mediator.initWithNative(mOmniboxStub,
                 isStartSurfaceEnabled ? mExploreSurfaceCoordinatorFactory : null, mPrefService,
                 null);
@@ -1891,7 +1867,7 @@ public class StartSurfaceMediatorUnitTest {
                 hasTasksView || hasTabSwitcherModule ? mInitializeMVTilesRunnable : null,
                 mParentTabSupplier, mLogoContainerView, mBackPressManager,
                 null /* feedPlaceholderParentView */, mActivityLifecycleDispatcher,
-                mTabSwitcherClickHandler, mProfileSupplier);
+                mTabSwitcherClickHandler);
     }
 
     private void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset) {

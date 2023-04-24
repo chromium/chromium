@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.OriginalProfileSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.query_tiles.QueryTileSection;
@@ -203,7 +204,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     private MostVisitedTilesCoordinator mMostVisitedCoordinator;
     private MostVisitedSuggestionsUiDelegate mSuggestionsUiDelegate;
     private TileGroupDelegateImpl mTileGroupDelegate;
-    private ObservableSupplier<Profile> mProfileSupplier;
+    private OneshotSupplier<Profile> mQueryTileProfileSupplier;
     private QueryTileSection mQueryTileSection;
     private boolean mIsMVTilesInitialized;
 
@@ -264,7 +265,6 @@ public class StartSurfaceCoordinator implements StartSurface {
      * @param backPressManager {@link BackPressManager} to handle back press.
      * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
      *         to detect pending re-auth when tab switcher is shown.
-     * @param profileSupplier Supplies the {@Profile}.
      * @param tabSwitcherClickHandler The {@link OnClickListener} for the tab switcher button.
      */
     public StartSurfaceCoordinator(@NonNull Activity activity,
@@ -288,8 +288,7 @@ public class StartSurfaceCoordinator implements StartSurface {
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull Supplier<Toolbar> toolbarSupplier, BackPressManager backPressManager,
             @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
-            @NonNull OnClickListener tabSwitcherClickHandler,
-            @NonNull ObservableSupplier<Profile> profileSupplier) {
+            @NonNull OnClickListener tabSwitcherClickHandler) {
         mConstructedTimeNs = SystemClock.elapsedRealtimeNanos();
         mActivity = activity;
         mScrimCoordinator = scrimCoordinator;
@@ -313,7 +312,6 @@ public class StartSurfaceCoordinator implements StartSurface {
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
         mToolbarSupplier = toolbarSupplier;
         mIncognitoReauthControllerSupplier = incognitoReauthControllerSupplier;
-        mProfileSupplier = profileSupplier;
 
         mTabSwitcherCustomViewManagerSupplier = new ObservableSupplierImpl<>();
         boolean excludeQueryTiles = !mIsStartSurfaceEnabled
@@ -363,7 +361,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 startSurfaceOneshotSupplier, hadWarmStart, initializeMVTilesRunnable,
                 mParentTabSupplier, logoContainerView,
                 mGridTabSwitcher == null ? backPressManager : null, feedPlaceholderParentView,
-                mActivityLifecycleDispatcher, tabSwitcherClickHandler, mProfileSupplier);
+                mActivityLifecycleDispatcher, tabSwitcherClickHandler);
 
         startSurfaceOneshotSupplier.set(this);
     }
@@ -391,7 +389,6 @@ public class StartSurfaceCoordinator implements StartSurface {
             removeHeaderOffsetChangeListener(mOffsetChangedListenerToGenerateScrollEvents);
             mOffsetChangedListenerToGenerateScrollEvents = null;
         }
-        mProfileSupplier = null;
         if (mStartSurfaceMediator != null) {
             mStartSurfaceMediator.destroy();
         }
@@ -909,7 +906,8 @@ public class StartSurfaceCoordinator implements StartSurface {
             if (ProfileManager.isInitialized()) {
                 initializeQueryTileSection(Profile.getLastUsedRegularProfile());
             } else {
-                mProfileSupplier.addObserver(this::initializeQueryTileSection);
+                mQueryTileProfileSupplier = new OriginalProfileSupplier();
+                mQueryTileProfileSupplier.onAvailable(this::initializeQueryTileSection);
             }
         } else {
             storeQueryTilesVisibility(false);
@@ -1099,8 +1097,6 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     private void initializeQueryTileSection(Profile profile) {
         assert profile != null;
-        if (profile.isOffTheRecord()) return;
-
         if (!QueryTileUtils.isQueryTilesEnabledOnStartSurface()) {
             storeQueryTilesVisibility(false);
             return;
@@ -1108,7 +1104,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         mQueryTileSection = new QueryTileSection(mView.findViewById(R.id.query_tiles_layout),
                 profile, query -> performSearchQuery(query.queryText, query.searchParams));
         storeQueryTilesVisibility(true);
-        mProfileSupplier.removeObserver(this::initializeQueryTileSection);
+        mQueryTileProfileSupplier = null;
     }
 
     /**

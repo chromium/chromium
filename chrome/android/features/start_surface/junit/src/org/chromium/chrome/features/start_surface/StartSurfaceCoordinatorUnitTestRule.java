@@ -114,7 +114,6 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
 
     private final OneshotSupplierImpl<IncognitoReauthController>
             mIncognitoReauthControllerSupplier = new OneshotSupplierImpl<>();
-    private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
 
     private static class MockTabModelFilterProvider extends TabModelFilterProvider {
         public MockTabModelFilterProvider(Activity activity) {
@@ -273,7 +272,7 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
                 new ActivityLifecycleDispatcherImpl(mActivity), new MockTabCreatorManager(),
                 Mockito.mock(MenuOrKeyboardActionController.class),
                 new MultiWindowModeStateDispatcherImpl(mActivity), new ObservableSupplierImpl<>(),
-                new BackPressManager(), mIncognitoReauthControllerSupplier, null, mProfileSupplier);
+                new BackPressManager(), mIncognitoReauthControllerSupplier, null);
 
         Assert.assertFalse(LibraryLoader.getInstance().isLoaded());
         when(mLibraryLoader.isInitialized()).thenReturn(true);
