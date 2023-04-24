@@ -126,12 +126,29 @@ def _ParseArgs(args):
 
   options = parser.parse_args(args)
   options.module_zips = action_helpers.parse_gn_list(options.module_zips)
+
+  if len(options.module_zips) == 0:
+    parser.error('The module zip list cannot be empty.')
+  if len(options.module_zips) != len(options.module_names):
+    parser.error('# module zips != # names.')
+  if 'base' not in options.module_names:
+    parser.error('Missing base module.')
+
+  # Sort modules for more stable outputs.
+  per_module_values = list(
+      zip(options.module_names, options.module_zips,
+          options.uncompressed_assets, options.rtxt_in_paths,
+          options.pathmap_in_paths))
+  per_module_values.sort(key=lambda x: (x[0] != 'base', x[0]))
+  options.module_names = [x[0] for x in per_module_values]
+  options.module_zips = [x[1] for x in per_module_values]
+  options.uncompressed_assets = [x[2] for x in per_module_values]
+  options.rtxt_in_paths = [x[3] for x in per_module_values]
+  options.pathmap_in_paths = [x[4] for x in per_module_values]
+
   options.rtxt_in_paths = action_helpers.parse_gn_list(options.rtxt_in_paths)
   options.pathmap_in_paths = action_helpers.parse_gn_list(
       options.pathmap_in_paths)
-
-  if len(options.module_zips) == 0:
-    raise Exception('The module zip list cannot be empty.')
 
   # Merge all uncompressed assets into a set.
   uncompressed_list = []
