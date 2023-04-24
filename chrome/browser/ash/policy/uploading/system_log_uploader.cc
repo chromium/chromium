@@ -36,10 +36,12 @@
 #include "components/feedback/redaction_tool/redaction_tool.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/policy_conversions.h"
+#include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/zip.h"
 
 namespace policy {
@@ -293,6 +295,11 @@ const int64_t SystemLogUploader::kLogThrottleCount = 100;
 const base::TimeDelta SystemLogUploader::kLogThrottleWindowDuration =
     base::Hours(24);
 
+// The request header to attach the command ID to upload request. The command Id
+// will be included in uploads that are triggered by
+// `DeviceCommandFetchStatusJob`.
+const char* const SystemLogUploader::kCommandIdHeaderName = "Command-ID";
+
 // String constant identifying the header field which stores the file type.
 const char* const SystemLogUploader::kFileTypeHeaderName = "File-Type";
 
@@ -337,7 +344,7 @@ SystemLogUploader::SystemLogUploader(
   // Immediately schedule the next system log upload (last_upload_attempt_ is
   // set to the start of the epoch, so this will trigger an update upload in the
   // immediate future).
-  ScheduleNextSystemLogUpload(upload_frequency_);
+  ScheduleNextSystemLogUpload(upload_frequency_, absl::nullopt);
 }
 
 SystemLogUploader::~SystemLogUploader() {}
@@ -355,7 +362,7 @@ void SystemLogUploader::OnSuccess() {
 
   // On successful log upload schedule the next log upload after
   // upload_frequency_ time from now.
-  ScheduleNextSystemLogUpload(upload_frequency_);
+  ScheduleNextSystemLogUpload(upload_frequency_, absl::nullopt);
 }
 
 void SystemLogUploader::OnFailure(UploadJob::ErrorCode error_code) {
@@ -372,13 +379,14 @@ void SystemLogUploader::OnFailure(UploadJob::ErrorCode error_code) {
   if (retry_count_++ < kMaxNumRetries) {
     SYSLOG(ERROR) << "Upload failed with error code " << error_code
                   << ", retrying later.";
-    ScheduleNextSystemLogUpload(base::Milliseconds(kErrorUploadDelayMs));
+    ScheduleNextSystemLogUpload(base::Milliseconds(kErrorUploadDelayMs),
+                                absl::nullopt);
   } else {
     // No more retries.
     SYSLOG(ERROR) << "Upload failed with error code " << error_code
                   << ", no more retries.";
     retry_count_ = 0;
-    ScheduleNextSystemLogUpload(upload_frequency_);
+    ScheduleNextSystemLogUpload(upload_frequency_, absl::nullopt);
   }
 }
 
@@ -389,8 +397,9 @@ std::string SystemLogUploader::RemoveSensitiveData(
   return redactor->Redact(data);
 }
 
-void SystemLogUploader::ScheduleNextSystemLogUploadImmediately() {
-  ScheduleNextSystemLogUpload(base::TimeDelta());
+void SystemLogUploader::ScheduleNextSystemLogUploadImmediately(
+    RemoteCommandJob::UniqueIDType command_id) {
+  ScheduleNextSystemLogUpload(base::TimeDelta(), command_id);
 }
 
 void SystemLogUploader::RefreshUploadSettings() {
@@ -410,7 +419,9 @@ void SystemLogUploader::RefreshUploadSettings() {
   }
 }
 
-void SystemLogUploader::UploadZippedSystemLogs(std::string zipped_system_logs) {
+void SystemLogUploader::UploadZippedSystemLogs(
+    absl::optional<RemoteCommandJob::UniqueIDType> command_id,
+    std::string zipped_system_logs) {
   // Must be called on the main thread.
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!upload_job_);
@@ -434,30 +445,37 @@ void SystemLogUploader::UploadZippedSystemLogs(std::string zipped_system_logs) {
       std::make_pair(kFileTypeHeaderName, kFileTypeZippedLogFile));
   header_fields.insert(std::make_pair(net::HttpRequestHeaders::kContentType,
                                       kContentTypeOctetStream));
+  if (command_id) {
+    header_fields.insert(std::make_pair(
+        kCommandIdHeaderName, base::NumberToString(command_id.value())));
+  }
   upload_job_->AddDataSegment(kZippedLogsName, kZippedLogsFileName,
                               header_fields, std::move(data));
   upload_job_->Start();
 }
 
-void SystemLogUploader::StartLogUpload() {
+void SystemLogUploader::StartLogUpload(
+    absl::optional<RemoteCommandJob::UniqueIDType> command_id) {
   // Must be called on the main thread.
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (upload_enabled_) {
     SYSLOG(INFO) << "Reading system logs for upload.";
     log_upload_in_progress_ = true;
-    syslog_delegate_->LoadSystemLogs(base::BindOnce(
-        &SystemLogUploader::OnSystemLogsLoaded, weak_factory_.GetWeakPtr()));
+    syslog_delegate_->LoadSystemLogs(
+        base::BindOnce(&SystemLogUploader::OnSystemLogsLoaded,
+                       weak_factory_.GetWeakPtr(), std::move(command_id)));
   } else {
     // If upload is disabled, schedule the next attempt after 12h.
     SYSLOG(INFO) << "System log upload is disabled, rescheduling.";
     retry_count_ = 0;
     last_upload_attempt_ = base::Time::NowFromSystemTime();
-    ScheduleNextSystemLogUpload(upload_frequency_);
+    ScheduleNextSystemLogUpload(upload_frequency_, absl::nullopt);
   }
 }
 
 void SystemLogUploader::OnSystemLogsLoaded(
+    absl::optional<RemoteCommandJob::UniqueIDType> command_id,
     std::unique_ptr<SystemLogs> system_logs) {
   // Must be called on the main thread.
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -468,7 +486,7 @@ void SystemLogUploader::OnSystemLogsLoaded(
   syslog_delegate_->ZipSystemLogs(
       std::move(system_logs),
       base::BindOnce(&SystemLogUploader::UploadZippedSystemLogs,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), std::move(command_id)));
 }
 
 // Update the list of logs within kLogThrottleWindowDuration window and add the
@@ -520,7 +538,9 @@ base::Time SystemLogUploader::UpdateLocalStateForLogs() {
   return updated_log_uploads.empty() ? base::Time() : updated_log_uploads[0];
 }
 
-void SystemLogUploader::ScheduleNextSystemLogUpload(base::TimeDelta frequency) {
+void SystemLogUploader::ScheduleNextSystemLogUpload(
+    base::TimeDelta frequency,
+    absl::optional<RemoteCommandJob::UniqueIDType> command_id) {
   // Don't schedule a new system log upload if there's a log upload in progress
   // (it will be scheduled once the current one completes).
   if (log_upload_in_progress_) {
@@ -551,7 +571,7 @@ void SystemLogUploader::ScheduleNextSystemLogUpload(base::TimeDelta frequency) {
   task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&SystemLogUploader::StartLogUpload,
-                     weak_factory_.GetWeakPtr()),
+                     weak_factory_.GetWeakPtr(), command_id),
       delay);
 }
 

@@ -19,6 +19,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/uploading/upload_job.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "components/policy/core/common/remote_commands/remote_command_job.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -51,6 +53,7 @@ class SystemLogUploader : public UploadJob::Delegate {
   static const base::TimeDelta kLogThrottleWindowDuration;
 
   // Http header constants to upload zipped logs.
+  static const char* const kCommandIdHeaderName;
   static const char* const kFileTypeHeaderName;
   static const char* const kFileTypeZippedLogFile;
   static const char* const kZippedLogsName;
@@ -117,7 +120,10 @@ class SystemLogUploader : public UploadJob::Delegate {
   // ever happened.
   base::Time last_upload_attempt() const { return last_upload_attempt_; }
 
-  void ScheduleNextSystemLogUploadImmediately();
+  // Schedules the next upload immediately. Is triggered in case of a remote
+  // command to upload logs. Attaches `command_id` to the file upload metadata.
+  void ScheduleNextSystemLogUploadImmediately(
+      RemoteCommandJob::UniqueIDType command_id);
 
   // Removes the log upload times before the particular time window ( which were
   // uploaded before kLogThrottleWindowDuration time from now), add the latest
@@ -138,18 +144,25 @@ class SystemLogUploader : public UploadJob::Delegate {
   void RefreshUploadSettings();
 
   // Starts the system log loading process.
-  void StartLogUpload();
+  void StartLogUpload(
+      absl::optional<RemoteCommandJob::UniqueIDType> command_id);
 
   // The callback is invoked by the Delegate if system logs have been loaded
   // from disk, adds policy dump and calls UploadSystemLogs.
-  void OnSystemLogsLoaded(std::unique_ptr<SystemLogs> system_logs);
+  void OnSystemLogsLoaded(
+      absl::optional<RemoteCommandJob::UniqueIDType> command_id,
+      std::unique_ptr<SystemLogs> system_logs);
 
   // Uploads zipped system logs.
-  void UploadZippedSystemLogs(std::string zipped_system_logs);
+  void UploadZippedSystemLogs(
+      absl::optional<RemoteCommandJob::UniqueIDType> command_id,
+      std::string zipped_system_logs);
 
   // Helper method that figures out when the next system log upload should
   // be scheduled.
-  void ScheduleNextSystemLogUpload(base::TimeDelta frequency);
+  void ScheduleNextSystemLogUpload(
+      base::TimeDelta frequency,
+      absl::optional<RemoteCommandJob::UniqueIDType> command_id);
 
   // The number of consequent retries after the failed uploads.
   int retry_count_;
