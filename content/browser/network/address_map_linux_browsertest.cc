@@ -17,7 +17,9 @@
 #include "base/run_loop.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
@@ -26,6 +28,7 @@
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/address_map_linux.h"
 #include "net/base/address_tracker_linux_test_util.h"
+#include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_change_notifier_factory.h"
 #include "net/base/network_change_notifier_linux.h"
@@ -199,6 +202,9 @@ class AddressMapLinuxBrowserTest : public ContentBrowserTest {
   };
 
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {net::features::kAddressTrackerLinuxIsProxied},
+        {features::kNetworkServiceInProcess});
     ncn_mocked_factory_ = new NetworkChangeNotifierLinuxMockedNetlinkFactory();
     net::NetworkChangeNotifier::SetFactory(ncn_mocked_factory_);
     ContentBrowserTest::SetUp();
@@ -310,6 +316,7 @@ class AddressMapLinuxBrowserTest : public ContentBrowserTest {
     ExpectedConnectionType expected_connection_type_;
   };
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<NetworkChangeNotificationListener> notification_listener_;
 };
 }  // namespace
@@ -330,10 +337,6 @@ IN_PROC_BROWSER_TEST_F(AddressMapLinuxBrowserTest, CheckInitialMapsMatch) {
 }
 
 IN_PROC_BROWSER_TEST_F(AddressMapLinuxBrowserTest, CheckAddressMapDiffsApply) {
-  if (IsInProcessNetworkService()) {
-    GTEST_SKIP();
-  }
-
   // Delete kAddr0 from the map.
   ncn_mocked_factory_->ncn_wrapper()->BufferDeleteAddrMsg(
       NCNLinuxMockedNetlinkTestUtil::kAddr0);
@@ -406,10 +409,6 @@ IN_PROC_BROWSER_TEST_F(AddressMapLinuxBrowserTest, CheckAddressMapDiffsApply) {
 }
 
 IN_PROC_BROWSER_TEST_F(AddressMapLinuxBrowserTest, CheckOnlineLinksDiffsApply) {
-  if (IsInProcessNetworkService()) {
-    GTEST_SKIP();
-  }
-
   // Delete the link.
   ncn_mocked_factory_->ncn_wrapper()->BufferDeleteLinkMsg(
       NCNLinuxMockedNetlinkTestUtil::kTestInterfaceEth);
@@ -468,10 +467,6 @@ IN_PROC_BROWSER_TEST_F(AddressMapLinuxBrowserTest, CheckOnlineLinksDiffsApply) {
 }
 
 IN_PROC_BROWSER_TEST_F(AddressMapLinuxBrowserTest, CheckBothDiffsApply) {
-  if (IsInProcessNetworkService()) {
-    GTEST_SKIP();
-  }
-
   // Delete the link, add another.
   ncn_mocked_factory_->ncn_wrapper()->BufferDeleteLinkMsg(
       NCNLinuxMockedNetlinkTestUtil::kTestInterfaceEth);
