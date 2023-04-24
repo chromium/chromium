@@ -327,7 +327,9 @@ class BidderWorkletTest : public testing::Test {
     seller_signals_ = "[\"seller_signals\"]";
     browser_signal_render_url_ = GURL("https://render_url.test/");
     browser_signal_bid_ = 1;
+    browser_signal_bid_currency_ = absl::nullopt;
     browser_signal_highest_scoring_other_bid_ = 0.5;
+    browser_signal_highest_scoring_other_bid_currency_ = absl::nullopt;
     browser_signal_made_highest_scoring_other_bid_ = false;
     browser_signal_ad_cost_.reset();
     browser_signal_modeling_signals_.reset();
@@ -507,7 +509,8 @@ class BidderWorkletTest : public testing::Test {
         direct_from_seller_per_buyer_signals_,
         direct_from_seller_auction_signals_, seller_signals_,
         browser_signal_render_url_, browser_signal_bid_,
-        browser_signal_highest_scoring_other_bid_,
+        browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
+        browser_signal_highest_scoring_other_bid_currency_,
         browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
         browser_signal_modeling_signals_, browser_signal_join_count_,
         browser_signal_recency_, browser_signal_seller_origin_,
@@ -838,7 +841,10 @@ class BidderWorkletTest : public testing::Test {
   absl::optional<uint32_t> data_version_;
   GURL browser_signal_render_url_;
   double browser_signal_bid_;
+  absl::optional<blink::AdCurrency> browser_signal_bid_currency_;
   double browser_signal_highest_scoring_other_bid_;
+  absl::optional<blink::AdCurrency>
+      browser_signal_highest_scoring_other_bid_currency_;
   bool browser_signal_made_highest_scoring_other_bid_;
   absl::optional<double> browser_signal_ad_cost_;
   absl::optional<uint16_t> browser_signal_modeling_signals_;
@@ -3419,7 +3425,8 @@ TEST_F(BidderWorkletTest, WasmReportWin) {
       direct_from_seller_per_buyer_signals_,
       direct_from_seller_auction_signals_, seller_signals_,
       browser_signal_render_url_, browser_signal_bid_,
-      browser_signal_highest_scoring_other_bid_,
+      browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
+      browser_signal_highest_scoring_other_bid_currency_,
       browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
       browser_signal_modeling_signals_, browser_signal_join_count_,
       browser_signal_recency_, browser_signal_seller_origin_,
@@ -4680,7 +4687,8 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
       direct_from_seller_per_buyer_signals_,
       direct_from_seller_auction_signals_, seller_signals_,
       browser_signal_render_url_, browser_signal_bid_,
-      browser_signal_highest_scoring_other_bid_,
+      browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
+      browser_signal_highest_scoring_other_bid_currency_,
       browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
       browser_signal_modeling_signals_, browser_signal_join_count_,
       browser_signal_recency_, browser_signal_seller_origin_,
@@ -4727,7 +4735,9 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
           direct_from_seller_per_buyer_signals_,
           direct_from_seller_auction_signals_, seller_signals_,
           browser_signal_render_url_, browser_signal_bid_,
+          browser_signal_bid_currency_,
           browser_signal_highest_scoring_other_bid_,
+          browser_signal_highest_scoring_other_bid_currency_,
           browser_signal_made_highest_scoring_other_bid_,
           browser_signal_ad_cost_, browser_signal_modeling_signals_,
           browser_signal_join_count_, browser_signal_recency_,
@@ -4776,7 +4786,8 @@ TEST_F(BidderWorkletTest, ReportWinParallelLoadFails) {
         direct_from_seller_per_buyer_signals_,
         direct_from_seller_auction_signals_, seller_signals_,
         browser_signal_render_url_, browser_signal_bid_,
-        browser_signal_highest_scoring_other_bid_,
+        browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
+        browser_signal_highest_scoring_other_bid_currency_,
         browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
         browser_signal_modeling_signals_, browser_signal_join_count_,
         browser_signal_recency_, browser_signal_seller_origin_,
@@ -4978,6 +4989,36 @@ TEST_F(BidderWorkletTest, ReportWinBrowserSignalHighestScoringOtherBid) {
       GURL("https://jumboshrimp.test"));
 }
 
+TEST_F(BidderWorkletTest, ReportWinBrowserSignalBidCurrency) {
+  browser_signal_bid_currency_ = absl::nullopt;
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(if (browserSignals.bidCurrency === "???")
+        sendReportTo("https://jumboshrimp.test"))",
+      GURL("https://jumboshrimp.test"));
+
+  browser_signal_bid_currency_ = blink::AdCurrency::From("USD");
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(if (browserSignals.bidCurrency === "USD")
+        sendReportTo("https://jumboshrimp.test"))",
+      GURL("https://jumboshrimp.test"));
+}
+
+TEST_F(BidderWorkletTest,
+       ReportWinBrowserSignalHighestScoringOtherBidCurrency) {
+  browser_signal_highest_scoring_other_bid_currency_ =
+      blink::AdCurrency::From("CAD");
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(if (browserSignals.highestScoringOtherBidCurrency === "CAD")
+        sendReportTo("https://jumboshrimp.test"))",
+      GURL("https://jumboshrimp.test"));
+
+  browser_signal_highest_scoring_other_bid_currency_ = absl::nullopt;
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(if (browserSignals.highestScoringOtherBidCurrency === "???")
+        sendReportTo("https://jumboshrimp.test"))",
+      GURL("https://jumboshrimp.test"));
+}
+
 TEST_F(BidderWorkletTest, ReportWinBrowserSignalIsHighestScoringOtherBidMe) {
   browser_signal_made_highest_scoring_other_bid_ = true;
   RunReportWinWithFunctionBodyExpectingResult(
@@ -5085,7 +5126,8 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
         direct_from_seller_per_buyer_signals_,
         direct_from_seller_auction_signals_, seller_signals_,
         browser_signal_render_url_, browser_signal_bid_,
-        browser_signal_highest_scoring_other_bid_,
+        browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
+        browser_signal_highest_scoring_other_bid_currency_,
         browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
         browser_signal_modeling_signals_, browser_signal_join_count_,
         browser_signal_recency_, browser_signal_seller_origin_,
@@ -5843,7 +5885,8 @@ TEST_F(BidderWorkletTest, CancelationDtor) {
       direct_from_seller_per_buyer_signals_,
       direct_from_seller_auction_signals_, seller_signals_,
       browser_signal_render_url_, browser_signal_bid_,
-      browser_signal_highest_scoring_other_bid_,
+      browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
+      browser_signal_highest_scoring_other_bid_currency_,
       browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
       browser_signal_modeling_signals_, browser_signal_join_count_,
       browser_signal_recency_, browser_signal_seller_origin_,

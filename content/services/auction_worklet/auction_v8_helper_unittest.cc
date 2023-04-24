@@ -94,7 +94,10 @@ class DebugConnector : public auction_worklet::mojom::BidderWorklet {
       const std::string& seller_signals_json,
       const GURL& browser_signal_render_url,
       double browser_signal_bid,
+      const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,
       double browser_signal_highest_scoring_other_bid,
+      const absl::optional<blink::AdCurrency>&
+          browser_signal_highest_scoring_other_bid_currency,
       bool browser_signal_made_highest_scoring_other_bid,
       absl::optional<double> browser_signal_ad_cost,
       absl::optional<uint16_t> browser_signal_modeling_signals,

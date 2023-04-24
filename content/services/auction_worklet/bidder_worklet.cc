@@ -51,6 +51,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -316,7 +317,10 @@ void BidderWorklet::ReportWin(
     const std::string& seller_signals_json,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
+    const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,
     double browser_signal_highest_scoring_other_bid,
+    const absl::optional<blink::AdCurrency>&
+        browser_signal_highest_scoring_other_bid_currency,
     bool browser_signal_made_highest_scoring_other_bid,
     absl::optional<double> browser_signal_ad_cost,
     absl::optional<uint16_t> browser_signal_modeling_signals,
@@ -338,8 +342,11 @@ void BidderWorklet::ReportWin(
   report_win_task->seller_signals_json = seller_signals_json;
   report_win_task->browser_signal_render_url = browser_signal_render_url;
   report_win_task->browser_signal_bid = browser_signal_bid;
+  report_win_task->browser_signal_bid_currency = browser_signal_bid_currency;
   report_win_task->browser_signal_highest_scoring_other_bid =
       browser_signal_highest_scoring_other_bid;
+  report_win_task->browser_signal_highest_scoring_other_bid_currency =
+      browser_signal_highest_scoring_other_bid_currency;
   report_win_task->browser_signal_made_highest_scoring_other_bid =
       browser_signal_made_highest_scoring_other_bid;
   report_win_task->browser_signal_ad_cost = browser_signal_ad_cost;
@@ -515,7 +522,10 @@ void BidderWorklet::V8State::ReportWin(
     const std::string& seller_signals_json,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
+    const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,
     double browser_signal_highest_scoring_other_bid,
+    const absl::optional<blink::AdCurrency>&
+        browser_signal_highest_scoring_other_bid_currency,
     bool browser_signal_made_highest_scoring_other_bid,
     const absl::optional<double>& browser_signal_ad_cost,
     const absl::optional<uint16_t>& browser_signal_modeling_signals,
@@ -565,6 +575,9 @@ void BidderWorklet::V8State::ReportWin(
       !browser_signals_dict.Set("renderUrl",
                                 browser_signal_render_url.spec()) ||
       !browser_signals_dict.Set("bid", browser_signal_bid) ||
+      !browser_signals_dict.Set(
+          "bidCurrency",
+          blink::PrintableAdCurrency(browser_signal_bid_currency)) ||
       (browser_signal_ad_cost.has_value() &&
        !browser_signals_dict.Set("adCost", *browser_signal_ad_cost)) ||
       (browser_signal_modeling_signals.has_value() &&
@@ -577,6 +590,10 @@ void BidderWorklet::V8State::ReportWin(
                                 static_cast<double>(browser_signal_recency)) ||
       !browser_signals_dict.Set("highestScoringOtherBid",
                                 browser_signal_highest_scoring_other_bid) ||
+      !browser_signals_dict.Set(
+          "highestScoringOtherBidCurrency",
+          blink::PrintableAdCurrency(
+              browser_signal_highest_scoring_other_bid_currency)) ||
       !browser_signals_dict.Set(
           "madeHighestScoringOtherBid",
           browser_signal_made_highest_scoring_other_bid) ||
@@ -1683,7 +1700,9 @@ void BidderWorklet::RunReportWinIfReady(ReportWinTaskList::iterator task) {
           std::move(task->seller_signals_json),
           std::move(task->browser_signal_render_url),
           std::move(task->browser_signal_bid),
+          std::move(task->browser_signal_bid_currency),
           std::move(task->browser_signal_highest_scoring_other_bid),
+          std::move(task->browser_signal_highest_scoring_other_bid_currency),
           std::move(task->browser_signal_made_highest_scoring_other_bid),
           std::move(task->browser_signal_ad_cost),
           std::move(task->browser_signal_modeling_signals),

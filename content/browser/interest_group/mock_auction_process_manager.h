@@ -84,7 +84,10 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
       const std::string& seller_signals_json,
       const GURL& browser_signal_render_url,
       double browser_signal_bid,
+      const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,
       double browser_signal_highest_scoring_other_bid,
+      const absl::optional<blink::AdCurrency>&
+          browser_signal_highest_scoring_other_bid_currency,
       bool browser_signal_made_highest_scoring_other_bid,
       absl::optional<double> browser_signal_ad_cost,
       absl::optional<uint16_t> browser_signal_modeling_signals,
@@ -243,8 +246,11 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
       const url::Origin& browser_signal_interest_group_owner,
       const GURL& browser_signal_render_url,
       double browser_signal_bid,
+      const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,
       double browser_signal_desirability,
       double browser_signal_highest_scoring_other_bid,
+      const absl::optional<blink::AdCurrency>&
+          browser_signal_highest_scoring_other_bid_currency,
       auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
           browser_signals_component_auction_report_result_params,
       uint32_t browser_signal_data_version,

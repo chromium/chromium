@@ -429,10 +429,22 @@ interface BidderWorklet {
   //  BidderWorklet's generateBid() method, invoked as part of BidderWorklet
   //  creation.
   //
-  // `browser_signal_bid` The numeric value of the winning bid.
+  // `browser_signal_bid` The numeric value of the winning bid. This is always
+  //  in the bidder's own currency.
+  //
+  // `browser_signal_bid_currency` Currency for the winning bid.
+  //  The client should redact the currency if it's not guaranteed by the
+  //  auction configuration to avoid leaking information.
   //
   // `browser_signal_highest_scoring_other_bid` The numeric value of the bid
-  //  that got the second highest score.
+  //  that got the second highest score, or 0 if it's not available, either
+  //  because there is no such thing or because sellerCurrency is enabled, and
+  //  the relevant bid was in a different currency without scoreAd providing
+  //  a conversion for it.
+  //
+  // `browser_signal_highest_scoring_other_bid_currency` The currency associated
+  //  with `browser_signal_highest_scoring_other_bid`. If a concrete value is
+  //  provided, it's always the sellerCurrency for the auction.
   //
   // `browser_signal_made_highest_scoring_other_bid` True only if owner of
   //  the interest group that ReportWin() is being invoked on behalf of made
@@ -486,7 +498,9 @@ interface BidderWorklet {
       string seller_signals_json,
       url.mojom.Url browser_signal_render_url,
       double browser_signal_bid,
+      blink.mojom.AdCurrency? browser_signal_bid_currency,
       double browser_signal_highest_scoring_other_bid,
+      blink.mojom.AdCurrency? browser_signal_highest_scoring_other_bid_currency,
       bool browser_signal_made_highest_scoring_other_bid,
       double? browser_signal_ad_cost,
       uint16? browser_signal_modeling_signals,

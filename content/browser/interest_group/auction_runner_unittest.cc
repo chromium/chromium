@@ -119,12 +119,15 @@ const char kBidder2SignalsJson[] =
     R"({"keys": {"l1":"a", "l2": "b", "extra": "c"}})";
 
 const char kPostAuctionSignalsPlaceholder[] =
-    "?winningBid=${winningBid}&madeWinningBid=${madeWinningBid}&"
+    "?winningBid=${winningBid}&"
+    "winningBidCurrency=${winningBidCurrency}&madeWinningBid=${madeWinningBid}&"
     "highestScoringOtherBid=${highestScoringOtherBid}&"
+    "highestScoringOtherBidCurrency=${highestScoringOtherBidCurrency}&"
     "madeHighestScoringOtherBid=${madeHighestScoringOtherBid}";
 
 const char kTopLevelPostAuctionSignalsPlaceholder[] =
     "topLevelWinningBid=${topLevelWinningBid}&"
+    "topLevelWinningBidCurrency=${topLevelWinningBidCurrency}&"
     "topLevelMadeWinningBid=${topLevelMadeWinningBid}";
 
 const auction_worklet::mojom::PrivateAggregationRequestPtr
@@ -374,8 +377,10 @@ std::string MakeBidScript(const url::Origin& seller,
         throw new Error("wrong interestGroupOwner");
       if (sellerSignals.renderUrl !== renderUrl)
         throw new Error("wrong renderUrl");
-      if (sellerSignals.bid !== bid)
-        throw new Error("wrong bid");
+      if (sellerSignals.bid !== bid) {
+        throw new Error("wrong bid, bidder:" + bid +
+                        " seller:" + sellerSignals.bid);
+      }
       // `sellerSignals` is the `browserSignals` for the seller that's
       // associated with the bid. If it's the top-level seller, the seller's
       // `browserSignals` should have no `componentSeller`, since the bid
@@ -425,8 +430,12 @@ std::string MakeBidScript(const url::Origin& seller,
       if (reportPostAuctionSignals) {
         sendReportUrl +=
             '?highestScoringOtherBid=' + browserSignals.highestScoringOtherBid +
+            '&highestScoringOtherBidCurrency=' +
+            browserSignals.highestScoringOtherBidCurrency +
             '&madeHighestScoringOtherBid=' +
-            browserSignals.madeHighestScoringOtherBid + '&bid=';
+            browserSignals.madeHighestScoringOtherBid +
+            '&bidCurrency=' + browserSignals.bidCurrency +
+            '&bid=';
       }
       sendReportTo(sendReportUrl + bid);
       registerAdBeacon({
@@ -460,8 +469,11 @@ constexpr char kSimpleReportWin[] = R"(
     sendReportTo(
         "https://buyer-reporting.example.com/" +
         '?highestScoringOtherBid=' +  browserSignals.highestScoringOtherBid +
+        '&highestScoringOtherBidCurrency=' +
+        browserSignals.highestScoringOtherBidCurrency +
         '&madeHighestScoringOtherBid=' +
         browserSignals.madeHighestScoringOtherBid +
+        '&bidCurrency=' + browserSignals.bidCurrency +
         '&bid=' + browserSignals.bid);
   }
 )";
@@ -664,7 +676,9 @@ std::string MakeDecisionScript(
 
       adMetadata.fromComponentAuction = true;
 
-      return {desirability: computeScore(bid),
+      let convertedBid = auctionConfig.sellerCurrency ? bid * 10 : undefined;
+      return {desirability: computeScore(convertedBid ? convertedBid : bid),
+              incomingBidInSellerCurrency: convertedBid,
               // Only allow a component auction when the passed in ad is from
               // one.
               allowComponentAuction:
@@ -743,7 +757,11 @@ std::string MakeDecisionScript(
         });
         if (reportPostAuctionSignals) {
           sendReportUrl += "?highestScoringOtherBid=" +
-              browserSignals.highestScoringOtherBid + "&bid=";
+              browserSignals.highestScoringOtherBid +
+              '&highestScoringOtherBidCurrency=' +
+              browserSignals.highestScoringOtherBidCurrency +
+              "&bidCurrency=" + browserSignals.bidCurrency +
+              "&bid=";
         }
         sendReportTo(sendReportUrl + browserSignals.bid);
       }
@@ -752,6 +770,11 @@ std::string MakeDecisionScript(
       // script will not be reported.
       privateAggregation.reportContributionForEvent(
           'click', {bucket: 70n, value: 80});
+
+      // Convert the bid back into bidder currency if we're covering that.
+      if (auctionConfig.sellerCurrency) {
+        browserSignals.bid /= 10.0;
+      }
 
       return browserSignals;
     }
@@ -813,6 +836,10 @@ const char kBasicReportResult[] = R"(
     registerAdBeacon({
       "click": "https://reporting.example.com/" + 2*browserSignals.bid,
     });
+    // Convert the bid back into bidder currency if we're covering that.
+    if (auctionConfig.sellerCurrency) {
+      browserSignals.bid /= 10.0;
+    }
     return browserSignals;
   }
 )";
@@ -824,7 +851,8 @@ std::string MakeAuctionScriptReject2(
       privateAggregation.sendHistogramReport({bucket: 5n, value: 6});
       if (bid === 2)
         return {desirability: -1, rejectReason: '%s'};
-      return bid + 1;
+      let convertedBid = auctionConfig.sellerCurrency ? bid * 10 : undefined;
+      return {desirability: bid + 1, incomingBidInSellerCurrency: convertedBid};
     }
   )";
   return base::StringPrintf(kAuctionScriptRejects2, reject_reason.c_str()) +
@@ -883,15 +911,19 @@ std::string MakeBidScriptSupportsTie() {
           debugLossReportUrl + postAuctionSignalsPlaceholder + '&bid=' + bid);
       forDebuggingOnly.reportAdAuctionWin(
           debugWinReportUrl + postAuctionSignalsPlaceholder + '&bid=' + bid);
-      return {ad: [], bid: bid, render: interestGroup.ads[0].renderUrl};
+      return {ad: [], bid: bid, bidCurrency: 'USD',
+              render: interestGroup.ads[0].renderUrl};
     }
     function reportWin(
         auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
       sendReportTo(
           'https://buyer-reporting.example.com/?highestScoringOtherBid=' +
           browserSignals.highestScoringOtherBid +
+          '&highestScoringOtherBidCurrency=' +
+          browserSignals.highestScoringOtherBidCurrency +
           '&madeHighestScoringOtherBid=' +
           browserSignals.madeHighestScoringOtherBid +
+          '&bidCurrency=' + browserSignals.bidCurrency +
           '&bid=' + browserSignals.bid);
     }
   )";
@@ -911,13 +943,18 @@ std::string MakeAuctionScriptSupportsTie() {
           debugLossReportUrl + postAuctionSignalsPlaceholder + "&bid=" + bid);
       forDebuggingOnly.reportAdAuctionWin(
           debugWinReportUrl + postAuctionSignalsPlaceholder + "&bid=" + bid);
-      return bid = (bid == 3 || bid == 4) ? 3 : 1;
+      let score = (bid == 3 || bid == 4) ? 3 : 1;
+      let convertedBid = auctionConfig.sellerCurrency ? bid * 10 : undefined;
+      return {desirability: score, incomingBidInSellerCurrency: convertedBid};
     }
     function reportResult(auctionConfig, browserSignals) {
       sendReportTo(
           "https://reporting.example.com/?highestScoringOtherBid=" +
-          browserSignals.highestScoringOtherBid + "&bid=" +
-          browserSignals.bid);
+          browserSignals.highestScoringOtherBid +
+          '&highestScoringOtherBidCurrency=' +
+          browserSignals.highestScoringOtherBidCurrency +
+          "&bidCurrency=" + browserSignals.bidCurrency +
+          "&bid=" + browserSignals.bid);
     }
   )";
   return base::StringPrintf(
@@ -961,15 +998,20 @@ std::string MakeBiddingSignalsWithPerInterestGroupData(
 // signals included in the URL
 const GURL ReportWinUrl(
     double bid,
+    const absl::optional<blink::AdCurrency>& bid_currency,
     double highest_scoring_other_bid,
+    const absl::optional<blink::AdCurrency>& highest_scoring_other_bid_currency,
     bool made_highest_scoring_other_bid,
     const std::string& url = "https://buyer-reporting.example.com/") {
   // Only keeps integer part of bid values for simplicity for now.
   return GURL(base::StringPrintf(
       "%s"
-      "?highestScoringOtherBid=%.0f&madeHighestScoringOtherBid=%s&bid=%.0f",
+      "?highestScoringOtherBid=%.0f&highestScoringOtherBidCurrency=%s"
+      "&madeHighestScoringOtherBid=%s&bidCurrency=%s&bid=%.0f",
       url.c_str(), highest_scoring_other_bid,
-      made_highest_scoring_other_bid ? "true" : "false", bid));
+      blink::PrintableAdCurrency(highest_scoring_other_bid_currency).c_str(),
+      made_highest_scoring_other_bid ? "true" : "false",
+      blink::PrintableAdCurrency(bid_currency).c_str(), bid));
 }
 
 // Returns a report URL with given parameters for forDebuggingOnly win/loss
@@ -985,11 +1027,15 @@ const GURL DebugReportUrl(
   std::string report_url_string = base::StringPrintf(
       "%s"
       // Post auction signals
-      "?winningBid=%.0f&madeWinningBid=%s&highestScoringOtherBid=%.0f&"
-      "madeHighestScoringOtherBid=%s",
+      "?winningBid=%.0f&winningBidCurrency=%s&"
+      "madeWinningBid=%s&highestScoringOtherBid=%.0f&"
+      "highestScoringOtherBidCurrency=%s&madeHighestScoringOtherBid=%s",
       url.c_str(), signals.winning_bid,
+      blink::PrintableAdCurrency(signals.winning_bid_currency).c_str(),
       signals.made_winning_bid ? "true" : "false",
       signals.highest_scoring_other_bid,
+      blink::PrintableAdCurrency(signals.highest_scoring_other_bid_currency)
+          .c_str(),
       signals.made_highest_scoring_other_bid ? "true" : "false");
   if (reject_reason.has_value()) {
     report_url_string.append(
@@ -1019,17 +1065,24 @@ const GURL ComponentSellerDebugReportUrl(
   return GURL(base::StringPrintf(
       "%s"
       // Post auction signals.
-      "?winningBid=%.0f&madeWinningBid=%s&highestScoringOtherBid=%.0f&"
-      "madeHighestScoringOtherBid=%s"
+      "?winningBid=%.0f&winningBidCurrency=%s&"
+      "madeWinningBid=%s&highestScoringOtherBid=%.0f&"
+      "highestScoringOtherBidCurrency=%s&madeHighestScoringOtherBid=%s"
       // Top level post auction signals.
-      "&topLevelWinningBid=%.0f&topLevelMadeWinningBid=%s"
+      "&topLevelWinningBid=%.0f&topLevelWinningBidCurrency=%s&"
+      "topLevelMadeWinningBid=%s"
       // Bid value.
       "&bid=%.0f",
       url.c_str(), signals.winning_bid,
+      blink::PrintableAdCurrency(signals.winning_bid_currency).c_str(),
       signals.made_winning_bid ? "true" : "false",
       signals.highest_scoring_other_bid,
+      blink::PrintableAdCurrency(signals.highest_scoring_other_bid_currency)
+          .c_str(),
       signals.made_highest_scoring_other_bid ? "true" : "false",
       top_level_signals.winning_bid,
+      blink::PrintableAdCurrency(top_level_signals.winning_bid_currency)
+          .c_str(),
       top_level_signals.made_winning_bid ? "true" : "false", bid));
 }
 
@@ -1390,7 +1443,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       return blink::AuctionConfig::MaybePromiseBuyerCurrencies::FromPromise();
     } else {
       blink::AuctionConfig::BuyerCurrencies buyer_currencies;
-      buyer_currencies.all_buyers_currency = blink::AdCurrency::From("USD");
+      if (specify_all_buyer_currency_) {
+        buyer_currencies.all_buyers_currency = blink::AdCurrency::From("USD");
+      }
       return blink::AuctionConfig::MaybePromiseBuyerCurrencies::FromValue(
           std::move(buyer_currencies));
     }
@@ -1421,6 +1476,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
         MakeBuyerCumulativeTimeouts(use_promise_for_buyer_cumulative_timeouts_);
     auction_config.non_shared_params.buyer_currencies =
         MakeBuyerCurrencies(use_promise_for_buyer_currencies_);
+    auction_config.non_shared_params.seller_currency = seller_currency_;
     auction_config.non_shared_params.auction_signals = MakeAuctionSignals(
         use_promise_for_auction_signals_, auction_config.seller);
 
@@ -1836,8 +1892,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                 /*reject_reason=*/
                 auction_worklet::mojom::RejectReason::kNotAvailable,
                 auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-                /*scoring_signals_data_version=*/0,
-                /*has_scoring_signals_data_version=*/false,
+                /*bid_in_seller_currency=*/absl::nullopt,
+                /*scoring_signals_data_version=*/absl::nullopt,
                 /*debug_loss_report_url=*/absl::nullopt,
                 /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
                 /*errors=*/{});
@@ -2391,6 +2447,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   bool use_promise_for_buyer_timeouts_ = false;
   bool use_promise_for_buyer_cumulative_timeouts_ = false;
   bool use_promise_for_buyer_currencies_ = false;
+  bool specify_all_buyer_currency_ = true;
+  absl::optional<blink::AdCurrency> seller_currency_;
 
   // Unlike others, this is only test with promises at this level.
   bool pass_promise_for_direct_from_seller_signals_ = false;
@@ -2731,8 +2789,14 @@ TEST_F(AuctionRunnerTest, OneInterestGroup) {
   EXPECT_THAT(
       result_.report_urls,
       testing::UnorderedElementsAre(
-          GURL("https://reporting.example.com/?highestScoringOtherBid=0&bid=1"),
-          ReportWinUrl(/*bid=*/1, /*highest_scoring_other_bid=*/0,
+          GURL("https://reporting.example.com/"
+               "?highestScoringOtherBid=0&"
+               "highestScoringOtherBidCurrency=???&"
+               "bidCurrency=???&bid=1"),
+          ReportWinUrl(/*bid=*/1,
+                       /*bid_currency=*/blink::AdCurrency::From("USD"),
+                       /*highest_scoring_other_bid=*/0,
+                       /*highest_scoring_other_bid_currency=*/absl::nullopt,
                        /*made_highest_scoring_other_bid=*/false)));
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key));
@@ -2882,8 +2946,14 @@ TEST_F(AuctionRunnerTest, Basic) {
   EXPECT_THAT(
       result_.report_urls,
       testing::UnorderedElementsAre(
-          GURL("https://reporting.example.com/?highestScoringOtherBid=1&bid=2"),
-          ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/1,
+          GURL("https://reporting.example.com/"
+               "?highestScoringOtherBid=1&"
+               "highestScoringOtherBidCurrency=???&"
+               "bidCurrency=???&bid=2"),
+          ReportWinUrl(/*bid=*/2,
+                       /*bid_currency=*/blink::AdCurrency::From("USD"),
+                       /*highest_scoring_other_bid=*/1,
+                       /*highest_scoring_other_bid_currency=*/absl::nullopt,
                        /*made_highest_scoring_other_bid=*/false)));
   EXPECT_THAT(
       result_.ad_beacon_map,
@@ -2996,6 +3066,56 @@ TEST_F(AuctionRunnerTest, BasicCurrencyCheck) {
               testing::ElementsAre("https://anotheradthing.com/bids.js "
                                    "generateBid() bidCurrency mismatch;"
                                    " returned 'CAD', expected 'USD'."));
+}
+
+TEST_F(AuctionRunnerTest, BasicCurrencyRedact) {
+  // Make sure that if buyer currency isn't specified in AuctionConfig it's
+  // redacted in reportWin()
+  specify_all_buyer_currency_ = false;
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
+                    kBidder1, kBidder1Name,
+                    /*has_signals=*/true, "k1", "a",
+                    /*report_post_auction_signals=*/true));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
+                    kBidder2, kBidder2Name,
+                    /*has_signals=*/true, "l2", "b",
+                    /*report_post_auction_signals=*/true));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      MakeAuctionScript(/*report_post_auction_signals=*/true));
+  auction_worklet::AddBidderJsonResponse(
+      &url_loader_factory_,
+      GURL(kBidder1TrustedSignalsUrl.spec() +
+           "?hostname=publisher1.com&keys=k1,k2"
+           "&interestGroupNames=Ad+Platform"),
+      kBidder1SignalsJson);
+  auction_worklet::AddBidderJsonResponse(
+      &url_loader_factory_,
+      GURL(kBidder2TrustedSignalsUrl.spec() +
+           "?hostname=publisher1.com&keys=l1,l2"
+           "&interestGroupNames=Another+Ad+Thing"),
+      kBidder2SignalsJson);
+
+  RunStandardAuction();
+  EXPECT_FALSE(result_.manually_aborted);
+  EXPECT_EQ(kBidder2Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+  EXPECT_THAT(result_.report_urls,
+              testing::UnorderedElementsAre(
+                  GURL("https://reporting.example.com/"
+                       "?highestScoringOtherBid=1&"
+                       "highestScoringOtherBidCurrency=???&"
+                       "bidCurrency=???&bid=2"),
+                  ReportWinUrl(
+                      /*bid=*/2, /*bid_currency=*/absl::nullopt,
+                      /*highest_scoring_other_bid=*/1,
+                      /*highest_scoring_other_bid_currency=*/absl::nullopt,
+                      /*made_highest_scoring_other_bid=*/false)));
 }
 
 TEST_F(AuctionRunnerTest, BasicDebug) {
@@ -3358,10 +3478,18 @@ TEST_F(AuctionRunnerTest, ComponentAuction) {
   EXPECT_THAT(
       result_.report_urls,
       testing::UnorderedElementsAre(
-          GURL("https://reporting.example.com/?highestScoringOtherBid=1&bid=2"),
-          GURL(
-              "https://component2-report.test/?highestScoringOtherBid=0&bid=2"),
-          ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/0,
+          GURL("https://reporting.example.com/"
+               "?highestScoringOtherBid=1&"
+               "highestScoringOtherBidCurrency=???&"
+               "bidCurrency=???&bid=2"),
+          GURL("https://component2-report.test/"
+               "?highestScoringOtherBid=0&"
+               "highestScoringOtherBidCurrency=???&"
+               "bidCurrency=???&bid=2"),
+          ReportWinUrl(/*bid=*/2,
+                       /*bid_currency=*/blink::AdCurrency::From("USD"),
+                       /*highest_scoring_other_bid=*/0,
+                       /*highest_scoring_other_bid_currency=*/absl::nullopt,
                        /*made_highest_scoring_other_bid=*/false)));
   EXPECT_THAT(
       result_.ad_beacon_map,
@@ -3689,10 +3817,18 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneComponentTwoBidders) {
   EXPECT_THAT(
       result_.report_urls,
       testing::UnorderedElementsAre(
-          GURL("https://reporting.example.com/?highestScoringOtherBid=0&bid=1"),
-          GURL(
-              "https://component1-report.test/?highestScoringOtherBid=2&bid=1"),
-          ReportWinUrl(/*bid=*/1, /*highest_scoring_other_bid=*/2,
+          GURL("https://reporting.example.com/"
+               "?highestScoringOtherBid=0&"
+               "highestScoringOtherBidCurrency=???&"
+               "bidCurrency=???&bid=1"),
+          GURL("https://component1-report.test/"
+               "?highestScoringOtherBid=2&"
+               "highestScoringOtherBidCurrency=???&"
+               "bidCurrency=???&bid=1"),
+          ReportWinUrl(/*bid=*/1,
+                       /*bid_currency=*/blink::AdCurrency::From("USD"),
+                       /*highest_scoring_other_bid=*/2,
+                       /*highest_scoring_other_bid_currency=*/absl::nullopt,
                        /*made_highest_scoring_other_bid=*/false)));
   EXPECT_THAT(
       result_.ad_beacon_map,
@@ -3889,11 +4025,12 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
     }
   )";
 
-  // Component seller script that modifies the bid to 3 USD.
+  // Component seller script that modifies the bid to 3 USD; also notes that
+  // it interpreted the incoming bid as 20 in sellerCurrency.
   const std::string kComponentSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
       return {desirability: 10, allowComponentAuction: true, bid: 3,
-              bidCurrency: 'USD'};
+              bidCurrency: 'USD', incomingBidInSellerCurrency: 20};
     }
 
     function reportResult(auctionConfig, browserSignals) {
@@ -3951,11 +4088,12 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
       EXPECT_THAT(result_.errors, testing::ElementsAre());
       EXPECT_EQ(GURL("https://ad1.com"), result_.ad_descriptor->url);
       // The reporting URLs contain the bids - the top-level seller report
-      // should see the modified bid, the other worklets see the original bid.
+      // should see the modified bid, the other worklets see the original bid
+      // (modulo currency conversion).
       EXPECT_THAT(result_.report_urls,
                   testing::UnorderedElementsAre(
                       GURL("https://buyer-reporting.example.com/2"),
-                      GURL("https://component.seller1.test/2_3"),
+                      GURL("https://component.seller1.test/20_3"),
                       GURL("https://adstuff.publisher1.com/3")));
       EXPECT_THAT(
           result_.ad_beacon_map,
@@ -3967,7 +4105,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
               testing::Pair(
                   ReportingDestination::kComponentSeller,
                   testing::ElementsAre(testing::Pair(
-                      "click", GURL("https://component.seller1.test/4_3")))),
+                      "click", GURL("https://component.seller1.test/40_3")))),
               testing::Pair(
                   ReportingDestination::kBuyer,
                   testing::ElementsAre(testing::Pair(
@@ -7513,8 +7651,8 @@ TEST_F(AuctionRunnerTest, LateSellerWorkletSendPendingSignalsRequestsCalled) {
           /*reject_reason=*/
           auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*scoring_signals_data_version=*/0,
-          /*has_scoring_signals_data_version=*/false,
+          /*bid_in_seller_currency=*/absl::nullopt,
+          /*scoring_signals_data_version=*/absl::nullopt,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
           /*errors=*/{});
@@ -7529,8 +7667,8 @@ TEST_F(AuctionRunnerTest, LateSellerWorkletSendPendingSignalsRequestsCalled) {
           /*reject_reason=*/
           auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*scoring_signals_data_version=*/0,
-          /*has_scoring_signals_data_version=*/false,
+          /*bid_in_seller_currency=*/absl::nullopt,
+          /*scoring_signals_data_version=*/absl::nullopt,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
           /*errors=*/{});
@@ -7782,8 +7920,8 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
             /*reject_reason=*/
             auction_worklet::mojom::RejectReason::kNotAvailable,
             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-            /*scoring_signals_data_version=*/0,
-            /*has_scoring_signals_data_version=*/false,
+            /*bid_in_seller_currency=*/absl::nullopt,
+            /*scoring_signals_data_version=*/absl::nullopt,
             /*debug_loss_report_url=*/absl::nullopt,
             /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
             /*errors=*/{});
@@ -8016,8 +8154,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
               /*bid=*/0,
               /*bid_currency=*/absl::nullopt,
               /*has_bid=*/false),
-          /*scoring_signals_data_version=*/0,
-          /*has_scoring_signals_data_version=*/false,
+          /*bid_in_seller_currency=*/absl::nullopt,
+          /*scoring_signals_data_version=*/absl::nullopt,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
           /*errors=*/{});
@@ -8036,8 +8174,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
           /*reject_reason=*/
           auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*scoring_signals_data_version=*/0,
-          /*has_scoring_signals_data_version=*/false,
+          /*bid_in_seller_currency=*/absl::nullopt,
+          /*scoring_signals_data_version=*/absl::nullopt,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
           /*errors=*/{});
@@ -8227,8 +8365,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellerBadBidParams) {
                             /*reject_reason=*/
                             auction_worklet::mojom::RejectReason::kNotAvailable,
                             test_case.params.Clone(),
-                            /*scoring_signals_data_version=*/0,
-                            /*has_scoring_signals_data_version=*/false,
+                            /*bid_in_seller_currency=*/absl::nullopt,
+                            /*scoring_signals_data_version=*/absl::nullopt,
                             /*debug_loss_report_url=*/absl::nullopt,
                             /*debug_win_report_url=*/absl::nullopt,
                             /*pa_requests=*/{},
@@ -8297,8 +8435,8 @@ TEST_F(AuctionRunnerTest, TopLevelSellerBadBidParams) {
               /*bid=*/0,
               /*bid_currency=*/absl::nullopt,
               /*has_bid=*/false),
-          /*scoring_signals_data_version=*/0,
-          /*has_scoring_signals_data_version=*/false,
+          /*bid_in_seller_currency=*/absl::nullopt,
+          /*scoring_signals_data_version=*/absl::nullopt,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
           /*errors=*/{});
@@ -8373,8 +8511,8 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
               /*reject_reason=*/
               auction_worklet::mojom::RejectReason::kNotAvailable,
               auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-              /*scoring_signals_data_version=*/0,
-              /*has_scoring_signals_data_version=*/false,
+              /*bid_in_seller_currency=*/absl::nullopt,
+              /*scoring_signals_data_version=*/absl::nullopt,
               /*debug_loss_report_url=*/absl::nullopt,
               /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
               /*errors=*/{});
@@ -8485,8 +8623,8 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
               /*reject_reason=*/
               auction_worklet::mojom::RejectReason::kNotAvailable,
               auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-              /*scoring_signals_data_version=*/0,
-              /*has_scoring_signals_data_version=*/false,
+              /*bid_in_seller_currency=*/absl::nullopt,
+              /*scoring_signals_data_version=*/absl::nullopt,
               /*debug_loss_report_url=*/absl::nullopt,
               /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
               /*errors=*/{});
@@ -8814,6 +8952,70 @@ TEST_F(AuctionRunnerTest, BadBid) {
   }
 }
 
+// Testcase for mojo errors in ScoreAd result's bid_in_seller_currency; note
+// that problems with ComponentAuctionModifiedBidParams are covered in
+// *BadBidParams* tests and those with debug URLs in
+// ForDebuggingOnlyReportingSellerBadUrls.
+TEST_F(AuctionRunnerTest, BadScoreAdBidInSellerCurrency) {
+  const struct TestCase {
+    const char* test_name;
+    absl::optional<blink::AdCurrency> seller_currency;
+    absl::optional<double> bid_in_seller_currency;
+  } kTestCases[] = {
+      {
+          "Should not specify when no seller_currency",
+          absl::nullopt,
+          5,
+      },
+      {
+          "Must be a valid bid",
+          blink::AdCurrency::From("CAD"),
+          -5,
+      },
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.test_name);
+    seller_currency_ = test_case.seller_currency;
+
+    StartStandardAuctionWithMockService();
+    auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+    ASSERT_TRUE(seller_worklet);
+    auto bidder1_worklet =
+        mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+    ASSERT_TRUE(bidder1_worklet);
+    auto bidder2_worklet =
+        mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+    ASSERT_TRUE(bidder2_worklet);
+
+    // Only Bidder1 bids, to keep things simple.
+    bidder1_worklet->InvokeGenerateBidCallback(
+        /*bid=*/5, /*bid_currency=*/absl::nullopt,
+        blink::AdDescriptor(GURL("https://ad1.com/")));
+    bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/absl::nullopt);
+
+    auto score_ad_params = seller_worklet->WaitForScoreAd();
+    EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+    EXPECT_EQ(5, score_ad_params.bid);
+    mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+        std::move(score_ad_params.score_ad_client))
+        ->OnScoreAdComplete(
+            /*score=*/10,
+            /*reject_reason=*/
+            auction_worklet::mojom::RejectReason::kNotAvailable,
+            auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+            /*bid_in_seller_currency=*/test_case.bid_in_seller_currency,
+            /*scoring_signals_data_version=*/absl::nullopt,
+            /*debug_loss_report_url=*/absl::nullopt,
+            /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+            /*errors=*/{});
+    auction_run_loop_->Run();
+    EXPECT_EQ("Invalid bid_in_seller_currency", TakeBadMessage());
+
+    // No bidder won.
+    EXPECT_FALSE(result_.winning_group_id);
+  }
+}
+
 // Check that BidderWorklets that don't make a bid are destroyed immediately.
 TEST_F(AuctionRunnerTest, DestroyBidderWorkletWithoutBid) {
   StartStandardAuctionWithMockService();
@@ -8848,8 +9050,8 @@ TEST_F(AuctionRunnerTest, DestroyBidderWorkletWithoutBid) {
           /*reject_reason=*/
           auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*scoring_signals_data_version=*/0,
-          /*has_scoring_signals_data_version=*/false,
+          /*bid_in_seller_currency=*/absl::nullopt,
+          /*scoring_signals_data_version=*/absl::nullopt,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
           /*errors=*/{});
@@ -8921,8 +9123,8 @@ TEST_F(AuctionRunnerTest, Tie) {
             /*reject_reason=*/
             auction_worklet::mojom::RejectReason::kNotAvailable,
             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-            /*scoring_signals_data_version=*/0,
-            /*has_scoring_signals_data_version=*/false,
+            /*bid_in_seller_currency=*/absl::nullopt,
+            /*scoring_signals_data_version=*/absl::nullopt,
             /*debug_loss_report_url=*/absl::nullopt,
             /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
             /*errors=*/{});
@@ -8941,8 +9143,8 @@ TEST_F(AuctionRunnerTest, Tie) {
             /*reject_reason=*/
             auction_worklet::mojom::RejectReason::kNotAvailable,
             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-            /*scoring_signals_data_version=*/0,
-            /*has_scoring_signals_data_version=*/false,
+            /*bid_in_seller_currency=*/absl::nullopt,
+            /*scoring_signals_data_version=*/absl::nullopt,
             /*debug_loss_report_url=*/absl::nullopt,
             /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
             /*errors=*/{});
@@ -9080,8 +9282,8 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
                     auction_worklet::mojom::RejectReason::kNotAvailable,
                     auction_worklet::mojom::
                         ComponentAuctionModifiedBidParamsPtr(),
-                    /*scoring_signals_data_version=*/0,
-                    /*has_scoring_signals_data_version=*/false,
+                    /*bid_in_seller_currency=*/absl::nullopt,
+                    /*scoring_signals_data_version=*/absl::nullopt,
                     /*debug_loss_report_url=*/absl::nullopt,
                     /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
                     /*errors=*/{});
@@ -9097,8 +9299,8 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
                     auction_worklet::mojom::RejectReason::kNotAvailable,
                     auction_worklet::mojom::
                         ComponentAuctionModifiedBidParamsPtr(),
-                    /*scoring_signals_data_version=*/0,
-                    /*has_scoring_signals_data_version=*/false,
+                    /*bid_in_seller_currency=*/absl::nullopt,
+                    /*scoring_signals_data_version=*/absl::nullopt,
                     /*debug_loss_report_url=*/absl::nullopt,
                     /*debug_win_report_url=*/absl::nullopt,
                     /*pa_requests=*/{},
@@ -9383,8 +9585,8 @@ TEST_F(AuctionRunnerTest,
           /*reject_reason=*/
           auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*scoring_signals_data_version=*/0,
-          /*has_scoring_signals_data_version=*/false,
+          /*bid_in_seller_currency=*/absl::nullopt,
+          /*scoring_signals_data_version=*/absl::nullopt,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
           /*errors=*/{});
@@ -9500,8 +9702,8 @@ TEST_F(AuctionRunnerTest,
           /*reject_reason=*/
           auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*scoring_signals_data_version=*/0,
-          /*has_scoring_signals_data_version=*/false,
+          /*bid_in_seller_currency=*/absl::nullopt,
+          /*scoring_signals_data_version=*/absl::nullopt,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
           /*errors=*/{});
@@ -11309,8 +11511,8 @@ TEST_F(AuctionRunnerTest,
           /*reject_reason=*/
           auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*scoring_signals_data_version=*/0,
-          /*has_scoring_signals_data_version=*/false,
+          /*bid_in_seller_currency=*/absl::nullopt,
+          /*scoring_signals_data_version=*/absl::nullopt,
           /*debug_loss_report_url=*/absl::nullopt,
           /*debug_win_report_url=*/absl::nullopt,
           std::move(score_ad_1_pa_requests),
@@ -12879,19 +13081,39 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Enable and test forDebuggingOnly.reportAdAuctionLoss() and
 // forDebuggingOnly.reportAdAuctionWin() APIs.
+// IMPORTANT: These tests do a better job of covering second-highest-scoring
+// bid ties and other such tricky cases than elsewhere[1], so if the
+// forDebuggingOnly functionality is removed they should be adjusted to only
+// look at `report_urls` rather than entirely removed.
+//
+// [1] And are therefore the only place for some currency testcases.
 class AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest
-    : public AuctionRunnerTest {
+    : public AuctionRunnerTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest() {
     feature_list_.InitAndEnableFeature(
         blink::features::kBiddingAndScoringDebugReportingAPI);
+    if (SellerCurrencyOn()) {
+      seller_currency_ = blink::AdCurrency::From("EUR");
+    }
   }
+
+  bool SellerCurrencyOn() const { return GetParam(); }
+
+  absl::optional<blink::AdCurrency> ModeCurrency() {
+    return SellerCurrencyOn()
+               ? absl::make_optional(blink::AdCurrency::From("EUR"))
+               : absl::nullopt;
+  }
+
+  double ModeBid(double in) { return SellerCurrencyOn() ? in * 10.0 : in; }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
        ForDebuggingOnlyReporting) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
@@ -12925,17 +13147,23 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
   // Sellers can get highest scoring other bid, but losing bidders can not.
   EXPECT_THAT(result_.debug_loss_report_urls,
               testing::UnorderedElementsAre(
-                  DebugReportUrl(kBidder1DebugLossReportUrl,
-                                 PostAuctionSignals(
-                                     /*winning_bid=*/2,
-                                     /*made_winning_bid=*/false,
-                                     /*highest_scoring_other_bid=*/0,
-                                     /*made_highest_scoring_other_bid=*/false)),
+                  DebugReportUrl(
+                      kBidder1DebugLossReportUrl,
+                      PostAuctionSignals(
+                          /*winning_bid=*/ModeBid(2),
+                          /*winning_bid_currency=*/ModeCurrency(),
+                          /*made_winning_bid=*/false,
+                          /*highest_scoring_other_bid=*/0,
+                          /*highest_scoring_other_bid_currency=*/absl::nullopt,
+                          /*made_highest_scoring_other_bid=*/false)),
                   DebugReportUrl(kSellerDebugLossReportBaseUrl,
                                  PostAuctionSignals(
-                                     /*winning_bid=*/2,
+                                     /*winning_bid=*/ModeBid(2),
+                                     /*winning_bid_currency=*/ModeCurrency(),
                                      /*made_winning_bid=*/false,
-                                     /*highest_scoring_other_bid=*/1,
+                                     /*highest_scoring_other_bid=*/ModeBid(1),
+                                     /*highest_scoring_other_bid_currency=*/
+                                     ModeCurrency(),
                                      /*made_highest_scoring_other_bid=*/true),
                                  /*bid=*/1)));
 
@@ -12943,25 +13171,31 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
   // Winning bidders can get highest scoring other bid.
   EXPECT_THAT(result_.debug_win_report_urls,
               testing::UnorderedElementsAre(
-                  DebugReportUrl(kBidder2DebugWinReportUrl,
-                                 PostAuctionSignals(
-                                     /*winning_bid=*/2,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/1,
-                                     /*made_highest_scoring_other_bid=*/false)),
-                  DebugReportUrl(kSellerDebugWinReportBaseUrl,
-                                 PostAuctionSignals(
-                                     /*winning_bid=*/2,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/1,
-                                     /*made_highest_scoring_other_bid=*/false),
-                                 /*bid=*/2)));
+                  DebugReportUrl(
+                      kBidder2DebugWinReportUrl,
+                      PostAuctionSignals(
+                          /*winning_bid=*/ModeBid(2),
+                          /*winning_bid_currency=*/ModeCurrency(),
+                          /*made_winning_bid=*/true,
+                          /*highest_scoring_other_bid=*/ModeBid(1),
+                          /*highest_scoring_other_bid_currency=*/ModeCurrency(),
+                          /*made_highest_scoring_other_bid=*/false)),
+                  DebugReportUrl(
+                      kSellerDebugWinReportBaseUrl,
+                      PostAuctionSignals(
+                          /*winning_bid=*/ModeBid(2),
+                          /*winning_bid_currency=*/ModeCurrency(),
+                          /*made_winning_bid=*/true,
+                          /*highest_scoring_other_bid=*/ModeBid(1),
+                          /*highest_scoring_other_bid_currency=*/ModeCurrency(),
+                          /*made_highest_scoring_other_bid=*/false),
+                      /*bid=*/2)));
 }
 
 // Post auction signals should only be reported through report URL's query
 // string. Placeholder ${} in a debugging report URL's other parts such as path
 // will be kept as it is without being replaced with actual signal.
-TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
        PostAuctionSignalsInQueryStringOnly) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
@@ -13005,16 +13239,22 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                   DebugReportUrl("https://bidder1-debug-loss-reporting.com/"
                                  "winningBid=${winningBid}",
                                  PostAuctionSignals(
-                                     /*winning_bid=*/2,
+                                     /*winning_bid=*/ModeBid(2),
+                                     /*winning_bid_currency=*/ModeCurrency(),
                                      /*made_winning_bid=*/false,
                                      /*highest_scoring_other_bid=*/0,
+                                     /*highest_scoring_other_bid_currency=*/
+                                     absl::nullopt,
                                      /*made_highest_scoring_other_bid=*/false)),
                   DebugReportUrl("https://seller-debug-loss-reporting.com/"
                                  "winningBid=${winningBid}",
                                  PostAuctionSignals(
-                                     /*winning_bid=*/2,
+                                     /*winning_bid=*/ModeBid(2),
+                                     /*winning_bid_currency=*/ModeCurrency(),
                                      /*made_winning_bid=*/false,
-                                     /*highest_scoring_other_bid=*/1,
+                                     /*highest_scoring_other_bid=*/ModeBid(1),
+                                     /*highest_scoring_other_bid_currency=*/
+                                     ModeCurrency(),
                                      /*made_highest_scoring_other_bid=*/true),
                                  /*bid=*/1)));
 
@@ -13025,23 +13265,29 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           DebugReportUrl("https://bidder2-debug-win-reporting.com/"
                          "winningBid=${winningBid}",
                          PostAuctionSignals(
-                             /*winning_bid=*/2,
+                             /*winning_bid=*/ModeBid(2),
+                             /*winning_bid_currency=*/ModeCurrency(),
                              /*made_winning_bid=*/true,
-                             /*highest_scoring_other_bid=*/1,
+                             /*highest_scoring_other_bid=*/ModeBid(1),
+                             /*highest_scoring_other_bid_currency=*/
+                             ModeCurrency(),
                              /*made_highest_scoring_other_bid=*/false)),
           DebugReportUrl(
               "https://seller-debug-win-reporting.com/winningBid=${winningBid}",
               PostAuctionSignals(
-                  /*winning_bid=*/2,
+                  /*winning_bid=*/ModeBid(2),
+                  /*winning_bid_currency=*/ModeCurrency(),
                   /*made_winning_bid=*/true,
-                  /*highest_scoring_other_bid=*/1,
+                  /*highest_scoring_other_bid=*/ModeBid(1),
+                  /*highest_scoring_other_bid_currency=*/
+                  ModeCurrency(),
                   /*made_highest_scoring_other_bid=*/false),
               /*bid=*/2)));
 }
 
 // When there are multiple bids getting the highest score, then highest scoring
 // other bid will be one of them which didn't win the bid.
-TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
        ForDebuggingOnlyReportingMultipleTopBids) {
   bool seen_ad2_win = false;
   bool seen_ad3_win = false;
@@ -13085,31 +13331,43 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           testing::UnorderedElementsAre(
               DebugReportUrl(
                   kBidderDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/0,
-                                     /*made_highest_scoring_other_bid=*/false),
+                  PostAuctionSignals(
+                      /*winning_bid=*/ModeBid(3),
+                      /*winning_bid_currency=*/ModeCurrency(),
+                      /*made_winning_bid=*/true,
+                      /*highest_scoring_other_bid=*/0,
+                      /*highest_scoring_other_bid_currency=*/absl::nullopt,
+                      /*made_highest_scoring_other_bid=*/false),
                   /*bid=*/1),
               DebugReportUrl(
                   kBidderDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/false,
-                                     /*highest_scoring_other_bid=*/0,
-                                     /*made_highest_scoring_other_bid=*/false),
+                  PostAuctionSignals(
+                      /*winning_bid=*/ModeBid(3),
+                      /*winning_bid_currency=*/ModeCurrency(),
+                      /*made_winning_bid=*/false,
+                      /*highest_scoring_other_bid=*/0,
+                      /*highest_scoring_other_bid_currency=*/absl::nullopt,
+                      /*made_highest_scoring_other_bid=*/false),
                   /*bid=*/4),
               DebugReportUrl(
                   kSellerDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/4,
-                                     /*made_highest_scoring_other_bid=*/false),
+                  PostAuctionSignals(
+                      /*winning_bid=*/ModeBid(3),
+                      /*winning_bid_currency=*/ModeCurrency(),
+                      /*made_winning_bid=*/true,
+                      /*highest_scoring_other_bid=*/ModeBid(4),
+                      /*highest_scoring_other_bid_currency=*/ModeCurrency(),
+                      /*made_highest_scoring_other_bid=*/false),
                   /*bid=*/1),
               DebugReportUrl(
                   kSellerDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/false,
-                                     /*highest_scoring_other_bid=*/4,
-                                     /*made_highest_scoring_other_bid=*/false),
+                  PostAuctionSignals(
+                      /*winning_bid=*/ModeBid(3),
+                      /*winning_bid_currency=*/ModeCurrency(),
+                      /*made_winning_bid=*/false,
+                      /*highest_scoring_other_bid=*/ModeBid(4),
+                      /*highest_scoring_other_bid_currency=*/ModeCurrency(),
+                      /*made_highest_scoring_other_bid=*/false),
                   /*bid=*/4)));
 
       EXPECT_THAT(
@@ -13117,25 +13375,40 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           testing::UnorderedElementsAre(
               DebugReportUrl(
                   kBidderDebugWinReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/4,
-                                     /*made_highest_scoring_other_bid=*/false),
+                  PostAuctionSignals(
+                      /*winning_bid=*/ModeBid(3),
+                      /*winning_bid_currency=*/ModeCurrency(),
+                      /*made_winning_bid=*/true,
+                      /*highest_scoring_other_bid=*/ModeBid(4),
+                      /*highest_scoring_other_bid_currency=*/ModeCurrency(),
+                      /*made_highest_scoring_other_bid=*/false),
                   /*bid=*/3),
               DebugReportUrl(
                   kSellerDebugWinReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/4,
-                                     /*made_highest_scoring_other_bid=*/false),
+                  PostAuctionSignals(
+                      /*winning_bid=*/ModeBid(3),
+                      /*winning_bid_currency=*/ModeCurrency(),
+                      /*made_winning_bid=*/true,
+                      /*highest_scoring_other_bid=*/ModeBid(4),
+                      /*highest_scoring_other_bid_currency=*/ModeCurrency(),
+                      /*made_highest_scoring_other_bid=*/false),
                   /*bid=*/3)));
 
-      EXPECT_THAT(result_.report_urls,
-                  testing::UnorderedElementsAre(
-                      GURL("https://reporting.example.com/"
-                           "?highestScoringOtherBid=4&bid=3"),
-                      ReportWinUrl(/*bid=*/3, /*highest_scoring_other_bid=*/4,
-                                   /*made_highest_scoring_other_bid=*/false)));
+      EXPECT_THAT(
+          result_.report_urls,
+          testing::UnorderedElementsAre(
+              SellerCurrencyOn() ? GURL("https://reporting.example.com/"
+                                        "?highestScoringOtherBid=40&"
+                                        "highestScoringOtherBidCurrency=EUR&"
+                                        "bidCurrency=EUR&bid=30")
+                                 : GURL("https://reporting.example.com/"
+                                        "?highestScoringOtherBid=4&"
+                                        "highestScoringOtherBidCurrency=???&"
+                                        "bidCurrency=???&bid=3"),
+              ReportWinUrl(
+                  /*bid=*/3, /*bid_currency=*/blink::AdCurrency::From("USD"),
+                  /*highest_scoring_other_bid=*/ModeBid(4), ModeCurrency(),
+                  /*made_highest_scoring_other_bid=*/false)));
     } else if (result_.ad_descriptor->url == "https://ad3.com/") {
       seen_ad3_win = true;
       EXPECT_THAT(
@@ -13143,31 +13416,43 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           testing::UnorderedElementsAre(
               DebugReportUrl(
                   kBidderDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/4,
-                                     /*made_winning_bid=*/false,
-                                     /*highest_scoring_other_bid=*/0,
-                                     /*made_highest_scoring_other_bid=*/false),
+                  PostAuctionSignals(
+                      /*winning_bid=*/ModeBid(4),
+                      /*winning_bid_currency=*/ModeCurrency(),
+                      /*made_winning_bid=*/false,
+                      /*highest_scoring_other_bid=*/0,
+                      /*highest_scoring_other_bid_currency=*/absl::nullopt,
+                      /*made_highest_scoring_other_bid=*/false),
                   /*bid=*/1),
               DebugReportUrl(
                   kBidderDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/4,
-                                     /*made_winning_bid=*/false,
-                                     /*highest_scoring_other_bid=*/0,
-                                     /*made_highest_scoring_other_bid=*/false),
+                  PostAuctionSignals(
+                      /*winning_bid=*/ModeBid(4),
+                      /*winning_bid_currency=*/ModeCurrency(),
+                      /*made_winning_bid=*/false,
+                      /*highest_scoring_other_bid=*/0,
+                      /*highest_scoring_other_bid_currency=*/absl::nullopt,
+                      /*made_highest_scoring_other_bid=*/false),
                   /*bid=*/3),
               DebugReportUrl(
                   kSellerDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/4,
-                                     /*made_winning_bid=*/false,
-                                     /*highest_scoring_other_bid=*/3,
-                                     /*made_highest_scoring_other_bid=*/false),
+                  PostAuctionSignals(
+                      /*winning_bid=*/ModeBid(4),
+                      /*winning_bid_currency=*/ModeCurrency(),
+                      /*made_winning_bid=*/false,
+                      /*highest_scoring_other_bid=*/ModeBid(3),
+                      /*highest_scoring_other_bid_currency=*/ModeCurrency(),
+                      /*made_highest_scoring_other_bid=*/false),
                   /*bid=*/1),
               DebugReportUrl(
                   kSellerDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/4,
-                                     /*made_winning_bid=*/false,
-                                     /*highest_scoring_other_bid=*/3,
-                                     /*made_highest_scoring_other_bid=*/false),
+                  PostAuctionSignals(
+                      /*winning_bid=*/ModeBid(4),
+                      /*winning_bid_currency=*/ModeCurrency(),
+                      /*made_winning_bid=*/false,
+                      /*highest_scoring_other_bid=*/ModeBid(3),
+                      /*highest_scoring_other_bid_currency=*/ModeCurrency(),
+                      /*made_highest_scoring_other_bid=*/false),
                   /*bid=*/3)));
 
       EXPECT_THAT(
@@ -13175,26 +13460,41 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           testing::UnorderedElementsAre(
               DebugReportUrl(
                   kBidderDebugWinReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/4,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/3,
-                                     /*made_highest_scoring_other_bid=*/false),
+                  PostAuctionSignals(
+                      /*winning_bid=*/ModeBid(4),
+                      /*winning_bid_currency=*/ModeCurrency(),
+                      /*made_winning_bid=*/true,
+                      /*highest_scoring_other_bid=*/ModeBid(3),
+                      /*highest_scoring_other_bid_currency=*/ModeCurrency(),
+                      /*made_highest_scoring_other_bid=*/false),
                   /*bid=*/4),
               DebugReportUrl(
                   kSellerDebugWinReportBaseUrl,
 
-                  PostAuctionSignals(/*winning_bid=*/4,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/3,
-                                     /*made_highest_scoring_other_bid=*/false),
+                  PostAuctionSignals(
+                      /*winning_bid=*/ModeBid(4),
+                      /*winning_bid_currency=*/ModeCurrency(),
+                      /*made_winning_bid=*/true,
+                      /*highest_scoring_other_bid=*/ModeBid(3),
+                      /*highest_scoring_other_bid_currency=*/ModeCurrency(),
+                      /*made_highest_scoring_other_bid=*/false),
                   /*bid=*/4)));
 
-      EXPECT_THAT(result_.report_urls,
-                  testing::UnorderedElementsAre(
-                      GURL("https://reporting.example.com/"
-                           "?highestScoringOtherBid=3&bid=4"),
-                      ReportWinUrl(/*bid=*/4, /*highest_scoring_other_bid=*/3,
-                                   /*made_highest_scoring_other_bid=*/false)));
+      EXPECT_THAT(
+          result_.report_urls,
+          testing::UnorderedElementsAre(
+              SellerCurrencyOn() ? GURL("https://reporting.example.com/"
+                                        "?highestScoringOtherBid=30&"
+                                        "highestScoringOtherBidCurrency=EUR&"
+                                        "bidCurrency=EUR&bid=40")
+                                 : GURL("https://reporting.example.com/"
+                                        "?highestScoringOtherBid=3&"
+                                        "highestScoringOtherBidCurrency=???&"
+                                        "bidCurrency=???&bid=4"),
+              ReportWinUrl(
+                  /*bid=*/4, /*bid_currency=*/blink::AdCurrency::From("USD"),
+                  /*highest_scoring_other_bid=*/ModeBid(3), ModeCurrency(),
+                  /*made_highest_scoring_other_bid=*/false)));
     } else {
       NOTREACHED();
     }
@@ -13204,7 +13504,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
 // This is used to test post auction signals when an auction where bidders are
 // from the same interest group owner. All winning bid and highest scoring other
 // bids come from the same interest group owner.
-TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
        ForDebuggingOnlyReportingSameOwnerBidders) {
   // Seen bid1 or bid2 being picked as highest scoring other bid.
   bool seen_bid1 = false;
@@ -13245,14 +13545,30 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
     RunAuctionAndWait(kSellerUrl, std::move(bidders));
 
     double highest_scoring_other_bid = 0.0;
-    if (base::Contains(
-            result_.report_urls,
-            "https://reporting.example.com/?highestScoringOtherBid=1&bid=3",
-            &GURL::spec)) {
+    if (base::Contains(result_.report_urls,
+                       "https://reporting.example.com/"
+                       "?highestScoringOtherBid=1&"
+                       "highestScoringOtherBidCurrency=???&"
+                       "bidCurrency=???&bid=3",
+                       &GURL::spec) ||
+        base::Contains(result_.report_urls,
+                       "https://reporting.example.com/"
+                       "?highestScoringOtherBid=10&"
+                       "highestScoringOtherBidCurrency=EUR&"
+                       "bidCurrency=EUR&bid=30",
+                       &GURL::spec)) {
       highest_scoring_other_bid = 1;
     } else if (base::Contains(result_.report_urls,
                               "https://reporting.example.com/"
-                              "?highestScoringOtherBid=2&bid=3",
+                              "?highestScoringOtherBid=2&"
+                              "highestScoringOtherBidCurrency=???&"
+                              "bidCurrency=???&bid=3",
+                              &GURL::spec) ||
+               base::Contains(result_.report_urls,
+                              "https://reporting.example.com/"
+                              "?highestScoringOtherBid=20&"
+                              "highestScoringOtherBidCurrency=EUR&"
+                              "bidCurrency=EUR&bid=30",
                               &GURL::spec)) {
       highest_scoring_other_bid = 2;
     }
@@ -13269,57 +13585,84 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           testing::UnorderedElementsAre(
               DebugReportUrl(
                   kBidderDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/0,
-                                     /*made_highest_scoring_other_bid=*/false),
+                  PostAuctionSignals(
+                      /*winning_bid=*/ModeBid(3),
+                      /*winning_bid_currency=*/ModeCurrency(),
+                      /*made_winning_bid=*/true,
+                      /*highest_scoring_other_bid=*/0,
+                      /*highest_scoring_other_bid_currency=*/absl::nullopt,
+                      /*made_highest_scoring_other_bid=*/false),
                   /*bid=*/1),
               DebugReportUrl(
                   kBidderDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/0,
-                                     /*made_highest_scoring_other_bid=*/false),
+                  PostAuctionSignals(
+                      /*winning_bid=*/ModeBid(3),
+                      /*winning_bid_currency=*/ModeCurrency(),
+                      /*made_winning_bid=*/true,
+                      /*highest_scoring_other_bid=*/0,
+                      /*highest_scoring_other_bid_currency=*/absl::nullopt,
+                      /*made_highest_scoring_other_bid=*/false),
                   /*bid=*/2),
-              DebugReportUrl(
-                  kSellerDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/1,
-                                     /*made_highest_scoring_other_bid=*/true),
-                  /*bid=*/1),
-              DebugReportUrl(
-                  kSellerDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/1,
-                                     /*made_highest_scoring_other_bid=*/true),
-                  /*bid=*/2)));
+              DebugReportUrl(kSellerDebugLossReportBaseUrl,
+                             PostAuctionSignals(
+                                 /*winning_bid=*/ModeBid(3),
+                                 /*winning_bid_currency=*/ModeCurrency(),
+                                 /*made_winning_bid=*/true,
+                                 /*highest_scoring_other_bid=*/ModeBid(1),
+                                 /*highest_scoring_other_bid_currency=*/
+                                 ModeCurrency(),
+                                 /*made_highest_scoring_other_bid=*/true),
+                             /*bid=*/1),
+              DebugReportUrl(kSellerDebugLossReportBaseUrl,
+                             PostAuctionSignals(
+                                 /*winning_bid=*/ModeBid(3),
+                                 /*winning_bid_currency=*/ModeCurrency(),
+                                 /*made_winning_bid=*/true,
+                                 /*highest_scoring_other_bid=*/ModeBid(1),
+                                 /*highest_scoring_other_bid_currency=*/
+                                 ModeCurrency(),
+                                 /*made_highest_scoring_other_bid=*/true),
+                             /*bid=*/2)));
 
       EXPECT_THAT(
           result_.debug_win_report_urls,
           testing::UnorderedElementsAre(
               DebugReportUrl(kBidderDebugWinReportBaseUrl,
                              PostAuctionSignals(
-                                 /*winning_bid=*/3,
+                                 /*winning_bid=*/ModeBid(3),
+                                 /*winning_bid_currency=*/ModeCurrency(),
                                  /*made_winning_bid=*/true,
-                                 /*highest_scoring_other_bid=*/1,
+                                 /*highest_scoring_other_bid=*/ModeBid(1),
+                                 /*highest_scoring_other_bid_currency=*/
+                                 ModeCurrency(),
                                  /*made_highest_scoring_other_bid=*/true),
                              /*bid=*/3),
               DebugReportUrl(kSellerDebugWinReportBaseUrl,
                              PostAuctionSignals(
-                                 /*winning_bid=*/3,
+                                 /*winning_bid=*/ModeBid(3),
+                                 /*winning_bid_currency=*/ModeCurrency(),
                                  /*made_winning_bid=*/true,
-                                 /*highest_scoring_other_bid=*/1,
+                                 /*highest_scoring_other_bid=*/ModeBid(1),
+                                 /*highest_scoring_other_bid_currency=*/
+                                 ModeCurrency(),
                                  /*made_highest_scoring_other_bid=*/true),
                              /*bid=*/3)));
 
-      EXPECT_THAT(result_.report_urls,
-                  testing::UnorderedElementsAre(
-                      GURL("https://reporting.example.com/"
-                           "?highestScoringOtherBid=1&bid=3"),
-                      ReportWinUrl(/*bid=*/3, /*highest_scoring_other_bid=*/1,
-                                   /*made_highest_scoring_other_bid=*/true)));
+      EXPECT_THAT(
+          result_.report_urls,
+          testing::UnorderedElementsAre(
+              SellerCurrencyOn() ? GURL("https://reporting.example.com/"
+                                        "?highestScoringOtherBid=10&"
+                                        "highestScoringOtherBidCurrency=EUR&"
+                                        "bidCurrency=EUR&bid=30")
+                                 : GURL("https://reporting.example.com/"
+                                        "?highestScoringOtherBid=1&"
+                                        "highestScoringOtherBidCurrency=???&"
+                                        "bidCurrency=???&bid=3"),
+              ReportWinUrl(
+                  /*bid=*/3, /*bid_currency=*/blink::AdCurrency::From("USD"),
+                  /*highest_scoring_other_bid=*/ModeBid(1), ModeCurrency(),
+                  /*made_highest_scoring_other_bid=*/true)));
     } else if (highest_scoring_other_bid == 2) {
       seen_bid2 = true;
       EXPECT_THAT(
@@ -13327,57 +13670,84 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           testing::UnorderedElementsAre(
               DebugReportUrl(
                   kBidderDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/0,
-                                     /*made_highest_scoring_other_bid=*/false),
+                  PostAuctionSignals(
+                      /*winning_bid=*/ModeBid(3),
+                      /*winning_bid_currency=*/ModeCurrency(),
+                      /*made_winning_bid=*/true,
+                      /*highest_scoring_other_bid=*/0,
+                      /*highest_scoring_other_bid_currency=*/absl::nullopt,
+                      /*made_highest_scoring_other_bid=*/false),
                   /*bid=*/1),
               DebugReportUrl(
                   kBidderDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/0,
-                                     /*made_highest_scoring_other_bid=*/false),
+                  PostAuctionSignals(
+                      /*winning_bid=*/ModeBid(3),
+                      /*winning_bid_currency=*/ModeCurrency(),
+                      /*made_winning_bid=*/true,
+                      /*highest_scoring_other_bid=*/0,
+                      /*highest_scoring_other_bid_currency=*/absl::nullopt,
+                      /*made_highest_scoring_other_bid=*/false),
                   /*bid=*/2),
-              DebugReportUrl(
-                  kSellerDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/2,
-                                     /*made_highest_scoring_other_bid=*/true),
-                  /*bid=*/1),
-              DebugReportUrl(
-                  kSellerDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/2,
-                                     /*made_highest_scoring_other_bid=*/true),
-                  /*bid=*/2)));
+              DebugReportUrl(kSellerDebugLossReportBaseUrl,
+                             PostAuctionSignals(
+                                 /*winning_bid=*/ModeBid(3),
+                                 /*winning_bid_currency=*/ModeCurrency(),
+                                 /*made_winning_bid=*/true,
+                                 /*highest_scoring_other_bid=*/ModeBid(2),
+                                 /*highest_scoring_other_bid_currency=*/
+                                 ModeCurrency(),
+                                 /*made_highest_scoring_other_bid=*/true),
+                             /*bid=*/1),
+              DebugReportUrl(kSellerDebugLossReportBaseUrl,
+                             PostAuctionSignals(
+                                 /*winning_bid=*/ModeBid(3),
+                                 /*winning_bid_currency=*/ModeCurrency(),
+                                 /*made_winning_bid=*/true,
+                                 /*highest_scoring_other_bid=*/ModeBid(2),
+                                 /*highest_scoring_other_bid_currency=*/
+                                 ModeCurrency(),
+                                 /*made_highest_scoring_other_bid=*/true),
+                             /*bid=*/2)));
 
       EXPECT_THAT(
           result_.debug_win_report_urls,
           testing::UnorderedElementsAre(
               DebugReportUrl(kBidderDebugWinReportBaseUrl,
                              PostAuctionSignals(
-                                 /*winning_bid=*/3,
+                                 /*winning_bid=*/ModeBid(3),
+                                 /*winning_bid_currency=*/ModeCurrency(),
                                  /*made_winning_bid=*/true,
-                                 /*highest_scoring_other_bid=*/2,
+                                 /*highest_scoring_other_bid=*/ModeBid(2),
+                                 /*highest_scoring_other_bid_currency=*/
+                                 ModeCurrency(),
                                  /*made_highest_scoring_other_bid=*/true),
                              /*bid=*/3),
               DebugReportUrl(kSellerDebugWinReportBaseUrl,
                              PostAuctionSignals(
-                                 /*winning_bid=*/3,
+                                 /*winning_bid=*/ModeBid(3),
+                                 /*winning_bid_currency=*/ModeCurrency(),
                                  /*made_winning_bid=*/true,
-                                 /*highest_scoring_other_bid=*/2,
+                                 /*highest_scoring_other_bid=*/ModeBid(2),
+                                 /*highest_scoring_other_bid_currency=*/
+                                 ModeCurrency(),
                                  /*made_highest_scoring_other_bid=*/true),
                              /*bid=*/3)));
 
-      EXPECT_THAT(result_.report_urls,
-                  testing::UnorderedElementsAre(
-                      GURL("https://reporting.example.com/"
-                           "?highestScoringOtherBid=2&bid=3"),
-                      ReportWinUrl(/*bid=*/3, /*highest_scoring_other_bid=*/2,
-                                   /*made_highest_scoring_other_bid=*/true)));
+      EXPECT_THAT(
+          result_.report_urls,
+          testing::UnorderedElementsAre(
+              SellerCurrencyOn() ? GURL("https://reporting.example.com/"
+                                        "?highestScoringOtherBid=20&"
+                                        "highestScoringOtherBidCurrency=EUR&"
+                                        "bidCurrency=EUR&bid=30")
+                                 : GURL("https://reporting.example.com/"
+                                        "?highestScoringOtherBid=2&"
+                                        "highestScoringOtherBidCurrency=???&"
+                                        "bidCurrency=???&bid=3"),
+              ReportWinUrl(
+                  /*bid=*/3, /*bid_currency=*/blink::AdCurrency::From("USD"),
+                  /*highest_scoring_other_bid=*/ModeBid(2), ModeCurrency(),
+                  /*made_highest_scoring_other_bid=*/true)));
     } else {
       NOTREACHED();
     }
@@ -13386,7 +13756,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
 
 // Multiple bids from different interest group owners get the second highest
 // score, then `${madeHighestScoringOtherBid}` is always false.
-TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
        ForDebuggingOnlyReportingHighestScoringOtherBidFromDifferentOwners) {
   // Seen bid1 or bid2 being picked as highest scoring other bid.
   bool seen_bid1 = false;
@@ -13423,14 +13793,30 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
     EXPECT_EQ(2u, result_.debug_win_report_urls.size());
     EXPECT_EQ(2u, result_.report_urls.size());
     double highest_scoring_other_bid = 0.0;
-    if (base::Contains(
-            result_.report_urls,
-            "https://reporting.example.com/?highestScoringOtherBid=1&bid=3",
-            &GURL::spec)) {
+    if (base::Contains(result_.report_urls,
+                       "https://reporting.example.com/"
+                       "?highestScoringOtherBid=1&"
+                       "highestScoringOtherBidCurrency=???&"
+                       "bidCurrency=???&bid=3",
+                       &GURL::spec) ||
+        base::Contains(result_.report_urls,
+                       "https://reporting.example.com/"
+                       "?highestScoringOtherBid=10&"
+                       "highestScoringOtherBidCurrency=EUR&"
+                       "bidCurrency=EUR&bid=30",
+                       &GURL::spec)) {
       highest_scoring_other_bid = 1;
     } else if (base::Contains(result_.report_urls,
                               "https://reporting.example.com/"
-                              "?highestScoringOtherBid=2&bid=3",
+                              "?highestScoringOtherBid=2&"
+                              "highestScoringOtherBidCurrency=???&"
+                              "bidCurrency=???&bid=3",
+                              &GURL::spec) ||
+               base::Contains(result_.report_urls,
+                              "https://reporting.example.com/"
+                              "?highestScoringOtherBid=20&"
+                              "highestScoringOtherBidCurrency=EUR&"
+                              "bidCurrency=EUR&bid=30",
                               &GURL::spec)) {
       highest_scoring_other_bid = 2;
     }
@@ -13442,115 +13828,169 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           testing::UnorderedElementsAre(
               DebugReportUrl(
                   kBidderDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/0,
-                                     /*made_highest_scoring_other_bid=*/false),
+                  PostAuctionSignals(
+                      /*winning_bid=*/ModeBid(3),
+                      /*winning_bid_currency=*/ModeCurrency(),
+                      /*made_winning_bid=*/true,
+                      /*highest_scoring_other_bid=*/0,
+                      /*highest_scoring_other_bid_currency=*/absl::nullopt,
+                      /*made_highest_scoring_other_bid=*/false),
                   /*bid=*/1),
               DebugReportUrl(
                   kBidderDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
+                  PostAuctionSignals(/*winning_bid=*/ModeBid(3),
+                                     /*winning_bid_currency=*/ModeCurrency(),
                                      /*made_winning_bid=*/false,
                                      /*highest_scoring_other_bid=*/0,
+                                     /*highest_scoring_other_bid_currency=*/
+                                     absl::nullopt,
                                      /*made_highest_scoring_other_bid=*/false),
                   /*bid=*/2),
+              DebugReportUrl(kSellerDebugLossReportBaseUrl,
+                             PostAuctionSignals(
+                                 /*winning_bid=*/ModeBid(3),
+                                 /*winning_bid_currency=*/ModeCurrency(),
+                                 /*made_winning_bid=*/true,
+                                 /*highest_scoring_other_bid=*/ModeBid(1),
+                                 /*highest_scoring_other_bid_currency=*/
+                                 ModeCurrency(),
+                                 /*made_highest_scoring_other_bid=*/false),
+                             /*bid=*/1),
               DebugReportUrl(
                   kSellerDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/1,
-                                     /*made_highest_scoring_other_bid=*/false),
-                  /*bid=*/1),
-              DebugReportUrl(
-                  kSellerDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
+                  PostAuctionSignals(/*winning_bid=*/ModeBid(3),
+                                     /*winning_bid_currency=*/ModeCurrency(),
                                      /*made_winning_bid=*/false,
-                                     /*highest_scoring_other_bid=*/1,
+                                     /*highest_scoring_other_bid=*/ModeBid(1),
+                                     /*highest_scoring_other_bid_currency=*/
+                                     ModeCurrency(),
                                      /*made_highest_scoring_other_bid=*/false),
                   /*bid=*/2)));
 
       EXPECT_THAT(
           result_.debug_win_report_urls,
           testing::UnorderedElementsAre(
-              DebugReportUrl(
-                  kBidderDebugWinReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/1,
-                                     /*made_highest_scoring_other_bid=*/false),
-                  /*bid=*/3),
-              DebugReportUrl(
-                  kSellerDebugWinReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/1,
-                                     /*made_highest_scoring_other_bid=*/false),
-                  /*bid=*/3)));
+              DebugReportUrl(kBidderDebugWinReportBaseUrl,
+                             PostAuctionSignals(
+                                 /*winning_bid=*/ModeBid(3),
+                                 /*winning_bid_currency=*/ModeCurrency(),
+                                 /*made_winning_bid=*/true,
+                                 /*highest_scoring_other_bid=*/ModeBid(1),
+                                 /*highest_scoring_other_bid_currency=*/
+                                 ModeCurrency(),
+                                 /*made_highest_scoring_other_bid=*/false),
+                             /*bid=*/3),
+              DebugReportUrl(kSellerDebugWinReportBaseUrl,
+                             PostAuctionSignals(
+                                 /*winning_bid=*/ModeBid(3),
+                                 /*winning_bid_currency=*/ModeCurrency(),
+                                 /*made_winning_bid=*/true,
+                                 /*highest_scoring_other_bid=*/ModeBid(1),
+                                 /*highest_scoring_other_bid_currency=*/
+                                 ModeCurrency(),
+                                 /*made_highest_scoring_other_bid=*/false),
+                             /*bid=*/3)));
 
-      EXPECT_THAT(result_.report_urls,
-                  testing::UnorderedElementsAre(
-                      GURL("https://reporting.example.com/"
-                           "?highestScoringOtherBid=1&bid=3"),
-                      ReportWinUrl(/*bid=*/3, /*highest_scoring_other_bid=*/1,
-                                   /*made_highest_scoring_other_bid=*/false)));
+      EXPECT_THAT(
+          result_.report_urls,
+          testing::UnorderedElementsAre(
+              SellerCurrencyOn() ? GURL("https://reporting.example.com/"
+                                        "?highestScoringOtherBid=10&"
+                                        "highestScoringOtherBidCurrency=EUR&"
+                                        "bidCurrency=EUR&bid=30")
+                                 : GURL("https://reporting.example.com/"
+                                        "?highestScoringOtherBid=1&"
+                                        "highestScoringOtherBidCurrency=???&"
+                                        "bidCurrency=???&bid=3"),
+              ReportWinUrl(
+                  /*bid=*/3, /*bid_currency=*/blink::AdCurrency::From("USD"),
+                  /*highest_scoring_other_bid=*/ModeBid(1), ModeCurrency(),
+                  /*made_highest_scoring_other_bid=*/false)));
     } else if (highest_scoring_other_bid == 2) {
       seen_bid2 = true;
       EXPECT_THAT(
           result_.debug_loss_report_urls,
           testing::UnorderedElementsAre(
+              DebugReportUrl(kBidderDebugLossReportBaseUrl,
+                             PostAuctionSignals(
+                                 /*winning_bid=*/ModeBid(3),
+                                 /*winning_bid_currency=*/ModeCurrency(),
+                                 /*made_winning_bid=*/true,
+                                 /*highest_scoring_other_bid=*/0,
+                                 /*highest_scoring_other_bid_currency=*/
+                                 absl::nullopt,
+                                 /*made_highest_scoring_other_bid=*/false),
+                             /*bid=*/1),
               DebugReportUrl(
                   kBidderDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/0,
-                                     /*made_highest_scoring_other_bid=*/false),
-                  /*bid=*/1),
-              DebugReportUrl(
-                  kBidderDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
+                  PostAuctionSignals(/*winning_bid=*/ModeBid(3),
+                                     /*winning_bid_currency=*/ModeCurrency(),
                                      /*made_winning_bid=*/false,
                                      /*highest_scoring_other_bid=*/0,
+                                     /*highest_scoring_other_bid_currency=*/
+                                     absl::nullopt,
                                      /*made_highest_scoring_other_bid=*/false),
                   /*bid=*/2),
+              DebugReportUrl(kSellerDebugLossReportBaseUrl,
+                             PostAuctionSignals(
+                                 /*winning_bid=*/ModeBid(3),
+                                 /*winning_bid_currency=*/ModeCurrency(),
+                                 /*made_winning_bid=*/true,
+                                 /*highest_scoring_other_bid=*/ModeBid(2),
+                                 /*highest_scoring_other_bid_currency=*/
+                                 ModeCurrency(),
+                                 /*made_highest_scoring_other_bid=*/false),
+                             /*bid=*/1),
               DebugReportUrl(
                   kSellerDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/2,
-                                     /*made_highest_scoring_other_bid=*/false),
-                  /*bid=*/1),
-              DebugReportUrl(
-                  kSellerDebugLossReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
+                  PostAuctionSignals(/*winning_bid=*/ModeBid(3),
+                                     /*winning_bid_currency=*/ModeCurrency(),
                                      /*made_winning_bid=*/false,
-                                     /*highest_scoring_other_bid=*/2,
+                                     /*highest_scoring_other_bid=*/ModeBid(2),
+                                     /*highest_scoring_other_bid_currency=*/
+                                     ModeCurrency(),
                                      /*made_highest_scoring_other_bid=*/false),
                   /*bid=*/2)));
 
       EXPECT_THAT(
           result_.debug_win_report_urls,
           testing::UnorderedElementsAre(
-              DebugReportUrl(
-                  kBidderDebugWinReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/2,
-                                     /*made_highest_scoring_other_bid=*/false),
-                  /*bid=*/3),
-              DebugReportUrl(
-                  kSellerDebugWinReportBaseUrl,
-                  PostAuctionSignals(/*winning_bid=*/3,
-                                     /*made_winning_bid=*/true,
-                                     /*highest_scoring_other_bid=*/2,
-                                     /*made_highest_scoring_other_bid=*/false),
-                  /*bid=*/3)));
+              DebugReportUrl(kBidderDebugWinReportBaseUrl,
+                             PostAuctionSignals(
+                                 /*winning_bid=*/ModeBid(3),
+                                 /*winning_bid_currency=*/ModeCurrency(),
+                                 /*made_winning_bid=*/true,
+                                 /*highest_scoring_other_bid=*/ModeBid(2),
+                                 /*highest_scoring_other_bid_currency=*/
+                                 ModeCurrency(),
+                                 /*made_highest_scoring_other_bid=*/false),
+                             /*bid=*/3),
+              DebugReportUrl(kSellerDebugWinReportBaseUrl,
+                             PostAuctionSignals(
+                                 /*winning_bid=*/ModeBid(3),
+                                 /*winning_bid_currency=*/ModeCurrency(),
+                                 /*made_winning_bid=*/true,
+                                 /*highest_scoring_other_bid=*/ModeBid(2),
+                                 /*highest_scoring_other_bid_currency=*/
+                                 ModeCurrency(),
+                                 /*made_highest_scoring_other_bid=*/false),
+                             /*bid=*/3)));
 
-      EXPECT_THAT(result_.report_urls,
-                  testing::UnorderedElementsAre(
-                      GURL("https://reporting.example.com/"
-                           "?highestScoringOtherBid=2&bid=3"),
-                      ReportWinUrl(/*bid=*/3, /*highest_scoring_other_bid=*/2,
-                                   /*made_highest_scoring_other_bid=*/false)));
+      EXPECT_THAT(
+          result_.report_urls,
+          testing::UnorderedElementsAre(
+              SellerCurrencyOn() ? GURL("https://reporting.example.com/"
+                                        "?highestScoringOtherBid=20&"
+                                        "highestScoringOtherBidCurrency=EUR&"
+                                        "bidCurrency=EUR&bid=30")
+                                 : GURL("https://reporting.example.com/"
+                                        "?highestScoringOtherBid=2&"
+                                        "highestScoringOtherBidCurrency=???&"
+                                        "bidCurrency=???&bid=3"),
+              ReportWinUrl(
+                  /*bid=*/3, /*bid_currency=*/blink::AdCurrency::From("USD"),
+                  /*highest_scoring_other_bid=*/ModeBid(2), ModeCurrency(),
+                  /*made_highest_scoring_other_bid=*/false)));
     } else {
       NOTREACHED();
     }
@@ -13559,7 +13999,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
 
 // Should send loss report to seller and bidders when auction fails due to
 // AllBidsRejected.
-TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
        ForDebuggingOnlyReportingAuctionFailAllBidsRejected) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
@@ -13593,6 +14033,9 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
   EXPECT_FALSE(result_.ad_descriptor);
 
   EXPECT_EQ(4u, result_.debug_loss_report_urls.size());
+  PostAuctionSignals empty_signals_with_currency;
+  empty_signals_with_currency.highest_scoring_other_bid_currency =
+      ModeCurrency();
   EXPECT_THAT(
       result_.debug_loss_report_urls,
       testing::UnorderedElementsAre(
@@ -13600,9 +14043,11 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                          /*bid=*/absl::nullopt, "invalid-bid"),
           DebugReportUrl(kBidder2DebugLossReportUrl, PostAuctionSignals(),
                          /*bid=*/absl::nullopt, "bid-below-auction-floor"),
-          DebugReportUrl(kSellerDebugLossReportBaseUrl, PostAuctionSignals(),
+          DebugReportUrl(kSellerDebugLossReportBaseUrl,
+                         empty_signals_with_currency,
                          /*bid=*/1),
-          DebugReportUrl(kSellerDebugLossReportBaseUrl, PostAuctionSignals(),
+          DebugReportUrl(kSellerDebugLossReportBaseUrl,
+                         empty_signals_with_currency,
                          /*bid=*/2)));
 
   EXPECT_EQ(0u, result_.debug_win_report_urls.size());
@@ -13610,7 +14055,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
 
 // Test win/loss reporting in a component auction with two components with one
 // bidder each.
-TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
        ForDebuggingOnlyReportingComponentAuctionTwoComponents) {
   interest_group_buyers_.emplace();
 
@@ -13685,59 +14130,76 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
   EXPECT_THAT(
       result_.debug_loss_report_urls,
       testing::UnorderedElementsAre(
-          DebugReportUrl(kBidder1DebugLossReportUrl,
-                         PostAuctionSignals(
-                             /*winning_bid=*/1,
-                             /*made_winning_bid=*/true,
-                             /*highest_scoring_other_bid=*/0,
-                             /*made_highest_scoring_other_bid=*/false)),
+          DebugReportUrl(
+              kBidder1DebugLossReportUrl,
+              PostAuctionSignals(
+                  /*winning_bid=*/ModeBid(1),
+                  /*winning_bid_currency=*/ModeCurrency(),
+                  /*made_winning_bid=*/true,
+                  /*highest_scoring_other_bid=*/0,
+                  /*highest_scoring_other_bid_currency=*/absl::nullopt,
+                  /*made_highest_scoring_other_bid=*/false)),
           ComponentSellerDebugReportUrl(
               "https://component1-loss-reporting.test/",
               /*signals=*/
-              PostAuctionSignals(/*winning_bid=*/1,
-                                 /*made_winning_bid=*/true,
-                                 /*highest_scoring_other_bid=*/0,
-                                 /*made_highest_scoring_other_bid=*/false),
+              PostAuctionSignals(
+                  /*winning_bid=*/ModeBid(1),
+                  /*winning_bid_currency=*/ModeCurrency(),
+                  /*made_winning_bid=*/true,
+                  /*highest_scoring_other_bid=*/0,
+                  /*highest_scoring_other_bid_currency=*/ModeCurrency(),
+                  /*made_highest_scoring_other_bid=*/false),
               /*top_level_signals=*/
-              PostAuctionSignals(/*winning_bid=*/2,
+              PostAuctionSignals(/*winning_bid=*/ModeBid(2),
+                                 /*winning_bid_currency=*/ModeCurrency(),
                                  /*made_winning_bid=*/false),
               /*bid=*/1),
-          DebugReportUrl("https://top-seller-loss-reporting.test/",
-                         PostAuctionSignals(/*winning_bid=*/2,
-                                            /*made_winning_bid=*/false),
-                         /*bid=*/1)));
-
-  EXPECT_THAT(
-      result_.debug_win_report_urls,
-      testing::UnorderedElementsAre(
           DebugReportUrl(
-              kBidder2DebugWinReportUrl,
-              PostAuctionSignals(/*winning_bid=*/2,
-                                 /*made_winning_bid=*/true,
-                                 /*highest_scoring_other_bid=*/0,
-                                 /*made_highest_scoring_other_bid=*/false)),
-          ComponentSellerDebugReportUrl(
-              "https://component2-win-reporting.test/",
-              /*signals=*/
-              PostAuctionSignals(/*winning_bid=*/2,
-                                 /*made_winning_bid=*/true,
-                                 /*highest_scoring_other_bid=*/0,
-                                 /*made_highest_scoring_other_bid=*/false),
-              /*top_level_signals=*/
-              PostAuctionSignals(/*winning_bid=*/2,
-                                 /*made_winning_bid=*/true),
-              /*bid=*/2),
-          DebugReportUrl("https://top-seller-win-reporting.test/",
-                         PostAuctionSignals(/*winning_bid=*/2,
-                                            /*made_winning_bid=*/true),
-                         /*bid=*/2)));
+              "https://top-seller-loss-reporting.test/",
+              PostAuctionSignals(/*winning_bid=*/ModeBid(2),
+                                 /*winning_bid_currency=*/ModeCurrency(),
+                                 /*made_winning_bid=*/false),
+              /*bid=*/1)));
+
+  EXPECT_THAT(result_.debug_win_report_urls,
+              testing::UnorderedElementsAre(
+                  DebugReportUrl(
+                      kBidder2DebugWinReportUrl,
+                      PostAuctionSignals(
+                          /*winning_bid=*/ModeBid(2),
+                          /*winning_bid_currency=*/ModeCurrency(),
+                          /*made_winning_bid=*/true,
+                          /*highest_scoring_other_bid=*/0,
+                          /*highest_scoring_other_bid_currency=*/ModeCurrency(),
+                          /*made_highest_scoring_other_bid=*/false)),
+                  ComponentSellerDebugReportUrl(
+                      "https://component2-win-reporting.test/",
+                      /*signals=*/
+                      PostAuctionSignals(
+                          /*winning_bid=*/ModeBid(2),
+                          /*winning_bid_currency=*/ModeCurrency(),
+                          /*made_winning_bid=*/true,
+                          /*highest_scoring_other_bid=*/0,
+                          /*highest_scoring_other_bid_currency=*/ModeCurrency(),
+                          /*made_highest_scoring_other_bid=*/false),
+                      /*top_level_signals=*/
+                      PostAuctionSignals(
+                          /*winning_bid=*/ModeBid(2),
+                          /*winning_bid_currency=*/ModeCurrency(),
+                          /*made_winning_bid=*/true),
+                      /*bid=*/2),
+                  DebugReportUrl("https://top-seller-win-reporting.test/",
+                                 PostAuctionSignals(/*winning_bid=*/ModeBid(2),
+                                                    ModeCurrency(),
+                                                    /*made_winning_bid=*/true),
+                                 /*bid=*/2)));
 }
 
 // Test debug loss reporting in an auction with no winner. Component bidder 1 is
 // rejected by component seller, and component bidder 2 is rejected by top-level
 // seller. Component bidders get component auction's reject reason but not the
 // top-level auction's.
-TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
        ForDebuggingOnlyReportingComponentAuctionNoWinner) {
   interest_group_buyers_.emplace();
 
@@ -13821,44 +14283,52 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
   // Component bidder 1 rejected by component auction gets its reject reason
   // "invalid-bid". Component bidders don't get the top-level auction's reject
   // reason.
-  EXPECT_THAT(
-      result_.debug_loss_report_urls,
-      testing::UnorderedElementsAre(
-          DebugReportUrl(kBidder1DebugLossReportUrl,
-                         PostAuctionSignals(
-                             /*winning_bid=*/0,
-                             /*made_winning_bid=*/false,
-                             /*highest_scoring_other_bid=*/0,
-                             /*made_highest_scoring_other_bid=*/false),
-                         /*bid=*/absl::nullopt, "invalid-bid"),
-          GURL("https://component1-loss-reporting.test/?&bid=1"),
-          DebugReportUrl(kBidder2DebugLossReportUrl,
-                         PostAuctionSignals(
-                             /*winning_bid=*/2,
-                             /*made_winning_bid=*/true,
-                             /*highest_scoring_other_bid=*/0,
-                             /*made_highest_scoring_other_bid=*/false),
-                         /*bid=*/absl::nullopt, "not-available"),
-          ComponentSellerDebugReportUrl(
-              "https://component2-loss-reporting.test/",
-              /*signals=*/
-              PostAuctionSignals(/*winning_bid=*/2,
-                                 /*made_winning_bid=*/true,
-                                 /*highest_scoring_other_bid=*/0,
-                                 /*made_highest_scoring_other_bid=*/false),
-              /*top_level_signals=*/
-              PostAuctionSignals(),
-              /*bid=*/2),
-          DebugReportUrl("https://top-seller-loss-reporting.test/",
-                         PostAuctionSignals(),
-                         /*bid=*/2)));
+  EXPECT_THAT(result_.debug_loss_report_urls,
+              testing::UnorderedElementsAre(
+                  DebugReportUrl(
+                      kBidder1DebugLossReportUrl,
+                      PostAuctionSignals(
+                          /*winning_bid=*/0,
+                          /*winning_bid_currency=*/absl::nullopt,
+                          /*made_winning_bid=*/false,
+                          /*highest_scoring_other_bid=*/0,
+                          /*highest_scoring_other_bid_currency=*/absl::nullopt,
+                          /*made_highest_scoring_other_bid=*/false),
+                      /*bid=*/absl::nullopt, "invalid-bid"),
+                  GURL("https://component1-loss-reporting.test/?&bid=1"),
+                  DebugReportUrl(
+                      kBidder2DebugLossReportUrl,
+                      PostAuctionSignals(
+                          /*winning_bid=*/ModeBid(2),
+                          /*winning_bid_currency=*/ModeCurrency(),
+                          /*made_winning_bid=*/true,
+                          /*highest_scoring_other_bid=*/0,
+                          /*highest_scoring_other_bid_currency=*/absl::nullopt,
+                          /*made_highest_scoring_other_bid=*/false),
+                      /*bid=*/absl::nullopt, "not-available"),
+                  ComponentSellerDebugReportUrl(
+                      "https://component2-loss-reporting.test/",
+                      /*signals=*/
+                      PostAuctionSignals(
+                          /*winning_bid=*/ModeBid(2),
+                          /*winning_bid_currency=*/ModeCurrency(),
+                          /*made_winning_bid=*/true,
+                          /*highest_scoring_other_bid=*/0,
+                          /*highest_scoring_other_bid_currency=*/ModeCurrency(),
+                          /*made_highest_scoring_other_bid=*/false),
+                      /*top_level_signals=*/
+                      PostAuctionSignals(),
+                      /*bid=*/2),
+                  DebugReportUrl("https://top-seller-loss-reporting.test/",
+                                 PostAuctionSignals(),
+                                 /*bid=*/2)));
 
   EXPECT_THAT(result_.debug_win_report_urls, testing::UnorderedElementsAre());
 }
 
 // Test win/loss reporting in a component auction with one component with two
 // bidders.
-TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
        ForDebuggingOnlyReportingComponentAuctionOneComponent) {
   interest_group_buyers_.emplace();
 
@@ -13923,50 +14393,66 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
       testing::UnorderedElementsAre(
           DebugReportUrl(
               kBidder2DebugLossReportUrl,
-              PostAuctionSignals(/*winning_bid=*/1,
-                                 /*made_winning_bid=*/false,
-                                 /*highest_scoring_other_bid=*/0,
-                                 /*made_highest_scoring_other_bid=*/false)),
+              PostAuctionSignals(
+                  /*winning_bid=*/ModeBid(1),
+                  /*winning_bid_currency=*/ModeCurrency(),
+                  /*made_winning_bid=*/false,
+                  /*highest_scoring_other_bid=*/0,
+                  /*highest_scoring_other_bid_currency=*/absl::nullopt,
+                  /*made_highest_scoring_other_bid=*/false)),
           ComponentSellerDebugReportUrl(
               "https://component-loss-reporting.test/",
               /*signals=*/
-              PostAuctionSignals(/*winning_bid=*/1,
+              PostAuctionSignals(/*winning_bid=*/ModeBid(1),
+                                 /*winning_bid_currency=*/ModeCurrency(),
                                  /*made_winning_bid=*/false,
-                                 /*highest_scoring_other_bid=*/2,
+                                 /*highest_scoring_other_bid=*/ModeBid(2),
+                                 /*highest_scoring_other_bid_currency=*/
+                                 ModeCurrency(),
                                  /*made_highest_scoring_other_bid=*/true),
               /*top_level_signals=*/
-              PostAuctionSignals(/*winning_bid=*/1,
+              PostAuctionSignals(/*winning_bid=*/ModeBid(1),
+                                 /*winning_bid_currency=*/ModeCurrency(),
                                  /*made_winning_bid=*/false),
               /*bid=*/2)));
 
-  EXPECT_THAT(
-      result_.debug_win_report_urls,
-      testing::UnorderedElementsAre(
-          DebugReportUrl(kBidder1DebugWinReportUrl,
-                         PostAuctionSignals(
-                             /*winning_bid=*/1,
-                             /*made_winning_bid=*/true,
-                             /*highest_scoring_other_bid=*/2,
-                             /*made_highest_scoring_other_bid=*/false)),
-          ComponentSellerDebugReportUrl(
-              "https://component-win-reporting.test/",
-              /*signals=*/
-              PostAuctionSignals(/*winning_bid=*/1,
-                                 /*made_winning_bid=*/true,
-                                 /*highest_scoring_other_bid=*/2,
-                                 /*made_highest_scoring_other_bid=*/false),
-              /*top_level_signals=*/
-              PostAuctionSignals(/*winning_bid=*/1,
-                                 /*made_winning_bid=*/true),
-              /*bid=*/1),
-          DebugReportUrl("https://top-seller-win-reporting.test/",
-                         PostAuctionSignals(/*winning_bid=*/1,
-                                            /*made_winning_bid=*/true),
-                         /*bid=*/1)));
+  EXPECT_THAT(result_.debug_win_report_urls,
+              testing::UnorderedElementsAre(
+                  DebugReportUrl(
+                      kBidder1DebugWinReportUrl,
+                      PostAuctionSignals(
+                          /*winning_bid=*/ModeBid(1),
+                          /*winning_bid_currency=*/ModeCurrency(),
+                          /*made_winning_bid=*/true,
+                          /*highest_scoring_other_bid=*/ModeBid(2),
+                          /*highest_scoring_other_bid_currency=*/ModeCurrency(),
+                          /*made_highest_scoring_other_bid=*/false)),
+                  ComponentSellerDebugReportUrl(
+                      "https://component-win-reporting.test/",
+                      /*signals=*/
+                      PostAuctionSignals(
+                          /*winning_bid=*/ModeBid(1),
+                          /*winning_bid_currency=*/ModeCurrency(),
+                          /*made_winning_bid=*/true,
+                          /*highest_scoring_other_bid=*/ModeBid(2),
+                          /*highest_scoring_other_bid_currency=*/ModeCurrency(),
+                          /*made_highest_scoring_other_bid=*/false),
+                      /*top_level_signals=*/
+                      PostAuctionSignals(
+                          /*winning_bid=*/ModeBid(1),
+                          /*winning_bid_currency=*/ModeCurrency(),
+                          /*made_winning_bid=*/true),
+                      /*bid=*/1),
+                  DebugReportUrl("https://top-seller-win-reporting.test/",
+                                 PostAuctionSignals(
+                                     /*winning_bid=*/ModeBid(1),
+                                     /*winning_bid_currency=*/ModeCurrency(),
+                                     /*made_winning_bid=*/true),
+                                 /*bid=*/1)));
 }
 
 // Loss report URLs should be dropped when the seller worklet fails to load.
-TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
        ForDebuggingOnlyReportingSellerWorkletFailToLoad) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
@@ -14002,7 +14488,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
   EXPECT_EQ(0u, result_.debug_loss_report_urls.size());
 }
 
-TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
        ForDebuggingOnlyReportingBidderBadUrls) {
   const struct TestCase {
     const char* expected_error_message;
@@ -14068,7 +14554,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
   }
 }
 
-TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
        ForDebuggingOnlyReportingSellerBadUrls) {
   const struct TestCase {
     const char* expected_error_message;
@@ -14128,8 +14614,8 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
             /*reject_reason=*/
             auction_worklet::mojom::RejectReason::kNotAvailable,
             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-            /*scoring_signals_data_version=*/0,
-            /*has_scoring_signals_data_version=*/false,
+            /*bid_in_seller_currency=*/absl::nullopt,
+            /*scoring_signals_data_version=*/absl::nullopt,
             test_case.seller_debug_loss_report_url,
             test_case.seller_debug_win_report_url, /*pa_requests=*/{},
             /*errors=*/{});
@@ -14147,7 +14633,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
   }
 }
 
-TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
        ForDebuggingOnlyReportingGoodAndBadUrl) {
   StartStandardAuctionWithMockService();
   auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
@@ -14197,8 +14683,8 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           /*reject_reason=*/
           auction_worklet::mojom::RejectReason::kNotAvailable,
           auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-          /*scoring_signals_data_version=*/0,
-          /*has_scoring_signals_data_version=*/false,
+          /*bid_in_seller_currency=*/absl::nullopt,
+          /*scoring_signals_data_version=*/absl::nullopt,
           GURL("https://seller-debug-loss-reporting.com/1"),
           GURL("https://seller-debug-win-reporting.com/1"), /*pa_requests=*/{},
           /*errors=*/{});
@@ -14238,7 +14724,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
 // scripts were run to completion. The main thing this test serves to do is to
 // validate the component auction state machinery works (Waits for all bids to
 // be generated/scored, doesn't abort them early, doesn't wait for extra bids).
-TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
        LargeComponentAuction) {
   const GURL kComponentSeller3Url{"https://component.seller3.test/baz.js"};
 
@@ -14377,7 +14863,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
 
 // Reject reason returned by scoreAd() for a rejected bid can be reported to the
 // bidder through its debug loss report URL.
-TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
        RejectedBidGetsRejectReason) {
   for (const std::string& reject_reason :
        {"not-available", "invalid-bid", "bid-below-auction-floor",
@@ -14428,7 +14914,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
 
 // Reject reason returned by scoreAd() for a bid whose score is positive is
 // ignored and will not be reported to the bidder.
-TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
        RejectReasonIgnoredForPositiveBid) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
@@ -14474,7 +14960,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
 // Only bidders' debug loss report URLs support macro ${rejectReason}.
 // Bidders' debug win report URLs and sellers' debug loss/win report URLs does
 // not.
-TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
        RejectReasonInBidderDebugLossReportOnly) {
   const char kBidder1Script[] = R"(
     function generateBid(interestGroup, auctionSignals, perBuyerSignals,
@@ -14562,7 +15048,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
 
 // When scoreAd() does not return a reject reason, report it as "not-available"
 // in bidder's loss report URL as default.
-TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
        SellerNotReturningRejectReason) {
   interest_group_buyers_ = {{kBidder1}};
 
@@ -14606,6 +15092,11 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                                     "?reason=not-available"));
   EXPECT_EQ(0u, result_.debug_win_report_urls.size());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no label */,
+    AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
+    ::testing::Bool());
 
 // Disable private aggregation API.
 class AuctionRunnerPrivateAggregationAPIDisabledTest
@@ -14928,9 +15419,11 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
                                             ad2_k_anon_keys.end());
 
         expected_seller_report_url = GURL("https://reporting.example.com/2");
-        expected_report_urls.push_back(
-            ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/1,
-                         /*made_highest_scoring_other_bid=*/false));
+        expected_report_urls.push_back(ReportWinUrl(
+            /*bid=*/2, /*bid_currency=*/absl::nullopt,
+            /*highest_scoring_other_bid=*/1,
+            /*highest_scoring_other_bid_currency=*/absl::nullopt,
+            /*made_highest_scoring_other_bid=*/false));
         CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                          .SetNumInterestGroups(2)
                          .SetNumOwnersAndDistinctOwners(2)
@@ -14993,9 +15486,11 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
         expected_k_anon_keys_to_join.insert(ad2_k_anon_keys.begin(),
                                             ad2_k_anon_keys.end());
         expected_seller_report_url = GURL("https://reporting.example.com/1");
-        expected_report_urls.push_back(
-            ReportWinUrl(/*bid=*/1, /*highest_scoring_other_bid=*/0,
-                         /*made_highest_scoring_other_bid=*/false));
+        expected_report_urls.push_back(ReportWinUrl(
+            /*bid=*/1, /*bid_currency=*/absl::nullopt,
+            /*highest_scoring_other_bid=*/0,
+            /*highest_scoring_other_bid_currency=*/absl::nullopt,
+            /*made_highest_scoring_other_bid=*/false));
         CheckMetrics(
             MetricsExpectations(AuctionResult::kSuccess)
                 .SetNumInterestGroups(2)
@@ -15061,9 +15556,11 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
         expected_k_anon_keys_to_join.insert(ad2_k_anon_keys.begin(),
                                             ad2_k_anon_keys.end());
         expected_seller_report_url = GURL("https://reporting.example.com/2");
-        expected_report_urls.push_back(
-            ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/1,
-                         /*made_highest_scoring_other_bid=*/false));
+        expected_report_urls.push_back(ReportWinUrl(
+            /*bid=*/2, /*bid_currency=*/absl::nullopt,
+            /*highest_scoring_other_bid=*/1,
+            /*highest_scoring_other_bid_currency=*/absl::nullopt,
+            /*made_highest_scoring_other_bid=*/false));
         CheckMetrics(
             MetricsExpectations(AuctionResult::kSuccess)
                 .SetNumInterestGroups(2)
@@ -15199,9 +15696,11 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
         expected_k_anon_keys_to_join.insert(ad2_k_anon_keys.begin(),
                                             ad2_k_anon_keys.end());
         expected_seller_report_url = GURL("https://reporting.example.com/2");
-        expected_report_urls.push_back(
-            ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/1,
-                         /*made_highest_scoring_other_bid=*/false));
+        expected_report_urls.push_back(ReportWinUrl(
+            /*bid=*/2, /*bid_currency=*/absl::nullopt,
+            /*highest_scoring_other_bid=*/1,
+            /*highest_scoring_other_bid_currency=*/absl::nullopt,
+            /*made_highest_scoring_other_bid=*/false));
         CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                          .SetNumInterestGroups(2)
                          .SetNumOwnersAndDistinctOwners(2)
@@ -15254,9 +15753,11 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
         expected_k_anon_keys_to_join.insert(ad2_k_anon_keys.begin(),
                                             ad2_k_anon_keys.end());
         expected_seller_report_url = GURL("https://reporting.example.com/1");
-        expected_report_urls.push_back(
-            ReportWinUrl(/*bid=*/1, /*highest_scoring_other_bid=*/0,
-                         /*made_highest_scoring_other_bid=*/false));
+        expected_report_urls.push_back(ReportWinUrl(
+            /*bid=*/1, /*bid_currency=*/absl::nullopt,
+            /*highest_scoring_other_bid=*/0,
+            /*highest_scoring_other_bid_currency=*/absl::nullopt,
+            /*made_highest_scoring_other_bid=*/false));
         CheckMetrics(
             MetricsExpectations(AuctionResult::kSuccess)
                 .SetNumInterestGroups(2)
@@ -15315,9 +15816,11 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
         expected_k_anon_keys_to_join.insert(ad2_k_anon_keys.begin(),
                                             ad2_k_anon_keys.end());
         expected_seller_report_url = GURL("https://reporting.example.com/2");
-        expected_report_urls.push_back(
-            ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/1,
-                         /*made_highest_scoring_other_bid=*/false));
+        expected_report_urls.push_back(ReportWinUrl(
+            /*bid=*/2, /*bid_currency=*/absl::nullopt,
+            /*highest_scoring_other_bid=*/1,
+            /*highest_scoring_other_bid_currency=*/absl::nullopt,
+            /*made_highest_scoring_other_bid=*/false));
         CheckMetrics(
             MetricsExpectations(AuctionResult::kSuccess)
                 .SetNumInterestGroups(2)
@@ -15431,9 +15934,11 @@ TEST_P(AuctionRunnerKAnonTest, KAnonHigher) {
       // are set.
       histogram_tester_->ExpectUniqueSample(
           "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", false, 1);
-      expected_report_urls.push_back(
-          ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/1,
-                       /*made_highest_scoring_other_bid=*/false));
+      expected_report_urls.push_back(ReportWinUrl(
+          /*bid=*/2, /*bid_currency=*/absl::nullopt,
+          /*highest_scoring_other_bid=*/1,
+          /*highest_scoring_other_bid_currency=*/absl::nullopt,
+          /*made_highest_scoring_other_bid=*/false));
       CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                        .SetNumInterestGroups(2)
                        .SetNumOwnersAndDistinctOwners(2)
@@ -15462,9 +15967,11 @@ TEST_P(AuctionRunnerKAnonTest, KAnonHigher) {
       // The enforced winner is the same, but there is no runner-up.
       histogram_tester_->ExpectUniqueSample(
           "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", true, 1);
-      expected_report_urls.push_back(
-          ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/0,
-                       /*made_highest_scoring_other_bid=*/false));
+      expected_report_urls.push_back(ReportWinUrl(
+          /*bid=*/2, /*bid_currency=*/absl::nullopt,
+          /*highest_scoring_other_bid=*/0,
+          /*highest_scoring_other_bid_currency=*/absl::nullopt,
+          /*made_highest_scoring_other_bid=*/false));
       CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                        .SetNumInterestGroups(2)
                        .SetNumOwnersAndDistinctOwners(2)
@@ -15494,9 +16001,11 @@ TEST_P(AuctionRunnerKAnonTest, KAnonHigher) {
       // ad1.com also wins in the simulated mode.
       histogram_tester_->ExpectUniqueSample(
           "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", true, 1);
-      expected_report_urls.push_back(
-          ReportWinUrl(/*bid=*/2, /*highest_scoring_other_bid=*/1,
-                       /*made_highest_scoring_other_bid=*/false));
+      expected_report_urls.push_back(ReportWinUrl(
+          /*bid=*/2, /*bid_currency=*/absl::nullopt,
+          /*highest_scoring_other_bid=*/1,
+          /*highest_scoring_other_bid_currency=*/absl::nullopt,
+          /*made_highest_scoring_other_bid=*/false));
       CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                        .SetNumInterestGroups(2)
                        .SetNumOwnersAndDistinctOwners(2)
@@ -15826,8 +16335,8 @@ TEST_P(AuctionRunnerKAnonTest, MojoValidation) {
             /*reject_reason=*/
             auction_worklet::mojom::RejectReason::kNotAvailable,
             auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
-            /*scoring_signals_data_version=*/0,
-            /*has_scoring_signals_data_version=*/false,
+            /*bid_in_seller_currency=*/absl::nullopt,
+            /*scoring_signals_data_version=*/absl::nullopt,
             /*debug_loss_report_url=*/absl::nullopt,
             /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
             /*errors=*/{});

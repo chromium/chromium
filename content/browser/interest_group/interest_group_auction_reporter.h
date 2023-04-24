@@ -118,11 +118,13 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     // returned by the component seller. Otherwise, it's the bid from the
     // bidder.
     double bid;
+    double bid_in_seller_currency;
 
     // Score this seller assigned the bid.
     double score;
 
     double highest_scoring_other_bid;
+    absl::optional<double> highest_scoring_other_bid_in_seller_currency;
     absl::optional<url::Origin> highest_scoring_other_bid_owner;
 
     absl::optional<uint32_t> scoring_signals_data_version;
@@ -148,6 +150,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
     // Bid returned by the bidder.
     double bid;
+
+    // Currency the bid is in.
+    absl::optional<blink::AdCurrency> bid_currency;
 
     // Ad cost returned by the bidder.
     absl::optional<double> ad_cost;

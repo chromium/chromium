@@ -49,6 +49,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -327,6 +328,18 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
             seller_info->component_auction_modified_bid_params->has_bid);
   }
 
+  double bid = seller_info->bid;
+  absl::optional<blink::AdCurrency> bid_currency;
+  double highest_scoring_other_bid = seller_info->highest_scoring_other_bid;
+  if (seller_info->auction_config->non_shared_params.seller_currency
+          .has_value()) {
+    bid = seller_info->bid_in_seller_currency;
+    highest_scoring_other_bid =
+        seller_info->highest_scoring_other_bid_in_seller_currency.value_or(0.0);
+    bid_currency =
+        *seller_info->auction_config->non_shared_params.seller_currency;
+  }
+
   seller_worklet_handle_->AuthorizeSubresourceUrls(
       *seller_info->subresource_url_builder);
   seller_worklet_handle_->GetSellerWorklet()->ReportResult(
@@ -338,12 +351,13 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
       std::move(other_seller),
       winning_bid_info_.storage_interest_group->interest_group.owner,
       winning_bid_info_.render_url,
-      RoundStochasticallyToKBits(seller_info->bid,
-                                 kFledgeBidReportingBits.Get()),
+      RoundStochasticallyToKBits(bid, kFledgeBidReportingBits.Get()),
+      bid_currency,
       RoundStochasticallyToKBits(seller_info->score,
                                  kFledgeScoreReportingBits.Get()),
-      RoundStochasticallyToKBits(seller_info->highest_scoring_other_bid,
+      RoundStochasticallyToKBits(highest_scoring_other_bid,
                                  kFledgeBidReportingBits.Get()),
+      bid_currency,
       std::move(browser_signals_component_auction_report_result_params),
       seller_info->scoring_signals_data_version.value_or(0),
       seller_info->scoring_signals_data_version.has_value(),
@@ -542,6 +556,20 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
     noised_and_masked_modeling_signals =
         NoiseAndMaskModelingSignals(*winning_bid_info_.modeling_signals);
   }
+
+  double highest_scoring_other_bid;
+  absl::optional<blink::AdCurrency> highest_scoring_other_bid_currency;
+  bool made_highest_scoring_other_bid;
+  InterestGroupAuction::PostAuctionSignals::
+      FillRelevantHighestScoringOtherBidInfo(
+          winning_bid_info_.storage_interest_group->interest_group.owner,
+          seller_info.highest_scoring_other_bid_owner,
+          seller_info.highest_scoring_other_bid,
+          seller_info.highest_scoring_other_bid_in_seller_currency,
+          auction_config->non_shared_params.seller_currency,
+          made_highest_scoring_other_bid, highest_scoring_other_bid,
+          highest_scoring_other_bid_currency);
+
   bidder_worklet_handle_->GetBidderWorklet()->ReportWin(
       group_name, auction_config->non_shared_params.auction_signals.value(),
       per_buyer_signals,
@@ -553,12 +581,11 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
       signals_for_winner, winning_bid_info_.render_url,
       RoundStochasticallyToKBits(winning_bid_info_.bid,
                                  kFledgeBidReportingBits.Get()),
+      winning_bid_info_.bid_currency,
       /*browser_signal_highest_scoring_other_bid=*/
-      RoundStochasticallyToKBits(seller_info.highest_scoring_other_bid,
+      RoundStochasticallyToKBits(highest_scoring_other_bid,
                                  kFledgeBidReportingBits.Get()),
-      seller_info.highest_scoring_other_bid_owner.has_value() &&
-          winning_bid_info_.storage_interest_group->interest_group.owner ==
-              seller_info.highest_scoring_other_bid_owner.value(),
+      highest_scoring_other_bid_currency, made_highest_scoring_other_bid,
       rounded_ad_cost, noised_and_masked_modeling_signals,
       NoiseAndBucketJoinCount(
           // Browser signals may be null in tests.

@@ -8844,7 +8844,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
     perBuyerTimeouts: {$4: 110, $5: 120, '*': 150},
     perBuyerCumulativeTimeouts: {$4: 13000, $5: 14000, '*': 16000},
     perBuyerPrioritySignals: {$4: {foo: 1}, '*': {BaR: -2}},
-    perBuyerCurrencies: {$4: 'USD', $5: 'CAD', '*': 'EUR'}
+    perBuyerCurrencies: {$4: 'USD', $5: 'CAD', '*': 'EUR'},
+    sellerCurrency: 'EUR'
   });
 })())",
                       seller_origin, seller_script_url,
@@ -8975,7 +8976,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     perBuyerTimeouts: {$4: 110, $5: 120, '*': 150},
     perBuyerCumulativeTimeouts: {$4: 13000, $5: 14000, '*': 16000},
     perBuyerPrioritySignals: {$4: {foo: 1}, '*': {BaR: -2}},
-    perBuyerCurrencies: {$4: 'USD', $5: 'CAD', '*': 'EUR'}
+    perBuyerCurrencies: {$4: 'USD', $5: 'CAD', '*': 'EUR'},
+    sellerCurrency: 'EUR'
   });
 })())",
                       seller_origin, seller_script_url,

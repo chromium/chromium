@@ -360,6 +360,86 @@ absl::optional<blink::AdCurrency> PerBuyerCurrency(
 
 }  // namespace
 
+InterestGroupAuction::PostAuctionSignals::PostAuctionSignals() = default;
+
+InterestGroupAuction::PostAuctionSignals::PostAuctionSignals(
+    double winning_bid,
+    absl::optional<blink::AdCurrency> winning_bid_currency,
+    bool made_winning_bid)
+    : winning_bid(winning_bid),
+      winning_bid_currency(std::move(winning_bid_currency)),
+      made_winning_bid(made_winning_bid) {}
+
+InterestGroupAuction::PostAuctionSignals::PostAuctionSignals(
+    double winning_bid,
+    absl::optional<blink::AdCurrency> winning_bid_currency,
+    bool made_winning_bid,
+    double highest_scoring_other_bid,
+    absl::optional<blink::AdCurrency> highest_scoring_other_bid_currency,
+    bool made_highest_scoring_other_bid)
+    : winning_bid(winning_bid),
+      winning_bid_currency(std::move(winning_bid_currency)),
+      made_winning_bid(made_winning_bid),
+      highest_scoring_other_bid(highest_scoring_other_bid),
+      highest_scoring_other_bid_currency(
+          std::move(highest_scoring_other_bid_currency)),
+      made_highest_scoring_other_bid(made_highest_scoring_other_bid) {}
+
+InterestGroupAuction::PostAuctionSignals::~PostAuctionSignals() = default;
+
+// static
+void InterestGroupAuction::PostAuctionSignals::FillWinningBidInfo(
+    const url::Origin& owner,
+    absl::optional<url::Origin> winner_owner,
+    double winning_bid,
+    absl::optional<double> winning_bid_in_seller_currency,
+    const absl::optional<blink::AdCurrency>& seller_currency,
+    bool& out_made_winning_bid,
+    double& out_winning_bid,
+    absl::optional<blink::AdCurrency>& out_winning_bid_currency) {
+  out_made_winning_bid = false;
+  if (winner_owner.has_value()) {
+    out_made_winning_bid = owner == *winner_owner;
+  }
+
+  if (seller_currency.has_value()) {
+    out_winning_bid = winning_bid_in_seller_currency.value_or(0.0);
+    out_winning_bid_currency = *seller_currency;
+  } else {
+    out_winning_bid = winning_bid;
+    out_winning_bid_currency = absl::nullopt;
+  }
+}
+
+// static
+void InterestGroupAuction::PostAuctionSignals::
+    FillRelevantHighestScoringOtherBidInfo(
+        const url::Origin& owner,
+        absl::optional<url::Origin> highest_scoring_other_bid_owner,
+        double highest_scoring_other_bid,
+        absl::optional<double> highest_scoring_other_bid_in_seller_currency,
+        const absl::optional<blink::AdCurrency>& seller_currency,
+        bool& out_made_highest_scoring_other_bid,
+        double& out_highest_scoring_other_bid,
+        absl::optional<blink::AdCurrency>&
+            out_highest_scoring_other_bid_currency) {
+  out_made_highest_scoring_other_bid = false;
+  if (highest_scoring_other_bid_owner.has_value()) {
+    DCHECK_GT(highest_scoring_other_bid, 0);
+    out_made_highest_scoring_other_bid =
+        owner == highest_scoring_other_bid_owner.value();
+  }
+
+  if (seller_currency.has_value()) {
+    out_highest_scoring_other_bid =
+        highest_scoring_other_bid_in_seller_currency.value_or(0);
+    out_highest_scoring_other_bid_currency = *seller_currency;
+  } else {
+    out_highest_scoring_other_bid = highest_scoring_other_bid;
+    out_highest_scoring_other_bid_currency = absl::nullopt;
+  }
+}
+
 InterestGroupAuction::BidState::BidState() = default;
 
 InterestGroupAuction::BidState::~BidState() {
@@ -464,11 +544,13 @@ InterestGroupAuction::ScoredBid::ScoredBid(
     double score,
     absl::optional<uint32_t> scoring_signals_data_version,
     std::unique_ptr<Bid> bid,
+    absl::optional<double> bid_in_seller_currency,
     auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr
         component_auction_modified_bid_params)
     : score(score),
       scoring_signals_data_version(scoring_signals_data_version),
       bid(std::move(bid)),
+      bid_in_seller_currency(std::move(bid_in_seller_currency)),
       component_auction_modified_bid_params(
           std::move(component_auction_modified_bid_params)) {
   DCHECK_GT(score, 0);
@@ -739,11 +821,15 @@ class InterestGroupAuction::BuyerHelper
       }
       if (bid_state->bidder_debug_loss_report_url.has_value()) {
         // Losing and rejected bidders should not get highest_scoring_other_bid
-        // and made_highest_scoring_other_bid signals.
+        // and made_highest_scoring_other_bid signals. (And also the currency
+        // bit for those).
         debug_loss_report_urls.emplace_back(FillPostAuctionSignals(
             std::move(bid_state->bidder_debug_loss_report_url).value(),
-            PostAuctionSignals(signals.winning_bid, signals.made_winning_bid,
-                               0.0, false),
+            PostAuctionSignals(
+                signals.winning_bid, signals.winning_bid_currency,
+                signals.made_winning_bid, /*highest_scoring_other_bid=*/0.0,
+                /*highest_scoring_other_bid_currency=*/absl::nullopt,
+                /*made_highest_scoring_other_bid=*/false),
             /*top_level_signals=*/absl::nullopt, bid_state->reject_reason));
       }
       // TODO(qingxinwu): Add reject reason to seller debug loss report as well.
@@ -1857,10 +1943,21 @@ InterestGroupAuction::CreateReporter(
   // the bid was from the top-level auction, and the original top bid from the
   // component auction, otherwise, so will always be the bid returned by the
   // winning bidder's generateBid() method.
-  winning_bid_info.bid = winner->bid->auction->top_bid()->bid->bid;
-  winning_bid_info.ad_cost = winner->bid->auction->top_bid()->bid->ad_cost;
-  winning_bid_info.modeling_signals =
-      winner->bid->auction->top_bid()->bid->modeling_signals;
+  const InterestGroupAuction::Bid* bidder_bid =
+      winner->bid->auction->top_bid()->bid.get();
+  winning_bid_info.bid = bidder_bid->bid;
+  winning_bid_info.bid_currency = bidder_bid->bid_currency;
+  // We redact the bid currency if it's not a concrete currency from the config,
+  // to avoid the bidder being able to leak ~14 bits of information if the
+  // bidder currency configuration is not restrictive.
+  absl::optional<blink::AdCurrency> config_currency = PerBuyerCurrency(
+      bidder_bid->interest_group->owner, *bidder_bid->auction->config_);
+  if (!config_currency.has_value()) {
+    winning_bid_info.bid_currency = absl::nullopt;
+  }
+
+  winning_bid_info.ad_cost = bidder_bid->ad_cost;
+  winning_bid_info.modeling_signals = bidder_bid->modeling_signals;
   winning_bid_info.bid_duration = winner->bid->bid_duration;
   winning_bid_info.bidding_signals_data_version =
       winner->bid->bidding_signals_data_version;
@@ -1883,9 +1980,14 @@ InterestGroupAuction::CreateReporter(
   top_level_seller_winning_bid_info.subresource_url_builder =
       std::move(subresource_url_builder_);
   top_level_seller_winning_bid_info.bid = winner->bid->bid;
+  top_level_seller_winning_bid_info.bid_in_seller_currency =
+      winner->bid_in_seller_currency.value_or(0.0);
   top_level_seller_winning_bid_info.score = winner->score;
   top_level_seller_winning_bid_info.highest_scoring_other_bid =
       leader.highest_scoring_other_bid;
+  top_level_seller_winning_bid_info
+      .highest_scoring_other_bid_in_seller_currency =
+      leader.highest_scoring_other_bid_in_seller_currency;
   top_level_seller_winning_bid_info.highest_scoring_other_bid_owner =
       leader.highest_scoring_other_bid_owner;
   top_level_seller_winning_bid_info.scoring_signals_data_version =
@@ -1914,9 +2016,14 @@ InterestGroupAuction::CreateReporter(
         std::move(component_auction->subresource_url_builder_);
     const LeaderInfo& component_leader = component_auction->leader_info();
     component_seller_winning_bid_info->bid = component_leader.top_bid->bid->bid;
+    component_seller_winning_bid_info->bid_in_seller_currency =
+        component_leader.top_bid->bid_in_seller_currency.value_or(0.0);
     component_seller_winning_bid_info->score = component_leader.top_bid->score;
     component_seller_winning_bid_info->highest_scoring_other_bid =
         component_leader.highest_scoring_other_bid;
+    component_seller_winning_bid_info
+        ->highest_scoring_other_bid_in_seller_currency =
+        component_leader.highest_scoring_other_bid_in_seller_currency;
     component_seller_winning_bid_info->highest_scoring_other_bid_owner =
         component_leader.highest_scoring_other_bid_owner;
     component_seller_winning_bid_info->scoring_signals_data_version =
@@ -2070,6 +2177,9 @@ GURL InterestGroupAuction::FillPostAuctionSignals(
   std::string query_string = url.query();
   base::ReplaceSubstringsAfterOffset(&query_string, 0, "${winningBid}",
                                      base::NumberToString(signals.winning_bid));
+  base::ReplaceSubstringsAfterOffset(
+      &query_string, 0, "${winningBidCurrency}",
+      blink::PrintableAdCurrency(signals.winning_bid_currency));
 
   base::ReplaceSubstringsAfterOffset(
       &query_string, 0, "${madeWinningBid}",
@@ -2077,6 +2187,9 @@ GURL InterestGroupAuction::FillPostAuctionSignals(
   base::ReplaceSubstringsAfterOffset(
       &query_string, 0, "${highestScoringOtherBid}",
       base::NumberToString(signals.highest_scoring_other_bid));
+  base::ReplaceSubstringsAfterOffset(
+      &query_string, 0, "${highestScoringOtherBidCurrency}",
+      blink::PrintableAdCurrency(signals.highest_scoring_other_bid_currency));
   base::ReplaceSubstringsAfterOffset(
       &query_string, 0, "${madeHighestScoringOtherBid}",
       signals.made_highest_scoring_other_bid ? "true" : "false");
@@ -2089,6 +2202,9 @@ GURL InterestGroupAuction::FillPostAuctionSignals(
     base::ReplaceSubstringsAfterOffset(
         &query_string, 0, "${topLevelWinningBid}",
         base::NumberToString(top_level_signals->winning_bid));
+    base::ReplaceSubstringsAfterOffset(
+        &query_string, 0, "${topLevelWinningBidCurrency}",
+        blink::PrintableAdCurrency(top_level_signals->winning_bid_currency));
     base::ReplaceSubstringsAfterOffset(
         &query_string, 0, "${topLevelMadeWinningBid}",
         top_level_signals->made_winning_bid ? "true" : "false");
@@ -2223,8 +2339,7 @@ void InterestGroupAuction::
 
   // `signals` includes post auction signals from current auction.
   PostAuctionSignals signals;
-  signals.winning_bid = leader.top_bid ? leader.top_bid->bid->bid : 0.0;
-  signals.highest_scoring_other_bid = leader.highest_scoring_other_bid;
+
   // `top_level_signals` includes post auction signals from top-level auction.
   // Will only will be used in debug report URLs of top-level seller and
   // component sellers.
@@ -2232,10 +2347,7 @@ void InterestGroupAuction::
   // (not second-price auction) and it does not need highest_scoring_other_bid.
   absl::optional<PostAuctionSignals> top_level_signals;
   if (parent_) {
-    ScoredBid* parent_top_bid = parent_->top_bid();
-    top_level_signals = PostAuctionSignals();
-    top_level_signals->winning_bid =
-        parent_top_bid ? parent_top_bid->bid->bid : 0.0;
+    top_level_signals.emplace();
   }
 
   if (!leader.top_bid) {
@@ -2246,18 +2358,30 @@ void InterestGroupAuction::
   for (const auto& buyer_helper : buyer_helpers_) {
     const url::Origin& owner = buyer_helper->owner();
     if (leader.top_bid) {
-      signals.made_winning_bid =
-          owner == leader.top_bid->bid->interest_group->owner;
+      PostAuctionSignals::FillWinningBidInfo(
+          owner, leader.top_bid->bid->interest_group->owner,
+          leader.top_bid->bid->bid, leader.top_bid->bid_in_seller_currency,
+          config_->non_shared_params.seller_currency, signals.made_winning_bid,
+          signals.winning_bid, signals.winning_bid_currency);
     }
 
-    if (leader.highest_scoring_other_bid_owner.has_value()) {
-      DCHECK_GT(leader.highest_scoring_other_bid, 0);
-      signals.made_highest_scoring_other_bid =
-          owner == leader.highest_scoring_other_bid_owner.value();
-    }
+    PostAuctionSignals::FillRelevantHighestScoringOtherBidInfo(
+        owner, leader.highest_scoring_other_bid_owner,
+        leader.highest_scoring_other_bid,
+        leader.highest_scoring_other_bid_in_seller_currency,
+        config_->non_shared_params.seller_currency,
+        signals.made_highest_scoring_other_bid,
+        signals.highest_scoring_other_bid,
+        signals.highest_scoring_other_bid_currency);
+
     if (parent_ && parent_->top_bid()) {
-      top_level_signals->made_winning_bid =
-          owner == parent_->top_bid()->bid->interest_group->owner;
+      PostAuctionSignals::FillWinningBidInfo(
+          owner, parent_->top_bid()->bid->interest_group->owner,
+          parent_->top_bid()->bid->bid,
+          parent_->top_bid()->bid_in_seller_currency,
+          parent_->config_->non_shared_params.seller_currency,
+          top_level_signals->made_winning_bid, top_level_signals->winning_bid,
+          top_level_signals->winning_bid_currency);
     }
 
     buyer_helper->TakeDebugReportUrls(winner, signals, top_level_signals,
@@ -2915,6 +3039,7 @@ bool InterestGroupAuction::ValidateScoreBidCompleteResult(
     double score,
     auction_worklet::mojom::ComponentAuctionModifiedBidParams*
         component_auction_modified_bid_params,
+    absl::optional<double> bid_in_seller_currency,
     const absl::optional<GURL>& debug_loss_report_url,
     const absl::optional<GURL>& debug_win_report_url) {
   // If `debug_loss_report_url` or `debug_win_report_url` is not a valid HTTPS
@@ -2966,6 +3091,12 @@ bool InterestGroupAuction::ValidateScoreBidCompleteResult(
       }
     }
   }
+  if (bid_in_seller_currency.has_value() &&
+      (!IsValidBid(*bid_in_seller_currency) ||
+       !config_->non_shared_params.seller_currency.has_value())) {
+    score_ad_receivers_.ReportBadMessage("Invalid bid_in_seller_currency");
+    return false;
+  }
   return true;
 }
 
@@ -2974,8 +3105,8 @@ void InterestGroupAuction::OnScoreAdComplete(
     auction_worklet::mojom::RejectReason reject_reason,
     auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr
         component_auction_modified_bid_params,
-    uint32_t data_version,
-    bool has_data_version,
+    absl::optional<double> bid_in_seller_currency,
+    absl::optional<uint32_t> scoring_signals_data_version,
     const absl::optional<GURL>& debug_loss_report_url,
     const absl::optional<GURL>& debug_win_report_url,
     PrivateAggregationRequests pa_requests,
@@ -2984,7 +3115,8 @@ void InterestGroupAuction::OnScoreAdComplete(
 
   if (!ValidateScoreBidCompleteResult(
           score, component_auction_modified_bid_params.get(),
-          debug_loss_report_url, debug_win_report_url)) {
+          bid_in_seller_currency, debug_loss_report_url,
+          debug_win_report_url)) {
     OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
     return;
   }
@@ -3059,13 +3191,15 @@ void InterestGroupAuction::OnScoreAdComplete(
       case Bid::BidRole::kUnenforcedKAnon:
         UpdateAuctionLeaders(std::move(bid), score,
                              std::move(component_auction_modified_bid_params),
-                             data_version, has_data_version,
+                             bid_in_seller_currency,
+                             scoring_signals_data_version,
                              non_kanon_enforced_auction_leader_);
         break;
       case Bid::BidRole::kEnforcedKAnon:
         UpdateAuctionLeaders(std::move(bid), score,
                              std::move(component_auction_modified_bid_params),
-                             data_version, has_data_version,
+                             bid_in_seller_currency,
+                             scoring_signals_data_version,
                              kanon_enforced_auction_leader_);
         break;
       case Bid::BidRole::kBothKAnonModes: {
@@ -3077,11 +3211,13 @@ void InterestGroupAuction::OnScoreAdComplete(
                       ComponentAuctionModifiedBidParamsPtr();
         UpdateAuctionLeaders(std::move(bid), score,
                              std::move(component_auction_modified_bid_params),
-                             data_version, has_data_version,
+                             bid_in_seller_currency,
+                             scoring_signals_data_version,
                              non_kanon_enforced_auction_leader_);
-        UpdateAuctionLeaders(std::move(bid_copy), score,
-                             std::move(modified_bid_params_copy), data_version,
-                             has_data_version, kanon_enforced_auction_leader_);
+        UpdateAuctionLeaders(
+            std::move(bid_copy), score, std::move(modified_bid_params_copy),
+            bid_in_seller_currency, scoring_signals_data_version,
+            kanon_enforced_auction_leader_);
       }
     }
   }
@@ -3099,8 +3235,8 @@ void InterestGroupAuction::UpdateAuctionLeaders(
     double score,
     auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr
         component_auction_modified_bid_params,
-    uint32_t data_version,
-    bool has_data_version,
+    absl::optional<double> bid_in_seller_currency,
+    absl::optional<uint32_t> scoring_signals_data_version,
     LeaderInfo& leader_info) {
   bool is_top_bid = false;
   const url::Origin& owner = bid->interest_group->owner;
@@ -3112,6 +3248,7 @@ void InterestGroupAuction::UpdateAuctionLeaders(
     if (leader_info.top_bid) {
       OnNewHighestScoringOtherBid(
           leader_info.top_bid->score, leader_info.top_bid->bid->bid,
+          leader_info.top_bid->bid_in_seller_currency,
           &leader_info.top_bid->bid->interest_group->owner, leader_info);
     }
     leader_info.num_top_bids = 1;
@@ -3132,32 +3269,41 @@ void InterestGroupAuction::UpdateAuctionLeaders(
     // bid.
     double new_highest_scoring_other_bid =
         is_top_bid ? leader_info.top_bid->bid->bid : bid->bid;
-    OnNewHighestScoringOtherBid(score, new_highest_scoring_other_bid,
-                                leader_info.at_most_one_top_bid_owner
-                                    ? &bid->interest_group->owner
-                                    : nullptr,
-                                leader_info);
+    absl::optional<double> new_highest_scoring_other_bid_in_seller_currency =
+        is_top_bid ? leader_info.top_bid->bid_in_seller_currency
+                   : bid_in_seller_currency;
+    OnNewHighestScoringOtherBid(
+        score, new_highest_scoring_other_bid,
+        new_highest_scoring_other_bid_in_seller_currency,
+        leader_info.at_most_one_top_bid_owner ? &bid->interest_group->owner
+                                              : nullptr,
+        leader_info);
   } else if (score >= leader_info.second_highest_score) {
     // Also use this bid (the most recent one) as highest scoring other bid if
     // there's a tie for second highest score.
-    OnNewHighestScoringOtherBid(score, bid->bid, &owner, leader_info);
+    OnNewHighestScoringOtherBid(score, bid->bid, bid_in_seller_currency, &owner,
+                                leader_info);
   }
 
   if (is_top_bid) {
     leader_info.top_bid = std::make_unique<ScoredBid>(
-        score, has_data_version ? data_version : absl::optional<uint32_t>(),
-        std::move(bid), std::move(component_auction_modified_bid_params));
+        score, std::move(scoring_signals_data_version), std::move(bid),
+        std::move(bid_in_seller_currency),
+        std::move(component_auction_modified_bid_params));
   }
 }
 
 void InterestGroupAuction::OnNewHighestScoringOtherBid(
     double score,
     double bid_value,
+    absl::optional<double> bid_in_seller_currency,
     const url::Origin* owner,
     LeaderInfo& leader_info) {
   // Current (the most recent) bid becomes highest scoring other bid.
   if (score > leader_info.second_highest_score) {
     leader_info.highest_scoring_other_bid = bid_value;
+    leader_info.highest_scoring_other_bid_in_seller_currency =
+        bid_in_seller_currency;
     leader_info.num_second_highest_bids = 1;
     // Owner may be false if this is one of the bids tied for first place.
     if (!owner) {
@@ -3178,6 +3324,8 @@ void InterestGroupAuction::OnNewHighestScoringOtherBid(
   // stream with fixed storage problem.
   if (1 == base::RandInt(1, leader_info.num_second_highest_bids)) {
     leader_info.highest_scoring_other_bid = bid_value;
+    leader_info.highest_scoring_other_bid_in_seller_currency =
+        bid_in_seller_currency;
   }
 }
 

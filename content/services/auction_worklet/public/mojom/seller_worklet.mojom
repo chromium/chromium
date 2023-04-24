@@ -80,6 +80,10 @@ interface ScoreAdClient {
   //  of 0 indicates either an error running the script, or that the script
   //  indicated the bid should not be used.
   //
+  // `bid_in_seller_currency` If present, denotes the conversion of bidder's
+  //  bid to seller's currency. Should be present only when auction
+  //  configuration specifies what the seller currency is.
+  //
   // `reject_reason` The reason this bid was rejected by the auction (i.e., the
   //  reason why `score` was non-positive). Default to kNotAvailable if not set.
   //  Will be ignored if `score` is positive.
@@ -89,11 +93,7 @@ interface ScoreAdClient {
   //  in place of values from the original bidder worklet's BidderWorkletBid.
   //
   // `scoring_signals_data_version` The value of the Data-Version header served
-  //  with the trusted scoring signals.
-  //
-  // `has_scoring_signals_data_version` True to indicate Data-Version header
-  //  was present in the HTTP response for the trusted scoring signals.
-  //  TODO(https://crbug.com/657632): Update when optional integers supported.
+  //  with the trusted scoring signals. nullopt when the header wasn't present.
   //
   // `debug_loss_report_url` The URL to request if this bid does not win the
   //  auction. It's requested if the auction runs to completion and this is not
@@ -117,8 +117,8 @@ interface ScoreAdClient {
                     RejectReason reject_reason,
                     ComponentAuctionModifiedBidParams?
                         component_auction_modified_bid_params,
-                    uint32 scoring_signals_data_version,
-                    bool has_scoring_signals_data_version,
+                    double? bid_in_seller_currency,
+                    uint32? scoring_signals_data_version,
                     url.mojom.Url? debug_loss_report_url,
                     url.mojom.Url? debug_win_report_url,
                     array<PrivateAggregationRequest> pa_requests,
@@ -265,11 +265,22 @@ interface SellerWorklet {
   //
   // `browser_signal_bid` The numeric value of the winning bid.
   //
+  // `browser_signal_bid_currency` The currency the bid is in. This is either
+  //  the sellerCurrency from auction configuration, or unset to denote it's in
+  //  the bidder's currency.
+  //
   // `browser_signal_desirability` The score returned by ScoreAd for the
   //  winning bid.
   //
   // `browser_signal_highest_scoring_other_bid` The numeric value of the bid
-  //  that got the second highest score.
+  //  that got the second highest score, or 0 if it's not available, either
+  //  because there is no such thing or because no currency conversion was
+  //  performed.
+  //
+  // `browser_signal_highest_scoring_other_bid_currency` The currency associated
+  //  with `browser_signal_highest_scoring_other_bid`. This is either the
+  //  sellerCurrency from auction configuration, if it's set, or nullopt to
+  //  denote it's in the bidder's currency.
   //
   // `browser_signals_component_auction_report_result_params` Extra parameters
   //  passed to the component auction's ReportResult() method. Should be null
@@ -310,8 +321,10 @@ interface SellerWorklet {
       url.mojom.Origin browser_signal_interest_group_owner,
       url.mojom.Url browser_signal_render_url,
       double browser_signal_bid,
+      blink.mojom.AdCurrency? browser_signal_bid_currency,
       double browser_signal_desirability,
       double browser_signal_highest_scoring_other_bid,
+      blink.mojom.AdCurrency? browser_signal_highest_scoring_other_bid_currency,
       ComponentAuctionReportResultParams?
           browser_signals_component_auction_report_result_params,
       uint32 scoring_signals_data_version,
