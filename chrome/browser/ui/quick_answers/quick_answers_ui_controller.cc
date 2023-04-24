@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
+#include "chrome/browser/ui/quick_answers/ui/rich_answers_translation_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_view.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
@@ -106,6 +107,10 @@ void QuickAnswersUiController::OnQuickAnswersViewPressed() {
       controller_->quick_answer() != nullptr &&
       controller_->quick_answer()->result_type !=
           quick_answers::ResultType::kNoResult) {
+    // TODO(b/279061152): Build result type specific rich answers view with
+    // reading `controller_->structured_result()`. Note that each result type
+    // will be copyable, i.e. we can copy a struct to a view without worrying
+    // about object-life-time management.
     auto* const rich_answers_view = new quick_answers::RichAnswersView(
         quick_answers_view_tracker_.view()->bounds(),
         weak_factory_.GetWeakPtr(), *controller_->quick_answer());

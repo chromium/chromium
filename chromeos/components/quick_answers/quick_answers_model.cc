@@ -36,4 +36,13 @@ QuickAnswersRequest::QuickAnswersRequest(const QuickAnswersRequest& other) =
     default;
 QuickAnswersRequest::~QuickAnswersRequest() = default;
 
+TranslationResult::TranslationResult() = default;
+TranslationResult::~TranslationResult() = default;
+
+StructuredResult::StructuredResult() = default;
+StructuredResult::~StructuredResult() = default;
+
+QuickAnswersSession::QuickAnswersSession() = default;
+QuickAnswersSession::~QuickAnswersSession() = default;
+
 }  // namespace quick_answers

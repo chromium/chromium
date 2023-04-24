@@ -25,7 +25,8 @@ class MockQuickAnswersDelegate : public QuickAnswersDelegate {
   MockQuickAnswersDelegate& operator=(const MockQuickAnswersDelegate&) = delete;
 
   // QuickAnswersClient::QuickAnswersDelegate:
-  MOCK_METHOD1(OnQuickAnswerReceived, void(std::unique_ptr<QuickAnswer>));
+  MOCK_METHOD1(OnQuickAnswerReceived,
+               void(std::unique_ptr<QuickAnswersSession>));
   MOCK_METHOD1(OnRequestPreprocessFinished, void(const QuickAnswersRequest&));
   MOCK_METHOD0(OnNetworkError, void());
 };
@@ -41,7 +42,8 @@ class MockResultLoaderDelegate : public ResultLoader::ResultLoaderDelegate {
 
   // ResultLoader::ResultLoaderDelegate:
   MOCK_METHOD0(OnNetworkError, void());
-  MOCK_METHOD1(OnQuickAnswerReceived, void(std::unique_ptr<QuickAnswer>));
+  MOCK_METHOD1(OnQuickAnswerReceived,
+               void(std::unique_ptr<QuickAnswersSession>));
 };
 
 MATCHER_P(QuickAnswerEqual, quick_answer, "") {

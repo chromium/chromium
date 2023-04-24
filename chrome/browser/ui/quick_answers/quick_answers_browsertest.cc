@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -50,6 +51,9 @@ constexpr char16_t kTestNotificationTitle[] = u"title";
 constexpr char16_t kTestNotificationMessage[] = u"message";
 constexpr char16_t kTestNotificationDisplaySource[] = u"display-source";
 constexpr char kTestNotificationOriginUrl[] = "https://example.com/";
+
+constexpr char16_t kSourceText[] = u"prodotto";
+constexpr char16_t kTranslatedText[] = u"product";
 
 constexpr int kFakeImageWidth = 300;
 constexpr int kFakeImageHeight = 300;
@@ -237,12 +241,28 @@ IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
   quick_answer->title.push_back(
       std::make_unique<quick_answers::QuickAnswerText>(
           l10n_util::GetStringFUTF8(IDS_QUICK_ANSWERS_TRANSLATION_TITLE_TEXT,
-                                    u"prodotto", u"Italian")));
+                                    kSourceText, u"Italian")));
   quick_answer->first_answer_row.push_back(
       std::make_unique<quick_answers::QuickAnswerResultText>(
-          l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_TRANSLATION_INTENT)));
+          base::UTF16ToUTF8(kTranslatedText)));
+
+  std::unique_ptr<TranslationResult> translation_result =
+      std::make_unique<TranslationResult>();
+  translation_result->text_to_translate = kSourceText;
+  translation_result->translated_text = kTranslatedText;
+  translation_result->target_locale = "en";
+  translation_result->source_locale = "it";
+
+  std::unique_ptr<QuickAnswersSession> quick_answers_session =
+      std::make_unique<QuickAnswersSession>();
+  quick_answers_session->quick_answer = std::move(quick_answer);
+  quick_answers_session->structured_result =
+      std::make_unique<StructuredResult>();
+  quick_answers_session->structured_result->translation_result =
+      std::move(translation_result);
+
   controller()->GetQuickAnswersDelegate()->OnQuickAnswerReceived(
-      std::move(quick_answer));
+      std::move(quick_answers_session));
 
   // Click on the quick answers view to trigger the rich answers view.
   views::NamedWidgetShownWaiter rich_answers_view_widget_waiter(

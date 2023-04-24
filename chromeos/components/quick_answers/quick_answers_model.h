@@ -224,6 +224,57 @@ struct QuickAnswersRequest {
   // links, etc).
 };
 
+// `TranslationResult` holds result for translation intent.
+// `TranslationResult` must be copyable as it can be copied to a view.
+struct TranslationResult {
+ public:
+  TranslationResult();
+  ~TranslationResult();
+
+  std::u16string text_to_translate;
+  std::u16string translated_text;
+  std::string source_locale;
+  std::string target_locale;
+};
+
+// `StructuredResult` is NOT copyable as it's not trivial to make a class with
+// unique_ptr to copyable.
+class StructuredResult {
+ public:
+  StructuredResult();
+  ~StructuredResult();
+  StructuredResult(const StructuredResult&) = delete;
+  StructuredResult& operator=(const StructuredResult) = delete;
+
+  // Result type specific structs must be copyable.
+  std::unique_ptr<TranslationResult> translation_result;
+};
+
+// `QuickAnswersSession` holds states related to a single Quick Answer session.
+//
+// This class currently holds results in `QuickAnswer` and `StructuredResult`.
+// `QuickAnswer` field is used by `QuickAnswersView`. Rich Answers will read
+// `StructuredResult`. Note that `QuickAnswer` is populated by using information
+// in `StructuredResult`, i.e. `StructuredResult` is a super-set of
+// `QuickAnswer`.
+//
+// Longer term plan is to migrate other states to this class, e.g. intent.
+//
+// `QuickAnswersSession` is NOT copyable as it's not trivial to make a class
+// with unique_ptr to copyable.
+class QuickAnswersSession {
+ public:
+  QuickAnswersSession();
+  ~QuickAnswersSession();
+  QuickAnswersSession(const QuickAnswersSession&) = delete;
+  QuickAnswersSession& operator=(const QuickAnswersSession) = delete;
+
+  // TODO(b/278929409): Once we migrate all result types to `StructuredResult`,
+  // populate `QuickAnswer` outside of ResultParsers.
+  std::unique_ptr<QuickAnswer> quick_answer;
+  std::unique_ptr<StructuredResult> structured_result;
+};
+
 }  // namespace quick_answers
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_QUICK_ANSWERS_MODEL_H_

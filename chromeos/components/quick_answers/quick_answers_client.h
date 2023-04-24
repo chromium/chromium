@@ -22,7 +22,6 @@ class SharedURLLoaderFactory;
 namespace quick_answers {
 
 class SpellChecker;
-struct QuickAnswer;
 struct QuickAnswersRequest;
 struct IntentInfo;
 enum class IntentType;
@@ -34,10 +33,11 @@ class QuickAnswersDelegate {
   QuickAnswersDelegate(const QuickAnswersDelegate&) = delete;
   QuickAnswersDelegate& operator=(const QuickAnswersDelegate&) = delete;
 
-  // Invoked when the |quick_answer| is received. Note that |quick_answer| may
-  // be |nullptr| if no answer found for the selected content.
+  // Invoked when the `quick_answers_session` is received. Note that
+  // `quick_answers_session` may be `nullptr` if no answer found for the
+  // selected content.
   virtual void OnQuickAnswerReceived(
-      std::unique_ptr<QuickAnswer> quick_answer) {}
+      std::unique_ptr<QuickAnswersSession> quick_answers_session) {}
 
   // Invoked when the query is rewritten.
   virtual void OnRequestPreprocessFinished(
@@ -76,7 +76,7 @@ class QuickAnswersClient : public ResultLoader::ResultLoaderDelegate {
   // ResultLoaderDelegate:
   void OnNetworkError() override;
   void OnQuickAnswerReceived(
-      std::unique_ptr<QuickAnswer> quick_answer) override;
+      std::unique_ptr<QuickAnswersSession> quick_answers_session) override;
 
   // Send a quick answer request for preprocessing only.
   void SendRequestForPreprocessing(

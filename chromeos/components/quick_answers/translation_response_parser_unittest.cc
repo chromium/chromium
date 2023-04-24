@@ -34,8 +34,8 @@ class TranslationResponseParserTest : public testing::Test {
   }
 
   void TranslationResponseParserCallback(
-      std::unique_ptr<QuickAnswer> quick_answer) {
-    quick_answer_ = std::move(quick_answer);
+      std::unique_ptr<TranslationResult> translation_result) {
+    translation_result_ = std::move(translation_result);
     run_loop_->Quit();
   }
 
@@ -47,7 +47,7 @@ class TranslationResponseParserTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<TranslationResponseParser> translation_response_parser_;
-  std::unique_ptr<QuickAnswer> quick_answer_;
+  std::unique_ptr<TranslationResult> translation_result_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
@@ -64,16 +64,11 @@ TEST_F(TranslationResponseParserTest, ProcessResponseSuccess) {
       }
     }
   )";
-  constexpr char kTranslationTitle[] = "testo tradotto · Italian";
   translation_response_parser_->ProcessResponse(
-      std::make_unique<std::string>(kTranslationResponse), kTranslationTitle);
+      std::make_unique<std::string>(kTranslationResponse));
   WaitForResponse();
-  EXPECT_TRUE(quick_answer_);
-  EXPECT_EQ("translated text",
-            GetQuickAnswerTextForTesting(quick_answer_->first_answer_row));
-  EXPECT_EQ(kTranslationTitle,
-            GetQuickAnswerTextForTesting(quick_answer_->title));
-  EXPECT_EQ(ResultType::kTranslationResult, quick_answer_->result_type);
+  ASSERT_TRUE(translation_result_);
+  EXPECT_EQ(u"translated text", translation_result_->translated_text);
 }
 
 TEST_F(TranslationResponseParserTest,
@@ -89,17 +84,12 @@ TEST_F(TranslationResponseParserTest,
       }
     }
   )";
-  constexpr char kTranslationTitle[] = "non scherzare con me · Italian";
   translation_response_parser_->ProcessResponse(
-      std::make_unique<std::string>(kTranslationResponse), kTranslationTitle);
+      std::make_unique<std::string>(kTranslationResponse));
   WaitForResponse();
-  EXPECT_TRUE(quick_answer_);
+  ASSERT_TRUE(translation_result_);
   // Should correctly unescape ampersand character codes.
-  EXPECT_EQ("don't mess with me",
-            GetQuickAnswerTextForTesting(quick_answer_->first_answer_row));
-  EXPECT_EQ(kTranslationTitle,
-            GetQuickAnswerTextForTesting(quick_answer_->title));
-  EXPECT_EQ(ResultType::kTranslationResult, quick_answer_->result_type);
+  EXPECT_EQ(u"don't mess with me", translation_result_->translated_text);
 }
 
 TEST_F(TranslationResponseParserTest, ProcessResponseNoResults) {
@@ -107,16 +97,16 @@ TEST_F(TranslationResponseParserTest, ProcessResponseNoResults) {
     {}
   )";
   translation_response_parser_->ProcessResponse(
-      std::make_unique<std::string>(kTranslationResponse), std::string());
+      std::make_unique<std::string>(kTranslationResponse));
   WaitForResponse();
-  EXPECT_FALSE(quick_answer_);
+  EXPECT_FALSE(translation_result_);
 }
 
 TEST_F(TranslationResponseParserTest, ProcessResponseInvalidResponse) {
   translation_response_parser_->ProcessResponse(
-      std::make_unique<std::string>("results {}"), std::string());
+      std::make_unique<std::string>("results {}"));
   WaitForResponse();
-  EXPECT_FALSE(quick_answer_);
+  EXPECT_FALSE(translation_result_);
 }
 
 }  // namespace quick_answers

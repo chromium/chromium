@@ -142,13 +142,17 @@ void ResultLoader::OnSimpleURLLoaderComplete(
 }
 
 void ResultLoader::OnResultParserComplete(
-    std::unique_ptr<QuickAnswer> quick_answer) {
+    std::unique_ptr<QuickAnswersSession> quick_answers_session) {
+  raw_ptr<QuickAnswer> quick_answer =
+      quick_answers_session ? quick_answers_session->quick_answer.get()
+                            : nullptr;
   // Record quick answer result.
   base::TimeDelta duration = base::TimeTicks::Now() - fetch_start_time_;
   RecordLoadingStatus(
       quick_answer ? LoadStatus::kSuccess : LoadStatus::kNoResult, duration);
   RecordResult(quick_answer ? quick_answer->result_type : ResultType::kNoResult,
                duration);
-  delegate_->OnQuickAnswerReceived(std::move(quick_answer));
+
+  delegate_->OnQuickAnswerReceived(std::move(quick_answers_session));
 }
 }  // namespace quick_answers

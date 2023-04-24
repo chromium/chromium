@@ -52,8 +52,8 @@ class QuickAnswersControllerImpl : public QuickAnswersController,
   void SetVisibility(QuickAnswersVisibility visibility) override;
 
   // QuickAnswersDelegate:
-  void OnQuickAnswerReceived(
-      std::unique_ptr<quick_answers::QuickAnswer> answer) override;
+  void OnQuickAnswerReceived(std::unique_ptr<quick_answers::QuickAnswersSession>
+                                 quick_answers_session) override;
   void OnNetworkError() override;
   void OnRequestPreprocessFinished(
       const quick_answers::QuickAnswersRequest& processed_request) override;
@@ -71,7 +71,15 @@ class QuickAnswersControllerImpl : public QuickAnswersController,
     return quick_answers_ui_controller_.get();
   }
 
-  quick_answers::QuickAnswer* quick_answer() { return quick_answer_.get(); }
+  raw_ptr<quick_answers::QuickAnswer> quick_answer() {
+    return quick_answers_session_ ? quick_answers_session_->quick_answer.get()
+                                  : nullptr;
+  }
+  raw_ptr<quick_answers::StructuredResult> structured_result() {
+    return quick_answers_session_
+               ? quick_answers_session_->structured_result.get()
+               : nullptr;
+  }
 
  private:
   void HandleQuickAnswerRequest(
@@ -102,8 +110,8 @@ class QuickAnswersControllerImpl : public QuickAnswersController,
 
   std::unique_ptr<QuickAnswersUiController> quick_answers_ui_controller_;
 
-  // The last received QuickAnswer from client.
-  std::unique_ptr<quick_answers::QuickAnswer> quick_answer_;
+  // The last received `QuickAnswersSession` from client.
+  std::unique_ptr<quick_answers::QuickAnswersSession> quick_answers_session_;
 
   QuickAnswersVisibility visibility_ = QuickAnswersVisibility::kClosed;
 };

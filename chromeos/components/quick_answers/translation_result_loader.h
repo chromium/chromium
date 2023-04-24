@@ -9,6 +9,8 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/result_loader.h"
 #include "chromeos/components/quick_answers/translation_response_parser.h"
 
@@ -37,7 +39,13 @@ class TranslationResultLoader : public ResultLoader {
                        ResponseParserCallback complete_callback) override;
 
  private:
+  void ProcessParsedResponse(
+      IntentInfo intent_info,
+      ResponseParserCallback complete_callback,
+      std::unique_ptr<TranslationResult> translation_result);
   std::unique_ptr<TranslationResponseParser> translation_response_parser_;
+
+  base::WeakPtrFactory<TranslationResultLoader> weak_ptr_factory_{this};
 };
 
 }  // namespace quick_answers

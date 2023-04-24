@@ -8,6 +8,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/strings/escape.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
@@ -85,11 +86,52 @@ void TranslationResultLoader::ProcessResponse(
     const PreprocessedOutput& preprocessed_output,
     std::unique_ptr<std::string> response_body,
     ResponseParserCallback complete_callback) {
+  if (translation_response_parser_) {
+    DCHECK(false) << "translation_response_parser_ must be nullptr";
+    std::move(complete_callback).Run(nullptr);
+    return;
+  }
+
   translation_response_parser_ =
-      std::make_unique<TranslationResponseParser>(std::move(complete_callback));
-  translation_response_parser_->ProcessResponse(
-      std::move(response_body),
-      BuildTranslationTitleText(preprocessed_output.intent_info));
+      std::make_unique<TranslationResponseParser>(base::BindOnce(
+          &TranslationResultLoader::ProcessParsedResponse,
+          weak_ptr_factory_.GetWeakPtr(), preprocessed_output.intent_info,
+          std::move(complete_callback)));
+  translation_response_parser_->ProcessResponse(std::move(response_body));
+}
+
+void TranslationResultLoader::ProcessParsedResponse(
+    IntentInfo intent_info,
+    ResponseParserCallback complete_callback,
+    std::unique_ptr<TranslationResult> translation_result) {
+  translation_response_parser_.reset();
+
+  if (!translation_result || translation_result->translated_text.empty()) {
+    std::move(complete_callback).Run(nullptr);
+    return;
+  }
+
+  translation_result->text_to_translate =
+      base::UTF8ToUTF16(intent_info.intent_text);
+  translation_result->source_locale = intent_info.source_language;
+  translation_result->target_locale = intent_info.device_language;
+
+  std::unique_ptr<QuickAnswer> quick_answer = std::make_unique<QuickAnswer>();
+  quick_answer->result_type = ResultType::kTranslationResult;
+  quick_answer->title.push_back(std::make_unique<QuickAnswerText>(
+      BuildTranslationTitleText(intent_info)));
+  quick_answer->first_answer_row.push_back(
+      std::make_unique<QuickAnswerResultText>(
+          base::UTF16ToUTF8(translation_result->translated_text)));
+
+  std::unique_ptr<QuickAnswersSession> session =
+      std::make_unique<QuickAnswersSession>();
+  session->structured_result = std::make_unique<StructuredResult>();
+  session->structured_result->translation_result =
+      std::move(translation_result);
+  session->quick_answer = std::move(quick_answer);
+
+  std::move(complete_callback).Run(std::move(session));
 }
 
 }  // namespace quick_answers
