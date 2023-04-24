@@ -4691,6 +4691,14 @@ void LayoutObject::SetIsBackgroundAttachmentFixedObject(
     GetFrameView()->RemoveBackgroundAttachmentFixedObject(this);
 }
 
+void LayoutObject::SetCanCompositeBackgroundAttachmentFixed(
+    bool can_fast_scroll) {
+  if (can_fast_scroll != bitfields_.CanCompositeBackgroundAttachmentFixed()) {
+    bitfields_.SetCanCompositeBackgroundAttachmentFixed(can_fast_scroll);
+    SetNeedsPaintPropertyUpdate();
+  }
+}
+
 PhysicalRect LayoutObject::DebugRect() const {
   NOT_DESTROYED();
   return PhysicalRect();

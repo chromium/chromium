@@ -253,6 +253,9 @@ class CORE_EXPORT ObjectPaintProperties {
   //     +-[ OverflowControlsClip ]
   //     |   Clip created by overflow clip to clip overflow controls
   //     |   (scrollbars, resizer, scroll corner) that would overflow the box.
+  //     +-[ BackgroundClip ]
+  //     |   Clip created for CompositeBackgroundAttachmentFixed background
+  //     |   according to CSS background-clip.
   //     +-[ PixelMovingFilterClipExpander ]
   //       | Clip created by pixel-moving filter. Instead of intersecting with
   //       | the current clip, this clip expands the current clip to include all
@@ -283,6 +286,7 @@ class CORE_EXPORT ObjectPaintProperties {
   ADD_CLIP(CssClip, css_clip_);
   ADD_CLIP(CssClipFixedPosition, css_clip_fixed_position_);
   ADD_CLIP(OverflowControlsClip, overflow_controls_clip_);
+  ADD_CLIP(BackgroundClip, background_clip_);
   ADD_CLIP(InnerBorderRadiusClip, inner_border_radius_clip_);
   ADD_CLIP(OverflowClip, overflow_clip_);
   ADD_ALIAS_NODE(Clip, ClipIsolationNode, clip_isolation_node_);

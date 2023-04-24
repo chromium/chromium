@@ -470,6 +470,10 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   void StyleWillChange(StyleDifference,
                        const ComputedStyle& new_style) override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  virtual bool ComputeCanCompositeBackgroundAttachmentFixed() const {
+    NOT_DESTROYED();
+    return false;
+  }
 
  public:
   // These functions are only used internally to manipulate the layout tree

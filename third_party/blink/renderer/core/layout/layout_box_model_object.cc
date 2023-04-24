@@ -350,10 +350,6 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
     else
       element->RemoveAnchorScrollData();
   }
-
-  SetIsBackgroundAttachmentFixedObject(
-      !BackgroundTransfersToView() &&
-      StyleRef().HasFixedAttachmentBackgroundImage());
 }
 
 void LayoutBoxModelObject::CreateLayerAfterStyleChange() {
@@ -480,6 +476,14 @@ void LayoutBoxModelObject::UpdateFromStyle() {
   SetCanContainAbsolutePositionObjects(
       ComputeIsAbsoluteContainer(&style_to_use));
   SetCanContainFixedPositionObjects(ComputeIsFixedContainer(&style_to_use));
+
+  bool is_background_attachment_fixed_object =
+      !BackgroundTransfersToView() &&
+      StyleRef().HasFixedAttachmentBackgroundImage();
+  SetIsBackgroundAttachmentFixedObject(is_background_attachment_fixed_object);
+  SetCanCompositeBackgroundAttachmentFixed(
+      is_background_attachment_fixed_object &&
+      ComputeCanCompositeBackgroundAttachmentFixed());
 }
 
 PhysicalRect LayoutBoxModelObject::PhysicalVisualOverflowRectIncludingFilters()

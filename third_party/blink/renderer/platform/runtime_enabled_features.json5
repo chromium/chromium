@@ -603,6 +603,9 @@
       base_feature: "none",
     },
     {
+      name: "CompositeBackgroundAttachmentFixed",
+    },
+    {
       name: "CompositeBGColorAnimation",
       public: true,
       status: "experimental",

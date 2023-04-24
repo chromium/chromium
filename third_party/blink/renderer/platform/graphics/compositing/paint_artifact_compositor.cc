@@ -1190,6 +1190,8 @@ CompositingReasons PaintArtifactCompositor::GetCompositingReasons(
   }
   if (layer.Chunks().size() == 1 && layer.FirstPaintChunk().size() == 1) {
     switch (layer.FirstDisplayItem().GetType()) {
+      case DisplayItem::kFixedAttachmentBackground:
+        return CompositingReason::kFixedAttachmentBackground;
       case DisplayItem::kCaret:
         return CompositingReason::kCaret;
       case DisplayItem::kScrollbarHorizontal:

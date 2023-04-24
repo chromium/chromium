@@ -77,6 +77,7 @@ using CompositingReasons = uint64_t;
   V(Overlap)                                                                   \
   /* These are based on the type of paint chunks and display items. */         \
   V(BackfaceVisibilityHidden)                                                  \
+  V(FixedAttachmentBackground)                                                 \
   V(Caret)                                                                     \
   V(Video)                                                                     \
   V(Canvas)                                                                    \

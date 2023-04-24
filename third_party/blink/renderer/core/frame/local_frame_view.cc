@@ -1203,23 +1203,27 @@ void LocalFrameView::RemoveBackgroundAttachmentFixedObject(
   SetNeedsPaintPropertyUpdate();
 }
 
+static bool BackgroundAttachmentFixedNeedsRepaintOnScroll(
+    const LayoutObject& object) {
+  // We should not add such object in the background_attachment_fixed_objects_.
+  DCHECK(!To<LayoutBoxModelObject>(object).BackgroundTransfersToView());
+  // The background doesn't need repaint if it's the viewport background and it
+  // paints onto the border box space only.
+  if (IsA<LayoutView>(object) &&
+      object.GetBackgroundPaintLocation() == kBackgroundPaintInBorderBoxSpace) {
+    return false;
+  }
+  return !object.CanCompositeBackgroundAttachmentFixed();
+}
+
 bool LocalFrameView::RequiresMainThreadScrollingForBackgroundAttachmentFixed()
     const {
-  if (background_attachment_fixed_objects_.empty())
-    return false;
-  if (background_attachment_fixed_objects_.size() > 1)
-    return true;
-
-  const auto* object = To<LayoutBoxModelObject>(
-      background_attachment_fixed_objects_.begin()->Get());
-  // We should not add such object in the set.
-  DCHECK(!object->BackgroundTransfersToView());
-  // If the background is viewport background and it paints onto the border box
-  // space only, then it doesn't need main thread scrolling.
-  if (IsA<LayoutView>(object) &&
-      object->GetBackgroundPaintLocation() == kBackgroundPaintInBorderBoxSpace)
-    return false;
-  return true;
+  for (const auto& object : background_attachment_fixed_objects_) {
+    if (BackgroundAttachmentFixedNeedsRepaintOnScroll(*object)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void LocalFrameView::AddFixedPositionObject(LayoutObject& object) {
@@ -1317,19 +1321,15 @@ bool LocalFrameView::ShouldSetCursor() const {
 }
 
 void LocalFrameView::InvalidateBackgroundAttachmentFixedDescendantsOnScroll(
-    const LayoutObject& scrolled_object) {
+    const LayoutBox& scroller) {
   for (const auto& layout_object : background_attachment_fixed_objects_) {
-    if (scrolled_object != GetLayoutView() &&
-        !layout_object->IsDescendantOf(&scrolled_object))
+    if (scroller != GetLayoutView() &&
+        !layout_object->IsDescendantOf(&scroller)) {
       continue;
-    // An object needs to repaint the background on scroll when it has
-    // background-attachment:fixed unless the object is the LayoutView and the
-    // background is not painted on the scrolling contents.
-    if (layout_object == GetLayoutView() &&
-        !(GetLayoutView()->GetBackgroundPaintLocation() &
-          kBackgroundPaintInContentsSpace))
-      continue;
-    layout_object->SetBackgroundNeedsFullPaintInvalidation();
+    }
+    if (BackgroundAttachmentFixedNeedsRepaintOnScroll(*layout_object)) {
+      layout_object->SetBackgroundNeedsFullPaintInvalidation();
+    }
   }
 }
 

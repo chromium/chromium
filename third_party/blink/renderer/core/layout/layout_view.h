@@ -344,6 +344,13 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   bool CanHaveChildren() const override;
   void UpdateFromStyle() override;
 
+  // The CompositeBackgroundAttachmentFixed optimization doesn't apply to
+  // LayoutView which paints background specially.
+  bool ComputeCanCompositeBackgroundAttachmentFixed() const override {
+    NOT_DESTROYED();
+    return false;
+  }
+
   Member<LocalFrameView> frame_view_;
 
   // The page size.

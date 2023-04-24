@@ -322,7 +322,7 @@ class CORE_EXPORT LocalFrameView final
     return background_attachment_fixed_objects_;
   }
   void InvalidateBackgroundAttachmentFixedDescendantsOnScroll(
-      const LayoutObject& scrolled_object);
+      const LayoutBox& scroller);
 
   void HandleLoadCompleted();
 

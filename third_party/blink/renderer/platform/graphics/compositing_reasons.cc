@@ -90,6 +90,8 @@ constexpr ReasonAndDescription kReasonDescriptionMap[] = {
     {CompositingReason::kOverlap, "Overlaps other composited content."},
     {CompositingReason::kBackfaceVisibilityHidden,
      "Has backface-visibility: hidden."},
+    {CompositingReason::kFixedAttachmentBackground,
+     "Is an accelerated background-attachment:fixed background."},
     {CompositingReason::kCaret, "Is a caret in an editor."},
     {CompositingReason::kVideo, "Is an accelerated video."},
     {CompositingReason::kCanvas,

@@ -93,6 +93,10 @@ class BackgroundImageGeometry {
   const ComputedStyle& ImageStyle(const ComputedStyle& fragment_style) const;
   InterpolationQuality ImageInterpolationQuality() const;
 
+  bool CanCompositeBackgroundAttachmentFixed() const;
+
+  static bool HasBackgroundFixedToViewport(const LayoutBoxModelObject&);
+
  private:
   BackgroundImageGeometry(const LayoutBoxModelObject* box,
                           const LayoutBoxModelObject* positioning_box);
@@ -120,6 +124,7 @@ class BackgroundImageGeometry {
   void SetSpaceX(LayoutUnit space, LayoutUnit extra_offset);
   void SetSpaceY(LayoutUnit space, LayoutUnit extra_offset);
 
+  PhysicalRect FixedAttachmentPositioningArea(const PaintInfo&) const;
   void UseFixedAttachment(const PhysicalOffset& attachment_point);
 
   // Compute adjustments for the destination rects. Adjustments
@@ -155,15 +160,23 @@ class BackgroundImageGeometry {
   // The offset of the background image within the background positioning area.
   PhysicalOffset OffsetInBackground(const FillLayer&) const;
 
-  // |box_| is the source for the Document. In most cases it also provides the
-  // background properties (see |positioning_box_| for exceptions.) It's also
-  // the image client unless painting the view background.
+  // In most cases this is the same as positioning_box_. They are different
+  // when we are painting:
+  // 1. the view background (box_ is the LayoutView, and positioning_box_ is
+  //    the LayoutView's RootBox()), or
+  // 2. a table cell using its row/column's background (box_ is the table cell,
+  //    and positioning_box_ is the row/column).
+  // When they are different:
+  // - ImageDocument() uses box_;
+  // - ImageClient() uses box_ if painting view, otherwise positioning_box_;
+  // - ImageStyle() uses positioning_box_;
+  // - ImageInterpolationQuality() uses box_;
+  // - FillLayers come from box_ if painting view, otherwise positioning_box_.
   const LayoutBoxModelObject* const box_;
 
   // The positioning box is the source of geometric information for positioning
-  // and sizing the background. It also provides the background properties if
-  // painting the view background or a table-cell using its container's
-  // (row's/column's) background.
+  // and sizing the background. It also provides the information listed in the
+  // comment for box_.
   const LayoutBoxModelObject* const positioning_box_;
 
   // When painting table cells or the view, the positioning area

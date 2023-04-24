@@ -1102,20 +1102,81 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithRect(
     return;
   }
 
+  const auto& box = To<LayoutBox>(*box_fragment_.GetLayoutObject());
   absl::optional<DisplayItemCacheSkipper> cache_skipper;
   if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
-      ShouldSkipPaintUnderInvalidationChecking(
-          To<LayoutBox>(*box_fragment_.GetLayoutObject()))) {
+      ShouldSkipPaintUnderInvalidationChecking(box)) {
     cache_skipper.emplace(paint_info.context);
   }
 
-  if (DrawingRecorder::UseCachedDrawingIfPossible(
-          paint_info.context, background_client,
-          DisplayItem::kBoxDecorationBackground))
+  if (box.CanCompositeBackgroundAttachmentFixed() &&
+      BackgroundImageGeometry::HasBackgroundFixedToViewport(box)) {
+    PaintCompositeBackgroundAttachmentFixed(paint_info, background_client,
+                                            box_decoration_data);
+    if (box_decoration_data.ShouldPaintBorder()) {
+      PaintBoxDecorationBackgroundWithDecorationData(
+          paint_info, visual_rect, paint_rect, background_client,
+          DisplayItem::kBoxDecorationBackground,
+          box_decoration_data.BorderOnly());
+    }
+  } else {
+    PaintBoxDecorationBackgroundWithDecorationData(
+        paint_info, visual_rect, paint_rect, background_client,
+        DisplayItem::kBoxDecorationBackground, box_decoration_data);
+  }
+}
+
+void NGBoxFragmentPainter::PaintCompositeBackgroundAttachmentFixed(
+    const PaintInfo& paint_info,
+    const DisplayItemClient& background_client,
+    const BoxDecorationData& box_decoration_data) {
+  const auto& box = To<LayoutBox>(*box_fragment_.GetLayoutObject());
+  DCHECK(box.CanCompositeBackgroundAttachmentFixed());
+  const FragmentData* fragment_data = box_fragment_.GetFragmentData();
+  if (!fragment_data) {
     return;
+  }
+
+  // Paint the background-attachment:fixed background in the view's transform
+  // space, clipped by BackgroundClip.
+  DCHECK(!box_decoration_data.IsPaintingBackgroundInContentsSpace());
+  DCHECK(!box_decoration_data.HasAppearance());
+  DCHECK(!box_decoration_data.ShouldPaintShadow());
+  DCHECK(box_decoration_data.ShouldPaintBackground());
+  DCHECK(fragment_data->PaintProperties());
+  DCHECK(fragment_data->PaintProperties()->BackgroundClip());
+  PropertyTreeStateOrAlias state(
+      box.View()->FirstFragment().LocalBorderBoxProperties().Transform(),
+      *fragment_data->PaintProperties()->BackgroundClip(),
+      paint_info.context.GetPaintController()
+          .CurrentPaintChunkProperties()
+          .Effect());
+  const ScrollableArea* layout_viewport = box.GetFrameView()->LayoutViewport();
+  DCHECK(layout_viewport);
+  gfx::Rect background_rect(layout_viewport->VisibleContentRect().size());
+  ScopedPaintChunkProperties fixed_background_properties(
+      paint_info.context.GetPaintController(), state, background_client,
+      DisplayItem::kFixedAttachmentBackground);
+  PaintBoxDecorationBackgroundWithDecorationData(
+      paint_info, background_rect, PhysicalRect(background_rect),
+      background_client, DisplayItem::kFixedAttachmentBackground,
+      box_decoration_data.BackgroundOnly());
+}
+
+void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithDecorationData(
+    const PaintInfo& paint_info,
+    const gfx::Rect& visual_rect,
+    const PhysicalRect& paint_rect,
+    const DisplayItemClient& background_client,
+    DisplayItem::Type display_item_type,
+    const BoxDecorationData& box_decoration_data) {
+  if (DrawingRecorder::UseCachedDrawingIfPossible(
+          paint_info.context, background_client, display_item_type)) {
+    return;
+  }
 
   DrawingRecorder recorder(paint_info.context, background_client,
-                           DisplayItem::kBoxDecorationBackground, visual_rect);
+                           display_item_type, visual_rect);
 
   if (PhysicalFragment().IsFieldsetContainer()) {
     NGFieldsetPainter(box_fragment_)

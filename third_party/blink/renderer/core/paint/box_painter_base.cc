@@ -1109,41 +1109,48 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
   }
 
   absl::optional<RoundedInnerRectClipper> clip_to_border;
-  if (fill_layer_info.is_rounded_fill)
+  if (fill_layer_info.is_rounded_fill) {
+    DCHECK(!geometry.CanCompositeBackgroundAttachmentFixed());
     clip_to_border.emplace(context, rect, border_rect);
+  }
 
   if (bg_layer.Clip() == EFillBox::kText) {
+    DCHECK(!geometry.CanCompositeBackgroundAttachmentFixed());
     PaintFillLayerTextFillBox(paint_info, fill_layer_info, image.get(),
                               composite_op, geometry, rect, scrolled_paint_rect,
                               object_has_multiple_boxes);
     return;
   }
 
-  GraphicsContextStateSaver background_clip_state_saver(context, false);
-  switch (bg_layer.Clip()) {
-    case EFillBox::kPadding:
-    case EFillBox::kContent: {
-      if (fill_layer_info.is_rounded_fill)
-        break;
+  // We use BackgroundClip paint property when CanFastScrollFixedAttachment().
+  absl::optional<GraphicsContextStateSaver> background_clip_state_saver;
+  if (!geometry.CanCompositeBackgroundAttachmentFixed()) {
+    switch (bg_layer.Clip()) {
+      case EFillBox::kPadding:
+      case EFillBox::kContent: {
+        if (fill_layer_info.is_rounded_fill) {
+          break;
+        }
 
-      // Clip to the padding or content boxes as necessary.
-      PhysicalRect clip_rect = scrolled_paint_rect;
-      clip_rect.Contract(
-          AdjustOutsetsForEdgeInclusion(border, fill_layer_info));
-      if (bg_layer.Clip() == EFillBox::kContent) {
+        // Clip to the padding or content boxes as necessary.
+        PhysicalRect clip_rect = scrolled_paint_rect;
         clip_rect.Contract(
-            AdjustOutsetsForEdgeInclusion(padding, fill_layer_info));
+            AdjustOutsetsForEdgeInclusion(border, fill_layer_info));
+        if (bg_layer.Clip() == EFillBox::kContent) {
+          clip_rect.Contract(
+              AdjustOutsetsForEdgeInclusion(padding, fill_layer_info));
+        }
+        background_clip_state_saver.emplace(context);
+        context.Clip(ToPixelSnappedRect(clip_rect));
+        break;
       }
-      background_clip_state_saver.Save();
-      context.Clip(ToPixelSnappedRect(clip_rect));
-      break;
+      case EFillBox::kBorder:
+        break;
+      case EFillBox::kText:  // fall through
+      default:
+        NOTREACHED();
+        break;
     }
-    case EFillBox::kBorder:
-      break;
-    case EFillBox::kText:  // fall through
-    default:
-      NOTREACHED();
-      break;
   }
 
   PaintFillLayerBackground(document_, context, fill_layer_info, node_, style_,

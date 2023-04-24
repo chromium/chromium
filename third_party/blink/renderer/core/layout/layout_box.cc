@@ -773,6 +773,12 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
         old_style->Direction() != new_style.Direction()) {
       SetNeedsCollectInlines();
     }
+
+    if (CanCompositeBackgroundAttachmentFixed() &&
+        new_style.BackgroundLayers().Clip() !=
+            old_style->BackgroundLayers().Clip()) {
+      SetNeedsPaintPropertyUpdate();
+    }
   }
 
   if (LocalFrameView* frame_view = View()->GetFrameView()) {
@@ -6273,6 +6279,41 @@ BackgroundPaintLocation LayoutBox::ComputeBackgroundPaintLocationIfComposited()
   }
 
   return paint_location;
+}
+
+bool LayoutBox::ComputeCanCompositeBackgroundAttachmentFixed() const {
+  NOT_DESTROYED();
+  DCHECK(IsBackgroundAttachmentFixedObject());
+  if (!RuntimeEnabledFeatures::CompositeBackgroundAttachmentFixedEnabled()) {
+    return false;
+  }
+  if (GetDocument().GetSettings()->GetLCDTextPreference() ==
+      LCDTextPreference::kStronglyPreferred) {
+    return false;
+  }
+  // The fixed attachment background must be the only background layer.
+  if (StyleRef().BackgroundLayers().Next() ||
+      StyleRef().BackgroundLayers().Clip() == EFillBox::kText) {
+    return false;
+  }
+  // To support box shadow, we'll need to paint the outset and inset box
+  // shadows in separate display items in case there are outset box shadow,
+  // background, inset box shadow and border in paint order.
+  if (StyleRef().BoxShadow()) {
+    return false;
+  }
+  // The theme may paint the background differently for an appearance.
+  if (StyleRef().HasEffectiveAppearance()) {
+    return false;
+  }
+  // For now the BackgroundClip paint property node doesn't support rounded
+  // corners. If we want to support this, we need to ensure
+  // - there is no obvious bleeding issues, and
+  // - both the fast path and the slow path of composited rounded clip work.
+  if (StyleRef().HasBorderRadius()) {
+    return false;
+  }
+  return true;
 }
 
 bool LayoutBox::IsFixedToView(

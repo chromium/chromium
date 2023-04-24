@@ -1787,6 +1787,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const PhysicalRect& local_rect,
       unsigned max_depth_to_test) const;
   virtual bool ComputeBackgroundIsKnownToBeObscured() const;
+  bool ComputeCanCompositeBackgroundAttachmentFixed() const override;
 
   LayoutUnit ComputeIntrinsicLogicalContentHeightUsing(
       SizeType height_type,
