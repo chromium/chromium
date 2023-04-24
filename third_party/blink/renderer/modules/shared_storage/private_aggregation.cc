@@ -15,7 +15,6 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
@@ -164,14 +163,13 @@ void PrivateAggregation::enableDebugMode(
 
 void PrivateAggregation::OnOperationStarted(
     int64_t operation_id,
-    mojo::PendingRemote<mojom::PrivateAggregationHost>
+    mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
         private_aggregation_host) {
   CHECK(!operation_states_.Contains(operation_id));
   auto map_it = operation_states_.insert(
       operation_id, MakeGarbageCollected<OperationState>(global_scope_));
   map_it.stored_value->value->private_aggregation_host.Bind(
-      CrossVariantMojoRemote<mojom::blink::PrivateAggregationHostInterfaceBase>(
-          std::move(private_aggregation_host)),
+      std::move(private_aggregation_host),
       global_scope_->GetTaskRunner(blink::TaskType::kMiscPlatformAPI));
 }
 

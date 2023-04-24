@@ -15,12 +15,11 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-blink-forward.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-blink.h"
-#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -44,12 +43,12 @@ class SharedStorage;
 class PrivateAggregation;
 class Crypto;
 
-// mojom::SharedStorageWorkletService implementation. Responsible for
+// mojom::blink::SharedStorageWorkletService implementation. Responsible for
 // handling worklet operations. This object lives on the worklet thread.
 class MODULES_EXPORT SharedStorageWorkletGlobalScope final
     : public WorkletGlobalScope,
       public Supplementable<SharedStorageWorkletGlobalScope>,
-      public mojom::SharedStorageWorkletService {
+      public mojom::blink::SharedStorageWorkletService {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -59,7 +58,7 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   ~SharedStorageWorkletGlobalScope() override;
 
   void BindSharedStorageWorkletService(
-      mojo::PendingReceiver<mojom::SharedStorageWorkletService> receiver,
+      mojo::PendingReceiver<mojom::blink::SharedStorageWorkletService> receiver,
       base::OnceClosure disconnect_handler);
 
   // SharedStorageWorkletGlobalScope IDL
@@ -99,26 +98,25 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
 
   void Trace(Visitor*) const override;
 
-  // mojom::SharedStorageWorkletService implementation:
-  void Initialize(
-      mojo::PendingAssociatedRemote<mojom::SharedStorageWorkletServiceClient>
-          client,
-      bool private_aggregation_permissions_policy_allowed,
-      const absl::optional<std::u16string>& embedder_context) override;
-  void AddModule(mojo::PendingRemote<network::mojom::URLLoaderFactory>
+  // mojom::blink::SharedStorageWorkletService implementation:
+  void Initialize(mojo::PendingAssociatedRemote<
+                      mojom::blink::SharedStorageWorkletServiceClient> client,
+                  bool private_aggregation_permissions_policy_allowed,
+                  const String& embedder_context) override;
+  void AddModule(mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
                      pending_url_loader_factory,
-                 const GURL& script_source_url,
+                 const KURL& script_source_url,
                  AddModuleCallback callback) override;
   void RunURLSelectionOperation(
-      const std::string& name,
-      const std::vector<GURL>& urls,
-      const std::vector<uint8_t>& serialized_data,
-      mojo::PendingRemote<mojom::PrivateAggregationHost>
+      const String& name,
+      const Vector<KURL>& urls,
+      const Vector<uint8_t>& serialized_data,
+      mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
           private_aggregation_host,
       RunURLSelectionOperationCallback callback) override;
-  void RunOperation(const std::string& name,
-                    const std::vector<uint8_t>& serialized_data,
-                    mojo::PendingRemote<mojom::PrivateAggregationHost>
+  void RunOperation(const String& name,
+                    const Vector<uint8_t>& serialized_data,
+                    mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
                         private_aggregation_host,
                     RunOperationCallback callback) override;
 
@@ -135,9 +133,7 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
     return client_.get();
   }
 
-  const absl::optional<String>& embedder_context() const {
-    return embedder_context_;
-  }
+  const String& embedder_context() const { return embedder_context_; }
 
   bool private_aggregation_permissions_policy_allowed() const {
     return private_aggregation_permissions_policy_allowed_;
@@ -145,8 +141,8 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
 
  private:
   void OnModuleScriptDownloaded(
-      const GURL& script_source_url,
-      mojom::SharedStorageWorkletService::AddModuleCallback callback,
+      const KURL& script_source_url,
+      mojom::blink::SharedStorageWorkletService::AddModuleCallback callback,
       std::unique_ptr<std::string> response_body,
       std::string error_message);
 
@@ -156,8 +152,8 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   // `RunOperation`. On success, sets `operation_definition` to the registered
   // operation. On failure, sets `error_message` to the error to be returned.
   bool PerformCommonOperationChecks(
-      const std::string& operation_name,
-      std::string& error_message,
+      const String& operation_name,
+      String& error_message,
       SharedStorageOperationDefinition*& operation_definition);
 
   network::mojom::RequestDestination GetDestination() const override {
@@ -175,7 +171,7 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   // particular operation invocation later, even after asynchronous operations.
   // Returns a closure that should be run when the operation finishes.
   base::OnceClosure StartOperation(
-      mojo::PendingRemote<mojom::PrivateAggregationHost>
+      mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
           private_aggregation_host);
 
   // Notifies the `private_aggregation_` that the operation with the given ID
@@ -195,7 +191,7 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   // ensure that the worklet thread object and this service are not leaked,
   // `receiver_` must be cut off from the remote side when the worklet is
   // supposed to be destroyed.
-  HeapMojoReceiver<mojom::SharedStorageWorkletService,
+  HeapMojoReceiver<mojom::blink::SharedStorageWorkletService,
                    SharedStorageWorkletGlobalScope>
       receiver_{this, this};
 
@@ -203,7 +199,7 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   // `embedder_context_` represents any contextual information written to the
   // frame's `blink::FencedFrameConfig` by the embedder before navigation to the
   // config. `embedder_context_` is passed to the worklet upon initialization.
-  absl::optional<String> embedder_context_;
+  String embedder_context_;
 
   // The per-global-scope shared storage object. Created on the first access of
   // `sharedStorage`.

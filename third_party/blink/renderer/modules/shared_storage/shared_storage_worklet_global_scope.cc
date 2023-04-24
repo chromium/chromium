@@ -15,9 +15,12 @@
 #include "gin/converter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/shared_storage/module_script_downloader.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -47,7 +50,7 @@ namespace blink {
 namespace {
 
 ScriptValue Deserialize(ScriptState* script_state,
-                        const std::vector<uint8_t>& serialized_data) {
+                        const Vector<uint8_t>& serialized_data) {
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::Local<v8::Context> context = script_state->GetContext();
 
@@ -68,8 +71,8 @@ ScriptValue Deserialize(ScriptState* script_state,
 
 // We try to use .stack property so that the error message contains a stack
 // trace, but otherwise fallback to .toString().
-std::string ExceptionToString(ScriptState* script_state,
-                              v8::Local<v8::Value> exception) {
+String ExceptionToString(ScriptState* script_state,
+                         v8::Local<v8::Value> exception) {
   v8::Isolate* isolate = script_state->GetIsolate();
 
   if (!exception.IsEmpty()) {
@@ -78,7 +81,7 @@ std::string ExceptionToString(ScriptState* script_state,
         v8::TryCatch::StackTrace(context, exception).FromMaybe(exception);
     v8::Local<v8::String> value_string;
     if (value->ToString(context).ToLocal(&value_string)) {
-      return gin::V8ToString(isolate, value_string);
+      return String(gin::V8ToString(isolate, value_string));
     }
   }
 
@@ -88,7 +91,7 @@ std::string ExceptionToString(ScriptState* script_state,
 struct UnresolvedSelectURLRequest final
     : public GarbageCollected<UnresolvedSelectURLRequest> {
   UnresolvedSelectURLRequest(size_t urls_size,
-                             blink::mojom::SharedStorageWorkletService::
+                             blink::mojom::blink::SharedStorageWorkletService::
                                  RunURLSelectionOperationCallback callback)
       : urls_size(urls_size), callback(std::move(callback)) {}
   ~UnresolvedSelectURLRequest() = default;
@@ -96,20 +99,22 @@ struct UnresolvedSelectURLRequest final
   void Trace(Visitor* visitor) const {}
 
   size_t urls_size;
-  blink::mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
-      callback;
+  blink::mojom::blink::SharedStorageWorkletService::
+      RunURLSelectionOperationCallback callback;
 };
 
 struct UnresolvedRunRequest final
     : public GarbageCollected<UnresolvedRunRequest> {
   explicit UnresolvedRunRequest(
-      blink::mojom::SharedStorageWorkletService::RunOperationCallback callback)
+      blink::mojom::blink::SharedStorageWorkletService::RunOperationCallback
+          callback)
       : callback(std::move(callback)) {}
   ~UnresolvedRunRequest() = default;
 
   void Trace(Visitor* visitor) const {}
 
-  blink::mojom::SharedStorageWorkletService::RunOperationCallback callback;
+  blink::mojom::blink::SharedStorageWorkletService::RunOperationCallback
+      callback;
 };
 
 class SelectURLResolutionSuccessCallback final
@@ -148,7 +153,7 @@ class SelectURLResolutionSuccessCallback final
       } else {
         std::move(request_->callback)
             .Run(/*success=*/true,
-                 /*error_message=*/{}, result_index);
+                 /*error_message=*/g_empty_string, result_index);
       }
     }
 
@@ -200,7 +205,7 @@ class RunResolutionSuccessCallback final : public ScriptFunction::Callable {
   ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
     std::move(request_->callback)
         .Run(/*success=*/true,
-             /*error_message=*/{});
+             /*error_message=*/g_empty_string);
     return value;
   }
 
@@ -250,7 +255,7 @@ SharedStorageWorkletGlobalScope::SharedStorageWorkletGlobalScope(
 SharedStorageWorkletGlobalScope::~SharedStorageWorkletGlobalScope() = default;
 
 void SharedStorageWorkletGlobalScope::BindSharedStorageWorkletService(
-    mojo::PendingReceiver<mojom::SharedStorageWorkletService> receiver,
+    mojo::PendingReceiver<mojom::blink::SharedStorageWorkletService> receiver,
     base::OnceClosure disconnect_handler) {
   receiver_.Bind(std::move(receiver),
                  GetTaskRunner(blink::TaskType::kMiscPlatformAPI));
@@ -344,45 +349,43 @@ void SharedStorageWorkletGlobalScope::Trace(Visitor* visitor) const {
 }
 
 void SharedStorageWorkletGlobalScope::Initialize(
-    mojo::PendingAssociatedRemote<mojom::SharedStorageWorkletServiceClient>
-        client,
+    mojo::PendingAssociatedRemote<
+        mojom::blink::SharedStorageWorkletServiceClient> client,
     bool private_aggregation_permissions_policy_allowed,
-    const absl::optional<std::u16string>& embedder_context) {
-  client_.Bind(
-      CrossVariantMojoAssociatedRemote<
-          mojom::blink::SharedStorageWorkletServiceClientInterfaceBase>(
-          std::move(client)),
-      GetTaskRunner(blink::TaskType::kMiscPlatformAPI));
+    const String& embedder_context) {
+  client_.Bind(std::move(client),
+               GetTaskRunner(blink::TaskType::kMiscPlatformAPI));
+
   private_aggregation_permissions_policy_allowed_ =
       private_aggregation_permissions_policy_allowed;
 
-  if (embedder_context) {
-    embedder_context_ = WTF::String(embedder_context->c_str());
-  }
+  embedder_context_ = embedder_context;
 }
 
 void SharedStorageWorkletGlobalScope::AddModule(
-    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+    mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
         pending_url_loader_factory,
-    const GURL& script_source_url,
+    const KURL& script_source_url,
     AddModuleCallback callback) {
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory(
-      std::move(pending_url_loader_factory));
+      CrossVariantMojoRemote<network::mojom::URLLoaderFactoryInterfaceBase>(
+          std::move(pending_url_loader_factory)));
 
   module_script_downloader_ = std::make_unique<ModuleScriptDownloader>(
-      url_loader_factory.get(), script_source_url,
+      url_loader_factory.get(), GURL(script_source_url),
       WTF::BindOnce(&SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded,
                     WrapWeakPersistent(this), script_source_url,
                     std::move(callback)));
 }
 
 void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
-    const std::string& name,
-    const std::vector<GURL>& urls,
-    const std::vector<uint8_t>& serialized_data,
-    mojo::PendingRemote<mojom::PrivateAggregationHost> private_aggregation_host,
+    const String& name,
+    const Vector<KURL>& urls,
+    const Vector<uint8_t>& serialized_data,
+    mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
+        private_aggregation_host,
     RunURLSelectionOperationCallback callback) {
-  std::string error_message;
+  String error_message;
   SharedStorageOperationDefinition* operation_definition = nullptr;
   if (!PerformCommonOperationChecks(name, error_message,
                                     operation_definition)) {
@@ -394,9 +397,8 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
 
   base::OnceClosure operation_completion_cb =
       StartOperation(std::move(private_aggregation_host));
-  mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
-      combined_operation_completion_cb =
-          std::move(callback).Then(std::move(operation_completion_cb));
+  RunURLSelectionOperationCallback combined_operation_completion_cb =
+      std::move(callback).Then(std::move(operation_completion_cb));
 
   DCHECK(operation_definition);
 
@@ -412,15 +414,14 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
   V8RunFunctionForSharedStorageSelectURLOperation* registered_run_function =
       operation_definition->GetRunFunctionForSharedStorageSelectURLOperation();
 
-  Vector<String> blink_urls;
-  base::ranges::transform(
-      urls, std::back_inserter(blink_urls),
-      [](const GURL& url) { return String(url.spec().c_str()); });
+  Vector<String> urls_param;
+  base::ranges::transform(urls, std::back_inserter(urls_param),
+                          [](const KURL& url) { return url.GetString(); });
 
-  ScriptValue blink_data = Deserialize(script_state, serialized_data);
+  ScriptValue data_param = Deserialize(script_state, serialized_data);
 
   v8::Maybe<ScriptPromise> result = registered_run_function->Invoke(
-      instance.Get(isolate), blink_urls, blink_data);
+      instance.Get(isolate), urls_param, data_param);
 
   if (try_catch.HasCaught()) {
     v8::Local<v8::Value> exception = try_catch.Exception();
@@ -453,11 +454,12 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
 }
 
 void SharedStorageWorkletGlobalScope::RunOperation(
-    const std::string& name,
-    const std::vector<uint8_t>& serialized_data,
-    mojo::PendingRemote<mojom::PrivateAggregationHost> private_aggregation_host,
+    const String& name,
+    const Vector<uint8_t>& serialized_data,
+    mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
+        private_aggregation_host,
     RunOperationCallback callback) {
-  std::string error_message;
+  String error_message;
   SharedStorageOperationDefinition* operation_definition = nullptr;
   if (!PerformCommonOperationChecks(name, error_message,
                                     operation_definition)) {
@@ -468,7 +470,7 @@ void SharedStorageWorkletGlobalScope::RunOperation(
 
   base::OnceClosure operation_completion_cb =
       StartOperation(std::move(private_aggregation_host));
-  mojom::SharedStorageWorkletService::RunOperationCallback
+  mojom::blink::SharedStorageWorkletService::RunOperationCallback
       combined_operation_completion_cb =
           std::move(callback).Then(std::move(operation_completion_cb));
 
@@ -486,10 +488,10 @@ void SharedStorageWorkletGlobalScope::RunOperation(
   V8RunFunctionForSharedStorageRunOperation* registered_run_function =
       operation_definition->GetRunFunctionForSharedStorageRunOperation();
 
-  ScriptValue blink_data = Deserialize(script_state, serialized_data);
+  ScriptValue data_param = Deserialize(script_state, serialized_data);
 
   v8::Maybe<ScriptPromise> result =
-      registered_run_function->Invoke(instance.Get(isolate), blink_data);
+      registered_run_function->Invoke(instance.Get(isolate), data_param);
 
   if (try_catch.HasCaught()) {
     v8::Local<v8::Value> exception = try_catch.Exception();
@@ -583,20 +585,20 @@ int64_t SharedStorageWorkletGlobalScope::GetCurrentOperationId() {
 }
 
 void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
-    const GURL& script_source_url,
-    mojom::SharedStorageWorkletService::AddModuleCallback callback,
+    const KURL& script_source_url,
+    mojom::blink::SharedStorageWorkletService::AddModuleCallback callback,
     std::unique_ptr<std::string> response_body,
     std::string error_message) {
   module_script_downloader_.reset();
 
-  mojom::SharedStorageWorkletService::AddModuleCallback
+  mojom::blink::SharedStorageWorkletService::AddModuleCallback
       add_module_finished_callback = std::move(callback).Then(WTF::BindOnce(
           &SharedStorageWorkletGlobalScope::RecordAddModuleFinished,
           WrapPersistent(this)));
 
   if (!response_body) {
     std::move(add_module_finished_callback)
-        .Run(false, std::string(error_message));
+        .Run(false, String(error_message.c_str()));
     return;
   }
 
@@ -608,10 +610,10 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
   // TODO(crbug.com/1419253): Using a classic script with the custom script
   // loader is tentative. Eventually, this should migrate to the blink-worklet's
   // script loading infrastructure.
-  ClassicScript* worker_script = ClassicScript::Create(
-      String(*response_body),
-      /*source_url=*/KURL(String(script_source_url.spec().c_str())),
-      /*base_url=*/KURL(), ScriptFetchOptions());
+  ClassicScript* worker_script =
+      ClassicScript::Create(String(*response_body),
+                            /*source_url=*/script_source_url,
+                            /*base_url=*/KURL(), ScriptFetchOptions());
 
   v8::HandleScope handle_scope(script_state->GetIsolate());
   ScriptEvaluationResult result =
@@ -632,7 +634,8 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
     return;
   }
 
-  std::move(add_module_finished_callback).Run(true, /*error_message=*/{});
+  std::move(add_module_finished_callback)
+      .Run(true, /*error_message=*/g_empty_string);
 }
 
 void SharedStorageWorkletGlobalScope::RecordAddModuleFinished() {
@@ -640,8 +643,8 @@ void SharedStorageWorkletGlobalScope::RecordAddModuleFinished() {
 }
 
 bool SharedStorageWorkletGlobalScope::PerformCommonOperationChecks(
-    const std::string& operation_name,
-    std::string& error_message,
+    const String& operation_name,
+    String& error_message,
     SharedStorageOperationDefinition*& operation_definition) {
   DCHECK(error_message.empty());
   DCHECK_EQ(operation_definition, nullptr);
@@ -654,7 +657,7 @@ bool SharedStorageWorkletGlobalScope::PerformCommonOperationChecks(
     return false;
   }
 
-  auto it = operation_definition_map_.find(String(operation_name.c_str()));
+  auto it = operation_definition_map_.find(operation_name);
   if (it == operation_definition_map_.end()) {
     error_message = "Cannot find operation name.";
     return false;
@@ -677,7 +680,7 @@ bool SharedStorageWorkletGlobalScope::PerformCommonOperationChecks(
 }
 
 base::OnceClosure SharedStorageWorkletGlobalScope::StartOperation(
-    mojo::PendingRemote<mojom::PrivateAggregationHost>
+    mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
         private_aggregation_host) {
   CHECK(add_module_finished_);
   CHECK_EQ(!!private_aggregation_host,

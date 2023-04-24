@@ -584,7 +584,7 @@ ScriptValue SharedStorage::context(ScriptState* script_state,
     return ScriptValue();
   }
 
-  const absl::optional<String>& embedder_context =
+  const String& embedder_context =
       To<SharedStorageWorkletGlobalScope>(execution_context)
           ->embedder_context();
 
@@ -596,7 +596,7 @@ ScriptValue SharedStorage::context(ScriptState* script_state,
 
   base::UmaHistogramBoolean("Storage.SharedStorage.Worklet.Context.IsDefined",
                             true);
-  return ScriptValue::From(script_state, embedder_context.value());
+  return ScriptValue::From(script_state, embedder_context);
 }
 
 // This C++ overload is called by JavaScript:
