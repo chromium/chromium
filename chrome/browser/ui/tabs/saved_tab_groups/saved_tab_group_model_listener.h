@@ -19,13 +19,6 @@ class SavedTabGroupModel;
 class TabStripModel;
 class Profile;
 
-struct TabGroupIdHash {
- public:
-  size_t operator()(const tab_groups::TabGroupId& group_id) const {
-    return base::TokenHash()(group_id.token());
-  }
-};
-
 // Serves to maintain and listen to browsers who contain saved tab groups and
 // update the model if a saved tab group was changed.
 class SavedTabGroupModelListener : public BrowserListObserver,
@@ -70,7 +63,7 @@ class SavedTabGroupModelListener : public BrowserListObserver,
   // Testing Accessors.
   std::unordered_map<tab_groups::TabGroupId,
                      LocalTabGroupListener,
-                     TabGroupIdHash>&
+                     tab_groups::TabGroupIdHash>&
   GetLocalTabGroupListenerMapForTesting() {
     return local_tab_group_listeners_;
   }
@@ -79,7 +72,7 @@ class SavedTabGroupModelListener : public BrowserListObserver,
   // The LocalTabGroupListeners for each saved tab group that's currently open.
   std::unordered_map<tab_groups::TabGroupId,
                      LocalTabGroupListener,
-                     TabGroupIdHash>
+                     tab_groups::TabGroupIdHash>
       local_tab_group_listeners_;
   raw_ptr<SavedTabGroupModel> model_ = nullptr;
   raw_ptr<Profile> profile_;

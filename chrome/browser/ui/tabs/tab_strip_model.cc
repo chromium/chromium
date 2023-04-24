@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <unordered_map>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -40,6 +41,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -47,6 +50,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_notes/user_notes_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -56,6 +60,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/reading_list/core/reading_list_model.h"
+#include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -1414,9 +1419,13 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     case CommandCloseOtherTabs: {
       ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
+      const std::vector<int> indices =
+          GetIndicesClosedByCommand(context_index, command_id);
+
+      DisconnectSavedTabGroups(indices);
+
       base::RecordAction(UserMetricsAction("TabContextMenu_CloseOtherTabs"));
-      CloseTabs(GetWebContentsesByIndices(
-                    GetIndicesClosedByCommand(context_index, command_id)),
+      CloseTabs(GetWebContentsesByIndices(indices),
                 TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
       break;
     }
@@ -1424,9 +1433,13 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     case CommandCloseTabsToRight: {
       ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
+      const std::vector<int> indices =
+          GetIndicesClosedByCommand(context_index, command_id);
+
+      DisconnectSavedTabGroups(indices);
+
       base::RecordAction(UserMetricsAction("TabContextMenu_CloseTabsToRight"));
-      CloseTabs(GetWebContentsesByIndices(
-                    GetIndicesClosedByCommand(context_index, command_id)),
+      CloseTabs(GetWebContentsesByIndices(indices),
                 TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
       break;
     }
@@ -2368,6 +2381,37 @@ void TabStripModel::GroupTab(int index, const tab_groups::TabGroupId& group) {
   }
 
   group_model_->GetTabGroup(group)->AddTab();
+}
+
+void TabStripModel::DisconnectSavedTabGroups(
+    const std::vector<int>& indices) const {
+  if (!base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
+    return;
+  }
+
+  SavedTabGroupKeyedService* const keyed_service =
+      SavedTabGroupServiceFactory::GetForProfile(profile_);
+  const SavedTabGroupModel* const stg_model = keyed_service->model();
+
+  // Count the tabs in each group in `indices`.
+  std::unordered_map<tab_groups::TabGroupId, size_t, tab_groups::TabGroupIdHash>
+      tabs_per_group;
+  for (const int index : indices) {
+    const absl::optional<tab_groups::TabGroupId> group =
+        GetTabGroupForTab(index);
+    if (group.has_value() && stg_model->Contains(group.value())) {
+      tabs_per_group[group.value()]++;
+    }
+  }
+
+  // Disconnect each group fully contained in `indices`.
+  for (const auto& [group, count] : tabs_per_group) {
+    const gfx::Range grouped_tabs =
+        group_model_->GetTabGroup(group)->ListTabs();
+    if (grouped_tabs.length() == count) {
+      keyed_service->DisconnectLocalTabGroup(group);
+    }
+  }
 }
 
 int TabStripModel::SetTabPinnedImpl(int index, bool pinned) {
