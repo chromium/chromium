@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <cmath>
 
-#include "base/cxx17_backports.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/buffer_manager.h"
 #include "gpu/command_buffer/service/framebuffer_manager.h"
@@ -374,7 +373,7 @@ void ContextState::RestoreUnpackState() const {
 }
 
 void ContextState::DoLineWidth(GLfloat width) const {
-  api()->glLineWidthFn(base::clamp(width, line_width_min_, line_width_max_));
+  api()->glLineWidthFn(std::clamp(width, line_width_min_, line_width_max_));
 }
 
 void ContextState::RestoreBufferBindings() const {
