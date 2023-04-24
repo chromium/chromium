@@ -256,8 +256,6 @@ class CrostiniManager : public KeyedService,
       std::string name,
       // Path to the disk image on the host.
       const base::FilePath& disk_path,
-      // Path to the wayland server's socket, per go/secure-exo-ids.
-      const base::FilePath& wayland_path,
       // The number of logical CPU cores that are currently disabled.
       size_t num_cores_disabled,
       // A callback to invoke with the result of the launch request.

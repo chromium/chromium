@@ -55,8 +55,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
-#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
-#include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/scheduler_configuration_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -280,7 +278,6 @@ class CrostiniManager::CrostiniRestarter
   // ash::SchedulerConfigurationManagerBase::Observer:
   void OnConfigurationSet(bool success, size_t num_cores_disabled) override;
   void OnConfigureContainerFinished(bool success);
-  void OnWaylandServerCreated(guest_os::GuestOsWaylandServer::Result result);
   void StartTerminaVmFinished(bool success);
   void SharePathsFinished(bool success, const std::string& failure_reason);
   void StartLxdFinished(CrostiniResult result);
@@ -742,11 +739,11 @@ void CrostiniManager::CrostiniRestarter::OnConfigurationSet(
   scheduler_configuration_manager_observation_.Reset();
   num_cores_disabled_ = num_cores_disabled;
 
-  guest_os::GuestOsServiceFactory::GetForProfile(profile_)
-      ->WaylandServer()
-      ->Get(vm_tools::launch::TERMINA,
-            base::BindOnce(&CrostiniRestarter::OnWaylandServerCreated,
-                           weak_ptr_factory_.GetWeakPtr()));
+  StartStage(mojom::InstallerState::kStartTerminaVm);
+  crostini_manager_->StartTerminaVm(
+      container_id_.vm_name, disk_path_, num_cores_disabled_,
+      base::BindOnce(&CrostiniRestarter::StartTerminaVmFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CrostiniManager::CrostiniRestarter::OnConfigureContainerFinished(
@@ -760,22 +757,6 @@ void CrostiniManager::CrostiniRestarter::OnConfigureContainerFinished(
     return;
   }
   FinishRestart(CrostiniResult::SUCCESS);
-}
-
-void CrostiniManager::CrostiniRestarter::OnWaylandServerCreated(
-    guest_os::GuestOsWaylandServer::Result result) {
-  if (!result) {
-    LOG(ERROR) << "Wayland server creation failed: "
-               << static_cast<int>(result.Error());
-    FinishRestart(CrostiniResult::WAYLAND_SERVER_CREATION_FAILED);
-    return;
-  }
-  StartStage(mojom::InstallerState::kStartTerminaVm);
-  crostini_manager_->StartTerminaVm(
-      container_id_.vm_name, disk_path_, result.Value()->server_path(),
-      num_cores_disabled_,
-      base::BindOnce(&CrostiniRestarter::StartTerminaVmFinished,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CrostiniManager::CrostiniRestarter::StartTerminaVmFinished(bool success) {
@@ -1455,7 +1436,6 @@ void CrostiniManager::CreateDiskImage(
 
 void CrostiniManager::StartTerminaVm(std::string name,
                                      const base::FilePath& disk_path,
-                                     const base::FilePath& wayland_path,
                                      size_t num_cores_disabled,
                                      BoolCallback callback) {
   if (name.empty()) {
@@ -1492,9 +1472,9 @@ void CrostiniManager::StartTerminaVm(std::string name,
   request.set_start_termina(true);
   request.set_owner_id(owner_id_);
   request.set_timeout(static_cast<uint32_t>(kStartVmTimeout.InSeconds()));
-  request.mutable_vm()->set_wayland_server(wayland_path.AsUTF8Unsafe());
-  if (base::FeatureList::IsEnabled(ash::features::kCrostiniGpuSupport))
+  if (base::FeatureList::IsEnabled(ash::features::kCrostiniGpuSupport)) {
     request.set_enable_gpu(true);
+  }
   if (profile_->GetPrefs()->GetBoolean(prefs::kCrostiniMicAllowed) &&
       profile_->GetPrefs()->GetBoolean(::prefs::kAudioCaptureAllowed)) {
     request.set_enable_audio_capture(true);

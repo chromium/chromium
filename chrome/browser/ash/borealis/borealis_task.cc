@@ -178,30 +178,6 @@ void CreateDiskImage::OnCreateDiskImage(
   Complete(BorealisStartupResult::kSuccess, "");
 }
 
-RequestWaylandServer::RequestWaylandServer()
-    : BorealisTask("RequestWaylandServer") {}
-RequestWaylandServer::~RequestWaylandServer() = default;
-
-void RequestWaylandServer::RunInternal(BorealisContext* context) {
-  guest_os::GuestOsService::GetForProfile(context->profile())
-      ->WaylandServer()
-      ->Get(vm_tools::launch::BOREALIS,
-            base::BindOnce(&RequestWaylandServer::OnServerRequested,
-                           weak_factory_.GetWeakPtr(), context));
-}
-
-void RequestWaylandServer::OnServerRequested(
-    BorealisContext* context,
-    guest_os::GuestOsWaylandServer::Result result) {
-  if (!result) {
-    Complete(BorealisStartupResult::kRequestWaylandFailed,
-             "Failed to create a wayland server");
-    return;
-  }
-  context->set_wayland_path(result.Value()->server_path());
-  Complete(BorealisStartupResult::kSuccess, "");
-}
-
 namespace {
 
 absl::optional<base::File> MaybeOpenFile(
@@ -237,8 +213,6 @@ void StartBorealisVm::StartBorealisWithExternalDisk(
     absl::optional<base::File> external_disk) {
   vm_tools::concierge::StartVmRequest request;
   request.mutable_vm()->set_dlc_id(kBorealisDlcName);
-  request.mutable_vm()->set_wayland_server(
-      context->wayland_path().AsUTF8Unsafe());
   request.set_start_termina(false);
   request.set_owner_id(
       ash::ProfileHelper::GetUserIdHashFromProfile(context->profile()));

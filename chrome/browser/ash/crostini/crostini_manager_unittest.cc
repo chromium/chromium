@@ -28,7 +28,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
-#include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
@@ -220,10 +219,6 @@ class CrostiniManagerTest : public testing::Test {
     g_browser_process->platform_part()
         ->InitializeSchedulerConfigurationManager();
 
-    guest_os::GuestOsService::GetForProfile(profile())
-        ->WaylandServer()
-        ->OverrideServerForTesting(vm_tools::launch::TERMINA, nullptr, {});
-
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
         std::make_unique<SystemNotificationHelper>());
 
@@ -319,7 +314,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmNameError) {
   TestFuture<bool> success_future;
 
   const base::FilePath& disk_path = base::FilePath("unused");
-  crostini_manager()->StartTerminaVm("", disk_path, {}, 0,
+  crostini_manager()->StartTerminaVm("", disk_path, 0,
                                      success_future.GetCallback());
 
   EXPECT_FALSE(success_future.Get());
@@ -332,7 +327,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmAnomalyDetectorNotConnectedError) {
 
   fake_anomaly_detector_client_->set_guest_file_corruption_signal_connected(
       false);
-  crostini_manager()->StartTerminaVm(kVmName, disk_path, {}, 0,
+  crostini_manager()->StartTerminaVm(kVmName, disk_path, 0,
                                      success_future.GetCallback());
 
   EXPECT_FALSE(success_future.Get());
@@ -343,7 +338,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmDiskPathError) {
   TestFuture<bool> success_future;
   const base::FilePath& disk_path = base::FilePath();
 
-  crostini_manager()->StartTerminaVm(kVmName, disk_path, {}, 0,
+  crostini_manager()->StartTerminaVm(kVmName, disk_path, 0,
                                      success_future.GetCallback());
 
   EXPECT_FALSE(success_future.Get());
@@ -361,7 +356,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmMountError) {
 
   EnsureTerminaInstalled();
   TestFuture<bool> success_future;
-  crostini_manager()->StartTerminaVm(kVmName, disk_path, {}, 0,
+  crostini_manager()->StartTerminaVm(kVmName, disk_path, 0,
                                      success_future.GetCallback());
 
   EXPECT_FALSE(success_future.Get());
@@ -382,7 +377,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmMountErrorThenSuccess) {
 
   EnsureTerminaInstalled();
   TestFuture<bool> result_future;
-  crostini_manager()->StartTerminaVm(kVmName, disk_path, {}, 0,
+  crostini_manager()->StartTerminaVm(kVmName, disk_path, 0,
                                      result_future.GetCallback());
 
   EXPECT_TRUE(result_future.Get());
@@ -397,7 +392,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmSuccess) {
 
   EnsureTerminaInstalled();
   TestFuture<bool> result_future;
-  crostini_manager()->StartTerminaVm(kVmName, disk_path, {}, 0,
+  crostini_manager()->StartTerminaVm(kVmName, disk_path, 0,
                                      result_future.GetCallback());
 
   EXPECT_TRUE(result_future.Get());
@@ -418,8 +413,8 @@ TEST_F(CrostiniManagerTest, StartTerminaVmLowDiskNotification) {
 
   EnsureTerminaInstalled();
   TestFuture<bool> result_future;
-  crostini_manager()->StartTerminaVm(DefaultContainerId().vm_name, disk_path,
-                                     {}, 0, result_future.GetCallback());
+  crostini_manager()->StartTerminaVm(DefaultContainerId().vm_name, disk_path, 0,
+                                     result_future.GetCallback());
 
   EXPECT_TRUE(result_future.Get());
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
@@ -441,8 +436,8 @@ TEST_F(CrostiniManagerTest,
 
   EnsureTerminaInstalled();
   TestFuture<bool> result_future;
-  crostini_manager()->StartTerminaVm(DefaultContainerId().vm_name, disk_path,
-                                     {}, 0, result_future.GetCallback());
+  crostini_manager()->StartTerminaVm(DefaultContainerId().vm_name, disk_path, 0,
+                                     result_future.GetCallback());
 
   EXPECT_TRUE(result_future.Get());
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
@@ -457,7 +452,7 @@ TEST_F(CrostiniManagerTest, OnStartTremplinRecordsRunningVm) {
   // Start the Vm.
   EnsureTerminaInstalled();
   TestFuture<bool> result_future;
-  crostini_manager()->StartTerminaVm(kVmName, disk_path, {}, 0,
+  crostini_manager()->StartTerminaVm(kVmName, disk_path, 0,
                                      result_future.GetCallback());
 
   // Check that the Vm start is not recorded until tremplin starts.
@@ -478,7 +473,7 @@ TEST_F(CrostiniManagerTest, OnStartTremplinHappensEarlier) {
   // Start the Vm.
   EnsureTerminaInstalled();
   TestFuture<bool> result_future;
-  crostini_manager()->StartTerminaVm(kVmName, disk_path, {}, 0,
+  crostini_manager()->StartTerminaVm(kVmName, disk_path, 0,
                                      result_future.GetCallback());
 
   // Check that the Vm start is not recorded until tremplin starts.

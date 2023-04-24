@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
-#include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
@@ -268,11 +267,6 @@ class GuestOsSharePathTest : public testing::Test {
     profile()->GetPrefs()->SetString(drive::prefs::kDriveFsProfileSalt, "a");
     drivefs_ =
         base::FilePath("/media/fuse/drivefs-84675c855b63e12f384d45f033826980");
-
-    // Setup for a fake wayland server (needed when CrostiniManager makes a VM).
-    guest_os::GuestOsService::GetForProfile(profile())
-        ->WaylandServer()
-        ->OverrideServerForTesting(vm_tools::launch::TERMINA, nullptr, {});
 
     guest_os::GuestOsSessionTracker::GetForProfile(profile())
         ->AddGuestForTesting(guest_os::GuestId{guest_os::VmType::UNKNOWN,

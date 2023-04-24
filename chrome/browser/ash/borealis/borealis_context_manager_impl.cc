@@ -42,8 +42,9 @@ BorealisContextManagerImpl::Startup::Startup(
 BorealisContextManagerImpl::Startup::~Startup() = default;
 
 std::unique_ptr<BorealisContext> BorealisContextManagerImpl::Startup::Abort() {
-  while (!task_queue_.empty())
+  while (!task_queue_.empty()) {
     task_queue_.pop();
+  }
   Fail({BorealisStartupResult::kCancelled, "Startup aborted by user"});
   return std::move(context_);
 }
@@ -181,8 +182,9 @@ void BorealisContextManagerImpl::ShutDownBorealis(
   // from the running one.
   std::unique_ptr<BorealisContext> shutdown_context;
   std::swap(shutdown_context, context_);
-  if (in_progress_startup_)
+  if (in_progress_startup_) {
     shutdown_context = in_progress_startup_->Abort();
+  }
   if (!shutdown_context) {
     // TODO(b/172178036): There could be an operation in progress but we can't
     // tell because we don't record that state. Fix this by adding proper state
@@ -203,7 +205,6 @@ BorealisContextManagerImpl::GetTasks() {
   task_queue.push(std::make_unique<GetLaunchOptions>());
   task_queue.push(std::make_unique<MountDlc>());
   task_queue.push(std::make_unique<CreateDiskImage>());
-  task_queue.push(std::make_unique<RequestWaylandServer>());
   task_queue.push(std::make_unique<StartBorealisVm>());
   task_queue.push(
       std::make_unique<AwaitBorealisStartup>(profile_, kBorealisVmName));

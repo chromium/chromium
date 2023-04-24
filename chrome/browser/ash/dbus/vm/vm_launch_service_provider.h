@@ -26,12 +26,6 @@ class VmLaunchServiceProvider
   void Start(scoped_refptr<dbus::ExportedObject> exported_object) override;
 
  private:
-  void StartWaylandServer(dbus::MethodCall* method_call,
-                          dbus::ExportedObject::ResponseSender response_sender);
-
-  void StopWaylandServer(dbus::MethodCall* method_call,
-                         dbus::ExportedObject::ResponseSender response_sender);
-
   // Sets the token used by certain VMs to authorize their usage. This method
   // expects a string for the token, and optionally a boolean to control whether
   // we should install/launch on successfully setting the token, or just return.

@@ -106,21 +106,6 @@ class CreateDiskImage : public BorealisTask {
   base::WeakPtrFactory<CreateDiskImage> weak_factory_{this};
 };
 
-// Requests a wayland server from Exo for use by the borealis VM.
-class RequestWaylandServer : public BorealisTask {
- public:
-  RequestWaylandServer();
-  ~RequestWaylandServer() override;
-
-  // BorealisTask overrides:
-  void RunInternal(BorealisContext* context) override;
-
- private:
-  void OnServerRequested(BorealisContext* context,
-                         guest_os::GuestOsWaylandServer::Result result);
-  base::WeakPtrFactory<RequestWaylandServer> weak_factory_{this};
-};
-
 // Instructs Concierge to start the Borealis VM.
 class StartBorealisVm : public BorealisTask {
  public:

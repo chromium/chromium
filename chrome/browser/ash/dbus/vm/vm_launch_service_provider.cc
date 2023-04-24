@@ -96,20 +96,6 @@ void VmLaunchServiceProvider::Start(
     scoped_refptr<dbus::ExportedObject> exported_object) {
   exported_object->ExportMethod(
       vm_tools::launch::kVmLaunchServiceInterface,
-      vm_tools::launch::kVmLaunchServiceStartWaylandServerMethod,
-      base::BindRepeating(&VmLaunchServiceProvider::StartWaylandServer,
-                          weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&OnExported));
-
-  exported_object->ExportMethod(
-      vm_tools::launch::kVmLaunchServiceInterface,
-      vm_tools::launch::kVmLaunchServiceStopWaylandServerMethod,
-      base::BindRepeating(&VmLaunchServiceProvider::StopWaylandServer,
-                          weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&OnExported));
-
-  exported_object->ExportMethod(
-      vm_tools::launch::kVmLaunchServiceInterface,
       vm_tools::launch::kVmLaunchServiceProvideVmTokenMethod,
       base::BindRepeating(&VmLaunchServiceProvider::ProvideVmToken,
                           weak_ptr_factory_.GetWeakPtr()),
@@ -121,44 +107,6 @@ void VmLaunchServiceProvider::Start(
       base::BindRepeating(&VmLaunchServiceProvider::EnsureVmLaunched,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&OnExported));
-}
-
-void VmLaunchServiceProvider::StartWaylandServer(
-    dbus::MethodCall* method_call,
-    dbus::ExportedObject::ResponseSender response_sender) {
-  vm_tools::launch::StartWaylandServerRequest request;
-  if (!dbus::MessageReader(method_call).PopArrayOfBytesAsProto(&request)) {
-    std::move(response_sender)
-        .Run(dbus::ErrorResponse::FromMethodCall(
-            method_call, DBUS_ERROR_INVALID_ARGS,
-            "Unable to parse StartWaylandServerRequest from message"));
-    return;
-  }
-
-  guest_os::GuestOsWaylandServer::StartServer(
-      request, base::BindOnce(
-                   &HandleReturn<vm_tools::launch::StartWaylandServerResponse>,
-                   method_call, std::move(response_sender)));
-}
-
-void VmLaunchServiceProvider::StopWaylandServer(
-    dbus::MethodCall* method_call,
-    dbus::ExportedObject::ResponseSender response_sender) {
-  vm_tools::launch::StopWaylandServerRequest request;
-  if (!dbus::MessageReader(method_call).PopArrayOfBytesAsProto(&request)) {
-    std::move(response_sender)
-        .Run(dbus::ErrorResponse::FromMethodCall(
-            method_call, DBUS_ERROR_INVALID_ARGS,
-            "Unable to parse StopWaylandServerRequest from message"));
-    return;
-  }
-  // TODO(b/200896773): Stop is not used currently as the current set of wayland
-  // servers all ignore shutdown requests while their lifetimes are tied to
-  // chrome itself. Going forward this method will be necessary for servers
-  // whose lifetime is not bound to chrome's.
-  std::move(response_sender)
-      .Run(dbus::ErrorResponse::FromMethodCall(
-          method_call, DBUS_ERROR_NOT_SUPPORTED, "Not implemented."));
 }
 
 void VmLaunchServiceProvider::ProvideVmToken(
@@ -174,8 +122,9 @@ void VmLaunchServiceProvider::ProvideVmToken(
   }
 
   bool launch;
-  if (!reader.PopBool(&launch))
+  if (!reader.PopBool(&launch)) {
     launch = true;
+  }
 
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   if (!profile) {
