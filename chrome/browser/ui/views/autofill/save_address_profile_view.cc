@@ -91,9 +91,12 @@ void AddAddressSection(views::View* parent_view,
 
 void AddAddressSection(views::View* parent_view,
                        std::unique_ptr<views::ImageView> icon_view,
-                       const std::u16string& text) {
+                       const std::u16string& text,
+                       int a11y_label_string_id) {
   auto text_label =
       std::make_unique<views::Label>(text, views::style::CONTEXT_LABEL);
+  text_label->SetAccessibleName(
+      l10n_util::GetStringFUTF16(a11y_label_string_id, text));
   text_label->SetMultiLine(true);
   text_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   return AddAddressSection(parent_view, std::move(icon_view),
@@ -106,6 +109,8 @@ std::unique_ptr<views::View> CreateStreetAddressView(
   return views::Builder<views::Label>()
       .SetText(summary)
       .SetTextContext(views::style::CONTEXT_LABEL)
+      .SetAccessibleName(l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_SAVE_PROMPT_ADDRESS_SECTION_A11Y_LABEL, summary))
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetMultiLine(true)
       .Build();
@@ -237,8 +242,9 @@ SaveAddressProfileView::SaveAddressProfileView(
     std::unique_ptr<views::ImageView> icon =
         CreateAddressSectionIcon(vector_icons::kCallIcon);
     address_section_icons_.push_back(icon.get());
-    AddAddressSection(/*parent_view=*/address_components_view_, std::move(icon),
-                      phone);
+    AddAddressSection(
+        /*parent_view=*/address_components_view_, std::move(icon), phone,
+        IDS_AUTOFILL_SAVE_PROMPT_PHONE_SECTION_A11Y_LABEL);
   }
 
   std::u16string email = controller_->GetProfileEmail();
@@ -246,8 +252,9 @@ SaveAddressProfileView::SaveAddressProfileView(
     std::unique_ptr<views::ImageView> icon =
         CreateAddressSectionIcon(vector_icons::kEmailIcon);
     address_section_icons_.push_back(icon.get());
-    AddAddressSection(/*parent_view=*/address_components_view_, std::move(icon),
-                      email);
+    AddAddressSection(
+        /*parent_view=*/address_components_view_, std::move(icon), email,
+        IDS_AUTOFILL_SAVE_PROMPT_EMAIL_SECTION_A11Y_LABEL);
   }
 
   if (base::FeatureList::IsEnabled(
