@@ -143,8 +143,8 @@
 #include "base/base_switches.h"
 #include "base/environment.h"
 #include "base/files/file_path_watcher.h"
-#include "base/guid.h"
 #include "base/process/launch.h"
+#include "base/uuid.h"
 #include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"  // nogncheck
@@ -896,7 +896,7 @@ void InProcessBrowserTest::StartUniqueAshChrome(
   base::Environment::Create()->SetVar(
       "WAYLAND_DISPLAY",
       base::JoinString({"unique_wayland",
-                        base::GUID::GenerateRandomV4().AsLowercaseString()},
+                        base::Uuid::GenerateRandomV4().AsLowercaseString()},
                        "_"));
 
   base::FilePath ash_chrome_path =
