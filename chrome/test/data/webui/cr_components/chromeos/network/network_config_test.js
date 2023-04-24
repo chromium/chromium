@@ -8,7 +8,7 @@ import 'chrome://resources/ash/common/network/network_config.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {CrosNetworkConfigRemote, HiddenSsidMode, SecurityType, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {NetworkType, OncSource, PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
 
@@ -1545,6 +1545,39 @@ suite('network-config', function() {
         // Set a non empty DomainSuffixMatch clears the error.
         await setSerializedDomainSuffixMatch('test.com');
         assertFalse(isConfigErrorsPresent(), errorMessage);
+      });
+    });
+
+    // Testing that managed WiFi EAP networks which use the default Server CA
+    // cert are not required to set a SerializedDomainSuffixMatch or
+    // SerializedSubjectAltNameMatch, even when the experiment
+    // eapDefaultCasWithoutSubjectVerificationAllowed is disabled.
+    ['EAP-TLS', 'EAP-TTLS', 'PEAP'].forEach(eapType => {
+      test('WiFi EAP Default CA Cert Managed EAP Settings', async function() {
+        const errorMessage = getErrorMessage(eapType);
+        loadTimeData.overrideValues({
+          'eapDefaultCasWithoutSubjectVerificationAllowed': false,
+        });
+        mojoApi_.resetForTest();
+        const wifi1 = OncMojo.getDefaultManagedProperties(
+            NetworkType.kWiFi, 'testguid', '');
+        const managed_eap = {
+          outer: {activeValue: eapType},
+          useSystemCas: {
+            activeValue: true,
+            policySource: PolicySource.kUserPolicyEnforced,
+          },
+        };
+        wifi1.typeProperties.wifi.security = SecurityType.kWpaEap;
+        wifi1.typeProperties.wifi.eap = managed_eap;
+
+        setNetworkConfig(wifi1);
+        initNetworkConfigWithCerts(
+            /* hasServerCa= */ false, /* hasUserCert= */ true);
+        await mojoApi_.whenCalled('getNetworkCertificates');
+        await flushAsync();
+        assertTrue(isDefaultServerCaSelected());
+        assertFalse(isConfigErrorsPresent());
       });
     });
 
