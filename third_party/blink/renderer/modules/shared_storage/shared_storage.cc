@@ -187,6 +187,7 @@ SharedStorage::~SharedStorage() = default;
 
 void SharedStorage::Trace(Visitor* visitor) const {
   visitor->Trace(shared_storage_worklet_);
+  visitor->Trace(shared_storage_document_service_);
   ScriptWrappable::Trace(visitor);
 }
 
