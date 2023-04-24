@@ -51,6 +51,7 @@ found in the LICENSE file.
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/last_explanation_item_extra_marginBottom"
             app:iconImage="@drawable/ic_lightbulb_24dp"
             app:summaryText="@string/privacy_guide_msbb_item_two" />
 
