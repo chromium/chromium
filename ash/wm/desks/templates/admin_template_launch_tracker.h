@@ -41,6 +41,15 @@ ASH_EXPORT bool MergeAdminTemplateWindowUpdate(
     DeskTemplate& admin_template,
     const AdminTemplateWindowUpdate& update);
 
+// Figures out where to place an admin template window. The passed `bounds` is
+// first adjusted to fit inside `work_area` (note that this may change the
+// size). It is then placed, if possible, so that it does not overlap exactly
+// with any of the bounds in `existing_bounds`.
+ASH_EXPORT void AdjustAdminTemplateWindowBounds(
+    const gfx::Rect& work_area,
+    const std::vector<gfx::Rect>& existing_bounds,
+    gfx::Rect& bounds);
+
 // This class is used to launch an admin template and track the windows that
 // have been launched from it.
 class ASH_EXPORT AdminTemplateLaunchTracker {

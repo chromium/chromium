@@ -164,17 +164,25 @@ std::vector<GURL> GetURLsForBrowserWindow(Browser* browser) {
   return urls;
 }
 
-// Locate a browser launched from a template whose URLs match `urls`.
-Browser* FindLaunchedBrowserByURLs(const std::vector<GURL>& urls) {
+// Locate all browsers launched from templates whose URLs match `urls`.
+std::vector<Browser*> FindLaunchedBrowsersByURLs(
+    const std::vector<GURL>& urls) {
+  std::vector<Browser*> browsers;
   for (auto* browser : *BrowserList::GetInstance()) {
     aura::Window* window = browser->window()->GetNativeWindow();
     if (window->GetProperty(app_restore::kRestoreWindowIdKey) <
             kLaunchedWindowIdBase &&
         GetURLsForBrowserWindow(browser) == urls) {
-      return browser;
+      browsers.push_back(browser);
     }
   }
-  return nullptr;
+  return browsers;
+}
+
+// Locate a browser launched from a template whose URLs match `urls`.
+Browser* FindLaunchedBrowserByURLs(const std::vector<GURL>& urls) {
+  auto browsers = FindLaunchedBrowsersByURLs(urls);
+  return browsers.empty() ? nullptr : browsers.front();
 }
 
 // TODO(crbug.com/1286515): Remove this. Tests should navigate to overview and
@@ -3402,26 +3410,35 @@ class AdminTemplateTest : public extensions::PlatformAppBrowserTest {
   struct AdminTemplateDefinition {
     struct WindowDefinition {
       std::vector<std::string> urls;
+      absl::optional<gfx::Rect> bounds;
     };
 
     std::vector<WindowDefinition> windows;
   };
 
+  // Converts a `gfx::Rect` to a list, as expected by `RestoreData`.
+  base::Value::List CreateBounds(const gfx::Rect& bounds) {
+    base::Value::List list;
+    list.Append(bounds.x());
+    list.Append(bounds.y());
+    list.Append(bounds.width());
+    list.Append(bounds.height());
+    return list;
+  }
+
   // Creates an admin template with the windows and URLs given by `definition`.
   std::unique_ptr<ash::DeskTemplate> CreateAdminTemplate(
       const AdminTemplateDefinition& definition) {
-    // Common set of bounds to use for now. Later, get from `definition`.
-    base::Value::List bounds;
-    for (int b : {100, 50, 400, 300}) {
-      bounds.Append(b);
-    }
-
     base::Value::Dict windows;
     for (size_t i = 0; i != definition.windows.size(); ++i) {
       base::Value::Dict window;
       window.Set("title", "Chrome");
       window.Set("window_state_type", 0);
-      window.Set("bounds", bounds.Clone());
+
+      if (definition.windows[i].bounds) {
+        window.Set("current_bounds",
+                   CreateBounds(*definition.windows[i].bounds));
+      }
 
       base::Value::List urls;
       for (const std::string& url : definition.windows[i].urls) {
@@ -3454,8 +3471,9 @@ class AdminTemplateTest : public extensions::PlatformAppBrowserTest {
 IN_PROC_BROWSER_TEST_F(AdminTemplateTest, LaunchAdminTemplate) {
   // Launch an admin template with a single browser. Verifies that a browser was
   // actually launched.
-  auto admin_template =
-      CreateAdminTemplate({.windows = {{.urls = {kExampleUrl1}}}});
+  auto admin_template = CreateAdminTemplate(
+      {.windows = {
+           {.urls = {kExampleUrl1}, .bounds = gfx::Rect(100, 50, 400, 300)}}});
   ASSERT_NE(admin_template, nullptr);
 
   base::Uuid template_uuid = admin_template->uuid();
@@ -3488,4 +3506,33 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, LaunchAdminTemplate) {
       base::ranges::find(container, old_browser_window) - container.begin();
 
   EXPECT_GT(new_index, old_index);
+}
+
+IN_PROC_BROWSER_TEST_F(AdminTemplateTest, AdminTemplateWindowOffset) {
+  // Launch an admin template with a single browser. Verifies that a browser was
+  // actually launched.
+  auto admin_template = CreateAdminTemplate(
+      {.windows = {
+           {.urls = {kExampleUrl1}, .bounds = gfx::Rect(50, 50, 640, 480)}}});
+  ASSERT_NE(admin_template, nullptr);
+
+  base::Uuid template_uuid = admin_template->uuid();
+
+  auto* saved_desk_controller = ash::Shell::Get()->saved_desk_controller();
+  ash::SavedDeskControllerTestApi(saved_desk_controller)
+      .SetAdminTemplate(std::move(admin_template));
+
+  // Launch the template twice.
+  for (int i = 0; i != 2; ++i) {
+    saved_desk_controller->LaunchAdminTemplate(
+        template_uuid, display::Screen::GetScreen()->GetPrimaryDisplay().id());
+  }
+
+  auto browsers = FindLaunchedBrowsersByURLs({GURL(kExampleUrl1)});
+  ASSERT_EQ(browsers.size(), 2u);
+
+  // Verify that the two windows are not in the same position.
+  aura::Window* window1 = browsers[0]->window()->GetNativeWindow();
+  aura::Window* window2 = browsers[1]->window()->GetNativeWindow();
+  EXPECT_NE(window1->bounds(), window2->bounds());
 }

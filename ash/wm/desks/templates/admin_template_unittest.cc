@@ -138,6 +138,63 @@ TEST_F(AdminTemplateTest, MergeAdminTemplateWindowUpdate) {
   EXPECT_THAT(app_restore_data->display_id, Optional(123456));
 }
 
+TEST_F(AdminTemplateTest, AdjustAdminTemplateWindowBounds) {
+  // Simulates 800x600, but with a 50 pixel inset at top.
+  const gfx::Rect work_area(0, 50, 800, 550);
+
+  struct TestCase {
+    const char* name;
+    // The input bounds.
+    gfx::Rect bounds;
+    // Existing bounds.
+    std::vector<gfx::Rect> existing;
+    // Expected output bounds.
+    gfx::Rect expected;
+  };
+
+  const TestCase tests[] = {
+      {.name = "Not adjusted",
+       .bounds = gfx::Rect(100, 100, 640, 480),
+       .existing = {},
+       .expected = gfx::Rect(100, 100, 640, 480)},
+      {.name = "Adjusted to fit work area",
+       .bounds = gfx::Rect(0, 0, 640, 480),
+       .existing = {},
+       .expected = gfx::Rect(0, 50, 640, 480)},
+      {.name = "Existing, but no overlap",
+       .bounds = gfx::Rect(100, 100, 640, 480),
+       .existing = {gfx::Rect(20, 50, 640, 480)},
+       .expected = gfx::Rect(100, 100, 640, 480)},
+      {.name = "Existing, with exact overlap",
+       .bounds = gfx::Rect(100, 100, 640, 480),
+       .existing = {gfx::Rect(100, 100, 640, 480)},
+       .expected = gfx::Rect(110, 110, 640, 480)},
+      {.name = "Existing, adjusted multiple times",
+       .bounds = gfx::Rect(100, 100, 640, 480),
+       .existing = {gfx::Rect(100, 100, 640, 480),
+                    gfx::Rect(110, 110, 640, 480)},
+       .expected = gfx::Rect(120, 120, 640, 480)},
+      {.name = "Existing, adjustment clamped in the x direction",
+       .bounds = gfx::Rect(155, 100, 640, 480),
+       .existing = {gfx::Rect(155, 100, 640, 480)},
+       .expected = gfx::Rect(160, 110, 640, 480)},
+      {.name = "Existing, adjustment clamped in the y direction",
+       .bounds = gfx::Rect(100, 115, 640, 480),
+       .existing = {gfx::Rect(100, 115, 640, 480)},
+       .expected = gfx::Rect(110, 120, 640, 480)},
+      {.name = "Existing, adjustment not possible",
+       .bounds = gfx::Rect(160, 120, 640, 480),
+       .existing = {gfx::Rect(160, 120, 640, 480)},
+       .expected = gfx::Rect(160, 120, 640, 480)}};
+
+  for (const TestCase& test : tests) {
+    SCOPED_TRACE(test.name);
+    gfx::Rect bounds = test.bounds;
+    AdjustAdminTemplateWindowBounds(work_area, test.existing, bounds);
+    EXPECT_EQ(bounds, test.expected);
+  }
+}
+
 TEST_F(AdminTemplateTest, LaunchTemplate) {
   auto admin_template = CreateTemplateFromJson(kAdminTemplateJson);
   ASSERT_TRUE(admin_template);

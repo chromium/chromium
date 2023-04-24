@@ -10,6 +10,7 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/templates/saved_desk_constants.h"
+#include "ash/wm/work_area_insets.h"
 #include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/scoped_observation.h"
@@ -28,6 +29,10 @@ using ObserverCreatedCallback =
 using ObserverDoneCallback =
     base::RepeatingCallback<void(base::CheckedObserver*)>;
 
+// The distance a launched window is offset (down and to the right) in order to
+// not exactly overlap an existing window.
+constexpr int kWindowOffset = 10;
+
 // The next activation index to assign to an admin template window.
 int32_t g_admin_template_next_activation_index =
     kAdminTemplateStartingActivationIndex;
@@ -45,6 +50,30 @@ void UpdateAdminTemplateActivationIndices(DeskTemplate& saved_desk) {
     for (auto& [window_id, app_restore_data] : base::Reversed(launch_list)) {
       app_restore_data->activation_index =
           g_admin_template_next_activation_index--;
+    }
+  }
+}
+
+// This function updates the window bounds of the windows identified by `rwids`
+// in `saved_desk` such that none of them exactly overlap
+// `existing_bounds`.
+void UpdateWindowBounds(DeskTemplate& saved_desk,
+                        const gfx::Rect& work_area,
+                        std::vector<gfx::Rect> existing_bounds,
+                        const std::vector<int32_t>& rwids) {
+  auto& app_id_to_launch_list =
+      saved_desk.mutable_desk_restore_data()->mutable_app_id_to_launch_list();
+
+  for (auto& [app_id, launch_list] : app_id_to_launch_list) {
+    for (auto& [window_id, app_restore_data] : base::Reversed(launch_list)) {
+      CHECK(app_restore_data->current_bounds.has_value());
+
+      AdjustAdminTemplateWindowBounds(work_area, existing_bounds,
+                                      *app_restore_data->current_bounds);
+
+      // Append to existing bounds so that a later window doesn't end up exactly
+      // matching.
+      existing_bounds.push_back(*app_restore_data->current_bounds);
     }
   }
 }
@@ -195,6 +224,27 @@ bool MergeAdminTemplateWindowUpdate(DeskTemplate& admin_template,
   return true;
 }
 
+void AdjustAdminTemplateWindowBounds(
+    const gfx::Rect& work_area,
+    const std::vector<gfx::Rect>& existing_bounds,
+    gfx::Rect& bounds) {
+  bounds.AdjustToFit(work_area);
+
+  while (base::Contains(existing_bounds, bounds)) {
+    // There's an exact match for bounds, so we need to adjust it. We move it
+    // down and to the right, while staying within the work area.
+    int xoffset = std::min(kWindowOffset, work_area.right() - bounds.right());
+    int yoffset = std::min(kWindowOffset, work_area.bottom() - bounds.bottom());
+
+    // If we're unable to adjust further, then so be it.
+    if (xoffset == 0 && yoffset == 0) {
+      break;
+    }
+
+    bounds.Offset(xoffset, yoffset);
+  }
+}
+
 AdminTemplateLaunchTracker::AdminTemplateLaunchTracker(
     std::unique_ptr<DeskTemplate> admin_template,
     base::RepeatingCallback<void(const DeskTemplate&)> template_update_cb)
@@ -269,6 +319,24 @@ void AdminTemplateLaunchTracker::LaunchTemplate(SavedDeskDelegate* delegate,
   for (auto& [root, rwids] : root_to_rwids) {
     aura::Window* container =
         desks_controller->active_desk()->GetDeskContainerForRoot(root);
+
+    std::vector<gfx::Rect> existing_window_bounds;
+    for (aura::Window* child : container->children()) {
+      // This window has been launched from a template.
+      if (child->GetProperty(app_restore::kRestoreWindowIdKey) < -1) {
+        existing_window_bounds.push_back(child->bounds());
+      }
+    }
+
+    std::vector<int32_t> unique_rwids;
+    for (const auto& pair : rwids) {
+      unique_rwids.push_back(pair.unique_rwid);
+    }
+
+    WorkAreaInsets* work_area_insets = WorkAreaInsets::ForWindow(root);
+    UpdateWindowBounds(*admin_template,
+                       work_area_insets->user_work_area_bounds(),
+                       std::move(existing_window_bounds), unique_rwids);
 
     window_observers_.push_back(std::make_unique<AdminTemplateDeskObserver>(
         update_cb, created_cb, done_cb, container, std::move(rwids)));
