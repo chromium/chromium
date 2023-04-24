@@ -279,16 +279,6 @@ const base::flat_set<FrameNodeImpl*>& PageNodeImpl::main_frame_nodes() const {
   return main_frame_nodes_;
 }
 
-base::TimeTicks PageNodeImpl::usage_estimate_time() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return usage_estimate_time_;
-}
-
-uint64_t PageNodeImpl::private_footprint_kb_estimate() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return private_footprint_kb_estimate_;
-}
-
 const std::string& PageNodeImpl::browser_context_id() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return browser_context_id_;
@@ -397,18 +387,6 @@ void PageNodeImpl::ClearEmbedderFrameNodeAndEmbeddingType() {
   for (auto* observer : GetObservers())
     observer->OnEmbedderFrameNodeChanged(this, previous_embedder,
                                          previous_type);
-}
-
-void PageNodeImpl::set_usage_estimate_time(
-    base::TimeTicks usage_estimate_time) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  usage_estimate_time_ = usage_estimate_time;
-}
-
-void PageNodeImpl::set_private_footprint_kb_estimate(
-    uint64_t private_footprint_kb_estimate) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  private_footprint_kb_estimate_ = private_footprint_kb_estimate;
 }
 
 void PageNodeImpl::set_has_nonempty_beforeunload(

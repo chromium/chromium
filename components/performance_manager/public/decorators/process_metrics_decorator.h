@@ -8,8 +8,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
+#include "components/performance_manager/public/graph/node_data_describer.h"
 
 namespace memory_instrumentation {
 class GlobalMemoryDump;
@@ -17,11 +19,14 @@ class GlobalMemoryDump;
 
 namespace performance_manager {
 
+class SystemNode;
+
 // The ProcessMetricsDecorator is responsible for adorning process nodes with
 // performance metrics.
 class ProcessMetricsDecorator
     : public GraphOwned,
-      public GraphRegisteredImpl<ProcessMetricsDecorator> {
+      public GraphRegisteredImpl<ProcessMetricsDecorator>,
+      public NodeDataDescriberDefaultImpl {
  public:
   ProcessMetricsDecorator();
 
@@ -56,6 +61,10 @@ class ProcessMetricsDecorator
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
+  // NodeDataDescriber
+  base::Value::Dict DescribeSystemNodeData(
+      const SystemNode* node) const override;
+
   void SetGraphForTesting(Graph* graph) { graph_ = graph; }
   bool IsTimerRunningForTesting() const { return refresh_timer_.IsRunning(); }
 
@@ -63,7 +72,7 @@ class ProcessMetricsDecorator
     return refresh_timer_.GetCurrentDelay();
   }
 
-  void RefreshMetricsForTesting() { RefreshMetrics(); }
+  void RefreshMetricsForTesting();
 
  protected:
   class ScopedMetricsInterestTokenImpl;
@@ -72,7 +81,7 @@ class ProcessMetricsDecorator
   void StartTimer();
   void StopTimer();
 
-  // Schedule a refresh of the metrics for all the process nodes.
+  // Asynchronously refreshes the metrics for all the process nodes.
   void RefreshMetrics();
 
   // Query the MemoryInstrumentation service to get the memory metrics for all

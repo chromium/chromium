@@ -51,13 +51,9 @@ class WorkerNodeImpl
   void AddClientWorker(WorkerNodeImpl* worker_node);
   void RemoveClientWorker(WorkerNodeImpl* worker_node);
 
-  // Sets the worker priority, and the reason behind it.
+  // Setters are not thread safe.
   void SetPriorityAndReason(const PriorityAndReason& priority_and_reason);
-
-  // Sets the Resident Set Size estimate.
   void SetResidentSetKbEstimate(uint64_t rss_estimate);
-
-  // Sets the Private Footprint Size estimate.
   void SetPrivateFootprintKbEstimate(uint64_t pmf_estimate);
 
   // Invoked when the worker script was fetched and the final response URL is

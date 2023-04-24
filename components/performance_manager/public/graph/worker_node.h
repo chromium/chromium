@@ -118,6 +118,9 @@ class WorkerNode : public Node {
   // having that particular priority.
   virtual const PriorityAndReason& GetPriorityAndReason() const = 0;
 
+  // TODO(joenotcharles): Move the resource usage estimates to a separate
+  // class.
+
   // Returns the most recently estimated resident set of the worker, in
   // kilobytes. This is an estimate because RSS is computed by process, and a
   // process can host multiple workers.

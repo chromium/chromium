@@ -224,6 +224,9 @@ class FrameNode : public Node {
   // proxy may only be dereferenced on the UI thread.
   virtual const RenderFrameHostProxy& GetRenderFrameHostProxy() const = 0;
 
+  // TODO(joenotcharles): Move the resource usage estimates to a separate
+  // class.
+
   // Returns the most recently estimated resident set of the frame, in
   // kilobytes. This is an estimate because RSS is computed by process, and a
   // process can host multiple frames.

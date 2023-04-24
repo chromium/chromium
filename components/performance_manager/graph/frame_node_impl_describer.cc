@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
@@ -86,6 +87,13 @@ base::Value::Dict FrameNodeImplDescriber::DescribeFrameNodeData(
   ret.Set("viewport_intersection",
           ViewportIntersectionToString(impl->viewport_intersection_.value()));
   ret.Set("visibility", FrameNodeVisibilityToString(impl->visibility_.value()));
+
+  base::Value::Dict metrics;
+  metrics.Set("resident_set",
+              base::NumberToString(impl->resident_set_kb_estimate()));
+  metrics.Set("private_footprint",
+              base::NumberToString(impl->private_footprint_kb_estimate()));
+  ret.Set("metrics_estimates", std::move(metrics));
 
   return ret;
 }

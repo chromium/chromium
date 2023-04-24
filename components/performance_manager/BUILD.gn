@@ -272,6 +272,7 @@ source_set("unit_tests") {
     "decorators/page_live_state_decorator_unittest.cc",
     "decorators/page_load_tracker_decorator_unittest.cc",
     "decorators/process_hosted_content_types_aggregator_unittest.cc",
+    "decorators/process_metrics_decorator_unittest.cc",
     "execution_context/execution_context_attached_data_unittest.cc",
     "execution_context/execution_context_registry_impl_unittest.cc",
     "execution_context_priority/ad_frame_voter_unittest.cc",
