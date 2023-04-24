@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {ConfirmationManagerInterface, PayloadPreview, ShareTarget, TransferUpdateListenerPendingReceiver} from '/shared/nearby_share.mojom-webui.js';
 import {NearbyShareSettingsMixin} from '/shared/nearby_share_settings_mixin.js';
 import {CloseReason} from '/shared/types.js';
+import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -92,6 +93,18 @@ export class NearbyShareAppElement extends NearbyShareAppElementBase {
         type: Object,
         value: null,
       },
+
+      /**
+       * Return true if the Jelly feature flag is enabled.
+       */
+      isJellyEnabled: {
+        type: Boolean,
+        readOnly: true,
+        value() {
+          return loadTimeData.valueExists('isJellyEnabled') &&
+              loadTimeData.getBoolean('isJellyEnabled');
+        },
+      },
     };
   }
 
@@ -99,6 +112,7 @@ export class NearbyShareAppElement extends NearbyShareAppElementBase {
   private transferUpdateListener_: TransferUpdateListenerPendingReceiver|null;
   private selectedShareTarget_: ShareTarget|null;
   private payloadPreview_: PayloadPreview|null;
+  isJellyEnabled: boolean;
 
   override ready() {
     super.ready();
@@ -108,6 +122,15 @@ export class NearbyShareAppElement extends NearbyShareAppElementBase {
     this.addEventListener(
         'close', e => this.onClose_(e as CustomEvent<{reason: CloseReason}>));
     this.addEventListener('onboarding-complete', this.onOnboardingComplete_);
+
+    if (this.isJellyEnabled) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'chrome://theme/colors.css?sets=legacy,sys';
+      document.head.appendChild(link);
+      document.body.classList.add('jelly-enabled');
+      startColorChangeUpdater();
+    }
   }
 
   /**

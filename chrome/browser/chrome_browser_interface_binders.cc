@@ -990,7 +990,7 @@ void PopulateChromeWebUIFrameBinders(
       ash::ShortcutCustomizationAppUI,
       ash::printing::printing_manager::PrintManagementUI,
       ash::InternetConfigDialogUI, ash::InternetDetailDialogUI, ash::SetTimeUI,
-      ash::BluetoothPairingDialogUI,
+      ash::BluetoothPairingDialogUI, nearby_share::NearbyShareDialogUI,
 #endif
       NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI, CustomizeChromeUI>(
       map);
