@@ -6033,6 +6033,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="OpenBookmark" label=""/>
   <suffix name="OpenInChrome" label=""/>
   <suffix name="OpenRecentTab" label=""/>
+  <suffix name="PasswordManager" label=""/>
   <suffix name="Paste" label=""/>
   <suffix name="PinToStartScreen" label=""/>
   <suffix name="Print" label=""/>

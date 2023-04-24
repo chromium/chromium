@@ -865,6 +865,13 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.AppInfo", delta);
       LogMenuAction(MENU_ACTION_APP_INFO);
       break;
+    case IDC_VIEW_PASSWORDS:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.PasswordManager",
+                                   delta);
+      }
+      LogMenuAction(MENU_ACTION_PASSWORD_MANAGER);
+      break;
   }
 
   if (!uma_action_recorded_) {
