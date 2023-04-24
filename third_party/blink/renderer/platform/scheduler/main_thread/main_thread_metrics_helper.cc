@@ -78,9 +78,6 @@ MainThreadMetricsHelper::MainThreadMetricsHelper(
           {QUEUEING_DELAY_HISTOGRAM_INIT("LowContinuation")},
           {QUEUEING_DELAY_HISTOGRAM_INIT("Low")},
           {QUEUEING_DELAY_HISTOGRAM_INIT("BestEffort")}},
-      total_task_time_reporter_(
-          "Scheduler.Experimental.Renderer.TotalTime.Wall.MainThread.Positive",
-          "Scheduler.Experimental.Renderer.TotalTime.Wall.MainThread.Negative"),
       main_thread_task_load_state_(MainThreadTaskLoadState::kUnknown) {
   main_thread_load_tracker_.Resume(now);
   if (renderer_backgrounded) {
@@ -174,9 +171,6 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
   }
 
   MetricsHelper::RecordCommonTaskMetrics(task, task_timing);
-
-  total_task_time_reporter_.RecordAdditionalDuration(
-      task_timing.wall_duration());
 
   // WARNING: All code below must be compatible with down-sampling.
   constexpr double kSamplingProbability = .01;

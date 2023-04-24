@@ -16,43 +16,11 @@ namespace {
 // task).
 constexpr base::TimeDelta kLongTaskDiscardingThreshold = base::Seconds(30);
 
-scheduling_metrics::ThreadType ConvertBlinkThreadType(ThreadType thread_type) {
-  switch (thread_type) {
-    case ThreadType::kMainThread:
-      return scheduling_metrics::ThreadType::kRendererMainThread;
-    case ThreadType::kCompositorThread:
-      return scheduling_metrics::ThreadType::kRendererCompositorThread;
-    case ThreadType::kDedicatedWorkerThread:
-      return scheduling_metrics::ThreadType::kRendererDedicatedWorkerThread;
-    case ThreadType::kServiceWorkerThread:
-      return scheduling_metrics::ThreadType::kRendererServiceWorkerThread;
-    case ThreadType::kAnimationAndPaintWorkletThread:
-    case ThreadType::kDatabaseThread:
-    case ThreadType::kFileThread:
-    case ThreadType::kHRTFDatabaseLoaderThread:
-    case ThreadType::kOfflineAudioRenderThread:
-    case ThreadType::kReverbConvolutionBackgroundThread:
-    case ThreadType::kSharedWorkerThread:
-    case ThreadType::kUnspecifiedWorkerThread:
-    case ThreadType::kTestThread:
-    case ThreadType::kAudioEncoderThread:
-    case ThreadType::kVideoEncoderThread:
-    case ThreadType::kOfflineAudioWorkletThread:
-    case ThreadType::kRealtimeAudioWorkletThread:
-    case ThreadType::kSemiRealtimeAudioWorkletThread:
-    case ThreadType::kFontThread:
-    case ThreadType::kPreloadScannerThread:
-      return scheduling_metrics::ThreadType::kRendererOtherBlinkThread;
-  }
-}
-
 }  // namespace
 
 MetricsHelper::MetricsHelper(ThreadType thread_type,
                              bool has_cpu_timing_for_each_task)
     : thread_type_(thread_type),
-      thread_metrics_(ConvertBlinkThreadType(thread_type),
-                      has_cpu_timing_for_each_task),
       thread_task_cpu_duration_reporter_(
           "RendererScheduler.TaskCPUDurationPerThreadType2"),
       foreground_thread_task_cpu_duration_reporter_(
@@ -75,8 +43,6 @@ bool MetricsHelper::ShouldDiscardTask(
 void MetricsHelper::RecordCommonTaskMetrics(
     const base::sequence_manager::Task& task,
     const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
-  thread_metrics_.RecordTaskMetrics(task, task_timing);
-
   bool backgrounded = internal::ProcessState::Get()->is_process_backgrounded;
 
   if (!task_timing.has_thread_time())

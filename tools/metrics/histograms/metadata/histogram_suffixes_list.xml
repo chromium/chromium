@@ -5026,27 +5026,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="SB2.RequestDestination"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SchedulerDarkMatterMetrics" separator=".">
-  <suffix name="Tracked"
-      label="Total duration of all tasks managed by the scheduler. This
-             histogram is similar to the plain .CPUTimePerThread, but it
-             ensures that the number of samples matches the .Untracked
-             version of the same histogram."/>
-  <suffix name="Untracked"
-      label="Total execution time unaccounted for by the scheduler.
-             Calculated as the difference between total thread time and the
-             sum of all tasks managed by the scheduler."/>
-  <affected-histogram name="Scheduler.Experimental.CPUTimePerThread"/>
-  <affected-histogram name="Scheduler.Experimental.Renderer.CPUTimePerThread"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="SchedulerTotalDurationHistograms" separator=".">
-  <suffix name="Negative" label=""/>
-  <suffix name="Positive" label=""/>
-  <affected-histogram
-      name="Scheduler.Experimental.Renderer.TotalTime.Wall.MainThread"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ScrollSourceDevice" separator=".">
   <suffix name="Touch" label="Touch"/>
   <suffix name="Wheel" label="Wheel"/>

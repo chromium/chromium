@@ -7,8 +7,6 @@
 
 #include "base/task/sequence_manager/task_queue.h"
 #include "components/scheduling_metrics/task_duration_metric_reporter.h"
-#include "components/scheduling_metrics/thread_metrics.h"
-#include "components/scheduling_metrics/total_duration_metric_reporter.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_type.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -56,8 +54,6 @@ class PLATFORM_EXPORT MetricsHelper {
   const ThreadType thread_type_;
 
  private:
-  scheduling_metrics::ThreadMetrics thread_metrics_;
-
   scheduling_metrics::TaskDurationMetricReporter<ThreadType>
       thread_task_cpu_duration_reporter_;
   scheduling_metrics::TaskDurationMetricReporter<ThreadType>

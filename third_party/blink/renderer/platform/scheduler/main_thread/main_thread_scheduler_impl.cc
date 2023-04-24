@@ -2390,15 +2390,6 @@ void MainThreadSchedulerImpl::RecordTaskUkm(
   if (!helper_.ShouldRecordTaskUkm(task_timing.has_thread_time()))
     return;
 
-  if (queue && queue->GetFrameScheduler()) {
-    auto status = RecordTaskUkmImpl(queue, task, task_timing,
-                                    queue->GetFrameScheduler(), true);
-    UMA_HISTOGRAM_ENUMERATION(
-        "Scheduler.Experimental.Renderer.UkmRecordingStatus", status,
-        UkmRecordingStatus::kCount);
-    return;
-  }
-
   for (PageSchedulerImpl* page_scheduler : main_thread_only().page_schedulers) {
     auto status = RecordTaskUkmImpl(
         queue, task, task_timing,
