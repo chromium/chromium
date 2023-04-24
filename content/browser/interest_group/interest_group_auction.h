@@ -266,10 +266,13 @@ class CONTENT_EXPORT InterestGroupAuction
 
     // Requests made to Private aggregation API in generateBid() and scoreAd().
     // Keyed by reporting origin of the associated requests, i.e., buyer origin
-    // for generateBid() and seller origin for scoreAd().
+    // for generateBid() and seller origin for scoreAd(), plus a bool that's
+    // true for top-level seller requests only, which is used to make sure they
+    // get the top-level signals.
+    //
     // TODO(qingxinwu): Consider only saving the requests without saving Origin,
     // since copying Origin is expensive.
-    std::map<url::Origin, PrivateAggregationRequests>
+    std::map<std::pair<url::Origin, bool>, PrivateAggregationRequests>
         private_aggregation_requests;
 
     // Requests made to Private aggregation API in generateBid() for the

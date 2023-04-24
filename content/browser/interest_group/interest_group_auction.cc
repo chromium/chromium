@@ -860,19 +860,37 @@ class InterestGroupAuction::BuyerHelper
       const BidState* winner,
       const BidState* non_kanon_winner,
       const PostAuctionSignals& signals,
+      const absl::optional<PostAuctionSignals>& top_level_signals,
       std::map<url::Origin, PrivateAggregationRequests>&
           private_aggregation_requests_reserved,
       std::map<std::string, PrivateAggregationRequests>&
           private_aggregation_requests_non_reserved) {
     for (std::unique_ptr<BidState>& state : bid_states_) {
       bool is_winner = state.get() == winner;
-      for (auto& [origin, requests] : state->private_aggregation_requests) {
+      for (auto& [key, requests] : state->private_aggregation_requests) {
+        const url::Origin& origin = key.first;
+        bool is_top_level_seller = key.second;
+        double winning_bid_to_use = signals.winning_bid;
+        double highest_scoring_other_bid_to_use =
+            signals.highest_scoring_other_bid;
+        // When component auctions are in use, a BuyerHelper for a component
+        // auction calls here for the scoreAd() aggregation calls from the
+        // top-level; in that case the relevant signals are in
+        // `top_level_signals` and not `signals`. `highest_scoring_other_bid`
+        // is also not reported for top-levels.
+        if (is_top_level_seller && auction_->parent_) {
+          highest_scoring_other_bid_to_use = 0;
+          winning_bid_to_use = top_level_signals.has_value()
+                                   ? top_level_signals->winning_bid
+                                   : 0.0;
+        }
+
         for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
              requests) {
           absl::optional<PrivateAggregationRequestWithEventType>
               converted_request = FillInPrivateAggregationRequest(
-                  std::move(request), signals.winning_bid,
-                  signals.highest_scoring_other_bid, state->reject_reason,
+                  std::move(request), winning_bid_to_use,
+                  highest_scoring_other_bid_to_use, state->reject_reason,
                   is_winner);
           if (converted_request.has_value()) {
             PrivateAggregationRequestWithEventType converted_request_value =
@@ -1372,7 +1390,8 @@ class InterestGroupAuction::BuyerHelper
     auction_->MaybeLogPrivateAggregationWebFeatures(pa_requests);
     if (!pa_requests.empty()) {
       PrivateAggregationRequests& pa_requests_for_bidder =
-          state->private_aggregation_requests[interest_group.owner];
+          state->private_aggregation_requests[std::make_pair(
+              interest_group.owner, false /*not a top-level seller*/)];
       pa_requests_for_bidder.insert(pa_requests_for_bidder.end(),
                                     std::move_iterator(pa_requests.begin()),
                                     std::move_iterator(pa_requests.end()));
@@ -2393,7 +2412,7 @@ void InterestGroupAuction::
     std::map<std::string, PrivateAggregationRequests>
         private_aggregation_requests_non_reserved;
     buyer_helper->TakePrivateAggregationRequests(
-        winner, non_kanon_winner, signals,
+        winner, non_kanon_winner, signals, top_level_signals,
         private_aggregation_requests_reserved,
         private_aggregation_requests_non_reserved);
 
@@ -3146,7 +3165,8 @@ void InterestGroupAuction::OnScoreAdComplete(
     if (!pa_requests.empty()) {
       DCHECK(config_);
       PrivateAggregationRequests& pa_requests_for_seller =
-          bid->bid_state->private_aggregation_requests[config_->seller];
+          bid->bid_state->private_aggregation_requests[std::make_pair(
+              config_->seller, !parent_)];
       for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
            pa_requests) {
         // A for-event private aggregation request with non-reserved event type

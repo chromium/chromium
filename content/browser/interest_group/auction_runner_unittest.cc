@@ -3478,8 +3478,9 @@ TEST_F(AuctionRunnerTest, ComponentAuction) {
   EXPECT_THAT(
       result_.report_urls,
       testing::UnorderedElementsAre(
+          // top-level doesn't get highestScoringOtherBid.
           GURL("https://reporting.example.com/"
-               "?highestScoringOtherBid=1&"
+               "?highestScoringOtherBid=0&"
                "highestScoringOtherBidCurrency=???&"
                "bidCurrency=???&bid=2"),
           GURL("https://component2-report.test/"
@@ -3545,6 +3546,393 @@ TEST_F(AuctionRunnerTest, ComponentAuction) {
                    .SetNumSellers(3)
                    .SetNumBidderWorklets(2)
                    .SetNumInterestGroupsWithOnlyNonKAnonBid(2));
+}
+
+// Test of a component auction where top-level seller and intermediate one use
+// different currencies.
+TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency) {
+  const char kBidScript[] = R"(
+    const inBid = %d;
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      privateAggregation.reportContributionForEvent('reserved.always', {
+        bucket: {baseValue: 'winning-bid'},
+        value: 1 + 1000 * inBid,
+      });
+      privateAggregation.reportContributionForEvent('reserved.always', {
+        bucket: {baseValue: 'highest-scoring-other-bid'},
+        value: 2 + 1000 * inBid,
+      });
+      return {bid: inBid, render: interestGroup.ads[0].renderUrl,
+              allowComponentAuction: true};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+      let sendReportUrl = "https://buyer-reporting.example.com/";
+      sendReportUrl +=
+          '?highestScoringOtherBid=' + browserSignals.highestScoringOtherBid +
+          '&highestScoringOtherBidCurrency=' +
+          browserSignals.highestScoringOtherBidCurrency +
+          '&bidCurrency=' + browserSignals.bidCurrency +
+          '&bid=' + browserSignals.bid;
+      sendReportTo(sendReportUrl);
+
+      privateAggregation.reportContributionForEvent('reserved.win', {
+        bucket: {baseValue: 'winning-bid'},
+        value: 11 + 1000 * browserSignals.bid,
+      });
+      privateAggregation.reportContributionForEvent('reserved.win', {
+        bucket: {baseValue: 'highest-scoring-other-bid'},
+        value: 12 + 1000 * browserSignals.bid,
+      });
+    }
+  )";
+
+  const char kDecisionScript[] = R"(
+    const inOffset = %d;
+    function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+                      browserSignals) {
+      privateAggregation.reportContributionForEvent('reserved.always', {
+        bucket: {baseValue: 'winning-bid'},
+        value: inOffset + 1 + 1000 * bid,
+      });
+      privateAggregation.reportContributionForEvent('reserved.always', {
+        bucket: {baseValue: 'highest-scoring-other-bid'},
+        value: inOffset + 2 + 1000 * bid,
+      });
+      // Pass along a bit less than our conversion.
+      return {desirability: bid,
+              incomingBidInSellerCurrency: bid * 10,
+              bid: bid * 9,
+              allowComponentAuction: true,
+              ad: adMetadata};
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+      let sendReportUrl = "https://seller-reporting-" + inOffset +
+                          ".example.com/";
+      sendReportUrl +=
+          '?highestScoringOtherBid=' + browserSignals.highestScoringOtherBid +
+          '&highestScoringOtherBidCurrency=' +
+          browserSignals.highestScoringOtherBidCurrency +
+          '&bidCurrency=' + browserSignals.bidCurrency +
+          '&bid=' + browserSignals.bid;
+      sendReportTo(sendReportUrl);
+
+      privateAggregation.reportContributionForEvent('reserved.win', {
+        bucket: {baseValue: 'winning-bid'},
+        value: inOffset + 11 + 1000 * browserSignals.bid,
+      });
+      privateAggregation.reportContributionForEvent('reserved.win', {
+        bucket: {baseValue: 'highest-scoring-other-bid'},
+        value: inOffset + 12 + 1000 * browserSignals.bid,
+      });
+     }
+  )";
+
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kComponentSeller1,
+                                    /*bid_from_component_auction_wins=*/true,
+                                    /*report_post_auction_signals=*/true);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         base::StringPrintf(kBidScript, 1));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder2Url,
+                                         base::StringPrintf(kBidScript, 2));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kComponentSeller1Url,
+      base::StringPrintf(kDecisionScript, 20));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      base::StringPrintf(kDecisionScript, 50));
+  ASSERT_EQ(component_auctions_.size(), 1u);
+  component_auctions_[0].non_shared_params.seller_currency =
+      blink::AdCurrency::From("USD");
+  seller_currency_ = blink::AdCurrency::From("CAD");
+
+  RunStandardAuction();
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+
+  EXPECT_THAT(
+      result_.report_urls,
+      testing::UnorderedElementsAre(
+          GURL("https://seller-reporting-50.example.com/"
+               "?highestScoringOtherBid=0&highestScoringOtherBidCurrency=???&"
+               "bidCurrency=CAD&bid=180"),
+          GURL("https://seller-reporting-20.example.com/"
+               "?highestScoringOtherBid=10&highestScoringOtherBidCurrency=USD&"
+               "bidCurrency=USD&bid=20"),
+          GURL("https://buyer-reporting.example.com/"
+               "?highestScoringOtherBid=10&highestScoringOtherBidCurrency=USD&"
+               "bidCurrency=???&bid=2")));
+
+  EXPECT_THAT(
+      private_aggregation_manager_.TakePrivateAggregationRequests(),
+      testing::UnorderedElementsAre(
+          testing::Pair(
+              kBidder1,
+              ElementsAreRequests(
+                  // generateBid(), winning-bid
+                  BuildPrivateAggregationRequest(/*bucket=*/20, /*value=*/1001),
+                  // generateBid(), highest-scoring-other-bid
+                  BuildPrivateAggregationRequest(/*bucket=*/10,
+                                                 /*value=*/1002))),
+          testing::Pair(
+              kBidder2,
+              ElementsAreRequests(
+                  // generateBid(), winning-bid
+                  BuildPrivateAggregationRequest(/*bucket=*/20, /*value=*/2001),
+                  // generateBid(), highest-scoring-other-bid
+                  BuildPrivateAggregationRequest(/*bucket=*/10, /*value=*
+                                                                 */
+                                                 2002),
+                  // reportWin(), winning-bid
+                  BuildPrivateAggregationRequest(/*bucket=*/20, /*value=*/2011),
+                  // reportWin(), highest-scoring-other-bid
+                  BuildPrivateAggregationRequest(/*bucket=*/10, /*value=*
+                                                                 */
+                                                 2012))),
+          testing::Pair(
+              kComponentSeller1,
+              ElementsAreRequests(
+                  // scoreAd(), winning-bid, incoming bid 1
+                  BuildPrivateAggregationRequest(/*bucket=*/20, /*value=*/1021),
+                  // scoreAd(), highest-scoring-other-bid, incoming bid 1
+                  BuildPrivateAggregationRequest(/*bucket=*/10, /*value=*
+                                                                 */
+                                                 1022),
+                  // scoreAd(), winning-bid, incoming bid 2
+                  BuildPrivateAggregationRequest(/*bucket=*/20, /*value=*/2021),
+                  // scoreAd(), highest-scoring-other-bid, incoming bid 2
+                  BuildPrivateAggregationRequest(/*bucket=*/10, /*value=*
+                                                                 */
+                                                 2022),
+                  // reportResult(), winning-bid, browserSignals.bid is 20
+                  BuildPrivateAggregationRequest(/*bucket=*/20,
+                                                 /*value=*/20031),
+                  // reportResult(), highest-scoring-other-bid,
+                  // browserSignals.bid is 20
+                  BuildPrivateAggregationRequest(/*bucket=*/10, /*value=*
+                                                                 */
+                                                 20032))),
+          testing::Pair(
+              kSeller,
+              ElementsAreRequests(
+                  // scoreAd(), winning-bid, browserSignals.bid is 18
+                  BuildPrivateAggregationRequest(/*bucket=*/180,
+                                                 /*value=*/18051),
+                  // scoreAd(), highest-scoring-other-bid is 0.
+                  BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/18052),
+                  // reportResult(), winning-bid, browserSignals.bid is 180.
+                  BuildPrivateAggregationRequest(/*bucket=*/180,
+                                                 /*value=*/180061),
+                  // reportResult() highest-scoring-other-bid is 0.
+                  BuildPrivateAggregationRequest(/*bucket=*/0,
+                                                 /*value=*/180062)))));
+}
+
+// Test of a component auction where top-level seller and intermediate one use
+// different currencies, with two components.
+TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency2) {
+  const char kBidScript[] = R"(
+    const inBid = %d;
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      privateAggregation.reportContributionForEvent('reserved.always', {
+        bucket: {baseValue: 'winning-bid'},
+        value: 1 + 1000 * inBid,
+      });
+      privateAggregation.reportContributionForEvent('reserved.always', {
+        bucket: {baseValue: 'highest-scoring-other-bid'},
+        value: 2 + 1000 * inBid,
+      });
+      return {bid: inBid, render: interestGroup.ads[0].renderUrl,
+              allowComponentAuction: true};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+      let sendReportUrl = "https://buyer-reporting.example.com/";
+      sendReportUrl +=
+          '?highestScoringOtherBid=' + browserSignals.highestScoringOtherBid +
+          '&highestScoringOtherBidCurrency=' +
+          browserSignals.highestScoringOtherBidCurrency +
+          '&bidCurrency=' + browserSignals.bidCurrency +
+          '&bid=' + browserSignals.bid;
+      sendReportTo(sendReportUrl);
+
+      privateAggregation.reportContributionForEvent('reserved.win', {
+        bucket: {baseValue: 'winning-bid'},
+        value: 11 + 1000 * browserSignals.bid,
+      });
+      privateAggregation.reportContributionForEvent('reserved.win', {
+        bucket: {baseValue: 'highest-scoring-other-bid'},
+        value: 12 + 1000 * browserSignals.bid,
+      });
+    }
+  )";
+
+  const char kDecisionScript[] = R"(
+    const inOffset = %d;
+    function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+                      browserSignals) {
+      privateAggregation.reportContributionForEvent('reserved.always', {
+        bucket: {baseValue: 'winning-bid'},
+        value: inOffset + 1 + 1000 * bid,
+      });
+      privateAggregation.reportContributionForEvent('reserved.always', {
+        bucket: {baseValue: 'highest-scoring-other-bid'},
+        value: inOffset + 2 + 1000 * bid,
+      });
+      // Pass along a bit less than our conversion.
+      return {desirability: bid,
+              incomingBidInSellerCurrency: bid * 10,
+              bid: bid * 9,
+              allowComponentAuction: true,
+              ad: adMetadata};
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+      let sendReportUrl = "https://seller-reporting-" + inOffset +
+                          ".example.com/";
+      sendReportUrl +=
+          '?highestScoringOtherBid=' + browserSignals.highestScoringOtherBid +
+          '&highestScoringOtherBidCurrency=' +
+          browserSignals.highestScoringOtherBidCurrency +
+          '&bidCurrency=' + browserSignals.bidCurrency +
+          '&bid=' + browserSignals.bid;
+      sendReportTo(sendReportUrl);
+
+      privateAggregation.reportContributionForEvent('reserved.win', {
+        bucket: {baseValue: 'winning-bid'},
+        value: inOffset + 11 + 1000 * browserSignals.bid,
+      });
+      privateAggregation.reportContributionForEvent('reserved.win', {
+        bucket: {baseValue: 'highest-scoring-other-bid'},
+        value: inOffset + 12 + 1000 * browserSignals.bid,
+      });
+     }
+  )";
+
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kComponentSeller2,
+                                    /*bid_from_component_auction_wins=*/true,
+                                    /*report_post_auction_signals=*/true);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         base::StringPrintf(kBidScript, 1));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder2Url,
+                                         base::StringPrintf(kBidScript, 2));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kComponentSeller1Url,
+      base::StringPrintf(kDecisionScript, 20));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kComponentSeller2Url,
+      base::StringPrintf(kDecisionScript, 40));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      base::StringPrintf(kDecisionScript, 60));
+  ASSERT_EQ(component_auctions_.size(), 2u);
+  component_auctions_[0].non_shared_params.seller_currency =
+      blink::AdCurrency::From("USD");
+  component_auctions_[1].non_shared_params.seller_currency =
+      blink::AdCurrency::From("MXN");
+  seller_currency_ = blink::AdCurrency::From("CAD");
+
+  RunStandardAuction();
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+
+  EXPECT_THAT(
+      result_.report_urls,
+      testing::UnorderedElementsAre(
+          GURL("https://seller-reporting-60.example.com/"
+               "?highestScoringOtherBid=0&highestScoringOtherBidCurrency=???&"
+               "bidCurrency=CAD&bid=180"),
+          GURL("https://seller-reporting-40.example.com/"
+               "?highestScoringOtherBid=0&highestScoringOtherBidCurrency=MXN&"
+               "bidCurrency=MXN&bid=20"),
+          GURL("https://buyer-reporting.example.com/"
+               "?highestScoringOtherBid=0&highestScoringOtherBidCurrency=MXN&"
+               "bidCurrency=???&bid=2")));
+
+  EXPECT_THAT(
+      private_aggregation_manager_.TakePrivateAggregationRequests(),
+      testing::UnorderedElementsAre(
+          testing::Pair(
+              kBidder1,
+              ElementsAreRequests(
+                  // generateBid(), winning-bid
+                  BuildPrivateAggregationRequest(/*bucket=*/10, /*value=*/1001),
+                  // generateBid(), highest-scoring-other-bid
+                  BuildPrivateAggregationRequest(/*bucket=*/0,
+                                                 /*value=*/1002))),
+          testing::Pair(
+              kBidder2,
+              ElementsAreRequests(
+                  // generateBid(), winning-bid
+                  BuildPrivateAggregationRequest(/*bucket=*/20, /*value=*/2001),
+                  // generateBid(), highest-scoring-other-bid
+                  BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*
+                                                                */
+                                                 2002),
+                  // reportWin(), winning-bid
+                  BuildPrivateAggregationRequest(/*bucket=*/20, /*value=*/2011),
+                  // reportWin(), highest-scoring-other-bid
+                  BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*
+                                                                */
+                                                 2012))),
+          testing::Pair(
+              kComponentSeller1,
+              ElementsAreRequests(
+                  // scoreAd(), winning-bid, incoming bid 1
+                  BuildPrivateAggregationRequest(/*bucket=*/10, /*value=*/1021),
+                  // scoreAd(), highest-scoring-other-bid, incoming bid 1
+                  BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*
+                                                                */
+                                                 1022))),
+          testing::Pair(
+              kComponentSeller2,
+              ElementsAreRequests(
+                  // scoreAd(), winning-bid, incoming bid 2
+                  BuildPrivateAggregationRequest(/*bucket=*/20, /*value=*/2041),
+                  // scoreAd(), highest-scoring-other-bid, incoming bid 2
+                  BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*
+                                                                */
+                                                 2042),
+                  // reportResult(), winning-bid, browserSignals.bid is 20
+                  BuildPrivateAggregationRequest(/*bucket=*/20,
+                                                 /*value=*/20051),
+                  // reportResult(), highest-scoring-other-bid,
+                  // browserSignals.bid is 20
+                  BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*
+                                                                */
+                                                 20052))),
+          testing::Pair(
+              kSeller,
+              ElementsAreRequests(
+                  // scoreAd(), winning-bid, browserSignals.bid is 9
+                  BuildPrivateAggregationRequest(/*bucket=*/180,
+                                                 /*value=*/9061),
+                  // scoreAd(), highest-scoring-other-bid is 0.
+                  BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/9062),
+
+                  // scoreAd(), winning-bid, browserSignals.bid is 18
+                  BuildPrivateAggregationRequest(/*bucket=*/180,
+                                                 /*value=*/18061),
+                  // scoreAd(), highest-scoring-other-bid is 0, since not set
+                  // on top-level.
+                  BuildPrivateAggregationRequest(/*bucket=*/0,
+                                                 /*value=*/18062),
+                  // reportResult(), winning-bid, browserSignals.bid is 180.
+                  BuildPrivateAggregationRequest(/*bucket=*/180,
+                                                 /*value=*/180071),
+                  // reportResult() highest-scoring-other-bid is 0, since not
+                  // set on top-level.
+                  BuildPrivateAggregationRequest(/*bucket=*/0,
+                                                 /*value=*/180072)))));
 }
 
 // Test a component auction where the top level seller rejects all bids. This
@@ -10985,6 +11373,10 @@ TEST_F(AuctionRunnerTest,
 
   const std::string kSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      let convertedBid;
+      if (auctionConfig.sellerCurrency) {
+        convertedBid = 10*bid;
+      }
       privateAggregation.reportContributionForEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid'},
         value: 21 + 100 * bid,
@@ -10997,8 +11389,12 @@ TEST_F(AuctionRunnerTest,
         bucket: {baseValue: 'bid-reject-reason'},
         value: 23 + 100 * bid,
       });
-      if (bid === 2) return {desirability: -1, rejectReason: 'invalid-bid'};
-      return bid;
+      if (bid === 2) return {
+        desirability: -1,
+        incomingBidInSellerCurrency: convertedBid,
+        rejectReason: 'invalid-bid'
+      };
+      return {desirability: bid, incomingBidInSellerCurrency: convertedBid};
     }
 
     function reportResult(auctionConfig, browserSignals) {
@@ -11023,58 +11419,83 @@ TEST_F(AuctionRunnerTest,
                                          base::StringPrintf(kBidScript, 2));
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          kSellerScript);
+  for (bool use_seller_currency : {false, true}) {
+    SCOPED_TRACE(use_seller_currency);
+    if (use_seller_currency) {
+      seller_currency_ = blink::AdCurrency::From("CAD");
+    }
 
-  // kBidder2 was rejected by seller, so kBidder1 won the auction.
-  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
-  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
-  EXPECT_FALSE(result_.manually_aborted);
-  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
-  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+    // kBidder2 was rejected by seller, so kBidder1 won the auction.
+    RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+    EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+    EXPECT_FALSE(result_.manually_aborted);
+    EXPECT_EQ(kBidder1Key, result_.winning_group_id);
+    EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
 
-  // Post auction signals of this auction:
-  // winning-bid is 1, highest-scoring-other-bid is 0, bid-reject-reason for
-  // kBidder1 is kNotAvailable (0), and bid-reject-reason for kBidder2 is
-  // kInvalidBid (1).
-  EXPECT_THAT(
-      private_aggregation_manager_.TakePrivateAggregationRequests(),
-      testing::UnorderedElementsAre(
-          testing::Pair(
-              kBidder1,
-              ElementsAreRequests(
-                  // generateBid().
-                  BuildPrivateAggregationRequest(/*bucket=*/1, /*value=*/101),
-                  BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/102),
-                  BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/103),
-                  // reportWin(). No request for 'bid-reject-reason' whose value
-                  // is 113, because it's not a supported base value in
-                  // reportWin().
-                  BuildPrivateAggregationRequest(/*bucket=*/1, /*value=*/111),
-                  BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/112))),
-          testing::Pair(
-              kBidder2,
-              ElementsAreRequests(
-                  // generateBid().
-                  BuildPrivateAggregationRequest(/*bucket=*/1, /*value=*/201),
-                  BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/202),
-                  BuildPrivateAggregationRequest(/*bucket=*/1, /*value=*/203))),
-          testing::Pair(
-              kSeller,
-              ElementsAreRequests(
-                  // scoreAd() for kBidder1.
-                  BuildPrivateAggregationRequest(/*bucket=*/1, /*value=*/121),
-                  BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/122),
-                  BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/123),
-                  // scoreAd() for kBidder2.
-                  BuildPrivateAggregationRequest(/*bucket=*/1, /*value=*/221),
-                  BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/222),
-                  BuildPrivateAggregationRequest(/*bucket=*/1, /*value=*/223),
-                  // reportResult() for kBidder1. No request for
-                  // 'bid-reject-reason' whose value is 133, because it's not a
-                  // supported base value in reportResult().
-                  BuildPrivateAggregationRequest(/*bucket=*/1, /*value=*/131),
-                  BuildPrivateAggregationRequest(/*bucket=*/0,
-                                                 /*value=*/132)))));
-  EXPECT_TRUE(result_.private_aggregation_event_map.empty());
+    // Post auction signals of this auction:
+    // If sellerCurrency is off:
+    //   winning-bid is 1, highest-scoring-other-bid is 0, bid-reject-reason for
+    //   kBidder1 is kNotAvailable (0), and bid-reject-reason for kBidder2 is
+    //   kInvalidBid (1).
+    // If sellerCurrency is on:
+    //   winning-bid is 10, everything else is the same.
+    //
+    // Some things use 100 * browserSignals.bid in their
+    // reportResultcalculation, that's in seller currency, so also needs to be
+    // adjusted.
+    int winning_bid = use_seller_currency ? 10 : 1;
+
+    EXPECT_THAT(
+        private_aggregation_manager_.TakePrivateAggregationRequests(),
+        testing::UnorderedElementsAre(
+            testing::Pair(
+                kBidder1,
+                ElementsAreRequests(
+                    // generateBid().
+                    BuildPrivateAggregationRequest(/*bucket=*/winning_bid,
+                                                   /*value=*/101),
+                    BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/102),
+                    BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/103),
+                    // reportWin(). No request for 'bid-reject-reason' whose
+                    // value is 113, because it's not a supported base value in
+                    // reportWin().
+                    BuildPrivateAggregationRequest(/*bucket=*/winning_bid,
+                                                   /*value=*/111),
+                    BuildPrivateAggregationRequest(/*bucket=*/0,
+                                                   /*value=*/112))),
+            testing::Pair(
+                kBidder2,
+                ElementsAreRequests(
+                    // generateBid().
+                    BuildPrivateAggregationRequest(/*bucket=*/winning_bid,
+                                                   /*value=*/201),
+                    BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/202),
+                    BuildPrivateAggregationRequest(/*bucket=*/1,
+                                                   /*value=*/203))),
+            testing::Pair(
+                kSeller,
+                ElementsAreRequests(
+                    // scoreAd() for kBidder1.
+                    BuildPrivateAggregationRequest(/*bucket=*/winning_bid,
+                                                   /*value=*/121),
+                    BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/122),
+                    BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/123),
+                    // scoreAd() for kBidder2.
+                    BuildPrivateAggregationRequest(/*bucket=*/winning_bid,
+                                                   /*value=*/221),
+                    BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/222),
+                    BuildPrivateAggregationRequest(/*bucket=*/1, /*value=*/223),
+                    // reportResult() for kBidder1. No request for
+                    // 'bid-reject-reason' whose value is 133, because it's not
+                    // a supported base value in reportResult().
+                    BuildPrivateAggregationRequest(
+                        /*bucket=*/winning_bid,
+                        /*value=*/100 * winning_bid + 31),
+                    BuildPrivateAggregationRequest(
+                        /*bucket=*/0,
+                        /*value=*/100 * winning_bid + 32)))));
+    EXPECT_TRUE(result_.private_aggregation_event_map.empty());
+  }
 }
 
 // Similar to `PrivateAggregationRequestForEventContributionBucketBaseValue()`
@@ -11121,6 +11542,10 @@ TEST_F(AuctionRunnerTest,
 
   const std::string kSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      let convertedBid;
+      if (auctionConfig.sellerCurrency) {
+        convertedBid = 10*bid;
+      }
       privateAggregation.reportContributionForEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid'},
         value: 21 + 100 * bid,
@@ -11133,7 +11558,7 @@ TEST_F(AuctionRunnerTest,
         bucket: {baseValue: 'bid-reject-reason'},
         value: 23 + 100 * bid,
       });
-      return bid;
+      return {desirability: bid, incomingBidInSellerCurrency: convertedBid};
     }
 
     function reportResult(auctionConfig, browserSignals) {
@@ -11159,58 +11584,84 @@ TEST_F(AuctionRunnerTest,
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          kSellerScript);
 
-  // kBidder2 won the auction.
-  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
-  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
-  EXPECT_FALSE(result_.manually_aborted);
-  EXPECT_EQ(kBidder2Key, result_.winning_group_id);
-  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+  for (bool use_seller_currency : {false, true}) {
+    SCOPED_TRACE(use_seller_currency);
+    if (use_seller_currency) {
+      seller_currency_ = blink::AdCurrency::From("CAD");
+    }
 
-  // Post auction signals of this auction:
-  // winning-bid is 2, highest-scoring-other-bid is 1, bid-reject-reason for
-  // both bidders are kNotAvailable (0).
-  EXPECT_THAT(
-      private_aggregation_manager_.TakePrivateAggregationRequests(),
-      testing::UnorderedElementsAre(
-          testing::Pair(
-              kBidder1,
-              ElementsAreRequests(
-                  // generateBid().
-                  BuildPrivateAggregationRequest(/*bucket=*/2, /*value=*/101),
-                  BuildPrivateAggregationRequest(/*bucket=*/1, /*value=*/102),
-                  BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/103))),
-          testing::Pair(
-              kBidder2,
-              ElementsAreRequests(
-                  // generateBid().
-                  BuildPrivateAggregationRequest(
-                      /*bucket=*/2, /*value=*/201),
-                  BuildPrivateAggregationRequest(
-                      /*bucket=*/1, /*value=*/202),
-                  BuildPrivateAggregationRequest(
-                      /*bucket=*/0, /*value=*/203),
-                  // reportWin(). No request for 'bid-reject-reason' whose value
-                  // is 213, because it's not a supported base value in
-                  // reportWin().
-                  BuildPrivateAggregationRequest(/*bucket=*/2, /*value=*/211),
-                  BuildPrivateAggregationRequest(/*bucket=*/1, /*value=*/212))),
-          testing::Pair(
-              kSeller,
-              ElementsAreRequests(
-                  // scoreAd() for kBidder1.
-                  BuildPrivateAggregationRequest(/*bucket=*/2, /*value=*/121),
-                  BuildPrivateAggregationRequest(/*bucket=*/1, /*value=*/122),
-                  BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/123),
-                  // scoreAd() for kBidder2.
-                  BuildPrivateAggregationRequest(/*bucket=*/2, /*value=*/221),
-                  BuildPrivateAggregationRequest(/*bucket=*/1, /*value=*/222),
-                  BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/223),
-                  // reportResult() for kBidder2. No request for
-                  // 'bid-reject-reason' whose value is 233, because it's not a
-                  // supported base value in reportResult().
-                  BuildPrivateAggregationRequest(/*bucket=*/2, /*value=*/231),
-                  BuildPrivateAggregationRequest(/*bucket=*/1,
-                                                 /*value=*/232)))));
+    // kBidder2 won the auction.
+    RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+    EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+    EXPECT_FALSE(result_.manually_aborted);
+    EXPECT_EQ(kBidder2Key, result_.winning_group_id);
+    EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+
+    // Post auction signals of this auction:
+    // If sellerCurrency is off:
+    //   winning-bid is 2, highest-scoring-other-bid is 1, bid-reject-reason for
+    //   both bidders are kNotAvailable (0).
+    // If sellerCurrency is on:
+    //   winning-bid is 20, highest_scoring_other_bid is 10, everything else is
+    // same.
+    int winning_bid = use_seller_currency ? 20 : 2;
+    int highest_scoring_other_bid = use_seller_currency ? 10 : 1;
+
+    EXPECT_THAT(
+        private_aggregation_manager_.TakePrivateAggregationRequests(),
+        testing::UnorderedElementsAre(
+            testing::Pair(
+                kBidder1,
+                ElementsAreRequests(
+                    // generateBid().
+                    BuildPrivateAggregationRequest(/*bucket=*/winning_bid,
+                                                   /*value=*/101),
+                    BuildPrivateAggregationRequest(
+                        /*bucket=*/highest_scoring_other_bid, /*value=*/102),
+                    BuildPrivateAggregationRequest(/*bucket=*/0,
+                                                   /*value=*/103))),
+            testing::Pair(
+                kBidder2,
+                ElementsAreRequests(
+                    // generateBid().
+                    BuildPrivateAggregationRequest(
+                        /*bucket=*/winning_bid, /*value=*/201),
+                    BuildPrivateAggregationRequest(
+                        /*bucket=*/highest_scoring_other_bid, /*value=*/202),
+                    BuildPrivateAggregationRequest(
+                        /*bucket=*/0, /*value=*/203),
+                    // reportWin(). No request for 'bid-reject-reason' whose
+                    // value is 213, because it's not a supported base value in
+                    // reportWin().
+                    BuildPrivateAggregationRequest(/*bucket=*/winning_bid,
+                                                   /*value=*/211),
+                    BuildPrivateAggregationRequest(
+                        /*bucket=*/highest_scoring_other_bid, /*value=*/212))),
+            testing::Pair(
+                kSeller,
+                ElementsAreRequests(
+                    // scoreAd() for kBidder1.
+                    BuildPrivateAggregationRequest(/*bucket=*/winning_bid,
+                                                   /*value=*/121),
+                    BuildPrivateAggregationRequest(
+                        /*bucket=*/highest_scoring_other_bid, /*value=*/122),
+                    BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/123),
+                    // scoreAd() for kBidder2.
+                    BuildPrivateAggregationRequest(/*bucket=*/winning_bid,
+                                                   /*value=*/221),
+                    BuildPrivateAggregationRequest(
+                        /*bucket=*/highest_scoring_other_bid, /*value=*/222),
+                    BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/223),
+                    // reportResult() for kBidder2. No request for
+                    // 'bid-reject-reason' whose value is 233, because it's not
+                    // a supported base value in reportResult().
+                    BuildPrivateAggregationRequest(
+                        /*bucket=*/winning_bid,
+                        /*value=*/winning_bid * 100 + 31),
+                    BuildPrivateAggregationRequest(
+                        /*bucket=*/highest_scoring_other_bid,
+                        /*value=*/winning_bid * 100 + 32)))));
+  }
 }
 
 // Similar to PrivateAggregationRequestForEventContributionBucketBaseValue,
@@ -14156,9 +14607,13 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
               /*bid=*/1),
           DebugReportUrl(
               "https://top-seller-loss-reporting.test/",
-              PostAuctionSignals(/*winning_bid=*/ModeBid(2),
-                                 /*winning_bid_currency=*/ModeCurrency(),
-                                 /*made_winning_bid=*/false),
+              PostAuctionSignals(
+                  /*winning_bid=*/ModeBid(2),
+                  /*winning_bid_currency=*/ModeCurrency(),
+                  /*made_winning_bid=*/false,
+                  /*highest_scoring_other_bid=*/0.0,
+                  /*highest_scoring_other_bid_currency=*/absl::nullopt,
+                  /*made_highest_scoring_other_bid=*/false),
               /*bid=*/1)));
 
   EXPECT_THAT(result_.debug_win_report_urls,
@@ -14188,11 +14643,15 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                           /*winning_bid_currency=*/ModeCurrency(),
                           /*made_winning_bid=*/true),
                       /*bid=*/2),
-                  DebugReportUrl("https://top-seller-win-reporting.test/",
-                                 PostAuctionSignals(/*winning_bid=*/ModeBid(2),
-                                                    ModeCurrency(),
-                                                    /*made_winning_bid=*/true),
-                                 /*bid=*/2)));
+                  DebugReportUrl(
+                      "https://top-seller-win-reporting.test/",
+                      PostAuctionSignals(
+                          /*winning_bid=*/ModeBid(2), ModeCurrency(),
+                          /*made_winning_bid=*/true,
+                          /*highest_scoring_other_bid=*/0.0,
+                          /*highest_scoring_other_bid_currency=*/absl::nullopt,
+                          /*made_highest_scoring_other_bid=*/false),
+                      /*bid=*/2)));
 }
 
 // Test debug loss reporting in an auction with no winner. Component bidder 1 is
@@ -14443,12 +14902,16 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                           /*winning_bid_currency=*/ModeCurrency(),
                           /*made_winning_bid=*/true),
                       /*bid=*/1),
-                  DebugReportUrl("https://top-seller-win-reporting.test/",
-                                 PostAuctionSignals(
-                                     /*winning_bid=*/ModeBid(1),
-                                     /*winning_bid_currency=*/ModeCurrency(),
-                                     /*made_winning_bid=*/true),
-                                 /*bid=*/1)));
+                  DebugReportUrl(
+                      "https://top-seller-win-reporting.test/",
+                      PostAuctionSignals(
+                          /*winning_bid=*/ModeBid(1),
+                          /*winning_bid_currency=*/ModeCurrency(),
+                          /*made_winning_bid=*/true,
+                          /*highest_scoring_other_bid=*/0.0,
+                          /*highest_scoring_other_bid_currency=*/absl::nullopt,
+                          /*made_highest_scoring_other_bid=*/false),
+                      /*bid=*/1)));
 }
 
 // Loss report URLs should be dropped when the seller worklet fails to load.

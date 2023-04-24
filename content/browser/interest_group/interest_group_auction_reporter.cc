@@ -288,6 +288,8 @@ void InterestGroupAuctionReporter::OnSellerWorkletFatalError(
   // On a seller load failure or crash, act as if the worklet returned no
   // results to advance to the next worklet.
   OnSellerReportResultComplete(seller_info,
+                               /*winning_bid=*/0.0,
+                               /*highest_scoring_other_bid=*/0.0,
                                /*signals_for_winner=*/absl::nullopt,
                                /*seller_report_url=*/absl::nullopt,
                                /*seller_ad_beacon_map=*/{},
@@ -303,9 +305,11 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
   auction_worklet::mojom::ComponentAuctionOtherSellerPtr other_seller;
   auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
       browser_signals_component_auction_report_result_params;
+  bool top_level_with_components = false;
   if (seller_info == &top_level_seller_winning_bid_info_) {
     DCHECK(!top_seller_signals);
     if (component_seller_winning_bid_info_) {
+      top_level_with_components = true;
       other_seller = auction_worklet::mojom::ComponentAuctionOtherSeller::
           NewComponentSeller(
               component_seller_winning_bid_info_->auction_config->seller);
@@ -340,6 +344,11 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
         *seller_info->auction_config->non_shared_params.seller_currency;
   }
 
+  // top-level auctions with components don't report highest_scoring_other_bid.
+  if (top_level_with_components) {
+    highest_scoring_other_bid = 0.0;
+  }
+
   seller_worklet_handle_->AuthorizeSubresourceUrls(
       *seller_info->subresource_url_builder);
   seller_worklet_handle_->GetSellerWorklet()->ReportResult(
@@ -357,18 +366,22 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
                                  kFledgeScoreReportingBits.Get()),
       RoundStochasticallyToKBits(highest_scoring_other_bid,
                                  kFledgeBidReportingBits.Get()),
-      bid_currency,
+      /*browser_signal_highest_scoring_other_bid_currency=*/
+      top_level_with_components ? absl::nullopt : bid_currency,
       std::move(browser_signals_component_auction_report_result_params),
       seller_info->scoring_signals_data_version.value_or(0),
       seller_info->scoring_signals_data_version.has_value(),
       seller_info->trace_id,
       base::BindOnce(
           &InterestGroupAuctionReporter::OnSellerReportResultComplete,
-          weak_ptr_factory_.GetWeakPtr(), base::Unretained(seller_info)));
+          weak_ptr_factory_.GetWeakPtr(), base::Unretained(seller_info), bid,
+          highest_scoring_other_bid));
 }
 
 void InterestGroupAuctionReporter::OnSellerReportResultComplete(
     const SellerWinningBidInfo* seller_info,
+    double winning_bid,
+    double highest_scoring_other_bid,
     const absl::optional<std::string>& signals_for_winner,
     const absl::optional<GURL>& seller_report_url,
     const base::flat_map<std::string, GURL>& seller_ad_beacon_map,
@@ -395,8 +408,8 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
     // meaningful thus not supported in reportResult(), so it is set to
     // absl::nullopt.
     absl::optional<PrivateAggregationRequestWithEventType> converted_request =
-        FillInPrivateAggregationRequest(std::move(request), seller_info->bid,
-                                        seller_info->highest_scoring_other_bid,
+        FillInPrivateAggregationRequest(std::move(request), winning_bid,
+                                        highest_scoring_other_bid,
                                         /*reject_reason=*/absl::nullopt,
                                         /*is_winner=*/true);
 
@@ -570,6 +583,14 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
           made_highest_scoring_other_bid, highest_scoring_other_bid,
           highest_scoring_other_bid_currency);
 
+  // While reportWin() itself always gets the bid back in its own currency,
+  // for private aggregation we want to do things in seller currency if
+  // it's enabled.
+  double winning_bid_for_aggregation =
+      auction_config->non_shared_params.seller_currency
+          ? seller_info.bid_in_seller_currency
+          : winning_bid_info_.bid;
+
   bidder_worklet_handle_->GetBidderWorklet()->ReportWin(
       group_name, auction_config->non_shared_params.auction_signals.value(),
       per_buyer_signals,
@@ -605,7 +626,8 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
       winning_bid_info_.bidding_signals_data_version.has_value(),
       top_level_seller_winning_bid_info_.trace_id,
       base::BindOnce(&InterestGroupAuctionReporter::OnBidderReportWinComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     winning_bid_for_aggregation, highest_scoring_other_bid));
 }
 
 void InterestGroupAuctionReporter::OnBidderWorkletFatalError(
@@ -613,12 +635,16 @@ void InterestGroupAuctionReporter::OnBidderWorkletFatalError(
     const std::vector<std::string>& errors) {
   // Nothing more to do. Act as if the worklet completed as normal, with no
   // results.
-  OnBidderReportWinComplete(/*bidder_report_url=*/absl::nullopt,
+  OnBidderReportWinComplete(/*winning_bid=*/0.0,
+                            /*highest_scoring_other_bid=*/0.0,
+                            /*bidder_report_url=*/absl::nullopt,
                             /*bidder_ad_beacon_map=*/{},
                             /*pa_requests=*/{}, errors);
 }
 
 void InterestGroupAuctionReporter::OnBidderReportWinComplete(
+    double winning_bid,
+    double highest_scoring_other_bid,
     const absl::optional<GURL>& bidder_report_url,
     const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
     PrivateAggregationRequests pa_requests,
@@ -640,7 +666,6 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
 
   const url::Origin& bidder =
       winning_bid_info_.storage_interest_group->interest_group.owner;
-  const SellerWinningBidInfo& seller_info = GetBidderAuction();
   for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
        pa_requests) {
     // Only winner's reportWin() gets executed, so is_winner is true, which
@@ -649,8 +674,8 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
     // absl::nullopt.
     absl::optional<PrivateAggregationRequestWithEventType> converted_request =
         FillInPrivateAggregationRequest(
-            std::move(request), winning_bid_info_.bid,
-            /*highest_scoring_other_bid=*/seller_info.highest_scoring_other_bid,
+            std::move(request), winning_bid,
+            /*highest_scoring_other_bid=*/highest_scoring_other_bid,
             /*reject_reason=*/absl::nullopt, /*is_winner=*/true);
 
     if (converted_request.has_value()) {
