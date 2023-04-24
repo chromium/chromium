@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/ui/partial_translate/partial_translate_delegate.h"
 
 @protocol BrowserCoordinatorCommands;
@@ -23,7 +22,7 @@ class WebStateList;
 // Initializer for a mediator. `webStateList` is the WebStateList for the
 // Browser whose content is shown within the BrowserContainerConsumer. It must
 // be non-null.
-- (instancetype)initWithWebStateList:(base::WeakPtr<WebStateList>)webStateList
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
               withBaseViewController:(UIViewController*)baseViewController
                          prefService:(PrefService*)prefs
                 fullscreenController:(FullscreenController*)fullscreenController

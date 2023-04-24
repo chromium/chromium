@@ -165,7 +165,7 @@ class PartialTranslateMediatorTest : public PlatformTest {
     mock_browser_coordinator_commands_handler_ =
         OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
     mediator_ = [[PartialTranslateMediator alloc]
-          initWithWebStateList:web_state_list_.AsWeakPtr()
+          initWithWebStateList:&web_state_list_
         withBaseViewController:base_view_controller_
                    prefService:browser_state_->GetSyncablePrefs()
           fullscreenController:nullptr
@@ -258,7 +258,7 @@ TEST_F(PartialTranslateMediatorTest, IncognitoSupportedSuccess) {
     return;
   }
   PartialTranslateMediator* mediator = [[PartialTranslateMediator alloc]
-        initWithWebStateList:web_state_list_.AsWeakPtr()
+        initWithWebStateList:&web_state_list_
       withBaseViewController:base_view_controller_
                  prefService:browser_state_->GetSyncablePrefs()
         fullscreenController:nullptr
@@ -289,7 +289,7 @@ TEST_F(PartialTranslateMediatorTest, IncognitoNotSupported) {
       kIOSEditMenuPartialTranslate,
       {{kIOSEditMenuPartialTranslateNoIncognitoParam, "true"}});
   PartialTranslateMediator* mediator = [[PartialTranslateMediator alloc]
-        initWithWebStateList:web_state_list_.AsWeakPtr()
+        initWithWebStateList:&web_state_list_
       withBaseViewController:base_view_controller_
                  prefService:browser_state_->GetSyncablePrefs()
         fullscreenController:nullptr

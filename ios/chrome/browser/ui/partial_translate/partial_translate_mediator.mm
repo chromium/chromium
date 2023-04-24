@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/partial_translate/partial_translate_mediator.h"
 
+#import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "components/prefs/pref_member.h"
 #import "components/strings/grit/components_strings.h"
@@ -104,7 +105,7 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
   FullscreenController* _fullscreenController;
 }
 
-- (instancetype)initWithWebStateList:(base::WeakPtr<WebStateList>)webStateList
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
               withBaseViewController:(UIViewController*)baseViewController
                          prefService:(PrefService*)prefs
                 fullscreenController:(FullscreenController*)fullscreenController
@@ -112,7 +113,7 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
   if (self = [super init]) {
     DCHECK(webStateList);
     DCHECK(baseViewController);
-    _webStateList = webStateList;
+    _webStateList = webStateList->AsWeakPtr();
     _baseViewController = baseViewController;
     _fullscreenController = fullscreenController;
     _incognito = incognito;

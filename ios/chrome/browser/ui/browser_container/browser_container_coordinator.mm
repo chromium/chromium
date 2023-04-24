@@ -104,7 +104,7 @@
         FullscreenController::FromBrowser(self.browser);
 
     self.partialTranslateMediator = [[PartialTranslateMediator alloc]
-          initWithWebStateList:webStateList->AsWeakPtr()
+          initWithWebStateList:webStateList
         withBaseViewController:self.viewController
                    prefService:prefService
           fullscreenController:fullscreenController

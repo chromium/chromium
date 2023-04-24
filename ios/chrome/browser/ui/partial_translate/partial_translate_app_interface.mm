@@ -36,7 +36,7 @@
 
   PartialTranslateMediator* partialTranslateMediator =
       [[PartialTranslateMediator alloc]
-            initWithWebStateList:webStateList->AsWeakPtr()
+            initWithWebStateList:webStateList
           withBaseViewController:viewController
                      prefService:prefService
             fullscreenController:fullscreenController
