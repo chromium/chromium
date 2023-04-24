@@ -590,6 +590,9 @@ const char kSystemLogUploadFrequency[] = "system-log-upload-frequency";
 const char kThisTabCaptureAutoAccept[] = "auto-accept-this-tab-capture";
 const char kThisTabCaptureAutoReject[] = "auto-reject-this-tab-capture";
 
+// Custom delay for memory log. This should be used only for testing purpose.
+const char kTestMemoryLogDelayInMinutes[] = "test-memory-log-delay-in-minutes";
+
 // Passes the name of the current running automated test to Chrome.
 const char kTestName[] = "test-name";
 

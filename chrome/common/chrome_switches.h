@@ -179,6 +179,7 @@ extern const char kSupervisedUserId[];
 extern const char kSystemLogUploadFrequency[];
 extern const char kThisTabCaptureAutoAccept[];
 extern const char kThisTabCaptureAutoReject[];
+extern const char kTestMemoryLogDelayInMinutes[];
 extern const char kTestName[];
 extern const char kTrustedDownloadSources[];
 extern const char kTryChromeAgain[];
