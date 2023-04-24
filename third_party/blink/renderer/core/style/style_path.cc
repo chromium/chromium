@@ -69,7 +69,9 @@ bool StylePath::IsEqualAssumingSameType(const BasicShape& o) const {
   return wind_rule_ == other.wind_rule_ && *byte_stream_ == *other.byte_stream_;
 }
 
-void StylePath::GetPath(Path& path, const gfx::RectF& offset_rect, float zoom) {
+void StylePath::GetPath(Path& path,
+                        const gfx::RectF& offset_rect,
+                        float zoom) const {
   path = GetPath();
   path.Transform(AffineTransform::Translation(offset_rect.x(), offset_rect.y())
                      .Scale(zoom));

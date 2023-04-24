@@ -66,7 +66,7 @@ float BasicShapeCircle::FloatValueForRadiusInBox(gfx::SizeF box_size) const {
 
 void BasicShapeCircle::GetPath(Path& path,
                                const gfx::RectF& bounding_box,
-                               float) {
+                               float) const {
   DCHECK(path.IsEmpty());
   gfx::PointF center =
       PointForCenterCoordinate(center_x_, center_y_, bounding_box.size());
@@ -99,7 +99,7 @@ float BasicShapeEllipse::FloatValueForRadiusInBox(
 
 void BasicShapeEllipse::GetPath(Path& path,
                                 const gfx::RectF& bounding_box,
-                                float) {
+                                float) const {
   DCHECK(path.IsEmpty());
   gfx::PointF center =
       PointForCenterCoordinate(center_x_, center_y_, bounding_box.size());
@@ -112,7 +112,7 @@ void BasicShapeEllipse::GetPath(Path& path,
 
 void BasicShapePolygon::GetPath(Path& path,
                                 const gfx::RectF& bounding_box,
-                                float) {
+                                float) const {
   DCHECK(path.IsEmpty());
   DCHECK(!(values_.size() % 2));
   wtf_size_t length = values_.size();
@@ -154,7 +154,7 @@ bool BasicShapeRectCommon::IsEqualAssumingSameType(const BasicShape& o) const {
 
 void BasicShapeInset::GetPath(Path& path,
                               const gfx::RectF& bounding_box,
-                              float) {
+                              float) const {
   DCHECK(path.IsEmpty());
   float left = FloatValueForLength(left_, bounding_box.width());
   float top = FloatValueForLength(top_, bounding_box.height());
@@ -180,7 +180,7 @@ void BasicShapeInset::GetPath(Path& path,
 
 void BasicShapeRect::GetPath(Path& path,
                              const gfx::RectF& bounding_box,
-                             float) {
+                             float) const {
   DCHECK(path.IsEmpty());
 
   // The following computes |left|, |right| as the inset from the left edge
@@ -225,7 +225,7 @@ void BasicShapeRect::GetPath(Path& path,
 
 void BasicShapeXYWH::GetPath(Path& path,
                              const gfx::RectF& bounding_box,
-                             float) {
+                             float) const {
   DCHECK(path.IsEmpty());
   gfx::RectF rect(FloatValueForLength(x_, bounding_box.width()),
                   FloatValueForLength(y_, bounding_box.height()),

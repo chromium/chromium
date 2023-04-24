@@ -26,7 +26,7 @@ bool StyleRay::IsEqualAssumingSameType(const BasicShape& o) const {
          contain_ == other.contain_;
 }
 
-void StyleRay::GetPath(Path&, const gfx::RectF&, float) {
+void StyleRay::GetPath(Path&, const gfx::RectF&, float) const {
   // ComputedStyle::ApplyMotionPathTransform cannot call GetPath
   // for rays as they may have infinite length.
   NOTREACHED();
