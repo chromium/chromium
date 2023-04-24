@@ -170,7 +170,20 @@ SkiaImageRepresentation::ScopedWriteAccess::ScopedWriteAccess(
     : ScopedAccessBase(representation),
       promise_image_textures_(std::move(promise_image_textures)) {
   DCHECK(!promise_image_textures_.empty());
+#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
+  CHECK(graphite_textures_.empty());
+#endif
 }
+
+#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
+SkiaImageRepresentation::ScopedWriteAccess::ScopedWriteAccess(
+    SkiaImageRepresentation* representation,
+    std::vector<skgpu::graphite::BackendTexture> graphite_textures)
+    : ScopedAccessBase(representation), graphite_textures_(graphite_textures) {
+  CHECK(!graphite_textures_.empty());
+  CHECK(promise_image_textures_.empty());
+}
+#endif
 
 SkiaImageRepresentation::ScopedWriteAccess::~ScopedWriteAccess() {
   // Ensure no one uses `surfaces_` by dropping the reference before calling
@@ -185,7 +198,20 @@ SkiaImageRepresentation::ScopedReadAccess::ScopedReadAccess(
     : ScopedAccessBase(representation),
       promise_image_textures_(std::move(promise_image_textures)) {
   DCHECK(!promise_image_textures_.empty());
+#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
+  CHECK(graphite_textures_.empty());
+#endif
 }
+
+#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
+SkiaImageRepresentation::ScopedReadAccess::ScopedReadAccess(
+    SkiaImageRepresentation* representation,
+    std::vector<skgpu::graphite::BackendTexture> graphite_textures)
+    : ScopedAccessBase(representation), graphite_textures_(graphite_textures) {
+  CHECK(!graphite_textures_.empty());
+  CHECK(promise_image_textures_.empty());
+}
+#endif
 
 SkiaImageRepresentation::ScopedReadAccess::~ScopedReadAccess() {
   representation()->EndReadAccess();
@@ -450,8 +476,10 @@ SkiaGaneshImageRepresentation::BeginScopedReadAccess(
   std::unique_ptr<GrBackendSurfaceMutableState> end_state;
   std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures =
       BeginReadAccess(begin_semaphores, end_semaphores, &end_state);
-  if (promise_image_textures.empty())
+  if (promise_image_textures.empty()) {
+    LOG(ERROR) << "Unable to initialize SkPromiseImageTexture";
     return nullptr;
+  }
 
   backing()->OnReadSucceeded();
 
@@ -459,6 +487,160 @@ SkiaGaneshImageRepresentation::BeginScopedReadAccess(
       base::PassKey<SkiaGaneshImageRepresentation>(), this,
       std::move(promise_image_textures), std::move(end_state));
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// SkiaGraphiteImageRepresentation
+
+#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
+SkiaGraphiteImageRepresentation::SkiaGraphiteImageRepresentation(
+    SharedImageManager* manager,
+    SharedImageBacking* backing,
+    MemoryTypeTracker* tracker)
+    : SkiaImageRepresentation(manager, backing, tracker) {}
+
+SkiaGraphiteImageRepresentation::ScopedGraphiteWriteAccess::
+    ScopedGraphiteWriteAccess(
+        base::PassKey<SkiaGraphiteImageRepresentation> /* pass_key */,
+        SkiaImageRepresentation* representation,
+        std::vector<sk_sp<SkSurface>> surfaces)
+    : ScopedWriteAccess(representation, std::move(surfaces)) {
+  CHECK(!surfaces_.empty());
+}
+
+SkiaGraphiteImageRepresentation::ScopedGraphiteWriteAccess::
+    ScopedGraphiteWriteAccess(
+        base::PassKey<SkiaGraphiteImageRepresentation> /* pass_key */,
+        SkiaImageRepresentation* representation,
+        std::vector<skgpu::graphite::BackendTexture> backend_textures)
+    : ScopedWriteAccess(representation, backend_textures) {
+  CHECK(!graphite_textures_.empty());
+}
+
+SkiaGraphiteImageRepresentation::ScopedGraphiteWriteAccess::
+    ~ScopedGraphiteWriteAccess() = default;
+
+// Graphite-Dawn backend handles Vulkan transitions by itself, so nothing to do
+// here.
+void SkiaGraphiteImageRepresentation::ScopedGraphiteWriteAccess::
+    ApplyBackendSurfaceEndState() {}
+
+std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
+SkiaGraphiteImageRepresentation::BeginScopedWriteAccess(
+    int final_msaa_count,
+    const SkSurfaceProps& surface_props,
+    const gfx::Rect& update_rect,
+    std::vector<GrBackendSemaphore>* begin_semaphores,
+    std::vector<GrBackendSemaphore>* end_semaphores,
+    AllowUnclearedAccess allow_uncleared,
+    bool use_sk_surface) {
+  if (allow_uncleared != AllowUnclearedAccess::kYes && !IsCleared()) {
+    LOG(ERROR) << "Attempt to write to an uninitialized SharedImage";
+    return nullptr;
+  }
+
+  if (use_sk_surface) {
+    std::vector<sk_sp<SkSurface>> surfaces =
+        BeginWriteAccess(surface_props, update_rect);
+    if (surfaces.empty()) {
+      LOG(ERROR) << "Unable to initialize SkSurface";
+      return nullptr;
+    }
+
+    backing()->OnWriteSucceeded();
+
+    return std::make_unique<ScopedGraphiteWriteAccess>(
+        base::PassKey<SkiaGraphiteImageRepresentation>(), this,
+        std::move(surfaces));
+  }
+  std::vector<skgpu::graphite::BackendTexture> graphite_textures =
+      BeginWriteAccess();
+  if (graphite_textures.empty()) {
+    LOG(ERROR) << "Unable to initialize graphite::BackendTextures";
+    return nullptr;
+  }
+
+  backing()->OnWriteSucceeded();
+
+  return std::make_unique<ScopedGraphiteWriteAccess>(
+      base::PassKey<SkiaGraphiteImageRepresentation>(), this,
+      graphite_textures);
+}
+
+std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
+SkiaGraphiteImageRepresentation::BeginScopedWriteAccess(
+    int final_msaa_count,
+    const SkSurfaceProps& surface_props,
+    std::vector<GrBackendSemaphore>* begin_semaphores,
+    std::vector<GrBackendSemaphore>* end_semaphores,
+    AllowUnclearedAccess allow_uncleared,
+    bool use_sk_surface) {
+  return BeginScopedWriteAccess(
+      final_msaa_count, surface_props, gfx::Rect(size()), begin_semaphores,
+      end_semaphores, allow_uncleared, use_sk_surface);
+}
+
+std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
+SkiaGraphiteImageRepresentation::BeginScopedWriteAccess(
+    std::vector<GrBackendSemaphore>* begin_semaphores,
+    std::vector<GrBackendSemaphore>* end_semaphores,
+    AllowUnclearedAccess allow_uncleared,
+    bool use_sk_surface) {
+  return BeginScopedWriteAccess(
+      /*final_msaa_count=*/1,
+      SkSurfaceProps(/*flags=*/0, kUnknown_SkPixelGeometry), begin_semaphores,
+      end_semaphores, allow_uncleared, use_sk_surface);
+}
+
+SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::
+    ScopedGraphiteReadAccess(
+        base::PassKey<SkiaGraphiteImageRepresentation> /* pass_key */,
+        SkiaImageRepresentation* representation,
+        std::vector<skgpu::graphite::BackendTexture> graphite_textures)
+    : ScopedReadAccess(representation, graphite_textures) {
+  CHECK(!graphite_textures_.empty());
+}
+
+SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::
+    ~ScopedGraphiteReadAccess() = default;
+
+bool SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::
+    HasBackendSurfaceEndState() {
+  return false;
+}
+
+// Graphite-Dawn backend handles Vulkan transitions by itself, so nothing to do
+// here.
+void SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::
+    ApplyBackendSurfaceEndState() {}
+
+std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
+SkiaGraphiteImageRepresentation::BeginScopedReadAccess(
+    std::vector<GrBackendSemaphore>* begin_semaphores,
+    std::vector<GrBackendSemaphore>* end_semaphores) {
+  if (!IsCleared()) {
+    auto cr = ClearedRect();
+    LOG(ERROR) << base::StringPrintf(
+        "Attempt to read from an uninitialized SharedImage. "
+        "Initialized region: (%d, %d, %d, %d) Size: (%d, %d)",
+        cr.x(), cr.y(), cr.width(), cr.height(), size().width(),
+        size().height());
+    return nullptr;
+  }
+
+  std::vector<skgpu::graphite::BackendTexture> graphite_textures =
+      BeginReadAccess();
+  if (graphite_textures.empty()) {
+    LOG(ERROR) << "Unable to initialize graphite::BackendTextures";
+    return nullptr;
+  }
+
+  backing()->OnReadSucceeded();
+
+  return std::make_unique<ScopedGraphiteReadAccess>(
+      base::PassKey<SkiaGraphiteImageRepresentation>(), this,
+      graphite_textures);
+}
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // OverlayImageRepresentation
@@ -544,8 +726,10 @@ DawnImageRepresentation::BeginScopedAccess(
   }
 
   WGPUTexture texture = BeginAccess(usage);
-  if (!texture)
+  if (!texture) {
+    LOG(ERROR) << "Error creating WGPUTexture";
     return nullptr;
+  }
 
   if (usage & kWriteUsage) {
     backing()->OnWriteSucceeded();
