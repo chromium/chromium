@@ -4892,7 +4892,10 @@ Press an assigned switch or key to remove assignment.
     Treat top-row keys as function keys
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE" desc="The checkbox label for enabling keyboard auto-repeat.">
-    Enable auto-repeat
+    Repeat key press
+  </message>
+    <message name="IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE_SUB_LABEL" desc="The checkbox label for enabling keyboard auto-repeat.">
+If you hold down a key, the key’s character will repeat
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_DELAY" desc="The label for the slider for the delay before auto-repeat begins. The delay is the amount of time a key must be held down before auto-repeating begins.">
     Delay before repeat
@@ -4933,6 +4936,16 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS_DESCRIPTION" desc="In Device Settings, the label describing how to use the top-row keys' original actions when they are set to behave like function keys.">
     Hold the Search key to switch the behavior of the top-row keys
   </message>
+  <message name="IDS_SETTINGS_KEYBOARD_HOLDING_KEYS" desc="In Device Settings, a label for a section containing settings for key repeat and holding down keys">
+  Repeat keys and accent marks
+  </message>
+  <message name="IDS_SETTINGS_KEYBOARD_ACCENT_MARKS" desc="In Device Settings a label for a setting that allows for holding down a key to produce a pop up for inserting letters with diacritics">
+  Show accent marks and special characters
+  </message>
+  <message name="IDS_SETTINGS_KEYBOARD_ACCENT_MARKS_SUB_LABEL" desc="In Device Settings a label for a setting that allows for holding down a key to produce a pop up for inserting letters with diacritics - longer descriptive sublabel">
+Press &amp; hold keyboard keys to see accent marks and special characters. This turns off repeat key press for alphabet keys. Only available for English (US).
+  </message>
+
 
   <!-- Apps Section Page -->
   <message name="IDS_SETTINGS_APPS_TITLE" desc="The title of Apps section.">
