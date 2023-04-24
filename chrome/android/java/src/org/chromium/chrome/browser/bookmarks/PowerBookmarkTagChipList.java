@@ -86,7 +86,7 @@ public class PowerBookmarkTagChipList extends FrameLayout {
     private void populateChipsForCurrentFolder() {
         mTagMap.clear();
         mChipList.clear();
-        for (BookmarkId id : mBookmarkModel.getChildIDs(mCurrentFolder)) {
+        for (BookmarkId id : mBookmarkModel.getChildIds(mCurrentFolder)) {
             BookmarkItem item = mBookmarkModel.getBookmarkById(id);
             // TODO(crbug.com/1247825): Call #populateChipsForPowerBookmarkMeta will bookmark
             // metadata once available.

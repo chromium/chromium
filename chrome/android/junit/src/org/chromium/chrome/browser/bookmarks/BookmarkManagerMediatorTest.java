@@ -152,7 +152,7 @@ public class BookmarkManagerMediatorTest {
             doReturn(true).when(mBookmarkModel).doesBookmarkExist(any());
             doReturn(Arrays.asList(mFolderId2, mFolderId3))
                     .when(mBookmarkModel)
-                    .getChildIDs(mFolderId1);
+                    .getChildIds(mFolderId1);
             doReturn(mFolderItem1).when(mBookmarkModel).getBookmarkById(mFolderId1);
             doReturn(mFolderItem2).when(mBookmarkModel).getBookmarkById(mFolderId2);
             doReturn(mFolderItem3).when(mBookmarkModel).getBookmarkById(mFolderId3);
@@ -231,13 +231,13 @@ public class BookmarkManagerMediatorTest {
         verify(mBookmarkModel, times(0)).getDesktopFolderId();
         verify(mBookmarkModel, times(0)).getMobileFolderId();
         verify(mBookmarkModel, times(0)).getOtherFolderId();
-        verify(mBookmarkModel, times(0)).getTopLevelFolderIDs(true, false);
+        verify(mBookmarkModel, times(0)).getTopLevelFolderIds(true, false);
 
         finishLoading();
         verify(mBookmarkModel, times(1)).getDesktopFolderId();
         verify(mBookmarkModel, times(1)).getMobileFolderId();
         verify(mBookmarkModel, times(1)).getOtherFolderId();
-        verify(mBookmarkModel, times(1)).getTopLevelFolderIDs(true, false);
+        verify(mBookmarkModel, times(1)).getTopLevelFolderIds(true, false);
     }
 
     @Test
@@ -338,7 +338,7 @@ public class BookmarkManagerMediatorTest {
         mMediator.openFolder(mFolderId1);
         assertEquals(2, mModelList.size());
 
-        doReturn(Arrays.asList(mFolderId3)).when(mBookmarkModel).getChildIDs(mFolderId1);
+        doReturn(Arrays.asList(mFolderId3)).when(mBookmarkModel).getChildIds(mFolderId1);
         verify(mBookmarkModel, times(2))
                 .addObserver(mBookmarkModelObserverArgumentCaptor.capture());
         for (BookmarkModelObserver bookmarkModelObserver :

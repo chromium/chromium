@@ -125,7 +125,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
             // bookmarks mode.
             if (getCurrentUiMode() == BookmarkUiMode.FOLDER
                     && node.getId().equals(mStateStack.peek().mFolder)) {
-                if (mBookmarkModel.getTopLevelFolderIDs(true, true).contains(node.getId())) {
+                if (mBookmarkModel.getTopLevelFolderIds(true, true).contains(node.getId())) {
                     openFolder(mBookmarkModel.getDefaultFolderViewLocation());
                 } else {
                     openFolder(parent.getId());
@@ -819,7 +819,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
             if (parentId.equals(mBookmarkModel.getRootFolderId())) {
                 childIdList = mTopLevelFolders;
             } else {
-                childIdList = mBookmarkModel.getChildIDs(parentId);
+                childIdList = mBookmarkModel.getChildIds(parentId);
             }
 
             final List<BookmarkListEntry> bookmarkListEntries = new ArrayList<>();

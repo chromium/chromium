@@ -235,7 +235,7 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
         } else if (folder.equals(BookmarkId.SHOPPING_FOLDER)) {
             title = res.getString(R.string.price_tracking_bookmarks_filter_title);
             navigationButton = NavigationButton.BACK;
-        } else if (mBookmarkModel.getTopLevelFolderParentIDs().contains(folderItem.getParentId())
+        } else if (mBookmarkModel.getTopLevelFolderParentIds().contains(folderItem.getParentId())
                 && TextUtils.isEmpty(folderItem.getTitle())) {
             title = res.getString(R.string.bookmarks);
             navigationButton = NavigationButton.BACK;
