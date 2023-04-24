@@ -1349,10 +1349,20 @@ void AshNotificationView::CreateOrUpdateProgressViews(
   // bar. This is the opposite of what is required of the chrome notification.
   CreateOrUpdateProgressStatusView(notification);
   CreateOrUpdateProgressBarView(notification);
+  if (progress_bar_view() && chromeos::features::IsJellyEnabled()) {
+    progress_bar_view()->SetForegroundColorId(cros_tokens::kCrosSysPrimary);
+    progress_bar_view()->SetBackgroundColorId(
+        cros_tokens::kCrosSysHighlightShape);
+  }
 
   if (status_view()) {
     status_view()->SetMultiLine(true);
     status_view()->SetMaxLines(message_center::kMaxLinesForStatusView);
+    if (chromeos::features::IsJellyEnabled()) {
+      status_view()->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
+                                            *status_view());
+    }
   }
 }
 
