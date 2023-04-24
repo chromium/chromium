@@ -132,11 +132,19 @@ class COMPONENT_EXPORT(SQL) Statement {
   void BindDouble(int param_index, double val);
   void BindCString(int param_index, const char* val);
   void BindString(int param_index, base::StringPiece val);
+
+  // If you need to store (potentially invalid) UTF-16 strings losslessly,
+  // store them as BLOBs instead. `BindBlob()` has an overload for this purpose.
   void BindString16(int param_index, base::StringPiece16 value);
   void BindBlob(int param_index, base::span<const uint8_t> value);
 
   // Overload that makes it easy to pass in std::string values.
   void BindBlob(int param_index, base::span<const char> value) {
+    BindBlob(param_index, base::as_bytes(base::make_span(value)));
+  }
+
+  // Overload that makes it easy to pass in std::u16string values.
+  void BindBlob(int param_index, base::span<const char16_t> value) {
     BindBlob(param_index, base::as_bytes(base::make_span(value)));
   }
 
@@ -183,6 +191,10 @@ class COMPONENT_EXPORT(SQL) Statement {
   int64_t ColumnInt64(int column_index);
   double ColumnDouble(int column_index);
   std::string ColumnString(int column_index);
+
+  // If you need to store and retrieve (potentially invalid) UTF-16 strings
+  // losslessly, store them as BLOBs instead. They may be retrieved with
+  // `ColumnBlobAsString16()`.
   std::u16string ColumnString16(int column_index);
 
   // Conforms with base::Time serialization recommendations.
@@ -216,6 +228,7 @@ class COMPONENT_EXPORT(SQL) Statement {
   base::span<const uint8_t> ColumnBlob(int column_index);
 
   bool ColumnBlobAsString(int column_index, std::string* result);
+  bool ColumnBlobAsString16(int column_index, std::u16string* result);
   bool ColumnBlobAsVector(int column_index, std::vector<char>* result);
   bool ColumnBlobAsVector(int column_index, std::vector<uint8_t>* result);
 
