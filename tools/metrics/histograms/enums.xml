@@ -93316,6 +93316,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Empty Fetch Handler"/>
 </enum>
 
+<enum name="ServiceWorkerFetchResponseFrom">
+  <int value="0" label="No response yet"/>
+  <int value="1" label="ServiceWorker"/>
+  <int value="2" label="Without ServiceWorker"/>
+</enum>
+
 <enum name="ServiceWorkerInstalledScriptsManager.FinishedReason">
   <int value="0" label="NOT_FINISHED"/>
   <int value="1" label="SUCCESS"/>

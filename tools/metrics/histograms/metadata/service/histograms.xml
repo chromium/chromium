@@ -452,6 +452,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.FetchEvent.{Resource}.FetchResponseFrom"
+    enum="ServiceWorkerFetchResponseFrom" expires_after="2023-10-20">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The result of the RaceNetworkRequest. RaceNetworkRequest runs a race between
+    the network request which bypasses ServiceWorker, and the other request
+    which goes through the fetch handler. This metric is recorded for both main
+    and subresources, respectively.
+  </summary>
+  <token key="Resource">
+    <variant name="MainResource" summary="main resource"/>
+    <variant name="Subresource" summary="subresource"/>
+  </token>
+</histogram>
+
 <histogram name="ServiceWorker.FetchHandler.SkipReason"
     enum="ServiceWorkerFetchHandlerSkipReason" expires_after="2023-10-01">
   <owner>yyanagisawa@chromium.org</owner>

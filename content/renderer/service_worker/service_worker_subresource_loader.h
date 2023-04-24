@@ -158,6 +158,8 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   // CommitResponseHeaders (i.e. status_ == kSentHeader).
   void CommitCompleted(int error_code, const char* reason) override;
 
+  bool IsMainResourceLoader() override;
+
   // Record loading milestones. Called after a response is completed or
   // a request is fall back to network. Never called when an error is
   // occurred.

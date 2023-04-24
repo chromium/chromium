@@ -7,4 +7,15 @@
 namespace content {
 ServiceWorkerResourceLoader::ServiceWorkerResourceLoader() = default;
 ServiceWorkerResourceLoader::~ServiceWorkerResourceLoader() = default;
+
+void ServiceWorkerResourceLoader::SetFetchResponseFrom(
+    FetchResponseFrom fetch_response_from) {
+  DCHECK_EQ(fetch_response_from_, FetchResponseFrom::kNoResponseYet);
+  UMA_HISTOGRAM_ENUMERATION(
+      IsMainResourceLoader()
+          ? "ServiceWorker.FetchEvent.MainResource.FetchResponseFrom"
+          : "ServiceWorker.FetchEvent.Subresource.FetchResponseFrom",
+      fetch_response_from);
+  fetch_response_from_ = fetch_response_from;
+}
 }  // namespace content

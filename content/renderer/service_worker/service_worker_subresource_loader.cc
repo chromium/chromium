@@ -443,7 +443,7 @@ void ServiceWorkerSubresourceLoader::OnConnectionClosed() {
     if (fetch_response_from() == FetchResponseFrom::kWithoutServiceWorker) {
       return;
     }
-    set_fetch_response_from(FetchResponseFrom::kServiceWorker);
+    SetFetchResponseFrom(FetchResponseFrom::kServiceWorker);
     CommitCompleted(net::ERR_FAILED, "Disconnected before completed");
     return;
   }
@@ -573,7 +573,7 @@ void ServiceWorkerSubresourceLoader::StartResponse(
   if (fetch_response_from() == FetchResponseFrom::kWithoutServiceWorker) {
     return;
   }
-  set_fetch_response_from(FetchResponseFrom::kServiceWorker);
+  SetFetchResponseFrom(FetchResponseFrom::kServiceWorker);
 
   // A response with status code 0 is Blink telling us to respond with network
   // error.
@@ -1028,6 +1028,10 @@ void ServiceWorkerSubresourceLoader::OnBodyReadingComplete(int net_error) {
   if (!side_data_reading_complete_ && net_error == net::OK)
     return;
   CommitCompleted(net_error, "Body reading completed");
+}
+
+bool ServiceWorkerSubresourceLoader::IsMainResourceLoader() {
+  return false;
 }
 
 // ServiceWorkerSubresourceLoaderFactory ------------------------------------

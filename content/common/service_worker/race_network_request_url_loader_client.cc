@@ -6,6 +6,7 @@
 #include "content/common/service_worker/service_worker_resource_loader.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
+#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 namespace content {
 ServiceWorkerRaceNetworkRequestURLLoaderClient::
@@ -58,7 +59,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse(
     return;
   }
 
-  owner_->set_fetch_response_from(
+  owner_->SetFetchResponseFrom(
       ServiceWorkerResourceLoader::FetchResponseFrom::kWithoutServiceWorker);
 
   head_ = std::move(head);

@@ -379,7 +379,7 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
   // TODO(crbug.com/1420517) RaceNetworkRequrest doesn't support fallback case.
   // If the response from the fetch handler is fallback, the fallback resource
   // fetch will start separately without using RaceNetworkRequest's result.
-  set_fetch_response_from(FetchResponseFrom::kServiceWorker);
+  SetFetchResponseFrom(FetchResponseFrom::kServiceWorker);
   race_network_request_url_loader_.reset();
 
   DCHECK_EQ(status_, Status::kStarted);
@@ -979,6 +979,10 @@ void ServiceWorkerMainResourceLoader::TransitionToStatus(Status new_status) {
   status_ = new_status;
   if (new_status == Status::kCompleted)
     completion_time_ = base::TimeTicks::Now();
+}
+
+bool ServiceWorkerMainResourceLoader::IsMainResourceLoader() {
+  return true;
 }
 
 ServiceWorkerMainResourceLoaderWrapper::ServiceWorkerMainResourceLoaderWrapper(

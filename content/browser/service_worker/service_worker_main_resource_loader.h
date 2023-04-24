@@ -162,6 +162,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // argument of TRACE_EVENT.
   void CommitCompleted(int error_code, const char* reason) override;
 
+  bool IsMainResourceLoader() override;
+
   // network::mojom::URLLoader:
   void FollowRedirect(
       const std::vector<std::string>& removed_headers,
