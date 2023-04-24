@@ -118,8 +118,9 @@ void SharedImageTestBase::InitializeContext(GrContextType context_type) {
 
   context_state_ = base::MakeRefCounted<SharedContextState>(
       base::MakeRefCounted<gl::GLShareGroup>(), gl_surface_, gl_context_,
-      /*use_virtualized_gl_contexts=*/false, base::DoNothing(), context_type,
+      /*use_virtualized_gl_contexts=*/false, base::DoNothing(), context_type
 #if BUILDFLAG(ENABLE_VULKAN)
+      ,
       vulkan_context_provider_.get()
 #endif
   );

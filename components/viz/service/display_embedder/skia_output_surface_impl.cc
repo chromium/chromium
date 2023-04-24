@@ -1277,8 +1277,8 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
     int plane_index,
     uint32_t gl_texture_target,
     const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
-  if (dependency_->gr_context_type() == gpu::GrContextType::kVulkan) {
 #if BUILDFLAG(ENABLE_VULKAN)
+  if (dependency_->gr_context_type() == gpu::GrContextType::kVulkan) {
     if (!ycbcr_info) {
       return GrBackendFormat::MakeVk(gpu::ToVkFormat(si_format, plane_index));
     }
@@ -1297,8 +1297,10 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
 #else
     return GrBackendFormat::MakeVk(gr_ycbcr_info);
 #endif  // BUILDFLAG(IS_LINUX)
-#endif  // BUILDFLAG(ENABLE_VULKAN)
   } else {
+#else
+  {
+#endif  // BUILDFLAG(ENABLE_VULKAN)
     CHECK_EQ(dependency_->gr_context_type(), gpu::GrContextType::kGL);
     // Convert internal format from GLES2 to platform GL.
     bool use_angle_rgbx_format = impl_on_gpu_->GetFeatureInfo()
