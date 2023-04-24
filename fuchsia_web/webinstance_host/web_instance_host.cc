@@ -250,9 +250,9 @@ InstanceBuilder::Create(sys::OutgoingDirectory& outgoing_directory,
     return base::unexpected(status);
   }
 
-  return base::ok(base::WrapUnique(new InstanceBuilder(
+  return base::WrapUnique(new InstanceBuilder(
       outgoing_directory, realm, std::move(instance_id),
-      std::move(instance_name), instance_dir_ptr, launch_args)));
+      std::move(instance_name), instance_dir_ptr, launch_args));
 }
 
 InstanceBuilder::InstanceBuilder(sys::OutgoingDirectory& outgoing_directory,
