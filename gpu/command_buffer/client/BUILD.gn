@@ -264,7 +264,6 @@ source_set("raster_sources") {
     ":client",
     ":gles2_implementation",
     ":gles2_interface",
-    ":raster_interface",
     "//base",
     "//cc/paint",
     "//components/viz/common:resource_format_utils",
@@ -277,6 +276,8 @@ source_set("raster_sources") {
     "//ui/gfx/geometry",
     "//ui/gfx/ipc/color",
   ]
+  public_deps = [ ":raster_interface" ]
+
   sources = [
     "client_font_manager.cc",
     "client_font_manager.h",

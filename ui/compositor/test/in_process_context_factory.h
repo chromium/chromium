@@ -28,10 +28,10 @@ class RasterContextProviderWrapper;
 
 namespace viz {
 class HostFrameSinkManager;
+class TestInProcessContextProvider;
 }
 
 namespace ui {
-class InProcessContextProvider;
 
 class InProcessContextFactory : public ContextFactory {
  public:
@@ -90,7 +90,7 @@ class InProcessContextFactory : public ContextFactory {
 
   PerCompositorData* CreatePerCompositorData(Compositor* compositor);
 
-  scoped_refptr<InProcessContextProvider> shared_main_thread_contexts_;
+  scoped_refptr<viz::TestInProcessContextProvider> shared_main_thread_contexts_;
   scoped_refptr<cc::RasterContextProviderWrapper>
       shared_worker_context_provider_wrapper_;
   viz::TestSharedBitmapManager shared_bitmap_manager_;

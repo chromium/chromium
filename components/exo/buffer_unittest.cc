@@ -17,11 +17,11 @@
 #include "components/exo/test/exo_test_helper.h"
 #include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/test/surface_tree_host_test_util.h"
+#include "components/viz/test/test_in_process_context_provider.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/env.h"
 #include "ui/compositor/compositor.h"
-#include "ui/compositor/test/in_process_context_provider.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -268,7 +268,7 @@ TEST_P(BufferTest, OnLostResources) {
           ->context_factory()
           ->SharedMainThreadRasterContextProvider()
           .get();
-  static_cast<ui::InProcessContextProvider*>(context_provider)
+  static_cast<viz::TestInProcessContextProvider*>(context_provider)
       ->SendOnContextLost();
 }
 
