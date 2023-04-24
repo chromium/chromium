@@ -98,6 +98,13 @@ class LayoutUnit {
 
  public:
   constexpr LayoutUnit() : value_(0) {}
+  // Creates a LayoutUnit with the specified integer value.
+  // If the specified value is smaller than LayoutUnit::Min(), the new
+  // LayoutUnit is equivalent to LayoutUnit::Min().
+  // If the specified value is greater than the maximum integer value which
+  // LayoutUnit can represent, the new LayoutUnit is equivalent to
+  // LayoutUnit(kIntMaxForLayoutUnit) in 32-bit Arm, or is equivalent to
+  // LayoutUnit::Max() otherwise.
   template <typename IntegerType>
   constexpr explicit LayoutUnit(IntegerType value) : value_(0) {
     if (std::is_signed<IntegerType>::value)

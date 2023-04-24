@@ -98,7 +98,8 @@ TEST(NGPhysicalBoxStrutTest, Constructors) {
   NGPhysicalBoxStrut result(0, std::numeric_limits<int>::max(), -1,
                             std::numeric_limits<int>::min());
   EXPECT_EQ(LayoutUnit(), result.top);
-  EXPECT_EQ(LayoutUnit::Max(), result.right);
+  EXPECT_EQ(LayoutUnit::FromRawValue(GetMaxSaturatedSetResultForTesting()),
+            result.right);
   EXPECT_EQ(LayoutUnit(-1), result.bottom);
   EXPECT_EQ(LayoutUnit::Min(), result.left);
 }
