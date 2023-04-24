@@ -191,9 +191,10 @@ class TrustTokenPermissionsPolicyBrowsertest : public ContentBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(TrustTokenPermissionsPolicyBrowsertest,
                        PassesNegativeValueToFactoryParams) {
-  // Since the trust-token-redemption Permissions Policy feature is disabled by
-  // default in cross-site frames, the child's URLLoaderFactoryParams should be
-  // populated with TrustTokenRedemptionPolicy::kForbid.
+  // Since the private-state-token-redemption Permissions Policy feature is
+  // disabled by default in cross-site frames, the child's
+  // URLLoaderFactoryParams should be populated with
+  // TrustTokenRedemptionPolicy::kForbid.
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(
@@ -220,15 +221,17 @@ IN_PROC_BROWSER_TEST_F(TrustTokenPermissionsPolicyBrowsertest,
 
 IN_PROC_BROWSER_TEST_F(TrustTokenPermissionsPolicyBrowsertest,
                        PassesPositiveValueToFactoryParams) {
-  // Even though the trust-token-redemption Permissions Policy feature is
-  // disabled by default in cross-site frames, the allow attribute on the iframe
-  // enables it for the b.com frame, so the child's URLLoaderFactoryParams
-  // should be populated with TrustTokenRedemptionPolicy::kPotentiallyPermit.
+  // Even though the private-state-token-redemption Permissions Policy feature
+  // is disabled by default in cross-site frames, the allow attribute on the
+  // iframe enables it for the b.com frame, so the child's
+  // URLLoaderFactoryParams should be populated with
+  // TrustTokenRedemptionPolicy::kPotentiallyPermit.
 
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url(embedded_test_server()->GetURL(
-      "a.com",
-      "/cross_site_iframe_factory.html?a(b{allow-trust-token-redemption})"));
+  GURL url(
+      embedded_test_server()->GetURL("a.com",
+                                     "/cross_site_iframe_factory.html?a(b{"
+                                     "allow-private-state-token-redemption})"));
 
   base::RunLoop run_loop;
   ShellContentBrowserClient::Get()->set_url_loader_factory_params_callback(
@@ -253,9 +256,10 @@ IN_PROC_BROWSER_TEST_F(TrustTokenPermissionsPolicyBrowsertest,
 
 IN_PROC_BROWSER_TEST_F(TrustTokenPermissionsPolicyBrowsertest,
                        PassesNegativeValueToFactoryParamsAfterCrash) {
-  // Since the trust-token-redemption Permissions Policy feature is disabled by
-  // default in cross-site frames, the child's URLLoaderFactoryParams should be
-  // populated with TrustTokenRedemptionPolicy::kForbid.
+  // Since the private-state-token-redemption Permissions Policy feature is
+  // disabled by default in cross-site frames, the child's
+  // URLLoaderFactoryParams should be populated with
+  // TrustTokenRedemptionPolicy::kForbid.
   //
   // In particular, this should be true for factory params repopulated after a
   // network service crash!
@@ -289,10 +293,11 @@ IN_PROC_BROWSER_TEST_F(TrustTokenPermissionsPolicyBrowsertest,
 
 IN_PROC_BROWSER_TEST_F(TrustTokenPermissionsPolicyBrowsertest,
                        PassesPositiveValueToFactoryParamsAfterCrash) {
-  // Even though the trust-token-redemption Permissions Policy feature is
-  // disabled by default in cross-site frames, the allow attribute on the iframe
-  // enables it for the b.com frame, so the child's URLLoaderFactoryParams
-  // should be populated with TrustTokenRedemptionPolicy::kPotentiallyPermit.
+  // Even though the private-state-token-redemption Permissions Policy feature
+  // is disabled by default in cross-site frames, the allow attribute on the
+  // iframe enables it for the b.com frame, so the child's
+  // URLLoaderFactoryParams should be populated with
+  // TrustTokenRedemptionPolicy::kPotentiallyPermit.
   //
   // In particular, this should be true for factory params repopulated after a
   // network service crash!
@@ -302,9 +307,10 @@ IN_PROC_BROWSER_TEST_F(TrustTokenPermissionsPolicyBrowsertest,
     return;
 
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url(embedded_test_server()->GetURL(
-      "a.com",
-      "/cross_site_iframe_factory.html?a(b{allow-trust-token-redemption})"));
+  GURL url(
+      embedded_test_server()->GetURL("a.com",
+                                     "/cross_site_iframe_factory.html?a(b{"
+                                     "allow-private-state-token-redemption})"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   base::RunLoop run_loop;
@@ -328,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenPermissionsPolicyBrowsertest,
 }
 
 constexpr char kTrustTokenHeader[] =
-    "/set-header?Feature-Policy: trust-token-redemption 'self'";
+    "/set-header?Feature-Policy: private-state-token-redemption 'self'";
 
 class TrustTokenPermissionsPolicyFencedFrameTest
     : public TrustTokenPermissionsPolicyBrowsertest,

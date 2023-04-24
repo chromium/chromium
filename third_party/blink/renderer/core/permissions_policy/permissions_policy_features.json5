@@ -386,7 +386,7 @@
     },
     {
       name: "TrustTokenRedemption",
-      permissions_policy_name: "trust-token-redemption",
+      permissions_policy_name: "private-state-token-redemption",
       depends_on: ["PrivateStateTokens"],
     },
     {

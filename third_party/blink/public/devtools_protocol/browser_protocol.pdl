@@ -7227,6 +7227,7 @@ domain Page
       payment
       picture-in-picture
       private-aggregation
+      private-state-token-redemption
       publickey-credentials-get
       run-ad-auction
       screen-wake-lock
@@ -7237,7 +7238,6 @@ domain Page
       smart-card
       storage-access
       sync-xhr
-      trust-token-redemption
       unload
       usb
       vertical-scroll
