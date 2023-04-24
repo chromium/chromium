@@ -727,6 +727,12 @@ try_.builder(
     execution_timeout = 20 * time.hour,
 )
 
+try_.builder(
+    name = "chromeos-js-code-coverage",
+    mirrors = ["ci/chromeos-js-code-coverage"],
+    execution_timeout = 20 * time.hour,
+)
+
 # ML experimental builder, modifies RTS itself to use a ml model
 try_.builder(
     name = "linux-rel-ml",

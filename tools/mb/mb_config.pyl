@@ -241,6 +241,7 @@
       'android-code-coverage': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_java_coverage_reclient',
       'android-code-coverage-native': 'gpu_tests_android_release_bot_no_symbols_arm64_fastbuild_native_coverage_reclient',
       'android-x86-code-coverage': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient_coverage',
+      'chromeos-js-code-coverage': 'js_coverage_reclient',
       'fuchsia-code-coverage': 'fuchsia_clang_code_coverage_reclient',
       'ios-simulator-code-coverage': 'clang_code_coverage_ios_xctest_reclient',
       'linux-chromeos-code-coverage': 'chromeos_with_codecs_release_bot_coverage_reclient',
@@ -1186,6 +1187,7 @@
 
     'tryserver.chromium.linux': {
       'cast-binary-size': 'cast_binary_size',
+      'chromeos-js-code-coverage': 'js_coverage_reclient',
       'chromium_presubmit': 'presubmit',
       'gpu-fyi-try-lacros-amd-rel': 'gpu_tests_ozone_linux_non_x11_release_trybot_reclient',
       'gpu-fyi-try-lacros-intel-rel': 'gpu_tests_ozone_linux_non_x11_release_trybot_reclient',
