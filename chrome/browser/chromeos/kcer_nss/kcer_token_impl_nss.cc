@@ -397,12 +397,6 @@ void KcerTokenImplNss::OnImportCertFromBytesDone(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
-void KcerTokenImplNss::ImportX509Cert(scoped_refptr<net::X509Certificate> cert,
-                                      Kcer::StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  // TODO(244408716): Implement.
-}
-
 void KcerTokenImplNss::ImportPkcs12Cert(Pkcs12Blob pkcs12_blob,
                                         std::string password,
                                         bool hardware_backed,

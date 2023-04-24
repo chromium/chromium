@@ -47,8 +47,6 @@ class COMPONENT_EXPORT(KCER) KcerToken {
                          Kcer::ImportKeyCallback callback) = 0;
   virtual void ImportCertFromBytes(CertDer cert_der,
                                    Kcer::StatusCallback callback) = 0;
-  virtual void ImportX509Cert(scoped_refptr<net::X509Certificate> cert,
-                              Kcer::StatusCallback callback) = 0;
   virtual void ImportPkcs12Cert(Pkcs12Blob pkcs12_blob,
                                 std::string password,
                                 bool hardware_backed,

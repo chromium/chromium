@@ -66,8 +66,6 @@ class KcerTokenImplNss : public KcerToken, public net::CertDatabase::Observer {
                  Kcer::ImportKeyCallback callback) override;
   void ImportCertFromBytes(CertDer cert_der,
                            Kcer::StatusCallback callback) override;
-  void ImportX509Cert(scoped_refptr<net::X509Certificate> cert,
-                      Kcer::StatusCallback callback) override;
   void ImportPkcs12Cert(Pkcs12Blob pkcs12_blob,
                         std::string password,
                         bool hardware_backed,

@@ -178,7 +178,7 @@ TEST_F(KcerNssTest, UseUnavailableTokenThenGetError) {
   EXPECT_EQ(generate_waiter.Get().error(), Error::kTokenIsNotAvailable);
 }
 
-TEST_F(KcerNssTest, ImportCertForImportedKeySuccess) {
+TEST_F(KcerNssTest, ImportCertForImportedKey) {
   absl::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
       net::GetTestCertsDirectory().AppendASCII("client_1.key"));
   ASSERT_TRUE(key.has_value() && (key->size() > 0));
@@ -245,8 +245,12 @@ TEST_F(KcerNssTest, ImportCertWithoutKeyThenFail) {
 // Test that all methods can be queued while a token is initializing and that
 // the entire task queue can be processed when initialization completes (in this
 // case - completes with a failure).
-TEST_F(KcerNssTest, QueueTasksThenFailAll) {
+TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
   TokenHolder user_token(Token::kUser);
+
+  std::unique_ptr<net::CertBuilder> issuer = MakeCertIssuer();
+  std::unique_ptr<net::CertBuilder> cert_builder = MakeCertBuilder(
+      issuer.get(), base::Base64Decode(kPublicKeyBase64).value());
 
   std::unique_ptr<Kcer> kcer = internal::CreateKcer(
       IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
@@ -266,6 +270,10 @@ TEST_F(KcerNssTest, QueueTasksThenFailAll) {
       import_cert_from_bytes_waiter;
   kcer->ImportCertFromBytes(Token::kUser, CertDer({1, 2, 3}),
                             import_cert_from_bytes_waiter.GetCallback());
+  base::test::TestFuture<base::expected<void, Error>> import_x509_cert_waiter;
+  kcer->ImportX509Cert(Token::kUser,
+                       /*cert=*/cert_builder->GetX509Certificate(),
+                       import_x509_cert_waiter.GetCallback());
   base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
                          base::flat_map<Token, Error>>
       list_certs_waiter;
@@ -291,6 +299,9 @@ TEST_F(KcerNssTest, QueueTasksThenFailAll) {
   EXPECT_EQ(import_key_waiter.Get().error(), Error::kTokenInitializationFailed);
   ASSERT_FALSE(import_cert_from_bytes_waiter.Get().has_value());
   EXPECT_EQ(import_cert_from_bytes_waiter.Get().error(),
+            Error::kTokenInitializationFailed);
+  ASSERT_FALSE(import_x509_cert_waiter.Get().has_value());
+  EXPECT_EQ(import_x509_cert_waiter.Get().error(),
             Error::kTokenInitializationFailed);
   ASSERT_FALSE(list_certs_waiter.Get<1>().empty());
   EXPECT_EQ(list_certs_waiter.Get<1>().at(Token::kUser),
@@ -336,12 +347,10 @@ TEST_P(KcerNssAllKeyTypesTest, AllMethodsTogether) {
   std::unique_ptr<net::CertBuilder> cert_builder =
       MakeCertBuilder(issuer.get(), public_key.GetSpki().value());
 
-  CertDer cert(StrToBytes(cert_builder->GetDER()));
-
   // Import a cert for the key.
   base::test::TestFuture<base::expected<void, Error>> import_waiter;
-  kcer->ImportCertFromBytes(Token::kUser, std::move(cert),
-                            import_waiter.GetCallback());
+  kcer->ImportX509Cert(Token::kUser, cert_builder->GetX509Certificate(),
+                       import_waiter.GetCallback());
   EXPECT_TRUE(import_waiter.Get().has_value());
 
   // List certs, make sure the new cert is listed.

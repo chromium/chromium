@@ -104,7 +104,17 @@ void KcerImpl::ImportCertFromBytes(Token token,
 void KcerImpl::ImportX509Cert(Token token,
                               scoped_refptr<net::X509Certificate> cert,
                               StatusCallback callback) {
-  // TODO(244408716): Implement.
+  if (!cert) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kInvalidCertificate));
+  }
+
+  const CRYPTO_BUFFER* buffer = cert->cert_buffer();
+  CertDer cert_der(std::vector<uint8_t>(
+      CRYPTO_BUFFER_data(buffer),
+      CRYPTO_BUFFER_data(buffer) + CRYPTO_BUFFER_len(buffer)));
+
+  return ImportCertFromBytes(token, std::move(cert_der), std::move(callback));
 }
 
 void KcerImpl::ImportPkcs12Cert(Token token,
