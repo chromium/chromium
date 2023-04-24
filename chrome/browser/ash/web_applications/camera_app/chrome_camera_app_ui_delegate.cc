@@ -184,8 +184,9 @@ ChromeCameraAppUIDelegate::StorageMonitor::StorageMonitor(
     : task_runner_(task_runner) {}
 
 ChromeCameraAppUIDelegate::StorageMonitor::~StorageMonitor() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  StopMonitoring();
+  if (timer_.IsRunning()) {
+    StopMonitoring();
+  }
 }
 
 void ChromeCameraAppUIDelegate::StorageMonitor::StartMonitoring(
@@ -252,10 +253,11 @@ ChromeCameraAppUIDelegate::ChromeCameraAppUIDelegate(content::WebUI* web_ui)
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
       storage_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {
-  file_task_runner_->PostTask(
+  file_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&ChromeCameraAppUIDelegate::InitFileMonitorOnFileThread,
-                     base::Unretained(this)));
+      base::BindOnce([]() { return std::make_unique<FileMonitor>(); }),
+      base::BindOnce(&ChromeCameraAppUIDelegate::OnFileMonitorInitialized,
+                     weak_factory_.GetWeakPtr()));
 
   IntializeStorageMonitor();
 }
@@ -263,6 +265,7 @@ ChromeCameraAppUIDelegate::ChromeCameraAppUIDelegate(content::WebUI* web_ui)
 ChromeCameraAppUIDelegate::~ChromeCameraAppUIDelegate() {
   // Destroy |file_monitor_| on |file_task_runner_|.
   // TODO(wtlee): Ensure there is no lifetime issue before actually deleting it.
+  weak_factory_.InvalidateWeakPtrs();
   file_task_runner_->DeleteSoon(FROM_HERE, std::move(file_monitor_));
 
   storage_task_runner_->DeleteSoon(FROM_HERE, std::move(storage_monitor_));
@@ -385,6 +388,10 @@ void ChromeCameraAppUIDelegate::MonitorFileDeletion(
     std::move(callback).Run(FileMonitorResult::ERROR);
     return;
   }
+  if (!file_monitor_) {
+    std::move(callback).Run(FileMonitorResult::ERROR);
+    return;
+  }
 
   // We should return the response on current thread (mojo thread).
   auto callback_on_current_thread =
@@ -393,7 +400,7 @@ void ChromeCameraAppUIDelegate::MonitorFileDeletion(
       FROM_HERE,
       base::BindOnce(
           &ChromeCameraAppUIDelegate::MonitorFileDeletionOnFileThread,
-          base::Unretained(this), file_monitor_.get(), std::move(file_path),
+          weak_factory_.GetWeakPtr(), file_monitor_.get(), std::move(file_path),
           std::move(callback_on_current_thread)));
 }
 
@@ -408,6 +415,11 @@ void ChromeCameraAppUIDelegate::MaybeTriggerSurvey() {
 
 void ChromeCameraAppUIDelegate::StartStorageMonitor(
     base::RepeatingCallback<void(StorageMonitorStatus)> monitor_callback) {
+  if (!storage_monitor_) {
+    monitor_callback.Run(StorageMonitorStatus::ERROR);
+    return;
+  }
+
   auto monitor_callback_on_current_thread =
       base::BindPostTaskToCurrentDefault(monitor_callback, FROM_HERE);
   auto monitor_path = GetMyFilesFolder();
@@ -447,10 +459,9 @@ base::FilePath ChromeCameraAppUIDelegate::GetFilePathByName(
   return GetMyFilesFolder().Append("Camera").Append(name_component);
 }
 
-void ChromeCameraAppUIDelegate::InitFileMonitorOnFileThread() {
-  DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
-
-  file_monitor_ = std::make_unique<FileMonitor>();
+void ChromeCameraAppUIDelegate::OnFileMonitorInitialized(
+    std::unique_ptr<FileMonitor> file_monitor) {
+  file_monitor_ = std::move(file_monitor);
 }
 
 void ChromeCameraAppUIDelegate::MonitorFileDeletionOnFileThread(

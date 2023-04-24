@@ -13,6 +13,7 @@
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/camera_app_ui/camera_app_window_state_controller.h"
 #include "ash/webui/camera_app_ui/document_scanner_service_client.h"
+#include "base/memory/weak_ptr.h"
 #include "chromeos/services/machine_learning/public/mojom/document_scanner.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -157,6 +158,8 @@ class CameraAppHelperImpl : public TabletModeObserver,
 
   // Client to connect to document detection service.
   std::unique_ptr<DocumentScannerServiceClient> document_scanner_service_;
+
+  base::WeakPtrFactory<CameraAppHelperImpl> weak_factory_{this};
 };
 
 }  // namespace ash

@@ -413,8 +413,9 @@ void CameraAppHelperImpl::StartStorageMonitor(
   storage_monitor_ = mojo::Remote<StorageMonitor>(std::move(monitor));
   storage_callback_ = std::move(callback);
 
-  camera_app_ui_->delegate()->StartStorageMonitor(base::BindRepeating(
-      &CameraAppHelperImpl::OnStorageStatusUpdated, base::Unretained(this)));
+  camera_app_ui_->delegate()->StartStorageMonitor(
+      base::BindRepeating(&CameraAppHelperImpl::OnStorageStatusUpdated,
+                          weak_factory_.GetWeakPtr()));
 }
 
 void CameraAppHelperImpl::StopStorageMonitor() {
