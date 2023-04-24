@@ -3,8 +3,8 @@ env:
   GIT_TERMINAL_PROMPT: 0
 
 steps:
-  - label: "Build chromium"
-    key: "build-chromium"
+  - label: "Build chromium - Linux"
+    key: "build-chromium-linux"
     plugins:
       - thedyrt/skip-checkout#v0.1.1: ~
     command: "cd /home/ubuntu/chromium/src && docker build -t chromium-build-new - < Dockerfile.build && git status && node buildLinux.mjs && node replay_build_scripts/upload_build_artifacts.mjs"
@@ -17,6 +17,21 @@ steps:
       - "queue=runtime"
     artifact_paths:
       - "build_id/**"
+  - label: "Build chromium - Mac"
+    key: "build-chromium-mac"
+    plugins:
+      - thedyrt/skip-checkout#v0.1.1: ~
+    command: "cd /Users/administrator/chromium/src && node buildMac.mjs &&  node replay_build_scripts/upload_build_artifacts.mjs"
+    env:
+      GOMA_SERVER_HOST: simpsonite.goma.engflow.com
+      GOMACTL_USE_PROXY: false
+    agents:
+      - "runtimeType=chromiumbuild"
+      - "os=macos"
+      - "queue=runtime"
+    # TODO(dmiller): this might race with the linux build, we should store these under separate paths
+    # artifact_paths:
+    #   - "build_id/**"
   - trigger: "testing-runtime-e2e"
     label: ":hammer: Trigger Runtime Tests"
-    depends_on: "build-chromium"
+    depends_on: "build-chromium-linux"

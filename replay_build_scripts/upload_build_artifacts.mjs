@@ -1,6 +1,12 @@
 import fs from "fs";
 import path from "path";
-import { assert, currentPlatform, log, spawnChecked, Platform } from "./common.mjs";
+import {
+  assert,
+  currentPlatform,
+  log,
+  spawnChecked,
+  Platform,
+} from "./common.mjs";
 import { readSymbols } from "./symbolication.mjs";
 
 const DEFAULT_BUCKET_NAME = "recordreplay-us-east-2";
@@ -9,8 +15,8 @@ const S3DevBucket = "recordreplay-us-east-2-dev";
 const S3Website = "recordreplay-website";
 
 const BUILDKITE_BUILD_ID_ARTIFACT = "build_id";
-const BUILDKITE_ARTIFACT_DIRECTORY = (process.env.BUILDKITE_BUILD_CHECKOUT_PATH || "./") + "/build_id";
-
+const BUILDKITE_ARTIFACT_DIRECTORY =
+  (process.env.BUILDKITE_BUILD_CHECKOUT_PATH || "./") + "/build_id";
 
 function uploadToAllBuckets(localPath, s3Path) {
   for (const bucket of [S3Bucket, S3DevBucket]) {
@@ -66,7 +72,7 @@ function copyBuildFiles(srcDir, dstDir) {
       return true;
     }
 
-    if (extensions.some(extension => file.endsWith(extension))) {
+    if (extensions.some((extension) => file.endsWith(extension))) {
       return true;
     }
 
@@ -78,7 +84,9 @@ function copyBuildFiles(srcDir, dstDir) {
       fs.cpSync(path.join(srcDir, file), path.join(dstDir, file));
     }
   }
-  fs.cpSync(path.join(srcDir, "locales"), path.join(dstDir, "locales"), { recursive: true });
+  fs.cpSync(path.join(srcDir, "locales"), path.join(dstDir, "locales"), {
+    recursive: true,
+  });
 }
 
 function prepareLinuxBinaries(buildId) {
@@ -90,7 +98,9 @@ function prepareLinuxBinaries(buildId) {
 
   copyBuildFiles("out/Release", "replay-chromium");
 
-  spawnChecked("tar", ["cfz", buildArchive, "replay-chromium"], { stdio: "inherit" });
+  spawnChecked("tar", ["cfz", buildArchive, "replay-chromium"], {
+    stdio: "inherit",
+  });
   spawnChecked("sudo", ["rm", "-rf", "replay-chromium"], { stdio: "inherit" });
   return [buildArchive];
 }
@@ -126,7 +136,7 @@ function prepareWindowsBinaries(buildId) {
 
 function prepareMacOSBinaries(buildId) {
   const dmgArchive = `${buildId}.dmg`;
-  const outdir = path.join(chromium, "out", "Release");
+  const outdir = path.join("out", "Release");
   fs.rmSync(path.join(outdir, "Replay-Chromium.app"), {
     recursive: true,
     force: true,
@@ -220,9 +230,14 @@ async function main(options) {
   // to download from S3: by first downloading this file.
   fs.rmSync(BUILDKITE_ARTIFACT_DIRECTORY, { force: true, recursive: true });
   fs.mkdirSync(BUILDKITE_ARTIFACT_DIRECTORY);
-  fs.writeFileSync(`${BUILDKITE_ARTIFACT_DIRECTORY}/${BUILDKITE_BUILD_ID_ARTIFACT}`, buildId);
+  fs.writeFileSync(
+    `${BUILDKITE_ARTIFACT_DIRECTORY}/${BUILDKITE_BUILD_ID_ARTIFACT}`,
+    buildId
+  );
 
-  log(`Wrote build_id to ${BUILDKITE_ARTIFACT_DIRECTORY}/${BUILDKITE_BUILD_ID_ARTIFACT}`);
+  log(
+    `Wrote build_id to ${BUILDKITE_ARTIFACT_DIRECTORY}/${BUILDKITE_BUILD_ID_ARTIFACT}`
+  );
 }
 
 async function buildChromiumSymbols(options) {
@@ -251,7 +266,9 @@ async function buildChromiumSymbols(options) {
   const pdbs = [];
   switch (currentPlatform()) {
     case Platform.macOS:
-      libraries.push(`Chromium Framework.framework/Versions/Current/Chromium Framework`);
+      libraries.push(
+        `Chromium Framework.framework/Versions/Current/Chromium Framework`
+      );
       break;
     case Platform.linux:
       libraries.push("chrome");
@@ -275,7 +292,6 @@ async function buildChromiumSymbols(options) {
   return `${buildId}`;
 }
 
-
 function readShortRevision(branch = "HEAD") {
   return spawnChecked("git", ["rev-parse", "--short=12", branch])
     .stdout.toString()
@@ -294,10 +310,7 @@ function buildDateStringToDate(buildDate) {
   return new Date(`${y}-${m}-${d}`);
 }
 
-function getLinkerRevisionDate(
-  revision = "HEAD",
-  spawnOptions
-) {
+function getLinkerRevisionDate(revision = "HEAD", spawnOptions) {
   const dateString = spawnChecked(
     "git",
     ["show", revision, "--pretty=%cd", "--date=iso-strict", "--no-patch"],
@@ -311,11 +324,7 @@ function getLinkerRevisionDate(
   return new Date(dateString).toISOString().substring(0, 10).replace(/-/g, "");
 }
 
-function computeBuildId(
-  runtimeName,
-  runtimeRevision,
-  driverRevision
-) {
+function computeBuildId(runtimeName, runtimeRevision, driverRevision) {
   // Download the archive for this driver revision, using the latest version
   // if no revision was specified.
   const driverArchive = `${currentPlatform()}-recordreplay.tgz`;
@@ -325,7 +334,11 @@ function computeBuildId(
   }
   spawnChecked(
     "curl",
-    [`https://static.replay.io/downloads/${downloadArchive}`, "-o", driverArchive],
+    [
+      `https://static.replay.io/downloads/${downloadArchive}`,
+      "-o",
+      driverArchive,
+    ],
     { stdio: "inherit" }
   );
 
@@ -375,7 +388,10 @@ async function buildSymbolsArchive(
     let pdbFile;
     if (pdbs[i]) {
       pdbFile = path.join(objectDirectory, pdbs[i]);
-      assert(fs.existsSync(pdbFile), `Missing PDB for symbols archive ${pdbFile}`);
+      assert(
+        fs.existsSync(pdbFile),
+        `Missing PDB for symbols archive ${pdbFile}`
+      );
     }
     const symbols = await readSymbols(file, pdbFile);
     json[name] = symbols;
