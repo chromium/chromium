@@ -81,6 +81,12 @@ const char kAndroidAppIntegrationName[] = "Integrate with Android App Search";
 const char kAndroidAppIntegrationDescription[] =
     "If enabled, allows Chrome to integrate with the Android App Search.";
 
+const char kAndroidExtendedKeyboardShortcutsName[] =
+    "Android Extended Keyboard Shortcuts";
+const char kAndroidExtendedKeyboardShortcutsDescription[] =
+    "If enabled, allows for extended keyboard shortcuts (i.e. Alt + Backspace "
+    "to delete line).";
+
 const char kAnimatedImageResumeName[] = "Use animated image resume behavior";
 const char kAnimatedImageResumeDescription[] =
     "Resumes animated images from the last frame drawn rather than attempt "

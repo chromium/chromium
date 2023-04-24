@@ -10186,6 +10186,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(permissions::features::kPermissionStorageAccessAPI)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"android-extended-keyboard-shortcuts",
+     flag_descriptions::kAndroidExtendedKeyboardShortcutsName,
+     flag_descriptions::kAndroidExtendedKeyboardShortcutsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(blink::features::kAndroidExtendedKeyboardShortcuts)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -72,6 +72,9 @@ extern const char kAllowInsecureLocalhostDescription[];
 extern const char kAndroidAppIntegrationName[];
 extern const char kAndroidAppIntegrationDescription[];
 
+extern const char kAndroidExtendedKeyboardShortcutsName[];
+extern const char kAndroidExtendedKeyboardShortcutsDescription[];
+
 extern const char kAnimatedImageResumeName[];
 extern const char kAnimatedImageResumeDescription[];
 

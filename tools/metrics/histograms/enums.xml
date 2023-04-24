@@ -60815,6 +60815,7 @@ from previous Chrome versions.
   <int value="-728461030" label="AutofillPruneSuggestions:disabled"/>
   <int value="-728187009" label="NtpRealboxSuggestionAnswers:enabled"/>
   <int value="-727860269" label="WebAuthenticationBle:disabled"/>
+  <int value="-727539088" label="AndroidExtendedKeyboardShortcuts:disabled"/>
   <int value="-726892130" label="AndroidMessagesIntegration:disabled"/>
   <int value="-726844226"
       label="AutofillSuggestVirtualCardsOnIncompleteForm:enabled"/>
@@ -65976,6 +65977,7 @@ from previous Chrome versions.
   <int value="2072231406" label="SingleProcessMash:disabled"/>
   <int value="2073113207" label="SensorContentSetting:disabled"/>
   <int value="2075207488" label="AutomaticPasswordGeneration:disabled"/>
+  <int value="2075686131" label="AndroidExtendedKeyboardShortcuts:enabled"/>
   <int value="2075718434" label="NtpRealboxSuggestionAnswers:disabled"/>
   <int value="2076787478" label="OmniboxDisplayTitleForCurrentUrl:disabled"/>
   <int value="2076903744" label="progress-bar-animation"/>
