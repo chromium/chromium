@@ -75,11 +75,9 @@ const clearCookies = async () => {
 
   const crossOrigin = get_host_info().HTTPS_REMOTE_ORIGIN;
   const params = getFetchParams(crossOrigin);
-  return fetch(blankURLWithHeaders(
-    params.headers.concat(headers),
-    crossOrigin,
-    {credentials: params.credentials}
-  ));
+  return fetch(
+      blankURLWithHeaders(params.headers.concat(headers), crossOrigin),
+      {credentials: params.credentials});
 }
 
 /**
