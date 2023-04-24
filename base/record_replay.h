@@ -26,6 +26,8 @@ bool IsRecording();
 bool IsReplaying();
 char* GetRecordingId();
 
+bool HadMismatch();
+
 void Print(const char* format, ...);
 void Diagnostic(const char* format, ...);
 void Warning(const char* format, ...);
