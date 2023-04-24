@@ -475,14 +475,9 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, MAYBE_RemoveHistory) {
       }));
 }
 
-// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
-// crbug.com/1429828: Test is flaky on Mac and Linux
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_TreeModelDeletion DISABLED_TreeModelDeletion
-#else
-#define MAYBE_TreeModelDeletion TreeModelDeletion
-#endif
-IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, MAYBE_TreeModelDeletion) {
+// TODO(crbug.com/1435528): Test is no longer needed.
+IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest,
+                       DISABLED_TreeModelDeletion) {
   // Check that removing cookies and storage API usage via the CookiesTreeModel
   // also removes the associated access records.
   content::CookieChangeObserver cookie_observer(
