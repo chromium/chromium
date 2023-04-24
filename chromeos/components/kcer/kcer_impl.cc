@@ -137,7 +137,20 @@ void KcerImpl::RemoveKeyAndCerts(PrivateKeyHandle key,
 
 void KcerImpl::RemoveCert(scoped_refptr<const Cert> cert,
                           StatusCallback callback) {
-  // TODO(244408716): Implement.
+  if (!cert) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kInvalidCertificate));
+  }
+
+  const base::WeakPtr<KcerToken>& kcer_token = GetToken(cert->GetToken());
+  if (!kcer_token.MaybeValid()) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kTokenIsNotAvailable));
+  }
+  token_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&KcerToken::RemoveCert, kcer_token, std::move(cert),
+                     base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 void KcerImpl::ListKeys(base::flat_set<Token> tokens,

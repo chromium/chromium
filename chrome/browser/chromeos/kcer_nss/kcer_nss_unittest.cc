@@ -252,6 +252,11 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
   std::unique_ptr<net::CertBuilder> cert_builder = MakeCertBuilder(
       issuer.get(), base::Base64Decode(kPublicKeyBase64).value());
 
+  // Internal values don't matter, they won't be accessed during this test.
+  scoped_refptr<Cert> fake_cert = base::MakeRefCounted<Cert>(
+      Token::kUser, Pkcs11Id(), /*nickname=*/std::string(),
+      /*x509_cert=*/nullptr);
+
   std::unique_ptr<Kcer> kcer = internal::CreateKcer(
       IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
 
@@ -274,6 +279,8 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
   kcer->ImportX509Cert(Token::kUser,
                        /*cert=*/cert_builder->GetX509Certificate(),
                        import_x509_cert_waiter.GetCallback());
+  base::test::TestFuture<base::expected<void, Error>> remove_cert_waiter;
+  kcer->RemoveCert(fake_cert, remove_cert_waiter.GetCallback());
   base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
                          base::flat_map<Token, Error>>
       list_certs_waiter;
@@ -303,6 +310,9 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
   ASSERT_FALSE(import_x509_cert_waiter.Get().has_value());
   EXPECT_EQ(import_x509_cert_waiter.Get().error(),
             Error::kTokenInitializationFailed);
+  ASSERT_FALSE(remove_cert_waiter.Get().has_value());
+  EXPECT_EQ(remove_cert_waiter.Get().error(),
+            Error::kTokenInitializationFailed);
   ASSERT_FALSE(list_certs_waiter.Get<1>().empty());
   EXPECT_EQ(list_certs_waiter.Get<1>().at(Token::kUser),
             Error::kTokenInitializationFailed);
@@ -326,7 +336,7 @@ TEST_P(KcerNssAllKeyTypesTest, AllMethodsTogether) {
   std::unique_ptr<Kcer> kcer = internal::CreateKcer(
       IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
 
-  // Generate a key.
+  // Generate new key.
   base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
   switch (GetKeyType()) {
     case KeyType::kRsa:
@@ -359,12 +369,36 @@ TEST_P(KcerNssAllKeyTypesTest, AllMethodsTogether) {
       certs_waiter;
   kcer->ListCerts({Token::kUser}, certs_waiter.GetCallback());
   EXPECT_TRUE(certs_waiter.Get<1>().empty());  // Error map is empty.
-
   const auto& certs =
       certs_waiter.Get<std::vector<scoped_refptr<const Cert>>>();
   ASSERT_EQ(certs.size(), 1u);
   EXPECT_TRUE(certs.front()->GetX509Cert()->EqualsExcludingChain(
       cert_builder->GetX509Certificate().get()));
+
+  // Remove the cert.
+  base::test::TestFuture<base::expected<void, Error>> remove_cert_waiter;
+  kcer->RemoveCert(certs.front(), remove_cert_waiter.GetCallback());
+  ASSERT_TRUE(remove_cert_waiter.Get().has_value());
+
+  // Check that the cert cannot be found anymore.
+  base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
+                         base::flat_map<Token, Error>>
+      certs_waiter_2;
+  kcer->ListCerts({Token::kUser}, certs_waiter_2.GetCallback());
+  EXPECT_TRUE(certs_waiter_2.Get<1>().empty());  // Error map is empty.
+  ASSERT_EQ(certs_waiter_2.Get<std::vector<scoped_refptr<const Cert>>>().size(),
+            0u);
+
+  std::unique_ptr<net::CertBuilder> issuer_2 = MakeCertIssuer();
+  std::unique_ptr<net::CertBuilder> cert_builder_2 =
+      MakeCertBuilder(issuer_2.get(), public_key.GetSpki().value());
+
+  // Import another cert for the key to check that the key was not removed and
+  // is still usable.
+  base::test::TestFuture<base::expected<void, Error>> import_waiter_2;
+  kcer->ImportX509Cert(Token::kUser, cert_builder_2->GetX509Certificate(),
+                       import_waiter_2.GetCallback());
+  EXPECT_TRUE(import_waiter_2.Get().has_value());
 }
 
 INSTANTIATE_TEST_SUITE_P(AllKeyTypes,

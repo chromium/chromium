@@ -4,9 +4,9 @@
 
 #include "chrome/browser/chromeos/kcer_nss/kcer_token_impl_nss.h"
 
-#include <stdint.h>
-
+#include <certdb.h>
 #include <pkcs11.h>
+#include <stdint.h>
 #include <queue>
 #include <string>
 #include <vector>
@@ -230,6 +230,28 @@ void ListCertsOnWorkerThread(
   std::move(callback).Run(std::move(result));
 }
 
+void RemoveCertOnWorkerThread(crypto::ScopedPK11Slot slot,
+                              scoped_refptr<const Cert> cert,
+                              Kcer::StatusCallback callback) {
+  net::ScopedCERTCertificate nss_cert =
+      net::x509_util::CreateCERTCertificateFromX509Certificate(
+          cert->GetX509Cert().get());
+  if (!nss_cert) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kInvalidCertificate));
+  }
+
+  if (SEC_DeletePermCertificate(nss_cert.get()) != SECSuccess) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kFailedToRemoveCertificate));
+  }
+  // TODO(miersh): Currently the method returns "success" even when
+  // SEC_DeletePermCertificate doesn't find the certificate. This is acceptable
+  // for a "remove" method, but it might be useful to change it after NSS is not
+  // used for Kcer.
+  std::move(callback).Run({});
+}
+
 scoped_refptr<const Cert> BuildKcerCert(
     Token token,
     const net::ScopedCERTCertificate& nss_cert) {
@@ -370,7 +392,7 @@ void KcerTokenImplNss::ImportCertFromBytes(CertDer cert_der,
   // callback.
   auto wrapped_callback = base::BindPostTask(
       content::GetIOThreadTaskRunner({}),
-      base::BindOnce(&KcerTokenImplNss::OnImportCertFromBytesDone,
+      base::BindOnce(&KcerTokenImplNss::OnCertsModified,
                      weak_factory_.GetWeakPtr(),
                      std::move(callback).Then(BlockQueueGetUnblocker())));
 
@@ -380,21 +402,6 @@ void KcerTokenImplNss::ImportCertFromBytes(CertDer cert_der,
       base::BindOnce(&ImportCertOnWorkerThread,
                      crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
                      std::move(cert_der), std::move(wrapped_callback)));
-}
-
-void KcerTokenImplNss::OnImportCertFromBytesDone(
-    Kcer::StatusCallback callback,
-    base::expected<void, Error> result) {
-  if (result.has_value()) {
-    net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
-  }
-  // The Notify... above will post a task to invalidate the cache. Calling the
-  // original callback for a request will automatically trigger updating cache
-  // and executing the next request. Post a task with the original callback
-  // (instead of calling it synchronously), so the cache update and the next
-  // request happen after the notification.
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
 void KcerTokenImplNss::ImportPkcs12Cert(Pkcs12Blob pkcs12_blob,
@@ -420,7 +427,29 @@ void KcerTokenImplNss::RemoveKeyAndCerts(PrivateKeyHandle key,
 void KcerTokenImplNss::RemoveCert(scoped_refptr<const Cert> cert,
                                   Kcer::StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  // TODO(244408716): Implement.
+
+  if (UNLIKELY(state_ == State::kInitializationFailed)) {
+    return HandleInitializationFailed(std::move(callback));
+  } else if (is_blocked_) {
+    return task_queue_.push(base::BindOnce(
+        &KcerTokenImplNss::RemoveCert, weak_factory_.GetWeakPtr(),
+        std::move(cert), std::move(callback)));
+  }
+
+  // Block task queue, attach queue unblocking and notification sending to the
+  // callback.
+  auto wrapped_callback = base::BindPostTask(
+      content::GetIOThreadTaskRunner({}),
+      base::BindOnce(&KcerTokenImplNss::OnCertsModified,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(callback).Then(BlockQueueGetUnblocker())));
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&RemoveCertOnWorkerThread,
+                     crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
+                     std::move(cert), std::move(wrapped_callback)));
 }
 
 void KcerTokenImplNss::ListKeys(TokenListKeysCallback callback) {
@@ -497,6 +526,22 @@ void KcerTokenImplNss::SetCertProvisioningProfileId(
     Kcer::StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   // TODO(244408716): Implement.
+}
+
+void KcerTokenImplNss::OnCertsModified(Kcer::StatusCallback callback,
+                                       base::expected<void, Error> result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  if (result.has_value()) {
+    net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
+  }
+  // The Notify... above will post a task to invalidate the cache. Calling the
+  // original callback for a request will automatically trigger updating cache
+  // and executing the next request. Post a task with the original callback
+  // (instead of calling it synchronously), so the cache update and the next
+  // request happen after the notification.
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
 base::OnceClosure KcerTokenImplNss::BlockQueueGetUnblocker() {

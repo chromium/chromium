@@ -57,6 +57,7 @@ enum class COMPONENT_EXPORT(KCER) Error {
   kFailedToImportKey = 8,
   kInvalidCertificate = 9,
   kFailedToImportCertificate = 10,
+  kFailedToRemoveCertificate = 11,
 };
 
 // Handles for tokens on ChromeOS.
@@ -296,7 +297,8 @@ class COMPONENT_EXPORT(KCER) Kcer {
   virtual void RemoveKeyAndCerts(PrivateKeyHandle key,
                                  StatusCallback callback) = 0;
   // Removes the client certificate. The key for the certificate will remain in
-  // the storage. Returns an error on failure.
+  // the storage. Returns success if the cert was removed or already not
+  // present. Returns an error on failure.
   virtual void RemoveCert(scoped_refptr<const Cert> cert,
                           StatusCallback callback) = 0;
 

@@ -120,8 +120,8 @@ class KcerTokenImplNss : public KcerToken, public net::CertDatabase::Observer {
 
   // Sends a notification about changed certs (if needed) and forwards the
   // result.
-  void OnImportCertFromBytesDone(Kcer::StatusCallback callback,
-                                 base::expected<void, Error> result);
+  void OnCertsModified(Kcer::StatusCallback callback,
+                       base::expected<void, Error> result);
 
   // Indicates whether the task queue is blocked. Task queue should be blocked
   // until NSS is initialized, during the processing of most requests and
