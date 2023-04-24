@@ -1,26 +1,32 @@
 # Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Definitions of builders in the chromium.packager builder group."""
+"""Definitions of builders in the chromium.infra builder group."""
 
 load("//lib/builders.star", "os", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
-    builder_group = "chromium.packager",
+    builder_group = "chromium.infra",
     pool = ci.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    service_account = "chromium-cipd-builder@chops-service-accounts.iam.gserviceaccount.com",
+    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )
 
 consoles.console_view(
-    name = "chromium.packager",
+    name = "chromium.infra",
 )
 
-ci.builder(
+def packager_builder(**kwargs):
+    return ci.builder(
+        service_account = "chromium-cipd-builder@chops-service-accounts.iam.gserviceaccount.com",
+        **kwargs
+    )
+
+packager_builder(
     name = "3pp-linux-amd64-packager",
     executable = "recipe:chromium_3pp",
     # Every 6 hours starting at 5am UTC.
@@ -28,7 +34,7 @@ ci.builder(
     triggered_by = [],
     builderless = False,
     console_view_entry = consoles.console_view_entry(
-        category = "3pp|linux",
+        category = "packager|3pp|linux",
         short_name = "amd64",
     ),
     notifies = ["chromium-3pp-packager"],
@@ -49,7 +55,7 @@ ci.builder(
     },
 )
 
-ci.builder(
+packager_builder(
     name = "3pp-mac-amd64-packager",
     executable = "recipe:chromium_3pp",
     # TODO(crbug.com/1267449): Trigger builds routinely once works fine.
@@ -59,7 +65,7 @@ ci.builder(
     cores = None,
     os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
-        category = "3pp|mac",
+        category = "packager|3pp|mac",
         short_name = "amd64",
     ),
     notifies = ["chromium-3pp-packager"],
@@ -71,20 +77,20 @@ ci.builder(
     },
 )
 
-ci.builder(
+packager_builder(
     name = "android-androidx-packager",
     executable = "recipe:android/androidx_packager",
     schedule = "0 7,14,22 * * * *",
     triggered_by = [],
     sheriff_rotations = sheriff_rotations.ANDROID,
     console_view_entry = consoles.console_view_entry(
-        category = "android",
+        category = "packager|android",
         short_name = "androidx",
     ),
     notifies = ["chromium-androidx-packager"],
 )
 
-ci.builder(
+packager_builder(
     name = "android-avd-packager",
     executable = "recipe:android/avd_packager",
     # Triggered manually through the scheduler UI
@@ -92,7 +98,7 @@ ci.builder(
     schedule = "triggered",
     triggered_by = [],
     console_view_entry = consoles.console_view_entry(
-        category = "android",
+        category = "packager|android",
         short_name = "avd",
     ),
     properties = {
@@ -125,13 +131,13 @@ ci.builder(
     },
 )
 
-ci.builder(
+packager_builder(
     name = "android-sdk-packager",
     executable = "recipe:android/sdk_packager",
     schedule = "0 7 * * *",
     triggered_by = [],
     console_view_entry = consoles.console_view_entry(
-        category = "android",
+        category = "packager|android",
         short_name = "sdk",
     ),
     properties = {
@@ -271,7 +277,7 @@ ci.builder(
     },
 )
 
-ci.builder(
+packager_builder(
     name = "rts-model-packager",
     executable = "recipe:chromium_rts/create_model",
     schedule = "0 9 * * *",  # at 1AM or 2AM PT (depending on DST), once a day.
@@ -279,7 +285,7 @@ ci.builder(
     builderless = False,
     cores = None,
     console_view_entry = consoles.console_view_entry(
-        category = "rts",
+        category = "packager|rts",
         short_name = "create-model",
     ),
     execution_timeout = 10 * time.hour,

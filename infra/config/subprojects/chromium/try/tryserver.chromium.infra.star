@@ -1,7 +1,7 @@
 # Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Definitions of builders in the tryserver.chromium.packager builder group."""
+"""Definitions of builders in the tryserver.chromium.infra builder group."""
 
 load("//lib/builders.star", "os")
 load("//lib/try.star", "try_")
@@ -9,14 +9,14 @@ load("//lib/consoles.star", "consoles")
 
 try_.defaults.set(
     executable = "recipe:chromium_3pp",
-    builder_group = "tryserver.chromium.packager",
+    builder_group = "tryserver.chromium.infra",
     pool = try_.DEFAULT_POOL,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     service_account = "chromium-cipd-try-builder@chops-service-accounts.iam.gserviceaccount.com",
 )
 
 consoles.list_view(
-    name = "tryserver.chromium.packager",
+    name = "tryserver.chromium.infra",
 )
 
 try_.builder(
