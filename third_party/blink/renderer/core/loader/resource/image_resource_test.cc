@@ -946,8 +946,8 @@ TEST_F(ImageResourceTest, PeriodicFlushTest) {
   ImageResource* image_resource = ImageResource::CreateForTest(test_url);
 
   // Ensure that |image_resource| has a loader.
-  [[maybe_unused]] auto* loader =
-      MakeGarbageCollected<ResourceLoader>(fetcher, scheduler, image_resource);
+  [[maybe_unused]] auto* loader = MakeGarbageCollected<ResourceLoader>(
+      fetcher, scheduler, image_resource, page_holder->GetFrame().DomWindow());
 
   image_resource->NotifyStartLoad();
 

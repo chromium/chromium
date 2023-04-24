@@ -660,6 +660,7 @@ ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
               : nullptr),
       blob_registry_remote_(init.context_lifecycle_notifier),
       resource_cache_remote_(init.context_lifecycle_notifier),
+      context_lifecycle_notifier_(init.context_lifecycle_notifier),
       auto_load_images_(true),
       images_enabled_(true),
       allow_stale_resources_(false),
@@ -2366,7 +2367,8 @@ bool ResourceFetcher::StartLoad(
     }
 
     loader = MakeGarbageCollected<ResourceLoader>(
-        this, scheduler_, resource, std::move(request_body), size);
+        this, scheduler_, resource, context_lifecycle_notifier_,
+        std::move(request_body), size);
     // Preload requests should not block the load event. IsLinkPreload()
     // actually continues to return true for Resources matched from the preload
     // cache that must block the load event, but that is OK because this method
@@ -2830,6 +2832,7 @@ void ResourceFetcher::Trace(Visitor* visitor) const {
   visitor->Trace(subresource_web_bundles_);
   visitor->Trace(document_resource_strong_refs_);
   visitor->Trace(resource_cache_remote_);
+  visitor->Trace(context_lifecycle_notifier_);
   MemoryPressureListener::Trace(visitor);
 }
 

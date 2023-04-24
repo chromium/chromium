@@ -36,7 +36,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -50,6 +49,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/response_body_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -85,7 +85,7 @@ class PLATFORM_EXPORT ResourceLoader final
     : public GarbageCollected<ResourceLoader>,
       public ResourceLoadSchedulerClient,
       protected URLLoaderClient,
-      protected mojom::blink::ProgressClient,
+      public mojom::blink::ProgressClient,
       private ResponseBodyLoaderClient {
   USING_PRE_FINALIZER(ResourceLoader, Dispose);
 
@@ -94,6 +94,7 @@ class PLATFORM_EXPORT ResourceLoader final
   ResourceLoader(ResourceFetcher*,
                  ResourceLoadScheduler*,
                  Resource*,
+                 ContextLifecycleNotifier*,
                  ResourceRequestBody request_body = ResourceRequestBody(),
                  uint32_t inflight_keepalive_bytes = 0);
   ~ResourceLoader() override;
@@ -270,9 +271,9 @@ class PLATFORM_EXPORT ResourceLoader final
 
   bool should_use_isolated_code_cache_ = false;
   bool is_downloading_to_blob_ = false;
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::AssociatedReceiver<mojom::blink::ProgressClient> progress_receiver_{
-      this};
+  blink::HeapMojoAssociatedReceiver<mojom::blink::ProgressClient,
+                                    blink::ResourceLoader>
+      progress_receiver_;
   bool blob_finished_ = false;
   bool blob_response_started_ = false;
   bool has_seen_end_of_body_ = false;

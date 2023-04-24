@@ -609,6 +609,10 @@ class PLATFORM_EXPORT ResourceFetcher
   // used only for histogram recordings.
   HeapMojoRemote<mojom::blink::ResourceCache> resource_cache_remote_;
 
+  // The context lifecycle notifier. Used for GC lifetime management
+  // purpose of the ResourceLoader used internally.
+  Member<ContextLifecycleNotifier> context_lifecycle_notifier_;
+
   // This is not in the bit field below because we want to use AutoReset.
   bool is_in_request_resource_ = false;
 
