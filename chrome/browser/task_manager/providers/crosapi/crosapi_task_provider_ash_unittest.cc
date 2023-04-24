@@ -8,9 +8,9 @@
 
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase_vector.h"
-#include "base/guid.h"
 #include "base/process/process_handle.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "chrome/browser/task_manager/providers/crosapi/crosapi_task.h"
 #include "chrome/browser/task_manager/providers/crosapi/crosapi_task_provider_ash.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -115,17 +115,17 @@ TEST_F(CrosapiTaskProviderAshTest, OnGetTaskManagerTasks) {
   // Create mojo task data set with 3 mojo tasks.
   std::vector<crosapi::mojom::TaskPtr> mojo_tasks;
 
-  std::string task_1_uuid = base::GenerateGUID();
+  std::string task_1_uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   base::ProcessId task_1_pid = base::GetCurrentProcId();
   std::string task_1_title = std::string("Task 1");
   crosapi::mojom::TaskType task_1_type = crosapi::mojom::TaskType::kBrowser;
 
-  std::string task_2_uuid = base::GenerateGUID();
+  std::string task_2_uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   base::ProcessId task_2_pid = task_1_pid + 100;
   std::string task_2_title = std::string("Task 2");
   crosapi::mojom::TaskType task_2_type = crosapi::mojom::TaskType::kGpu;
 
-  std::string task_3_uuid = base::GenerateGUID();
+  std::string task_3_uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   base::ProcessId task_3_pid = task_1_pid + 300;
   std::string task_3_title = std::string("Task 3");
   crosapi::mojom::TaskType task_3_type = crosapi::mojom::TaskType::kUtility;

@@ -5,8 +5,8 @@
 #include "chrome/browser/task_manager/providers/crosapi/task_manager_controller_lacros.h"
 
 #include "base/containers/contains.h"
-#include "base/guid.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "third_party/blink/public/common/web_cache/web_cache_resource_type_stats.h"
 #include "ui/gfx/image/image_skia.h"
@@ -156,7 +156,7 @@ void TaskManagerControllerLacros::ActivateTask(const std::string& task_uuid) {
 
 crosapi::mojom::TaskPtr TaskManagerControllerLacros::ToMojoTask(TaskId id) {
   auto mojo_task = crosapi::mojom::Task::New();
-  mojo_task->task_uuid = base::GenerateGUID();
+  mojo_task->task_uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   mojo_task->type = ToMojo(observed_task_manager()->GetType(id));
   UpdateTask(id, mojo_task);
   return mojo_task;
