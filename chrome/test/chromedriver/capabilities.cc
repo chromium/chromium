@@ -127,11 +127,12 @@ Status ParseDeviceName(const std::string& device_name,
                   "'" + device_name + "' must be a valid device", status);
   }
 
-  capabilities->mobile_device = std::move(device);
   // Don't override the user agent if blank (like for notebooks).
   if (!device.user_agent.empty()) {
     capabilities->switches.SetSwitch("user-agent", device.user_agent);
   }
+
+  capabilities->mobile_device = std::move(device);
 
   return Status(kOk);
 }
