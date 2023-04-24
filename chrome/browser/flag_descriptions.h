@@ -1727,6 +1727,9 @@ extern const char kStylusBatteryStatusDescription[];
 extern const char kSupportTool[];
 extern const char kSupportToolDescription[];
 
+extern const char kSupportToolCopyTokenButton[];
+extern const char kSupportToolCopyTokenButtonDescription[];
+
 extern const char kSupportToolScreenshot[];
 extern const char kSupportToolScreenshotDescription[];
 
