@@ -803,6 +803,32 @@ void WarnIgnoringQueryQuotaForCanMakePayment(
       mojom::ConsoleMessageLevel::kWarning, error));
 }
 
+// Returns whether a Show() call may be allowed without a user activation,
+// based on the request method and feature state.
+bool ActivationlessShowEnabled(ExecutionContext* execution_context,
+                               const HashSet<String>& method_names) {
+  if (method_names.size() == 1 &&
+      method_names.Contains(kSecurePaymentConfirmationMethod)) {
+    return RuntimeEnabledFeatures::
+        SecurePaymentConfirmationAllowOneActivationlessShowEnabled(
+            execution_context);
+  }
+
+  // Activationless show is currently only possible for the Secure Payment
+  // Confirmation method.
+  return false;
+}
+
+// Records metrics for an activationless Show() call based on the request
+// method.
+void RecordActivationlessShow(ExecutionContext* execution_context,
+                              const HashSet<String>& method_names) {
+  DCHECK((method_names.size() == 1 &&
+          method_names.Contains(kSecurePaymentConfirmationMethod)));
+  UseCounter::Count(execution_context,
+                    WebFeature::kSecurePaymentConfirmationActivationlessShow);
+}
+
 }  // namespace
 
 PaymentRequest* PaymentRequest::Create(
@@ -860,21 +886,31 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
 
   bool has_transient_user_activation =
       LocalFrame::HasTransientUserActivation(local_frame);
-  bool payment_request_token_active =
-      DomWindow()->IsPaymentRequestTokenActive();
+  bool has_delegated_activation = DomWindow()->IsPaymentRequestTokenActive();
 
   if (!has_transient_user_activation) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kPaymentRequestShowWithoutGesture);
 
-    if (!payment_request_token_active) {
+    if (!has_delegated_activation) {
       UseCounter::Count(GetExecutionContext(),
                         WebFeature::kPaymentRequestShowWithoutGestureOrToken);
     }
   }
 
-  bool payment_request_allowed =
-      has_transient_user_activation || payment_request_token_active;
+  bool activationless_payment_request =
+      ActivationlessShowEnabled(GetExecutionContext(), method_names_) &&
+      !has_transient_user_activation && !has_delegated_activation &&
+      !DomWindow()->HadActivationlessPaymentRequest();
+
+  if (activationless_payment_request) {
+    DomWindow()->SetHadActivationlessPaymentRequest();
+    RecordActivationlessShow(GetExecutionContext(), method_names_);
+  }
+
+  bool payment_request_allowed = has_transient_user_activation ||
+                                 has_delegated_activation ||
+                                 activationless_payment_request;
   DomWindow()->ConsumePaymentRequestToken();
 
   if (payment_request_allowed) {

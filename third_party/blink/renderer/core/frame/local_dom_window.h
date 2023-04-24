@@ -523,6 +523,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // given window, it cannot be taken away.
   void SetHasStorageAccess();
 
+  bool HadActivationlessPaymentRequest() const;
+  void SetHadActivationlessPaymentRequest();
+
  protected:
   // EventTarget overrides.
   void AddedEventListener(const AtomicString& event_type,
@@ -667,6 +670,12 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // Records whether this window has obtained storage access. It cannot be
   // revoked once set to true.
   bool has_storage_access_ = false;
+
+  // Tracks whether this window has shown a payment request without a user
+  // activation. It cannot be revoked once set to true.
+  // TODO(crbug.com/1439565): Move this bit to a new payments-specific
+  // per-LocalDOMWindow class in the payments module.
+  bool had_activationless_payment_request_ = false;
 };
 
 template <>

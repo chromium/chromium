@@ -42146,6 +42146,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4544" label="TextWrapBalance"/>
   <int value="4545" label="TextWrapBalanceFail"/>
   <int value="4546" label="AttributionReportingCrossAppWeb"/>
+  <int value="4547" label="SecurePaymentConfirmationActivationlessShow"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

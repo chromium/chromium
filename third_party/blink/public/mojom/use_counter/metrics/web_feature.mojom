@@ -3885,6 +3885,7 @@ enum WebFeature {
   kTextWrapBalance = 4544,
   kTextWrapBalanceFail = 4545,
   kAttributionReportingCrossAppWeb = 4546,
+  kSecurePaymentConfirmationActivationlessShow = 4547,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -2521,4 +2521,12 @@ void LocalDOMWindow::SetHasStorageAccess() {
   has_storage_access_ = true;
 }
 
+bool LocalDOMWindow::HadActivationlessPaymentRequest() const {
+  return had_activationless_payment_request_;
+}
+
+void LocalDOMWindow::SetHadActivationlessPaymentRequest() {
+  had_activationless_payment_request_ = true;
+}
+
 }  // namespace blink

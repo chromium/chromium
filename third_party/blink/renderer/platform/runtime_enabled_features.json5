@@ -3038,6 +3038,11 @@
       base_feature: "none",
     },
     {
+      name: "SecurePaymentConfirmationAllowOneActivationlessShow",
+      public: true,
+      status: "test",
+    },
+    {
       name: "SecurePaymentConfirmationDebug",
       base_feature: "none",
       public: true,
