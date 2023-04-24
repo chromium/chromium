@@ -721,7 +721,6 @@ ExtensionFunction::ScopedUserGestureForTests::~ScopedUserGestureForTests() {
   UserGestureForTests::GetInstance()->DecrementCount();
 }
 
-// static
 ExtensionFunction::ResponseValue ExtensionFunction::CreateArgumentListResponse(
     base::Value::List result) {
   SetFunctionResults(std::move(result));
@@ -731,7 +730,6 @@ ExtensionFunction::ResponseValue ExtensionFunction::CreateArgumentListResponse(
   return ResponseValue(true, PassKey());
 }
 
-// static
 ExtensionFunction::ResponseValue
 ExtensionFunction::CreateErrorWithArgumentsResponse(base::Value::List result,
                                                     const std::string& error) {
