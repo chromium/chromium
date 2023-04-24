@@ -247,6 +247,8 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   void OnSearchResultActionActivated(size_t index) override;
   bool IsSearchResultHoveredOrSelected() override;
 
+  bool IsInlineSearchResult();
+
   // Parent list view. Owned by views hierarchy.
   const raw_ptr<SearchResultListView, ExperimentalAsh> list_view_;
 
