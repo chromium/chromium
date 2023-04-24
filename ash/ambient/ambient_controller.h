@@ -93,6 +93,7 @@ class ASH_EXPORT AmbientController
   // SessionObserver:
   void OnLockStateChanged(bool locked) override;
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
+  void OnSigninScreenPrefServiceInitialized(PrefService* pref_service) override;
 
   // PowerStatus::Observer:
   void OnPowerStatusChanged() override;
@@ -127,7 +128,9 @@ class ASH_EXPORT AmbientController
   void OnInteractionStateChanged(InteractionState interaction_state) override;
 
   // Invoked by the `LockScreen` to notify ambient mode that either the login or
-  // lock screen is created.
+  // lock screen has been created. Note: This should only be used for reacting
+  // to login screen creation. For LockScreen lock/unlock we should keep relying
+  // on `OnLockStateChanged` method.
   void OnLoginOrLockScreenCreated();
 
   void ShowUi();
@@ -259,6 +262,12 @@ class ASH_EXPORT AmbientController
   bool IsUiLauncherActive() const;
   void OnUiLauncherInitialized(bool success);
 
+  // Returns the active pref change registrar. Note: The registar for user
+  // profile `pref_change_registrar_` will always be the active pref change
+  // registrar when the user is logged in, when the user is not logged in
+  // this will return the `sign_in_pref_change_registrar_`.
+  PrefChangeRegistrar* GetActivePrefChangeRegistrar();
+
   AmbientAccessTokenController* access_token_controller_for_testing() {
     return &access_token_controller_;
   }
@@ -305,6 +314,9 @@ class ASH_EXPORT AmbientController
 
   // Observes user profile prefs for ambient.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  // Observes sign-in profile prefs for ambient mode device policy changes.
+  std::unique_ptr<PrefChangeRegistrar> sign_in_pref_change_registrar_;
 
   // Records the time when preview widgets are created.
   base::Time preview_widget_created_at_;

@@ -22,6 +22,7 @@
 #include "ash/constants/ambient_theme.h"
 #include "ash/constants/ambient_video.h"
 #include "ash/constants/ash_features.h"
+#include "ash/login/login_screen_controller.h"
 #include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
@@ -33,6 +34,7 @@
 #include "ash/shell.h"
 #include "ash/system/power/power_status.h"
 #include "ash/test/test_ash_web_view.h"
+#include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
@@ -1534,6 +1536,8 @@ class AmbientControllerForManagedScreensaverTest : public AmbientAshTestBase {
         ash::features::kAmbientModeManagedScreensaver);
     AmbientAshTestBase::SetUp();
     photo_source_ = std::make_unique<TestAmbientManagedPhotoSource>();
+    // Disable consumer ambient mode
+    SetAmbientModeEnabled(false);
     GetSessionControllerClient()->set_show_lock_screen_views(true);
     CreateTestData();
   }
@@ -1563,7 +1567,6 @@ class AmbientControllerForManagedScreensaverTest : public AmbientAshTestBase {
   void SimulateScreensaverStart() {
     LockScreen();
     FastForwardToLockScreenTimeout();
-    FastForwardTiny();
     EXPECT_TRUE(ambient_controller()->IsShown());
   }
 
@@ -1735,6 +1738,117 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
   // with success = false, so the container would be null.
   ASSERT_FALSE(GetContainerView());
   EXPECT_TRUE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerForManagedScreensaverTest,
+       ManagedAmbientModeGetsEnabledOnLockScreenAndStartsIt) {
+  LockScreen();
+  ambient_managed_photo_source()->SetImagesForTesting(image_file_paths_);
+  SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
+  FastForwardToLockScreenTimeout();
+  ASSERT_TRUE(GetContainerView());
+  EXPECT_TRUE(
+      GetContainerView()->GetViewByID(AmbientViewID::kAmbientPhotoView));
+}
+
+class AmbientControllerForManagedScreensaverLoginScreenTest
+    : public AmbientControllerForManagedScreensaverTest {
+ public:
+  void SetUp() override {
+    // For login screen tests we don't want to start a session rather we want to
+    // start on the login screen.
+    set_start_session(false);
+    AmbientControllerForManagedScreensaverTest::SetUp();
+    ambient_managed_photo_source()->SetImagesForTesting(image_file_paths_);
+    SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
+  }
+
+  void TriggerLoginScreen() {
+    GetSessionControllerClient()->RequestSignOut();
+    // The login screen can't be shown without a wallpaper.
+    Shell::Get()->wallpaper_controller()->ShowDefaultWallpaperForTesting();
+    Shell::Get()->login_screen_controller()->ShowLoginScreen();
+    GetSessionControllerClient()->FlushForTest();
+    FastForwardToLockScreenTimeout();
+  }
+};
+
+TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
+       ShownOnLoginScreen) {
+  TriggerLoginScreen();
+
+  EXPECT_TRUE(ambient_controller()->IsShown());
+  ASSERT_TRUE(GetContainerView());
+  EXPECT_TRUE(
+      GetContainerView()->GetViewByID(AmbientViewID::kAmbientPhotoView));
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_FALSE(ambient_controller()->IsShown());
+  FastForwardToLockScreenTimeout();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
+       ShownOnLoginWhenPrefUpdatedLater) {
+  SetAmbientModeManagedScreensaverEnabled(/*enabled=*/false);
+  EXPECT_FALSE(ambient_controller()->IsShown());
+  // Login screen is shown when the managed mode is disabled
+  TriggerLoginScreen();
+  SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
+  FastForwardToLockScreenTimeout();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+  ASSERT_TRUE(GetContainerView());
+}
+
+TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
+       NotShownOnLoginScreenWhenDisabled) {
+  SetAmbientModeManagedScreensaverEnabled(/*enabled=*/false);
+  FastForwardToLockScreenTimeout();
+  EXPECT_FALSE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
+       UserLogsInAmbientModeDisabledAndManagedAmbientModeEnabldd) {
+  TriggerLoginScreen();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+  ASSERT_TRUE(GetContainerView());
+
+  // Simulate user session start (e.g. user login)
+  CreateUserSessions(/*session_count=*/1);
+
+  // Confirm that ambient mode is not shown if disabled. (disabled by default)
+  FastForwardToLockScreenTimeout();
+  EXPECT_FALSE(ambient_controller()->IsShown());
+  ASSERT_FALSE(GetContainerView());
+  ASSERT_FALSE(ambient_controller()->ambient_ui_launcher());
+
+  // Enabling and locking screen starts the managed ambient mode
+  SetAmbientModeManagedScreensaverEnabled(true);
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+
+  EXPECT_TRUE(ambient_controller()->IsShown());
+  ASSERT_TRUE(GetContainerView());
+}
+
+TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
+       UserLogsInAmbientModeEnabled) {
+  TriggerLoginScreen();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+  ASSERT_TRUE(GetContainerView());
+
+  // Simulate user session start (e.g. consumer user login)
+  SimulateNewUserFirstLogin(kUser1);
+
+  // Enabling and locking screen starts the consumer ambient mode
+  SetAmbientModeEnabled(true);
+  DisableBackupCacheDownloads();
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+
+  EXPECT_TRUE(ambient_controller()->IsShown());
+  ASSERT_TRUE(GetContainerView());
 }
 
 TEST_F(AmbientControllerForManagedScreensaverTest,

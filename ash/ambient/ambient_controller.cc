@@ -137,6 +137,20 @@ PrefService* GetPrimaryUserPrefService() {
   return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
 }
 
+PrefService* GetSigninPrefService() {
+  return Shell::Get()->session_controller()->GetSigninScreenPrefService();
+}
+
+PrefService* GetActivePrefService() {
+  if (GetPrimaryUserPrefService()) {
+    return GetPrimaryUserPrefService();
+  }
+  if (ash::features::IsAmbientModeManagedScreensaverEnabled()) {
+    return GetSigninPrefService();
+  }
+  return nullptr;
+}
+
 bool IsUserAmbientModeEnabled() {
   if (!AmbientClient::Get()->IsAmbientModeAllowed()) {
     return false;
@@ -148,9 +162,8 @@ bool IsUserAmbientModeEnabled() {
 }
 
 bool IsAmbientModeManagedScreensaverEnabled() {
-  // TODO(fahadmansoor): Consider adding additional client side checks to
-  // keep behavior consistent with the consumer ambient mode.
-  auto* pref_service = GetPrimaryUserPrefService();
+  PrefService* pref_service = GetActivePrefService();
+
   return ash::features::IsAmbientModeManagedScreensaverEnabled() &&
          pref_service &&
          pref_service->GetBoolean(
@@ -339,8 +352,14 @@ void AmbientController::OnAutoShowTimeOut() {
 }
 
 void AmbientController::OnLoginOrLockScreenCreated() {
-  // TODO(b/269579917) Add checks to start Hidden UI when the ambient mode is
-  // enabled.
+  if (!LockScreen::HasInstance() ||
+      LockScreen::Get()->screen_type() != LockScreen::ScreenType::kLogin ||
+      !IsAmbientModeManagedScreensaverEnabled() ||
+      ambient_ui_model_.ui_visibility() != AmbientUiVisibility::kClosed) {
+    return;
+  }
+
+  ShowHiddenUi();
 }
 
 void AmbientController::OnLockStateChanged(bool locked) {
@@ -400,6 +419,13 @@ void AmbientController::OnActiveUserPrefServiceChanged(
   if (pref_change_registrar_)
     return;
 
+  // Once logged in just remove the sign in pref registrations. So that we
+  // don't react to device policy changes. Note: we do not need to re-add it
+  // on logout because the chrome process is destroyed on logout.
+  if (sign_in_pref_change_registrar_) {
+    sign_in_pref_change_registrar_.reset();
+  }
+
   bool ambient_mode_allowed = AmbientClient::Get()->IsAmbientModeAllowed();
   bool managed_screensaver_flag_enabled =
       ash::features::IsAmbientModeManagedScreensaverEnabled();
@@ -427,6 +453,31 @@ void AmbientController::OnActiveUserPrefServiceChanged(
 
     OnManagedScreensaverEnabledPrefChanged();
   }
+}
+
+void AmbientController::OnSigninScreenPrefServiceInitialized(
+    PrefService* pref_service) {
+  if (!ash::features::IsAmbientModeManagedScreensaverEnabled()) {
+    return;
+  }
+
+  // Do not re-create the registrars if any registrar exists. This is done
+  // so that in case the user pref registrar already exists it takes
+  // priority.
+  if (sign_in_pref_change_registrar_ || pref_change_registrar_) {
+    return;
+  }
+
+  sign_in_pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  sign_in_pref_change_registrar_->Init(pref_service);
+
+  sign_in_pref_change_registrar_->Add(
+      ambient::prefs::kAmbientModeManagedScreensaverEnabled,
+      base::BindRepeating(
+          &AmbientController::OnManagedScreensaverEnabledPrefChanged,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  OnManagedScreensaverEnabledPrefChanged();
 }
 
 void AmbientController::OnPowerStatusChanged() {
@@ -746,15 +797,28 @@ void AmbientController::CloseAllWidgets(bool immediately) {
   }
 }
 
+PrefChangeRegistrar* AmbientController::GetActivePrefChangeRegistrar() {
+  if (pref_change_registrar_) {
+    return pref_change_registrar_.get();
+  }
+
+  if (ash::features::IsAmbientModeManagedScreensaverEnabled()) {
+    return sign_in_pref_change_registrar_.get();
+  }
+  return nullptr;
+}
+
 void AmbientController::AddManagedScreensaverPolicyPrefObservers() {
-  pref_change_registrar_->Add(
+  PrefChangeRegistrar* registrar = GetActivePrefChangeRegistrar();
+  CHECK(registrar);
+  registrar->Add(
       ambient::prefs::kAmbientModeManagedScreensaverIdleTimeoutSeconds,
       base::BindRepeating(
           &AmbientController::
               OnManagedScreensaverLockScreenIdleTimeoutPrefChanged,
           weak_ptr_factory_.GetWeakPtr()));
 
-  pref_change_registrar_->Add(
+  registrar->Add(
       ambient::prefs::kAmbientModeManagedScreensaverImageDisplayIntervalSeconds,
       base::BindRepeating(
           &AmbientController::
@@ -775,23 +839,30 @@ void AmbientController::RemoveAmbientModeSettingsPrefObservers() {
         ambient::prefs::kAmbientModeManagedScreensaverIdleTimeoutSeconds,
         ambient::prefs::
             kAmbientModeManagedScreensaverImageDisplayIntervalSeconds}) {
-    if (pref_change_registrar_->IsObserved(pref_name)) {
+    if (pref_change_registrar_ &&
+        pref_change_registrar_->IsObserved(pref_name)) {
       pref_change_registrar_->Remove(pref_name);
+    }
+    if (sign_in_pref_change_registrar_ &&
+        sign_in_pref_change_registrar_->IsObserved(pref_name)) {
+      sign_in_pref_change_registrar_->Remove(pref_name);
     }
   }
 }
 
 void AmbientController::OnManagedScreensaverLockScreenIdleTimeoutPrefChanged() {
-  DCHECK(GetPrimaryUserPrefService());
+  PrefService* pref_service = GetActivePrefService();
+  CHECK(pref_service);
   ambient_ui_model_.SetLockScreenInactivityTimeout(
-      base::Seconds(GetPrimaryUserPrefService()->GetInteger(
+      base::Seconds(pref_service->GetInteger(
           ambient::prefs::kAmbientModeManagedScreensaverIdleTimeoutSeconds)));
 }
 
 void AmbientController::OnManagedScreensaverPhotoRefreshIntervalPrefChanged() {
-  DCHECK(GetPrimaryUserPrefService());
+  PrefService* pref_service = GetActivePrefService();
+  CHECK(pref_service);
   ambient_ui_model_.SetPhotoRefreshInterval(
-      base::Seconds(GetPrimaryUserPrefService()->GetInteger(
+      base::Seconds(pref_service->GetInteger(
           ambient::prefs::
               kAmbientModeManagedScreensaverImageDisplayIntervalSeconds)));
 }
@@ -800,14 +871,29 @@ void AmbientController::OnManagedScreensaverEnabledPrefChanged() {
   ResetAmbientControllerResources();
   OnEnabledPrefChanged();
 
-  if (IsAmbientModeManagedScreensaverEnabled()) {
-    RemoveAmbientModeSettingsPrefObservers();
-    AddManagedScreensaverPolicyPrefObservers();
+  if (!IsAmbientModeManagedScreensaverEnabled()) {
     return;
   }
+  RemoveAmbientModeSettingsPrefObservers();
+  AddManagedScreensaverPolicyPrefObservers();
+  if (!LockScreen::HasInstance()) {
+    return;
+  }
+  // Start hidden ambient mode immediately if the lock screen has an instance
+  // and ambient mode is enabled.
+  ShowHiddenUi();
 }
 
 void AmbientController::AddAmbientModeUserSettingsPolicyPrefObservers() {
+  // Note: in case we ever want to enable the consumer screensaver on the
+  // login screen we should change the pref_change_registrar here with
+  // `GetActivePrefChangeRegistrar()` and the corresponding
+  // `GetPrimaryUserPrefService()` with `GetActivePrefService()` in the actual
+  // method calls.
+  if (!pref_change_registrar_) {
+    return;
+  }
+
   pref_change_registrar_->Add(
       ambient::prefs::kAmbientModeLockScreenInactivityTimeoutSeconds,
       base::BindRepeating(
@@ -1183,8 +1269,8 @@ void AmbientController::MaybeStartScreenSaver() {
 }
 
 AmbientUiSettings AmbientController::GetCurrentUiSettings() const {
-  CHECK(GetPrimaryUserPrefService());
-  return AmbientUiSettings::ReadFromPrefService(*GetPrimaryUserPrefService());
+  CHECK(GetActivePrefService());
+  return AmbientUiSettings::ReadFromPrefService(*GetActivePrefService());
 }
 
 void AmbientController::MaybeDismissUIOnMouseMove() {
