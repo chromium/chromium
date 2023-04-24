@@ -104082,6 +104082,8 @@ Full version information for the fingerprint enum values:
   <int value="12" label="MSBB consent is disabled"/>
   <int value="13" label="Apps consent is disabled"/>
   <int value="14" label="Extension URL has an unexpected scheme"/>
+  <int value="15"
+      label="Recording Disabled with UkmReduceAddEntryIPC experiment"/>
 </enum>
 
 <enum name="UkmEventNameHash">
