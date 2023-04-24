@@ -1026,6 +1026,9 @@ uint32_t CaptionButtonMask(uint32_t mask) {
     caption_button_icon_mask |= 1 << views::CAPTION_BUTTON_ICON_ZOOM;
   if (mask & ZCR_REMOTE_SURFACE_V1_FRAME_BUTTON_TYPE_CENTER)
     caption_button_icon_mask |= 1 << views::CAPTION_BUTTON_ICON_CENTER;
+  if (mask & ZCR_REMOTE_SURFACE_V2_FRAME_BUTTON_TYPE_FLOAT) {
+    caption_button_icon_mask |= 1 << views::CAPTION_BUTTON_ICON_FLOAT;
+  }
   return caption_button_icon_mask;
 }
 

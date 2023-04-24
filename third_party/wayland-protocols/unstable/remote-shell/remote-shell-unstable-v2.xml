@@ -621,6 +621,8 @@
 	     summary="a mask to turn the maximize_restore button to zoom button"/>
       <entry name="center" value="64"
 	     summary="a customizable, center-aligned button"/>
+      <entry name="float" value="128"
+	     summary="a button to float a window without maximize or restore"/>
     </enum>
 
     <request name="set_frame_buttons" since="1">
