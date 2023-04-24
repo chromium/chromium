@@ -65,9 +65,7 @@ export class CloudUploadElement extends HTMLElement {
 
     // TODO(b/251046341): Adjust this once the rest of the pages are in place.
     const welcomePage = new WelcomePageElement();
-    if (isOfficeWebAppInstalled && isOdfsMounted) {
-      welcomePage.setZeroStep();
-    }
+    welcomePage.setInstalled(isOfficeWebAppInstalled, isOdfsMounted);
     this.pages.push(welcomePage);
 
     if (!isOfficeWebAppInstalled) {
