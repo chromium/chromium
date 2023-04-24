@@ -42,7 +42,6 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabRegistrationObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelUtils.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabReparentingParams.java",
-    "android/java/src/org/chromium/chrome/browser/tabmodel/TabSwitchMetrics.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManager.java",
   ]
   deps = [

@@ -1694,58 +1694,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Tabs.SwitchFromCloseLatency{Tabs_SwitchLatency}" units="ms"
-    expires_after="M88">
-  <owner>dtrainor@chromium.org</owner>
-  <owner>yusufo@chromium.org</owner>
-  <summary>
-    [Android] Time between the event that closes a tab and the start of
-    rendering. {Tabs_SwitchLatency}
-  </summary>
-  <token key="Tabs_SwitchLatency" variants="Tabs_SwitchLatency">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram name="Tabs.SwitchFromExitLatency{Tabs_SwitchLatency}" units="ms"
-    expires_after="M88">
-  <owner>dtrainor@chromium.org</owner>
-  <owner>yusufo@chromium.org</owner>
-  <summary>
-    [Android] Time between the event that exits an app and the start of
-    rendering. {Tabs_SwitchLatency}
-  </summary>
-  <token key="Tabs_SwitchLatency" variants="Tabs_SwitchLatency">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram name="Tabs.SwitchFromNewLatency{Tabs_SwitchLatency}" units="ms"
-    expires_after="M88">
-  <owner>dtrainor@chromium.org</owner>
-  <owner>yusufo@chromium.org</owner>
-  <summary>
-    [Android] Time between the event that creates a tab and the start of
-    rendering. {Tabs_SwitchLatency}
-  </summary>
-  <token key="Tabs_SwitchLatency" variants="Tabs_SwitchLatency">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram name="Tabs.SwitchFromUserLatency{Tabs_SwitchLatency}" units="ms"
-    expires_after="M88">
-  <owner>dtrainor@chromium.org</owner>
-  <owner>yusufo@chromium.org</owner>
-  <summary>
-    [Android] Time between the event that selects a tab and the start of
-    rendering. {Tabs_SwitchLatency}
-  </summary>
-  <token key="Tabs_SwitchLatency" variants="Tabs_SwitchLatency">
-    <variant name=""/>
-  </token>
-</histogram>
-
 <histogram name="Tabs.TabCountActiveWindow" units="tabs" expires_after="never">
 <!-- expires-never: usage drives tab optimization and analysis. -->
 

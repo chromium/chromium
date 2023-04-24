@@ -716,9 +716,6 @@ public class TabImpl implements Tab {
             // TabSwitcherAndStartSurfaceLayout.doneHiding runs after the animation, actually
             // triggering this tab change.
             //
-            // Due to this TabSwitchMetrics.startTabSwitchLatencyTiming is not using an accurate
-            // start time and needs updating.
-            //
             // We should also consider merging the TabImpl and WebContents onShow into a single Jni
             // call.
             TabImplJni.get().onShow(mNativeTabAndroid);
