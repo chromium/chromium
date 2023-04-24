@@ -669,6 +669,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.Assistive.MultiWord.ImplicitRejection"
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2023-10-01">
+  <owner>curtismcmullan@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    This metric is recorded when a user implicitly rejects a multi word
+    suggestion that is shown to them. Implicit rejection here means the user has
+    typed some text that does not match the suggestion shown to them.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.Assistive.MultiWord.InputState"
     enum="IMEAssistiveTextInputState" expires_after="2023-08-20">
   <owner>curtismcmullan@google.com</owner>
