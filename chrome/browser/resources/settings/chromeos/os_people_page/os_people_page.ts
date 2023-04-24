@@ -157,6 +157,17 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
         ]),
       },
 
+      /**
+       * Whether to show the new UI for OS Sync Settings
+       * which include sublabel and Apps toggle
+       * shared between Ash and Lacros.
+       */
+      showSyncSettingsRevamp_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('showSyncSettingsRevamp'),
+        readOnly: true,
+      },
+
     };
   }
 
@@ -172,6 +183,7 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
   private showParentalControls_: boolean;
   private focusConfig_: Map<string, string>;
   private showPasswordPromptDialog_: boolean;
+  private showSyncSettingsRevamp_: boolean;
   private setModes_: Object|undefined;
   private syncBrowserProxy_: SyncBrowserProxy;
   private clearAccountPasswordTimeoutId_: number|undefined;
@@ -226,6 +238,13 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
     if (!this.setModes_) {
       Router.getInstance().navigateToPreviousRoute();
     }
+  }
+
+  private getSyncAdvancedTitle_(): string {
+    if (this.showSyncSettingsRevamp_) {
+      return this.i18n('syncAdvancedDevicePageTitle');
+    }
+    return this.i18n('syncAdvancedPageTitle');
   }
 
   private afterRenderShowDeepLink_(
