@@ -35,6 +35,14 @@ struct CORE_EXPORT NGInlineItemResult {
   DISALLOW_NEW();
 
  public:
+  NGInlineItemResult() = default;
+  NGInlineItemResult(const NGInlineItem*,
+                     unsigned index,
+                     const NGTextOffsetRange& text_offset,
+                     bool break_anywhere_if_overflow,
+                     bool should_create_line_box,
+                     bool has_unpositioned_floats);
+
   const NGTextOffsetRange& TextOffset() const { return text_offset; }
   wtf_size_t StartOffset() const { return text_offset.start; }
   wtf_size_t EndOffset() const { return text_offset.end; }
@@ -52,10 +60,13 @@ struct CORE_EXPORT NGInlineItemResult {
   }
 
   void Trace(Visitor* visitor) const;
+#if DCHECK_IS_ON()
+  void CheckConsistency(bool allow_null_shape_result = false) const;
+#endif
 
   // The NGInlineItem and its index.
-  const NGInlineItem* item;
-  unsigned item_index;
+  const NGInlineItem* item = nullptr;
+  unsigned item_index = 0;
 
   // The range of text content for this item.
   NGTextOffsetRange text_offset;
@@ -142,18 +153,6 @@ struct CORE_EXPORT NGInlineItemResult {
   // True if this is hyphenated. The hyphen is in |hyphen_string| and
   // |hyphen_shape_result|.
   bool is_hyphenated = false;
-
-  NGInlineItemResult();
-  NGInlineItemResult(const NGInlineItem*,
-                     unsigned index,
-                     const NGTextOffsetRange& text_offset,
-                     bool break_anywhere_if_overflow,
-                     bool should_create_line_box,
-                     bool has_unpositioned_floats);
-
-#if DCHECK_IS_ON()
-  void CheckConsistency(bool allow_null_shape_result = false) const;
-#endif
 };
 
 // Represents a set of NGInlineItemResult that form a line box.

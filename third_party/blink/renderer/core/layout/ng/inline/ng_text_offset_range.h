@@ -33,8 +33,8 @@ struct CORE_EXPORT NGTextOffsetRange {
     return !operator==(other);
   }
 
-  wtf_size_t start;
-  wtf_size_t end;
+  wtf_size_t start = 0;
+  wtf_size_t end = 0;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const NGTextOffsetRange&);

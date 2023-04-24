@@ -11,8 +11,6 @@
 
 namespace blink {
 
-NGInlineItemResult::NGInlineItemResult() : item(nullptr), item_index(0) {}
-
 NGInlineItemResult::NGInlineItemResult(const NGInlineItem* item,
                                        unsigned index,
                                        const NGTextOffsetRange& text_offset,
