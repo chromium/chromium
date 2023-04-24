@@ -951,8 +951,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 60
-// Next id: 60
+// Next version: 61
+// Next id: 61
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1328,6 +1328,11 @@ struct BrowserInitParams {
   // When this flag is set to true, OOP video decoding is available.
   [MinVersion=59]
   bool oop_video_decoding_enabled@59;
+
+  // Set to true when the `chromeos::features::kUploadOfficeToCloud` flag is
+  // enabled in Ash.
+  [MinVersion=60]
+  bool is_upload_office_to_cloud_enabled@60;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

@@ -125,7 +125,11 @@ bool IsQuickAnswersV2SettingsSubToggleEnabled() {
 }
 
 bool IsUploadOfficeToCloudEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->IsUploadOfficeToCloudEnabled();
+#else
   return base::FeatureList::IsEnabled(kUploadOfficeToCloud);
+#endif
 }
 
 }  // namespace chromeos::features

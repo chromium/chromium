@@ -616,6 +616,9 @@ void InjectBrowserInitParams(
 
   params->oop_video_decoding_enabled = base::FeatureList::IsEnabled(
       media::kExposeOutOfProcessVideoDecodingToLacros);
+
+  params->is_upload_office_to_cloud_enabled =
+      chromeos::features::IsUploadOfficeToCloudEnabled();
 }
 
 template <typename BrowserParams>

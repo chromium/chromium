@@ -132,6 +132,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool OopVideoDecodingEnabled() const;
 
+  bool IsUploadOfficeToCloudEnabled() const;
+
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
 

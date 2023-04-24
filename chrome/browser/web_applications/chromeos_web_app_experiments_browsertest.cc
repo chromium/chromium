@@ -21,6 +21,10 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_init_params.h"
+#endif
+
 static_assert(BUILDFLAG(IS_CHROMEOS), "For Chrome OS only");
 
 namespace web_app {
@@ -50,6 +54,12 @@ class ChromeOsWebAppExperimentsBrowserTest
     app_id_ = InstallWebAppFromPageAndCloseAppBrowser(
         browser(), embedded_test_server()->GetURL("/web_apps/basic.html"));
     AppReadinessWaiter(profile(), app_id_).Await();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    auto init_params = chromeos::BrowserInitParams::GetForTests()->Clone();
+    init_params->is_upload_office_to_cloud_enabled = true;
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#endif
   }
   void TearDownOnMainThread() override {
     WebAppNavigationBrowserTest::TearDownOnMainThread();
@@ -61,6 +71,8 @@ class ChromeOsWebAppExperimentsBrowserTest
   GURL extended_scope_;
   GURL extended_scope_page_;
   std::vector<const char* const> extended_scopes_;
+  // This has no effect in Lacros, the feature is enabled via
+  // `chromeos::BrowserInitParams` instead.
   base::test::ScopedFeatureList scoped_feature_list_{
       chromeos::features::kUploadOfficeToCloud};
 };
