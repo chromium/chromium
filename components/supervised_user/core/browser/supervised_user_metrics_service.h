@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_METRICS_SERVICE_H_
-#define CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_METRICS_SERVICE_H_
+#ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_METRICS_SERVICE_H_
+#define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_METRICS_SERVICE_H_
 
 #include <memory>
 #include <vector>
@@ -21,9 +21,9 @@ namespace base {
 class Time;
 }  // namespace base
 
-namespace content {
-class BrowserContext;
-}  // namespace content
+namespace supervised_user {
+class SupervisedUserURLFilter;
+}  // namespace supervised_user
 
 // Service to initialize and control metric recorders of supervised users.
 class SupervisedUserMetricsService : public KeyedService {
@@ -40,7 +40,9 @@ class SupervisedUserMetricsService : public KeyedService {
   // Returns the day id for a given time for testing.
   static int GetDayIdForTesting(base::Time time);
 
-  explicit SupervisedUserMetricsService(content::BrowserContext* context);
+  explicit SupervisedUserMetricsService(
+      PrefService* pref_service,
+      supervised_user::SupervisedUserURLFilter* url_filter);
   SupervisedUserMetricsService(const SupervisedUserMetricsService&) = delete;
   SupervisedUserMetricsService& operator=(const SupervisedUserMetricsService&) =
       delete;
@@ -66,4 +68,4 @@ class SupervisedUserMetricsService : public KeyedService {
   std::vector<std::unique_ptr<Observer>> supervised_user_metrics_;
 };
 
-#endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_METRICS_SERVICE_H_
+#endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_METRICS_SERVICE_H_

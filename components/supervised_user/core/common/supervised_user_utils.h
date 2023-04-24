@@ -8,6 +8,7 @@
 #include <string>
 
 class GURL;
+class PrefService;
 
 namespace supervised_user {
 
@@ -26,6 +27,9 @@ std::string FilteringBehaviorReasonToString(FilteringBehaviorReason reason);
 
 // Strips user-specific tokens in a URL to generalize it.
 GURL NormalizeUrl(const GURL& url);
+
+// Check if web filtering prefs are set to default values.
+bool AreWebFilterPrefsDefault(const PrefService& pref_service);
 
 }  // namespace supervised_user
 

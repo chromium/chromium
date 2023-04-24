@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -28,6 +29,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/common/features.h"
@@ -52,6 +54,13 @@ using extensions::Extension;
 #endif
 
 using content::MessageLoopRunner;
+
+namespace {
+
+constexpr char kExampleHost0[] = "http://www.example0.com";
+constexpr char kExampleURL1[] = "http://www.example1.com/123";
+
+}  // namespace
 
 namespace {
 
@@ -185,6 +194,101 @@ TEST_F(SupervisedUserServiceTest, AreExtensionsPermissionsEnabled) {
   EXPECT_FALSE(service->AreExtensionsPermissionsEnabled());
 }
 #endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
+
+TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
+  base::HistogramTester histogram_tester;
+  PrefService* prefs = profile_->GetPrefs();
+
+  // Overriding the value of prefs::kSupervisedUserSafeSites and
+  // prefs::kDefaultSupervisedUserFilteringBehavior in default storage is
+  // needed, otherwise no report could be triggered by policies change. Since
+  // the default values are the same of override values, the WebFilterType
+  // doesn't change and no report here.
+  prefs->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
+                    supervised_user::SupervisedUserURLFilter::ALLOW);
+  prefs->SetBoolean(prefs::kSupervisedUserSafeSites, true);
+
+  // Blocks `kExampleHost0`.
+  {
+    ScopedDictPrefUpdate hosts_update(prefs, prefs::kSupervisedUserManualHosts);
+    base::Value::Dict& hosts = hosts_update.Get();
+    hosts.Set(kExampleHost0, false);
+  }
+
+  histogram_tester.ExpectBucketCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetManagedSiteListHistogramNameForTest(),
+      /*sample=*/
+      supervised_user::SupervisedUserURLFilter::ManagedSiteList::
+          kBlockedListOnly,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetApprovedSitesCountHistogramNameForTest(),
+      /*sample=*/0, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetBlockedSitesCountHistogramNameForTest(),
+      /*sample=*/1, /*expected_count=*/1);
+
+  // Approves `kExampleHost0`.
+  {
+    ScopedDictPrefUpdate hosts_update(prefs, prefs::kSupervisedUserManualHosts);
+    base::Value::Dict& hosts = hosts_update.Get();
+    hosts.Set(kExampleHost0, true);
+  }
+
+  histogram_tester.ExpectBucketCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetManagedSiteListHistogramNameForTest(),
+      /*sample=*/
+      supervised_user::SupervisedUserURLFilter::ManagedSiteList::
+          kApprovedListOnly,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetApprovedSitesCountHistogramNameForTest(),
+      /*sample=*/1, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetBlockedSitesCountHistogramNameForTest(),
+      /*sample=*/0, /*expected_count=*/1);
+
+  // Blocks `kExampleURL1`.
+  {
+    ScopedDictPrefUpdate urls_update(prefs, prefs::kSupervisedUserManualURLs);
+    base::Value::Dict& urls = urls_update.Get();
+    urls.Set(kExampleURL1, false);
+  }
+
+  histogram_tester.ExpectBucketCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetManagedSiteListHistogramNameForTest(),
+      /*sample=*/
+      supervised_user::SupervisedUserURLFilter::ManagedSiteList::kBoth,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetApprovedSitesCountHistogramNameForTest(),
+      /*sample=*/1, /*expected_count=*/2);
+  histogram_tester.ExpectBucketCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetBlockedSitesCountHistogramNameForTest(),
+      /*sample=*/1, /*expected_count=*/2);
+
+  histogram_tester.ExpectTotalCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetManagedSiteListHistogramNameForTest(),
+      /*expected_count=*/3);
+  histogram_tester.ExpectTotalCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetApprovedSitesCountHistogramNameForTest(),
+      /*expected_count=*/3);
+  histogram_tester.ExpectTotalCount(
+      supervised_user::SupervisedUserURLFilter::
+          GetBlockedSitesCountHistogramNameForTest(),
+      /*expected_count=*/3);
+}
 
 class SupervisedUserServiceTestUnsupervised
     : public SupervisedUserServiceTestBase {
