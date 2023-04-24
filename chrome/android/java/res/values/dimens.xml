@@ -72,7 +72,7 @@ found in the LICENSE file.
     <dimen name="sheet_tab_toolbar_height">70dp</dimen>
 
     <!-- Autofill address prompt dimensions -->
-    <dimen name="address_prompt_end_margin">8dp</dimen>
+    <dimen name="address_prompt_end_margin">16dp</dimen>
     <dimen name="address_prompt_edit_button_size">48dp</dimen>
     <dimen name="address_prompt_edit_button_padding">12dp</dimen>
 

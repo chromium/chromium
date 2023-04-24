@@ -18,13 +18,16 @@ found in the LICENSE file.
       android:focusable="true"
       android:focusableInTouchMode="true">
 
-    <include
+    <TextView
+        android:id="@+id/autofill_address_profile_prompt_source_notice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/address_prompt_end_margin"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        layout="@layout/autofill_address_profile_prompt_source_notice" />
+        android:layout_marginStart="@dimen/dialog_padding_sides"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        tools:text="@string/autofill_save_in_account_prompt_address_source_notice" />
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/edit_button"

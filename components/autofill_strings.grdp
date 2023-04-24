@@ -167,7 +167,7 @@
   </if>
 
   <message name="IDS_AUTOFILL_IPH_EXTERNAL_ACCOUNT_PROFILE_SUGGESTION" desc="IPH bubble for a suggestion item with an account profile that was created somewhere outside Chrome (e.g. Google Pay)." formatter_data="android_java">
-    You can now use addresses from your Google Account.
+    You can now use addresses from your Google Account
   </message>
 
   <!-- Autofill suggestion label separator -->
@@ -225,16 +225,16 @@
     This address will be deleted from this device
   </message>
   <message name="IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_SOURCE_NOTICE" desc="The notice/warning message for the user that this address is going to be stored in their account.">
-    In your Google Account <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>
+    In your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>
   </message>
   <message name="IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_MIGRATION_SOURCE_NOTICE" desc="The notice/warning message for the user that this address is going to be migrated in their account.">
     You will be able to use it across Google products
   </message>
   <message name="IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_SOURCE_NOTICE" desc="The footer message used to notify user that their address is stored in their account." formatter_data="android_java">
-    You can use saved addresses across Google products. This address is saved in your Google Account (<ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>).
+    You can use saved addresses across Google products. This address is saved in your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>.
   </message>
   <message name="IDS_AUTOFILL_ADDRESS_WILL_BE_SAVED_IN_ACCOUNT_SOURCE_NOTICE" desc="The footer message used to notify user that their address will be saved in their account." formatter_data="android_java">
-    You can use saved addresses across Google products. This address will be saved in your Google Account (<ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>).
+    You can use saved addresses across Google products. This address will be saved in your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>.
   </message>
   <message name="IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_FORM_ERROR" desc="The form error message shown to the user in case of a single required field missing.">
     A required field is empty. Fill it before saving.
@@ -387,10 +387,10 @@
     You can use saved addresses across Google products. This address is saved in your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>.
   </message>
   <message name="IDS_AUTOFILL_SYNCABLE_PROFILE_MIGRATION_PROMPT_NOTICE" desc="The syncable profile prompt body text.">
-    This address is currently saved only to Chrome. To use it across Google products, save it in your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>.
+    This address is currently saved to Chrome. To use it across Google products, save it in your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>.
   </message>
   <message name="IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE" desc="The local profile prompt body text.">
-    This address is currently saved only to this device. To use it across Google products, save it in your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>.
+    This address is currently saved to this device. To use it across Google products, save it in your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>.
   </message>
   <message name="IDS_AUTOFILL_SAVE_PROMPT_ADDRESS_SECTION_A11Y_LABEL" desc="The 'Save address' prompt address summary section a11y announcement, accompanied with a label to make it clear that the content being read is an address.">
     Address: <ph name="ADDRESS">$1<ex>345 Spear street</ex></ph>.
