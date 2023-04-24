@@ -99,7 +99,8 @@
         </div>
         <cr-toggle id="touchpadHapticFeedbackToggle"
             checked="{{hapticFeedbackValue}}"
-            aria-labelledby="touchpadHapticFeedbackRow"
+            aria-label=
+                "[[getTouchpadName(touchpad.name)]] $i18n{learnMoreLabel}"
             deep-link-focus-id$="[[Setting.kTouchpadHapticFeedback]]">
         </cr-toggle>
       </div>
@@ -116,7 +117,7 @@
       </div>
       <cr-toggle id="enableReverseScrollingToggle"
           checked="{{reverseScrollValue}}"
-          aria-labelledby="enableReverseScrollingLabel"
+          aria-label="[[getTouchpadName(touchpad.name)]] $i18n{learnMoreLabel}"
           deep-link-focus-id$="[[Setting.kTouchpadReverseScrolling]]">
       </cr-toggle>
     </div>

@@ -1710,6 +1710,7 @@ void DeviceSection::AddDevicePointersStrings(
       {"touchpadScrollAccelerationLabel",
        IDS_SETTINGS_TOUCHPAD_SCROLL_ACCELERATION_LABEL},
       {"touchpadScrollSpeed", IDS_SETTINGS_TOUCHPAD_SCROLL_SPEED_LABEL},
+      {"learnMoreLabel", IDS_SETTINGS_LEARN_MORE_LABEL},
   };
   html_source->AddLocalizedStrings(kPointersStrings);
 
