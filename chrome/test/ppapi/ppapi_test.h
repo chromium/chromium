@@ -192,4 +192,6 @@ class PPAPINaClTestDisallowedSockets : public PPAPITestBase {
                          const std::string& test_case) override;
 };
 
+class PPAPIBrokerInfoBarTest : public OutOfProcessPPAPITest {};
+
 #endif  // CHROME_TEST_PPAPI_PPAPI_TEST_H_

@@ -83,6 +83,11 @@ ContentSettingsContentSettingClearFunction::Run() {
   absl::optional<Clear::Params> params = Clear::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
+  if (content_type == ContentSettingsType::DEPRECATED_PPAPI_BROKER) {
+    NOTREACHED();
+    return RespondNow(Error(kUnknownErrorDoNotUse));
+  }
+
   ExtensionPrefsScope scope = kExtensionPrefsScopeRegular;
   bool incognito = false;
   if (params->details.scope ==
@@ -115,6 +120,11 @@ ContentSettingsContentSettingGetFunction::Run() {
 
   absl::optional<Get::Params> params = Get::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
+
+  if (content_type == ContentSettingsType::DEPRECATED_PPAPI_BROKER) {
+    NOTREACHED();
+    return RespondNow(Error(kUnknownErrorDoNotUse));
+  }
 
   GURL primary_url(params->details.primary_url);
   if (!primary_url.is_valid()) {
@@ -181,6 +191,11 @@ ContentSettingsContentSettingSetFunction::Run() {
 
   absl::optional<Set::Params> params = Set::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
+
+  if (content_type == ContentSettingsType::DEPRECATED_PPAPI_BROKER) {
+    NOTREACHED();
+    return RespondNow(Error(kUnknownErrorDoNotUse));
+  }
 
   std::string primary_error;
   ContentSettingsPattern primary_pattern =
