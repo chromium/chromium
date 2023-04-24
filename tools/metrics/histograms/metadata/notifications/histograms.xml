@@ -505,6 +505,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Notifications.macOS.Delivered.{Style}" enum="BooleanSuccess"
     expires_after="M96">
+  <obsolete>
+    Obsoleted April 2023. Histogram was removed after expiration.
+  </obsolete>
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

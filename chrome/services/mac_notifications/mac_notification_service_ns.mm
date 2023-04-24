@@ -199,8 +199,6 @@ void MacNotificationServiceNS::DisplayNotification(
       base::SysUTF8ToNSString(DeriveMacNotificationId(notification->meta->id));
   [toast setIdentifier:notification_id];
 
-  LogMacNotificationDelivered(IsAppBundleAlertStyle(), /*success=*/true);
-
   [notification_center_ deliverNotification:toast.get()];
 }
 

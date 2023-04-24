@@ -22,13 +22,6 @@ std::string MacNotificationStyleSuffix(bool is_alert) {
   return is_alert ? "Alert" : "Banner";
 }
 
-void LogMacNotificationDelivered(bool is_alert, bool success) {
-  base::UmaHistogramBoolean(
-      base::StrCat({"Notifications.macOS.Delivered.",
-                    MacNotificationStyleSuffix(is_alert)}),
-      success);
-}
-
 void LogMacNotificationActionReceived(bool is_alert, bool is_valid) {
   base::UmaHistogramBoolean(
       base::StrCat({"Notifications.macOS.ActionReceived.",

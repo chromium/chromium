@@ -189,7 +189,6 @@ void MacNotificationServiceUN::DisplayNotification(
   }
 
   auto completion_handler = ^(NSError* _Nullable error) {
-    LogMacNotificationDelivered(IsAppBundleAlertStyle(), !error);
   };
 
   // If the renotify is not set try to replace the notification silently.

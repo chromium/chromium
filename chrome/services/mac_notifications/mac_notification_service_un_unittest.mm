@@ -493,16 +493,6 @@ TEST_F(MacNotificationServiceUNTest, LogsMetricsForAlerts) {
         andReturn:@{@"NSUserNotificationAlertStyle" : @"alert"}]
         infoDictionary];
 
-    DisplayNotificationSync("notificationId", "profileId", /*incognito=*/true,
-                            /*success=*/true);
-    histogram_tester.ExpectUniqueSample("Notifications.macOS.Delivered.Alert",
-                                        /*sample=*/true, /*expected_count=*/1);
-
-    DisplayNotificationSync("notificationId", "profileId", /*incognito=*/true,
-                            /*success=*/false);
-    histogram_tester.ExpectBucketCount("Notifications.macOS.Delivered.Alert",
-                                       /*sample=*/false, /*expected_count=*/1);
-
     for (auto result :
          {UNNotificationRequestPermissionResult::kRequestFailed,
           UNNotificationRequestPermissionResult::kPermissionDenied,
@@ -527,16 +517,6 @@ TEST_F(MacNotificationServiceUNTest, LogsMetricsForBanners) {
     [[[mainBundleMock stub]
         andReturn:@{@"NSUserNotificationAlertStyle" : @"banner"}]
         infoDictionary];
-
-    DisplayNotificationSync("notificationId", "profileId", /*incognito=*/true,
-                            /*success=*/true);
-    histogram_tester.ExpectUniqueSample("Notifications.macOS.Delivered.Banner",
-                                        /*sample=*/true, /*expected_count=*/1);
-
-    DisplayNotificationSync("notificationId", "profileId", /*incognito=*/true,
-                            /*success=*/false);
-    histogram_tester.ExpectBucketCount("Notifications.macOS.Delivered.Banner",
-                                       /*sample=*/false, /*expected_count=*/1);
 
     for (auto result :
          {UNNotificationRequestPermissionResult::kRequestFailed,
