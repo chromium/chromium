@@ -1610,9 +1610,9 @@ void HTMLElement::HideAllPopoversUntil(
             focus_behavior, transition_behavior, exception_state);
       }
       // Close all auto popovers.
-      for (auto popover : document.PopoverStack()) {
-        popover->HidePopoverInternal(focus_behavior, transition_behavior,
-                                     exception_state);
+      while (!document.PopoverStack().empty()) {
+        document.PopoverStack().back()->HidePopoverInternal(
+            focus_behavior, transition_behavior, exception_state);
       }
     }
   } else {
