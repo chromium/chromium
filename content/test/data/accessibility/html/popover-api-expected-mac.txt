@@ -5,6 +5,8 @@ AXWebArea
 ++AXButton AXTitle='Hide button pointing to hidden manual'
 ++AXTextField
 ++AXStaticText AXValue='Email input pointing to hidden manual '
+++AXButton AXTitle='Button pointing to hint popover'
+++AXButton AXTitle='Button pointing to "rich" hint popover'
 ++AXButton AXTitle='Button pointing to non-popover'
 ++AXTextField
 ++AXStaticText AXValue='Text input pointing to non-popover'
@@ -32,3 +34,7 @@ AXWebArea
 ++AXButton AXTitle='Hide button pointing to showing manual (should NOT add aria-details)'
 ++AXGroup AXSubrole=AXApplicationGroup
 ++++AXStaticText AXValue='Manual (showing)'
+++AXGroup AXSubrole=AXApplicationGroup
+++++AXStaticText AXValue='Popover=hint (showing) '
+++++AXLink AXDescription='Link'
+++++++AXStaticText AXValue='Link'

@@ -5,6 +5,8 @@
 ++[push button] name='Hide button pointing to hidden manual'
 ++[entry] selectable-text
 ++[static] name='Email input pointing to hidden manual '
+++[push button] name='Button pointing to hint popover'
+++[push button] name='Button pointing to "rich" hint popover'
 ++[push button] name='Button pointing to non-popover'
 ++[entry] selectable-text
 ++[static] name='Text input pointing to non-popover'
@@ -32,3 +34,7 @@
 ++[push button] name='Hide button pointing to showing manual (should NOT add aria-details)'
 ++[panel] details-for
 ++++[static] name='Manual (showing)'
+++[panel]
+++++[static] name='Popover=hint (showing) '
+++++[link] name='Link'
+++++++[static] name='Link'
