@@ -47287,11 +47287,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="13" label="Device has too many registrations"/>
 </enum>
 
-<enum name="GCMResetStoreError">
-  <int value="0" label="Destroying store failed"/>
-  <int value="1" label="Infinite store reset"/>
-</enum>
-
 <enum name="GCMSendMessageStatus">
   <int value="0" label="Message queued"/>
   <int value="1" label="Message sent to the server, ACK received"/>
