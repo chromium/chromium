@@ -37,11 +37,11 @@ using testing::Return;
 using IsUvpaaCallback =
     mojom::WebAuthnProxy::IsUserVerifyingPlatformAuthenticatorAvailableCallback;
 
-base::Value CreateRequestMessage(const std::string& message_type,
-                                 int message_id = 1) {
-  base::Value request(base::Value::Type::DICT);
-  request.SetStringKey(kMessageType, message_type);
-  request.SetIntKey(kMessageId, message_id);
+base::Value::Dict CreateRequestMessage(const std::string& message_type,
+                                       int message_id = 1) {
+  base::Value::Dict request;
+  request.Set(kMessageType, message_type);
+  request.Set(kMessageId, message_id);
   return request;
 }
 
@@ -123,7 +123,7 @@ class RemoteWebAuthnNativeMessagingHostTest
       const base::RepeatingClosure& spy_callback);
 
   // Sends a message to the native messaging host.
-  void SendMessage(const base::Value& message);
+  void SendMessage(const base::Value::Dict& message);
 
   // Blocks until a new message is received, then returns the message.
   const base::Value::Dict& ReadMessage();
@@ -206,7 +206,7 @@ void RemoteWebAuthnNativeMessagingHostTest::
 }
 
 void RemoteWebAuthnNativeMessagingHostTest::SendMessage(
-    const base::Value& message) {
+    const base::Value::Dict& message) {
   std::string serialized_message;
   ASSERT_TRUE(base::JSONWriter::Write(message, &serialized_message));
   host_->OnMessage(serialized_message);
@@ -333,7 +333,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest,
        Create_IpcConnectionFailed_ClientDisconnectMessageSent) {
   ExpectGetSessionServices(false);
   auto request = CreateRequestMessage(kCreateMessageType);
-  request.SetStringKey(kCreateRequestDataKey, "fake");
+  request.Set(kCreateRequestDataKey, "fake");
   SendMessage(std::move(request));
 
   const base::Value::Dict& response = ReadMessage();
@@ -348,7 +348,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Create_EmptyResponse) {
   EXPECT_CALL(webauthn_proxy_, Create("fake", _, _))
       .WillOnce(base::test::RunOnceCallback<2>(nullptr));
   auto request = CreateRequestMessage(kCreateMessageType);
-  request.SetStringKey(kCreateRequestDataKey, "fake");
+  request.Set(kCreateRequestDataKey, "fake");
   SendMessage(std::move(request));
 
   const base::Value::Dict& response = ReadMessage();
@@ -366,7 +366,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Create_ErrorResponse) {
   EXPECT_CALL(webauthn_proxy_, Create("fake", _, _))
       .WillOnce(base::test::RunOnceCallback<2>(std::move(mojo_response)));
   auto request = CreateRequestMessage(kCreateMessageType);
-  request.SetStringKey(kCreateRequestDataKey, "fake");
+  request.Set(kCreateRequestDataKey, "fake");
   SendMessage(std::move(request));
 
   const base::Value::Dict& response = ReadMessage();
@@ -384,7 +384,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Create_DataResponse) {
   EXPECT_CALL(webauthn_proxy_, Create("fake", _, _))
       .WillOnce(base::test::RunOnceCallback<2>(std::move(mojo_response)));
   auto request = CreateRequestMessage(kCreateMessageType);
-  request.SetStringKey(kCreateRequestDataKey, "fake");
+  request.Set(kCreateRequestDataKey, "fake");
   SendMessage(std::move(request));
 
   const base::Value::Dict& response = ReadMessage();
@@ -414,7 +414,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest,
        Get_IpcConnectionFailed_ClientDisconnectedMessageSent) {
   ExpectGetSessionServices(false);
   auto request = CreateRequestMessage(kGetMessageType);
-  request.SetStringKey(kGetRequestDataKey, "fake");
+  request.Set(kGetRequestDataKey, "fake");
   SendMessage(std::move(request));
 
   const base::Value::Dict& response = ReadMessage();
@@ -429,7 +429,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Get_EmptyResponse) {
   EXPECT_CALL(webauthn_proxy_, Get("fake", _, _))
       .WillOnce(base::test::RunOnceCallback<2>(nullptr));
   auto request = CreateRequestMessage(kGetMessageType);
-  request.SetStringKey(kGetRequestDataKey, "fake");
+  request.Set(kGetRequestDataKey, "fake");
   SendMessage(std::move(request));
 
   const base::Value::Dict& response = ReadMessage();
@@ -447,7 +447,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Get_ErrorResponse) {
   EXPECT_CALL(webauthn_proxy_, Get("fake", _, _))
       .WillOnce(base::test::RunOnceCallback<2>(std::move(mojo_response)));
   auto request = CreateRequestMessage(kGetMessageType);
-  request.SetStringKey(kGetRequestDataKey, "fake");
+  request.Set(kGetRequestDataKey, "fake");
   SendMessage(std::move(request));
 
   const base::Value::Dict& response = ReadMessage();
@@ -465,7 +465,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, Get_DataResponse) {
   EXPECT_CALL(webauthn_proxy_, Get("fake", _, _))
       .WillOnce(base::test::RunOnceCallback<2>(std::move(mojo_response)));
   auto request = CreateRequestMessage(kGetMessageType);
-  request.SetStringKey(kGetRequestDataKey, "fake");
+  request.Set(kGetRequestDataKey, "fake");
   SendMessage(std::move(request));
 
   const base::Value::Dict& response = ReadMessage();
@@ -522,7 +522,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, CancelCreateRequest) {
       .WillOnce(base::test::RunOnceCallback<0>(true));
 
   auto request = CreateRequestMessage(kCreateMessageType, /* message_id= */ 1);
-  request.SetStringKey(kCreateRequestDataKey, "fake");
+  request.Set(kCreateRequestDataKey, "fake");
   SendMessage(std::move(request));
   webauthn_proxy_create_runloop.Run();
 
@@ -566,7 +566,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest, CancelGetRequest) {
       .WillOnce(base::test::RunOnceCallback<0>(true));
 
   auto request = CreateRequestMessage(kGetMessageType, /* message_id= */ 1);
-  request.SetStringKey(kGetRequestDataKey, "fake");
+  request.Set(kGetRequestDataKey, "fake");
   SendMessage(std::move(request));
   webauthn_proxy_get_runloop.Run();
 
@@ -607,7 +607,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest,
       });
 
   auto request = CreateRequestMessage(kCreateMessageType, /* message_id= */ 1);
-  request.SetStringKey(kCreateRequestDataKey, "fake");
+  request.Set(kCreateRequestDataKey, "fake");
   SendMessage(std::move(request));
   webauthn_proxy_create_runloop.Run();
 
@@ -636,7 +636,7 @@ TEST_F(RemoteWebAuthnNativeMessagingHostTest,
       .WillOnce(base::test::RunOnceCallback<2>(nullptr));
 
   auto request = CreateRequestMessage(kCreateMessageType, /* message_id= */ 1);
-  request.SetStringKey(kCreateRequestDataKey, "fake");
+  request.Set(kCreateRequestDataKey, "fake");
   SendMessage(std::move(request));
   const base::Value::Dict& response_1 = ReadMessage();
   VerifyResponseMessage(response_1, kCreateMessageType);
