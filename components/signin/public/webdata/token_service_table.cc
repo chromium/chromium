@@ -53,10 +53,6 @@ bool TokenServiceTable::CreateTablesIfNecessary() {
   return true;
 }
 
-bool TokenServiceTable::IsSyncable() {
-  return true;
-}
-
 bool TokenServiceTable::MigrateToVersion(int version,
                                          bool* update_compatible_version) {
   return true;

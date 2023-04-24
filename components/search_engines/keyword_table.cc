@@ -228,10 +228,6 @@ bool KeywordTable::CreateTablesIfNecessary() {
              "enforced_by_policy INTEGER DEFAULT 0)");
 }
 
-bool KeywordTable::IsSyncable() {
-  return true;
-}
-
 bool KeywordTable::MigrateToVersion(int version,
                                     bool* update_compatible_version) {
   // Migrate if necessary.

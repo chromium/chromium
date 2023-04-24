@@ -91,10 +91,6 @@ bool WebAppManifestSectionTable::CreateTablesIfNecessary() {
   return true;
 }
 
-bool WebAppManifestSectionTable::IsSyncable() {
-  return false;
-}
-
 bool WebAppManifestSectionTable::MigrateToVersion(
     int version,
     bool* update_compatible_version) {

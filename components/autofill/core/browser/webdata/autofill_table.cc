@@ -1201,10 +1201,6 @@ bool AutofillTable::CreateTablesIfNecessary() {
          InitVirtualCardUsageDataTable();
 }
 
-bool AutofillTable::IsSyncable() {
-  return true;
-}
-
 bool AutofillTable::MigrateToVersion(int version,
                                      bool* update_compatible_version) {
   if (!db_->is_open()) {

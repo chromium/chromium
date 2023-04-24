@@ -40,13 +40,6 @@ class WEBDATA_EXPORT WebDatabaseTable {
   // Returns true on success, false on failure.
   virtual bool CreateTablesIfNecessary() = 0;
 
-  // In order to encourage developers to think about sync when adding or
-  // or altering new tables, this method must be implemented. Please get in
-  // contact with the sync team if you believe you're making a change that they
-  // should be aware of (or if you could break something).
-  // TODO(andybons): Implement something more robust.
-  virtual bool IsSyncable() = 0;
-
   // Migrates this table to |version|. Returns false if there was
   // migration work to do and it failed, true otherwise.
   //

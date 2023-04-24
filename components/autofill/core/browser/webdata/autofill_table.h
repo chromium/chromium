@@ -520,7 +520,6 @@ class AutofillTable : public WebDatabaseTable,
   // WebDatabaseTable:
   WebDatabaseTable::TypeKey GetTypeKey() const override;
   bool CreateTablesIfNecessary() override;
-  bool IsSyncable() override;
   bool MigrateToVersion(int version, bool* update_compatible_version) override;
 
   // Records the form elements in |elements| in the database in the

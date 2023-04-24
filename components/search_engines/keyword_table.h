@@ -109,7 +109,6 @@ class KeywordTable : public WebDatabaseTable {
 
   WebDatabaseTable::TypeKey GetTypeKey() const override;
   bool CreateTablesIfNecessary() override;
-  bool IsSyncable() override;
   bool MigrateToVersion(int version, bool* update_compatible_version) override;
 
   // Performs an arbitrary number of Add/Remove/Update operations as a single
