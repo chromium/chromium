@@ -55,14 +55,15 @@ size_t ParseEnvLine(const wchar_t* input, std::wstring* key) {
   return cur + 1;
 }
 
-void CopyPolicyToTarget(const void* source, size_t size, void* dest) {
-  if (!source || !size)
+void CopyPolicyToTarget(base::span<const uint8_t> source, void* dest) {
+  if (!source.size()) {
     return;
-  memcpy(dest, source, size);
+  }
+  memcpy(dest, source.data(), source.size());
   sandbox::PolicyGlobal* policy =
       reinterpret_cast<sandbox::PolicyGlobal*>(dest);
 
-  size_t offset = reinterpret_cast<size_t>(source);
+  size_t offset = reinterpret_cast<size_t>(source.data());
 
   for (size_t i = 0; i < sandbox::kMaxServiceCount; i++) {
     size_t buffer = reinterpret_cast<size_t>(policy->entry[i]);
@@ -246,9 +247,8 @@ ResultCode TargetProcess::TransferVariable(const char* name,
 // Construct the IPC server and the IPC dispatcher. When the target does
 // an IPC it will eventually call the dispatcher.
 ResultCode TargetProcess::Init(Dispatcher* ipc_dispatcher,
-                               void* policy,
+                               absl::optional<base::span<const uint8_t>> policy,
                                uint32_t shared_IPC_size,
-                               uint32_t shared_policy_size,
                                DWORD* win_error) {
   ResultCode ret = VerifySentinels();
   if (ret != SBOX_ALL_OK)
@@ -261,8 +261,11 @@ ResultCode TargetProcess::Init(Dispatcher* ipc_dispatcher,
   // the rest, which boils down to calling MapViewofFile()
 
   // We use this single memory pool for IPC and for policy.
-  DWORD shared_mem_size =
-      static_cast<DWORD>(shared_IPC_size + shared_policy_size);
+  DWORD shared_mem_size = static_cast<DWORD>(shared_IPC_size);
+  if (policy.has_value()) {
+    shared_mem_size += static_cast<DWORD>(policy->size());
+  }
+
   shared_section_.Set(::CreateFileMappingW(INVALID_HANDLE_VALUE, nullptr,
                                            PAGE_READWRITE | SEC_COMMIT, 0,
                                            shared_mem_size, nullptr));
@@ -278,8 +281,10 @@ ResultCode TargetProcess::Init(Dispatcher* ipc_dispatcher,
     return SBOX_ERROR_MAP_VIEW_OF_SHARED_SECTION;
   }
 
-  CopyPolicyToTarget(policy, shared_policy_size,
-                     reinterpret_cast<char*>(shared_memory) + shared_IPC_size);
+  if (policy.has_value()) {
+    CopyPolicyToTarget(policy.value(), reinterpret_cast<char*>(shared_memory) +
+                                           shared_IPC_size);
+  }
 
   // Set the global variables in the target. These are not used on the broker.
   g_shared_IPC_size = shared_IPC_size;
@@ -290,13 +295,15 @@ ResultCode TargetProcess::Init(Dispatcher* ipc_dispatcher,
     *win_error = ::GetLastError();
     return ret;
   }
-  g_shared_policy_size = shared_policy_size;
-  ret = TransferVariable("g_shared_policy_size", &g_shared_policy_size,
-                         sizeof(g_shared_policy_size));
-  g_shared_policy_size = 0;
-  if (SBOX_ALL_OK != ret) {
-    *win_error = ::GetLastError();
-    return ret;
+  if (policy.has_value()) {
+    g_shared_policy_size = policy->size();
+    ret = TransferVariable("g_shared_policy_size", &g_shared_policy_size,
+                           sizeof(g_shared_policy_size));
+    g_shared_policy_size = 0;
+    if (SBOX_ALL_OK != ret) {
+      *win_error = ::GetLastError();
+      return ret;
+    }
   }
 
   ipc_server_ = std::make_unique<SharedMemIPCServer>(

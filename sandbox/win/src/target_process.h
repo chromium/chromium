@@ -58,9 +58,8 @@ class TargetProcess {
   // Creates the IPC objects such as the BrokerDispatcher and the
   // IPC server. The IPC server uses the services of the thread_pool.
   ResultCode Init(Dispatcher* ipc_dispatcher,
-                  void* policy,
+                  absl::optional<base::span<const uint8_t>> policy,
                   uint32_t shared_IPC_size,
-                  uint32_t shared_policy_size,
                   DWORD* win_error);
 
   // Returns the handle to the target process.

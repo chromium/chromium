@@ -204,11 +204,12 @@ bool MapGlobalMemory() {
           GetNtExports()->UnmapViewOfSection(NtCurrentProcess, memory));
     }
     DCHECK_NT(g_shared_IPC_size > 0);
-    g_shared_policy_memory =
-        reinterpret_cast<char*>(g_shared_IPC_memory) + g_shared_IPC_size;
+    if (g_shared_policy_size > 0) {
+      g_shared_policy_memory =
+          reinterpret_cast<char*>(g_shared_IPC_memory) + g_shared_IPC_size;
+    }
   }
-  DCHECK_NT(g_shared_policy_memory);
-  DCHECK_NT(g_shared_policy_size > 0);
+
   return true;
 }
 
@@ -218,7 +219,7 @@ void* GetGlobalIPCMemory() {
   return g_shared_IPC_memory;
 }
 
-void* GetGlobalPolicyMemory() {
+void* GetGlobalPolicyMemoryForTesting() {
   if (!MapGlobalMemory())
     return nullptr;
   return g_shared_policy_memory;

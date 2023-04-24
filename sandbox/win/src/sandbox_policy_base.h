@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -113,6 +114,7 @@ class ConfigBase final : public TargetConfig {
 
   // Should only be called once the object is configured.
   PolicyGlobal* policy();
+  absl::optional<base::span<const uint8_t>> policy_span();
   std::vector<std::wstring>& blocklisted_dlls();
   AppContainerBase* app_container();
   IntegrityLevel integrity_level() { return integrity_level_; }

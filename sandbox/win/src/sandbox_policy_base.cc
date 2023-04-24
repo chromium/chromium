@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/win/access_control_list.h"
@@ -153,6 +154,16 @@ bool ConfigBase::Freeze() {
 PolicyGlobal* ConfigBase::policy() {
   DCHECK(configured_);
   return policy_;
+}
+
+absl::optional<base::span<const uint8_t>> ConfigBase::policy_span() {
+  if (policy_) {
+    // Note: this is not policy().data_size as that relates to internal data,
+    // not the entire allocated policy area.
+    return base::span<const uint8_t>(reinterpret_cast<uint8_t*>(policy_.get()),
+                                     kPolMemSize);
+  }
+  return absl::nullopt;
 }
 
 std::vector<std::wstring>& ConfigBase::blocklisted_dlls() {
@@ -617,8 +628,8 @@ ResultCode PolicyBase::ApplyToTarget(std::unique_ptr<TargetProcess> target) {
   DWORD win_error = ERROR_SUCCESS;
   // Initialize the sandbox infrastructure for the target.
   // TODO(wfh) do something with win_error code here.
-  ret = target->Init(dispatcher_.get(), config()->policy(), kIPCMemSize,
-                     kPolMemSize, &win_error);
+  ret = target->Init(dispatcher_.get(), config()->policy_span(), kIPCMemSize,
+                     &win_error);
 
   if (ret != SBOX_ALL_OK)
     return ret;

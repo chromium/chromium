@@ -25,11 +25,15 @@ SANDBOX_INTERCEPT size_t g_shared_policy_size;
 
 bool QueryBroker(IpcTag ipc_id, CountedParameterSetBase* params) {
   DCHECK_NT(static_cast<size_t>(ipc_id) < kMaxServiceCount);
-  DCHECK_NT(g_shared_policy_memory);
-  DCHECK_NT(g_shared_policy_size > 0);
 
   if (static_cast<size_t>(ipc_id) >= kMaxServiceCount)
     return false;
+
+  // Policy is only sent if required.
+  if (!g_shared_policy_memory) {
+    CHECK_NT(g_shared_policy_size);
+    return false;
+  }
 
   PolicyGlobal* global_policy =
       reinterpret_cast<PolicyGlobal*>(g_shared_policy_memory);

@@ -100,7 +100,7 @@ struct NtAllocDeleter {
 void* GetGlobalIPCMemory();
 
 // Returns a pointer to the Policy shared memory.
-void* GetGlobalPolicyMemory();
+void* GetGlobalPolicyMemoryForTesting();
 
 // Returns a reference to imported NT functions.
 const NtExports* GetNtExports();
