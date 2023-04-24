@@ -408,6 +408,17 @@ gfx::Rect FloatController::GetPreferredFloatWindowClamshellBounds(
                             ->user_work_area_bounds();
   wm::ConvertRectFromScreen(window->GetRootWindow(), &work_area);
 
+  const int padding_dp = chromeos::wm::kFloatedWindowPaddingDp;
+
+  if ((window->GetProperty(aura::client::kResizeBehaviorKey) &
+       aura::client::kResizeBehaviorCanResize) == 0) {
+    // Unresizable windows must not be resized for any reason.
+    const gfx::Size size = window->bounds().size();
+    return gfx::Rect(work_area.right() - size.width() - padding_dp,
+                     work_area.bottom() - size.height() - padding_dp,
+                     size.width(), size.height());
+  }
+
   // Default float size is 1/3 width and 70% height of `work_area`.
   // Float bounds also should not be smaller than min bounds, use min
   // width/height if it exceeds the limit.
@@ -427,7 +438,6 @@ gfx::Rect FloatController::GetPreferredFloatWindowClamshellBounds(
     preferred_bounds = window->bounds();
   }
 
-  const int padding_dp = chromeos::wm::kFloatedWindowPaddingDp;
   const int preferred_width =
       std::min(preferred_bounds.width(), work_area.width() - 2 * padding_dp);
   const int preferred_height =

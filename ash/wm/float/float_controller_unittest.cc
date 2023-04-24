@@ -974,6 +974,18 @@ TEST_F(WindowFloatMetricsTest, FloatWindowDuration) {
   histogram_tester_.ExpectBucketCount(kHistogramName, 3, 4);
 }
 
+// Test that the size of preferred bounds for unresizable windows is not
+// different from the size of the original window bounds.
+TEST_F(WindowFloatTest, PreferredBoundsForUnresizableWindow) {
+  std::unique_ptr<aura::Window> window = CreateAppWindow(gfx::Rect(600, 600));
+  window->SetProperty(aura::client::kResizeBehaviorKey,
+                      aura::client::kResizeBehaviorNone);
+  EXPECT_EQ(
+      FloatController::GetPreferredFloatWindowClamshellBounds(window.get())
+          .size(),
+      window->GetBoundsInScreen().size());
+}
+
 class TabletWindowFloatTest : public WindowFloatTest,
                               public display::DisplayObserver {
  public:
