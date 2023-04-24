@@ -59,7 +59,16 @@ void KcerImpl::GenerateEcKey(Token token,
                              EllipticCurve curve,
                              bool hardware_backed,
                              GenerateKeyCallback callback) {
-  // TODO(244408716): Implement.
+  const base::WeakPtr<KcerToken>& kcer_token = GetToken(token);
+  if (!kcer_token.MaybeValid()) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kTokenIsNotAvailable));
+  }
+  token_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&KcerToken::GenerateEcKey, kcer_token, curve,
+                     hardware_backed,
+                     base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 void KcerImpl::ImportKey(Token token,

@@ -47,12 +47,14 @@ using DigestWithPrefix =
 // Values should not be reused or renumbered.
 enum class COMPONENT_EXPORT(KCER) Error {
   kUnknownError = 0,
-  kTokenIsNotAvailable = 1,
-  kTokenInitializationFailed = 2,
-  kInvalidCertificate = 3,
-  kFailedToImportCertificate = 4,
-  kFailedToGenerateKey = 5,
-  kFailedToExportPublicKey = 6,
+  kNotImplemented = 1,
+  kNotSupported = 2,
+  kTokenIsNotAvailable = 3,
+  kTokenInitializationFailed = 4,
+  kInvalidCertificate = 5,
+  kFailedToImportCertificate = 6,
+  kFailedToGenerateKey = 7,
+  kFailedToExportPublicKey = 8,
 };
 
 // Handles for tokens on ChromeOS.

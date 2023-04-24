@@ -20,6 +20,11 @@
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+// The tests here provide only the minimal coverage for the basic functionality
+// of Kcer. More thorough testing, including edge cases, will be done in a
+// fuzzer.
+// TODO(244408716): Implement the fuzzer.
+
 namespace kcer {
 
 // Test-only overloads for better errors from EXPECT_EQ, etc.
@@ -33,6 +38,17 @@ std::ostream& operator<<(std::ostream& stream, Token val) {
 }
 
 namespace {
+
+enum class KeyType { kRsa, kEc };
+
+std::string KeyTypeToStr(KeyType key_type) {
+  switch (key_type) {
+    case KeyType::kRsa:
+      return "kRsa";
+    case KeyType::kEc:
+      return "kEc";
+  }
+}
 
 constexpr char kPublicKeyBase64[] =
     "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArURIGgAq8joyzjFdUpzmOeDa5VgTC8"
@@ -141,92 +157,9 @@ TEST_F(KcerNssTest, UseUnavailableTokenThenGetError) {
   EXPECT_EQ(generate_waiter.Get().error(), Error::kTokenIsNotAvailable);
 }
 
-// Test that an RSA key can be generated.
-TEST_F(KcerNssTest, GenerateRsaKeySuccess) {
-  TokenHolder user_token(Token::kUser);
-  user_token.Initialize();
-
-  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
-      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
-
-  base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
-  kcer->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
-                       /*hardware_backed=*/true, generate_waiter.GetCallback());
-
-  ASSERT_TRUE(generate_waiter.Get().has_value());
-  const PublicKey& public_key = generate_waiter.Get().value();
-  EXPECT_EQ(public_key.GetToken(), Token::kUser);
-  // Arbitrary bytes, not much to check about them.
-  EXPECT_EQ(public_key.GetPkcs11Id().value().size(), 20u);
-  // Arbitrary bytes, not much to check about them.
-  EXPECT_EQ(public_key.GetSpki().value().size(), 294u);
-}
-
-// Test that an RSA key can be generated on a device token (the token itself is
-// not special, test the logic of distributing requests to correct tokens). The
-// user token is implicitly covered above.
-TEST_F(KcerNssTest, GenerateRsaKeyOnDeviceTokenSuccess) {
-  TokenHolder device_token(Token::kDevice);
-  device_token.Initialize();
-
-  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
-      IOTaskRunner(), /*user_token=*/nullptr, device_token.GetWeakPtr());
-
-  base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
-  kcer->GenerateRsaKey(Token::kDevice, /*modulus_length_bits=*/2048,
-                       /*hardware_backed=*/true, generate_waiter.GetCallback());
-
-  ASSERT_TRUE(generate_waiter.Get().has_value());
-  const PublicKey& public_key = generate_waiter.Get().value();
-  EXPECT_EQ(public_key.GetToken(), Token::kDevice);
-  // Arbitrary bytes, not much to check about them.
-  EXPECT_EQ(public_key.GetPkcs11Id().value().size(), 20u);
-  // Arbitrary bytes, not much to check about them.
-  EXPECT_EQ(public_key.GetSpki().value().size(), 294u);
-}
-
-// Test that a certificate can be imported for a generated key and then found
-// using ListCerts.
-TEST_F(KcerNssTest, ImportCertForGeneratedKeySuccess) {
-  TokenHolder user_token(Token::kUser);
-  user_token.Initialize();
-
-  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
-      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
-
-  base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
-  kcer->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
-                       /*hardware_backed=*/true, generate_waiter.GetCallback());
-  ASSERT_TRUE(generate_waiter.Get().has_value());
-  const PublicKey& public_key = generate_waiter.Get().value();
-
-  std::unique_ptr<net::CertBuilder> issuer = MakeCertIssuer();
-  std::unique_ptr<net::CertBuilder> cert_builder =
-      MakeCertBuilder(issuer.get(), public_key.GetSpki().value());
-
-  CertDer cert(StrToBytes(cert_builder->GetDER()));
-
-  base::test::TestFuture<base::expected<void, Error>> import_waiter;
-  kcer->ImportCertFromBytes(Token::kUser, std::move(cert),
-                            import_waiter.GetCallback());
-  EXPECT_TRUE(import_waiter.Get().has_value());
-
-  base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
-                         base::flat_map<Token, Error>>
-      certs_waiter;
-  kcer->ListCerts({Token::kUser}, certs_waiter.GetCallback());
-  EXPECT_TRUE(certs_waiter.Get<1>().empty());  // Error map is empty.
-
-  const std::vector<scoped_refptr<const Cert>>& certs =
-      certs_waiter.Get<std::vector<scoped_refptr<const Cert>>>();
-  ASSERT_EQ(certs.size(), 1u);
-  EXPECT_TRUE(certs.front()->GetX509Cert()->EqualsExcludingChain(
-      cert_builder->GetX509Certificate().get()));
-}
-
 // Test that a certificate can not be imported, if there's no key for it on the
 // token.
-TEST_F(KcerNssTest, ImportCertWithoutKeyFail) {
+TEST_F(KcerNssTest, ImportCertWithoutKeyThenFail) {
   TokenHolder user_token(Token::kUser);
   user_token.Initialize();
 
@@ -267,13 +200,25 @@ TEST_F(KcerNssTest, QueueTasksThenFailAll) {
   kcer->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
                        /*hardware_backed=*/true,
                        generate_rsa_waiter.GetCallback());
-  base::test::TestFuture<base::expected<void, Error>> import_from_bytes_waiter;
+  base::test::TestFuture<base::expected<PublicKey, Error>> generate_ec_waiter;
+  kcer->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
+                      /*hardware_backed=*/true,
+                      generate_ec_waiter.GetCallback());
+  base::test::TestFuture<base::expected<void, Error>>
+      import_cert_from_bytes_waiter;
   kcer->ImportCertFromBytes(Token::kUser, CertDer({1, 2, 3}),
-                            import_from_bytes_waiter.GetCallback());
+                            import_cert_from_bytes_waiter.GetCallback());
   base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
                          base::flat_map<Token, Error>>
       list_certs_waiter;
   kcer->ListCerts({Token::kUser}, list_certs_waiter.GetCallback());
+  // Close the list with one more GenerateRsaKey, so all methods are tested with
+  // other methods before and after them.
+  base::test::TestFuture<base::expected<PublicKey, Error>>
+      generate_rsa_waiter_2;
+  kcer->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
+                       /*hardware_backed=*/true,
+                       generate_rsa_waiter_2.GetCallback());
   // TODO(244408716): Add more methods when they are implemented.
 
   user_token.FailInitialization();
@@ -281,13 +226,85 @@ TEST_F(KcerNssTest, QueueTasksThenFailAll) {
   ASSERT_FALSE(generate_rsa_waiter.Get().has_value());
   EXPECT_EQ(generate_rsa_waiter.Get().error(),
             Error::kTokenInitializationFailed);
-  ASSERT_FALSE(import_from_bytes_waiter.Get().has_value());
-  EXPECT_EQ(import_from_bytes_waiter.Get().error(),
+  ASSERT_FALSE(generate_ec_waiter.Get().has_value());
+  EXPECT_EQ(generate_ec_waiter.Get().error(),
+            Error::kTokenInitializationFailed);
+  ASSERT_FALSE(import_cert_from_bytes_waiter.Get().has_value());
+  EXPECT_EQ(import_cert_from_bytes_waiter.Get().error(),
             Error::kTokenInitializationFailed);
   ASSERT_FALSE(list_certs_waiter.Get<1>().empty());
   EXPECT_EQ(list_certs_waiter.Get<1>().at(Token::kUser),
             Error::kTokenInitializationFailed);
+  ASSERT_FALSE(generate_rsa_waiter_2.Get().has_value());
+  EXPECT_EQ(generate_rsa_waiter_2.Get().error(),
+            Error::kTokenInitializationFailed);
 }
+
+class KcerNssAllKeyTypesTest : public KcerNssTest,
+                               public testing::WithParamInterface<KeyType> {
+ protected:
+  KeyType GetKeyType() { return GetParam(); }
+};
+
+// Test that all methods work together as expected. Simulate a potential
+// lifecycle of a key and related objects.
+TEST_P(KcerNssAllKeyTypesTest, AllMethodsTogether) {
+  TokenHolder user_token(Token::kUser);
+  user_token.Initialize();
+
+  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
+      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
+
+  // Generate a key.
+  base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
+  switch (GetKeyType()) {
+    case KeyType::kRsa:
+      kcer->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
+                           /*hardware_backed=*/true,
+                           generate_waiter.GetCallback());
+      break;
+    case KeyType::kEc:
+      kcer->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
+                          /*hardware_backed=*/true,
+                          generate_waiter.GetCallback());
+      break;
+  }
+  ASSERT_TRUE(generate_waiter.Get().has_value());
+  const PublicKey& public_key = generate_waiter.Get().value();
+
+  std::unique_ptr<net::CertBuilder> issuer = MakeCertIssuer();
+  std::unique_ptr<net::CertBuilder> cert_builder =
+      MakeCertBuilder(issuer.get(), public_key.GetSpki().value());
+
+  CertDer cert(StrToBytes(cert_builder->GetDER()));
+
+  // Import a cert for the key.
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  kcer->ImportCertFromBytes(Token::kUser, std::move(cert),
+                            import_waiter.GetCallback());
+  EXPECT_TRUE(import_waiter.Get().has_value());
+
+  // List certs, make sure the new cert is listed.
+  base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
+                         base::flat_map<Token, Error>>
+      certs_waiter;
+  kcer->ListCerts({Token::kUser}, certs_waiter.GetCallback());
+  EXPECT_TRUE(certs_waiter.Get<1>().empty());  // Error map is empty.
+
+  const auto& certs =
+      certs_waiter.Get<std::vector<scoped_refptr<const Cert>>>();
+  ASSERT_EQ(certs.size(), 1u);
+  EXPECT_TRUE(certs.front()->GetX509Cert()->EqualsExcludingChain(
+      cert_builder->GetX509Certificate().get()));
+}
+
+INSTANTIATE_TEST_SUITE_P(AllKeyTypes,
+                         KcerNssAllKeyTypesTest,
+                         testing::Values(KeyType::kRsa, KeyType::kEc),
+                         // Make test names more readable:
+                         [](const auto& info) {
+                           return KeyTypeToStr(info.param);
+                         });
 
 }  // namespace
 }  // namespace kcer

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/bind_post_task.h"
@@ -51,8 +52,11 @@ void RunUnblocker(base::ScopedClosureRunner unblocker) {
   unblocker.RunAndReset();
 }
 
+// Returns a vector containing bytes from `value` or an empty vector if `value`
+// is nullptr.
 std::vector<uint8_t> SECItemToBytes(crypto::ScopedSECItem value) {
-  return std::vector<uint8_t>(value->data, value->data + value->len);
+  return value ? std::vector<uint8_t>(value->data, value->data + value->len)
+               : std::vector<uint8_t>();
 }
 
 void GenerateRsaKeyOnWorkerThread(Token token,
@@ -78,11 +82,14 @@ void GenerateRsaKeyOnWorkerThread(Token token,
     return std::move(callback).Run(
         base::unexpected(Error::kFailedToGenerateKey));
   }
+  DCHECK(public_key && private_key);
 
   crypto::ScopedSECItem public_key_der(
       SECKEY_EncodeDERSubjectPublicKeyInfo(public_key.get()));
   if (!public_key_der) {
-    // Clean up generated keys.
+    // Clean up generated keys. PK11_DeleteTokenPrivateKey and
+    // PK11_DeleteTokenPublicKey are documented to also destroy the passed
+    // SECKEYPublicKey/SECKEYPrivateKey structures.
     PK11_DeleteTokenPrivateKey(/*privKey=*/private_key.release(),
                                /*force=*/false);
     PK11_DeleteTokenPublicKey(/*pubKey=*/public_key.release());
@@ -98,13 +105,61 @@ void GenerateRsaKeyOnWorkerThread(Token token,
       PublicKey(token, std::move(pkcs11_id), std::move(public_key_spki)));
 }
 
+void GenerateEcKeyOnWorkerThread(Token token,
+                                 crypto::ScopedPK11Slot slot,
+                                 EllipticCurve curve,
+                                 bool hardware_backed,
+                                 Kcer::GenerateKeyCallback callback) {
+  bool key_gen_success = false;
+  crypto::ScopedSECKEYPublicKey public_key;
+  crypto::ScopedSECKEYPrivateKey private_key;
+
+  if (curve != EllipticCurve::kP256) {
+    return std::move(callback).Run(base::unexpected(Error::kNotSupported));
+  }
+
+  if (hardware_backed) {
+    key_gen_success = crypto::GenerateECKeyPairNSS(
+        slot.get(), SEC_OID_ANSIX962_EC_PRIME256V1, /*permanent=*/true,
+        &public_key, &private_key);
+  } else {
+    // Shouldn't be needed yet, will be implemented in non-NSS version of Kcer.
+    return std::move(callback).Run(base::unexpected(Error::kNotImplemented));
+  }
+
+  if (!key_gen_success) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kFailedToGenerateKey));
+  }
+
+  crypto::ScopedSECItem public_key_der(
+      SECKEY_EncodeDERSubjectPublicKeyInfo(public_key.get()));
+  if (!public_key_der) {
+    // Clean up generated keys. // PK11_DeleteTokenPrivateKey and
+    // PK11_DeleteTokenPublicKey are documented to also destroy the passed
+    // SECKEYPublicKey/SECKEYPrivateKey structures.
+    PK11_DeleteTokenPrivateKey(/*privKey=*/private_key.release(),
+                               /*force=*/false);
+    PK11_DeleteTokenPublicKey(/*pubKey=*/public_key.release());
+    return std::move(callback).Run(
+        base::unexpected(Error::kFailedToExportPublicKey));
+  }
+
+  Pkcs11Id pkcs11_id(SECItemToBytes(crypto::ScopedSECItem(
+      PK11_MakeIDFromPubKey(&public_key->u.ec.publicValue))));
+
+  return std::move(callback).Run(
+      PublicKey(token, std::move(pkcs11_id),
+                PublicKeySpki(SECItemToBytes(std::move(public_key_der)))));
+}
+
 void ImportCertOnWorkerThread(crypto::ScopedPK11Slot slot,
                               CertDer cert_der,
                               Kcer::Kcer::StatusCallback callback) {
   net::ScopedCERTCertificateList certs =
       net::x509_util::CreateCERTCertificateListFromBytes(
-          reinterpret_cast<char*>(cert_der.value().data()),
-          cert_der.value().size(), net::X509Certificate::FORMAT_AUTO);
+          reinterpret_cast<char*>(cert_der->data()), cert_der->size(),
+          net::X509Certificate::FORMAT_AUTO);
 
   if (certs.empty() || (certs.size() != 1)) {
     return std::move(callback).Run(
@@ -214,7 +269,24 @@ void KcerTokenImplNss::GenerateEcKey(EllipticCurve curve,
                                      bool hardware_backed,
                                      Kcer::GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  // TODO(244408716): Implement.
+
+  if (UNLIKELY(state_ == State::kInitializationFailed)) {
+    return HandleInitializationFailed(std::move(callback));
+  } else if (is_blocked_) {
+    return task_queue_.push(base::BindOnce(
+        &KcerTokenImplNss::GenerateEcKey, weak_factory_.GetWeakPtr(), curve,
+        hardware_backed, std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = std::move(callback).Then(BlockQueueGetUnblocker());
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&GenerateEcKeyOnWorkerThread, token_,
+                     crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
+                     curve, hardware_backed, std::move(unblocking_callback)));
 }
 
 void KcerTokenImplNss::ImportKey(
