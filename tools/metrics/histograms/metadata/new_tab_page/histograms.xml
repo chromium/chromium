@@ -1284,7 +1284,8 @@ chromium-metrics-reviews@google.com.
     recorded when user clicks on the home button. For profile button: is
     recorded when user clicks on the profile button. For doodle logo: is
     recorded every time when user clicks on the doodle and navigates to another
-    website. The histogram is logged on New tab page and is Android-only.
+    website. For menu button: is recorded when user clicks on the menu button.
+    The histogram is logged on New tab page and is Android-only.
   </summary>
 </histogram>
 

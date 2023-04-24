@@ -74,6 +74,9 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuUtil;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNTP;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
@@ -1276,6 +1279,22 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         if (directShareTitle != null) {
             item.setTitle(
                     mContext.getString(R.string.accessibility_menu_share_via, directShareTitle));
+        }
+    }
+
+    /** Records user clicking on the menu button in New tab page or Start surface. */
+    @Override
+    public void onMenuShown() {
+        if (isInStartSurfaceHomepage()) {
+            BrowserUiUtils.recordModuleClickHistogram(
+                    HostSurface.START_SURFACE, ModuleTypeOnStartAndNTP.MENU_BUTTON);
+            return;
+        }
+        Tab currentTab = mActivityTabProvider.get();
+        if (currentTab != null && UrlUtilities.isNTPUrl(currentTab.getUrl())
+                && !currentTab.isIncognito()) {
+            BrowserUiUtils.recordModuleClickHistogram(
+                    HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNTP.MENU_BUTTON);
         }
     }
 }

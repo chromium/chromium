@@ -881,6 +881,28 @@ public class StartSurfaceTest {
                 + " is not recorded correctly when click on the profile button.");
     }
 
+    /**
+     * Test whether the clicking action on the menu button in {@link StartSurface} is been
+     * recorded in histogram correctly.
+     */
+    @Test
+    @SmallTest
+    @Feature({"StartSurface"})
+    public void testRecordHistogramMenuButtonClick_StartSurface() {
+        Assume.assumeTrue(mImmediateReturn);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(HISTOGRAM_START_SURFACE_MODULE_CLICK,
+                        BrowserUiUtils.ModuleTypeOnStartAndNTP.MENU_BUTTON);
+        onView(allOf(withId(R.id.menu_button_wrapper), withParent(withId(R.id.menu_anchor))))
+                .perform(click());
+        histogramWatcher.assertExpected(HISTOGRAM_START_SURFACE_MODULE_CLICK
+                + " is not recorded correctly when click on the menu button.");
+    }
+
     private void doTestNotLoadLastSelectedTabOnStartupImpl() {
         assumeTrue(mImmediateReturn);
 

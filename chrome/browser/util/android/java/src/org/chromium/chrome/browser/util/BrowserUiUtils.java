@@ -21,7 +21,7 @@ public class BrowserUiUtils {
             ModuleTypeOnStartAndNTP.SINGLE_TAB_CARD, ModuleTypeOnStartAndNTP.FEED,
             ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON, ModuleTypeOnStartAndNTP.HOME_BUTTON,
             ModuleTypeOnStartAndNTP.PROFILE_BUTTON, ModuleTypeOnStartAndNTP.DOODLE,
-            ModuleTypeOnStartAndNTP.NUM_ENTRIES})
+            ModuleTypeOnStartAndNTP.MENU_BUTTON, ModuleTypeOnStartAndNTP.NUM_ENTRIES})
     public @interface ModuleTypeOnStartAndNTP {
         int MOST_VISITED_TILES = 0;
         int OMNIBOX = 1;
@@ -31,9 +31,10 @@ public class BrowserUiUtils {
         int HOME_BUTTON = 5;
         int PROFILE_BUTTON = 6;
         int DOODLE = 7;
+        int MENU_BUTTON = 8;
 
         // Be sure to also update enums.xml when updating these values.
-        int NUM_ENTRIES = 8;
+        int NUM_ENTRIES = 9;
     }
 
     /**
