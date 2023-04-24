@@ -224,14 +224,4 @@ TEST_F(SharingImplTest, NearbyConnections_PresenceReset) {
   EnsureDependenciesAreDisconnected();
 }
 
-TEST_F(SharingImplTest, NearbyConnections_DecoderReset) {
-  decoder_.reset();
-  EnsureDependenciesAreDisconnected();
-}
-
-TEST_F(SharingImplTest, NearbyConnections_QuickStartDecoderReset) {
-  quick_start_decoder_.reset();
-  EnsureDependenciesAreDisconnected();
-}
-
 }  // namespace sharing

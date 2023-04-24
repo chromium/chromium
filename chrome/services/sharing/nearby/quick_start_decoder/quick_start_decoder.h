@@ -22,8 +22,8 @@ namespace ash::quick_start {
 // by the browser process.
 class QuickStartDecoder : public mojom::QuickStartDecoder {
  public:
-  QuickStartDecoder(mojo::PendingReceiver<mojom::QuickStartDecoder> receiver,
-                    base::OnceClosure on_disconnect);
+  explicit QuickStartDecoder(
+      mojo::PendingReceiver<mojom::QuickStartDecoder> receiver);
   QuickStartDecoder(const QuickStartDecoder&) = delete;
   QuickStartDecoder& operator=(const QuickStartDecoder&) = delete;
   ~QuickStartDecoder() override;

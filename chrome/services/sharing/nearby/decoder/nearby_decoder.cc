@@ -217,11 +217,8 @@ mojom::CertificateInfoFramePtr GetCertificateInfoFrame(
 }  // namespace
 
 NearbySharingDecoder::NearbySharingDecoder(
-    mojo::PendingReceiver<mojom::NearbySharingDecoder> receiver,
-    base::OnceClosure on_disconnect)
-    : receiver_(this, std::move(receiver)) {
-  receiver_.set_disconnect_handler(std::move(on_disconnect));
-}
+    mojo::PendingReceiver<mojom::NearbySharingDecoder> receiver)
+    : receiver_(this, std::move(receiver)) {}
 
 NearbySharingDecoder::~NearbySharingDecoder() = default;
 

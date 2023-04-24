@@ -56,15 +56,11 @@ void SharingImpl::Connect(
       base::BindOnce(&SharingImpl::OnDisconnect, weak_ptr_factory_.GetWeakPtr(),
                      MojoDependencyName::kNearbyPresence));
 
-  nearby_decoder_ = std::make_unique<NearbySharingDecoder>(
-      std::move(decoder_receiver),
-      base::BindOnce(&SharingImpl::OnDisconnect, weak_ptr_factory_.GetWeakPtr(),
-                     MojoDependencyName::kNearbyShareDecoder));
+  nearby_decoder_ =
+      std::make_unique<NearbySharingDecoder>(std::move(decoder_receiver));
 
   quick_start_decoder_ = std::make_unique<ash::quick_start::QuickStartDecoder>(
-      std::move(quick_start_decoder_receiver),
-      base::BindOnce(&SharingImpl::OnDisconnect, weak_ptr_factory_.GetWeakPtr(),
-                     MojoDependencyName::kQuickStartDecoder));
+      std::move(quick_start_decoder_receiver));
 }
 
 void SharingImpl::ShutDown(ShutDownCallback callback) {
@@ -199,10 +195,6 @@ std::string SharingImpl::GetMojoDependencyName(
       return "TCP socket Factory";
     case MojoDependencyName::kNearbyPresence:
       return "Nearby Presence";
-    case MojoDependencyName::kNearbyShareDecoder:
-      return "Decoder";
-    case MojoDependencyName::kQuickStartDecoder:
-      return "Quick Start Decoder";
   }
 }
 

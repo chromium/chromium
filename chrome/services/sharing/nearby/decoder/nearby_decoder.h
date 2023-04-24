@@ -16,9 +16,8 @@ namespace sharing {
 
 class NearbySharingDecoder : public mojom::NearbySharingDecoder {
  public:
-  NearbySharingDecoder(
-      mojo::PendingReceiver<mojom::NearbySharingDecoder> receiver,
-      base::OnceClosure on_disconnect);
+  explicit NearbySharingDecoder(
+      mojo::PendingReceiver<mojom::NearbySharingDecoder> receiver);
   NearbySharingDecoder(const NearbySharingDecoder&) = delete;
   NearbySharingDecoder& operator=(const NearbySharingDecoder&) = delete;
   ~NearbySharingDecoder() override;
