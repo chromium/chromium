@@ -126,8 +126,7 @@ class ExtensionsMenuModel : public ui::SimpleMenuModel {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kVisitChromeWebStoreMenuItem);
 
   ExtensionsMenuModel(ui::SimpleMenuModel::Delegate* delegate,
-                      Browser* browser,
-                      AppMenuIconController* app_menu_icon_controller);
+                      Browser* browser);
 
   ExtensionsMenuModel(const ExtensionsMenuModel&) = delete;
   ExtensionsMenuModel& operator=(const ExtensionsMenuModel&) = delete;
@@ -136,8 +135,6 @@ class ExtensionsMenuModel : public ui::SimpleMenuModel {
 
  private:
   void Build(Browser* browser);
-
-  raw_ptr<AppMenuIconController> app_menu_icon_controller_ = nullptr;
 };
 
 class AutofillSubMenuModel : public ui::SimpleMenuModel {
@@ -154,8 +151,7 @@ class AutofillSubMenuModel : public ui::SimpleMenuModel {
 class FindAndEditSubMenuModel : public ui::SimpleMenuModel {
  public:
   FindAndEditSubMenuModel(ui::SimpleMenuModel::Delegate* delegate,
-                          Browser* browser,
-                          AppMenuIconController* app_menu_icon_controller);
+                          Browser* browser);
 
   FindAndEditSubMenuModel(const FindAndEditSubMenuModel&) = delete;
   FindAndEditSubMenuModel& operator=(const FindAndEditSubMenuModel&) = delete;
@@ -164,8 +160,6 @@ class FindAndEditSubMenuModel : public ui::SimpleMenuModel {
 
  private:
   void Build(Browser* browser);
-
-  raw_ptr<AppMenuIconController> app_menu_icon_controller_ = nullptr;
 };
 
 // A menu model that builds the contents of the app menu.

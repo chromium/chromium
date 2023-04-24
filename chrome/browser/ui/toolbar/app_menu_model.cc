@@ -127,7 +127,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExtensionsMenuModel,
 namespace {
 
 constexpr size_t kMaxAppNameLength = 30;
-constexpr int kChromeRefreshAppMenuIconSize = 16;
 
 // Conditionally return the update app menu item title based on upgrade detector
 // state.
@@ -286,10 +285,8 @@ void ToolsMenuModel::Build(Browser* browser) {
 
 ExtensionsMenuModel::ExtensionsMenuModel(
     ui::SimpleMenuModel::Delegate* delegate,
-    Browser* browser,
-    AppMenuIconController* app_menu_icon_controller)
-    : SimpleMenuModel(delegate),
-      app_menu_icon_controller_(app_menu_icon_controller) {
+    Browser* browser)
+    : SimpleMenuModel(delegate) {
   Build(browser);
 }
 
@@ -316,15 +313,14 @@ void ExtensionsMenuModel::Build(Browser* browser) {
     SetIcon(
         GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS).value(),
         ui::ImageModel::FromVectorIcon(
-            vector_icons::kExtensionChromeRefreshIcon,
-            app_menu_icon_controller_->GetIconColor(absl::nullopt), kIconSize));
+            vector_icons::kExtensionChromeRefreshIcon, ui::kColorMenuIcon,
+            kIconSize));
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     SetIcon(
         GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE)
             .value(),
-        ui::ImageModel::FromVectorIcon(
-            vector_icons::kGoogleChromeWebstoreIcon,
-            app_menu_icon_controller_->GetIconColor(absl::nullopt), kIconSize));
+        ui::ImageModel::FromVectorIcon(vector_icons::kGoogleChromeWebstoreIcon,
+                                       ui::kColorMenuIcon, kIconSize));
 #endif
   }
 }
@@ -341,19 +337,19 @@ AutofillSubMenuModel::AutofillSubMenuModel(
       ui::ImageModel::FromVectorIcon(
           kKeyChromeRefreshIcon,
           app_menu_icon_controller->GetIconColor(absl::nullopt),
-          kChromeRefreshAppMenuIconSize));
+          kDefaultIconSize));
   AddItemWithStringIdAndIcon(
       IDC_SHOW_PAYMENT_METHODS, IDS_PAYMENT_METHOD_SUBMENU_OPTION,
       ui::ImageModel::FromVectorIcon(
           kCreditCardChromeRefreshIcon,
           app_menu_icon_controller->GetIconColor(absl::nullopt),
-          kChromeRefreshAppMenuIconSize));
+          kDefaultIconSize));
   AddItemWithStringIdAndIcon(
       IDC_SHOW_ADDRESSES, IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
       ui::ImageModel::FromVectorIcon(
           kLocationOnChromeRefreshIcon,
           app_menu_icon_controller->GetIconColor(absl::nullopt),
-          kChromeRefreshAppMenuIconSize));
+          kDefaultIconSize));
 }
 
 AutofillSubMenuModel::~AutofillSubMenuModel() = default;
@@ -363,10 +359,8 @@ AutofillSubMenuModel::~AutofillSubMenuModel() = default;
 
 FindAndEditSubMenuModel::FindAndEditSubMenuModel(
     ui::SimpleMenuModel::Delegate* delegate,
-    Browser* browser,
-    AppMenuIconController* app_menu_icon_controller)
-    : SimpleMenuModel(delegate),
-      app_menu_icon_controller_(app_menu_icon_controller) {
+    Browser* browser)
+    : SimpleMenuModel(delegate) {
   Build(browser);
 }
 
@@ -375,26 +369,17 @@ FindAndEditSubMenuModel::~FindAndEditSubMenuModel() = default;
 void FindAndEditSubMenuModel::Build(Browser* browser) {
   AddItemWithStringIdAndIcon(
       IDC_FIND, IDS_FIND,
-      ui::ImageModel::FromVectorIcon(
-          kSearchMenuIcon,
-          app_menu_icon_controller_->GetIconColor(absl::nullopt)));
+      ui::ImageModel::FromVectorIcon(kSearchMenuIcon, ui::kColorMenuIcon));
   AddSeparator(ui::NORMAL_SEPARATOR);
   AddItemWithStringIdAndIcon(
       IDC_CUT, IDS_CUT,
-      ui::ImageModel::FromVectorIcon(
-          kCutMenuIcon, app_menu_icon_controller_->GetIconColor(absl::nullopt),
-          kChromeRefreshAppMenuIconSize));
+      ui::ImageModel::FromVectorIcon(kCutMenuIcon, ui::kColorMenuIcon));
   AddItemWithStringIdAndIcon(
       IDC_COPY, IDS_COPY,
-      ui::ImageModel::FromVectorIcon(
-          kCopyMenuIcon, app_menu_icon_controller_->GetIconColor(absl::nullopt),
-          kChromeRefreshAppMenuIconSize));
+      ui::ImageModel::FromVectorIcon(kCopyMenuIcon, ui::kColorMenuIcon));
   AddItemWithStringIdAndIcon(
       IDC_PASTE, IDS_PASTE,
-      ui::ImageModel::FromVectorIcon(
-          kPasteMenuIcon,
-          app_menu_icon_controller_->GetIconColor(absl::nullopt),
-          kChromeRefreshAppMenuIconSize));
+      ui::ImageModel::FromVectorIcon(kPasteMenuIcon, ui::kColorMenuIcon));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1072,8 +1057,7 @@ void AppMenuModel::Build() {
   if (base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) ||
       features::IsChromeRefresh2023()) {
     // Extensions sub menu.
-    sub_menus_.push_back(std::make_unique<ExtensionsMenuModel>(
-        this, browser_, app_menu_icon_controller_));
+    sub_menus_.push_back(std::make_unique<ExtensionsMenuModel>(this, browser_));
     AddSubMenuWithStringId(IDC_EXTENSIONS_SUBMENU, IDS_EXTENSIONS_SUBMENU,
                            sub_menus_.back().get());
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU).value(),
@@ -1082,8 +1066,7 @@ void AppMenuModel::Build() {
       constexpr int kIconSize = 16;
       SetIcon(GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU).value(),
               ui::ImageModel::FromVectorIcon(
-                  vector_icons::kExtensionChromeRefreshIcon,
-                  app_menu_icon_controller_->GetIconColor(absl::nullopt),
+                  vector_icons::kExtensionChromeRefreshIcon, ui::kColorMenuIcon,
                   kIconSize));
     }
   }
@@ -1100,8 +1083,8 @@ void AppMenuModel::Build() {
     AddItemWithStringId(IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE);
 
   if (features::IsChromeRefresh2023()) {
-    sub_menus_.push_back(std::make_unique<FindAndEditSubMenuModel>(
-        this, browser_, app_menu_icon_controller_));
+    sub_menus_.push_back(
+        std::make_unique<FindAndEditSubMenuModel>(this, browser_));
     AddSubMenuWithStringId(IDC_FIND_AND_EDIT_MENU, IDS_FIND_AND_EDIT_MENU,
                            sub_menus_.back().get());
   } else {
@@ -1215,13 +1198,11 @@ void AppMenuModel::Build() {
               vector_icons::kBusinessIcon,
               ui::kColorMenuItemForegroundHighlighted, kIconSize));
     } else {
-      AddItemWithIcon(
-          IDC_SHOW_MANAGEMENT_PAGE,
-          chrome::GetManagedUiMenuItemLabel(browser_->profile()),
-          ui::ImageModel::FromVectorIcon(
-              vector_icons::kBusinessChromeRefreshIcon,
-              app_menu_icon_controller_->GetIconColor(absl::nullopt),
-              kChromeRefreshAppMenuIconSize));
+      AddItemWithIcon(IDC_SHOW_MANAGEMENT_PAGE,
+                      chrome::GetManagedUiMenuItemLabel(browser_->profile()),
+                      ui::ImageModel::FromVectorIcon(
+                          vector_icons::kBusinessChromeRefreshIcon,
+                          ui::kColorMenuIcon, kDefaultIconSize));
     }
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1230,11 +1211,8 @@ void AppMenuModel::Build() {
     auto set_icon = [this](int command_id, const gfx::VectorIcon& vector_icon) {
       auto index = GetIndexOfCommandId(command_id);
       if (index) {
-        SetIcon(index.value(),
-                ui::ImageModel::FromVectorIcon(
-                    vector_icon,
-                    app_menu_icon_controller_->GetIconColor(absl::nullopt),
-                    kChromeRefreshAppMenuIconSize));
+        SetIcon(index.value(), ui::ImageModel::FromVectorIcon(
+                                   vector_icon, ui::kColorMenuIcon));
       }
     };
     set_icon(IDC_NEW_TAB, kNewTabRefreshIcon);
