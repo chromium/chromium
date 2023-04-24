@@ -8,7 +8,7 @@ desc: |-
 
   If the URI template contains a <ph name="HTTP_VARIABLE_DNS">dns</ph> variable, requests to the resolver will use <ph name="HTTP_METHOD_GET">GET</ph>; otherwise requests will use <ph name="HTTP_METHOD_POST">POST</ph>.
 
-  In version 114 and later, <ph name="DOH_SALT_POLICY_NAME">DnsOverHttpsSalt</ph>is optional if this policy is set.
+  In version 114 and later, <ph name="DOH_SALT_POLICY_NAME">DnsOverHttpsSalt</ph> is optional if this policy is set.
 example_value: https://dns.example.net/dns-query{?dns}
 features:
   dynamic_refresh: true
