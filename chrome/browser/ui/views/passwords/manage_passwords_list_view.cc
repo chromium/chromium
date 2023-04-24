@@ -38,7 +38,13 @@ std::unique_ptr<views::View> ManagePasswordsListView::CreateTitleView(
           GooglePasswordManagerVectorIcon(), ui::kColorIcon,
           layout_provider->GetDistanceMetric(
               DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
-  header->AddChildView(views::BubbleFrameView::CreateDefaultTitleLabel(title));
+  views::Label* title_label = header->AddChildView(
+      views::BubbleFrameView::CreateDefaultTitleLabel(title));
+  // For simplicity use full width of the bubble instead of subtracting the
+  // space for the icon and the close button. It is more important that the
+  // bubble does not grow arbitrarily long than the actual max width.
+  title_label->SetMaximumWidth(layout_provider->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   return header;
 }
 
