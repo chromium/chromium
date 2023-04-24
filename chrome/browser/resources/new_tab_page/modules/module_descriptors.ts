@@ -37,7 +37,6 @@ descriptors.push(
     modulesRedesignedEnabled ? driveV2Descriptor : driveDescriptor);
 descriptors.push(photosDescriptor);
 descriptors.push(modulesRedesignedEnabled ? feedV2Descriptor : feedDescriptor);
-descriptors.push(historyClustersDescriptor);
 descriptors.push(
     modulesRedesignedEnabled ? historyClustersV2Descriptor :
                                historyClustersDescriptor);
