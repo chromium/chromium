@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.fast_checkout;
 
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
 import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
 import static org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType.AUTOFILL_PROFILE_SCREEN;
@@ -31,7 +33,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -43,6 +44,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.ui.test.util.RenderTestRule.Component;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -55,7 +57,6 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisabledTest(message = "https://crbug.com/1424888")
 public class FastCheckoutRenderTest {
     private static final FastCheckoutAutofillProfile AUTOFILL_PROFILE =
             FastCheckoutTestUtils.createDetailedProfile(
@@ -174,6 +175,8 @@ public class FastCheckoutRenderTest {
                     new FastCheckoutCreditCard[] {SERVER_CREDIT_CARD});
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        ViewUtils.waitForView(
+                withId(R.id.fast_checkout_detail_screen_recycler_view), ViewUtils.VIEW_VISIBLE);
 
         View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
         mRenderTestRule.render(bottomSheetView, "fast_checkout_addresses_screen");
@@ -190,6 +193,8 @@ public class FastCheckoutRenderTest {
                     new FastCheckoutCreditCard[] {SERVER_CREDIT_CARD});
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        ViewUtils.waitForView(
+                withId(R.id.fast_checkout_detail_screen_recycler_view), ViewUtils.VIEW_VISIBLE);
 
         View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
         mRenderTestRule.render(bottomSheetView, "fast_checkout_credit_cards_screen");
