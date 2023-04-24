@@ -659,13 +659,20 @@ void PasswordsPrivateDelegateImpl::ImportPasswords(
 
 void PasswordsPrivateDelegateImpl::ContinueImport(
     const std::vector<int>& selected_ids,
-    ImportResultsCallback results_callback) {
+    ImportResultsCallback results_callback,
+    content::WebContents* web_contents) {
   if (selected_ids.empty()) {
     password_manager_porter_->ContinueImport(
         selected_ids, base::BindOnce(&ConvertImportResults)
                           .Then(std::move(results_callback)));
     return;
   }
+  // Save |web_contents| so that it can be used later when OsReauthCall() is
+  // called. Note: This is safe because the |web_contents| is used before
+  // exiting this method.
+  // TODO(crbug.com/495290): Pass the native window directly to the
+  // reauth-handling code.
+  web_contents_ = web_contents;
 
   password_access_authenticator_.ForceUserReauthentication(
       password_manager::ReauthPurpose::IMPORT,

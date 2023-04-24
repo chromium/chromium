@@ -302,7 +302,8 @@ ResponseAction PasswordsPrivateContinueImportFunction::Run() {
       ->ContinueImport(
           parameters->selected_ids,
           base::BindOnce(
-              &PasswordsPrivateContinueImportFunction::ImportCompleted, this));
+              &PasswordsPrivateContinueImportFunction::ImportCompleted, this),
+          GetSenderWebContents());
 
   // `ImportCompleted()` might respond before we reach this point.
   return did_respond() ? AlreadyResponded() : RespondLater();

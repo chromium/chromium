@@ -659,7 +659,8 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestReauthFailedOnImport) {
                                IMPORT_RESULTS_STATUS_DISMISSED)))
       .Times(1);
 
-  delegate->ContinueImport(/*selected_ids=*/{1}, import_callback.Get());
+  delegate->ContinueImport(/*selected_ids=*/{1}, import_callback.Get(),
+                           web_contents.get());
   task_environment()->RunUntilIdle();
 
   histogram_tester().ExpectUniqueSample("PasswordManager.ImportResultsStatus2",
@@ -692,7 +693,8 @@ TEST_F(PasswordsPrivateDelegateImplTest,
                             api::passwords_private::ImportResultsStatus::
                                 IMPORT_RESULTS_STATUS_BAD_FORMAT)))
       .Times(1);
-  delegate->ContinueImport(/*selected_ids=*/{}, callback.Get());
+  delegate->ContinueImport(/*selected_ids=*/{}, callback.Get(),
+                           web_contents.get());
   task_environment()->RunUntilIdle();
 
   histogram_tester().ExpectUniqueSample("PasswordManager.ImportResultsStatus2",

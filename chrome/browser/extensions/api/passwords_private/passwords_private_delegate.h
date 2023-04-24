@@ -161,7 +161,8 @@ class PasswordsPrivateDelegate
   // |results_callback|: Used to communicate the status and summary of the
   // import process.
   virtual void ContinueImport(const std::vector<int>& selected_ids,
-                              ImportResultsCallback results_callback) = 0;
+                              ImportResultsCallback results_callback,
+                              content::WebContents* web_contents) = 0;
 
   // Resets the PasswordImporter if it is in the CONFLICTS/FINISHED state and
   // the user closes the dialog. Only when the PasswordImporter is in FINISHED
