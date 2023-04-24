@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_BAD_MESSAGE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_BAD_MESSAGE_H_
 
-#include <vector>
-
 #include "components/autofill/core/common/form_data.h"
 
 namespace content {
@@ -56,11 +54,6 @@ namespace bad_message {
 bool CheckChildProcessSecurityPolicyForURL(content::RenderFrameHost* frame,
                                            const GURL& form_url,
                                            BadMessageReason reason);
-
-bool CheckChildProcessSecurityPolicy(
-    content::RenderFrameHost* frame,
-    const std::vector<autofill::FormData>& forms_data,
-    BadMessageReason reason);
 
 // Returns true if frame is not prerendering (when password manager updates
 // are disallowed). Kills the renderer if we are prerendering.

@@ -56,19 +56,6 @@ bool CheckChildProcessSecurityPolicyForURL(content::RenderFrameHost* frame,
   return true;
 }
 
-bool CheckChildProcessSecurityPolicy(
-    content::RenderFrameHost* frame,
-    const std::vector<autofill::FormData>& forms_data,
-    BadMessageReason reason) {
-  for (const auto& form_data : forms_data) {
-    if (!bad_message::CheckChildProcessSecurityPolicyForURL(
-            frame, form_data.url, reason)) {
-      return false;
-    }
-  }
-  return true;
-}
-
 bool CheckFrameNotPrerendering(content::RenderFrameHost* frame) {
   if (frame->GetLifecycleState() ==
       content::RenderFrameHost::LifecycleState::kPrerendering) {
