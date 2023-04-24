@@ -376,13 +376,13 @@ NSArray* BuildExpectedMenu(EditMenuAdditionType additions) {
   GREYAssertEqualObjects(items, expected, @"Edit Menu item don't match");
   DismissEditMenuByTapping();
 }
-// TODO(crbug.com/1435058): Test consistently failing on device.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testEditableMenu DISABLED_testEditableMenu
-#else
-#define MAYBE_testEditableMenu testEditableMenu
-#endif
-- (void)MAYBE_testEditableMenu {
+
+- (void)testEditableMenu {
+  if (!base::ios::IsRunningOnIOS16OrLater()) {
+    // Test is flaky on iOS15- and there is no menu customization, so the test
+    // is not needed. Just disable it.
+    EARL_GREY_TEST_SKIPPED(@"Test is flaky on iOS15-.");
+  }
   std::string pageText = "mmmm";
   [self loadPageWithType:kEditableInputSelectionUrl forText:pageText];
   SelectAllInput();
