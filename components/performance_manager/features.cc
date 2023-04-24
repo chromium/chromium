@@ -84,6 +84,9 @@ const base::FeatureParam<int>
 const base::FeatureParam<int> kHeuristicMemorySaverAvailableMemoryThresholdMb{
     &kHeuristicMemorySaver, "threshold_mb", 4096};
 
+const base::FeatureParam<int> kHeuristicMemorySaverPageCacheDiscountMac{
+    &kHeuristicMemorySaver, "mac_page_cache_available_percent", 50};
+
 const base::FeatureParam<int> kHeuristicMemorySaverMinimumMinutesInBackground{
     &kHeuristicMemorySaver, "minimum_minutes_in_background", 120};
 

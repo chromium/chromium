@@ -99,6 +99,14 @@ extern const base::FeatureParam<int>
 extern const base::FeatureParam<int>
     kHeuristicMemorySaverAvailableMemoryThresholdMb;
 
+// The percentage of the page cache that should be considered "available" for
+// the purposes of Memory Saver thresholding. For instance, setting this
+// parameter to 20 will make it so that 20% of the page cache is added to the
+// "free" memory figure on macOS. See the comment in
+// `HeuristicMemorySaverPolicy::DefaultGetAmountOfAvailablePhysicalMemory` for
+// more information.
+extern const base::FeatureParam<int> kHeuristicMemorySaverPageCacheDiscountMac;
+
 // The minimum amount of minutes a tab has to spend in the background before
 // HeuristicMemorySaverPolicy will consider it eligible for discarding.
 extern const base::FeatureParam<int>

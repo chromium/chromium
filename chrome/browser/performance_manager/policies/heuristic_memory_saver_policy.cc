@@ -4,8 +4,9 @@
 
 #include "chrome/browser/performance_manager/policies/heuristic_memory_saver_policy.h"
 
+#include "base/process/process_metrics.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
-#include "heuristic_memory_saver_policy.h"
+#include "components/performance_manager/public/features.h"
 
 namespace performance_manager::policies {
 
@@ -106,7 +107,45 @@ void HeuristicMemorySaverPolicy::ScheduleNextHeartbeat(
 // static
 uint64_t
 HeuristicMemorySaverPolicy::DefaultGetAmountOfAvailablePhysicalMemory() {
-  return base::SysInfo::AmountOfAvailablePhysicalMemory();
+  base::CheckedNumeric<uint64_t> available_memory =
+      base::SysInfo::AmountOfAvailablePhysicalMemory();
+
+#if BUILDFLAG(IS_MAC)
+  // On macOS, we have access to the "free" memory figure, which only reports
+  // memory that is completely unused. This is misleading because the OS will
+  // try to keep pages in memory if there is space available, even though they
+  // are inactive. This is so that subsequently accessing them is faster.
+  //
+  // Because of this, the reported amount of "free" memory is always very low on
+  // macOS. Moreover, it's relatively cheap to dispose of pages in the pagecache
+  // in most cases. On the other hand, we don't want to consider the page cache
+  // as fully "free" memory since it does serve a purpose, and allocating so
+  // much that there's no more room for it means the system will likely start
+  // swapping.
+  //
+  // To address this, we'll treat a portion of the file-backed pagecache as
+  // available for the purposes of memory saver. The factor used for this is
+  // determined by the `kHeuristicMemorySaverPageCacheDiscountMac` feature
+  // param.
+  //
+  // This treatment of the pagecache is very platform specific. On Linux for
+  // instance, the computation is performed by the kernel (and is more
+  // sophisticated). See the comment in sys_info_linux.cc's
+  // `SysInfo::AmountOfAvailablePhysicalMemory`.
+  constexpr uint64_t kBytesPerKb = 1024;
+  base::SystemMemoryInfoKB info;
+  if (base::GetSystemMemoryInfo(&info)) {
+    int available_page_cache_percent =
+        features::kHeuristicMemorySaverPageCacheDiscountMac.Get();
+    CHECK_GE(available_page_cache_percent, 0);
+    CHECK_LE(available_page_cache_percent, 100);
+    available_memory += (info.file_backed * kBytesPerKb *
+                         static_cast<uint64_t>(available_page_cache_percent)) /
+                        100;
+  }
+#endif
+
+  return available_memory.ValueOrDie();
 }
 
 // static
