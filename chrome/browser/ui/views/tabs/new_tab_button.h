@@ -98,6 +98,12 @@ class NewTabButton : public views::ImageButton,
 
   base::CallbackListSubscription paint_as_active_subscription_;
 
+  // Stored ColorId values to differentiate for ChromeRefresh.
+  ui::ColorId foreground_frame_active_color_id_;
+  ui::ColorId foreground_frame_inactive_color_id_;
+  ui::ColorId background_frame_active_color_id_;
+  ui::ColorId background_frame_inactive_color_id_;
+
   // For tracking whether this object has been destroyed. Must be last.
   base::WeakPtrFactory<NewTabButton> weak_factory_{this};
 };

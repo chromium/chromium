@@ -97,6 +97,9 @@ class GM2TabStyleViews : public TabStyleViews {
   // treated as an active tab regardless of its true current state.
   virtual int GetStrokeThickness(bool should_paint_as_active = false) const;
 
+  virtual bool ShouldPaintTabBackgroundColor(TabActive active,
+                                             bool has_custom_background) const;
+
   // Returns the progress (0 to 1) of the hover animation.
   double GetHoverAnimationValue() const override;
 
@@ -133,9 +136,6 @@ class GM2TabStyleViews : public TabStyleViews {
 
   // Gets the throb value. A value of 0 indicates no throbbing.
   float GetThrobValue() const;
-
-  bool ShouldPaintTabBackgroundColor(TabActive active,
-                                     bool has_custom_background) const;
 
   // When selected, non-active, non-hovered tabs are adjacent to each other,
   // there are anti-aliasing artifacts in the overlapped lower arc region. This
@@ -848,8 +848,7 @@ void GM2TabStyleViews::PaintTabBackgroundFill(gfx::Canvas* canvas,
 
   canvas->ClipPath(fill_path, true);
 
-  if ((tab_->IsActive() || tab_->IsSelected()) &&
-      ShouldPaintTabBackgroundColor(active, fill_id.has_value())) {
+  if (ShouldPaintTabBackgroundColor(active, fill_id.has_value())) {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setColor(GetTabBackgroundColor(active));
@@ -997,6 +996,8 @@ class ChromeRefresh2023TabStyleViews : public GM2TabStyleViews {
   int GetStrokeThickness(bool should_paint_as_active = false) const override;
   void PaintBackgroundHover(gfx::Canvas* canvas, float scale) const override;
   SkColor GetTabSeparatorColor() const override;
+  bool ShouldPaintTabBackgroundColor(TabActive active,
+                                     bool has_custom_background) const override;
 };
 
 ChromeRefresh2023TabStyleViews::ChromeRefresh2023TabStyleViews(Tab* tab)
@@ -1064,6 +1065,14 @@ SkColor ChromeRefresh2023TabStyleViews::GetTabSeparatorColor() const {
   return cp->GetColor(tab()->controller()->ShouldPaintAsActiveFrame()
                           ? kColorTabDividerFrameActive
                           : kColorTabDividerFrameInactive);
+}
+
+bool ChromeRefresh2023TabStyleViews::ShouldPaintTabBackgroundColor(
+    TabActive active,
+    bool has_custom_background) const {
+  return (tab()->IsActive() || tab()->IsSelected()) &&
+         GM2TabStyleViews::ShouldPaintTabBackgroundColor(active,
+                                                         has_custom_background);
 }
 
 }  // namespace

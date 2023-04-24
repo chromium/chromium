@@ -141,13 +141,10 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabDividerFrameActive] = {kColorToolbar};
   mixer[kColorTabDividerFrameInactive] = {kColorToolbar};
 
-  // TODO (crbug.com/1399942): update to respect original values once theming is
-  // correctly supported.
-  mixer[kColorNewTabButtonForegroundFrameActive] = {kColorToolbarButtonIcon};
-  mixer[kColorNewTabButtonForegroundFrameInactive] = {
-      kColorToolbarButtonIconInactive};
-  mixer[kColorNewTabButtonBackgroundFrameActive] = {kColorToolbar};
-  mixer[kColorNewTabButtonBackgroundFrameInactive] = {kColorToolbar};
+  mixer[kColorNewTabButtonBackgroundFrameActive] = {
+      kColorTabBackgroundInactiveFrameActive};
+  mixer[kColorNewTabButtonBackgroundFrameInactive] = {
+      kColorTabBackgroundInactiveFrameInactive};
   mixer[kColorNewTabButtonFocusRing] = ui::PickGoogleColorTwoBackgrounds(
       ui::kColorFocusableBorderFocused,
       ui::GetResultingPaintColor(kColorNewTabButtonBackgroundFrameActive,
@@ -157,6 +154,14 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
       ui::GetColorWithMaxContrast(kColorNewTabButtonBackgroundFrameActive);
   mixer[kColorNewTabButtonInkDropFrameInactive] =
       ui::GetColorWithMaxContrast(kColorNewTabButtonBackgroundFrameInactive);
+
+  // TODO (crbug.com/1399942): consolidate the new tab button color ids once the
+  // refresh flag is enabled by default.
+  mixer[kColorNewTabButtonCRForegroundFrameActive] = {kColorToolbarButtonIcon};
+  mixer[kColorNewTabButtonCRForegroundFrameInactive] = {
+      kColorToolbarButtonIconInactive};
+  mixer[kColorNewTabButtonCRBackgroundFrameActive] = {kColorToolbar};
+  mixer[kColorNewTabButtonCRBackgroundFrameInactive] = {kColorToolbar};
 
   /* WebUI Tab Strip colors. */
   // TODO(https://crbug.com/1060398): Update the tab strip color to respond

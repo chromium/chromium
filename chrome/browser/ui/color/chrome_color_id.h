@@ -136,6 +136,12 @@
   E_CPONLY(kColorNewTabButtonFocusRing) \
   E_CPONLY(kColorNewTabButtonInkDropFrameActive) \
   E_CPONLY(kColorNewTabButtonInkDropFrameInactive) \
+  /* New tab button colors for ChromeRefresh.*/ \
+  /* TODO (crbug.com/1399942) remove when theming works */ \
+  E_CPONLY(kColorNewTabButtonCRForegroundFrameActive) \
+  E_CPONLY(kColorNewTabButtonCRForegroundFrameInactive) \
+  E_CPONLY(kColorNewTabButtonCRBackgroundFrameActive) \
+  E_CPONLY(kColorNewTabButtonCRBackgroundFrameInactive) \
   /* New Tab Page colors. */ \
   E_CPONLY(kColorNewTabPageActionButtonBackground) \
   E_CPONLY(kColorNewTabPageActionButtonBorder) \

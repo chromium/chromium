@@ -67,6 +67,24 @@ NewTabButton::NewTabButton(TabStrip* tab_strip, PressedCallback callback)
                            ui::EF_MIDDLE_MOUSE_BUTTON);
 #endif
 
+  if (features::IsChromeRefresh2023()) {
+    foreground_frame_active_color_id_ =
+        kColorNewTabButtonCRForegroundFrameActive;
+    foreground_frame_inactive_color_id_ =
+        kColorNewTabButtonCRForegroundFrameInactive;
+    background_frame_active_color_id_ =
+        kColorNewTabButtonCRBackgroundFrameActive;
+    background_frame_inactive_color_id_ =
+        kColorNewTabButtonCRBackgroundFrameInactive;
+  } else {
+    foreground_frame_active_color_id_ = kColorNewTabButtonForegroundFrameActive;
+    foreground_frame_inactive_color_id_ =
+        kColorNewTabButtonForegroundFrameInactive;
+    background_frame_active_color_id_ = kColorNewTabButtonBackgroundFrameActive;
+    background_frame_inactive_color_id_ =
+        kColorNewTabButtonBackgroundFrameInactive;
+  }
+
   ink_drop_container_ =
       AddChildView(std::make_unique<views::InkDropContainerView>());
 
@@ -117,8 +135,8 @@ SkColor NewTabButton::GetForegroundColor() const {
   if (features::IsChromeRefresh2023()) {
     return GetColorProvider()->GetColor(
         tab_strip_->ShouldPaintAsActiveFrame()
-            ? kColorNewTabButtonForegroundFrameActive
-            : kColorNewTabButtonForegroundFrameInactive);
+            ? foreground_frame_active_color_id_
+            : foreground_frame_inactive_color_id_);
   }
   return tab_strip_->GetTabForegroundColor(TabActive::kInactive);
 }
@@ -263,8 +281,8 @@ void NewTabButton::PaintFill(gfx::Canvas* canvas) const {
   } else {
     flags.setColor(GetColorProvider()->GetColor(
         tab_strip_->ShouldPaintAsActiveFrame()
-            ? kColorNewTabButtonBackgroundFrameActive
-            : kColorNewTabButtonBackgroundFrameInactive));
+            ? background_frame_active_color_id_
+            : background_frame_inactive_color_id_));
   }
 
   canvas->DrawPath(GetBorderPath(gfx::Point(), scale, false), flags);
