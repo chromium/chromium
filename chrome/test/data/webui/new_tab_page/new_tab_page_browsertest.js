@@ -409,17 +409,13 @@ var NewTabPageModulesHistoryClustersModuleTest =
   }
 };
 
-// https://crbug.com/1428590: Flaky on LaCrOS.
-GEN('#if BUILDFLAG(IS_CHROMEOS_LACROS)');
-GEN('#define MAYBE_Core DISABLED_Core');
-GEN('#else');
-GEN('#define MAYBE_Core Core');
-GEN('#endif');
-
-TEST_F('NewTabPageModulesHistoryClustersModuleTest', 'MAYBE_Core', function() {
+TEST_F('NewTabPageModulesHistoryClustersModuleTest', 'Core', function() {
   runMochaSuite('NewTabPageModulesHistoryClustersModuleTest core');
 });
-GEN('#undef MAYBE_Core');
+
+TEST_F('NewTabPageModulesHistoryClustersModuleTest', 'Layouts', function() {
+  runMochaSuite('NewTabPageModulesHistoryClustersModuleTest layouts');
+});
 
 TEST_F(
     'NewTabPageModulesHistoryClustersModuleTest',

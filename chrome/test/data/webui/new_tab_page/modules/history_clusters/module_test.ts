@@ -128,80 +128,6 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
       assertEquals(null, moduleElement);
     });
 
-    test('Layout 1 is used', async () => {
-      // Arrange.
-      const moduleElement = await initializeModule([createSampleCluster()]);
-
-      // Assert.
-      assertTrue(!!moduleElement);
-      assertLayoutSet(moduleElement, HistoryClusterLayoutType.LAYOUT_1);
-      // Check that metrics are set.
-      assertEquals(1, metrics.count(DISPLAY_LAYOUT_METRIC_NAME));
-      assertEquals(
-          1,
-          metrics.count(
-              DISPLAY_LAYOUT_METRIC_NAME, HistoryClusterLayoutType.LAYOUT_1));
-      // Check that the visits are processed and set properly.
-      const visits = moduleElement.cluster.visits;
-      assertEquals(visits.length, LAYOUT_1_MIN_VISITS);
-      for (let i = 0; i < visits.length; i++) {
-        assertTrue(!!visits[i]);
-        if (i < LAYOUT_1_MIN_IMAGE_VISITS) {
-          assertTrue(visits[i]!.hasUrlKeyedImage);
-        }
-      }
-    });
-
-    test('Layout 2 is used', async () => {
-      // Arrange.
-      const moduleElement = await initializeModule(
-          [createSampleCluster(HistoryClusterLayoutType.LAYOUT_2)]);
-
-      // Assert.
-      assertTrue(!!moduleElement);
-      assertLayoutSet(moduleElement, HistoryClusterLayoutType.LAYOUT_2);
-      // Check that metrics are set.
-      assertEquals(1, metrics.count(DISPLAY_LAYOUT_METRIC_NAME));
-      assertEquals(
-          1,
-          metrics.count(
-              DISPLAY_LAYOUT_METRIC_NAME, HistoryClusterLayoutType.LAYOUT_2));
-      // Check that the visits are processed and set properly.
-      const visits = moduleElement.cluster.visits;
-      assertEquals(visits.length, LAYOUT_2_MIN_VISITS);
-      for (let i = 0; i < visits.length; i++) {
-        assertTrue(!!visits[i]);
-        if (i < LAYOUT_2_MIN_IMAGE_VISITS) {
-          assertTrue(visits[i]!.hasUrlKeyedImage);
-        }
-      }
-    });
-
-    test('Layout 3 is used', async () => {
-      // Arrange.
-      const moduleElement = await initializeModule(
-          [createSampleCluster(HistoryClusterLayoutType.LAYOUT_3)]);
-
-      // Assert.
-      assertTrue(!!moduleElement);
-      assertLayoutSet(moduleElement, HistoryClusterLayoutType.LAYOUT_3);
-      // Check that metrics are set.
-      assertEquals(1, metrics.count(DISPLAY_LAYOUT_METRIC_NAME));
-      assertEquals(
-          1,
-          metrics.count(
-              DISPLAY_LAYOUT_METRIC_NAME, HistoryClusterLayoutType.LAYOUT_3));
-      // Check that the visits are processed and set properly.
-      const visits = moduleElement.cluster.visits;
-      assertEquals(visits.length, LAYOUT_3_MIN_VISITS);
-      for (let i = 0; i < visits.length; i++) {
-        assertTrue(!!visits[i]);
-        if (i < LAYOUT_3_MIN_IMAGE_VISITS) {
-          assertTrue(visits[i]!.hasUrlKeyedImage);
-        }
-      }
-    });
-
     test('Header element populated with correct data', async () => {
       // Arrange.
       const sampleClusterLabel = '"Sample Journey"';
@@ -315,11 +241,18 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
         assertEquals(index, Number(visit.visitId));
       });
     });
+  });
+
+  suite('layouts', () => {
+    function removeHrefAndClick(element: HTMLElement) {
+      element.removeAttribute('href');
+      element.click();
+    }
 
     [HistoryClusterLayoutType.LAYOUT_1, HistoryClusterLayoutType.LAYOUT_2,
      HistoryClusterLayoutType.LAYOUT_3]
         .forEach(layoutType => {
-          test('Module produces visit tile click metrics', async () => {
+          test(`Layout ${layoutType}: Visit tile click metrics`, async () => {
             // Arrange.
             const moduleElement =
                 await initializeModule([createSampleCluster(layoutType)]);
@@ -330,7 +263,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
                 $$(moduleElement, 'ntp-history-clusters-tile') as HTMLElement;
             assertTrue(!!tileElement);
 
-            ($$(tileElement, '#content') as HTMLElement).click();
+            removeHrefAndClick($$(tileElement, '#content') as HTMLElement);
             assertEquals(
                 1,
                 metrics.count(`NewTabPage.HistoryClusters.Layout${
@@ -346,7 +279,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
                     HistoryClusterElementType.VISIT));
           });
 
-          test('Module produces suggest tile click metrics', async () => {
+          test(`Layout ${layoutType}: Suggest tile click metrics`, async () => {
             // Arrange.
             const moduleElement =
                 await initializeModule([createSampleCluster(layoutType)]);
@@ -357,7 +290,8 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
                 $$(moduleElement, 'ntp-history-clusters-suggest-tile');
             assertTrue(!!suggestTileElement);
 
-            ($$(suggestTileElement, '.related-search') as HTMLElement).click();
+            removeHrefAndClick(
+                $$(suggestTileElement, '.related-search') as HTMLElement);
             assertEquals(
                 1,
                 metrics.count(`NewTabPage.HistoryClusters.Layout${
@@ -371,6 +305,36 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
                 metrics.count(
                     `NewTabPage.HistoryClusters.Layout${layoutType}.Click`,
                     HistoryClusterElementType.SUGGEST));
+          });
+
+          const LAYOUT_MIN_VISITS =
+              [LAYOUT_1_MIN_VISITS, LAYOUT_2_MIN_VISITS, LAYOUT_3_MIN_VISITS];
+          const LAYOUT_MIN_IMAGE_VISITS = [
+            LAYOUT_1_MIN_IMAGE_VISITS,
+            LAYOUT_2_MIN_IMAGE_VISITS,
+            LAYOUT_3_MIN_IMAGE_VISITS,
+          ];
+          test(`Layout ${layoutType} is used`, async () => {
+            // Arrange.
+            const moduleElement =
+                await initializeModule([createSampleCluster(layoutType)]);
+
+            // Assert.
+            assertTrue(!!moduleElement);
+            assertLayoutSet(moduleElement, layoutType);
+            // Check that metrics are set.
+            assertEquals(1, metrics.count(DISPLAY_LAYOUT_METRIC_NAME));
+            assertEquals(
+                1, metrics.count(DISPLAY_LAYOUT_METRIC_NAME, layoutType));
+            // Check that the visits are processed and set properly.
+            const visits = moduleElement.cluster.visits;
+            assertEquals(visits.length, LAYOUT_MIN_VISITS[layoutType - 1]);
+            for (let i = 0; i < visits.length; i++) {
+              assertTrue(!!visits[i]);
+              if (i < LAYOUT_MIN_IMAGE_VISITS[layoutType - 1]!) {
+                assertTrue(visits[i]!.hasUrlKeyedImage);
+              }
+            }
           });
         });
   });
