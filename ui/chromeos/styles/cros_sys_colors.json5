@@ -375,6 +375,10 @@
       light: 'rgba($cros.sys.on-surface.rgb, 0.38)',
       dark: 'rgba($cros.sys.on-surface.rgb, 0.38)',
     },
+    'disabled-opaque': {
+      light: '$cros.ref.neutralvariant80',
+      dark: '$cros.ref.neutralvariant30',
+    },
     'disabled-container': 'rgba($cros.sys.on-surface.rgb, 0.12)',
     // TODO(b/224402466): Add cros.sys.warning
     // TODO(b/224402466): Add cros.sys.success
