@@ -932,7 +932,8 @@ PrintBackendServiceImpl::GetXpsCapabilities(const std::string& printer_name) {
                                                      &value_result);
   if (value_result->is_result_code()) {
     DLOG(ERROR) << "Failure parsing XML of XPS capabilities of printer "
-                << printer_name << ", error: " << xml.error();
+                << printer_name
+                << ", error: " << value_result->get_result_code();
     return base::unexpected(value_result->get_result_code());
   }
 
@@ -940,7 +941,7 @@ PrintBackendServiceImpl::GetXpsCapabilities(const std::string& printer_name) {
       ParseValueForXpsPrinterCapabilities(value_result->get_capabilities());
   if (!xps_capabilities.has_value()) {
     DLOG(ERROR) << "Failure parsing value of XPS capabilities of printer "
-                << printer_name << ", error: " << xml.error();
+                << printer_name << ", error: " << xps_capabilities.error();
     return base::unexpected(xps_capabilities.error());
   }
   return std::move(xps_capabilities).value();
