@@ -71,6 +71,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -86,6 +87,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
@@ -4459,6 +4461,58 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerImmediateUpdateBrowserTest,
   // Read the middle of the icon since on Chrome OS it gets circlified.
   EXPECT_EQ(GetMiddlePixel(app_controller->GetWindowIcon().GetImage()),
             SK_ColorGREEN);
+}
+
+class ManifestUpdateManagerPrerenderingBrowserTest
+    : public ManifestUpdateManagerBrowserTest {
+ public:
+  ManifestUpdateManagerPrerenderingBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &ManifestUpdateManagerPrerenderingBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+
+  ~ManifestUpdateManagerPrerenderingBrowserTest() override = default;
+
+  content::WebContents* GetWebContents() const {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+// Tests that prerendering doesn't change the existing App ID. It also doesn't
+// call ManifestUpdateManager as a primary page is not changed.
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerPrerenderingBrowserTest,
+                       NotUpdateInPrerendering) {
+  AppId app_id = InstallWebApp();
+  EXPECT_EQ(ManifestUpdateResult::kAppUpToDate,
+            GetResultAfterPageLoad(GetAppURL()));
+
+  content::WebContents* web_contents = GetWebContents();
+  const AppId* first_app_id = WebAppTabHelper::GetAppId(web_contents);
+  EXPECT_EQ(app_id, *first_app_id);
+
+  base::HistogramTester histogram_tester;
+  const GURL prerender_url = http_server_.GetURL("/title1.html");
+  int host_id = prerender_helper().AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*web_contents, host_id);
+  // Prerendering doesn't update the existing App ID.
+  const AppId* app_id_on_prerendering = WebAppTabHelper::GetAppId(web_contents);
+  EXPECT_EQ(app_id, *app_id_on_prerendering);
+
+  // In prerendering navigation, it doesn't call ManifestUpdateManager.
+  histogram_tester.ExpectTotalCount(kUpdateHistogramName, 0);
+
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+  EXPECT_TRUE(host_observer.was_activated());
+  const AppId* app_id_after_activation =
+      WebAppTabHelper::GetAppId(web_contents);
+  EXPECT_EQ(nullptr, app_id_after_activation);
 }
 
 enum AppIdTestParam {
