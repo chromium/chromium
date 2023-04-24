@@ -50,6 +50,11 @@ namespace ash {
 
 namespace {
 
+// The ideal dimensions of a clamshell floated window before factoring in its
+// minimum size (if any) is the available work area multiplied by these ratios.
+constexpr float kFloatedWindowClamshellWidthRatio = 1.f / 3.f;
+constexpr float kFloatedWindowClamshellHeightRatio = 0.7f;
+
 constexpr char kFloatWindowCountsPerSessionHistogramName[] =
     "Ash.Float.FloatWindowCountsPerSession";
 constexpr char kFloatWindowDurationHistogramName[] =
@@ -395,8 +400,9 @@ gfx::Rect FloatController::GetPreferredFloatWindowClamshellBounds(
   // In the case of window restore, as we re-float previously floated window, we
   // will use `window->bounds()`to restore floated window's previous
   // location.
-  if (window->GetProperty(app_restore::kLaunchedFromAppRestoreKey))
+  if (window->GetProperty(app_restore::kLaunchedFromAppRestoreKey)) {
     return window->bounds();
+  }
 
   gfx::Rect work_area = WorkAreaInsets::ForWindow(window->GetRootWindow())
                             ->user_work_area_bounds();
@@ -407,9 +413,11 @@ gfx::Rect FloatController::GetPreferredFloatWindowClamshellBounds(
   // width/height if it exceeds the limit.
   const gfx::Size minimum_size = window->delegate()->GetMinimumSize();
   gfx::Rect preferred_bounds =
-      gfx::Rect(std::max(static_cast<int>(work_area.width() * 0.33),
+      gfx::Rect(std::max(static_cast<int>(work_area.width() *
+                                          kFloatedWindowClamshellWidthRatio),
                          minimum_size.width()),
-                std::max(static_cast<int>(work_area.height() * 0.7),
+                std::max(static_cast<int>(work_area.height() *
+                                          kFloatedWindowClamshellHeightRatio),
                          minimum_size.height()));
 
   // If user has already adjusted the window to be a size smaller than the
@@ -433,20 +441,10 @@ gfx::Rect FloatController::GetPreferredFloatWindowClamshellBounds(
 // static
 gfx::Rect FloatController::GetPreferredFloatWindowTabletBounds(
     aura::Window* window) {
-  gfx::Rect work_area = WorkAreaInsets::ForWindow(window->GetRootWindow())
-                            ->user_work_area_bounds();
-  wm::ConvertRectFromScreen(window->GetRootWindow(), &work_area);
-
-  const bool landscape = chromeos::wm::IsLandscapeOrientationForWindow(window);
   const gfx::Size preferred_size =
-      chromeos::wm::GetPreferredFloatedWindowTabletSize(work_area, landscape);
-  const gfx::Size minimum_size = window->delegate()->GetMinimumSize();
+      chromeos::wm::GetFloatedWindowTabletSize(window);
 
-  const int width = std::max(preferred_size.width(), minimum_size.width());
-
-  // Preferred height is always greater than minimum height since this function
-  // won't be called otherwise.
-  DCHECK_GT(preferred_size.height(), minimum_size.height());
+  const int width = preferred_size.width();
   const int height = preferred_size.height();
 
   // Get `floated_window_info` from the float controller. For non ARC apps, it
@@ -459,6 +457,10 @@ gfx::Rect FloatController::GetPreferredFloatWindowTabletBounds(
     DCHECK(floated_window_info);
   }
 #endif
+
+  gfx::Rect work_area = WorkAreaInsets::ForWindow(window->GetRootWindow())
+                            ->user_work_area_bounds();
+  wm::ConvertRectFromScreen(window->GetRootWindow(), &work_area);
 
   // Update the origin of the floated window based on whichever corner it is
   // magnetized to.

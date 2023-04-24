@@ -19,10 +19,10 @@ namespace chromeos::wm {
 COMPONENT_EXPORT(CHROMEOS_UI_WM)
 bool IsLandscapeOrientationForWindow(aura::Window* window);
 
-// Returns the preferred size for a floated window in tablet mode.
+// Returns the size for a `window` in tablet mode. Returns an empty size if the
+// window cannot be floated.
 COMPONENT_EXPORT(CHROMEOS_UI_WM)
-gfx::Size GetPreferredFloatedWindowTabletSize(const gfx::Rect& work_area,
-                                              bool landscape);
+gfx::Size GetFloatedWindowTabletSize(aura::Window* window);
 
 // Checks whether a `window` can be floated.
 COMPONENT_EXPORT(CHROMEOS_UI_WM) bool CanFloatWindow(aura::Window* window);

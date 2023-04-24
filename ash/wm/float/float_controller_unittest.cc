@@ -1201,7 +1201,6 @@ TEST_F(TabletWindowFloatTest, MinimumSizeChangeOnTablet) {
       views::Widget::GetWidgetForNativeWindow(window.get())
           ->non_client_view()
           ->frame_view());
-
   wm::ActivateWindow(window.get());
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
@@ -1238,6 +1237,52 @@ TEST_F(TabletWindowFloatTest, MinimumSizeChangeOnTablet) {
   custom_frame->SetMinimumSize(gfx::Size(350, 350));
   ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
   EXPECT_EQ(350, window->bounds().width());
+}
+
+// Tests if a browser can float at several minimum sizes.
+TEST_F(TabletWindowFloatTest, CanBrowsersFloat) {
+  UpdateDisplay("800x600");
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  const int work_area_width =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area().width();
+  const int maximum_float_width =
+      (work_area_width - chromeos::wm::kSplitviewDividerShortSideLength) / 2 -
+      chromeos::wm::kFloatedWindowPaddingDp * 2;
+
+  aura::test::TestWindowDelegate window_delegate;
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
+      &window_delegate, /*id=*/-1, gfx::Rect(500, 500)));
+  window->SetProperty(aura::client::kAppType,
+                      static_cast<int>(AppType::BROWSER));
+  wm::ActivateWindow(window.get());
+
+  // Browser windows whose minimum size is greater than the maximum allowed
+  // float width can never be floated.
+  window_delegate.set_minimum_size(gfx::Size(maximum_float_width + 5, 100));
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_FALSE(WindowState::Get(window.get())->IsFloated());
+
+  // Browser windows whose minimum size is slightly less than the maximum
+  // allowed, will be floated and have some extra padding, but their size should
+  // not exceed the maximum allowed.
+  window_delegate.set_minimum_size(gfx::Size(maximum_float_width - 20, 100));
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
+  EXPECT_EQ(maximum_float_width, window->bounds().width());
+
+  // Unfloat the window for the next check.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_FALSE(WindowState::Get(window.get())->IsFloated());
+
+  // Browser windows whose minimum size is smaller that the maximum allowed will
+  // have extra padding to make the omnibox tappable.
+  window_delegate.set_minimum_size(gfx::Size(250, 100));
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
+  EXPECT_EQ(250 + chromeos::wm::kBrowserExtraPaddingDp,
+            window->bounds().width());
 }
 
 // Tests that a window can be floated in tablet mode, unless its minimum width
