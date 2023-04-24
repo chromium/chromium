@@ -65,6 +65,7 @@ class MultiWordSuggester : public Suggester {
       size_t initial_confirmed_length;
       base::TimeTicks time_first_shown;
       bool highlighted = false;
+      size_t original_surrounding_text_length;
     };
 
     struct SurroundingText {

@@ -1229,6 +1229,209 @@ TEST_F(MultiWordSuggesterTest,
 }
 
 TEST_F(MultiWordSuggesterTest,
+       DoesNotRecordImplicitRejectionWhenPredictionSuggestionShown) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "are you"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitRejection", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how ", gfx::Range(4));
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitRejection", 0);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       DoesNotRecordImplicitRejectionWhenCompletionSuggestionShown) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "are you"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitRejection", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how a", gfx::Range(5));
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitRejection", 0);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       DoesNotRecordImplicitRejectionWhenSuggestionAccepted) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitRejection", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how ", gfx::Range(4));
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+  suggester_->OnSurroundingTextChanged(u"how a", gfx::Range(5));
+  SendKeyEvent(suggester_.get(), ui::DomCode::TAB);
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitRejection", 0);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       DoesNotRecordImplicitRejectionWhenAUserTypesSuggestion) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "are"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitRejection", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how ", gfx::Range(4));
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+  suggester_->OnSurroundingTextChanged(u"how a", gfx::Range(5));
+  suggester_->OnSurroundingTextChanged(u"how ar", gfx::Range(6));
+  suggester_->OnSurroundingTextChanged(u"how are", gfx::Range(7));
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitRejection", 0);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       DoesNotRecordImplicitRejectionWhenAUserTypesThenDeletes) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "are"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitRejection", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how ", gfx::Range(4));
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+  suggester_->OnSurroundingTextChanged(u"how a", gfx::Range(5));
+  suggester_->OnSurroundingTextChanged(u"how ar", gfx::Range(6));
+  suggester_->OnSurroundingTextChanged(u"how a", gfx::Range(5));
+  suggester_->OnSurroundingTextChanged(u"how ", gfx::Range(4));
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitRejection", 0);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       DoesNotRecordImplicitRejectionWhenAnInputLosesFocus) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "are"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitRejection", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how ", gfx::Range(4));
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+  suggester_->OnSurroundingTextChanged(u"how a", gfx::Range(5));
+  suggester_->OnBlur();
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitRejection", 0);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       RecordsImplicitRejectionWhenUserMistypesSuggestion) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "are we"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitRejection", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how ", gfx::Range(4));
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+  suggester_->OnSurroundingTextChanged(u"how a", gfx::Range(5));
+  suggester_->OnSurroundingTextChanged(u"how ar", gfx::Range(6));
+  suggester_->OnSurroundingTextChanged(u"how are", gfx::Range(7));
+  suggester_->OnSurroundingTextChanged(u"how are ", gfx::Range(8));
+  suggester_->OnSurroundingTextChanged(u"how are y", gfx::Range(9));
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitRejection", 1);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       RecordsImplicitRejectionWhenSuggestionHasNoConfirmedLength) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "going today"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitRejection", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how are you ", gfx::Range(12));
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+  suggester_->OnSurroundingTextChanged(u"how are you f", gfx::Range(13));
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitRejection", 1);
+}
+
+TEST_F(MultiWordSuggesterTest, RecordsImplicitRejectionOnlyOnce) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "are we"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitRejection", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how ", gfx::Range(4));
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+  suggester_->OnSurroundingTextChanged(u"how a", gfx::Range(5));
+  suggester_->OnSurroundingTextChanged(u"how ar", gfx::Range(6));
+  suggester_->OnSurroundingTextChanged(u"how are", gfx::Range(7));
+  suggester_->OnSurroundingTextChanged(u"how are ", gfx::Range(8));
+  suggester_->OnSurroundingTextChanged(u"how are y", gfx::Range(9));
+  suggester_->OnSurroundingTextChanged(u"how are yo", gfx::Range(10));
+  suggester_->OnSurroundingTextChanged(u"how are you", gfx::Range(11));
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitRejection", 1);
+}
+
+TEST_F(MultiWordSuggesterTest,
        SurroundingTextChangesDoNotTriggerAnnouncements) {
   suggester_->OnFocus(kFocusedContextId);
   suggester_->OnSurroundingTextChanged(u"why are", gfx::Range(7));

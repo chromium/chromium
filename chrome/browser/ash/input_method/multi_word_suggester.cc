@@ -111,6 +111,13 @@ void RecordImplicitAcceptance(
       ToSuggestionType(suggestion_mode));
 }
 
+void RecordImplicitRejection(
+    const ime::AssistiveSuggestionMode& suggestion_mode) {
+  base::UmaHistogramEnumeration(
+      "InputMethod.Assistive.MultiWord.ImplicitRejection",
+      ToSuggestionType(suggestion_mode));
+}
+
 absl::optional<int> GetTimeFirstAcceptedSuggestion(Profile* profile) {
   ScopedDictPrefUpdate update(profile->GetPrefs(),
                               prefs::kAssistiveInputFeatureSettings);
@@ -441,6 +448,8 @@ void MultiWordSuggester::SuggestionState::UpdateSurroundingText(
 void MultiWordSuggester::SuggestionState::UpdateSuggestion(
     const MultiWordSuggester::SuggestionState::Suggestion& suggestion) {
   suggestion_ = suggestion;
+  suggestion_->original_surrounding_text_length =
+      surrounding_text_ ? surrounding_text_->text.length() : 0;
   UpdateState(suggestion.mode == AssistiveSuggestionMode::kCompletion
                   ? State::kCompletionSuggestionShown
                   : State::kPredictionSuggestionShown);
@@ -466,6 +475,9 @@ void MultiWordSuggester::SuggestionState::ReconcileSuggestionWithText() {
       new_confirmed_length == suggestion_->text.length();
 
   // Are we still tracking the last suggestion shown to the user?
+  //
+  // TODO(b/279114189): Prediction suggestions are not dismissed correctly on
+  //    first mismatched character typed, need to investigate.
   bool no_longer_tracking =
       state_ == State::kTrackingLastSuggestionShown &&
       ((new_confirmed_length == 0 ||
@@ -474,8 +486,17 @@ void MultiWordSuggester::SuggestionState::ReconcileSuggestionWithText() {
         surrounding_text_->cursor_pos != surrounding_text_->prev_cursor_pos) ||
        user_typed_suggestion);
 
-  if (no_longer_tracking && user_typed_suggestion)
+  bool user_has_typed_more = surrounding_text_->text.length() >
+                             suggestion_->original_surrounding_text_length;
+  if ((state_ == State::kPredictionSuggestionShown ||
+       state_ == State::kTrackingLastSuggestionShown) &&
+      new_confirmed_length == 0 && user_has_typed_more) {
+    RecordImplicitRejection(suggestion_->mode);
+  }
+
+  if (no_longer_tracking && user_typed_suggestion) {
     RecordImplicitAcceptance(suggestion_->mode);
+  }
 
   if (no_longer_tracking || !surrounding_text_->cursor_at_end_of_text) {
     UpdateState(State::kSuggestionDismissed);
@@ -493,7 +514,9 @@ void MultiWordSuggester::SuggestionState::ReconcileSuggestionWithText() {
                            .confirmed_length = new_confirmed_length,
                            .initial_confirmed_length = initial_confirmed_length,
                            .time_first_shown = suggestion_->time_first_shown,
-                           .highlighted = suggestion_->highlighted};
+                           .highlighted = suggestion_->highlighted,
+                           .original_surrounding_text_length =
+                               suggestion_->original_surrounding_text_length};
 }
 
 void MultiWordSuggester::SuggestionState::ToggleSuggestionHighlight() {
