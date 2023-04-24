@@ -569,7 +569,6 @@ const CGFloat kIPHVerticalOffset = -5;
   // initializer.
   NSString* text = l10n_util::GetNSString(
       IDS_AUTOFILL_IPH_EXTERNAL_ACCOUNT_PROFILE_SUGGESTION);
-  BubbleViewType bubbleType = BubbleViewTypeDefault;
 
   // Prepare the dismissal callback.
   __weak __typeof(self) weakSelf = self;
@@ -586,8 +585,10 @@ const CGFloat kIPHVerticalOffset = -5;
                       image:nil
              arrowDirection:BubbleArrowDirectionDown
                   alignment:BubbleAlignmentLeading
-                 bubbleType:bubbleType
+                 bubbleType:BubbleViewTypeDefault
           dismissalCallback:dismissalCallback];
+  bubbleViewControllerPresenter.voiceOverAnnouncement = l10n_util::GetNSString(
+      IDS_AUTOFILL_IPH_EXTERNAL_ACCOUNT_PROFILE_SUGGESTION);
   return bubbleViewControllerPresenter;
 }
 
