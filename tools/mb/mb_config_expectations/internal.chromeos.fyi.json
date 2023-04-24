@@ -40,8 +40,8 @@
       "use_remoteexec": true
     }
   },
-  "chromeos-jacuzzi64-chrome-skylab-fyi": {
-    "args_file": "//build/args/chromeos/jacuzzi64.gni",
+  "chromeos-jacuzzi-chrome-skylab-fyi": {
+    "args_file": "//build/args/chromeos/jacuzzi.gni",
     "gn_args": {
       "dcheck_always_on": true,
       "exclude_unwind_tables": false,

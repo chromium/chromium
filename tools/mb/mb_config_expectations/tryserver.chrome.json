@@ -165,6 +165,18 @@
       "use_remoteexec": true
     }
   },
+  "chromeos-jacuzzi-chrome-skylab": {
+    "args_file": "//build/args/chromeos/jacuzzi.gni",
+    "gn_args": {
+      "dcheck_always_on": true,
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "is_skylab": true,
+      "use_remoteexec": true
+    }
+  },
   "chromeos-jacuzzi-compile-chrome": {
     "args_file": "//build/args/chromeos/jacuzzi.gni",
     "gn_args": {
@@ -175,18 +187,6 @@
       "is_chromeos_device": true,
       "is_official_build": true,
       "ozone_platform_headless": true,
-      "use_remoteexec": true
-    }
-  },
-  "chromeos-jacuzzi64-chrome-skylab": {
-    "args_file": "//build/args/chromeos/jacuzzi64.gni",
-    "gn_args": {
-      "dcheck_always_on": true,
-      "exclude_unwind_tables": false,
-      "is_chrome_branded": true,
-      "is_chromeos_device": true,
-      "is_official_build": true,
-      "is_skylab": true,
       "use_remoteexec": true
     }
   },
