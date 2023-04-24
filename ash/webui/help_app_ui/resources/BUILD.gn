@@ -51,6 +51,10 @@ copy("stage_generated") {
 optimize_webui("browser_proxy_rollup") {
   host = "help-app"
   js_module_in_files = [ "browser_proxy.js" ]
+
+  # Exclude files that are served from chrome://resources anyway, since bundling
+  # them would unnecessarily increase the overall build size.
+  excludes = [ "chrome://resources/mojo/url/mojom/url.mojom-lite.js" ]
   input = rebase_path(stage_folder, root_build_dir)
   deps = [
     ":stage_generated",

@@ -49,6 +49,19 @@ const isLauncherSearchEnabled =
     help_app.handler.isLauncherSearchEnabled().then(result => result.enabled);
 
 /**
+ * @param {string|Object} url
+ * @return {!url.mojom.Url}
+ */
+function toUrl(url) {
+  // TODO(b/279132899): Figure out why `url` is an empty object when it should
+  // have been an empty string.
+  if (url === '' || typeof (url) !== 'string') {
+    return /** @type {!url.mojom.Url} */ ({url: ''});
+  }
+  return /** @type {!url.mojom.Url} */ ({url});
+}
+
+/**
  * @param {string} s
  * @return {!mojoBase.mojom.String16Spec}
  */
@@ -291,6 +304,10 @@ guestMessagePipe.registerHandler(
 
 guestMessagePipe.registerHandler(Message.GET_DEVICE_INFO, async () => {
   return (await help_app.handler.getDeviceInfo()).deviceInfo;
+});
+
+guestMessagePipe.registerHandler(Message.OPEN_URL_IN_BROWSER, (url) => {
+  help_app.handler.openUrlInBrowser(toUrl(url));
 });
 
 /**

@@ -4,6 +4,8 @@
 
 module ash.help_app.mojom;
 
+import "url/mojom/url.mojom";
+
 // Device info obtained via the DeviceInfoManager.
 struct DeviceInfo {
   // The board family of the device. e.g. "brya".
@@ -52,4 +54,9 @@ interface PageHandler {
 
   // Returns device info obtained via the DeviceInfoManager.
   GetDeviceInfo() => (DeviceInfo device_info);
+
+  // Opens a valid https:// URL in a new browser tab without getting intercepted
+  // by URL capturing logic. Failure to provide a valid https:// URL will cause
+  // the Help app renderer process to crash.
+  OpenUrlInBrowser(url.mojom.Url url);
 };

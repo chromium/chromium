@@ -40,6 +40,7 @@ class ChromeHelpAppUIDelegate : public HelpAppUIDelegate {
   void MaybeShowReleaseNotesNotification() override;
   void GetDeviceInfo(ash::help_app::mojom::PageHandler::GetDeviceInfoCallback
                          callback) override;
+  absl::optional<std::string> OpenUrlInBrowser(const GURL& url) override;
 
  private:
   content::WebUI* web_ui_;  // Owns |this|.

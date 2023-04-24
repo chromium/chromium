@@ -23,4 +23,5 @@ export const Message = {
   MAYBE_SHOW_RELEASE_NOTES_NOTIFICATION:
       'maybe-show-release-notes-notification',
   GET_DEVICE_INFO: 'get-device-info',
+  OPEN_URL_IN_BROWSER: 'open-url-in-browser',
 };

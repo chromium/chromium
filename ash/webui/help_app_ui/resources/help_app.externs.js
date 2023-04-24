@@ -272,6 +272,15 @@ helpApp.ClientApiDelegate.prototype.maybeShowReleaseNotesNotification =
 helpApp.ClientApiDelegate.prototype.getDeviceInfo = function() {};
 
 /**
+ * Opens a valid https:// URL in a new browser tab without getting intercepted
+ * by URL capturing logic. Failure to provide a valid https:// URL will cause
+ * the Help app renderer process to crash.
+ * @param {string} url
+ * @return {!Promise<undefined>}
+ */
+helpApp.ClientApiDelegate.prototype.openUrlInBrowser = function(url) {};
+
+/**
  * Launch data that can be read by the app when it first loads.
  * @type {{
  *     delegate: !helpApp.ClientApiDelegate,

@@ -68,6 +68,7 @@ static_library("help_app_ui") {
 
 mojom("mojo_bindings") {
   sources = [ "help_app_ui.mojom" ]
+  public_deps = [ "//url/mojom:url_mojom_gurl" ]
 }
 
 source_set("unit_tests") {
