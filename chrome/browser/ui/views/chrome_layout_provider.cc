@@ -53,8 +53,10 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   switch (metric) {
     case views::INSETS_DIALOG:
-    case views::INSETS_DIALOG_SUBSECTION:
-      return gfx::Insets(kHarmonyLayoutUnit);
+    case views::INSETS_DIALOG_SUBSECTION: {
+      return features::IsChromeRefresh2023() ? gfx::Insets::VH(20, 20)
+                                             : gfx::Insets(kHarmonyLayoutUnit);
+    }
     case views::INSETS_CHECKBOX_RADIO_BUTTON: {
       gfx::Insets insets = LayoutProvider::GetInsetsMetric(metric);
       // Checkboxes and radio buttons should be aligned flush to the left edge.
