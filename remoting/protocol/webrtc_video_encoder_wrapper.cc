@@ -6,11 +6,11 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <functional>
 #include <string>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -108,7 +108,7 @@ int GetFrameRateFromSdpFormatParam(const std::string& param_value) {
   // A lower bound of 1 millisecond is needed because the framerate is used as
   // the denominator when determining the period between frames so 0 will lead
   // to divide by 0 bugs.
-  return base::clamp<int>(conversion_result, 1, 1000);
+  return std::clamp<int>(conversion_result, 1, 1000);
 }
 
 }  // namespace

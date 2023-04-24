@@ -8,6 +8,7 @@
 #include <sddl.h>
 #include <wrl/client.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <string>
@@ -15,7 +16,6 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
 #include "base/logging.h"
@@ -104,8 +104,8 @@ const wchar_t kSecurityLayerValueName[] = L"SecurityLayer";
 
 webrtc::DesktopSize GetBoundedRdpDesktopSize(int width, int height) {
   return webrtc::DesktopSize(
-      base::clamp(width, kMinRdpScreenWidth, kMaxRdpScreenWidth),
-      base::clamp(height, kMinRdpScreenHeight, kMaxRdpScreenHeight));
+      std::clamp(width, kMinRdpScreenWidth, kMaxRdpScreenWidth),
+      std::clamp(height, kMinRdpScreenHeight, kMaxRdpScreenHeight));
 }
 
 // DesktopSession implementation which attaches to the host's physical console.

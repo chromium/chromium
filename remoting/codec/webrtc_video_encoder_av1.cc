@@ -4,7 +4,8 @@
 
 #include "remoting/codec/webrtc_video_encoder_av1.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -63,7 +64,7 @@ void WebrtcVideoEncoderAV1::SetEncoderSpeed(int encoder_speed) {
   // realtime encoding with AV1.  This allows for client-driven experimentation,
   // however in practice, a value of 9 or 10 should be chosen as that will give
   // the best performance.
-  av1_encoder_speed_ = base::clamp<int>(encoder_speed, 7, 10);
+  av1_encoder_speed_ = std::clamp<int>(encoder_speed, 7, 10);
 }
 
 bool WebrtcVideoEncoderAV1::InitializeCodec(const webrtc::DesktopSize& size) {

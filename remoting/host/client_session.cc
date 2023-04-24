@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_map.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -192,13 +191,13 @@ void ClientSession::ControlVideo(const protocol::VideoControl& video_control) {
     } else {
       base::TimeDelta capture_interval =
           framerate_boost.has_capture_interval_ms()
-              ? base::clamp(
+              ? std::clamp(
                     base::Milliseconds(framerate_boost.capture_interval_ms()),
                     base::Milliseconds(1), base::Milliseconds(1000))
               : kDefaultBoostCaptureInterval;
       base::TimeDelta boost_duration =
           framerate_boost.has_boost_duration_ms()
-              ? base::clamp(
+              ? std::clamp(
                     base::Milliseconds(framerate_boost.boost_duration_ms()),
                     base::Milliseconds(1), base::Milliseconds(1000))
               : kDefaultBoostDuration;

@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -206,8 +205,8 @@ void WebrtcVideoEncoderVpx::SetEncoderSpeed(int encoder_speed) {
     return;
   }
 
-  vp9_encoder_speed_ = base::clamp<int>(encoder_speed, kVp9LosslessEncodeSpeed,
-                                        kVp9MaxEncoderSpeed);
+  vp9_encoder_speed_ = std::clamp<int>(encoder_speed, kVp9LosslessEncodeSpeed,
+                                       kVp9MaxEncoderSpeed);
 }
 
 void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
