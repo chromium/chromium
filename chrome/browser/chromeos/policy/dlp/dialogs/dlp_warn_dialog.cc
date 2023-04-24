@@ -66,6 +66,8 @@ DlpWarnDialog::DlpWarnDialog(OnDlpRestrictionCheckedCallback callback,
       restriction_(options.restriction),
       application_title_(options.application_title),
       contents_(std::move(options.confidential_contents)) {
+  SetModalType(ui::MODAL_TYPE_SYSTEM);
+
   SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, GetCancelButton());
 

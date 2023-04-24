@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_notifier.h"
 
+#include <cstddef>
 #include <memory>
 
 #include "base/containers/cxx20_erase.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 
 namespace policy {
@@ -59,12 +61,14 @@ base::WeakPtr<views::Widget> DlpWarnNotifier::ShowDlpFilesWarningDialog(
     OnDlpRestrictionCheckedCallback callback,
     const std::vector<DlpConfidentialFile>& confidential_files,
     const DlpFileDestination& files_destination,
-    DlpFilesController::FileAction files_action) {
+    DlpFilesController::FileAction files_action,
+    gfx::NativeWindow modal_parent) {
   return ShowDlpWarningDialog(
       std::move(callback),
       DlpWarnDialog::DlpWarnDialogOptions(DlpWarnDialog::Restriction::kFiles,
                                           confidential_files, files_destination,
-                                          files_action));
+                                          files_action),
+      modal_parent);
 }
 
 base::WeakPtr<views::Widget> DlpWarnNotifier::ShowDlpScreenShareWarningDialog(
@@ -83,16 +87,17 @@ int DlpWarnNotifier::ActiveWarningDialogsCountForTesting() const {
 
 base::WeakPtr<views::Widget> DlpWarnNotifier::ShowDlpWarningDialog(
     OnDlpRestrictionCheckedCallback callback,
-    DlpWarnDialog::DlpWarnDialogOptions options) {
+    DlpWarnDialog::DlpWarnDialogOptions options,
+    gfx::NativeWindow modal_parent) {
   views::Widget* widget;
   if (options.restriction == PolicyDialogBase::Restriction::kFiles) {
-    // TODO(aidazolic): Pass parent.
     widget = views::DialogDelegate::CreateDialogWidget(
         std::make_unique<FilesPolicyDialog>(
             std::move(callback), options.confidential_files,
-            options.files_destination.value(), options.files_action.value()),
-        /*context=*/nullptr, /*parent=*/nullptr);
-  } else {
+            options.files_destination.value(), options.files_action.value(),
+            modal_parent),
+        /*context=*/nullptr, /*parent=*/modal_parent);
+  } else {  // on-screen restriction
     widget = views::DialogDelegate::CreateDialogWidget(
         std::make_unique<DlpWarnDialog>(std::move(callback), options),
         /*context=*/nullptr, /*parent=*/nullptr);

@@ -84,8 +84,6 @@ PolicyDialogBase::PolicyDialogBase(OnDlpRestrictionCheckedCallback callback) {
   SetAcceptCallback(base::BindOnce(std::move(split.first), true));
   SetCancelCallback(base::BindOnce(std::move(split.second), false));
 
-  SetModalType(ui::MODAL_TYPE_SYSTEM);
-
   SetShowCloseButton(false);
 
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(

@@ -14,6 +14,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -58,7 +59,8 @@ class DlpWarnNotifier : public views::WidgetObserver {
       OnDlpRestrictionCheckedCallback callback,
       const std::vector<DlpConfidentialFile>& confidential_files,
       const DlpFileDestination& files_destination,
-      DlpFilesController::FileAction files_action);
+      DlpFilesController::FileAction files_action,
+      gfx::NativeWindow modal_parent);
 
   // Shows a warning dialog that informs the user that screen sharing is not
   // recommended due to |confidential_contents| visible. Calls |callback| and
@@ -77,11 +79,11 @@ class DlpWarnNotifier : public views::WidgetObserver {
  private:
   friend class MockDlpWarnNotifier;
 
-  // Helper method to create and show a warning dialog for a given
-  // |restriction|.
+  // Helper method to create and show a DlpWarnDialog.
   virtual base::WeakPtr<views::Widget> ShowDlpWarningDialog(
       OnDlpRestrictionCheckedCallback callback,
-      DlpWarnDialog::DlpWarnDialogOptions options);
+      DlpWarnDialog::DlpWarnDialogOptions options,
+      gfx::NativeWindow modal_parent = nullptr);
 
   // Removes the |widget| from widgets_ and stops observing it.
   void RemoveWidget(views::Widget* widget);

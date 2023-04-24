@@ -76,11 +76,18 @@ FilesPolicyDialog::FilesPolicyDialog(
     OnDlpRestrictionCheckedCallback callback,
     const std::vector<DlpConfidentialFile>& files,
     DlpFileDestination destination,
-    DlpFilesController::FileAction action)
+    DlpFilesController::FileAction action,
+    gfx::NativeWindow modal_parent)
     : PolicyDialogBase(std::move(callback)),
       files_(std::move(files)),
       destination_(destination),
       action_(action) {
+  // TODO(b/277879595): When no Files app window, open a new one.
+  // TODO(b/279397364): Confirm behavior if we cannot open Files App.
+  ui::ModalType type =
+      modal_parent ? ui::MODAL_TYPE_WINDOW : ui::MODAL_TYPE_SYSTEM;
+  SetModalType(type);
+
   SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());
   SetButtonLabel(ui::DialogButton::DIALOG_BUTTON_CANCEL, GetCancelButton());
 

@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -48,6 +49,8 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "chromeos/ui/base/file_icon_util.h"
@@ -62,6 +65,7 @@
 #include "storage/browser/file_system/recursive_operation_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -979,6 +983,13 @@ void DlpFilesController::IsFilesTransferRestricted(
         views::Widget::ClosedReason::kUnspecified);
   }
 
+  // Get the last active Files app window to use as parent.
+  // TODO(b/277032725): Pass the Files app window.
+  Browser* browser =
+      FindSystemWebAppBrowser(profile, ash::SystemWebAppType::FILE_MANAGER);
+  gfx::NativeWindow modal_parent =
+      browser ? browser->window()->GetNativeWindow() : nullptr;
+
   warn_dialog_widget_ = warn_notifier_->ShowDlpFilesWarningDialog(
       base::BindOnce(&DlpFilesController::OnDlpWarnDialogReply,
                      weak_ptr_factory_.GetWeakPtr(), std::move(files_levels),
@@ -986,7 +997,7 @@ void DlpFilesController::IsFilesTransferRestricted(
                      std::move(warned_rules_metadata), actual_dst,
                      destination_pattern, files_action,
                      std::move(result_callback)),
-      std::move(dialog_files), actual_dst, files_action);
+      std::move(dialog_files), actual_dst, files_action, modal_parent);
 }
 
 std::vector<DlpFilesController::DlpFileRestrictionDetails>

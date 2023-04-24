@@ -16,9 +16,10 @@ MockDlpWarnNotifier::MockDlpWarnNotifier() : should_proceed_(true) {
   // Propagate to the real object.
   ON_CALL(*this, ShowDlpWarningDialog)
       .WillByDefault([this](OnDlpRestrictionCheckedCallback callback,
-                            DlpWarnDialog::DlpWarnDialogOptions options) {
-        return this->DlpWarnNotifier::ShowDlpWarningDialog(std::move(callback),
-                                                           options);
+                            DlpWarnDialog::DlpWarnDialogOptions options,
+                            gfx::NativeWindow modal_parent) {
+        return this->DlpWarnNotifier::ShowDlpWarningDialog(
+            std::move(callback), options, modal_parent);
       });
 }
 
@@ -27,7 +28,8 @@ MockDlpWarnNotifier::MockDlpWarnNotifier(bool should_proceed)
   // Simulate proceed or cancel.
   ON_CALL(*this, ShowDlpWarningDialog)
       .WillByDefault([this](OnDlpRestrictionCheckedCallback callback,
-                            DlpWarnDialog::DlpWarnDialogOptions options) {
+                            DlpWarnDialog::DlpWarnDialogOptions options,
+                            gfx::NativeWindow modal_parent) {
         std::move(callback).Run(should_proceed_);
         return nullptr;
       });

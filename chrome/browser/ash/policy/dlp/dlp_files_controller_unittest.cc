@@ -477,8 +477,9 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_ErrorResponse) {
 
   base::test::TestFuture<std::vector<storage::FileSystemURL>> future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->GetDisallowedTransfers(
-      transferred_files, dst_url, /*is_move=*/false, future.GetCallback());
+  files_controller_->GetDisallowedTransfers(transferred_files, dst_url,
+                                            /*is_move=*/false,
+                                            future.GetCallback());
 
   ASSERT_EQ(3u, future.Get().size());
   EXPECT_EQ(transferred_files, future.Take());
@@ -2374,7 +2375,7 @@ TEST_P(DlpFilesWarningDialogContentTest,
       .Times(::testing::AnyNumber());
 
   EXPECT_CALL(*mock_dlp_warn_notifier,
-              ShowDlpWarningDialog(_, expected_dialog_options))
+              ShowDlpWarningDialog(_, expected_dialog_options, _))
       .Times(1);
 
   MockIsFilesTransferRestrictedCallback cb;

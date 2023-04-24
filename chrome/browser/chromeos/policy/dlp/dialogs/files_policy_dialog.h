@@ -25,7 +25,8 @@ class FilesPolicyDialog : public PolicyDialogBase {
   FilesPolicyDialog(OnDlpRestrictionCheckedCallback callback,
                     const std::vector<DlpConfidentialFile>& files,
                     DlpFileDestination destination,
-                    DlpFilesController::FileAction action);
+                    DlpFilesController::FileAction action,
+                    gfx::NativeWindow modal_parent);
   FilesPolicyDialog(const FilesPolicyDialog& other) = delete;
   FilesPolicyDialog& operator=(const FilesPolicyDialog& other) = delete;
   ~FilesPolicyDialog() override;
