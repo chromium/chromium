@@ -16,8 +16,8 @@ import '/shared/nearby_page_template.js';
 import '/shared/nearby_preview.js';
 import './strings.m.js';
 
-import {ConfirmationManagerInterface, DiscoveryObserverReceiver, PayloadPreview, SelectShareTargetResult, ShareTarget, ShareTargetListenerCallbackRouter, StartDiscoveryResult, TransferUpdateListenerPendingReceiver} from '/shared/mojo/nearby_share.mojom-webui.js';
 import {NearbyDeviceElement} from '/shared/nearby_device.js';
+import {ConfirmationManagerInterface, DiscoveryObserverReceiver, PayloadPreview, SelectShareTargetResult, ShareTarget, ShareTargetListenerCallbackRouter, StartDiscoveryResult, TransferUpdateListenerPendingReceiver} from '/shared/nearby_share.mojom-webui.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';

@@ -19,8 +19,8 @@ import './nearby_share_device_name_dialog.js';
 import './nearby_share_data_usage_dialog.js';
 import './nearby_share_receive_dialog.js';
 
-import {ReceiveObserverReceiver, ShareTarget, TransferMetadata} from '/shared/mojo/nearby_share.mojom-webui.js';
 import {getContactManager} from '/shared/nearby_contact_manager.js';
+import {ReceiveObserverReceiver, ShareTarget, TransferMetadata} from '/shared/nearby_share.mojom-webui.js';
 import {NearbySettings} from '/shared/nearby_share_settings_mixin.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';

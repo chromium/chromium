@@ -93,8 +93,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
  * into a single JS file. The exports below are necessary so they can be
  * imported into browser tests.
  */
-export * as nearbyShareMojom from '/shared/mojo/nearby_share.mojom-webui.js';
 export {getContactManager, observeContactManager, setContactManagerForTesting} from '/shared/nearby_contact_manager.js';
+export * as nearbyShareMojom from '/shared/nearby_share.mojom-webui.js';
 export {getNearbyShareSettings, observeNearbyShareSettings, setNearbyShareSettingsForTesting} from '/shared/nearby_share_settings.js';
 export {NearbySettings, NearbyShareSettingsMixin} from '/shared/nearby_share_settings_mixin.js';
 export {LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.js';

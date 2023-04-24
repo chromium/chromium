@@ -18,9 +18,9 @@ import './nearby_device_icon.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ShareTarget} from './mojo/nearby_share.mojom-webui.js';
 import {NearbyDeviceIconElement} from './nearby_device_icon.js';
 import {getTemplate} from './nearby_progress.html.js';
+import {ShareTarget} from './nearby_share.mojom-webui.js';
 
 export class NearbyProgressElement extends PolymerElement {
   static get is() {
