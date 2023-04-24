@@ -208,14 +208,8 @@ MultiStepImportMerger::~MultiStepImportMerger() = default;
 void MultiStepImportMerger::ProcessMultiStepImport(
     AutofillProfile& profile,
     ProfileImportMetadata& import_metadata) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableMultiStepImports)) {
-    return;
-  }
-
-  multistep_candidates_.RemoveOutdatedItems(
-      features::kAutofillMultiStepImportCandidateTTL.Get(),
-      import_metadata.origin);
+  multistep_candidates_.RemoveOutdatedItems(kMultiStepImportTTL,
+                                            import_metadata.origin);
   bool has_min_address_requirements =
       MergeProfileWithMultiStepCandidates(profile, import_metadata);
   if (!has_min_address_requirements) {
@@ -336,13 +330,6 @@ void MultiStepImportMerger::OnBrowsingHistoryCleared(
 
 void MultiStepImportMerger::OnPersonalDataChanged(
     PersonalDataManager& personal_data_manager) {
-  // Complete profiles are only stored if multi-step complements are enabled.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableMultiStepImports) ||
-      !features::kAutofillEnableMultiStepImportComplements.Get()) {
-    return;
-  }
-
   auto it = multistep_candidates_.begin();
   while (it != multistep_candidates_.end()) {
     // `it` might get erased, so `it++` at the end of the loop doesn't suffice.

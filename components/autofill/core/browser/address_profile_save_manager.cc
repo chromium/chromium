@@ -15,19 +15,15 @@ namespace autofill {
 
 namespace {
 
-// When multi-step complements are enabled, sufficiently complete profiles are
-// added as to `form_data_importer`s multi-step import candidates. This
-// enables complementing them in later steps with additional optional
-// information.
+// Sufficiently complete profiles are added to the `form_data_importer`s
+// multi-step import candidates. This enables complementing them in later steps
+// with additional optional information.
 // This function adds the imported profile as a candidate. This is only done
 // after the user decision to incorporate manual edits.
 void AddMultiStepComplementCandidate(FormDataImporter* form_data_importer,
                                      const AutofillProfile& profile,
                                      const url::Origin& origin) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableMultiStepImports) ||
-      !features::kAutofillEnableMultiStepImportComplements.Get() ||
-      !form_data_importer) {
+  if (!form_data_importer) {
     return;
   }
   // Metrics depending on `import_process.import_metadata()` are collected

@@ -4142,10 +4142,6 @@ TEST_P(FormDataImporterTest, RemoveInaccessibleProfileValuesMetrics) {
 
 // Tests a 2-page multi-step extraction.
 TEST_P(FormDataImporterTest, MultiStepImport) {
-  base::test::ScopedFeatureList multistep_import_feature;
-  multistep_import_feature.InitAndEnableFeature(
-      features::kAutofillEnableMultiStepImports);
-
   std::unique_ptr<FormStructure> form_structure =
       ConstructSplitDefaultProfileFormStructure(/*part=*/1);
   ExtractAddressProfilesAndVerifyExpectation(*form_structure, {});
@@ -4156,9 +4152,6 @@ TEST_P(FormDataImporterTest, MultiStepImport) {
 
 // Tests that a complemented country is discarded in favour of an observed one.
 TEST_P(FormDataImporterTest, MultiStepImport_ComplementCountryEarly) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(features::kAutofillEnableMultiStepImports);
-
   // Import a profile fragment with country information.
   TypeValuePairs type_value_pairs =
       GetSplitDefaultProfileTypeValuePairs(/*part=*/1);
@@ -4184,11 +4177,6 @@ TEST_P(FormDataImporterTest, MultiStepImport_ComplementCountryEarly) {
 // import was accepted are added as a multi-step candidate. This enables
 // complementing the profile with additional information on further pages.
 TEST_P(FormDataImporterTest, MultiStepImport_Complement) {
-  base::test::ScopedFeatureList multistep_import_with_complement_feature;
-  multistep_import_with_complement_feature.InitAndEnableFeatureWithParameters(
-      features::kAutofillEnableMultiStepImports,
-      {{features::kAutofillEnableMultiStepImportComplements.name, "true"}});
-
   // Extract the default profile without an email address.
   TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
   SetValueForType(type_value_pairs, EMAIL_ADDRESS, "");
@@ -4212,11 +4200,6 @@ TEST_P(FormDataImporterTest, MultiStepImport_Complement) {
 // via the settings), the multi-step complement candidate is updated accordingly
 // and the correct profile update occurs.
 TEST_P(FormDataImporterTest, MultiStepImport_Complement_ExternalUpdate) {
-  base::test::ScopedFeatureList multistep_import_with_complement_feature;
-  multistep_import_with_complement_feature.InitAndEnableFeatureWithParameters(
-      features::kAutofillEnableMultiStepImports,
-      {{features::kAutofillEnableMultiStepImportComplements.name, "true"}});
-
   // Extract the default profile without an email address.
   TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
   SetValueForType(type_value_pairs, EMAIL_ADDRESS, "");
@@ -4246,11 +4229,6 @@ TEST_P(FormDataImporterTest, MultiStepImport_Complement_ExternalUpdate) {
 // via the settings), the multi-step complement candidate is removed and no
 // further updates related to it are offered.
 TEST_P(FormDataImporterTest, MultiStepImport_Complement_ExternalRemove) {
-  base::test::ScopedFeatureList multistep_import_with_complement_feature;
-  multistep_import_with_complement_feature.InitAndEnableFeatureWithParameters(
-      features::kAutofillEnableMultiStepImports,
-      {{features::kAutofillEnableMultiStepImportComplements.name, "true"}});
-
   // Extract the default profile without an email address.
   TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
   SetValueForType(type_value_pairs, EMAIL_ADDRESS, "");
@@ -4273,10 +4251,6 @@ TEST_P(FormDataImporterTest, MultiStepImport_Complement_ExternalRemove) {
 // Tests that multi-step candidate profiles from different origins are not
 // merged.
 TEST_P(FormDataImporterTest, MultiStepImport_DifferentOrigin) {
-  base::test::ScopedFeatureList multistep_import_feature;
-  multistep_import_feature.InitAndEnableFeature(
-      features::kAutofillEnableMultiStepImports);
-
   FormData form = ConstructSplitDefaultFormData(/*part=*/1);
   form.url = GURL("https://www.foo.com");
   std::unique_ptr<FormStructure> form_structure =
@@ -4291,17 +4265,13 @@ TEST_P(FormDataImporterTest, MultiStepImport_DifferentOrigin) {
 
 // Tests that multi-step candidates profiles are invalidated after some TTL.
 TEST_P(FormDataImporterTest, MultiStepImport_TTL) {
-  base::test::ScopedFeatureList multistep_import_feature_set_ttl;
-  multistep_import_feature_set_ttl.InitAndEnableFeatureWithParameters(
-      features::kAutofillEnableMultiStepImports,
-      {{features::kAutofillMultiStepImportCandidateTTL.name, "30m"}});
   TestAutofillClock test_clock;
 
   std::unique_ptr<FormStructure> form_structure =
       ConstructSplitDefaultProfileFormStructure(/*part=*/1);
   ExtractAddressProfilesAndVerifyExpectation(*form_structure, {});
 
-  test_clock.Advance(base::Minutes(31));
+  test_clock.Advance(kMultiStepImportTTL + base::Minutes(1));
 
   form_structure = ConstructSplitDefaultProfileFormStructure(/*part=*/2);
   ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
@@ -4310,10 +4280,6 @@ TEST_P(FormDataImporterTest, MultiStepImport_TTL) {
 // Tests that multi-step candidates profiles are cleared if the browsing history
 // is deleted.
 TEST_P(FormDataImporterTest, MultiStepImport_DeleteOnBrowsingHistoryCleared) {
-  base::test::ScopedFeatureList multistep_import_feature;
-  multistep_import_feature.InitAndEnableFeature(
-      features::kAutofillEnableMultiStepImports);
-
   std::unique_ptr<FormStructure> form_structure =
       ConstructSplitDefaultProfileFormStructure(/*part=*/1);
   ExtractAddressProfilesAndVerifyExpectation(*form_structure, {});

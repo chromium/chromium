@@ -78,6 +78,10 @@ constexpr base::TimeDelta kLimitBeforeRefill = base::Seconds(1);
 constexpr base::TimeDelta kDisusedDataModelTimeDelta = base::Days(180);
 constexpr base::TimeDelta kDisusedDataModelDeletionTimeDelta = base::Days(395);
 
+// Defines for how long recently submitted profile fragments are retained in
+// memory for multi-step imports.
+constexpr base::TimeDelta kMultiStepImportTTL = base::Minutes(5);
+
 // Returns if the entry with the given |use_date| is deletable? (i.e. has not
 // been used for a long time).
 bool IsAutofillEntryWithUseDateDeletable(const base::Time& use_date);
