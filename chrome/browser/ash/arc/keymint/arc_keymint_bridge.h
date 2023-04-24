@@ -7,6 +7,7 @@
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/mojom/keymint.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/keymint/cert_store_bridge_keymint.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -68,8 +69,9 @@ class ArcKeyMintBridge : public KeyedService,
   void GetServerAfterBootstrap(GetServerCallback callback,
                                bool bootstrapResult);
 
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
-                                                //
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
+                            //
   // Points to a proxy bound to the implementation in arc-keymintd.
   mojo::Remote<mojom::keymint::KeyMintServer> keymint_server_proxy_;
 

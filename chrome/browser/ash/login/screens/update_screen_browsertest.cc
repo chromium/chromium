@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -258,11 +259,11 @@ class UpdateScreenTest : public OobeBaseTest,
 
   NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
 
-  UpdateScreen* update_screen_ = nullptr;
+  raw_ptr<UpdateScreen, ExperimentalAsh> update_screen_ = nullptr;
   // Version updater - owned by `update_screen_`.
-  VersionUpdater* version_updater_ = nullptr;
+  raw_ptr<VersionUpdater, ExperimentalAsh> version_updater_ = nullptr;
   // Error screen - owned by OobeUI.
-  ErrorScreen* error_screen_ = nullptr;
+  raw_ptr<ErrorScreen, ExperimentalAsh> error_screen_ = nullptr;
 
   base::SimpleTestTickClock tick_clock_;
 

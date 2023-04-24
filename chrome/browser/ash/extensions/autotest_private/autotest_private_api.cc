@@ -58,6 +58,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
@@ -1306,7 +1307,7 @@ class EventGenerator {
   }
 
   std::unique_ptr<ui::SystemInputInjector> input_injector_;
-  aura::WindowTreeHost* host_;
+  raw_ptr<aura::WindowTreeHost, ExperimentalAsh> host_;
   base::TimeTicks next_event_timestamp_;
   const base::TimeDelta interval_;
   base::OnceClosure closure_;
@@ -4879,7 +4880,7 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
                           webapps::AppBannerManager::Observer>
       observation_{this};
   base::OnceCallback<void()> callback_;
-  webapps::AppBannerManager* app_banner_manager_;
+  raw_ptr<webapps::AppBannerManager, ExperimentalAsh> app_banner_manager_;
 };
 
 // Used to notify when a PWA is installed.
@@ -4922,7 +4923,7 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstallManagerObserver
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>
       observation_{this};
-  web_app::WebAppProvider* provider_;
+  raw_ptr<web_app::WebAppProvider, ExperimentalAsh> provider_;
   base::OnceCallback<void(const web_app::AppId&)> callback_;
   base::WeakPtrFactory<
       AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstallManagerObserver>

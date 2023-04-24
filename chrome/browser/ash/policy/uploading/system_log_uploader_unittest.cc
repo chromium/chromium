@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -61,7 +62,7 @@ class MockUploadJob : public UploadJob {
   void Start() override;
 
  protected:
-  UploadJob::Delegate* delegate_;
+  raw_ptr<UploadJob::Delegate, ExperimentalAsh> delegate_;
   bool is_upload_error_;
   int file_index_;
   int max_files_;

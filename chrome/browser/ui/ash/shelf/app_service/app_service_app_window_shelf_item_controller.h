@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
 
 class AppServiceAppWindowShelfController;
@@ -52,7 +53,8 @@ class AppServiceAppWindowShelfItemController
  private:
   bool IsChromeApp();
 
-  AppServiceAppWindowShelfController* controller_ = nullptr;
+  raw_ptr<AppServiceAppWindowShelfController, ExperimentalAsh> controller_ =
+      nullptr;
 
   std::set<int> task_ids_;
   std::set<int> session_ids_;

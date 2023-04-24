@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_user_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -45,7 +46,7 @@ class SearchCompanionSidePanelCoordinator
   BrowserView* GetBrowserView();
 
   std::u16string name() { return name_; }
-  const gfx::VectorIcon& icon() { return icon_; }
+  const gfx::VectorIcon& icon() { return *icon_; }
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -82,7 +83,7 @@ class SearchCompanionSidePanelCoordinator
 
   raw_ptr<Browser> browser_;
   std::u16string name_;
-  const gfx::VectorIcon& icon_;
+  const raw_ref<const gfx::VectorIcon, ExperimentalAsh> icon_;
   bool dsp_is_google_ = false;
 
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>

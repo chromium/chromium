@@ -7,6 +7,7 @@
 #include "chrome/browser/speech/tts_controller_delegate_impl.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
@@ -23,7 +24,7 @@ class MockTtsControllerDelegate : public TtsControllerDelegateImpl {
   MockTtsControllerDelegate() {}
   ~MockTtsControllerDelegate() override {}
 
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
 
  private:
   const PrefService* GetPrefService(content::TtsUtterance* utterance) override {

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_BROWSER_VERSION_SERVICE_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_BROWSER_VERSION_SERVICE_ASH_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/crosapi/mojom/browser_version.mojom.h"
 #include "components/component_updater/component_updater_service.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -59,7 +60,8 @@ class BrowserVersionServiceAsh
   // can be launched.
   std::string GetLatestLaunchableBrowserVersion() const;
 
-  component_updater::ComponentUpdateService* const component_update_service_;
+  const raw_ptr<component_updater::ComponentUpdateService, ExperimentalAsh>
+      component_update_service_;
 
   // Optional delegate member for testing.
   raw_ptr<const Delegate> delegate_for_testing_ = nullptr;

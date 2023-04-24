@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 class Profile;
@@ -43,7 +44,7 @@ class HelpAppNotificationController {
   void MaybeShowDiscoverNotification();
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   std::unique_ptr<HelpAppDiscoverTabNotification> discover_tab_notification_;
   std::unique_ptr<ReleaseNotesNotification> release_notes_notification_;
 

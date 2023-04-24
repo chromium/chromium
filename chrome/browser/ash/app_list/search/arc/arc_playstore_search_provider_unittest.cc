@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/components/arc/app/arc_playstore_search_request_state.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -81,7 +82,7 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
  private:
   std::unique_ptr<::test::TestAppListControllerDelegate> controller_;
   std::unique_ptr<TestSearchController> search_controller_;
-  ArcPlayStoreSearchProvider* provider_ = nullptr;
+  raw_ptr<ArcPlayStoreSearchProvider, ExperimentalAsh> provider_ = nullptr;
   ArcAppTest arc_test_;
 };
 

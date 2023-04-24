@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -62,9 +63,10 @@ class ChildStatusReportingService : public KeyedService {
   // reporting.
   base::TimeDelta day_reset_time_;
 
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
 
-  policy::UserCloudPolicyManagerAsh* user_cloud_policy_manager_;
+  raw_ptr<policy::UserCloudPolicyManagerAsh, ExperimentalAsh>
+      user_cloud_policy_manager_;
 };
 
 }  // namespace ash

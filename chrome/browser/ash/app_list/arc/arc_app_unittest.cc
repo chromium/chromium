@@ -26,6 +26,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
@@ -251,30 +252,32 @@ class FakeArcAppIcon : public ArcAppIcon {
   FakeArcAppIcon& operator=(const FakeArcAppIcon&) = delete;
 
   void LoadSupportedScaleFactors() override {
-    arc_app_icon_requests_.insert(this);
-    if (max_arc_app_icon_request_count_ < arc_app_icon_requests_.size())
-      max_arc_app_icon_request_count_ = arc_app_icon_requests_.size();
+    arc_app_icon_requests_->insert(this);
+    if (*max_arc_app_icon_request_count_ < arc_app_icon_requests_->size()) {
+      *max_arc_app_icon_request_count_ = arc_app_icon_requests_->size();
+    }
 
     ArcAppIcon::LoadSupportedScaleFactors();
   }
 
  private:
   void LoadForScaleFactor(ui::ResourceScaleFactor scale_factor) override {
-    arc_app_icon_requests_.insert(this);
-    if (max_arc_app_icon_request_count_ < arc_app_icon_requests_.size())
-      max_arc_app_icon_request_count_ = arc_app_icon_requests_.size();
+    arc_app_icon_requests_->insert(this);
+    if (*max_arc_app_icon_request_count_ < arc_app_icon_requests_->size()) {
+      *max_arc_app_icon_request_count_ = arc_app_icon_requests_->size();
+    }
 
     ArcAppIcon::LoadForScaleFactor(scale_factor);
   }
 
   void OnIconRead(
       std::unique_ptr<ArcAppIcon::ReadResult> read_result) override {
-    arc_app_icon_requests_.erase(this);
+    arc_app_icon_requests_->erase(this);
     ArcAppIcon::OnIconRead(std::move(read_result));
   }
 
-  std::set<ArcAppIcon*>& arc_app_icon_requests_;
-  size_t& max_arc_app_icon_request_count_;
+  const raw_ref<std::set<ArcAppIcon*>, ExperimentalAsh> arc_app_icon_requests_;
+  const raw_ref<size_t, ExperimentalAsh> max_arc_app_icon_request_count_;
 };
 
 // FakeArcAppIconFactory is a sub class of ArcAppIconFactory, to generate
@@ -300,12 +303,12 @@ class FakeArcAppIconFactory : public arc::ArcAppIconFactory {
       ArcAppIcon::IconType icon_type) override {
     return std::make_unique<FakeArcAppIcon>(
         context, app_id, size_in_dip, observer, icon_type,
-        arc_app_icon_requests_, max_arc_app_icon_request_count_);
+        *arc_app_icon_requests_, *max_arc_app_icon_request_count_);
   }
 
  private:
-  std::set<ArcAppIcon*>& arc_app_icon_requests_;
-  size_t& max_arc_app_icon_request_count_;
+  const raw_ref<std::set<ArcAppIcon*>, ExperimentalAsh> arc_app_icon_requests_;
+  const raw_ref<size_t, ExperimentalAsh> max_arc_app_icon_request_count_;
 };
 
 ArcAppIconDescriptor GetAppListIconDescriptor(

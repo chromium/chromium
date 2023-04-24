@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "components/sync/model/string_ordinal.h"
 
@@ -61,7 +62,7 @@ class AppListSyncModelSanitizer {
       const syncer::StringOrdinal& starting_ordinal,
       std::map<std::string, syncer::StringOrdinal>* resolved_positions);
 
-  AppListSyncableService* const syncable_service_;
+  const raw_ptr<AppListSyncableService, ExperimentalAsh> syncable_service_;
 };
 
 }  // namespace app_list

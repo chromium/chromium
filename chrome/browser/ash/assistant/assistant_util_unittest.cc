@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -151,8 +152,8 @@ class ScopedLogIn {
     return account_id_.GetAccountType() == AccountType::GOOGLE;
   }
 
-  ash::FakeChromeUserManager* fake_user_manager_;
-  signin::IdentityTestEnvironment* identity_test_env_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
+  raw_ptr<signin::IdentityTestEnvironment, ExperimentalAsh> identity_test_env_;
   const AccountId account_id_;
 };
 
@@ -240,7 +241,7 @@ class ChromeAssistantUtilTest : public testing::Test {
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   // Owned by |profile_manager_|
-  TestingProfile* profile_ = nullptr;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
 };
 
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_PrimaryUser) {

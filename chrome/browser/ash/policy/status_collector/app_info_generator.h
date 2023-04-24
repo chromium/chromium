@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -97,7 +98,7 @@ class AppInfoGenerator : public apps::InstanceRegistry::Observer,
     ~AppInfoProvider();
 
     ActivityStorage activity_storage;
-    apps::AppServiceProxy& app_service_proxy;
+    const raw_ref<apps::AppServiceProxy, ExperimentalAsh> app_service_proxy;
   };
 
   const enterprise_management::AppInfo ConvertToAppInfo(
@@ -128,7 +129,7 @@ class AppInfoGenerator : public apps::InstanceRegistry::Observer,
   // This is kept in case status uploads fail for a number of days.
   base::TimeDelta max_stored_past_activity_interval_;
 
-  const base::Clock& clock_;
+  const raw_ref<const base::Clock, ExperimentalAsh> clock_;
 
   base::ScopedObservation<ManagedSessionService,
                           ManagedSessionService::Observer>

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader.h"
@@ -103,8 +104,8 @@ class MachineCertificateUploaderImpl : public MachineCertificateUploader {
 
   void RunCallbacks(bool status);
 
-  policy::CloudPolicyClient* policy_client_ = nullptr;
-  AttestationFlow* attestation_flow_ = nullptr;
+  raw_ptr<policy::CloudPolicyClient, ExperimentalAsh> policy_client_ = nullptr;
+  raw_ptr<AttestationFlow, ExperimentalAsh> attestation_flow_ = nullptr;
   std::unique_ptr<AttestationFlow> default_attestation_flow_;
   bool refresh_certificate_ = false;
   std::vector<UploadCallback> callbacks_;

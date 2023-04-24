@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -94,11 +95,12 @@ class FakeConsumer : public AffiliatedInvalidationServiceProvider::Consumer {
   const invalidation::InvalidationService* GetInvalidationService() const;
 
  private:
-  AffiliatedInvalidationServiceProviderImpl* provider_;
+  raw_ptr<AffiliatedInvalidationServiceProviderImpl, ExperimentalAsh> provider_;
   invalidation::FakeInvalidationHandler invalidation_handler_;
 
   int invalidation_service_set_count_ = 0;
-  invalidation::InvalidationService* invalidation_service_ = nullptr;
+  raw_ptr<invalidation::InvalidationService, ExperimentalAsh>
+      invalidation_service_ = nullptr;
 };
 
 class AffiliatedInvalidationServiceProviderImplTest : public testing::Test {
@@ -144,13 +146,15 @@ class AffiliatedInvalidationServiceProviderImplTest : public testing::Test {
                                  bool is_affiliated);
   std::unique_ptr<AffiliatedInvalidationServiceProviderImpl> provider_;
   std::unique_ptr<FakeConsumer> consumer_;
-  invalidation::InvalidationService* device_invalidation_service_;
-  invalidation::FakeInvalidationService* profile_invalidation_service_;
+  raw_ptr<invalidation::InvalidationService, ExperimentalAsh>
+      device_invalidation_service_;
+  raw_ptr<invalidation::FakeInvalidationService, ExperimentalAsh>
+      profile_invalidation_service_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-  ash::FakeChromeUserManager* fake_user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -211,7 +215,7 @@ AffiliatedInvalidationServiceProviderImplTest::
     : device_invalidation_service_(nullptr),
       profile_invalidation_service_(nullptr),
       fake_user_manager_(new ash::FakeChromeUserManager),
-      user_manager_enabler_(base::WrapUnique(fake_user_manager_)),
+      user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())),
       profile_manager_(TestingBrowserProcess::GetGlobal()) {
   cros_settings_test_helper_.InstallAttributes()->SetCloudManaged("example.com",
                                                                   "device_id");

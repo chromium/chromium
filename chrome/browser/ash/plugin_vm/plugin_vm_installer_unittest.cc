@@ -13,6 +13,7 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -274,14 +275,14 @@ class PluginVmInstallerTestBase : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<PluginVmTestHelper> plugin_vm_test_helper_;
-  PluginVmInstaller* installer_;
+  raw_ptr<PluginVmInstaller, ExperimentalAsh> installer_;
   std::unique_ptr<MockObserver> observer_;
 
   // A pointer to a singleton object which is valid until
   // ConciergeClient::Shutdown() is called.
-  ash::FakeConciergeClient* fake_concierge_client_;
+  raw_ptr<ash::FakeConciergeClient, ExperimentalAsh> fake_concierge_client_;
   // Owned by ash::DBusThreadManager
-  ash::FakeDlcserviceClient* fake_dlcservice_client_;
+  raw_ptr<ash::FakeDlcserviceClient, ExperimentalAsh> fake_dlcservice_client_;
 
  private:
   void CreateProfile() {
@@ -409,8 +410,9 @@ class PluginVmInstallerDriveTest : public PluginVmInstallerTestBase {
     return fake_drive_service_ptr;
   }
 
-  PluginVmDriveImageDownloadService* drive_download_service_;
-  drive::FakeDriveService* fake_drive_service_;
+  raw_ptr<PluginVmDriveImageDownloadService, ExperimentalAsh>
+      drive_download_service_;
+  raw_ptr<drive::FakeDriveService, ExperimentalAsh> fake_drive_service_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 

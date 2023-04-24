@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -424,7 +425,7 @@ class DriveIntegrationService : public KeyedService,
 
   friend class DriveIntegrationServiceFactory;
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   State state_;
   bool enabled_;
   bool mount_failed_ = false;

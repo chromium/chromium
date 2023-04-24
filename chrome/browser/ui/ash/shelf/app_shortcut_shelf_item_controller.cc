@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/extensions/launch_util.h"
@@ -224,10 +225,10 @@ class AppMatcher {
   // AppMatcher is stack allocated. Pointer members below are not owned.
 
   // registrar_ is set when app_id_ is a web app.
-  const web_app::WebAppRegistrar* registrar_ = nullptr;
+  raw_ptr<const web_app::WebAppRegistrar, ExperimentalAsh> registrar_ = nullptr;
 
   // extension_ is set when app_id_ is a hosted app.
-  const Extension* extension_ = nullptr;
+  raw_ptr<const Extension, ExperimentalAsh> extension_ = nullptr;
 };
 
 }  // namespace

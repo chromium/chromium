@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ATTESTATION_ATTESTATION_POLICY_OBSERVER_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 
@@ -36,8 +37,8 @@ class AttestationPolicyObserver {
   // Checks attestation policy and starts any necessary work.
   void Start();
 
-  CrosSettings* cros_settings_;
-  MachineCertificateUploader* certificate_uploader_;
+  raw_ptr<CrosSettings, ExperimentalAsh> cros_settings_;
+  raw_ptr<MachineCertificateUploader, ExperimentalAsh> certificate_uploader_;
 
   base::CallbackListSubscription attestation_subscription_;
 };

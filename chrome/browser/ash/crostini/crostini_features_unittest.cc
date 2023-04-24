@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
@@ -91,7 +92,7 @@ class CrostiniFeaturesAllowedTest : public testing::Test {
  protected:
   CrostiniFeaturesAllowedTest()
       : user_manager_(new ash::FakeChromeUserManager()),
-        scoped_user_manager_(base::WrapUnique(user_manager_)) {}
+        scoped_user_manager_(base::WrapUnique(user_manager_.get())) {}
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures({features::kCrostini}, {});
@@ -110,7 +111,7 @@ class CrostiniFeaturesAllowedTest : public testing::Test {
   FakeCrostiniFeatures crostini_features_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  ash::FakeChromeUserManager* user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 };
 
@@ -150,7 +151,7 @@ class CrostiniFeaturesAdbSideloadingTest : public testing::Test {
  protected:
   CrostiniFeaturesAdbSideloadingTest()
       : user_manager_(new ash::FakeChromeUserManager()),
-        scoped_user_manager_(base::WrapUnique(user_manager_)) {}
+        scoped_user_manager_(base::WrapUnique(user_manager_.get())) {}
 
   void SetFeatureFlag(bool is_enabled) {
     if (is_enabled) {
@@ -247,7 +248,7 @@ class CrostiniFeaturesAdbSideloadingTest : public testing::Test {
   ash::ScopedCrosSettingsTestHelper scoped_settings_helper_{
       /* create_settings_service=*/false};
 
-  ash::FakeChromeUserManager* user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 };
 

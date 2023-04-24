@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -100,7 +101,7 @@ class DlpCopyOrMoveHookDelegateTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::ThreadPoolExecutionMode::QUEUED,
       content::BrowserTaskEnvironment::REAL_IO_THREAD};
-  MockDlpRulesManager* manager_;
+  raw_ptr<MockDlpRulesManager, ExperimentalAsh> manager_;
   std::unique_ptr<DlpCopyOrMoveHookDelegate> hook_{
       std::make_unique<DlpCopyOrMoveHookDelegate>()};
   const storage::FileSystemURL source =
@@ -110,10 +111,11 @@ class DlpCopyOrMoveHookDelegateTest : public testing::Test {
   std::unique_ptr<MockDlpRulesManager> scoped_manager;
 
   std::unique_ptr<TestingProfile> profile_;
-  ash::FakeChromeUserManager* user_manager_{new ash::FakeChromeUserManager()};
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_{
+      new ash::FakeChromeUserManager()};
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_{
       std::make_unique<user_manager::ScopedUserManager>(
-          base::WrapUnique(user_manager_))};
+          base::WrapUnique(user_manager_.get()))};
   std::unique_ptr<MockController> controller_;
 };
 

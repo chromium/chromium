@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -115,7 +116,7 @@ class SigninPartitionManager : public KeyedService {
   };
 
  private:
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
 
   ClearStoragePartitionTask clear_storage_partition_task_;
   GetSystemNetworkContextTask get_system_network_context_task_;
@@ -129,7 +130,8 @@ class SigninPartitionManager : public KeyedService {
   std::string current_storage_partition_name_;
   // The StoragePartition identified by `storage_partition_domain_` and
   // `current_storage_partition_name_`.
-  content::StoragePartition* current_storage_partition_ = nullptr;
+  raw_ptr<content::StoragePartition, ExperimentalAsh>
+      current_storage_partition_ = nullptr;
 };
 
 }  // namespace login

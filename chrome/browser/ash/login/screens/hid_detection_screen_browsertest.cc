@@ -6,6 +6,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -323,10 +324,11 @@ class HIDDetectionScreenChromeboxTest
   device::BluetoothDevice::ConnectCallback connect_callback_;
 
  private:
-  HIDDetectionScreen* hid_detection_screen_;
+  raw_ptr<HIDDetectionScreen, ExperimentalAsh> hid_detection_screen_;
 
   test::HIDControllerMixin hid_controller_{&mixin_host_};
-  hid_detection::FakeHidDetectionManager* fake_hid_detection_manager_;
+  raw_ptr<hid_detection::FakeHidDetectionManager, ExperimentalAsh>
+      fake_hid_detection_manager_;
 
   // HID detection screen only appears for Chromebases, Chromebits, and
   // Chromeboxes.
@@ -901,7 +903,8 @@ class HIDDetectionScreenChromebaseTest
 
  private:
   test::HIDControllerMixin hid_controller_{&mixin_host_};
-  hid_detection::FakeHidDetectionManager* fake_hid_detection_manager_;
+  raw_ptr<hid_detection::FakeHidDetectionManager, ExperimentalAsh>
+      fake_hid_detection_manager_;
 
   // Set device type to a Chromebase with a touch screen.
   // This should show the HIDDetectionScreen with the continue button

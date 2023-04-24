@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_background_service_observer.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_window_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_active_window_throttle_observer.h"
@@ -47,9 +48,9 @@ class ArcSystemStateObservationTest : public testing::Test {
 
   std::unique_ptr<ArcSystemStateObservation> observation_;
 
-  ash::ThrottleObserver* active_window_observer_;
-  ash::ThrottleObserver* background_service_observer_;
-  ash::ThrottleObserver* arc_window_observer_;
+  raw_ptr<ash::ThrottleObserver, ExperimentalAsh> active_window_observer_;
+  raw_ptr<ash::ThrottleObserver, ExperimentalAsh> background_service_observer_;
+  raw_ptr<ash::ThrottleObserver, ExperimentalAsh> arc_window_observer_;
 };
 
 TEST_F(ArcSystemStateObservationTest, TestConstructDestruct) {}

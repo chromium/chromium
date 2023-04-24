@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NOTIFICATIONS_CHROME_ASH_MESSAGE_CENTER_CLIENT_H_
 
 #include "ash/public/cpp/notifier_settings_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
@@ -54,7 +55,7 @@ class ChromeAshMessageCenterClient : public NotificationPlatformBridge,
                                 bool enabled) override;
 
  private:
-  NotificationPlatformBridgeDelegate* delegate_;
+  raw_ptr<NotificationPlatformBridgeDelegate, ExperimentalAsh> delegate_;
 
   // Notifier source for each notifier type.
   std::map<message_center::NotifierType, std::unique_ptr<NotifierController>>

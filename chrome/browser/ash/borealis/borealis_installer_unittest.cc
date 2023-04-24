@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
@@ -145,10 +146,10 @@ class BorealisInstallerTest : public testing::Test,
   std::unique_ptr<BorealisContextManagerMock> test_context_manager_;
   std::unique_ptr<BorealisWindowManager> test_window_manager_;
   std::unique_ptr<BorealisDiskManagerDispatcher> test_disk_dispatcher_;
-  BorealisServiceFake* fake_service_;
+  raw_ptr<BorealisServiceFake, ExperimentalAsh> fake_service_;
   std::unique_ptr<ScopedAllowBorealis> scoped_allowance_;
   std::unique_ptr<BorealisInstallerImpl> installer_impl_;
-  BorealisInstaller* installer_;
+  raw_ptr<BorealisInstaller, ExperimentalAsh> installer_;
   std::unique_ptr<MockObserver> observer_;
   dlcservice::DlcsWithContent current_dlcs_;
 };
@@ -426,7 +427,7 @@ class BorealisUninstallerTest : public BorealisInstallerTest {
   }
 
  protected:
-  BorealisServiceFake* fake_service_ = nullptr;
+  raw_ptr<BorealisServiceFake, ExperimentalAsh> fake_service_ = nullptr;
 };
 
 using CallbackFactory = StrictCallbackFactory<void(BorealisUninstallResult)>;

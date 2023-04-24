@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PRINTING_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PRINTING_SECTION_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
@@ -45,7 +46,7 @@ class PrintingSection : public OsSettingsSection,
 
   void UpdateSavedPrintersSearchTags();
 
-  CupsPrintersManager* printers_manager_;
+  raw_ptr<CupsPrintersManager, ExperimentalAsh> printers_manager_;
 };
 
 }  // namespace ash::settings

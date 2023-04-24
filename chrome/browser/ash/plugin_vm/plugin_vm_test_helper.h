@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_TEST_HELPER_H_
 #define CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_TEST_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
@@ -68,7 +69,7 @@ class PluginVmTestHelper {
  private:
   void UpdateRegistry();
 
-  TestingProfile* testing_profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_;
   vm_tools::apps::ApplicationList current_apps_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;

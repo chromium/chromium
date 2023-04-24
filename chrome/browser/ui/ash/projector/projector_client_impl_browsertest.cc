@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
@@ -112,7 +113,7 @@ class DriveFsMountStatusWaiter : public ProjectorAppClient::Observer {
 
  private:
   base::OnceClosure quit_closure_;
-  drive::DriveIntegrationService* service_;
+  raw_ptr<drive::DriveIntegrationService, ExperimentalAsh> service_;
 };
 
 class ProjectorClientTest : public InProcessBrowserTest {

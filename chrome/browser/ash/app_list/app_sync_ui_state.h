@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_APP_SYNC_UI_STATE_H_
 #define CHROME_BROWSER_ASH_APP_LIST_APP_SYNC_UI_STATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -82,8 +83,8 @@ class AppSyncUIState : public KeyedService,
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const extensions::Extension* extension) override;
 
-  Profile* profile_;
-  syncer::SyncService* sync_service_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<syncer::SyncService, ExperimentalAsh> sync_service_;
 
   // Timer to limit how much time STATUS_SYNCING is allowed.
   base::OneShotTimer max_syncing_status_timer_;
@@ -91,7 +92,7 @@ class AppSyncUIState : public KeyedService,
   Status status_;
   base::ObserverList<AppSyncUIStateObserver> observers_;
 
-  extensions::ExtensionRegistry* extension_registry_;
+  raw_ptr<extensions::ExtensionRegistry, ExperimentalAsh> extension_registry_;
 };
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_APP_SYNC_UI_STATE_H_

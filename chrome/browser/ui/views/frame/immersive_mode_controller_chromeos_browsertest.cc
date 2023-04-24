@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_io_data.h"
@@ -131,8 +132,8 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
 
  private:
   web_app::AppId app_id;
-  Browser* browser_ = nullptr;
-  ImmersiveModeController* controller_ = nullptr;
+  raw_ptr<Browser, ExperimentalAsh> browser_ = nullptr;
+  raw_ptr<ImmersiveModeController, ExperimentalAsh> controller_ = nullptr;
 
   std::unique_ptr<ImmersiveRevealedLock> revealed_lock_;
 

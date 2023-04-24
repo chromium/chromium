@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "ui/gfx/native_widget_types.h"
@@ -104,7 +105,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   void CloseWidgetWithReason(views::Widget::ClosedReason closed_reason);
 
   // Owns this class.
-  ::sharesheet::SharesheetServiceDelegator* delegator_;
+  raw_ptr<::sharesheet::SharesheetServiceDelegator, ExperimentalAsh> delegator_;
   std::u16string active_target_;
   apps::IntentPtr intent_;
   ::sharesheet::DeliveredCallback delivered_callback_;
@@ -119,21 +120,21 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
 
   size_t keyboard_highlighted_target_ = 0;
 
-  views::View* main_view_ = nullptr;
-  SharesheetHeaderView* header_view_ = nullptr;
-  views::View* body_view_ = nullptr;
-  views::View* footer_view_ = nullptr;
-  views::View* default_view_ = nullptr;
-  views::View* expanded_view_ = nullptr;
-  views::View* share_action_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> main_view_ = nullptr;
+  raw_ptr<SharesheetHeaderView, ExperimentalAsh> header_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> body_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> footer_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> default_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> expanded_view_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> share_action_view_ = nullptr;
   // Separator that appears between the |header_view_| and the |body_view|.
-  views::Separator* header_body_separator_ = nullptr;
+  raw_ptr<views::Separator, ExperimentalAsh> header_body_separator_ = nullptr;
   // Separator that appears between the |body_view| and the |footer_view_|.
-  views::Separator* body_footer_separator_ = nullptr;
+  raw_ptr<views::Separator, ExperimentalAsh> body_footer_separator_ = nullptr;
   // Separator between the default_view and the expanded_view.
-  views::Separator* expanded_view_separator_ = nullptr;
-  views::View* parent_view_ = nullptr;
-  SharesheetExpandButton* expand_button_ = nullptr;
+  raw_ptr<views::Separator, ExperimentalAsh> expanded_view_separator_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> parent_view_ = nullptr;
+  raw_ptr<SharesheetExpandButton, ExperimentalAsh> expand_button_ = nullptr;
 
   std::unique_ptr<SharesheetParentWidgetObserver> parent_widget_observer_;
   base::ScopedObservation<TabletMode, TabletModeObserver>

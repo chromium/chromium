@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_NETWORK_NETWORK_PORTAL_SIGNIN_CONTROLLER_H_
 #define CHROME_BROWSER_UI_ASH_NETWORK_NETWORK_PORTAL_SIGNIN_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/net/network_portal_web_dialog.h"
 
 class Profile;
@@ -81,7 +82,7 @@ class NetworkPortalSigninController : public NetworkPortalWebDialog::Delegate {
   SigninMode GetSigninMode() const;
 
  private:
-  NetworkPortalWebDialog* dialog_ = nullptr;
+  raw_ptr<NetworkPortalWebDialog, ExperimentalAsh> dialog_ = nullptr;
   base::WeakPtrFactory<NetworkPortalWebDialog::Delegate>
       web_dialog_weak_factory_{this};
   base::WeakPtrFactory<NetworkPortalSigninController> weak_factory_{this};

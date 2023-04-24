@@ -6,6 +6,7 @@
 
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -64,7 +65,7 @@ class CustomTabSessionImplTest : public InProcessBrowserTest,
 
  private:
   std::unique_ptr<exo::WMHelper> wm_helper_;
-  CustomTabSessionImpl* custom_tab_session_ = nullptr;
+  raw_ptr<CustomTabSessionImpl, ExperimentalAsh> custom_tab_session_ = nullptr;
 };
 
 // Calls |callback| when |browser| is removed from BrowserList.
@@ -84,7 +85,7 @@ class BrowserRemovalObserver final : public BrowserListObserver {
   }
 
  private:
-  Browser* browser_;
+  raw_ptr<Browser, ExperimentalAsh> browser_;
   base::OnceClosure callback_;
 };
 

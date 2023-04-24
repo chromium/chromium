@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_KEYBOARD_SHORTCUT_RESULT_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_KEYBOARD_SHORTCUT_RESULT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_data.h"
 #include "chrome/browser/profiles/profile.h"
@@ -61,7 +62,7 @@ class KeyboardShortcutResult : public ChromeSearchResult {
 
   void UpdateIcon();
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   friend class test::KeyboardShortcutResultTest;
 };
 

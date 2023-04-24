@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/settings/ash/constants/constants_util.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_sections.h"
@@ -148,7 +149,7 @@ class Hierarchy::PerSectionHierarchyGenerator
   }
 
   mojom::Section section_;
-  Hierarchy* hierarchy_;
+  raw_ptr<Hierarchy, ExperimentalAsh> hierarchy_;
 };
 
 Hierarchy::SectionMetadata::SectionMetadata(mojom::Section section,

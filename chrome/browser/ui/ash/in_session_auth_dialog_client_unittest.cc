@@ -8,6 +8,7 @@
 #include "ash/public/cpp/in_session_auth_dialog_client.h"
 #include "ash/public/cpp/webauthn_dialog_controller.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -132,10 +133,10 @@ class InSessionAuthDialogClientTest : public testing::Test {
   // thread.
   const content::BrowserTaskEnvironment task_environment_;
 
-  ash::FakeChromeUserManager* fake_user_manager_{
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_{
       new ash::FakeChromeUserManager()};
   user_manager::ScopedUserManager scoped_user_manager_{
-      base::WrapUnique(fake_user_manager_)};
+      base::WrapUnique(fake_user_manager_.get())};
   std::unique_ptr<FakeInSessionAuthDialogController> fake_controller_{
       std::make_unique<FakeInSessionAuthDialogController>()};
   std::unique_ptr<InSessionAuthDialogClient> client_;

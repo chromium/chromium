@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -95,9 +96,11 @@ class EnrollmentIdUploadManager : public DeviceSettingsService::Observer {
   // Run all callbacks with |status|.
   void RunCallbacks(bool status);
 
-  DeviceSettingsService* const device_settings_service_;
-  policy::CloudPolicyClient* const policy_client_;
-  EnrollmentCertificateUploader* const certificate_uploader_;
+  const raw_ptr<DeviceSettingsService, ExperimentalAsh>
+      device_settings_service_;
+  const raw_ptr<policy::CloudPolicyClient, ExperimentalAsh> policy_client_;
+  const raw_ptr<EnrollmentCertificateUploader, ExperimentalAsh>
+      certificate_uploader_;
   int num_retries_;
   int retry_limit_;
   int retry_delay_;

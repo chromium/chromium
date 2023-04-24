@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_with_timeout.h"
@@ -50,7 +51,7 @@ class SamlChallengeKeyHandler final {
   // task.
   void ReturnResult(const attestation::TpmChallengeKeyResult& result);
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   std::string decoded_challenge_;
   // Callback to return a result of ChallengeKey.
   CallbackType callback_;

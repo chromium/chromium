@@ -11,6 +11,7 @@
 #include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -261,7 +262,7 @@ class EnrollmentScreen
                           NetworkError::ErrorReason reason);
 
   base::WeakPtr<EnrollmentScreenView> view_;
-  ErrorScreen* error_screen_ = nullptr;
+  raw_ptr<ErrorScreen, ExperimentalAsh> error_screen_ = nullptr;
   ScreenExitCallback exit_callback_;
   absl::optional<TpmStatusCallback> tpm_ownership_callback_for_testing_;
   policy::EnrollmentConfig config_;

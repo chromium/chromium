@@ -493,7 +493,7 @@ void TaskManagerImpl::TaskAdded(Task* task) {
         task->process_handle(), proc_id, is_running_in_vm,
         on_background_data_ready_callback_, shared_sampler_,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-        is_running_in_lacros ? crosapi_task_provider_ : nullptr,
+        is_running_in_lacros ? crosapi_task_provider_.get() : nullptr,
 #endif
         blocking_pool_runner_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)

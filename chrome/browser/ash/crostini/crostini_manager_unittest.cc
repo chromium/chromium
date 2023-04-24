@@ -10,6 +10,7 @@
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -252,14 +253,15 @@ class CrostiniManagerTest : public testing::Test {
         user_manager::UserManager::Get());
   }
 
-  ash::FakeCiceroneClient* fake_cicerone_client_;
-  ash::FakeConciergeClient* fake_concierge_client_;
-  ash::FakeAnomalyDetectorClient* fake_anomaly_detector_client_;
+  raw_ptr<ash::FakeCiceroneClient, ExperimentalAsh> fake_cicerone_client_;
+  raw_ptr<ash::FakeConciergeClient, ExperimentalAsh> fake_concierge_client_;
+  raw_ptr<ash::FakeAnomalyDetectorClient, ExperimentalAsh>
+      fake_anomaly_detector_client_;
 
   std::unique_ptr<base::RunLoop>
       run_loop_;  // run_loop_ must be created on the UI thread.
   std::unique_ptr<TestingProfile> profile_;
-  CrostiniManager* crostini_manager_;
+  raw_ptr<CrostiniManager, ExperimentalAsh> crostini_manager_;
   const guest_os::GuestId container_id_ =
       guest_os::GuestId(kCrostiniDefaultVmType, kVmName, kContainerName);
   device::FakeUsbDeviceManager fake_usb_manager_;
@@ -807,7 +809,8 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
   const CrostiniManager::RestartId uninitialized_id_ =
       CrostiniManager::kUninitializedRestartId;
 
-  ash::disks::MockDiskMountManager* disk_mount_manager_mock_;
+  raw_ptr<ash::disks::MockDiskMountManager, ExperimentalAsh>
+      disk_mount_manager_mock_;
   base::HistogramTester histogram_tester_{};
 
   base::RepeatingCallback<void(mojom::InstallerState)> on_stage_started_ =
@@ -2301,7 +2304,8 @@ class CrostiniManagerAnsibleInfraTest : public CrostiniManagerRestartTest {
   }
 
   std::unique_ptr<AnsibleManagementTestHelper> ansible_management_test_helper_;
-  MockAnsibleManagementService* mock_ansible_management_service_;
+  raw_ptr<MockAnsibleManagementService, ExperimentalAsh>
+      mock_ansible_management_service_;
 };
 
 TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerFailure) {

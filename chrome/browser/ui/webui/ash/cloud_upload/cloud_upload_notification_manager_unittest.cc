@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_notification_manager.h"
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -85,7 +86,7 @@ class CloudUploadNotificationManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfile> profile_;
-  StubNotificationDisplayService* display_service_;
+  raw_ptr<StubNotificationDisplayService, ExperimentalAsh> display_service_;
   std::string file_name_ = "foo.docx";
   base::FilePath file_path_ = base::FilePath("/some/path/foo.doc");
 };

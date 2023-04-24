@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -40,7 +41,7 @@ class NetworkPrefStateObserverTest : public testing::Test {
  public:
   NetworkPrefStateObserverTest()
       : fake_user_manager_(new FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_)),
+        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
   NetworkPrefStateObserverTest(const NetworkPrefStateObserverTest&) = delete;
@@ -73,7 +74,7 @@ class NetworkPrefStateObserverTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   NetworkHandlerTestHelper network_handler_test_helper_;
-  FakeChromeUserManager* fake_user_manager_;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
   TestingProfileManager profile_manager_;
   session_manager::SessionManager session_manager_;

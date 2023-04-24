@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -166,7 +167,7 @@ class BrowserNonClientFrameViewChromeOSTestApi {
   }
 
  private:
-  BrowserNonClientFrameViewChromeOS* const frame_view_;
+  const raw_ptr<BrowserNonClientFrameViewChromeOS, ExperimentalAsh> frame_view_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -712,12 +713,15 @@ class WebAppNonClientFrameViewAshTest
 
   static SkColor GetThemeColor() { return SK_ColorBLUE; }
 
-  Browser* app_browser_ = nullptr;
-  BrowserView* browser_view_ = nullptr;
-  chromeos::DefaultFrameHeader* frame_header_ = nullptr;
-  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
-  const std::vector<ContentSettingImageView*>* content_setting_views_ = nullptr;
-  AppMenuButton* web_app_menu_button_ = nullptr;
+  raw_ptr<Browser, ExperimentalAsh> app_browser_ = nullptr;
+  raw_ptr<BrowserView, ExperimentalAsh> browser_view_ = nullptr;
+  raw_ptr<chromeos::DefaultFrameHeader, ExperimentalAsh> frame_header_ =
+      nullptr;
+  raw_ptr<WebAppFrameToolbarView, ExperimentalAsh> web_app_frame_toolbar_ =
+      nullptr;
+  raw_ptr<const std::vector<ContentSettingImageView*>, ExperimentalAsh>
+      content_setting_views_ = nullptr;
+  raw_ptr<AppMenuButton, ExperimentalAsh> web_app_menu_button_ = nullptr;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     TopChromeMdParamTest<InProcessBrowserTest>::SetUpCommandLine(command_line);

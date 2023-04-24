@@ -141,7 +141,7 @@ void CupsPrintJobNotification::Click(
   chrome::ShowPrintManagementApp(
       profile_->IsGuestSession()
           ? profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)
-          : profile_);
+          : profile_.get());
 }
 
 void CupsPrintJobNotification::CleanUpNotification() {

@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_tags.h"
@@ -454,7 +455,7 @@ class KioskUpdateTest : public KioskBaseTest {
     }
 
     std::unique_ptr<base::RunLoop> runner_;
-    KioskAppManager* manager_;
+    raw_ptr<KioskAppManager, ExperimentalAsh> manager_;
     const std::string app_id_;
     bool quit_ = false;
     bool update_success_ = false;
@@ -462,7 +463,7 @@ class KioskUpdateTest : public KioskBaseTest {
   };
 
   // Owned by DiskMountManager.
-  KioskFakeDiskMountManager* fake_disk_mount_manager_;
+  raw_ptr<KioskFakeDiskMountManager, ExperimentalAsh> fake_disk_mount_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_LaunchOfflineEnabledAppNoNetwork) {

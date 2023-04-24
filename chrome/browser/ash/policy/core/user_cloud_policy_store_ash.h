@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -94,7 +95,7 @@ class UserCloudPolicyStoreAsh : public UserCloudPolicyStoreBase {
   std::unique_ptr<UserCloudPolicyValidator> CreateValidatorForLoad(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy);
 
-  ash::SessionManagerClient* session_manager_client_;
+  raw_ptr<ash::SessionManagerClient, ExperimentalAsh> session_manager_client_;
   const AccountId account_id_;
   bool is_active_directory_;
 

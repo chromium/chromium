@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -86,7 +87,7 @@ class OwnerKeyLoaderTest : public testing::Test {
       TestingBrowserProcess::GetGlobal()};
 
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  ash::FakeChromeUserManager* user_manager_ = nullptr;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_ = nullptr;
 
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;
   FakeSessionManagerClient session_manager_client_;

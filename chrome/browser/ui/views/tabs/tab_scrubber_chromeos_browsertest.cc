@@ -11,6 +11,7 @@
 #include "ash/display/event_transformation_handler.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -82,7 +83,7 @@ class ImmersiveRevealEndedWaiter : public ImmersiveModeController::Observer {
     immersive_controller_ = nullptr;
   }
 
-  ImmersiveModeController* immersive_controller_;
+  raw_ptr<ImmersiveModeController, ExperimentalAsh> immersive_controller_;
   base::OnceClosure quit_closure_;
 };
 
@@ -331,7 +332,7 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
         TabScrubberChromeOS::GetInstance()->FinishScrub(true);
     }
 
-    ui::test::EventGenerator* event_generator_;
+    raw_ptr<ui::test::EventGenerator, ExperimentalAsh> event_generator_;
     base::TimeTicks time_for_next_event_ = ui::EventTimeForNow();
     int last_x_offset_ = 0;
   };

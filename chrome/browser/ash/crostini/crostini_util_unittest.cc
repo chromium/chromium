@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -89,7 +90,7 @@ class CrostiniUtilTest : public testing::Test {
   }
 
  protected:
-  ash::FakeConciergeClient* fake_concierge_client_;
+  raw_ptr<ash::FakeConciergeClient, ExperimentalAsh> fake_concierge_client_;
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniTestHelper> test_helper_;

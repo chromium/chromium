@@ -15,6 +15,7 @@
 #include "ash/components/arc/mojom/bitmap.mojom.h"
 #include "base/base64.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/profiles/profile.h"
@@ -84,7 +85,7 @@ class BitmapWrapper {
   }
 
  private:
-  const SkBitmap* const bitmap_;
+  const raw_ptr<const SkBitmap, ExperimentalAsh> bitmap_;
 };
 
 }  // namespace

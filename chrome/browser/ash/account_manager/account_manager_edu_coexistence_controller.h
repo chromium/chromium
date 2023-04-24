@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
@@ -62,9 +63,11 @@ class EduCoexistenceConsentInvalidationController {
       const std::vector<std::string>& account_emails_to_invalidate,
       const std::vector<::account_manager::Account>& accounts);
 
-  Profile* const profile_;
-  account_manager::AccountManager* const account_manager_;
-  account_manager::AccountManagerFacade* const account_manager_facade_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<account_manager::AccountManager, ExperimentalAsh>
+      account_manager_;
+  const raw_ptr<account_manager::AccountManagerFacade, ExperimentalAsh>
+      account_manager_facade_;
   const AccountId device_account_id_;
   PrefChangeRegistrar pref_change_registrar_;
   base::WeakPtrFactory<EduCoexistenceConsentInvalidationController>

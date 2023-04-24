@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -87,7 +88,7 @@ class ExtensionIncomingNativeMessagingTest
   }
 
  private:
-  const extensions::Extension* extension_ = nullptr;
+  raw_ptr<const extensions::Extension, ExperimentalAsh> extension_ = nullptr;
 };
 
 // Tests that the extension receives the onConnectNative event when the native

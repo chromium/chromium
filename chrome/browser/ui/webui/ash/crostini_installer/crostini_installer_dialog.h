@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_CROSTINI_INSTALLER_CROSTINI_INSTALLER_DIALOG_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 
@@ -39,7 +40,7 @@ class CrostiniInstallerDialog : public SystemWebDialogDelegate {
   void OnDialogShown(content::WebUI* webui) override;
   void OnWebContentsFinishedLoad() override;
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   base::WeakPtr<CrostiniInstallerUI> installer_ui_ = nullptr;
   OnLoadedCallback on_loaded_callback_;
 };

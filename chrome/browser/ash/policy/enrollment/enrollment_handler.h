@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_validator.h"
@@ -222,15 +223,16 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   // Set |enrollment_step_| to |step|.
   void SetStep(EnrollmentStep step);
 
-  DeviceCloudPolicyStoreAsh* store_;
-  ash::InstallAttributes* install_attributes_;
-  ServerBackedStateKeysBroker* state_keys_broker_;
-  ash::attestation::AttestationFlow* attestation_flow_;
+  raw_ptr<DeviceCloudPolicyStoreAsh, ExperimentalAsh> store_;
+  raw_ptr<ash::InstallAttributes, ExperimentalAsh> install_attributes_;
+  raw_ptr<ServerBackedStateKeysBroker, ExperimentalAsh> state_keys_broker_;
+  raw_ptr<ash::attestation::AttestationFlow, ExperimentalAsh> attestation_flow_;
   // Factory for SigningService to be used by |client_| to register with.
   std::unique_ptr<SigningServiceProvider> signing_service_provider_;
   std::unique_ptr<CloudPolicyClient> client_;
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-  ActiveDirectoryJoinDelegate* ad_join_delegate_ = nullptr;
+  raw_ptr<ActiveDirectoryJoinDelegate, ExperimentalAsh> ad_join_delegate_ =
+      nullptr;
   std::unique_ptr<DeviceAccountInitializer> device_account_initializer_;
   std::unique_ptr<DMTokenStorage> dm_token_storage_;
 

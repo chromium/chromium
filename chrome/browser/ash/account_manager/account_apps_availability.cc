@@ -202,8 +202,8 @@ AccountAppsAvailability::AccountAppsAvailability(
   DCHECK(identity_manager_);
   DCHECK(prefs_);
 
-  account_manager_facade_observation_.Observe(account_manager_facade_);
-  identity_manager_observation_.Observe(identity_manager_);
+  account_manager_facade_observation_.Observe(account_manager_facade_.get());
+  identity_manager_observation_.Observe(identity_manager_.get());
 
   if (IsPrefInitialized(prefs_)) {
     is_initialized_ = true;

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_RECOVERY_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_RECOVERY_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -54,7 +55,7 @@ class CrostiniRecoveryView : public views::BubbleDialogDelegateView {
 
   void OnStopVm(crostini::CrostiniResult result);
 
-  Profile* profile_;  // Not owned.
+  raw_ptr<Profile, ExperimentalAsh> profile_;  // Not owned.
   std::string app_id_;
   int64_t display_id_;
   const std::vector<crostini::LaunchArg> args_;

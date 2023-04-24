@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
@@ -72,7 +73,8 @@ class EduAccountLoginHandler : public content::WebUIMessageHandler,
                         const gfx::Image& image,
                         const image_fetcher::RequestMetadata& metadata);
 
-    image_fetcher::ImageFetcher* image_fetcher_ = nullptr;
+    raw_ptr<image_fetcher::ImageFetcher, ExperimentalAsh> image_fetcher_ =
+        nullptr;
     const std::map<std::string, GURL> profile_image_urls_;
     base::OnceCallback<void(std::map<std::string, gfx::Image> profile_images)>
         callback_;

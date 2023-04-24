@@ -125,7 +125,7 @@ class UpdateInstallGateTest : public testing::Test {
     // Takes ownership of fake_user_manager_.
     scoped_user_manager_enabler_ =
         std::make_unique<user_manager::ScopedUserManager>(
-            base::WrapUnique(fake_user_manager_));
+            base::WrapUnique(fake_user_manager_.get()));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
 #endif
@@ -233,7 +233,8 @@ class UpdateInstallGateTest : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Needed for creating ExtensionService.
-  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
+      nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_enabler_;
 #endif
 

@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
@@ -171,8 +172,9 @@ class BorealisDiskManagerImpl::BuildDiskInfo
     Succeed(std::move(disk_info_));
   }
 
-  BorealisDiskManagerImpl::FreeSpaceProvider* free_space_provider_;
-  const BorealisContext* const context_;
+  raw_ptr<BorealisDiskManagerImpl::FreeSpaceProvider, ExperimentalAsh>
+      free_space_provider_;
+  const raw_ptr<const BorealisContext, ExperimentalAsh> context_;
   std::unique_ptr<BorealisDiskManagerImpl::BorealisDiskInfo> disk_info_;
   base::WeakPtrFactory<BuildDiskInfo> weak_factory_;
 };
@@ -380,11 +382,12 @@ class BorealisDiskManagerImpl::ResizeDisk
   int64_t space_delta_;
   // Will emit additional metrics if the transition is for a client request.
   bool client_request_;
-  BorealisDiskManagerImpl::FreeSpaceProvider* free_space_provider_;
+  raw_ptr<BorealisDiskManagerImpl::FreeSpaceProvider, ExperimentalAsh>
+      free_space_provider_;
   std::string uuid_;
   BorealisDiskInfo original_disk_info_;
   BorealisDiskInfo updated_disk_info_;
-  const BorealisContext* const context_;
+  const raw_ptr<const BorealisContext, ExperimentalAsh> context_;
   std::unique_ptr<BuildDiskInfo> build_disk_info_transition_;
   base::WeakPtrFactory<ResizeDisk> weak_factory_;
 };
@@ -488,8 +491,9 @@ class BorealisDiskManagerImpl::SyncDisk
            disk_info.available_space <= kTargetBufferUpperBound;
   }
 
-  BorealisDiskManagerImpl::FreeSpaceProvider* free_space_provider_;
-  const BorealisContext* const context_;
+  raw_ptr<BorealisDiskManagerImpl::FreeSpaceProvider, ExperimentalAsh>
+      free_space_provider_;
+  const raw_ptr<const BorealisContext, ExperimentalAsh> context_;
   BuildDiskInfo build_disk_info_transition_;
   std::unique_ptr<ResizeDisk> resize_disk_transition_;
   base::WeakPtrFactory<SyncDisk> weak_factory_;

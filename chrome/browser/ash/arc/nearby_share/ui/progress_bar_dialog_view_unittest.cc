@@ -8,6 +8,7 @@
 
 #include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -31,7 +32,7 @@ class ProgressBarDialogViewTest : public CompatModeTestBase {
   }
 
  protected:
-  ProgressBarDialogView* dialog_view_;
+  raw_ptr<ProgressBarDialogView, ExperimentalAsh> dialog_view_;
   std::unique_ptr<views::Widget> widget_;
 };
 

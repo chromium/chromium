@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 
 #include <stddef.h>
@@ -130,7 +131,7 @@ class GuestOsRegistryServiceIconTest : public InProcessBrowserTest {
   }
 
  protected:
-  ash::FakeCiceroneClient* fake_cicerone_client_;
+  raw_ptr<ash::FakeCiceroneClient, ExperimentalAsh> fake_cicerone_client_;
   static constexpr char kSvgData[] =
       "<svg width='20px' height='20px' viewBox='0 0 24 24' "
       "fill='rgb(95,99,104)' "

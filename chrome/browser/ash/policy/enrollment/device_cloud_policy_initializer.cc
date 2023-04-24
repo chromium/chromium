@@ -56,7 +56,7 @@ void DeviceCloudPolicyInitializer::Init() {
   state_keys_update_subscription_ = state_keys_broker_->RegisterUpdateCallback(
       base::BindRepeating(&DeviceCloudPolicyInitializer::TryToStartConnection,
                           base::Unretained(this)));
-  policy_manager_observer_.Observe(policy_manager_);
+  policy_manager_observer_.Observe(policy_manager_.get());
 
   TryToStartConnection();
 }

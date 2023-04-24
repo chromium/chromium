@@ -145,7 +145,7 @@ class LockScreenEventObserver
 
  private:
   std::vector<std::string> launched_apps_;
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
   bool expect_restore_action_state_ = true;
 };
 
@@ -493,7 +493,7 @@ class LockScreenAppManagerImplTest
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
   TestingProfileManager profile_manager_;
-  TestingProfile* profile_ = nullptr;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
 
   std::unique_ptr<LockScreenEventObserver> event_observer_;
 

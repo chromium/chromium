@@ -10,6 +10,7 @@
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/test_window_builder.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
@@ -78,7 +79,7 @@ class FakeController : public KioskAppLauncher::NetworkDelegate,
   RepeatingTestFuture<bool> window_created_semaphore_;
   RepeatingTestFuture<bool> app_prepared_semaphore_;
 
-  ArcKioskAppService* service_;
+  raw_ptr<ArcKioskAppService, ExperimentalAsh> service_;
 };
 
 class ArcKioskAppServiceTest : public testing::Test {
@@ -172,7 +173,7 @@ class ArcKioskAppServiceTest : public testing::Test {
   std::unique_ptr<ArcKioskAppManager> app_manager_;
   std::unique_ptr<exo::WMHelper> wm_helper_;
 
-  arc::ArcPolicyBridge* arc_policy_bridge_;
+  raw_ptr<arc::ArcPolicyBridge, ExperimentalAsh> arc_policy_bridge_;
 };
 
 TEST_F(ArcKioskAppServiceTest, LaunchConditions) {

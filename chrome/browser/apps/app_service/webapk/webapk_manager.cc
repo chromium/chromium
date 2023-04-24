@@ -61,7 +61,7 @@ WebApkManager::WebApkManager(Profile* profile)
   // Always observe AppListPrefs, even when the rest of WebAPKs is not enabled,
   // so that we can detect WebAPK uninstalls that happen when the feature is
   // disabled.
-  arc_app_list_prefs_observer_.Observe(app_list_prefs_);
+  arc_app_list_prefs_observer_.Observe(app_list_prefs_.get());
   arc::ArcSessionManager::Get()->AddObserver(this);
   pref_change_registrar_->Init(profile_->GetPrefs());
   pref_change_registrar_->Add(

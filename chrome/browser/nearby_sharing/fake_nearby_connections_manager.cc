@@ -81,7 +81,7 @@ void FakeNearbyConnectionsManager::Connect(
   DCHECK(!is_shutdown());
   connected_data_usage_ = data_usage;
   connection_endpoint_infos_.emplace(endpoint_id, std::move(endpoint_info));
-  std::move(callback).Run(connection_);
+  std::move(callback).Run(connection_.get());
 }
 
 void FakeNearbyConnectionsManager::Disconnect(const std::string& endpoint_id) {

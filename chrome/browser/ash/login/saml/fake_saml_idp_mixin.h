@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -107,7 +108,7 @@ class FakeSamlIdpMixin final : public InProcessBrowserTestMixin {
   void SaveChallengeResponse(const std::string& response);
   void ClearChallengeResponse();
 
-  FakeGaiaMixin* const gaia_mixin_;
+  const raw_ptr<FakeGaiaMixin, ExperimentalAsh> gaia_mixin_;
   net::EmbeddedTestServer saml_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   net::EmbeddedTestServer saml_http_server_{net::EmbeddedTestServer::TYPE_HTTP};
 

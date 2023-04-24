@@ -11,6 +11,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -402,7 +403,7 @@ class ProgressNotificationDelegate : public NearbyNotificationDelegate {
   }
 
  private:
-  NearbyNotificationManager* manager_;
+  raw_ptr<NearbyNotificationManager, ExperimentalAsh> manager_;
   bool awaiting_remote_acceptance_ = false;
 };
 
@@ -439,7 +440,7 @@ class ConnectionRequestNotificationDelegate
   }
 
  private:
-  NearbyNotificationManager* manager_;
+  raw_ptr<NearbyNotificationManager, ExperimentalAsh> manager_;
 };
 
 class ReceivedImageDecoder : public ImageDecoder::ImageRequest {
@@ -616,8 +617,8 @@ class SuccessNotificationDelegate : public NearbyNotificationDelegate {
     }
   }
 
-  NearbyNotificationManager* manager_;
-  Profile* profile_;
+  raw_ptr<NearbyNotificationManager, ExperimentalAsh> manager_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   ShareTarget share_target_;
   NearbyNotificationManager::ReceivedContentType type_;
   SkBitmap image_;
@@ -659,7 +660,7 @@ class NearbyDeviceTryingToShareNotificationDelegate
   }
 
  private:
-  NearbyNotificationManager* manager_;
+  raw_ptr<NearbyNotificationManager, ExperimentalAsh> manager_;
 };
 
 class NearbyVisibilityReminderNotificationDelegate
@@ -697,7 +698,7 @@ class NearbyVisibilityReminderNotificationDelegate
   }
 
  private:
-  NearbyNotificationManager* manager_;
+  raw_ptr<NearbyNotificationManager, ExperimentalAsh> manager_;
 };
 
 bool ShouldShowNearbyDeviceTryingToShareNotification(

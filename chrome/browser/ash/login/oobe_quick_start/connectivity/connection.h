@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
@@ -134,7 +135,7 @@ class Connection
 
   void OnConnectionClosed();
 
-  NearbyConnection* nearby_connection_;
+  raw_ptr<NearbyConnection, ExperimentalAsh> nearby_connection_;
   RandomSessionId random_session_id_;
   SharedSecret shared_secret_;
   SharedSecret secondary_shared_secret_;

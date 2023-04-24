@@ -9,6 +9,7 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -78,10 +79,12 @@ class DriveUploadHandler
   // the timeout for getting the alternate URL is hit.
   void CheckAlternateUrl(bool timed_out);
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
-  ::file_manager::io_task::IOTaskController* io_task_controller_;
-  drive::DriveIntegrationService* const drive_integration_service_;
+  raw_ptr<::file_manager::io_task::IOTaskController, ExperimentalAsh>
+      io_task_controller_;
+  const raw_ptr<drive::DriveIntegrationService, ExperimentalAsh>
+      drive_integration_service_;
   scoped_refptr<CloudUploadNotificationManager> notification_manager_;
   const storage::FileSystemURL source_url_;
   ::file_manager::io_task::IOTaskId observed_task_id_;

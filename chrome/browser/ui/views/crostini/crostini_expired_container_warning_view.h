@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_EXPIRED_CONTAINER_WARNING_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_EXPIRED_CONTAINER_WARNING_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -28,7 +29,7 @@ class CrostiniExpiredContainerWarningView
                                       base::OnceClosure callback);
   ~CrostiniExpiredContainerWarningView() override;
 
-  Profile* const profile_;  // Not owned.
+  const raw_ptr<Profile, ExperimentalAsh> profile_;  // Not owned.
   std::vector<base::OnceClosure> callbacks_;
 
   base::WeakPtrFactory<CrostiniExpiredContainerWarningView> weak_ptr_factory_;

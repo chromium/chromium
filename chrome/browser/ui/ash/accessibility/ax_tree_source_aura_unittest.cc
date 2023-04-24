@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,7 +72,7 @@ class AXTreeSourceAuraTest : public ChromeViewsTestBase {
 
     textfield_ = new Textfield();
     textfield_->SetText(u"Value");
-    content_->AddChildView(textfield_);
+    content_->AddChildView(textfield_.get());
     widget_->Show();
   }
 
@@ -82,9 +83,9 @@ class AXTreeSourceAuraTest : public ChromeViewsTestBase {
   }
 
  protected:
-  Widget* widget_;
-  View* content_;
-  Textfield* textfield_;
+  raw_ptr<Widget, ExperimentalAsh> widget_;
+  raw_ptr<View, ExperimentalAsh> content_;
+  raw_ptr<Textfield, ExperimentalAsh> textfield_;
   AXAuraObjCache cache_;
   // A simulated desktop root with no delegate.
   AXRootObjWrapper root_wrapper_{nullptr, &cache_};
@@ -174,7 +175,7 @@ TEST_F(AXTreeSourceAuraTest, Serialize) {
 
   // Try removing some child views and re-adding which should fire some events.
   content_->RemoveAllChildViewsWithoutDeleting();
-  content_->AddChildView(textfield_);
+  content_->AddChildView(textfield_.get());
 
   // Grab the textfield since serialization only walks up the tree (not down
   // from root).

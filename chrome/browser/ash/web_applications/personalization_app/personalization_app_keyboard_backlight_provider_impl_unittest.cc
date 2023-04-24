@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
@@ -168,7 +169,7 @@ class PersonalizationAppKeyboardBacklightProviderImplTest
   TestingProfileManager profile_manager_;
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   std::unique_ptr<KeyboardBacklightColorController>
       keyboard_backlight_color_controller_;
   mojo::Remote<ash::personalization_app::mojom::KeyboardBacklightProvider>

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/ash_test_util.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/run_loop.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -45,7 +46,7 @@ class SnapWaiter : public aura::WindowObserver {
   }
 
  private:
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
   chromeos::WindowStateType type_;
   base::RunLoop run_loop_;
 };

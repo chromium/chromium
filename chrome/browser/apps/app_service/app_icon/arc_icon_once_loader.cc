@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_icon.h"
 #include "chrome/browser/profiles/profile.h"
 
@@ -37,10 +39,10 @@ class ArcIconOnceLoader::SizeSpecificLoader : public ArcAppIcon::Observer {
   void OnIconFailed(ArcAppIcon* icon) override;
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   const int32_t size_in_dip_;
   const apps::IconType icon_type_;
-  ArcIconOnceLoader& host_;
+  const raw_ref<ArcIconOnceLoader, ExperimentalAsh> host_;
 
   // Maps App IDs to their icon loaders (for a specific size_in_dip and
   // icon_compression).
@@ -95,18 +97,18 @@ void ArcIconOnceLoader::SizeSpecificLoader::LoadIcon(
       break;
   }
 
-  auto arc_app_icon = host_.arc_app_icon_factory()->CreateArcAppIcon(
+  auto arc_app_icon = host_->arc_app_icon_factory()->CreateArcAppIcon(
       profile_, app_id, size_in_dip_, this, icon_type);
   iter = icons_.insert(std::make_pair(app_id, std::move(arc_app_icon))).first;
-  host_.MaybeStartIconRequest(iter->second.get(),
-                              ui::ResourceScaleFactor::NUM_SCALE_FACTORS);
+  host_->MaybeStartIconRequest(iter->second.get(),
+                               ui::ResourceScaleFactor::NUM_SCALE_FACTORS);
   return;
 }
 
 void ArcIconOnceLoader::SizeSpecificLoader::Remove(const std::string& app_id) {
   auto iter = icons_.find(app_id);
   if (iter != icons_.end()) {
-    host_.RemoveArcAppIcon(iter->second.get());
+    host_->RemoveArcAppIcon(iter->second.get());
     icons_.erase(iter);
   }
 }
@@ -116,7 +118,7 @@ void ArcIconOnceLoader::SizeSpecificLoader::Reload(
     ui::ResourceScaleFactor scale_factor) {
   auto iter = icons_.find(app_id);
   if (iter != icons_.end()) {
-    host_.MaybeStartIconRequest(iter->second.get(), scale_factor);
+    host_->MaybeStartIconRequest(iter->second.get(), scale_factor);
     return;
   }
 }
@@ -126,7 +128,7 @@ void ArcIconOnceLoader::SizeSpecificLoader::OnIconUpdated(ArcAppIcon* icon) {
     return;
   }
 
-  host_.RemoveArcAppIcon(icon);
+  host_->RemoveArcAppIcon(icon);
 
   if (!icon->EverySupportedScaleFactorIsLoaded()) {
     return;

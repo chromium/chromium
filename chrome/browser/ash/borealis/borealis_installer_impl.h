@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/borealis/borealis_installer.h"
@@ -70,7 +71,7 @@ class BorealisInstallerImpl : public BorealisInstaller {
       base::OnceCallback<void(BorealisUninstallResult)> on_uninstall_callback,
       Expected<std::unique_ptr<InstallInfo>, BorealisUninstallResult> result);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   base::ObserverList<Observer> observers_;
 
   InstallingState installing_state_;

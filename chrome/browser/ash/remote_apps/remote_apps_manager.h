@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -194,11 +195,12 @@ class RemoteAppsManager
 
   void OnIconDownloaded(const std::string& id, const gfx::ImageSkia& icon);
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   bool is_initialized_ = false;
-  app_list::AppListSyncableService* app_list_syncable_service_ = nullptr;
-  AppListModelUpdater* model_updater_ = nullptr;
-  extensions::EventRouter* event_router_ = nullptr;
+  raw_ptr<app_list::AppListSyncableService, ExperimentalAsh>
+      app_list_syncable_service_ = nullptr;
+  raw_ptr<AppListModelUpdater, ExperimentalAsh> model_updater_ = nullptr;
+  raw_ptr<extensions::EventRouter, ExperimentalAsh> event_router_ = nullptr;
   std::unique_ptr<apps::RemoteApps> remote_apps_;
   RemoteAppsImpl remote_apps_impl_{this};
   std::unique_ptr<RemoteAppsModel> model_;

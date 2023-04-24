@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
@@ -375,8 +376,9 @@ class ChallengeResponseExtensionLoadObserverTest
   }
 
  private:
-  base::RunLoop* extension_host_created_loop_ = nullptr;
-  extensions::ExtensionHost* extension_host_ = nullptr;
+  raw_ptr<base::RunLoop, ExperimentalAsh> extension_host_created_loop_ =
+      nullptr;
+  raw_ptr<extensions::ExtensionHost, ExperimentalAsh> extension_host_ = nullptr;
   base::ScopedObservation<extensions::ProcessManager,
                           extensions::ProcessManagerObserver>
       process_manager_observation_{this};

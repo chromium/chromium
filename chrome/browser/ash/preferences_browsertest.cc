@@ -8,6 +8,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/input_method/input_method_manager_impl.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -159,8 +160,9 @@ class PreferencesTest : public LoginManagerTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  system::InputDeviceSettings::FakeInterface* input_settings_;
-  input_method::FakeImeKeyboard* keyboard_;
+  raw_ptr<system::InputDeviceSettings::FakeInterface, ExperimentalAsh>
+      input_settings_;
+  raw_ptr<input_method::FakeImeKeyboard, ExperimentalAsh> keyboard_;
 };
 
 IN_PROC_BROWSER_TEST_F(PreferencesTest, MultiProfiles) {

@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 
 class PrefService;
@@ -36,7 +37,8 @@ class OwnerFlagsStorage : public ::flags_ui::PrefServiceFlagsStorage {
   bool SetFlags(const std::set<std::string>& flags) override;
 
  private:
-  ownership::OwnerSettingsService* owner_settings_service_;
+  raw_ptr<ownership::OwnerSettingsService, ExperimentalAsh>
+      owner_settings_service_;
 };
 
 // FlagsStorage implementation for Chrome OS startup. It is backed by a set of

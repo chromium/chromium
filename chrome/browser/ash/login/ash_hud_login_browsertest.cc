@@ -12,6 +12,8 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
@@ -176,10 +178,10 @@ class TestAshTraceDestinationIO : public hud_display::AshTraceDestinationIO {
     CHECK_EQ(test_ash_trace_destination_io_registry->id(), registry_id_);
   }
 
-  const TestAshTraceDestinationIORegistry* registry_;
+  raw_ptr<const TestAshTraceDestinationIORegistry, ExperimentalAsh> registry_;
   const uint64_t registry_id_;
 
-  TestAshTraceDestinationIORegistry::IOStatus* status_;
+  raw_ptr<TestAshTraceDestinationIORegistry::IOStatus, ExperimentalAsh> status_;
 };
 
 // Keeps track of all test TracingSession objects.
@@ -324,13 +326,13 @@ class TestTracingSession : public perfetto::TracingSession {
     CHECK_EQ(test_tracing_session_registry->id(), registry_id_);
   }
 
-  const TestTracingSessionRegistry* registry_;
+  raw_ptr<const TestTracingSessionRegistry, ExperimentalAsh> registry_;
   const uint64_t registry_id_;
 
   std::function<void()> on_start_callback_;  // nocheck
   std::function<void()> on_stop_callback_;   // nocheck
 
-  TestTracingSessionRegistry::SessionStatus* status_;
+  raw_ptr<TestTracingSessionRegistry::SessionStatus, ExperimentalAsh> status_;
 };
 
 // Generates TraceDestination on the ThreadPool (IO-enabled sequence runner)
@@ -380,23 +382,25 @@ class TestAshTracingManagerObserver
       : manager_(manager) {}
 
   void Wait(Condition condition) {
-    if (condition.Run(manager_))
+    if (condition.Run(*manager_)) {
       return;
+    }
 
     condition_ = condition;
-    manager_.AddObserver(this);
+    manager_->AddObserver(this);
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
-    manager_.RemoveObserver(this);
+    manager_->RemoveObserver(this);
   }
 
   void OnTracingStatusChange() override {
-    if (condition_.Run(manager_))
+    if (condition_.Run(*manager_)) {
       run_loop_->Quit();
+    }
   }
 
  private:
-  hud_display::AshTracingManager& manager_;
+  const raw_ref<hud_display::AshTracingManager, ExperimentalAsh> manager_;
   Condition condition_;
 
   std::unique_ptr<base::RunLoop> run_loop_;

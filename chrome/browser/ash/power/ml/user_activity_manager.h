@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POWER_ML_USER_ACTIVITY_MANAGER_H_
 
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -217,7 +218,7 @@ class UserActivityManager : public ui::UserActivityObserver,
 
   BootClock boot_clock_;
 
-  UserActivityUkmLogger* const ukm_logger_;
+  const raw_ptr<UserActivityUkmLogger, ExperimentalAsh> ukm_logger_;
 
   base::ScopedObservation<ui::UserActivityDetector, ui::UserActivityObserver>
       user_activity_observation_{this};
@@ -228,13 +229,15 @@ class UserActivityManager : public ui::UserActivityObserver,
                           session_manager::SessionManagerObserver>
       session_manager_observation_{this};
 
-  session_manager::SessionManager* const session_manager_;
+  const raw_ptr<session_manager::SessionManager, ExperimentalAsh>
+      session_manager_;
 
   mojo::Receiver<viz::mojom::VideoDetectorObserver> receiver_;
 
-  const ChromeUserManager* const user_manager_;
+  const raw_ptr<const ChromeUserManager, ExperimentalAsh> user_manager_;
 
-  chromeos::PowerManagerClient* const power_manager_client_;
+  const raw_ptr<chromeos::PowerManagerClient, ExperimentalAsh>
+      power_manager_client_;
 
   // Delays to dim and turn off the screen. Zero means disabled.
   base::TimeDelta screen_dim_delay_;

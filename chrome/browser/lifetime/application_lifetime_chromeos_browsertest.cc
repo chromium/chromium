@@ -5,6 +5,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -74,7 +75,8 @@ class ApplicationLifetimeTest : public InProcessBrowserTest,
   }
 
   absl::optional<base::RunLoop> quits_on_browser_closing_;
-  ash::FakeUpdateEngineClient* fake_update_engine_client_ = nullptr;
+  raw_ptr<ash::FakeUpdateEngineClient, ExperimentalAsh>
+      fake_update_engine_client_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(ApplicationLifetimeTest,

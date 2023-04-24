@@ -522,7 +522,7 @@ void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
       &DeleteFilesAndMonikers, share_path, std::move(shared_monikers_));
 
   if (test_sharesheet_callback_) {
-    test_sharesheet_callback_.Run(arc_window_, std::move(intent),
+    test_sharesheet_callback_.Run(arc_window_.get(), std::move(intent),
                                   sharesheet::LaunchSource::kArcNearbyShare,
                                   std::move(delivered_callback),
                                   std::move(close_callback),

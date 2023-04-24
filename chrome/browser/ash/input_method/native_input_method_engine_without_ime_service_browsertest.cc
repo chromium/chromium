@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/input_method/native_input_method_engine.h"
 
 #include "ash/constants/ash_features.h"
@@ -202,9 +203,9 @@ class NativeInputMethodEngineWithoutImeServiceTest
   }
 
   std::unique_ptr<NativeInputMethodEngine> engine_;
-  Profile* profile_;
-  PrefService* prefs_;
-  TestObserver* observer_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<PrefService, ExperimentalAsh> prefs_;
+  raw_ptr<TestObserver, ExperimentalAsh> observer_;
 
  private:
   InputMethodAsh input_method_;

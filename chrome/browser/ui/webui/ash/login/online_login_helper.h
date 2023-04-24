@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -119,7 +120,8 @@ class OnlineLoginHelper : public network::mojom::CookieChangeListener {
 
   std::string signin_partition_name_;
 
-  login::SigninPartitionManager* signin_partition_manager_;
+  raw_ptr<login::SigninPartitionManager, ExperimentalAsh>
+      signin_partition_manager_;
 
   // Connection to the CookieManager that signals when the GAIA cookies change.
   mojo::Receiver<network::mojom::CookieChangeListener> oauth_code_listener_{

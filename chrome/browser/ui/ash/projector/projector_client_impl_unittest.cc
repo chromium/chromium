@@ -14,6 +14,7 @@
 #include "ash/public/cpp/test/mock_projector_controller.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "ash/webui/projector_app/test/mock_app_client.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
@@ -198,7 +199,7 @@ class ProjectorClientImplUnitTest
   base::HistogramTester histogram_tester_;
 
   content::BrowserTaskEnvironment task_environment_;
-  Profile* testing_profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> testing_profile_ = nullptr;
 
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
@@ -208,7 +209,7 @@ class ProjectorClientImplUnitTest
   std::unique_ptr<MockSodaInstaller> soda_installer_;
   std::unique_ptr<MockAppClient> mock_app_client_;
   std::unique_ptr<MockLocaleUpdateController> mock_locale_controller_;
-  speech::FakeSpeechRecognitionService* fake_service_;
+  raw_ptr<speech::FakeSpeechRecognitionService, ExperimentalAsh> fake_service_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };

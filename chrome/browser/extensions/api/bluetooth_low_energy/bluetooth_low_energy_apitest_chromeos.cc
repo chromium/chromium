@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -51,7 +52,7 @@ class BluetoothLowEnergyApiTestChromeOs : public PlatformAppBrowserTest {
   void EnterKioskSession() {
     fake_user_manager_ = new ash::FakeChromeUserManager();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(fake_user_manager_));
+        base::WrapUnique(fake_user_manager_.get()));
 
     const AccountId kiosk_account_id(
         AccountId::FromUserEmail("kiosk@foobar.com"));
@@ -67,7 +68,7 @@ class BluetoothLowEnergyApiTestChromeOs : public PlatformAppBrowserTest {
 
   ash::KioskAppManager* manager() const { return ash::KioskAppManager::Get(); }
 
-  ash::FakeChromeUserManager* fake_user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
   ash::ScopedCrosSettingsTestHelper settings_helper_;

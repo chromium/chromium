@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 
 #include <stddef.h>
@@ -337,7 +338,7 @@ class EasyUnlockServiceRegularTest : public testing::Test {
 
   std::unique_ptr<TestingProfile> profile_;
   AccountId account_id_;
-  FakeChromeUserManager* fake_chrome_user_manager_;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_chrome_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
   const multidevice::RemoteDeviceRef test_local_device_;
@@ -356,7 +357,8 @@ class EasyUnlockServiceRegularTest : public testing::Test {
 
   scoped_refptr<testing::NiceMock<MockBluetoothAdapter>> mock_adapter_;
 
-  testing::StrictMock<MockEasyUnlockNotificationController>*
+  raw_ptr<testing::StrictMock<MockEasyUnlockNotificationController>,
+          ExperimentalAsh>
       mock_notification_controller_;
 
   views::TestViewsDelegate view_delegate_;

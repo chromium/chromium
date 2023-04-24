@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/style/color_mode_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
@@ -56,8 +57,8 @@ class OpenTabResult : public ChromeSearchResult,
   // Handle used to receive a fetched favicon over mojo.
   const mojo::Receiver<crosapi::mojom::SearchResultConsumer> consumer_receiver_;
 
-  Profile* const profile_;
-  AppListControllerDelegate* const list_controller_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
   crosapi::mojom::SearchResultPtr search_result_;
   const absl::optional<std::string> drive_id_;
   const std::u16string description_;

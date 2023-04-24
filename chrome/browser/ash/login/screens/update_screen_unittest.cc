@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "chrome/browser/ash/login/screens/mock_error_screen.h"
 #include "chrome/browser/ash/login/screens/mock_update_screen.h"
@@ -112,8 +113,9 @@ class UpdateScreenUnitTest : public testing::Test {
   MockUpdateView mock_view_;
   MockErrorScreenView mock_error_view_;
   std::unique_ptr<MockErrorScreen> mock_error_screen_;
-  MockNetworkPortalDetector* mock_network_portal_detector_;
-  FakeUpdateEngineClient* fake_update_engine_client_;
+  raw_ptr<MockNetworkPortalDetector, ExperimentalAsh>
+      mock_network_portal_detector_;
+  raw_ptr<FakeUpdateEngineClient, ExperimentalAsh> fake_update_engine_client_;
   std::unique_ptr<WizardContext> wizard_context_;
 
   absl::optional<UpdateScreen::Result> last_screen_result_;

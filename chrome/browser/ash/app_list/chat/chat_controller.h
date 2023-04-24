@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_CHAT_CHAT_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_CHAT_CHAT_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 
@@ -23,7 +24,7 @@ class ChatController {
   ChatController& operator=(const ChatController&) = delete;
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 }  // namespace app_list

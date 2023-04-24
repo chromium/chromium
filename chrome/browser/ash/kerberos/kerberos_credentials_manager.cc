@@ -8,6 +8,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
@@ -276,7 +277,7 @@ class KerberosAddAccountRunner {
   }
 
   // Pointer to the owning manager, not owned.
-  KerberosCredentialsManager* const manager_ = nullptr;
+  const raw_ptr<KerberosCredentialsManager, ExperimentalAsh> manager_ = nullptr;
   std::string normalized_principal_;
   bool is_managed_ = false;
   absl::optional<std::string> password_;

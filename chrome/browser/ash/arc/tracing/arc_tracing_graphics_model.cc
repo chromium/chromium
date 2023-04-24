@@ -17,6 +17,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -481,7 +482,7 @@ class ExoInputEvent {
   ui::EventType type() const { return type_; }
 
  private:
-  const ArcTracingEvent* event_;
+  raw_ptr<const ArcTracingEvent, ExperimentalAsh> event_;
   // Time of the creation of the event. Normally, it is before the event
   // timestamp that indicates when event was seen in Wayland.
   const uint64_t input_timestamp_;
@@ -591,7 +592,7 @@ class AndroidInputEvent {
   int sequence_id() const { return sequence_id_; }
 
  private:
-  const ArcTracingEvent* event_;
+  raw_ptr<const ArcTracingEvent, ExperimentalAsh> event_;
   // Time of the creation of the event. Note that Wayland passes only
   // milliseconds. So for events coming from Chrome, it is expected 0 for
   // microsecond and nanosecond fraction. There is special case for motion

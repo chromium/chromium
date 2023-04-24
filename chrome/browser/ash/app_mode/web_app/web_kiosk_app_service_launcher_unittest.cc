@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -282,7 +283,7 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
   AccountId account_id_;
 
   apps::AppServiceTest app_service_test_;
-  apps::AppServiceProxy* app_service_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_ = nullptr;
 
   std::unique_ptr<WebKioskAppManager> app_manager_;
 

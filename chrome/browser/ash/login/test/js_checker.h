@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 
 namespace content {
@@ -242,7 +243,7 @@ class JSChecker {
   void GetIntImpl(const std::string& expression, int* result);
   void GetStringImpl(const std::string& expression, std::string* result);
 
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents, ExperimentalAsh> web_contents_ = nullptr;
 };
 
 // Helper method to create the JSChecker instance from the login/oobe

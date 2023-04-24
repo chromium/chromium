@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
 class Profile;
@@ -42,7 +43,7 @@ class ArcUiAvailabilityReporter {
   void MaybeReport();
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   const Mode mode_;
   const base::TimeTicks start_ticks_;
 

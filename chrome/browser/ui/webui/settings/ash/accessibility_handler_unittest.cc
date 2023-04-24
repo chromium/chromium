@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/ash/accessibility_handler.h"
 
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -61,11 +62,11 @@ class AccessibilityHandlerTest : public testing::Test {
 
  protected:
   std::unique_ptr<content::TestWebUI> web_ui_;
-  MockNewWindowDelegate* new_window_delegate_primary_;
+  raw_ptr<MockNewWindowDelegate, ExperimentalAsh> new_window_delegate_primary_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  AccessibilityHandler* handler_;
+  raw_ptr<AccessibilityHandler, ExperimentalAsh> handler_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
 };

@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -219,13 +220,15 @@ class CertProvisioningSchedulerImpl
   CertScope cert_scope_ = CertScope::kUser;
   // |profile_| can be nullptr for the device-wide instance of
   // CertProvisioningScheduler.
-  Profile* profile_ = nullptr;
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
   const char* pref_name_ = nullptr;
   std::unique_ptr<CertProvisioningClient> cert_provisioning_client_;
   // |platform_keys_service_| can be nullptr if it has been shut down.
-  platform_keys::PlatformKeysService* platform_keys_service_ = nullptr;
-  NetworkStateHandler* network_state_handler_ = nullptr;
+  raw_ptr<platform_keys::PlatformKeysService, ExperimentalAsh>
+      platform_keys_service_ = nullptr;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
+      nullptr;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 

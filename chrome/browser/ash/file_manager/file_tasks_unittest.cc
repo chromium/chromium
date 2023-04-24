@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
@@ -250,7 +251,7 @@ class FileManagerFileTaskWithAppServiceTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  apps::AppServiceProxy* app_service_proxy_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_proxy_ = nullptr;
   apps::AppServiceTest app_service_test_;
 };
 
@@ -856,7 +857,8 @@ class FileManagerFileTasksComplexTest : public testing::Test {
   ash::ScopedTestUserManager test_user_manager_;
   std::unique_ptr<TestingProfile> test_profile_;
   base::CommandLine command_line_;
-  extensions::ExtensionService* extension_service_;  // Owned by test_profile_;
+  raw_ptr<extensions::ExtensionService, ExperimentalAsh>
+      extension_service_;  // Owned by test_profile_;
 };
 
 }  // namespace file_manager::file_tasks

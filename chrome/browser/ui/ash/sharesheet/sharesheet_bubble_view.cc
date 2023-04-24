@@ -13,6 +13,7 @@
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -150,7 +151,7 @@ class SharesheetBubbleView::SharesheetParentWidgetObserver
   }
 
  private:
-  SharesheetBubbleView* owner_;
+  raw_ptr<SharesheetBubbleView, ExperimentalAsh> owner_;
   base::ScopedObservation<views::Widget, views::WidgetObserver> observer_{this};
 };
 

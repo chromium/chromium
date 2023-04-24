@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
 
@@ -31,7 +32,7 @@ class InputMethodPrefs {
   std::set<std::string> GetEnabledImes() const;
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 }  // namespace arc

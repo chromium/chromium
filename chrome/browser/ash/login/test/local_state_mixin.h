@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_LOCAL_STATE_MIXIN_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_LOCAL_STATE_MIXIN_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
 namespace ash {
@@ -31,7 +32,7 @@ class LocalStateMixin : public InProcessBrowserTestMixin {
       content::BrowserMainParts* browser_main_parts) override;
 
  private:
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 };
 
 }  // namespace ash

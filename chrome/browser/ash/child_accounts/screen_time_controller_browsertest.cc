@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -141,7 +142,7 @@ class ScreenTimeControllerTest : public MixinBasedInProcessBrowserTest {
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
 
-  Profile* child_profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> child_profile_ = nullptr;
 
  private:
   LoggedInUserMixin logged_in_user_mixin_{&mixin_host_,

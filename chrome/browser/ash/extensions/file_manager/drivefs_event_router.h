@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
@@ -149,7 +150,7 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver,
       const std::string& event_name);
 
   // This is owned by EventRouter and only shared with this class.
-  SystemNotificationManager* notification_manager_;
+  raw_ptr<SystemNotificationManager, ExperimentalAsh> notification_manager_;
 
   SyncingStatusState sync_status_state_;
   SyncingStatusState pin_status_state_;

@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -129,9 +130,11 @@ class ProxiedPoliciesPropagatedWatcher : PolicyService::ProviderUpdateObserver {
                       base::TimeTicks::Now() - construction_time_);
   }
 
-  PolicyService* const device_wide_policy_service_;
-  const ProxyPolicyProvider* const proxy_policy_provider_;
-  const ConfigurationPolicyProvider* const source_policy_provider_;
+  const raw_ptr<PolicyService, ExperimentalAsh> device_wide_policy_service_;
+  const raw_ptr<const ProxyPolicyProvider, ExperimentalAsh>
+      proxy_policy_provider_;
+  const raw_ptr<const ConfigurationPolicyProvider, ExperimentalAsh>
+      source_policy_provider_;
   const base::TimeTicks construction_time_ = base::TimeTicks::Now();
   base::OnceClosure proxied_policies_propagated_callback_;
   base::OneShotTimer timeout_timer_;

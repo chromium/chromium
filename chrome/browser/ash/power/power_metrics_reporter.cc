@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/power/power_metrics_reporter.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -65,7 +66,7 @@ class PowerMetricsReporter::DailyEventObserver
   }
 
  private:
-  PowerMetricsReporter* reporter_;  // Not owned.
+  raw_ptr<PowerMetricsReporter, ExperimentalAsh> reporter_;  // Not owned.
 };
 
 const char PowerMetricsReporter::kDailyEventIntervalName[] =

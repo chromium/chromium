@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_STANDALONE_BROWSER_APPS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_STANDALONE_BROWSER_APPS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
@@ -69,9 +70,10 @@ class StandaloneBrowserApps : public AppPublisher,
   // crosapi::BrowserManagerObserver
   void OnLoadComplete(bool success, const base::Version& version) override;
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   bool is_browser_load_success_ = true;
-  BrowserAppInstanceRegistry* const browser_app_instance_registry_;
+  const raw_ptr<BrowserAppInstanceRegistry, DanglingUntriaged | ExperimentalAsh>
+      browser_app_instance_registry_;
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   // Used to observe the browser manager for image load changes.

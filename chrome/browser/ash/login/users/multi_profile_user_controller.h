@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
 class PrefService;
@@ -100,8 +102,9 @@ class MultiProfileUserController {
   // Invoked when user behavior pref value changes.
   void OnUserPrefChanged(Profile* profile);
 
-  MultiProfileUserControllerDelegate* delegate_;  // Not owned.
-  PrefService* local_state_;                      // Not owned.
+  raw_ptr<MultiProfileUserControllerDelegate, ExperimentalAsh>
+      delegate_;                                       // Not owned.
+  raw_ptr<PrefService, ExperimentalAsh> local_state_;  // Not owned.
   std::vector<std::unique_ptr<PrefChangeRegistrar>> pref_watchers_;
 };
 

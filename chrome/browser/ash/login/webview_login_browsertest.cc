@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -2077,7 +2078,7 @@ class WebviewProxyAuthLoginTest : public WebviewLoginTest {
   std::unique_ptr<content::WindowedNotificationObserver> auth_needed_observer_;
   std::unique_ptr<base::RunLoop> auth_needed_wait_loop_;
   // Unowned pointer - set to the LoginHandler of the frame displaying gaia.
-  LoginHandler* gaia_frame_login_handler_ = nullptr;
+  raw_ptr<LoginHandler, ExperimentalAsh> gaia_frame_login_handler_ = nullptr;
 
   // A proxy server which requires authentication using the 'Basic'
   // authentication method.

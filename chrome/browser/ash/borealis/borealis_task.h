@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
@@ -147,7 +148,7 @@ class UpdateChromeFlags : public BorealisTask {
  private:
   void OnFlagsUpdated(BorealisContext* context, std::string error);
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   base::WeakPtrFactory<UpdateChromeFlags> weak_factory_{this};
 };
 

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_cache.h"
@@ -120,7 +121,7 @@ class AppDeduplicationService : public KeyedService,
   std::map<uint32_t, DuplicateGroup> duplication_map_;
   std::map<EntryId, uint32_t> entry_to_group_map_;
   std::map<EntryId, EntryStatus> entry_status_;
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   base::ScopedObservation<AppProvisioningDataManager,
                           AppProvisioningDataManager::Observer>

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_OMNIBOX_OMNIBOX_LACROS_PROVIDER_H_
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
@@ -38,9 +39,9 @@ class OmniboxLacrosProvider : public SearchProvider {
  private:
   void OnResultsReceived(std::vector<crosapi::mojom::SearchResultPtr> results);
 
-  crosapi::SearchProviderAsh* search_provider_;
-  Profile* const profile_;
-  AppListControllerDelegate* const list_controller_;
+  raw_ptr<crosapi::SearchProviderAsh, ExperimentalAsh> search_provider_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
 
   AutocompleteInput input_;
 

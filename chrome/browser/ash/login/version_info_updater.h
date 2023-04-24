@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -96,9 +97,9 @@ class VersionInfoUpdater : public policy::CloudPolicyStore::Observer {
 
   std::vector<base::CallbackListSubscription> subscriptions_;
 
-  CrosSettings* cros_settings_;
+  raw_ptr<CrosSettings, ExperimentalAsh> cros_settings_;
 
-  Delegate* delegate_;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   // Weak pointer factory so we can give our callbacks for invocation
   // at a later time without worrying that they will actually try to

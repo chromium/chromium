@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_PHONEHUB_ATTESTATION_CERTIFICATE_GENERATOR_IMPL_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/soft_bind_attestation_flow.h"
@@ -40,7 +41,7 @@ class AttestationCertificateGeneratorImpl
   std::unique_ptr<attestation::SoftBindAttestationFlow>
       soft_bind_attestation_flow_;
   std::unique_ptr<device_sync::CryptAuthKeyRegistry> key_registry_;
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   bool is_valid_;
   std::vector<std::string> attestation_certs_;
   base::Time last_attestation_certificate_generated_time_;

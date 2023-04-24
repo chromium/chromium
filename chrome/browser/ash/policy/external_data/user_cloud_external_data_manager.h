@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_EXTERNAL_DATA_USER_CLOUD_EXTERNAL_DATA_MANAGER_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/policy/external_data/cloud_external_data_manager_base.h"
 #include "components/policy/core/common/policy_details.h"
@@ -60,7 +61,7 @@ class UserCloudExternalDataManager : public CloudExternalDataManagerBase {
   // * Post a task to the |backend_task_runner_| that will destroy the
   //   |resource_cache_|.
   // Because of this destruction sequence, a scoped_ptr cannot be used.
-  ResourceCache* resource_cache_;
+  raw_ptr<ResourceCache, DanglingUntriaged | ExperimentalAsh> resource_cache_;
 };
 
 }  // namespace policy

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_BOREALIS_BOREALIS_DISK_MANAGER_IMPL_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager.h"
@@ -111,8 +112,8 @@ class BorealisDiskManagerImpl : public BorealisDiskManager {
       Expected<std::unique_ptr<BorealisSyncDiskSizeResult>,
                Described<BorealisSyncDiskSizeResult>> success_or_error);
 
-  const BorealisContext* const context_;
-  BorealisService* const service_;
+  const raw_ptr<const BorealisContext, ExperimentalAsh> context_;
+  const raw_ptr<BorealisService, ExperimentalAsh> service_;
   int request_count_{0};
   std::unique_ptr<BuildDiskInfo> build_disk_info_transition_;
   std::unique_ptr<ResizeDisk> resize_disk_transition_;

@@ -8,6 +8,7 @@
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_tracing_instance.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_bridge.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -63,7 +64,7 @@ class ArcTracingBridgeTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
   ArcBridgeService bridge_service_;
   std::unique_ptr<ArcTracingBridge> tracing_bridge_;

@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -248,7 +249,7 @@ class ManagedConfigurationVariablesBase {
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
 
   ash::system::FakeStatisticsProvider statistics_provider_;
 

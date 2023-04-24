@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
@@ -80,7 +81,7 @@ class MockUptimeProvider {
   }
 
  private:
-  base::TestMockTimeTaskRunner* mock_time_task_runner_;
+  raw_ptr<base::TestMockTimeTaskRunner, ExperimentalAsh> mock_time_task_runner_;
 
   base::FilePath uptime_file_path_;
   base::TimeDelta uptime_offset_;
@@ -132,7 +133,7 @@ class MockAutomaticRebootManagerObserver
  private:
   void StopObserving();
 
-  AutomaticRebootManager* automatic_reboot_manger_;
+  raw_ptr<AutomaticRebootManager, ExperimentalAsh> automatic_reboot_manger_;
 };
 
 }  // namespace
@@ -227,7 +228,8 @@ class AutomaticRebootManagerBasicTest : public testing::Test {
   user_manager::ScopedUserManager user_manager_enabler_;
   session_manager::SessionManager session_manager_;
 
-  FakeUpdateEngineClient* update_engine_client_ = nullptr;  // Not owned.
+  raw_ptr<FakeUpdateEngineClient, ExperimentalAsh> update_engine_client_ =
+      nullptr;  // Not owned.
 };
 
 enum AutomaticRebootManagerTestScenario {

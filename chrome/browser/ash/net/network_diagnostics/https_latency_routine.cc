@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -89,8 +90,9 @@ class HttpsLatencyRoutine::HostResolver
   void CreateHostResolver();
   void OnMojoConnectionError();
 
-  network::mojom::NetworkContext* network_context_ = nullptr;  // Unowned
-  HttpsLatencyRoutine* https_latency_;                         // Unowned
+  raw_ptr<network::mojom::NetworkContext, ExperimentalAsh> network_context_ =
+      nullptr;                                                   // Unowned
+  raw_ptr<HttpsLatencyRoutine, ExperimentalAsh> https_latency_;  // Unowned
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
   mojo::Remote<network::mojom::HostResolver> host_resolver_;
 };

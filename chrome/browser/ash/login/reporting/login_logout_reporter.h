@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -91,7 +92,7 @@ class LoginLogoutReporter : public policy::ManagedSessionService::Observer {
                           policy::ManagedSessionService::Observer>
       managed_session_observation_{this};
 
-  base::Clock* const clock_;
+  const raw_ptr<base::Clock, ExperimentalAsh> clock_;
 
   // To be able to access |kEnableKioskAndGuestLoginLogoutReporting| in tests.
   friend class LoginLogoutTestHelper;

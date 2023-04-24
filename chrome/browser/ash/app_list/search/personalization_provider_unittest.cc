@@ -8,6 +8,7 @@
 
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/search/search_handler.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
@@ -120,8 +121,8 @@ class PersonalizationProviderTest : public testing::Test {
 
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
-  ::apps::AppServiceProxy* app_service_proxy_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<::apps::AppServiceProxy, ExperimentalAsh> app_service_proxy_;
   std::unique_ptr<PersonalizationProvider> provider_;
 };
 

@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager_dispatcher.h"
@@ -160,8 +161,8 @@ class BorealisDiskManagerTest : public testing::Test,
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<BorealisContext> context_;
   std::unique_ptr<BorealisDiskManagerImpl> disk_manager_;
-  FreeSpaceProviderMock* free_space_provider_;
-  BorealisServiceFake* service_fake_;
+  raw_ptr<FreeSpaceProviderMock, ExperimentalAsh> free_space_provider_;
+  raw_ptr<BorealisServiceFake, ExperimentalAsh> service_fake_;
   std::unique_ptr<testing::NiceMock<BorealisDiskDispatcherMock>>
       mock_dispatcher_;
   std::unique_ptr<BorealisFeatures> borealis_features_;

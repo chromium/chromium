@@ -11,6 +11,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -258,9 +259,9 @@ class DesksClient : public ash::SessionObserver {
 
   // Convenience pointer to ash::DesksController. Guaranteed to be not null for
   // the duration of `this`.
-  ash::DesksController* const desks_controller_;
+  const raw_ptr<ash::DesksController, ExperimentalAsh> desks_controller_;
 
-  Profile* active_profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> active_profile_ = nullptr;
 
   // Maps launch id to a launch handler.
   std::map<int32_t, std::unique_ptr<DesksTemplatesAppLaunchHandler>>

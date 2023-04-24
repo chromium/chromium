@@ -9,6 +9,7 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/pickle.h"
@@ -145,7 +146,7 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
 
   aura::test::TestWindowDelegate delegate_;
 
-  storage::ExternalMountPoints* mount_points_;
+  raw_ptr<storage::ExternalMountPoints, ExperimentalAsh> mount_points_;
   std::string myfiles_mount_name_;
   base::FilePath myfiles_dir_;
   std::string crostini_mount_name_;
@@ -156,7 +157,8 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
   static constexpr char kFakeAndroidAllowDir[] = "/fake/aa_dir";
   static constexpr char kFakeAndroidDenyDir[] = "/fake/ad_dir";
 
-  FakeSeneschalClient* fake_seneschal_client_ = nullptr;
+  raw_ptr<FakeSeneschalClient, ExperimentalAsh> fake_seneschal_client_ =
+      nullptr;
 };
 
 TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {

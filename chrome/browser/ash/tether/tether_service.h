@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -262,15 +263,19 @@ class TetherService
   TetherFeatureState previous_feature_state_ =
       TetherFeatureState::TETHER_FEATURE_STATE_MAX;
 
-  Profile* profile_;
-  chromeos::PowerManagerClient* power_manager_client_;
-  device_sync::DeviceSyncClient* device_sync_client_;
-  secure_channel::SecureChannelClient* secure_channel_client_;
-  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
-  NetworkStateHandler* network_state_handler_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<chromeos::PowerManagerClient, ExperimentalAsh> power_manager_client_;
+  raw_ptr<device_sync::DeviceSyncClient, DanglingUntriaged | ExperimentalAsh>
+      device_sync_client_;
+  raw_ptr<secure_channel::SecureChannelClient, ExperimentalAsh>
+      secure_channel_client_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient,
+          DanglingUntriaged | ExperimentalAsh>
+      multidevice_setup_client_;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
-  session_manager::SessionManager* session_manager_;
+  raw_ptr<session_manager::SessionManager, ExperimentalAsh> session_manager_;
   std::unique_ptr<NotificationPresenter> notification_presenter_;
   std::unique_ptr<GmsCoreNotificationsStateTrackerImpl>
       gms_core_notifications_state_tracker_;

@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ash/crosapi/parent_access_ash.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -78,7 +79,7 @@ class ParentAccessAshTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   mojo::Remote<crosapi::mojom::ParentAccess> parent_access_remote_;
   std::unique_ptr<crosapi::ParentAccessAsh> parent_access_ash_;
-  FakeParentAccessDialogProvider* dialog_provider_;
+  raw_ptr<FakeParentAccessDialogProvider, ExperimentalAsh> dialog_provider_;
 };
 
 // Tests that the correct parameters were passed through to the dialog for

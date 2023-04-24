@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
@@ -75,7 +76,7 @@ class CrostiniTestHelper {
  private:
   void UpdateRegistry();
 
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   vm_tools::apps::ApplicationList current_apps_;
 
   // This are used to allow Crostini.

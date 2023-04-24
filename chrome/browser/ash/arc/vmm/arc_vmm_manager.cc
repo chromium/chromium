@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/vmm/arc_vmm_swap_scheduler.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -174,7 +175,7 @@ class ArcVmmManager::AcceleratorTarget : public ui::AcceleratorTarget {
   bool CanHandleAccelerators() const override { return true; }
 
   // The manager responsible for executing vmm commands.
-  ArcVmmManager* const manager_;
+  const raw_ptr<ArcVmmManager, ExperimentalAsh> manager_;
 
   // The accelerator to enable vmm swap for ARCVM.
   const ui::Accelerator vmm_swap_enabled_;

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_FAKE_EULA_MIXIN_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_FAKE_EULA_MIXIN_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -37,7 +38,7 @@ class FakeEulaMixin : public InProcessBrowserTestMixin {
 
  private:
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request);
-  net::EmbeddedTestServer* test_server_;
+  raw_ptr<net::EmbeddedTestServer, ExperimentalAsh> test_server_;
 
   // The default behaviour for the embedded server is to service the
   // online version properly. Offline tests may change this during construction

@@ -6,6 +6,7 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/session/arc_service_manager.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -106,9 +107,9 @@ class ArcVmmManagerTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* testing_profile_ = nullptr;
+  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_ = nullptr;
   std::unique_ptr<TestConciergeClient> concierge_client_;
-  ArcVmmManager* manager_ = nullptr;
+  raw_ptr<ArcVmmManager, ExperimentalAsh> manager_ = nullptr;
 
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
 };

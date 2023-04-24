@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/ash/arc/auth/arc_auth_code_fetcher.h"
@@ -69,7 +70,7 @@ class ArcBackgroundAuthCodeFetcher : public ArcAuthCodeFetcher {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // Unowned pointer.
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   ArcAuthContext context_;
   FetchCallback callback_;
 

@@ -14,6 +14,7 @@
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -168,16 +169,16 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
  private:
   ash::ScopedCrosSettingsTestHelper settings_helper_{
       /* create_settings_service= */ false};
-  ash::FakeChromeUserManager* fake_user_manager_{
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_{
       new ash::FakeChromeUserManager()};
   user_manager::ScopedUserManager scoped_user_manager_{
-      base::WrapUnique(fake_user_manager_)};
+      base::WrapUnique(fake_user_manager_.get())};
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   // Required for initialization.
   ash::SessionTerminationManager termination_manager_;
   std::unique_ptr<LockToSingleUserManager> lock_to_single_user_manager_;
-  ash::FakeConciergeClient* fake_concierge_client_;
+  raw_ptr<ash::FakeConciergeClient, ExperimentalAsh> fake_concierge_client_;
   TestingPrefServiceSimple local_state_;
 };
 

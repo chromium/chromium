@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -131,7 +132,7 @@ class AnsibleManagementService : public KeyedService,
   void OnConfigurationFinished(const guest_os::GuestId& container_id,
                                bool success);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   base::ObserverList<Observer> observers_;
   std::map<guest_os::GuestId, std::unique_ptr<AnsibleConfiguration>>
       configuration_tasks_;

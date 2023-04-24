@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -242,11 +243,12 @@ class ScopedFakeAutoEnrollmentClientFactory {
 
   // The `policy::AutoEnrollmentController` which is using
   // `fake_auto_enrollment_client_factory_`.
-  policy::AutoEnrollmentController* controller_;
+  raw_ptr<policy::AutoEnrollmentController, ExperimentalAsh> controller_;
   policy::FakeAutoEnrollmentClient::FactoryImpl
       fake_auto_enrollment_client_factory_;
 
-  policy::FakeAutoEnrollmentClient* created_auto_enrollment_client_ = nullptr;
+  raw_ptr<policy::FakeAutoEnrollmentClient, ExperimentalAsh>
+      created_auto_enrollment_client_ = nullptr;
   base::OnceClosure run_on_auto_enrollment_client_created_;
 };
 
@@ -328,7 +330,7 @@ class ScopedEnrollmentStateFetcherFactory {
 
   // The `policy::AutoEnrollmentController` which is using
   // `MockEnrollmentStateFetcher`.
-  policy::AutoEnrollmentController* controller_;
+  raw_ptr<policy::AutoEnrollmentController, ExperimentalAsh> controller_;
 
   bool fetcher_created_ = false;
   base::OnceCallback<void(policy::AutoEnrollmentState)> report_result_;
@@ -836,52 +838,60 @@ class WizardControllerFlowTest : public WizardControllerTest {
 
   // All of the *Screen types are owned by WizardController. The views are owned
   // by this test class.
-  MockWelcomeScreen* mock_welcome_screen_ = nullptr;
+  raw_ptr<MockWelcomeScreen, ExperimentalAsh> mock_welcome_screen_ = nullptr;
 
-  MockNetworkScreen* mock_network_screen_ = nullptr;
+  raw_ptr<MockNetworkScreen, ExperimentalAsh> mock_network_screen_ = nullptr;
   std::unique_ptr<MockNetworkScreenView> mock_network_screen_view_;
 
-  MockUpdateScreen* mock_update_screen_ = nullptr;
+  raw_ptr<MockUpdateScreen, ExperimentalAsh> mock_update_screen_ = nullptr;
   std::unique_ptr<MockUpdateView> mock_update_view_;
 
-  MockEnrollmentScreen* mock_enrollment_screen_ = nullptr;
+  raw_ptr<MockEnrollmentScreen, ExperimentalAsh> mock_enrollment_screen_ =
+      nullptr;
   std::unique_ptr<MockEnrollmentScreenView> mock_enrollment_screen_view_;
 
   // Auto enrollment check screen is a nice mock because it may or may not be
   // shown depending on when asynchronous auto enrollment check finishes. Only
   // add expectations for this if you are sure they are not affected by race
   // conditions.
-  testing::NiceMock<MockAutoEnrollmentCheckScreen>*
+  raw_ptr<testing::NiceMock<MockAutoEnrollmentCheckScreen>, ExperimentalAsh>
       mock_auto_enrollment_check_screen_ = nullptr;
   std::unique_ptr<MockAutoEnrollmentCheckScreenView>
       mock_auto_enrollment_check_screen_view_;
 
-  MockWrongHWIDScreen* mock_wrong_hwid_screen_ = nullptr;
+  raw_ptr<MockWrongHWIDScreen, ExperimentalAsh> mock_wrong_hwid_screen_ =
+      nullptr;
   std::unique_ptr<MockWrongHWIDScreenView> mock_wrong_hwid_screen_view_;
 
-  MockEnableAdbSideloadingScreen* mock_enable_adb_sideloading_screen_ = nullptr;
+  raw_ptr<MockEnableAdbSideloadingScreen, ExperimentalAsh>
+      mock_enable_adb_sideloading_screen_ = nullptr;
   std::unique_ptr<MockEnableAdbSideloadingScreenView>
       mock_enable_adb_sideloading_screen_view_;
 
-  MockEnableDebuggingScreen* mock_enable_debugging_screen_ = nullptr;
+  raw_ptr<MockEnableDebuggingScreen, ExperimentalAsh>
+      mock_enable_debugging_screen_ = nullptr;
   std::unique_ptr<MockEnableDebuggingScreenView>
       mock_enable_debugging_screen_view_;
 
-  MockDemoSetupScreen* mock_demo_setup_screen_ = nullptr;
+  raw_ptr<MockDemoSetupScreen, ExperimentalAsh> mock_demo_setup_screen_ =
+      nullptr;
   std::unique_ptr<MockDemoSetupScreenView> mock_demo_setup_screen_view_;
 
-  MockDemoPreferencesScreen* mock_demo_preferences_screen_ = nullptr;
+  raw_ptr<MockDemoPreferencesScreen, ExperimentalAsh>
+      mock_demo_preferences_screen_ = nullptr;
   std::unique_ptr<MockDemoPreferencesScreenView>
       mock_demo_preferences_screen_view_;
 
-  MockConsolidatedConsentScreen* mock_consolidated_consent_screen_ = nullptr;
+  raw_ptr<MockConsolidatedConsentScreen, ExperimentalAsh>
+      mock_consolidated_consent_screen_ = nullptr;
   std::unique_ptr<MockConsolidatedConsentScreenView>
       mock_consolidated_consent_screen_view_;
 
   std::unique_ptr<MockDeviceDisabledScreenView> device_disabled_screen_view_;
 
  private:
-  NetworkPortalDetectorTestImpl* network_portal_detector_ = nullptr;
+  raw_ptr<NetworkPortalDetectorTestImpl, ExperimentalAsh>
+      network_portal_detector_ = nullptr;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
 };
@@ -2409,7 +2419,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerEnableAdbSideloadingTest,
 
   EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
   SkipToScreen(EnableAdbSideloadingScreenView::kScreenId,
-               mock_enable_adb_sideloading_screen_);
+               mock_enable_adb_sideloading_screen_.get());
   CheckCurrentScreen(EnableAdbSideloadingScreenView::kScreenId);
 
   test::OobeJS().ClickOnPath(
@@ -2435,7 +2445,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerEnableAdbSideloadingTest,
 
   EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
   SkipToScreen(EnableAdbSideloadingScreenView::kScreenId,
-               mock_enable_adb_sideloading_screen_);
+               mock_enable_adb_sideloading_screen_.get());
   CheckCurrentScreen(EnableAdbSideloadingScreenView::kScreenId);
   EXPECT_CALL(*mock_enable_adb_sideloading_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_welcome_screen_, ShowImpl()).Times(1);
@@ -2632,7 +2642,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, DemoPreferencesCanceled) {
   CheckCurrentScreen(WelcomeView::kScreenId);
   EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
   SkipToScreen(DemoPreferencesScreenView::kScreenId,
-               mock_demo_preferences_screen_);
+               mock_demo_preferences_screen_.get());
 
   CheckCurrentScreen(DemoPreferencesScreenView::kScreenId);
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
@@ -2656,7 +2666,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, DemoPreferencesCanceled) {
 IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, NetworkBackPressed) {
   CheckCurrentScreen(WelcomeView::kScreenId);
   EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-  SkipToScreen(NetworkScreenView::kScreenId, mock_network_screen_);
+  SkipToScreen(NetworkScreenView::kScreenId, mock_network_screen_.get());
 
   CheckCurrentScreen(NetworkScreenView::kScreenId);
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
@@ -2804,10 +2814,10 @@ class WizardControllerOobeResumeTest : public WizardControllerTest {
   }
 
   std::unique_ptr<MockWelcomeView> mock_welcome_view_;
-  MockWelcomeScreen* mock_welcome_screen_;
+  raw_ptr<MockWelcomeScreen, ExperimentalAsh> mock_welcome_screen_;
 
   std::unique_ptr<MockEnrollmentScreenView> mock_enrollment_screen_view_;
-  MockEnrollmentScreen* mock_enrollment_screen_;
+  raw_ptr<MockEnrollmentScreen, ExperimentalAsh> mock_enrollment_screen_;
 
   std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
 };
@@ -2966,7 +2976,7 @@ class WizardControllerRollbackFlowTest : public WizardControllerFlowTest {
         policy::AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
   }
 
-  FakeRollbackNetworkConfig* network_config_;
+  raw_ptr<FakeRollbackNetworkConfig, ExperimentalAsh> network_config_;
 };
 
 // Ensure that enrollment screen is triggered after auto enrollment check

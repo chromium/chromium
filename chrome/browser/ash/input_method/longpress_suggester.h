@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_LONGPRESS_SUGGESTER_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_LONGPRESS_SUGGESTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/input_method/suggester.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -29,7 +30,8 @@ class LongpressSuggester : public Suggester {
   std::vector<ime::AssistiveSuggestion> GetSuggestions() override;
 
  protected:
-  SuggestionHandlerInterface* const suggestion_handler_;
+  const raw_ptr<SuggestionHandlerInterface, ExperimentalAsh>
+      suggestion_handler_;
   absl::optional<int> focused_context_id_;
 };
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_SYSTEM_NOTIFICATION_MANAGER_H_
 
 #include "ash/public/cpp/notification_utils.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
@@ -293,16 +294,18 @@ class SystemNotificationManager {
       mount_status_;
 
   // User profile.
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Application name (used for notification display source).
   std::u16string const app_name_;
 
   // DriveFS event router: not owned.
-  DriveFsEventRouter* drivefs_event_router_ = nullptr;
+  raw_ptr<DriveFsEventRouter, DanglingUntriaged | ExperimentalAsh>
+      drivefs_event_router_ = nullptr;
 
   // IOTaskController is owned by VolumeManager.
-  file_manager::io_task::IOTaskController* io_task_controller_ = nullptr;
+  raw_ptr<file_manager::io_task::IOTaskController, ExperimentalAsh>
+      io_task_controller_ = nullptr;
 
   // base::WeakPtr{this} factory.
   base::WeakPtrFactory<SystemNotificationManager> weak_ptr_factory_{this};

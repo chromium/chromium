@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -181,10 +182,10 @@ class OwnerSettingsServiceAsh : public ownership::OwnerSettingsService,
   void MigrateFeatureFlags(
       enterprise_management::ChromeDeviceSettingsProto* settings);
 
-  DeviceSettingsService* device_settings_service_;
+  raw_ptr<DeviceSettingsService, ExperimentalAsh> device_settings_service_;
 
   // Profile this service instance belongs to.
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // User ID this service instance belongs to.
   std::string user_id_;

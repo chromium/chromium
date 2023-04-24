@@ -12,6 +12,7 @@
 #include "ash/style/color_palette_controller.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -212,7 +213,7 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
   TestingProfileManager profile_manager_;
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   mojo::Remote<ash::personalization_app::mojom::ThemeProvider>
       theme_provider_remote_;
   TestThemeObserver test_theme_observer_;

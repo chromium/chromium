@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_QUICK_UNLOCK_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_QUICK_UNLOCK_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -34,8 +35,8 @@ class QuickUnlockHandler : public ::settings::SettingsPageUIHandler {
   void HandleQuickUnlockDisabledByPolicy(const base::Value::List& args);
   void UpdateQuickUnlockDisabledByPolicy();
 
-  Profile* profile_;
-  PrefService* pref_service_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<QuickUnlockHandler> weak_ptr_factory_{this};

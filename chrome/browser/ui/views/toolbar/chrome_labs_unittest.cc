@@ -104,7 +104,7 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
             base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         user_manager_(new ash::FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(user_manager_)),
+        user_manager_enabler_(base::WrapUnique(user_manager_.get())),
 #endif
         scoped_feature_entries_(
             {{kFirstTestFeatureId, "", "",
@@ -173,7 +173,7 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::FakeChromeUserManager* user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 #endif
 
@@ -246,7 +246,7 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
             base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         user_manager_(new ash::FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(user_manager_)),
+        user_manager_enabler_(base::WrapUnique(user_manager_.get())),
 #endif
         scoped_feature_entries_(
             {{kFirstTestFeatureId, "", "",
@@ -388,7 +388,7 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::FakeChromeUserManager* user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 #endif
 
@@ -469,7 +469,7 @@ class ChromeLabsAshFeatureTest : public ChromeLabsFeatureTest {
   ChromeLabsAshFeatureTest()
       : ChromeLabsFeatureTest(),
         user_manager_(new FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(user_manager_)) {
+        user_manager_enabler_(base::WrapUnique(user_manager_.get())) {
     SessionManagerClient::InitializeFakeInMemory();
     FakeSessionManagerClient::Get()->set_supports_browser_restart(true);
     const AccountId account_id(
@@ -479,7 +479,7 @@ class ChromeLabsAshFeatureTest : public ChromeLabsFeatureTest {
   }
 
  private:
-  FakeChromeUserManager* user_manager_;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 };
 

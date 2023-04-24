@@ -12,6 +12,7 @@
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/components/arc/session/arc_management_transition.h"
 #include "ash/components/arc/test/fake_app_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -35,7 +36,7 @@ struct TransitionNotificationParams {
       : arc_transition(arc_transition), notification_icon(notification_icon) {}
 
   ArcManagementTransition arc_transition;
-  const gfx::VectorIcon* notification_icon;
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> notification_icon;
 };
 
 }  // namespace

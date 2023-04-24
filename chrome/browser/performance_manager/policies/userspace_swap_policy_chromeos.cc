@@ -72,7 +72,7 @@ void UserspaceSwapPolicy::OnPassedToGraph(Graph* graph) {
 
   // Only handle the memory pressure notifications if the feature to swap on
   // moderate pressure is enabled.
-  if (config_.swap_on_moderate_pressure) {
+  if (config_->swap_on_moderate_pressure) {
     graph_->AddSystemNodeObserver(this);
   }
 }
@@ -80,7 +80,7 @@ void UserspaceSwapPolicy::OnPassedToGraph(Graph* graph) {
 void UserspaceSwapPolicy::OnTakenFromGraph(Graph* graph) {
   DCHECK_EQ(graph_, graph);
 
-  if (config_.swap_on_moderate_pressure) {
+  if (config_->swap_on_moderate_pressure) {
     graph_->RemoveSystemNodeObserver(this);
   }
 
@@ -90,7 +90,7 @@ void UserspaceSwapPolicy::OnTakenFromGraph(Graph* graph) {
 
 void UserspaceSwapPolicy::OnAllFramesInProcessFrozen(
     const ProcessNode* process_node) {
-  if (config_.swap_on_freeze) {
+  if (config_->swap_on_freeze) {
     // We don't provide a page node because the visibility requirements don't
     // matter on freeze.
     if (IsEligibleToSwap(process_node, nullptr)) {
@@ -152,7 +152,7 @@ void UserspaceSwapPolicy::OnMemoryPressure(
   auto now_ticks = base::TimeTicks::Now();
   // Try not to walk the graph too frequently because we can receive moderate
   // memory pressure notifications every 10s.
-  if (now_ticks - last_graph_walk_ < config_.graph_walk_frequency) {
+  if (now_ticks - last_graph_walk_ < config_->graph_walk_frequency) {
     return;
   }
 
@@ -285,7 +285,7 @@ bool UserspaceSwapPolicy::IsEligibleToSwap(const ProcessNode* process_node,
   auto now_ticks = base::TimeTicks::Now();
   // Don't swap a renderer too frequently.
   auto time_since_last_swap = now_ticks - GetLastSwapTime(process_node);
-  if (time_since_last_swap < config_.process_swap_frequency) {
+  if (time_since_last_swap < config_->process_swap_frequency) {
     return false;
   }
 
@@ -301,7 +301,7 @@ bool UserspaceSwapPolicy::IsEligibleToSwap(const ProcessNode* process_node,
     // Next the page node must have been invisible for longer than the
     // configured time.
     if (GetTimeSinceLastVisibilityChange(page_node) <
-        config_.invisible_time_before_swap) {
+        config_->invisible_time_before_swap) {
       return false;
     }
   }
@@ -309,26 +309,27 @@ bool UserspaceSwapPolicy::IsEligibleToSwap(const ProcessNode* process_node,
   // To avoid hammering the system with fstat(2) system calls we will cache the
   // available disk space for 30 seconds. But we only check if it's been
   // configured to enforce a swap device minimum.
-  if (config_.minimum_swap_disk_space_available > 0) {
+  if (config_->minimum_swap_disk_space_available > 0) {
     // Check if we can't swap because the device is running low on space.
     if (GetSwapDeviceFreeSpaceBytes() <
-        config_.minimum_swap_disk_space_available) {
+        config_->minimum_swap_disk_space_available) {
       return false;
     }
   }
 
   // Make sure we're not exceeding the total swap file usage across all
   // renderers.
-  if (config_.maximum_swap_disk_space_bytes > 0) {
-    if (GetTotalSwapFileUsageBytes() >= config_.maximum_swap_disk_space_bytes) {
+  if (config_->maximum_swap_disk_space_bytes > 0) {
+    if (GetTotalSwapFileUsageBytes() >=
+        config_->maximum_swap_disk_space_bytes) {
       return false;
     }
   }
 
   // And make sure we're not exceeding the per-renderer swap file limit.
-  if (config_.renderer_maximum_disk_swap_file_size_bytes > 0) {
+  if (config_->renderer_maximum_disk_swap_file_size_bytes > 0) {
     if (GetProcessNodeSwapFileUsageBytes(process_node) >=
-        config_.renderer_maximum_disk_swap_file_size_bytes) {
+        config_->renderer_maximum_disk_swap_file_size_bytes) {
       return false;
     }
   }

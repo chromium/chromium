@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -84,7 +85,8 @@ class AccessibilityNodeInfoDataWrapper : public AccessibilityInfoDataWrapper {
   bool HasImportantProperty() const;
   bool HasImportantPropertyInternal() const;
 
-  mojom::AccessibilityNodeInfoData* node_ptr_ = nullptr;
+  raw_ptr<mojom::AccessibilityNodeInfoData, ExperimentalAsh> node_ptr_ =
+      nullptr;
 
   // Properties which should be checked for recursive text computation.
   // It's not clear whether labeled by should be taken into account here.

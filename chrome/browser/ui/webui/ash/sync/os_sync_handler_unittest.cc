@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -183,15 +184,15 @@ class OsSyncHandlerTest : public ChromeRenderViewHostTestHarness {
                                              enabled);
   }
 
-  syncer::TestSyncService* sync_service_ = nullptr;
-  syncer::SyncUserSettings* user_settings_ = nullptr;
+  raw_ptr<syncer::TestSyncService, ExperimentalAsh> sync_service_ = nullptr;
+  raw_ptr<syncer::SyncUserSettings, ExperimentalAsh> user_settings_ = nullptr;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   std::unique_ptr<TestWebUI> web_ui_;
   TestWebUIProvider test_web_ui_provider_;
   std::unique_ptr<TestChromeWebUIControllerFactory> test_web_ui_factory_;
-  OSSyncHandler* handler_;
-  MockNewWindowDelegate* new_window_delegate_primary_;
+  raw_ptr<OSSyncHandler, ExperimentalAsh> handler_;
+  raw_ptr<MockNewWindowDelegate, ExperimentalAsh> new_window_delegate_primary_;
   std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
 };
 

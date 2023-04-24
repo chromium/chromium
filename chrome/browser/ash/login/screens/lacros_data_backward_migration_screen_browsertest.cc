@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/lacros_data_backward_migration_screen.h"
 
 #include "ash/constants/ash_switches.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -78,7 +79,7 @@ class LacrosDataBackwardMigrationScreenTest : public OobeBaseTest {
   FakeBackMigrator* fake_back_migrator() { return fake_back_migrator_; }
 
  private:
-  FakeBackMigrator* fake_back_migrator_;
+  raw_ptr<FakeBackMigrator, ExperimentalAsh> fake_back_migrator_;
 
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};

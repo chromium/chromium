@@ -9,6 +9,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_helper_instance_remote_proxy.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_test_util.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
@@ -36,7 +37,7 @@ class ArcAccessibilityTreeTrackerTest : public ChromeViewsTestBase {
                                       accessibility_helper_instance,
                                       arc_bridge_service) {}
 
-    aura::Window* focused_window_ = nullptr;
+    raw_ptr<aura::Window, ExperimentalAsh> focused_window_ = nullptr;
     absl::optional<bool> last_dispatched_talkback_state_;
 
     void TrackWindow(aura::Window* window) {

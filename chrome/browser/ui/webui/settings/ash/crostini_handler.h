@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
 #include "chrome/browser/ash/crostini/crostini_file_selector.h"
@@ -165,7 +166,7 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   // Handle a request to start uninstalling Bruschetta
   void HandleRequestBruschettaUninstallerView(const base::Value::List& args);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   base::CallbackListSubscription adb_sideloading_device_policy_subscription_;
   PrefChangeRegistrar pref_change_registrar_;
   std::unique_ptr<crostini::CrostiniFileSelector> file_selector_;

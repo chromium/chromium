@@ -156,7 +156,7 @@ PluginVmInstallerView::PluginVmInstallerView(Profile* profile)
       gfx::Insets::TLBR(kTitleHeight - kTitleFontSize, 0, 0, 0));
   title_label_->SetMultiLine(false);
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  upper_container_view->AddChildView(title_label_);
+  upper_container_view->AddChildView(title_label_.get());
 
   views::View* message_container_view = new views::View();
   message_container_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -167,19 +167,19 @@ PluginVmInstallerView::PluginVmInstallerView(Profile* profile)
   message_label_ = new views::Label(GetMessage(), {kMessageFont});
   message_label_->SetMultiLine(true);
   message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  message_container_view->AddChildView(message_label_);
+  message_container_view->AddChildView(message_label_.get());
 
   learn_more_link_ = new views::Link(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
   learn_more_link_->SetCallback(base::BindRepeating(
       &PluginVmInstallerView::OnLinkClicked, base::Unretained(this)));
   learn_more_link_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  message_container_view->AddChildView(learn_more_link_);
+  message_container_view->AddChildView(learn_more_link_.get());
 
   progress_bar_ = new views::ProgressBar(kProgressBarHeight);
   progress_bar_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(kProgressBarTopMargin - kProgressBarHeight, 0, 0, 0));
-  upper_container_view->AddChildView(progress_bar_);
+  upper_container_view->AddChildView(progress_bar_.get());
 
   download_progress_message_label_ =
       new views::Label(std::u16string(), {kDownloadProgressMessageFont});
@@ -190,10 +190,10 @@ PluginVmInstallerView::PluginVmInstallerView(Profile* profile)
           0, 0));
   download_progress_message_label_->SetMultiLine(false);
   download_progress_message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  upper_container_view->AddChildView(download_progress_message_label_);
+  upper_container_view->AddChildView(download_progress_message_label_.get());
 
   big_image_ = new views::ImageView();
-  lower_container_view->AddChildView(big_image_);
+  lower_container_view->AddChildView(big_image_.get());
 
   // Make sure the lower_container_view is pinned to the bottom of the dialog.
   lower_container_layout_->set_main_axis_alignment(

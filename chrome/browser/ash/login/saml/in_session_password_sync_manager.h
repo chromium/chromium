@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
@@ -118,13 +119,13 @@ class InSessionPasswordSyncManager
   void OnPasswordUpdateFailure(std::unique_ptr<UserContext> user_context,
                                AuthenticationError error);
 
-  Profile* const primary_profile_;
+  const raw_ptr<Profile, ExperimentalAsh> primary_profile_;
   UserContext user_context_;
-  const base::Clock* clock_;
-  const user_manager::User* const primary_user_;
+  raw_ptr<const base::Clock, ExperimentalAsh> clock_;
+  const raw_ptr<const user_manager::User, ExperimentalAsh> primary_user_;
   ReauthenticationReason lock_screen_reauth_reason_ =
       ReauthenticationReason::kNone;
-  proximity_auth::ScreenlockBridge* screenlock_bridge_;
+  raw_ptr<proximity_auth::ScreenlockBridge, ExperimentalAsh> screenlock_bridge_;
   std::unique_ptr<PasswordSyncTokenFetcher> password_sync_token_fetcher_;
 
   // Used to authenticate the user.

@@ -12,6 +12,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -87,7 +88,7 @@ class ImageAnnotationWorker {
 
   // AnnotationStorage owns this ImageAnnotationWorker. All the methods must
   // be called from the main sequence.
-  AnnotationStorage* annotation_storage_;
+  raw_ptr<AnnotationStorage, ExperimentalAsh> annotation_storage_;
 
   bool use_fake_annotator_for_tests_ = false;
 

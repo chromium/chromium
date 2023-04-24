@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_MOJO_H_
 #define CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_MOJO_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
 #include "components/user_manager/user_manager.h"
@@ -41,7 +42,8 @@ class LoginDisplayMojo : public LoginDisplay,
 
   bool initialized_ = false;
 
-  LoginDisplayHostMojo* const host_ = nullptr;  // Unowned.
+  const raw_ptr<LoginDisplayHostMojo, ExperimentalAsh> host_ =
+      nullptr;  // Unowned.
 
   base::WeakPtrFactory<LoginDisplayMojo> weak_factory_{this};
 };

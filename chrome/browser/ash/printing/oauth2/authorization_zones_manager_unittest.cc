@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -210,7 +211,8 @@ class PrintingOAuth2AuthorizationZonesManagerTest : public testing::Test {
     return auth_zone;
   }
 
-  testing::NiceMock<MockClientIdsDatabase>* client_ids_database_;
+  raw_ptr<testing::NiceMock<MockClientIdsDatabase>, ExperimentalAsh>
+      client_ids_database_;
   std::map<GURL, AuthZoneMock*> auth_zones_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;

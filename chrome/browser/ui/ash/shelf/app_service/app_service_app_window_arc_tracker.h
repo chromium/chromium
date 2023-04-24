@@ -13,6 +13,7 @@
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 
@@ -148,8 +149,9 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
   // `session_id`.
   void OnSessionDestroyed(int32_t session_id);
 
-  Profile* const observed_profile_;
-  AppServiceAppWindowShelfController* const app_service_controller_;
+  const raw_ptr<Profile, ExperimentalAsh> observed_profile_;
+  const raw_ptr<AppServiceAppWindowShelfController, ExperimentalAsh>
+      app_service_controller_;
 
   TaskIdToArcAppWindowInfo task_id_to_arc_app_window_info_;
   SessionIdToArcAppWindowInfo session_id_to_arc_app_window_info_;

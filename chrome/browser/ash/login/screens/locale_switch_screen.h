@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_LOCALE_SWITCH_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_LOCALE_SWITCH_SCREEN_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 
 #include "base/memory/weak_ptr.h"
@@ -67,7 +68,7 @@ class LocaleSwitchScreen : public BaseScreen,
 
   std::string gaia_id_;
   ScreenExitCallback exit_callback_;
-  signin::IdentityManager* identity_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_ = nullptr;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observer_{this};

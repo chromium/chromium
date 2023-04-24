@@ -7,6 +7,7 @@
 
 #include "ash/components/arc/mojom/privacy_items.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -60,7 +61,7 @@ class ArcPrivacyItemsBridge
   static void EnsureFactoryBuilt();
 
  private:
-  ArcBridgeService* const arc_bridge_service_;
+  const raw_ptr<ArcBridgeService, ExperimentalAsh> arc_bridge_service_;
   base::ObserverList<Observer> observer_list_;
 };
 

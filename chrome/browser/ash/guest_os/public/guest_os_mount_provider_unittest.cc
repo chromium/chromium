@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -113,9 +114,9 @@ class GuestOsMountProviderTest : public testing::Test {
   const std::string kMountName = std::string{"guestos++cow+ptery%2Fdaccy"};
 
   content::BrowserTaskEnvironment task_environment_;
-  ash::disks::MockDiskMountManager* disk_manager_;
+  raw_ptr<ash::disks::MockDiskMountManager, ExperimentalAsh> disk_manager_;
   std::unique_ptr<TestingProfile> profile_;
-  file_manager::VolumeManager* volume_manager_;
+  raw_ptr<file_manager::VolumeManager, ExperimentalAsh> volume_manager_;
   std::unique_ptr<MockMountProvider> provider_;
   int cid_ = 41;     // Default set in MockMountProvider
   int port_ = 1234;  // Default set in MockMountProvider

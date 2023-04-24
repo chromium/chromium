@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
@@ -122,20 +123,23 @@ class AccountManagerUIHandler
   // Refreshes the UI.
   void RefreshUI();
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
   // A non-owning pointer to |account_manager::AccountManager|.
-  account_manager::AccountManager* const account_manager_;
+  const raw_ptr<account_manager::AccountManager, ExperimentalAsh>
+      account_manager_;
 
   // A non-owning pointer to |AccountManagerFacade|.
-  account_manager::AccountManagerFacade* const account_manager_facade_;
+  const raw_ptr<account_manager::AccountManagerFacade, ExperimentalAsh>
+      account_manager_facade_;
 
   // A non-owning pointer to |IdentityManager|.
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
 
   // A non-owning pointer to |AccountAppsAvailability| which is a KeyedService
   // and should outlive this class.
-  AccountAppsAvailability* account_apps_availability_ = nullptr;
+  raw_ptr<AccountAppsAvailability, ExperimentalAsh> account_apps_availability_ =
+      nullptr;
 
   // An observer for |AccountManagerFacade|. Automatically deregisters when
   // |this| is destructed.

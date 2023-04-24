@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+
 class Profile;
 
 namespace ash {
@@ -25,7 +27,7 @@ class LoginFeedback {
   void Request(const std::string& description);
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   std::string description_;
 };
 

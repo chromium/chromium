@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
@@ -134,13 +135,13 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
     return profile;
   }
 
-  ::reporting::MockReportQueueStrict* mock_queue_;
+  raw_ptr<::reporting::MockReportQueueStrict, ExperimentalAsh> mock_queue_;
 
   std::unique_ptr<base::WeakPtrFactory<::reporting::MockReportQueueStrict>>
       weak_mock_queue_factory_;
 
  private:
-  ash::FakeChromeUserManager* user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
 
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 

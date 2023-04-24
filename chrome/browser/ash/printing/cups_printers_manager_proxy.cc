@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -76,7 +77,7 @@ class ProxyImpl : public CupsPrintersManagerProxy,
 
  private:
   // The manager for which we are forwarding events.
-  CupsPrintersManager* active_manager_ = nullptr;
+  raw_ptr<CupsPrintersManager, ExperimentalAsh> active_manager_ = nullptr;
   // TODO(skau): Change to CheckedObservers
   base::ObserverList<CupsPrintersManager::Observer>::Unchecked observers_;
 };

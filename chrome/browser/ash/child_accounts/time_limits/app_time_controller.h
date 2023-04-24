@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -63,7 +64,7 @@ class AppTimeController : public SystemClockClient::Observer,
     AppActivityRegistry* app_registry();
 
    private:
-    AppTimeController* const controller_;
+    const raw_ptr<AppTimeController, ExperimentalAsh> controller_;
   };
 
   // Registers preferences
@@ -141,7 +142,7 @@ class AppTimeController : public SystemClockClient::Observer,
                               absl::optional<base::TimeDelta> time_limit,
                               absl::optional<gfx::ImageSkia> icon);
   // Profile
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // The time of the day when app time limits should be reset.
   // Defaults to 6am local time.

@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -165,7 +166,7 @@ class TestTetherComponentFactory final : public TetherComponentImpl::Factory {
             &TestTetherComponentFactory::OnActiveTetherComponentDeleted,
             base::Unretained(this)));
     was_tether_component_active_ = true;
-    return base::WrapUnique(active_tether_component_);
+    return base::WrapUnique(active_tether_component_.get());
   }
 
   bool was_tether_component_active() { return was_tether_component_active_; }
@@ -180,7 +181,8 @@ class TestTetherComponentFactory final : public TetherComponentImpl::Factory {
     active_tether_component_ = nullptr;
   }
 
-  FakeTetherComponentWithDestructorCallback* active_tether_component_ = nullptr;
+  raw_ptr<FakeTetherComponentWithDestructorCallback, ExperimentalAsh>
+      active_tether_component_ = nullptr;
   bool was_tether_component_active_ = false;
   TetherComponent::ShutdownReason last_shutdown_reason_;
 };
@@ -218,12 +220,12 @@ class FakeTetherHostFetcherFactory : public TetherHostFetcherImpl::Factory {
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client)
       override {
     last_created_ = new FakeTetherHostFetcher(initial_devices_);
-    return base::WrapUnique(last_created_);
+    return base::WrapUnique(last_created_.get());
   }
 
  private:
   multidevice::RemoteDeviceRefList initial_devices_;
-  FakeTetherHostFetcher* last_created_ = nullptr;
+  raw_ptr<FakeTetherHostFetcher, ExperimentalAsh> last_created_ = nullptr;
 };
 
 class FakeDeviceSyncClientImplFactory
@@ -280,7 +282,8 @@ class FakeMultiDeviceSetupClientImplFactory
   }
 
  private:
-  multidevice_setup::FakeMultiDeviceSetupClient* fake_multidevice_setup_client_;
+  raw_ptr<multidevice_setup::FakeMultiDeviceSetupClient, ExperimentalAsh>
+      fake_multidevice_setup_client_;
 };
 
 }  // namespace
@@ -305,7 +308,7 @@ class TetherServiceTest : public testing::Test {
 
     fake_chrome_user_manager_ = new FakeChromeUserManager();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(fake_chrome_user_manager_));
+        base::WrapUnique(fake_chrome_user_manager_.get()));
 
     chromeos::PowerManagerClient::InitializeFake();
 
@@ -419,8 +422,8 @@ class TetherServiceTest : public testing::Test {
     fake_notification_presenter_ = new FakeNotificationPresenter();
     mock_timer_ = new base::MockOneShotTimer();
     tether_service_->SetTestDoubles(
-        base::WrapUnique(fake_notification_presenter_),
-        base::WrapUnique(mock_timer_));
+        base::WrapUnique(fake_notification_presenter_.get()),
+        base::WrapUnique(mock_timer_.get()));
 
     SetPrimaryUserLoggedIn();
 
@@ -518,7 +521,7 @@ class TetherServiceTest : public testing::Test {
 
   NetworkHandlerTestHelper network_handler_test_helper_;
   std::unique_ptr<TestingProfile> profile_;
-  FakeChromeUserManager* fake_chrome_user_manager_;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_chrome_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>
       test_pref_service_;
@@ -527,8 +530,9 @@ class TetherServiceTest : public testing::Test {
       fake_remote_device_provider_factory_;
   std::unique_ptr<FakeTetherHostFetcherFactory>
       fake_tether_host_fetcher_factory_;
-  FakeNotificationPresenter* fake_notification_presenter_;
-  base::MockOneShotTimer* mock_timer_;
+  raw_ptr<FakeNotificationPresenter, ExperimentalAsh>
+      fake_notification_presenter_;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_;
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
   std::unique_ptr<FakeDeviceSyncClientImplFactory>
       fake_device_sync_client_impl_factory_;

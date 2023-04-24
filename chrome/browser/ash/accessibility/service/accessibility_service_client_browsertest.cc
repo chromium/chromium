@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/accessibility/service/accessibility_service_router_factory.h"
 #include "chrome/browser/ash/accessibility/service/accessibility_service_client.h"
 #include "chrome/browser/ash/accessibility/service/automation_client_impl.h"
@@ -68,7 +69,7 @@ class AccessibilityServiceClientTest : public InProcessBrowserTest {
   }
 
   // Unowned.
-  FakeAccessibilityService* fake_service_ = nullptr;
+  raw_ptr<FakeAccessibilityService, ExperimentalAsh> fake_service_ = nullptr;
 
  private:
   std::unique_ptr<KeyedService> CreateTestAccessibilityService(

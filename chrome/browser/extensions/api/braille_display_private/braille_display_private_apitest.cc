@@ -6,6 +6,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
@@ -140,7 +141,7 @@ class MockBrlapiConnection : public BrlapiConnection {
     }
   }
 
-  MockBrlapiConnectionData* data_;
+  raw_ptr<MockBrlapiConnectionData, ExperimentalAsh> data_;
   OnDataReadyCallback on_data_ready_;
 };
 

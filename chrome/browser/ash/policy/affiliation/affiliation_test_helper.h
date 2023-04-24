@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 
 class AccountId;
@@ -93,8 +94,10 @@ class AffiliationTestHelper {
   void CheckPreconditions();
 
   ManagementType management_type_;
-  ash::FakeSessionManagerClient* fake_session_manager_client_;  // Not owned.
-  ash::FakeAuthPolicyClient* fake_authpolicy_client_;       // Not owned.
+  raw_ptr<ash::FakeSessionManagerClient, ExperimentalAsh>
+      fake_session_manager_client_;  // Not owned.
+  raw_ptr<ash::FakeAuthPolicyClient, ExperimentalAsh>
+      fake_authpolicy_client_;  // Not owned.
 };
 
 }  // namespace policy

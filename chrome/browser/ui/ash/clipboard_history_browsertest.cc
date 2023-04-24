@@ -15,6 +15,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/shell.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -135,7 +136,7 @@ class ViewBoundsWaiter : public views::ViewObserver {
     run_loop_.Quit();
   }
 
-  views::View* const observed_view_;
+  const raw_ptr<views::View, ExperimentalAsh> observed_view_;
   base::RunLoop run_loop_;
 };
 
@@ -796,15 +797,16 @@ class ClipboardHistoryPasteTypeBrowserTest
  private:
   // Returns all valid data formats for the last paste.
   base::Value::List GetLastPaste() {
-    auto result = content::EvalJs(
-        web_contents_, "(function() { return window.getLastPaste(); })();");
+    auto result =
+        content::EvalJs(web_contents_.get(),
+                        "(function() { return window.getLastPaste(); })();");
     EXPECT_TRUE(result.error.empty());
     auto paste_list_value = result.ExtractList();
     EXPECT_TRUE(paste_list_value.is_list());
     return std::move(paste_list_value).TakeList();
   }
 
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents, ExperimentalAsh> web_contents_ = nullptr;
   int paste_num_ = 1;
 };
 
@@ -1286,7 +1288,7 @@ class ClipboardHistoryTextfieldBrowserTest
   }
 
   std::unique_ptr<views::Widget> widget_;
-  views::Textfield* textfield_ = nullptr;
+  raw_ptr<views::Textfield, ExperimentalAsh> textfield_ = nullptr;
 };
 
 // Verifies that the clipboard history menu responses to the gesture tap

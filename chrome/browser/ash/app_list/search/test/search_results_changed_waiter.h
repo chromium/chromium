@@ -8,6 +8,7 @@
 #include <set>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 
 namespace app_list {
@@ -40,7 +41,7 @@ class SearchResultsChangedWaiter {
   void OnResultsChanged(ash::AppListSearchResultType result_type);
 
   // Observed search controller.
-  SearchController* const search_controller_;
+  const raw_ptr<SearchController, ExperimentalAsh> search_controller_;
 
   // Set of result types that the waiter is still waiting for.
   std::set<ash::AppListSearchResultType> types_;

@@ -11,6 +11,7 @@
 #include "ash/webui/help_app_ui/search/search_tag_registry.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -69,7 +70,8 @@ class MockSearchHandler : public ash::help_app::SearchHandler {
     results_ = std::move(results);
   }
 
-  ash::help_app::SearchTagRegistry* search_tag_registry_;
+  raw_ptr<ash::help_app::SearchTagRegistry, ExperimentalAsh>
+      search_tag_registry_;
   std::vector<SearchResultPtr> results_;
 };
 }  // namespace
@@ -123,8 +125,8 @@ class HelpAppProviderTest : public AppListTestBase {
   std::unique_ptr<ash::local_search_service::LocalSearchServiceProxy>
       local_search_service_proxy_;
   ash::help_app::SearchTagRegistry search_tag_registry_;
-  HelpAppProvider* provider_ = nullptr;
-  apps::AppServiceProxy* proxy_;
+  raw_ptr<HelpAppProvider, ExperimentalAsh> provider_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> proxy_;
   base::test::ScopedFeatureList scoped_feature_list_;
   MockSearchHandler mock_handler_;
 };

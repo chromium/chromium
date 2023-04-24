@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/keyboard/ui/keyboard_ui.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 
 class ChromeKeyboardWebContents;
@@ -60,7 +61,7 @@ class ChromeKeyboardUI : public keyboard::KeyboardUI,
 
   // The BrowserContext to use for creating the WebContents hosting the
   // keyboard.
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
 
   std::unique_ptr<ChromeKeyboardWebContents> keyboard_contents_;
   std::unique_ptr<ui::Shadow> shadow_;

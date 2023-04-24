@@ -400,7 +400,7 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   ScopedTestingLocalState scoped_testing_local_state_;
-  TestingPrefServiceSimple* local_state_;
+  raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> local_state_;
   testing::StrictMock<MockJobCreationHandler> job_creation_handler_;
   std::unique_ptr<FakeDeviceManagementService> service_;
   em::DeviceManagementRequest last_request_;

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
 
 #include <memory>
@@ -248,7 +249,7 @@ class ParentPermissionDialogViewTest
   }
 
  private:
-  ParentPermissionDialogView* view_ = nullptr;
+  raw_ptr<ParentPermissionDialogView, ExperimentalAsh> view_ = nullptr;
   std::unique_ptr<ParentPermissionDialog> parent_permission_dialog_;
   ParentPermissionDialog::Result result_;
 

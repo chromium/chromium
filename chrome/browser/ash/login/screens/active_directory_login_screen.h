@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
@@ -73,7 +74,7 @@ class ActiveDirectoryLoginScreen
   base::ScopedObservation<NetworkStateInformer, NetworkStateInformerObserver>
       scoped_observation_{this};
 
-  ErrorScreen* error_screen_ = nullptr;
+  raw_ptr<ErrorScreen, ExperimentalAsh> error_screen_ = nullptr;
 
   // TODO(crbug.com/1154669) Refactor error screen usage
   bool error_screen_visible_ = false;

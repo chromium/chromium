@@ -11,6 +11,7 @@
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace crosapi {
@@ -50,7 +51,8 @@ class TestMojoConnectionManager {
   void OnTestingSocketAvailable();
 
   // Used to pass ash-chrome specific flags/configurations to lacros-chrome.
-  EnvironmentProvider* environment_provider_;
+  raw_ptr<EnvironmentProvider, DanglingUntriaged | ExperimentalAsh>
+      environment_provider_;
 
   // A socket for a client, such as a test launcher, to connect to.
   base::ScopedFD testing_socket_;

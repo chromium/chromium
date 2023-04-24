@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_ENTERPRISE_INCOGNITO_NAVIGATION_THROTTLE_H_
 
 #include <string>
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/navigation_throttle.h"
 
@@ -56,7 +57,7 @@ class IncognitoNavigationThrottle : public content::NavigationThrottle {
   // in the browser.
   base::Value::List missing_extensions_;
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   base::WeakPtrFactory<IncognitoNavigationThrottle> weak_ptr_factory_{this};
 };

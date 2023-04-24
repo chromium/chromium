@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/power/auto_screen_brightness/metrics_reporter.h"
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/common/pref_names.h"
@@ -76,7 +77,7 @@ class MetricsReporter::DailyEventObserver
   }
 
  private:
-  MetricsReporter* reporter_;  // Not owned.
+  raw_ptr<MetricsReporter, ExperimentalAsh> reporter_;  // Not owned.
 };
 
 void MetricsReporter::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

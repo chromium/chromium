@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/extensions/extensions_permissions_tracker.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -114,8 +115,8 @@ class ExtensionsPermissionsTrackerTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  sync_preferences::TestingPrefServiceSyncable* prefs_;
-  ExtensionRegistry* registry_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh> prefs_;
+  raw_ptr<ExtensionRegistry, ExperimentalAsh> registry_;
   ScopedTestingLocalState testing_local_state_;
   std::unique_ptr<MockExtensionsPermissionsTracker> permissions_tracker_;
 };

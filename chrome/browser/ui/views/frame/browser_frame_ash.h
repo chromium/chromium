@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_ASH_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_ASH_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/native_browser_frame.h"
 #include "ui/views/widget/native_widget_aura.h"
 
@@ -48,7 +49,7 @@ class BrowserFrameAsh : public views::NativeWidgetAura,
   void SetWindowAutoManaged();
 
   // The BrowserView is our ClientView. This is a pointer to it.
-  BrowserView* browser_view_;
+  raw_ptr<BrowserView, ExperimentalAsh> browser_view_;
 
   // Set true when dragging a tab to create a browser window.
   bool created_from_drag_ = false;

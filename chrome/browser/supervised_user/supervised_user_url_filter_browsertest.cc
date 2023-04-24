@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -142,7 +143,8 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  SupervisedUserService* supervised_user_service_ = nullptr;
+  raw_ptr<SupervisedUserService, ExperimentalAsh> supervised_user_service_ =
+      nullptr;
 
   ash::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, ash::LoggedInUserMixin::LogInType::kChild,
@@ -203,12 +205,12 @@ class TabClosingObserver : public TabStripModelObserver {
   }
 
  private:
-  TabStripModel* tab_strip_ = nullptr;
+  raw_ptr<TabStripModel, ExperimentalAsh> tab_strip_ = nullptr;
 
   base::RunLoop run_loop_;
 
   // Contents to wait for.
-  content::WebContents* contents_ = nullptr;
+  raw_ptr<content::WebContents, ExperimentalAsh> contents_ = nullptr;
 };
 
 // Navigates to a blocked URL.
@@ -602,7 +604,8 @@ class MockSupervisedUserURLFilterObserver
       (override));
 
  private:
-  supervised_user::SupervisedUserURLFilter* const filter_;
+  const raw_ptr<supervised_user::SupervisedUserURLFilter, ExperimentalAsh>
+      filter_;
 };
 
 class SupervisedUserURLFilterPrerenderingTest

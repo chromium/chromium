@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_EXTENSION_NOTIFIER_CONTROLLER_H_
 #define CHROME_BROWSER_NOTIFICATIONS_EXTENSION_NOTIFIER_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/notifications/notifier_controller.h"
 #include "chrome/browser/ui/app_icon_loader_delegate.h"
 
@@ -32,7 +33,7 @@ class ExtensionNotifierController : public NotifierController,
   std::unique_ptr<AppIconLoader> app_icon_loader_;
 
   // Lifetime of parent must be longer than the source.
-  Observer* observer_;
+  raw_ptr<Observer, ExperimentalAsh> observer_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_EXTENSION_NOTIFIER_CONTROLLER_H_

@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/mojom/process.mojom.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/arc/process/arc_process.h"
@@ -108,7 +109,7 @@ class ScopedTestArcVmDelegate
   }
 
  private:
-  WorkingSetTrimmerPolicyChromeOS* const policy_;
+  const raw_ptr<WorkingSetTrimmerPolicyChromeOS, ExperimentalAsh> policy_;
   mechanism::ArcVmReclaimType eligibility_;
   bool is_first_trim_post_boot_;
 };
@@ -329,7 +330,7 @@ class WorkingSetTrimmerPolicyChromeOSTest : public GraphTestHarness {
     auto mock_policy = std::make_unique<
         testing::NiceMock<MockWorkingSetTrimmerPolicyChromeOS>>();
     policy_ = mock_policy.get();
-    std::move(callback).Run(policy_);
+    std::move(callback).Run(policy_.get());
     graph()->PassToGraph(std::move(mock_policy));
   }
 
@@ -366,7 +367,8 @@ class WorkingSetTrimmerPolicyChromeOSTest : public GraphTestHarness {
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-  MockWorkingSetTrimmerPolicyChromeOS* policy_ = nullptr;  // Not owned.
+  raw_ptr<MockWorkingSetTrimmerPolicyChromeOS, ExperimentalAsh> policy_ =
+      nullptr;  // Not owned.
   std::unique_ptr<mechanism::MockWorkingSetTrimmerChromeOS> trimmer_;
 };
 

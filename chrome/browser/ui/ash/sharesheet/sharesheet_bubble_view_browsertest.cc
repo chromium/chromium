@@ -8,6 +8,7 @@
 
 #include "ash/shell.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -95,7 +96,7 @@ class SharesheetBubbleViewBrowserTest
   }
 
  protected:
-  views::Widget* sharesheet_widget_;
+  raw_ptr<views::Widget, ExperimentalAsh> sharesheet_widget_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -211,7 +212,8 @@ class SharesheetBubbleViewPolicyBrowserTest
   }
 
   apps::AppServiceTest app_service_test_;
-  policy::MockDlpRulesManager* rules_manager_ = nullptr;
+  raw_ptr<policy::MockDlpRulesManager, ExperimentalAsh> rules_manager_ =
+      nullptr;
   std::unique_ptr<MockFilesController> mock_files_controller_ = nullptr;
 };
 

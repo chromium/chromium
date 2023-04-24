@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -199,7 +200,7 @@ class IdleAppNameNotificationDelegateView
 
   // The owner of this message which needs to get notified when the message
   // closes.
-  IdleAppNameNotificationView* owner_;
+  raw_ptr<IdleAppNameNotificationView, ExperimentalAsh> owner_;
 
   // True if the widget got already closed.
   bool widget_closed_;

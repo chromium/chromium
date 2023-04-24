@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_ARC_ARC_FAST_APP_REINSTALL_STARTER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_ARC_ARC_FAST_APP_REINSTALL_STARTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 
 class PrefService;
@@ -47,8 +48,8 @@ class ArcFastAppReinstallStarter : public ArcAppListPrefs::Observer {
   void OnAppStatesChanged(const std::string& app_id,
                           const ArcAppListPrefs::AppInfo& app_info) override;
 
-  content::BrowserContext* const context_;
-  PrefService* const pref_service_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   bool started_ = false;
 };
 

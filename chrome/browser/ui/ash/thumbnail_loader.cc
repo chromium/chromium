@@ -14,6 +14,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
@@ -257,7 +258,7 @@ class ThumbnailLoaderNativeMessageHost : public extensions::NativeMessageHost {
   const std::string message_;
   ThumbnailDataCallback callback_;
 
-  Client* client_ = nullptr;
+  raw_ptr<Client, ExperimentalAsh> client_ = nullptr;
 
   bool response_received_ = false;
 

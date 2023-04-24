@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -73,7 +74,7 @@ class FingerprintStorageTestApi {
   }
 
  private:
-  FingerprintStorage* fingerprint_storage_;
+  raw_ptr<FingerprintStorage, ExperimentalAsh> fingerprint_storage_;
 };
 
 // Verifies that:

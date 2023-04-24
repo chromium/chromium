@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
@@ -66,11 +67,12 @@ class RequestSystemProxyCredentialsViewTest : public BrowserWithTestWindowTest {
   bool accepted_ = false;
   bool canceled_ = false;
   // Owned by |active_widget_|.
-  RequestSystemProxyCredentialsView* system_proxy_dialog_ = nullptr;
+  raw_ptr<RequestSystemProxyCredentialsView, ExperimentalAsh>
+      system_proxy_dialog_ = nullptr;
 
  private:
   // Owned by the UI code (NativeWidget).
-  views::Widget* active_widget_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> active_widget_ = nullptr;
 };
 
 // Tests that clicking "OK" in the UI will result in calling the

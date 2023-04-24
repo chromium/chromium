@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_UPGRADER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
@@ -114,7 +115,7 @@ class CrostiniUpgrader : public KeyedService,
   };
   friend class StatusTracker;
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   guest_os::GuestId container_id_;
   base::ObserverList<CrostiniUpgraderUIObserver>::Unchecked upgrader_observers_;
 

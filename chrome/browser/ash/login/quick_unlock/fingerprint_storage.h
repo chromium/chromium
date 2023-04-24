@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_FINGERPRINT_STORAGE_H_
 #define CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_FINGERPRINT_STORAGE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_power_button_race_detector.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
@@ -118,7 +119,7 @@ class FingerprintStorage final
   friend class FingerprintStorageTestApi;
   friend class QuickUnlockStorage;
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   // Number of fingerprint unlock attempts.
   int unlock_attempt_count_ = 0;
 

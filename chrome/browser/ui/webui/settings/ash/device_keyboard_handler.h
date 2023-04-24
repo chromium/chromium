@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DEVICE_KEYBOARD_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DEVICE_KEYBOARD_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -33,7 +34,7 @@ class KeyboardHandler
     void Initialize();
 
    private:
-    KeyboardHandler* handler_;  // Not owned.
+    raw_ptr<KeyboardHandler, ExperimentalAsh> handler_;  // Not owned.
   };
 
   KeyboardHandler();

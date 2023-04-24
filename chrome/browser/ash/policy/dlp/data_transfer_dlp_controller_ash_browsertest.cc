@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -131,8 +132,8 @@ class FakeDlpController : public DataTransferDlpController,
     return false;
   }
 
-  views::Widget* widget_ = nullptr;
-  FakeClipboardNotifier* helper_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  raw_ptr<FakeClipboardNotifier, ExperimentalAsh> helper_ = nullptr;
   absl::optional<ui::DataTransferEndpoint> blink_data_dst_;
   base::RepeatingClosure blink_quit_cb_ = base::DoNothing();
   bool force_paste_on_warn_ = false;
@@ -217,7 +218,7 @@ class DataTransferDlpAshBrowserTest : public InProcessBrowserTest {
                                 "PLACEHOLDER_IP"));
   }
 
-  MockDlpRulesManager* rules_manager_;
+  raw_ptr<MockDlpRulesManager, ExperimentalAsh> rules_manager_;
   std::unique_ptr<DlpReportingManager> reporting_manager_;
   std::vector<DlpPolicyEvent> events;
   FakeClipboardNotifier helper_;

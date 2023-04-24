@@ -14,6 +14,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
@@ -307,12 +308,14 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
 
   device::FakeUsbDeviceManager device_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  disks::MockDiskMountManager* mock_disk_mount_manager_;
+  raw_ptr<disks::MockDiskMountManager, ExperimentalAsh>
+      mock_disk_mount_manager_;
   disks::DiskMountManager::Disks disks_;
 
-  ash::FakeCiceroneClient* fake_cicerone_client_;
-  FakeConciergeClient* fake_concierge_client_;
-  FakeVmPluginDispatcherClient* fake_vm_plugin_dispatcher_client_;
+  raw_ptr<ash::FakeCiceroneClient, ExperimentalAsh> fake_cicerone_client_;
+  raw_ptr<FakeConciergeClient, ExperimentalAsh> fake_concierge_client_;
+  raw_ptr<FakeVmPluginDispatcherClient, ExperimentalAsh>
+      fake_vm_plugin_dispatcher_client_;
 
   TestCrosUsbDeviceObserver usb_device_observer_;
   std::unique_ptr<CrosUsbDetector> cros_usb_detector_;

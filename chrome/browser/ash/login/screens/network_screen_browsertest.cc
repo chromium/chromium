@@ -10,6 +10,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
@@ -132,8 +133,9 @@ class NetworkScreenTest : public OobeBaseTest {
       std::move(screen_exit_callback_).Run();
   }
 
-  login::MockNetworkStateHelper* mock_network_state_helper_;
-  NetworkScreen* network_screen_;
+  raw_ptr<login::MockNetworkStateHelper, ExperimentalAsh>
+      mock_network_state_helper_;
+  raw_ptr<NetworkScreen, ExperimentalAsh> network_screen_;
   bool screen_exited_ = false;
   base::test::ScopedFeatureList feature_list_;
   absl::optional<NetworkScreen::Result> last_screen_result_;

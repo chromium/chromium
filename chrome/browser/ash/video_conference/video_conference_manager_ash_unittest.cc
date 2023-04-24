@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/system/video_conference/video_conference_common.h"
+#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -37,7 +38,7 @@ class FakeVcManagerCppClient
       : id_(base::UnguessableToken::Create()), vc_manager_(vc_manager) {}
   FakeVcManagerCppClient(const FakeVcManagerCppClient&) = delete;
   FakeVcManagerCppClient& operator=(const FakeVcManagerCppClient&) = delete;
-  ~FakeVcManagerCppClient() override { vc_manager_.UnregisterClient(id_); }
+  ~FakeVcManagerCppClient() override { vc_manager_->UnregisterClient(id_); }
 
   // crosapi::mojom::VideoConferenceManagerClient overrides
   void GetMediaApps(
@@ -63,7 +64,7 @@ class FakeVcManagerCppClient
   // Public for testing.
   base::UnguessableToken id_;
   std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> apps_;
-  FakeVideoConferenceManagerAsh& vc_manager_;
+  const raw_ref<FakeVideoConferenceManagerAsh, ExperimentalAsh> vc_manager_;
 };
 
 class VideoConferenceManagerAshTest : public testing::Test {

@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_system_provider/notification_manager_interface.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
@@ -70,7 +71,7 @@ class NotificationManager : public NotificationManagerInterface,
   // clearing the list.
   void OnNotificationResult(NotificationResult result);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   ProvidedFileSystemInfo file_system_info_;
   CallbackMap callbacks_;
   std::unique_ptr<AppIconLoader> icon_loader_;

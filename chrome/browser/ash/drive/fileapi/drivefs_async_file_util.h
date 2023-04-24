@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/browser/file_system/async_file_util_adapter.h"
 
@@ -39,7 +40,7 @@ class DriveFsAsyncFileUtil : public storage::AsyncFileUtilAdapter {
       StatusCallback callback) override;
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
 
   base::WeakPtrFactory<DriveFsAsyncFileUtil> weak_factory_{this};
 };

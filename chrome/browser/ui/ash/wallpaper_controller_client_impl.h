@@ -11,6 +11,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
@@ -192,9 +193,9 @@ class WallpaperControllerClientImpl
   void ObserveVolumeManagerForAccountId(const AccountId& account_id);
 
   // WallpaperController interface in ash.
-  ash::WallpaperController* wallpaper_controller_;
+  raw_ptr<ash::WallpaperController, ExperimentalAsh> wallpaper_controller_;
 
-  PrefService* local_state_;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_;
 
   // The registrar used to watch DeviceWallpaperImageFilePath pref changes.
   PrefChangeRegistrar pref_registrar_;

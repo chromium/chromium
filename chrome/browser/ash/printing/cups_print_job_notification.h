@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -56,11 +57,12 @@ class CupsPrintJobNotification : public message_center::NotificationObserver {
 
   void CleanUpNotification();
 
-  CupsPrintJobNotificationManager* notification_manager_;
+  raw_ptr<CupsPrintJobNotificationManager, ExperimentalAsh>
+      notification_manager_;
   std::unique_ptr<message_center::Notification> notification_;
   std::string notification_id_;
   base::WeakPtr<CupsPrintJob> print_job_;
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // If the notification has been closed in the middle of printing or not. If it
   // is true, then prevent the following print job progress update after close,

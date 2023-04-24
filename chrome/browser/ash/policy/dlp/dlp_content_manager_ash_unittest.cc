@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -145,7 +146,7 @@ class DlpContentManagerAshTest : public testing::Test {
   DlpContentManagerAshTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()),
         user_manager_(new ash::FakeChromeUserManager()),
-        scoped_user_manager_(base::WrapUnique(user_manager_)) {}
+        scoped_user_manager_(base::WrapUnique(user_manager_.get())) {}
   ~DlpContentManagerAshTest() override = default;
 
   std::unique_ptr<content::WebContents> CreateWebContents() {
@@ -207,7 +208,7 @@ class DlpContentManagerAshTest : public testing::Test {
   DlpContentManagerTestHelper helper_;
   base::HistogramTester histogram_tester_;
   std::vector<DlpPolicyEvent> events_;
-  MockDlpRulesManager* mock_rules_manager_ = nullptr;
+  raw_ptr<MockDlpRulesManager, ExperimentalAsh> mock_rules_manager_ = nullptr;
   MockPrivacyScreenHelper mock_privacy_screen_helper_;
 
  private:
@@ -227,8 +228,8 @@ class DlpContentManagerAshTest : public testing::Test {
 
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   TestingProfileManager profile_manager_;
-  TestingProfile* profile_;
-  ash::FakeChromeUserManager* user_manager_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 };
 

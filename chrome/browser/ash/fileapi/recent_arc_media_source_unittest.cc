@@ -10,6 +10,7 @@
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_file_system_instance.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -191,7 +192,7 @@ class RecentArcMediaSourceTest : public testing::Test {
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestingProfile> profile_;
 
-  arc::ArcFileSystemOperationRunner* runner_;
+  raw_ptr<arc::ArcFileSystemOperationRunner, ExperimentalAsh> runner_;
 
   std::unique_ptr<RecentArcMediaSource> source_;
 };

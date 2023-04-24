@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_APP_DISCOVERY_METRICS_MANAGER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_APP_DISCOVERY_METRICS_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,7 +34,7 @@ class AppDiscoveryMetricsManager {
   bool IsAppSyncEnabled();
 
   // Profile of the current user.
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 }  // namespace app_list

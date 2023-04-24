@@ -7,6 +7,7 @@
 
 #include "ash/system/media/media_notification_provider_observer.h"
 #include "ash/test_shell_delegate.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/crosapi/test_crosapi_environment.h"
@@ -174,7 +175,7 @@ class MediaNotificationProviderImplTest : public ChromeAshTestBase {
 
   std::unique_ptr<ChromeLayoutProvider> layout_provider_;
   std::unique_ptr<MockMediaNotificationProviderObserver> observer_;
-  MediaNotificationProviderImpl* provider_;
+  raw_ptr<MediaNotificationProviderImpl, ExperimentalAsh> provider_;
 };
 
 TEST_F(MediaNotificationProviderImplTest, NotificationListTest) {
@@ -270,7 +271,7 @@ class CastStartStopMediaNotificationProviderImplTest
         1, /*should_clip_height=*/true, /*item_id=*/"");
   }
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   crosapi::TestCrosapiEnvironment crosapi_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<views::View> list_view_;

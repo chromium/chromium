@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
@@ -105,7 +106,7 @@ class ActivityStorage {
       const base::RepeatingCallback<
           void(const int64_t, const int64_t, const std::string&)>& f) const;
 
-  PrefService* const pref_service_ = nullptr;
+  const raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
   const std::string pref_name_;
 
   // Distance from midnight. |GetBeginningOfDay| uses this, as some

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_EVENTS_EVENT_REWRITER_DELEGATE_IMPL_H_
 
 #include "ash/public/cpp/input_device_settings_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -52,9 +53,10 @@ class EventRewriterDelegateImpl : public ui::EventRewriterAsh::Delegate {
  private:
   const PrefService* GetPrefService() const;
 
-  const PrefService* pref_service_for_testing_;
+  raw_ptr<const PrefService, ExperimentalAsh> pref_service_for_testing_;
 
-  wm::ActivationClient* activation_client_;
+  raw_ptr<wm::ActivationClient, DanglingUntriaged | ExperimentalAsh>
+      activation_client_;
 
   // Handles showing notifications when deprecated event rewrites occur.
   std::unique_ptr<DeprecationNotificationController> deprecation_controller_;

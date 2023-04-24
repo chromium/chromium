@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -203,7 +204,7 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
   static constexpr CK_FLAGS kOpenSessionFlags =
       CKF_RW_SESSION | CKF_SERIAL_SESSION;
 
-  void* chaps_handle_ = nullptr;
+  raw_ptr<void, ExperimentalAsh> chaps_handle_ = nullptr;
   CK_C_OpenSession open_session_ = nullptr;
   CK_C_CloseSession close_session_ = nullptr;
   CK_C_GenerateKeyPair generate_key_pair_ = nullptr;

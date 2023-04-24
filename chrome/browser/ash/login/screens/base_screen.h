@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_BASE_SCREEN_H_
 
 #include "ash/public/cpp/login_accelerators.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "components/login/base_screen_handler_utils.h"
@@ -80,7 +81,7 @@ class BaseScreen {
 
   // Wizard context itself is owned by WizardController and is accessible
   // to screen only between OnShow / OnHide calls.
-  WizardContext* wizard_context_ = nullptr;
+  raw_ptr<WizardContext, ExperimentalAsh> wizard_context_ = nullptr;
 
   const OobeScreenId screen_id_;
 

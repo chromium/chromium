@@ -10,6 +10,7 @@
 #include <string>
 
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -57,7 +58,7 @@ class ArcAppLauncher : public ArcAppListPrefs::Observer,
                       apps::Readiness readiness);
 
   // Unowned pointer.
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
   // ARC app id.
   const std::string app_id_;
   // Optional intent to launch the app. If not set then app is started default

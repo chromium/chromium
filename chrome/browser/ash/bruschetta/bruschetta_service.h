@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
@@ -116,7 +117,7 @@ class BruschettaService : public KeyedService,
                           ash::ConciergeClient::VmObserver>
       vm_observer_{this};
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Must be last
   base::WeakPtrFactory<BruschettaService> weak_ptr_factory_{this};

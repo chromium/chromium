@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/syslog_logging.h"
@@ -129,7 +130,7 @@ class KioskProfileLoader::CryptohomedChecker
     }
   }
 
-  KioskProfileLoader* loader_;
+  raw_ptr<KioskProfileLoader, ExperimentalAsh> loader_;
   int retry_count_ = 0;
 };
 

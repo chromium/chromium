@@ -22,6 +22,7 @@
 #include "ash/public/cpp/external_arc/message_center/mock_arc_notification_surface.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -104,7 +105,7 @@ class ArcAccessibilityHelperBridgeTest : public ChromeViewsTestBase {
       return filter_type_for_test_;
     }
 
-    extensions::TestEventRouter* const event_router_;
+    const raw_ptr<extensions::TestEventRouter, ExperimentalAsh> event_router_;
     arc::mojom::AccessibilityFilterType filter_type_for_test_ =
         arc::mojom::AccessibilityFilterType::ALL;
   };

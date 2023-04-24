@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -430,7 +431,7 @@ class NearbyConnectionsTest : public testing::Test {
   mojo::SelfOwnedReceiverRef<sharing::mojom::TcpSocketFactory>
       tcp_socket_factory_self_owned_receiver_ref_;
   std::unique_ptr<NearbyConnections> nearby_connections_;
-  testing::NiceMock<MockServiceControllerRouter>*
+  raw_ptr<testing::NiceMock<MockServiceControllerRouter>, ExperimentalAsh>
       service_controller_router_ptr_;
   base::RunLoop disconnect_run_loop_;
 };

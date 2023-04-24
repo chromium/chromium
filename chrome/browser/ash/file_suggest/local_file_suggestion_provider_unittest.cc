@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/file_tasks_observer.h"
@@ -93,7 +94,7 @@ class LocalFileSuggestionProviderTest : public testing::Test {
     WaitForProviderToBeInitialized();
   }
 
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -108,10 +109,13 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
       const std::vector<nearbyshare::proto::ContactRecord>& contacts,
       uint32_t num_unreachable_contacts_filtered_out);
 
-  PrefService* pref_service_ = nullptr;
-  NearbyShareClientFactory* http_client_factory_ = nullptr;
-  NearbyShareLocalDeviceDataManager* local_device_data_manager_ = nullptr;
-  NearbyShareProfileInfoProvider* profile_info_provider_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
+  raw_ptr<NearbyShareClientFactory, ExperimentalAsh> http_client_factory_ =
+      nullptr;
+  raw_ptr<NearbyShareLocalDeviceDataManager, ExperimentalAsh>
+      local_device_data_manager_ = nullptr;
+  raw_ptr<NearbyShareProfileInfoProvider, ExperimentalAsh>
+      profile_info_provider_ = nullptr;
   std::unique_ptr<ash::nearby::NearbyScheduler>
       periodic_contact_upload_scheduler_;
   std::unique_ptr<ash::nearby::NearbyScheduler>

@@ -179,7 +179,7 @@ UserCloudPolicyManagerAsh::UserCloudPolicyManagerAsh(
   // not be initialized before then because the invalidation service cannot be
   // started because it depends on components initialized at the end of profile
   // creation. https://crbug.com/171406
-  observed_profile_.Observe(profile_);
+  observed_profile_.Observe(profile_.get());
 }
 
 void UserCloudPolicyManagerAsh::ForceTimeoutForTest() {

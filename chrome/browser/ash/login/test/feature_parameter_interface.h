@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,7 +20,7 @@ namespace {
 
 // Desired state of a feature in a test instantiation.
 struct FeatureState {
-  const base::Feature* feature;
+  raw_ptr<const base::Feature, ExperimentalAsh> feature;
   bool is_enabled;
 };
 

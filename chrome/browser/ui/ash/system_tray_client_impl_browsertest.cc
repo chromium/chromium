@@ -13,6 +13,7 @@
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/i18n/time_formatting.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -589,7 +590,7 @@ class SystemTrayClientShowVideoConferenceTest
     ASSERT_TRUE(browser_);
   }
 
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser, ExperimentalAsh> browser_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(SystemTrayClientShowVideoConferenceTest,

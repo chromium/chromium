@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/shelf/crostini_app_window.h"
+#include "base/memory/raw_ptr.h"
 
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
 #include "chrome/browser/profiles/profile.h"
@@ -52,7 +53,7 @@ class CrostiniAppWindow::IconLoader : public AppServiceAppIconLoader,
 
  private:
   const Mode mode_;
-  views::Widget* const widget_;
+  const raw_ptr<views::Widget, ExperimentalAsh> widget_;
 };
 
 CrostiniAppWindow::CrostiniAppWindow(Profile* profile,

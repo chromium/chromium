@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -520,12 +521,12 @@ class WizardController : public OobeUI::Observer {
   // So it should be safe to store the pointers.
   base::flat_map<BaseScreen*, BaseScreen*> previous_screens_;
 
-  WizardContext* wizard_context_;
+  raw_ptr<WizardContext, ExperimentalAsh> wizard_context_;
 
   static bool skip_enrollment_prompts_for_testing_;
 
   // Screen that's currently active.
-  BaseScreen* current_screen_ = nullptr;
+  raw_ptr<BaseScreen, ExperimentalAsh> current_screen_ = nullptr;
 
   // True if full OOBE flow should be shown.
   bool is_out_of_box_ = false;

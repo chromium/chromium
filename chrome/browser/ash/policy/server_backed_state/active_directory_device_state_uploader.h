@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -135,9 +136,9 @@ class ActiveDirectoryDeviceStateUploader : public CloudPolicyClient::Observer {
 
   std::string client_id_;
 
-  DeviceManagementService* dm_service_;
+  raw_ptr<DeviceManagementService, ExperimentalAsh> dm_service_;
 
-  ServerBackedStateKeysBroker* state_keys_broker_;
+  raw_ptr<ServerBackedStateKeysBroker, ExperimentalAsh> state_keys_broker_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
@@ -146,7 +147,7 @@ class ActiveDirectoryDeviceStateUploader : public CloudPolicyClient::Observer {
   std::string dm_token_;
 
   // Local state prefs, not owned.
-  PrefService* local_state_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
 
   std::unique_ptr<CloudPolicyClient> cloud_policy_client_;
 
@@ -165,7 +166,8 @@ class ActiveDirectoryDeviceStateUploader : public CloudPolicyClient::Observer {
   StatusCallback enrollment_id_callback_for_testing_;
 
   // Not owned.
-  ash::DeviceSettingsService* device_settings_service_for_testing_ = nullptr;
+  raw_ptr<ash::DeviceSettingsService, ExperimentalAsh>
+      device_settings_service_for_testing_ = nullptr;
 
   // Must be last member.
   base::WeakPtrFactory<ActiveDirectoryDeviceStateUploader> weak_ptr_factory_{

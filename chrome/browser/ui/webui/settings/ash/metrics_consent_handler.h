@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_METRICS_CONSENT_HANDLER_H_
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -56,9 +57,9 @@ class MetricsConsentHandler : public ::settings::SettingsPageUIHandler {
   // device metrics consent.
   bool ShouldUseUserConsent() const;
 
-  Profile* const profile_;
-  metrics::MetricsService* const metrics_service_;
-  user_manager::UserManager* const user_manager_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<metrics::MetricsService, ExperimentalAsh> metrics_service_;
+  const raw_ptr<user_manager::UserManager, ExperimentalAsh> user_manager_;
 
   // Used for callbacks.
   base::WeakPtrFactory<MetricsConsentHandler> weak_ptr_factory_{this};

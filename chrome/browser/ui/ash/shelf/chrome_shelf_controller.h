@@ -15,6 +15,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -442,23 +443,23 @@ class ChromeShelfController
   // The currently loaded profile used for prefs and loading extensions. This is
   // NOT necessarily the profile new windows are created with. Note that in
   // multi-profile use cases this might change over time.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
   // The profile used to load icons and get the app update information. This is
   // the latest active user's profile when switch users in multi-profile use
   // cases.
-  Profile* latest_active_profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> latest_active_profile_ = nullptr;
 
   // The ShelfModel instance owned by ash::Shell's ShelfController.
-  ash::ShelfModel* const model_;
+  const raw_ptr<ash::ShelfModel, ExperimentalAsh> model_;
 
   // Guaranteed to outlive this class. The central authority for creating
   // ShelfItems from app_ids.
-  ChromeShelfItemFactory* const shelf_item_factory_;
+  const raw_ptr<ChromeShelfItemFactory, ExperimentalAsh> shelf_item_factory_;
 
   // The AppService app window shelf controller.
-  AppServiceAppWindowShelfController* app_service_app_window_controller_ =
-      nullptr;
+  raw_ptr<AppServiceAppWindowShelfController, ExperimentalAsh>
+      app_service_app_window_controller_ = nullptr;
 
   // When true, changes to pinned shelf items should update the sync model.
   bool should_sync_pin_changes_ = true;

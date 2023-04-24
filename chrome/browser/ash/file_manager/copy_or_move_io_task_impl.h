@@ -14,6 +14,8 @@
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_delegate.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
@@ -103,7 +105,7 @@ class CopyOrMoveIOTaskImpl {
   // The current progress state.
   // The reference is allowed here, as the owning object (CopyOrMoveIOTask) is
   // guaranteed to outlive the CopyOrMoveIOTaskImpl.
-  ProgressStatus& progress_;
+  const raw_ref<ProgressStatus, ExperimentalAsh> progress_;
 
   // ProgressCallback for this operation, used to notify the UI of the current
   // progress.
@@ -153,7 +155,7 @@ class CopyOrMoveIOTaskImpl {
   void SetCurrentOperationID(
       storage::FileSystemOperationRunner::OperationID id);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
   // Specifies whether the operation is already completed.

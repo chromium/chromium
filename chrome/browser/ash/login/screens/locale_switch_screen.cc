@@ -129,7 +129,7 @@ void LocaleSwitchScreen::ShowImpl() {
     return;
   }
 
-  identity_manager_observer_.Observe(identity_manager_);
+  identity_manager_observer_.Observe(identity_manager_.get());
 
   gaia_id_ = user->GetAccountId().GetGaiaId();
   const AccountInfo account_info =

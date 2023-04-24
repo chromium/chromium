@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/app_list_notifier_impl.h"
 #include "chrome/browser/ash/app_list/app_list_test_util.h"
@@ -79,7 +80,7 @@ class HelpAppZeroStateProviderTest : public AppListTestBase {
   ::test::TestAppListController app_list_controller_;
   std::unique_ptr<ash::AppListNotifier> app_list_notifier_;
   TestSearchController search_controller_;
-  HelpAppZeroStateProvider* provider_ = nullptr;
+  raw_ptr<HelpAppZeroStateProvider, ExperimentalAsh> provider_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

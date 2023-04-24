@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
@@ -137,7 +138,7 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
 
   // The Delegate is used to interact with chrome services and CRD host.
   // Owned by DeviceCommandsFactoryAsh.
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   bool terminate_session_attempted_ = false;
 

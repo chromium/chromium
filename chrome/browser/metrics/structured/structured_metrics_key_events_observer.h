@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_METRICS_STRUCTURED_STRUCTURED_METRICS_KEY_EVENTS_OBSERVER_H_
 #define CHROME_BROWSER_METRICS_STRUCTURED_STRUCTURED_METRICS_KEY_EVENTS_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/user_manager/user_manager.h"
@@ -38,9 +39,10 @@ class StructuredMetricsKeyEventsObserver
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
 
  private:
-  user_manager::UserManager* user_manager_;
-  ash::SessionTerminationManager* session_termination_manager_;
-  chromeos::PowerManagerClient* power_manager_client_;
+  raw_ptr<user_manager::UserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<ash::SessionTerminationManager, ExperimentalAsh>
+      session_termination_manager_;
+  raw_ptr<chromeos::PowerManagerClient, ExperimentalAsh> power_manager_client_;
 };
 
 }  // namespace metrics::structured

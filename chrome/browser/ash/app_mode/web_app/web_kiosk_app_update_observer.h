@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/profiles/profile.h"
@@ -44,8 +45,8 @@ class WebKioskAppUpdateObserver : public apps::AppRegistryCache::Observer {
 
   AccountId account_id_;
 
-  apps::AppServiceProxy* app_service_;
-  web_app::WebAppProvider* web_app_provider_;
+  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_;
+  raw_ptr<web_app::WebAppProvider, ExperimentalAsh> web_app_provider_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>

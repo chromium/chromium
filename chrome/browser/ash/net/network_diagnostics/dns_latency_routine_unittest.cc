@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/net/network_diagnostics/dns_latency_routine.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -105,7 +106,7 @@ class FakeHostResolver : public network::mojom::HostResolver {
  private:
   mojo::Receiver<network::mojom::HostResolver> receiver_;
   // Unowned
-  DnsResult* result_;
+  raw_ptr<DnsResult, ExperimentalAsh> result_;
 };
 
 class FakeNetworkContext : public network::TestNetworkContext {
@@ -129,7 +130,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
  private:
   std::unique_ptr<FakeHostResolver> resolver_;
   // Unowned
-  FakeHostResolver::DnsResult* result_;
+  raw_ptr<FakeHostResolver::DnsResult, ExperimentalAsh> result_;
 };
 
 }  // namespace
@@ -210,7 +211,7 @@ class DnsLatencyRoutineTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::RunLoop run_loop_;
   std::unique_ptr<FakeNetworkContext> fake_network_context_;
-  Profile* test_profile_;
+  raw_ptr<Profile, ExperimentalAsh> test_profile_;
   std::unique_ptr<FakeTickClock> fake_tick_clock_;
   session_manager::SessionManager session_manager_;
   TestingProfileManager profile_manager_;

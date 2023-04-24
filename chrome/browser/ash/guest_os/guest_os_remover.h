@@ -7,6 +7,7 @@
 
 #include <string>
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
@@ -44,7 +45,7 @@ class GuestOsRemover : public base::RefCountedThreadSafe<GuestOsRemover> {
   void DestroyDiskImageFinished(
       absl::optional<vm_tools::concierge::DestroyDiskImageResponse> response);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   guest_os::VmType vm_type_;
   std::string vm_name_;
   base::OnceCallback<void(Result)> callback_;

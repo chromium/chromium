@@ -145,7 +145,7 @@ HatsNotificationController::HatsNotificationController(
       product_specific_data_(product_specific_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  std::string histogram_name = HatsFinchHelper::GetHistogramName(hats_config_);
+  std::string histogram_name = HatsFinchHelper::GetHistogramName(*hats_config_);
   if (!histogram_name.empty()) {
     base::UmaHistogramSparse(histogram_name, kSurveyTriggeredEnumeration);
   }
@@ -176,7 +176,7 @@ HatsNotificationController::~HatsNotificationController() {
 void HatsNotificationController::Initialize(bool is_new_device) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (is_new_device && !IsTestingEnabled(hats_config_)) {
+  if (is_new_device && !IsTestingEnabled(*hats_config_)) {
     // This device has been chosen for a survey, but it is too new. Instead
     // of showing the user the survey, just mark it as completed.
     UpdateLastInteractionTime();
@@ -297,8 +297,8 @@ void HatsNotificationController::ShowDialog(const std::string& site_context) {
     return;
   }
 
-  HatsDialog::Show(HatsFinchHelper::GetTriggerID(hats_config_),
-                   HatsFinchHelper::GetHistogramName(hats_config_),
+  HatsDialog::Show(HatsFinchHelper::GetTriggerID(*hats_config_),
+                   HatsFinchHelper::GetHistogramName(*hats_config_),
                    site_context);
 }
 

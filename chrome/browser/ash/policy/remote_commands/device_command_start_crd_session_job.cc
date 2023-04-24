@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -175,7 +176,7 @@ class DeviceCommandStartCrdSessionJob::OAuthTokenFetcher
     OAuth2AccessTokenManager::ScopeSet scopes{
         GaiaConstants::kGoogleUserInfoEmail, kCloudDevicesOAuth2Scope,
         kChromotingRemoteSupportOAuth2Scope, kTachyonOAuth2Scope};
-    oauth_request_ = oauth_service_.StartAccessTokenRequest(scopes, this);
+    oauth_request_ = oauth_service_->StartAccessTokenRequest(scopes, this);
   }
 
  private:
@@ -196,7 +197,7 @@ class DeviceCommandStartCrdSessionJob::OAuthTokenFetcher
         .Run(ResultCode::FAILURE_NO_OAUTH_TOKEN, error.ToString());
   }
 
-  DeviceOAuth2TokenService& oauth_service_;
+  const raw_ref<DeviceOAuth2TokenService, ExperimentalAsh> oauth_service_;
   absl::optional<std::string> oauth_token_for_test_;
   DeviceCommandStartCrdSessionJob::OAuthTokenCallback success_callback_;
   DeviceCommandStartCrdSessionJob::ErrorCallback error_callback_;

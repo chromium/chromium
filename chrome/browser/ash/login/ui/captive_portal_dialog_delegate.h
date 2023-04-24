@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
@@ -73,10 +74,10 @@ class CaptivePortalDialogDelegate
   content::WebContents* web_contents_for_test() { return web_contents_; }
 
  private:
-  views::Widget* widget_ = nullptr;
-  views::WebDialogView* view_ = nullptr;
-  views::WebDialogView* host_view_ = nullptr;
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  raw_ptr<views::WebDialogView, ExperimentalAsh> view_ = nullptr;
+  raw_ptr<views::WebDialogView, ExperimentalAsh> host_view_ = nullptr;
+  raw_ptr<content::WebContents, ExperimentalAsh> web_contents_ = nullptr;
 
   class ModalDialogManagerCleanup;
   std::unique_ptr<ModalDialogManagerCleanup> modal_dialog_manager_cleanup_;

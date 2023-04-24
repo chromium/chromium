@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -148,7 +149,7 @@ class SearchControllerTest : public testing::Test {
   std::unique_ptr<SearchController> search_controller_;
   ::test::TestAppListControllerDelegate list_controller_{};
   // Owned by |search_controller_|.
-  TestRankerManager* ranker_manager_{nullptr};
+  raw_ptr<TestRankerManager, ExperimentalAsh> ranker_manager_{nullptr};
 };
 
 // Tests that long queries are truncated to the maximum allowed query length.

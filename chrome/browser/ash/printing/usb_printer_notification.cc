@@ -93,7 +93,7 @@ void UsbPrinterNotification::Click(
       chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
           profile_->IsGuestSession()
               ? profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)
-              : profile_,
+              : profile_.get(),
           chromeos::settings::mojom::kPrintingDetailsSubpagePath);
     }
     return;

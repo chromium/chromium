@@ -17,6 +17,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -206,7 +207,7 @@ class AppLaunchTracker : public extensions::TestEventRouter::EventObserver {
 
  private:
   const std::string app_id_;
-  extensions::TestEventRouter* event_router_;
+  raw_ptr<extensions::TestEventRouter, ExperimentalAsh> event_router_;
   int kiosk_launch_count_ = 0;
 };
 
@@ -340,9 +341,11 @@ class TestKioskLoaderVisitor
   }
 
  private:
-  content::BrowserContext* const browser_context_;
-  extensions::ExtensionRegistry* const extension_registry_;
-  extensions::ExtensionService* const extension_service_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
+  const raw_ptr<extensions::ExtensionRegistry, ExperimentalAsh>
+      extension_registry_;
+  const raw_ptr<extensions::ExtensionService, ExperimentalAsh>
+      extension_service_;
 
   std::set<std::string> pending_crx_files_;
   std::set<std::string> pending_update_urls_;
@@ -504,7 +507,7 @@ class ScopedKioskAppManagerOverrides : public KioskAppManager::Overrides {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<ScopedCrosSettingsTestHelper> accounts_settings_helper_;
 
-  chromeos::TestExternalCache* external_cache_;
+  raw_ptr<chromeos::TestExternalCache, ExperimentalAsh> external_cache_;
   bool kiosk_app_session_initialized_ = false;
 };
 
@@ -1578,7 +1581,7 @@ class StartupAppLauncherUsingLacrosTest : public testing::Test {
  public:
   StartupAppLauncherUsingLacrosTest()
       : fake_user_manager_(new FakeChromeUserManager()),
-        scoped_user_manager_(base::WrapUnique(fake_user_manager_)) {
+        scoped_user_manager_(base::WrapUnique(fake_user_manager_.get())) {
     scoped_feature_list_.InitAndEnableFeature(
         features::kChromeKioskEnableLacros);
   }
@@ -1681,8 +1684,8 @@ class StartupAppLauncherUsingLacrosTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
-  Profile* profile_;
-  FakeChromeUserManager* fake_user_manager_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
   FakeChromeKioskLaunchController launch_controller_;
   crosapi::FakeBrowserManager browser_manager_;

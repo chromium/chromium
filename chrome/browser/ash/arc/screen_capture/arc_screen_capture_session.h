@@ -10,6 +10,7 @@
 #include <string>
 
 #include "ash/components/arc/mojom/screen_capture.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "gpu/command_buffer/client/gl_helper.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -109,7 +110,7 @@ class ArcScreenCaptureSession : public mojom::ScreenCaptureSession,
   gfx::Size size_;
   // aura::Window of the display being captured. This corresponds to one of
   // Ash's root windows.
-  aura::Window* display_root_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> display_root_window_ = nullptr;
 
   // We have 2 separate queues for handling incoming GPU buffers from Android
   // and also textures for the desktop we have captured already. Due to the

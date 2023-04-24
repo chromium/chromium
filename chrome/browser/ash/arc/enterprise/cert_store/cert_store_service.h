@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/arc_cert_installer.h"
 #include "chrome/services/keymanagement/public/mojom/cert_store_types.mojom.h"
@@ -145,7 +146,7 @@ class CertStoreService : public KeyedService,
                               bool success);
   void OnArcCertsInstalled(bool need_policy_update, bool success);
 
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
 
   std::unique_ptr<ArcCertInstaller> installer_;
   CertificateCache certificate_cache_;

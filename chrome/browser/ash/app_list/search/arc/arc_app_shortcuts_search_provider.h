@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/components/arc/mojom/app.mojom-forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 
@@ -40,8 +41,9 @@ class ArcAppShortcutsSearchProvider : public SearchProvider {
 
   std::u16string last_query_;
   const int max_results_;
-  Profile* const profile_;                            // Owned by ProfileInfo.
-  AppListControllerDelegate* const list_controller_;  // Owned by AppListClient.
+  const raw_ptr<Profile, ExperimentalAsh> profile_;  // Owned by ProfileInfo.
+  const raw_ptr<AppListControllerDelegate, ExperimentalAsh>
+      list_controller_;  // Owned by AppListClient.
 
   base::WeakPtrFactory<ArcAppShortcutsSearchProvider> weak_ptr_factory_{this};
 };

@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -79,7 +80,7 @@ class ArcVpnProviderManager : public ArcAppListPrefs::Observer,
 
   void MaybeNotifyArcVpnProviderUpdate(const std::string& app_id);
 
-  ArcAppListPrefs* const arc_app_list_prefs_;
+  const raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_prefs_;
 
   // List of observers.
   base::ObserverList<Observer> observer_list_;

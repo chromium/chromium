@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -225,7 +226,8 @@ class NetworkInfoSamplerBrowserTest
       &device_state_};
 
  private:
-  ::ash::ShillDeviceClient::TestInterface* device_client_;
+  raw_ptr<::ash::ShillDeviceClient::TestInterface, ExperimentalAsh>
+      device_client_;
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 

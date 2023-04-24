@@ -19,6 +19,7 @@
 #include "ash/system/federated/federated_service_controller_impl.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -137,7 +138,7 @@ class ScopedIphSessionImpl : public ash::ScopedIphSession {
     CHECK(tracker_);
   }
 
-  ~ScopedIphSessionImpl() override { tracker_->Dismissed(iph_feature_); }
+  ~ScopedIphSessionImpl() override { tracker_->Dismissed(*iph_feature_); }
 
   void NotifyEvent(const std::string& event) override {
     tracker_->NotifyEvent(event);
@@ -145,7 +146,7 @@ class ScopedIphSessionImpl : public ash::ScopedIphSession {
 
  private:
   raw_ptr<feature_engagement::Tracker> tracker_;
-  const base::Feature& iph_feature_;
+  const raw_ref<const base::Feature, ExperimentalAsh> iph_feature_;
 };
 
 }  // namespace

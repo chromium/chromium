@@ -13,6 +13,7 @@
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
@@ -93,7 +94,7 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
 
  protected:
   base::test::ScopedFeatureList features_{ash::features::kGlanceables};
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(GlanceablesBrowserTest, ShowsAndHide) {

@@ -10,6 +10,7 @@
 
 #include "base/files/file.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "net/base/net_errors.h"
@@ -74,7 +75,7 @@ class ExternalFileResolver {
   void OnFileInfoObtained(base::File::Error error,
                           const base::File::Info& file_info);
 
-  void* profile_id_;
+  raw_ptr<void, ExperimentalAsh> profile_id_;
   net::Error range_parse_result_;
   net::HttpByteRange byte_range_;
 

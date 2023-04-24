@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_BLUETOOTH_DEBUG_LOGS_MANAGER_H_
 #define CHROME_BROWSER_ASH_BLUETOOTH_DEBUG_LOGS_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -88,7 +89,7 @@ class DebugLogsManager : public mojom::DebugLogsChangeHandler,
       scoped_refptr<device::BluetoothAdapter> adapter);
 
   const std::string primary_user_email_;
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
   mojo::ReceiverSet<mojom::DebugLogsChangeHandler> receivers_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   bool debug_logs_enabled_ = false;

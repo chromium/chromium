@@ -4,6 +4,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -47,7 +48,7 @@ class DisplayPrefsBrowserTest : public InProcessBrowserTest {
     return result;
   }
 
-  PrefService* local_state_;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_;
 };
 
 // Test that display prefs are registered in the browser local_state

@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -114,7 +115,7 @@ class GuestOsWaylandServer {
                        base::WeakPtr<GuestOsSecurityDelegate> delegate,
                        std::unique_ptr<exo::WaylandServerHandle> handle);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   ServersByType servers_;
 

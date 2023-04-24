@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -89,9 +90,10 @@ class ZeroStateDriveProvider : public SearchProvider,
   // FileSuggestKeyedService::Observer:
   void OnFileSuggestionUpdated(ash::FileSuggestionType type) override;
 
-  Profile* const profile_;
-  drive::DriveIntegrationService* const drive_service_;
-  session_manager::SessionManager* const session_manager_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<drive::DriveIntegrationService, ExperimentalAsh> drive_service_;
+  const raw_ptr<session_manager::SessionManager, ExperimentalAsh>
+      session_manager_;
 
   const base::raw_ptr<ash::FileSuggestKeyedService> file_suggest_service_;
 

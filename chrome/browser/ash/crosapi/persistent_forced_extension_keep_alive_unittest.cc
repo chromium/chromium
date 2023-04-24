@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/persistent_forced_extension_keep_alive.h"
 
 #include "base/auto_reset.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/fake_browser_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -87,7 +88,7 @@ class PersistentForcedExtensionKeepAliveTest : public testing::Test {
   std::unique_ptr<BrowserManager::ScopedUnsetAllKeepAliveForTesting>
       scoped_unset_all_keep_alive_;
 
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
 };
 
 // Test that KeepAlive is registered on session start if an extension that

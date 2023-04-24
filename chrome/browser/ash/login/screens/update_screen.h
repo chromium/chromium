@@ -11,6 +11,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -169,7 +170,7 @@ class UpdateScreen : public BaseScreen,
   static bool CheckIfOptOutIsEnabled();
 
   base::WeakPtr<UpdateView> view_;
-  ErrorScreen* error_screen_;
+  raw_ptr<ErrorScreen, ExperimentalAsh> error_screen_;
   ScreenExitCallback exit_callback_;
 
   // Whether the update screen is shown.
@@ -229,7 +230,7 @@ class UpdateScreen : public BaseScreen,
   // Time to delay showing the screen.
   base::TimeDelta show_delay_;
 
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
 
   base::TimeTicks start_update_downloading_;
   // Support variables for update stages time recording.

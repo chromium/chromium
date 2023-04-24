@@ -150,14 +150,15 @@ RemoteAppsManager::RemoteAppsManager(Profile* profile)
   app_list_syncable_service_ =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile_);
   model_updater_ = app_list_syncable_service_->GetModelUpdater();
-  app_list_model_updater_observation_.Observe(model_updater_);
+  app_list_model_updater_observation_.Observe(model_updater_.get());
 
   // |AppListSyncableService| manages the Chrome side AppList and has to be
   // initialized before apps can be added.
   if (app_list_syncable_service_->IsInitialized()) {
     Initialize();
   } else {
-    app_list_syncable_service_observation_.Observe(app_list_syncable_service_);
+    app_list_syncable_service_observation_.Observe(
+        app_list_syncable_service_.get());
   }
 }
 

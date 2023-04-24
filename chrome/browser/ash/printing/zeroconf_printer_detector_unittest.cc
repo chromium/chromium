@@ -15,6 +15,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -287,12 +288,12 @@ class ZeroconfPrinterDetectorTest : public testing::Test {
   // with this class in listers_ when the test starts, and is transferred to
   // detector_ when the detector is created.  Throughout, the listers remain
   // available to the test via these pointers.
-  FakeServiceDiscoveryDeviceLister* ipp_lister_;
-  FakeServiceDiscoveryDeviceLister* ipps_lister_;
-  FakeServiceDiscoveryDeviceLister* ippe_lister_;
-  FakeServiceDiscoveryDeviceLister* ippse_lister_;
-  FakeServiceDiscoveryDeviceLister* socket_lister_;
-  FakeServiceDiscoveryDeviceLister* lpd_lister_;
+  raw_ptr<FakeServiceDiscoveryDeviceLister, ExperimentalAsh> ipp_lister_;
+  raw_ptr<FakeServiceDiscoveryDeviceLister, ExperimentalAsh> ipps_lister_;
+  raw_ptr<FakeServiceDiscoveryDeviceLister, ExperimentalAsh> ippe_lister_;
+  raw_ptr<FakeServiceDiscoveryDeviceLister, ExperimentalAsh> ippse_lister_;
+  raw_ptr<FakeServiceDiscoveryDeviceLister, ExperimentalAsh> socket_lister_;
+  raw_ptr<FakeServiceDiscoveryDeviceLister, ExperimentalAsh> lpd_lister_;
 
   // Detector under test.
   std::unique_ptr<ZeroconfPrinterDetector> detector_;

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -109,7 +110,7 @@ class UserSessionManagerTest : public testing::Test {
       std::make_unique<user_manager::FakeUserManager>()};
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  user_manager::User* test_user_;
+  raw_ptr<user_manager::User, ExperimentalAsh> test_user_;
 };
 
 // Calling VoteForSavingLoginPassword() with `save_password` set to false for

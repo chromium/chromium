@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_NOTIFICATION_ARC_BOOT_ERROR_NOTIFICATION_H_
 #define CHROME_BROWSER_ASH_ARC_NOTIFICATION_ARC_BOOT_ERROR_NOTIFICATION_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -39,7 +40,7 @@ class ArcBootErrorNotification : public KeyedService,
   static void EnsureFactoryBuilt();
 
  private:
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
 };
 
 }  // namespace arc

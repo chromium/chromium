@@ -166,13 +166,13 @@ void CopyOrMoveIOTaskScanningImpl::VerifyTransfer() {
 
   // Allocate one unique_ptr for each source. If it is not set, scanning is not
   // enabled for this source.
-  file_transfer_analysis_delegates_.resize(progress_.sources.size());
+  file_transfer_analysis_delegates_.resize(progress_->sources.size());
   MaybeScanForDisallowedFiles(0);
 }
 
 void CopyOrMoveIOTaskScanningImpl::MaybeScanForDisallowedFiles(size_t idx) {
-  DCHECK_LE(idx, progress_.sources.size());
-  if (idx == progress_.sources.size()) {
+  DCHECK_LE(idx, progress_->sources.size());
+  if (idx == progress_->sources.size()) {
     // Scanning is complete.
     StartTransfer();
     return;
@@ -185,17 +185,18 @@ void CopyOrMoveIOTaskScanningImpl::MaybeScanForDisallowedFiles(size_t idx) {
     return;
   }
 
-  if (progress_.state != State::kScanning) {
-    progress_.state = State::kScanning;
-    progress_callback_.Run(progress_);
+  if (progress_->state != State::kScanning) {
+    progress_->state = State::kScanning;
+    progress_callback_.Run(*progress_);
   }
 
-  DCHECK_EQ(file_transfer_analysis_delegates_.size(), progress_.sources.size());
+  DCHECK_EQ(file_transfer_analysis_delegates_.size(),
+            progress_->sources.size());
 
   file_transfer_analysis_delegates_[idx] =
       enterprise_connectors::FileTransferAnalysisDelegate::Create(
           safe_browsing::DeepScanAccessPoint::FILE_TRANSFER,
-          progress_.sources[idx].url, progress_.GetDestinationFolder(),
+          progress_->sources[idx].url, progress_->GetDestinationFolder(),
           profile_, file_system_context_.get(),
           std::move(settings_[idx].value()));
 

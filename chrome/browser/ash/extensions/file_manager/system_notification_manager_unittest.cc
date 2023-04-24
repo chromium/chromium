@@ -8,6 +8,7 @@
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -275,9 +276,10 @@ class SystemNotificationManagerTest
   std::unique_ptr<TestingProfileManager> profile_manager_;
   // Externally owned raw pointers:
   // profile_ is owned by TestingProfileManager.
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   // notification_display_service is owned by NotificationDisplayServiceFactory.
-  NotificationDisplayServiceImpl* notification_display_service_;
+  raw_ptr<NotificationDisplayServiceImpl, ExperimentalAsh>
+      notification_display_service_;
   std::unique_ptr<SystemNotificationManager> notification_manager_;
   std::unique_ptr<DeviceEventRouterImpl> device_event_router_;
 
@@ -287,10 +289,11 @@ class SystemNotificationManagerTest
  public:
   size_t notification_count;
   // notification_platform_bridge is owned by NotificationDisplayService.
-  TestNotificationPlatformBridgeDelegator* notification_platform_bridge;
+  raw_ptr<TestNotificationPlatformBridgeDelegator, ExperimentalAsh>
+      notification_platform_bridge;
 
   // Used for tests with IOTask:
-  io_task::IOTaskController* io_task_controller;
+  raw_ptr<io_task::IOTaskController, ExperimentalAsh> io_task_controller;
   scoped_refptr<storage::FileSystemContext> file_system_context;
 
   // Keep track of the task state transitions.

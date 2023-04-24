@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
@@ -166,7 +167,7 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   void OnAdConfigurationUnlocked(std::string unlocked_data);
 
   // Keeps the controller for this view.
-  Controller* controller_ = nullptr;
+  raw_ptr<Controller, ExperimentalAsh> controller_ = nullptr;
 
   bool show_on_init_ = false;
 

@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/search/scoring.h"
@@ -240,7 +241,7 @@ class ChromeSearchResult {
 
   std::unique_ptr<ash::SearchResultMetadata> metadata_;
 
-  AppListModelUpdater* model_updater_ = nullptr;
+  raw_ptr<AppListModelUpdater, ExperimentalAsh> model_updater_ = nullptr;
 
   base::WeakPtrFactory<ChromeSearchResult> weak_ptr_factory_{this};
 };

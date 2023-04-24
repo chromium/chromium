@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 #include "chrome/browser/apps/app_service/metrics/browser_to_tab_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -107,7 +108,7 @@ class AppPlatformInputMetrics : public ui::EventHandler,
   // Records the input events UKM saved in the user pref.
   void RecordInputEventsUkmFromPref();
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   BrowserToTabList browser_to_tab_list_;
 

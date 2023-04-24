@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -235,7 +236,7 @@ class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
          path,
          "'});"
          "return paths; })())"});
-    auto response = content::EvalJs(dialog_contents_, js_expression);
+    auto response = content::EvalJs(dialog_contents_.get(), js_expression);
 
     base::Value response_list = response.ExtractList();
     return response_list.GetList().Clone();
@@ -250,7 +251,7 @@ class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
         "const handler = BrowserProxy.getInstance().handler;"
         "const response = await handler.getSyncingPaths();"
         "return response; })())";
-    auto response = content::EvalJs(dialog_contents_, js_expression);
+    auto response = content::EvalJs(dialog_contents_.get(), js_expression);
     EXPECT_TRUE(response.value.is_dict());
     return response.value.GetDict().Clone();
   }
@@ -263,7 +264,7 @@ class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir temp_dir_;
   base::FilePath my_files_dir_;
-  content::WebContents* dialog_contents_;
+  raw_ptr<content::WebContents, ExperimentalAsh> dialog_contents_;
 
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;

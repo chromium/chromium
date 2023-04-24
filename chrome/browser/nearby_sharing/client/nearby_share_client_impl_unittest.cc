@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/null_task_runner.h"
@@ -315,7 +316,7 @@ class NearbyShareClientImplTest : public testing::Test,
       list_public_certificate_response_from_notifier_;
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_environment_;
-  FakeNearbyShareApiCallFlow* api_call_flow_;
+  raw_ptr<FakeNearbyShareApiCallFlow, ExperimentalAsh> api_call_flow_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
   NearbyShareHttpNotifier notifier_;
   std::unique_ptr<NearbyShareClient> client_;

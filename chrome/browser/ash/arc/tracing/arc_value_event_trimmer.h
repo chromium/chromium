@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_TRACING_ARC_VALUE_EVENT_TRIMMER_H_
 #define CHROME_BROWSER_ASH_ARC_TRACING_ARC_VALUE_EVENT_TRIMMER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/tracing/arc_value_event.h"
 
 namespace arc {
@@ -33,7 +34,7 @@ class ArcValueEventTrimmer {
   // In case value has changed, insert last trimmed value.
   void Flush();
 
-  ValueEvents* const events_;
+  const raw_ptr<ValueEvents, ExperimentalAsh> events_;
   const ArcValueEvent::Type type_;
   // Indicate if this is first event that would never be trimmed.
   bool first_event_ = true;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/chrome_new_window_client.h"
+#include "base/memory/raw_ptr.h"
 
 #include <string>
 #include <utility>
@@ -220,9 +221,9 @@ class ChromeNewWindowClient::TabRestoreHelper
   }
 
  private:
-  ChromeNewWindowClient* delegate_;
-  Profile* profile_;
-  sessions::TabRestoreService* tab_restore_service_;
+  raw_ptr<ChromeNewWindowClient, ExperimentalAsh> delegate_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<sessions::TabRestoreService, ExperimentalAsh> tab_restore_service_;
 };
 
 void ChromeNewWindowClient::NewTab() {

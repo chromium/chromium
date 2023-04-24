@@ -9,6 +9,7 @@
 #include <ostream>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -109,8 +110,8 @@ class CrostiniPackageNotification
   base::TimeTicks running_start_time_;
 
   // These notifications are owned by the package service.
-  CrostiniPackageService* package_service_;
-  Profile* profile_;
+  raw_ptr<CrostiniPackageService, ExperimentalAsh> package_service_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   const NotificationSettings notification_settings_;
 
   std::unique_ptr<message_center::Notification> notification_;

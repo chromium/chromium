@@ -90,7 +90,7 @@ JSChecker::JSChecker(content::RenderFrameHost* frame_host) {
 
 void JSChecker::Evaluate(const std::string& expression) {
   CHECK(web_contents_);
-  ASSERT_TRUE(content::ExecuteScript(web_contents_, expression));
+  ASSERT_TRUE(content::ExecuteScript(web_contents_.get(), expression));
 }
 
 void JSChecker::ExecuteAsync(const std::string& expression) {
@@ -333,18 +333,18 @@ std::unique_ptr<TestConditionWaiter> JSChecker::CreateHasClassWaiter(
 void JSChecker::GetBoolImpl(const std::string& expression, bool* result) {
   CHECK(web_contents_);
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents_, WrapSend("!!(" + expression + ")"), result));
+      web_contents_.get(), WrapSend("!!(" + expression + ")"), result));
 }
 
 void JSChecker::GetIntImpl(const std::string& expression, int* result) {
   CHECK(web_contents_);
-  *result = content::EvalJs(web_contents_, expression).ExtractInt();
+  *result = content::EvalJs(web_contents_.get(), expression).ExtractInt();
 }
 
 void JSChecker::GetStringImpl(const std::string& expression,
                               std::string* result) {
   CHECK(web_contents_);
-  *result = content::EvalJs(web_contents_, expression).ExtractString();
+  *result = content::EvalJs(web_contents_.get(), expression).ExtractString();
 }
 
 void JSChecker::ExpectVisiblePath(

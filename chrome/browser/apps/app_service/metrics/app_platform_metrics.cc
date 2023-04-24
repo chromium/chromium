@@ -774,7 +774,7 @@ void AppPlatformMetrics::OnAppUpdate(const apps::AppUpdate& update) {
   }
 
   InstallTime install_time =
-      app_registry_cache_.IsAppTypeInitialized(update.AppType())
+      app_registry_cache_->IsAppTypeInitialized(update.AppType())
           ? InstallTime::kRunning
           : InstallTime::kInit;
 
@@ -1028,7 +1028,7 @@ void AppPlatformMetrics::ClearRunningDuration() {
 }
 
 void AppPlatformMetrics::ReadInstalledApps() {
-  app_registry_cache_.ForEachApp([this](const apps::AppUpdate& update) {
+  app_registry_cache_->ForEachApp([this](const apps::AppUpdate& update) {
     RecordAppsInstallUkm(update, InstallTime::kInit);
   });
 }
@@ -1038,7 +1038,7 @@ void AppPlatformMetrics::RecordAppsCount(AppType app_type) {
   std::map<AppTypeName, std::map<apps::InstallReason, int>>
       app_count_per_install_reason;
 
-  app_registry_cache_.ForEachApp(
+  app_registry_cache_->ForEachApp(
       [app_type, this, &app_count,
        &app_count_per_install_reason](const apps::AppUpdate& update) {
         if (app_type != apps::AppType::kUnknown &&

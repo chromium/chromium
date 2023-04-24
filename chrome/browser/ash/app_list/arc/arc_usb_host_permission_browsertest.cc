@@ -11,6 +11,7 @@
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -164,10 +165,11 @@ class ArcUsbHostPermissionTest : public InProcessBrowserTest {
   }
 
  private:
-  ArcAppListPrefs* arc_app_list_pref_;
-  ArcUsbHostPermissionManager* arc_usb_permission_manager_;
+  raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_pref_;
+  raw_ptr<ArcUsbHostPermissionManager, ExperimentalAsh>
+      arc_usb_permission_manager_;
   std::unique_ptr<FakeAppInstance> app_instance_;
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 class ArcUsbHostKioskPermissionTest : public ArcUsbHostPermissionTest {

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_MULTIDEVICE_SETUP_AUTH_TOKEN_VALIDATOR_IMPL_H_
 #define CHROME_BROWSER_ASH_MULTIDEVICE_SETUP_AUTH_TOKEN_VALIDATOR_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/auth_token_validator.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -37,7 +38,8 @@ class AuthTokenValidatorImpl : public AuthTokenValidator, public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
-  quick_unlock::QuickUnlockStorage* quick_unlock_storage_;
+  raw_ptr<quick_unlock::QuickUnlockStorage, ExperimentalAsh>
+      quick_unlock_storage_;
 };
 
 }  // namespace multidevice_setup

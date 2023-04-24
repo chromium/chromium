@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_PLATFORM_KEYS_PLATFORM_KEYS_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_ASH_PLATFORM_KEYS_PLATFORM_KEYS_SERVICE_FACTORY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
@@ -73,7 +74,8 @@ class PlatformKeysServiceFactory : public ProfileKeyedServiceFactory {
   // Initialized lazily.
   std::unique_ptr<PlatformKeysService> device_wide_service_;
 
-  PlatformKeysService* device_wide_service_for_testing_ = nullptr;
+  raw_ptr<PlatformKeysService, ExperimentalAsh>
+      device_wide_service_for_testing_ = nullptr;
 
   bool map_to_softoken_attrs_for_testing_ = false;
 };

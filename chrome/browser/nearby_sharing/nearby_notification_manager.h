@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NEARBY_SHARING_NEARBY_NOTIFICATION_MANAGER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/nearby_notification_delegate.h"
@@ -172,10 +173,11 @@ class NearbyNotificationManager : public TransferUpdateCallback,
                            ReceivedContentType type,
                            const SkBitmap& image);
 
-  NotificationDisplayService* notification_display_service_;
-  NearbySharingService* nearby_service_;
-  PrefService* pref_service_;
-  Profile* profile_;
+  raw_ptr<NotificationDisplayService, DanglingUntriaged | ExperimentalAsh>
+      notification_display_service_;
+  raw_ptr<NearbySharingService, ExperimentalAsh> nearby_service_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   std::unique_ptr<SettingsOpener> settings_opener_;
 
   // Maps notification ids to notification delegates.

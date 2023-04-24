@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
@@ -66,13 +67,14 @@ class KioskAppUpdateService : public KeyedService,
   // KioskAppManagerObserver overrides:
   void OnKioskAppCacheUpdated(const std::string& app_id) override;
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   std::string app_id_;
 
   // After we detect an upgrade we start a one-short timer to force restart.
   base::OneShotTimer restart_timer_;
 
-  system::AutomaticRebootManager* automatic_reboot_manager_;  // Not owned.
+  raw_ptr<system::AutomaticRebootManager, ExperimentalAsh>
+      automatic_reboot_manager_;  // Not owned.
 };
 
 // Singleton that owns all KioskAppUpdateServices and associates them with

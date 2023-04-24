@@ -1687,7 +1687,7 @@ DeviceStatusCollector::DeviceStatusCollector(
   stats_reporting_pref_subscription_ =
       cros_settings_->AddSettingsObserver(ash::kStatsReportingPref, callback);
 
-  power_manager_observation_.Observe(power_manager_);
+  power_manager_observation_.Observe(power_manager_.get());
 
   // Fetch the current values of the policies.
   UpdateReportingSettings();

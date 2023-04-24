@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/app_restore/arc_ghost_window_view.h"
+#include "base/memory/raw_ptr.h"
 
 #include "ash/components/arc/arc_features.h"
 #include "base/functional/callback_forward.h"
@@ -113,10 +114,10 @@ class ArcGhostWindowViewTest : public testing::Test {
 
   base::test::ScopedFeatureList feature_list_;
 
-  FakeChromeUserManager* user_manager_;  // Not own.
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;  // Not own.
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 };
 

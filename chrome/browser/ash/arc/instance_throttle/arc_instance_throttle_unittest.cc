@@ -23,6 +23,7 @@
 #include "ash/components/arc/test/fake_power_instance.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
@@ -235,7 +236,7 @@ class ArcInstanceThrottleTest : public testing::Test {
     void RecordCpuRestrictionDisabledUMA(const std::string& observer_name,
                                          base::TimeDelta delta) override {}
 
-    ArcInstanceThrottleTest* test_;
+    raw_ptr<ArcInstanceThrottleTest, ExperimentalAsh> test_;
   };
 
   content::BrowserTaskEnvironment task_environment_{
@@ -251,8 +252,8 @@ class ArcInstanceThrottleTest : public testing::Test {
   std::unique_ptr<FakeIntentHelperHost> intent_helper_host_;
   std::unique_ptr<FakeIntentHelperInstance> intent_helper_instance_;
 
-  ArcInstanceThrottle* arc_instance_throttle_;
-  ArcMetricsService* arc_metrics_service_ = nullptr;
+  raw_ptr<ArcInstanceThrottle, ExperimentalAsh> arc_instance_throttle_;
+  raw_ptr<ArcMetricsService, ExperimentalAsh> arc_metrics_service_ = nullptr;
   size_t disable_cpu_restriction_counter_ = 0;
   size_t enable_cpu_restriction_counter_ = 0;
   size_t use_quota_counter_ = 0;
@@ -509,8 +510,8 @@ class ArcInstanceThrottleVMTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<TestingProfile> testing_profile_;
 
-  ArcInstanceThrottle* arc_instance_throttle_;
-  ArcMetricsService* arc_metrics_service_ = nullptr;
+  raw_ptr<ArcInstanceThrottle, ExperimentalAsh> arc_instance_throttle_;
+  raw_ptr<ArcMetricsService, ExperimentalAsh> arc_metrics_service_ = nullptr;
 };
 
 TEST_F(ArcInstanceThrottleVMTest, Histograms) {

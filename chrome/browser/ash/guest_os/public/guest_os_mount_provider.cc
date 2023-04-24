@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/borealis/infra/expected.h"
@@ -83,7 +84,7 @@ class ScopedVolume {
     }
   }
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   std::string mount_label_;
   const std::string display_name_;
   const base::FilePath mount_path_;
@@ -162,7 +163,7 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
     std::move(callback).Run(RealResult(std::move(scoped_volume)));
   }
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   const std::string display_name_;
   const guest_os::GuestId container_id_;
   std::string mount_label_;

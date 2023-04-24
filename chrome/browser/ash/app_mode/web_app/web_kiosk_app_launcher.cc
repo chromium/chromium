@@ -227,7 +227,7 @@ void WebKioskAppLauncher::LaunchApp() {
       app->name(), true, gfx::Rect(), profile_, false);
   params.initial_show_state = ui::SHOW_STATE_FULLSCREEN;
   if (test_browser_window_) {
-    params.window = test_browser_window_;
+    params.window = test_browser_window_.get();
   }
 
   browser_ = Browser::Create(params);

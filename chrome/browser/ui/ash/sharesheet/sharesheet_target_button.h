@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_TARGET_BUTTON_H_
 #define CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_TARGET_BUTTON_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -46,7 +47,7 @@ class SharesheetTargetButton : public views::Button {
   void SetLabelProperties(views::Label* label);
 
   base::raw_ptr<views::ImageView> image_;
-  const gfx::VectorIcon* vector_icon_;
+  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> vector_icon_;
 };
 
 }  // namespace sharesheet

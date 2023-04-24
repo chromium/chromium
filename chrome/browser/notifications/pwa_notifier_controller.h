@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/notifier_controller.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -44,8 +45,8 @@ class PwaNotifierController : public NotifierController,
       apps::AppRegistryCache* cache) override;
 
   // Needed to load icons for PWAs.
-  Profile* observed_profile_ = nullptr;
-  NotifierController::Observer* const observer_;
+  raw_ptr<Profile, ExperimentalAsh> observed_profile_ = nullptr;
+  const raw_ptr<NotifierController::Observer, ExperimentalAsh> observer_;
 
   // Used to keep track of all PWA start URLs to prevent creation of duplicate
   // notifier metadat.

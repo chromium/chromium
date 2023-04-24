@@ -19,6 +19,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -95,7 +96,7 @@ class FakeTabletMode : public ash::TabletMode {
   }
 
  private:
-  ash::TabletModeObserver* observer_ = nullptr;
+  raw_ptr<ash::TabletModeObserver, ExperimentalAsh> observer_ = nullptr;
   bool in_tablet_mode = false;
 };
 
@@ -241,7 +242,7 @@ class TestIMEInputContextHandler : public ash::MockIMEInputContextHandler {
   ui::InputMethod* GetInputMethod() override { return input_method_; }
 
  private:
-  ui::InputMethod* const input_method_;
+  const raw_ptr<ui::InputMethod, ExperimentalAsh> input_method_;
 };
 
 class TestWindowDelegate : public ArcInputMethodManagerService::WindowDelegate {
@@ -326,9 +327,10 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
         profile_.get());
     test_bridge_ = new TestInputMethodManagerBridge();
     service_->SetInputMethodManagerBridgeForTesting(
-        base::WrapUnique(test_bridge_));
+        base::WrapUnique(test_bridge_.get()));
     window_delegate_ = new TestWindowDelegate();
-    service_->SetWindowDelegateForTesting(base::WrapUnique(window_delegate_));
+    service_->SetWindowDelegateForTesting(
+        base::WrapUnique(window_delegate_.get()));
   }
 
   void TearDown() override {
@@ -351,10 +353,12 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
   std::unique_ptr<FakeTabletMode> tablet_mode_controller_;
   std::unique_ptr<ash::ArcInputMethodBoundsTracker>
       input_method_bounds_tracker_;
-  TestInputMethodManager* input_method_manager_ = nullptr;
-  TestInputMethodManagerBridge* test_bridge_ = nullptr;  // Owned by |service_|
-  ArcInputMethodManagerService* service_ = nullptr;
-  TestWindowDelegate* window_delegate_ = nullptr;
+  raw_ptr<TestInputMethodManager, ExperimentalAsh> input_method_manager_ =
+      nullptr;
+  raw_ptr<TestInputMethodManagerBridge, ExperimentalAsh> test_bridge_ =
+      nullptr;  // Owned by |service_|
+  raw_ptr<ArcInputMethodManagerService, ExperimentalAsh> service_ = nullptr;
+  raw_ptr<TestWindowDelegate, ExperimentalAsh> window_delegate_ = nullptr;
 };
 
 }  // anonymous namespace

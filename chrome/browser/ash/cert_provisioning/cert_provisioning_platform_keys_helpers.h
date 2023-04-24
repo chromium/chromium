@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "net/cert/x509_certificate.h"
@@ -59,7 +60,8 @@ class CertIterator {
   void StopIteration(chromeos::platform_keys::Status status);
 
   const CertScope cert_scope_ = CertScope::kDevice;
-  platform_keys::PlatformKeysService* const platform_keys_service_ = nullptr;
+  const raw_ptr<platform_keys::PlatformKeysService, ExperimentalAsh>
+      platform_keys_service_ = nullptr;
 
   size_t wait_counter_ = 0;
   CertIteratorForEachCallback for_each_callback_;
@@ -148,7 +150,8 @@ class CertDeleter {
   void ReturnStatus(chromeos::platform_keys::Status status);
 
   const CertScope cert_scope_ = CertScope::kDevice;
-  platform_keys::PlatformKeysService* const platform_keys_service_ = nullptr;
+  const raw_ptr<platform_keys::PlatformKeysService, ExperimentalAsh>
+      platform_keys_service_ = nullptr;
 
   CertIterator iterator_;
   bool iteration_finished_ = false;

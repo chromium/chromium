@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/speech/fake_speech_recognition_service.h"
@@ -178,7 +179,7 @@ class SpeechRecognitionRecognizerClientImplTest : public InProcessBrowserTest {
   std::unique_ptr<SpeechRecognitionRecognizerClientImpl> recognizer_;
 
   // Unowned.
-  speech::FakeSpeechRecognitionService* fake_service_;
+  raw_ptr<speech::FakeSpeechRecognitionService, ExperimentalAsh> fake_service_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };

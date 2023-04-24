@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_GAMES_GAME_RESULT_H_
 
 #include "ash/public/cpp/style/color_mode_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 #include "chrome/browser/apps/app_discovery_service/result.h"
@@ -46,8 +47,8 @@ class GameResult : public ChromeSearchResult, public ash::ColorModeObserver {
   void UpdateText(const apps::Result& game, const std::u16string& query);
   void OnIconLoaded(const gfx::ImageSkia& image, apps::DiscoveryError error);
 
-  Profile* profile_;
-  AppListControllerDelegate* list_controller_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
 
   GURL launch_url_;
   bool is_icon_masking_allowed_;

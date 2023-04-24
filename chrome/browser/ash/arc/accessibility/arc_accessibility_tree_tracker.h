@@ -11,6 +11,8 @@
 #include <string>
 #include <tuple>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_helper_instance_remote_proxy.h"
@@ -158,9 +160,10 @@ class ArcAccessibilityTreeTracker : public aura::EnvObserver {
   virtual void DispatchCustomSpokenFeedbackToggled(bool enabled);
   virtual aura::Window* GetFocusedArcWindow() const;
 
-  Profile* const profile_;
-  AXTreeSourceArc::Delegate* tree_source_delegate_;
-  const AccessibilityHelperInstanceRemoteProxy& accessibility_helper_instance_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<AXTreeSourceArc::Delegate, ExperimentalAsh> tree_source_delegate_;
+  const raw_ref<const AccessibilityHelperInstanceRemoteProxy, ExperimentalAsh>
+      accessibility_helper_instance_;
 
   TreeMap trees_;
 

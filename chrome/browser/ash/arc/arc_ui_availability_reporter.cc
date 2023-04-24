@@ -7,6 +7,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
 
 namespace arc {
@@ -28,7 +29,7 @@ class ArcUiAvailabilityReporter::ConnectionNotifierBase {
   ArcUiAvailabilityReporter* owner() { return owner_; }
 
  private:
-  ArcUiAvailabilityReporter* const owner_;
+  const raw_ptr<ArcUiAvailabilityReporter, ExperimentalAsh> owner_;
 };
 
 namespace {
@@ -63,7 +64,8 @@ class ConnectionNotifier
   void OnConnectionReady() override { owner()->MaybeReport(); }
 
  private:
-  ConnectionHolder<InstanceType, HostType>* const holder_;
+  const raw_ptr<ConnectionHolder<InstanceType, HostType>, ExperimentalAsh>
+      holder_;
 };
 
 }  // namespace

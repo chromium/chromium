@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -183,7 +184,7 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
     }
 
    private:
-    FakeCookieManager* fake_cookie_manager_;
+    raw_ptr<FakeCookieManager, ExperimentalAsh> fake_cookie_manager_;
     base::flat_map<GURL, web_app::AppId> url_to_pwa_map_;
   };
 
@@ -454,9 +455,9 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
   raw_ptr<web_app::FakeWebAppProvider> provider_;
 
   TestingProfile profile_;
-  HostContentSettingsMap* host_content_settings_map_;
+  raw_ptr<HostContentSettingsMap, ExperimentalAsh> host_content_settings_map_;
   std::unique_ptr<FakeCookieManager> fake_cookie_manager_;
-  TestPwaDelegate* test_pwa_delegate_;
+  raw_ptr<TestPwaDelegate, ExperimentalAsh> test_pwa_delegate_;
   std::unique_ptr<AndroidSmsAppSetupController> setup_controller_;
 };
 

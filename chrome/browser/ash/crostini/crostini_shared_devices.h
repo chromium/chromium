@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSTINI_CROSTINI_SHARED_DEVICES_H_
 #define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_SHARED_DEVICES_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 #include <string>
@@ -69,7 +70,7 @@ class CrostiniSharedDevices : public KeyedService,
       absl::optional<vm_tools::cicerone::UpdateContainerDevicesResponse>
           response);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   base::WeakPtrFactory<CrostiniSharedDevices> weak_ptr_factory_{this};
 };

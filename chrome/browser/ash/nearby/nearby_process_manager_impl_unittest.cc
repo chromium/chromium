@@ -10,6 +10,7 @@
 #include "ash/public/cpp/network_config_service.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -253,7 +254,7 @@ class NearbyProcessManagerImplTest : public testing::Test {
 
   std::unique_ptr<NearbyProcessManager> nearby_process_manager_;
 
-  base::MockOneShotTimer* mock_timer_ = nullptr;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_ = nullptr;
 };
 
 TEST_F(NearbyProcessManagerImplTest, StartAndStop) {

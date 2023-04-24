@@ -151,7 +151,7 @@ BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh()
               std::move(device_cloud_policy_store));
       providers_for_init_.push_back(
           base::WrapUnique<ConfigurationPolicyProvider>(
-              device_active_directory_policy_manager_));
+              device_active_directory_policy_manager_.get()));
     } else {
       state_keys_broker_ = std::make_unique<ServerBackedStateKeysBroker>(
           ash::SessionManagerClient::Get());
@@ -172,7 +172,7 @@ BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh()
           state_keys_broker_.get());
       providers_for_init_.push_back(
           base::WrapUnique<ConfigurationPolicyProvider>(
-              device_cloud_policy_manager_));
+              device_cloud_policy_manager_.get()));
     }
   }
 

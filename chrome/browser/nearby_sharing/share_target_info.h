@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
 #include "chrome/browser/nearby_sharing/incoming_frames_reader.h"
@@ -90,7 +91,7 @@ class ShareTargetInfo {
  private:
   absl::optional<std::string> endpoint_id_;
   absl::optional<NearbyShareDecryptedPublicCertificate> certificate_;
-  NearbyConnection* connection_ = nullptr;
+  raw_ptr<NearbyConnection, ExperimentalAsh> connection_ = nullptr;
   std::unique_ptr<TransferUpdateCallback> transfer_update_callback_;
   absl::optional<std::string> token_;
   std::unique_ptr<IncomingFramesReader> frames_reader_;

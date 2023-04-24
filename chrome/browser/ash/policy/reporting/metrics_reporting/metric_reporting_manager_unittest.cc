@@ -306,12 +306,13 @@ class MetricReportingManagerTest
         .WillByDefault(Return(ByMove(std::move(telemetry_queue))));
   }
 
-  test::FakeMetricReportQueue* info_queue_ptr_;
-  test::FakeMetricReportQueue* telemetry_queue_ptr_;
-  test::FakeMetricReportQueue* event_queue_ptr_;
-  test::FakeMetricReportQueue* peripheral_queue_ptr_;
-  test::FakeMetricReportQueue* user_telemetry_queue_ptr_;
-  test::FakeMetricReportQueue* user_event_queue_ptr_;
+  raw_ptr<test::FakeMetricReportQueue, ExperimentalAsh> info_queue_ptr_;
+  raw_ptr<test::FakeMetricReportQueue, ExperimentalAsh> telemetry_queue_ptr_;
+  raw_ptr<test::FakeMetricReportQueue, ExperimentalAsh> event_queue_ptr_;
+  raw_ptr<test::FakeMetricReportQueue, ExperimentalAsh> peripheral_queue_ptr_;
+  raw_ptr<test::FakeMetricReportQueue, ExperimentalAsh>
+      user_telemetry_queue_ptr_;
+  raw_ptr<test::FakeMetricReportQueue, ExperimentalAsh> user_event_queue_ptr_;
 
   std::unique_ptr<::testing::NiceMock<MockDelegate>> mock_delegate_;
 };
@@ -374,7 +375,8 @@ TEST_P(MetricReportingManagerInfoTest, Default) {
       .WillByDefault(Return(test_case.is_affiliated));
   ON_CALL(*mock_delegate_ptr,
           CreateOneShotCollector(
-              _, info_queue_ptr_, _, test_case.setting_data.enable_setting_path,
+              _, info_queue_ptr_.get(), _,
+              test_case.setting_data.enable_setting_path,
               test_case.setting_data.setting_enabled_default_value, init_delay))
       .WillByDefault(
           [&]() { return std::make_unique<FakeCollector>(&collector_count); });
@@ -459,7 +461,8 @@ TEST_P(MetricReportingManagerEventTest, Default) {
   ON_CALL(
       *mock_delegate_ptr,
       CreateEventObserverManager(
-          _, event_queue_ptr_, _, test_case.setting_data.enable_setting_path,
+          _, event_queue_ptr_.get(), _,
+          test_case.setting_data.enable_setting_path,
           test_case.setting_data.setting_enabled_default_value, _, init_delay))
       .WillByDefault([&]() {
         return std::make_unique<FakeMetricEventObserverManager>(
@@ -468,7 +471,7 @@ TEST_P(MetricReportingManagerEventTest, Default) {
   ON_CALL(
       *mock_delegate_ptr,
       CreateEventObserverManager(
-          _, user_event_queue_ptr_, _,
+          _, user_event_queue_ptr_.get(), _,
           test_case.setting_data.enable_setting_path,
           test_case.setting_data.setting_enabled_default_value, _, init_delay))
       .WillByDefault([&]() {
@@ -505,19 +508,20 @@ TEST_F(MetricReportingManagerEventTest,
   ON_CALL(*mock_delegate_ptr, IsAffiliated).WillByDefault(Return(true));
   ON_CALL(*mock_delegate_ptr, IsAppServiceAvailableForProfile)
       .WillByDefault(Return(false));
-  ON_CALL(*mock_delegate_ptr,
-          CreateEventObserverManager(
-              _, event_queue_ptr_, _, app_event_settings.enable_setting_path,
-              app_event_settings.setting_enabled_default_value, _, _))
+  ON_CALL(
+      *mock_delegate_ptr,
+      CreateEventObserverManager(
+          _, event_queue_ptr_.get(), _, app_event_settings.enable_setting_path,
+          app_event_settings.setting_enabled_default_value, _, _))
       .WillByDefault([&]() {
         return std::make_unique<FakeMetricEventObserverManager>(
             fake_reporting_settings.get(), &observer_manager_count);
       });
-  ON_CALL(
-      *mock_delegate_ptr,
-      CreateEventObserverManager(
-          _, user_event_queue_ptr_, _, app_event_settings.enable_setting_path,
-          app_event_settings.setting_enabled_default_value, _, _))
+  ON_CALL(*mock_delegate_ptr,
+          CreateEventObserverManager(
+              _, user_event_queue_ptr_.get(), _,
+              app_event_settings.enable_setting_path,
+              app_event_settings.setting_enabled_default_value, _, _))
       .WillByDefault([&]() {
         return std::make_unique<FakeMetricEventObserverManager>(
             fake_reporting_settings.get(), &observer_manager_count);
@@ -628,7 +632,7 @@ TEST_P(MetricReportingManagerPeripheralTest, Default) {
   ON_CALL(
       *mock_delegate_ptr,
       CreateEventObserverManager(
-          _, peripheral_queue_ptr_, _,
+          _, peripheral_queue_ptr_.get(), _,
           test_case.setting_data.enable_setting_path,
           test_case.setting_data.setting_enabled_default_value, _, init_delay))
       .WillByDefault([&]() {
@@ -681,7 +685,7 @@ TEST_F(MetricReportingManagerTelemetryTest, OneShotCollectorBootPerformance) {
   int collector_count = 0;
 
   ON_CALL(*mock_delegate_ptr,
-          CreateOneShotCollector(_, telemetry_queue_ptr_, _,
+          CreateOneShotCollector(_, telemetry_queue_ptr_.get(), _,
                                  ::ash::kReportDeviceBootMode, true,
                                  metrics::InitDelayParam::Get()))
       .WillByDefault(
@@ -722,7 +726,7 @@ TEST_P(MetricReportingManagerTelemetryTest, Default) {
       .WillByDefault(Return(true));
   ON_CALL(*mock_delegate_ptr,
           CreatePeriodicCollector(
-              _, telemetry_queue_ptr_, _,
+              _, telemetry_queue_ptr_.get(), _,
               test_case.setting_data.enable_setting_path,
               test_case.setting_data.setting_enabled_default_value,
               test_case.setting_data.rate_setting_path, _,
@@ -731,7 +735,7 @@ TEST_P(MetricReportingManagerTelemetryTest, Default) {
           [&]() { return std::make_unique<FakeCollector>(&collector_count); });
   ON_CALL(*mock_delegate_ptr,
           CreatePeriodicCollector(
-              _, user_telemetry_queue_ptr_, _,
+              _, user_telemetry_queue_ptr_.get(), _,
               test_case.setting_data.enable_setting_path,
               test_case.setting_data.setting_enabled_default_value,
               test_case.setting_data.rate_setting_path, _,
@@ -781,7 +785,7 @@ TEST_F(MetricReportingManagerTelemetryTest,
       .WillByDefault(Return(false));
   ON_CALL(*mock_delegate_ptr,
           CreatePeriodicCollector(
-              _, telemetry_queue_ptr_, _,
+              _, telemetry_queue_ptr_.get(), _,
               app_telemetry_settings.enable_setting_path,
               app_telemetry_settings.setting_enabled_default_value,
               app_telemetry_settings.rate_setting_path, _,
@@ -790,7 +794,7 @@ TEST_F(MetricReportingManagerTelemetryTest,
           [&]() { return std::make_unique<FakeCollector>(&collector_count); });
   ON_CALL(*mock_delegate_ptr,
           CreatePeriodicCollector(
-              _, user_telemetry_queue_ptr_, _,
+              _, user_telemetry_queue_ptr_.get(), _,
               app_telemetry_settings.enable_setting_path,
               app_telemetry_settings.setting_enabled_default_value,
               app_telemetry_settings.rate_setting_path, _,

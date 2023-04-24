@@ -25,6 +25,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
@@ -220,7 +221,7 @@ class DesksClient::LaunchPerformanceTracker
   // Pointer back to the owning templates client. This is done to facilitate
   // this object's removal from the mapping of template id's to trackers after
   // this object has recorded its metric.
-  DesksClient* templates_client_;
+  raw_ptr<DesksClient, ExperimentalAsh> templates_client_;
 
   base::ScopedObservation<app_restore::AppRestoreInfo,
                           app_restore::AppRestoreInfo::Observer>

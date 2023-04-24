@@ -1085,12 +1085,13 @@ class ManagementApiSupervisedUserTest : public ManagementApiUnitTest {
     supervised_user_delegate_ =
         new TestSupervisedUserExtensionsDelegate(profile());
     management_api_->set_supervised_user_extensions_delegate_for_test(
-        base::WrapUnique(supervised_user_delegate_));
+        base::WrapUnique(supervised_user_delegate_.get()));
   }
 
   std::unique_ptr<content::WebContents> web_contents_;
-  ManagementAPI* management_api_ = nullptr;
-  TestSupervisedUserExtensionsDelegate* supervised_user_delegate_ = nullptr;
+  raw_ptr<ManagementAPI, ExperimentalAsh> management_api_ = nullptr;
+  raw_ptr<TestSupervisedUserExtensionsDelegate, ExperimentalAsh>
+      supervised_user_delegate_ = nullptr;
 };
 
 TEST_F(ManagementApiSupervisedUserTest, SetEnabled_BlockedByParent) {
@@ -1526,7 +1527,7 @@ class ManagementApiSupervisedUserTestWithSetup
 
     // Install a ManagementAPIDelegate to sense extension enable.
     delegate_ = new TestManagementAPIDelegate;
-    management_api_->set_delegate_for_test(base::WrapUnique(delegate_));
+    management_api_->set_delegate_for_test(base::WrapUnique(delegate_.get()));
 
     // Add a generic extension.
     extension_ = ExtensionBuilder("Test").Build();
@@ -1534,7 +1535,7 @@ class ManagementApiSupervisedUserTestWithSetup
     EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_->id()));
   }
 
-  TestManagementAPIDelegate* delegate_ = nullptr;
+  raw_ptr<TestManagementAPIDelegate, ExperimentalAsh> delegate_ = nullptr;
   scoped_refptr<const Extension> extension_;
 };
 

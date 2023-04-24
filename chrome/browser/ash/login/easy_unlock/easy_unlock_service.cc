@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
@@ -113,7 +114,7 @@ class EasyUnlockService::PowerMonitor
 
   void ResetWakingUp() { service_->UpdateAppState(); }
 
-  EasyUnlockService* service_;
+  raw_ptr<EasyUnlockService, ExperimentalAsh> service_;
   base::WeakPtrFactory<PowerMonitor> weak_ptr_factory_{this};
 };
 

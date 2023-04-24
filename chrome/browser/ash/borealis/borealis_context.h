@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/borealis/borealis_launch_options.h"
 
 class Profile;
@@ -68,7 +69,7 @@ class BorealisContext {
 
   explicit BorealisContext(Profile* profile);
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   BorealisLaunchOptions::Options launch_options_;
   std::string vm_name_;
   std::string container_name_;

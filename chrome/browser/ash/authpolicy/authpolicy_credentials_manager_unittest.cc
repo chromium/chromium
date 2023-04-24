@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -125,7 +126,8 @@ class AuthPolicyCredentialsManagerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 
   // Owned by AuthPolicyCredentialsManagerFactory.
-  AuthPolicyCredentialsManager* authpolicy_credentials_manager_;
+  raw_ptr<AuthPolicyCredentialsManager, ExperimentalAsh>
+      authpolicy_credentials_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;

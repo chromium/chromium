@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -97,7 +98,7 @@ class TemplatesUriResolverImplTest : public testing::Test {
 
     fake_user_manager_ = new user_manager::FakeUserManager(&pref_service_);
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(fake_user_manager_));
+        base::WrapUnique(fake_user_manager_.get()));
 
     doh_template_uri_resolver_ = std::make_unique<TemplatesUriResolverImpl>();
 
@@ -136,7 +137,7 @@ class TemplatesUriResolverImplTest : public testing::Test {
 
  private:
   TestingPrefServiceSimple pref_service_;
-  user_manager::FakeUserManager* fake_user_manager_;
+  raw_ptr<user_manager::FakeUserManager, ExperimentalAsh> fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   ScopedStubInstallAttributes test_install_attributes_{
       StubInstallAttributes::CreateCloudManaged("fake-domain", "fake-id")};

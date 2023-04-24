@@ -190,7 +190,7 @@ int32_t AccessibilityWindowInfoDataWrapper::GetWindowId() const {
 
 bool AccessibilityWindowInfoDataWrapper::GetProperty(
     mojom::AccessibilityWindowBooleanProperty prop) const {
-  return arc::GetBooleanProperty(window_ptr_, prop);
+  return arc::GetBooleanProperty(window_ptr_.get(), prop);
 }
 
 bool AccessibilityWindowInfoDataWrapper::GetProperty(

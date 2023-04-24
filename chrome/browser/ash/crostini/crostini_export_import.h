@@ -11,6 +11,7 @@
 #include <unordered_map>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -261,7 +262,7 @@ class CrostiniExportImport : public KeyedService,
   std::unique_ptr<CrostiniExportImportStatusTracker> RemoveTracker(
       TrackerMap::iterator it);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   scoped_refptr<ui::SelectFileDialog> select_folder_dialog_;
   TrackerMap status_trackers_;
   // |operation_data_storage_| persists the data required to complete an

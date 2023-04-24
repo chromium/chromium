@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
+#include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
 
@@ -199,7 +200,7 @@ class WebContentCapturingObserver : public content::TestNavigationObserver {
   }
 
  private:
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents, ExperimentalAsh> web_contents_;
 };
 
 // During test, the test extensions can send a list of entries (directories
@@ -1513,11 +1514,12 @@ class DriveFsTestVolume : public TestVolume {
   absl::optional<drivefs::mojom::DialogResult> last_dialog_result_;
 
   // Profile associated with this volume: not owned.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   // Integration service used for testing: not owned.
-  drive::DriveIntegrationService* integration_service_ = nullptr;
+  raw_ptr<drive::DriveIntegrationService, ExperimentalAsh>
+      integration_service_ = nullptr;
 
-  Profile* const original_profile_;
+  const raw_ptr<Profile, ExperimentalAsh> original_profile_;
   std::map<base::FilePath, const AddEntriesMessage::TestEntryInfo> entries_;
   std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
 };
@@ -1598,7 +1600,8 @@ class DocumentsProviderTestVolume : public TestVolume {
   }
 
  protected:
-  arc::FakeFileSystemInstance* const file_system_instance_;
+  const raw_ptr<arc::FakeFileSystemInstance, ExperimentalAsh>
+      file_system_instance_;
   const std::string authority_;
   const std::string root_document_id_;
   const bool read_only_;
@@ -1864,7 +1867,7 @@ class MockGuestOsMountProvider : public guest_os::GuestOsMountProvider {
   int cid_;
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   std::string name_;
   guest_os::VmType vm_type_;
 };
@@ -1888,7 +1891,7 @@ class GuestOsTestVolume : public LocalTestVolume {
 
   const base::FilePath& mount_path() const { return root_path(); }
 
-  MockGuestOsMountProvider* provider_;
+  raw_ptr<MockGuestOsMountProvider, ExperimentalAsh> provider_;
 };
 
 FileManagerBrowserTestBase::FileManagerBrowserTestBase() = default;

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_APP_MODE_TEST_TEST_BROWSER_CLOSED_WAITER_H_
 #define CHROME_BROWSER_ASH_LOGIN_APP_MODE_TEST_TEST_BROWSER_CLOSED_WAITER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -22,7 +23,7 @@ class TestBrowserClosedWaiter : public BrowserListObserver {
  private:
   void OnBrowserRemoved(Browser* browser) override;
 
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser, ExperimentalAsh> browser_ = nullptr;
   base::test::TestFuture<bool> future_;
 };
 

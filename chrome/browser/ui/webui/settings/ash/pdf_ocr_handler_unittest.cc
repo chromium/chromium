@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/ash/pdf_ocr_handler.h"
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/screen_ai/public/cpp/screen_ai_install_state.h"
@@ -61,7 +62,8 @@ class TestPdfOcrHandler : public PdfOcrHandler {
   using PdfOcrHandler::set_web_ui;
 
  private:
-  TestScreenAIInstallState* test_screen_ai_install_state_ = nullptr;
+  raw_ptr<TestScreenAIInstallState, ExperimentalAsh>
+      test_screen_ai_install_state_ = nullptr;
 };
 
 }  // namespace

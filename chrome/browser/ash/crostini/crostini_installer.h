@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_INSTALLER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -131,7 +132,7 @@ class CrostiniInstaller : public KeyedService,
   void OnCrostiniRemovedAfterConfigurationFailed(
       crostini::CrostiniResult result);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   State state_ = State::IDLE;
   crostini::mojom::InstallerState installing_state_;

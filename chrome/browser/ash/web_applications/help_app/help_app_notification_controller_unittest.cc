@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -132,7 +133,7 @@ class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
 
   PrefService* pref_service() { return pref_service_.get(); }
 
-  FakeChromeUserManager* user_manager_;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
   int notification_count_ = 0;
   std::unique_ptr<HelpAppNotificationController>

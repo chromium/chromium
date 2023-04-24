@@ -10,6 +10,7 @@
 #include <string>
 
 #include "ash/components/arc/mojom/app.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -78,7 +79,7 @@ class ArcShelfSpinnerItemController : public ShelfSpinnerItemController,
   arc::mojom::WindowInfoPtr window_info_;
 
   // Unowned
-  Profile* observed_profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> observed_profile_ = nullptr;
 
   // A one shot timer to close this item.
   std::unique_ptr<base::OneShotTimer> close_timer_;

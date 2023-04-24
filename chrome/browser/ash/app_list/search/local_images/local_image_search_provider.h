@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_LOCAL_IMAGES_LOCAL_IMAGE_SEARCH_PROVIDER_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -43,7 +44,7 @@ class LocalImageSearchProvider : public SearchProvider {
   base::TimeTicks query_start_time_;
   std::u16string last_query_;
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   ash::ThumbnailLoader thumbnail_loader_;
   base::FilePath root_path_;
 

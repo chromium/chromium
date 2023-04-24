@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -66,7 +67,7 @@ class WaitForURLsDeletedObserver : public history::HistoryServiceObserver {
   }
 
  private:
-  base::RunLoop* runner_;
+  raw_ptr<base::RunLoop, ExperimentalAsh> runner_;
 };
 
 void WaitForURLsDeletedNotification(history::HistoryService* history_service) {

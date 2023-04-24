@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 
 class PrefRegistrySimple;
@@ -78,7 +79,7 @@ class MetadataTable {
   base::Value::List installed_items_;
 
   // Local state PrefService.
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
 };
 
 }  // namespace component_updater

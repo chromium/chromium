@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -426,7 +427,7 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
 
   std::unique_ptr<NearbyConnectionBroker> broker_;
 
-  base::MockOneShotTimer* mock_timer_ = nullptr;
+  raw_ptr<base::MockOneShotTimer, ExperimentalAsh> mock_timer_ = nullptr;
 
   base::OnceClosure on_connected_closure_;
   base::OnceClosure on_disconnected_closure_;

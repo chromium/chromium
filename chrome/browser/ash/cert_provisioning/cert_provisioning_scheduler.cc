@@ -160,9 +160,10 @@ CertProvisioningSchedulerImpl::CertProvisioningSchedulerImpl(
   pref_name_ = GetPrefNameForCertProfiles(cert_scope);
   CHECK(pref_name_);
 
-  scoped_platform_keys_service_observation_.Observe(platform_keys_service_);
+  scoped_platform_keys_service_observation_.Observe(
+      platform_keys_service_.get());
 
-  network_state_handler_observer_.Observe(network_state_handler_);
+  network_state_handler_observer_.Observe(network_state_handler_.get());
 
   ScheduleInitialUpdate();
   ScheduleDailyUpdate();

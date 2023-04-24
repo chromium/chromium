@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -336,7 +337,7 @@ class ExistingUserController : public content::NotificationObserver,
   size_t num_login_attempts_ = 0;
 
   // Interface to the signed settings store.
-  CrosSettings* cros_settings_;
+  raw_ptr<CrosSettings, ExperimentalAsh> cros_settings_;
 
   // URL to append to start Guest mode with.
   GURL guest_mode_url_;

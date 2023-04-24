@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/android_sms/android_sms_app_manager.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "content/public/browser/service_worker_context_observer.h"
@@ -105,9 +106,10 @@ class ConnectionManager
       std::unique_ptr<ServiceWorkerProvider> service_worker_provider);
 
   std::unique_ptr<ConnectionEstablisher> connection_establisher_;
-  Profile* profile_;
-  AndroidSmsAppManager* android_sms_app_manager_;
-  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<AndroidSmsAppManager, ExperimentalAsh> android_sms_app_manager_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
+      multidevice_setup_client_;
 
   std::unique_ptr<ServiceWorkerProvider> service_worker_provider_;
 

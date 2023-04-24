@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_license_checker.h"
@@ -269,9 +270,10 @@ class PluginVmInstaller : public KeyedService,
 
   device::mojom::WakeLock* GetWakeLock();
 
-  Profile* profile_ = nullptr;
-  Observer* observer_ = nullptr;
-  download::BackgroundDownloadService* download_service_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Observer, ExperimentalAsh> observer_ = nullptr;
+  raw_ptr<download::BackgroundDownloadService, ExperimentalAsh>
+      download_service_ = nullptr;
   State state_ = State::kIdle;
   InstallingState installing_state_ = InstallingState::kInactive;
   std::string current_download_guid_;

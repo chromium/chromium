@@ -13,6 +13,7 @@
 #include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -178,7 +179,7 @@ class AppListNotifierImpl : public ash::AppListNotifier,
   // reported to be visible.
   bool GetContinueSectionVisibility(Location location) const;
 
-  ash::AppListController* const app_list_controller_;
+  const raw_ptr<ash::AppListController, ExperimentalAsh> app_list_controller_;
 
   base::ObserverList<Observer> observers_;
 

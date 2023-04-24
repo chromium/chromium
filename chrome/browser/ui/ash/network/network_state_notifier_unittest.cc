@@ -9,6 +9,7 @@
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
@@ -215,8 +216,9 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
     base::RunLoop().RunUntilIdle();
   }
 
-  HermesManagerClient::TestInterface* hermes_manager_test_;
-  HermesEuiccClient::TestInterface* hermes_euicc_test_;
+  raw_ptr<HermesManagerClient::TestInterface, ExperimentalAsh>
+      hermes_manager_test_;
+  raw_ptr<HermesEuiccClient::TestInterface, ExperimentalAsh> hermes_euicc_test_;
   TestSystemTrayClient test_system_tray_client_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<NetworkConnectTestDelegate> network_connect_delegate_;

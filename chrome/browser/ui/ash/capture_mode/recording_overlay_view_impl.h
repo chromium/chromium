@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_CAPTURE_MODE_RECORDING_OVERLAY_VIEW_IMPL_H_
 
 #include "ash/public/cpp/capture_mode/recording_overlay_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -33,7 +34,7 @@ class RecordingOverlayViewImpl : public ash::RecordingOverlayView {
   // Initializes `web_view_` to load the annotator app.
   void InitializeAnnotator();
 
-  views::WebView* web_view_;
+  raw_ptr<views::WebView, ExperimentalAsh> web_view_;
 
   base::WeakPtrFactory<RecordingOverlayViewImpl> weak_ptr_factory_{this};
 };

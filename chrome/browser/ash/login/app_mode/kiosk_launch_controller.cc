@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -148,7 +149,7 @@ class ArcKioskAppServiceWrapper : public KioskAppLauncher {
  private:
   // `service_` is externally owned and it's the caller's responsibility to
   // ensure that it outlives this wrapper.
-  ArcKioskAppService* const service_;
+  const raw_ptr<ArcKioskAppService, ExperimentalAsh> service_;
 };
 
 std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(

@@ -129,7 +129,7 @@ class WindowPropertyWaiter : public aura::WindowObserver {
     base::RunLoop loop;
     quit_closure_ = loop.QuitClosure();
 
-    make_transparent_observation_.Observe(window_);
+    make_transparent_observation_.Observe(window_.get());
 
     loop.Run();
   }
@@ -151,7 +151,7 @@ class WindowPropertyWaiter : public aura::WindowObserver {
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       make_transparent_observation_{this};
   base::OnceClosure quit_closure_;
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
   const raw_ptr<const ui::ClassProperty<T>> key_;
 };
 

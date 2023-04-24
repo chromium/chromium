@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "url/gurl.h"
@@ -18,7 +19,8 @@ class WebContents;
 namespace apps {
 
 struct NavigationInfo {
-  content::WebContents* web_contents;
+  raw_ptr<content::WebContents, DanglingUntriaged | ExperimentalAsh>
+      web_contents;
   GURL url;
   GURL starting_url;
   bool is_navigate_from_link;

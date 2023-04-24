@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
@@ -705,7 +706,8 @@ class FileTasksPolicyBrowserTest : public FileTasksBrowserTest {
   }
 
  protected:
-  policy::MockDlpRulesManager* rules_manager_ = nullptr;
+  raw_ptr<policy::MockDlpRulesManager, ExperimentalAsh> rules_manager_ =
+      nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(FileTasksPolicyBrowserTest, TasksMarkedAsBlocked) {
@@ -1507,7 +1509,7 @@ class OneDriveTest : public TestAccountBrowserTest {
   std::string file_system_id_;
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;
-  ash::file_system_provider::Service* service_;
+  raw_ptr<ash::file_system_provider::Service, ExperimentalAsh> service_;
   std::string test_file_name_;
 };
 

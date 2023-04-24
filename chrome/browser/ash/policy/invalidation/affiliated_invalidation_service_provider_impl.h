@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
@@ -110,7 +111,8 @@ class AffiliatedInvalidationServiceProviderImpl
   // The invalidation service currently used by consumers. nullptr if there are
   // no registered consumers or no connected invalidation service is available
   // for use.
-  invalidation::InvalidationService* current_invalidation_service_;
+  raw_ptr<invalidation::InvalidationService, ExperimentalAsh>
+      current_invalidation_service_;
 
   base::ObserverList<Consumer, true>::Unchecked consumers_;
   int consumer_count_;

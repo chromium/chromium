@@ -33,7 +33,7 @@ Window::Window(CreateOptions* create_options)
                             std::make_unique<ChromeWebContentsHandler>())) {
   dialog_widget_ = new views::Widget;
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
-  params.delegate = dialog_view_;
+  params.delegate = dialog_view_.get();
   ash_util::SetupWidgetInitParamsForContainer(
       &params, kShellWindowId_LockScreenContainer);
   dialog_widget_->Init(std::move(params));

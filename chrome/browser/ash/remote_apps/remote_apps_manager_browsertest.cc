@@ -20,6 +20,7 @@
 #include "base/barrier_closure.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -95,7 +96,7 @@ class AppUpdateWaiter : public apps::AppRegistryCache::Observer {
       : id_(id), condition_(condition) {
     app_registry_cache_ = &apps::AppServiceProxyFactory::GetForProfile(profile)
                                ->AppRegistryCache();
-    app_registry_cache_observation_.Observe(app_registry_cache_);
+    app_registry_cache_observation_.Observe(app_registry_cache_.get());
   }
 
   void Wait() {
@@ -127,7 +128,8 @@ class AppUpdateWaiter : public apps::AppRegistryCache::Observer {
 
  private:
   std::string id_;
-  apps::AppRegistryCache* app_registry_cache_ = nullptr;
+  raw_ptr<apps::AppRegistryCache, ExperimentalAsh> app_registry_cache_ =
+      nullptr;
   base::OnceClosure callback_;
   base::RepeatingCallback<bool(const apps::AppUpdate&)> condition_;
   bool condition_met_ = false;
@@ -347,12 +349,13 @@ class RemoteAppsManagerBrowsertest
                              "screenplay-446812cc-07af-4094-bfb2-00150301ede3");
   }
 
-  app_list::AppListSyncableService* app_list_syncable_service_;
-  AppListModelUpdater* app_list_model_updater_;
+  raw_ptr<app_list::AppListSyncableService, ExperimentalAsh>
+      app_list_syncable_service_;
+  raw_ptr<AppListModelUpdater, ExperimentalAsh> app_list_model_updater_;
   ash::AppListTestApi app_list_test_api_;
-  RemoteAppsManager* manager_ = nullptr;
-  MockImageDownloader* image_downloader_ = nullptr;
-  Profile* profile_ = nullptr;
+  raw_ptr<RemoteAppsManager, ExperimentalAsh> manager_ = nullptr;
+  raw_ptr<MockImageDownloader, ExperimentalAsh> image_downloader_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
 };
 

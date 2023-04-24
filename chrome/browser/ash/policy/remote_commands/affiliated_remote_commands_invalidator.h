@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
 
@@ -37,8 +38,9 @@ class AffiliatedRemoteCommandsInvalidator
       invalidation::InvalidationService* invalidation_service) override;
 
  private:
-  CloudPolicyCore* const core_;
-  AffiliatedInvalidationServiceProvider* const invalidation_service_provider_;
+  const raw_ptr<CloudPolicyCore, ExperimentalAsh> core_;
+  const raw_ptr<AffiliatedInvalidationServiceProvider, ExperimentalAsh>
+      invalidation_service_provider_;
 
   std::unique_ptr<RemoteCommandsInvalidatorImpl> invalidator_;
 

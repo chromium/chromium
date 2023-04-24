@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
@@ -59,7 +60,7 @@ class OAuth2TokenFetcher : public base::SupportsWeakPtr<OAuth2TokenFetcher>,
       const GaiaAuthConsumer::ClientOAuthResult& result) override;
   void OnClientOAuthFailure(const GoogleServiceAuthError& error) override;
 
-  OAuth2TokenFetcher::Delegate* delegate_;
+  raw_ptr<OAuth2TokenFetcher::Delegate, ExperimentalAsh> delegate_;
   GaiaAuthFetcher auth_fetcher_;
 
   // The retry counter. Increment this only when failure happened.

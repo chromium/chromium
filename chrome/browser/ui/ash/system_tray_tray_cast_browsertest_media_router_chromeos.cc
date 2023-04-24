@@ -18,6 +18,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_view.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -173,7 +174,8 @@ class SystemTrayTrayCastMediaRouterChromeOSTest
 
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<media_router::MockMediaRouter> media_router_;
-  media_router::MediaSinksObserver* media_sinks_observer_ = nullptr;
+  raw_ptr<media_router::MediaSinksObserver, ExperimentalAsh>
+      media_sinks_observer_ = nullptr;
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
 };
 
@@ -395,7 +397,7 @@ class SystemTrayTrayCastAccessCodeChromeOSTest
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
-  const user_manager::User* user_;
+  raw_ptr<const user_manager::User, ExperimentalAsh> user_;
 
  private:
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;

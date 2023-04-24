@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+
 class ArcAppListPrefs;
 class Profile;
 
@@ -54,7 +56,7 @@ class AppRestoreArcTestHelper {
   arc::mojom::AppHost* GetAppHost();
 
  private:
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
 };

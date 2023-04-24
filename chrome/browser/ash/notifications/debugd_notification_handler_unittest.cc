@@ -8,6 +8,7 @@
 
 #include "ash/test/ash_test_base.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
@@ -37,7 +38,7 @@ class DebugdNotificationHandlerTest : public AshTestBase {
  protected:
   std::unique_ptr<DebugDaemonClient> debug_daemon_client_;
   std::unique_ptr<DebugdNotificationHandler> handler_;
-  message_center::MessageCenter* message_center_;
+  raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
 };
 
 TEST_F(DebugdNotificationHandlerTest,

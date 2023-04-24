@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_BOREALIS_BOREALIS_WINDOW_MANAGER_TEST_HELPER_H_
 #define CHROME_BROWSER_ASH_BOREALIS_BOREALIS_WINDOW_MANAGER_TEST_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 
@@ -23,7 +24,7 @@ class ScopedTestWindow {
  private:
   base::UnguessableToken instance_id_;
   std::unique_ptr<aura::Window> window_;
-  borealis::BorealisWindowManager* manager_;
+  raw_ptr<borealis::BorealisWindowManager, ExperimentalAsh> manager_;
 };
 
 // Creates a widget for use in testing.

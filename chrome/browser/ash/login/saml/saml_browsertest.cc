@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -352,7 +353,8 @@ class SamlTestBase : public OobeBaseTest {
   FakeSamlIdpMixin* fake_saml_idp() { return &fake_saml_idp_mixin_; }
 
  protected:
-  SecretInterceptingFakeUserDataAuthClient* cryptohome_client_;
+  raw_ptr<SecretInterceptingFakeUserDataAuthClient, ExperimentalAsh>
+      cryptohome_client_;
 
   FakeGaiaMixin fake_gaia_{&mixin_host_};
 
@@ -1126,7 +1128,7 @@ class SAMLPolicyTest : public SamlTestBase {
   // `device_state_` from `SamlTestBase` instead. Right now we have two ways to
   // do device policy updates in this fixture and they are not interchangeable
   // as they update different policy blobs.
-  policy::DevicePolicyBuilder* device_policy_;
+  raw_ptr<policy::DevicePolicyBuilder, ExperimentalAsh> device_policy_;
   NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   net::CookieList cookie_list_;
 
@@ -1952,7 +1954,8 @@ class SAMLDeviceAttestationTest : public SamlTestBase {
       const std::vector<std::string>& allowed_urls);
 
   ScopedTestingCrosSettings settings_helper_;
-  StubCrosSettingsProvider* settings_provider_ = nullptr;
+  raw_ptr<StubCrosSettingsProvider, ExperimentalAsh> settings_provider_ =
+      nullptr;
 
   policy::DevicePolicyCrosTestHelper policy_helper_;
 

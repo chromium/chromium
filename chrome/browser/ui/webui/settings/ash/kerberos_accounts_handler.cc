@@ -396,7 +396,7 @@ void KerberosAccountsHandler::HandleSetAsActiveKerberosAccount(
 }
 
 void KerberosAccountsHandler::OnJavascriptAllowed() {
-  credentials_manager_observation_.Observe(kerberos_credentials_manager_);
+  credentials_manager_observation_.Observe(kerberos_credentials_manager_.get());
 }
 
 void KerberosAccountsHandler::OnJavascriptDisallowed() {

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_OWNERSHIP_OWNER_KEY_LOADER_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/ownership/owner_key_util.h"
@@ -58,8 +59,9 @@ class OwnerKeyLoader {
   void MaybeRegenerateLostKey(
       const enterprise_management::PolicyData* policy_data);
 
-  Profile* const profile_;
-  DeviceSettingsService* const device_settings_service_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<DeviceSettingsService, ExperimentalAsh>
+      device_settings_service_;
   scoped_refptr<ownership::OwnerKeyUtil> owner_key_util_;
   const bool is_enterprise_managed_;
   scoped_refptr<ownership::PublicKey> public_key_;

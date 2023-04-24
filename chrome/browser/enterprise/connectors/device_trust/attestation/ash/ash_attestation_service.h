@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
 
@@ -46,7 +47,7 @@ class AshAttestationService : public AttestationService {
       AttestationCallback callback,
       const ash::attestation::TpmChallengeKeyResult& result);
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   base::WeakPtrFactory<AshAttestationService> weak_factory_{this};
 };

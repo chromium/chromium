@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -119,7 +120,7 @@ class MultiProfileUserControllerTest
  public:
   MultiProfileUserControllerTest()
       : fake_user_manager_(new FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_)),
+        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())),
         user_not_allowed_count_(0) {
     for (size_t i = 0; i < std::size(kUsers); ++i) {
       test_users_.push_back(AccountId::FromUserEmail(kUsers[i]));
@@ -205,7 +206,8 @@ class MultiProfileUserControllerTest
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  FakeChromeUserManager* fake_user_manager_;  // Not owned
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh>
+      fake_user_manager_;  // Not owned
   user_manager::ScopedUserManager user_manager_enabler_;
 
   std::unique_ptr<MultiProfileUserController> controller_;

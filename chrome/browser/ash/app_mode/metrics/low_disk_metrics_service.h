@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/prefs/pref_service.h"
 
@@ -53,7 +54,7 @@ class LowDiskMetricsService : public UserDataAuthClient::Observer {
   // Report a highest severity of the previous session.
   void ReportPreviousSessionLowDiskSeverity();
 
-  PrefService* prefs_;
+  raw_ptr<PrefService, ExperimentalAsh> prefs_;
   // The highest low disk notification severity during the session.
   KioskLowDiskSeverity low_disk_severity_{KioskLowDiskSeverity::kNone};
 };

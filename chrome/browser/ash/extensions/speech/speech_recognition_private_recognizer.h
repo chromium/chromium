@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/speech/speech_recognition_constants.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
@@ -89,9 +90,9 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
   OnStartCallback on_start_callback_;
   // Delegate that helps handle speech recognition events. `delegate_` is
   // required to outlive this object.
-  SpeechRecognitionPrivateDelegate* const delegate_;
+  const raw_ptr<SpeechRecognitionPrivateDelegate, ExperimentalAsh> delegate_;
   // The associated BrowserContext.
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
   // A unique ID for this speech recognizer.
   const std::string id_;
   std::unique_ptr<SpeechRecognizer> speech_recognizer_;

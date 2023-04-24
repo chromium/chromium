@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -92,14 +93,15 @@ class AndroidManagementClientImpl : public AndroidManagementClient {
   void OnAndroidManagementChecked(DMServerJobResult result);
 
   // Used to communicate with the device management service.
-  DeviceManagementService* const device_management_service_;
+  const raw_ptr<DeviceManagementService, ExperimentalAsh>
+      device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<DeviceManagementService::Job> request_job_;
 
   // The account ID that will be used for the access token fetch.
   const CoreAccountId account_id_;
 
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
 
   StatusCallback callback_;

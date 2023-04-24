@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_NETWORK_PORTAL_DETECTOR_MIXIN_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_NETWORK_PORTAL_DETECTOR_MIXIN_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 
@@ -53,7 +54,8 @@ class NetworkPortalDetectorMixin : public InProcessBrowserTestMixin {
       const std::string& network_type,
       NetworkPortalDetector::CaptivePortalStatus status);
 
-  NetworkPortalDetectorTestImpl* network_portal_detector_ = nullptr;
+  raw_ptr<NetworkPortalDetectorTestImpl, ExperimentalAsh>
+      network_portal_detector_ = nullptr;
   std::string default_network_guid_;
 };
 

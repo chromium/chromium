@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SWITCH_ACCESS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SWITCH_ACCESS_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/events/event_handler.h"
@@ -39,7 +40,7 @@ class SwitchAccessHandler : public ::settings::SettingsPageUIHandler,
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
-  PrefService* prefs_;
+  raw_ptr<PrefService, ExperimentalAsh> prefs_;
 };
 
 }  // namespace ash::settings

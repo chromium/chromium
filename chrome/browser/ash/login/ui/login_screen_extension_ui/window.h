@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+
 namespace views {
 class Widget;
 }  // namespace views
@@ -35,9 +37,9 @@ class Window {
   views::Widget* GetDialogWidgetForTesting();
 
  private:
-  DialogDelegate* dialog_delegate_ = nullptr;
-  WebDialogView* dialog_view_ = nullptr;
-  views::Widget* dialog_widget_ = nullptr;
+  raw_ptr<DialogDelegate, ExperimentalAsh> dialog_delegate_ = nullptr;
+  raw_ptr<WebDialogView, ExperimentalAsh> dialog_view_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> dialog_widget_ = nullptr;
 };
 
 class WindowFactory {

@@ -10,6 +10,7 @@
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -76,7 +77,7 @@ class FileResult : public ChromeSearchResult, public ash::ColorModeObserver {
 
   const base::FilePath filepath_;
   const Type type_;
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   absl::optional<std::string> drive_id_;
 

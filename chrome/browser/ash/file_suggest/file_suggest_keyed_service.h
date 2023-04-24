@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -134,7 +135,7 @@ class FileSuggestKeyedService : public KeyedService {
 
   base::ObserverList<Observer> observers_;
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Used to query/persis the removed result ids. NOTE: `proto_` contains
   // non-file ids.

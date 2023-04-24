@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/printing/cups_print_job.h"
@@ -137,7 +138,7 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
       Profile* profile);
   virtual ash::printing::IppClientInfoCalculator* GetIppClientInfoCalculator();
 
-  ProfileManager* profile_manager_ = nullptr;
+  raw_ptr<ProfileManager, ExperimentalAsh> profile_manager_ = nullptr;
 
   bool observers_registered_ = false;
 

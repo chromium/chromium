@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/assistant/assistant_test_mixin.h"
+#include "base/memory/raw_ptr.h"
 
 #include <utility>
 #include <vector>
@@ -77,7 +78,7 @@ class AssistantStatusWaiter : private AssistantStateObserver {
       std::move(quit_loop_).Run();
   }
 
-  AssistantState* const state_;
+  const raw_ptr<AssistantState, ExperimentalAsh> state_;
   AssistantStatus const expected_status_;
 
   base::OnceClosure quit_loop_;
@@ -162,7 +163,7 @@ class ResponseWaiter : private views::ViewObserver {
   virtual absl::optional<std::string> GetResponseTextOfView(
       views::View* view) const = 0;
 
-  views::View* parent_view_;
+  raw_ptr<views::View, ExperimentalAsh> parent_view_;
   base::OnceClosure quit_loop_;
 };
 
@@ -289,7 +290,7 @@ class CallbackViewHierarchyChangedObserver : views::ViewObserver {
  private:
   base::RepeatingCallback<void(const views::ViewHierarchyChangedDetails&)>
       callback_;
-  views::View* parent_view_;
+  raw_ptr<views::View, ExperimentalAsh> parent_view_;
 };
 
 }  // namespace
@@ -359,7 +360,7 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
   FakeGaiaMixin fake_gaia_;
 
   LoginManagerMixin::TestUserInfo user_;
-  InProcessBrowserTest* const test_base_;
+  const raw_ptr<InProcessBrowserTest, ExperimentalAsh> test_base_;
   UserContext user_context_;
   std::string access_token_{FakeGaiaMixin::kFakeAllScopeAccessToken};
 };

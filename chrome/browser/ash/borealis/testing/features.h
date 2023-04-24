@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_BOREALIS_TESTING_FEATURES_H_
 #define CHROME_BROWSER_ASH_BOREALIS_TESTING_FEATURES_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/user_manager/scoped_user_manager.h"
 
@@ -27,7 +28,7 @@ class ScopedAllowBorealis {
   ~ScopedAllowBorealis();
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   base::test::ScopedFeatureList features_;
   user_manager::ScopedUserManager user_manager_;
 };

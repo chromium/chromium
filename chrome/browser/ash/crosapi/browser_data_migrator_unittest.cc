@@ -10,6 +10,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
@@ -233,7 +234,7 @@ class BrowserDataMigratorRestartTest : public ::testing::Test {
   void SetUp() override {
     fake_user_manager_ = new ash::FakeChromeUserManager;
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(fake_user_manager_));
+        base::WrapUnique(fake_user_manager_.get()));
   }
 
   void AddRegularUser(const std::string& email) {
@@ -256,7 +257,8 @@ class BrowserDataMigratorRestartTest : public ::testing::Test {
   ScopedTestingLocalState scoped_local_state_{
       TestingBrowserProcess::GetGlobal()};
   TestingProfile testing_profile_;
-  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
+      nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   FakeSessionManagerClient session_manager_;
 };

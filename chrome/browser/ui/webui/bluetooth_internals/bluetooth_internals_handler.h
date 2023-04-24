@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_BLUETOOTH_INTERNALS_BLUETOOTH_INTERNALS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_BLUETOOTH_INTERNALS_BLUETOOTH_INTERNALS_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"
@@ -60,7 +61,8 @@ class BluetoothInternalsHandler : public mojom::BluetoothInternalsHandler {
   mojo::Receiver<mojom::BluetoothInternalsHandler> receiver_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::bluetooth::DebugLogsManager* debug_logs_manager_ = nullptr;
+  raw_ptr<ash::bluetooth::DebugLogsManager, ExperimentalAsh>
+      debug_logs_manager_ = nullptr;
 #endif
 
   base::WeakPtrFactory<BluetoothInternalsHandler> weak_ptr_factory_{this};

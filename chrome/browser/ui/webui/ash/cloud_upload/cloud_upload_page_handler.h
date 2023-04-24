@@ -7,6 +7,7 @@
 
 #include "base/files/file.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-shared.h"
@@ -68,8 +69,8 @@ class CloudUploadPageHandler : public mojom::PageHandler {
       GetOfficeMoveConfirmationShownForOneDriveCallback callback) override;
 
  private:
-  Profile* profile_;
-  content::WebUI* web_ui_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<content::WebUI, ExperimentalAsh> web_ui_;
   mojom::DialogArgsPtr dialog_args_;
 
   mojo::Receiver<PageHandler> receiver_;

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/public/cpp/shelf_types.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/ui/app_icon_loader.h"
@@ -71,14 +72,14 @@ class ArcAppWindow : public AppWindowBase,
   const arc::ArcAppShelfId app_shelf_id_;
   // Keeps current full-screen mode.
   FullScreenMode fullscreen_mode_ = FullScreenMode::kNotDefined;
-  ArcAppWindowDelegate* const owner_;
+  const raw_ptr<ArcAppWindowDelegate, ExperimentalAsh> owner_;
 
   // Set to true in case image fetch is requested. This indicates that default
   // app icon is returned in |OnAppImageUpdated|.
   bool image_fetching_ = false;
   base::OneShotTimer apply_default_image_timer_;
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Loads the ARC app icon to the window icon keys. Nullptr once a custom icon
   // has been successfully set.

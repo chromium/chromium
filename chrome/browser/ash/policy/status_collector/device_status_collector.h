@@ -16,6 +16,7 @@
 #include "base/callback_list.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -336,7 +337,7 @@ class DeviceStatusCollector : public StatusCollector,
   bool IncludeEmailsInActivityReports() const;
 
   // Pref service that is mainly used to store activity periods for reporting.
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
 
   // The last time an idle state check was performed.
   base::Time last_idle_check_;
@@ -416,7 +417,7 @@ class DeviceStatusCollector : public StatusCollector,
   PowerStatusCallback power_status_callback_;
 
   // Power manager client. Used to listen to power changed events.
-  chromeos::PowerManagerClient* const power_manager_;
+  const raw_ptr<chromeos::PowerManagerClient, ExperimentalAsh> power_manager_;
 
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>

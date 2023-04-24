@@ -15,6 +15,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -360,7 +361,7 @@ class FakeRecommendAppsFetcher : public RecommendAppsFetcher {
   void Retry() override { NOTREACHED(); }
 
  private:
-  RecommendAppsFetcherDelegate* const delegate_;
+  const raw_ptr<RecommendAppsFetcherDelegate, ExperimentalAsh> delegate_;
 };
 
 std::unique_ptr<RecommendAppsFetcher> CreateRecommendAppsFetcher(
@@ -398,7 +399,7 @@ class NativeWindowVisibilityObserver : public aura::WindowObserver {
   // The window was visible at some point in time.
   bool was_visible_ = false;
 
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 };
 
 // Sets the `NativeWindowVisibilityObserver` to observe the
@@ -432,7 +433,7 @@ class NativeWindowVisibilityBrowserMainExtraParts
   }
 
  private:
-  NativeWindowVisibilityObserver* observer_;
+  raw_ptr<NativeWindowVisibilityObserver, ExperimentalAsh> observer_;
 };
 
 class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_CROSTINI_INSTALLER_CROSTINI_INSTALLER_PAGE_HANDLER_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer.mojom.h"
@@ -53,7 +54,8 @@ class CrostiniInstallerPageHandler
   void OnInstallFinished(crostini::mojom::InstallerError error);
   void OnCanceled();
 
-  crostini::CrostiniInstallerUIDelegate* installer_ui_delegate_;
+  raw_ptr<crostini::CrostiniInstallerUIDelegate, ExperimentalAsh>
+      installer_ui_delegate_;
   mojo::Receiver<crostini_installer::mojom::PageHandler> receiver_;
   mojo::Remote<crostini_installer::mojom::Page> page_;
   base::OnceClosure on_page_closed_;

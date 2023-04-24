@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/ash/app_list/app_list_test_util.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
@@ -87,7 +88,7 @@ class AppSearchProviderTestBase : public AppListTestBase {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestSearchController> search_controller_;
   std::unique_ptr<AppSearchDataSource> data_source_;
-  SearchProvider* app_search_ = nullptr;
+  raw_ptr<SearchProvider, ExperimentalAsh> app_search_ = nullptr;
   std::unique_ptr<::test::TestAppListControllerDelegate> controller_;
   ArcAppTest arc_test_;
 };

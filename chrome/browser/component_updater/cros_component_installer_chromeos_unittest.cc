@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
@@ -348,7 +349,8 @@ class CrOSComponentInstallerTest : public testing::Test {
   user_manager::ScopedUserManager user_manager_;
 
   // Image loader client that is active during the test.
-  ash::FakeImageLoaderClient* image_loader_client_ = nullptr;
+  raw_ptr<ash::FakeImageLoaderClient, ExperimentalAsh> image_loader_client_ =
+      nullptr;
 
   base::ScopedTempDir base_component_paths_;
 

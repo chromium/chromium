@@ -516,7 +516,7 @@ PeopleSection::PeopleSection(Profile* profile,
     account_manager_facade_ =
         ::GetAccountManagerFacade(profile->GetPath().value());
     DCHECK(account_manager_facade_);
-    account_manager_facade_observation_.Observe(account_manager_facade_);
+    account_manager_facade_observation_.Observe(account_manager_facade_.get());
     account_apps_availability_ =
         AccountAppsAvailabilityFactory::GetForProfile(profile);
     FetchAccounts();

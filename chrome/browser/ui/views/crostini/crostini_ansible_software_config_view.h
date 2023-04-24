@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_CROSTINI_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
@@ -66,12 +67,12 @@ class CrostiniAnsibleSoftwareConfigView
 
   State state_ = State::CONFIGURING;
 
-  views::Label* subtext_label_ = nullptr;
-  views::Label* progress_label_ = nullptr;
-  views::ProgressBar* progress_bar_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> subtext_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> progress_label_ = nullptr;
+  raw_ptr<views::ProgressBar, ExperimentalAsh> progress_bar_ = nullptr;
   base::FilePath default_container_ansible_filepath_;
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   guest_os::GuestId container_id_;
   std::u16string container_name_;

@@ -1102,7 +1102,7 @@ class LogsZipper : public download::AllDownloadItemNotifier::Observer {
     base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE, this);
   }
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   const base::FilePath logs_directory_;
   const base::FilePath zip_path_;
 

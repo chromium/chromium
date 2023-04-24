@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_METRIC_BROWSERTEST_UTILS_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_METRIC_BROWSERTEST_UTILS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/browser_process.h"
@@ -55,7 +56,7 @@ class MetricTestInitializationHelper
  private:
   std::unique_ptr<base::ScopedMockTimeMessageLoopTaskRunner> mock_task_runner_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  ash::DeviceStateMixin* device_state_;
+  raw_ptr<ash::DeviceStateMixin, ExperimentalAsh> device_state_;
 };
 }  // namespace ash::reporting
 

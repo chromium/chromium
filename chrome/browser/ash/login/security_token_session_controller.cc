@@ -176,7 +176,7 @@ SecurityTokenSessionController::SecurityTokenSessionController(
   DCHECK(local_state_);
   DCHECK(primary_user_);
   DCHECK(certificate_provider_service_);
-  session_manager_observation_.Observe(session_manager_);
+  session_manager_observation_.Observe(session_manager_.get());
   certificate_provider_ =
       certificate_provider_service_->CreateCertificateProvider();
   LoadStoredChallengeResponseSpkiKeysForUser(

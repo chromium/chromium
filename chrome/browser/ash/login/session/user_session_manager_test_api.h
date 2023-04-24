@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 
 namespace ash {
@@ -43,7 +44,7 @@ class UserSessionManagerTestApi {
   OnboardingUserActivityCounter* get_onboarding_user_activity_counter();
 
  private:
-  UserSessionManager* session_manager_;  // not owned
+  raw_ptr<UserSessionManager, ExperimentalAsh> session_manager_;  // not owned
 };
 
 }  // namespace test

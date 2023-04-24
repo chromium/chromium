@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "components/sync/model/string_ordinal.h"
 
@@ -63,7 +64,7 @@ class SyncAppListHelper {
                  ChromeAppListItem* item,
                  const std::string& label);
 
-  SyncTest* test_ = nullptr;
+  raw_ptr<SyncTest, ExperimentalAsh> test_ = nullptr;
   bool setup_completed_ = false;
 };
 

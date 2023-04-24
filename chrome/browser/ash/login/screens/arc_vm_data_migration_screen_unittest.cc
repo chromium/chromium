@@ -9,6 +9,7 @@
 #include "ash/components/arc/session/arc_vm_client_adapter.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -286,7 +287,8 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
 
   std::unique_ptr<WizardContext> wizard_context_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_ = nullptr;  // Owned by |profile_manager_|.
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_ =
+      nullptr;  // Owned by |profile_manager_|.
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
 
   std::unique_ptr<TestArcVmDataMigrationScreen> screen_;

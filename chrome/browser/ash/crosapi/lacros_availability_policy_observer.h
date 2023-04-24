@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_LACROS_AVAILABILITY_POLICY_OBSERVER_H_
 #define CHROME_BROWSER_ASH_CROSAPI_LACROS_AVAILABILITY_POLICY_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -37,9 +38,9 @@ class LacrosAvailabilityPolicyObserver : public ProfileManagerObserver {
   // Called when LacrosAvailability policy value is updated.
   void OnChanged();
 
-  ProfileManager* const profile_manager_;
-  PrefService* const local_state_;
-  Profile* primary_profile_ = nullptr;
+  const raw_ptr<ProfileManager, ExperimentalAsh> profile_manager_;
+  const raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  raw_ptr<Profile, ExperimentalAsh> primary_profile_ = nullptr;
 
   PrefChangeRegistrar pref_change_registrar_;
   base::WeakPtrFactory<LacrosAvailabilityPolicyObserver> weak_factory_{this};

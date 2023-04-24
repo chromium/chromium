@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/arc_support_host.h"
 #include "chrome/browser/ash/arc/auth/arc_fetcher_base.h"
@@ -82,7 +83,8 @@ class ArcActiveDirectoryEnrollmentTokenFetcher
   // Calls callback_ with an error status and resets state.
   void CancelSamlFlow();
 
-  ArcSupportHost* const support_host_ = nullptr;  // Not owned.
+  const raw_ptr<ArcSupportHost, ExperimentalAsh> support_host_ =
+      nullptr;  // Not owned.
 
   std::unique_ptr<policy::DeviceManagementService::Job> fetch_request_job_;
   std::unique_ptr<policy::DMTokenStorage> dm_token_storage_;

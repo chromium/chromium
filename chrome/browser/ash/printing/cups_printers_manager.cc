@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/network_config_service.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -124,7 +125,8 @@ class CupsPrintersManagerImpl
     // Prime the printer cache with the saved printers.
     printers_.ReplacePrintersInClass(
         PrinterClass::kSaved, synced_printers_manager_->GetSavedPrinters());
-    synced_printers_manager_observation_.Observe(synced_printers_manager_);
+    synced_printers_manager_observation_.Observe(
+        synced_printers_manager_.get());
 
     // Prime the printer cache with the enterprise printers (observer called
     // immediately).
@@ -740,7 +742,8 @@ class CupsPrintersManagerImpl
   std::vector<PrinterDetector::DetectedPrinter> servers_detections_;
 
   // Not owned.
-  SyncedPrintersManager* const synced_printers_manager_;
+  const raw_ptr<SyncedPrintersManager, ExperimentalAsh>
+      synced_printers_manager_;
   base::ScopedObservation<SyncedPrintersManager,
                           SyncedPrintersManager::Observer>
       synced_printers_manager_observation_{this};
@@ -768,7 +771,7 @@ class CupsPrintersManagerImpl
       enterprise_printers_provider_observation_{this};
 
   // Not owned
-  PrinterEventTracker* const event_tracker_;
+  const raw_ptr<PrinterEventTracker, ExperimentalAsh> event_tracker_;
 
   // Categorized printers.  This is indexed by PrinterClass.
   PrintersMap printers_;

@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -38,7 +39,8 @@ class ExtensionEventObserverTest : public ChromeRenderViewHostTestHarness {
  public:
   ExtensionEventObserverTest()
       : fake_user_manager_(new FakeChromeUserManager()),
-        scoped_user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
+        scoped_user_manager_enabler_(
+            base::WrapUnique(fake_user_manager_.get())) {}
 
   ExtensionEventObserverTest(const ExtensionEventObserverTest&) = delete;
   ExtensionEventObserverTest& operator=(const ExtensionEventObserverTest&) =
@@ -122,7 +124,7 @@ class ExtensionEventObserverTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<ExtensionEventObserver::TestApi> test_api_;
 
   // Owned by |profile_manager_|.
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
  private:
@@ -130,7 +132,7 @@ class ExtensionEventObserverTest : public ChromeRenderViewHostTestHarness {
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
 
   // Owned by |scoped_user_manager_enabler_|.
-  FakeChromeUserManager* fake_user_manager_;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_enabler_;
 
   std::vector<scoped_refptr<const extensions::Extension>> created_apps_;

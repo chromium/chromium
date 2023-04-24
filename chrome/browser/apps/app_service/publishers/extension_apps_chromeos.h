@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_notifications.h"
@@ -192,7 +193,7 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
                        WindowInfoPtr window_info,
                        LaunchCallback callback);
 
-  apps::InstanceRegistry* const instance_registry_;
+  const raw_ptr<apps::InstanceRegistry, ExperimentalAsh> instance_registry_;
   base::ScopedObservation<extensions::AppWindowRegistry,
                           extensions::AppWindowRegistry::Observer>
       app_window_registry_{this};
@@ -208,7 +209,7 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
 
   std::map<extensions::AppWindow*, aura::Window*> app_window_to_aura_window_;
 
-  ArcAppListPrefs* arc_prefs_ = nullptr;
+  raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_prefs_ = nullptr;
 
   // Registrar used to monitor the profile prefs.
   PrefChangeRegistrar profile_pref_change_registrar_;

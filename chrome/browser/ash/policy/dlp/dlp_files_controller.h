@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -307,7 +308,7 @@ class DlpFilesController {
       CheckIfDlpAllowedCallback result_callback,
       std::vector<storage::FileSystemURL> dropped_files);
 
-  const DlpRulesManager& rules_manager_;
+  const raw_ref<const DlpRulesManager, ExperimentalAsh> rules_manager_;
 
   // Is used for creating and showing the warning dialog.
   std::unique_ptr<DlpWarnNotifier> warn_notifier_;

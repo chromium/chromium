@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/easy_unlock/chrome_proximity_auth_client.h"
@@ -224,8 +225,9 @@ class EasyUnlockService : public KeyedService,
 
   void NotifySmartLockAuthResult(bool success);
 
-  Profile* const profile_;
-  secure_channel::SecureChannelClient* secure_channel_client_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<secure_channel::SecureChannelClient, ExperimentalAsh>
+      secure_channel_client_;
 
   ChromeProximityAuthClient proximity_auth_client_;
 

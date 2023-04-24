@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_switches.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
@@ -191,7 +192,7 @@ class PasswordChangeExtensionTest : public extensions::ExtensionBrowserTest {
   EmbeddedTestServerSetupMixin embedded_test_server_mixin_{
       &mixin_host_, &embedded_test_server_};
 
-  const extensions::Extension* extension;
+  raw_ptr<const extensions::Extension, ExperimentalAsh> extension;
 
   std::unique_ptr<InSessionPasswordChangeManager> password_change_manager_;
 };

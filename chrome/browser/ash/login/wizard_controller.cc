@@ -2768,7 +2768,7 @@ bool WizardController::MaybeSetToPreviousScreen() {
   if (!base::Contains(previous_screens_, current_screen_)) {
     return false;
   }
-  auto* old_current_screen = current_screen_;
+  auto* old_current_screen = current_screen_.get();
   SetCurrentScreen(previous_screens_[current_screen_]);
   return old_current_screen != current_screen_;
 }

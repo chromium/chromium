@@ -6,6 +6,7 @@
 
 #include "ash/shell.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -81,7 +82,8 @@ class MultiCaptureNotificationTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  user_manager::FakeUserManager* user_manager_ = nullptr;
+  raw_ptr<user_manager::FakeUserManager, ExperimentalAsh> user_manager_ =
+      nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
   std::unique_ptr<MultiCaptureNotification> multi_capture_notification_;

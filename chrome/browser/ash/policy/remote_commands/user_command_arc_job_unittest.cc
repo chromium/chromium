@@ -15,6 +15,7 @@
 #include "ash/components/arc/test/fake_policy_instance.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
@@ -70,7 +71,7 @@ class UserCommandArcJobTest : public testing::Test {
   const std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   const std::unique_ptr<TestingProfile> profile_;
-  arc::ArcPolicyBridge* arc_policy_bridge_;
+  raw_ptr<arc::ArcPolicyBridge, ExperimentalAsh> arc_policy_bridge_;
   std::unique_ptr<arc::FakePolicyInstance> policy_instance_;
 };
 

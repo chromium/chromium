@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
@@ -52,7 +53,7 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
       :
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         user_manager_(new ash::FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(user_manager_)),
+        user_manager_enabler_(base::WrapUnique(user_manager_.get())),
 #endif
 
         scoped_feature_entries_({{kFirstTestFeatureId, "", "",
@@ -80,7 +81,7 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
  protected:
-  ash::FakeChromeUserManager* user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 #endif
 

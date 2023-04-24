@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/prefs/pref_member.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -54,7 +55,7 @@ class NewUserRestorePrefHandler
   // Callback method for preference changes.
   void OnPreferenceChanged(const std::string& pref_name);
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
   bool is_restore_pref_changed_ = false;
   bool is_restore_pref_synced_ = false;

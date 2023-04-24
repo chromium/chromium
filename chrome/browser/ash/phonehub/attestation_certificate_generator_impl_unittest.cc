@@ -6,6 +6,7 @@
 #include <iterator>
 #include <memory>
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/fake_soft_bind_attestation_flow.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -84,7 +85,7 @@ class AttestationCertificateGeneratorImplTest : public testing::Test {
         &mock_cryptauth_key_factory_);
     user_manager_ = new FakeChromeUserManager();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(user_manager_));
+        base::WrapUnique(user_manager_.get()));
     user_manager_->AddUser(
         AccountId::FromUserEmail(profile_->GetProfileUserName()));
     auto soft_bind_attestation_flow =
@@ -116,12 +117,13 @@ class AttestationCertificateGeneratorImplTest : public testing::Test {
       attestation_certificate_generator_impl_;
   FakeCryptAuthKeyRegistryFactory mock_cryptauth_key_factory_;
   bool is_valid_ = false;
-  const std::vector<std::string>* certs_;
+  raw_ptr<const std::vector<std::string>, ExperimentalAsh> certs_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* const profile_;
+  const raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-  FakeChromeUserManager* user_manager_;
-  attestation::FakeSoftBindAttestationFlow* mock_attestation_flow_;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<attestation::FakeSoftBindAttestationFlow, ExperimentalAsh>
+      mock_attestation_flow_;
 
  private:
   std::unique_ptr<TestingProfileManager> CreateTestingProfileManager() {

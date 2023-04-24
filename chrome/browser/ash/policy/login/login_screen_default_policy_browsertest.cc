@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/repeating_test_future.h"
 #include "base/values.h"
@@ -56,7 +57,7 @@ class LoginScreenDefaultPolicyBrowsertestBase
 
   void RefreshDevicePolicyAndWaitForPrefChange(const char* pref_name);
 
-  Profile* login_profile_;
+  raw_ptr<Profile, ExperimentalAsh> login_profile_;
 };
 
 class LoginScreenDefaultPolicyLoginScreenBrowsertest

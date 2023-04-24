@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
@@ -171,7 +172,7 @@ class AssistiveSuggester : public SuggestionsSource {
   // status of the clipboard history menu, as indicated by `will_paste_item`.
   void OnClipboardHistoryMenuClosing(bool will_paste_item);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   EmojiSuggester emoji_suggester_;
   MultiWordSuggester multi_word_suggester_;
   LongpressDiacriticsSuggester longpress_diacritics_suggester_;
@@ -193,7 +194,7 @@ class AssistiveSuggester : public SuggestionsSource {
   base::OneShotTimer longpress_timer_;
 
   // The current suggester in use, nullptr means no suggestion is shown.
-  Suggester* current_suggester_ = nullptr;
+  raw_ptr<Suggester, ExperimentalAsh> current_suggester_ = nullptr;
 
   absl::optional<AssistiveSuggesterSwitch::EnabledSuggestions>
       enabled_suggestions_from_last_onfocus_;

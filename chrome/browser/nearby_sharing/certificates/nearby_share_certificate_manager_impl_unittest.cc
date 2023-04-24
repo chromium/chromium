@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager_impl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -396,11 +397,14 @@ class NearbyShareCertificateManagerImplTest
     }
   }
 
-  FakeNearbyShareCertificateStorage* cert_store_;
-  ash::nearby::FakeNearbyScheduler* private_cert_exp_scheduler_;
-  ash::nearby::FakeNearbyScheduler* public_cert_exp_scheduler_;
-  ash::nearby::FakeNearbyScheduler* upload_scheduler_;
-  ash::nearby::FakeNearbyScheduler* download_scheduler_;
+  raw_ptr<FakeNearbyShareCertificateStorage, ExperimentalAsh> cert_store_;
+  raw_ptr<ash::nearby::FakeNearbyScheduler, ExperimentalAsh>
+      private_cert_exp_scheduler_;
+  raw_ptr<ash::nearby::FakeNearbyScheduler, ExperimentalAsh>
+      public_cert_exp_scheduler_;
+  raw_ptr<ash::nearby::FakeNearbyScheduler, ExperimentalAsh> upload_scheduler_;
+  raw_ptr<ash::nearby::FakeNearbyScheduler, ExperimentalAsh>
+      download_scheduler_;
   bool is_bluetooth_adapter_present_ = true;
   std::string bluetooth_mac_address_ = kTestUnparsedBluetoothMacAddress;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;

@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
@@ -109,7 +110,8 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
   void ShutDownProcess(NearbyProcessShutdownReason shutdown_reason);
   void NotifyProcessStopped(NearbyProcessShutdownReason shutdown_reason);
 
-  NearbyDependenciesProvider* nearby_dependencies_provider_;
+  raw_ptr<NearbyDependenciesProvider, ExperimentalAsh>
+      nearby_dependencies_provider_;
   std::unique_ptr<base::OneShotTimer> shutdown_debounce_timer_;
   base::RepeatingCallback<mojo::PendingRemote<sharing::mojom::Sharing>()>
       sharing_binder_;

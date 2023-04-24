@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -66,7 +67,7 @@ class AppInstallEventLogManagerWrapper {
   void OnAppTerminating();
 
   // The profile whose app push-install events are being logged.
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Handles collection, storage and upload of app push-install event logs.
   std::unique_ptr<ArcAppInstallEventLogManager> log_manager_;

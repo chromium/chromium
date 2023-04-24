@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -111,8 +112,8 @@ class LacrosDataBackwardMigrationModePolicyObserverTest : public testing::Test {
   user_manager::ScopedUserManager scoped_user_manager_{
       std::make_unique<user_manager::FakeUserManager>()};
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  user_manager::User* test_user_ = nullptr;
-  TestingProfile* primary_profile_ = nullptr;
+  raw_ptr<user_manager::User, ExperimentalAsh> test_user_ = nullptr;
+  raw_ptr<TestingProfile, ExperimentalAsh> primary_profile_ = nullptr;
 };
 
 TEST_F(LacrosDataBackwardMigrationModePolicyObserverTest, OnPolicyUpdate) {

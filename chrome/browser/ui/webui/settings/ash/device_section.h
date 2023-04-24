@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/public/cpp/night_light_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/system/pointer_device_observer.h"
@@ -85,7 +86,7 @@ class DeviceSection : public OsSettingsSection,
 
   void AddDevicePointersStrings(content::WebUIDataSource* html_source);
 
-  PrefService* pref_service_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   system::PointerDeviceObserver pointer_device_observer_;
   mojo::Remote<crosapi::mojom::CrosDisplayConfigController>
       cros_display_config_;

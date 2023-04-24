@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/app_shortcut_item.h"
@@ -84,7 +85,7 @@ class AppServiceContextMenu : public app_list::AppContextMenu {
   // Caches the app shortcut items.
   std::unique_ptr<apps::AppShortcutItems> app_shortcut_items_;
 
-  apps::AppServiceProxy* const proxy_;
+  const raw_ptr<apps::AppServiceProxy, ExperimentalAsh> proxy_;
 
   // Where this item is being shown (e.g. the apps grid or recent apps).
   const ash::AppListItemContext item_context_;

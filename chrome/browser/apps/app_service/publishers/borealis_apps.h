@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
@@ -119,7 +120,7 @@ class BorealisApps
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   base::ScopedObservation<borealis::BorealisWindowManager,
                           borealis::BorealisWindowManager::AnonymousAppObserver>

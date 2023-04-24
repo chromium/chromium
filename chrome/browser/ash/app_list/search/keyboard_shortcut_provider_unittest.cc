@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_provider.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
@@ -51,7 +52,7 @@ class KeyboardShortcutProviderTest : public ChromeAshTestBase {
 
   std::unique_ptr<Profile> profile_;
   std::unique_ptr<TestSearchController> search_controller_;
-  KeyboardShortcutProvider* provider_ = nullptr;
+  raw_ptr<KeyboardShortcutProvider, ExperimentalAsh> provider_ = nullptr;
 };
 
 // Make search queries which yield shortcut results with shortcut key

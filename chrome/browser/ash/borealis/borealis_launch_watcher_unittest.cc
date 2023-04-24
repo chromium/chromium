@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -27,7 +28,7 @@ class BorealisLaunchWatcherTest : public testing::Test,
   content::BrowserTaskEnvironment task_environment_;
   // This test doesn't actually need the profile for anything meaningful,
   // beyond hashing, so it is safe for it to be nullptr.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 };
 
 TEST_F(BorealisLaunchWatcherTest, VmStartsCallbackRan) {

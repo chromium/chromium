@@ -17,6 +17,7 @@
 #include "ash/public/cpp/update_types.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
@@ -229,8 +230,8 @@ class SystemTrayClientImpl::EnterpriseAccountObserver
   ~EnterpriseAccountObserver() override = default;
 
  private:
-  SystemTrayClientImpl* const owner_;
-  Profile* profile_ = nullptr;
+  const raw_ptr<SystemTrayClientImpl, ExperimentalAsh> owner_;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::UserSessionStateObserver>

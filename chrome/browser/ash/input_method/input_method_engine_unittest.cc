@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
@@ -168,7 +169,7 @@ class InputMethodEngineTest : public testing::Test {
 
   std::unique_ptr<InputMethodEngine> engine_;
 
-  TestObserver* observer_;
+  raw_ptr<TestObserver, ExperimentalAsh> observer_;
   std::vector<std::string> languages_;
   std::vector<std::string> layouts_;
   GURL options_page_;

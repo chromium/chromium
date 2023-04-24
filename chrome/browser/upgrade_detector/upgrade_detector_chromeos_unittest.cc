@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/environment.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
@@ -72,7 +73,7 @@ class MockUpgradeObserver : public UpgradeObserver {
   MOCK_METHOD1(OnRelaunchOverriddenToRequired, void(bool overridden));
 
  private:
-  UpgradeDetector* const upgrade_detector_;
+  const raw_ptr<UpgradeDetector, ExperimentalAsh> upgrade_detector_;
 };
 
 }  // namespace
@@ -206,7 +207,8 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
   std::unique_ptr<base::Environment> env_;
   absl::optional<std::string> original_tz_;
 
-  ash::FakeUpdateEngineClient* fake_update_engine_client_;  // Not owned.
+  raw_ptr<ash::FakeUpdateEngineClient, ExperimentalAsh>
+      fake_update_engine_client_;  // Not owned.
 };
 
 TEST_F(UpgradeDetectorChromeosTest, PolicyNotEnabled) {

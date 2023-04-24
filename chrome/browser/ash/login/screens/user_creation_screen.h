@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/error_screens_histogram_helper.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -79,7 +80,7 @@ class UserCreationScreen
   base::ScopedObservation<NetworkStateInformer, NetworkStateInformerObserver>
       scoped_observation_{this};
 
-  ErrorScreen* error_screen_ = nullptr;
+  raw_ptr<ErrorScreen, ExperimentalAsh> error_screen_ = nullptr;
 
   // TODO(crbug.com/1154669) Refactor error screen usage
   bool error_screen_visible_ = false;

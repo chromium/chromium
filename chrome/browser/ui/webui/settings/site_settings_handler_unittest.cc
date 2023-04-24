@@ -19,6 +19,7 @@
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -241,7 +242,7 @@ void RegisterWebApp(Profile* profile, apps::AppPtr app) {
 struct TestModels {
   scoped_refptr<browsing_data::MockCookieHelper> cookie_helper;
   scoped_refptr<browsing_data::MockLocalStorageHelper> local_storage_helper;
-  FakeBrowsingDataModel& browsing_data_model;
+  const raw_ref<FakeBrowsingDataModel, ExperimentalAsh> browsing_data_model;
 };
 
 }  // namespace
@@ -662,7 +663,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
 
     std::move(setup).Run({mock_browsing_data_cookie_helper,
                           mock_browsing_data_local_storage_helper,
-                          *fake_browsing_data_model});
+                          raw_ref(*fake_browsing_data_model)});
 
     mock_browsing_data_local_storage_helper->Notify();
     mock_browsing_data_cookie_helper->Notify();
@@ -716,7 +717,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
       models.cookie_helper->AddCookieSamples(GURL("http://ungrouped.com"),
                                              "A=1");
 
-      models.browsing_data_model.AddBrowsingData(
+      models.browsing_data_model->AddBrowsingData(
           url::Origin::Create(GURL("https://www.google.com")),
           BrowsingDataModel::StorageType::kTrustTokens, 50000000000);
     }));
@@ -726,7 +727,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
       const std::string& isolated_web_app_url,
       int64_t usage) {
     SetupModels(base::BindLambdaForTesting([&](const TestModels& models) {
-      models.browsing_data_model.AddBrowsingData(
+      models.browsing_data_model->AddBrowsingData(
           url::Origin::Create(GURL(isolated_web_app_url)),
           static_cast<BrowsingDataModel::StorageType>(
               ChromeBrowsingDataModelDelegate::StorageType::kIsolatedWebApp),
@@ -1172,7 +1173,7 @@ TEST_F(SiteSettingsHandlerTest, Cookies) {
   // This corresponds to case 3 in InsertOriginIntoGroup.
   {
     SetupModels(base::BindLambdaForTesting([](const TestModels& models) {
-      models.browsing_data_model.AddBrowsingData(
+      models.browsing_data_model->AddBrowsingData(
           url::Origin::Create(GURL("https://w.c3.com")),
           BrowsingDataModel::StorageType::kTrustTokens, 50);
       models.cookie_helper->AddCookieSamples(GURL("http://w.c3.com"), "A=1");

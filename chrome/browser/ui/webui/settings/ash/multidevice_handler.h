@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_MULTIDEVICE_HANDLER_H_
 
 #include "ash/webui/eche_app_ui/apps_access_manager.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/android_sms/android_sms_app_manager.h"
@@ -173,7 +174,7 @@ class MultideviceHandler
   bool IsAuthTokenValid(const std::string& auth_token);
 
   // Unowned pointer to the preferences service.
-  PrefService* prefs_;
+  raw_ptr<PrefService, ExperimentalAsh> prefs_;
 
   // Registers preference value change listeners.
   PrefChangeRegistrar pref_change_registrar_;
@@ -188,9 +189,10 @@ class MultideviceHandler
   multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap
   GetFeatureStatesMap();
 
-  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
+      multidevice_setup_client_;
 
-  phonehub::MultideviceFeatureAccessManager*
+  raw_ptr<phonehub::MultideviceFeatureAccessManager, ExperimentalAsh>
       multidevice_feature_access_manager_;
   std::unique_ptr<phonehub::NotificationAccessSetupOperation>
       notification_access_operation_;
@@ -199,15 +201,17 @@ class MultideviceHandler
   std::unique_ptr<phonehub::FeatureSetupConnectionOperation>
       feature_setup_connection_operation_;
 
-  multidevice_setup::AndroidSmsPairingStateTracker*
+  raw_ptr<multidevice_setup::AndroidSmsPairingStateTracker, ExperimentalAsh>
       android_sms_pairing_state_tracker_;
-  android_sms::AndroidSmsAppManager* android_sms_app_manager_;
+  raw_ptr<android_sms::AndroidSmsAppManager, ExperimentalAsh>
+      android_sms_app_manager_;
 
-  eche_app::AppsAccessManager* apps_access_manager_;
+  raw_ptr<eche_app::AppsAccessManager, ExperimentalAsh> apps_access_manager_;
   std::unique_ptr<eche_app::AppsAccessSetupOperation> apps_access_operation_;
 
-  phonehub::CameraRollManager* camera_roll_manager_;
-  phonehub::BrowserTabsModelProvider* browser_tabs_model_provider_;
+  raw_ptr<phonehub::CameraRollManager, ExperimentalAsh> camera_roll_manager_;
+  raw_ptr<phonehub::BrowserTabsModelProvider, ExperimentalAsh>
+      browser_tabs_model_provider_;
 
   base::ScopedObservation<multidevice_setup::MultiDeviceSetupClient,
                           multidevice_setup::MultiDeviceSetupClient::Observer>

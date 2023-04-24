@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
 
@@ -67,9 +68,10 @@ class AffiliatedCloudPolicyInvalidator
 
   const PolicyInvalidationScope scope_;
   const std::string device_local_account_id_;
-  CloudPolicyCore* const core_;
+  const raw_ptr<CloudPolicyCore, ExperimentalAsh> core_;
 
-  AffiliatedInvalidationServiceProvider* const invalidation_service_provider_;
+  const raw_ptr<AffiliatedInvalidationServiceProvider, ExperimentalAsh>
+      invalidation_service_provider_;
 
   // The highest invalidation version that was handled already.
   int64_t highest_handled_invalidation_version_;

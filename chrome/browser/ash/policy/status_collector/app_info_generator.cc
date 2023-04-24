@@ -111,7 +111,7 @@ AppInfoGenerator::AppInstances::AppInstances(const base::Time start_time_)
 AppInfoGenerator::AppInstances::~AppInstances() = default;
 
 AppInfoGenerator::~AppInfoGenerator() {
-  SetOpenDurationsToClosed(clock_.Now());
+  SetOpenDurationsToClosed(clock_->Now());
 }
 
 // static
@@ -134,7 +134,7 @@ const AppInfoGenerator::Result AppInfoGenerator::Generate() const {
     return time_period1.start_timestamp() < time_period2.start_timestamp();
   };
   std::vector<em::AppInfo> app_infos;
-  provider_->app_service_proxy.AppRegistryCache().ForEachApp(
+  provider_->app_service_proxy->AppRegistryCache().ForEachApp(
       [&app_infos, &activity_periods, &activity_compare,
        this](const apps::AppUpdate& update) {
         ActivityStorage::Activities& app_activity =
@@ -152,9 +152,9 @@ void AppInfoGenerator::OnReportingChanged(bool should_report) {
   should_report_ = should_report;
   if (provider_) {
     if (should_report) {
-      provider_->app_service_proxy.InstanceRegistry().AddObserver(this);
+      provider_->app_service_proxy->InstanceRegistry().AddObserver(this);
     } else {
-      provider_->app_service_proxy.InstanceRegistry().RemoveObserver(this);
+      provider_->app_service_proxy->InstanceRegistry().RemoveObserver(this);
     }
   }
 }
@@ -171,7 +171,7 @@ void AppInfoGenerator::OnWillReport() {
   if (!provider_ || device_locked_) {
     return;
   }
-  SetOpenDurationsToClosed(clock_.Now());
+  SetOpenDurationsToClosed(clock_->Now());
   SetIdleDurationsToOpen();
 }
 
@@ -187,10 +187,10 @@ void AppInfoGenerator::OnLogin(Profile* profile) {
 
   provider_ = std::make_unique<AppInfoGenerator::AppInfoProvider>(profile);
   provider_->activity_storage.PruneActivityPeriods(
-      clock_.Now(), max_stored_past_activity_interval_);
+      clock_->Now(), max_stored_past_activity_interval_);
 
   if (should_report_) {
-    provider_->app_service_proxy.InstanceRegistry().AddObserver(this);
+    provider_->app_service_proxy->InstanceRegistry().AddObserver(this);
   }
 }
 
@@ -201,7 +201,7 @@ void AppInfoGenerator::OnLogout(Profile* profile) {
 
   if (provider_) {
     if (should_report_) {
-      provider_->app_service_proxy.InstanceRegistry().RemoveObserver(this);
+      provider_->app_service_proxy->InstanceRegistry().RemoveObserver(this);
     }
     provider_.reset();
   }
@@ -209,7 +209,7 @@ void AppInfoGenerator::OnLogout(Profile* profile) {
 
 void AppInfoGenerator::OnLocked() {
   device_locked_ = true;
-  SetOpenDurationsToClosed(clock_.Now());
+  SetOpenDurationsToClosed(clock_->Now());
 }
 
 void AppInfoGenerator::OnUnlocked() {
@@ -257,7 +257,7 @@ void AppInfoGenerator::SetOpenDurationsToClosed(base::Time end_time) {
   if (!provider_) {
     return;
   }
-  provider_->app_service_proxy.InstanceRegistry().RemoveObserver(this);
+  provider_->app_service_proxy->InstanceRegistry().RemoveObserver(this);
   for (auto const& app : app_instances_by_id_) {
     const std::string& app_id = app.first;
     base::Time start_time = app.second.get()->start_time;
@@ -270,14 +270,14 @@ void AppInfoGenerator::SetIdleDurationsToOpen() {
   if (!provider_) {
     return;
   }
-  base::Time start_time = clock_.Now();
-  provider_->app_service_proxy.InstanceRegistry().ForEachInstance(
+  base::Time start_time = clock_->Now();
+  provider_->app_service_proxy->InstanceRegistry().ForEachInstance(
       [this, start_time](const apps::InstanceUpdate& update) {
         if (update.State() & apps::InstanceState::kStarted) {
           OpenUsageInterval(update.AppId(), update.InstanceId(), start_time);
         }
       });
-  provider_->app_service_proxy.InstanceRegistry().AddObserver(this);
+  provider_->app_service_proxy->InstanceRegistry().AddObserver(this);
 }
 
 void AppInfoGenerator::OpenUsageInterval(

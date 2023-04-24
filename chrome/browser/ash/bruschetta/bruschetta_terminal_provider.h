@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_TERMINAL_PROVIDER_H_
 #define CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_TERMINAL_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider.h"
 
 class Profile;
@@ -29,7 +30,7 @@ class BruschettaTerminalProvider : public guest_os::GuestOsTerminalProvider {
           callback) override;
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   guest_os::GuestId guest_id_;
 };
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSTINI_FAKE_CROSTINI_FEATURES_H_
 #define CHROME_BROWSER_ASH_CROSTINI_FAKE_CROSTINI_FEATURES_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -63,7 +64,7 @@ class FakeCrostiniFeatures : public CrostiniFeatures {
  private:
   // Original global static when this instance is created. It is captured when
   // FakeCrostiniFeatures is created and replaced at destruction.
-  CrostiniFeatures* original_features_;
+  raw_ptr<CrostiniFeatures, ExperimentalAsh> original_features_;
 
   absl::optional<bool> could_be_allowed_;
   absl::optional<bool> allowed_now_;

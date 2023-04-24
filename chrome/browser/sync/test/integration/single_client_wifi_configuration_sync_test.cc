@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/public/cpp/network_config_service.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_engine_stopped_checker.h"
@@ -117,7 +118,8 @@ class LocalWifiConfigurationChecker
   std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
       networks_;
 
-  mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>*
+  raw_ptr<mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>,
+          ExperimentalAsh>
       remote_cros_network_config_;
   mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
       receiver_{this};

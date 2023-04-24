@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_constants.h"
 #include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_test_utils.h"
@@ -180,7 +181,7 @@ class EnhancedNetworkTtsImplTest : public testing::Test {
 
   TestAudioDataObserverImpl* GetTestingObserverPtr() { return &observer_; }
 
-  EnhancedNetworkTtsImpl* enhanced_network_tts_impl_;
+  raw_ptr<EnhancedNetworkTtsImpl, ExperimentalAsh> enhanced_network_tts_impl_;
   std::unique_ptr<data_decoder::test::InProcessDataDecoder>
       in_process_data_decoder_;
   base::test::TaskEnvironment test_task_env_;

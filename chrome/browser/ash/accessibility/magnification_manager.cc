@@ -194,7 +194,7 @@ void MagnificationManager::SetProfileByUser(const user_manager::User* user) {
 
 void MagnificationManager::SetProfile(Profile* profile) {
   if (profile_) {
-    DCHECK(profile_observation_.IsObservingSource(profile_));
+    DCHECK(profile_observation_.IsObservingSource(profile_.get()));
     profile_observation_.Reset();
   }
   DCHECK(!profile_observation_.IsObserving());

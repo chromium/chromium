@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
@@ -63,9 +64,10 @@ class ArcAppSingleRestoreHandler
   void SendAppLaunchRequestToARC();
 
   // For test usage.
-  full_restore::ArcGhostWindowHandler* ghost_window_handler_ = nullptr;
+  raw_ptr<full_restore::ArcGhostWindowHandler, ExperimentalAsh>
+      ghost_window_handler_ = nullptr;
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   absl::optional<std::string> app_id_;
   bool is_cancelled_ = false;
 

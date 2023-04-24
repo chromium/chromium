@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SYNC_OS_SYNC_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SYNC_OS_SYNC_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -54,7 +55,7 @@ class OSSyncHandler : public content::WebUIMessageHandler,
   void AddSyncServiceObserver();
   void RemoveSyncServiceObserver();
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 }  // namespace ash

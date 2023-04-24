@@ -13,6 +13,7 @@
 #include "ash/components/arc/test/fake_file_system_instance.h"
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -224,7 +225,7 @@ class ArcAppsPublisherTest : public testing::Test {
   ArcAppTest arc_test_;
   TestingProfile profile_;
   apps::AppServiceTest app_service_test_;
-  arc::ArcIntentHelperBridge* intent_helper_;
+  raw_ptr<arc::ArcIntentHelperBridge, ExperimentalAsh> intent_helper_;
   std::unique_ptr<arc::FakeFileSystemInstance> file_system_instance_;
   std::unique_ptr<arc::ArcFileSystemBridge> arc_file_system_bridge_;
 };

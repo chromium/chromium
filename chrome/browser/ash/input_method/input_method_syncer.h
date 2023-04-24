@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_member.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
@@ -78,7 +79,7 @@ class InputMethodSyncer : public sync_preferences::PrefServiceSyncableObserver {
   StringPrefMember preload_engines_syncable_;
   StringPrefMember enabled_imes_syncable_;
 
-  sync_preferences::PrefServiceSyncable* prefs_;
+  raw_ptr<sync_preferences::PrefServiceSyncable, ExperimentalAsh> prefs_;
   scoped_refptr<InputMethodManager::State> ime_state_;
 
   // Used to ignore PrefChanged events while InputMethodManager is merging.

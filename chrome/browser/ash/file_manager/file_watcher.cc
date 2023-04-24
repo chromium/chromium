@@ -83,7 +83,7 @@ FileWatcher::FileWatcher(const base::FilePath& virtual_path)
 FileWatcher::~FileWatcher() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  sequenced_task_runner_->DeleteSoon(FROM_HERE, local_file_watcher_);
+  sequenced_task_runner_->DeleteSoon(FROM_HERE, local_file_watcher_.get());
 }
 
 void FileWatcher::AddListener(const url::Origin& listener) {

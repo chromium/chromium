@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_BLUETOOTH_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_BLUETOOTH_SECTION_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -63,7 +64,7 @@ class BluetoothSection : public OsSettingsSection,
   void UpdateSearchTags();
 
   // Observes user profile prefs.
-  PrefService* pref_service_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   base::WeakPtrFactory<BluetoothSection> weak_ptr_factory_{this};

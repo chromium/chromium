@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/game_mode/game_mode_controller.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -30,7 +31,7 @@ class GameModeControllerTestBase : public ChromeAshTestBase {
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<GameModeController> game_mode_controller_;
-  ash::FakeResourcedClient* fake_resourced_client_;
+  raw_ptr<ash::FakeResourcedClient, ExperimentalAsh> fake_resourced_client_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 

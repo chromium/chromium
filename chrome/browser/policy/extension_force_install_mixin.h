@@ -247,10 +247,13 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   raw_ptr<policy::MockConfigurationPolicyProvider> mock_policy_provider_ =
       nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::DeviceStateMixin* device_state_mixin_ = nullptr;
-  policy::DevicePolicyCrosTestHelper* device_policy_cros_test_helper_ = nullptr;
-  ash::EmbeddedPolicyTestServerMixin* policy_test_server_mixin_ = nullptr;
-  policy::UserPolicyBuilder* user_policy_builder_ = nullptr;
+  raw_ptr<ash::DeviceStateMixin, ExperimentalAsh> device_state_mixin_ = nullptr;
+  raw_ptr<policy::DevicePolicyCrosTestHelper, ExperimentalAsh>
+      device_policy_cros_test_helper_ = nullptr;
+  raw_ptr<ash::EmbeddedPolicyTestServerMixin, ExperimentalAsh>
+      policy_test_server_mixin_ = nullptr;
+  raw_ptr<policy::UserPolicyBuilder, ExperimentalAsh> user_policy_builder_ =
+      nullptr;
   // |account_id_| and |policy_type_| are only used with
   // |policy_test_server_mixin_|.
   std::string account_id_;

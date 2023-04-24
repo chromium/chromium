@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_routine.h"
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
@@ -72,7 +73,7 @@ class NetworkDiagnostics
       RoutineResultCallback callback,
       chromeos::network_diagnostics::mojom::RoutineResultPtr result);
   // An unowned pointer to the DebugDaemonClient instance.
-  DebugDaemonClient* debug_daemon_client_;
+  raw_ptr<DebugDaemonClient, ExperimentalAsh> debug_daemon_client_;
   // Receiver for mojo service manager service provider.
   mojo::Receiver<chromeos::mojo_service_manager::mojom::ServiceProvider>
       provider_receiver_{this};

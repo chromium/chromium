@@ -21,6 +21,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -187,10 +188,10 @@ class PendingProfileCreation : public Profile::Delegate {
   }
 
   base::FilePath path_;
-  Profile::Delegate* delegate_ = nullptr;
+  raw_ptr<Profile::Delegate, ExperimentalAsh> delegate_ = nullptr;
   base::OnceClosure wait_quit_closure_;
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   bool success_ = false;
   bool is_new_profile_ = false;
 };
@@ -391,9 +392,9 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
-  UnittestProfileManager* profile_manager_;
+  raw_ptr<UnittestProfileManager, ExperimentalAsh> profile_manager_;
 
-  TestingProfile* primary_profile_ = nullptr;
+  raw_ptr<TestingProfile, ExperimentalAsh> primary_profile_ = nullptr;
 
   base::SimpleTestTickClock tick_clock_;
 

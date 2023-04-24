@@ -55,7 +55,7 @@ CaptivePortalDialogDelegate::CaptivePortalDialogDelegate(
 
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.delegate = view_;
+  params.delegate = view_.get();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   ash_util::SetupWidgetInitParamsForContainer(
       &params, kShellWindowId_LockSystemModalContainer);

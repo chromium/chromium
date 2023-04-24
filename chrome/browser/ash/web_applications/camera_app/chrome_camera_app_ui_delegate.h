@@ -11,6 +11,7 @@
 #include "ash/webui/camera_app_ui/camera_app_ui_delegate.h"
 #include "base/files/file_path_watcher.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -155,7 +156,7 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   void IntializeStorageMonitor();
   void OnStorageMonitorInitialized(std::unique_ptr<StorageMonitor> monitor);
 
-  content::WebUI* web_ui_;  // Owns |this|.
+  raw_ptr<content::WebUI, ExperimentalAsh> web_ui_;  // Owns |this|.
 
   base::Time session_start_time_;
 

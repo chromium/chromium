@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -139,12 +140,12 @@ class ChromeOSSystemProfileProviderTest : public testing::Test {
   }
 
  protected:
-  ash::multidevice_setup::FakeMultiDeviceSetupClient*
+  raw_ptr<ash::multidevice_setup::FakeMultiDeviceSetupClient, ExperimentalAsh>
       fake_multidevice_setup_client_;
   base::test::ScopedFeatureList scoped_feature_list_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* testing_profile_ = nullptr;
+  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_ = nullptr;
   std::unique_ptr<FakeMultiDeviceSetupClientImplFactory>
       fake_multidevice_setup_client_impl_factory_;
 

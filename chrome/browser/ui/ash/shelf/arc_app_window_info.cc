@@ -78,8 +78,9 @@ void ArcAppWindowInfo::set_window(aura::Window* window) {
   if (window_ == window)
     return;
 
-  if (window_ && observed_window_.IsObservingSource(window_))
+  if (window_ && observed_window_.IsObservingSource(window_.get())) {
     observed_window_.Reset();
+  }
 
   window_ = window;
   UpdateWindowProperties();

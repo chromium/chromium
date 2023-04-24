@@ -15,6 +15,7 @@
 #include "ash/components/arc/mojom/file_system.mojom-forward.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/arc/fileapi/arc_select_files_handler.h"
@@ -195,8 +196,9 @@ class ArcFileSystemBridge
                               const std::string& file_system_id,
                               bool result);
 
-  Profile* const profile_;
-  ArcBridgeService* const bridge_service_;  // Owned by ArcServiceManager
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      bridge_service_;  // Owned by ArcServiceManager
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   // Map from file descriptor IDs to requested URLs.

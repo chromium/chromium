@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_GUEST_OS_TERMINAL_PROVIDER_REGISTRY_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 
 class Profile;
@@ -57,7 +58,7 @@ class GuestOsTerminalProviderRegistry {
   std::unique_ptr<GuestOsTerminalProvider> Unregister(Id provider);
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   Id next_id_ = 0;
   base::flat_map<Id, std::unique_ptr<GuestOsTerminalProvider>> providers_;
 };

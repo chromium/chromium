@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/repeating_test_future.h"
@@ -252,7 +253,7 @@ class KioskRemoteCommandTest : public KioskBaseTest {
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
   std::unique_ptr<TestingRemoteCommandsServer> remote_command_server_;
-  policy::DeviceCloudPolicyManagerAsh* policy_manager_;
+  raw_ptr<policy::DeviceCloudPolicyManagerAsh, ExperimentalAsh> policy_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(KioskRemoteCommandTest, SetVolumeWithRemoteCommand) {

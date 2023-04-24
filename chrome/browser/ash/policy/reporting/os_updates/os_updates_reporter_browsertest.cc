@@ -5,6 +5,7 @@
 #include <string>
 
 #include "ash/constants/ash_switches.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -120,7 +121,8 @@ class OsUpdatesReporterBrowserTest
 
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
-  FakeUpdateEngineClient* fake_update_engine_client_ = nullptr;
+  raw_ptr<FakeUpdateEngineClient, ExperimentalAsh> fake_update_engine_client_ =
+      nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(OsUpdatesReporterBrowserTest, ReportUpdateSuccessEvent) {

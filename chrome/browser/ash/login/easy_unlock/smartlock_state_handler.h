@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "components/account_id/account_id.h"
 
@@ -70,7 +71,8 @@ class SmartLockStateHandler
 
   SmartLockState state_;
   const AccountId account_id_;
-  proximity_auth::ScreenlockBridge* screenlock_bridge_ = nullptr;
+  raw_ptr<proximity_auth::ScreenlockBridge, ExperimentalAsh>
+      screenlock_bridge_ = nullptr;
 
   // Whether the user's phone was ever locked while on the current lock screen.
   bool did_see_locked_phone_ = false;

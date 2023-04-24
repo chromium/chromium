@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -203,7 +204,7 @@ class CrostiniManager::CrostiniRestarter
     RestartId restart_id;
     RestartOptions options;
     CrostiniResultCallback callback;
-    RestartObserver* observer;  // optional
+    raw_ptr<RestartObserver, ExperimentalAsh> observer;  // optional
   };
 
   CrostiniRestarter(Profile* profile,
@@ -318,10 +319,10 @@ class CrostiniManager::CrostiniRestarter
       {mojom::InstallerState::kConfigureContainer, base::Hours(2)},
   };
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   // This isn't accessed after the CrostiniManager is destroyed and we need a
   // reference to it during the CrostiniRestarter destructor.
-  CrostiniManager* crostini_manager_;
+  raw_ptr<CrostiniManager, ExperimentalAsh> crostini_manager_;
 
   const guest_os::GuestId container_id_;
   bool is_initial_install_ = false;
@@ -380,7 +381,7 @@ void CrostiniManager::CrostiniRestarter::Restart() {
     return;
   }
 
-  vm_shutdown_observation_.Observe(crostini_manager_);
+  vm_shutdown_observation_.Observe(crostini_manager_.get());
   // TODO(b/205650706): It is possible to invoke a CrostiniRestarter to install
   // Crostini without using the actual installer. We should handle these better.
   RestartSource restart_source = requests_[0].options.restart_source;
@@ -407,7 +408,7 @@ void CrostiniManager::CrostiniRestarter::AddRequest(RestartRequest request) {
   DCHECK(abort_callbacks_.empty());
 
   if (request.observer) {
-    observer_list_.AddObserver(request.observer);
+    observer_list_.AddObserver(request.observer.get());
   }
   requests_.push_back(std::move(request));
 }
@@ -613,7 +614,7 @@ base::OnceClosure CrostiniManager::CrostiniRestarter::ExtractRequests(
 
     crostini_manager_->RemoveRestartId(it->restart_id);
     if (it->observer)
-      observer_list_.RemoveObserver(it->observer);
+      observer_list_.RemoveObserver(it->observer.get());
     callbacks.push_back(std::move(it->callback));
     it = requests_.erase(it);
   }

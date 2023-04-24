@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
@@ -149,7 +150,7 @@ class SmbFsShareTest : public testing::Test {
   SmbFsShare::MounterCreationCallback mounter_creation_callback_;
   std::unique_ptr<MockSmbFsMounter> mounter_ =
       std::make_unique<MockSmbFsMounter>();
-  MockSmbFsMounter* raw_mounter_ = mounter_.get();
+  raw_ptr<MockSmbFsMounter, ExperimentalAsh> raw_mounter_ = mounter_.get();
 };
 
 TEST_F(SmbFsShareTest, Mount) {

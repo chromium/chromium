@@ -27,6 +27,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -801,7 +802,7 @@ class ExtensionInstallObserver : public ProfileManagerObserver,
     registry_->AddObserver(this);
   }
 
-  extensions::ExtensionRegistry* registry_;
+  raw_ptr<extensions::ExtensionRegistry, ExperimentalAsh> registry_;
   base::RunLoop run_loop_;
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observer_{this};

@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/printing/specifics_translation.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -172,7 +173,7 @@ class PrintersSyncBridge::StoreProxy {
     owner_->change_processor()->ModelReadyToSync(std::move(metadata_batch));
   }
 
-  PrintersSyncBridge* owner_;
+  raw_ptr<PrintersSyncBridge, ExperimentalAsh> owner_;
 
   std::unique_ptr<ModelTypeStore> store_;
   base::WeakPtrFactory<StoreProxy> weak_ptr_factory_{this};

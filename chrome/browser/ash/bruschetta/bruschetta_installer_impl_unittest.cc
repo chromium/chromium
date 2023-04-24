@@ -7,6 +7,8 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
@@ -125,7 +127,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
     ASSERT_TRUE(base::CreateDirectory(profile_.GetPath().Append("Downloads")));
 
-    ash::disks::DiskMountManager::InitializeForTesting(&disk_mount_manager_);
+    ash::disks::DiskMountManager::InitializeForTesting(&*disk_mount_manager_);
 
     BruschettaServiceFactory::EnableForTesting(&profile_);
 
@@ -566,10 +568,11 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
   MockObserver observer_;
   // Pointer owned by DiskMountManager
-  ash::disks::MockDiskMountManager& disk_mount_manager_{
-      *new ash::disks::MockDiskMountManager};
+  const raw_ref<ash::disks::MockDiskMountManager, ExperimentalAsh>
+      disk_mount_manager_{*new ash::disks::MockDiskMountManager};
 
-  download::test::TestDownloadService* download_service_;
+  raw_ptr<download::test::TestDownloadService, ExperimentalAsh>
+      download_service_;
   BruschettaDownloadClient download_client_{&profile_};
   bool destroy_installer_on_completion_ = true;
   base::HistogramTester histogram_tester_;
@@ -752,7 +755,7 @@ TEST_F(BruschettaInstallerTest, AllStepsTested) {
         &failures};
 
     testing::Mock::VerifyAndClearExpectations(&observer_);
-    testing::Mock::VerifyAndClearExpectations(&disk_mount_manager_);
+    testing::Mock::VerifyAndClearExpectations(&*disk_mount_manager_);
   }
 }
 

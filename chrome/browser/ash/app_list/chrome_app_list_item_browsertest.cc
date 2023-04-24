@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
@@ -73,8 +74,8 @@ class ChromeAppListItemTest : public InProcessBrowserTest {
   Profile* profile() { return ProfileManager::GetActiveUserProfile(); }
 
  protected:
-  AppListClientImpl* client_ = nullptr;
-  AppListModelUpdater* model_updater_ = nullptr;
+  raw_ptr<AppListClientImpl, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<AppListModelUpdater, ExperimentalAsh> model_updater_ = nullptr;
 };
 
 // Tests that app icon load is deferred until UI is shown.

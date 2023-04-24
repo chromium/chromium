@@ -9,6 +9,7 @@
 
 #include "ash/shell.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/test/gtest_tags.h"
@@ -145,7 +146,7 @@ class GetAllScreensMediaBrowserTest : public WebRtcTestBase {
   }
 
  protected:
-  content::WebContents* contents_ = nullptr;
+  raw_ptr<content::WebContents, ExperimentalAsh> contents_ = nullptr;
   std::unique_ptr<ContentBrowserClientMock> browser_client_;
 
  private:

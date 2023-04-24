@@ -13,6 +13,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -459,14 +460,16 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
 
  private:
   const Type type_;
-  HoldingSpaceDownloadsDelegate* const delegate_;  // NOTE: Owns `this`.
+  const raw_ptr<HoldingSpaceDownloadsDelegate, ExperimentalAsh>
+      delegate_;  // NOTE: Owns `this`.
   crosapi::mojom::DownloadItemPtr mojo_download_item_;
 
   // The in-progress holding space item associated with this in-progress
   // download. NOTE: This may be `nullptr` until the target file path for the
   // in-progress download has been set and a holding space item has been created
   // and associated.
-  const HoldingSpaceItem* holding_space_item_ = nullptr;
+  raw_ptr<const HoldingSpaceItem, ExperimentalAsh> holding_space_item_ =
+      nullptr;
 
   base::WeakPtrFactory<InProgressDownload> weak_factory_{this};
 };
@@ -526,8 +529,8 @@ class HoldingSpaceDownloadsDelegate::InProgressAshDownload
     UpdateMojoDownloadItem(nullptr);  // NOTE: Destroys `this`.
   }
 
-  content::DownloadManager* const manager_;
-  download::DownloadItem* const download_item_;
+  const raw_ptr<content::DownloadManager, ExperimentalAsh> manager_;
+  const raw_ptr<download::DownloadItem, ExperimentalAsh> download_item_;
 
   base::ScopedObservation<download::DownloadItem,
                           download::DownloadItem::Observer>

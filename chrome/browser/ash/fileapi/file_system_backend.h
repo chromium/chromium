@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/account_id/account_id.h"
 #include "components/file_access/scoped_file_access_delegate.h"
@@ -194,7 +195,7 @@ class FileSystemBackend : public storage::ExternalFileSystemBackend {
 
   // Globally visible mount points. System MountPonts instance should outlive
   // all FileSystemBackend instances, so raw pointer is safe.
-  storage::ExternalMountPoints* system_mount_points_;
+  raw_ptr<storage::ExternalMountPoints, ExperimentalAsh> system_mount_points_;
 };
 
 }  // namespace ash

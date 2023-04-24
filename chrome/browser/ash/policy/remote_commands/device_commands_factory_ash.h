@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_screenshot_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
 #include "components/policy/core/common/remote_commands/remote_commands_factory.h"
@@ -36,7 +37,7 @@ class DeviceCommandsFactoryAsh : public RemoteCommandsFactory {
   // TODO(b/269432279): Consider removing when test uses a local upload server
   static bool device_commands_test_;
 
-  DeviceCloudPolicyManagerAsh* policy_manager_;
+  raw_ptr<DeviceCloudPolicyManagerAsh, ExperimentalAsh> policy_manager_;
   std::unique_ptr<DeviceCommandStartCrdSessionJob::Delegate> crd_host_delegate_;
 
   DeviceCommandStartCrdSessionJob::Delegate* GetCrdHostDelegate();

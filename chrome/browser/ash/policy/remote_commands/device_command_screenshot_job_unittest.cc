@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -74,7 +75,7 @@ class MockUploadJob : public UploadJob {
 
  protected:
   const GURL upload_url_;
-  UploadJob::Delegate* delegate_;
+  raw_ptr<UploadJob::Delegate, ExperimentalAsh> delegate_;
   std::unique_ptr<UploadJob::ErrorCode> error_code_;
   bool add_datasegment_succeeds_;
 };

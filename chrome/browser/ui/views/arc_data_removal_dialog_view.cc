@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/arc/arc_data_removal_dialog.h"
 
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
@@ -59,11 +60,11 @@ class DataRemovalConfirmationDialog : public views::DialogDelegateView,
 
  private:
   // UI hierarchy owned.
-  views::ImageView* icon_view_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_view_ = nullptr;
 
   std::unique_ptr<AppServiceAppIconLoader> icon_loader_;
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   DataRemovalConfirmationCallback confirm_callback_;
 };

@@ -105,8 +105,8 @@ void AppInfoFooterPanel::UpdatePinButtons(bool focus_visible_button) {
     unpin_from_shelf_button_->SetVisible(was_pinned);
 
     if (focus_visible_button) {
-      views::View* button_to_focus =
-          was_pinned ? unpin_from_shelf_button_ : pin_to_shelf_button_;
+      views::View* button_to_focus = was_pinned ? unpin_from_shelf_button_.get()
+                                                : pin_to_shelf_button_.get();
       button_to_focus->RequestFocus();
     }
   }

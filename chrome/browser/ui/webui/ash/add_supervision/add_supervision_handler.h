@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_ADD_SUPERVISION_ADD_SUPERVISION_HANDLER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -70,15 +71,15 @@ class AddSupervisionHandler
                                   signin::AccessTokenInfo access_token_info);
 
   // The AddSupervisionUI that this AddSupervisionHandler belongs to.
-  content::WebUI* web_ui_;
+  raw_ptr<content::WebUI, ExperimentalAsh> web_ui_;
 
   // Used to fetch OAuth2 access tokens.
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
   std::unique_ptr<signin::AccessTokenFetcher> oauth2_access_token_fetcher_;
 
   mojo::Receiver<add_supervision::mojom::AddSupervisionHandler> receiver_;
 
-  Delegate* delegate_;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   base::WeakPtrFactory<AddSupervisionHandler> weak_ptr_factory_{this};
 };

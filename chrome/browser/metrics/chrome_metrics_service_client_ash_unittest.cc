@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
 
 #include "base/test/metrics/user_action_tester.h"
@@ -350,12 +351,13 @@ class ChromeMetricsServiceClientTestIgnoredForAppMetrics
   base::test::ScopedFeatureList scoped_feature_list_;
 
   std::vector<ukm::SourceId> source_ids_;
-  ChromeMetricsServiceClient* chrome_metrics_service_client_;
+  raw_ptr<ChromeMetricsServiceClient, ExperimentalAsh>
+      chrome_metrics_service_client_;
 
   MockSyncService sync_service_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-  TestingProfile* testing_profile_ = nullptr;
-  ash::multidevice_setup::FakeMultiDeviceSetupClient*
+  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_ = nullptr;
+  raw_ptr<ash::multidevice_setup::FakeMultiDeviceSetupClient, ExperimentalAsh>
       fake_multidevice_setup_client_;
   std::unique_ptr<FakeMultiDeviceSetupClientImplFactory>
       fake_multidevice_setup_client_impl_factory_;

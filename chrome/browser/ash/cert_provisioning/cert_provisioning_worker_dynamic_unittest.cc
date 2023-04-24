@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -480,7 +481,8 @@ class CertProvisioningWorkerDynamicTest : public ::testing::Test {
   TestingPrefServiceSimple testing_pref_service_;
 
   StrictMock<MockCertProvisioningClient> cert_provisioning_client_;
-  platform_keys::MockPlatformKeysService* platform_keys_service_ = nullptr;
+  raw_ptr<platform_keys::MockPlatformKeysService, ExperimentalAsh>
+      platform_keys_service_ = nullptr;
   std::unique_ptr<platform_keys::MockKeyPermissionsManager>
       key_permissions_manager_;
 };
@@ -1873,7 +1875,7 @@ class PrefServiceObserver {
   MOCK_METHOD(void, OnPrefValueUpdated, (const base::Value& value));
 
  private:
-  PrefService* service_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> service_ = nullptr;
   const char* pref_name_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
   base::WeakPtrFactory<PrefServiceObserver> weak_factory_{this};

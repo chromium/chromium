@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_observation.h"
@@ -89,7 +90,7 @@ class DelegateForUser : public PlatformKeysServiceImplDelegate {
   }
 
  private:
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
 };
 
 class DelegateForDevice : public PlatformKeysServiceImplDelegate,

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_routine.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -63,9 +64,10 @@ class DnsResolutionRoutine : public NetworkDiagnosticsRoutine,
   void AttemptResolution();
 
   // Unowned
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   // Unowned
-  network::mojom::NetworkContext* network_context_ = nullptr;
+  raw_ptr<network::mojom::NetworkContext, ExperimentalAsh> network_context_ =
+      nullptr;
   static constexpr int kTotalNumRetries = 1;
   int num_retries_ = kTotalNumRetries;
   bool resolved_address_received_ = false;

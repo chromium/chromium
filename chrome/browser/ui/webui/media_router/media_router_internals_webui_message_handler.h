@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_MEDIA_ROUTER_MEDIA_ROUTER_INTERNALS_WEBUI_MESSAGE_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/media_router/browser/media_router_debugger.h"
@@ -46,7 +47,7 @@ class MediaRouterInternalsWebUIMessageHandler
 
   // Pointer to the MediaRouter.
   const raw_ptr<const MediaRouter> router_;
-  MediaRouterDebugger& debugger_;
+  const raw_ref<MediaRouterDebugger, ExperimentalAsh> debugger_;
 
   base::WeakPtrFactory<MediaRouterInternalsWebUIMessageHandler> weak_factory_{
       this};

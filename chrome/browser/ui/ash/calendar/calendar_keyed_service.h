@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/shell.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/ui/ash/calendar/calendar_client_impl.h"
 #include "components/account_id/account_id.h"
@@ -85,10 +86,10 @@ class CalendarKeyedService : public KeyedService {
 
   // The class is expected to run on UI thread.
   base::ThreadChecker thread_checker_;
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   const AccountId account_id_;
   CalendarClientImpl calendar_client_;
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
   CoreAccountId core_account_id_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<google_apis::RequestSender> sender_;

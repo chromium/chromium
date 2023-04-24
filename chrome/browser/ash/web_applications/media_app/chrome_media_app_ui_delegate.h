@@ -7,6 +7,7 @@
 
 #include "ash/webui/media_app_ui/media_app_ui_delegate.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -54,7 +55,7 @@ class ChromeMediaAppUIDelegate : public ash::MediaAppUIDelegate {
                         base::OnceCallback<void()> edit_in_photos_callback,
                         absl::optional<storage::FileSystemURL> url);
 
-  content::WebUI* web_ui_;  // Owns |this|.
+  raw_ptr<content::WebUI, ExperimentalAsh> web_ui_;  // Owns |this|.
 
   scoped_refptr<ash::HatsNotificationController> hats_notification_controller_;
 

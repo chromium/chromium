@@ -611,7 +611,7 @@ int32_t AccessibilityNodeInfoDataWrapper::GetWindowId() const {
 
 bool AccessibilityNodeInfoDataWrapper::GetProperty(
     AXBooleanProperty prop) const {
-  return arc::GetBooleanProperty(node_ptr_, prop);
+  return arc::GetBooleanProperty(node_ptr_.get(), prop);
 }
 
 bool AccessibilityNodeInfoDataWrapper::GetProperty(AXIntProperty prop,
@@ -699,8 +699,9 @@ bool AccessibilityNodeInfoDataWrapper::HasText() const {
     return false;
 
   for (const auto it : text_properties_) {
-    if (HasNonEmptyStringProperty(node_ptr_, it))
+    if (HasNonEmptyStringProperty(node_ptr_.get(), it)) {
       return true;
+    }
   }
   return false;
 }
@@ -808,11 +809,12 @@ bool AccessibilityNodeInfoDataWrapper::HasImportantProperty() const {
 }
 
 bool AccessibilityNodeInfoDataWrapper::HasImportantPropertyInternal() const {
-  if (HasNonEmptyStringProperty(node_ptr_,
+  if (HasNonEmptyStringProperty(node_ptr_.get(),
                                 AXStringProperty::CONTENT_DESCRIPTION) ||
-      HasNonEmptyStringProperty(node_ptr_, AXStringProperty::TEXT) ||
-      HasNonEmptyStringProperty(node_ptr_, AXStringProperty::PANE_TITLE) ||
-      HasNonEmptyStringProperty(node_ptr_, AXStringProperty::HINT_TEXT)) {
+      HasNonEmptyStringProperty(node_ptr_.get(), AXStringProperty::TEXT) ||
+      HasNonEmptyStringProperty(node_ptr_.get(),
+                                AXStringProperty::PANE_TITLE) ||
+      HasNonEmptyStringProperty(node_ptr_.get(), AXStringProperty::HINT_TEXT)) {
     return true;
   }
 

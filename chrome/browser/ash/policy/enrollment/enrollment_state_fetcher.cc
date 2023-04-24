@@ -11,6 +11,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -71,11 +72,12 @@ struct DeterminationContext {
 
   // Allows retrieving system values from multiple sources.
   // Must be set before sequence starts.
-  ash::system::StatisticsProvider* statistics_provider;
+  raw_ptr<ash::system::StatisticsProvider, ExperimentalAsh> statistics_provider;
 
   // Interface for talking to DMServer.
   // Must be set before sequence starts.
-  DeviceManagementService* device_management_service = nullptr;
+  raw_ptr<DeviceManagementService, ExperimentalAsh> device_management_service =
+      nullptr;
 
   // This will be used to configure `job`s for the `device_management_service`.
   // Must be set before sequence starts.
@@ -83,15 +85,15 @@ struct DeterminationContext {
 
   // Interface for retrieving synchronized clock time.
   // Must be set before sequence starts.
-  ash::SystemClockClient* system_clock_client;
+  raw_ptr<ash::SystemClockClient, ExperimentalAsh> system_clock_client;
 
   // Used to retrieve device state keys.
   // Must be set before sequence starts.
-  ServerBackedStateKeysBroker* state_key_broker;
+  raw_ptr<ServerBackedStateKeysBroker, ExperimentalAsh> state_key_broker;
 
   // Interface for checking ownership.
   // Must be set before sequence starts.
-  ash::DeviceSettingsService* device_settings_service;
+  raw_ptr<ash::DeviceSettingsService, ExperimentalAsh> device_settings_service;
 
   // RLZ brand code and serial numbers retrieved using `statistics_provider`.
   // Used for state availability determination (PSM) and state retrieval
@@ -904,7 +906,7 @@ class EnrollmentStateFetcherImpl::Sequence {
   // Used to store the initial enrollment state (if available) in a dict at
   // `prefs::kServerBackedDeviceState`.
   // Must not be nullptr for initial enrollment state determination.
-  PrefService* local_state_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
 
   DeviceIdentifiers device_identifiers_;
   SystemClock system_clock_;

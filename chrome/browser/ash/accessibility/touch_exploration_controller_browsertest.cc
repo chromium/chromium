@@ -8,6 +8,7 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -69,8 +70,8 @@ class TouchExplorationTest : public InProcessBrowserTest {
   base::TimeTicks Now() { return simulated_clock_->NowTicks(); }
 
   ui::GestureDetector::Config gesture_detector_config_;
-  base::SimpleTestTickClock* simulated_clock_;
-  aura::Window* root_window_;
+  raw_ptr<base::SimpleTestTickClock, ExperimentalAsh> simulated_clock_;
+  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
   std::unique_ptr<ui::test::TestEventHandler> event_handler_;
 };
 

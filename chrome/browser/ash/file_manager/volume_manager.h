@@ -12,6 +12,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
@@ -333,10 +334,13 @@ class VolumeManager : public KeyedService,
   static int counter_;
   const int id_ = ++counter_;  // Only used in log traces
 
-  Profile* const profile_;
-  drive::DriveIntegrationService* const drive_integration_service_;
-  ash::disks::DiskMountManager* const disk_mount_manager_;
-  ash::file_system_provider::Service* const file_system_provider_service_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<drive::DriveIntegrationService, ExperimentalAsh>
+      drive_integration_service_;
+  const raw_ptr<ash::disks::DiskMountManager, ExperimentalAsh>
+      disk_mount_manager_;
+  const raw_ptr<ash::file_system_provider::Service, ExperimentalAsh>
+      file_system_provider_service_;
 
   PrefChangeRegistrar pref_change_registrar_;
   base::ObserverList<VolumeManagerObserver>::Unchecked observers_;

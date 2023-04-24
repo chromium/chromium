@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -42,7 +43,7 @@ class ExternalProtocolNoHandlersTelSchemeDialog : public views::DialogDelegate {
 
  private:
   // The message box view whose commands we handle.
-  views::MessageBoxView* message_box_view_;
+  raw_ptr<views::MessageBoxView, ExperimentalAsh> message_box_view_;
 
   // The time at which this dialog was created.
   base::TimeTicks creation_time_;

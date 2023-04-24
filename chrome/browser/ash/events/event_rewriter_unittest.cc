@@ -18,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -186,7 +187,7 @@ class EventRewriterTest : public ChromeAshTestBase {
  public:
   EventRewriterTest()
       : fake_user_manager_(new FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
+        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {}
   ~EventRewriterTest() override {}
 
   void SetUp() override {
@@ -371,9 +372,11 @@ class EventRewriterTest : public ChromeAshTestBase {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  FakeChromeUserManager* fake_user_manager_;  // Not owned.
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh>
+      fake_user_manager_;  // Not owned.
   user_manager::ScopedUserManager user_manager_enabler_;
-  input_method::MockInputMethodManagerImpl* input_method_manager_mock_;
+  raw_ptr<input_method::MockInputMethodManagerImpl, ExperimentalAsh>
+      input_method_manager_mock_;
   testing::FakeUdevLoader fake_udev_;
   ui::DeviceDataManagerTestApi device_data_manager_test_api_;
 
@@ -382,7 +385,8 @@ class EventRewriterTest : public ChromeAshTestBase {
   std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<ui::EventRewriterAsh> rewriter_;
-  DeprecationNotificationController* deprecation_controller_;  // Not owned.
+  raw_ptr<DeprecationNotificationController, ExperimentalAsh>
+      deprecation_controller_;  // Not owned.
   message_center::FakeMessageCenter message_center_;
 };
 
@@ -4319,7 +4323,7 @@ class TestEventSource : public ui::EventSource {
   }
 
  private:
-  ui::EventProcessor* processor_;
+  raw_ptr<ui::EventProcessor, ExperimentalAsh> processor_;
 };
 
 // Tests of event rewriting that depend on the Ash window manager.
@@ -4328,7 +4332,7 @@ class EventRewriterAshTest : public ChromeAshTestBase {
   EventRewriterAshTest()
       : source_(&buffer_),
         fake_user_manager_(new FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
+        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {}
 
   EventRewriterAshTest(const EventRewriterAshTest&) = delete;
   EventRewriterAshTest& operator=(const EventRewriterAshTest&) = delete;
@@ -4396,7 +4400,7 @@ class EventRewriterAshTest : public ChromeAshTestBase {
   }
 
  protected:
-  StickyKeysController* sticky_keys_controller_;
+  raw_ptr<StickyKeysController, ExperimentalAsh> sticky_keys_controller_;
 
  private:
   std::unique_ptr<EventRewriterDelegateImpl> delegate_;
@@ -4407,7 +4411,8 @@ class EventRewriterAshTest : public ChromeAshTestBase {
   EventBuffer buffer_;
   TestEventSource source_;
 
-  FakeChromeUserManager* fake_user_manager_;  // Not owned.
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh>
+      fake_user_manager_;  // Not owned.
   user_manager::ScopedUserManager user_manager_enabler_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
 };
@@ -4990,7 +4995,7 @@ class StickyKeysOverlayTest : public EventRewriterAshTest {
     ASSERT_TRUE(overlay_);
   }
 
-  StickyKeysOverlay* overlay_;
+  raw_ptr<StickyKeysOverlay, ExperimentalAsh> overlay_;
 };
 
 TEST_F(StickyKeysOverlayTest, OneModifierEnabled) {

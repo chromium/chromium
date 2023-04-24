@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/accelerators.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/sessions/exit_type_service.h"
@@ -135,7 +136,7 @@ class FullRestoreService : public KeyedService,
 
   void OnAppTerminating();
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
 
   // If the user of `profile_` is not the primary user, and hasn't been the

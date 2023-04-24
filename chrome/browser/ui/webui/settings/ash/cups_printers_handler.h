@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
@@ -263,7 +264,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
 
   void HandleOpenScanningApp(const base::Value::List& args);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Discovery support.  discovery_active_ tracks whether or not the UI
   // currently wants updates about printer availability.  The two vectors track
@@ -286,7 +287,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   std::string webui_callback_id_;
-  CupsPrintersManager* printers_manager_;
+  raw_ptr<CupsPrintersManager, ExperimentalAsh> printers_manager_;
   std::unique_ptr<local_discovery::EndpointResolver> endpoint_resolver_;
 
   std::unique_ptr<ServerPrintersFetcher> server_printers_fetcher_;

@@ -11,6 +11,7 @@
 #include "ash/public/cpp/test/mock_projector_client.h"
 #include "ash/webui/projector_app/test/mock_app_client.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -132,7 +133,7 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
   speech::LanguageCode fr_fr() { return speech::LanguageCode::kFrFr; }
 
  private:
-  Profile* testing_profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> testing_profile_ = nullptr;
 
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};

@@ -76,8 +76,8 @@ class AppInfoFooterPanel
   // UI elements on the dialog. Elements are null if they are not displayed.
   raw_ptr<views::View> create_shortcuts_button_ = nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  views::View* pin_to_shelf_button_ = nullptr;
-  views::View* unpin_from_shelf_button_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> pin_to_shelf_button_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> unpin_from_shelf_button_ = nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   raw_ptr<views::View> remove_button_ = nullptr;
 

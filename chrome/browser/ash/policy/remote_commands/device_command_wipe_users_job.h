@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_WIPE_USERS_JOB_H_
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_WIPE_USERS_JOB_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
 namespace policy {
@@ -30,7 +31,7 @@ class DeviceCommandWipeUsersJob : public RemoteCommandJob {
   void RunImpl(CallbackWithResult result_callback) override;
 
  private:
-  RemoteCommandsService* const service_;
+  const raw_ptr<RemoteCommandsService, ExperimentalAsh> service_;
 };
 
 }  // namespace policy

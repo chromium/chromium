@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/extensions/file_manager/logged_extension_function.h"
@@ -324,7 +325,7 @@ class FileManagerPrivateInternalGetDisallowedTransfersFunction
       std::unique_ptr<file_manager::util::EntryDefinitionList>
           entry_definition_list);
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
   std::vector<storage::FileSystemURL> source_urls_;
   storage::FileSystemURL destination_url_;

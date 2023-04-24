@@ -12,6 +12,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
@@ -284,8 +285,8 @@ class ApkWebAppInstallerBrowserTest
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>
       observation_{this};
-  ArcAppListPrefs* arc_app_list_prefs_ = nullptr;
-  web_app::WebAppProvider* provider_ = nullptr;
+  raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_prefs_ = nullptr;
+  raw_ptr<web_app::WebAppProvider, ExperimentalAsh> provider_ = nullptr;
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
   base::RepeatingCallback<void(const web_app::AppId&)>
       app_uninstalled_callback_;
@@ -316,7 +317,7 @@ class ApkWebAppInstallerWithShelfControllerBrowserTest
   }
 
  protected:
-  ChromeShelfController* shelf_controller_;
+  raw_ptr<ChromeShelfController, ExperimentalAsh> shelf_controller_;
 };
 
 // Test the full installation and uninstallation flow.

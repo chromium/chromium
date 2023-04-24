@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -206,7 +207,7 @@ class DeviceCloudPolicyManagerAshTest
         std::make_unique<MockCloudExternalDataManager>();
     external_data_manager_ = external_data_manager.get();
     manager_ = std::make_unique<TestingDeviceCloudPolicyManagerAsh>(
-        base::WrapUnique(store_), std::move(external_data_manager),
+        base::WrapUnique(store_.get()), std::move(external_data_manager),
         base::SingleThreadTaskRunner::GetCurrentDefault(), &state_keys_broker_);
 
     RegisterLocalState(local_state_.registry());
@@ -346,10 +347,10 @@ class DeviceCloudPolicyManagerAshTest
   ServerBackedStateKeysBroker state_keys_broker_;
   StrictMock<ash::attestation::MockAttestationFlow> mock_attestation_flow_;
 
-  DeviceCloudPolicyStoreAsh* store_;
+  raw_ptr<DeviceCloudPolicyStoreAsh, ExperimentalAsh> store_;
   SchemaRegistry schema_registry_;
   ash::attestation::ScopedStubAttestationFeatures attestation_features_;
-  MockCloudExternalDataManager* external_data_manager_;
+  raw_ptr<MockCloudExternalDataManager, ExperimentalAsh> external_data_manager_;
   std::unique_ptr<TestingDeviceCloudPolicyManagerAsh> manager_;
   std::unique_ptr<DeviceCloudPolicyInitializer> initializer_;
   network::TestURLLoaderFactory test_url_loader_factory_;

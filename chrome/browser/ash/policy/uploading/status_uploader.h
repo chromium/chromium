@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/cancelable_callback.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -86,7 +87,7 @@ class StatusUploader : public MediaCaptureDevicesDispatcher::Observer {
   void RefreshUploadFrequency();
 
   // CloudPolicyClient used to issue requests to the server.
-  CloudPolicyClient* client_;
+  raw_ptr<CloudPolicyClient, ExperimentalAsh> client_;
 
   // StatusCollector that provides status for uploading.
   std::unique_ptr<StatusCollector> collector_;

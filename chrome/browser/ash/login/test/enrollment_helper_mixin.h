@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -85,7 +86,7 @@ class EnrollmentHelperMixin : public InProcessBrowserTestMixin {
 
  private:
   // Unowned reference to last created mock.
-  EnterpriseEnrollmentHelperMock* mock_ = nullptr;
+  raw_ptr<EnterpriseEnrollmentHelperMock, ExperimentalAsh> mock_ = nullptr;
   base::WeakPtrFactory<EnrollmentHelperMixin> weak_ptr_factory_{this};
 };
 

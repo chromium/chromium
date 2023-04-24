@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_reader.h"
@@ -294,7 +295,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
       const apps::IntentFilterPtr& filter,
       const apps::AppUpdate& update) override;
 
-  SubscriberCrosapi* crosapi_subscriber_ = nullptr;
+  raw_ptr<SubscriberCrosapi, ExperimentalAsh> crosapi_subscriber_ = nullptr;
 
   std::unique_ptr<PublisherHost> publisher_host_;
 

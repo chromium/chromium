@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/string_compare.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -378,11 +379,12 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
  protected:
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       chrome_keyboard_controller_client_test_helper_;
-  InputMethodManagerImpl* manager_ = nullptr;
-  MockCandidateWindowController* candidate_window_controller_ = nullptr;
+  raw_ptr<InputMethodManagerImpl, ExperimentalAsh> manager_ = nullptr;
+  raw_ptr<MockCandidateWindowController, ExperimentalAsh>
+      candidate_window_controller_ = nullptr;
   std::unique_ptr<MockInputMethodEngine> mock_engine_handler_;
-  FakeImeKeyboard* keyboard_ = nullptr;
-  ui::ime::InputMethodMenuManager* menu_manager_;
+  raw_ptr<FakeImeKeyboard, ExperimentalAsh> keyboard_ = nullptr;
+  raw_ptr<ui::ime::InputMethodMenuManager, ExperimentalAsh> menu_manager_;
 };
 
 TEST_F(InputMethodManagerImplTest, TestGetImeKeyboard) {

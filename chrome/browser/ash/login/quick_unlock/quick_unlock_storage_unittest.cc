@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
@@ -88,7 +89,7 @@ class QuickUnlockStorageTestApi {
   }
 
  private:
-  QuickUnlockStorage* quick_unlock_storage_;
+  raw_ptr<QuickUnlockStorage, ExperimentalAsh> quick_unlock_storage_;
 };
 
 // Verifies that marking the strong auth makes TimeSinceLastStrongAuth a > zero

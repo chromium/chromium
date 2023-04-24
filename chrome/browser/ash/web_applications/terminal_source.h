@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/template_expressions.h"
@@ -46,7 +47,7 @@ class TerminalSource : public content::URLDataSource {
   std::string GetCrossOriginOpenerPolicy() override;
   std::string GetCrossOriginEmbedderPolicy() override;
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   std::string source_;
   std::string default_file_;
   const bool ssh_allowed_;

@@ -509,7 +509,7 @@ void ArcSupportHost::RequestAppStart() {
   DCHECK(!app_start_pending_);
 
   app_start_pending_ = true;
-  request_open_app_callback_.Run(profile_);
+  request_open_app_callback_.Run(profile_.get());
 }
 
 void ArcSupportHost::SetRequestOpenAppCallbackForTesting(

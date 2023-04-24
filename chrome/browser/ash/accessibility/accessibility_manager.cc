@@ -29,6 +29,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
@@ -342,7 +343,7 @@ class AccessibilityPanelWidgetObserver : public views::WidgetObserver {
   }
 
  private:
-  views::Widget* widget_;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_;
 
   base::OnceCallback<void()> on_destroying_;
 };
@@ -1431,7 +1432,7 @@ void AccessibilityManager::SetProfile(Profile* profile) {
     return;
 
   if (profile_)
-    DCHECK(profile_observation_.IsObservingSource(profile_));
+    DCHECK(profile_observation_.IsObservingSource(profile_.get()));
   profile_observation_.Reset();
   DCHECK(!profile_observation_.IsObserving());
 

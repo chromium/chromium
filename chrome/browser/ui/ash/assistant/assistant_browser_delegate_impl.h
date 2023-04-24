@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/ash/assistant/device_actions.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
@@ -101,8 +102,8 @@ class AssistantBrowserDelegateImpl
   base::CallbackListSubscription subscription_;
 
   // Non-owning pointers.
-  Profile* profile_ = nullptr;
-  signin::IdentityManager* identity_manager_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_ = nullptr;
 
   base::ScopedObservation<ash::AssistantStateBase, ash::AssistantStateObserver>
       assistant_state_observation_{this};

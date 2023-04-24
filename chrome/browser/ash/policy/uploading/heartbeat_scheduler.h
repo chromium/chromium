@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -138,12 +139,12 @@ class HeartbeatScheduler : public gcm::GCMAppHandler,
   // Callback invoked via a delay to send a heartbeat.
   base::CancelableOnceClosure heartbeat_callback_;
 
-  CloudPolicyClient* cloud_policy_client_;
+  raw_ptr<CloudPolicyClient, ExperimentalAsh> cloud_policy_client_;
 
-  CloudPolicyStore* cloud_policy_store_;
+  raw_ptr<CloudPolicyStore, ExperimentalAsh> cloud_policy_store_;
 
   // The GCMDriver used to send heartbeat messages.
-  gcm::GCMDriver* const gcm_driver_;
+  const raw_ptr<gcm::GCMDriver, ExperimentalAsh> gcm_driver_;
 
   // The GCM registration ID - if empty, we are not registered yet.
   std::string registration_id_;

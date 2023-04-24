@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILEAPI_MTP_WATCHER_MANAGER_H_
 #define CHROME_BROWSER_ASH_FILEAPI_MTP_WATCHER_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media_galleries/fileapi/device_media_async_file_util.h"
 #include "storage/browser/file_system/watcher_manager.h"
 
@@ -32,7 +33,8 @@ class MTPWatcherManager : public storage::WatcherManager {
                      StatusCallback callback) override;
 
  private:
-  DeviceMediaAsyncFileUtil* const device_media_async_file_util_;
+  const raw_ptr<DeviceMediaAsyncFileUtil, ExperimentalAsh>
+      device_media_async_file_util_;
 };
 
 }  // namespace ash

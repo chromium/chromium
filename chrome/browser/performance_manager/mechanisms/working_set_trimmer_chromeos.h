@@ -7,6 +7,7 @@
 
 #include "ash/components/arc/mojom/memory.mojom-forward.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
@@ -89,7 +90,8 @@ class WorkingSetTrimmerChromeOS : public WorkingSetTrimmer {
   // WorkingSetTrimmer::GetInstance().
   WorkingSetTrimmerChromeOS();
 
-  content::BrowserContext* context_for_testing_ = nullptr;
+  raw_ptr<content::BrowserContext, ExperimentalAsh> context_for_testing_ =
+      nullptr;
 
   base::WeakPtrFactory<WorkingSetTrimmerChromeOS> weak_factory_{this};
 };

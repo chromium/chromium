@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
@@ -103,7 +104,7 @@ class InputMethodTestInterfaceAsh : public mojom::InputMethodTestInterface,
     std::string text;
     gfx::Range selection_range;
   };
-  ash::InputMethodAsh* text_input_target_;
+  raw_ptr<ash::InputMethodAsh, ExperimentalAsh> text_input_target_;
   FakeTextInputMethod fake_text_input_method_;
   base::ScopedObservation<FakeTextInputMethod, FakeTextInputMethod::Observer>
       text_input_method_observation_{this};

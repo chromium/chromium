@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/clipboard_history_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
@@ -79,7 +80,7 @@ class ChromeVirtualKeyboardDelegate
                          bool has_audio_input_devices);
   void DispatchConfigChangeEvent(absl::optional<base::Value::Dict> settings);
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
   std::unique_ptr<media::AudioSystem> audio_system_;
   base::WeakPtr<ChromeVirtualKeyboardDelegate> weak_this_;
   base::WeakPtrFactory<ChromeVirtualKeyboardDelegate> weak_factory_{this};

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/guest_os/guest_os_security_delegate.h"
 
 class Profile;
@@ -39,7 +40,7 @@ class BorealisSecurityDelegate : public guest_os::GuestOsSecurityDelegate {
   // Private constructor, use Build().
   explicit BorealisSecurityDelegate(Profile* profile);
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 }  // namespace borealis

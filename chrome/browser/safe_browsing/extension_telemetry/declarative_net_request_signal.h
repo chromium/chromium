@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_EXTENSION_TELEMETRY_DECLARATIVE_NET_REQUEST_SIGNAL_H_
 #define CHROME_BROWSER_SAFE_BROWSING_EXTENSION_TELEMETRY_DECLARATIVE_NET_REQUEST_SIGNAL_H_
 
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_signal.h"
 #include "extensions/common/api/declarative_net_request.h"
 
@@ -23,12 +24,15 @@ class DeclarativeNetRequestSignal : public ExtensionSignal {
 
   const std::vector<extensions::api::declarative_net_request::Rule>& rules()
       const {
-    return rules_;
+    return *rules_;
   }
 
  protected:
   // Rules to be added from the declarativeNetRequest API invocations.
-  const std::vector<extensions::api::declarative_net_request::Rule>& rules_;
+  const raw_ref<
+      const std::vector<extensions::api::declarative_net_request::Rule>,
+      ExperimentalAsh>
+      rules_;
 };
 
 }  // namespace safe_browsing

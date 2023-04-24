@@ -133,14 +133,14 @@ void StoreFileTask::OnCalculatedSize(uint64_t total_size,
                                      uint64_t expected_content_size) {
   DCHECK_EQ(total_size, expected_content_size);
 
-  if (expected_content_size > available_space_ ||
+  if (expected_content_size > *available_space_ ||
       expected_content_size != file_->blob->size) {
     VLOG(1) << "Share too large: " << expected_content_size << " bytes";
     std::move(callback_).Run(blink::mojom::ShareError::PERMISSION_DENIED);
     return;
   }
 
-  available_space_ -= expected_content_size;
+  *available_space_ -= expected_content_size;
   total_bytes_ = expected_content_size;
 
   if (expected_content_size == 0) {

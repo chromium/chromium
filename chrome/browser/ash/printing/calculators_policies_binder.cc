@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/printing/bulk_printers_calculator.h"
 #include "chrome/browser/ash/printing/bulk_printers_calculator_factory.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -73,7 +74,7 @@ class PrefBinder : public CalculatorsPoliciesBinder {
   }
 
  private:
-  PrefService* prefs_;
+  raw_ptr<PrefService, ExperimentalAsh> prefs_;
   PrefChangeRegistrar pref_change_registrar_;
 };
 
@@ -110,7 +111,7 @@ class SettingsBinder : public CalculatorsPoliciesBinder {
   }
 
  private:
-  CrosSettings* settings_;
+  raw_ptr<CrosSettings, ExperimentalAsh> settings_;
   std::list<base::CallbackListSubscription> subscriptions_;
 };
 

@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
@@ -288,8 +289,8 @@ class GuestOsRegistryService : public KeyedService {
                            std::string png_icon_content);
 
   // Owned by the Profile.
-  Profile* const profile_;
-  PrefService* const prefs_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<PrefService, ExperimentalAsh> prefs_;
 
   // Keeps root folder where Crostini app icons for different scale factors are
   // stored.
@@ -297,7 +298,7 @@ class GuestOsRegistryService : public KeyedService {
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  const base::Clock* clock_;
+  raw_ptr<const base::Clock, ExperimentalAsh> clock_;
 
   // Keeps record for icon request to avoid duplication. Each app may contain
   // several requests for different scale factors. Scale factor is defined by

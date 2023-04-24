@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
@@ -77,7 +78,7 @@ class EduCoexistenceLoginHandler : public content::WebUIMessageHandler,
   // The terms of service version number.
   std::string terms_of_service_version_number_;
 
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
 
   // |in_error_state_| boolean tracks whether an error has occurred.
   // The error could happen when trying to access OAuth tokens.

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -92,7 +93,7 @@ class FakeHostResolver : public network::mojom::HostResolver {
 
  private:
   mojo::Receiver<network::mojom::HostResolver> receiver_;
-  DnsResult* fake_dns_result_;
+  raw_ptr<DnsResult, ExperimentalAsh> fake_dns_result_;
 };
 
 class FakeNetworkContext : public network::TestNetworkContext {
@@ -269,7 +270,7 @@ class HttpsLatencyRoutineTest : public ::testing::Test {
   base::RunLoop run_loop_;
   session_manager::SessionManager session_manager_;
   std::unique_ptr<FakeNetworkContext> fake_network_context_;
-  Profile* test_profile_;  // Unowned
+  raw_ptr<Profile, ExperimentalAsh> test_profile_;  // Unowned
   TestingProfileManager profile_manager_;
   std::unique_ptr<HttpsLatencyRoutine> https_latency_routine_;
   base::WeakPtrFactory<HttpsLatencyRoutineTest> weak_factory_{this};

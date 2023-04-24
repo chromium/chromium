@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -112,7 +113,7 @@ class TestDelegate : public UsersPrivateDelegate {
   }
 
  private:
-  Profile* profile_;  // weak
+  raw_ptr<Profile, ExperimentalAsh> profile_;  // weak
   std::unique_ptr<TestPrefsUtil> prefs_util_;
 };
 

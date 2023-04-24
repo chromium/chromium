@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/printing/printing_stubs.h"
@@ -162,7 +163,8 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
  private:
   ~FakeSelectFileDialog() override = default;
 
-  ui::SelectFileDialog::FileTypeInfo* expected_file_type_info_;
+  raw_ptr<ui::SelectFileDialog::FileTypeInfo, ExperimentalAsh>
+      expected_file_type_info_;
 };
 
 // A factory associated with the artificial file picker.
@@ -187,7 +189,8 @@ class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
       delete;
 
  private:
-  ui::SelectFileDialog::FileTypeInfo* expected_file_type_info_;
+  raw_ptr<ui::SelectFileDialog::FileTypeInfo, ExperimentalAsh>
+      expected_file_type_info_;
 };
 
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
@@ -272,7 +275,7 @@ class CupsPrintersHandlerTest : public testing::Test {
   base::RunLoop run_loop_;
   scoped_refptr<printing::TestPrintBackend> print_backend_ =
       base::MakeRefCounted<printing::TestPrintBackend>();
-  MockNewWindowDelegate* new_window_delegate_primary_;
+  raw_ptr<MockNewWindowDelegate, ExperimentalAsh> new_window_delegate_primary_;
   std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
   base::ScopedTempDir download_dir_;
 

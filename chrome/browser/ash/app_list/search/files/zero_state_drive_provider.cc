@@ -66,12 +66,12 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
     } else {
       // Wait for DriveFS to be mounted, then fetch results. This happens in
       // OnFileSystemMounted.
-      drive_observation_.Observe(drive_service_);
+      drive_observation_.Observe(drive_service_.get());
     }
   }
 
   if (session_manager_)
-    session_observation_.Observe(session_manager_);
+    session_observation_.Observe(session_manager_.get());
 
   auto* power_manager = chromeos::PowerManagerClient::Get();
   if (power_manager)

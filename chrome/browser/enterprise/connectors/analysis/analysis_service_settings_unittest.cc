@@ -217,7 +217,7 @@ struct SourceDestinationTestParam {
 
   std::pair<VolumeInfo, VolumeInfo> source_destination_pair;
   const char* settings_value;
-  AnalysisSettings* expected_settings;
+  raw_ptr<AnalysisSettings, ExperimentalAsh> expected_settings;
 };
 
 constexpr char kNormalSourceDestinationSettings[] = R"({

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_RELEASE_NOTES_RELEASE_NOTES_STORAGE_H_
 #define CHROME_BROWSER_ASH_RELEASE_NOTES_RELEASE_NOTES_STORAGE_H_
 
+#include "base/memory/raw_ptr.h"
+
 class Profile;
 class PrefRegistrySimple;
 
@@ -41,7 +43,7 @@ class ReleaseNotesStorage {
   void StopShowingSuggestionChip();
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 }  // namespace ash

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/components/arc/mojom/kiosk.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -57,9 +58,10 @@ class ArcKioskBridge : public KeyedService,
   // |delegate| should be alive while the ArcKioskBridge instance is alive.
   ArcKioskBridge(ArcBridgeService* bridge_service, Delegate* delegate);
 
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   // Tracks current maintenance session id.
   int32_t session_id_ = -1;

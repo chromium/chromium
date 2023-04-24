@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/version.h"
@@ -70,7 +71,8 @@ class StatefulLacrosLoader : public LacrosSelectionLoader {
   scoped_refptr<component_updater::CrOSComponentManager> component_manager_;
 
   // May be null in tests.
-  component_updater::ComponentUpdateService* const component_update_service_;
+  const raw_ptr<component_updater::ComponentUpdateService, ExperimentalAsh>
+      component_update_service_;
 
   base::WeakPtrFactory<StatefulLacrosLoader> weak_factory_{this};
 };

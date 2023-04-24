@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/attestation/platform_verification_flow.h"
@@ -140,7 +141,7 @@ class PlatformVerificationFlowTest : public ::testing::Test {
 
   // Used to create a fake user.
   FakeChromeUserManager user_manager_;
-  user_manager::User* user_;
+  raw_ptr<user_manager::User, ExperimentalAsh> user_;
 
   scoped_refptr<PlatformVerificationFlow> verifier_;
 

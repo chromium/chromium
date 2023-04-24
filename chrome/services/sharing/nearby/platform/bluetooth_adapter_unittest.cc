@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -42,7 +43,7 @@ class BluetoothAdapterTest : public testing::Test {
   }
 
  protected:
-  bluetooth::FakeAdapter* fake_adapter_;
+  raw_ptr<bluetooth::FakeAdapter, ExperimentalAsh> fake_adapter_;
   std::unique_ptr<BluetoothAdapter> bluetooth_adapter_;
 
  private:

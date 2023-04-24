@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/printers_map.h"
 #include "chrome/browser/ash/printing/test_printer_configurer.h"
@@ -87,7 +88,7 @@ class FakeObservablePrintersManager {
     observer_->OnPrintersChanged(printer_class, printers_.Get(printer_class));
   }
 
-  CupsPrintersManager::Observer* observer_;
+  raw_ptr<CupsPrintersManager::Observer, ExperimentalAsh> observer_;
   PrintersMap printers_;
 };
 
@@ -178,7 +179,8 @@ class AutomaticUsbPrinterConfigurerTest : public testing::Test {
 
  protected:
   FakeObservablePrintersManager fake_observable_printers_manager_;
-  TestPrinterConfigurer* fake_printer_configurer_;  // not owned.
+  raw_ptr<TestPrinterConfigurer, ExperimentalAsh>
+      fake_printer_configurer_;  // not owned.
   std::unique_ptr<FakePrinterInstallationManager> fake_installation_manager_;
   std::unique_ptr<FakeUsbPrinterNotificationController>
       fake_notification_controller_;

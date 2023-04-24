@@ -10,6 +10,7 @@
 #include <string>
 
 #include "ash/public/cpp/clipboard_image_model_factory.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
@@ -46,7 +47,7 @@ class ClipboardImageModelFactoryImpl : public ash::ClipboardImageModelFactory {
 
   // The primary profile, used instead of the active profile to create the
   // WebContents that renders html.
-  Profile* const primary_profile_;
+  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> primary_profile_;
 
   // Whether ClipboardImageModelFactoryImpl is activated. If not, requests are
   // queued until Activate().

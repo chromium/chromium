@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -166,7 +167,7 @@ class UserImageManagerImpl : public UserImageManager,
   bool IsCustomizationSelectorsPrefEnabled() const;
 
   // The user manager.
-  user_manager::UserManager* user_manager_;
+  raw_ptr<user_manager::UserManager, ExperimentalAsh> user_manager_;
 
   // Whether the `profile_downloader_` is downloading the profile image for the
   // currently logged-in user (and not just the full name). Only valid when a

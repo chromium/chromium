@@ -13,6 +13,7 @@
 
 #include "ash/components/arc/mojom/policy.mojom-forward.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/policy/reporting/install_event_log_collector_base.h"
@@ -101,7 +102,7 @@ class ArcAppInstallEventLogCollector : public InstallEventLogCollectorBase,
   void OnConnectionStateChanged(network::mojom::ConnectionType type) override;
 
  private:
-  Delegate* const delegate_;
+  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   // Set of apps whose push-install is currently pending.
   std::set<std::string> pending_packages_;

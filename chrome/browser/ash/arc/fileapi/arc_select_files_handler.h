@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/mojom/file_system.mojom.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
@@ -71,7 +72,7 @@ class ArcSelectFilesHandlersManager {
       mojom::FileSystemHost::SelectFilesCallback callback,
       mojom::SelectFilesResultPtr result);
 
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
 
   // Map of Task ID -> ArcSelectFilesHandler.
   std::map<int, std::unique_ptr<ArcSelectFilesHandler>> handlers_by_task_id_;
@@ -117,7 +118,7 @@ class ArcSelectFilesHandler : public ui::SelectFileDialog::Listener {
   void SetDialogHolderForTesting(
       std::unique_ptr<SelectFileDialogHolder> dialog_holder);
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   mojom::FileSystemHost::SelectFilesCallback callback_;
   std::unique_ptr<SelectFileDialogHolder> dialog_holder_;

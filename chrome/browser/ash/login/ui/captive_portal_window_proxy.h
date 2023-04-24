@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -105,9 +106,10 @@ class CaptivePortalWindowProxy : public views::WidgetObserver {
   // notifications from `widget_` and resets it.
   void DetachFromWidget(views::Widget* widget);
 
-  Profile* profile_ = ProfileHelper::GetSigninProfile();
-  content::WebContents* web_contents_;
-  views::Widget* widget_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ =
+      ProfileHelper::GetSigninProfile();
+  raw_ptr<content::WebContents, ExperimentalAsh> web_contents_;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
 
   std::unique_ptr<CaptivePortalView> captive_portal_view_;
 

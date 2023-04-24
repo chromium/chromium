@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
@@ -73,7 +74,7 @@ class LoginWebDialog : public ui::WebDialogDelegate {
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
  private:
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
   gfx::NativeWindow parent_window_;
   gfx::NativeWindow dialog_window_;
 

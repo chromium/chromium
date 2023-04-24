@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CROSAPI_BROWSER_ACTION_H_
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -15,7 +16,7 @@
 namespace crosapi {
 
 struct VersionedBrowserService {
-  mojom::BrowserService* service;
+  raw_ptr<mojom::BrowserService, ExperimentalAsh> service;
   uint32_t interface_version;
 };
 

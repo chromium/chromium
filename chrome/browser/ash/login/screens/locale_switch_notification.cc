@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/message_center/oobe_notification_constants.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/browser_process.h"
@@ -84,7 +85,7 @@ class LocaleSwitchNotificationDelegate
   };
 
   std::string new_locale_;
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   locale_util::SwitchLanguageCallback callback_;
 
   bool is_screen_changed_ = false;

@@ -9,6 +9,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/assistant/test_support/mock_assistant_controller.h"
 #include "ash/public/cpp/assistant/test_support/mock_assistant_state.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/app_list_test_util.h"
@@ -69,7 +70,8 @@ class AssistantTextSearchProviderTest : public AppListTestBase {
   ash::MockAssistantState assistant_state_;
   testing::NiceMock<ash::MockAssistantController> assistant_controller_;
   TestSearchController search_controller_;
-  AssistantTextSearchProvider* search_provider_ = nullptr;
+  raw_ptr<AssistantTextSearchProvider, ExperimentalAsh> search_provider_ =
+      nullptr;
 };
 
 // Tests -----------------------------------------------------------------------

@@ -16,6 +16,7 @@
 #include "ash/system/video_conference/video_conference_common.h"
 #include "ash/test/test_window_builder.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -232,10 +233,12 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
   }
 
  protected:
-  apps::InstanceRegistry* instance_registry_ = nullptr;
-  apps::AppRegistryCache* app_registry_cache_ = nullptr;
-  apps::AppCapabilityAccessCache* capability_cache_ = nullptr;
-  VideoConferenceAppServiceClient* client_ = nullptr;
+  raw_ptr<apps::InstanceRegistry, ExperimentalAsh> instance_registry_ = nullptr;
+  raw_ptr<apps::AppRegistryCache, ExperimentalAsh> app_registry_cache_ =
+      nullptr;
+  raw_ptr<apps::AppCapabilityAccessCache, ExperimentalAsh> capability_cache_ =
+      nullptr;
+  raw_ptr<VideoConferenceAppServiceClient, ExperimentalAsh> client_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_{
       ash::features::kVideoConference};

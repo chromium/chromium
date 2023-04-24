@@ -588,7 +588,7 @@ GooglePhotosFetcher<T>::GooglePhotosFetcher(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(profile_);
   DCHECK(identity_manager_);
-  identity_manager_observation_.Observe(identity_manager_);
+  identity_manager_observation_.Observe(identity_manager_.get());
 }
 
 template <typename T>

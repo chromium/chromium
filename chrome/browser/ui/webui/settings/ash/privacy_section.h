@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PRIVACY_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PRIVACY_SECTION_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/ash/auth/legacy_fingerprint_engine.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
@@ -45,7 +46,7 @@ class PrivacySection : public OsSettingsSection {
   bool AreFingerprintSettingsAllowed();
   void UpdateRemoveFingerprintSearchTags();
 
-  PrefService* pref_service_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   PrefChangeRegistrar fingerprint_pref_change_registrar_;
 
   AuthPerformer auth_performer_;

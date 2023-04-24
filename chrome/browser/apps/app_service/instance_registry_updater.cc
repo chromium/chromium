@@ -46,7 +46,7 @@ InstanceRegistryUpdater::InstanceRegistryUpdater(
     : browser_app_instance_registry_(browser_app_instance_registry),
       instance_registry_(instance_registry) {
   browser_app_instance_registry_observation_.Observe(
-      &browser_app_instance_registry_);
+      &*browser_app_instance_registry_);
 }
 
 InstanceRegistryUpdater::~InstanceRegistryUpdater() = default;
@@ -99,14 +99,14 @@ void InstanceRegistryUpdater::OnWindowVisibilityChanged(aura::Window* window,
     return;
   }
   for (const BrowserAppInstance* instance :
-       browser_app_instance_registry_.SelectAppInstances(
+       browser_app_instance_registry_->SelectAppInstances(
            [window](const BrowserAppInstance& instance) {
              return instance.window == window;
            })) {
     OnBrowserAppUpdated(*instance);
   }
   for (const BrowserWindowInstance* instance :
-       browser_app_instance_registry_.SelectWindowInstances(
+       browser_app_instance_registry_->SelectWindowInstances(
            [window](const BrowserWindowInstance& instance) {
              return instance.window == window;
            })) {
@@ -125,7 +125,7 @@ void InstanceRegistryUpdater::OnInstance(
     InstanceState state) {
   auto instance = std::make_unique<apps::Instance>(app_id, instance_id, window);
   instance->UpdateState(state, base::Time::Now());
-  instance_registry_.OnInstance(std::move(instance));
+  instance_registry_->OnInstance(std::move(instance));
 }
 
 }  // namespace apps

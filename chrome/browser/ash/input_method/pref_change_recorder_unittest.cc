@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/input_method/pref_change_recorder.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
@@ -45,7 +46,7 @@ class FakeInputMethodOptions {
   }
 
  private:
-  PrefService* pref_service_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   const std::string engine_id_;
 };
 

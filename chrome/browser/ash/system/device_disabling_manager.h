@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -124,10 +125,11 @@ class DeviceDisablingManager {
 
   void UpdateFromCrosSettings();
 
-  Delegate* delegate_;
-  policy::BrowserPolicyConnectorAsh* browser_policy_connector_;
-  CrosSettings* cros_settings_;
-  user_manager::UserManager* user_manager_;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<policy::BrowserPolicyConnectorAsh, ExperimentalAsh>
+      browser_policy_connector_;
+  raw_ptr<CrosSettings, ExperimentalAsh> cros_settings_;
+  raw_ptr<user_manager::UserManager, ExperimentalAsh> user_manager_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

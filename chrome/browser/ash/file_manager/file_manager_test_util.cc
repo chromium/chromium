@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -129,7 +130,7 @@ class VolumeWaiter : public VolumeManagerObserver {
   }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   base::RepeatingClosure on_mount_;
 };
 }  // namespace

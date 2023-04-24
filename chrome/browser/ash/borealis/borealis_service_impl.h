@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_BOREALIS_BOREALIS_SERVICE_IMPL_H_
 #define CHROME_BROWSER_ASH_BOREALIS_BOREALIS_SERVICE_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher_impl.h"
 #include "chrome/browser/ash/borealis/borealis_app_uninstaller.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager_impl.h"
@@ -36,7 +37,7 @@ class BorealisServiceImpl : public BorealisService {
   BorealisShutdownMonitor& ShutdownMonitor() override;
   BorealisWindowManager& WindowManager() override;
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   BorealisAppLauncherImpl app_launcher_;
   BorealisAppUninstaller app_uninstaller_;

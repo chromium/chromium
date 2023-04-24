@@ -12,6 +12,7 @@
 #include "ash/user_education/user_education_util.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/user_education/user_education_service.h"
 #include "chrome/browser/ui/user_education/user_education_service_factory.h"
@@ -56,7 +57,7 @@ class ChromeUserEducationDelegateTest
  public:
   ChromeUserEducationDelegateTest()
       : user_manager_(new ash::FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(user_manager_)) {}
+        user_manager_enabler_(base::WrapUnique(user_manager_.get())) {}
 
   // Returns the `AccountId` for the primary `profile()`.
   const AccountId& account_id() const {
@@ -99,7 +100,7 @@ class ChromeUserEducationDelegateTest
   }
 
   // User management.
-  ash::FakeChromeUserManager* const user_manager_;
+  const raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 
   // The delegate instance under test.

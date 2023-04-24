@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -61,7 +62,7 @@ class ArcGhostWindowShellSurface : public exo::ClientControlledShellSurface {
   void SetShellAppId(ui::PropertyHandler* property_handler,
                      const absl::optional<std::string>& id);
 
-  ArcGhostWindowView* view_observer_ = nullptr;
+  raw_ptr<ArcGhostWindowView, ExperimentalAsh> view_observer_ = nullptr;
   absl::optional<std::string> app_id_;
 
   std::unique_ptr<exo::Surface> controller_surface_;

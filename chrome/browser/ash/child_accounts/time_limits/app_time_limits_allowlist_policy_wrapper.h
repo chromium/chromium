@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 
 namespace ash {
@@ -29,7 +30,7 @@ class AppTimeLimitsAllowlistPolicyWrapper {
   std::vector<AppId> GetAllowlistAppList() const;
 
  private:
-  const base::Value::Dict* dict_;
+  raw_ptr<const base::Value::Dict, ExperimentalAsh> dict_;
 };
 
 }  // namespace app_time

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -127,14 +128,14 @@ class ShellSurfaceForceCloseDelegate : public ForceCloseWatcher::Delegate,
 
  private:
   // Handle to the shell surface we are trying to close.
-  exo::ShellSurfaceBase* shell_surface_;
+  raw_ptr<exo::ShellSurfaceBase, ExperimentalAsh> shell_surface_;
 
   // Name of the app we are trying to close (or "" if unknown).
   std::string app_name_;
 
   // Handle to the widget representing the currently visible force-close dialog
   // (if there is one), or null.
-  views::Widget* current_dialog_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> current_dialog_ = nullptr;
 
   base::WeakPtrFactory<ShellSurfaceForceCloseDelegate> weak_ptr_factory_;
 };

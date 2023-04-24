@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/auto_reset.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -191,8 +192,8 @@ class SyncConsentScreen : public BaseScreen,
       sync_service_observation_{this};
 
   // Primary user ind his Profile (if screen is shown).
-  const user_manager::User* user_ = nullptr;
-  Profile* profile_ = nullptr;
+  raw_ptr<const user_manager::User, ExperimentalAsh> user_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   bool is_initialized_ = false;
 
   // Used to record whether sync engine initialization is timed out.
@@ -203,7 +204,8 @@ class SyncConsentScreen : public BaseScreen,
   base::TimeTicks start_time_;
 
   // Notify tests.
-  SyncConsentScreenTestDelegate* test_delegate_ = nullptr;
+  raw_ptr<SyncConsentScreenTestDelegate, ExperimentalAsh> test_delegate_ =
+      nullptr;
 
   base::WeakPtrFactory<SyncConsentScreen> weak_factory_{this};
 };

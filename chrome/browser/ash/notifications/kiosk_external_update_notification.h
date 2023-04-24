@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+
 namespace ash {
 
 class KioskExternalUpdateNotificationView;
@@ -30,7 +32,8 @@ class KioskExternalUpdateNotification {
   void Dismiss();
   void CreateAndShowNotificationView(const std::u16string& message);
 
-  KioskExternalUpdateNotificationView* view_;  // Owned by views hierarchy.
+  raw_ptr<KioskExternalUpdateNotificationView, ExperimentalAsh>
+      view_;  // Owned by views hierarchy.
 };
 
 }  // namespace ash

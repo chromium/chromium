@@ -16,6 +16,7 @@
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -107,7 +108,8 @@ class TestObserver : public app_list::AppListSyncableService::Observer {
   void OnAddOrUpdateFromSyncItemForTest() override { ++add_or_update_count_; }
 
  private:
-  app_list::AppListSyncableService* const syncable_service_;
+  const raw_ptr<app_list::AppListSyncableService, ExperimentalAsh>
+      syncable_service_;
   size_t add_or_update_count_ = 0;
 };
 
@@ -139,7 +141,7 @@ class ActiveWindowWaiter : public wm::ActivationChangeObserver {
 
  private:
   base::RunLoop run_loop_;
-  aura::Window* found_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> found_window_ = nullptr;
 
   base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
       observation_{this};
@@ -285,7 +287,7 @@ class SelfDestroyAppItem : public ChromeAppListItem {
   }
 
  private:
-  AppListModelUpdater* updater_;
+  raw_ptr<AppListModelUpdater, ExperimentalAsh> updater_;
 };
 
 // Verifies that activating an app item which destroys itself during activation
@@ -852,7 +854,7 @@ class AppListAppLaunchTest : public extensions::ExtensionBrowserTest {
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
  private:
-  AppListModelUpdater* model_updater_;
+  raw_ptr<AppListModelUpdater, ExperimentalAsh> model_updater_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppListAppLaunchTest,

@@ -8,6 +8,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -86,7 +87,7 @@ class CrostiniUpgradeAvailableNotificationDelegate
 
   CrostiniUpgradeAvailableNotificationClosed disposition_ =
       CrostiniUpgradeAvailableNotificationClosed::kUnknown;
-  Profile* profile_;  // Not owned.
+  raw_ptr<Profile, ExperimentalAsh> profile_;  // Not owned.
   base::WeakPtr<CrostiniUpgradeAvailableNotification> notification_;
   base::OnceClosure closure_;
 

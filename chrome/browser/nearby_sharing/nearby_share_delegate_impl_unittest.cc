@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/nearby_share_controller.h"
 #include "ash/public/cpp/session/session_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_local_device_data_manager.h"
@@ -100,7 +101,7 @@ class NearbyShareDelegateImplTest : public ::testing::Test {
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
   FakeNearbyShareLocalDeviceDataManager test_local_device_data_;
   std::unique_ptr<NearbyShareSettings> settings_;
-  MockSettingsOpener* settings_opener_;
+  raw_ptr<MockSettingsOpener, ExperimentalAsh> settings_opener_;
   MockNearbyShareController controller_;
   NearbyShareDelegateImpl delegate_;
   bool high_visibility_on_ = false;

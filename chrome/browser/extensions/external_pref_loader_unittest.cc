@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
@@ -52,7 +53,7 @@ class TestSyncService : public syncer::TestSyncService {
   }
 
  private:
-  syncer::SyncServiceObserver* observer_ = nullptr;
+  raw_ptr<syncer::SyncServiceObserver, ExperimentalAsh> observer_ = nullptr;
 };
 
 std::unique_ptr<KeyedService> TestingSyncFactoryFunction(
@@ -115,7 +116,7 @@ class ExternalPrefLoaderTest : public ::testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  TestSyncService* sync_service_ = nullptr;
+  raw_ptr<TestSyncService, ExperimentalAsh> sync_service_ = nullptr;
 };
 
 // TODO(lazyboy): Add a test to cover

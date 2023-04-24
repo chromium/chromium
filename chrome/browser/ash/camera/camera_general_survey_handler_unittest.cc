@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -86,7 +87,7 @@ class CameraGeneralSurveyHandlerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  MockDelegate* delegate_ = nullptr;
+  raw_ptr<MockDelegate, ExperimentalAsh> delegate_ = nullptr;
   std::unique_ptr<CameraGeneralSurveyHandler> survey_handler_;
 };
 

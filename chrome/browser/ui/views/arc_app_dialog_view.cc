@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_dialog.h"
 
 #include "base/functional/bind.h"
@@ -68,11 +69,11 @@ class ArcAppDialogView : public views::DialogDelegateView,
   void OnDialogAccepted();
   void OnDialogCancelled();
 
-  views::ImageView* icon_view_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_view_ = nullptr;
 
   std::unique_ptr<AppServiceAppIconLoader> icon_loader_;
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   const std::string app_id_;
   ArcAppConfirmCallback confirm_callback_;

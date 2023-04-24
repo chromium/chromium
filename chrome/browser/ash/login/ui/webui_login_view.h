@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/system_tray_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
@@ -174,7 +175,7 @@ class WebUILoginView : public views::View,
   base::WeakPtr<LoginDisplayHostWebUI> controller_;
 
   // WebView for rendering a webpage as a webui login.
-  views::WebView* web_view_ = nullptr;
+  raw_ptr<views::WebView, ExperimentalAsh> web_view_ = nullptr;
 
   // Converts keyboard events on the WebContents to accelerators.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;

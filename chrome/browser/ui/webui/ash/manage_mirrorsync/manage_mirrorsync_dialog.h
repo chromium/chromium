@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_MANAGE_MIRRORSYNC_MANAGE_MIRRORSYNC_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_MANAGE_MIRRORSYNC_MANAGE_MIRRORSYNC_DIALOG_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 
 class Profile;
@@ -27,7 +28,7 @@ class ManageMirrorSyncDialog : public SystemWebDialogDelegate {
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override;
   void OnWebContentsFinishedLoad() override;
-  ManageMirrorSyncUI* mirrorsync_ui_ = nullptr;
+  raw_ptr<ManageMirrorSyncUI, ExperimentalAsh> mirrorsync_ui_ = nullptr;
 };
 
 }  // namespace ash

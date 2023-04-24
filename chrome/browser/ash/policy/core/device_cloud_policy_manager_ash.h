@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
@@ -211,7 +212,8 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
   // Manages external data referenced by device policies.
   std::unique_ptr<CloudExternalDataManager> external_data_manager_;
 
-  ServerBackedStateKeysBroker* state_keys_broker_;
+  raw_ptr<ServerBackedStateKeysBroker, DanglingUntriaged | ExperimentalAsh>
+      state_keys_broker_;
 
   // Helper object that handles updating the server with our current device
   // state.
@@ -233,7 +235,7 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
   base::CallbackListSubscription state_keys_update_subscription_;
 
   // PrefService instance to read the policy refresh rate from.
-  PrefService* local_state_;
+  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_;
 
   std::unique_ptr<ash::attestation::EnrollmentCertificateUploader>
       enrollment_certificate_uploader_;

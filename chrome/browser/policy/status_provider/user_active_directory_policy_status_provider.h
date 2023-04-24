@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_POLICY_STATUS_PROVIDER_USER_ACTIVE_DIRECTORY_POLICY_STATUS_PROVIDER_H_
 #define CHROME_BROWSER_POLICY_STATUS_PROVIDER_USER_ACTIVE_DIRECTORY_POLICY_STATUS_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 
@@ -38,8 +39,9 @@ class UserActiveDirectoryPolicyStatusProvider
   void OnStoreError(policy::CloudPolicyStore* store) override;
 
  private:
-  policy::ActiveDirectoryPolicyManager* const policy_manager_;  // not owned.
-  Profile* profile_;
+  const raw_ptr<policy::ActiveDirectoryPolicyManager, ExperimentalAsh>
+      policy_manager_;  // not owned.
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 #endif  // CHROME_BROWSER_POLICY_STATUS_PROVIDER_USER_ACTIVE_DIRECTORY_POLICY_STATUS_PROVIDER_H_

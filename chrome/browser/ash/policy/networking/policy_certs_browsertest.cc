@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
@@ -660,7 +661,7 @@ class PolicyProvidedCertsForSigninExtensionTest
         extension_id, signin_profile_, /*can_create=*/false);
   }
 
-  Profile* signin_profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> signin_profile_ = nullptr;
   scoped_refptr<net::X509Certificate> server_cert_;
 
  private:

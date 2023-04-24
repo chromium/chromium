@@ -32,6 +32,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
@@ -665,8 +666,8 @@ class HoldingSpaceUiDragAndDropBrowserTest
     return GetStorageLocationFlags() & flag;
   }
 
-  DropSenderView* drop_sender_view_ = nullptr;
-  DropTargetView* drop_target_view_ = nullptr;
+  raw_ptr<DropSenderView, ExperimentalAsh> drop_sender_view_ = nullptr;
+  raw_ptr<DropTargetView, ExperimentalAsh> drop_target_view_ = nullptr;
 };
 
 // Flaky on ChromeOS bots: crbug.com/1338054
@@ -1440,7 +1441,7 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
 
           // Swap out the production download manager for the mock.
           context->SetDownloadManagerForTesting(
-              base::WrapUnique(download_manager_));
+              base::WrapUnique(download_manager_.get()));
 
           // Install a new download manager delegate after swapping out the
           // production download manager so it will properly register itself
@@ -2037,8 +2038,10 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
 
   const DownloadTypeToUse download_type_to_use_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  testing::NiceMock<content::MockDownloadManager>* download_manager_ = nullptr;
-  content::DownloadManagerDelegate* download_manager_delegate_ = nullptr;
+  raw_ptr<testing::NiceMock<content::MockDownloadManager>, ExperimentalAsh>
+      download_manager_ = nullptr;
+  raw_ptr<content::DownloadManagerDelegate, ExperimentalAsh>
+      download_manager_delegate_ = nullptr;
   base::ObserverList<content::DownloadManager::Observer>::Unchecked
       download_manager_observers_;
   testing::NiceMock<MockDownloadControllerClient> download_controller_client_;

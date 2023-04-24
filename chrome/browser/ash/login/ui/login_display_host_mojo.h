@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -214,7 +215,8 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
 
   // Called after host deletion.
   std::vector<base::OnceClosure> completion_callbacks_;
-  OobeUIDialogDelegate* dialog_ = nullptr;  // Not owned.
+  raw_ptr<OobeUIDialogDelegate, ExperimentalAsh> dialog_ =
+      nullptr;  // Not owned.
   std::unique_ptr<WizardController> wizard_controller_;
 
   // Whether or not there are users that are visible in the views login screen.

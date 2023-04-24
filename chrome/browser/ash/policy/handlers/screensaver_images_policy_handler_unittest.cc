@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/hash/sha1.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/repeating_test_future.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/handlers/screensaver_image_downloader.h"
@@ -160,7 +161,8 @@ class ScreensaverImagesPolicyHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   ash::AshTestHelper ash_test_helper_;
-  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
+      nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
   base::ScopedTempDir temp_dir_;
@@ -168,7 +170,7 @@ class ScreensaverImagesPolicyHandlerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 
   // Ownership of this pref service is transferred to the session controller
-  TestingPrefServiceSimple* user_prefs_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> user_prefs_ = nullptr;
 
   network::TestURLLoaderFactory url_loader_factory_;
 

@@ -9,6 +9,7 @@
 
 #include "base/hash/md5.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
@@ -257,7 +258,7 @@ class ServerPrintersFetcher::PrivateImplementation
     printer->set_id(ServerPrinterId(url.GetNormalized()));
   }
 
-  const ServerPrintersFetcher* owner_;
+  raw_ptr<const ServerPrintersFetcher, ExperimentalAsh> owner_;
   const GURL server_url_;
   const std::string server_name_;
 

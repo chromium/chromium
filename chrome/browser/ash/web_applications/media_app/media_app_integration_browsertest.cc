@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
@@ -297,7 +298,7 @@ class NotificationWatcher : public NotificationDisplayService::Observer {
   }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   base::RunLoop run_loop_;
   std::string seen_notification_id_;
 

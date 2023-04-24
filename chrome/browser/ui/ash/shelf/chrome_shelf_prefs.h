@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 
@@ -193,11 +194,12 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
 
   // The sync service instance that is currently being observed. If nullptr then
   // nothing is being observed.
-  app_list::AppListSyncableService* observed_sync_service_ = nullptr;
+  raw_ptr<app_list::AppListSyncableService, ExperimentalAsh>
+      observed_sync_service_ = nullptr;
 
   // The owner of this class is responsible for ensuring the validity of this
   // pointer.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_CHROME_SHELF_PREFS_H_

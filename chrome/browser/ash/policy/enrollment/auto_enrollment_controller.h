@@ -212,8 +212,8 @@ class AutoEnrollmentController {
 
   // Unowned pointer. If not nullptr, this will be used to create the `client_`.
   // It can be set using `SetAutoEnrollmentClientFactoryForTesting`.
-  AutoEnrollmentClient::Factory* testing_auto_enrollment_client_factory_ =
-      nullptr;
+  raw_ptr<AutoEnrollmentClient::Factory, ExperimentalAsh>
+      testing_auto_enrollment_client_factory_ = nullptr;
 
   // Constructs the PSM RLWE client. It will either create a fake or real
   // implementation of the client.

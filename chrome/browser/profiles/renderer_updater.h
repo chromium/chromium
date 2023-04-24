@@ -94,7 +94,7 @@ class RendererUpdater : public KeyedService,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::OAuth2LoginManager* oauth2_login_manager_;
+  raw_ptr<ash::OAuth2LoginManager, ExperimentalAsh> oauth2_login_manager_;
   bool merge_session_running_;
   std::vector<mojo::Remote<chrome::mojom::ChromeOSListener>>
       chromeos_listeners_;

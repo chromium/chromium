@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_FAKE_UDP_SOCKET_H_
 #define CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_FAKE_UDP_SOCKET_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -121,7 +122,7 @@ class FakeUdpSocket : public network::mojom::UDPSocket {
   bool mojo_disconnect_on_connect_ = false;
   bool mojo_disconnect_on_send_ = false;
   bool mojo_disconnect_on_receive_ = false;
-  content::BrowserTaskEnvironment* task_environment_;
+  raw_ptr<content::BrowserTaskEnvironment, ExperimentalAsh> task_environment_;
   base::TimeDelta connection_delay_;
   base::TimeDelta send_delay_;
   base::TimeDelta receive_delay_;

@@ -11,6 +11,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace ash {
@@ -82,7 +83,8 @@ class ServerBackedStateKeysBroker {
   // Stores newly-received state keys and notifies consumers.
   void StoreStateKeys(const std::vector<std::string>& state_keys);
 
-  ash::SessionManagerClient* session_manager_client_;
+  raw_ptr<ash::SessionManagerClient, DanglingUntriaged | ExperimentalAsh>
+      session_manager_client_;
 
   // The current set of state keys.
   std::vector<std::string> state_keys_;

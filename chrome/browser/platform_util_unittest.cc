@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -158,9 +159,10 @@ class PlatformUtilTestBase : public BrowserWithTestWindowTest {
 
  private:
   std::unique_ptr<content::ContentBrowserClient> content_browser_client_;
-  content::ContentBrowserClient* old_content_browser_client_ = nullptr;
+  raw_ptr<content::ContentBrowserClient, ExperimentalAsh>
+      old_content_browser_client_ = nullptr;
   apps::AppServiceTest app_service_test_;
-  apps::AppServiceProxy* app_service_proxy_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_proxy_ = nullptr;
 };
 
 #else

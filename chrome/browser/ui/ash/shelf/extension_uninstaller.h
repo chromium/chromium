@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_SHELF_EXTENSION_UNINSTALLER_H_
 #define CHROME_BROWSER_UI_ASH_SHELF_EXTENSION_UNINSTALLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -37,7 +38,7 @@ class ExtensionUninstaller
 
   void CleanUp();
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   std::string app_id_;
   gfx::NativeWindow parent_window_;  // Can be null.
   std::unique_ptr<extensions::ExtensionUninstallDialog> dialog_;

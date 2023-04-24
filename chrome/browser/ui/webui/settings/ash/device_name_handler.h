@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DEVICE_NAME_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DEVICE_NAME_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/device_name/device_name_store.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -42,7 +43,7 @@ class DeviceNameHandler : public ::settings::SettingsPageUIHandler,
 
   base::Value::Dict GetDeviceNameMetadata() const;
 
-  DeviceNameStore* device_name_store_;
+  raw_ptr<DeviceNameStore, ExperimentalAsh> device_name_store_;
 
   base::ScopedObservation<DeviceNameStore, DeviceNameStore::Observer>
       observation_{this};

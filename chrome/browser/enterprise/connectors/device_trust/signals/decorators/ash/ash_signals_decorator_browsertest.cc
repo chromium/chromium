@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/ash/ash_signals_decorator.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -123,7 +124,7 @@ class AshSignalsDecoratorBrowserTest
 
   std::unique_ptr<TestingProfile> testing_profile_;
   TestingPrefServiceSimple prefs_;
-  policy::BrowserPolicyConnectorAsh* connector_;
+  raw_ptr<policy::BrowserPolicyConnectorAsh, ExperimentalAsh> connector_;
 
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -85,7 +86,7 @@ class ArcDocumentsProviderRootMap : public KeyedService {
   // |runner_| outlives |this| and ArcDocumentsProviderRoot instances in |map_|
   // as this service has explicit dependency on ArcFileSystemOperationRunner in
   // the BrowserContextKeyedServiceFactory dependency graph.
-  ArcFileSystemOperationRunner* const runner_;
+  const raw_ptr<ArcFileSystemOperationRunner, ExperimentalAsh> runner_;
 
   // Key is (authority, root_document_id).
   using Key = std::pair<std::string, std::string>;

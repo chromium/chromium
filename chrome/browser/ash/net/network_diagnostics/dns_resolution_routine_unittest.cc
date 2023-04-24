@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/net/network_diagnostics/dns_resolution_routine.h"
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -181,7 +182,7 @@ class DnsResolutionRoutineTest : public ::testing::Test {
   session_manager::SessionManager session_manager_;
   std::unique_ptr<FakeNetworkContext> fake_network_context_;
   // Unowned
-  Profile* test_profile_;
+  raw_ptr<Profile, ExperimentalAsh> test_profile_;
   TestingProfileManager profile_manager_;
   std::unique_ptr<DnsResolutionRoutine> dns_resolution_routine_;
   base::WeakPtrFactory<DnsResolutionRoutineTest> weak_factory_{this};

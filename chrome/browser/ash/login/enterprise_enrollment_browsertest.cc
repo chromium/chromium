@@ -6,6 +6,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/string_escape.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -410,7 +411,8 @@ class ActiveDirectoryJoinTest : public EnterpriseEnrollmentTest {
 
  private:
   // Owned by the AuthPolicyClient global instance.
-  MockAuthPolicyClient* mock_authpolicy_client_ = nullptr;
+  raw_ptr<MockAuthPolicyClient, ExperimentalAsh> mock_authpolicy_client_ =
+      nullptr;
 };
 
 // Shows the enrollment screen and mocks the enrollment helper to request an

@@ -6,6 +6,7 @@
 
 #include "chrome/browser/nearby_sharing/nearby_share_profile_info_provider_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -28,7 +29,7 @@ class NearbyShareProfileInfoProviderImplTest : public ::testing::Test {
   NearbyShareProfileInfoProviderImplTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()),
         user_manager_(new user_manager::FakeUserManager()),
-        enabler_(base::WrapUnique(user_manager_)) {}
+        enabler_(base::WrapUnique(user_manager_.get())) {}
   ~NearbyShareProfileInfoProviderImplTest() override = default;
 
   void SetUp() override { ASSERT_TRUE(profile_manager_.SetUp()); }
@@ -50,7 +51,8 @@ class NearbyShareProfileInfoProviderImplTest : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment;
   TestingProfileManager profile_manager_;
-  user_manager::FakeUserManager* user_manager_ = nullptr;
+  raw_ptr<user_manager::FakeUserManager, ExperimentalAsh> user_manager_ =
+      nullptr;
   user_manager::ScopedUserManager enabler_;
   AccountId account_id_;
 };

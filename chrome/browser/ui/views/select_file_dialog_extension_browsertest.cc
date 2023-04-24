@@ -14,6 +14,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -135,7 +136,7 @@ class MockSelectFileDialogListener : public ui::SelectFileDialog::Listener {
   bool file_selected_;
   bool canceled_;
   base::FilePath path_;
-  void* params_;
+  raw_ptr<void, ExperimentalAsh> params_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 };
 
@@ -784,9 +785,11 @@ class SelectFileDialogExtensionPolicyTest
         .WillByDefault(testing::Return(mock_files_controller_.get()));
   }
 
-  policy::MockDlpRulesManager* rules_manager_ = nullptr;
+  raw_ptr<policy::MockDlpRulesManager, ExperimentalAsh> rules_manager_ =
+      nullptr;
   std::unique_ptr<MockFilesController> mock_files_controller_ = nullptr;
-  storage::ExternalMountPoints* mount_points_ = nullptr;
+  raw_ptr<storage::ExternalMountPoints, ExperimentalAsh> mount_points_ =
+      nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionPolicyTest, DlpDownloadAllow) {

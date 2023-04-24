@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -305,7 +306,8 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
 
  protected:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  AppPlatformMetricsService* app_platform_metrics_service_ = nullptr;
+  raw_ptr<AppPlatformMetricsService, ExperimentalAsh>
+      app_platform_metrics_service_ = nullptr;
 #else
   WebsiteMetricsServiceLacros* website_metrics_service_ = nullptr;
 #endif

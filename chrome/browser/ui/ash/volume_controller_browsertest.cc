@@ -8,6 +8,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -87,7 +88,7 @@ class VolumeControllerTest : public InProcessBrowserTest {
   }
 
  protected:
-  ash::CrasAudioHandler* audio_handler_;  // Not owned.
+  raw_ptr<ash::CrasAudioHandler, ExperimentalAsh> audio_handler_;  // Not owned.
 };
 
 IN_PROC_BROWSER_TEST_F(VolumeControllerTest, VolumeUpAndDown) {
@@ -197,7 +198,7 @@ class VolumeControllerSoundsTest : public VolumeControllerTest {
   }
 
  private:
-  SoundsManagerTestImpl* sounds_manager_;
+  raw_ptr<SoundsManagerTestImpl, ExperimentalAsh> sounds_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(VolumeControllerSoundsTest, Simple) {

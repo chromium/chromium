@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_NET_APN_MIGRATOR_H_
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -58,10 +59,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
 
   base::flat_set<std::string> iccids_in_migration_;
 
-  ManagedCellularPrefHandler* managed_cellular_pref_handler_ = nullptr;
-  ManagedNetworkConfigurationHandler* network_configuration_handler_ = nullptr;
-  NetworkStateHandler* network_state_handler_ = nullptr;
-  NetworkMetadataStore* network_metadata_store_ = nullptr;
+  raw_ptr<ManagedCellularPrefHandler, ExperimentalAsh>
+      managed_cellular_pref_handler_ = nullptr;
+  raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
+      network_configuration_handler_ = nullptr;
+  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
+      nullptr;
+  raw_ptr<NetworkMetadataStore, ExperimentalAsh> network_metadata_store_ =
+      nullptr;
 
   // Remote for sending requests to the CrosNetworkConfig service.
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>

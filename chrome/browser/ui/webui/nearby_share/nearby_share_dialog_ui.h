@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
@@ -91,11 +92,12 @@ class NearbyShareDialogUI : public ui::MojoWebUIController,
   // A pointer to the Sharesheet controller is provided by
   // |NearbyShareAction::LaunchAction| when this WebUI controller is created. It
   // is used to close the Sharesheet in |HandleClose|.
-  sharesheet::SharesheetController* sharesheet_controller_ = nullptr;
+  raw_ptr<sharesheet::SharesheetController, ExperimentalAsh>
+      sharesheet_controller_ = nullptr;
 
   std::vector<std::unique_ptr<Attachment>> attachments_;
-  NearbySharingService* nearby_service_;
-  views::WebView* web_view_ = nullptr;
+  raw_ptr<NearbySharingService, ExperimentalAsh> nearby_service_;
+  raw_ptr<views::WebView, ExperimentalAsh> web_view_ = nullptr;
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();

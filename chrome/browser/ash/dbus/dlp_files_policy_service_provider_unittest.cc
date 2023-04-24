@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/dbus/dlp_files_policy_service_provider.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
@@ -38,7 +39,7 @@ class DlpFilesPolicyServiceProviderTest
   DlpFilesPolicyServiceProviderTest()
       : profile_(std::make_unique<TestingProfile>()),
         user_manager_(new FakeChromeUserManager()),
-        scoped_user_manager_(base::WrapUnique(user_manager_)),
+        scoped_user_manager_(base::WrapUnique(user_manager_.get())),
         dlp_policy_service_(std::make_unique<DlpFilesPolicyServiceProvider>()) {
   }
 
@@ -115,10 +116,11 @@ class DlpFilesPolicyServiceProviderTest
 
   content::BrowserTaskEnvironment task_environment_;
 
-  policy::MockDlpRulesManager* mock_rules_manager_ = nullptr;
+  raw_ptr<policy::MockDlpRulesManager, ExperimentalAsh> mock_rules_manager_ =
+      nullptr;
 
   const std::unique_ptr<TestingProfile> profile_;
-  FakeChromeUserManager* user_manager_;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 
   std::unique_ptr<DlpFilesPolicyServiceProvider> dlp_policy_service_;

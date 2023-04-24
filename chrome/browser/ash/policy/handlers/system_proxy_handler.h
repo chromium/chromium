@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_HANDLERS_SYSTEM_PROXY_HANDLER_H_
 #define CHROME_BROWSER_ASH_POLICY_HANDLERS_SYSTEM_PROXY_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 
 namespace ash {
@@ -34,8 +35,9 @@ class SystemProxyHandler {
   ash::SystemProxyManager* GetSystemProxyManager();
 
   // Owned by the test fixture.
-  ash::SystemProxyManager* system_proxy_manager_for_testing_ = nullptr;
-  ash::CrosSettings* cros_settings_;
+  raw_ptr<ash::SystemProxyManager, ExperimentalAsh>
+      system_proxy_manager_for_testing_ = nullptr;
+  raw_ptr<ash::CrosSettings, ExperimentalAsh> cros_settings_;
   base::CallbackListSubscription system_proxy_subscription_;
 };
 

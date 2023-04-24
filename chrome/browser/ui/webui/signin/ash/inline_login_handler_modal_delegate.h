@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_HANDLER_MODAL_DELEGATE_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_HANDLER_MODAL_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 
 namespace ash {
@@ -33,7 +34,7 @@ class InlineLoginHandlerModalDelegate
 
  private:
   // Non-owning pointer.
-  web_modal::WebContentsModalDialogHost* host_;
+  raw_ptr<web_modal::WebContentsModalDialogHost, ExperimentalAsh> host_;
 };
 
 }  // namespace ash

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -245,15 +246,15 @@ class PerUserStateManagerChromeOS
   base::RepeatingCallbackList<void(bool)> callback_list_;
 
   // Raw pointer to Metrics service client that should own |this|.
-  MetricsServiceClient* const metrics_service_client_;
+  const raw_ptr<MetricsServiceClient, ExperimentalAsh> metrics_service_client_;
 
   // Raw pointer to user manager. User manager is used to listen to login/logout
   // events as well as retrieve metadata about users. |user_manager_| should
   // outlive |this|.
-  user_manager::UserManager* const user_manager_;
+  const raw_ptr<user_manager::UserManager, ExperimentalAsh> user_manager_;
 
   // Raw pointer to local state prefs store.
-  PrefService* const local_state_;
+  const raw_ptr<PrefService, ExperimentalAsh> local_state_;
 
   // Logs parameters that control log storage requirements and restrictions.
   const MetricsLogStore::StorageLimits storage_limits_;
@@ -262,7 +263,7 @@ class PerUserStateManagerChromeOS
   const std::string signing_key_;
 
   // Pointer to the current logged-in user.
-  user_manager::User* current_user_ = nullptr;
+  raw_ptr<user_manager::User, ExperimentalAsh> current_user_ = nullptr;
 
   // Current state for |this|.
   State state_ = State::CONSTRUCTED;

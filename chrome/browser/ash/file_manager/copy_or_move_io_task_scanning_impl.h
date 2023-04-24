@@ -11,6 +11,7 @@
 
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -99,7 +100,7 @@ class CopyOrMoveIOTaskScanningImpl : public CopyOrMoveIOTaskImpl {
   std::unique_ptr<storage::CopyOrMoveHookDelegate> GetHookDelegate(
       size_t idx) override;
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
   // Stores the settings, only valid until creation of respective.

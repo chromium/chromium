@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
@@ -70,7 +71,7 @@ class PinStoragePrefsTestApi {
   }
 
  private:
-  PinStoragePrefs* pin_storage_;
+  raw_ptr<PinStoragePrefs, ExperimentalAsh> pin_storage_;
 };
 
 // Verifies that:

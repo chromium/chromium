@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_restore/arc_app_single_restore_handler.h"
 
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -47,7 +48,7 @@ class ArcAppSingleRestoreHandlerTest : public testing::Test {
       : profile_manager_(CreateTestingProfileManager()),
         profile_(profile_manager_->CreateTestingProfile(kTestProfileName)),
         user_manager_(new FakeChromeUserManager),
-        user_manager_owner_(base::WrapUnique(user_manager_)),
+        user_manager_owner_(base::WrapUnique(user_manager_.get())),
         wm_helper_(std::make_unique<exo::WMHelper>()) {
     const user_manager::User* user =
         user_manager_->AddUser(AccountId::FromUserEmail(kTestProfileName));
@@ -73,8 +74,8 @@ class ArcAppSingleRestoreHandlerTest : public testing::Test {
 
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
-  FakeChromeUserManager* user_manager_;  // Not own.
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;  // Not own.
   user_manager::ScopedUserManager user_manager_owner_;
 
   // Initialize WMHelper to create ARC ghost window handler.

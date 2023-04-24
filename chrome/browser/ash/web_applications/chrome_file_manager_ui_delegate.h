@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_CHROME_FILE_MANAGER_UI_DELEGATE_H_
 
 #include "ash/webui/file_manager/file_manager_ui_delegate.h"
+#include "base/memory/raw_ptr.h"
 
 namespace content {
 class WebUI;
@@ -30,7 +31,7 @@ class ChromeFileManagerUIDelegate : public ash::FileManagerUIDelegate {
   void ProgressPausedTasks() const override;
 
  private:
-  content::WebUI* web_ui_;  // Owns |this|.
+  raw_ptr<content::WebUI, ExperimentalAsh> web_ui_;  // Owns |this|.
 };
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_CHROME_FILE_MANAGER_UI_DELEGATE_H_

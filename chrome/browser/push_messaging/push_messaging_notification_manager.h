@@ -108,11 +108,11 @@ class PushMessagingNotificationManager {
   BudgetDatabase budget_database_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::multidevice_setup::MultiDeviceSetupClient*
+  raw_ptr<ash::multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
       test_multidevice_setup_client_ = nullptr;
 
-  ash::android_sms::AndroidSmsAppManager* test_android_sms_app_manager_ =
-      nullptr;
+  raw_ptr<ash::android_sms::AndroidSmsAppManager, ExperimentalAsh>
+      test_android_sms_app_manager_ = nullptr;
 #endif
 
   base::WeakPtrFactory<PushMessagingNotificationManager> weak_factory_{this};

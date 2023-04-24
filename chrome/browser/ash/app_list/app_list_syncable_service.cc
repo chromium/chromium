@@ -17,6 +17,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -339,7 +340,7 @@ class AppListSyncableService::ModelUpdaterObserver
     owner_->UpdateSyncItem(item);
   }
 
-  AppListSyncableService* const owner_;
+  const raw_ptr<AppListSyncableService, ExperimentalAsh> owner_;
   std::string adding_item_id_;
 
   // Whether the observer should handle model updated updates. The value is

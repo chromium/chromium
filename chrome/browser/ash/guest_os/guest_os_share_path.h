@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
@@ -187,7 +188,7 @@ class GuestOsSharePath : public KeyedService,
   // true if path is no longer shared with any VMs.
   bool RemoveSharedPathInfo(SharedPathInfo& info, const std::string& vm_name);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   // Task runner for FilePathWatchers to be created, run, and be destroyed on.
   scoped_refptr<base::SequencedTaskRunner> file_watcher_task_runner_;
 

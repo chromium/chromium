@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 
 class Profile;
 
@@ -32,7 +33,7 @@ class BorealisAppUninstaller {
   void Uninstall(std::string app_id, OnUninstalledCallback callback);
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 }  // namespace borealis

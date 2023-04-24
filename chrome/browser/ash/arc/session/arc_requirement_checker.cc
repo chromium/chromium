@@ -185,7 +185,7 @@ void ArcRequirementChecker::StartBackgroundChecks(
     return;
 
   android_management_checker_ = android_management_checker_factory_.Run(
-      profile_, true /* retry_on_error */);
+      profile_.get(), true /* retry_on_error */);
   android_management_checker_->StartCheck(base::BindOnce(
       &ArcRequirementChecker::OnBackgroundAndroidManagementChecked,
       weak_ptr_factory_.GetWeakPtr()));
@@ -244,7 +244,7 @@ void ArcRequirementChecker::StartAndroidManagementCheck() {
     return;
 
   android_management_checker_ = android_management_checker_factory_.Run(
-      profile_, false /* retry_on_error */);
+      profile_.get(), false /* retry_on_error */);
   android_management_checker_->StartCheck(
       base::BindOnce(&ArcRequirementChecker::OnAndroidManagementChecked,
                      weak_ptr_factory_.GetWeakPtr()));

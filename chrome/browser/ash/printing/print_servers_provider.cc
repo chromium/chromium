@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
@@ -321,7 +322,7 @@ class PrintServersProviderImpl : public PrintServersProvider {
   // The current resultant list of servers.
   std::vector<PrintServer> result_servers_;
 
-  PrefService* prefs_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> prefs_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
   std::string allowlist_pref_;
 

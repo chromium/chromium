@@ -35,7 +35,7 @@ void ChildPolicyObserver::NotifyWhenPolicyReady(
   DCHECK(!on_policy_ready_);
 
   if (IsChildPolicyReady()) {
-    std::move(on_policy_ready).Run(profile_, refresh_result_);
+    std::move(on_policy_ready).Run(profile_.get(), refresh_result_);
     return;
   }
 
@@ -69,7 +69,7 @@ void ChildPolicyObserver::OnPolicyReady(
     refresh_result_ = refresh_result;
 
   if (on_policy_ready_)
-    std::move(on_policy_ready_).Run(profile_, refresh_result_);
+    std::move(on_policy_ready_).Run(profile_.get(), refresh_result_);
 }
 
 policy::UserCloudPolicyManagerAsh*

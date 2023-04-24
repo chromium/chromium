@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
@@ -48,7 +49,7 @@ class OsSettingsResult : public ChromeSearchResult {
   void Open(int event_flags) override;
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   const std::string url_path_;
 };
 
@@ -117,10 +118,10 @@ class OsSettingsProvider : public SearchProvider,
   float min_score_ = 0.4f;
   float min_score_for_alternates_ = 0.4f;
 
-  Profile* const profile_;
-  ash::settings::SearchHandler* search_handler_;
-  const ash::settings::Hierarchy* hierarchy_;
-  apps::AppServiceProxy* app_service_proxy_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<ash::settings::SearchHandler, ExperimentalAsh> search_handler_;
+  raw_ptr<const ash::settings::Hierarchy, ExperimentalAsh> hierarchy_;
+  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_proxy_;
   gfx::ImageSkia icon_;
 
   // Last query. It is reset when view is closed.

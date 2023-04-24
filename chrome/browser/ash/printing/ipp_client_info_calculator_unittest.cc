@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/time/time.h"
@@ -69,7 +70,7 @@ class IppClientInfoCalculatorTest : public testing::Test {
   base::test::ScopedChromeOSVersionInfo cros_version_info_{kLsbRelease,
                                                            base::Time()};
   ScopedTestingCrosSettings testing_cros_settings_;
-  policy::FakeDeviceAttributes* device_attributes_;
+  raw_ptr<policy::FakeDeviceAttributes, ExperimentalAsh> device_attributes_;
   std::unique_ptr<IppClientInfoCalculator> client_info_calculator_;
 };
 

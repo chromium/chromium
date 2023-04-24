@@ -10,6 +10,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "chrome/browser/ash/login/mock_network_state_helper.h"
@@ -61,7 +62,8 @@ class NetworkScreenUnitTest : public testing::Test {
   // A pointer to the NetworkScreen.
   std::unique_ptr<NetworkScreen> network_screen_;
 
-  login::MockNetworkStateHelper* mock_network_state_helper_ = nullptr;
+  raw_ptr<login::MockNetworkStateHelper, ExperimentalAsh>
+      mock_network_state_helper_ = nullptr;
   absl::optional<NetworkScreen::Result> last_screen_result_;
 
  private:

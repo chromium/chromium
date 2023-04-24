@@ -7,6 +7,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -106,8 +108,8 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   void UpdateLastInteractionTime();
   void ShowDialog(const std::string& site_context);
 
-  Profile* const profile_;
-  const HatsConfig& hats_config_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ref<const HatsConfig, ExperimentalAsh> hats_config_;
   base::flat_map<std::string, std::string> product_specific_data_;
   std::unique_ptr<message_center::Notification> notification_;
 

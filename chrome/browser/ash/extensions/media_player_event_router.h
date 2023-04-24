@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_EXTENSIONS_MEDIA_PLAYER_EVENT_ROUTER_H_
 #define CHROME_BROWSER_ASH_EXTENSIONS_MEDIA_PLAYER_EVENT_ROUTER_H_
 
+#include "base/memory/raw_ptr.h"
+
 namespace content {
 class BrowserContext;
 }
@@ -31,7 +33,7 @@ class MediaPlayerEventRouter {
   void NotifyTogglePlayState();
 
  private:
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
 };
 
 }  // namespace extensions

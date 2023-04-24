@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/fileapi/recent_source.h"
@@ -54,7 +55,7 @@ class RecentDriveSource : public RecentSource {
       drive::FileError error,
       absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> results);
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Set at the beginning of GetRecentFiles().
   absl::optional<Params> params_;

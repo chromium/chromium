@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/components/arc/mojom/app.mojom-forward.h"
+#include "base/memory/raw_ptr.h"
 
 namespace arc {
 namespace mojom {
@@ -145,9 +146,9 @@ class ArcAppTest {
   void CreateFakeAppsAndPackages();
 
   // Unowned pointer.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
-  ArcAppListPrefs* arc_app_list_pref_ = nullptr;
+  raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_pref_ = nullptr;
 
   bool wait_default_apps_ = true;
 

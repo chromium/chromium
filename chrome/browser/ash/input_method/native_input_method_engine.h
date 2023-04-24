@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_NATIVE_INPUT_METHOD_ENGINE_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_NATIVE_INPUT_METHOD_ENGINE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/input_method/assistive_suggester.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
@@ -114,8 +115,8 @@ class NativeInputMethodEngine
 
   bool ShouldRouteToNativeMojoEngine(const std::string& engine_id) const;
 
-  AssistiveSuggester* assistive_suggester_ = nullptr;
-  AutocorrectManager* autocorrect_manager_ = nullptr;
+  raw_ptr<AssistiveSuggester, ExperimentalAsh> assistive_suggester_ = nullptr;
+  raw_ptr<AutocorrectManager, ExperimentalAsh> autocorrect_manager_ = nullptr;
   base::ScopedObservation<ChromeKeyboardControllerClient,
                           ChromeKeyboardControllerClient::Observer>
       chrome_keyboard_controller_client_observer_{this};

@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
@@ -162,12 +163,13 @@ class ArcAppIcon::DecodeRequest : public ImageDecoder::ImageRequest {
   void OnDecodeImageFailed() override;
 
  private:
-  ArcAppIcon& host_;
+  const raw_ref<ArcAppIcon, ExperimentalAsh> host_;
   const ArcAppIconDescriptor descriptor_;
   const bool resize_allowed_;
   const bool retain_padding_;
-  gfx::ImageSkia& image_skia_;
-  std::map<ui::ResourceScaleFactor, base::Time>& incomplete_scale_factors_;
+  const raw_ref<gfx::ImageSkia, ExperimentalAsh> image_skia_;
+  const raw_ref<std::map<ui::ResourceScaleFactor, base::Time>, ExperimentalAsh>
+      incomplete_scale_factors_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -205,26 +207,26 @@ void ArcAppIcon::DecodeRequest::OnImageDecoded(const SkBitmap& bitmap) {
     if (!resize_allowed_) {
       VLOG(2) << "Decoded ARC icon has unexpected dimension " << bitmap.width()
               << "x" << bitmap.height() << ". Expected " << expected_dim << ".";
-      host_.MaybeRequestIcon(descriptor_.scale_factor);
+      host_->MaybeRequestIcon(descriptor_.scale_factor);
     } else {
-      host_.UpdateImageSkia(descriptor_.scale_factor,
-                            skia::ImageOperations::Resize(
-                                bitmap, skia::ImageOperations::RESIZE_BEST,
-                                expected_dim, expected_dim),
-                            image_skia_, incomplete_scale_factors_);
+      host_->UpdateImageSkia(descriptor_.scale_factor,
+                             skia::ImageOperations::Resize(
+                                 bitmap, skia::ImageOperations::RESIZE_BEST,
+                                 expected_dim, expected_dim),
+                             *image_skia_, *incomplete_scale_factors_);
     }
   } else {
-    host_.UpdateImageSkia(descriptor_.scale_factor, bitmap, image_skia_,
-                          incomplete_scale_factors_);
+    host_->UpdateImageSkia(descriptor_.scale_factor, bitmap, *image_skia_,
+                           *incomplete_scale_factors_);
   }
 
-  host_.DiscardDecodeRequest(this, true /* bool is_decode_success */);
+  host_->DiscardDecodeRequest(this, true /* bool is_decode_success */);
 }
 
 void ArcAppIcon::DecodeRequest::OnDecodeImageFailed() {
   VLOG(2) << "Failed to decode ARC icon.";
-  host_.MaybeRequestIcon(descriptor_.scale_factor);
-  host_.DiscardDecodeRequest(this, false /* bool is_decode_success*/);
+  host_->MaybeRequestIcon(descriptor_.scale_factor);
+  host_->DiscardDecodeRequest(this, false /* bool is_decode_success*/);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

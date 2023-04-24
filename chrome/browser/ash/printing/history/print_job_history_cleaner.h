@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_HISTORY_CLEANER_H_
 #define CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_HISTORY_CLEANER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/printing/history/print_job_database.h"
@@ -50,12 +51,12 @@ class PrintJobHistoryCleaner {
 
   // This object is owned by PrintJobHistoryService and outlives
   // PrintJobHistoryCleaner.
-  PrintJobDatabase* print_job_database_;
+  raw_ptr<PrintJobDatabase, ExperimentalAsh> print_job_database_;
 
-  PrefService* pref_service_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
 
   // Points to the base::DefaultClock by default.
-  const base::Clock* clock_;
+  raw_ptr<const base::Clock, ExperimentalAsh> clock_;
 
   // Stores the completion time of the oldest print job in the database or the
   // time of last cleanup.

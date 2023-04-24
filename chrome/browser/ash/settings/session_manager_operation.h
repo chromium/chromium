@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_validator.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -130,7 +131,8 @@ class SessionManagerOperation {
   // Extracts status and device settings from the validator and reports them.
   void ReportValidatorStatus(policy::DeviceCloudPolicyValidator* validator);
 
-  SessionManagerClient* session_manager_client_ = nullptr;
+  raw_ptr<SessionManagerClient, ExperimentalAsh> session_manager_client_ =
+      nullptr;
   scoped_refptr<ownership::OwnerKeyUtil> owner_key_util_;
 
   Callback callback_;

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_FAKE_ARC_TOS_MIXIN_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_FAKE_ARC_TOS_MIXIN_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
 namespace net {
@@ -39,7 +40,7 @@ class FakeArcTosMixin : public InProcessBrowserTestMixin {
   std::string TestServerBaseUrl();
   const std::string kArcTosContent = "ARC TOS for test.";
   const std::string kPrivacyPolicyContent = "ARC Privacy Policy for test.";
-  net::EmbeddedTestServer* test_server_;
+  raw_ptr<net::EmbeddedTestServer, ExperimentalAsh> test_server_;
 };
 
 }  // namespace ash

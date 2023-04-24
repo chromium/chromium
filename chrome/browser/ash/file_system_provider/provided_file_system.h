@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -247,8 +248,9 @@ class ProvidedFileSystem : public ProvidedFileSystemInterface {
 
   void OnLacrosOperationForwarded(int request_id, base::File::Error error);
 
-  Profile* profile_;                       // Not owned.
-  extensions::EventRouter* event_router_;  // Not owned. May be NULL.
+  raw_ptr<Profile, ExperimentalAsh> profile_;  // Not owned.
+  raw_ptr<extensions::EventRouter, ExperimentalAsh>
+      event_router_;  // Not owned. May be NULL.
   ProvidedFileSystemInfo file_system_info_;
   std::unique_ptr<NotificationManagerInterface> notification_manager_;
   std::unique_ptr<RequestDispatcher> request_dispatcher_;

@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -399,9 +400,9 @@ class AutoEnrollmentClientImpl::FREServerStateAvailabilityRequester
     }
   }
 
-  DeviceManagementService* device_management_service_;
+  raw_ptr<DeviceManagementService, ExperimentalAsh> device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  PrefService* local_state_;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_;
   const std::string device_id_;
   const std::string uma_suffix_;
 
@@ -559,7 +560,7 @@ class AutoEnrollmentClientImpl::InitialServerStateAvailabilityRequester
   // related to PSM protocol with DMServer.
   std::unique_ptr<psm::RlweDmserverClient> psm_rlwe_dmserver_client_;
 
-  PrefService* local_state_;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_;
 
   CompletionCallback completion_callback_;
 };
@@ -711,9 +712,9 @@ class AutoEnrollmentClientImpl::ServerStateRetriever {
     std::move(completion_callback_).Run(result);
   }
 
-  DeviceManagementService* device_management_service_;
+  raw_ptr<DeviceManagementService, ExperimentalAsh> device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  PrefService* local_state_;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_;
   const std::string device_id_;
   const std::string uma_suffix_;
 

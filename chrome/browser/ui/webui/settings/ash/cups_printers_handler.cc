@@ -378,7 +378,7 @@ void CupsPrintersHandler::RegisterMessages() {
 
 void CupsPrintersHandler::OnJavascriptAllowed() {
   DCHECK(!printers_manager_observation_.IsObserving());
-  printers_manager_observation_.Observe(printers_manager_);
+  printers_manager_observation_.Observe(printers_manager_.get());
 }
 
 void CupsPrintersHandler::OnJavascriptDisallowed() {

@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -291,7 +292,8 @@ class LorgnetteScannerManagerTest : public testing::Test {
 
   std::unique_ptr<base::RunLoop> run_loop_;
 
-  FakeZeroconfScannerDetector* fake_zeroconf_scanner_detector_;
+  raw_ptr<FakeZeroconfScannerDetector, ExperimentalAsh>
+      fake_zeroconf_scanner_detector_;
 
   std::unique_ptr<LorgnetteScannerManager> lorgnette_scanner_manager_;
 

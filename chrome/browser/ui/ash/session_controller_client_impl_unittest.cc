@@ -11,6 +11,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -115,7 +116,7 @@ class SessionControllerClientImplTest : public testing::Test {
     // Initialize the UserManager singleton.
     user_manager_ = new TestChromeUserManager;
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(user_manager_));
+        base::WrapUnique(user_manager_.get()));
     // Initialize AssistantBrowserDelegate singleton.
     assistant_delegate_ = std::make_unique<AssistantBrowserDelegateImpl>();
 
@@ -203,7 +204,7 @@ class SessionControllerClientImplTest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
   // Owned by |user_manager_enabler_|.
-  TestChromeUserManager* user_manager_ = nullptr;
+  raw_ptr<TestChromeUserManager, ExperimentalAsh> user_manager_ = nullptr;
 
   std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_test_helper_;
 };

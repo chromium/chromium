@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_FAKE_RECOMMEND_APPS_FETCHER_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_RECOMMEND_APPS_FAKE_RECOMMEND_APPS_FETCHER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher.h"
@@ -30,7 +31,7 @@ class FakeRecommendAppsFetcher : public RecommendAppsFetcher {
  private:
   void OnTimer();
 
-  RecommendAppsFetcherDelegate* delegate_;
+  raw_ptr<RecommendAppsFetcherDelegate, ExperimentalAsh> delegate_;
   int fake_apps_count_;
   base::OneShotTimer delay_timer_;
 

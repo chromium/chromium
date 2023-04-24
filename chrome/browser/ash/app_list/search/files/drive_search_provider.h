@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -71,8 +72,8 @@ class DriveSearchProvider : public SearchProvider {
   std::u16string last_query_;
   absl::optional<ash::string_matching::TokenizedString> last_tokenized_query_;
 
-  Profile* const profile_;
-  drive::DriveIntegrationService* const drive_service_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<drive::DriveIntegrationService, ExperimentalAsh> drive_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<DriveSearchProvider> weak_factory_{this};

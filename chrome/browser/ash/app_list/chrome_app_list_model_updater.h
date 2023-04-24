@@ -15,6 +15,7 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/quick_app_access_model.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
@@ -206,11 +207,13 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   void OnFeatureEngagementTrackerInitialized(bool success);
 
   // Indicates the profile that the model updater is associated with.
-  Profile* const profile_ = nullptr;
+  const raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
   // Provides the access to the methods for ordering app list items.
-  app_list::reorder::AppListReorderDelegate* const order_delegate_;
-  app_list::AppListSyncModelSanitizer* const sync_model_sanitizer_;
+  const raw_ptr<app_list::reorder::AppListReorderDelegate, ExperimentalAsh>
+      order_delegate_;
+  const raw_ptr<app_list::AppListSyncModelSanitizer, ExperimentalAsh>
+      sync_model_sanitizer_;
 
   // A helper class to manage app list items. It never talks to ash.
   std::unique_ptr<ChromeAppListItemManager> item_manager_;

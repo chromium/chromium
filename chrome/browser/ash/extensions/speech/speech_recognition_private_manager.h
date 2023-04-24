@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_delegate.h"
 #include "chrome/browser/speech/speech_recognition_constants.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -87,7 +88,7 @@ class SpeechRecognitionPrivateManager
       recognition_data_;
 
   // The browser context associated with the keyed service.
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
 };
 
 }  // namespace extensions

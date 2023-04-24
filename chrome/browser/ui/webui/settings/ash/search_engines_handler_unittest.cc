@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/search_engines_handler.h"
 
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -67,11 +68,11 @@ class SearchEnginesHandlerTest : public testing::Test {
 
  protected:
   std::unique_ptr<content::TestWebUI> web_ui_;
-  MockNewWindowDelegate* new_window_delegate_primary_;
+  raw_ptr<MockNewWindowDelegate, ExperimentalAsh> new_window_delegate_primary_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  ::settings::SearchEnginesHandler* handler_;
+  raw_ptr<::settings::SearchEnginesHandler, ExperimentalAsh> handler_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
 };

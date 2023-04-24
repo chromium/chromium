@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
@@ -171,7 +172,7 @@ class WebAppsCrosapi : public KeyedService,
 
   mojo::Receiver<crosapi::mojom::AppPublisher> receiver_{this};
   mojo::Remote<crosapi::mojom::AppController> controller_;
-  AppServiceProxy* const proxy_;
+  const raw_ptr<AppServiceProxy, ExperimentalAsh> proxy_;
   bool should_notify_initialized_ = true;
 
   base::WeakPtrFactory<WebAppsCrosapi> weak_factory_{this};

@@ -14,6 +14,7 @@
 #include "ash/components/arc/mojom/file_system.mojom-forward.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
@@ -391,7 +392,7 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
   // |runner_| outlives this object. ArcDocumentsProviderRootMap, the owner of
   // this object, depends on ArcFileSystemOperationRunner in the
   // BrowserContextKeyedServiceFactory dependency graph.
-  ArcFileSystemOperationRunner* const runner_;
+  const raw_ptr<ArcFileSystemOperationRunner, ExperimentalAsh> runner_;
 
   const std::string authority_;
   const std::string root_document_id_;

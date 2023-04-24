@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
@@ -178,7 +179,7 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
   std::unique_ptr<views::Widget> const widget_;
 
   // Contents view of |widget_|. Owned by |widget_|.
-  views::WebView* const web_view_;
+  const raw_ptr<views::WebView, ExperimentalAsh> web_view_;
 
   // Unique identifier for this request run. Empty when there are no running
   // requests.

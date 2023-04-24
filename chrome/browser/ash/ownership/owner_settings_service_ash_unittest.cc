@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_path_override.h"
@@ -79,8 +80,8 @@ class PrefsChecker : public ownership::OwnerSettingsService::Observer {
   void Wait() { loop_.Run(); }
 
  private:
-  OwnerSettingsServiceAsh* service_;
-  DeviceSettingsProvider* provider_;
+  raw_ptr<OwnerSettingsServiceAsh, ExperimentalAsh> service_;
+  raw_ptr<DeviceSettingsProvider, ExperimentalAsh> provider_;
   base::RunLoop loop_;
 
   using SetRequest = std::pair<std::string, base::Value>;
@@ -154,7 +155,7 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
   }
 
  protected:
-  OwnerSettingsServiceAsh* service_ = nullptr;
+  raw_ptr<OwnerSettingsServiceAsh, ExperimentalAsh> service_ = nullptr;
   ScopedTestingLocalState local_state_;
   std::unique_ptr<DeviceSettingsProvider> provider_;
   base::ScopedPathOverride user_data_dir_override_;

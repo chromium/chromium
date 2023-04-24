@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
@@ -98,7 +99,8 @@ class KerberosAccountsHandler : public ::settings::SettingsPageUIHandler,
       credentials_manager_observation_{this};
 
   // Not owned.
-  KerberosCredentialsManager* kerberos_credentials_manager_;
+  raw_ptr<KerberosCredentialsManager, ExperimentalAsh>
+      kerberos_credentials_manager_;
 
   base::WeakPtrFactory<KerberosAccountsHandler> weak_factory_{this};
 };

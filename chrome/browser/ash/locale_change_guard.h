@@ -13,6 +13,7 @@
 #include "ash/public/cpp/locale_update_controller.h"
 #include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -90,7 +91,7 @@ class LocaleChangeGuard : public session_manager::SessionManagerObserver,
 
   std::string from_locale_;
   std::string to_locale_;
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   bool reverted_ = false;
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>

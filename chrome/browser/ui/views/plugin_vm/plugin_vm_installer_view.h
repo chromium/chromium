@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PLUGIN_VM_PLUGIN_VM_INSTALLER_VIEW_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -94,16 +95,18 @@ class PluginVmInstallerView : public views::BubbleDialogDelegateView,
 
   void StartInstallation();
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   std::u16string app_name_;
-  plugin_vm::PluginVmInstaller* plugin_vm_installer_ = nullptr;
-  views::Label* title_label_ = nullptr;
-  views::Label* message_label_ = nullptr;
-  views::ProgressBar* progress_bar_ = nullptr;
-  views::Label* download_progress_message_label_ = nullptr;
-  views::BoxLayout* lower_container_layout_ = nullptr;
-  views::ImageView* big_image_ = nullptr;
-  views::Link* learn_more_link_ = nullptr;
+  raw_ptr<plugin_vm::PluginVmInstaller, ExperimentalAsh> plugin_vm_installer_ =
+      nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> message_label_ = nullptr;
+  raw_ptr<views::ProgressBar, ExperimentalAsh> progress_bar_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> download_progress_message_label_ =
+      nullptr;
+  raw_ptr<views::BoxLayout, ExperimentalAsh> lower_container_layout_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> big_image_ = nullptr;
+  raw_ptr<views::Link, ExperimentalAsh> learn_more_link_ = nullptr;
 
   State state_ = State::kConfirmInstall;
   InstallingState installing_state_ = InstallingState::kInactive;

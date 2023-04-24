@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
@@ -98,8 +99,9 @@ class NearbyShareLocalDeviceDataManagerImpl
   void HandleUpdateDeviceResponse(
       const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response);
 
-  PrefService* pref_service_ = nullptr;
-  NearbyShareProfileInfoProvider* profile_info_provider_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
+  raw_ptr<NearbyShareProfileInfoProvider, ExperimentalAsh>
+      profile_info_provider_ = nullptr;
   std::unique_ptr<NearbyShareDeviceDataUpdater> device_data_updater_;
   std::unique_ptr<ash::nearby::NearbyScheduler> download_device_data_scheduler_;
   std::string default_device_name_;

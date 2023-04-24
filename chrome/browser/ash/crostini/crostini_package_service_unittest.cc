@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
@@ -344,15 +345,17 @@ class CrostiniPackageServiceTest : public testing::Test {
     fake_cicerone_client_->InstallLinuxPackageProgress(signal);
   }
 
-  FakeCiceroneClient* fake_cicerone_client_ = nullptr;
-  FakeSeneschalClient* fake_seneschal_client_ = nullptr;
+  raw_ptr<FakeCiceroneClient, ExperimentalAsh> fake_cicerone_client_ = nullptr;
+  raw_ptr<FakeSeneschalClient, ExperimentalAsh> fake_seneschal_client_ =
+      nullptr;
 
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniTestHelper> crostini_test_helper_;
   std::unique_ptr<NotificationDisplayServiceTester>
       notification_display_service_tester_;
-  StubNotificationDisplayService* notification_display_service_;
+  raw_ptr<StubNotificationDisplayService, ExperimentalAsh>
+      notification_display_service_;
   std::unique_ptr<CrostiniPackageService> service_;
 
  private:

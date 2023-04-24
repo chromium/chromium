@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/account_manager/child_account_type_changed_user_data.h"
 #include "components/account_id/account_id.h"
@@ -62,9 +63,11 @@ class AccountManagerPolicyController : public KeyedService {
   void Shutdown() override;
 
   // Non-owning pointers.
-  Profile* const profile_;
-  account_manager::AccountManager* const account_manager_;
-  account_manager::AccountManagerFacade* const account_manager_facade_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<account_manager::AccountManager, ExperimentalAsh>
+      account_manager_;
+  const raw_ptr<account_manager::AccountManagerFacade, ExperimentalAsh>
+      account_manager_facade_;
 
   const AccountId device_account_id_;
 

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
@@ -217,7 +218,7 @@ class OmniboxLacrosProviderTest : public testing::Test {
   TestAppListControllerDelegate list_controller_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
 
   std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
 
@@ -401,7 +402,7 @@ class OmniboxLacrosProviderNoCrosAPITest : public testing::Test {
   TestAppListControllerDelegate list_controller_;
   std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   std::unique_ptr<OmniboxLacrosProvider> omnibox_provider_;
 };
 

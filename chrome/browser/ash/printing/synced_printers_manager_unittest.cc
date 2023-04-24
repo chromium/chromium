@@ -10,6 +10,7 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
@@ -54,7 +55,7 @@ class LoggingObserver : public SyncedPrintersManager::Observer {
   base::ScopedObservation<SyncedPrintersManager,
                           SyncedPrintersManager::Observer>
       observation_{this};
-  SyncedPrintersManager* manager_;
+  raw_ptr<SyncedPrintersManager, ExperimentalAsh> manager_;
 };
 
 class SyncedPrintersManagerTest : public testing::Test {

@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -61,10 +62,10 @@ class AccessibilityPanel : public views::WidgetDelegate,
   // Indirectly invoked by the component extension.
   void DidFirstVisuallyNonEmptyPaint();
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents, ExperimentalAsh> web_contents_;
   std::unique_ptr<AccessibilityPanelWebContentsObserver> web_contents_observer_;
-  views::Widget* widget_ = nullptr;
-  views::View* web_view_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> web_view_ = nullptr;
 };
 
 }  // namespace ash

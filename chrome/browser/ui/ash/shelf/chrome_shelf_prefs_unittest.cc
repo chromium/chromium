@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -131,8 +132,8 @@ class ChromeShelfPrefsFake : public ChromeShelfPrefs {
 
   void ObserveSyncService() override {}
 
-  TestingPrefServiceSimple* const pref_service_;
-  AppListSyncableServiceFake* const syncable_service_;
+  const raw_ptr<TestingPrefServiceSimple, ExperimentalAsh> pref_service_;
+  const raw_ptr<AppListSyncableServiceFake, ExperimentalAsh> syncable_service_;
   bool standalone_browser_publishing_chrome_apps_ = false;
 
   // A map that returns the app type for a given app id.
@@ -158,7 +159,7 @@ class ChromeShelfPrefsTest : public testing::Test {
         ash::prefs::kFilesAppUIPrefsMigrated, true);
     fake_user_manager_ = new ash::FakeChromeUserManager;
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(fake_user_manager_));
+        base::WrapUnique(fake_user_manager_.get()));
     helper_ = std::make_unique<ShelfControllerHelperFake>();
   }
 
@@ -182,7 +183,8 @@ class ChromeShelfPrefsTest : public testing::Test {
   }
 
  protected:
-  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
+      nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   TestingPrefServiceSimple pref_service_;
   AppListSyncableServiceFake syncable_service_;

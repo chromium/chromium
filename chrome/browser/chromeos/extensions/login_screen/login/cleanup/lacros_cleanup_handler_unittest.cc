@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -53,7 +54,9 @@ class TestCleanupTriggeredObserver
 
   absl::optional<std::string> error_;
   bool should_reset_ = false;
-  mojo::Receiver<crosapi::mojom::LacrosCleanupTriggeredObserver>* receiver_;
+  raw_ptr<mojo::Receiver<crosapi::mojom::LacrosCleanupTriggeredObserver>,
+          ExperimentalAsh>
+      receiver_;
 };
 
 }  // namespace

@@ -12,6 +12,7 @@
 
 #include "base/files/file.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
@@ -101,14 +102,14 @@ class FileSystemProviderServiceTest : public testing::Test {
     user_manager_->AddUser(
         AccountId::FromUserEmail(profile_->GetProfileUserName()));
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(user_manager_));
+        base::WrapUnique(user_manager_.get()));
     extension_registry_ =
         std::make_unique<extensions::ExtensionRegistry>(profile_);
     service_ = std::make_unique<Service>(profile_, extension_registry_.get());
 
     registry_ = new FakeRegistry;
     // Passes ownership to the service instance.
-    service_->SetRegistryForTesting(base::WrapUnique(registry_));
+    service_->SetRegistryForTesting(base::WrapUnique(registry_.get()));
 
     fake_watcher_.entry_path = base::FilePath(FILE_PATH_LITERAL("/a/b/c"));
     fake_watcher_.recursive = true;
@@ -121,12 +122,12 @@ class FileSystemProviderServiceTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
-  FakeChromeUserManager* user_manager_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<extensions::ExtensionRegistry> extension_registry_;
   std::unique_ptr<Service> service_;
-  FakeRegistry* registry_;  // Owned by Service.
+  raw_ptr<FakeRegistry, ExperimentalAsh> registry_;  // Owned by Service.
   Watcher fake_watcher_;
 };
 

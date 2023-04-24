@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
@@ -94,7 +95,7 @@ class BruschettaInstallerViewBrowserTest : public DialogBrowserTest {
         }));
   }
 
-  BruschettaInstallerView* view_;
+  raw_ptr<BruschettaInstallerView, ExperimentalAsh> view_;
   std::unique_ptr<bruschetta::BruschettaInstallerMock> installer_;
 };
 

@@ -11,6 +11,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_tray_test_api.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -224,7 +225,8 @@ class EolStatusMixin : public InProcessBrowserTestMixin {
     return eol_notification;
   }
 
-  FakeUpdateEngineClient* update_engine_client_ = nullptr;
+  raw_ptr<FakeUpdateEngineClient, ExperimentalAsh> update_engine_client_ =
+      nullptr;
   base::SimpleTestClock clock_;
   base::Time profile_creation_time_;
 };

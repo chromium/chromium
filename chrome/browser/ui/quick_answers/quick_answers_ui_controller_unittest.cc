@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
 
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
@@ -36,7 +37,7 @@ class QuickAnswersUiControllerTest : public ChromeQuickAnswersTestBase {
   QuickAnswersUiController* ui_controller() { return ui_controller_; }
 
  private:
-  QuickAnswersUiController* ui_controller_ = nullptr;
+  raw_ptr<QuickAnswersUiController, ExperimentalAsh> ui_controller_ = nullptr;
 };
 
 TEST_F(QuickAnswersUiControllerTest, TearDownWhileQuickAnswersViewShowing) {

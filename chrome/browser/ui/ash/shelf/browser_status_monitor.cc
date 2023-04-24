@@ -9,6 +9,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -67,7 +68,7 @@ class BrowserStatusMonitor::LocalWebContentsObserver
   }
 
  private:
-  BrowserStatusMonitor* monitor_;
+  raw_ptr<BrowserStatusMonitor, ExperimentalAsh> monitor_;
 };
 
 BrowserStatusMonitor::BrowserStatusMonitor(

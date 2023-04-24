@@ -15,6 +15,7 @@
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/components/arc/test/fake_memory_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -118,7 +119,7 @@ class TestWorkingSetTrimmerChromeOS : public testing::Test {
       return static_cast<arc::FakeArcSession*>(
           runner_->GetArcSessionForTesting());
     }
-    arc::ArcSessionRunner* runner_;
+    raw_ptr<arc::ArcSessionRunner, ExperimentalAsh> runner_;
   };
 
   content::BrowserTaskEnvironment& task_environment() {

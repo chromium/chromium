@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/ui_base_types.h"
 
@@ -56,8 +57,8 @@ class LowDiskSpaceDialogViewTest : public CompatModeTestBase {
   bool should_open_storage_settings_ = false;
   int on_close_callback_count_ = 0;
   std::unique_ptr<views::Widget> arc_widget_;
-  views::Widget* bubble_widget_;
-  LowDiskSpaceDialogView* dialog_view_;
+  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_;
+  raw_ptr<LowDiskSpaceDialogView, ExperimentalAsh> dialog_view_;
 };
 
 TEST_F(LowDiskSpaceDialogViewTest, ConstructDestruct) {

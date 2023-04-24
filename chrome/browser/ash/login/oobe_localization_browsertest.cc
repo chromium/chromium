@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_runner.h"
@@ -80,7 +81,7 @@ class LanguageListWaiter : public WelcomeScreen::Observer {
       loop_.Quit();
   }
 
-  WelcomeScreen* welcome_screen_;
+  raw_ptr<WelcomeScreen, ExperimentalAsh> welcome_screen_;
   base::RunLoop loop_;
 };
 

@@ -181,7 +181,7 @@ class AppSession::PluginHandlerDelegateImpl
   }
 
  private:
-  AppSession* const owner_;
+  const raw_ptr<AppSession, ExperimentalAsh> owner_;
 };
 #endif
 

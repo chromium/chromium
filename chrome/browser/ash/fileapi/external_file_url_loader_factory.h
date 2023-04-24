@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILEAPI_EXTERNAL_FILE_URL_LOADER_FACTORY_H_
 #define CHROME_BROWSER_ASH_FILEAPI_EXTERNAL_FILE_URL_LOADER_FACTORY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -55,7 +56,7 @@ class ExternalFileURLLoaderFactory
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override;
 
-  void* profile_id_;
+  raw_ptr<void, DanglingUntriaged | ExperimentalAsh> profile_id_;
   const int render_process_host_id_;
 };
 

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -163,15 +164,16 @@ class AppManagerImpl : public AppManager,
   // the lock screen apps profile.
   void RemoveLockScreenAppDueToError();
 
-  Profile* primary_profile_ = nullptr;
-  Profile* lock_screen_profile_ = nullptr;
-  LockScreenProfileCreator* lock_screen_profile_creator_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> primary_profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> lock_screen_profile_ = nullptr;
+  raw_ptr<LockScreenProfileCreator, ExperimentalAsh>
+      lock_screen_profile_creator_ = nullptr;
 
   State state_ = State::kNotInitialized;
   // ID may refer to a Chrome app or a web app.
   std::string lock_screen_app_id_;
 
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
 
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>

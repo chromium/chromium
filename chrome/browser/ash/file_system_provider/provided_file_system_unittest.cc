@@ -12,6 +12,7 @@
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -113,7 +114,8 @@ class FakeEventRouter : public extensions::EventRouter {
   void set_reply_result(base::File::Error result) { reply_result_ = result; }
 
  private:
-  ProvidedFileSystemInterface* const file_system_;  // Not owned.
+  const raw_ptr<ProvidedFileSystemInterface, ExperimentalAsh>
+      file_system_;  // Not owned.
   base::File::Error reply_result_;
 };
 

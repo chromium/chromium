@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_data.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_answer_result.h"
@@ -42,7 +43,7 @@ class CpuAnswerResult : public SystemInfoAnswerResult,
  private:
   SystemInfoCardProvider::UpdateCpuResultCallback callback_;
   std::unique_ptr<base::RepeatingTimer> timer_;
-  SystemInfoCardProvider* provider_;
+  raw_ptr<SystemInfoCardProvider, ExperimentalAsh> provider_;
   base::WeakPtrFactory<CpuAnswerResult> weak_factory_{this};
 };
 

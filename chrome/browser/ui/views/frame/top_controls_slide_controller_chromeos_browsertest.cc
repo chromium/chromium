@@ -16,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/safe_sprintf.h"
 #include "build/build_config.h"
@@ -252,7 +253,7 @@ class TopControlsShownRatioWaiter : public TestControllerObserver {
     return false;
   }
 
-  TestController* controller_;
+  raw_ptr<TestController, ExperimentalAsh> controller_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 
@@ -298,7 +299,7 @@ class GestureScrollInProgressChangeWaiter : public TestControllerObserver {
   }
 
  private:
-  TestController* controller_;
+  raw_ptr<TestController, ExperimentalAsh> controller_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 
@@ -557,7 +558,8 @@ class TopControlsSlideControllerTest : public InProcessBrowserTest {
     return std::move(controller);
   }
 
-  TestController* test_controller_ = nullptr;  // Not owned.
+  raw_ptr<TestController, ExperimentalAsh> test_controller_ =
+      nullptr;  // Not owned.
 };
 
 namespace {
@@ -909,7 +911,7 @@ class BrowserViewLayoutWaiter : public views::ViewObserver {
   }
 
  private:
-  BrowserView* browser_view_;
+  raw_ptr<BrowserView, ExperimentalAsh> browser_view_;
 
   bool view_bounds_changed_ = false;
 
@@ -1197,7 +1199,7 @@ class IntermediateShownRatioWaiter : public TestControllerObserver {
   }
 
  private:
-  TestController* controller_;
+  raw_ptr<TestController, ExperimentalAsh> controller_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 

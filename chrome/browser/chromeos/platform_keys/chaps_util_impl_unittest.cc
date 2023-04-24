@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/platform_keys/chaps_slot_session.h"
 #include "crypto/nss_key_util.h"
 #include "crypto/scoped_nss_types.h"
@@ -373,9 +374,9 @@ class FakeChapsSlotSession : public ChapsSlotSession {
   bool session_ok_ = true;
 
   // Unowned.
-  PK11SlotInfo* const slot_;
+  const raw_ptr<PK11SlotInfo, ExperimentalAsh> slot_;
   // Unowned.
-  PassedData* const passed_data_;
+  const raw_ptr<PassedData, ExperimentalAsh> passed_data_;
 
   // Cached modulus of the generated public key so GetAttributeValue with
   // CKA_MODULUS is supported.
@@ -401,9 +402,9 @@ class FakeChapsSlotSessionFactory : public ChapsSlotSessionFactory {
 
  private:
   // Unowned.
-  PK11SlotInfo* const slot_;
+  const raw_ptr<PK11SlotInfo, ExperimentalAsh> slot_;
   // Unowned.
-  PassedData* const passed_data_;
+  const raw_ptr<PassedData, ExperimentalAsh> passed_data_;
 };
 
 class ChapsUtilImplTest : public ::testing::Test {

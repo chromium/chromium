@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/crosapi/mojom/arc.mojom.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
@@ -82,7 +83,7 @@ class ArcAsh : public mojom::Arc, public arc::ArcIntentHelperObserver {
   mojo::RemoteSet<mojom::ArcObserver> observers_;
 
   // profile_ should not be overridden.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
   // This must come last to make sure weak pointers are invalidated first.
   base::WeakPtrFactory<ArcAsh> weak_ptr_factory_{this};

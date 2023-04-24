@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_TEST_ARC_TEST_WINDOW_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_TEST_ARC_TEST_WINDOW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_helper.h"
@@ -29,7 +30,7 @@ class ArcTestWindow {
   void SetBounds(display::Display& display, gfx::Rect bounds);
 
  private:
-  exo::Surface* surface_;
+  raw_ptr<exo::Surface, ExperimentalAsh> surface_;
   std::unique_ptr<exo::ClientControlledShellSurface> shell_surface_;
 };
 

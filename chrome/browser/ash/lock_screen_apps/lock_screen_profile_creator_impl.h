@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_LOCK_SCREEN_PROFILE_CREATOR_IMPL_H_
 #define CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_LOCK_SCREEN_PROFILE_CREATOR_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator.h"
@@ -57,8 +58,8 @@ class LockScreenProfileCreatorImpl : public LockScreenProfileCreator,
   // |profile| - the created profile - i.e. the lock screen profile.
   void OnProfileReady(const base::TimeTicks& start_time, Profile* profile);
 
-  Profile* const primary_profile_;
-  const base::TickClock* tick_clock_;
+  const raw_ptr<Profile, ExperimentalAsh> primary_profile_;
+  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
 
   base::ScopedObservation<ash::NoteTakingHelper,
                           ash::NoteTakingHelper::Observer>

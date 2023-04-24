@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -174,7 +175,7 @@ class BorealisLifetimeObserver
                   /*metadata=*/nullptr);
   }
 
-  BorealisContext* const context_;
+  const raw_ptr<BorealisContext, ExperimentalAsh> context_;
   base::ScopedObservation<BorealisWindowManager,
                           BorealisWindowManager::AppWindowLifetimeObserver>
       observation_;

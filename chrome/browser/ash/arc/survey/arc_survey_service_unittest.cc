@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -72,7 +73,7 @@ class ArcSurveyServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile testing_profile_;
   ArcServiceManager arc_service_manager_;
-  ArcSurveyService* arc_survey_service_ = nullptr;
+  raw_ptr<ArcSurveyService, ExperimentalAsh> arc_survey_service_ = nullptr;
 };
 
 TEST_F(ArcSurveyServiceTest, ConstructDestruct) {}

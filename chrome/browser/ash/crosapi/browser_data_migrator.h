@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
@@ -265,7 +266,7 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   // can check if migration is cancelled or not.
   scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag_;
   // Local state prefs, not owned.
-  PrefService* local_state_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
   std::unique_ptr<MigratorDelegate> migrator_delegate_;
 
   SEQUENCE_CHECKER(sequence_checker_);

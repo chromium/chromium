@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_SCHEDULED_TASK_HANDLER_TEST_FAKE_REBOOT_NOTIFICATIONS_SCHEDULER_H_
 #define CHROME_BROWSER_ASH_POLICY_SCHEDULED_TASK_HANDLER_TEST_FAKE_REBOOT_NOTIFICATIONS_SCHEDULER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
 
 class PrefService;
@@ -50,7 +51,7 @@ class FakeRebootNotificationsScheduler : public RebootNotificationsScheduler {
   int show_dialog_calls_ = 0, show_notification_calls_ = 0,
       close_notification_calls_ = 0;
   bool wait_full_restore_init_ = false;
-  PrefService* prefs_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> prefs_ = nullptr;
 };
 
 }  // namespace policy

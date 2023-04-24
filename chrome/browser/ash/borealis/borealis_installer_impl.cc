@@ -8,6 +8,7 @@
 #include <sstream>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
@@ -235,7 +236,7 @@ class BorealisInstallerImpl::Installation
     Succeed(std::move(install_info_));
   }
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   base::TimeTicks installation_start_tick_;
   base::TimeDelta main_app_timeout_;
   InstallingState installing_state_;
@@ -329,7 +330,7 @@ class BorealisInstallerImpl::Uninstallation
     Succeed(std::move(uninstall_info_));
   }
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   std::unique_ptr<BorealisInstallerImpl::InstallInfo> uninstall_info_;
   base::WeakPtrFactory<Uninstallation> weak_factory_;
 };

@@ -8,6 +8,7 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen_client.h"
 #include "ash/public/cpp/system_tray_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
@@ -142,7 +143,7 @@ class LoginScreenClientImpl : public ash::LoginScreenClient {
   void OnParentAccessValidation(const AccountId& prefilled_account,
                                 bool success);
 
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
 
   // Captures authentication related user metrics for login screen.
   std::unique_ptr<ash::LoginAuthRecorder> auth_recorder_;

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_SCREENS_UTILS_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_SCREENS_UTILS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
@@ -55,7 +56,7 @@ class LanguageReloadObserver : public WelcomeScreen::Observer {
   // WelcomeScreen::Observer:
   void OnLanguageListReloaded() override;
 
-  WelcomeScreen* const welcome_screen_;
+  const raw_ptr<WelcomeScreen, ExperimentalAsh> welcome_screen_;
   base::RunLoop run_loop_;
 };
 

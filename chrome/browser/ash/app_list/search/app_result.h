@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/app_context_menu_delegate.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
@@ -52,9 +53,9 @@ class AppResult : public ChromeSearchResult, public AppContextMenuDelegate {
   }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   const std::string app_id_;
-  AppListControllerDelegate* controller_;
+  raw_ptr<AppListControllerDelegate, ExperimentalAsh> controller_;
 
   base::WeakPtrFactory<AppResult> weak_ptr_factory_{this};
 };

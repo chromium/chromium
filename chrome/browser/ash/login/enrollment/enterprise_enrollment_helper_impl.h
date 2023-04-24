@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -102,7 +103,8 @@ class EnterpriseEnrollmentHelperImpl : public EnterpriseEnrollmentHelper {
   bool oauth_data_cleared_ = false;
   policy::DMAuth auth_data_;
   bool success_ = false;
-  policy::ActiveDirectoryJoinDelegate* ad_join_delegate_ = nullptr;
+  raw_ptr<policy::ActiveDirectoryJoinDelegate, ExperimentalAsh>
+      ad_join_delegate_ = nullptr;
 
   std::unique_ptr<policy::PolicyOAuth2TokenFetcher> oauth_fetcher_;
 

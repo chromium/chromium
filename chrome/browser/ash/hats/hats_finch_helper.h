@@ -8,6 +8,8 @@
 #include <limits.h>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "chrome/common/chrome_features.h"
 
@@ -108,9 +110,9 @@ class HatsFinchHelper {
   // current survey cycle. This is set by |CheckForDeviceSelection()|.
   bool device_is_selected_for_cycle_ = false;
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
-  const HatsConfig& hats_config_;
+  const raw_ref<const HatsConfig, ExperimentalAsh> hats_config_;
 };
 
 }  // namespace ash

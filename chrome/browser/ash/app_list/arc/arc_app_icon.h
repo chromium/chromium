@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/base/layout.h"
@@ -245,13 +246,13 @@ class ArcAppIcon {
   void UpdateCompressed(ui::ResourceScaleFactor scale_factor, std::string data);
   void DiscardDecodeRequest(DecodeRequest* request, bool is_decode_success);
 
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
   const std::string app_id_;
   // Contains app id that is actually used to read an icon resource to support
   // shelf group mapping to shortcut.
   const std::string mapped_app_id_;
   const int resource_size_in_dip_;
-  Observer* const observer_;
+  const raw_ptr<Observer, ExperimentalAsh> observer_;
   const IconType icon_type_;
   // Used to separate first 5 loaded app icons and other app icons.
   // Only one form of app icons will be loaded, compressed or uncompressed, so

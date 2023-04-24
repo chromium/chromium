@@ -13,6 +13,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
@@ -102,7 +103,7 @@ class ArcWallpaperService::DecodeRequest : public ImageDecoder::ImageRequest {
 
  private:
   // ArcWallpaperService owns DecodeRequest, so it will outlive this.
-  ArcWallpaperService* const service_;
+  const raw_ptr<ArcWallpaperService, ExperimentalAsh> service_;
   const int32_t android_id_;
 };
 

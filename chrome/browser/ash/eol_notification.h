@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/eol_incentive_util.h"
@@ -83,10 +84,10 @@ class EolNotification final : public message_center::NotificationObserver {
   void ResetDismissedPrefs();
 
   // Overridden for testing pending EOL notifications.
-  base::Clock* clock_;
+  raw_ptr<base::Clock, ExperimentalAsh> clock_;
 
   // Profile which is associated with the EndOfLife notification.
-  Profile* const profile_;
+  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
 
   // Pref which determines which warning should be displayed to the user.
   absl::optional<std::string> dismiss_pref_;

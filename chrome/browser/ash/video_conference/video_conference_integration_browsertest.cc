@@ -13,6 +13,7 @@
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -217,11 +218,11 @@ class VideoConferenceIntegrationTest : public testing::WithParamInterface<bool>,
   }
 
  protected:
-  VideoConferenceTrayButton* camera_bt_ = nullptr;
-  VideoConferenceTrayButton* mic_bt_ = nullptr;
-  VideoConferenceTrayButton* share_bt_ = nullptr;
+  raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> camera_bt_ = nullptr;
+  raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> mic_bt_ = nullptr;
+  raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> share_bt_ = nullptr;
 
-  ToastManagerImpl* toast_manager_ = nullptr;
+  raw_ptr<ToastManagerImpl, ExperimentalAsh> toast_manager_ = nullptr;
   Browser* browser_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_{

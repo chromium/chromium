@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
@@ -53,8 +54,8 @@ class OmniboxProvider : public SearchProvider,
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;
 
-  Profile* profile_;
-  AppListControllerDelegate* list_controller_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
 
   std::u16string last_query_;
   absl::optional<ash::string_matching::TokenizedString> last_tokenized_query_;

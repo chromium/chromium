@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
@@ -142,7 +143,7 @@ class BorealisWindowManager : public apps::InstanceRegistry::Observer {
   void HandleWindowDestruction(aura::Window* window, const std::string& app_id);
   void HandleWindowCreation(aura::Window* window, const std::string& app_id);
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   base::ScopedObservation<apps::InstanceRegistry,
                           apps::InstanceRegistry::Observer>
       instance_registry_observation_;

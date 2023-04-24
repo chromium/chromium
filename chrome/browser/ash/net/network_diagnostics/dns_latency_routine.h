@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_routine.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -69,11 +70,12 @@ class DnsLatencyRoutine : public NetworkDiagnosticsRoutine,
   bool ProblemDetected();
 
   // Unowned
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   // Unowned
-  network::mojom::NetworkContext* network_context_ = nullptr;
+  raw_ptr<network::mojom::NetworkContext, ExperimentalAsh> network_context_ =
+      nullptr;
   // Unowned
-  const base::TickClock* tick_clock_ = nullptr;
+  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_ = nullptr;
   bool successfully_resolved_all_addresses_ = false;
   base::TimeTicks start_resolution_time_;
   base::TimeTicks resolution_complete_time_;

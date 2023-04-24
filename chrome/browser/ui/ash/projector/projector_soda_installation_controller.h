@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/locale_update_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/soda/soda_installer.h"
 
@@ -60,8 +61,9 @@ class ProjectorSodaInstallationController
   // ash::LocaleChangeObserver:
   void OnLocaleChanged() override;
 
-  ash::ProjectorAppClient* const app_client_;
-  ash::ProjectorController* const projector_controller_;
+  const raw_ptr<ash::ProjectorAppClient, ExperimentalAsh> app_client_;
+  const raw_ptr<ash::ProjectorController, ExperimentalAsh>
+      projector_controller_;
 
  private:
   base::ScopedObservation<speech::SodaInstaller,

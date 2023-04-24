@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 
@@ -226,7 +227,7 @@ class DlpContentManagerAshBrowserTest : public InProcessBrowserTest {
  protected:
   std::unique_ptr<DlpContentManagerTestHelper> helper_;
   base::HistogramTester histogram_tester_;
-  MockDlpRulesManager* mock_rules_manager_;
+  raw_ptr<MockDlpRulesManager, ExperimentalAsh> mock_rules_manager_;
   std::vector<DlpPolicyEvent> events_;
 };
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_MULTI_WORD_SUGGESTER_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_MULTI_WORD_SUGGESTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/suggester.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
@@ -117,7 +118,7 @@ class MultiWordSuggester : public Suggester {
 
    private:
     // Not owned by this class
-    MultiWordSuggester* suggester_;
+    raw_ptr<MultiWordSuggester, ExperimentalAsh> suggester_;
 
     // The current state of the suggester (eg is a suggestion shown or not).
     State state_ = State::kNoSuggestionShown;
@@ -147,7 +148,7 @@ class MultiWordSuggester : public Suggester {
   absl::optional<int> focused_context_id_;
 
   // Not owned by this class
-  SuggestionHandlerInterface* suggestion_handler_;
+  raw_ptr<SuggestionHandlerInterface, ExperimentalAsh> suggestion_handler_;
 
   // Current suggestion state
   SuggestionState state_;
@@ -155,7 +156,7 @@ class MultiWordSuggester : public Suggester {
   ui::ime::AssistiveWindowButton suggestion_button_;
 
   // The current user's Chrome user profile.
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 }  // namespace input_method

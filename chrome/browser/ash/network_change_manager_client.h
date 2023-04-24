@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -118,7 +119,8 @@ class NetworkChangeManagerClient
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
-  net::NetworkChangeNotifierPassive* network_change_notifier_;
+  raw_ptr<net::NetworkChangeNotifierPassive, ExperimentalAsh>
+      network_change_notifier_;
   mojo::Remote<network::mojom::NetworkChangeManager> network_change_manager_;
   mojo::RemoteSet<crosapi::mojom::NetworkChangeObserver>
       lacros_network_change_observers_;

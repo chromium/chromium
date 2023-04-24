@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/profiles/profile.h"
 
@@ -41,7 +42,7 @@ class SystemInfoAnswerResult : public ChromeSearchResult {
 
  private:
   SystemInfoCategory const system_info_category_;
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   const std::u16string query_;
 
   const std::string url_path_;

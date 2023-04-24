@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -441,7 +442,7 @@ class SupervisedUserIframeFilterTest
                                         const std::string& command);
 
   std::unique_ptr<RenderFrameTracker> tracker_;
-  PermissionRequestCreatorMock* permission_creator_;
+  raw_ptr<PermissionRequestCreatorMock, ExperimentalAsh> permission_creator_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

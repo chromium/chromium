@@ -509,7 +509,7 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
       !title.empty() ? title
                      : file_manager::util::GetSelectFileDialogTitle(type);
   gfx::NativeWindow parent_window =
-      base_window ? base_window->GetNativeWindow() : owner.window;
+      base_window ? base_window->GetNativeWindow() : owner.window.get();
 
   owner_ = owner;
   type_ = type;

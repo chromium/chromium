@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
@@ -136,7 +137,7 @@ class InstallLimiterTest : public extensions::ExtensionServiceTestBase {
     return crx_info;
   }
 
-  InstallLimiter* install_limiter_;
+  raw_ptr<InstallLimiter, ExperimentalAsh> install_limiter_;
   scoped_refptr<extensions::MockCrxInstaller> mock_installer_;
 };
 

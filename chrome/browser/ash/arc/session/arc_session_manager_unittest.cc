@@ -23,6 +23,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
@@ -115,7 +116,7 @@ class ArcInitialStartHandler : public ArcSessionManagerObserver {
  private:
   bool was_called_ = false;
 
-  ArcSessionManager* const session_manager_;
+  const raw_ptr<ArcSessionManager, ExperimentalAsh> session_manager_;
 };
 
 class FileExpansionObserver : public ArcSessionManagerObserver {
@@ -160,7 +161,7 @@ class ShowErrorObserver : public ArcSessionManagerObserver {
 
  private:
   absl::optional<ArcSupportHost::ErrorInfo> error_info_;
-  ArcSessionManager* const session_manager_;
+  const raw_ptr<ArcSessionManager, ExperimentalAsh> session_manager_;
 };
 
 class ArcSessionManagerInLoginScreenTest : public testing::Test {

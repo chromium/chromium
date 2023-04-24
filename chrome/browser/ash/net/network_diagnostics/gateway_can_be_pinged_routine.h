@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_routine.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
@@ -62,7 +63,7 @@ class GatewayCanBePingedRoutine : public NetworkDiagnosticsRoutine {
   std::vector<chromeos::network_diagnostics::mojom::GatewayCanBePingedProblem>
       problems_;
   // An unowned pointer to the DebugDaemonClient instance.
-  DebugDaemonClient* debug_daemon_client_;
+  raw_ptr<DebugDaemonClient, ExperimentalAsh> debug_daemon_client_;
   std::vector<std::string> gateways_;
   bool unreachable_gateways_ = true;
   int non_default_network_unsuccessful_ping_count_ = 0;

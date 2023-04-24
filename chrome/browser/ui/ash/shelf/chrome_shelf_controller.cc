@@ -26,6 +26,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
@@ -181,7 +182,7 @@ class ChromeShelfControllerUserSwitchObserver
   void AddUser(Profile* profile);
 
   // The owning ChromeShelfController.
-  ChromeShelfController* controller_;
+  raw_ptr<ChromeShelfController, ExperimentalAsh> controller_;
 
   // Users which were just added to the system, but which profiles were not yet
   // (fully) loaded.

@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
@@ -154,7 +155,7 @@ class AshTtsApiTest : public AshRequiresLacrosExtensionApiTest,
     }
 
    private:
-    extensions::AshTtsApiTest* owner_;
+    raw_ptr<extensions::AshTtsApiTest, ExperimentalAsh> owner_;
     mojo::Receiver<crosapi::mojom::TtsUtteranceClient> receiver_{this};
   };
 

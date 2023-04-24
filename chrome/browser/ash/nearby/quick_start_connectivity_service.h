@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 
@@ -30,7 +31,8 @@ class QuickStartConnectivityService : public KeyedService {
 
  private:
   std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager_;
-  nearby::NearbyProcessManager* nearby_process_manager_;
+  raw_ptr<nearby::NearbyProcessManager, ExperimentalAsh>
+      nearby_process_manager_;
 
   base::WeakPtrFactory<QuickStartConnectivityService> weak_ptr_factory_{this};
 };

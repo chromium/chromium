@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/notifications/kiosk_external_update_notification.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -86,7 +87,7 @@ class KioskExternalUpdateNotificationView : public views::WidgetDelegateView {
     label_->SetEnabledColor(kTextColor);
     label_->SetAutoColorReadabilityEnabled(false);
     label_->SetMultiLine(true);
-    AddChildView(label_);
+    AddChildView(label_.get());
   }
 
   void InformOwnerForDismiss() {
@@ -100,8 +101,8 @@ class KioskExternalUpdateNotificationView : public views::WidgetDelegateView {
 
   // The owner of this message which needs to get notified when the message
   // closes.
-  KioskExternalUpdateNotification* owner_;
-  views::Label* label_;  // owned by views hierarchy.
+  raw_ptr<KioskExternalUpdateNotification, ExperimentalAsh> owner_;
+  raw_ptr<views::Label, ExperimentalAsh> label_;  // owned by views hierarchy.
 
   // True if the widget got already closed.
   bool widget_closed_;
@@ -139,7 +140,7 @@ void KioskExternalUpdateNotification::CreateAndShowNotificationView(
   params.ownership = views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
   params.accept_events = false;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
-  params.delegate = view_;
+  params.delegate = view_.get();
   params.bounds = bounds;
   // The notification is shown on the primary display.
   ash_util::SetupWidgetInitParamsForContainer(

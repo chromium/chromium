@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
@@ -118,7 +119,7 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   int64_t storage_items_total_bytes_[SizeCalculator::kCalculationTypeCount] = {
       0};
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   const std::string source_name_;
   base::ScopedObservation<arc::ArcSessionManager,
                           arc::ArcSessionManagerObserver>

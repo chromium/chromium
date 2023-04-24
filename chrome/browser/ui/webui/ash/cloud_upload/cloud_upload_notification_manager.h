@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -117,7 +118,7 @@ class CloudUploadNotificationManager
   // never decremented.
   static inline int notification_manager_counter_ = 0;
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   CloudProvider provider_;
   std::string file_name_;
   std::string cloud_provider_name_;

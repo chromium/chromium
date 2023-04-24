@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/escape.h"
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -140,13 +141,13 @@ class PluginVmAppsTest : public testing::Test {
     }
   } dbus_clients_;
 
-  AppServiceProxy* app_service_proxy_ = nullptr;
+  raw_ptr<AppServiceProxy, ExperimentalAsh> app_service_proxy_ = nullptr;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<plugin_vm::PluginVmTestHelper> test_helper_;
-  storage::ExternalMountPoints* mount_points_;
+  raw_ptr<storage::ExternalMountPoints, ExperimentalAsh> mount_points_;
   std::string mount_name_;
-  MockPluginVmManager* plugin_vm_manager_;
+  raw_ptr<MockPluginVmManager, ExperimentalAsh> plugin_vm_manager_;
 };
 
 TEST_F(PluginVmAppsTest, AppServiceHasPluginVmIntentFilters) {

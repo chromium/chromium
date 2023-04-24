@@ -21,6 +21,7 @@
 #include "ash/wm/wm_event.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -1560,8 +1561,8 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
   }
 
  protected:
-  app_restore::ArcAppQueueRestoreHandler* arc_app_queue_restore_handler_ =
-      nullptr;
+  raw_ptr<app_restore::ArcAppQueueRestoreHandler, ExperimentalAsh>
+      arc_app_queue_restore_handler_ = nullptr;
   AppRestoreArcTestHelper arc_helper_;
 
  private:

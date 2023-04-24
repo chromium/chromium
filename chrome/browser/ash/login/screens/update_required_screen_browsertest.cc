@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -198,10 +199,10 @@ class UpdateRequiredScreenTest : public OobeBaseTest {
   }
 
  protected:
-  UpdateRequiredScreen* update_required_screen_;
+  raw_ptr<UpdateRequiredScreen, ExperimentalAsh> update_required_screen_;
   // Error screen - owned by OobeUI.
   // Version updater - owned by `update_required_screen_`.
-  VersionUpdater* version_updater_ = nullptr;
+  raw_ptr<VersionUpdater, ExperimentalAsh> version_updater_ = nullptr;
 
   // Handles network connections
   std::unique_ptr<NetworkStateTestHelper> network_state_test_helper_;

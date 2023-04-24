@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
@@ -134,10 +135,13 @@ class EasyUnlockServiceRegular
   std::unique_ptr<EasyUnlockNotificationController> notification_controller_;
 
   // Used to fetch local device and remote device data.
-  device_sync::DeviceSyncClient* device_sync_client_;
+  raw_ptr<device_sync::DeviceSyncClient, DanglingUntriaged | ExperimentalAsh>
+      device_sync_client_;
 
   // Used to determine the FeatureState of Smart Lock.
-  multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient,
+          DanglingUntriaged | ExperimentalAsh>
+      multidevice_setup_client_;
 
   // Tracks Smart Lock feature usage for the Standard Feature Usage Logging
   // (SFUL) framework.

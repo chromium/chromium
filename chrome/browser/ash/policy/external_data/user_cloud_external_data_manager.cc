@@ -37,7 +37,7 @@ UserCloudExternalDataManager::UserCloudExternalDataManager(
 
 UserCloudExternalDataManager::~UserCloudExternalDataManager() {
   SetExternalDataStore(nullptr);
-  backend_task_runner_->DeleteSoon(FROM_HERE, resource_cache_);
+  backend_task_runner_->DeleteSoon(FROM_HERE, resource_cache_.get());
 }
 
 }  // namespace policy

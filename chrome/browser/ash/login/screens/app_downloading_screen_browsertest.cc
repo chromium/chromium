@@ -9,6 +9,7 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
@@ -73,7 +74,7 @@ class AppDownloadingScreenTest : public OobeBaseTest {
     EXPECT_TRUE(waiter.Wait());
   }
 
-  AppDownloadingScreen* app_downloading_screen_;
+  raw_ptr<AppDownloadingScreen, ExperimentalAsh> app_downloading_screen_;
   bool screen_exited_ = false;
 
  private:

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -59,7 +60,7 @@ class GuestOsMimeTypesService : public KeyedService {
 
  private:
   // Owned by the Profile.
-  PrefService* const prefs_;
+  const raw_ptr<PrefService, ExperimentalAsh> prefs_;
 };
 
 }  // namespace guest_os

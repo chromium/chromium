@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
@@ -35,7 +36,7 @@ class TestMainExtraPart : public ChromeBrowserMainExtraParts {
   }
 
  private:
-  LocalStateMixin::Delegate* const delegate_;
+  const raw_ptr<LocalStateMixin::Delegate, ExperimentalAsh> delegate_;
 };
 
 }  // namespace

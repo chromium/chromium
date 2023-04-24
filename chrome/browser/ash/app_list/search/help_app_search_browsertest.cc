@@ -10,6 +10,7 @@
 #include "ash/webui/help_app_ui/help_app_manager_factory.h"
 #include "ash/webui/help_app_ui/search/search.mojom.h"
 #include "ash/webui/help_app_ui/search/search_handler.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -121,8 +122,10 @@ class HelpAppSearchBrowserTest : public HelpAppSearchBrowserTestBase {
                       std::move(drive_continue_section_provider)));
   }
 
-  TestContinueFilesSearchProvider* local_continue_section_provider_ = nullptr;
-  TestContinueFilesSearchProvider* drive_continue_section_provider_ = nullptr;
+  raw_ptr<TestContinueFilesSearchProvider, ExperimentalAsh>
+      local_continue_section_provider_ = nullptr;
+  raw_ptr<TestContinueFilesSearchProvider, ExperimentalAsh>
+      drive_continue_section_provider_ = nullptr;
 };
 
 // Test that Help App shows up as Release notes if pref shows we have some times

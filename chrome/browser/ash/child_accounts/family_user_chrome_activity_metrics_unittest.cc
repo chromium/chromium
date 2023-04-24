@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -152,7 +153,8 @@ class FamilyUserChromeActivityMetricsTest
       family_user_chrome_activity_metrics_;
   std::unique_ptr<TestBrowserWindowAura> browser_window_;
   session_manager::SessionManager session_manager_;
-  extensions::ExtensionService* extension_service_ = nullptr;
+  raw_ptr<extensions::ExtensionService, ExperimentalAsh> extension_service_ =
+      nullptr;
 };
 
 TEST_F(FamilyUserChromeActivityMetricsTest, Basic) {

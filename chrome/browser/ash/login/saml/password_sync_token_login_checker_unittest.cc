@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/saml/password_sync_token_login_checker.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
@@ -44,7 +45,7 @@ class PasswordSyncTokenLoginCheckerTest : public testing::Test {
 
   ScopedTestingLocalState scoped_local_state_;
   std::unique_ptr<net::BackoffEntry> sync_token_retry_backoff_;
-  FakeChromeUserManager* user_manager_ = nullptr;
+  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<PasswordSyncTokenLoginChecker> checker_;
 };

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/search/files/zero_state_drive_provider.h"
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -146,13 +147,14 @@ class ZeroStateDriveProviderTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  TestingProfile* profile_ = nullptr;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
   TestSearchController search_controller_;
-  ZeroStateDriveProvider* provider_ = nullptr;
+  raw_ptr<ZeroStateDriveProvider, ExperimentalAsh> provider_ = nullptr;
   base::HistogramTester histogram_tester_;
   base::ScopedTempDir temp_dir_;
-  TestFileSuggestKeyedService* file_suggest_service_ = nullptr;
+  raw_ptr<TestFileSuggestKeyedService, ExperimentalAsh> file_suggest_service_ =
+      nullptr;
   // The mount point for drive files.
   std::unique_ptr<ScopedTestMountPoint> drive_fs_mount_point_;
 };

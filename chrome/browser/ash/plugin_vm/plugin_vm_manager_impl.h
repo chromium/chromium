@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
@@ -147,7 +148,7 @@ class PluginVmManagerImpl : public PluginVmManager,
   // policy changes.
   void OnAvailabilityChanged(bool is_allowed, bool is_configured);
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   std::string owner_id_;
   uint64_t seneschal_server_handle_ = 0;
 

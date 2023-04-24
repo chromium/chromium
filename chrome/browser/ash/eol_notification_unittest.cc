@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -79,7 +80,7 @@ class EolNotificationTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  FakeUpdateEngineClient* fake_update_engine_client_;
+  raw_ptr<FakeUpdateEngineClient, ExperimentalAsh> fake_update_engine_client_;
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
   std::unique_ptr<EolNotification> eol_notification_;
   std::unique_ptr<base::SimpleTestClock> clock_;

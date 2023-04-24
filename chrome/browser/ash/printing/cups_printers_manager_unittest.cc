@@ -16,6 +16,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -360,7 +361,7 @@ class FakePrintServersManager : public PrintServersManager {
   }
 
  private:
-  Observer* observer_;
+  raw_ptr<Observer, ExperimentalAsh> observer_;
 };
 
 class CupsPrintersManagerTest : public testing::Test,
@@ -449,12 +450,17 @@ class CupsPrintersManagerTest : public testing::Test,
 
   // Backend fakes driving the CupsPrintersManager.
   FakeSyncedPrintersManager synced_printers_manager_;
-  FakeEnterprisePrintersProvider* enterprise_printers_provider_;  // Not owned.
-  FakePrinterDetector* usb_detector_;                             // Not owned.
-  FakePrinterDetector* zeroconf_detector_;                        // Not owned.
-  TestPrinterConfigurer* printer_configurer_;                     // Not owned.
-  FakeUsbPrinterNotificationController* usb_notif_controller_;    // Not owned.
-  FakePrintServersManager* print_servers_manager_;                // Not owned.
+  raw_ptr<FakeEnterprisePrintersProvider, ExperimentalAsh>
+      enterprise_printers_provider_;                            // Not owned.
+  raw_ptr<FakePrinterDetector, ExperimentalAsh> usb_detector_;  // Not owned.
+  raw_ptr<FakePrinterDetector, ExperimentalAsh>
+      zeroconf_detector_;  // Not owned.
+  raw_ptr<TestPrinterConfigurer, ExperimentalAsh>
+      printer_configurer_;  // Not owned.
+  raw_ptr<FakeUsbPrinterNotificationController, ExperimentalAsh>
+      usb_notif_controller_;  // Not owned.
+  raw_ptr<FakePrintServersManager, ExperimentalAsh>
+      print_servers_manager_;  // Not owned.
   scoped_refptr<FakePpdProvider> ppd_provider_;
 
   // This is unused, it's just here for memory ownership.

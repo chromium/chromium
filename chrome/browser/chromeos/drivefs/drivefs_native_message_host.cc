@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
@@ -121,7 +122,7 @@ class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
   mojo::Receiver<drivefs::mojom::NativeMessagingPort> receiver_{this};
   mojo::Remote<drivefs::mojom::NativeMessagingHost> drivefs_remote_;
 
-  Client* client_ = nullptr;
+  raw_ptr<Client, ExperimentalAsh> client_ = nullptr;
 
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_ =
       base::SingleThreadTaskRunner::GetCurrentDefault();

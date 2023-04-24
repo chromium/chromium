@@ -13,6 +13,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -205,8 +206,8 @@ class AppServiceAppWindowBrowserTest
     return apps::InstanceState::kUnknown;
   }
 
-  ChromeShelfController* controller_ = nullptr;
-  apps::AppServiceProxy* app_service_proxy_ = nullptr;
+  raw_ptr<ChromeShelfController, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_proxy_ = nullptr;
 };
 
 // Test that we have the correct instance for Chrome apps.

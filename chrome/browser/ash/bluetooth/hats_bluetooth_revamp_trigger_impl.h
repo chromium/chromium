@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_BLUETOOTH_HATS_BLUETOOTH_REVAMP_TRIGGER_IMPL_H_
 
 #include "ash/public/cpp/hats_bluetooth_revamp_trigger.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -43,7 +44,7 @@ class HatsBluetoothRevampTriggerImpl : public HatsBluetoothRevampTrigger {
   Profile* GetActiveUserProfile();
 
   base::OneShotTimer hats_timer_;
-  Profile* profile_for_testing_ = nullptr;
+  raw_ptr<Profile, ExperimentalAsh> profile_for_testing_ = nullptr;
   bool did_set_profile_for_testing_ = false;
   scoped_refptr<ash::HatsNotificationController> hats_notification_controller_;
   base::WeakPtrFactory<HatsBluetoothRevampTriggerImpl> weak_ptr_factory_{this};

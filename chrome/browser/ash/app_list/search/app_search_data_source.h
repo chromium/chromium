@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
@@ -84,11 +85,11 @@ class AppSearchDataSource : public apps::AppRegistryCache::Observer {
   // repeatedly calling `Refresh()` during batch updates in app service.
   void ScheduleRefresh();
 
-  Profile* const profile_;
-  AppListControllerDelegate* const list_controller_;
-  base::Clock* const clock_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
+  const raw_ptr<base::Clock, ExperimentalAsh> clock_;
 
-  apps::AppServiceProxy* const proxy_;
+  const raw_ptr<apps::AppServiceProxy, ExperimentalAsh> proxy_;
 
   base::CallbackListSubscription foreign_session_updated_subscription_;
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_FAKE_LOCK_SCREEN_PROFILE_CREATOR_H_
 #define CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_FAKE_LOCK_SCREEN_PROFILE_CREATOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator.h"
 
 class TestingProfileManager;
@@ -37,7 +38,7 @@ class FakeLockScreenProfileCreator : public LockScreenProfileCreator {
   void InitializeImpl() override;
 
  private:
-  TestingProfileManager* const profile_manager_;
+  const raw_ptr<TestingProfileManager, ExperimentalAsh> profile_manager_;
 };
 
 }  // namespace lock_screen_apps

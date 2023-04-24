@@ -7,6 +7,7 @@
 
 #include <list>
 
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "ui/aura/window.h"
 
@@ -49,7 +50,7 @@ class BrowserToTabList {
     BrowserToTab(aura::Window* browser_window,
                  const base::UnguessableToken& tab_id,
                  const std::string& app_id);
-    aura::Window* browser_window;
+    raw_ptr<aura::Window, ExperimentalAsh> browser_window;
     base::UnguessableToken tab_id;
     std::string app_id;
   };

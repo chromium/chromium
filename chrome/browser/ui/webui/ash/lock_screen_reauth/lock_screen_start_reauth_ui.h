@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOCK_SCREEN_REAUTH_LOCK_SCREEN_START_REAUTH_UI_H_
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
@@ -37,7 +38,7 @@ class LockScreenStartReauthUI : public ui::WebDialogUI {
 
  private:
   // The main message handler.
-  LockScreenReauthHandler* main_handler_;
+  raw_ptr<LockScreenReauthHandler, ExperimentalAsh> main_handler_;
 
   base::WeakPtrFactory<LockScreenStartReauthUI> weak_factory_{this};
 };

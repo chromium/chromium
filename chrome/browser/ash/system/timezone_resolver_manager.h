@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_TIMEZONE_RESOLVER_MANAGER_H_
 #define CHROME_BROWSER_ASH_SYSTEM_TIMEZONE_RESOLVER_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
@@ -99,7 +100,8 @@ class TimeZoneResolverManager : public TimeZoneResolver::Delegate {
   base::ObserverList<Observer>::Unchecked observers_;
 
   // This is non-null only after user logs in.
-  PrefService* primary_user_prefs_ = nullptr;
+  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh>
+      primary_user_prefs_ = nullptr;
 
   // This is used to subscribe to policy preference.
   PrefChangeRegistrar local_state_pref_change_registrar_;

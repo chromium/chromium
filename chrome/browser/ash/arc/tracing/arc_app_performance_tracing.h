@@ -14,6 +14,7 @@
 
 #include "ash/components/arc/mojom/metrics.mojom.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "components/exo/surface_observer.h"
@@ -162,9 +163,9 @@ class ArcAppPerformanceTracing : public KeyedService,
                     mojom::GfxMetricsPtr metrics_ptr);
 
   // Unowned pointers.
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
   // Currently active ARC++ app window.
-  aura::Window* arc_active_window_ = nullptr;
+  raw_ptr<aura::Window, ExperimentalAsh> arc_active_window_ = nullptr;
 
   // Maps active tasks to app id and package name.
   std::map<int, std::pair<std::string, std::string>> task_id_to_app_id_;

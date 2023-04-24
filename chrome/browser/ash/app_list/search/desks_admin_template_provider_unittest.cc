@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "ash/wm/desks/templates/saved_desk_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/profiles/profile.h"
@@ -85,9 +86,9 @@ class DesksAdminTemplateProviderTest : public testing::Test {
 
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
   ::test::TestAppListControllerDelegate list_controller_;
-  DesksAdminTemplateProvider* provider_ = nullptr;
+  raw_ptr<DesksAdminTemplateProvider, ExperimentalAsh> provider_ = nullptr;
 };
 
 // Tests that when there isn't a admin template, the results will be empty.

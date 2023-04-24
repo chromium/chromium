@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 
@@ -33,7 +34,7 @@ class AppSearchProvider : public SearchProvider {
  private:
   void UpdateResults();
 
-  AppSearchDataSource* const data_source_;
+  const raw_ptr<AppSearchDataSource, ExperimentalAsh> data_source_;
 
   std::u16string query_;
   base::TimeTicks query_start_time_;

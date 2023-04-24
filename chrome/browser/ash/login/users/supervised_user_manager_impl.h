@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/users/supervised_user_manager.h"
 
 namespace ash {
@@ -70,10 +71,10 @@ class SupervisedUserManagerImpl : public SupervisedUserManager {
 
   void CleanPref(const std::string& user_id, const char* key);
 
-  ChromeUserManagerImpl* owner_;
+  raw_ptr<ChromeUserManagerImpl, ExperimentalAsh> owner_;
 
   // Interface to the signed settings store.
-  CrosSettings* cros_settings_;
+  raw_ptr<CrosSettings, ExperimentalAsh> cros_settings_;
 };
 
 }  // namespace ash

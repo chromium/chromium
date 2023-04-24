@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "base/posix/unix_domain_socket.h"
@@ -272,7 +273,8 @@ class ArcTracingDataSource
   base::OnceClosure stop_complete_callback_;
   // Parent class's |producer_| member is only valid on the perfetto sequence,
   // we need to track it ourselves for access from the UI thread.
-  tracing::PerfettoProducer* producer_on_ui_thread_ = nullptr;
+  raw_ptr<tracing::PerfettoProducer, ExperimentalAsh> producer_on_ui_thread_ =
+      nullptr;
   perfetto::DataSourceConfig data_source_config_;
   std::unique_ptr<SystemTraceWriter> trace_writer_;
 };

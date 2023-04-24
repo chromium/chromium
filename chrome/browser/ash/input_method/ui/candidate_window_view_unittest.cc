@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/input_method/ui/candidate_window_view.h"
+#include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
 
@@ -112,7 +113,8 @@ class CandidateWindowViewTest : public views::ViewsTestBase {
   }
 
  private:
-  CandidateWindowView* candidate_window_view_;  // Owned by its Widget.
+  raw_ptr<CandidateWindowView, ExperimentalAsh>
+      candidate_window_view_;  // Owned by its Widget.
 };
 
 TEST_F(CandidateWindowViewTest, UpdateCandidatesTest_CursorVisibility) {

@@ -9,6 +9,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "chrome/browser/ash/login/screens/mock_error_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
@@ -107,9 +108,10 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
   std::unique_ptr<MockErrorScreen> mock_error_screen_;
   std::unique_ptr<WizardContext> wizard_context_;
   // Will be deleted in `network_portal_detector::Shutdown()`.
-  MockNetworkPortalDetector* mock_network_portal_detector_;
+  raw_ptr<MockNetworkPortalDetector, ExperimentalAsh>
+      mock_network_portal_detector_;
   // Will be deleted in `DBusThreadManager::Shutdown()`.
-  FakeUpdateEngineClient* fake_update_engine_client_;
+  raw_ptr<FakeUpdateEngineClient, ExperimentalAsh> fake_update_engine_client_;
   // Initializes NetworkHandler and required DBus clients.
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
 

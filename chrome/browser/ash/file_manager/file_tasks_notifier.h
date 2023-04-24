@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/file_manager/file_tasks_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
@@ -95,7 +96,7 @@ class FileTasksNotifier : public KeyedService,
                                     base::FilePath* drive_relative_path);
   virtual bool IsOffline();
 
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
   download::AllDownloadItemNotifier download_notifier_;
   base::ObserverList<FileTasksObserver> observers_;
 };

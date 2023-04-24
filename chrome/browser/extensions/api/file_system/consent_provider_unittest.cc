@@ -117,7 +117,7 @@ class FileSystemApiConsentProviderTest : public testing::Test {
     user_manager_ = new ash::FakeChromeUserManager;
     scoped_user_manager_enabler_ =
         std::make_unique<user_manager::ScopedUserManager>(
-            base::WrapUnique(user_manager_));
+            base::WrapUnique(user_manager_.get()));
   }
 
   void TearDown() override {
@@ -129,7 +129,8 @@ class FileSystemApiConsentProviderTest : public testing::Test {
 
  protected:
   std::unique_ptr<TestingPrefServiceSimple> testing_pref_service_;
-  ash::FakeChromeUserManager* user_manager_;  // Owned by the scope enabler.
+  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh>
+      user_manager_;  // Owned by the scope enabler.
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_enabler_;
   content::BrowserTaskEnvironment task_environment_;
 };

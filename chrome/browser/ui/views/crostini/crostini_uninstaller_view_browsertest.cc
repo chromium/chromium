@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/crostini/crostini_uninstaller_view.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -91,7 +92,8 @@ class CrostiniUninstallerViewBrowserTest : public CrostiniDialogBrowserTest {
   }
 
  protected:
-  WaitingFakeConciergeClient* waiting_fake_concierge_client_;
+  raw_ptr<WaitingFakeConciergeClient, ExperimentalAsh>
+      waiting_fake_concierge_client_;
 };
 
 class CrostiniUninstalledUninstallerViewBrowserTest

@@ -9,6 +9,7 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
@@ -165,9 +166,9 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
  private:
   gfx::NativeWindow parent_window_;
   std::unique_ptr<TestingProfile> profile_;
-  SharesheetBubbleViewDelegate* bubble_delegate_;
-  SharesheetBubbleView* sharesheet_bubble_view_;
-  views::Widget* sharesheet_widget_;
+  raw_ptr<SharesheetBubbleViewDelegate, ExperimentalAsh> bubble_delegate_;
+  raw_ptr<SharesheetBubbleView, ExperimentalAsh> sharesheet_bubble_view_;
+  raw_ptr<views::Widget, ExperimentalAsh> sharesheet_widget_;
 };
 
 TEST_F(SharesheetBubbleViewTest, BubbleDoesOpenAndClose) {

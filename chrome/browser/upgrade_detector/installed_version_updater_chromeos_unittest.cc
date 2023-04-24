@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/browser/upgrade_detector/mock_build_state_observer.h"
@@ -47,7 +48,8 @@ class InstalledVersionUpdaterTest : public ::testing::Test {
   BuildState build_state_;
 
  private:
-  ash::FakeUpdateEngineClient* fake_update_engine_client_;  // Not owned.
+  raw_ptr<ash::FakeUpdateEngineClient, ExperimentalAsh>
+      fake_update_engine_client_;  // Not owned.
 };
 
 // Tests that an unrelated status change notification does not push data to the

@@ -9,6 +9,7 @@
 #include "base/callback_list.h"
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
@@ -55,7 +56,7 @@ class BruschettaLauncher {
   void Finish(BruschettaResult result);
 
   std::string vm_name_;
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Callbacks to run once an in-progress launch finishes.
   base::OnceCallbackList<void(BruschettaResult)> callbacks_;

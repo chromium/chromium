@@ -12,6 +12,7 @@
 #include "ash/webui/scanning/scanning_app_delegate.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/scanning/scanning_file_path_helper.h"
@@ -76,7 +77,7 @@ class ChromeScanningAppDelegate : public ScanningAppDelegate {
                     base::OnceCallback<void(bool)>,
                     bool file_path_exists);
 
-  content::WebUI* web_ui_;  // Owns |this|.
+  raw_ptr<content::WebUI, ExperimentalAsh> web_ui_;  // Owns |this|.
 
   // Helper class for for file path manipulation and verification.
   ScanningFilePathHelper file_path_helper_;

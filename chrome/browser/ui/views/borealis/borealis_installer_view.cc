@@ -149,7 +149,7 @@ BorealisInstallerView::BorealisInstallerView(Profile* profile)
       views::kMarginsKey, gfx::Insets::TLBR(kPrimaryMessageHeight, 0, 0, 0));
   primary_message_label_->SetMultiLine(false);
   primary_message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  upper_container_view->AddChildView(primary_message_label_);
+  upper_container_view->AddChildView(primary_message_label_.get());
 
   views::View* secondary_message_container_view =
       AddChildView(std::make_unique<views::View>());
@@ -163,13 +163,14 @@ BorealisInstallerView::BorealisInstallerView(Profile* profile)
       views::style::STYLE_SECONDARY);
   secondary_message_label_->SetMultiLine(true);
   secondary_message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  secondary_message_container_view->AddChildView(secondary_message_label_);
+  secondary_message_container_view->AddChildView(
+      secondary_message_label_.get());
 
   progress_bar_ = new views::ProgressBar(kProgressBarHeight);
   progress_bar_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(kProgressBarTopMargin - kProgressBarHeight, 0, 0, 0));
-  upper_container_view->AddChildView(progress_bar_);
+  upper_container_view->AddChildView(progress_bar_.get());
 
   installation_progress_message_label_ =
       new views::Label(std::u16string(), CONTEXT_DIALOG_BODY_TEXT_SMALL,
@@ -179,10 +180,11 @@ BorealisInstallerView::BorealisInstallerView(Profile* profile)
       gfx::Insets::TLBR(kInstallationProgressMessageHeight, 0, 0, 0));
   installation_progress_message_label_->SetMultiLine(false);
   installation_progress_message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  upper_container_view->AddChildView(installation_progress_message_label_);
+  upper_container_view->AddChildView(
+      installation_progress_message_label_.get());
 
   big_image_ = new views::ImageView();
-  lower_container_view->AddChildView(big_image_);
+  lower_container_view->AddChildView(big_image_.get());
 
   // Make sure the lower_container_view is pinned to the bottom of the dialog.
   lower_container_layout_->set_main_axis_alignment(

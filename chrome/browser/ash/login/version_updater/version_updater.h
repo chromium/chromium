@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -178,7 +179,7 @@ class VersionUpdater : public UpdateEngineClient::Observer,
   void OnUpdateCheckStarted(UpdateEngineClient::UpdateCheckResult result);
 
   // Pointer to delegate that owns this VersionUpdater instance.
-  Delegate* delegate_;
+  raw_ptr<Delegate, ExperimentalAsh> delegate_;
 
   std::unique_ptr<base::RepeatingTimer> refresh_timer_;
 
@@ -200,7 +201,7 @@ class VersionUpdater : public UpdateEngineClient::Observer,
 
   UpdateTimeEstimator time_estimator_;
 
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
 
   base::WeakPtrFactory<VersionUpdater> weak_ptr_factory_{this};
 };

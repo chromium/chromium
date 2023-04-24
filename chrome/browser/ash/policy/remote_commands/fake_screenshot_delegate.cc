@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/policy/uploading/upload_job.h"
 
 namespace policy {
@@ -36,7 +37,7 @@ class FakeUploadJob : public policy::UploadJob {
   }
 
  private:
-  UploadJob::Delegate* delegate_;
+  raw_ptr<UploadJob::Delegate, ExperimentalAsh> delegate_;
 };
 }  // namespace
 

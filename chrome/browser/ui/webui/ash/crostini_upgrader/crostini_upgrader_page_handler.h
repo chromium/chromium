@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_CROSTINI_UPGRADER_CROSTINI_UPGRADER_PAGE_HANDLER_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crostini/crostini_upgrader_ui_delegate.h"
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader.mojom.h"
@@ -71,8 +72,9 @@ class CrostiniUpgraderPageHandler
  private:
   // The chrome://crostini-upgrader WebUI that triggered the upgrade.
   // Used to parent open/save dialogs.
-  content::WebContents* web_contents_;                          // Not owned.
-  crostini::CrostiniUpgraderUIDelegate* upgrader_ui_delegate_;  // Not owned.
+  raw_ptr<content::WebContents, ExperimentalAsh> web_contents_;  // Not owned.
+  raw_ptr<crostini::CrostiniUpgraderUIDelegate, ExperimentalAsh>
+      upgrader_ui_delegate_;  // Not owned.
   mojo::Receiver<crostini_upgrader::mojom::PageHandler> receiver_;
   mojo::Remote<crostini_upgrader::mojom::Page> page_;
   base::OnceClosure on_page_closed_;

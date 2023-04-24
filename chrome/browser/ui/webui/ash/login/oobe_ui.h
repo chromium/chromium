@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/webui/common/chrome_os_webui_config.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/values.h"
@@ -201,7 +202,7 @@ class OobeUI : public ui::MojoWebUIController {
   scoped_refptr<NetworkStateInformer> network_state_informer_;
 
   // Reference to CoreOobeHandler that handles common requests of Oobe page.
-  CoreOobeHandler* core_handler_ = nullptr;
+  raw_ptr<CoreOobeHandler, ExperimentalAsh> core_handler_ = nullptr;
 
   std::vector<BaseWebUIHandler*> webui_handlers_;       // Non-owning pointers.
   std::vector<BaseWebUIHandler*> webui_only_handlers_;  // Non-owning pointers.

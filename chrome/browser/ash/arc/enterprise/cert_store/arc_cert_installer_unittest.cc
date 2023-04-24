@@ -13,6 +13,7 @@
 #include "ash/components/arc/session/arc_session_runner.h"
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/components/arc/test/fake_policy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -154,10 +155,10 @@ class ArcCertInstallerTest : public testing::Test {
   const std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   const std::unique_ptr<TestingProfile> profile_;
-  arc::ArcPolicyBridge* arc_policy_bridge_;
+  raw_ptr<arc::ArcPolicyBridge, ExperimentalAsh> arc_policy_bridge_;
   std::unique_ptr<arc::MockPolicyInstance> policy_instance_;
 
-  policy::RemoteCommandsQueue* queue_;
+  raw_ptr<policy::RemoteCommandsQueue, ExperimentalAsh> queue_;
   std::unique_ptr<ArcCertInstaller> installer_;
   MockRemoteCommandsQueueObserver observer_;
 };

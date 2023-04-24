@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -159,10 +160,12 @@ class KioskAppUpdateServiceTest
  private:
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<base::ScopedPathOverride> uptime_file_override_;
-  const extensions::Extension* app_ = nullptr;       // Not owned.
-  KioskAppUpdateService* update_service_ = nullptr;  // Not owned.
-  system::AutomaticRebootManager* automatic_reboot_manager_ =
+  raw_ptr<const extensions::Extension, ExperimentalAsh> app_ =
       nullptr;  // Not owned.
+  raw_ptr<KioskAppUpdateService, ExperimentalAsh> update_service_ =
+      nullptr;  // Not owned.
+  raw_ptr<system::AutomaticRebootManager, ExperimentalAsh>
+      automatic_reboot_manager_ = nullptr;  // Not owned.
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 

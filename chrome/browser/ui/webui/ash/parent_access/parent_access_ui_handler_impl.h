@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_callback.pb.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_state_tracker.h"
@@ -87,11 +88,11 @@ class ParentAccessUIHandlerImpl
       ParentAccessUIHandlerImpl::ParentAccessWidgetError error);
 
   // Used to fetch OAuth2 access tokens.
-  signin::IdentityManager* identity_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_ = nullptr;
   std::unique_ptr<signin::AccessTokenFetcher> oauth2_access_token_fetcher_;
   // Not owned by this class, and provided by the class's creator.  Can be null
   // if the handler is created without a dialog.
-  ParentAccessUIHandlerDelegate* delegate_ = nullptr;
+  raw_ptr<ParentAccessUIHandlerDelegate, ExperimentalAsh> delegate_ = nullptr;
   mojo::Receiver<parent_access_ui::mojom::ParentAccessUIHandler> receiver_;
 
   // The Parent Access Token.  Only set if the parent was verified.

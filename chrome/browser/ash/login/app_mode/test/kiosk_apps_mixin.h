@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_APP_MODE_TEST_KIOSK_APPS_MIXIN_H_
 #define CHROME_BROWSER_ASH_LOGIN_APP_MODE_TEST_KIOSK_APPS_MIXIN_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome_device_policy.pb.h"
@@ -36,7 +37,8 @@ class KioskAppsMixin : public InProcessBrowserTestMixin {
   void SetUpInProcessBrowserTestFixture() override;
 
  private:
-  net::EmbeddedTestServer* embedded_test_server_ = nullptr;
+  raw_ptr<net::EmbeddedTestServer, ExperimentalAsh> embedded_test_server_ =
+      nullptr;
   FakeCWS fake_cws_;
 };
 

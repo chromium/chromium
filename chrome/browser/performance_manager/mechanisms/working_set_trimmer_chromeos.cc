@@ -81,7 +81,7 @@ void WorkingSetTrimmerChromeOS::TrimArcVmWorkingSet(
 
   // Before trimming, drop ARCVM's page caches.
   content::BrowserContext* context =
-      context_for_testing_ ? context_for_testing_ : GetContext();
+      context_for_testing_ ? context_for_testing_.get() : GetContext();
   if (!context)
     error = "BrowserContext unavailable";
 
@@ -136,7 +136,7 @@ void WorkingSetTrimmerChromeOS::OnDropArcVmCaches(
   if (base::FeatureList::IsEnabled(arc::kGuestZram) &&
       arc::kGuestReclaimEnabled.Get()) {
     content::BrowserContext* context =
-        context_for_testing_ ? context_for_testing_ : GetContext();
+        context_for_testing_ ? context_for_testing_.get() : GetContext();
     if (!context) {
       LogErrorAndInvokeCallback("BrowserContext unavailable",
                                 std::move(callback));

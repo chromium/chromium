@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
@@ -66,7 +67,7 @@ class AccessibilityServiceClient
   // and need to reconnect, for example when the profile changes.
   std::vector<ax::mojom::AssistiveTechnologyType> enabled_features_;
 
-  content::BrowserContext* profile_ = nullptr;
+  raw_ptr<content::BrowserContext, ExperimentalAsh> profile_ = nullptr;
 
   // Here is the remote to the AT Controller, used to toggle features.
   mojo::Remote<ax::mojom::AssistiveTechnologyController> at_controller_;

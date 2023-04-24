@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_storage.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_storage_impl.h"
@@ -51,9 +52,9 @@ class FakeNearbyShareCertificateStorage : public NearbyShareCertificateStorage {
         const base::FilePath& profile_path) override;
 
     std::vector<FakeNearbyShareCertificateStorage*> instances_;
-    PrefService* latest_pref_service_ = nullptr;
-    leveldb_proto::ProtoDatabaseProvider* latest_proto_database_provider_ =
-        nullptr;
+    raw_ptr<PrefService, ExperimentalAsh> latest_pref_service_ = nullptr;
+    raw_ptr<leveldb_proto::ProtoDatabaseProvider, ExperimentalAsh>
+        latest_proto_database_provider_ = nullptr;
     base::FilePath latest_profile_path_;
   };
 

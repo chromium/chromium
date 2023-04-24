@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ui/views/crostini/crostini_dialogue_browser_test_util.h"
@@ -55,9 +56,9 @@ class CrostiniForceCloseViewTest : public DialogBrowserTest {
   std::unique_ptr<exo::WMHelper> wm_helper_;
 
   std::unique_ptr<exo::ShellSurface> closable_surface_;
-  views::Widget* closable_widget_;
+  raw_ptr<views::Widget, ExperimentalAsh> closable_widget_;
 
-  views::Widget* dialog_widget_ = nullptr;
+  raw_ptr<views::Widget, ExperimentalAsh> dialog_widget_ = nullptr;
 
   int force_close_invocations_ = 0;
 

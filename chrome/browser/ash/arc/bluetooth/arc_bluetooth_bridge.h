@@ -22,6 +22,7 @@
 #include "base/files/file.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/bluetooth/arc_bluetooth_task_queue.h"
@@ -624,7 +625,8 @@ class ArcBluetoothBridge
   void OnBluetoothConnectingSocketReady(
       ArcBluetoothBridge::BluetoothConnectingSocket* socket);
 
-  ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
+  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+      arc_bridge_service_;  // Owned by ArcServiceManager.
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   scoped_refptr<device::BluetoothAdvertisement> advertisment_;
@@ -749,7 +751,7 @@ class ArcBluetoothBridge
     void OnConnectionClosed() override;
 
    private:
-    ArcBluetoothBridge* arc_bluetooth_bridge_;
+    raw_ptr<ArcBluetoothBridge, ExperimentalAsh> arc_bluetooth_bridge_;
   };
   BluetoothArcConnectionObserver bluetooth_arc_connection_observer_;
 

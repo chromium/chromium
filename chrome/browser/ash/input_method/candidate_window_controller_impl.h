@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/input_method/candidate_window_controller.h"
 #include "chrome/browser/ash/input_method/ui/candidate_window_view.h"
@@ -78,10 +79,11 @@ class CandidateWindowControllerImpl
   void InitCandidateWindowView();
 
   // The candidate window view.
-  ui::ime::CandidateWindowView* candidate_window_view_ = nullptr;
+  raw_ptr<ui::ime::CandidateWindowView, ExperimentalAsh>
+      candidate_window_view_ = nullptr;
 
   // This is the outer frame of the infolist window view. Owned by the widget.
-  ui::ime::InfolistWindow* infolist_window_ = nullptr;
+  raw_ptr<ui::ime::InfolistWindow, ExperimentalAsh> infolist_window_ = nullptr;
 
   bool is_focused_ = false;
 

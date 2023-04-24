@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ANDROID_SMS_ANDROID_SMS_PAIRING_STATE_TRACKER_IMPL_H_
 #define CHROME_BROWSER_ASH_ANDROID_SMS_ANDROID_SMS_PAIRING_STATE_TRACKER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/android_sms/android_sms_app_manager.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
@@ -53,8 +54,8 @@ class AndroidSmsPairingStateTrackerImpl
 
   void AddCookieChangeListener();
 
-  Profile* profile_;
-  AndroidSmsAppManager* android_sms_app_manager_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<AndroidSmsAppManager, ExperimentalAsh> android_sms_app_manager_;
 
   mojo::Receiver<network::mojom::CookieChangeListener>
       cookie_listener_receiver_{this};
