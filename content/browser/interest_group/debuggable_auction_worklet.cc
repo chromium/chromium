@@ -4,8 +4,8 @@
 
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 
-#include "base/guid.h"
 #include "base/strings/strcat.h"
+#include "base/uuid.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/interest_group/debuggable_auction_worklet_tracker.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -49,7 +49,7 @@ DebuggableAuctionWorklet::DebuggableAuctionWorklet(
     : owning_frame_(owning_frame),
       process_handle_(process_handle),
       url_(url),
-      unique_id_(base::GenerateGUID()),
+      unique_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       worklet_(bidder_worklet) {
   DebuggableAuctionWorkletTracker::GetInstance()->NotifyCreated(
       this, should_pause_on_start_);
@@ -64,7 +64,7 @@ DebuggableAuctionWorklet::DebuggableAuctionWorklet(
     : owning_frame_(owning_frame),
       process_handle_(process_handle),
       url_(url),
-      unique_id_(base::GenerateGUID()),
+      unique_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       worklet_(seller_worklet) {
   DebuggableAuctionWorkletTracker::GetInstance()->NotifyCreated(
       this, should_pause_on_start_);
