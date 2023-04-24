@@ -9,42 +9,40 @@
 <script src="resources/helpers.js"></script>
 <script>
 attribution_reporting_promise_test(async t => {
-  const source = {
-    source_event_id: generateSourceEventId(),
-    destination: 'https://{{host}}',
-    aggregation_keys: {
-      campaignCounts: '0x159',
-      geoValue: '0x5',
-    }
-  };
-  const trigger = {
-    aggregatable_trigger_data: [
-      {
-        key_piece: '0x400',
-        source_keys: ['campaignCounts'],
+  const host = 'https://{{host}}';
+
+  registerAttributionSrcByImg(createRedirectChain([
+    {
+      cookie: 'foo=bar;Secure;HttpOnly;Path=/',
+      source: {
+        aggregation_keys: {
+          campaignCounts: '0x159',
+          geoValue: '0x5',
+        },
+        destination: host,
       },
-      {
-        key_piece: '0xA80',
-        source_keys: ['geoValue', 'nonMatchingKey'],
-      }
-    ],
-    aggregatable_values: {
-      campaignCounts: 32768,
-      geoValue: 1664,
     },
-  };
+    {
+      trigger: {
+        aggregatable_trigger_data: [
+          {
+            key_piece: '0x400',
+            source_keys: ['campaignCounts'],
+          },
+          {
+            key_piece: '0xA80',
+            source_keys: ['geoValue', 'nonMatchingKey'],
+          }
+        ],
+        aggregatable_values: {
+          campaignCounts: 32768,
+          geoValue: 1664,
+        },
+      },
+    },
+  ]));
 
-  const reportingOrigin = getDefaultReportingOrigin();
-
-  await registerAttributionSrc({
-    source,
-    cookie: 'foo=bar;Secure;HttpOnly;Path=/',
-    reportingOrigin
-  });
-  await waitForSourceToBeRegistered(source.source_event_id);
-  await registerAttributionSrc({trigger, reportingOrigin});
-
-  const payload = await pollAggregatableReports(reportingOrigin);
+  const payload = await pollAggregatableReports(getDefaultReportingOrigin());
   assert_equals(payload.reports.length, 1);
   const report = JSON.parse(payload.reports[0].body);
   const headers = payload.reports[0].headers;
@@ -57,7 +55,7 @@ attribution_reporting_promise_test(async t => {
   assert_own_property(shared_info, 'scheduled_report_time');
   assert_own_property(shared_info, 'version');
   assert_own_property(shared_info, 'attribution_destination');
-  assert_equals(shared_info.attribution_destination, source.destination);
+  assert_equals(shared_info.attribution_destination, host);
   assert_not_own_property(report, 'source_debug_key');
   assert_not_own_property(report, 'trigger_debug_key');
   assert_own_property(report, 'aggregation_service_payloads');

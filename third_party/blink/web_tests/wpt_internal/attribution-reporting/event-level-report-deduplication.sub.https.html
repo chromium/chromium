@@ -10,42 +10,47 @@
 attribution_reporting_promise_test(async t => {
   const host = 'https://{{host}}';
 
-  const source = {
-    source_event_id: generateSourceEventId(),
-    destination: host,
-  };
-  await registerAttributionSrc({
-    source,
-    method: 'open',
-  });
-  await waitForSourceToBeRegistered(source.source_event_id);
+  const expectedSourceEventId = generateSourceEventId();
+  const expectedTriggerData = '1';
+  const deduplicationKey = '666';
 
-  await registerAttributionSrc({
-    trigger: {
-      event_trigger_data: [{
-        deduplication_key: '666',
-        trigger_data: '5',
-      }],
+  registerAttributionSrcByImg(createRedirectChain([
+    {
+      source: {
+        destination: host,
+        source_event_id: expectedSourceEventId,
+      },
     },
-  });
+    {
+      trigger: {
+        event_trigger_data: [{
+          deduplication_key: deduplicationKey,
+          trigger_data: expectedTriggerData,
+        }],
+      },
+    },
+  ]));
 
   const payload = await pollEventLevelReports();
   assert_equals(payload.reports.length, 1);
 
   const report = JSON.parse(payload.reports[0].body);
-  assert_equals(report.trigger_data, '5');
+  assert_equals(report.trigger_data, expectedTriggerData);
   assert_equals(report.attribution_destination, host);
 
-  await registerAttributionSrc({
-    trigger: {
-      event_trigger_data: [{
-        deduplication_key: '666',
-      }],
-      debug_key: '789',
-      debug_reporting: true,
+  const expectedTriggerDebugKey = '789';
+  registerAttributionSrcByImg(createRedirectChain([
+    {
+      cookie: attributionDebugCookie,
+      trigger: {
+        debug_key: expectedTriggerDebugKey,
+        debug_reporting: true,
+        event_trigger_data: [{
+          deduplication_key: deduplicationKey,
+        }],
+      },
     },
-    cookie: attributionDebugCookie,
-  });
+  ]));
 
   const debugPayload = await pollVerboseDebugReports();
   assert_equals(debugPayload.reports.length, 1);
@@ -55,9 +60,9 @@ attribution_reporting_promise_test(async t => {
   assert_own_property(debugReport[0], 'body');
   const debugReportBody = debugReport[0].body;
   assert_equals(debugReportBody.attribution_destination, host);
-  assert_equals(debugReportBody.source_event_id, source.source_event_id);
+  assert_equals(debugReportBody.source_event_id, expectedSourceEventId);
   assert_equals(debugReportBody.source_site, host);
-  assert_equals(debugReportBody.trigger_debug_key, '789');
+  assert_equals(debugReportBody.trigger_debug_key, expectedTriggerDebugKey);
   assert_not_own_property(debugReportBody, 'source_debug_key');
 }, 'Event-level report is deduplicated.');
 </script>

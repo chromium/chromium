@@ -19,17 +19,11 @@ attribution_reporting_promise_test(async t => {
   });
   await waitForSourceToBeRegistered(source.source_event_id);
 
-  await Promise.all([
-    registerAttributionSrc({trigger: {
-      event_trigger_data: [{trigger_data: '3'}],
-    }}),
-    registerAttributionSrc({trigger: {
-      event_trigger_data: [{trigger_data: '4'}],
-    }}),
-    registerAttributionSrc({trigger: {
-      event_trigger_data: [{trigger_data: '5'}],
-    }}),
-  ]);
+  registerAttributionSrcByImg(createRedirectChain([
+    {trigger: {event_trigger_data: [{trigger_data: '3'}]}},
+    {trigger: {event_trigger_data: [{trigger_data: '4'}]}},
+    {trigger: {event_trigger_data: [{trigger_data: '5'}]}},
+  ]));
 
   const reports = [];
 

@@ -13,19 +13,23 @@ const uuidPattern = /^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/;
 const reportingOrigin = getDefaultReportingOrigin();
 
 attribution_reporting_promise_test(async t => {
-  const source = {
-    source_event_id: generateSourceEventId(),
-    destination: 'https://{{host}}',
-  };
-  await registerAttributionSrc({
-    source,
-    cookie: 'foo=bar;Secure;HttpOnly;Path=/',
-    reportingOrigin,
-  });
-  await waitForSourceToBeRegistered(source.source_event_id);
+  const host = 'https://{{host}}';
+  const expectedSourceEventId = generateSourceEventId();
 
-  const trigger = {event_trigger_data: [{trigger_data: '2'}]};
-  await registerAttributionSrc({trigger, reportingOrigin});
+  registerAttributionSrcByImg(createRedirectChain([
+    {
+      cookie: 'foo=bar;Secure;HttpOnly;Path=/',
+      reportingOrigin,
+      source: {
+        destination: host,
+        source_event_id: expectedSourceEventId,
+      },
+    },
+    {
+      reportingOrigin,
+      trigger: {event_trigger_data: [{trigger_data: '2'}]},
+    },
+  ]));
 
   const payload = await pollEventLevelReports(reportingOrigin);
   assert_equals(payload.reports.length, 1);
@@ -35,9 +39,9 @@ attribution_reporting_promise_test(async t => {
   // The trigger data is sanitized to "0" because event sources are limited to 1
   // bit.
   assert_equals(report.trigger_data, '0');
-  assert_equals(report.source_event_id, source.source_event_id);
+  assert_equals(report.source_event_id, expectedSourceEventId);
   assert_equals(report.source_type, 'event');
-  assert_equals(report.attribution_destination, source.destination);
+  assert_equals(report.attribution_destination, host);
 
   assert_between_inclusive(report.randomized_trigger_rate, 0.0, 1.0);
 

@@ -6,36 +6,35 @@
 <script src="resources/helpers.js"></script>
 <script>
 attribution_reporting_promise_test(async t => {
-  const source = {
-    source_event_id: generateSourceEventId(),
-    destination: 'https://{{host}}',
-    debug_key: '246',
-  };
-  await registerAttributionSrc({
-    source,
-    cookie: attributionDebugCookie,
-  });
-  await waitForSourceToBeRegistered(source.source_event_id);
+  const expectedSourceDebugKey = '246';
+  const expectedTriggerDebugKey = '357';
 
-  const trigger_debug_key = '357';
-  await registerAttributionSrc({
-    trigger: {
-      event_trigger_data: [{}],
-      debug_key: trigger_debug_key,
+  registerAttributionSrcByImg(createRedirectChain([
+    {
+      cookie: attributionDebugCookie,
+      source: {
+        debug_key: expectedSourceDebugKey,
+        destination: 'https://{{host}}',
+      },
     },
-    cookie: attributionDebugCookie,
-  });
+    {
+      trigger: {
+        debug_key: expectedTriggerDebugKey,
+        event_trigger_data: [{}],
+      },
+    },
+  ]));
 
   const payload = await pollEventLevelReports();
   assert_equals(payload.reports.length, 1);
   const report = JSON.parse(payload.reports[0].body);
-  assert_equals(report.source_debug_key, source.debug_key);
-  assert_equals(report.trigger_debug_key, trigger_debug_key);
+  assert_equals(report.source_debug_key, expectedSourceDebugKey);
+  assert_equals(report.trigger_debug_key, expectedTriggerDebugKey);
 
   const debugPayload = await pollEventLevelDebugReports();
   assert_equals(debugPayload.reports.length, 1);
   const debugReport = JSON.parse(debugPayload.reports[0].body);
-  assert_equals(debugReport.source_debug_key, source.debug_key);
-  assert_equals(debugReport.trigger_debug_key, trigger_debug_key);
+  assert_equals(debugReport.source_debug_key, expectedSourceDebugKey);
+  assert_equals(debugReport.trigger_debug_key, expectedTriggerDebugKey);
 }, 'Debug report is received if source and trigger debug keys are set.');
 </script>

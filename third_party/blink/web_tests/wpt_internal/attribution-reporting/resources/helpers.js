@@ -44,10 +44,14 @@ const pipeHeaderPattern = /[,)]/g;
 // , and ) in pipe values must be escaped with \
 const encodeForPipe = urlString => urlString.replace(pipeHeaderPattern, '\\$&');
 
-const blankURLWithHeaders = (headers, origin) => {
+const blankURLWithHeaders = (headers, origin, status) => {
   const url = blankURL(origin);
 
   const parts = headers.map(h => `header(${h.name},${encodeForPipe(h.value)})`);
+
+  if (status !== undefined) {
+    parts.push(`status(${encodeForPipe(status)})`);
+  }
 
   if (parts.length > 0) {
     url.searchParams.set('pipe', parts.join('|'));
@@ -138,6 +142,49 @@ const getDefaultReportingOrigin = () => {
   // cross-origin means that the reporting origin differs from the source/destination origin.
   const crossOrigin = new URLSearchParams(location.search).get('cross-origin');
   return crossOrigin === null ? location.origin : get_host_info().HTTPS_REMOTE_ORIGIN;
+};
+
+const createRedirectChain = (redirects) => {
+  let redirectTo;
+
+  for (let i = redirects.length - 1; i >= 0; i--) {
+    const {source, trigger, cookie, reportingOrigin} = redirects[i];
+    const headers = [];
+
+    if (source) {
+      headers.push({
+        name: 'Attribution-Reporting-Register-Source',
+        value: JSON.stringify(source),
+      });
+    }
+
+    if (trigger) {
+      headers.push({
+        name: 'Attribution-Reporting-Register-Trigger',
+        value: JSON.stringify(trigger),
+      });
+    }
+
+    if (cookie) {
+      headers.push({name: 'Set-Cookie', value: cookie});
+    }
+
+    let status;
+    if (redirectTo) {
+      headers.push({name: 'Location', value: redirectTo.toString()});
+      status = '302';
+    }
+
+    redirectTo = blankURLWithHeaders(
+        headers, reportingOrigin || getDefaultReportingOrigin(), status);
+  }
+
+  return redirectTo;
+};
+
+const registerAttributionSrcByImg = (attributionSrc) => {
+  const element = document.createElement('img');
+  element.attributionSrc = attributionSrc;
 };
 
 const eligibleHeader = 'Attribution-Reporting-Eligible';
