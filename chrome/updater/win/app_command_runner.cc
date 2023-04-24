@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/base_paths_win.h"
@@ -181,7 +182,7 @@ AppCommandRunner::LoadAutoRunOnOsUpgradeAppCommands(
     HResultOr<AppCommandRunner> runner =
         LoadAppCommand(scope, app_id, it.Name());
     if (runner.has_value()) {
-      app_command_runners.push_back(*runner);
+      app_command_runners.push_back(*std::move(runner));
     }
   }
 

@@ -61,6 +61,7 @@
 #include "chrome/updater/win/scoped_handle.h"
 #include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_constants.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
@@ -437,8 +438,7 @@ HResultOr<bool> IsTokenAdmin(HANDLE token) {
                                   &administrators_group)) {
     return base::unexpected(HRESULTFromLastError());
   }
-  base::ScopedClosureRunner free_sid(
-      base::BindOnce([](PSID sid) { ::FreeSid(sid); }, administrators_group));
+  absl::Cleanup free_sid = [&] { ::FreeSid(administrators_group); };
   BOOL is_member = false;
   if (!::CheckTokenMembership(token, administrators_group, &is_member))
     return base::unexpected(HRESULTFromLastError());
@@ -482,9 +482,7 @@ HResultOr<bool> IsCOMCallerAdmin() {
       return base::unexpected(hr);
     }
 
-    base::ScopedClosureRunner co_revert_to_self(
-        base::BindOnce([]() { ::CoRevertToSelf(); }));
-
+    absl::Cleanup co_revert_to_self = [] { ::CoRevertToSelf(); };
     if (!::OpenThreadToken(::GetCurrentThread(), TOKEN_QUERY, TRUE,
                            ScopedKernelHANDLE::Receiver(token).get())) {
       hr = HRESULTFromLastError();
@@ -507,18 +505,13 @@ bool IsUACOn() {
   // The presence of a split token definitively indicates that UAC is on. But
   // the absence of the token does not necessarily indicate that UAC is off.
   HResultOr<bool> is_split_token = IsUserRunningSplitToken();
-  if (is_split_token.has_value() && is_split_token.value())
-    return true;
-
-  return IsExplorerRunningAtMediumOrLower();
+  return (is_split_token.has_value() && is_split_token.value()) ||
+         IsExplorerRunningAtMediumOrLower();
 }
 
 bool IsElevatedWithUACOn() {
   HResultOr<bool> is_user_admin = IsUserAdmin();
-  if (is_user_admin.has_value() && !is_user_admin.value())
-    return false;
-
-  return IsUACOn();
+  return (!is_user_admin.has_value() || is_user_admin.value()) && IsUACOn();
 }
 
 std::string GetUACState() {
@@ -529,13 +522,13 @@ std::string GetUACState() {
     base::StringAppendF(&s, "IsUserAdmin: %d, ", is_user_admin.value());
 
   HResultOr<bool> is_user_non_elevated_admin = IsUserNonElevatedAdmin();
-  if (is_user_non_elevated_admin.has_value())
+  if (is_user_non_elevated_admin.has_value()) {
     base::StringAppendF(&s, "IsUserNonElevatedAdmin: %d, ",
                         is_user_non_elevated_admin.value());
+  }
 
-  base::StringAppendF(&s, "IsUACOn: %d, ", IsUACOn());
-  base::StringAppendF(&s, "IsElevatedWithUACOn: %d", IsElevatedWithUACOn());
-
+  base::StringAppendF(&s, "IsUACOn: %d, IsElevatedWithUACOn: %d", IsUACOn(),
+                      IsElevatedWithUACOn());
   return s;
 }
 
@@ -567,12 +560,11 @@ HResultOr<DWORD> ShellExecuteAndWait(const base::FilePath& file_path,
   CHECK(!file_path.empty());
 
   const HWND hwnd = CreateForegroundParentWindowForUAC();
-  const base::ScopedClosureRunner destroy_window(base::BindOnce(
-      [](HWND hwnd) {
-        if (hwnd)
-          ::DestroyWindow(hwnd);
-      },
-      hwnd));
+  const absl::Cleanup destroy_window = [&] {
+    if (hwnd) {
+      ::DestroyWindow(hwnd);
+    }
+  };
 
   SHELLEXECUTEINFO shell_execute_info = {};
   shell_execute_info.cbSize = sizeof(SHELLEXECUTEINFO);
@@ -859,9 +851,8 @@ absl::optional<base::ScopedTempDir> CreateSecureTempDir() {
   base::ScopedTempDir temp_dir_owner;
   if (temp_dir_owner.Set(temp_dir)) {
     return temp_dir_owner;
-  } else {
-    return absl::nullopt;
   }
+  return absl::nullopt;
 }
 
 base::ScopedClosureRunner SignalShutdownEvent(UpdaterScope scope) {

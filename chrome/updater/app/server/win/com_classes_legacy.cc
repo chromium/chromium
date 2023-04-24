@@ -852,7 +852,7 @@ HRESULT LegacyAppCommandWebImpl::RuntimeClassInitialize(
     const std::wstring& command_id) {
   app_command_runner_ =
       AppCommandRunner::LoadAppCommand(scope, app_id, command_id);
-  return app_command_runner_.has_value() ? S_OK : app_command_runner_.error();
+  return app_command_runner_.error_or(S_OK);
 }
 
 STDMETHODIMP LegacyAppCommandWebImpl::get_status(UINT* status) {
