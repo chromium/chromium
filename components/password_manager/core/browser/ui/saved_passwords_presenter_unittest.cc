@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -73,6 +74,7 @@ class SavedPasswordsPresenterTest : public ::testing::Test {
   MockAffiliationService& affiliation_service() { return affiliation_service_; }
 
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
+  void AdvanceClock(base::TimeDelta time) { task_env_.AdvanceClock(time); }
 
  private:
   base::test::SingleThreadTaskEnvironment task_env_{
@@ -1387,6 +1389,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, GetSavedCredentials) {
 }
 
 TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       password_manager::features::kPasswordsGrouping);
@@ -1403,10 +1406,7 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
   blocked_form.blocked_by_user = true;
   blocked_form.in_store = PasswordForm::Store::kProfileStore;
 
-  store().AddLogin(form1);
-  store().AddLogin(form2);
-  store().AddLogin(form3);
-  store().AddLogin(blocked_form);
+  store().AddLogins({form1, form2, form3, blocked_form});
 
   std::vector<password_manager::GroupedFacets> grouped_facets(2);
   grouped_facets[0].facets = {
@@ -1414,10 +1414,15 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
       Facet(FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm))};
   grouped_facets[1].facets = {
       Facet(FacetURI::FromPotentiallyInvalidSpec(form3.signon_realm))};
-  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
-      .WillRepeatedly(base::test::RunOnceCallback<1>(grouped_facets));
 
+  AffiliationService::GroupsCallback callback;
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillOnce(MoveArg<1>(&callback));
   RunUntilIdle();
+
+  const int kDelay = 23;
+  AdvanceClock(base::Milliseconds(kDelay));
+  std::move(callback).Run(grouped_facets);
 
   CredentialUIEntry credential1(form1), credential2(form2), credential3(form3);
   EXPECT_THAT(
@@ -1428,6 +1433,9 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
           AffiliatedGroup({credential3}, {GetShownOrigin(credential3)})));
   EXPECT_THAT(presenter().GetBlockedSites(),
               ElementsAre(CredentialUIEntry(blocked_form)));
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.PasswordsGrouping.Time",
+                                      kDelay, 1);
 }
 
 // Prefixes like [m, mobile, www] are considered as "same-site".

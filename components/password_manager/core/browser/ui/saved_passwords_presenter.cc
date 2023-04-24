@@ -584,8 +584,10 @@ void SavedPasswordsPresenter::AddForms(const std::vector<PasswordForm>& forms) {
   // Notify observers after grouping is complete.
   passwords_grouper_->GroupPasswords(
       std::move(all_forms),
-      base::BindOnce(&SavedPasswordsPresenter::NotifySavedPasswordsChanged,
-                     weak_ptr_factory_.GetWeakPtr()));
+      metrics_util::TimeCallback(
+          base::BindOnce(&SavedPasswordsPresenter::NotifySavedPasswordsChanged,
+                         weak_ptr_factory_.GetWeakPtr()),
+          "PasswordManager.PasswordsGrouping.Time"));
 }
 
 }  // namespace password_manager

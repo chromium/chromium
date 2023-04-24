@@ -2579,6 +2579,16 @@ chromium-metrics-reviews@google.com.
   <token key="Setting" variants="PasswordManagerSetting"/>
 </histogram>
 
+<histogram name="PasswordManager.PasswordsGrouping.Time" units="ms"
+    expires_after="2023-09-01">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The time it takes to group passwords using the information provided by the
+    affiliation service. Recorded after password grouping is finished.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordStore.OnLoginsChanged" enum="Boolean"
     expires_after="2023-10-08">
   <owner>vsemeniuk@google.com</owner>
