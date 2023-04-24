@@ -500,7 +500,9 @@ void AwMainDelegate::InitializeMemorySystem(const bool is_browser_process) {
   memory_system::Initializer()
       .SetGwpAsanParameters(gwp_asan_boost_sampling, process_type)
       .SetDispatcherParameters(memory_system::DispatcherParameters::
-                                   PoissonAllocationSamplerInclusion::kEnforce)
+                                   PoissonAllocationSamplerInclusion::kEnforce,
+                               memory_system::DispatcherParameters::
+                                   AllocationTraceRecorderInclusion::kIgnore)
       .Initialize(memory_system_);
 }
 }  // namespace android_webview

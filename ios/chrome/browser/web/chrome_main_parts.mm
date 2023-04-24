@@ -244,7 +244,9 @@ void IOSChromeMainParts::PreCreateThreads() {
       .SetProfilingClientParameters(
           channel, metrics::CallStackProfileParams::Process::kBrowser)
       .SetDispatcherParameters(memory_system::DispatcherParameters::
-                                   PoissonAllocationSamplerInclusion::kDynamic)
+                                   PoissonAllocationSamplerInclusion::kDynamic,
+                               memory_system::DispatcherParameters::
+                                   AllocationTraceRecorderInclusion::kIgnore)
       .Initialize(memory_system_);
 
   variations::InitCrashKeys();

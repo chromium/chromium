@@ -58,10 +58,21 @@ struct DispatcherParameters {
     kEnforce,
   };
 
+  // The way the dispatcher should include the AllocationTraceRecorder.
+  enum class AllocationTraceRecorderInclusion {
+    // Do not include.
+    kIgnore,
+    // Let the memory-system decide whether to include. The trace recorder is
+    // currently included if the CPU has MTE support.
+    kDynamic,
+  };
+
   explicit DispatcherParameters(
-      PoissonAllocationSamplerInclusion poisson_allocation_sampler_inclusion);
+      PoissonAllocationSamplerInclusion poisson_allocation_sampler_inclusion,
+      AllocationTraceRecorderInclusion allocation_trace_recorder_inclusion);
 
   PoissonAllocationSamplerInclusion poisson_allocation_sampler_inclusion;
+  AllocationTraceRecorderInclusion allocation_trace_recorder_inclusion;
 };
 
 }  // namespace memory_system

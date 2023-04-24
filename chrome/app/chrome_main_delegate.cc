@@ -1787,6 +1787,8 @@ void ChromeMainDelegate::InitializeMemorySystem() {
       .SetProfilingClientParameters(channel,
                                     GetProfileParamsProcess(*command_line))
       .SetDispatcherParameters(memory_system::DispatcherParameters::
-                                   PoissonAllocationSamplerInclusion::kEnforce)
+                                   PoissonAllocationSamplerInclusion::kEnforce,
+                               memory_system::DispatcherParameters::
+                                   AllocationTraceRecorderInclusion::kDynamic)
       .Initialize(memory_system_);
 }

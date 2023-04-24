@@ -46,7 +46,13 @@
 // we include it only if both, dispatcher and heap-profiling, are enabled.
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #endif
-#endif
+
+#if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
+#include "base/cpu.h"
+#include "base/debug/allocation_trace.h"
+#include "components/allocation_recorder/crash_client/client.h"
+#endif  // BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
+#endif  // BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
 
 namespace memory_system {
 namespace {
@@ -108,6 +114,13 @@ struct MemorySystem::Impl {
   bool DispatcherIncludesPoissonAllocationSampler(
       const DispatcherParameters& dispatcher_parameters,
       const InitializationData& initialization_data);
+
+#if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
+  // Check if the the dispatcher should include the AllocationTraceRecorder as
+  // an observer.
+  bool DispatcherIncludesAllocationTraceRecorder(
+      const DispatcherParameters& dispatcher_parameters);
+#endif
 #endif
 
   std::unique_ptr<heap_profiling::HeapProfilerController>
@@ -231,6 +244,18 @@ bool MemorySystem::Impl::DispatcherIncludesPoissonAllocationSampler(
 }
 #endif
 
+#if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
+bool MemorySystem::Impl::DispatcherIncludesAllocationTraceRecorder(
+    const DispatcherParameters& dispatcher_parameters) {
+  switch (dispatcher_parameters.allocation_trace_recorder_inclusion) {
+    case DispatcherParameters::AllocationTraceRecorderInclusion::kDynamic:
+      return base::CPU::GetInstanceNoAllocation().has_mte();
+    case DispatcherParameters::AllocationTraceRecorderInclusion::kIgnore:
+      return false;
+  }
+}
+#endif
+
 void MemorySystem::Impl::InitializeDispatcher(
     const DispatcherParameters& dispatcher_parameters,
     InitializationData& initialization_data) {
@@ -248,9 +273,24 @@ void MemorySystem::Impl::InitializeDispatcher(
                                          : nullptr;
 #endif
 
+#if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
+  // Always initialize the crash client. This way it is always present in the
+  // crashpad report. The actual content will depend on further inclusion into
+  // the dispatcher.
+  auto& allocation_recorder = allocation_recorder::crash_client::Initialize();
+  const bool include_allocation_recorder =
+      DispatcherIncludesAllocationTraceRecorder(dispatcher_parameters);
+
+  auto* const allocation_recorder_to_include =
+      include_allocation_recorder ? &allocation_recorder : nullptr;
+#endif
+
   base::allocator::dispatcher::CreateInitializer()
 #if HEAP_PROFILING_SUPPORTED
       .AddOptionalObservers(poisson_allocation_sampler)
+#endif
+#if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
+      .AddOptionalObservers(allocation_recorder_to_include)
 #endif
       .DoInitialize(base::allocator::dispatcher::Dispatcher::GetInstance());
 }
