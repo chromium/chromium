@@ -65,6 +65,7 @@
 #include "chromeos/components/sensors/buildflags.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/system/core_scheduling.h"
+#include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
@@ -881,8 +882,12 @@ class ArcVmClientAdapter : public ArcClientAdapter,
       return;
     }
 
-    // Use LVM backend if LVM application containers feature is supported.
-    bool use_lvm = base::FeatureList::IsEnabled(kLvmApplicationContainers);
+    // Use LVM backend if LVM application containers feature is supported and
+    // user cryptohome data is not ephemeral (b/278305150).
+    bool use_lvm =
+        base::FeatureList::IsEnabled(kLvmApplicationContainers) &&
+        !user_manager::UserManager::Get()->IsUserCryptohomeDataEphemeral(
+            arc::ArcServiceManager::Get()->account_id());
 
     // Allow tests to override use_lvm param.
     if (base::FeatureList::IsEnabled(kVirtioBlkDataConfigOverride)) {
