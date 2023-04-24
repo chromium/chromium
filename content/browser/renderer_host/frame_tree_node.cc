@@ -1001,10 +1001,6 @@ FrameTreeNode::GetDeprecatedFencedFrameMode() {
 
 bool FrameTreeNode::IsErrorPageIsolationEnabled() const {
   // Error page isolation is enabled for main frames only (crbug.com/1092524).
-  // Note that this will also enable error page isolation for fenced frames in
-  // MPArch mode, but not ShadowDOM mode.
-  // See the issue in crbug.com/1264224#c7 for why it can't be enabled for
-  // ShadowDOM mode.
   return SiteIsolationPolicy::IsErrorPageIsolationEnabled(IsMainFrame());
 }
 
