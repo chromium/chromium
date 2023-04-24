@@ -1197,6 +1197,12 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationPhotosIntegrationTest,
   TestPhotosIntegrationForVideo(/* expect_flag_enabled= */ false, "5.3");
 }
 
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationPhotosIntegrationTest,
+                       PhotosVersionDevelopment) {
+  TestPhotosIntegrationForImage(/* expect_flag_enabled= */ true, "DEVELOPMENT");
+  TestPhotosIntegrationForVideo(/* expect_flag_enabled= */ true, "DEVELOPMENT");
+}
+
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
                        HasCorrectThemeAndBackgroundColor) {
   web_app::AppId app_id = MediaAppAppId();
