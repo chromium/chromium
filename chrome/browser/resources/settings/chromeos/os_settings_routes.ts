@@ -182,7 +182,6 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   OS_SEARCH: Route;
   OS_SYNC: Route;
   OS_PEOPLE: Route;
-  PASSPOINT_DETAIL: Route;
   PER_DEVICE_KEYBOARD: Route;
   PER_DEVICE_KEYBOARD_REMAP_KEYS: Route;
   PER_DEVICE_MOUSE: Route;
@@ -249,10 +248,6 @@ function createOsSettingsRoutes(): OsSettingsRoutes {
   if (loadTimeData.getBoolean('isApnRevampEnabled')) {
     r.APN =
         createSubpage(r.INTERNET, routesMojom.APN_SUBPAGE_PATH, Subpage.kApn);
-  }
-  if (loadTimeData.getBoolean('isPasspointSettingsEnabled')) {
-    r.PASSPOINT_DETAIL =
-        createSubpage(r.INTERNET, 'passpointDetail', Subpage.kPasspointDetails);
   }
 
   // Bluetooth section.

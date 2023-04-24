@@ -24,7 +24,6 @@ import './internet_page/hotspot_subpage.js';
 import './internet_page/internet_detail_subpage.js';
 import './internet_page/internet_known_networks_subpage.js';
 import './internet_page/internet_subpage.js';
-import './internet_page/passpoint_subpage.js';
 import './os_a11y_page/manage_a11y_subpage.js';
 import './os_a11y_page/text_to_speech_page.js';
 import './os_a11y_page/display_and_magnification_page.js';
