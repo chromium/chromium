@@ -40,6 +40,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @interface FakeAutofillProfileEditConsumer
     : NSObject <AutofillProfileEditConsumer>
 // If YES, denote that the particular field requires a value.
+@property(nonatomic, assign) BOOL nameRequired;
 @property(nonatomic, assign) BOOL line1Required;
 @property(nonatomic, assign) BOOL cityRequired;
 @property(nonatomic, assign) BOOL stateRequired;

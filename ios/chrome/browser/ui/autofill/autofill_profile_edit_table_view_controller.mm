@@ -91,6 +91,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 @property(nonatomic, assign) BOOL errorSectionPresented;
 
 // If YES, denote that the particular field requires a value.
+@property(nonatomic, assign) BOOL nameRequired;
 @property(nonatomic, assign) BOOL line1Required;
 @property(nonatomic, assign) BOOL cityRequired;
 @property(nonatomic, assign) BOOL stateRequired;
@@ -358,6 +359,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 - (autofill::ServerFieldType)serverFieldTypeCorrespondingToRequiredItemType:
     (ItemType)itemType {
   switch (itemType) {
+    case ItemTypeFullName:
+      return autofill::NAME_FULL;
     case ItemTypeLine1:
       return autofill::ADDRESS_HOME_LINE1;
     case ItemTypeCity:
@@ -368,7 +371,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       return autofill::ADDRESS_HOME_ZIP;
     case ItemTypeHonorificPrefix:
     case ItemTypeCompanyName:
-    case ItemTypeFullName:
     case ItemTypeLine2:
     case ItemTypePhoneNumber:
     case ItemTypeEmailAddress:
@@ -385,6 +387,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // Returns the label corresponding to the item type for a required field.
 - (NSString*)labelCorrespondingToRequiredItemType:(ItemType)itemType {
   switch (itemType) {
+    case ItemTypeFullName:
+      return l10n_util::GetNSString(IDS_IOS_AUTOFILL_FULLNAME);
     case ItemTypeLine1:
       return l10n_util::GetNSString(IDS_IOS_AUTOFILL_ADDRESS1);
     case ItemTypeCity:
@@ -395,7 +399,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       return l10n_util::GetNSString(IDS_IOS_AUTOFILL_ZIP);
     case ItemTypeHonorificPrefix:
     case ItemTypeCompanyName:
-    case ItemTypeFullName:
     case ItemTypeLine2:
     case ItemTypePhoneNumber:
     case ItemTypeEmailAddress:
@@ -579,6 +582,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // Returns true if the itemType belongs to a required field.
 - (BOOL)isItemTypeRequiredField:(ItemType)itemType {
   switch (itemType) {
+    case ItemTypeFullName:
+      return self.nameRequired;
     case ItemTypeLine1:
       return self.line1Required;
     case ItemTypeCity:
@@ -589,7 +594,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       return self.zipRequired;
     case ItemTypeHonorificPrefix:
     case ItemTypeCompanyName:
-    case ItemTypeFullName:
     case ItemTypeLine2:
     case ItemTypePhoneNumber:
     case ItemTypeEmailAddress:
