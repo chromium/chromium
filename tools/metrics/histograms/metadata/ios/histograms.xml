@@ -1920,7 +1920,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ReconcileEULAPref" enum="Boolean"
-    expires_after="2023-04-27">
+    expires_after="2024-04-24">
   <owner>olivierrobin@google.com</owner>
   <owner>rohitrao@google.com</owner>
   <summary>
