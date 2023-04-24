@@ -11,13 +11,13 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
@@ -413,7 +413,7 @@ void AutocompleteActionPredictor::UpdateDatabaseFromTransitionalMatches(
 
       auto it = db_cache_.find(key);
       if (it == db_cache_.end()) {
-        row.id = base::GenerateGUID();
+        row.id = base::Uuid::GenerateRandomV4().AsLowercaseString();
         row.number_of_hits = is_hit ? 1 : 0;
         row.number_of_misses = is_hit ? 0 : 1;
 
