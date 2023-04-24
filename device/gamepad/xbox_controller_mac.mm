@@ -4,10 +4,6 @@
 
 #include "device/gamepad/xbox_controller_mac.h"
 
-#include <algorithm>
-#include <cmath>
-#include <limits>
-
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOCFPlugIn.h>
 #include <IOKit/IOKitLib.h>
@@ -15,9 +11,12 @@
 #include <IOKit/usb/IOUSBLib.h>
 #include <IOKit/usb/USB.h>
 
+#include <algorithm>
+#include <cmath>
+#include <limits>
+
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -338,8 +337,8 @@ void XboxControllerMac::SetVibration(mojom::GamepadEffectParametersPtr params) {
 
   // Clamp magnitudes to [0,1]
   double strong_magnitude =
-      base::clamp<double>(params->strong_magnitude, 0.0, 1.0);
-  double weak_magnitude = base::clamp<double>(params->weak_magnitude, 0.0, 1.0);
+      std::clamp<double>(params->strong_magnitude, 0.0, 1.0);
+  double weak_magnitude = std::clamp<double>(params->weak_magnitude, 0.0, 1.0);
 
   if (xinput_type_ == kXInputTypeXbox360) {
     WriteXbox360Rumble(static_cast<uint8_t>(strong_magnitude * 255.0),
