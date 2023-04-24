@@ -286,15 +286,22 @@ PrefModelAssociator::MergeDataAndStartSyncing(
 
 void PrefModelAssociator::StopSyncing(syncer::ModelType type) {
   DCHECK_EQ(type_, type);
+  Stop(/*is_browser_shutdown=*/false);
+}
+
+void PrefModelAssociator::OnBrowserShutdown(syncer::ModelType type) {
+  DCHECK_EQ(type_, type);
+  Stop(/*is_browser_shutdown=*/true);
+}
+
+void PrefModelAssociator::Stop(bool is_browser_shutdown) {
   models_associated_ = false;
   sync_processor_.reset();
-  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
-    // TODO(crbug.com/1416480): StopSyncing() gets called when sync is being
-    // stopped (permanently), but also during browser shutdown, and in that case
-    // it's unnecessary (if mostly harmless) to clear the store. Plumb through
-    // an "is_shutdown" bit and don't clear in that case. Another alternative
-    // would be to just not call StopSyncing in case of browser
-    // shutdown (crbug.com/1400437).
+  if (!is_browser_shutdown &&
+      base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
+    // Avoid clearing account store in case of browser shutdown, since it
+    // tries to notify the observers which may or may not exist by this time
+    // during browser shutdown (crbug.com/1434902).
     dual_layer_user_prefs_->DisableTypeAndClearAccountStore(type_);
   }
   synced_preferences_.clear();

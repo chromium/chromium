@@ -232,10 +232,10 @@ SyncableServiceBasedBridge::SyncableServiceBasedBridge(
 
 SyncableServiceBasedBridge::~SyncableServiceBasedBridge() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Stop the syncable service to make sure instances of LocalChangeProcessor
+  // Inform the syncable service to make sure instances of LocalChangeProcessor
   // are not continued to be used.
   if (syncable_service_started_) {
-    syncable_service_->StopSyncing(type_);
+    syncable_service_->OnBrowserShutdown(type_);
   }
 }
 
