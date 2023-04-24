@@ -772,7 +772,6 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
       case CSSAtRuleID::kCSSAtRuleCharset:
       case CSSAtRuleID::kCSSAtRuleImport:
       case CSSAtRuleID::kCSSAtRuleNamespace:
-      case CSSAtRuleID::kCSSAtRuleScrollTimeline:
       case CSSAtRuleID::kCSSAtRuleTry:
       case CSSAtRuleID::kCSSAtRuleStylistic:
       case CSSAtRuleID::kCSSAtRuleStyleset:

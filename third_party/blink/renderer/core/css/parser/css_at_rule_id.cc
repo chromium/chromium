@@ -97,12 +97,6 @@ CSSAtRuleID CssAtRuleID(StringView name) {
   if (EqualIgnoringASCIICase(name, "counter-style")) {
     return CSSAtRuleID::kCSSAtRuleCounterStyle;
   }
-  if (EqualIgnoringASCIICase(name, "scroll-timeline")) {
-    if (RuntimeEnabledFeatures::CSSScrollTimelineEnabled()) {
-      return CSSAtRuleID::kCSSAtRuleScrollTimeline;
-    }
-    return CSSAtRuleID::kCSSAtRuleInvalid;
-  }
   if (EqualIgnoringASCIICase(name, "scope")) {
     if (RuntimeEnabledFeatures::CSSScopeEnabled()) {
       return CSSAtRuleID::kCSSAtRuleScope;
@@ -176,8 +170,6 @@ absl::optional<WebFeature> AtRuleFeature(CSSAtRuleID rule_id) {
       return WebFeature::kCSSAtRuleStylistic;
     case CSSAtRuleID::kCSSAtRuleSwash:
       return WebFeature::kCSSAtRuleSwash;
-    case CSSAtRuleID::kCSSAtRuleScrollTimeline:
-      return WebFeature::kCSSAtRuleScrollTimeline;
     case CSSAtRuleID::kCSSAtRuleSupports:
       return WebFeature::kCSSAtRuleSupports;
     case CSSAtRuleID::kCSSAtRulePositionFallback:

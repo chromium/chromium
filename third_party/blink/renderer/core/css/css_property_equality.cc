@@ -1244,7 +1244,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kAscentOverride:
     case CSSPropertyID::kBasePalette:
     case CSSPropertyID::kDescentOverride:
-    case CSSPropertyID::kEnd:
     case CSSPropertyID::kInvalid:
     case CSSPropertyID::kFallback:
     case CSSPropertyID::kFontDisplay:
@@ -1257,10 +1256,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kPrefix:
     case CSSPropertyID::kRange:
     case CSSPropertyID::kSize:
-    case CSSPropertyID::kSource:
     case CSSPropertyID::kSpeakAs:
     case CSSPropertyID::kSrc:
-    case CSSPropertyID::kStart:
     case CSSPropertyID::kSuffix:
     case CSSPropertyID::kSymbols:
     case CSSPropertyID::kSyntax:

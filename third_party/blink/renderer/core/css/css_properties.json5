@@ -6560,24 +6560,6 @@
       is_property: false,
     },
     {
-      name: "source",
-      is_descriptor: true,
-      is_property: false,
-      runtime_flag: "CSSScrollTimeline",
-    },
-    {
-      name: "start",
-      is_descriptor: true,
-      is_property: false,
-      runtime_flag: "CSSScrollTimeline",
-    },
-    {
-      name: "end",
-      is_descriptor: true,
-      is_property: false,
-      runtime_flag: "CSSScrollTimeline",
-    },
-    {
       name: "ascent-override",
       is_descriptor: true,
       is_property: false,

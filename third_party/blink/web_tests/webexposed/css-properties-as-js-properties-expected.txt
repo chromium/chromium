@@ -165,7 +165,6 @@ direction
 display
 dominantBaseline
 emptyCells
-end
 fallback
 fill
 fillOpacity
@@ -401,11 +400,9 @@ shapeOutside
 shapeRendering
 size
 sizeAdjust
-source
 speak
 speakAs
 src
-start
 stopColor
 stopOpacity
 stroke

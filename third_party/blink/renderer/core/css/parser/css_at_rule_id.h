@@ -28,7 +28,6 @@ enum class CSSAtRuleID {
   kCSSAtRuleContainer,
   kCSSAtRuleCounterStyle,
   kCSSAtRuleScope,
-  kCSSAtRuleScrollTimeline,
   kCSSAtRuleSupports,
   kCSSAtRuleTry,
   kCSSAtRuleWebkitKeyframes,
