@@ -415,26 +415,7 @@ void HTMLFencedFrameElement::RemovedFrom(ContainerNode& node) {
 
 void HTMLFencedFrameElement::ParseAttribute(
     const AttributeModificationParams& params) {
-  if (params.name == html_names::kSrcAttr) {
-    if (RuntimeEnabledFeatures::FencedFramesAPIChangesEnabled(
-            GetExecutionContext())) {
-      // Temporarily allow `src` to be set in a fenced frame if API changes is
-      // disabled. This functionality will be removed by fenced frames launch.
-      return;
-    }
-    if (config_) {
-      DCHECK(config_->url());
-      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kJavaScript,
-          mojom::blink::ConsoleMessageLevel::kWarning,
-          "Changing the `src` attribute on a fenced frame has no effect after "
-          "it has already been installed a config with a specified url."));
-      return;
-    }
-
-    KURL url = GetNonEmptyURLAttribute(html_names::kSrcAttr);
-    Navigate(url);
-  } else if (params.name == html_names::kSandboxAttr) {
+  if (params.name == html_names::kSandboxAttr) {
     sandbox_->DidUpdateAttributeValue(params.old_value, params.new_value);
 
     network::mojom::blink::WebSandboxFlags current_flags =
@@ -471,10 +452,6 @@ void HTMLFencedFrameElement::ParseAttribute(
   } else {
     HTMLFrameOwnerElement::ParseAttribute(params);
   }
-}
-
-bool HTMLFencedFrameElement::IsURLAttribute(const Attribute& attribute) const {
-  return attribute.GetName() == html_names::kSrcAttr;
 }
 
 bool HTMLFencedFrameElement::IsPresentationAttribute(
@@ -666,9 +643,6 @@ void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
 
   if (config_) {
     NavigateToConfig();
-  } else if (!RuntimeEnabledFeatures::FencedFramesAPIChangesEnabled(
-                 GetExecutionContext())) {
-    Navigate(GetNonEmptyURLAttribute(html_names::kSrcAttr));
   }
 }
 

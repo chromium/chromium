@@ -144,7 +144,6 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
 
   // Element overrides.
   void ParseAttribute(const AttributeModificationParams&) override;
-  bool IsURLAttribute(const Attribute&) const override;
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,

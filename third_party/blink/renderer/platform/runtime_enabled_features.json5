@@ -1630,8 +1630,8 @@
       // `config`, `sandbox`, and `allow`).
       origin_trial_feature_name: "PrivacySandboxAdsAPIs",
       origin_trial_allows_third_party: true,
-      base_feature_status: "disabled",
-      copied_from_base_feature_if: "overridden",
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "enabled_or_overridden",
     },
     {
       name: "FetchUploadStreaming",
