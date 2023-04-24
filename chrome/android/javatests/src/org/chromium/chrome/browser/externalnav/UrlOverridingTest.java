@@ -170,8 +170,6 @@ public class UrlOverridingTest {
             BASE_PATH + "navigation_from_java_redirection.html";
     private static final String NAVIGATION_TO_CCT_FROM_INTENT_URI =
             BASE_PATH + "navigation_to_cct_via_intent_uri.html";
-    private static final String NAVIGATION_TO_FILE_SCHEME_FROM_INTENT_URI =
-            BASE_PATH + "navigation_to_file_scheme_via_intent_uri.html";
     private static final String FALLBACK_URL =
             "https://play.google.com/store/apps/details?id=com.android.chrome";
     private static final String SUBFRAME_REDIRECT_WITH_PLAY_FALLBACK =
@@ -200,6 +198,9 @@ public class UrlOverridingTest {
             BASE_PATH + "renavigate_frame_with_redirect.html";
     private static final String NAVIGATION_FROM_WINDOW_REDIRECT =
             BASE_PATH + "navigation_from_window_redirect.html";
+
+    private static final String EXTERNAL_APP_URL =
+            "intent://test/#Intent;scheme=externalappscheme;end;";
 
     private static final String OTHER_BROWSER_PACKAGE = "com.other.browser";
     // Needs to be a real package on the device so we can get an icon from it. It will not be
@@ -642,6 +643,14 @@ public class UrlOverridingTest {
                 + (openInNewTab ? Base64.encodeToString(valBlank, Base64.URL_SAFE) : ""));
     }
 
+    private String getOpenWindowFromLinkUserGestureUrl(String targetUrl) {
+        byte[] param = ApiCompatibilityUtils.getBytesUtf8("PARAM_URL");
+        byte[] value = ApiCompatibilityUtils.getBytesUtf8(targetUrl);
+        return mTestServer.getURL(OPEN_WINDOW_FROM_LINK_USER_GESTURE_PAGE)
+                + "?replace_text=" + Base64.encodeToString(param, Base64.URL_SAFE) + ":"
+                + Base64.encodeToString(value, Base64.URL_SAFE);
+    }
+
     @Test
     @SmallTest
     public void testNavigationFromTimer() {
@@ -788,8 +797,8 @@ public class UrlOverridingTest {
     @SmallTest
     public void testOpenWindowFromLinkUserGesture() {
         mActivityTestRule.startMainActivityOnBlankPage();
-        loadUrlAndWaitForIntentUrl(mTestServer.getURL(OPEN_WINDOW_FROM_LINK_USER_GESTURE_PAGE),
-                true, true, true, null, true);
+        loadUrlAndWaitForIntentUrl(getOpenWindowFromLinkUserGestureUrl(EXTERNAL_APP_URL), true,
+                true, true, null, true);
     }
 
     @Test
@@ -892,36 +901,40 @@ public class UrlOverridingTest {
     @LargeTest
     public void testIntentURIWithFileSchemeDoesNothing() throws TimeoutException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        String originalUrl = mTestServer.getURL(NAVIGATION_TO_FILE_SCHEME_FROM_INTENT_URI);
-        loadUrlAndWaitForIntentUrl(originalUrl, true, true, false, null, true, "scheme_file",
-                PageTransition.LINK, false);
+        String url = getOpenWindowFromLinkUserGestureUrl(
+                "intent:///x.mhtml#Intent;package=org.chromium.chrome.tests;"
+                + "action=android.intent.action.VIEW;scheme=file;end;");
+        loadUrlAndWaitForIntentUrl(url, true, true, false, null, true);
     }
 
     @Test
     @LargeTest
     public void testIntentURIWithMixedCaseFileSchemeDoesNothing() throws TimeoutException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        String originalUrl = mTestServer.getURL(NAVIGATION_TO_FILE_SCHEME_FROM_INTENT_URI);
-        loadUrlAndWaitForIntentUrl(originalUrl, true, true, false, null, true,
-                "scheme_mixed_case_file", PageTransition.LINK, false);
+        String url = getOpenWindowFromLinkUserGestureUrl(
+                "intent:///x.mhtml#Intent;package=org.chromium.chrome.tests;"
+                + "action=android.intent.action.VIEW;scheme=FiLe;end;");
+        loadUrlAndWaitForIntentUrl(url, true, true, false, null, true);
     }
 
     @Test
     @LargeTest
     public void testIntentURIWithNoSchemeDoesNothing() throws TimeoutException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        String originalUrl = mTestServer.getURL(NAVIGATION_TO_FILE_SCHEME_FROM_INTENT_URI);
-        loadUrlAndWaitForIntentUrl(originalUrl, true, true, false, null, true, "null_scheme",
-                PageTransition.LINK, false);
+        String url = getOpenWindowFromLinkUserGestureUrl(
+                "intent:///x.mhtml#Intent;package=org.chromium.chrome.tests;"
+                + "action=android.intent.action.VIEW;end;");
+        loadUrlAndWaitForIntentUrl(url, true, true, false, null, true);
     }
 
     @Test
     @LargeTest
     public void testIntentURIWithEmptySchemeDoesNothing() throws TimeoutException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        String originalUrl = mTestServer.getURL(NAVIGATION_TO_FILE_SCHEME_FROM_INTENT_URI);
-        loadUrlAndWaitForIntentUrl(originalUrl, true, true, false, null, true, "empty_scheme",
-                PageTransition.LINK, false);
+        String url = getOpenWindowFromLinkUserGestureUrl(
+                "intent:///x.mhtml#Intent;package=org.chromium.chrome.tests;"
+                + "action=android.intent.action.VIEW;scheme=;end;");
+        loadUrlAndWaitForIntentUrl(url, true, true, false, null, true);
     }
 
     @Test
@@ -1132,7 +1145,7 @@ public class UrlOverridingTest {
         });
 
         // Click link to go to second page.
-        DOMUtils.clickNode(mActivityTestRule.getWebContents(), "link");
+        TouchCommon.singleClickView(tab.getView());
         finishCallback.waitForCallback(0);
         syncHelper.notifyCalled();
 
@@ -1517,7 +1530,7 @@ public class UrlOverridingTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         ChromeActivity activity = mActivityTestRule.getActivity();
         TabModelImpl tabModel = (TabModelImpl) activity.getTabModelSelector().getModel(false);
-        GURL url = new GURL("intent://test/#Intent;scheme=externalappscheme;end;");
+        GURL url = new GURL(EXTERNAL_APP_URL);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Called when a popup window is allowed.
             tabModel.openNewTab(activity.getActivityTab(), url, createExampleOrigin(), null, null,
