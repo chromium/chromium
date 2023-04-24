@@ -130,26 +130,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OfflinePages.AutoFetch.CompleteNotificationAction"
-    enum="OfflinePagesAutoFetchNotificationAction" expires_after="2021-10-04">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    This is recorded every time the auto-fetch complete notification is shown or
-    interacted with.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.AutoFetch.InProgressNotificationAction"
-    enum="OfflinePagesAutoFetchNotificationAction" expires_after="2021-10-04">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    This is recorded every time the auto-fetch in-progress notification is shown
-    or interacted with.
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.Background.ImmediateStart.AvailableRequestCount"
     units="units" expires_after="2021-06-25">
   <owner>dougarnett@chromium.org</owner>

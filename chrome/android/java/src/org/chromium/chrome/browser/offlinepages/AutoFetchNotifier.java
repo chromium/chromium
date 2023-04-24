@@ -20,7 +20,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.IntentHandler.TabOpenType;
@@ -121,12 +120,6 @@ public class AutoFetchNotifier {
     @CalledByNative
     private static void updateInProgressNotificationCountIfShowing(int inProgressCount) {
         if (inProgressCount == 0) {
-            // Note: we're not fully trusting the result of isShowingInProgressNotification(). It's
-            // possible that the prefs-based value is out of sync with the system notification, in
-            // which case we still try to remove the notification even if we think it's not there.
-            if (isShowingInProgressNotification()) {
-                reportInProgressNotificationAction(NotificationAction.COMPLETE);
-            }
             closeInProgressNotification();
             return;
         }
@@ -181,7 +174,6 @@ public class AutoFetchNotifier {
         NotificationUmaTracker.getInstance().onNotificationShown(
                 NotificationUmaTracker.SystemNotificationType.OFFLINE_PAGES,
                 notification.getNotification());
-        reportInProgressNotificationAction(NotificationAction.SHOWN);
         if (mTestHooks != null) {
             mTestHooks.inProgressNotificationShown(cancelButtonIntent, deleteIntent);
         }
@@ -207,7 +199,6 @@ public class AutoFetchNotifier {
         if (currentAction == NotificationAction.NUM_ENTRIES) {
             return;
         }
-        reportInProgressNotificationAction(currentAction);
         prefs.removeKey(ChromePreferenceKeys.OFFLINE_AUTO_FETCH_USER_CANCEL_ACTION_IN_PROGRESS);
     }
 
@@ -237,8 +228,6 @@ public class AutoFetchNotifier {
             if (action != NotificationAction.TAPPED && action != NotificationAction.DISMISSED) {
                 return;
             }
-
-            reportCompleteNotificationAction(action);
             if (action != NotificationAction.TAPPED) {
                 // If action == DISMISSED, the notification is already automatically removed.
                 return;
@@ -335,22 +324,9 @@ public class AutoFetchNotifier {
         NotificationUmaTracker.getInstance().onNotificationShown(
                 NotificationUmaTracker.SystemNotificationType.OFFLINE_PAGES,
                 notification.getNotification());
-        reportCompleteNotificationAction(NotificationAction.SHOWN);
         if (mTestHooks != null) {
             mTestHooks.completeNotificationShown(clickIntent, deleteIntent);
         }
-    }
-
-    private static void reportInProgressNotificationAction(@NotificationAction int action) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "OfflinePages.AutoFetch.InProgressNotificationAction", action,
-                NotificationAction.NUM_ENTRIES);
-    }
-
-    private static void reportCompleteNotificationAction(@NotificationAction int action) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "OfflinePages.AutoFetch.CompleteNotificationAction", action,
-                NotificationAction.NUM_ENTRIES);
     }
 
     private static boolean isShowingInProgressNotification() {
