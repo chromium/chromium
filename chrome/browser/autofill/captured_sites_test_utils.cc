@@ -13,7 +13,6 @@
 #include "base/check_deref.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/path_service.h"
@@ -28,6 +27,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
@@ -809,8 +809,9 @@ bool WebPageReplayServerWrapper::RunWebPageReplayCmd(
 // ProfileDataController ------------------------------------------------------
 ProfileDataController::ProfileDataController()
     : profile_(autofill::test::GetIncompleteProfile2()),
-      card_(autofill::CreditCard(base::GenerateGUID(),
-                                 "http://www.example.com")) {
+      card_(autofill::CreditCard(
+          base::Uuid::GenerateRandomV4().AsLowercaseString(),
+          "http://www.example.com")) {
   for (size_t i = autofill::NO_SERVER_DATA; i < autofill::MAX_VALID_FIELD_TYPE;
        ++i) {
     autofill::ServerFieldType field_type =
