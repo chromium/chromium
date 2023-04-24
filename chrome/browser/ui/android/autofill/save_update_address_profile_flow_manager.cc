@@ -6,8 +6,10 @@
 
 #include <utility>
 
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/ui/android/autofill/save_update_address_profile_prompt_view_android.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/messages/android/messages_feature.h"
 
@@ -82,9 +84,12 @@ void SaveUpdateAddressProfileFlowManager::ShowPromptWithDetails(
     AutofillClient::AddressProfileSavePromptCallback callback) {
   auto prompt_view_android =
       std::make_unique<SaveUpdateAddressProfilePromptViewAndroid>(web_contents);
+  autofill::PersonalDataManager* personal_data =
+      autofill::PersonalDataManagerFactory::GetForBrowserContext(
+          web_contents->GetBrowserContext());
   save_update_address_profile_prompt_controller_ = std::make_unique<
       SaveUpdateAddressProfilePromptController>(
-      std::move(prompt_view_android), profile, original_profile,
+      std::move(prompt_view_android), personal_data, profile, original_profile,
       is_migration_to_account, std::move(callback),
       /*dismissal_callback=*/
       base::BindOnce(

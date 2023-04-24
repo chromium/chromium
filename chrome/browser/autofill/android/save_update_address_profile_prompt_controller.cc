@@ -14,6 +14,7 @@
 #include "base/types/optional_util.h"
 #include "chrome/android/chrome_jni_headers/SaveUpdateAddressProfilePromptController_jni.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
@@ -21,6 +22,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -32,12 +34,14 @@ namespace autofill {
 SaveUpdateAddressProfilePromptController::
     SaveUpdateAddressProfilePromptController(
         std::unique_ptr<SaveUpdateAddressProfilePromptView> prompt_view,
+        autofill::PersonalDataManager* personal_data,
         const AutofillProfile& profile,
         const AutofillProfile* original_profile,
         bool is_migration_to_account,
         AutofillClient::AddressProfileSavePromptCallback decision_callback,
         base::OnceCallback<void()> dismissal_callback)
     : prompt_view_(std::move(prompt_view)),
+      personal_data_(personal_data),
       profile_(profile),
       original_profile_(base::OptionalFromPtr(original_profile)),
       is_migration_to_account_(is_migration_to_account),
@@ -95,7 +99,9 @@ std::u16string SaveUpdateAddressProfilePromptController::GetSourceNotice(
   // to their Google account.
   if (is_migration_to_account_) {
     return l10n_util::GetStringFUTF16(
-        IDS_AUTOFILL_ADDRESS_WILL_BE_MIGRATED_TO_ACCOUNT_SOURCE_NOTICE,
+        personal_data_->IsSyncEnabledFor(syncer::UserSelectableType::kAutofill)
+            ? IDS_AUTOFILL_SYNCABLE_PROFILE_MIGRATION_PROMPT_NOTICE
+            : IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE,
         base::UTF8ToUTF16(account_info.email));
   }
 

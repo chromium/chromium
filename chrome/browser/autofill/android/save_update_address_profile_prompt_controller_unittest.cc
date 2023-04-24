@@ -16,17 +16,28 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/geo/country_names.h"
+#include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
+
+namespace {
+std::unique_ptr<KeyedService> CreateTestSyncService(
+    content::BrowserContext* context) {
+  return std::make_unique<syncer::TestSyncService>();
+}
+}  // namespace
 
 class MockSaveUpdateAddressProfilePromptView
     : public SaveUpdateAddressProfilePromptView {
@@ -47,6 +58,8 @@ class SaveUpdateAddressProfilePromptControllerTest
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    sync_service_ = std::make_unique<syncer::TestSyncService>();
+    test_personal_data_.SetSyncServiceForTest(sync_service_.get());
 
     profile_ = test::GetFullProfile();
     original_profile_ = test::GetFullProfile();
@@ -54,6 +67,11 @@ class SaveUpdateAddressProfilePromptControllerTest
     original_profile_.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"", GetLocale());
 
     CountryNames::SetLocaleString(GetLocale());
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {{SyncServiceFactory::GetInstance(),
+             base::BindRepeating(&CreateTestSyncService)}};
   }
 
   void TearDown() override { ChromeRenderViewHostTestHarness::TearDown(); }
@@ -77,6 +95,8 @@ class SaveUpdateAddressProfilePromptControllerTest
   std::string GetLocale() { return "en-US"; }
 
   signin::IdentityTestEnvironment identity_test_env_;
+  autofill::TestPersonalDataManager test_personal_data_;
+  std::unique_ptr<syncer::TestSyncService> sync_service_;
   raw_ptr<MockSaveUpdateAddressProfilePromptView> prompt_view_;
   AutofillProfile profile_;
   AutofillProfile original_profile_;
@@ -101,7 +121,7 @@ void SaveUpdateAddressProfilePromptControllerTest::SetUpController(
   auto prompt_view = std::make_unique<MockSaveUpdateAddressProfilePromptView>();
   prompt_view_ = prompt_view.get();
   controller_ = std::make_unique<SaveUpdateAddressProfilePromptController>(
-      std::move(prompt_view), profile_,
+      std::move(prompt_view), &test_personal_data_, profile_,
       is_update ? &original_profile_ : nullptr, is_migration_to_account,
       decision_callback_.Get(), dismissal_callback_.Get());
   ON_CALL(*prompt_view_,
@@ -250,7 +270,11 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 }
 
 TEST_F(SaveUpdateAddressProfilePromptControllerTest,
-       ReturnsCorrectStringsToDisplayWhenMigrateAddress) {
+       ReturnsCorrectStringsToDisplayWhenMigrateLocalAddress) {
+  sync_service_->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPasswords));
   SigninUser();
   SetUpController(/*is_update=*/false, /*is_migration_to_account=*/true);
 
@@ -272,7 +296,39 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_ADDRESS_WILL_BE_MIGRATED_TO_ACCOUNT_SOURCE_NOTICE,
+          IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE,
+          base::ASCIIToUTF16(kUserEmail)),
+      controller_->GetSourceNotice(identity_test_env_.identity_manager()));
+}
+
+TEST_F(SaveUpdateAddressProfilePromptControllerTest,
+       ReturnsCorrectStringsToDisplayWhenMigrateSyncAddress) {
+  sync_service_->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kAutofill));
+  SigninUser();
+  SetUpController(/*is_update=*/false, /*is_migration_to_account=*/true);
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE),
+            controller_->GetTitle());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_MIGRATION_OK_BUTTON_LABEL),
+            controller_->GetPositiveButtonText());
+
+  EXPECT_EQ(u"John H. Doe\n666 Erebus St.", controller_->GetAddress());
+
+  EXPECT_EQ(u"johndoe@hades.com", controller_->GetEmail());
+  EXPECT_EQ(u"16502111111", controller_->GetPhoneNumber());
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_MIGRATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL),
+            controller_->GetNegativeButtonText());
+
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_SYNCABLE_PROFILE_MIGRATION_PROMPT_NOTICE,
           base::ASCIIToUTF16(kUserEmail)),
       controller_->GetSourceNotice(identity_test_env_.identity_manager()));
 }

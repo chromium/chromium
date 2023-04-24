@@ -449,10 +449,7 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
                     .replace("$1", email);
         }
 
-        return mContext
-                .getString(mIsMigrationToAccount
-                                ? R.string.autofill_address_will_be_migrated_to_account_source_notice
-                                : R.string.autofill_address_will_be_saved_in_account_source_notice)
+        return mContext.getString(R.string.autofill_address_will_be_saved_in_account_source_notice)
                 .replace("$1", email);
     }
 

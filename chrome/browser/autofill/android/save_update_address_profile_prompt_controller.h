@@ -22,6 +22,8 @@ class IdentityManager;
 
 namespace autofill {
 
+class PersonalDataManager;
+
 // Android implementation of the modal prompt for saving new/updating existing
 // address profile. The class is responsible for showing the view and handling
 // user interactions. The controller owns its java counterpart and the
@@ -30,6 +32,7 @@ class SaveUpdateAddressProfilePromptController {
  public:
   SaveUpdateAddressProfilePromptController(
       std::unique_ptr<SaveUpdateAddressProfilePromptView> prompt_view,
+      autofill::PersonalDataManager* personal_data,
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
       bool is_migration_to_account,
@@ -81,6 +84,11 @@ class SaveUpdateAddressProfilePromptController {
   bool had_user_interaction_ = false;
   // View that displays the prompt.
   std::unique_ptr<SaveUpdateAddressProfilePromptView> prompt_view_;
+  // The personal data manager associated with the current web contents of the
+  // tab the prompt will be displayed in. The lifetime of this object is
+  // constrained with the lifetime of the tab's web content, which owns the
+  // corresponding personal data manager.
+  raw_ptr<autofill::PersonalDataManager> personal_data_;
   // The profile which is being confirmed by the user.
   AutofillProfile profile_;
   // The profile (if exists) which will be updated if the user confirms.
