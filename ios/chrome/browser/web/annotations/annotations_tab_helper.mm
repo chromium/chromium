@@ -110,23 +110,8 @@ void AnnotationsTabHelper::OnClick(web::WebState* web_state,
     manager->RemoveHighlight();
   }
 
-  if (match.resultType == NSTextCheckingTypePhoneNumber) {
-    NSString* phone_number =
-        [match.phoneNumber stringByReplacingOccurrencesOfString:@" "
-                                                     withString:@""];
-    NSString* phone_number_call_format =
-        [NSString stringWithFormat:@"tel:%@", phone_number];
-    [[UIApplication sharedApplication]
-                  openURL:[NSURL URLWithString:phone_number_call_format]
-                  options:@{}
-        completionHandler:nil];
-  } else if (web::IsNSTextCheckingResultEmail(match)) {
-    base::RecordAction(
-        base::UserMetricsAction("IOS.EmailExperience.OneTap.CreateEmail"));
-    MailtoHandlerServiceFactory::GetForBrowserState(
-        ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()))
-        ->HandleMailtoURL(match.URL);
-  } else {
+  if (!ios::provider::HandleIntentTypesForOneTap(web_state, match,
+                                                 base_view_controller_)) {
     NSArray<CRWContextMenuItem*>* items =
         ios::provider::GetContextMenuElementsToAdd(
             web_state, match, base::SysUTF8ToNSString(text),
