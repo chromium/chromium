@@ -1397,6 +1397,9 @@ class OneDriveTest : public TestAccountBrowserTest {
     // The path in ODFS is the relative path with "/" prefixed.
     test_path_within_odfs_ = base::FilePath("/").Append(relative_test_path_);
     file_system_id_ = "odfs";
+
+    network_connection_tracker_ =
+        network::TestNetworkConnectionTracker::CreateInstance();
   }
 
   OneDriveTest(const OneDriveTest&) = delete;
@@ -1435,6 +1438,8 @@ class OneDriveTest : public TestAccountBrowserTest {
         AbsoluteOdfsTestPath());
 
     web_app_publisher_ = std::make_unique<FakeWebAppPublisher>(profile());
+
+    SetConnectionOffline();
   }
 
   Profile* profile() { return browser()->profile(); }
@@ -1472,9 +1477,15 @@ class OneDriveTest : public TestAccountBrowserTest {
         "pivots%2F" + user_email);
   }
 
+  void SetConnectionOffline() {
+    content::SetNetworkConnectionTrackerForTesting(nullptr);
+    content::SetNetworkConnectionTrackerForTesting(
+        network_connection_tracker_.get());
+    network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+        network::mojom::ConnectionType::CONNECTION_NONE);
+  }
+
   void SetConnectionOnline() {
-    network_connection_tracker_ =
-        network::TestNetworkConnectionTracker::CreateInstance();
     content::SetNetworkConnectionTrackerForTesting(nullptr);
     content::SetNetworkConnectionTrackerForTesting(
         network_connection_tracker_.get());
