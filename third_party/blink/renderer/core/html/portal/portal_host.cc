@@ -24,11 +24,12 @@
 namespace blink {
 
 PortalHost::PortalHost(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window) {}
+    : Supplement<LocalDOMWindow>(window), portal_host_(&window) {}
 
 void PortalHost::Trace(Visitor* visitor) const {
   EventTargetWithInlineData::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(portal_host_);
 }
 
 // static
@@ -108,10 +109,12 @@ void PortalHost::ReceiveMessage(
 mojom::blink::PortalHost& PortalHost::GetPortalHostInterface() {
   if (!portal_host_) {
     DCHECK(GetSupplementable()->GetFrame());
-    GetSupplementable()
-        ->GetFrame()
-        ->GetRemoteNavigationAssociatedInterfaces()
-        ->GetInterface(&portal_host_);
+    AssociatedInterfaceProvider* provider =
+        GetSupplementable()
+            ->GetFrame()
+            ->GetRemoteNavigationAssociatedInterfaces();
+    provider->GetInterface(
+        portal_host_.BindNewEndpointAndPassReceiver(provider->GetTaskRunner()));
   }
   return *portal_host_.get();
 }
