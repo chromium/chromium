@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_text_control.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/custom_layout_child.h"
@@ -202,13 +203,7 @@ LayoutUnit TextAreaIntrinsicBlockSize(const HTMLTextAreaElement& textarea,
                                       const LayoutBox& box) {
   const auto* inner_editor = textarea.InnerEditorElement();
   if (!inner_editor || !inner_editor->GetLayoutBox()) {
-    const LayoutUnit line_height = box.LineHeight(
-        true,
-        box.StyleRef().IsHorizontalWritingMode() ? kHorizontalLine
-                                                 : kVerticalLine,
-        kPositionOfInteriorLineBoxes);
-
-    return line_height * textarea.rows();
+    return box.FirstLineHeight() * textarea.rows();
   }
   const LayoutBox& inner_box = *inner_editor->GetLayoutBox();
   const ComputedStyle& inner_style = inner_box.StyleRef();
@@ -219,13 +214,7 @@ LayoutUnit TextAreaIntrinsicBlockSize(const HTMLTextAreaElement& textarea,
       (box.StyleRef().OverflowInlineDirection() == EOverflow::kAuto &&
        inner_style.OverflowWrap() == EOverflowWrap::kNormal))
     scrollbar_thickness = layout_text_control::ScrollbarThickness(box);
-  return inner_box.LineHeight(true,
-                              inner_style.IsHorizontalWritingMode()
-                                  ? kHorizontalLine
-                                  : kVerticalLine,
-                              kPositionOfInteriorLineBoxes) *
-             textarea.rows() +
-         scrollbar_thickness;
+  return inner_box.FirstLineHeight() * textarea.rows() + scrollbar_thickness;
 }
 
 LayoutUnit TextFieldIntrinsicBlockSize(const HTMLInputElement& input,
@@ -236,11 +225,7 @@ LayoutUnit TextFieldIntrinsicBlockSize(const HTMLInputElement& input,
   const LayoutBox& target_box = (inner_editor && inner_editor->GetLayoutBox())
                                     ? *inner_editor->GetLayoutBox()
                                     : box;
-  return target_box.LineHeight(true,
-                               target_box.StyleRef().IsHorizontalWritingMode()
-                                   ? kHorizontalLine
-                                   : kVerticalLine,
-                               kPositionOfInteriorLineBoxes);
+  return target_box.FirstLineHeight();
 }
 
 LayoutUnit FileUploadControlIntrinsicInlineSize(const HTMLInputElement& input,
@@ -5691,12 +5676,11 @@ bool LayoutBox::IsMonolithic() const {
   return false;
 }
 
-LayoutUnit LayoutBox::LineHeight(bool /*firstLine*/,
-                                 LineDirectionMode direction,
-                                 LinePositionMode /*linePositionMode*/) const {
+LayoutUnit LayoutBox::FirstLineHeight() const {
   if (IsAtomicInlineLevel()) {
-    return direction == kHorizontalLine ? MarginHeight() + Size().Height()
-                                        : MarginWidth() + Size().Width();
+    return FirstLineStyle()->IsHorizontalWritingMode()
+               ? MarginHeight() + Size().Height()
+               : MarginWidth() + Size().Width();
   }
   return LayoutUnit();
 }

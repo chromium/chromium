@@ -970,17 +970,8 @@ void LayoutInline::DirtyLinesFromChangedChild(
   }
 }
 
-LayoutUnit LayoutInline::LineHeight(
-    bool first_line,
-    LineDirectionMode /*direction*/,
-    LinePositionMode /*linePositionMode*/) const {
-  if (first_line && GetDocument().GetStyleEngine().UsesFirstLineRules()) {
-    const ComputedStyle* s = Style(first_line);
-    if (s != Style())
-      return LayoutUnit(s->ComputedLineHeight());
-  }
-
-  return LayoutUnit(StyleRef().ComputedLineHeight());
+LayoutUnit LayoutInline::FirstLineHeight() const {
+  return LayoutUnit(FirstLineStyle()->ComputedLineHeight());
 }
 
 void LayoutInline::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {

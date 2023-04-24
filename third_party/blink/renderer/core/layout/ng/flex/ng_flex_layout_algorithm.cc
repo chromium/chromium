@@ -2114,9 +2114,7 @@ void NGFlexLayoutAlgorithm::AdjustButtonBaseline(
       container_builder_.Children();
   if (children.size() < 1) {
     const LayoutBlock* layout_block = To<LayoutBlock>(Node().GetLayoutBox());
-    absl::optional<LayoutUnit> baseline = layout_block->BaselineForEmptyLine(
-        layout_block->IsHorizontalWritingMode() ? kHorizontalLine
-                                                : kVerticalLine);
+    absl::optional<LayoutUnit> baseline = layout_block->BaselineForEmptyLine();
     if (container_builder_.FirstBaseline() != baseline) {
       UseCounter::Count(Node().GetDocument(),
                         WebFeature::kWrongBaselineOfEmptyLineButton);

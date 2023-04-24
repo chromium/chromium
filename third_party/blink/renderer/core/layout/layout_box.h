@@ -302,9 +302,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   LayoutUnit LogicalHeightForEmptyLine() const {
     NOT_DESTROYED();
-    return LineHeight(
-        true, IsHorizontalWritingMode() ? kHorizontalLine : kVerticalLine,
-        kPositionOfInteriorLineBoxes);
+    return FirstLineHeight();
   }
 
   void SetLogicalWidth(LayoutUnit size) {
@@ -1406,10 +1404,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return Parent() && Parent()->IsMathML();
   }
 
-  LayoutUnit LineHeight(
-      bool first_line,
-      LineDirectionMode,
-      LinePositionMode = kPositionOnContainingLine) const override;
+  LayoutUnit FirstLineHeight() const override;
 
   PhysicalOffset OffsetPoint(const Element* parent) const;
   LayoutUnit OffsetLeft(const Element*) const final;

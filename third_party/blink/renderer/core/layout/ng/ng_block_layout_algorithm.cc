@@ -863,10 +863,9 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
     // [2] inline-block/contenteditable-baseline.html
     const LayoutBlock* const layout_block =
         To<LayoutBlock>(Node().GetLayoutBox());
-    if (auto baseline_offset = layout_block->BaselineForEmptyLine(
-            layout_block->IsHorizontalWritingMode() ? kHorizontalLine
-                                                    : kVerticalLine))
+    if (auto baseline_offset = layout_block->BaselineForEmptyLine()) {
       container_builder_.SetBaselines(*baseline_offset);
+    }
   }
 
   // Collapse annotation overflow and padding.

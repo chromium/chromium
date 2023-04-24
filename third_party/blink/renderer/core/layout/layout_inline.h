@@ -341,10 +341,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   // TODO(leviw): This should probably be an int. We don't snap equivalent lines
   // to different heights.
-  LayoutUnit LineHeight(
-      bool first_line,
-      LineDirectionMode,
-      LinePositionMode = kPositionOnContainingLine) const final;
+  LayoutUnit FirstLineHeight() const final;
 
   void ChildBecameNonInline(LayoutObject* child) final;
 

@@ -135,10 +135,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   }
 
   // These two functions are overridden for inline-block.
-  LayoutUnit LineHeight(
-      bool first_line,
-      LineDirectionMode,
-      LinePositionMode = kPositionOnContainingLine) const override;
+  LayoutUnit FirstLineHeight() const override;
 
   bool UseLogicalBottomMarginEdgeForInlineBlockBaseline() const;
 
@@ -252,8 +249,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   virtual bool HasLineIfEmpty() const;
   // Returns baseline offset if we can get |SimpleFontData| from primary font.
   // Or returns no value if we can't get font data.
-  absl::optional<LayoutUnit> BaselineForEmptyLine(
-      LineDirectionMode line_direction) const;
+  absl::optional<LayoutUnit> BaselineForEmptyLine() const;
 
  protected:
   bool HitTestChildren(HitTestResult&,

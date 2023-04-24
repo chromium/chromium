@@ -46,13 +46,6 @@ enum PaintLayerType {
   kForcedPaintLayer
 };
 
-// Modes for some of the line-related functions.
-enum LinePositionMode {
-  kPositionOnContainingLine,
-  kPositionOfInteriorLineBoxes
-};
-enum LineDirectionMode { kHorizontalLine, kVerticalLine };
-
 // This class is the base class for all CSS objects.
 //
 // All CSS objects follow the box model object. See THE BOX MODEL section in
@@ -422,11 +415,8 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     NOT_DESTROYED();
   }
 
-  // Overridden by subclasses to determine line height and baseline position.
-  virtual LayoutUnit LineHeight(
-      bool first_line,
-      LineDirectionMode,
-      LinePositionMode = kPositionOnContainingLine) const = 0;
+  // Overridden by subclasses to determine line-height of the first-line.
+  virtual LayoutUnit FirstLineHeight() const = 0;
 
   // Returns true if the background is painted opaque in the given rect.
   // The query rect is given in local coordinate system.

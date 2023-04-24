@@ -966,12 +966,7 @@ LayoutRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
   // primaryFont is null.
   if (font_data)
     height = LayoutUnit(font_data->GetFontMetrics().Height());
-  LayoutUnit vertical_space =
-      LineHeight(true,
-                 current_style.IsHorizontalWritingMode() ? kHorizontalLine
-                                                         : kVerticalLine,
-                 kPositionOfInteriorLineBoxes) -
-      height;
+  LayoutUnit vertical_space = FirstLineHeight() - height;
   LayoutUnit y = PaddingTop() + BorderTop() + (vertical_space / 2);
   return current_style.IsHorizontalWritingMode()
              ? LayoutRect(x, y, caret_width, height)

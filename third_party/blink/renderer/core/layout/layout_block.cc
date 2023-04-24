@@ -784,16 +784,15 @@ bool LayoutBlock::HasLineIfEmpty() const {
   return FirstLineStyleRef().HasLineIfEmpty();
 }
 
-absl::optional<LayoutUnit> LayoutBlock::BaselineForEmptyLine(
-    LineDirectionMode line_direction) const {
+absl::optional<LayoutUnit> LayoutBlock::BaselineForEmptyLine() const {
   NOT_DESTROYED();
-  const SimpleFontData* font_data = FirstLineStyle()->GetFont().PrimaryFont();
+  const ComputedStyle* style = FirstLineStyle();
+  const SimpleFontData* font_data = style->GetFont().PrimaryFont();
   if (!font_data)
     return absl::nullopt;
   const auto& font_metrics = font_data->GetFontMetrics();
-  const LayoutUnit line_height =
-      LineHeight(true, line_direction, kPositionOfInteriorLineBoxes);
-  const LayoutUnit border_padding = line_direction == kHorizontalLine
+  const LayoutUnit line_height = FirstLineHeight();
+  const LayoutUnit border_padding = style->IsHorizontalWritingMode()
                                         ? BorderTop() + PaddingTop()
                                         : BorderRight() + PaddingRight();
   return LayoutUnit((font_metrics.Ascent() +
@@ -801,20 +800,9 @@ absl::optional<LayoutUnit> LayoutBlock::BaselineForEmptyLine(
                         .ToInt());
 }
 
-LayoutUnit LayoutBlock::LineHeight(bool first_line,
-                                   LineDirectionMode direction,
-                                   LinePositionMode line_position_mode) const {
+LayoutUnit LayoutBlock::FirstLineHeight() const {
   NOT_DESTROYED();
-  // Inline blocks are replaced elements. Otherwise, just pass off to
-  // the base class.  If we're being queried as though we're the root line
-  // box, then the fact that we're an inline-block is irrelevant, and we behave
-  // just like a block.
-  if (IsAtomicInlineLevel() && line_position_mode == kPositionOnContainingLine)
-    return LayoutBox::LineHeight(first_line, direction, line_position_mode);
-
-  const ComputedStyle& style = StyleRef(
-      first_line && GetDocument().GetStyleEngine().UsesFirstLineRules());
-  return LayoutUnit(style.ComputedLineHeight());
+  return LayoutUnit(FirstLineStyle()->ComputedLineHeight());
 }
 
 bool LayoutBlock::UseLogicalBottomMarginEdgeForInlineBlockBaseline() const {
