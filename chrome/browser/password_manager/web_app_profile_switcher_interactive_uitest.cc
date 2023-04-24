@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -143,14 +144,16 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
                        SwitchWebAppProfileActivateWindowOnly) {
+  base::HistogramTester histogram_tester;
   Profile* first_profile = profile();
   InstallAppForProfile(first_profile, GetTestWebAppInstallInfo());
 
   // Launch the app for the first profile.
-  web_app::LaunchWebAppBrowserAndWait(first_profile, GetTestWebAppId());
+  web_app::LaunchWebAppBrowserAndWait(first_profile,
+                                      web_app::kPasswordManagerAppId);
   Browser* first_profile_app_browser =
-      web_app::AppBrowserController::FindForWebApp(*first_profile,
-                                                   GetTestWebAppId());
+      web_app::AppBrowserController::FindForWebApp(
+          *first_profile, web_app::kPasswordManagerAppId);
   ASSERT_TRUE(first_profile_app_browser);
   ASSERT_EQ(chrome::FindAllTabbedBrowsersWithProfile(first_profile).size(), 1U);
 
@@ -158,23 +161,28 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
   Profile* second_profile = CreateAdditionalProfile();
   InstallAppForProfile(second_profile, GetTestWebAppInstallInfo());
   // Launch the app.
-  web_app::LaunchWebAppBrowserAndWait(second_profile, GetTestWebAppId());
+  web_app::LaunchWebAppBrowserAndWait(second_profile,
+                                      web_app::kPasswordManagerAppId);
   Browser* second_profile_app_browser =
-      web_app::AppBrowserController::FindForWebApp(*second_profile,
-                                                   GetTestWebAppId());
+      web_app::AppBrowserController::FindForWebApp(
+          *second_profile, web_app::kPasswordManagerAppId);
   ASSERT_TRUE(second_profile_app_browser);
   EXPECT_EQ(chrome::FindLastActive(), second_profile_app_browser);
 
   // Switch to the first profile from the second.
   base::test::TestFuture<void> profile_switch_complete;
-  WebAppProfileSwitcher profile_switcher(GetTestWebAppId(), *second_profile,
+  WebAppProfileSwitcher profile_switcher(web_app::kPasswordManagerAppId,
+                                         *second_profile,
                                          profile_switch_complete.GetCallback());
   profile_switcher.SwitchToProfile(first_profile->GetPath());
   ui_test_utils::BrowserActivationWaiter(first_profile_app_browser)
       .WaitForActivation();
   EXPECT_TRUE(profile_switch_complete.Wait());
 
-  // Check that there is only one browser for the first_profile and it's active. 
+  // Check that there is only one browser for the first_profile and it's active.
   ASSERT_EQ(chrome::FindAllTabbedBrowsersWithProfile(first_profile).size(), 1U);
   EXPECT_EQ(chrome::FindBrowserWithActiveWindow(), first_profile_app_browser);
+
+  EXPECT_THAT(histogram_tester.GetAllSamples("PasswordManager.ShortcutMetric"),
+              base::BucketsAre(base::Bucket(2, 1)));
 }

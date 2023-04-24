@@ -3358,6 +3358,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.ShortcutMetric"
+    enum="PasswordManagerShortcutMetric" expires_after="2023-10-15">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records the user actions related to password manager shortcut. Recorded
+    before showing install prompt, after successful installation, or when user
+    switched profile inside a shortcut.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.SingleUsername.PasswordFormHadUsernameField"
     enum="PasswordFormHadUsernameField" expires_after="2023-11-28">
   <owner>kolos@chromium.org</owner>

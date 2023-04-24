@@ -80225,6 +80225,19 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Federated match"/>
 </enum>
 
+<enum name="PasswordManagerShortcutInteractions">
+  <int value="0" label="Import dialog opened from the three-dot menu."/>
+  <int value="1" label="Import dialog opened from the empty passwords list."/>
+  <int value="2" label="Import flow canceled before the file selection."/>
+</enum>
+
+<enum name="PasswordManagerShortcutMetric">
+  <int value="0" label="User clicked Add shortcut from the UI."/>
+  <int value="1" label="Shortcut was successfully installed."/>
+  <int value="2"
+      label="User switched profile in the standalone password manager app."/>
+</enum>
+
 <enum name="PasswordManagerShowEmptyUsername">
   <int value="0" label="Non-empty username"/>
   <int value="1" label="Empty username"/>

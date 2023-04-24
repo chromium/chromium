@@ -35,6 +35,7 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/webapps/chrome_webapps_client.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -1365,6 +1366,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 #endif
 
 TEST_F(PasswordsPrivateDelegateImplTest, ShowAddShortcutDialog) {
+  base::HistogramTester histogram_tester;
   // Set up a browser instance and simulate a navigation.
   Browser::CreateParams params(profile(), /*user_gesture=*/true);
   params.type = Browser::TYPE_NORMAL;
@@ -1403,6 +1405,8 @@ TEST_F(PasswordsPrivateDelegateImplTest, ShowAddShortcutDialog) {
 
   // Close the browser prior to TearDown.
   browser->tab_strip_model()->CloseAllTabs();
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.ShortcutMetric", 0, 1);
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, GetCredentialGroups) {
@@ -1437,6 +1441,22 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetCredentialGroups) {
               testing::UnorderedElementsAre(
                   PasswordUiEntryDataEquals(testing::ByRef(expected_entry1)),
                   PasswordUiEntryDataEquals(testing::ByRef(expected_entry2))));
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest, PasswordManagerAppInstalled) {
+  base::HistogramTester histogram_tester;
+  auto delegate = CreateDelegate();
+  static_cast<web_app::WebAppInstallManagerObserver*>(delegate.get())
+      ->OnWebAppInstalledWithOsHooks(web_app::kPasswordManagerAppId);
+
+  EXPECT_THAT(histogram_tester.GetAllSamples("PasswordManager.ShortcutMetric"),
+              base::BucketsAre(base::Bucket(1, 1)));
+
+  // Check that installing other app doesn't get recorded.
+  static_cast<web_app::WebAppInstallManagerObserver*>(delegate.get())
+      ->OnWebAppInstalledWithOsHooks(web_app::kYoutubeMusicAppId);
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.ShortcutMetric", 1, 1);
 }
 
 }  // namespace extensions

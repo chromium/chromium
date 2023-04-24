@@ -796,6 +796,10 @@ void PasswordsPrivateDelegateImpl::ShowAddShortcutDialog(
   DCHECK(browser);
   web_app::CreateWebAppFromCurrentWebContents(
       browser, web_app::WebAppInstallFlow::kInstallSite);
+  base::UmaHistogramEnumeration(
+      "PasswordManager.ShortcutMetric",
+      password_manager::metrics_util::PasswordManagerShortcutMetric::
+          kAddShortcutClicked);
 }
 
 void PasswordsPrivateDelegateImpl::ShowExportedFileInShell(
@@ -964,6 +968,10 @@ void PasswordsPrivateDelegateImpl::OnWebAppInstalledWithOsHooks(
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&MaybeShowProfileSwitchIPH, profile_),
       base::Seconds(1));
+  base::UmaHistogramEnumeration(
+      "PasswordManager.ShortcutMetric",
+      password_manager::metrics_util::PasswordManagerShortcutMetric::
+          kShortcutInstalled);
 }
 
 void PasswordsPrivateDelegateImpl::OnWebAppInstallManagerDestroyed() {
