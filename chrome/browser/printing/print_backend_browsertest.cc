@@ -25,6 +25,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/printing/print_backend_service_test_impl.h"
+#include "chrome/browser/printing/print_test_utils.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -148,6 +149,9 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     // tests.
     auto default_caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
     default_caps->copies_max = kCopiesMax;
+    default_caps->default_paper = kTestPaperLetter;
+    default_caps->papers.push_back(kTestPaperLetter);
+    default_caps->papers.push_back(kTestPaperLegal);
     test_print_backend_->AddValidPrinter(
         kDefaultPrinterName, std::move(default_caps),
         std::make_unique<PrinterBasicInfo>(kDefaultPrinterInfo));
@@ -336,6 +340,14 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     capture_caps_and_info = std::move(caps_and_info);
     CheckForQuit();
   }
+
+#if BUILDFLAG(IS_WIN)
+  void OnDidGetPaperPrintableArea(gfx::Rect& capture_printable_area_um,
+                                  const gfx::Rect& printable_area_um) {
+    capture_printable_area_um = printable_area_um;
+    CheckForQuit();
+  }
+#endif
 
   void CapturePrintSettings(
       mojom::PrintSettingsResultPtr& capture_print_settings,
@@ -547,6 +559,63 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FetchCapabilitiesAccessDenied) {
   ASSERT_TRUE(caps_and_info->is_result_code());
   EXPECT_EQ(caps_and_info->get_result_code(), mojom::ResultCode::kAccessDenied);
 }
+
+#if BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, GetPaperPrintableArea) {
+  AddDefaultPrinter();
+
+  mojom::PrinterCapsAndInfoResultPtr caps_and_info;
+
+  // Safe to use base::Unretained(this) since waiting locally on the callback
+  // forces a shorter lifetime than `this`.
+  GetPrintBackendService()->FetchCapabilities(
+      kDefaultPrinterName,
+      base::BindOnce(&PrintBackendBrowserTest::OnDidFetchCapabilities,
+                     base::Unretained(this), std::ref(caps_and_info)));
+  WaitUntilCallbackReceived();
+
+  // TODO(crbug.com/1432720):  Unlike in-browser behavior of fetching
+  // capabilities, out-of-process still provides the printable area for all
+  // paper sizes.  This is known to be slow, and so the behavior will need to
+  // be changed.
+  ASSERT_TRUE(caps_and_info->is_printer_caps_and_info());
+  absl::optional<PrinterSemanticCapsAndDefaults::Paper> non_default_paper;
+  const PrinterSemanticCapsAndDefaults::Paper& default_paper =
+      caps_and_info->get_printer_caps_and_info()->printer_caps.default_paper;
+  const PrinterSemanticCapsAndDefaults::Papers& papers =
+      caps_and_info->get_printer_caps_and_info()->printer_caps.papers;
+  for (const auto& paper : papers) {
+    if (paper != default_paper) {
+      non_default_paper = paper;
+      break;
+    }
+  }
+  ASSERT_TRUE(non_default_paper.has_value());
+  // TODO(crbug.com/1432720):  Update this to check that the printable area
+  // matches the paper size for non-default papers, once the workaround for
+  // the slow query is updated to match in-browser query behavior.
+  EXPECT_NE(non_default_paper->printable_area_um,
+            gfx::Rect(non_default_paper->size_um));
+
+  // Request the printable area for this paper size, which should not match
+  // match the physical size but have real printable area values.
+  gfx::Rect printable_area_um;
+  PrintSettings::RequestedMedia media(
+      /*.size_microns =*/non_default_paper->size_um,
+      /*.vendor_id = */ non_default_paper->vendor_id);
+  GetPrintBackendService()->GetPaperPrintableArea(
+      kDefaultPrinterName, media,
+      base::BindOnce(&PrintBackendBrowserTest::OnDidGetPaperPrintableArea,
+                     base::Unretained(this), std::ref(printable_area_um)));
+  WaitUntilCallbackReceived();
+  ASSERT_TRUE(!printable_area_um.IsEmpty());
+  // TODO(crbug.com/1432720):  Update this to check that the printable area
+  // does not match the paper size for non-default papers from
+  // FetchCapabilities(), once the workaround for the slow query is updated to
+  // match in-browser query behavior.
+  EXPECT_EQ(printable_area_um, non_default_paper->printable_area_um);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UseDefaultSettings) {
   AddDefaultPrinter();

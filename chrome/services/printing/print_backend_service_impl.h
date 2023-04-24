@@ -161,6 +161,13 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
   void FetchCapabilities(
       const std::string& printer_name,
       mojom::PrintBackendService::FetchCapabilitiesCallback callback) override;
+#if BUILDFLAG(IS_WIN)
+  void GetPaperPrintableArea(
+      const std::string& printer_name,
+      const PrintSettings::RequestedMedia& media,
+      mojom::PrintBackendService::GetPaperPrintableAreaCallback callback)
+      override;
+#endif
   void EstablishPrintingContext(uint32_t context_id
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
                                 ,

@@ -590,6 +590,22 @@ void PrintBackendServiceImpl::FetchCapabilities(
           std::move(caps_and_info)));
 }
 
+#if BUILDFLAG(IS_WIN)
+void PrintBackendServiceImpl::GetPaperPrintableArea(
+    const std::string& printer_name,
+    const PrintSettings::RequestedMedia& media,
+    mojom::PrintBackendService::GetPaperPrintableAreaCallback callback) {
+  CHECK(print_backend_);
+  crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
+      print_backend_->GetPrinterDriverInfo(printer_name));
+
+  absl::optional<gfx::Rect> printable_area_um =
+      print_backend_->GetPaperPrintableArea(printer_name, media.vendor_id,
+                                            media.size_microns);
+  std::move(callback).Run(printable_area_um.value_or(gfx::Rect()));
+}
+#endif
+
 void PrintBackendServiceImpl::EstablishPrintingContext(uint32_t context_id
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
                                                        ,
