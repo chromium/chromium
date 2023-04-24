@@ -66,14 +66,14 @@ def main():
 
   dir_name = os.path.dirname(os.path.realpath(__file__))
 
-  num_faliures_blink = BlinkGcPluginTest(
+  num_failures_blink = BlinkGcPluginTest(
       False,  # USE_V8_OILPAN
       dir_name,
       args.clang_path,
       'blink-gc-plugin',
       args.reset_results).Run()
 
-  num_faliures_cppgc = BlinkGcPluginTest(
+  num_failures_cppgc = BlinkGcPluginTest(
       True,  # USE_V8_OILPAN
       dir_name,
       args.clang_path,
@@ -82,8 +82,8 @@ def main():
 
   print("\nBlink GC Plugin Summary: %d tests failed without USE_V8_OILPAN, " \
    "%d tests failed with USE_V8_OILPAN" % (
-      num_faliures_blink, num_faliures_cppgc))
-  return num_faliures_blink + num_faliures_cppgc
+      num_failures_blink, num_failures_cppgc))
+  return num_failures_blink + num_failures_cppgc
 
 
 if __name__ == '__main__':
