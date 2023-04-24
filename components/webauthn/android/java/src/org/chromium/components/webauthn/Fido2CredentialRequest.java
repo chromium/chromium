@@ -646,6 +646,15 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         mWebContents = webContents;
     }
 
+    private String getCredManExceptionType(Throwable exception) {
+        try {
+            return (String) exception.getClass().getMethod("getType").invoke(exception);
+        } catch (ReflectiveOperationException e) {
+            // This will map to UNKNOWN_ERROR.
+            return "Exception details not available";
+        }
+    }
+
     /**
      * Create a credential using the Android 14 CredMan API.
      * TODO: update the version code to U when Chromium builds with Android 14 SDK.
@@ -683,9 +692,19 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         OutcomeReceiver receiver = new OutcomeReceiver<Object, Throwable>() {
             @Override
             public void onError(Throwable e) {
-                // TODO: map these errors to more than just `UNKNOWN_ERROR`.
-                Log.e(TAG, "CredMan call failed", e);
-                returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+                String errorType = getCredManExceptionType(e);
+                Log.e(TAG, "CredMan CreateCredential call failed: %s",
+                        errorType + " (" + e.getMessage() + ")");
+                if (errorType.equals(
+                            "android.credentials.CreateCredentialException.TYPE_USER_CANCELED")) {
+                    returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+                } else {
+                    // Includes:
+                    //  * CreateCredentialException.TYPE_UNKNOWN
+                    //  * CreateCredentialException.TYPE_NO_CREATE_OPTIONS
+                    //  * CreateCredentialException.TYPE_INTERRUPTED
+                    returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+                }
             }
 
             @Override
@@ -790,23 +809,18 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         OutcomeReceiver<Object, Throwable> receiver = new OutcomeReceiver<>() {
             @Override
             public void onError(Throwable getCredentialException) {
-                try {
-                    Log.e(TAG, "CredMan call failed", getCredentialException);
-                    Class<?> getCredentialExceptionClass = getCredentialException.getClass();
-                    String errorType =
-                            (String) getCredentialExceptionClass.getMethod("getType").invoke(
-                                    getCredentialException);
-                    if (((String) getCredentialExceptionClass.getField("TYPE_USER_CANCELED")
-                                        .get(getCredentialException))
-                                    .equals(errorType)) {
-                        returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
-                        return;
-                    }
+                String errorType = getCredManExceptionType(getCredentialException);
+                Log.e(TAG, "CredMan getCredential call failed: %s",
+                        errorType + " (" + getCredentialException.getMessage() + ")");
+                if (errorType.equals(
+                            "android.credentials.GetCredentialException.TYPE_USER_CANCELED")) {
+                    returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+                } else {
+                    // Includes:
+                    //  * GetCredentialException.TYPE_UNKNOWN
+                    //  * GetCredentialException.TYPE_NO_CREATE_OPTIONS
+                    //  * GetCredentialException.TYPE_INTERRUPTED
                     returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
-                } catch (ReflectiveOperationException e) {
-                    Log.e(TAG, "Reflection failed; are you running on Android 14?",
-                            getCredentialException);
-                    returnErrorAndResetCallback(AuthenticatorStatus.ANDROID_NOT_SUPPORTED_ERROR);
                 }
             }
 
@@ -910,8 +924,10 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         OutcomeReceiver<Object, Throwable> receiver = new OutcomeReceiver<>() {
             @Override
             public void onError(Throwable e) {
-                // TODO: map these errors to more than just `UNKNOWN_ERROR`.
-                Log.e(TAG, "CredMan call failed", e);
+                // prepareGetCredential uses getCredentialException, but it cannot be user
+                // cancelled so all errors map to UNKNOWN_ERROR.
+                Log.e(TAG, "CredMan prepareGetCredential call failed: %s",
+                        getCredManExceptionType(e) + " (" + e.getMessage() + ")");
                 returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
             }
 
