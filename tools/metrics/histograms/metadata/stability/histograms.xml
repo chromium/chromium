@@ -73,19 +73,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Stability.Android.OomKillReverseRankSuccess"
-    enum="BooleanSuccess" expires_after="2020-04-10">
-  <obsolete>
-    Expired in 2020-04-10. Removed in M111.
-  </obsolete>
-  <owner>boliu@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    Getting value for OomKillReverseRank may fail. Recorded when an applicable
-    child process is killed by android.
-  </summary>
-</histogram>
-
 <histogram name="Stability.Android.ProcessedCrashCounts"
     enum="AndroidProcessedCrashCounts" expires_after="never">
 <!-- expires-never: Critical stability metric that includes OOM rate. -->

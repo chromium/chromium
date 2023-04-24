@@ -104,9 +104,6 @@ void CrashMetricsReporter::ChildProcessExited(
       info.blink_oom_metrics.allocation_failed;
   const uint64_t private_footprint_kb =
       info.blink_oom_metrics.current_private_footprint_kb;
-  const uint64_t swap_kb = info.blink_oom_metrics.current_swap_kb;
-  const uint64_t vm_size_kb = info.blink_oom_metrics.current_vm_size_kb;
-  const uint64_t blink_usage_kb = info.blink_oom_metrics.current_blink_usage_kb;
 
   if (app_foreground && android_oom_kill) {
     if (info.process_type == content::PROCESS_TYPE_GPU) {
@@ -169,15 +166,6 @@ void CrashMetricsReporter::ChildProcessExited(
               "Memory.Experimental.OomIntervention."
               "RendererPrivateMemoryFootprintAtOOM",
               private_footprint_kb / 1024);
-          UMA_HISTOGRAM_MEMORY_MB(
-              "Memory.Experimental.OomIntervention.RendererSwapFootprintAtOOM",
-              swap_kb / 1024);
-          UMA_HISTOGRAM_MEMORY_MB(
-              "Memory.Experimental.OomIntervention.RendererBlinkUsageAtOOM",
-              blink_usage_kb / 1024);
-          UMA_HISTOGRAM_MEMORY_LARGE_MB(
-              "Memory.Experimental.OomIntervention.RendererVmSizeAtOOMLarge",
-              vm_size_kb / 1024);
         }
       }
     } else if (!crashed) {

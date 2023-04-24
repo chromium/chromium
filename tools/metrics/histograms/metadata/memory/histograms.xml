@@ -867,16 +867,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.Experimental.OomIntervention.RendererBlinkUsageAtOOM"
-    units="MB" expires_after="M77">
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    The renderer process' Blink memory usage, as sum of V8, PartitionAlloc and
-    BlinkGC allocations, when a foreground OOM occurs. This was last recorded
-    metric by renderer a few seconds before getting killed.
-  </summary>
-</histogram>
-
 <histogram
     name="Memory.Experimental.OomIntervention.RendererPrivateMemoryFootprintAtOOM"
     units="MB" expires_after="M85">
@@ -886,17 +876,6 @@ chromium-metrics-reviews@google.com.
     The renderer process' private memory footprint when a foreground OOM occurs.
     This was last recorded metric by renderer a few seconds before getting
     killed.
-  </summary>
-</histogram>
-
-<histogram
-    name="Memory.Experimental.OomIntervention.RendererSwapFootprintAtOOM"
-    units="MB" expires_after="M85">
-  <owner>ssid@chromium.org</owner>
-  <owner>bashi@chromium.org</owner>
-  <summary>
-    The renderer process' swap size when a foreground OOM occurs. This was last
-    recorded metric by renderer a few seconds before getting killed.
   </summary>
 </histogram>
 
@@ -932,17 +911,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time since starting monitor on renderer when high memory usage
     is detected.
-  </summary>
-</histogram>
-
-<histogram name="Memory.Experimental.OomIntervention.RendererVmSizeAtOOMLarge"
-    units="MB" expires_after="M85">
-  <owner>ssid@chromium.org</owner>
-  <owner>bashi@chromium.org</owner>
-  <summary>
-    The renderer process' virtual memory usage, when a foreground OOM occurs.
-    This was last recorded metric by renderer a few seconds before getting
-    killed.
   </summary>
 </histogram>
 
