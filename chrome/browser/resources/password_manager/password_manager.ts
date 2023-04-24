@@ -26,8 +26,6 @@ export {AccountStorageOptInStateChangedListener, BlockedSite, BlockedSitesListCh
 export {PasswordsExporterElement} from './passwords_exporter.js';
 export {PasswordsImporterElement} from './passwords_importer.js';
 export {PasswordsSectionElement} from './passwords_section.js';
-export {ExtensionControlBrowserProxy, ExtensionControlBrowserProxyImpl} from './prefs/extension_control_browser_proxy.js';
-export {ExtensionControlledIconElement} from './prefs/extension_controlled_icon.js';
 export {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
 export {PromoCard, PromoCardsProxy, PromoCardsProxyImpl} from './promo_cards/promo_cards_browser_proxy.js';
 export {CheckupSubpage, Page, Route, RouteObserverMixin, RouteObserverMixinInterface, Router, UrlParam} from './router.js';

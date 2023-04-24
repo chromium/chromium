@@ -56,6 +56,11 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #endif
 
+#if !BUILDFLAG(OPTIMIZE_WEBUI)
+#include "chrome/grit/settings_shared_resources.h"
+#include "chrome/grit/settings_shared_resources_map.h"
+#endif
+
 namespace {
 
 std::u16string InsertBrandedPasswordManager(int message_id) {
@@ -75,6 +80,11 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       source,
       base::make_span(kPasswordManagerResources, kPasswordManagerResourcesSize),
       IDR_PASSWORD_MANAGER_PASSWORD_MANAGER_HTML);
+
+#if !BUILDFLAG(OPTIMIZE_WEBUI)
+  source->AddResourcePaths(
+      base::make_span(kSettingsSharedResources, kSettingsSharedResourcesSize));
+#endif
 
   static constexpr webui::LocalizedString kStrings[] = {
     {"accountStorageToggleLabel",
