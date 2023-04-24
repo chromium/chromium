@@ -2973,7 +2973,11 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
         ExecSearchWebInCompanionSidePanel(selection_navigation_url_);
         break;
       }
+      // Searching in this side panel is dependent on the companion feature
+      // being disabled.
       if (side_search::IsSearchWebInSidePanelSupported(
+              chrome::FindBrowserWithWebContents(embedder_web_contents_)) &&
+          !companion::IsSearchInCompanionSidePanelSupported(
               chrome::FindBrowserWithWebContents(embedder_web_contents_))) {
         ExecSearchWebInSidePanel(selection_navigation_url_);
         break;

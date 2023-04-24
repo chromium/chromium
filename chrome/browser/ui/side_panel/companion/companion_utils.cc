@@ -15,6 +15,10 @@
 
 namespace companion {
 
+bool IsCompanionFeatureEnabled() {
+  return base::FeatureList::IsEnabled(features::kSidePanelCompanion);
+}
+
 bool IsSearchInCompanionSidePanelSupported(const Browser* browser) {
   if (!browser) {
     return false;
@@ -23,14 +27,15 @@ bool IsSearchInCompanionSidePanelSupported(const Browser* browser) {
   DCHECK(profile);
   return search::DefaultSearchProviderIsGoogle(profile) &&
          !profile->IsOffTheRecord() && browser->is_type_normal() &&
-         base::FeatureList::IsEnabled(features::kSidePanelCompanion);
+         IsCompanionFeatureEnabled();
 }
 
 bool IsSearchWebInCompanionSidePanelSupported(const Browser* browser) {
   if (!browser) {
     return false;
   }
-  return IsSearchInCompanionSidePanelSupported(browser);
+  return IsSearchInCompanionSidePanelSupported(browser) &&
+         features::kEnableOpenCompanionForWebSearch.Get();
 }
 
 bool IsSearchImageInCompanionSidePanelSupported(const Browser* browser) {

@@ -16,6 +16,7 @@
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace lens {
@@ -53,10 +54,15 @@ TemplateURLService* GetTemplateURLService(content::WebContents* web_contents) {
 }  // namespace internal
 
 bool IsSidePanelEnabledForLens(content::WebContents* web_contents) {
+  // Companion feature being enabled should disable Lens in the side panel.
+  bool is_companion_enabled = false;
+#if !BUILDFLAG(IS_ANDROID)
+  is_companion_enabled = companion::IsCompanionFeatureEnabled();
+#endif
   return search::DefaultSearchProviderIsGoogle(
              lens::internal::GetTemplateURLService(web_contents)) &&
          lens::internal::IsSidePanelEnabled(web_contents) &&
-         lens::features::IsLensSidePanelEnabled();
+         lens::features::IsLensSidePanelEnabled() && !is_companion_enabled;
 }
 
 bool IsSidePanelEnabledForLensRegionSearch(content::WebContents* web_contents) {

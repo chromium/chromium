@@ -26,6 +26,8 @@ constexpr base::FeatureParam<std::string> kImageUploadURLForCompanion{
     "https://www.example.com"};
 constexpr base::FeatureParam<bool> kEnableOpenCompanionForImageSearch{
     &kSidePanelCompanion, "open-companion-for-image-search", true};
+constexpr base::FeatureParam<bool> kEnableOpenCompanionForWebSearch{
+    &kSidePanelCompanion, "open-companion-for-web-search", true};
 
 }  // namespace features
 

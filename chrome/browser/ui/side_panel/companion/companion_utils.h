@@ -10,6 +10,9 @@ class PrefService;
 
 namespace companion {
 
+// Returns true if the companion feature is enabled.
+bool IsCompanionFeatureEnabled();
+
 // Returns true if browser is valid, DSE is Google, and the side panel companion
 // feature is enabled.
 bool IsSearchInCompanionSidePanelSupported(const Browser* browser);
