@@ -82,3 +82,8 @@
   --cr-input-padding-start: 8px;
   --cr-input-padding-top: 8px;
 }
+
+:host-context([chrome-refresh-2023]) .sp-labelless-input:hover {
+  --cr-input-background-color:
+      var(--color-side-panel-textfield-background-hover);
+}

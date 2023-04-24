@@ -38,5 +38,7 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
   mixer[kColorSidePanelFilterChipBackgroundSelected] = {
       ui::kColorSysTonalContainer};
 
+  mixer[kColorSidePanelTextfieldBackgroundHover] = {
+      ui::kColorSysStateHoverOnSubtle};
   mixer[kColorSidePanelTextfieldBorder] = {ui::kColorSysNeutralOutline};
 }
