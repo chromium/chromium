@@ -309,18 +309,17 @@ void ExtensionsMenuModel::Build(Browser* browser) {
           .value(),
       kVisitChromeWebStoreMenuItem);
   if (features::IsChromeRefresh2023()) {
-    const int kIconSize = 16;
     SetIcon(
         GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS).value(),
         ui::ImageModel::FromVectorIcon(
             vector_icons::kExtensionChromeRefreshIcon, ui::kColorMenuIcon,
-            kIconSize));
+            kDefaultIconSize));
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     SetIcon(
         GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE)
             .value(),
         ui::ImageModel::FromVectorIcon(vector_icons::kGoogleChromeWebstoreIcon,
-                                       ui::kColorMenuIcon, kIconSize));
+                                       ui::kColorMenuIcon, kDefaultIconSize));
 #endif
   }
 }
@@ -445,7 +444,8 @@ bool AppMenuModel::IsItemForCommandIdDynamic(int command_id) const {
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
          command_id == IDC_LACROS_DATA_MIGRATION ||
 #endif
-         command_id == IDC_INSTALL_PWA || command_id == IDC_UPGRADE_DIALOG;
+         (command_id == IDC_INSTALL_PWA && !features::IsChromeRefresh2023()) ||
+         command_id == IDC_UPGRADE_DIALOG;
 }
 
 std::u16string AppMenuModel::GetLabelForCommandId(int command_id) const {
@@ -1070,11 +1070,10 @@ void AppMenuModel::Build() {
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU).value(),
                            kExtensionsMenuItem);
     if (features::IsChromeRefresh2023()) {
-      constexpr int kIconSize = 16;
       SetIcon(GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU).value(),
               ui::ImageModel::FromVectorIcon(
                   vector_icons::kExtensionChromeRefreshIcon, ui::kColorMenuIcon,
-                  kIconSize));
+                  kDefaultIconSize));
     }
   }
 
@@ -1101,6 +1100,12 @@ void AppMenuModel::Build() {
   if (absl::optional<std::u16string> name =
           GetInstallPWAAppMenuItemName(browser_)) {
     AddItem(IDC_INSTALL_PWA, *name);
+    if (features::IsChromeRefresh2023()) {
+      SetIcon(
+          GetIndexOfCommandId(IDC_INSTALL_PWA).value(),
+          ui::ImageModel::FromVectorIcon(kInstallDesktopChromeRefreshIcon,
+                                         ui::kColorMenuIcon, kDefaultIconSize));
+    }
   } else if (absl::optional<web_app::AppId> app_id =
                  web_app::GetWebAppForActiveTab(browser_)) {
     auto* provider =
@@ -1115,6 +1120,11 @@ void AppMenuModel::Build() {
       AddItem(
           IDC_OPEN_IN_PWA_WINDOW,
           l10n_util::GetStringFUTF16(IDS_OPEN_IN_APP_WINDOW, truncated_name));
+      if (features::IsChromeRefresh2023()) {
+        SetIcon(GetIndexOfCommandId(IDC_OPEN_IN_PWA_WINDOW).value(),
+                ui::ImageModel::FromVectorIcon(
+                    kDesktopWindowsIcon, ui::kColorMenuIcon, kDefaultIconSize));
+      }
     }
   }
 
