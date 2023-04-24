@@ -337,14 +337,7 @@
   {
     "prefix": "composite-clip-path-animation",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/css/css-masking/clip-path/animations",
-              "animations/responsive/interpolation/clip-path-responsive.html",
-              "css3/masking/clip-path-animation.html",
-              "fast/css/clip-path-crash.html",
-              "http/tests/devtools/animation/animation-timeline.js",
-              "http/tests/devtools/animation/animation-web-anim-negative-start-time.js",
-              "paint/invalidation/svg/invalid-clip-path-crash.html",
-              "transitions/webkit-clip-path-equality.html"],
+    "bases": ["external/wpt/css/css-masking/clip-path/animations"],
     "args": ["--enable-blink-features=CompositeClipPathAnimation",
              "--enable-threaded-compositing"],
     "expires": "Jul 1, 2023"
