@@ -362,8 +362,9 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
   if (!IsDisabledFormControl()) {
     auto popover = popoverTargetElement();
     if (popover.popover) {
+      auto& document = GetDocument();
       DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-          GetDocument().GetExecutionContext()));
+          document.GetExecutionContext()));
       auto trigger_support = SupportsPopoverTriggering();
       DCHECK_NE(popover.action, PopoverTriggerAction::kNone);
       DCHECK_NE(trigger_support, PopoverTriggerSupport::kNone);
@@ -378,16 +379,18 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
       // not a triggering element, then the light dismiss code will hide the
       // popover and set focus to the previously focused element, then the
       // normal focus management code will reset focus to the clicked control.
-      bool can_show =
-          popover.popover->IsPopoverReady(PopoverTriggerAction::kShow,
-                                          /*exception_state=*/nullptr) &&
-          (popover.action == PopoverTriggerAction::kToggle ||
-           popover.action == PopoverTriggerAction::kShow);
-      bool can_hide =
-          popover.popover->IsPopoverReady(PopoverTriggerAction::kHide,
-                                          /*exception_state=*/nullptr) &&
-          (popover.action == PopoverTriggerAction::kToggle ||
-           popover.action == PopoverTriggerAction::kHide);
+      bool can_show = popover.popover->IsPopoverReady(
+                          PopoverTriggerAction::kShow,
+                          /*exception_state=*/nullptr,
+                          /*include_event_handler_text=*/true, &document) &&
+                      (popover.action == PopoverTriggerAction::kToggle ||
+                       popover.action == PopoverTriggerAction::kShow);
+      bool can_hide = popover.popover->IsPopoverReady(
+                          PopoverTriggerAction::kHide,
+                          /*exception_state=*/nullptr,
+                          /*include_event_handler_text=*/true, &document) &&
+                      (popover.action == PopoverTriggerAction::kToggle ||
+                       popover.action == PopoverTriggerAction::kHide);
       if (event.type() == event_type_names::kDOMActivate &&
           (!Form() || !IsSuccessfulSubmitButton())) {
         if (can_hide) {

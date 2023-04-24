@@ -1428,7 +1428,9 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   if (GetPopoverData()) {
     GetPopoverData()->setInvoker(invoker);
   }
-  if (!IsPopoverReady(PopoverTriggerAction::kShow, exception_state)) {
+  if (!IsPopoverReady(PopoverTriggerAction::kShow, exception_state,
+                      /*include_event_handler_text=*/false,
+                      &original_document)) {
     DCHECK(exception_state)
         << " Callers which aren't supposed to throw exceptions should not call "
            "ShowPopoverInternal when the Popover isn't in a valid state to be "
@@ -1683,11 +1685,12 @@ void HTMLElement::HidePopoverInternal(
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
 
-  if (!IsPopoverReady(PopoverTriggerAction::kHide, exception_state)) {
+  auto& document = GetDocument();
+  if (!IsPopoverReady(PopoverTriggerAction::kHide, exception_state,
+                      /*include_event_handler_text=*/true, &document)) {
     return;
   }
 
-  auto& document = GetDocument();
   if (PopoverType() == PopoverValueType::kAuto ||
       PopoverType() == PopoverValueType::kHint) {
     auto& stack = document.PopoverStack();
@@ -1698,29 +1701,13 @@ void HTMLElement::HidePopoverInternal(
       // The 'beforetoggle' event handlers could have changed this popover, e.g.
       // by changing its type, removing it from the document, or calling
       // hidePopover().
-      if (!stack.Contains(this) && this != document.PopoverHintShowing()) {
-        if (exception_state) {
-          exception_state->ThrowDOMException(
-              DOMExceptionCode::kInvalidStateError,
-              "This popover's \"beforetoggle\" event handler caused it to be "
-              "hidden (e.g. by calling hidePopover()).");
-        }
+      if (!IsPopoverReady(PopoverTriggerAction::kHide, exception_state,
+                          /*include_event_handler_text=*/true, &document)) {
         return;
       }
     } while (PopoverType() == PopoverValueType::kAuto
                  ? (!stack.empty() && stack.back() != this)
                  : (document.TopmostPopoverOrHint() != this));
-
-    // Then remove this popover from the stack.
-    if (PopoverType() == PopoverValueType::kAuto) {
-      DCHECK(!stack.empty());
-      DCHECK_EQ(stack.back(), this);
-      stack.pop_back();
-    } else {
-      DCHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
-      DCHECK_EQ(document.TopmostPopoverOrHint(), this);
-      document.SetPopoverHintShowing(nullptr);
-    }
   }
 
   MarkPopoverInvokersDirty(*this);
@@ -1745,7 +1732,7 @@ void HTMLElement::HidePopoverInternal(
     // changing its type, removing it from the document, or calling
     // showPopover().
     if (!IsPopoverReady(PopoverTriggerAction::kHide, exception_state,
-                        /*include_event_handler_text=*/true)) {
+                        /*include_event_handler_text=*/true, &document)) {
       return;
     }
 
@@ -1770,7 +1757,7 @@ void HTMLElement::HidePopoverInternal(
     DCHECK(!after_event->cancelable());
     after_event->SetTarget(this);
     GetPopoverData()->setPendingToggleEventTask(PostCancellableTask(
-        *GetDocument().GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
+        *document.GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
         WTF::BindOnce(
             [](HTMLElement* element, ToggleEvent* event) {
               DCHECK(element);
@@ -1779,9 +1766,21 @@ void HTMLElement::HidePopoverInternal(
             },
             WrapPersistent(this), WrapPersistent(after_event))));
 
-    GetDocument().ScheduleForTopLayerRemoval(this);
+    document.ScheduleForTopLayerRemoval(this);
   } else {
-    GetDocument().RemoveFromTopLayerImmediately(this);
+    document.RemoveFromTopLayerImmediately(this);
+  }
+
+  // Remove this popover from the stack.
+  if (PopoverType() == PopoverValueType::kAuto) {
+    auto& stack = document.PopoverStack();
+    DCHECK(!stack.empty());
+    DCHECK_EQ(stack.back(), this);
+    stack.pop_back();
+  } else if (PopoverType() == PopoverValueType::kHint) {
+    DCHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
+    DCHECK_EQ(document.TopmostPopoverOrHint(), this);
+    document.SetPopoverHintShowing(nullptr);
   }
 
   // Re-apply display:none, and stop matching `:popover-open`.
@@ -1793,7 +1792,7 @@ void HTMLElement::HidePopoverInternal(
   if (previously_focused_element) {
     GetPopoverData()->setPreviouslyFocusedElement(nullptr);
     if (focus_behavior == HidePopoverFocusBehavior::kFocusPreviousElement &&
-        contains(GetDocument().AdjustedFocusedElement())) {
+        contains(document.AdjustedFocusedElement())) {
       FocusOptions* focus_options = FocusOptions::Create();
       focus_options->setPreventScroll(true);
       previously_focused_element->Focus(FocusParams(

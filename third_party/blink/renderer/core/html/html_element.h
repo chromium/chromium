@@ -233,8 +233,8 @@ class CORE_EXPORT HTMLElement : public Element {
   // do not match.
   bool IsPopoverReady(PopoverTriggerAction action,
                       ExceptionState* exception_state,
-                      bool include_event_handler_text = false,
-                      Document* expected_document = nullptr) const;
+                      bool include_event_handler_text,
+                      Document* expected_document) const;
   void togglePopover(ExceptionState& exception_state);
   void togglePopover(bool force, ExceptionState& exception_state);
   void showPopover(ExceptionState& exception_state);
