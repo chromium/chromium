@@ -2006,7 +2006,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_SETTINGS_ALERT_TITLE" desc="Title for Price Notifications UI Alert Prompt displayed from the settings menu that redirects the user to the iOS push notifications permission page.">
           Turn on Price Alerts?
       </message>
-      <message name="IDS_IOS_PRICE_NOTIFICATIONS_TITLE" desc="Title for Price Notifications settings menu.">
+      <message name="IDS_IOS_NOTIFICATIONS_TITLE" desc="Title for Notifications settings menu.">
         Notifications
       </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_OVERFLOW_MENU_TITLE" desc="Title for Price Tracking Notifications overflow menu destination title.">

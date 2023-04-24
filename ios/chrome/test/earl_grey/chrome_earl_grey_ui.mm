@@ -342,8 +342,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
       grey_allOf(buttonMatcher, grey_interactable(), nil);
   [[[EarlGrey selectElementWithMatcher:interactableButtonMatcher]
          usingSearchAction:ScrollDown()
-      onElementWithMatcher:chrome_test_util::
-                               SettingsPriceNotificationsTableView()]
+      onElementWithMatcher:chrome_test_util::SettingsNotificationsTableView()]
       performAction:grey_tap()];
 }
 

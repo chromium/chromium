@@ -1,0 +1,99 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("notifications") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "notifications_coordinator.h",
+    "notifications_coordinator.mm",
+    "notifications_mediator.h",
+    "notifications_mediator.mm",
+  ]
+  deps = [
+    ":constants",
+    ":notifications_ui",
+    ":utils",
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/push_notification:push_notification_client",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui/settings/notifications/tracking_price",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
+  ]
+}
+
+source_set("notifications_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "notifications_consumer.h",
+    "notifications_navigation_commands.h",
+    "notifications_view_controller.h",
+    "notifications_view_controller.mm",
+    "notifications_view_controller_delegate.h",
+  ]
+  deps = [
+    ":constants",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ui/base",
+  ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "notifications_constants.h",
+    "notifications_constants.mm",
+  ]
+}
+
+source_set("utils") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "notifications_settings_observer.h",
+    "notifications_settings_observer.mm",
+    "notifications_settings_util.h",
+    "notifications_settings_util.mm",
+  ]
+  deps = [
+    "//components/commerce/core:pref_names",
+    "//components/prefs",
+    "//components/prefs/ios:ios",
+    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/push_notification:push_notification_client",
+    "//ios/chrome/browser/push_notification:push_notification_service",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "notifications_egtest.mm" ]
+  deps = [
+    ":constants",
+    "//base",
+    "//base/test:test_support",
+    "//components/commerce/core:feature_list",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

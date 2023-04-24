@@ -47,10 +47,10 @@
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/import_data_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/notifications/notifications_constants.h"
+#import "ios/chrome/browser/ui/settings/notifications/tracking_price/tracking_price_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
-#import "ios/chrome/browser/ui/settings/price_notifications/price_notifications_constants.h"
-#import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_constants.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_constants.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_ui_swift.h"
@@ -618,8 +618,8 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kPrivacySafeBrowsingTableViewId);
 }
 
-+ (id<GREYMatcher>)settingsPriceNotificationsTableView {
-  return grey_accessibilityID(kPriceNotificationsTableViewId);
++ (id<GREYMatcher>)settingsNotificationsTableView {
+  return grey_accessibilityID(kNotificationsTableViewId);
 }
 
 + (id<GREYMatcher>)settingsTrackingPriceTableView {
@@ -678,9 +678,9 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       buttonWithAccessibilityLabelID:(IDS_IOS_SETTINGS_PRIVACY_TITLE)];
 }
 
-+ (id<GREYMatcher>)settingsMenuPriceNotificationsButton {
++ (id<GREYMatcher>)settingsMenuNotificationsButton {
   return [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:(IDS_IOS_PRICE_NOTIFICATIONS_TITLE)];
+      buttonWithAccessibilityLabelID:(IDS_IOS_NOTIFICATIONS_TITLE)];
 }
 
 + (id<GREYMatcher>)settingsMenuPasswordsButton {

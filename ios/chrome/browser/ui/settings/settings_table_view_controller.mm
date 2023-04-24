@@ -100,11 +100,11 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/notifications/notifications_coordinator.h"
+#import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
+#import "ios/chrome/browser/ui/settings/notifications/notifications_settings_util.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
-#import "ios/chrome/browser/ui/settings/price_notifications/notifications_settings_observer.h"
-#import "ios/chrome/browser/ui/settings/price_notifications/notifications_settings_util.h"
-#import "ios/chrome/browser/ui/settings/price_notifications/price_notifications_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_coordinator.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_coordinator.h"
@@ -166,7 +166,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     PasswordsCoordinatorDelegate,
     PopoverLabelViewControllerDelegate,
     PrefObserverDelegate,
-    PriceNotificationsCoordinatorDelegate,
+    NotificationsCoordinatorDelegate,
     PrivacyCoordinatorDelegate,
     SafetyCheckCoordinatorDelegate,
     SettingsControllerProtocol,
@@ -214,8 +214,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   GoogleServicesSettingsCoordinator* _googleServicesSettingsCoordinator;
   ManageSyncSettingsCoordinator* _manageSyncSettingsCoordinator;
 
-  // Price notifications coordinator.
-  PriceNotificationsCoordinator* _priceNotificationsCoordinator;
+  // notifications coordinator.
+  NotificationsCoordinator* _notificationsCoordinator;
 
   // Privacy coordinator.
   PrivacyCoordinator* _privacyCoordinator;
@@ -247,7 +247,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   TableViewDetailIconItem* _passwordsDetailItem;
   TableViewDetailIconItem* _autoFillProfileDetailItem;
   TableViewDetailIconItem* _autoFillCreditCardDetailItem;
-  TableViewDetailIconItem* _priceNotificationsItem;
+  TableViewDetailIconItem* _notificationsItem;
   TableViewItem* _syncItem;
 
   // Whether Settings have been dismissed.
@@ -464,9 +464,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [model addSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   if (base::FeatureList::IsEnabled(kNotificationSettingsMenuItem) &&
       IsPriceNotificationsEnabled()) {
-    _priceNotificationsItem = [self priceNotificationsItem];
+    _notificationsItem = [self notificationsItem];
     [self updateNotificationsDetailText];
-    [model addItem:_priceNotificationsItem
+    [model addItem:_notificationsItem
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   }
   [model addItem:[self voiceSearchDetailItem]
@@ -955,14 +955,14 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   return _safetyCheckItem;
 }
 
-- (TableViewDetailIconItem*)priceNotificationsItem {
-  NSString* title = l10n_util::GetNSString(IDS_IOS_PRICE_NOTIFICATIONS_TITLE);
-  return [self detailItemWithType:SettingsItemTypePriceNotifications
+- (TableViewDetailIconItem*)notificationsItem {
+  NSString* title = l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_TITLE);
+  return [self detailItemWithType:SettingsItemTypeNotifications
                              text:title
                        detailText:nil
                            symbol:DefaultSettingsRootSymbol(kBellSymbol)
             symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
-          accessibilityIdentifier:kSettingsPriceNotificationsId];
+          accessibilityIdentifier:kSettingsNotificationsId];
 }
 
 - (TableViewItem*)privacyDetailItem {
@@ -1377,9 +1377,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       controller =
           [[AutofillProfileTableViewController alloc] initWithBrowser:_browser];
       break;
-    case SettingsItemTypePriceNotifications:
+    case SettingsItemTypeNotifications:
       DCHECK(IsPriceNotificationsEnabled());
-      [self showPriceNotifications];
+      [self showNotifications];
       break;
     case SettingsItemTypeVoiceSearch:
       base::RecordAction(base::UserMetricsAction("Settings.VoiceSearch"));
@@ -1661,15 +1661,15 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [self reconfigureCellsForItems:@[ _safetyCheckItem ]];
 }
 
-// Shows Price Notifications screen.
-- (void)showPriceNotifications {
-  DCHECK(!_priceNotificationsCoordinator);
+// Shows Notifications screen.
+- (void)showNotifications {
+  DCHECK(!_notificationsCoordinator);
   DCHECK(self.navigationController);
-  _priceNotificationsCoordinator = [[PriceNotificationsCoordinator alloc]
+  _notificationsCoordinator = [[NotificationsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];
-  _priceNotificationsCoordinator.delegate = self;
-  [_priceNotificationsCoordinator start];
+  _notificationsCoordinator.delegate = self;
+  [_notificationsCoordinator start];
 }
 
 // Shows Privacy screen.
@@ -1879,7 +1879,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 // Updates the string indicating the push notification state.
 - (void)updateNotificationsDetailText {
-  if (!_priceNotificationsItem) {
+  if (!_notificationsItem) {
     return;
   }
 
@@ -1901,8 +1901,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     detailText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
   }
 
-  _priceNotificationsItem.detailText = detailText;
-  [self reconfigureCellsForItems:@[ _priceNotificationsItem ]];
+  _notificationsItem.detailText = detailText;
+  [self reconfigureCellsForItems:@[ _notificationsItem ]];
 }
 
 #pragma mark - SigninPresenter
@@ -1974,8 +1974,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   _passwordsCoordinator.delegate = nil;
   _passwordsCoordinator = nil;
 
-  [_priceNotificationsCoordinator stop];
-  _priceNotificationsCoordinator = nil;
+  [_notificationsCoordinator stop];
+  _notificationsCoordinator = nil;
 
   [_privacyCoordinator stop];
   _privacyCoordinator = nil;
@@ -2275,13 +2275,13 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   _passwordsCoordinator = nil;
 }
 
-#pragma mark - PriceNotificationsDelegate
+#pragma mark - NotificationsDelegate
 
-- (void)priceNotificationsCoordinatorDidRemove:
-    (PriceNotificationsCoordinator*)coordinator {
-  DCHECK_EQ(_priceNotificationsCoordinator, coordinator);
-  [_priceNotificationsCoordinator stop];
-  _priceNotificationsCoordinator = nil;
+- (void)notificationsCoordinatorDidRemove:
+    (NotificationsCoordinator*)coordinator {
+  DCHECK_EQ(_notificationsCoordinator, coordinator);
+  [_notificationsCoordinator stop];
+  _notificationsCoordinator = nil;
 }
 
 #pragma mark - PrivacyCoordinatorDelegate
