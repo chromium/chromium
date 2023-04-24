@@ -34,17 +34,29 @@ BASE_FEATURE(kCrOSTuneExtraFree,
 const base::FeatureParam<int> kCrOSExtraFreeMb{&kCrOSTuneExtraFree,
                                                "CrOSExtraFreeMb", -1};
 
-BASE_FEATURE(kCrOSMemoryPressureSignalStudy,
-             "ChromeOSMemoryPressureSignalStudy",
+// There are going to be 2 separate experiments for memory pressure signal, one
+// for ARC enabled users and one for ARC disabled users.
+BASE_FEATURE(kCrOSMemoryPressureSignalStudyNonArc,
+             "ChromeOSMemoryPressureSignalStudyNonArc",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<int>
-    kCrOSMemoryPressureSignalStudyCriticalThresholdPrecentageBps{
-        &kCrOSMemoryPressureSignalStudy, "critical_threshold_percentage", 520};
+const base::FeatureParam<int> kCrOSMemoryPressureSignalStudyNonArcCriticalBps{
+    &kCrOSMemoryPressureSignalStudyNonArc, "critical_threshold_percentage",
+    520};
 
-const base::FeatureParam<int>
-    kCrOSMemoryPressureSignalStudyModerateThresholdPrecentageBps{
-        &kCrOSMemoryPressureSignalStudy, "moderate_threshold_percentage", 4000};
+const base::FeatureParam<int> kCrOSMemoryPressureSignalStudyNonArcModerateBps{
+    &kCrOSMemoryPressureSignalStudyNonArc, "moderate_threshold_percentage",
+    4000};
+
+BASE_FEATURE(kCrOSMemoryPressureSignalStudyArc,
+             "ChromeOSMemoryPressureSignalStudyArc",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kCrOSMemoryPressureSignalStudyArcCriticalBps{
+    &kCrOSMemoryPressureSignalStudyArc, "critical_threshold_percentage", 520};
+
+const base::FeatureParam<int> kCrOSMemoryPressureSignalStudyArcModerateBps{
+    &kCrOSMemoryPressureSignalStudyArc, "moderate_threshold_percentage", 4000};
 
 BASE_FEATURE(kCrOSEnableZramWriteback,
              "ChromeOSZramWriteback",
@@ -178,19 +190,33 @@ void OnMemoryMarginsSet(bool result, uint64_t critical, uint64_t moderate) {
                << "KB and " << moderate << "KB";
 }
 
-void ConfigureResourcedPressureThreshold() {
+void ConfigureResourcedPressureThreshold(bool arc_enabled) {
   if (!ResourcedClient::Get()) {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kCrOSMemoryPressureSignalStudy)) {
+  bool experiment_enabled = false;
+  int critical_bps = 0;
+  int moderate_bps = 0;
+  if (arc_enabled) {
+    experiment_enabled =
+        base::FeatureList::IsEnabled(kCrOSMemoryPressureSignalStudyArc);
+    if (experiment_enabled) {
+      critical_bps = kCrOSMemoryPressureSignalStudyArcCriticalBps.Get();
+      moderate_bps = kCrOSMemoryPressureSignalStudyArcModerateBps.Get();
+    }
+  } else {
+    experiment_enabled =
+        base::FeatureList::IsEnabled(kCrOSMemoryPressureSignalStudyNonArc);
+    if (experiment_enabled) {
+      critical_bps = kCrOSMemoryPressureSignalStudyNonArcCriticalBps.Get();
+      moderate_bps = kCrOSMemoryPressureSignalStudyNonArcModerateBps.Get();
+    }
+  }
+
+  if (experiment_enabled) {
     // We need to send a debus message to resourced with the critical threshold
     // value (in bps).
-    int critical_bps =
-        kCrOSMemoryPressureSignalStudyCriticalThresholdPrecentageBps.Get();
-    int moderate_bps =
-        kCrOSMemoryPressureSignalStudyModerateThresholdPrecentageBps.Get();
-
     if (critical_bps < 520 || critical_bps > 2500 || moderate_bps > 7500 ||
         moderate_bps < 2000 || critical_bps >= moderate_bps) {
       // To avoid a potentially catastrophic misconfiguration we
@@ -211,8 +237,8 @@ void ConfigureResourcedPressureThreshold() {
 
 }  // namespace
 
-void ConfigureSwap() {
-  ConfigureResourcedPressureThreshold();
+void ConfigureSwap(bool arc_enabled) {
+  ConfigureResourcedPressureThreshold(arc_enabled);
   ConfigureExtraFreeIfEnabled();
   ConfigureRamVsSwapWeightIfEnabled();
   ConfigureMinFilelistIfEnabled();

@@ -21,8 +21,8 @@
 
 namespace ash {
 
-COMPONENT_EXPORT(ASH_MEMORY) void UpdateMemoryParameters() {
-  ConfigureSwap();
+COMPONENT_EXPORT(ASH_MEMORY) void UpdateMemoryParameters(bool arc_enabled) {
+  ConfigureSwap(arc_enabled);
 }
 
 namespace memory {

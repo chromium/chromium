@@ -148,6 +148,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
 #include "base/system/sys_info.h"
@@ -926,7 +927,7 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
 
   if (is_browser_process) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    ash::ConfigureSwap();
+    ash::ConfigureSwap(arc::IsArcAvailable());
     ash::InitializeKstaled();
 #endif
   }

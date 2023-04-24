@@ -17,6 +17,8 @@ class Bus;
 
 namespace ash {
 
+class FakeResourcedClient;
+
 // ResourcedClient is used to communicate with the org.chromium.ResourceManager
 // service. The browser uses the ResourceManager service to get resource usage
 // status.
@@ -78,7 +80,8 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
   static void Initialize(dbus::Bus* bus);
 
   // Creates and initializes a fake global instance if not already created.
-  static void InitializeFake();
+  // The newly created object will persist until Shutdown() is called.
+  static FakeResourcedClient* InitializeFake();
 
   // Destroys the global instance.
   static void Shutdown();

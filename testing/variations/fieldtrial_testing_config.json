@@ -2820,19 +2820,37 @@
             ]
         }
     ],
-    "ChromeOSMemoryPressureSignalStudy": [
+    "ChromeOSMemoryPressureSignalStudyArc": [
         {
             "platforms": [
                 "chromeos"
             ],
             "experiments": [
                 {
-                    "name": "Enabled12_20220512",
+                    "name": "Enabled8_20230420",
                     "params": {
-                        "critical_threshold_percentage": "1200"
+                        "critical_threshold_percentage": "800"
                     },
                     "enable_features": [
-                        "ChromeOSMemoryPressureSignalStudy"
+                        "ChromeOSMemoryPressureSignalStudyArc"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeOSMemoryPressureSignalStudyNonArc": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled15_20230420",
+                    "params": {
+                        "critical_threshold_percentage": "1500"
+                    },
+                    "enable_features": [
+                        "ChromeOSMemoryPressureSignalStudyNonArc"
                     ]
                 }
             ]

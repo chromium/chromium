@@ -322,8 +322,8 @@ void ResourcedClient::Initialize(dbus::Bus* bus) {
 }
 
 // static
-void ResourcedClient::InitializeFake() {
-  new FakeResourcedClient();
+FakeResourcedClient* ResourcedClient::InitializeFake() {
+  return new FakeResourcedClient();
 }
 
 // static

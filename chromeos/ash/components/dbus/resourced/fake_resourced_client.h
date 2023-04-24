@@ -46,6 +46,9 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
 
   int get_exit_game_mode_count() const { return exit_game_mode_count_; }
 
+  uint32_t get_critical_margin_bps() const { return critical_margin_bps_; }
+  uint32_t get_moderate_margin_bps() const { return moderate_margin_bps_; }
+
   void AddObserver(Observer* observer) override;
 
   void RemoveObserver(Observer* observer) override;
