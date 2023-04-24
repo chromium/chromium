@@ -412,8 +412,8 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
   context.vtt_originating_element = match_request.VTTOriginatingElement();
   context.style_scope_frame =
       &style_scope_frame.GetParentFrameOrThis(context_.GetElement());
-  context.is_initial = !style_recalc_context_.is_ensuring_style &&
-                       !style_recalc_context_.old_style;
+  bool is_initial = !style_recalc_context_.is_ensuring_style &&
+                    !style_recalc_context_.old_style;
 
   CascadeLayerSeeker layer_seeker(
       context.scope, context.vtt_originating_element, style_sheet, rule_set);
@@ -434,7 +434,7 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
       selector_statistics_collector.EndCollectionForCurrentRule();
       selector_statistics_collector.BeginCollectionForRule(&rule_data);
     }
-    if (!context.is_initial && rule_data.IsInitial()) {
+    if (!is_initial && rule_data.IsInitial()) {
       continue;
     }
     if (can_use_fast_reject_ &&

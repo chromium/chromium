@@ -3054,7 +3054,7 @@ scoped_refptr<const ComputedStyle> Element::StyleForLayoutObject(
     return nullptr;
   }
   if (style->IsPseudoInitialStyle()) {
-    // :initial pseudo styles matched. We need to compute the style a second
+    // @initial pseudo styles matched. We need to compute the style a second
     // time to compute the actual style and trigger transitions using the
     // starting from the :initial style.
     new_style_recalc_context.old_style =

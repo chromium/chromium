@@ -1873,14 +1873,6 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       // Only kept around for parsing; can never match anything
       // (because we don't know what it's supposed to mean).
       return false;
-    case CSSSelector::kPseudoInitial: {
-      if (!context.is_initial || !context.in_rightmost_compound ||
-          context.in_nested_complex_selector) {
-        return false;
-      }
-      result.SetFlag(MatchFlag::kAffectedByInitial);
-      return true;
-    }
     case CSSSelector::kPseudoTrue:
       return true;
     case CSSSelector::kPseudoUnknown:
