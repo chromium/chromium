@@ -54,6 +54,7 @@ found in the LICENSE file.
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:importantForAccessibility="no"
             app:tabBackground="@drawable/tab_selector"
             app:tabGravity="center"
             app:tabIndicatorHeight="0dp"
