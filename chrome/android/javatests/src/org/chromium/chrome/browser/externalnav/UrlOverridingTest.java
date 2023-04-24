@@ -785,7 +785,7 @@ public class UrlOverridingTest {
     public void testOpenWindowFromLinkUserGesture() {
         mActivityTestRule.startMainActivityOnBlankPage();
         loadUrlAndWaitForIntentUrl(mTestServer.getURL(OPEN_WINDOW_FROM_LINK_USER_GESTURE_PAGE),
-                true, true, true, null, true, "link", PageTransition.LINK, false);
+                true, true, true, null, true);
     }
 
     @Test
