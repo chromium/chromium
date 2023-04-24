@@ -4505,11 +4505,6 @@ extern const char kHeuristicMemorySaverDescription[] =
     "discarding a tab rather than doing it after a fixed amount of time in the "
     "background.";
 
-extern const char kHighEfficiencyModeTimeBeforeDiscardName[] =
-    "Configure discard time for Memory Saver";
-extern const char kHighEfficiencyModeTimeBeforeDiscardDescription[] =
-    "When set, this controls the time before memory saver discards a tab.";
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const char kIOSPromoPasswordBubbleName[] =
     "Contextual Chrome for iOS promo in the password save/update bubble.";

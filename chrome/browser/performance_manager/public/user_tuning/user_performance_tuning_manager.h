@@ -10,7 +10,6 @@
 #include "base/power_monitor/battery_state_sampler.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/scoped_observation.h"
-#include "base/time/time.h"
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -41,9 +40,6 @@ class UserPerformanceTuningManager
   // would be `20` for 20%.
   static const uint64_t kLowBatteryThresholdPercent;
 
-  // Command line switch for setting the discard time.
-  static const char kTimeBeforeDiscardInMinutesSwitch[];
-
   class FrameThrottlingDelegate {
    public:
     virtual void StartThrottlingAllFrameSinks() = 0;
@@ -52,11 +48,10 @@ class UserPerformanceTuningManager
     virtual ~FrameThrottlingDelegate() = default;
   };
 
-  class HighEfficiencyModeDelegate {
+  class HighEfficiencyModeToggleDelegate {
    public:
     virtual void ToggleHighEfficiencyMode(bool enabled) = 0;
-    virtual void SetTimeBeforeDiscard(base::TimeDelta time_before_discard) = 0;
-    virtual ~HighEfficiencyModeDelegate() = default;
+    virtual ~HighEfficiencyModeToggleDelegate() = default;
   };
 
   class Observer : public base::CheckedObserver {
@@ -185,10 +180,6 @@ class UserPerformanceTuningManager
   // indicates that the battery state has not been sampled yet.
   int SampledBatteryPercentage() const;
 
-  // Sets the default value of the discard time pref using the command line
-  // switch, if the pref is in the default state.
-  static void SetDefaultTimeBeforeDiscardFromSwitch(PrefService* local_state);
-
   // Discards the given WebContents with the same mechanism as one that is
   // discarded through a natural timeout
   void DiscardPageForTesting(content::WebContents* web_contents);
@@ -217,13 +208,12 @@ class UserPerformanceTuningManager
       std::unique_ptr<UserPerformanceTuningNotifier> notifier = nullptr,
       std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate =
           nullptr,
-      std::unique_ptr<HighEfficiencyModeDelegate>
-          high_efficiency_mode_delegate = nullptr);
+      std::unique_ptr<HighEfficiencyModeToggleDelegate>
+          high_efficiency_mode_toggle_delegate = nullptr);
 
   void Start();
 
   void OnHighEfficiencyModePrefChanged();
-  void OnHighEfficiencyModeTimeBeforeDiscardChanged();
   void OnBatterySaverModePrefChanged();
 
   void UpdateBatterySaverModeState();
@@ -244,7 +234,8 @@ class UserPerformanceTuningManager
   bool battery_saver_mode_enabled_ = false;
   bool battery_saver_mode_disabled_for_session_ = false;
   std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate_;
-  std::unique_ptr<HighEfficiencyModeDelegate> high_efficiency_mode_delegate_;
+  std::unique_ptr<HighEfficiencyModeToggleDelegate>
+      high_efficiency_mode_toggle_delegate_;
 
   bool has_battery_ = false;
   bool force_has_battery_ = false;
@@ -259,7 +250,7 @@ class UserPerformanceTuningManager
   base::ObserverList<Observer> observers_;
 
   // Command line switch for overriding the device has battery flag.
-  static const char kForceDeviceHasBatterySwitch[];
+  static const char kForceDeviceHasBattery[];
 };
 
 }  // namespace performance_manager::user_tuning

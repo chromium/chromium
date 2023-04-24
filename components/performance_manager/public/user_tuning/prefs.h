@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_USER_TUNING_PREFS_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_USER_TUNING_PREFS_H_
 
-#include "base/timer/timer.h"
-
 class PrefRegistrySimple;
 class PrefService;
 
@@ -26,10 +24,6 @@ enum class HighEfficiencyModeState {
 };
 
 extern const char kHighEfficiencyModeState[];
-
-extern const char kHighEfficiencyModeTimeBeforeDiscardInMinutes[];
-
-extern const int kDefaultHighEfficiencyModeTimeBeforeDiscardInMinutes;
 
 enum class BatterySaverModeState {
   kDisabled = 0,
@@ -57,9 +51,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 HighEfficiencyModeState GetCurrentHighEfficiencyModeState(
-    PrefService* pref_service);
-
-base::TimeDelta GetCurrentHighEfficiencyModeTimeBeforeDiscard(
     PrefService* pref_service);
 
 BatterySaverModeState GetCurrentBatterySaverModeState(

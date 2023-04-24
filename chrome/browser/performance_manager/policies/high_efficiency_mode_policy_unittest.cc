@@ -26,7 +26,6 @@ class HighEfficiencyModeTest
         static_cast<PageNode*>(page_node())->GetBrowserContextID(), {});
 
     auto policy = std::make_unique<HighEfficiencyModePolicy>();
-    policy->SetTimeBeforeDiscard(base::Hours(2));
     policy_ = policy.get();
     graph()->PassToGraph(std::move(policy));
   }
@@ -80,7 +79,8 @@ TEST_F(HighEfficiencyModeTest, DiscardAfterBackgrounded) {
       .WillOnce(::testing::Return(true));
   page_node()->SetIsVisible(false);
 
-  task_env().FastForwardBy(policy()->GetTimeBeforeDiscardForTesting());
+  task_env().FastForwardBy(
+      HighEfficiencyModePolicy::kDefaultDiscardTimeInterval);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
@@ -109,27 +109,6 @@ TEST_F(HighEfficiencyModeTest, DontDiscardIfPlayingAudio) {
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(HighEfficiencyModeTest, TimeBeforeDiscardChangedBeforeHighEfficiencyOn) {
-  base::TimeDelta original_time_before_discard =
-      policy()->GetTimeBeforeDiscardForTesting();
-  policy()->SetTimeBeforeDiscard(original_time_before_discard +
-                                 base::Seconds(10));
-
-  page_node()->SetType(PageType::kTab);
-  page_node()->SetIsVisible(true);
-  page_node()->SetIsVisible(false);
-  policy()->OnHighEfficiencyModeChanged(true);
-
-  task_env().FastForwardBy(original_time_before_discard);
-  ::testing::Mock::VerifyAndClearExpectations(discarder());
-
-  EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
-      .WillOnce(::testing::Return(true));
-
-  task_env().FastForwardBy(base::Seconds(10));
-  ::testing::Mock::VerifyAndClearExpectations(discarder());
-}
-
 TEST_F(HighEfficiencyModeTest, DiscardIfAlreadyNotVisibleWhenModeEnabled) {
   page_node()->SetType(PageType::kTab);
   page_node()->SetIsVisible(true);
@@ -141,8 +120,9 @@ TEST_F(HighEfficiencyModeTest, DiscardIfAlreadyNotVisibleWhenModeEnabled) {
 
   // Advance time by the usual discard interval, minus 10 seconds. This means
   // that the page will be discarded 10 seconds after the mode is changed.
-  task_env().FastForwardBy(policy()->GetTimeBeforeDiscardForTesting() -
-                           base::Seconds(10));
+  task_env().FastForwardBy(
+      HighEfficiencyModePolicy::kDefaultDiscardTimeInterval -
+      base::Seconds(10));
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 
   policy()->OnHighEfficiencyModeChanged(true);
@@ -195,7 +175,8 @@ TEST_F(HighEfficiencyModeTest, PageNodeDiscardedIfTypeChanges) {
       .WillOnce(::testing::Return(true));
   page_node->SetIsVisible(false);
 
-  task_env().FastForwardBy(policy()->GetTimeBeforeDiscardForTesting());
+  task_env().FastForwardBy(
+      HighEfficiencyModePolicy::kDefaultDiscardTimeInterval);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 

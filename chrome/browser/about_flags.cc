@@ -47,7 +47,6 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/notifications/scheduler/public/features.h"
 #include "chrome/browser/page_info/page_info_features.h"
-#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/permissions/notifications_permission_revocation_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
@@ -3301,42 +3300,6 @@ const FeatureEntry::FeatureVariation kHeuristicMemorySaverVariations[] = {
      std::size(kHeuristicMemorySaverBalanced), nullptr},
     {"Conservative", kHeuristicMemorySaverConservative,
      std::size(kHeuristicMemorySaverConservative), nullptr},
-};
-
-const FeatureEntry::Choice kHighEfficiencyModeTimeBeforeDiscardChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {"1 Minute Discard",
-     performance_manager::user_tuning::UserPerformanceTuningManager::
-         kTimeBeforeDiscardInMinutesSwitch,
-     "1"},
-    {"5 Minute Discard",
-     performance_manager::user_tuning::UserPerformanceTuningManager::
-         kTimeBeforeDiscardInMinutesSwitch,
-     "5"},
-    {"15 Minute Discard",
-     performance_manager::user_tuning::UserPerformanceTuningManager::
-         kTimeBeforeDiscardInMinutesSwitch,
-     "15"},
-    {"30 Minute Discard",
-     performance_manager::user_tuning::UserPerformanceTuningManager::
-         kTimeBeforeDiscardInMinutesSwitch,
-     "30"},
-    {"1 Hour Discard",
-     performance_manager::user_tuning::UserPerformanceTuningManager::
-         kTimeBeforeDiscardInMinutesSwitch,
-     "60"},
-    {"4 Hour Discard",
-     performance_manager::user_tuning::UserPerformanceTuningManager::
-         kTimeBeforeDiscardInMinutesSwitch,
-     "240"},
-    {"6 Hour Discard",
-     performance_manager::user_tuning::UserPerformanceTuningManager::
-         kTimeBeforeDiscardInMinutesSwitch,
-     "360"},
-    {"12 Hour Discard",
-     performance_manager::user_tuning::UserPerformanceTuningManager::
-         kTimeBeforeDiscardInMinutesSwitch,
-     "720"},
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -9652,10 +9615,6 @@ const FeatureEntry kFeatureEntries[] = {
          performance_manager::features::kHeuristicMemorySaver,
          kHeuristicMemorySaverVariations,
          "HeuristicMemorySaver")},
-    {"high-efficiency-mode-time-before-discard",
-     flag_descriptions::kHighEfficiencyModeTimeBeforeDiscardName,
-     flag_descriptions::kHighEfficiencyModeTimeBeforeDiscardDescription,
-     kOsDesktop, MULTI_VALUE_TYPE(kHighEfficiencyModeTimeBeforeDiscardChoices)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

@@ -16,8 +16,11 @@ HighEfficiencyModePolicy* g_high_efficiency_mode_policy = nullptr;
 
 }
 
+const base::TimeDelta HighEfficiencyModePolicy::kDefaultDiscardTimeInterval =
+    base::Hours(2);
+
 HighEfficiencyModePolicy::HighEfficiencyModePolicy()
-    : time_before_discard_(base::TimeDelta::Max()) {
+    : time_before_discard_(kDefaultDiscardTimeInterval) {
   DCHECK(!g_high_efficiency_mode_policy);
   g_high_efficiency_mode_policy = this;
 }
@@ -114,19 +117,6 @@ void HighEfficiencyModePolicy::OnHighEfficiencyModeChanged(bool enabled) {
   }
 }
 
-base::TimeDelta HighEfficiencyModePolicy::GetTimeBeforeDiscardForTesting()
-    const {
-  return time_before_discard_;
-}
-
-void HighEfficiencyModePolicy::SetTimeBeforeDiscard(
-    base::TimeDelta time_before_discard) {
-  CHECK(active_discard_timers_.empty());
-  // TODO(charlesmeng): Update existing discard timers when time_before_discard_
-  // is changed.
-  time_before_discard_ = time_before_discard;
-}
-
 bool HighEfficiencyModePolicy::IsHighEfficiencyDiscardingEnabled() const {
   return high_efficiency_mode_enabled_;
 }
@@ -138,7 +128,6 @@ void HighEfficiencyModePolicy::StartDiscardTimerIfEnabled(
   if (IsHighEfficiencyDiscardingEnabled()) {
     // High Efficiency mode is enabled, so the tab should be discarded after the
     // amount of time specified by finch is elapsed.
-    CHECK_NE(time_before_discard_, base::TimeDelta::Max());
     active_discard_timers_[page_node].Start(
         FROM_HERE, time_before_discard,
         base::BindOnce(&HighEfficiencyModePolicy::DiscardPageTimerCallback,

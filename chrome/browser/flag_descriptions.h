@@ -2577,9 +2577,6 @@ extern const char kHighEfficiencyModeAvailableDescription[];
 extern const char kHeuristicMemorySaverName[];
 extern const char kHeuristicMemorySaverDescription[];
 
-extern const char kHighEfficiencyModeTimeBeforeDiscardName[];
-extern const char kHighEfficiencyModeTimeBeforeDiscardDescription[];
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const char kIOSPromoPasswordBubbleName[];
 extern const char kIOSPromoPasswordBubbleDecription[];

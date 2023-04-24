@@ -17,12 +17,12 @@
 
 #include "base/logging.h"
 
-class FakeHighEfficiencyModeDelegate
+class FakeHighEfficiencyModeToggleDelegate
     : public performance_manager::user_tuning::UserPerformanceTuningManager::
-          HighEfficiencyModeDelegate {
+          HighEfficiencyModeToggleDelegate {
  public:
   void ToggleHighEfficiencyMode(bool enabled) override {}
-  ~FakeHighEfficiencyModeDelegate() override = default;
+  ~FakeHighEfficiencyModeToggleDelegate() override = default;
 };
 
 class PerformanceManagerMetricsProviderTest : public testing::Test {

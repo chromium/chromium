@@ -20,6 +20,10 @@ namespace performance_manager::policies {
 class HighEfficiencyModePolicy : public GraphOwned,
                                  public PageNode::ObserverDefaultImpl {
  public:
+  // The default amount of time a tab must spend in the background before it's
+  // discarded by Memory Saver.
+  static const base::TimeDelta kDefaultDiscardTimeInterval;
+
   HighEfficiencyModePolicy();
   ~HighEfficiencyModePolicy() override;
 
@@ -37,8 +41,6 @@ class HighEfficiencyModePolicy : public GraphOwned,
   void OnTakenFromGraph(Graph* graph) override;
 
   void OnHighEfficiencyModeChanged(bool enabled);
-  base::TimeDelta GetTimeBeforeDiscardForTesting() const;
-  void SetTimeBeforeDiscard(base::TimeDelta time_before_discard);
 
   // Returns true if High Efficiency mode is enabled, false otherwise. Useful to
   // get the state of the mode from the Performance Manager sequence.
@@ -53,7 +55,7 @@ class HighEfficiencyModePolicy : public GraphOwned,
   bool high_efficiency_mode_enabled_ = false;
 
   std::map<const PageNode*, base::OneShotTimer> active_discard_timers_;
-  base::TimeDelta time_before_discard_;
+  const base::TimeDelta time_before_discard_;
 
   raw_ptr<Graph> graph_ = nullptr;
 };

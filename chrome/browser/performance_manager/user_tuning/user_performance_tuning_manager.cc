@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
 #include "chrome/browser/performance_manager/policies/heuristic_memory_saver_policy.h"
@@ -63,9 +64,9 @@ class FrameThrottlingDelegateImpl
   }
 };
 
-class HighEfficiencyModeDelegateImpl
+class HighEfficiencyModeToggleDelegateImpl
     : public performance_manager::user_tuning::UserPerformanceTuningManager::
-          HighEfficiencyModeDelegate {
+          HighEfficiencyModeToggleDelegate {
  public:
   void ToggleHighEfficiencyMode(bool enabled) override {
     performance_manager::PerformanceManager::CallOnGraph(
@@ -86,30 +87,14 @@ class HighEfficiencyModeDelegateImpl
             enabled));
   }
 
-  void SetTimeBeforeDiscard(base::TimeDelta time_before_discard) override {
-    performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE,
-        base::BindOnce(
-            [](base::TimeDelta time_before_discard,
-               performance_manager::Graph* graph) {
-              CHECK(policies::HighEfficiencyModePolicy::GetInstance());
-              policies::HighEfficiencyModePolicy::GetInstance()
-                  ->SetTimeBeforeDiscard(time_before_discard);
-            },
-            time_before_discard));
-  }
-
-  ~HighEfficiencyModeDelegateImpl() override = default;
+  ~HighEfficiencyModeToggleDelegateImpl() override = default;
 };
 
 }  // namespace
 
 const uint64_t UserPerformanceTuningManager::kLowBatteryThresholdPercent = 20;
 
-const char UserPerformanceTuningManager::kTimeBeforeDiscardInMinutesSwitch[] =
-    "time-before-discard-in-minutes";
-
-const char UserPerformanceTuningManager::kForceDeviceHasBatterySwitch[] =
+const char UserPerformanceTuningManager::kForceDeviceHasBattery[] =
     "force-device-has-battery";
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(
@@ -211,33 +196,6 @@ int UserPerformanceTuningManager::SampledBatteryPercentage() const {
   return battery_percentage_;
 }
 
-// static
-void UserPerformanceTuningManager::SetDefaultTimeBeforeDiscardFromSwitch(
-    PrefService* local_state) {
-  // TODO(https://crbug.com/1424220): remove this function after multistate
-  // memory saver UI is available as the discard time pref will be configurable
-  // by the user
-  const PrefService::Preference* time_before_discard_pref =
-      local_state->FindPreference(
-          performance_manager::user_tuning::prefs::
-              kHighEfficiencyModeTimeBeforeDiscardInMinutes);
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (time_before_discard_pref->IsDefaultValue() &&
-      command_line->HasSwitch(kTimeBeforeDiscardInMinutesSwitch)) {
-    int time_before_discard_in_minutes;
-    std::string time_before_discard_in_minutes_string =
-        command_line->GetSwitchValueASCII(kTimeBeforeDiscardInMinutesSwitch);
-    if (base::StringToInt(time_before_discard_in_minutes_string,
-                          &time_before_discard_in_minutes) &&
-        time_before_discard_in_minutes > 0) {
-      local_state->SetDefaultPrefValue(
-          performance_manager::user_tuning::prefs::
-              kHighEfficiencyModeTimeBeforeDiscardInMinutes,
-          base::Value(time_before_discard_in_minutes));
-    }
-  }
-}
-
 UserPerformanceTuningManager::UserPerformanceTuningReceiverImpl::
     ~UserPerformanceTuningReceiverImpl() = default;
 
@@ -278,15 +236,16 @@ UserPerformanceTuningManager::UserPerformanceTuningManager(
     PrefService* local_state,
     std::unique_ptr<UserPerformanceTuningNotifier> notifier,
     std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate,
-    std::unique_ptr<HighEfficiencyModeDelegate> high_efficiency_mode_delegate)
+    std::unique_ptr<HighEfficiencyModeToggleDelegate>
+        high_efficiency_mode_toggle_delegate)
     : frame_throttling_delegate_(
           frame_throttling_delegate
               ? std::move(frame_throttling_delegate)
               : std::make_unique<FrameThrottlingDelegateImpl>()),
-      high_efficiency_mode_delegate_(
-          high_efficiency_mode_delegate
-              ? std::move(high_efficiency_mode_delegate)
-              : std::make_unique<HighEfficiencyModeDelegateImpl>()) {
+      high_efficiency_mode_toggle_delegate_(
+          high_efficiency_mode_toggle_delegate
+              ? std::move(high_efficiency_mode_toggle_delegate)
+              : std::make_unique<HighEfficiencyModeToggleDelegateImpl>()) {
   DCHECK(!g_user_performance_tuning_manager);
   g_user_performance_tuning_manager = this;
 
@@ -300,25 +259,11 @@ UserPerformanceTuningManager::UserPerformanceTuningManager(
   // here in the same patch as the UI and enterprise policy are migrated to
   // the enum pref.
 
-  SetDefaultTimeBeforeDiscardFromSwitch(local_state);
-
   pref_change_registrar_.Init(local_state);
 }
 
 void UserPerformanceTuningManager::Start() {
   was_started_ = true;
-
-  pref_change_registrar_.Add(
-      performance_manager::user_tuning::prefs::
-          kHighEfficiencyModeTimeBeforeDiscardInMinutes,
-      base::BindRepeating(&UserPerformanceTuningManager::
-                              OnHighEfficiencyModeTimeBeforeDiscardChanged,
-                          base::Unretained(this)));
-  // Make sure the initial state of the discard timer pref is passed on to the
-  // policy before it can be enabled, because the policy initially has a dummy
-  // value for time_before_discard_. This prevents tabs' discard timers from
-  // starting with a value different from the pref.
-  OnHighEfficiencyModeTimeBeforeDiscardChanged();
 
   pref_change_registrar_.Add(
       performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,
@@ -329,7 +274,7 @@ void UserPerformanceTuningManager::Start() {
   OnHighEfficiencyModePrefChanged();
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kForceDeviceHasBatterySwitch)) {
+  if (command_line->HasSwitch(kForceDeviceHasBattery)) {
     force_has_battery_ = true;
     has_battery_ = true;
   }
@@ -357,19 +302,11 @@ void UserPerformanceTuningManager::Start() {
 void UserPerformanceTuningManager::OnHighEfficiencyModePrefChanged() {
   bool enabled = pref_change_registrar_.prefs()->GetBoolean(
       performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled);
-  high_efficiency_mode_delegate_->ToggleHighEfficiencyMode(enabled);
+  high_efficiency_mode_toggle_delegate_->ToggleHighEfficiencyMode(enabled);
 
   for (auto& obs : observers_) {
     obs.OnHighEfficiencyModeChanged();
   }
-}
-
-void UserPerformanceTuningManager::
-    OnHighEfficiencyModeTimeBeforeDiscardChanged() {
-  base::TimeDelta time_before_discard = performance_manager::user_tuning::
-      prefs::GetCurrentHighEfficiencyModeTimeBeforeDiscard(
-          pref_change_registrar_.prefs());
-  high_efficiency_mode_delegate_->SetTimeBeforeDiscard(time_before_discard);
 }
 
 void UserPerformanceTuningManager::OnBatterySaverModePrefChanged() {

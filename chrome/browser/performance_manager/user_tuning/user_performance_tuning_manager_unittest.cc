@@ -12,7 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/performance_manager/test_support/fake_frame_throttling_delegate.h"
-#include "chrome/browser/performance_manager/test_support/fake_high_efficiency_mode_delegate.h"
+#include "chrome/browser/performance_manager/test_support/fake_high_efficiency_mode_toggle_delegate.h"
 #include "chrome/browser/performance_manager/test_support/fake_power_monitor_source.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
@@ -96,12 +96,9 @@ class UserPerformanceTuningManagerTest : public testing::Test {
         std::make_unique<base::test::TestSamplingEventSource>();
     auto test_battery_level_provider =
         std::make_unique<base::test::TestBatteryLevelProvider>();
-    auto fake_high_efficiency_mode_delegate =
-        std::make_unique<FakeHighEfficiencyModeDelegate>();
 
     sampling_source_ = test_sampling_event_source.get();
     battery_level_provider_ = test_battery_level_provider.get();
-    high_efficiency_mode_delegate_ = fake_high_efficiency_mode_delegate.get();
 
     battery_sampler_ = std::make_unique<base::BatteryStateSampler>(
         std::move(test_sampling_event_source),
@@ -110,7 +107,7 @@ class UserPerformanceTuningManagerTest : public testing::Test {
     manager_.reset(new UserPerformanceTuningManager(
         &local_state_, nullptr,
         std::make_unique<FakeFrameThrottlingDelegate>(&throttling_enabled_),
-        std::move(fake_high_efficiency_mode_delegate)));
+        std::make_unique<FakeHighEfficiencyModeToggleDelegate>()));
     manager()->Start();
   }
 
@@ -128,7 +125,6 @@ class UserPerformanceTuningManagerTest : public testing::Test {
 
   raw_ptr<base::test::TestSamplingEventSource> sampling_source_;
   raw_ptr<base::test::TestBatteryLevelProvider> battery_level_provider_;
-  raw_ptr<FakeHighEfficiencyModeDelegate> high_efficiency_mode_delegate_;
   std::unique_ptr<base::BatteryStateSampler> battery_sampler_;
 
   raw_ptr<FakePowerMonitorSource> power_monitor_source_;
@@ -250,20 +246,6 @@ TEST_F(UserPerformanceTuningManagerTest, InvalidPrefInStore) {
           1);
   EXPECT_FALSE(manager()->IsBatterySaverActive());
   EXPECT_FALSE(throttling_enabled());
-}
-
-TEST_F(UserPerformanceTuningManagerTest, SetDefaultTimeBeforeDiscardPref) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      performance_manager::user_tuning::UserPerformanceTuningManager::
-          kTimeBeforeDiscardInMinutesSwitch,
-      "5");
-  StartManager();
-
-  EXPECT_EQ(5, local_state_.GetInteger(
-                   performance_manager::user_tuning::prefs::
-                       kHighEfficiencyModeTimeBeforeDiscardInMinutes));
-  EXPECT_EQ(base::Minutes(5),
-            high_efficiency_mode_delegate_->GetLastTimeBeforeDiscard());
 }
 
 TEST_F(UserPerformanceTuningManagerTest, EnabledOnBatteryPower) {
