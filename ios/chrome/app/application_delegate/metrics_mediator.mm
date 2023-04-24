@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/signin/signin_util.h"
+#import "ios/chrome/browser/tabs/inactive_tabs/metrics.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/widget_kit/features.h"
@@ -184,6 +185,24 @@ void DumpEnvironment(id<StartupInformation> startup_information) {
   [data writeToFile:file_path atomically:YES];
 }
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
+
+// Returns the associated setting from inactive tab preference value.
+InactiveTabsThresholdSetting InactiveTabsSettingFromPreference(int preference) {
+  switch (preference) {
+    case -1:
+      return InactiveTabsThresholdSetting::kNeverMove;
+    case 0:
+      return InactiveTabsThresholdSetting::kDefaultValue;
+    case 7:
+      return InactiveTabsThresholdSetting::kOneWeek;
+    case 14:
+      return InactiveTabsThresholdSetting::kTwoWeeks;
+    case 21:
+      return InactiveTabsThresholdSetting::kThreeWeeks;
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
 }  // namespace
 
 // A class to log the "load" time in uma.
@@ -291,6 +310,8 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
 // prefs, so as not to trigger upload of various stale data.
 // Mirrors the function in metrics_reporting_state.cc.
 - (void)updateMetricsPrefsOnPermissionChange:(BOOL)enabled;
+// Logs the inactive tabs settings preference.
++ (void)recordInactiveTabsSettingsAtStartup:(int)preference;
 // Logs the number of tabs with UMAHistogramCount100 and allows testing.
 + (void)recordNumTabAtStartup:(int)numTabs;
 // Logs the number of tabs with UMAHistogramCount100 and allows testing.
@@ -437,6 +458,9 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
   }
 
   if (startupInformation.isColdStart) {
+    [self recordInactiveTabsSettingsAtStartup:
+              GetApplicationContext()->GetLocalState()->GetInteger(
+                  prefs::kInactiveTabsTimeThreshold)];
     [self recordNumTabAtStartup:numTabs];
     [self recordNumNTPTabAtStartup:numNTPTabs];
     [self recordNumOldTabAtStartup:numOldTabs];
@@ -644,6 +668,11 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
 }
 
 #pragma mark - interfaces methods
+
++ (void)recordInactiveTabsSettingsAtStartup:(int)preference {
+  UMA_HISTOGRAM_ENUMERATION(kInactiveTabsThresholdSettingHistogram,
+                            InactiveTabsSettingFromPreference(preference));
+}
 
 + (void)recordNumTabAtStartup:(int)numTabs {
   base::UmaHistogramCounts100("Tabs.CountAtStartup", numTabs);

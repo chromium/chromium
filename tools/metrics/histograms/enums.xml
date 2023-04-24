@@ -52031,6 +52031,15 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="34" label="CreateFencedFrame"/>
 </enum>
 
+<enum name="InactiveTabsThresholdSettingType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Never Move"/>
+  <int value="2" label="One Week"/>
+  <int value="3" label="Two Weeks"/>
+  <int value="4" label="Three Weeks"/>
+  <int value="5" label="Default Value"/>
+</enum>
+
 <enum name="IncidentType">
   <int value="1" label="TrackedPreference"/>
   <int value="2" label="BinaryIntegrity"/>

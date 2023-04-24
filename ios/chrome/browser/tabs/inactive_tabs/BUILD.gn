@@ -5,6 +5,8 @@
 source_set("inactive_tabs") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "metrics.h",
+    "metrics.mm",
     "utils.h",
     "utils.mm",
   ]

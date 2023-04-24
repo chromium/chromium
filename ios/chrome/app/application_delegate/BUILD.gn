@@ -229,6 +229,7 @@ source_set("application_delegate_internal") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:system_identity_manager",
     "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/tabs/inactive_tabs",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/browser/ui/main",

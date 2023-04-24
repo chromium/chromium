@@ -989,6 +989,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.InactiveTabs.Settings.Threshold"
+    enum="InactiveTabsThresholdSettingType" expires_after="2023-10-19">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <summary>Logs the chosen inactive tab threshold at startup.</summary>
+</histogram>
+
 <histogram name="IOS.Incognito.BiometricAuthEnabled" enum="Boolean"
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
