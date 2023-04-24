@@ -219,6 +219,7 @@ source_set("common") {
     "mediastream/media_stream_controls.cc",
     "mediastream/media_stream_mojom_traits.cc",
     "mediastream/media_stream_request.cc",
+    "messaging/accelerated_static_bitmap_image_mojom_traits.cc",
     "messaging/cloneable_message.cc",
     "messaging/cloneable_message_mojom_traits.cc",
     "messaging/message_port_channel.cc",

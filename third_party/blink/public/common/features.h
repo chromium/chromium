@@ -320,6 +320,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResamplingInputEvents);
 // blocking.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInputTargetClientHighPriority);
 
+// Enables passing of mailbox backed Accelerated bitmap images to be passed
+// cross-process as mailbox references instead of serialized bitmaps in
+// shared memory.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kAcceleratedStaticBitmapImageSerialization);
+
 // Enables resampling GestureScroll events on compositor thread.
 // Uses the kPredictorName* values in ui_base_features.h as the 'predictor'
 // feature param.

@@ -6,10 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_MESSAGING_BLINK_TRANSFERABLE_MESSAGE_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/messaging/accelerated_image_info.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/public/mojom/messaging/delegated_capability.mojom-blink.h"
+#include "third_party/blink/public/mojom/messaging/static_bitmap_image.mojom-blink.h"
 #include "third_party/blink/public/mojom/messaging/user_activation_snapshot.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -43,6 +45,9 @@ struct CORE_EXPORT BlinkTransferableMessage : BlinkCloneableMessage {
 
 CORE_EXPORT scoped_refptr<blink::StaticBitmapImage> ToStaticBitmapImage(
     const SkBitmap& sk_bitmap);
+
+CORE_EXPORT scoped_refptr<blink::StaticBitmapImage> WrapAcceleratedBitmapImage(
+    AcceleratedImageInfo image);
 
 }  // namespace blink
 

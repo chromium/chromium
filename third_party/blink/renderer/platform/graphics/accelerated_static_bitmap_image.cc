@@ -25,6 +25,8 @@
 #include "third_party/blink/renderer/platform/graphics/mailbox_texture_backing.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
@@ -69,6 +71,56 @@ AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
       std::move(context_task_runner), std::move(release_callback)));
 }
 
+// static
+scoped_refptr<AcceleratedStaticBitmapImage>
+AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
+    const gpu::MailboxHolder& mailbox_holder,
+    uint32_t usage,
+    const SkImageInfo& sk_image_info,
+    bool is_origin_top_left,
+    bool supports_display_compositing,
+    bool is_overlay_candidate,
+    base::OnceCallback<void(const gpu::SyncToken&)> external_callback) {
+  auto shared_gpu_context = blink::SharedGpuContext::ContextProviderWrapper();
+  if (!shared_gpu_context) {
+    return nullptr;
+  }
+  auto* sii = shared_gpu_context->ContextProvider()->SharedImageInterface();
+  if (!sii) {
+    return nullptr;
+  }
+  sii->AddReferenceToSharedImage(mailbox_holder.sync_token,
+                                 mailbox_holder.mailbox, usage);
+  auto release_token = sii->GenVerifiedSyncToken();
+  // No need to keep the original image after the new reference has been added.
+  // Need to update the sync token, however.
+  std::move(external_callback).Run(release_token);
+
+  auto release_callback = WTF::BindOnce(
+      [](base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
+         const gpu::Mailbox& mailbox, const gpu::SyncToken& sync_token,
+         bool is_lost) {
+        if (is_lost || !context_provider) {
+          return;
+        }
+        auto* sii = context_provider->ContextProvider()->SharedImageInterface();
+        if (!sii) {
+          return;
+        }
+        sii->DestroySharedImage(sync_token, mailbox);
+      },
+      shared_gpu_context, mailbox_holder.mailbox);
+
+  return base::AdoptRef(new AcceleratedStaticBitmapImage(
+      mailbox_holder.mailbox, release_token, 0u, sk_image_info,
+      mailbox_holder.texture_target, is_origin_top_left,
+      supports_display_compositing, is_overlay_candidate,
+      ImageOrientationEnum::kDefault, shared_gpu_context,
+      base::PlatformThreadRef(),
+      ThreadScheduler::Current()->CleanupTaskRunner(),
+      std::move(release_callback)));
+}
+
 AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
     const gpu::Mailbox& mailbox,
     const gpu::SyncToken& sync_token,
@@ -108,7 +160,7 @@ AcceleratedStaticBitmapImage::~AcceleratedStaticBitmapImage() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-SkImageInfo AcceleratedStaticBitmapImage::GetSkImageInfoInternal() const {
+SkImageInfo AcceleratedStaticBitmapImage::GetSkImageInfo() const {
   return sk_image_info_;
 }
 
@@ -436,6 +488,13 @@ AcceleratedStaticBitmapImage::ConvertToColorSpace(
                                 SkSamplingOptions(), &paint);
   return provider->Snapshot(CanvasResourceProvider::FlushReason::kNon2DCanvas,
                             orientation_);
+}
+
+uint32_t AcceleratedStaticBitmapImage::GetUsage() const {
+  return ContextProviderWrapper()
+      ->ContextProvider()
+      ->SharedImageInterface()
+      ->UsageForMailbox(mailbox_);
 }
 
 }  // namespace blink

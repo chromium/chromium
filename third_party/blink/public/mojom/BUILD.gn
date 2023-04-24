@@ -1251,6 +1251,7 @@ mojom("mojom_core") {
     "messaging/cloneable_message.mojom",
     "messaging/delegated_capability.mojom",
     "messaging/message_port_descriptor.mojom",
+    "messaging/static_bitmap_image.mojom",
     "messaging/task_attribution_id.mojom",
     "messaging/transferable_message.mojom",
     "messaging/user_activation_snapshot.mojom",
@@ -1294,6 +1295,7 @@ mojom("mojom_core") {
     ":web_feature_mojo_bindings",
     "//cc/mojom",
     "//components/payments/mojom",
+    "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",
     "//services/network/public/mojom",
     "//services/service_manager/public/mojom",
@@ -1353,6 +1355,20 @@ mojom("mojom_core") {
         "//third_party/blink/public/common/scheduler/task_attribution_id.h",
       ]
       traits_private_headers = [ "//third_party/blink/public/common/messaging/task_attribution_id_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.AcceleratedStaticBitmapImage"
+          cpp = "::blink::AcceleratedImageInfo"
+          move_only = true
+        },
+      ]
+      traits_headers = [
+        "//third_party/blink/public/common/messaging/accelerated_image_info.h",
+      ]
+      traits_private_headers = [ "//third_party/blink/public/common/messaging/accelerated_static_bitmap_image_mojom_traits.h" ]
+      traits_deps = [ "//gpu/ipc/common" ]
     },
   ]
 

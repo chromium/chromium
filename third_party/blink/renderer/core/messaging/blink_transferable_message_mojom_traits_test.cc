@@ -5,6 +5,9 @@
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message_mojom_traits.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/null_task_runner.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
@@ -15,16 +18,24 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/test/fake_web_graphics_context_3d_provider.h"
+#include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
+
+using testing::_;
+using testing::Test;
 
 namespace blink {
 
@@ -199,6 +210,145 @@ TEST(BlinkTransferableMessageStructTraitsTest,
   // the original bitmap' data (as opposed to a copy of the data).
   ASSERT_EQ(original_bitmap_data, deserialized_bitmap->BitmapImage()->Data());
   ASSERT_TRUE(original_bitmap->IsNeutered());
+}
+
+class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
+ public:
+  void SetUp() override {
+    auto sii = std::make_unique<viz::TestSharedImageInterface>();
+    sii_ = sii.get();
+    context_provider_ = viz::TestContextProvider::Create(std::move(sii));
+    InitializeSharedGpuContext(context_provider_.get());
+  }
+
+  void TearDown() override {
+    sii_ = nullptr;
+    SharedGpuContext::ResetForTesting();
+  }
+
+  gpu::SyncToken GenTestSyncToken(GLbyte id) {
+    gpu::SyncToken token;
+    token.Set(gpu::CommandBufferNamespace::GPU_IO,
+              gpu::CommandBufferId::FromUnsafeValue(64), id);
+    token.SetVerifyFlush();
+    return token;
+  }
+
+  ImageBitmap* CreateAcceleratedStaticImageBitmap() {
+    auto mailbox = gpu::Mailbox::GenerateForSharedImage();
+
+    return MakeGarbageCollected<ImageBitmap>(
+        AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
+            mailbox, GenTestSyncToken(100), 0,
+            SkImageInfo::MakeN32Premul(100, 100), GL_TEXTURE_2D, true,
+            SharedGpuContext::ContextProviderWrapper(),
+            base::PlatformThread::CurrentRef(),
+            base::MakeRefCounted<base::NullTaskRunner>(),
+            WTF::BindOnce(&BlinkTransferableMessageStructTraitsWithFakeGpuTest::
+                              OnImageDestroyed,
+                          WTF::Unretained(this)),
+            /*supports_display_compositing=*/true,
+            /*is_overlay_candidate=*/true));
+  }
+
+  void OnImageDestroyed(const gpu::SyncToken&, bool) {
+    image_destroyed_ = true;
+  }
+
+ protected:
+  viz::TestSharedImageInterface* sii_;
+  scoped_refptr<viz::TestContextProvider> context_provider_;
+
+  bool image_destroyed_ = false;
+};
+
+TEST_F(BlinkTransferableMessageStructTraitsWithFakeGpuTest,
+       AcceleratedImageTransferSuccess) {
+  V8TestingScope scope;
+  scope.GetExecutionContext()
+      ->GetTaskRunner(TaskType::kInternalTest)
+      ->PostTask(
+          FROM_HERE, base::BindLambdaForTesting([&]() {
+            ImageBitmap* image_bitmap = CreateAcceleratedStaticImageBitmap();
+            v8::Local<v8::Value> wrapper =
+                ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(),
+                                              image_bitmap)
+                    .ToLocalChecked();
+            Transferables transferables;
+            transferables.image_bitmaps.push_back(image_bitmap);
+            BlinkTransferableMessage msg;
+            msg.sender_origin = SecurityOrigin::CreateUniqueOpaque();
+            msg.sender_agent_cluster_id = base::UnguessableToken::Create();
+            msg.message = BuildSerializedScriptValue(scope.GetIsolate(),
+                                                     wrapper, transferables);
+            mojo::Message mojo_message =
+                mojom::blink::TransferableMessage::SerializeAsMessage(&msg);
+
+            // Without this, deserialization of a PendingRemote in the message
+            // always fails with VALIDATION_ERROR_ILLEGAL_HANDLE.
+            mojo::ScopedMessageHandle handle = mojo_message.TakeMojoMessage();
+            mojo_message = mojo::Message::CreateFromMessageHandle(&handle);
+
+            // The original bitmap must be held alive until the transfer
+            // completes.
+            EXPECT_FALSE(image_destroyed_);
+            BlinkTransferableMessage out;
+            ASSERT_TRUE(
+                mojom::blink::TransferableMessage::DeserializeFromMessage(
+                    std::move(mojo_message), &out));
+            ASSERT_EQ(out.message->GetImageBitmapContentsArray().size(), 1U);
+          }));
+  base::RunLoop().RunUntilIdle();
+
+  // The original bitmap shouldn't be held anywhere after deserialization has
+  // completed. Because release callbacks are posted over mojo, check the
+  // completion in a new task.
+  scope.GetExecutionContext()
+      ->GetTaskRunner(TaskType::kInternalTest)
+      ->PostTask(FROM_HERE, base::BindLambdaForTesting(
+                                [&]() { EXPECT_TRUE(image_destroyed_); }));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(BlinkTransferableMessageStructTraitsWithFakeGpuTest,
+       AcceleratedImageTransferReceiverCrash) {
+  V8TestingScope scope;
+  scope.GetExecutionContext()
+      ->GetTaskRunner(TaskType::kInternalTest)
+      ->PostTask(
+          FROM_HERE, base::BindLambdaForTesting([&]() {
+            ImageBitmap* image_bitmap = CreateAcceleratedStaticImageBitmap();
+
+            v8::Local<v8::Value> wrapper =
+                ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(),
+                                              image_bitmap)
+                    .ToLocalChecked();
+            Transferables transferables;
+            transferables.image_bitmaps.push_back(image_bitmap);
+            BlinkTransferableMessage msg;
+            msg.sender_origin = SecurityOrigin::CreateUniqueOpaque();
+            msg.sender_agent_cluster_id = base::UnguessableToken::Create();
+            msg.message = BuildSerializedScriptValue(scope.GetIsolate(),
+                                                     wrapper, transferables);
+            mojo::Message mojo_message =
+                mojom::blink::TransferableMessage::SerializeAsMessage(&msg);
+            // The original bitmap must be held alive before the transfer
+            // completes.
+            EXPECT_FALSE(image_destroyed_);
+
+            // The mojo message is destroyed without deserialization to simulate
+            // the receiver process crash.
+          }));
+  base::RunLoop().RunUntilIdle();
+
+  // The original bitmap shouldn't be held anywhere after the mojo message is
+  // lost. Because release callbacks are posted over mojo, check the completion
+  // in a new task.
+  scope.GetExecutionContext()
+      ->GetTaskRunner(TaskType::kInternalTest)
+      ->PostTask(FROM_HERE, base::BindLambdaForTesting(
+                                [&]() { EXPECT_TRUE(image_destroyed_); }));
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace blink

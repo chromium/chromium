@@ -187,7 +187,7 @@ bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
                                         /*x=*/0, /*y=*/0);
 }
 
-SkImageInfo UnacceleratedStaticBitmapImage::GetSkImageInfoInternal() const {
+SkImageInfo UnacceleratedStaticBitmapImage::GetSkImageInfo() const {
   return paint_image_.GetSkImageInfo().makeWH(paint_image_.width(),
                                               paint_image_.height());
 }

@@ -95,13 +95,18 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
     return gpu::MailboxHolder();
   }
   virtual void UpdateSyncToken(const gpu::SyncToken&) { NOTREACHED(); }
+
+  // For gpu based images the Usage is a bitmap indicating set of API(s) and
+  // underlying gpu::SharedImage may be used with.
+  // The gpu::SharedImageInterface is using uint32_t directly.
+  virtual uint32_t GetUsage() const {
+    NOTREACHED();
+    return 0;
+  }
   bool IsPremultiplied() const {
-    return GetSkImageInfoInternal().alphaType() ==
-           SkAlphaType::kPremul_SkAlphaType;
+    return GetSkImageInfo().alphaType() == SkAlphaType::kPremul_SkAlphaType;
   }
-  SkColorInfo GetSkColorInfo() const {
-    return GetSkImageInfoInternal().colorInfo();
-  }
+  SkColorInfo GetSkColorInfo() const { return GetSkImageInfo().colorInfo(); }
 
   // Methods have exactly the same implementation for all sub-classes
   bool OriginClean() const { return is_origin_clean_; }
@@ -126,6 +131,9 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   Vector<uint8_t> CopyImageData(const SkImageInfo& info,
                                 bool apply_orientation);
 
+  // Return the SkImageInfo of the internal representation of this image.
+  virtual SkImageInfo GetSkImageInfo() const = 0;
+
  protected:
   // Helper for sub-classes
   void DrawHelper(cc::PaintCanvas*,
@@ -134,9 +142,6 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
                   const gfx::RectF&,
                   const ImageDrawOptions&,
                   const PaintImage&);
-
-  // Return the SkImageInfo of the internal representation of this image.
-  virtual SkImageInfo GetSkImageInfoInternal() const = 0;
 
   // The image orientation is stored here because it is only available when the
   // static image is created and the underlying representations do not store

@@ -1,0 +1,55 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "skia/public/mojom/bitmap.mojom";
+import "gpu/ipc/common/mailbox_holder.mojom";
+import "gpu/ipc/common/sync_token.mojom";
+import "skia/public/mojom/image_info.mojom";
+
+// This interface is used to manage the lifetime of the
+// AcceleratedStaticBitmapImage transferred in the TranferableMessage.
+// While the message pipe is open, the sender will keep the reference
+// alive.
+// The only interface method is used to update the source image sync token
+// so that reference management in the receiver process and the destruction
+// in the sender process are ordered correctly in the GPU command buffer.
+// It is also fine to simply destroy the Remote without calling the method.
+// In that case the image will be released without any updates to the SyncToken.
+interface ImageReleaseCallback {
+  // Updates the sync token on the associated AcceleratedStaticBitmapImage
+  // and releases it.
+  Release(gpu.mojom.SyncToken token);
+};
+
+// Holds all information, necessary to recreate the accelerated image.
+struct AcceleratedStaticBitmapImage {
+  // Mailbox holder contains SharedImage reference:
+  // mailbox, sync token and texture target.
+  gpu.mojom.MailboxHolder mailbox_holder;
+  // Shared image usage: a bitmask identifying which API(s)
+  // the SharedImage may be used with.
+  // See gpu/command_buffer/common/shared_image_usage.h
+  uint32 usage;
+  // Common image metadata.
+  skia.mojom.ImageInfo image_info;
+  // Indicates the orientation of the image.
+  bool is_origin_top_left;
+  // Indicates if the display compositing may be used with this image.
+  bool supports_display_compositing;
+  // Indicates if the image is an overlay candidate.
+  bool is_overlay_candidate;
+  // Resource lifetime management callback. Until this pending remote is
+  // destroyed or the callback is called the sender shall keep the
+  // resource alive.
+  pending_remote<ImageReleaseCallback> release_callback;
+};
+
+// StaticBitmapImage may be sent as a software SkBitmap or
+// as a GPU backed texture reference.
+union SerializedStaticBitmapImage {
+  skia.mojom.BitmapN32 bitmap;
+  AcceleratedStaticBitmapImage accelerated_image;
+};

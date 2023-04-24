@@ -833,6 +833,10 @@ BASE_FEATURE(kKalmanDirectionCutOff,
              "KalmanDirectionCutOff",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAcceleratedStaticBitmapImageSerialization,
+             "AcceleratedStaticBitmapImageSerialization",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const char kSkipTouchEventFilterTypeParamName[] = "type";
 const char kSkipTouchEventFilterTypeParamValueDiscrete[] = "discrete";
 const char kSkipTouchEventFilterTypeParamValueAll[] = "all";
