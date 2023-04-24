@@ -328,8 +328,8 @@ void PagedAppsGridView::Layout() {
 }
 
 void PagedAppsGridView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren, true);
   AppsGridView::GetAccessibleNodeData(node_data);
+  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren, true);
 }
 
 void PagedAppsGridView::OnThemeChanged() {
