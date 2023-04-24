@@ -4,15 +4,14 @@
 
 #include "chrome/common/safe_browsing/seven_zip_analyzer.h"
 
-#include "base/files/memory_mapped_file.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/lzma_sdk/google/seven_zip_reader.h"
+#include "components/safe_browsing/core/common/features.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -23,122 +22,6 @@
 #endif
 
 namespace safe_browsing {
-
-namespace {
-
-constexpr base::TimeDelta kAnalysisTimeout = base::Seconds(10);
-
-class SevenZipDelegate : public seven_zip::Delegate {
- public:
-  SevenZipDelegate(ArchiveAnalyzerResults* results,
-                   base::File temp_file,
-                   base::File temp_file2)
-      : results_(results),
-        temp_file_(std::move(temp_file)),
-        temp_file2_(std::move(temp_file2)) {
-    results_->success = false;
-    results_->analysis_result = ArchiveAnalysisResult::kUnknown;
-    results_->file_count = 0;
-    results_->directory_count = 0;
-  }
-
-  void OnOpenError(seven_zip::Result result) override {
-    success_ = false;
-    results_->analysis_result = ArchiveAnalysisResult::kFailedToOpen;
-  }
-
-  base::File OnTempFileRequest() override { return std::move(temp_file2_); }
-
-  bool OnEntry(const seven_zip::EntryInfo& entry,
-               base::span<uint8_t>& output) override {
-    if (base::TimeTicks::Now() - start_time_ > kAnalysisTimeout) {
-      results_->success = false;
-      results_->analysis_result = ArchiveAnalysisResult::kTimeout;
-      return false;
-    }
-
-    if (entry.file_size == 0) {
-      // Empty files try to initialize the memory mapping with region {0, 0},
-      // which is confused with Region::kWholeFile. Since we can't truncate the
-      // file within the utility process sandbox, the file still has contents
-      // from a previous entry, and we end up mapping those contents. This leads
-      // to CHECK failures since `output.size()` does not match
-      // `entry.file_size`. Since the file is actually empty, we can skip the
-      // memory mapping here to avoid this.
-      output = base::span<uint8_t>();
-      return true;
-    }
-
-    mapped_file_.emplace();
-    bool mapped_file_ok = mapped_file_->Initialize(
-        temp_file_.Duplicate(), {0, static_cast<size_t>(entry.file_size)},
-        base::MemoryMappedFile::READ_WRITE_EXTEND);
-    if (!mapped_file_ok) {
-      results_->success = false;
-      results_->analysis_result = ArchiveAnalysisResult::kUnknown;
-      return false;
-    }
-
-    output = base::span<uint8_t>(mapped_file_->data(), mapped_file_->length());
-    return true;
-  }
-
-  bool OnDirectory(const seven_zip::EntryInfo& entry) override {
-    if (base::TimeTicks::Now() - start_time_ > kAnalysisTimeout) {
-      results_->success = false;
-      results_->analysis_result = ArchiveAnalysisResult::kTimeout;
-      return false;
-    }
-
-    UpdateArchiveAnalyzerResultsWithFile(entry.file_path, &temp_file_,
-                                         entry.file_size, entry.is_encrypted,
-                                         /*is_directory=*/true, results_);
-    results_->directory_count++;
-    return true;
-  }
-
-  bool EntryDone(seven_zip::Result result,
-                 const seven_zip::EntryInfo& entry) override {
-    base::UmaHistogramEnumeration("SBClientDownload.SevenZipEntryResult",
-                                  result);
-
-    if (base::TimeTicks::Now() - start_time_ > kAnalysisTimeout) {
-      results_->success = false;
-      results_->analysis_result = ArchiveAnalysisResult::kTimeout;
-      return false;
-    }
-
-    results_->file_count++;
-
-    // Since unpacking an encrypted entry is expected to fail, allow all results
-    // here for encrypted entries.
-    if (result == seven_zip::Result::kSuccess || entry.is_encrypted) {
-      // TODO(crbug/1373509): We have the entire file in memory, so it's silly
-      // to do all this work to flush it and read it back. Can we simplify this
-      // process? This also reduces the risk that the file is not flushed fully.
-      mapped_file_.reset();
-      UpdateArchiveAnalyzerResultsWithFile(entry.file_path, &temp_file_,
-                                           entry.file_size, entry.is_encrypted,
-                                           /*is_directory=*/false, results_);
-    } else {
-      success_ = false;
-    }
-
-    return true;
-  }
-
-  bool success() const { return success_; }
-
- private:
-  const raw_ptr<ArchiveAnalyzerResults> results_;
-  base::File temp_file_;
-  base::File temp_file2_;
-  const base::TimeTicks start_time_{base::TimeTicks::Now()};
-  bool success_ = true;
-  absl::optional<base::MemoryMappedFile> mapped_file_;
-};
-
-}  // namespace
 
 SevenZipAnalyzer::~SevenZipAnalyzer() = default;
 
@@ -183,27 +66,159 @@ void SevenZipAnalyzer::FilePreChecks(base::File temp_file) {
     std::move(finished_analysis_callback_).Run();
     return;
   }
-  AnalyzeSevenZipFile();
-}
 
-void SevenZipAnalyzer::AnalyzeSevenZipFile() {
-  SevenZipDelegate delegate(results_, std::move(temp_file_),
-                            std::move(temp_file2_));
-  std::unique_ptr<seven_zip::SevenZipReader> reader =
-      seven_zip::SevenZipReader::Create(std::move(seven_zip_file_), delegate);
-  if (!reader) {
+  results_->success = true;
+  results_->analysis_result = ArchiveAnalysisResult::kValid;
+
+  reader_ =
+      seven_zip::SevenZipReader::Create(std::move(seven_zip_file_), *this);
+  if (!reader_) {
+    // We will have been notified through OnOpenError and updated `results_`
+    // appropriately
     std::move(finished_analysis_callback_).Run();
     return;
   }
 
-  reader->Extract();
+  AnalyzeSevenZipFile();
+}
 
-  if (delegate.success()) {
-    results_->success = true;
-    results_->analysis_result = ArchiveAnalysisResult::kValid;
+void SevenZipAnalyzer::AnalyzeSevenZipFile() {
+  reader_->Extract();
+
+  if (!awaiting_nested_) {
+    std::move(finished_analysis_callback_).Run();
+  }
+}
+
+void SevenZipAnalyzer::OnOpenError(seven_zip::Result result) {
+  results_->success = false;
+  results_->analysis_result = ArchiveAnalysisResult::kFailedToOpen;
+}
+
+base::File SevenZipAnalyzer::OnTempFileRequest() {
+  return std::move(temp_file2_);
+}
+
+bool SevenZipAnalyzer::OnEntry(const seven_zip::EntryInfo& entry,
+                               base::span<uint8_t>& output) {
+  if (entry.file_size == 0) {
+    // Empty files try to initialize the memory mapping with region {0, 0},
+    // which is confused with Region::kWholeFile. Since we can't truncate the
+    // file within the utility process sandbox, the file still has contents
+    // from a previous entry, and we end up mapping those contents. This leads
+    // to CHECK failures since `output.size()` does not match
+    // `entry.file_size`. Since the file is actually empty, we can skip the
+    // memory mapping here to avoid this.
+    output = base::span<uint8_t>();
+    return true;
   }
 
-  std::move(finished_analysis_callback_).Run();
+  mapped_file_.emplace();
+  bool mapped_file_ok = mapped_file_->Initialize(
+      temp_file_.Duplicate(), {0, static_cast<size_t>(entry.file_size)},
+      base::MemoryMappedFile::READ_WRITE_EXTEND);
+  if (!mapped_file_ok) {
+    results_->success = false;
+    results_->analysis_result = ArchiveAnalysisResult::kUnknown;
+    return false;
+  }
+
+  output = base::span<uint8_t>(mapped_file_->data(), mapped_file_->length());
+  return true;
+}
+
+bool SevenZipAnalyzer::OnDirectory(const seven_zip::EntryInfo& entry) {
+  UpdateArchiveAnalyzerResultsWithFile(entry.file_path, &temp_file_,
+                                       entry.file_size, entry.is_encrypted,
+                                       /*is_directory=*/true, results_);
+
+  results_->directory_count++;
+  return true;
+}
+
+bool SevenZipAnalyzer::EntryDone(seven_zip::Result result,
+                                 const seven_zip::EntryInfo& entry) {
+  base::UmaHistogramEnumeration("SBClientDownload.SevenZipEntryResult", result);
+
+  results_->file_count++;
+
+  // Since unpacking an encrypted entry is expected to fail, allow all results
+  // here for encrypted entries.
+  if (result == seven_zip::Result::kSuccess || entry.is_encrypted) {
+    if (base::FeatureList::IsEnabled(kNestedArchives) && !entry.is_encrypted &&
+        AnalyzeNestedArchive(GetFileType(entry.file_path), entry.file_path)) {
+      awaiting_nested_ = true;
+      return false;
+    } else {
+      // TODO(crbug/1373509): We have the entire file in memory, so it's silly
+      // to do all this work to flush it and read it back. Can we simplify this
+      // process? This also reduces the risk that the file is not flushed fully.
+      mapped_file_.reset();
+      UpdateArchiveAnalyzerResultsWithFile(
+          root_seven_zip_path_.Append(entry.file_path), &temp_file_,
+          entry.file_size, entry.is_encrypted,
+          /*is_directory=*/false, results_);
+    }
+  } else {
+    results_->success = false;
+  }
+
+  return true;
+}
+
+bool SevenZipAnalyzer::AnalyzeNestedArchive(
+    safe_browsing::DownloadFileType_InspectionType file_type,
+    base::FilePath path) {
+  FinishedAnalysisCallback nested_analysis_finished_callback = base::BindOnce(
+      &SevenZipAnalyzer::NestedAnalysisFinished, weak_factory_.GetWeakPtr(),
+      root_seven_zip_path_.Append(path));
+  if (file_type == DownloadFileType::ZIP) {
+    nested_zip_analyzer_ = std::make_unique<safe_browsing::ZipAnalyzer>();
+    nested_zip_analyzer_->Init(temp_file_.Duplicate(),
+                               root_seven_zip_path_.Append(path),
+                               std::move(nested_analysis_finished_callback),
+                               get_temp_file_callback_, results_);
+    return true;
+  } else if (file_type == DownloadFileType::RAR) {
+    nested_rar_analyzer_ = std::make_unique<safe_browsing::RarAnalyzer>();
+    nested_rar_analyzer_->Init(temp_file_.Duplicate(),
+                               root_seven_zip_path_.Append(path),
+                               std::move(nested_analysis_finished_callback),
+                               get_temp_file_callback_, results_);
+    return true;
+  } else if (file_type == DownloadFileType::SEVEN_ZIP) {
+    nested_seven_zip_analyzer_ =
+        std::make_unique<safe_browsing::SevenZipAnalyzer>();
+    nested_seven_zip_analyzer_->Init(
+        temp_file_.Duplicate(), root_seven_zip_path_.Append(path),
+        std::move(nested_analysis_finished_callback), get_temp_file_callback_,
+        results_);
+    return true;
+  }
+
+  return false;
+}
+
+void SevenZipAnalyzer::NestedAnalysisFinished(base::FilePath path) {
+  awaiting_nested_ = false;
+
+  // `results_->success` will contain the latest analyzer's success
+  // status and can be used to determine if the nester archive unpacked
+  // successfully.
+  if (!results_->success) {
+    results_->has_archive = true;
+    results_->archived_archive_filenames.push_back(path.BaseName());
+    ClientDownloadRequest::ArchivedBinary* archived_archive =
+        results_->archived_binary.Add();
+    archived_archive->set_download_type(ClientDownloadRequest::ARCHIVE);
+    archived_archive->set_is_encrypted(false);
+    archived_archive->set_is_archive(true);
+    SetNameForContainedFile(path, archived_archive);
+    SetLengthAndDigestForContainedFile(&temp_file_, temp_file_.GetLength(),
+                                       archived_archive);
+  }
+
+  AnalyzeSevenZipFile();
 }
 
 }  // namespace safe_browsing
