@@ -205,8 +205,8 @@ class AttributionStorageTest : public testing::Test {
   base::ScopedTempDir dir_;
 
  private:
-  raw_ptr<ConfigurableStorageDelegate> delegate_;
   std::unique_ptr<AttributionStorage> storage_;
+  raw_ptr<ConfigurableStorageDelegate> delegate_;
 };
 
 TEST_F(AttributionStorageTest,
