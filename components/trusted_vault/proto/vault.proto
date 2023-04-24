@@ -4,17 +4,14 @@
 
 // Trusted vault protos to communicate with backend written in proto3 to avoid
 // subtle differences between enum fields.
-
-// TODO(crbug.com/1423343): Delete this file once downstream references are
-// updated to use components/trusted_vault/proto.
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "org.chromium.components.sync.protocol";
+option java_package = "org.chromium.components.trusted_vault.proto";
 
 option optimize_for = LITE_RUNTIME;
 
-package sync_pb;
+package trusted_vault_pb;
 
 message SharedMemberKey {
   int32 epoch = 1;
@@ -28,7 +25,9 @@ message RotationProof {
 }
 
 message SecurityDomainDetails {
-  message SyncDetails { bool degraded_recoverability = 1; }
+  message SyncDetails {
+    bool degraded_recoverability = 1;
+  }
 
   SyncDetails sync_details = 1;
 }

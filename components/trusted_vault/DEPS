@@ -5,7 +5,6 @@ include_rules = [
   "+components/sync/base",
   "+components/sync/driver",
   "+components/sync/engine",
-  "+components/sync/protocol",
   "+crypto",
   "+google_apis",
   "+net",

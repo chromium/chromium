@@ -32,7 +32,6 @@ sync_protocol_sources = [
   "history_delete_directive_specifics.proto",
   "history_specifics.proto",
   "history_status.proto",
-  "local_trusted_vault.proto",
   "loopback_server.proto",
   "managed_user_setting_specifics.proto",
   "managed_user_shared_setting_specifics.proto",
