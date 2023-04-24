@@ -454,7 +454,7 @@ class ImeObserverChromeOS
               context.autocapitalization_mode);
       private_api_input_context.spell_check =
           ConvertInputContextSpellCheck(context.spellcheck_mode);
-      private_api_input_context.has_been_password = context.has_been_password;
+      private_api_input_context.has_been_password = false;
       private_api_input_context.should_do_learning =
           ConvertPersonalizationMode(context);
       private_api_input_context.focus_reason =

@@ -29,6 +29,7 @@
 #include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/geometry/rect.h"
@@ -886,9 +887,12 @@ TextInputMethod::InputContext InputMethodAsh::GetInputContext() const {
     return TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_NONE);
   }
 
-  TextInputMethod::InputContext input_context(client->GetTextInputType());
-  input_context.mode = client->GetTextInputMode();
   const int flags = client->GetTextInputFlags();
+  TextInputMethod::InputContext input_context(
+      flags & ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD
+          ? ui::TEXT_INPUT_TYPE_PASSWORD
+          : client->GetTextInputType());
+  input_context.mode = client->GetTextInputMode();
   input_context.autocompletion_mode =
       ConvertTextInputFlagToEnum<AutocompletionMode>(
           flags, ui::TEXT_INPUT_FLAG_AUTOCOMPLETE_ON,

@@ -29,6 +29,7 @@
 #include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -413,6 +414,19 @@ TEST_F(InputMethodAshTest, OnTextInputTypeChangedChangesInputType) {
   ime.OnTextInputTypeChanged(&fake_text_input_client);
 
   EXPECT_EQ(ime.GetTextInputType(), ui::TEXT_INPUT_TYPE_PASSWORD);
+
+  ime.SetFocusedTextInputClient(nullptr);
+}
+
+TEST_F(InputMethodAshTest, HasBeenPasswordShouldTriggerPassowrd) {
+  InputMethodAsh ime(this);
+  FakeTextInputClient fake_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
+  fake_text_input_client.SetFlags(ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD);
+
+  ime.SetFocusedTextInputClient(&fake_text_input_client);
+
+  EXPECT_EQ(mock_ime_engine_handler_->last_text_input_context().type,
+            ui::TEXT_INPUT_TYPE_PASSWORD);
 
   ime.SetFocusedTextInputClient(nullptr);
 }
