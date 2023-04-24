@@ -109,7 +109,7 @@ suite('searchResultRowTest', function() {
         'ctrl',
         keys1[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
     assertEquals(
-        'overview',
+        'show windows',
         keys1[1]!.shadowRoot!.querySelector('div:has(> iron-icon)')!.ariaLabel);
 
     const keys2: NodeListOf<InputKeyElement> =
@@ -117,7 +117,7 @@ suite('searchResultRowTest', function() {
     // Screenshot
     assertEquals(1, keys2.length);
     assertEquals(
-        'screenshot',
+        'take screenshot',
         keys2[0]!.shadowRoot!.querySelector('div:has(> iron-icon)')!.ariaLabel);
 
     // Select the row and verify that the keys are highlighted.

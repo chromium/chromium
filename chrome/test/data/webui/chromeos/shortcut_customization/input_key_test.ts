@@ -85,7 +85,7 @@ suite('inputKeyTest', function() {
     const iconWrapperElement = inputKeyElement.shadowRoot!.querySelector(
                                    '#key > div') as HTMLDivElement;
     assertTrue(isVisible(iconWrapperElement));
-    assertEquals('screenshot', iconWrapperElement.ariaLabel);
+    assertEquals('take screenshot', iconWrapperElement.ariaLabel);
     assertEquals('img', iconWrapperElement.getAttribute('role'));
   });
 
