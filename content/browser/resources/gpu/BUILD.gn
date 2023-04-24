@@ -47,6 +47,18 @@ generate_grd("build_html_wrapper_grdp") {
   deps = [ ":html_wrapper_files" ]
 }
 
+generate_grd("build_mojo_grdp") {
+  out_grd = "$target_gen_dir/mojo_resources.grdp"
+  grd_prefix = "gpu"
+  input_files = [
+    "vulkan_info.mojom-webui.js",
+    "vulkan_types.mojom-webui.js",
+  ]
+  input_files_base_dir =
+      rebase_path("${root_gen_dir}/mojom-webui/gpu/ipc/common", root_build_dir)
+  deps = [ "//gpu/ipc/common:vulkan_interface_js__generator" ]
+}
+
 generate_grd("build_grd") {
   out_grd = generated_grd
   grd_prefix = "gpu"
@@ -54,9 +66,15 @@ generate_grd("build_grd") {
       [ "gpu_internals.html" ] + web_component_files + non_component_files
   input_files_base_dir = rebase_path(".", "//")
 
-  grdp_files = filter_include(get_target_outputs(":build_html_wrapper_grdp"),
-                              [ "*.grdp" ])
-  deps = [ ":build_html_wrapper_grdp" ]
+  grdp_files = [
+    "$target_gen_dir/html_wrapper_resources.grdp",
+    "$target_gen_dir/mojo_resources.grdp",
+  ]
+
+  deps = [
+    ":build_html_wrapper_grdp",
+    ":build_mojo_grdp",
+  ]
 }
 
 grit("resources") {

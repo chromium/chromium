@@ -28,7 +28,6 @@
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_process_host.h"
-#include "content/grit/content_resources.h"
 #include "content/grit/gpu_resources.h"
 #include "content/grit/gpu_resources_map.h"
 #include "content/public/browser/browser_thread.h"
@@ -83,10 +82,6 @@ void CreateAndAddGpuHTMLSource(BrowserContext* browser_context) {
 
   source->UseStringsJs();
   source->AddResourcePaths(base::make_span(kGpuResources, kGpuResourcesSize));
-  source->AddResourcePath("vulkan_info.mojom-webui.js",
-                          IDR_VULKAN_INFO_MOJO_JS);
-  source->AddResourcePath("vulkan_types.mojom-webui.js",
-                          IDR_VULKAN_TYPES_MOJO_JS);
   source->AddResourcePath("", IDR_GPU_GPU_INTERNALS_HTML);
 }
 
