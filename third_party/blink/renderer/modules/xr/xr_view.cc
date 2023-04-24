@@ -6,9 +6,9 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_view.h"
 
+#include <algorithm>
 #include <cmath>
 
-#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/modules/xr/xr_camera.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
@@ -250,7 +250,7 @@ void XRViewData::requestViewportScale(absl::optional<double> scale) {
   if (!scale)
     return;
 
-  requested_viewport_scale_ = base::clamp(*scale, kMinViewportScale, 1.0);
+  requested_viewport_scale_ = std::clamp(*scale, kMinViewportScale, 1.0);
 }
 
 }  // namespace blink

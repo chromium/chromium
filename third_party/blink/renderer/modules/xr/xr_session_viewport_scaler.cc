@@ -7,8 +7,6 @@
 #include <algorithm>
 #include <cmath>
 
-#include "base/cxx17_backports.h"
-
 namespace blink {
 
 namespace {
@@ -49,8 +47,8 @@ void XRSessionViewportScaler::ResetLoad() {
 }
 
 void XRSessionViewportScaler::UpdateRenderingTimeRatio(float new_value) {
-  gpu_load_ += base::clamp(kLoadDecay * (new_value - gpu_load_), -kMaxChange,
-                           kMaxChange);
+  gpu_load_ +=
+      std::clamp(kLoadDecay * (new_value - gpu_load_), -kMaxChange, kMaxChange);
   float old_scale = scale_;
   if (gpu_load_ > kLoadHigh && scale_ > kMinScale) {
     scale_ *= kScaleStep;
@@ -59,7 +57,7 @@ void XRSessionViewportScaler::UpdateRenderingTimeRatio(float new_value) {
     scale_ /= kScaleStep;
     scale_ = round(scale_ * kRound) / kRound;
   }
-  scale_ = base::clamp(scale_, kMinScale, kMaxScale);
+  scale_ = std::clamp(scale_, kMinScale, kMaxScale);
   if (scale_ != old_scale) {
     ResetLoad();
   }

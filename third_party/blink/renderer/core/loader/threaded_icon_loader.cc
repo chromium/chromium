@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "skia/ext/image_operations.h"
@@ -101,12 +100,11 @@ void DecodeAndResizeImage(
     return;
   }
 
-  int resized_width =
-      base::clamp(static_cast<int>(scale * decoded_icon.width()), 1,
-                  resize_dimensions.width());
+  int resized_width = std::clamp(static_cast<int>(scale * decoded_icon.width()),
+                                 1, resize_dimensions.width());
   int resized_height =
-      base::clamp(static_cast<int>(scale * decoded_icon.height()), 1,
-                  resize_dimensions.height());
+      std::clamp(static_cast<int>(scale * decoded_icon.height()), 1,
+                 resize_dimensions.height());
 
   // Use the RESIZE_GOOD quality allowing the implementation to pick an
   // appropriate method for the resize. Can be increased to RESIZE_BETTER

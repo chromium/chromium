@@ -27,7 +27,8 @@
 
 #include "third_party/blink/renderer/core/xml/xpath_functions.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
@@ -545,8 +546,8 @@ static std::pair<unsigned, unsigned> ComputeSubstringStartEnd(double start,
   if (std::isnan(start) || std::isnan(end))
     return std::make_pair(1, 1);
   // Neither start nor end are NaN, but may still be +/- Inf
-  const double clamped_start = base::clamp<double>(start, 1, max_len + 1);
-  const double clamped_end = base::clamp(end, clamped_start, max_len + 1);
+  const double clamped_start = std::clamp<double>(start, 1, max_len + 1);
+  const double clamped_end = std::clamp(end, clamped_start, max_len + 1);
   return std::make_pair(static_cast<unsigned>(clamped_start),
                         static_cast<unsigned>(clamped_end));
 }

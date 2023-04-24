@@ -27,7 +27,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/values_equivalent.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/clamped_math.h"
@@ -2585,7 +2584,7 @@ bool ComputedStyleBuilder::SetEffectiveZoom(float f) {
   // real cost to our understanding of the zooms in use.
   base::UmaHistogramSparse(
       "Blink.EffectiveZoom",
-      base::clamp<float>(clamped_effective_zoom * 100, 0, 400));
+      std::clamp<float>(clamped_effective_zoom * 100, 0, 400));
   return true;
 }
 

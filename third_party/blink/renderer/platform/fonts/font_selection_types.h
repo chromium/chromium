@@ -26,7 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_SELECTION_TYPES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_SELECTION_TYPES_H_
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -355,7 +356,7 @@ struct FontSelectionRange {
   }
 
   FontSelectionValue clampToRange(FontSelectionValue selection_value) const {
-    return base::clamp(selection_value, minimum, maximum);
+    return std::clamp(selection_value, minimum, maximum);
   }
 
   FontSelectionValue minimum{FontSelectionValue(1)};

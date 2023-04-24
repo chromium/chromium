@@ -259,9 +259,6 @@ _CONFIG = [
             'base::ClampSub',
             'base::MakeClampedNum',
 
-            # //base/cxx17_backports.h.
-            "base::clamp",
-
             # //base/strings/strcat.h.
             'base::StrCat',
 

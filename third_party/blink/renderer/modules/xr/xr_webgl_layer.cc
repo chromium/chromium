@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -117,8 +116,8 @@ XRWebGLLayer* XRWebGLLayer::Create(XRSession* session,
     // small to see or unreasonably large.
     // TODO(bajones): Would be best to have the max value communicated from the
     // service rather than limited to the native res.
-    framebuffer_scale = base::clamp(initializer->framebufferScaleFactor(),
-                                    kFramebufferMinScale, max_scale);
+    framebuffer_scale = std::clamp(initializer->framebufferScaleFactor(),
+                                   kFramebufferMinScale, max_scale);
   }
 
   gfx::SizeF framebuffers_size = session->RecommendedFramebufferSize();

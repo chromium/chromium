@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/platform/media/multi_buffer_data_source.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/containers/adapters.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -721,7 +721,7 @@ void MultiBufferDataSource::UpdateBufferSizes() {
   buffer_size_update_counter_ = kUpdateBufferSizeFrequency;
 
   // Use a default bit rate if unknown and clamp to prevent overflow.
-  int64_t bitrate = base::clamp<int64_t>(bitrate_, 0, kMaxBitrate);
+  int64_t bitrate = std::clamp<int64_t>(bitrate_, 0, kMaxBitrate);
   if (bitrate == 0)
     bitrate = kDefaultBitrate;
 
@@ -735,8 +735,8 @@ void MultiBufferDataSource::UpdateBufferSizes() {
   int64_t bytes_per_second = (bitrate / 8.0) * playback_rate;
 
   // Preload 10 seconds of data, clamped to some min/max value.
-  int64_t preload = base::clamp(preload_seconds_.value() * bytes_per_second,
-                                kMinBufferPreload, kMaxBufferPreload);
+  int64_t preload = std::clamp(preload_seconds_.value() * bytes_per_second,
+                               kMinBufferPreload, kMaxBufferPreload);
 
   // Increase buffering slowly at a rate of 10% of data downloaded so
   // far, maxing out at the preload size.
@@ -751,8 +751,8 @@ void MultiBufferDataSource::UpdateBufferSizes() {
 
   // We pin a few seconds of data behind the current reading position.
   int64_t pin_backward =
-      base::clamp(keep_after_playback_seconds_.value() * bytes_per_second,
-                  kMinBufferPreload, kMaxBufferPreload);
+      std::clamp(keep_after_playback_seconds_.value() * bytes_per_second,
+                 kMinBufferPreload, kMaxBufferPreload);
 
   // We always pin at least kDefaultPinSize ahead of the read position.
   // Normally, the extra space between preload_high and kDefaultPinSize will
