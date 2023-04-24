@@ -612,10 +612,13 @@ absl::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
       VersionClassForVersion(version_info->version);
   if (version_info != version_info_) {
     version_info_ = version_info;
-    d_.resize(version_info_->total_size());
   }
-  // Previous data and "set" bits must be cleared.
-  memset(&d_[0], 0, version_info_->total_size());
+
+  // If this is the first time `Generate` is called, then `d_` is a brand-new
+  // (empty) vector.  If `Generate` has been called in the past, then `d_` is a
+  // vector in a moved-from state.  Either way, we need to construct a new
+  // vector.
+  d_ = std::vector<uint8_t>(version_info_->total_size(), 0);
 
   const size_t framed_input_size =
       version_info_->group1_data_bytes() + version_info_->group2_data_bytes();
@@ -784,8 +787,10 @@ absl::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
           kMaskFunctions[best_mask]);
 
   GeneratedCode code;
-  code.data = base::span<uint8_t>(&d_[0], version_info_->total_size());
+  code.data = std::move(d_);
   code.qr_size = version_info_->size;
+  CHECK_EQ(code.data.size(), version_info_->total_size());
+  CHECK_EQ(code.data.size(), static_cast<size_t>(code.qr_size * code.qr_size));
   return code;
 }
 

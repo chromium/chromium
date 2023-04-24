@@ -75,7 +75,7 @@ class QRCodeGeneratorServiceImpl : public mojom::QRCodeGeneratorService {
   // |response| is the mojo service request object to Generate().
   //     The bitmap will be populated as a response field if requested by the
   //     client.
-  void RenderBitmap(const uint8_t* data,
+  void RenderBitmap(base::span<const uint8_t> data,
                     const gfx::Size data_size,
                     const mojom::GenerateQRCodeRequestPtr& request,
                     mojom::GenerateQRCodeResponsePtr* response);

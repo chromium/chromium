@@ -34,13 +34,21 @@ class QRCodeGenerator {
 
     ~GeneratedCode();
 
-    // Pixel data; pointer to an array of bytes, where the least-significant
-    // bit of each byte is set if that tile should be "black".
-    // Clients should ensure four modules of padding when rendering the code.
-    // On error, will not be populated, and will evaluate to false.
-    base::span<uint8_t> data;
+    // Pixel data.  The least-significant bit of each byte is set if that
+    // tile/module should be "black".
+    //
+    // Clients should ensure four tiles/modules of padding when rendering the
+    // code.
+    //
+    // On error, will not be populated, and will contain an empty vector.
+    std::vector<uint8_t> data;
 
-    // Width and height (which are equal) of the generated data, in tiles.
+    // Width and height (which are equal) of the generated data, in
+    // tiles/modules.
+    //
+    // The following invariant holds: `qr_size * qr_size == data.size()`.
+    //
+    // On error, will not be populated, and will contain 0.
     int qr_size = 0;
   };
 

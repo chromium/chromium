@@ -195,7 +195,7 @@ static void DrawLocators(SkCanvas* canvas,
 }
 
 void QRCodeGeneratorServiceImpl::RenderBitmap(
-    const uint8_t* data,
+    base::span<const uint8_t> data,
     const gfx::Size data_size,
     const mojom::GenerateQRCodeRequestPtr& request,
     mojom::GenerateQRCodeResponsePtr* response) {
@@ -321,19 +321,17 @@ void QRCodeGeneratorServiceImpl::GenerateQRCode(
     std::move(callback).Run(std::move(response));
     return;
   }
-  auto& qr_data_span = qr_data->data;
-
   // The least significant bit of each byte in |qr_data.span| is set if the tile
   // should be black.
-  for (size_t i = 0; i < qr_data_span.size(); i++) {
-    qr_data_span[i] &= 1;
+  for (uint8_t& byte : qr_data->data) {
+    byte &= 1;
   }
 
-  response->data.insert(response->data.begin(), qr_data_span.begin(),
-                        qr_data_span.end());
+  response->data = std::move(qr_data->data);
   response->data_size = {qr_data->qr_size, qr_data->qr_size};
   response->error_code = mojom::QRCodeGeneratorError::NONE;
-  RenderBitmap(qr_data_span.data(), response->data_size, request, &response);
+  RenderBitmap(base::make_span(response->data), response->data_size, request,
+               &response);
 
   std::move(callback).Run(std::move(response));
 }
