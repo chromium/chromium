@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/login/screens/demo_preferences_screen.h"
 #include "chrome/browser/ash/login/screens/demo_setup_screen.h"
 #include "chrome/browser/ash/login/screens/display_size_screen.h"
+#include "chrome/browser/ash/login/screens/drive_pinning_screen.h"
 #include "chrome/browser/ash/login/screens/edu_coexistence_login_screen.h"
 #include "chrome/browser/ash/login/screens/enable_adb_sideloading_screen.h"
 #include "chrome/browser/ash/login/screens/enable_debugging_screen.h"
@@ -329,6 +330,7 @@ class WizardController : public OobeUI::Observer {
   void ShowTouchpadScrollScreen();
   void ShowDisplaySizeScreen();
   void ShowGaiaPasswordChangedScreen(std::unique_ptr<UserContext> user_context);
+  void ShowDrivePinningScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();
@@ -416,6 +418,7 @@ class WizardController : public OobeUI::Observer {
   void OnChoobeScreenExit(ChoobeScreen::Result result);
   void OnTouchpadScreenExit(TouchpadScrollScreen::Result result);
   void OnDisplaySizeScreenExit(DisplaySizeScreen::Result result);
+  void OnDrivePinningScreenExit(DrivePinningScreen::Result result);
 
   // Callback invoked once it has been determined whether the device is disabled
   // or not.

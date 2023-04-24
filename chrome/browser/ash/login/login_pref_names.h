@@ -37,6 +37,7 @@ extern const char kRevenOobeConsolidatedConsentAccepted[];
 extern const char kUrlParameterToAutofillSAMLUsername[];
 extern const char kChoobeSelectedScreens[];
 extern const char kChoobeCompletedScreens[];
+extern const char kOobeDrivePinningEnabledDeferred[];
 
 }  // namespace prefs
 }  // namespace ash

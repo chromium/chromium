@@ -2835,6 +2835,8 @@ static_library("ui") {
       "webui/ash/login/device_disabled_screen_handler.h",
       "webui/ash/login/display_size_screen_handler.cc",
       "webui/ash/login/display_size_screen_handler.h",
+      "webui/ash/login/drive_pinning_screen_handler.cc",
+      "webui/ash/login/drive_pinning_screen_handler.h",
       "webui/ash/login/enable_adb_sideloading_screen_handler.cc",
       "webui/ash/login/enable_adb_sideloading_screen_handler.h",
       "webui/ash/login/enable_debugging_screen_handler.cc",

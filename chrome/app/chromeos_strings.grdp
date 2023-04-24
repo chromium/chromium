@@ -6603,6 +6603,24 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Make everything bigger or smaller
   </message>
 
+  <!-- Drive Offline-->
+  <!-- TODO(b/278024582): Remove translateable tags when strings are finalized. -->
+  <message name="IDS_OOBE_DRIVE_PINNING_TITLE" desc="Title of the drive pinning screen." translateable="false">
+    Keep your files available when you're offline
+  </message>
+  <message name="IDS_OOBE_DRIVE_PINNING_SUBTITLE" desc="Description of the drive pinning screen." translateable="false">
+    Automatically download files in your My Drive so you can access and edit them without an internet connection.
+  </message>
+  <message name="IDS_OOBE_DRIVE_PINNING_ADDITIONAL_SUBTITLE" desc="Additional description of the drive pinning screen." translateable="false">
+    This will use about <ph name="REQUIRED_SPACE">$1<ex>12.2 GB</ex></ph> leaving <ph name="FREE_SPACE">$2<ex>96.8 GB</ex></ph> available
+  </message>
+  <message name="IDS_OOBE_DRIVE_PINNING_ACCEPT_BUTTON" desc="Label for button to accept sync drive files pinning." translateable="false">
+    Turn on sync
+  </message>
+  <message name="IDS_OOBE_DRIVE_PINNING_DECLINE_BUTTON" desc="Label for button to decline sync drive files pinning." translateable="false">
+    Skip
+  </message>
+
   <!-- Strings for the locale switch notification inside the OOBE. -->
   <message name="IDS_LOCALE_SWITCH_NOTIFICATION_TITLE" desc="Title of the notification that is displayed at the bottom-right corner of the screen.">
     Switch device language?

@@ -1578,6 +1578,10 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       kind: ScreenKind.NORMAL,
     },
     {
+      id: 'drive-pinning',
+      kind: ScreenKind.NORMAL,
+    },
+    {
       id: 'marketing-opt-in',
       kind: ScreenKind.NORMAL,
       handledSteps: 'overview',

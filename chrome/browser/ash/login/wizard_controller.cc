@@ -65,6 +65,7 @@
 #include "chrome/browser/ash/login/screens/demo_setup_screen.h"
 #include "chrome/browser/ash/login/screens/device_disabled_screen.h"
 #include "chrome/browser/ash/login/screens/display_size_screen.h"
+#include "chrome/browser/ash/login/screens/drive_pinning_screen.h"
 #include "chrome/browser/ash/login/screens/edu_coexistence_login_screen.h"
 #include "chrome/browser/ash/login/screens/enable_adb_sideloading_screen.h"
 #include "chrome/browser/ash/login/screens/enable_debugging_screen.h"
@@ -145,6 +146,7 @@
 #include "chrome/browser/ui/webui/ash/login/demo_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/display_size_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enable_adb_sideloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
@@ -883,6 +885,14 @@ WizardController::CreateScreens() {
         base::BindRepeating(&WizardController::OnDisplaySizeScreenExit,
                             weak_factory_.GetWeakPtr())));
   }
+
+  if (features::IsOobeDrivePinningEnabled()) {
+    append(std::make_unique<DrivePinningScreen>(
+        oobe_ui->GetView<DrivePinningScreenHandler>()->AsWeakPtr(),
+        base::BindRepeating(&WizardController::OnDrivePinningScreenExit,
+                            weak_factory_.GetWeakPtr())));
+  }
+
   return result;
 }
 
@@ -978,6 +988,14 @@ void WizardController::ShowDemoModePreferencesScreen() {
 
 void WizardController::ShowDemoModeSetupScreen() {
   SetCurrentScreen(GetScreen(DemoSetupScreenView::kScreenId));
+}
+
+void WizardController::ShowDrivePinningScreen() {
+  if (features::IsOobeDrivePinningEnabled()) {
+    SetCurrentScreen(GetScreen(DrivePinningScreenView::kScreenId));
+  } else {
+    OnDrivePinningScreenExit(DrivePinningScreen::Result::NOT_APPLICABLE);
+  }
 }
 
 void WizardController::ShowResetScreen() {
@@ -1332,6 +1350,11 @@ void WizardController::OnConsolidatedConsentScreenExit(
     ConsolidatedConsentScreen::Result result) {
   OnScreenExit(ConsolidatedConsentScreenView::kScreenId,
                ConsolidatedConsentScreen::GetResultString(result));
+
+  if (features::IsOobeDrivePinningEnabled()) {
+    GetScreen<DrivePinningScreen>()->CalculateRequiredSpace();
+  }
+
   if (wizard_context_->is_cloud_ready_update_flow) {
     AdvanceToScreen(HWDataCollectionView::kScreenId);
     return;
@@ -1516,12 +1539,16 @@ void WizardController::OnTouchpadScreenExit(
     TouchpadScrollScreen::Result result) {
   OnScreenExit(TouchpadScrollScreenView::kScreenId,
                TouchpadScrollScreen::GetResultString(result));
-  switch (result) {
-    case TouchpadScrollScreen::Result::kNotApplicable:
-    case TouchpadScrollScreen::Result::kNext:
-      ShowThemeSelectionScreen();
-      break;
-  }
+
+  ShowDrivePinningScreen();
+}
+
+void WizardController::OnDrivePinningScreenExit(
+    DrivePinningScreen::Result result) {
+  OnScreenExit(DrivePinningScreenView::kScreenId,
+               DrivePinningScreen::GetResultString(result));
+
+  ShowThemeSelectionScreen();
 }
 
 void WizardController::OnDisplaySizeScreenExit(

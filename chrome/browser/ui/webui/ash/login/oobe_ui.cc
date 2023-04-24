@@ -59,6 +59,7 @@
 #include "chrome/browser/ui/webui/ash/login/demo_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/display_size_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enable_adb_sideloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
@@ -296,6 +297,10 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
 
   source->AddBoolean("isTouchpadScrollEnabled",
                      features::IsOobeTouchpadScrollEnabled());
+
+  source->AddBoolean("isDrivePinningEnabled",
+                     features::IsOobeDrivePinningEnabled());
+
   // Whether the timings in oobe_trace.js will be output to the console.
   source->AddBoolean(
       "printFrontendTimings",
@@ -503,6 +508,10 @@ void OobeUI::ConfigureOobeDisplay() {
 
   if (features::IsOobeDisplaySizeEnabled()) {
     AddScreenHandler(std::make_unique<DisplaySizeScreenHandler>());
+  }
+
+  if (features::IsOobeDrivePinningEnabled()) {
+    AddScreenHandler(std::make_unique<DrivePinningScreenHandler>());
   }
 
   AddScreenHandler(std::make_unique<LocalStateErrorScreenHandler>());

@@ -142,6 +142,12 @@ void StartupUtils::RegisterOobeProfilePrefs(PrefRegistrySimple* registry) {
     registry->RegisterListPref(prefs::kChoobeSelectedScreens);
     registry->RegisterListPref(prefs::kChoobeCompletedScreens);
   }
+
+  if (features::IsOobeDrivePinningEnabled()) {
+    registry->RegisterBooleanPref(prefs::kOobeDrivePinningEnabledDeferred,
+                                  false);
+  }
+
   OnboardingUserActivityCounter::RegisterProfilePrefs(registry);
 }
 

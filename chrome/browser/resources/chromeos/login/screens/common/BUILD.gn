@@ -37,6 +37,7 @@ js_type_check("closure_compile_local") {
     ":cryptohome_recovery_setup",
     ":device_disabled",
     ":display_size",
+    ":drive_pinning",
     ":enable_kiosk",
     ":error_message",
     ":family_link_notice",
@@ -212,6 +213,19 @@ js_library("display_size") {
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_slider/cr_slider_externs.js" ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("drive_pinning") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/drive_pinning.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:oobe_dialog_host_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/buttons:oobe_next_button",
+    "../../components/dialogs:oobe_adaptive_dialog",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
   extra_deps = [ ":web_components" ]
 }
 
@@ -679,6 +693,7 @@ html_to_js("web_components") {
     "consolidated_consent.js",
     "device_disabled.js",
     "display_size.js",
+    "drive_pinning.js",
     "enable_kiosk.js",
     "error_message.js",
     "family_link_notice.js",
