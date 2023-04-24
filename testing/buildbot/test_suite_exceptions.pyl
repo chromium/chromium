@@ -1416,6 +1416,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.chrome_public_test_apk.filter',
         ],
       },
+      'android-13-x64-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.chrome_public_test_apk.filter',
+        ],
+      },
       'android-arm64-proguard-rel': {
         'swarming': {
           'shards': 25,

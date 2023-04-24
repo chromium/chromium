@@ -1,0 +1,2 @@
+# crbug.com/1435573
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.*
