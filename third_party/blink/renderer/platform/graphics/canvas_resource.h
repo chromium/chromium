@@ -103,6 +103,22 @@ class PLATFORM_EXPORT CanvasResource
   // CPU but can be used with GPU compositing (using GMBs).
   virtual bool SupportsAcceleratedCompositing() const = 0;
 
+  // Transfers ownership of the resource's vix::ReleaseCallback.  This is useful
+  // prior to transferring a resource to another thread, to retain the release
+  // callback on the current thread since the callback may not be thread safe.
+  // Even if the callback is never executed on another thread, simply transiting
+  // through another thread is dangerous because garbage collection races may
+  // make it impossible to return the resource to its thread of origin for
+  // destruction; in which case the callback (and its bound arguments) may be
+  // destroyed on the wrong thread.
+  virtual viz::ReleaseCallback TakeVizReleaseCallback() {
+    return viz::ReleaseCallback();
+  }
+
+  virtual void SetVizReleaseCallback(viz::ReleaseCallback cb) {
+    CHECK(cb.is_null());
+  }
+
   // Returns true if the resource is still usable. It maybe not be valid in the
   // case of a context loss or if we fail to initialize the memory backing for
   // the resource.
@@ -494,6 +510,12 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
 
   scoped_refptr<StaticBitmapImage> Bitmap() override;
   const gpu::Mailbox& GetOrCreateGpuMailbox(MailboxSyncMode) override;
+  viz::ReleaseCallback TakeVizReleaseCallback() override {
+    return std::move(release_callback_);
+  }
+  void SetVizReleaseCallback(viz::ReleaseCallback cb) override {
+    release_callback_ = std::move(cb);
+  }
 
  private:
   void TearDown() override;
