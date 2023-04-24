@@ -49,7 +49,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
     explicit FencedFrameDelegate(HTMLFencedFrameElement* outer_element)
         : outer_element_(outer_element) {}
     virtual ~FencedFrameDelegate();
-    void Trace(Visitor* visitor) const;
+    virtual void Trace(Visitor* visitor) const;
 
     virtual void Navigate(const KURL&, const String&) = 0;
     // This method is used to clean up all state in preparation for destruction,
