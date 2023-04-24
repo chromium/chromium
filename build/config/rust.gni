@@ -19,13 +19,14 @@ declare_args() {
   # should not be removed.
   # TODO(crbug.com/1386212): Mac
   # TODO(crbug.com/1271215): Windows
+  # TODO(crbug.com/1229419): no Linux official builds yet
   # TODO(crbug.com/1426472): use_clang_coverage
   # TODO(crbug.com/1427362): using_sanitizer
   # TODO(crbug.com/1427364): target_cpu != "x86"
-  # There is no specific bug for !is_official_build or other platforms, since
-  # this is just a matter of rolling things out slowly and carefully and there
-  # may be no actual bugs there.
-  enable_rust = (is_linux || is_android) && !is_official_build &&
+  # (There are not nececessarily bugs for every missing combination here,
+  # as we're just rolling things out incrementally and carefully.)
+  enable_rust = (is_linux || is_android) &&
+                (!is_official_build || is_android || !is_a_target_toolchain) &&
                 !using_sanitizer && target_cpu != "x86" &&
                 !use_clang_coverage && is_clang && build_with_chromium
 
