@@ -82,6 +82,8 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
     kMaxValue = kRequestDestination,
   };
 
+  // Observes a triggered prerender. Note that the observer should overlive the
+  // prerender host instance, or be removed properly upon destruction.
   class Observer : public base::CheckedObserver {
    public:
     // Called on the page activation.

@@ -7740,18 +7740,6 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
           nullptr);
   EXPECT_TRUE(prerender_handle);
-
-  // Navigate to `kInitialUrl` on the primary page. This should make
-  // SpeculationHostImpl destructed.
-  NavigatePrimaryPage(kInitialUrl);
-  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
-
-  // The metric is recorded after SpeculationHostImpl is destructed or a primary
-  // page is updated.
-  histogram_tester().ExpectUniqueSample(
-      "Prerender.Experimental.CancellationPercentageByExcessiveMemoryUsage."
-      "SpeculationRule",
-      0, 1);
 }
 
 // Tests that PrerenderHostRegistry can't start any prerenderings if the
@@ -7796,18 +7784,6 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersWithLimitedMemoryBrowserTest,
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
           nullptr);
   EXPECT_TRUE(prerender_handle);
-
-  // Navigate to `kInitialUrl` on the primary page. This should make
-  // SpeculationHostImpl destructed.
-  NavigatePrimaryPage(kInitialUrl);
-  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
-
-  // The metric is recorded after SpeculationHostImpl is destructed or a primary
-  // page is updated.
-  histogram_tester().ExpectUniqueSample(
-      "Prerender.Experimental.CancellationPercentageByExcessiveMemoryUsage."
-      "SpeculationRule",
-      count_of_memory_limit_exceeded * 100 / MaxNumOfRunningPrerenders(), 1);
 }
 
 // Tests that cross-site urls cannot be prerendered.

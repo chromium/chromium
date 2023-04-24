@@ -1657,19 +1657,6 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram
-    name="Prerender.Experimental.CancellationPercentageByExcessiveMemoryUsage.SpeculationRule"
-    units="%" expires_after="2023-08-27">
-  <owner>asamidoi@chromium.org</owner>
-  <owner>chrome-prerendering@google.com</owner>
-  <summary>
-    Records the percentage of destroyed prerenders due to the excessive memory
-    usage in started prerenders. The result should be an integer between 0 and
-    100. This is recorded when SpeculationHostImpl is destructed or a primary
-    page is updated.
-  </summary>
-</histogram>
-
-<histogram
     name="Prerender.Experimental.CrossOriginRedirectionProtocolChange{PrerenderTriggerType}"
     enum="PrerenderCrossOriginRedirectionProtocolChange"
     expires_after="2023-04-30">
