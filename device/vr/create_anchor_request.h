@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_VR_OPENXR_OPENXR_ANCHOR_REQUEST_H_
-#define DEVICE_VR_OPENXR_OPENXR_ANCHOR_REQUEST_H_
+#ifndef DEVICE_VR_CREATE_ANCHOR_REQUEST_H_
+#define DEVICE_VR_CREATE_ANCHOR_REQUEST_H_
 
+#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
@@ -16,7 +17,7 @@ using CreateAnchorCallback =
     base::OnceCallback<void(device::mojom::CreateAnchorResult,
                             uint64_t anchor_id)>;
 
-class CreateAnchorRequest {
+class COMPONENT_EXPORT(DEVICE_VR_BASE) CreateAnchorRequest {
  public:
   const mojom::XRNativeOriginInformation& GetNativeOriginInformation() const;
   const gfx::Transform& GetNativeOriginFromAnchor() const;
@@ -41,4 +42,4 @@ class CreateAnchorRequest {
 
 }  // namespace device
 
-#endif  // DEVICE_VR_OPENXR_OPENXR_ANCHOR_REQUEST_H_
+#endif  // DEVICE_VR_CREATE_ANCHOR_REQUEST_H_

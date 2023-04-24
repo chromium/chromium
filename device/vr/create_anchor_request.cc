@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/vr/openxr/openxr_anchor_request.h"
+#include "device/vr/create_anchor_request.h"
 
 namespace device {
 

@@ -10,7 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/math_constants.h"
-#include "device/vr/openxr/openxr_anchor_request.h"
+#include "device/vr/create_anchor_request.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
