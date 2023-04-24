@@ -1,0 +1,71 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// out/Debug/browser_tests \
+//    --gtest_filter=ReadAnythingAppTest.UpdateContent_Paragraph
+
+const readAnythingApp = document.querySelector('read-anything-app').shadowRoot;
+const container = readAnythingApp.getElementById('container');
+let result = true;
+
+function assertEquals(actual, expected) {
+  const isEqual = actual === expected;
+  if (!isEqual) {
+    console.error(
+        'Expected: ' + JSON.stringify(expected) + ', ' +
+        'Actual: ' + JSON.stringify(actual));
+  }
+  result = result && isEqual;
+  return isEqual;
+}
+
+function assertContainerInnerHTML(expected) {
+  const actual = container.innerHTML;
+  assertEquals(actual, expected);
+}
+
+// root htmlTag='#document' id=1
+// ++paragraph htmlTag='p' id=2
+// ++++staticText name='This is a paragraph' id=3
+// ++paragraph htmlTag='p' id=4
+// ++++staticText name='This is a second paragraph' id=5
+const axTree = {
+  rootId: 1,
+  nodes: [
+    {
+      id: 1,
+      role: 'rootWebArea',
+      htmlTag: '#document',
+      childIds: [2, 4],
+    },
+    {
+      id: 2,
+      role: 'paragraph',
+      htmlTag: 'p',
+      childIds: [3],
+    },
+    {
+      id: 3,
+      role: 'staticText',
+      name: 'This is a paragraph',
+    },
+    {
+      id: 4,
+      role: 'paragraph',
+      htmlTag: 'p',
+      childIds: [5],
+    },
+    {
+      id: 5,
+      role: 'staticText',
+      name: 'This is a second paragraph',
+    },
+  ],
+};
+chrome.readAnything.setContentForTesting(axTree, [2, 4]);
+const expected = '<div><p>This is a paragraph</p>' +
+    '<p>This is a second paragraph</p></div>';
+assertContainerInnerHTML(expected);
+
+domAutomationController.send(result);
