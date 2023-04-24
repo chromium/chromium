@@ -1442,6 +1442,8 @@ public class PersonalDataManager {
             // If the image fetching was unsuccessful, silently return.
             if (bitmap == null) return;
 
+            // When adding new sizes for card icons, check if the corner radius needs to be added as
+            // a suffix for caching (crbug.com/1431283).
             mCreditCardArtImages.put(urlWithParams.getSpec(),
                     AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(bitmap, width, height,
                             cornerRadius,
