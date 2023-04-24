@@ -34,13 +34,6 @@ constexpr char kChromiumSurfaceProtoValue[] = "4";
 constexpr char kStartTimeQueryParameter[] = "st";
 constexpr char kLensMetadataParameter[] = "lm";
 
-// TODO(b/278746005): Refactor code to to have origin in one place.
-// Query parameter for the Chrome WebUI origin. This needs to be different
-// from the WebUI URL constant because it does not include the last '/'.
-inline constexpr char kOriginQueryParameter[] = "origin";
-inline constexpr char kOriginQueryParameterValue[] =
-    "chrome-untrusted://companion-side-panel.top-chrome";
-
 constexpr char kRenderingEnvironmentQueryParameter[] = "re";
 constexpr char kOneLensDesktopWebChromeSidePanel[] = "dcsp";
 constexpr char kOneLensDesktopWebFullscreen[] = "df";
@@ -103,10 +96,6 @@ std::map<std::string, std::string> GetLensQueryParametersMap(
     case lens::CHROME_SEARCH_COMPANION:
       query_parameters.insert(
           {kRenderingEnvironmentQueryParameter, kChromeSearchCompanion});
-      // This rendering environment also needs to provide an 'origin' parameter
-      // on all requests.
-      query_parameters.insert(
-          {kOriginQueryParameter, kOriginQueryParameterValue});
       break;
     default:
       // Empty strings are ignored when query parameters are built.

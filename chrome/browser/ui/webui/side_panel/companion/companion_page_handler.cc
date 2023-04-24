@@ -112,6 +112,10 @@ void CompanionPageHandler::NotifyURLChanged(bool is_full_reload) {
 
 void CompanionPageHandler::OnImageQuery(
     side_panel::mojom::ImageQuery image_query) {
+  GURL modified_upload_url = url_builder_->AppendCompanionParamsToURL(
+      image_query.upload_url, web_contents()->GetVisibleURL(),
+      /*text_query=*/"");
+  image_query.upload_url = modified_upload_url;
   page_->OnImageQuery(image_query.Clone());
 }
 
