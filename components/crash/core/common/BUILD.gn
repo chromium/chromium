@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/cronet/config.gni")
+import("//build/config/features.gni")
 import("//components/gwp_asan/buildflags/buildflags.gni")
 
 declare_args() {
@@ -26,15 +27,17 @@ group("common") {
   }
 }
 
-use_crashpad_annotation = (is_mac || is_win || is_android ||
-                           (is_linux && !is_castos)) && !use_crash_key_stubs
+use_crashpad_annotation =
+    (is_mac || (is_ios && use_blink && !is_official_build) || is_win ||
+     is_android || (is_linux && !is_castos)) && !use_crash_key_stubs
 
 # Causes both Crashpad and Breakpad crash keys to be used. Both key
 # implementations will be instantiated and set, doubling the storage
 # used for keys. This is intended to be used temporarily to test Crashpad
 # integrations without disabling Breakpad.
 use_combined_annotations =
-    ((is_ios && !is_cronet_build) || is_chromeos) && !use_crash_key_stubs
+    ((is_ios && (!use_blink || is_official_build) && !is_cronet_build) ||
+     is_chromeos) && !use_crash_key_stubs
 
 buildflag_header("crash_buildflags") {
   header = "crash_buildflags.h"
@@ -189,7 +192,7 @@ source_set("unit_tests") {
     sources += [ "objc_zombie_unittest.mm" ]
   }
 
-  if (is_ios) {
+  if (is_ios && use_combined_annotations) {
     sources += [ "crash_key_breakpad_ios_unittest.cc" ]
     deps += [ "//third_party/breakpad:client" ]
     include_dirs = [ "//third_party/breakpad/breakpad/src/" ]
