@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/immediate_crash.h"
+#include "build/build_config.h"
 
 #include <sys/mman.h>
 
