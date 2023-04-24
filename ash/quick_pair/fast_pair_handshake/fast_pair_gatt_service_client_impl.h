@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
@@ -152,6 +153,37 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
   GetCharacteristicsByUUIDs(const device::BluetoothUUID& uuidV1,
                             const device::BluetoothUUID& uuidV2);
 
+  // Writes `encrypted_request` to `characteristic`.
+  void WriteGattCharacteristicWithTimeout(
+      device::BluetoothRemoteGattCharacteristic* characteristic,
+      const std::vector<uint8_t>& encrypted_request,
+      device::BluetoothRemoteGattCharacteristic::WriteType write_type,
+      base::OnceClosure on_timeout,
+      base::OnceClosure on_sucess,
+      base::OnceCallback<void(device::BluetoothGattService::GattErrorCode)>
+          on_failure);
+
+  // Helper functions to WriteGattCharacteristicTimeout.
+  // Both stop `characteristic`'s corresponding timer in
+  // `characteristic_write_request_timers_` and run `on_success`/`on_failure`
+  // callbacks. `on_failure` must take parameter `error`.
+  void StopTimerRunSuccess(
+      device::BluetoothRemoteGattCharacteristic* characteristic,
+      base::OnceClosure on_success);
+  void StopTimerRunFailure(
+      device::BluetoothRemoteGattCharacteristic* characteristic,
+      base::OnceCallback<void(device::BluetoothGattService::GattErrorCode)>
+          on_failure,
+      device::BluetoothGattService::GattErrorCode error);
+
+  // Stops `characteristic`'s corresponding timer in
+  // `characteristic_write_request_timers_` if it exists.
+  void StopWriteRequestTimer(
+      device::BluetoothRemoteGattCharacteristic* characteristic);
+
+  // Stops all timers in `characteristic_write_request_timers_`.
+  void StopAllWriteRequestTimers();
+
   // BluetoothRemoteGattCharacteristic StartNotifySession callbacks
   void OnKeyBasedRequestNotifySession(
       const std::vector<uint8_t>& request_data,
@@ -176,9 +208,11 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
   base::OneShotTimer gatt_service_discovery_timer_;
   base::OneShotTimer passkey_notify_session_timer_;
   base::OneShotTimer keybased_notify_session_timer_;
-  base::OneShotTimer passkey_write_request_timer_;
   base::OneShotTimer key_based_write_request_timer_;
-  base::OneShotTimer account_key_write_request_timer_;
+
+  std::map<device::BluetoothRemoteGattCharacteristic*,
+           std::unique_ptr<base::OneShotTimer>>
+      characteristic_write_request_timers_;
 
   base::TimeTicks gatt_service_discovery_start_time_;
   base::TimeTicks passkey_notify_session_start_time_;
