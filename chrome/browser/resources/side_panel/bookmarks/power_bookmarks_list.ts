@@ -845,6 +845,7 @@ export class PowerBookmarksListElement extends PolymerElement {
     event.preventDefault();
     event.stopPropagation();
     this.showDeletionToastWithCount_(event.detail.bookmarks.length);
+    this.selectedBookmarks_ = [];
     this.editing_ = false;
   }
 
