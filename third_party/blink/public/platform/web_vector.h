@@ -95,7 +95,9 @@ class WebVector {
 
   WebVector(const WebVector<T>& other) : data_(other.data_) {}
 
-  template <typename C>
+  template <typename C,
+            typename = decltype(std::declval<C>().begin()),
+            typename = decltype(std::declval<C>().end())>
   WebVector(const C& other) : data_(other.begin(), other.end()) {}
 
   WebVector(WebVector<T>&& other) noexcept { Swap(other); }
