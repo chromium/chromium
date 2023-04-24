@@ -166,6 +166,10 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     // Tracks whether a touch selection is currently active.
     private boolean mHasSelection;
 
+    // If we are currently processing a Select All request from the menu. Used to
+    // dismiss the old menu so that it won't be preserved and redrawn at a new anchor.
+    private boolean mIsProcessingSelectAll;
+
     // Lazily created paste popup menu, triggered either via long press in an
     // editable region or from tapping the insertion handle.
     private PastePopupMenu mPastePopupMenu;
@@ -1056,6 +1060,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
      */
     @VisibleForTesting
     public void selectAll() {
+        mIsProcessingSelectAll = true;
         mWebContents.selectAll();
         mClassificationResult = null;
         // Even though the above statement logged a SelectAll user action, we want to
@@ -1440,7 +1445,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     @CalledByNative
     /* package */ void onSelectionChanged(String text) {
         final boolean unSelected = TextUtils.isEmpty(text) && hasSelection();
-        if (unSelected) {
+        if (unSelected || mIsProcessingSelectAll) {
             if (mSmartSelectionEventProcessor != null) {
                 mSmartSelectionEventProcessor.onSelectionAction(mLastSelectedText,
                         mLastSelectionOffset, SelectionEvent.ACTION_ABANDON,
@@ -1452,6 +1457,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         if (mSelectionClient != null) {
             mSelectionClient.onSelectionChanged(text);
         }
+        mIsProcessingSelectAll = false;
     }
 
     /**
