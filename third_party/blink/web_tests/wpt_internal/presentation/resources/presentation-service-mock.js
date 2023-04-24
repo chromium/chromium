@@ -106,9 +106,11 @@ export class PresentationServiceMock {
     }
 
     console.log('onReceiverConnectionAvailable: ' + mojoUrl + ',' + id);
-    this.receiver_.onReceiverConnectionAvailable(
-        { url: mojoUrl, id: id },
-        controllerConnectionPtr, receiverConnectionRequest);
+    this.receiver_.onReceiverConnectionAvailable({
+      presentationInfo: {url: mojoUrl, id: id},
+      connectionRemote: controllerConnectionPtr,
+      connectionReceiver: receiverConnectionRequest,
+    });
     console.log('after onReceiverConnectionAvailable');
   }
 

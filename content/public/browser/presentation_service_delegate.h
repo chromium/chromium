@@ -49,9 +49,7 @@ using PresentationConnectionStateChangedCallback =
     base::RepeatingCallback<void(const PresentationConnectionStateChangeInfo&)>;
 
 using ReceiverConnectionAvailableCallback = base::RepeatingCallback<void(
-    blink::mojom::PresentationInfoPtr,
-    mojo::PendingRemote<blink::mojom::PresentationConnection>,
-    mojo::PendingReceiver<blink::mojom::PresentationConnection>)>;
+    blink::mojom::PresentationConnectionResultPtr)>;
 
 // Base class for ControllerPresentationServiceDelegate and
 // ReceiverPresentationServiceDelegate.

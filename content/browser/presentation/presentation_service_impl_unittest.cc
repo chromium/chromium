@@ -32,6 +32,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+using blink::mojom::PresentationConnectionResult;
+using blink::mojom::PresentationInfo;
+
 namespace content {
 
 namespace {
@@ -253,7 +256,7 @@ TEST_F(PresentationServiceImplTest, SetDefaultPresentationUrls) {
   mojo::Remote<PresentationConnection> controller_remote;
   std::ignore = presentation_connection_remote.InitWithNewPipeAndPassReceiver();
   std::move(callback).Run(PresentationConnectionResult::New(
-      blink::mojom::PresentationInfo::New(presentation_url2_, kPresentationId),
+      PresentationInfo::New(presentation_url2_, kPresentationId),
       std::move(presentation_connection_remote),
       controller_remote.BindNewPipeAndPassReceiver()));
   base::RunLoop().RunUntilIdle();
@@ -340,8 +343,7 @@ TEST_F(PresentationServiceImplTest, StartPresentationSuccess) {
       .Times(1);
   std::move(saved_success_cb)
       .Run(PresentationConnectionResult::New(
-          blink::mojom::PresentationInfo::New(presentation_url1_,
-                                              kPresentationId),
+          PresentationInfo::New(presentation_url1_, kPresentationId),
           mojo::NullRemote(), mojo::NullReceiver()));
   ExpectPresentationCallbackWasRun();
 }
@@ -388,8 +390,7 @@ TEST_F(PresentationServiceImplTest, ReconnectPresentationSuccess) {
       .Times(1);
   std::move(saved_success_cb)
       .Run(PresentationConnectionResult::New(
-          blink::mojom::PresentationInfo::New(presentation_url1_,
-                                              kPresentationId),
+          PresentationInfo::New(presentation_url1_, kPresentationId),
           mojo::NullRemote(), mojo::NullReceiver()));
   ExpectPresentationCallbackWasRun();
 }
@@ -469,12 +470,10 @@ TEST_F(PresentationServiceImplTest, ReceiverPresentationServiceDelegate) {
       controller_connection.InitWithNewPipeAndPassReceiver());
   mojo::Remote<PresentationConnection> receiver_connection;
 
-  EXPECT_CALL(mock_receiver,
-              OnReceiverConnectionAvailable(InfoPtrEquals(expected), _, _))
-      .Times(1);
-  callback.Run(PresentationInfo::New(expected),
-               std::move(controller_connection),
-               receiver_connection.BindNewPipeAndPassReceiver());
+  EXPECT_CALL(mock_receiver, OnReceiverConnectionAvailable(_)).Times(1);
+  callback.Run(PresentationConnectionResult::New(
+      PresentationInfo::New(expected), std::move(controller_connection),
+      receiver_connection.BindNewPipeAndPassReceiver()));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(mock_receiver_delegate_, RemoveObserver(_, _)).Times(1);
