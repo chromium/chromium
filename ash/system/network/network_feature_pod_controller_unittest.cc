@@ -31,6 +31,7 @@
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
@@ -94,12 +95,14 @@ class NetworkFeaturePodControllerTest
       public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
-    auto enabled_features = std::vector<base::test::FeatureRef>();
-    auto disabled_features = std::vector<base::test::FeatureRef>();
+    std::vector<base::test::FeatureRef> features = {
+        features::kQsRevamp, chromeos::features::kJellyroll};
     if (IsQsRevampEnabled()) {
-      feature_list_.InitAndEnableFeature(features::kQsRevamp);
+      feature_list_.InitWithFeatures(/*enabled_features=*/features,
+                                     /*disabled_features=*/{});
     } else {
-      feature_list_.InitAndDisableFeature(features::kQsRevamp);
+      feature_list_.InitWithFeatures(/*enabled_features=*/{},
+                                     /*disabled_features=*/features);
     }
 
     AshTestBase::SetUp();
@@ -110,6 +113,7 @@ class NetworkFeaturePodControllerTest
         std::make_unique<NetworkFeaturePodController>(tray_controller());
     if (IsQsRevampEnabled()) {
       feature_tile_ = network_feature_pod_controller_->CreateTile();
+      quick_settings_view()->AddChildView(feature_tile_.get());
     } else {
       feature_pod_button_.reset(
           network_feature_pod_controller_->CreateButton());
@@ -387,8 +391,8 @@ class NetworkFeaturePodControllerTest
     return network_state_helper()->ConfigureService(shill_json_string);
   }
 
-  network_config::CrosNetworkConfigTestHelper network_config_helper_;
   base::test::ScopedFeatureList feature_list_;
+  network_config::CrosNetworkConfigTestHelper network_config_helper_;
   std::string cellular_path_;
   std::string ethernet_path_;
   std::string wifi_path_;
@@ -843,12 +847,16 @@ TEST_P(NetworkFeaturePodControllerTest, HasCorrectIcons) {
                               : gfx::Image(feature_pod_icon_button()->GetImage(
                                     views::Button::STATE_NORMAL));
 
-  EXPECT_TRUE(
-      gfx::test::AreImagesEqual(gfx::Image(active_network_icon->GetImage(
-                                    ActiveNetworkIcon::Type::kSingle,
-                                    network_icon::ICON_TYPE_FEATURE_POD_TOGGLED,
-                                    /*animating=*/nullptr)),
-                                image));
+  ui::ColorProvider* color_provider =
+      IsQsRevampEnabled() ? quick_settings_view()->GetColorProvider()
+                          : unified_view()->GetColorProvider();
+
+  EXPECT_TRUE(gfx::test::AreImagesEqual(
+      gfx::Image(active_network_icon->GetImage(
+          color_provider, ActiveNetworkIcon::Type::kSingle,
+          network_icon::ICON_TYPE_FEATURE_POD_TOGGLED,
+          /*animating=*/nullptr)),
+      image));
 
   // Lock screen to get the button's disabled state.
   LockScreen();
@@ -858,7 +866,7 @@ TEST_P(NetworkFeaturePodControllerTest, HasCorrectIcons) {
 
   EXPECT_TRUE(gfx::test::AreImagesEqual(
       gfx::Image(active_network_icon->GetImage(
-          ActiveNetworkIcon::Type::kSingle,
+          color_provider, ActiveNetworkIcon::Type::kSingle,
           network_icon::ICON_TYPE_FEATURE_POD_DISABLED, /*animating=*/nullptr)),
       image));
 
@@ -878,7 +886,8 @@ TEST_P(NetworkFeaturePodControllerTest, HasCorrectIcons) {
 
   EXPECT_TRUE(gfx::test::AreImagesEqual(
       gfx::Image(active_network_icon->GetImage(
-          ActiveNetworkIcon::Type::kSingle, network_icon::ICON_TYPE_FEATURE_POD,
+          color_provider, ActiveNetworkIcon::Type::kSingle,
+          network_icon::ICON_TYPE_FEATURE_POD,
           /*animating=*/nullptr)),
       image));
 }

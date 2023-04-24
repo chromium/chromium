@@ -32,11 +32,13 @@ std::unique_ptr<Notification> CreateNotification(bool wifi_enabled) {
   const int string_id = wifi_enabled
                             ? IDS_ASH_STATUS_TRAY_NETWORK_WIFI_ENABLED
                             : IDS_ASH_STATUS_TRAY_NETWORK_WIFI_DISABLED;
+  // TODO(b/268644226): Pass a ImageModel::FromImageGenerator to support jelly
+  // color provider.
   std::unique_ptr<Notification> notification = std::make_unique<Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, kWifiToggleNotificationId,
       std::u16string(), l10n_util::GetStringUTF16(string_id),
       ui::ImageModel::FromImageSkia(
-          network_icon::GetImageForWiFiEnabledState(wifi_enabled)),
+          network_icon::GetImageForWiFiEnabledState(nullptr, wifi_enabled)),
       std::u16string() /* display_source */, GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierWifiToggle,

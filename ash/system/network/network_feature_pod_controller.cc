@@ -254,7 +254,7 @@ void NetworkFeaturePodController::UpdateButtonStateIfExists() {
 
   // Check button exists here so that calling functions don't need to.
   if (is_qs_revamp_enabled) {
-    if (!tile_) {
+    if (!tile_ || !tile_->GetColorProvider()) {
       return;
     }
   } else {
@@ -289,22 +289,24 @@ void NetworkFeaturePodController::UpdateButtonStateIfExists() {
     tile_->SetEnabled(!Shell::Get()->session_controller()->IsScreenLocked());
     tile_->SetImage(
         tile_->GetEnabled()
-            ? active_network_icon->GetImage(ActiveNetworkIcon::Type::kSingle,
+            ? active_network_icon->GetImage(tile_->GetColorProvider(),
+                                            ActiveNetworkIcon::Type::kSingle,
                                             icon_type, &image_animating)
             : active_network_icon->GetImage(
-                  ActiveNetworkIcon::Type::kSingle,
+                  tile_->GetColorProvider(), ActiveNetworkIcon::Type::kSingle,
                   network_icon::ICON_TYPE_FEATURE_POD_DISABLED,
                   &image_animating));
   } else {
     button_->SetEnabled(!Shell::Get()->session_controller()->IsScreenLocked());
     button_->icon_button()->SetImage(
         views::Button::STATE_NORMAL,
-        active_network_icon->GetImage(ActiveNetworkIcon::Type::kSingle,
+        active_network_icon->GetImage(/*color_provider=*/nullptr,
+                                      ActiveNetworkIcon::Type::kSingle,
                                       icon_type, &image_animating));
     button_->icon_button()->SetImage(
         views::Button::STATE_DISABLED,
         active_network_icon->GetImage(
-            ActiveNetworkIcon::Type::kSingle,
+            /*color_provider=*/nullptr, ActiveNetworkIcon::Type::kSingle,
             network_icon::ICON_TYPE_FEATURE_POD_DISABLED, &image_animating));
   }
 

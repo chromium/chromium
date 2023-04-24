@@ -358,8 +358,8 @@ void VPNListNetworkEntry::UpdateFromNetworkState(
   }
   Reset();
 
-  gfx::ImageSkia image =
-      network_icon::GetImageForVPN(vpn, network_icon::ICON_TYPE_LIST);
+  gfx::ImageSkia image = network_icon::GetImageForVPN(
+      GetColorProvider(), vpn, network_icon::ICON_TYPE_LIST);
   std::u16string label = network_icon::GetLabelForNetworkList(vpn);
   AddIconAndLabel(image, label);
   if (chromeos::network_config::StateIsConnected(vpn->connection_state)) {

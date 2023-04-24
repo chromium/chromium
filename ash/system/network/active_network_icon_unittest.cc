@@ -8,15 +8,19 @@
 #include <string>
 
 #include "ash/public/cpp/network_config_service.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/color_util.h"
 #include "ash/system/network/network_icon.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -35,7 +39,8 @@ const char16_t kCellularNetworkGuid16[] = u"cellular_guid";
 
 }  // namespace
 
-class ActiveNetworkIconTest : public AshTestBase {
+class ActiveNetworkIconTest : public AshTestBase,
+                              public testing::WithParamInterface<bool> {
  public:
   ActiveNetworkIconTest() = default;
 
@@ -45,6 +50,12 @@ class ActiveNetworkIconTest : public AshTestBase {
   ~ActiveNetworkIconTest() override = default;
 
   void SetUp() override {
+    if (IsJellyrollEnabled()) {
+      feature_list_.InitAndEnableFeature(chromeos::features::kJellyroll);
+    } else {
+      feature_list_.InitAndDisableFeature(chromeos::features::kJellyroll);
+    }
+
     AshTestBase::SetUp();
     network_state_model_ = std::make_unique<TrayNetworkStateModel>();
     active_network_icon_ =
@@ -128,8 +139,11 @@ class ActiveNetworkIconTest : public AshTestBase {
             network_config_helper_.CreateStandaloneNetworkProperties(
                 id, type, connection_state, signal_strength);
     return network_icon::GetImageForNonVirtualNetwork(
-        reference_properties.get(), icon_type_, false /* show_vpn_badge */);
+        GetColorProvider(), reference_properties.get(), icon_type_,
+        false /* show_vpn_badge */);
   }
+
+  bool IsJellyrollEnabled() const { return GetParam(); }
 
   bool AreImagesEqual(const gfx::ImageSkia& image,
                       const gfx::ImageSkia& reference) {
@@ -165,7 +179,15 @@ class ActiveNetworkIconTest : public AshTestBase {
 
   network_icon::IconType icon_type() { return icon_type_; }
 
+  const ui::ColorProvider* GetColorProvider() {
+    // TODO(b/279177422): Replace with a stable ColorProvider
+    return ColorUtil::GetColorProviderSourceForWindow(
+               Shell::GetPrimaryRootWindow())
+        ->GetColorProvider();
+  }
+
  private:
+  base::test::ScopedFeatureList feature_list_;
   network_config::CrosNetworkConfigTestHelper network_config_helper_;
   std::unique_ptr<TrayNetworkStateModel> network_state_model_;
   std::unique_ptr<ActiveNetworkIcon> active_network_icon_;
@@ -179,7 +201,9 @@ class ActiveNetworkIconTest : public AshTestBase {
   int reference_count_ = 0;
 };
 
-TEST_F(ActiveNetworkIconTest, GetConnectionStatusStrings) {
+INSTANTIATE_TEST_SUITE_P(Jellyroll, ActiveNetworkIconTest, testing::Bool());
+
+TEST_P(ActiveNetworkIconTest, GetConnectionStatusStrings) {
   // TODO(902409): Test multi icon and improve coverage.
   SetupCellular(shill::kStateOnline);
   std::u16string name, desc, tooltip;
@@ -198,12 +222,13 @@ TEST_F(ActiveNetworkIconTest, GetConnectionStatusStrings) {
       tooltip);
 }
 
-TEST_F(ActiveNetworkIconTest, GetSingleImage) {
+TEST_P(ActiveNetworkIconTest, GetSingleImage) {
   // Cellular only = Cellular icon
   SetupCellular(shill::kStateOnline);
   bool animating;
   gfx::ImageSkia image = active_network_icon()->GetImage(
-      ActiveNetworkIcon::Type::kSingle, icon_type(), &animating);
+      GetColorProvider(), ActiveNetworkIcon::Type::kSingle, icon_type(),
+      &animating);
   EXPECT_TRUE(AreImagesEqual(
       image,
       ImageForNetwork(NetworkType::kCellular, ConnectionStateType::kOnline)));
@@ -211,7 +236,8 @@ TEST_F(ActiveNetworkIconTest, GetSingleImage) {
 
   // Cellular + WiFi connected = WiFi connected icon
   SetupWiFi(shill::kStateOnline);
-  image = active_network_icon()->GetImage(ActiveNetworkIcon::Type::kSingle,
+  image = active_network_icon()->GetImage(GetColorProvider(),
+                                          ActiveNetworkIcon::Type::kSingle,
                                           icon_type(), &animating);
   EXPECT_TRUE(AreImagesEqual(
       image,
@@ -224,7 +250,8 @@ TEST_F(ActiveNetworkIconTest, GetSingleImage) {
   SetServiceProperty(wifi_path(), shill::kSignalStrengthProperty,
                      base::Value(50));
   base::RunLoop().RunUntilIdle();
-  image = active_network_icon()->GetImage(ActiveNetworkIcon::Type::kSingle,
+  image = active_network_icon()->GetImage(GetColorProvider(),
+                                          ActiveNetworkIcon::Type::kSingle,
                                           icon_type(), &animating);
   EXPECT_TRUE(AreImagesEqual(
       image, ImageForNetwork(NetworkType::kWiFi,
@@ -233,7 +260,8 @@ TEST_F(ActiveNetworkIconTest, GetSingleImage) {
 
   // Cellular + WiFi connecting + Ethernet = WiFi connecting icon
   SetupEthernet();
-  image = active_network_icon()->GetImage(ActiveNetworkIcon::Type::kSingle,
+  image = active_network_icon()->GetImage(GetColorProvider(),
+                                          ActiveNetworkIcon::Type::kSingle,
                                           icon_type(), &animating);
   EXPECT_TRUE(AreImagesEqual(
       image, ImageForNetwork(NetworkType::kWiFi,
@@ -243,25 +271,27 @@ TEST_F(ActiveNetworkIconTest, GetSingleImage) {
   // Cellular + WiFi connected + Ethernet = No icon
   SetupWiFi(shill::kStateOnline);
   network_state_handler()->SetNetworkConnectRequested(wifi_path(), false);
-  image = active_network_icon()->GetImage(ActiveNetworkIcon::Type::kSingle,
+  image = active_network_icon()->GetImage(GetColorProvider(),
+                                          ActiveNetworkIcon::Type::kSingle,
                                           icon_type(), &animating);
   EXPECT_TRUE(image.isNull());
   EXPECT_FALSE(animating);
 }
 
-TEST_F(ActiveNetworkIconTest, CellularUninitialized) {
+TEST_P(ActiveNetworkIconTest, CellularUninitialized) {
   SetCellularUninitialized(false /* scanning */);
 
   bool animating;
   gfx::ImageSkia image = active_network_icon()->GetImage(
-      ActiveNetworkIcon::Type::kSingle, icon_type(), &animating);
+      GetColorProvider(), ActiveNetworkIcon::Type::kSingle, icon_type(),
+      &animating);
   EXPECT_TRUE(
       AreImagesEqual(image, ImageForNetwork(NetworkType::kCellular,
                                             ConnectionStateType::kConnecting)));
   EXPECT_TRUE(animating);
 }
 
-TEST_F(ActiveNetworkIconTest, CellularScanning) {
+TEST_P(ActiveNetworkIconTest, CellularScanning) {
   SetCellularUninitialized(true /* scanning */);
 
   ASSERT_TRUE(network_state_handler()->GetScanningByType(
@@ -269,7 +299,8 @@ TEST_F(ActiveNetworkIconTest, CellularScanning) {
 
   bool animating;
   gfx::ImageSkia image = active_network_icon()->GetImage(
-      ActiveNetworkIcon::Type::kSingle, icon_type(), &animating);
+      GetColorProvider(), ActiveNetworkIcon::Type::kSingle, icon_type(),
+      &animating);
   EXPECT_TRUE(
       AreImagesEqual(image, ImageForNetwork(NetworkType::kCellular,
                                             ConnectionStateType::kConnecting)));
@@ -281,18 +312,20 @@ TEST_F(ActiveNetworkIconTest, CellularScanning) {
       base::Value(false), true /* notify_changed */);
   base::RunLoop().RunUntilIdle();
 
-  image = active_network_icon()->GetImage(ActiveNetworkIcon::Type::kSingle,
+  image = active_network_icon()->GetImage(GetColorProvider(),
+                                          ActiveNetworkIcon::Type::kSingle,
                                           icon_type(), &animating);
-  EXPECT_TRUE(AreImagesEqual(
-      image, network_icon::GetImageForWiFiNoConnections(icon_type())));
+  EXPECT_TRUE(AreImagesEqual(image, network_icon::GetImageForWiFiNoConnections(
+                                        GetColorProvider(), icon_type())));
   EXPECT_FALSE(animating);
 }
 
-TEST_F(ActiveNetworkIconTest, CellularDisable) {
+TEST_P(ActiveNetworkIconTest, CellularDisable) {
   SetupCellular(shill::kStateOnline);
   bool animating;
   gfx::ImageSkia image = active_network_icon()->GetImage(
-      ActiveNetworkIcon::Type::kSingle, icon_type(), &animating);
+      GetColorProvider(), ActiveNetworkIcon::Type::kSingle, icon_type(),
+      &animating);
   EXPECT_TRUE(AreImagesEqual(
       image,
       ImageForNetwork(NetworkType::kCellular, ConnectionStateType::kOnline)));
@@ -312,10 +345,11 @@ TEST_F(ActiveNetworkIconTest, CellularDisable) {
   network_state_helper().ClearServices();
   base::RunLoop().RunUntilIdle();
 
-  image = active_network_icon()->GetImage(ActiveNetworkIcon::Type::kSingle,
+  image = active_network_icon()->GetImage(GetColorProvider(),
+                                          ActiveNetworkIcon::Type::kSingle,
                                           icon_type(), &animating);
-  EXPECT_TRUE(AreImagesEqual(
-      image, network_icon::GetImageForWiFiNoConnections(icon_type())));
+  EXPECT_TRUE(AreImagesEqual(image, network_icon::GetImageForWiFiNoConnections(
+                                        GetColorProvider(), icon_type())));
   EXPECT_FALSE(animating);
 }
 

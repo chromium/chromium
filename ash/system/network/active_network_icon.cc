@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 using chromeos::network_config::mojom::ActivationStateType;
@@ -155,22 +156,25 @@ void ActiveNetworkIcon::GetConnectionStatusStrings(Type type,
   }
 }
 
-gfx::ImageSkia ActiveNetworkIcon::GetImage(Type type,
-                                           network_icon::IconType icon_type,
-                                           bool* animating) {
+gfx::ImageSkia ActiveNetworkIcon::GetImage(
+    const ui::ColorProvider* color_provider,
+    Type type,
+    network_icon::IconType icon_type,
+    bool* animating) {
   switch (type) {
     case Type::kSingle:
-      return GetSingleImage(icon_type, animating);
+      return GetSingleImage(color_provider, icon_type, animating);
     case Type::kPrimary:
-      return GetDualImagePrimary(icon_type, animating);
+      return GetDualImagePrimary(color_provider, icon_type, animating);
     case Type::kCellular:
-      return GetDualImageCellular(icon_type, animating);
+      return GetDualImageCellular(color_provider, icon_type, animating);
   }
   NOTREACHED();
   return gfx::ImageSkia();
 }
 
 gfx::ImageSkia ActiveNetworkIcon::GetSingleImage(
+    const ui::ColorProvider* color_provider,
     network_icon::IconType icon_type,
     bool* animating) {
   // If no network, check for cellular initializing.
@@ -179,12 +183,14 @@ gfx::ImageSkia ActiveNetworkIcon::GetSingleImage(
     if (animating)
       *animating = true;
     return network_icon::GetConnectingImageForNetworkType(
-        NetworkType::kCellular, icon_type);
+        color_provider, NetworkType::kCellular, icon_type);
   }
-  return GetDefaultImageImpl(default_network, icon_type, animating);
+  return GetDefaultImageImpl(color_provider, default_network, icon_type,
+                             animating);
 }
 
 gfx::ImageSkia ActiveNetworkIcon::GetDualImagePrimary(
+    const ui::ColorProvider* color_provider,
     network_icon::IconType icon_type,
     bool* animating) {
   const NetworkStateProperties* default_network = model_->default_network();
@@ -196,16 +202,18 @@ gfx::ImageSkia ActiveNetworkIcon::GetDualImagePrimary(
         *animating = false;
       return gfx::CreateVectorIcon(
           kNetworkBadgeTechnologyLteIcon,
-          network_icon::GetDefaultColorForIconType(icon_type));
+          network_icon::GetDefaultColorForIconType(color_provider, icon_type));
     }
     // If Cellular is connecting, use the active non cellular network.
-    return GetDefaultImageImpl(model_->active_non_cellular(), icon_type,
-                               animating);
+    return GetDefaultImageImpl(color_provider, model_->active_non_cellular(),
+                               icon_type, animating);
   }
-  return GetDefaultImageImpl(default_network, icon_type, animating);
+  return GetDefaultImageImpl(color_provider, default_network, icon_type,
+                             animating);
 }
 
 gfx::ImageSkia ActiveNetworkIcon::GetDualImageCellular(
+    const ui::ColorProvider* color_provider,
     network_icon::IconType icon_type,
     bool* animating) {
   if (model_->GetDeviceState(NetworkType::kCellular) ==
@@ -219,7 +227,7 @@ gfx::ImageSkia ActiveNetworkIcon::GetDualImageCellular(
     if (animating)
       *animating = true;
     return network_icon::GetConnectingImageForNetworkType(
-        NetworkType::kCellular, icon_type);
+        color_provider, NetworkType::kCellular, icon_type);
   }
 
   const NetworkStateProperties* active_cellular = model_->active_cellular();
@@ -227,20 +235,22 @@ gfx::ImageSkia ActiveNetworkIcon::GetDualImageCellular(
     if (animating)
       *animating = false;
     return network_icon::GetDisconnectedImageForNetworkType(
-        NetworkType::kCellular);
+        color_provider, NetworkType::kCellular);
   }
 
   return network_icon::GetImageForNonVirtualNetwork(
-      active_cellular, icon_type, false /* show_vpn_badge */, animating);
+      color_provider, active_cellular, icon_type, false /* show_vpn_badge */,
+      animating);
 }
 
 gfx::ImageSkia ActiveNetworkIcon::GetDefaultImageImpl(
+    const ui::ColorProvider* color_provider,
     const NetworkStateProperties* network,
     network_icon::IconType icon_type,
     bool* animating) {
   if (!network) {
     VLOG(1) << __func__ << ": No network";
-    return GetDefaultImageForNoNetwork(icon_type, animating);
+    return GetDefaultImageForNoNetwork(color_provider, icon_type, animating);
   }
   // Don't show connected Ethernet in the tray unless a VPN is present.
   const NetworkStateProperties* active_vpn = model_->active_vpn();
@@ -259,29 +269,31 @@ gfx::ImageSkia ActiveNetworkIcon::GetDefaultImageImpl(
     if (animating)
       *animating = true;
     VLOG(1) << __func__ << ": Connected with connecting VPN";
-    return network_icon::GetConnectedNetworkWithConnectingVpnImage(network,
-                                                                   icon_type);
+    return network_icon::GetConnectedNetworkWithConnectingVpnImage(
+        color_provider, network, icon_type);
   }
 
   // Default behavior: connected or connecting network, possibly with VPN badge.
   bool show_vpn_badge = !!active_vpn;
   VLOG(1) << __func__ << ": Network: " << network->name;
-  return network_icon::GetImageForNonVirtualNetwork(network, icon_type,
-                                                    show_vpn_badge, animating);
+  return network_icon::GetImageForNonVirtualNetwork(
+      color_provider, network, icon_type, show_vpn_badge, animating);
 }
 
 gfx::ImageSkia ActiveNetworkIcon::GetDefaultImageForNoNetwork(
+    const ui::ColorProvider* color_provider,
     network_icon::IconType icon_type,
     bool* animating) {
   if (animating)
     *animating = false;
   if (model_->GetDeviceState(NetworkType::kWiFi) == DeviceStateType::kEnabled) {
     // WiFi is enabled but no connections available.
-    return network_icon::GetImageForWiFiNoConnections(icon_type);
+    return network_icon::GetImageForWiFiNoConnections(color_provider,
+                                                      icon_type);
   }
   // WiFi is disabled, show a full icon with a strikethrough.
-  return network_icon::GetImageForWiFiEnabledState(false /* not enabled*/,
-                                                   icon_type);
+  return network_icon::GetImageForWiFiEnabledState(
+      color_provider, false /* not enabled*/, icon_type);
 }
 
 void ActiveNetworkIcon::SetCellularUninitializedMsg() {

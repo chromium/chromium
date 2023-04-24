@@ -111,7 +111,7 @@ void NetworkTrayView::UpdateNetworkStateHandlerIcon() {
   bool animating = false;
   gfx::ImageSkia image =
       Shell::Get()->system_tray_model()->active_network_icon()->GetImage(
-          type_, GetIconType(), &animating);
+          GetColorProvider(), type_, GetIconType(), &animating);
   bool show_in_tray = !image.isNull();
   UpdateIcon(show_in_tray, image);
   if (animating)
