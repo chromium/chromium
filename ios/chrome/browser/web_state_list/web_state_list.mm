@@ -10,7 +10,6 @@
 #import "base/auto_reset.h"
 #import "base/check_op.h"
 #import "base/containers/adapters.h"
-#import "base/cxx17_backports.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_order_controller.h"
@@ -657,9 +656,9 @@ int WebStateList::GetIndexOfFirstNonPinnedWebState() const {
 
 int WebStateList::ConstrainMoveIndex(int index, bool pinned) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return pinned ? base::clamp(index, 0, GetIndexOfFirstNonPinnedWebState() - 1)
-                : base::clamp(index, GetIndexOfFirstNonPinnedWebState(),
-                              count() - 1);
+  return pinned ? std::clamp(index, 0, GetIndexOfFirstNonPinnedWebState() - 1)
+                : std::clamp(index, GetIndexOfFirstNonPinnedWebState(),
+                             count() - 1);
 }
 
 WebStateList::WebStateWrapper* WebStateList::GetActiveWebStateWrapper() const {

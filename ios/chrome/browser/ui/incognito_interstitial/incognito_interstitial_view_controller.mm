@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_view_controller.h"
+
+#import <algorithm>
+
 #import "base/check.h"
-#import "base/cxx17_backports.h"
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -340,7 +342,7 @@ const CGFloat kTitleLabelLineHeightMultiple = 1.3;
                           : kNavigationBarFadeInKeyFrame1;
   CGFloat opacity =
       (self.scrollViewContentOffsetY - keyFrame0) / (keyFrame1 - keyFrame0);
-  opacity = base::clamp(opacity, 0.0, 1.0, std::less_equal<>());
+  opacity = std::clamp(opacity, 0.0, 1.0, std::less_equal<>());
 
   UIColor* backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];

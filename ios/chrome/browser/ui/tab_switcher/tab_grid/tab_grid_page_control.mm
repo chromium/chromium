@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_control.h"
 
 #import <CoreGraphics/CoreGraphics.h>
+
 #import <algorithm>
 
 #import "base/check_op.h"
-#import "base/cxx17_backports.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
@@ -265,7 +265,7 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 
 - (void)setSliderPosition:(CGFloat)sliderPosition {
   // Clamp `selectionOffset` to (0.0 - 1.0).
-  sliderPosition = base::clamp<CGFloat>(sliderPosition, 0.0, 1.0);
+  sliderPosition = std::clamp<CGFloat>(sliderPosition, 0.0, 1.0);
   CGPoint center = self.sliderView.center;
   center.x = self.sliderOrigin + self.sliderRange * sliderPosition;
   self.sliderView.center = center;

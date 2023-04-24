@@ -7,7 +7,6 @@
 #import <algorithm>
 
 #import "base/check.h"
-#import "base/cxx17_backports.h"
 #import "ios/chrome/browser/ui/toolbar_container/collapsing_toolbar_height_constraint_delegate.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_collapsing.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -101,7 +100,7 @@ using toolbar_container::HeightRange;
 }
 
 - (void)setProgress:(CGFloat)progress {
-  progress = base::clamp(progress, kMinProgress, kMaxProgress);
+  progress = std::clamp(progress, kMinProgress, kMaxProgress);
   if (AreCGFloatsEqual(_progress, progress))
     return;
   _progress = progress;
@@ -121,7 +120,7 @@ using toolbar_container::HeightRange;
 #pragma mark - Public
 
 - (CGFloat)toolbarHeightForProgress:(CGFloat)progress {
-  progress = base::clamp(progress, kMinProgress, kMaxProgress);
+  progress = std::clamp(progress, kMinProgress, kMaxProgress);
   CGFloat base = self.collapsedToolbarHeight;
   CGFloat range = self.expandedToolbarHeight - self.collapsedToolbarHeight;
   if (self.collapsesAdditionalHeight) {

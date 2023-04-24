@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
 
+#import <algorithm>
+
 #import "base/check_op.h"
-#import "base/cxx17_backports.h"
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
@@ -1856,7 +1857,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // Updates the value stored in `fractionVisibleOfLastItem`.
 - (void)updateFractionVisibleOfLastItem {
   CGFloat offset = self.offsetPastEndOfScrollView;
-  self.fractionVisibleOfLastItem = base::clamp<CGFloat>(
+  self.fractionVisibleOfLastItem = std::clamp<CGFloat>(
       1 - offset / kScrollThresholdForPlusSignButtonHide, 0, 1);
 }
 

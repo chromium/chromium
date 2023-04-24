@@ -6,8 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import <algorithm>
+
 #import "base/check.h"
-#import "base/cxx17_backports.h"
 #import "base/feature_list.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -383,7 +384,7 @@ CGFloat ToolbarHeight() {
   CGFloat percent = 0;
   if (offset && offset > startScaleOffset) {
     CGFloat animatingOffset = offset - startScaleOffset;
-    percent = base::clamp<CGFloat>(
+    percent = std::clamp<CGFloat>(
         animatingOffset / ntp_header::kAnimationDistance, 0, 1);
   }
   return percent;
