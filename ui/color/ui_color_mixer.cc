@@ -29,8 +29,7 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorBadgeBackground] =
       PickGoogleColor(kColorAccent, kColorDialogBackground,
                       color_utils::kMinimumVisibleContrastRatio);
-  mixer[kColorBadgeForeground] =
-      GetColorWithMaxContrast(kColorButtonBackgroundProminent);
+  mixer[kColorBadgeForeground] = GetColorWithMaxContrast(kColorBadgeBackground);
   mixer[kColorBadgeInCocoaMenuBackground] = {kColorBadgeBackground};
   mixer[kColorBadgeInCocoaMenuForeground] = {kColorBadgeForeground};
   mixer[kColorBubbleBackground] = {kColorPrimaryBackground};

@@ -55,6 +55,17 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorExtensionIconBadgeBackgroundDefault] =
       ui::PickGoogleColor(ui::kColorSysPrimary, kColorToolbar,
                           color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorFeaturePromoBubbleBackground] = {ui::kColorSysPrimary};
+  mixer[kColorFeaturePromoBubbleButtonBorder] = {
+      kColorFeaturePromoBubbleForeground};
+  mixer[kColorFeaturePromoBubbleCloseButtonInkDrop] =
+      AdjustHighlightColorForContrast(kColorFeaturePromoBubbleForeground,
+                                      kColorFeaturePromoBubbleBackground);
+  mixer[kColorFeaturePromoBubbleDefaultButtonBackground] = {
+      kColorFeaturePromoBubbleForeground};
+  mixer[kColorFeaturePromoBubbleDefaultButtonForeground] = {
+      kColorFeaturePromoBubbleBackground};
+  mixer[kColorFeaturePromoBubbleForeground] = {ui::kColorSysOnPrimary};
   mixer[kColorFlyingIndicatorBackground] = {kColorToolbar};
   mixer[kColorFlyingIndicatorForeground] = {kColorToolbarButtonIcon};
   mixer[kColorFrameCaptionActive] = {ui::kColorSysOnHeaderPrimary};
