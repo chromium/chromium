@@ -292,6 +292,8 @@ export class CheckupDetailsSectionElement extends
   private onChangePasswordClick_(event: CustomEvent<number>) {
     this.clickedChangePasswordIds_.add(event.detail);
     this.notifyPath('clickedChangePasswordIds_.size');
+    PasswordManagerImpl.getInstance().recordPasswordCheckInteraction(
+        PasswordCheckInteraction.CHANGE_PASSWORD);
   }
 
   private clickedChangePassword_(item: chrome.passwordsPrivate.PasswordUiEntry):

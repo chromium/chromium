@@ -18,6 +18,25 @@ import {CredentialsChangedListener, PasswordManagerImpl} from './password_manage
 import {Page, Route, RouteObserverMixin, Router, UrlParam} from './router.js';
 import {getTemplate} from './side_bar.html.js';
 
+/**
+ * Represents different referrers when navigating to the Password Check page.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Needs to stay in sync with PasswordCheckReferrer in enums.xml and
+ * password_check_referrer.h.
+ */
+enum PasswordCheckReferrer {
+  SAFETY_CHECK = 0,            // Web UI, recorded in JavaScript.
+  PASSWORD_SETTINGS = 1,       // Web UI, recorded in JavaScript.
+  PHISH_GUARD_DIALOG = 2,      // Native UI, recorded in C++.
+  PASSWORD_BREACH_DIALOG = 3,  // Native UI, recorded in C++.
+  // Must be last.
+  COUNT = 4,
+}
+
+
 export interface PasswordManagerSideBarElement {
   $: {
     'menu': CrMenuSelector,
@@ -93,6 +112,9 @@ export class PasswordManagerSideBarElement extends RouteObserverMixin
       const params = new URLSearchParams();
       params.set(UrlParam.START_CHECK, 'true');
       Router.getInstance().updateRouterParams(params);
+      chrome.metricsPrivate.recordEnumerationValue(
+          'PasswordManager.BulkCheck.PasswordCheckReferrer',
+          PasswordCheckReferrer.PASSWORD_SETTINGS, PasswordCheckReferrer.COUNT);
     }
   }
 
