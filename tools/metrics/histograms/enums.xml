@@ -66904,6 +66904,7 @@ from previous Chrome versions.
       label="(DEPRECATED - 12/22) Link after successful automated password
              change"/>
   <int value="15" label="Biometric Authentication before filling"/>
+  <int value="16" label="Chrome menu item"/>
 </enum>
 
 <enum name="ManifestFetchResultType">
