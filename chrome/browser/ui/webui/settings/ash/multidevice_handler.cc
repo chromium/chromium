@@ -315,6 +315,14 @@ void MultideviceHandler::OnJavascriptDisallowed() {
     camera_roll_manager_observation_.Reset();
   }
 
+  if (phonehub::BrowserTabsModelProviderImpl::
+          IsLacrosSessionSyncFeatureEnabled() &&
+      browser_tabs_model_provider_) {
+    DCHECK(browser_tabs_model_provider_observation_.IsObservingSource(
+        browser_tabs_model_provider_));
+    browser_tabs_model_provider_observation_.Reset();
+  }
+
   // Ensure that pending callbacks do not complete and cause JS to be evaluated.
   callback_weak_ptr_factory_.InvalidateWeakPtrs();
 }
