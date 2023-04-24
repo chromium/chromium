@@ -818,17 +818,14 @@ class QuotaManagerImpl::BucketSetDataDeleter {
  private:
   void DidGetBuckets(QuotaErrorOr<std::set<BucketInfo>> result) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!result.has_value()) {
-      Complete(/*success=*/false);
-      return;
+    if (result.has_value()) {
+      buckets_ = BucketInfosToBucketLocators(result.value());
+      if (!buckets_.empty()) {
+        ScheduleBucketsDeletion();
+        return;
+      }
     }
-
-    buckets_ = BucketInfosToBucketLocators(result.value());
-    if (!buckets_.empty()) {
-      ScheduleBucketsDeletion();
-      return;
-    }
-    Complete(/*success=*/true);
+    Complete(/*success=*/result.has_value());
   }
 
   void ScheduleBucketsDeletion() {
@@ -2580,12 +2577,9 @@ void QuotaManagerImpl::DidGetLruEvictableBucket(
   DidDatabaseWork(result.has_value() ||
                   result.error() != QuotaError::kDatabaseError);
 
-  if (result.has_value()) {
-    std::move(lru_bucket_callback_)
-        .Run(absl::make_optional(std::move(result.value())));
-  } else {
-    std::move(lru_bucket_callback_).Run(absl::nullopt);
-  }
+  std::move(lru_bucket_callback_)
+      .Run(result.has_value() ? absl::make_optional(std::move(result.value()))
+                              : absl::nullopt);
 }
 
 void QuotaManagerImpl::GetQuotaSettings(QuotaSettingsCallback callback) {
@@ -2930,11 +2924,7 @@ void QuotaManagerImpl::DidGetStorageKeys(
 
   DidDatabaseWork(result.has_value() ||
                   result.error() != QuotaError::kDatabaseError);
-  if (!result.has_value()) {
-    std::move(callback).Run(std::set<StorageKey>());
-    return;
-  }
-  std::move(callback).Run(std::move(result.value()));
+  std::move(callback).Run(result.value_or(std::set<StorageKey>()));
 }
 
 void QuotaManagerImpl::DidGetBuckets(
@@ -2999,11 +2989,7 @@ void QuotaManagerImpl::DidGetModifiedBetween(
 
   DidDatabaseWork(result.has_value() ||
                   result.error() != QuotaError::kDatabaseError);
-  if (!result.has_value()) {
-    std::move(callback).Run(std::set<BucketLocator>());
-    return;
-  }
-  std::move(callback).Run(result.value());
+  std::move(callback).Run(result.value_or(std::set<BucketLocator>()));
 }
 
 template <typename ValueType>

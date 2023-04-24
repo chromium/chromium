@@ -953,11 +953,8 @@ ObfuscatedFileUtil::GetDirectoryForStorageKeyAndType(
     return dir;
   }
   // Append the file system type and verify the path is valid.
-  base::FilePath path = dir.value();
-  if (type) {
-    path = path.AppendASCII(
-        SandboxFileSystemBackendDelegate::GetTypeString(type.value()));
-  }
+  base::FilePath path = dir->AppendASCII(
+      SandboxFileSystemBackendDelegate::GetTypeString(type.value()));
   base::File::Error error = GetDirectoryHelper(path, create);
   if (error != base::File::FILE_OK)
     return base::unexpected(error);

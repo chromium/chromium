@@ -100,7 +100,7 @@ void SandboxQuotaObserver::SetUsageCacheEnabled(const url::Origin& origin,
 base::FileErrorOr<base::FilePath> SandboxQuotaObserver::GetUsageCachePath(
     const FileSystemURL& url) {
   DCHECK(sandbox_file_util_);
-  base::FileErrorOr<base::FilePath> path = base::FilePath();
+  base::FileErrorOr<base::FilePath> path;
   if (url.bucket().has_value()) {
     path = SandboxFileSystemBackendDelegate::GetUsageCachePathForBucketAndType(
         sandbox_file_util_, url.bucket().value(), url.type());

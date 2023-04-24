@@ -227,12 +227,11 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::UpdateOrCreateBucket(
       GetBucket(params.storage_key, params.name, StorageType::kTemporary);
 
   if (!bucket_result.has_value()) {
-    if (bucket_result.error() == QuotaError::kNotFound) {
-      return CreateBucketInternal(params, StorageType::kTemporary,
-                                  max_bucket_count);
+    if (bucket_result.error() != QuotaError::kNotFound) {
+      return bucket_result;
     }
-
-    return bucket_result;
+    return CreateBucketInternal(params, StorageType::kTemporary,
+                                max_bucket_count);
   }
 
   // Don't bother updating anything if the bucket is expired.
@@ -273,7 +272,7 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::GetOrCreateBucketDeprecated(
   }
 
   if (bucket_result.error() != QuotaError::kNotFound) {
-    return base::unexpected(bucket_result.error());
+    return bucket_result;
   }
 
   return CreateBucketInternal(params, type);
