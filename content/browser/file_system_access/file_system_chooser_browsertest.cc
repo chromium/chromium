@@ -1426,7 +1426,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_FileHandle) {
                    "  self.selected_entry = e;"
                    "  return e.name; })()"));
   EXPECT_EQ(ui::SelectFileDialog::SELECT_OPEN_FILE, dialog_params.type);
-  EXPECT_EQ(test_file_dir, dialog_params.default_path);
+  // Windows file system is case-insensitive.
+  EXPECT_TRUE(base::FilePath::CompareEqualIgnoreCase(
+      test_file_dir.value(), dialog_params.default_path.value()));
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_DirectoryHandle) {
