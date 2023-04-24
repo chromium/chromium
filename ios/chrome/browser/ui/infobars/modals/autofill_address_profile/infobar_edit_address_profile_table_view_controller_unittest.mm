@@ -310,7 +310,7 @@ class InfobarEditAddressProfileTableViewControllerMigrationPromptTest
 TEST_F(InfobarEditAddressProfileTableViewControllerMigrationPromptTest,
        TestMigrationPrompt) {
   NSString* expected_footer_text = l10n_util::GetNSStringF(
-      IDS_IOS_AUTOFILL_ADDRESS_MIGRATE_IN_ACCOUNT_FOOTER, kTestSyncingEmail);
+      IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER, kTestSyncingEmail);
   TestModelRowsAndButtons(
       [controller() tableViewModel], expected_footer_text,
       l10n_util::GetNSString(

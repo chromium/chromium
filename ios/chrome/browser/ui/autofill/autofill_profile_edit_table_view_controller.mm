@@ -546,16 +546,10 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   CHECK(!self.settingsView);
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:ItemTypeFooter];
-  if (self.migrationPrompt) {
-    item.text = l10n_util::GetNSStringF(
-        IDS_IOS_AUTOFILL_ADDRESS_MIGRATE_IN_ACCOUNT_FOOTER,
-        base::SysNSStringToUTF16(_userEmail));
-  } else {
-    item.text = l10n_util::GetNSStringF(
-        update ? IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT
-               : IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER,
-        base::SysNSStringToUTF16(_userEmail));
-  }
+  item.text = l10n_util::GetNSStringF(
+      update ? IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT
+             : IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER,
+      base::SysNSStringToUTF16(_userEmail));
   item.textFont = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   item.textColor = [UIColor colorNamed:kTextSecondaryColor];
   return item;
