@@ -12,6 +12,7 @@ Packages everything necessary to extract and upload system symbols on a macOS
 system into `symbol_tools.zip` in the out directory.
 """
 import argparse
+import os
 import sys
 
 
@@ -51,7 +52,8 @@ def main():
     replacements = [
         ("@ARCH@", args.a),
         ("@GO_SOURCES@", args.go_src),
-        ("@EXTRA@", args.extra)
+        ("@EXTRA@", args.extra),
+        ("@CWD@", os.getcwd())
     ]
     for token, replacement in replacements:
         template = replace(template, token, replacement)

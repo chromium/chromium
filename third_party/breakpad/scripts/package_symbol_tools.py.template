@@ -31,6 +31,7 @@ def build_upload_system_symbols(arch):
 
 def main():
     arch = "@ARCH@"
+    os.chdir("@CWD@")
     if not build_upload_system_symbols(arch):
         return False
     subprocess.check_call([
