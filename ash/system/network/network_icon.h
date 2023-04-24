@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-forward.h"
+#include "ui/base/models/image_model.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
@@ -88,6 +89,13 @@ ASH_EXPORT gfx::ImageSkia GetImageForWiFiEnabledState(
     const ui::ColorProvider* color_provider,
     bool enabled,
     IconType = ICON_TYPE_DEFAULT_VIEW);
+
+// Returns an image for a Wi-Fi network, either full strength or strike-through
+// based on |enabled|. Note that this method uses the window background color
+// to color the image.
+ASH_EXPORT ui::ImageModel GetImageModelForWiFiEnabledState(
+    bool wifi_enabled,
+    IconType icon_type = ICON_TYPE_DEFAULT_VIEW);
 
 // Returns the connecting image for a shill network non-VPN type.
 gfx::ImageSkia GetConnectingImageForNetworkType(

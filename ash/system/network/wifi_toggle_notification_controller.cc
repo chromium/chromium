@@ -10,9 +10,11 @@
 #include "ash/system/network/network_icon.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/system_tray_notifier.h"
+#include "ash/system/tray/tray_constants.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/image/image.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -32,14 +34,11 @@ std::unique_ptr<Notification> CreateNotification(bool wifi_enabled) {
   const int string_id = wifi_enabled
                             ? IDS_ASH_STATUS_TRAY_NETWORK_WIFI_ENABLED
                             : IDS_ASH_STATUS_TRAY_NETWORK_WIFI_DISABLED;
-  // TODO(b/268644226): Pass a ImageModel::FromImageGenerator to support jelly
-  // color provider.
   std::unique_ptr<Notification> notification = std::make_unique<Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, kWifiToggleNotificationId,
       std::u16string(), l10n_util::GetStringUTF16(string_id),
-      ui::ImageModel::FromImageSkia(
-          network_icon::GetImageForWiFiEnabledState(nullptr, wifi_enabled)),
-      std::u16string() /* display_source */, GURL(),
+      network_icon::GetImageModelForWiFiEnabledState(wifi_enabled),
+      /*display_source=*/std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierWifiToggle,
                                  NotificationCatalogName::kWifiToggle),

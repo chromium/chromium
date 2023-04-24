@@ -26,6 +26,7 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/controls/image_view.h"
 
 // This tests both the helper functions in network_icon, and ActiveNetworkIcon
 // which is a primary consumer of the helper functions.
@@ -680,6 +681,30 @@ TEST_P(NetworkIconTest, DefaultNetworkImageVpnAndCellular) {
                                         ConnectionStateType::kConnecting, 65);
   EXPECT_TRUE(gfx::test::AreImagesEqual(
       gfx::Image(default_image), ImageForNetwork(reference_network.get())));
+}
+
+// Tests the case of getting the WiFi Enabled state icon when there is
+// no color provider, in which case the window background color is used.
+TEST_P(NetworkIconTest, GetImageModelForWiFiEnabledState) {
+  views::ImageView* image_view =
+      new views::ImageView(GetImageModelForWiFiEnabledState(true));
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  widget->SetFullscreen(true);
+  widget->SetContentsView(image_view);
+
+  ui::NativeTheme* native_theme = widget->GetNativeTheme();
+  native_theme->set_use_dark_colors(true);
+  native_theme->NotifyOnNativeThemeUpdated();
+
+  gfx::Image dark_mode_image = gfx::Image(image_view->GetImage());
+
+  // Change the color scheme.
+  native_theme->set_use_dark_colors(false);
+  native_theme->NotifyOnNativeThemeUpdated();
+
+  gfx::Image light_mode_image = gfx::Image(image_view->GetImage());
+  EXPECT_FALSE(gfx::test::AreImagesEqual(dark_mode_image, light_mode_image));
 }
 
 }  // namespace ash::network_icon

@@ -600,6 +600,18 @@ gfx::ImageSkia GetImageForWiFiEnabledState(
   return CreateNetworkIconImage(image, badges);
 }
 
+ui::ImageModel GetImageModelForWiFiEnabledState(bool wifi_enabled,
+                                                IconType icon_type) {
+  return ui::ImageModel::FromImageGenerator(
+      base::BindRepeating(
+          [](bool wifi_enabled, IconType icon_type,
+             const ui::ColorProvider* provider) {
+            return GetImageForWiFiEnabledState(provider, wifi_enabled);
+          },
+          wifi_enabled, icon_type),
+      gfx::Size(kUnifiedTrayIconSize, kUnifiedTrayIconSize));
+}
+
 gfx::ImageSkia GetConnectingImageForNetworkType(
     const ui::ColorProvider* color_provider,
     NetworkType network_type,
