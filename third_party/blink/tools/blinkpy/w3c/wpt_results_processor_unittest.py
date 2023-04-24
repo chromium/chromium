@@ -195,6 +195,10 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     self.fs.join('layout-test-results', 'wpt_internal',
                                  'reftest-actual.txt'),
                 ],
+                'pretty_text_diff': [
+                    self.fs.join('layout-test-results', 'wpt_internal',
+                                 'reftest-pretty-diff.html'),
+                ]
             })
         self.assertTrue(self.processor.has_regressions)
 
@@ -496,8 +500,9 @@ class WPTResultsProcessorTest(LoggingTestCase):
             self.fs.join('/mock-checkout', 'out', 'Default',
                          'layout-test-results',
                          'variant_foo=baz-pretty-diff.html'))
+
         self.assertIn('expected: FAIL', pretty_diff)
-        self.assertIn('expected: CRASH', pretty_diff)
+        self.assertIn('actual: CRASH', pretty_diff)
 
     def test_extract_text_multiglobal(self):
         # Similar to a test with variants, the processor should extract the
