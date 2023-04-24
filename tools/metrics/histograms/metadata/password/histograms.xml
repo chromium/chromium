@@ -1898,7 +1898,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.IsPasswordProtected" enum="Boolean"
+<histogram name="PasswordManager.IsPasswordProtected2" enum="Boolean"
     expires_after="2024-03-01">
   <owner>skrakowi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
