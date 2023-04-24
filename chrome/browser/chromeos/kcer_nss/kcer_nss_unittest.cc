@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/chromeos/kcer_nss/kcer_token_impl_nss.h"
@@ -17,7 +19,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/scoped_test_nss_db.h"
+#include "net/cert/pem.h"
 #include "net/test/cert_builder.h"
+#include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // The tests here provide only the minimal coverage for the basic functionality
@@ -65,6 +69,23 @@ std::vector<uint8_t> StrToBytes(const std::string& val) {
 
 scoped_refptr<base::SingleThreadTaskRunner> IOTaskRunner() {
   return content::GetIOThreadTaskRunner({});
+}
+
+// Reads a file in the PEM format, decodes it, returns the content of the first
+// PEM block in the DER format. Currently supports CERTIFICATE and PRIVATE KEY
+// block types.
+absl::optional<std::vector<uint8_t>> ReadPemFileReturnDer(
+    const base::FilePath& path) {
+  std::string pem_data;
+  if (!base::ReadFileToString(path, &pem_data)) {
+    return absl::nullopt;
+  }
+
+  net::PEMTokenizer tokenizer(pem_data, {"CERTIFICATE", "PRIVATE KEY"});
+  if (!tokenizer.GetNext()) {
+    return absl::nullopt;
+  }
+  return StrToBytes(tokenizer.data());
 }
 
 // A helper class to work with tokens (that exist on the IO thread) from the UI
@@ -157,6 +178,40 @@ TEST_F(KcerNssTest, UseUnavailableTokenThenGetError) {
   EXPECT_EQ(generate_waiter.Get().error(), Error::kTokenIsNotAvailable);
 }
 
+TEST_F(KcerNssTest, ImportCertForImportedKeySuccess) {
+  absl::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.key"));
+  ASSERT_TRUE(key.has_value() && (key->size() > 0));
+  absl::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+
+  TokenHolder user_token(Token::kUser);
+  user_token.Initialize();
+
+  std::unique_ptr<Kcer> kcer =
+      internal::CreateKcer(IOTaskRunner(), user_token.GetWeakPtr(),
+                           /*device_token=*/nullptr);
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  kcer->ImportKey(Token::kUser, Pkcs8PrivateKeyInfoDer(std::move(key.value())),
+                  import_key_waiter.GetCallback());
+  ASSERT_TRUE(import_key_waiter.Get().has_value());
+
+  const PublicKey& public_key = import_key_waiter.Get().value();
+
+  EXPECT_EQ(public_key.GetToken(), Token::kUser);
+  // Arbitrary bytes, not much to check about them.
+  EXPECT_EQ(public_key.GetPkcs11Id()->size(), 20u);
+  // Arbitrary bytes, not much to check about them.
+  EXPECT_EQ(public_key.GetSpki()->size(), 294u);
+
+  base::test::TestFuture<base::expected<void, Error>> import_cert_waiter;
+  kcer->ImportCertFromBytes(Token::kUser, CertDer(std::move(cert.value())),
+                            import_cert_waiter.GetCallback());
+  EXPECT_TRUE(import_cert_waiter.Get().has_value());
+}
+
 // Test that a certificate can not be imported, if there's no key for it on the
 // token.
 TEST_F(KcerNssTest, ImportCertWithoutKeyThenFail) {
@@ -204,6 +259,9 @@ TEST_F(KcerNssTest, QueueTasksThenFailAll) {
   kcer->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
                       /*hardware_backed=*/true,
                       generate_ec_waiter.GetCallback());
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  kcer->ImportKey(Token::kUser, Pkcs8PrivateKeyInfoDer({1, 2, 3}),
+                  import_key_waiter.GetCallback());
   base::test::TestFuture<base::expected<void, Error>>
       import_cert_from_bytes_waiter;
   kcer->ImportCertFromBytes(Token::kUser, CertDer({1, 2, 3}),
@@ -229,6 +287,8 @@ TEST_F(KcerNssTest, QueueTasksThenFailAll) {
   ASSERT_FALSE(generate_ec_waiter.Get().has_value());
   EXPECT_EQ(generate_ec_waiter.Get().error(),
             Error::kTokenInitializationFailed);
+  ASSERT_FALSE(import_key_waiter.Get().has_value());
+  EXPECT_EQ(import_key_waiter.Get().error(), Error::kTokenInitializationFailed);
   ASSERT_FALSE(import_cert_from_bytes_waiter.Get().has_value());
   EXPECT_EQ(import_cert_from_bytes_waiter.Get().error(),
             Error::kTokenInitializationFailed);

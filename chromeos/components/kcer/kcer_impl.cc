@@ -74,7 +74,16 @@ void KcerImpl::GenerateEcKey(Token token,
 void KcerImpl::ImportKey(Token token,
                          Pkcs8PrivateKeyInfoDer pkcs8_private_key_info_der,
                          ImportKeyCallback callback) {
-  // TODO(244408716): Implement.
+  const base::WeakPtr<KcerToken>& kcer_token = GetToken(token);
+  if (!kcer_token.MaybeValid()) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kTokenIsNotAvailable));
+  }
+  token_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&KcerToken::ImportKey, kcer_token,
+                     std::move(pkcs8_private_key_info_der),
+                     base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 void KcerImpl::ImportCertFromBytes(Token token,

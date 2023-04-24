@@ -59,6 +59,16 @@ std::vector<uint8_t> SECItemToBytes(crypto::ScopedSECItem value) {
                : std::vector<uint8_t>();
 }
 
+void CleanUpAndDestroyKeys(crypto::ScopedSECKEYPublicKey public_key,
+                           crypto::ScopedSECKEYPrivateKey private_key) {
+  // Clean up generated keys. PK11_DeleteTokenPrivateKey and
+  // PK11_DeleteTokenPublicKey are documented to also destroy the passed
+  // SECKEYPublicKey/SECKEYPrivateKey structures.
+  PK11_DeleteTokenPrivateKey(/*privKey=*/private_key.release(),
+                             /*force=*/false);
+  PK11_DeleteTokenPublicKey(/*pubKey=*/public_key.release());
+}
+
 void GenerateRsaKeyOnWorkerThread(Token token,
                                   crypto::ScopedPK11Slot slot,
                                   uint32_t modulus_length_bits,
@@ -79,6 +89,7 @@ void GenerateRsaKeyOnWorkerThread(Token token,
   }
 
   if (!key_gen_success) {
+    CleanUpAndDestroyKeys(std::move(public_key), std::move(private_key));
     return std::move(callback).Run(
         base::unexpected(Error::kFailedToGenerateKey));
   }
@@ -87,12 +98,6 @@ void GenerateRsaKeyOnWorkerThread(Token token,
   crypto::ScopedSECItem public_key_der(
       SECKEY_EncodeDERSubjectPublicKeyInfo(public_key.get()));
   if (!public_key_der) {
-    // Clean up generated keys. PK11_DeleteTokenPrivateKey and
-    // PK11_DeleteTokenPublicKey are documented to also destroy the passed
-    // SECKEYPublicKey/SECKEYPrivateKey structures.
-    PK11_DeleteTokenPrivateKey(/*privKey=*/private_key.release(),
-                               /*force=*/false);
-    PK11_DeleteTokenPublicKey(/*pubKey=*/public_key.release());
     return std::move(callback).Run(
         base::unexpected(Error::kFailedToExportPublicKey));
   }
@@ -128,6 +133,7 @@ void GenerateEcKeyOnWorkerThread(Token token,
   }
 
   if (!key_gen_success) {
+    CleanUpAndDestroyKeys(std::move(public_key), std::move(private_key));
     return std::move(callback).Run(
         base::unexpected(Error::kFailedToGenerateKey));
   }
@@ -135,18 +141,51 @@ void GenerateEcKeyOnWorkerThread(Token token,
   crypto::ScopedSECItem public_key_der(
       SECKEY_EncodeDERSubjectPublicKeyInfo(public_key.get()));
   if (!public_key_der) {
-    // Clean up generated keys. // PK11_DeleteTokenPrivateKey and
-    // PK11_DeleteTokenPublicKey are documented to also destroy the passed
-    // SECKEYPublicKey/SECKEYPrivateKey structures.
-    PK11_DeleteTokenPrivateKey(/*privKey=*/private_key.release(),
-                               /*force=*/false);
-    PK11_DeleteTokenPublicKey(/*pubKey=*/public_key.release());
+    CleanUpAndDestroyKeys(std::move(public_key), std::move(private_key));
     return std::move(callback).Run(
         base::unexpected(Error::kFailedToExportPublicKey));
   }
 
   Pkcs11Id pkcs11_id(SECItemToBytes(crypto::ScopedSECItem(
       PK11_MakeIDFromPubKey(&public_key->u.ec.publicValue))));
+
+  return std::move(callback).Run(
+      PublicKey(token, std::move(pkcs11_id),
+                PublicKeySpki(SECItemToBytes(std::move(public_key_der)))));
+}
+
+void ImportKeyOnWorkerThread(Token token,
+                             crypto::ScopedPK11Slot slot,
+                             Pkcs8PrivateKeyInfoDer pkcs8_private_key_info_der,
+                             Kcer::ImportKeyCallback callback) {
+  crypto::ScopedSECKEYPrivateKey imported_private_key =
+      crypto::ImportNSSKeyFromPrivateKeyInfo(slot.get(),
+                                             pkcs8_private_key_info_der.value(),
+                                             /*permanent=*/true);
+  if (!imported_private_key) {
+    return std::move(callback).Run(base::unexpected(Error::kFailedToImportKey));
+  }
+
+  crypto::ScopedSECKEYPublicKey public_key(
+      SECKEY_ConvertToPublicKey(imported_private_key.get()));
+  if (!public_key) {
+    CleanUpAndDestroyKeys(std::move(public_key),
+                          std::move(imported_private_key));
+    return std::move(callback).Run(
+        base::unexpected(Error::kFailedToExportPublicKey));
+  }
+
+  crypto::ScopedSECItem public_key_der(
+      SECKEY_EncodeDERSubjectPublicKeyInfo(public_key.get()));
+  if (!public_key_der) {
+    CleanUpAndDestroyKeys(std::move(public_key),
+                          std::move(imported_private_key));
+    return std::move(callback).Run(
+        base::unexpected(Error::kFailedToEncodePublicKey));
+  }
+
+  Pkcs11Id pkcs11_id(
+      SECItemToBytes(crypto::MakeNssIdFromPublicKey(public_key.get())));
 
   return std::move(callback).Run(
       PublicKey(token, std::move(pkcs11_id),
@@ -293,7 +332,25 @@ void KcerTokenImplNss::ImportKey(
     Pkcs8PrivateKeyInfoDer pkcs8_private_key_info_der,
     Kcer::ImportKeyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  // TODO(244408716): Implement.
+
+  if (UNLIKELY(state_ == State::kInitializationFailed)) {
+    return HandleInitializationFailed(std::move(callback));
+  } else if (is_blocked_) {
+    return task_queue_.push(base::BindOnce(
+        &KcerTokenImplNss::ImportKey, weak_factory_.GetWeakPtr(),
+        std::move(pkcs8_private_key_info_der), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = std::move(callback).Then(BlockQueueGetUnblocker());
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&ImportKeyOnWorkerThread, token_,
+                     crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
+                     std::move(pkcs8_private_key_info_der),
+                     std::move(unblocking_callback)));
 }
 
 void KcerTokenImplNss::ImportCertFromBytes(CertDer cert_der,

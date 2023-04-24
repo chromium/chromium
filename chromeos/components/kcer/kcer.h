@@ -51,10 +51,12 @@ enum class COMPONENT_EXPORT(KCER) Error {
   kNotSupported = 2,
   kTokenIsNotAvailable = 3,
   kTokenInitializationFailed = 4,
-  kInvalidCertificate = 5,
-  kFailedToImportCertificate = 6,
-  kFailedToGenerateKey = 7,
-  kFailedToExportPublicKey = 8,
+  kFailedToGenerateKey = 5,
+  kFailedToExportPublicKey = 6,
+  kFailedToEncodePublicKey = 7,
+  kFailedToImportKey = 8,
+  kInvalidCertificate = 9,
+  kFailedToImportCertificate = 10,
 };
 
 // Handles for tokens on ChromeOS.
@@ -251,8 +253,11 @@ class COMPONENT_EXPORT(KCER) Kcer {
                              bool hardware_backed,
                              GenerateKeyCallback callback) = 0;
 
-  // Imports a key pair from bytes `key_pair` in the PKCS#8 format into the
-  // `token`. Returns a public key on success, an error otherwise.
+  // Imports a key pair from bytes `key_pair` in the PKCS#8 format (DER encoded)
+  // into the `token`. It is caller's responsibility to make sure that the same
+  // key doesn't end up on two different tokens (otherwise Kcer is allowed to
+  // perform any future operations, such as RemoveKey, with only one of the
+  // keys). Returns a public key on success, an error otherwise.
   virtual void ImportKey(Token token,
                          Pkcs8PrivateKeyInfoDer pkcs8_private_key_info_der,
                          ImportKeyCallback callback) = 0;
