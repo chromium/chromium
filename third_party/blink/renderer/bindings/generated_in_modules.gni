@@ -611,8 +611,6 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_lock_manager_snapshot.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_lock_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_lock_options.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_login_hint.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_login_hint.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_long_range.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_long_range.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_m_doc_element.cc",

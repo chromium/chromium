@@ -63,21 +63,6 @@ struct LogoutRpsRequest {
   string account_id;
 };
 
-// The login hint for this identity provider. Used by the relying party to
-// specify some data about the user account they would like to show in the
-// FedCM dialog.
-struct IdentityProviderLoginHint {
-  // The strings can be empty when not provided.
-  string email;
-
-  string id;
-
-  // Whether the hint should be required or not. If required, the user agent can
-  // show other accounts if there is no account matching the hint. Otherwise,
-  // the user agent should not show other accounts in case no match is found.
-  bool is_required;
-};
-
 // The details of different mechanisms that allows the browser
 // to intermediate the exchange of the user's entities.
 // Currently, federated identities are supported, and mobile driver's license
@@ -116,8 +101,10 @@ struct IdentityProviderConfig {
   // Can be an empty string to be omitted in the request sent to the provider.
   string nonce;
 
+  // The login hint for this identity provider. Used by the relying party to
+  // specify which user account they would like to show in the FedCM dialog.
   // This field is not sent to the provider, but rather used by the user agent.
-  IdentityProviderLoginHint login_hint;
+  string login_hint;
 
   // The scope of the federated identity request: name/email/photo or
   // custom ones (e.g. "access to calendar", "access to social graph", etc).

@@ -64,11 +64,12 @@ constexpr char kAccountId[] = "1234";
 constexpr char kToken[] = "[not a real token]";
 
 static const std::initializer_list<IdentityRequestAccount> kAccounts{{
-    kAccountId,         // id
-    "ken@idp.example",  // email
-    "Ken R. Example",   // name
-    "Ken",              // given_name
-    GURL()              // picture
+    kAccountId,                 // id
+    "ken@idp.example",          // email
+    "Ken R. Example",           // name
+    "Ken",                      // given_name
+    GURL(),                     // picture
+    std::vector<std::string>()  // hints
 }};
 
 // IdpNetworkRequestManager which returns valid data from IdP.
@@ -237,14 +238,10 @@ class FederatedAuthRequestImplMultipleFramesTest
   void DoRequestToken(
       mojo::Remote<blink::mojom::FederatedAuthRequest>& request_remote,
       RequestTokenCallback callback) {
-    blink::mojom::IdentityProviderLoginHintPtr login_hint_ptr =
-        blink::mojom::IdentityProviderLoginHint::New(/*email=*/"", /*id=*/"",
-                                                     /*login_hint=*/false);
     auto config_ptr = blink::mojom::IdentityProviderConfig::New();
     config_ptr->config_url = GURL(kProviderUrlFull);
     config_ptr->client_id = kClientId;
     config_ptr->nonce = kNonce;
-    config_ptr->login_hint = std::move(login_hint_ptr);
     std::vector<blink::mojom::IdentityProviderPtr> idp_ptrs;
     blink::mojom::IdentityProviderPtr idp_ptr =
         blink::mojom::IdentityProvider::NewFederated(std::move(config_ptr));

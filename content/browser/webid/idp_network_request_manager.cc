@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/fedcm_metrics.h"
+#include "content/browser/webid/flags.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -80,6 +81,7 @@ constexpr char kAccountNameKey[] = "name";
 constexpr char kAccountGivenNameKey[] = "given_name";
 constexpr char kAccountPictureKey[] = "picture";
 constexpr char kAccountApprovedClientsKey[] = "approved_clients";
+constexpr char kHintsKey[] = "hints";
 
 // Keys in 'branding' 'icons' dictionary in accounts endpoint.
 constexpr char kIdpBrandingIconUrl[] = "url";
@@ -149,6 +151,17 @@ absl::optional<content::IdentityRequestAccount> ParseAccount(
   auto* given_name = account.FindString(kAccountGivenNameKey);
   auto* picture = account.FindString(kAccountPictureKey);
   auto* approved_clients = account.FindList(kAccountApprovedClientsKey);
+  std::vector<std::string> account_hints;
+  if (IsFedCmLoginHintEnabled()) {
+    auto* hints = account.FindList(kHintsKey);
+    if (hints) {
+      for (const base::Value& entry : *hints) {
+        if (entry.is_string()) {
+          account_hints.emplace_back(entry.GetString());
+        }
+      }
+    }
+  }
 
   // required fields
   if (!(id && email && name))
@@ -175,7 +188,8 @@ absl::optional<content::IdentityRequestAccount> ParseAccount(
 
   return content::IdentityRequestAccount(
       *id, *email, *name, given_name ? *given_name : "",
-      picture ? GURL(*picture) : GURL(), approved_value);
+      picture ? GURL(*picture) : GURL(), std::move(account_hints),
+      approved_value);
 }
 
 // Parses accounts from given Value. Returns true if parse is successful and

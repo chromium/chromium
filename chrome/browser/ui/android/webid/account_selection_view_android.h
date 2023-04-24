@@ -37,6 +37,7 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
       const base::android::JavaParamRef<jobject>& idp_config_url,
       const base::android::JavaParamRef<jobjectArray>& account_string_fields,
       const base::android::JavaParamRef<jobject>& account_picture_url,
+      const base::android::JavaParamRef<jobjectArray>& account_hints,
       bool is_sign_in);
   void OnDismiss(JNIEnv* env, jint dismiss_reason);
 

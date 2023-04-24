@@ -162,10 +162,10 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
     std::vector<IdentityRequestAccount> accounts;
     for (const AccountConfig& account_config : config_.accounts) {
-      accounts.emplace_back(account_config.id,
-                            GenerateEmailForUserId(account_config.id),
-                            kAccountName, kAccountGivenName,
-                            GURL(kAccountPicture), account_config.login_state);
+      accounts.emplace_back(
+          account_config.id, GenerateEmailForUserId(account_config.id),
+          kAccountName, kAccountGivenName, GURL(kAccountPicture),
+          std::vector<std::string>(), account_config.login_state);
     }
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

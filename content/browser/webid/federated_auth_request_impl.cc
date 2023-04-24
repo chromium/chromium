@@ -280,10 +280,9 @@ FederatedAuthRequestPageData* GetPageData(RenderFrameHost* render_frame_host) {
 }
 
 void FilterAccountsWithLoginHint(
-    const blink::mojom::IdentityProviderLoginHintPtr& login_hint,
+    const std::string& login_hint,
     IdpNetworkRequestManager::AccountList& accounts) {
-  // Do not filter if both email and id are empty.
-  if (login_hint->email.empty() && login_hint->id.empty()) {
+  if (login_hint.empty()) {
     return;
   }
 
@@ -292,26 +291,11 @@ void FilterAccountsWithLoginHint(
   // account afterwards, in which case the multiple account chooser would be
   // shown.
   auto Filter = [&login_hint](const IdentityRequestAccount& account) {
-    if (!login_hint->email.empty() && !login_hint->id.empty()) {
-      return account.id != login_hint->id && account.email != login_hint->email;
-    } else if (!login_hint->email.empty()) {
-      return account.email != login_hint->email;
-    } else {
-      return account.id != login_hint->id;
-    }
+    return std::find(account.hints.begin(), account.hints.end(), login_hint) ==
+           account.hints.end();
   };
-  bool should_filter = true;
-  if (!login_hint->is_required) {
-    // If |is_required| is false, do not use the filter if all elements would be
-    // removed.
-    size_t num_filtered_out =
-        std::count_if(accounts.begin(), accounts.end(), Filter);
-    should_filter = num_filtered_out != accounts.size();
-  }
-  if (should_filter) {
-    accounts.erase(std::remove_if(accounts.begin(), accounts.end(), Filter),
-                   accounts.end());
-  }
+  accounts.erase(std::remove_if(accounts.begin(), accounts.end(), Filter),
+                 accounts.end());
 }
 
 std::unique_ptr<FedCmMetrics> CreateFedCmMetrics(
