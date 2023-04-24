@@ -752,6 +752,8 @@ TEST_P(PasswordImporterTest, ContinueImportCanReplaceConflictingPassword) {
       "PasswordManager.ImportedPasswordsPerUserInCSV", 2, 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.Import.PerFile.Conflicts", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.Import.PerFile.ConflictsResolved", 1, 1);
 
   const password_manager::ImportResults& results = GetImportResults();
 

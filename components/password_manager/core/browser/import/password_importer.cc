@@ -518,6 +518,9 @@ void PasswordImporter::ContinueImport(const std::vector<int>& selected_ids,
       conflicts_cache_->start_time, conflicts_cache_->conflicts.size());
 
   conflicts_cache_.reset();
+
+  base::UmaHistogramCounts1M("PasswordManager.Import.PerFile.ConflictsResolved",
+                             selected_ids.size());
 }
 
 void PasswordImporter::ConsumePasswords(

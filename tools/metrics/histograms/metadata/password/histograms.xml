@@ -1741,6 +1741,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="PasswordManager.Import.PerFile.ConflictsResolved"
+    units="saved credentials" expires_after="2023-09-30">
+  <owner>eliaskh@chromium.org</owner>
+  <owner>natiahlyi@google.com</owner>
+  <summary>
+    Records number of passwords that were resolved in Passwords Import -
+    Conflict resolution. Basically the number of conflicting passwords that were
+    selected to be imported. Recorded during the passwords import process
+    triggered from settings, after the user clicks on the Repalce button.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.Import.PerFile.Notes.{Type}" units="units"
     expires_after="2023-09-15">
   <owner>eliaskh@chromium.org</owner>
