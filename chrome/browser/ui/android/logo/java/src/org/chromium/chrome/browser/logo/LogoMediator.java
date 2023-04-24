@@ -382,6 +382,10 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         mAnimatedLogoUrl = animatedLogoUrl;
     }
 
+    void setOnLogoClickUrlForTesting(String onLogoClickUrl) {
+        mOnLogoClickUrl = onLogoClickUrl;
+    }
+
     ImageFetcher getImageFetcherForTesting() {
         return mImageFetcher;
     }

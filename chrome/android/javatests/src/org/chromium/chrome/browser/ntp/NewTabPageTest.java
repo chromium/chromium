@@ -60,6 +60,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -67,6 +68,9 @@ import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.logo.LogoBridge;
+import org.chromium.chrome.browser.logo.LogoBridgeJni;
+import org.chromium.chrome.browser.logo.LogoCoordinator;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlBar;
@@ -79,6 +83,7 @@ import org.chromium.chrome.browser.suggestions.tile.TileGroup;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNTP;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -157,6 +162,8 @@ public class NewTabPageTest {
                     .setRevision(RENDER_TEST_REVISION)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_NEW_TAB_PAGE)
                     .build();
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
     @Mock
     OmniboxStub mOmniboxStub;
     @Mock
@@ -167,6 +174,10 @@ public class NewTabPageTest {
     private Callback mOnVisitComplete;
     @Mock
     private Runnable mOnPageLoaded;
+    @Mock
+    LogoBridge.Natives mLogoBridgeJniMock;
+    @Mock
+    private LogoBridge mLogoBridge;
 
     private static final String TEST_PAGE = "/chrome/test/data/android/navigate/simple.html";
     private static final String TEST_FEED =
@@ -806,6 +817,26 @@ public class NewTabPageTest {
         histogramWatcher.assertExpected(HISTOGRAM_NTP_MODULE_LONGCLICK
                 + " is not recorded correctly when we perform long click on the home button "
                 + "and navigate to home page setting.");
+    }
+
+    /**
+     * Test whether the clicking action on Logo in {@link NewTabPage} is been recorded in
+     * histogram correctly.
+     */
+    @Test
+    @SmallTest
+    @Feature({"NewTabPage"})
+    public void testRecordHistogramLogoClick_Ntp() {
+        mJniMocker.mock(LogoBridgeJni.TEST_HOOKS, mLogoBridgeJniMock);
+        NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
+        LogoCoordinator logoCoordinator = ntpLayout.getLogoCoordinatorForTesting();
+        logoCoordinator.setLogoBridgeForTesting(mLogoBridge);
+        logoCoordinator.setOnLogoClickUrlForTesting(TEST_URL);
+        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                HISTOGRAM_NTP_MODULE_CLICK, ModuleTypeOnStartAndNTP.DOODLE);
+        TestThreadUtils.runOnUiThreadBlocking(() -> logoCoordinator.onLogoClickedForTesting(true));
+        histogramWatcher.assertExpected(HISTOGRAM_NTP_MODULE_CLICK
+                + " is not recorded correctly when click on Logo with doodle enabled.");
     }
 
     private void captureThumbnail() {
