@@ -9,6 +9,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_text_index.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_text_offset_range.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
@@ -47,6 +48,9 @@ struct CORE_EXPORT NGInlineItemResult {
   wtf_size_t StartOffset() const { return text_offset.start; }
   wtf_size_t EndOffset() const { return text_offset.end; }
   wtf_size_t Length() const { return text_offset.Length(); }
+
+  NGInlineItemTextIndex Start() const { return {item_index, StartOffset()}; }
+  NGInlineItemTextIndex End() const { return {item_index, EndOffset()}; }
 
   LayoutUnit HyphenInlineSize() const {
     return hyphen_shape_result->SnappedWidth().ClampNegativeToZero();

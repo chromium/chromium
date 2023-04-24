@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_text_index.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -43,6 +44,9 @@ struct CORE_EXPORT NGInlineItemsData
 
   void AssertOffset(unsigned index, unsigned offset) const {
     items[index].AssertOffset(offset);
+  }
+  void AssertOffset(const NGInlineItemTextIndex& index) const {
+    AssertOffset(index.item_index, index.text_offset);
   }
   void AssertEndOffset(unsigned index, unsigned offset) const {
     items[index].AssertEndOffset(offset);

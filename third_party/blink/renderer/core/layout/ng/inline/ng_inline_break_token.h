@@ -37,16 +37,6 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
       const NGInlineItemTextIndex& index,
       unsigned flags /* NGInlineBreakTokenFlags */,
       const NGBreakToken* sub_break_token = nullptr);
-  static NGInlineBreakToken* Create(
-      NGInlineNode node,
-      const ComputedStyle* style,
-      unsigned item_index,
-      unsigned text_offset,
-      unsigned flags /* NGInlineBreakTokenFlags */,
-      const NGBreakToken* sub_break_token = nullptr) {
-    return Create(node, style, NGInlineItemTextIndex{item_index, text_offset},
-                  flags, sub_break_token);
-  }
 
   // The style at the end of this break token. The next line should start with
   // this style.

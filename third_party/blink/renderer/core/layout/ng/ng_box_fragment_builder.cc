@@ -71,8 +71,8 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
 
       // We're at the beginning of the inline formatting context.
       last_inline_break_token_ = NGInlineBreakToken::Create(
-          *child_inline_node, /* style */ nullptr, /* item_index */ 0,
-          /* text_offset */ 0, NGInlineBreakToken::kDefault);
+          *child_inline_node, /* style */ nullptr, NGInlineItemTextIndex(),
+          NGInlineBreakToken::kDefault);
     }
     return;
   }
