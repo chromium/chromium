@@ -18,6 +18,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/view_class_properties.h"
@@ -40,11 +41,19 @@ std::unique_ptr<views::View> ManagePasswordsListView::CreateTitleView(
               DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
   views::Label* title_label = header->AddChildView(
       views::BubbleFrameView::CreateDefaultTitleLabel(title));
-  // For simplicity use full width of the bubble instead of subtracting the
-  // space for the icon and the close button. It is more important that the
-  // bubble does not grow arbitrarily long than the actual max width.
-  title_label->SetMaximumWidth(layout_provider->GetDistanceMetric(
-      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
+
+  const int close_button_width =
+      layout_provider->GetDistanceMetric(
+          views::DISTANCE_RELATED_BUTTON_HORIZONTAL) +
+      gfx::GetDefaultSizeOfVectorIcon(vector_icons::kCloseRoundedIcon) +
+      layout_provider->GetDistanceMetric(views::DISTANCE_CLOSE_BUTTON_MARGIN);
+  const int title_width =
+      layout_provider->GetDistanceMetric(
+          views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
+      layout_provider->GetInsetsMetric(views::INSETS_DIALOG).width() -
+      layout_provider->GetInsetsMetric(views::INSETS_DIALOG_TITLE).width() -
+      close_button_width;
+  title_label->SetMaximumWidth(title_width);
   return header;
 }
 
