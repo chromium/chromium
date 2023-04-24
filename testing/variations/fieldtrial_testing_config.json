@@ -9718,6 +9718,21 @@
             ]
         }
     ],
+    "PasswordCheckupOnIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSPasswordCheckup"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasswordGenerationPreviewOnHover": [
         {
             "platforms": [
