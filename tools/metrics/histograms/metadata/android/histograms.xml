@@ -3618,25 +3618,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.ThumbnailDiskStorage.CachedBitmap.Found"
-    enum="BooleanFound" expires_after="2020-01-30">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    Records the status of a thumbnail query from the thumbnail disk storage.
-  </summary>
-</histogram>
-
-<histogram name="Android.ThumbnailDiskStorage.Size" units="KB"
-    expires_after="2020-01-30">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    Measures the size of the thumbnail disk storage used. Recorded during
-    initialization.
-  </summary>
-</histogram>
-
 <histogram
     name="Android.ThumbnailProvider.BitmapCache.Size{ThumbnailProvider_ClientType}"
     units="KB" expires_after="2021-01-30">
