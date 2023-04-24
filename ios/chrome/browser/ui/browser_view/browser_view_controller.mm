@@ -287,8 +287,6 @@ enum HeaderBehaviour {
 // not active, the UI will not react to changes in the active web state, so
 // generally an inactive BVC should not be visible.
 @property(nonatomic, assign, getter=isActive) BOOL active;
-// The Browser whose UI is managed by this instance.
-@property(nonatomic, assign) Browser* browser;
 // Browser container view controller.
 @property(nonatomic, strong)
     BrowserContainerViewController* browserContainerViewController;
