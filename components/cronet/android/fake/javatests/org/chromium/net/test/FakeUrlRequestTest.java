@@ -1642,7 +1642,7 @@ public class FakeUrlRequestTest {
      * A Cronet callback that does nothing.
      */
 
-    private static class StubCallback extends UrlRequest.Callback {
+    static class StubCallback extends UrlRequest.Callback {
         @Override
         public void onRedirectReceived(org.chromium.net.UrlRequest urlRequest,
                 UrlResponseInfo urlResponseInfo, String s) {}

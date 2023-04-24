@@ -35,7 +35,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
-import org.chromium.net.MetricsTestUtil.TestRequestFinishedListener;
 import org.chromium.net.TestBidirectionalStreamCallback.FailureType;
 import org.chromium.net.TestBidirectionalStreamCallback.ResponseStep;
 import org.chromium.net.impl.BidirectionalStreamNetworkException;

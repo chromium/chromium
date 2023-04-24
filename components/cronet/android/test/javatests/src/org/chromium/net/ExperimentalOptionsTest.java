@@ -37,7 +37,6 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.DnsOptions.StaleDnsOptions;
-import org.chromium.net.MetricsTestUtil.TestRequestFinishedListener;
 import org.chromium.net.impl.CronetUrlRequestContext;
 import org.chromium.net.test.EmbeddedTestServer;
 

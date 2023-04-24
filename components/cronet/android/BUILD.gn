@@ -371,6 +371,7 @@ android_library("cronet_impl_fake_base_java") {
     "fake/java/org/chromium/net/test/FakeCronetController.java",
     "fake/java/org/chromium/net/test/FakeCronetEngine.java",
     "fake/java/org/chromium/net/test/FakeCronetProvider.java",
+    "fake/java/org/chromium/net/test/FakeRequestFinishedInfo.java",
     "fake/java/org/chromium/net/test/FakeUrlRequest.java",
     "fake/java/org/chromium/net/test/FakeUrlResponse.java",
     "fake/java/org/chromium/net/test/ResponseMatcher.java",
@@ -990,6 +991,7 @@ android_library("cronet_common_javatests") {
   sources = [
     "test/javatests/src/org/chromium/net/CronetLoggerTestRule.java",
     "test/javatests/src/org/chromium/net/CronetTestRule.java",
+    "test/javatests/src/org/chromium/net/TestRequestFinishedListener.java",
     "test/javatests/src/org/chromium/net/TestUploadDataProvider.java",
     "test/javatests/src/org/chromium/net/TestUrlRequestCallback.java",
   ]

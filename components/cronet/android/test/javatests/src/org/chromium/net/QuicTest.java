@@ -23,7 +23,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
-import org.chromium.net.MetricsTestUtil.TestRequestFinishedListener;
 
 import java.io.File;
 import java.io.FileInputStream;

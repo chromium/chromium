@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.net.CronetException;
 import org.chromium.net.InlineExecutionProhibitedException;
+import org.chromium.net.RequestFinishedInfo;
 import org.chromium.net.UploadDataProvider;
 import org.chromium.net.UrlResponseInfo;
 import org.chromium.net.impl.CallbackExceptionImpl;
@@ -21,6 +22,7 @@ import org.chromium.net.impl.JavaUrlRequestUtils.CheckedRunnable;
 import org.chromium.net.impl.JavaUrlRequestUtils.DirectPreventingExecutor;
 import org.chromium.net.impl.JavaUrlRequestUtils.State;
 import org.chromium.net.impl.Preconditions;
+import org.chromium.net.impl.RequestFinishedInfoImpl;
 import org.chromium.net.impl.UrlRequestBase;
 import org.chromium.net.impl.UrlResponseInfoImpl;
 
@@ -32,6 +34,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +56,8 @@ final class FakeUrlRequest extends UrlRequestBase {
     private final Executor mUserExecutor;
     // The {@link Executor} provided by the engine used to break up callback loops.
     private final Executor mExecutor;
+    // The Annotations provided by the engine during the creation of this request.
+    private final Collection<Object> mRequestAnnotations;
     // The {@link FakeCronetController} that will provide responses for this request.
     private final FakeCronetController mFakeCronetController;
     // The fake {@link CronetEngine} that should be notified when this request starts and stops.
@@ -68,6 +73,10 @@ final class FakeUrlRequest extends UrlRequestBase {
     // The list of HTTP headers used by this request to establish a connection.
     @GuardedBy("mLock")
     private final ArrayList<Map.Entry<String, String>> mAllHeadersList = new ArrayList<>();
+    // The exception that is thrown by the request. This is the same exception as the one in
+    // onFailed
+    @GuardedBy("mLock")
+    private CronetException mCronetException;
     // The current URL this request is connecting to.
     @GuardedBy("mLock")
     private String mCurrentUrl;
@@ -187,7 +196,8 @@ final class FakeUrlRequest extends UrlRequestBase {
     FakeUrlRequest(Callback callback, Executor userExecutor, Executor executor, String url,
             boolean allowDirectExecutor, boolean trafficStatsTagSet, int trafficStatsTag,
             final boolean trafficStatsUidSet, final int trafficStatsUid,
-            FakeCronetController fakeCronetController, FakeCronetEngine fakeCronetEngine) {
+            FakeCronetController fakeCronetController, FakeCronetEngine fakeCronetEngine,
+            Collection<Object> requestAnnotations) {
         if (url == null) {
             throw new NullPointerException("URL is required");
         }
@@ -205,6 +215,7 @@ final class FakeUrlRequest extends UrlRequestBase {
         mFakeCronetController = fakeCronetController;
         mFakeCronetEngine = fakeCronetEngine;
         mAllowDirectExecutor = allowDirectExecutor;
+        mRequestAnnotations = requestAnnotations;
     }
 
     @Override
@@ -519,6 +530,7 @@ final class FakeUrlRequest extends UrlRequestBase {
      */
     private void tryToFailWithException(CronetException e) {
         synchronized (mLock) {
+            mCronetException = e;
             if (setTerminalState(State.ERROR)) {
                 mCallback.onFailed(FakeUrlRequest.this, mUrlResponseInfo, e);
             }
@@ -575,8 +587,35 @@ final class FakeUrlRequest extends UrlRequestBase {
                 return false; // Already in a terminal state
             default: {
                 mState = terminalState;
+                reportRequestFinished();
                 cleanup();
                 return true;
+            }
+        }
+    }
+
+    private void reportRequestFinished() {
+        synchronized (mLock) {
+            mFakeCronetEngine.reportRequestFinished(
+                    new FakeRequestFinishedInfo(mCurrentUrl, mRequestAnnotations,
+                            getRequestFinishedReason(), mUrlResponseInfo, mCronetException));
+        }
+    }
+
+    @RequestFinishedInfoImpl.FinishedReason
+    @GuardedBy("mLock")
+    private int getRequestFinishedReason() {
+        synchronized (mLock) {
+            switch (mState) {
+                case State.COMPLETE:
+                    return RequestFinishedInfo.SUCCEEDED;
+                case State.ERROR:
+                    return RequestFinishedInfo.FAILED;
+                case State.CANCELLED:
+                    return RequestFinishedInfo.CANCELED;
+                default:
+                    throw new IllegalStateException(
+                            "Request should be in terminal state before calling getRequestFinishedReason");
             }
         }
     }
