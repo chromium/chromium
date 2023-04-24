@@ -290,6 +290,11 @@ export class TimeLapseSaver {
    */
   private speedCheckpoint!: number;
 
+  /**
+   * Initial time lapse speed.
+   */
+  private initialSpeed!: number;
+
   private constructor(
       encoderConfig: VideoEncoderConfig,
       private readonly resolution: Resolution, private readonly fps: number) {
@@ -306,6 +311,7 @@ export class TimeLapseSaver {
    * Initializes the saver with the given initial speed.
    */
   private async init(speed: number): Promise<void> {
+    this.initialSpeed = speed;
     this.currSpeedSaver = await this.createSaver(speed);
     this.nextSpeedSaver = await this.createSaver(this.getNextSpeed(speed));
     this.speedCheckpoint = speed * TIME_LAPSE_MAX_DURATION * this.fps;
@@ -334,7 +340,10 @@ export class TimeLapseSaver {
       return;
     }
     this.frameNoMap.set(frame.timestamp, frameNo);
-    this.encoder.encode(frame, {keyFrame: true});
+    // Frames that are only in the initial speed video don't have to be encoded
+    // as key frames because they'll be dropped soon.
+    const keyFrame = frameNo % (this.initialSpeed * 2) === 0;
+    this.encoder.encode(frame, {keyFrame});
   }
 
   /**
