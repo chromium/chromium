@@ -6,6 +6,7 @@
 
 #include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/uuid.h"
 #include "chrome/grit/generated_resources.h"
 #import "chrome/services/mac_notifications/mac_notification_service_utils.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -215,7 +216,7 @@ UNNotificationCategory* NotificationCategoryManager::CreateCategory(
   }
 
   NSString* category_id = base::SysUTF8ToNSString(
-      base::GUID::GenerateRandomV4().AsLowercaseString());
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   UNNotificationCategory* category = [UNNotificationCategory
       categoryWithIdentifier:category_id
