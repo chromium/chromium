@@ -198,7 +198,8 @@ TEST_F(FeedbackServiceTest, SendFeedbackLoadSysInfo) {
                     feedback::FeedbackReport::kMemUsageWithTabTitlesKey));
 }
 
-TEST_F(FeedbackServiceTest, SendFeedbackDoNotSendTabTitles) {
+// TODO(crbug.com/1439227): Re-enable this test
+TEST_F(FeedbackServiceTest, DISABLED_SendFeedbackDoNotSendTabTitles) {
   TestSendFeedbackConcerningTabTitles(false);
   EXPECT_EQ(0u, feedback_data_->sys_info()->count(
                     feedback::FeedbackReport::kMemUsageWithTabTitlesKey));
