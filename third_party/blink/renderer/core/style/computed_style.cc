@@ -377,6 +377,9 @@ bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
   if (old_style->Overlay() != new_style->Overlay()) {
     return true;
   }
+  if (old_style->ListStylePosition() != new_style->ListStylePosition()) {
+    return true;
+  }
   return false;
 }
 

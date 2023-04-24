@@ -86,20 +86,9 @@ void LayoutNGListItem::OrdinalValueChanged() {
 
 void LayoutNGListItem::SubtreeDidChange() {
   LayoutObject* marker = Marker();
-  ListMarker* list_marker = ListMarker::Get(marker);
-  if (!list_marker)
-    return;
-
-  // Make sure an outside marker is a direct child of the list item (not nested
-  // inside an anonymous box), and that a marker originated by a ::before or
-  // ::after precedes the generated contents.
-  if ((marker->IsLayoutNGOutsideListMarker() && marker->Parent() != this) ||
-      (IsPseudoElement() && marker != FirstChild())) {
-    marker->Remove();
-    AddChild(marker, FirstChild());
+  if (ListMarker* list_marker = ListMarker::Get(marker)) {
+    list_marker->UpdateMarkerContentIfNeeded(*marker);
   }
-
-  list_marker->UpdateMarkerContentIfNeeded(*marker);
 }
 
 void LayoutNGListItem::WillCollectInlines() {
