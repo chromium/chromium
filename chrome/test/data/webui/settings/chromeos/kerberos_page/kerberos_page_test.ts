@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {KerberosAccountsBrowserProxyImpl, Route, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {KerberosAccountsBrowserProxyImpl, Route, Router, routes, SettingsKerberosPageElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 
 import {TestKerberosAccountsBrowserProxy} from './test_kerberos_accounts_browser_proxy.js';
 
-suite('KerberosPageTests', function() {
-  let browserProxy = null;
+suite('<settings-kerberos-page>', () => {
+  let kerberosPage: SettingsKerberosPageElement;
+  let browserProxy: TestKerberosAccountsBrowserProxy;
 
-  /** @type {SettingsKerberosPageElement} */
-  let kerberosPage = null;
-
-  setup(function() {
+  setup(() => {
     routes.BASIC = new Route('/'),
     routes.KERBEROS = routes.BASIC.createSection('/kerberos', 'kerberos');
     routes.KERBEROS_ACCOUNTS_V2 =
@@ -25,13 +23,11 @@ suite('KerberosPageTests', function() {
 
     browserProxy = new TestKerberosAccountsBrowserProxy();
     KerberosAccountsBrowserProxyImpl.setInstanceForTesting(browserProxy);
-    PolymerTest.clearBody();
   });
 
-  teardown(function() {
+  teardown(() => {
     kerberosPage.remove();
     Router.getInstance().resetRouteForTesting();
-    KerberosAccountsBrowserProxyImpl.setInstanceForTesting(undefined);
   });
 
   test('Kerberos Section contains a link to Kerberos Accounts', () => {
@@ -40,13 +36,14 @@ suite('KerberosPageTests', function() {
     flush();
 
     // Sub-page trigger is shown.
-    const subpageTrigger = kerberosPage.shadowRoot.querySelector(
+    const subpageTrigger = kerberosPage.shadowRoot!.querySelector<HTMLElement>(
         '#kerberos-accounts-subpage-trigger');
+    assert(subpageTrigger);
     assertFalse(subpageTrigger.hidden);
 
     // Sub-page trigger navigates to Kerberos Accounts V2.
     subpageTrigger.click();
     assertEquals(
-        Router.getInstance().currentRoute, routes.KERBEROS_ACCOUNTS_V2);
+        routes.KERBEROS_ACCOUNTS_V2, Router.getInstance().currentRoute);
   });
 });

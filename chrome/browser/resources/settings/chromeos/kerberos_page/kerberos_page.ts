@@ -28,7 +28,8 @@ import {getTemplate} from './kerberos_page.html.js';
 const SettingsKerberosPageElementBase =
     WebUiListenerMixin(I18nMixin(PolymerElement));
 
-class SettingsKerberosPageElement extends SettingsKerberosPageElementBase {
+export class SettingsKerberosPageElement extends
+    SettingsKerberosPageElementBase {
   static get is() {
     return 'settings-kerberos-page';
   }

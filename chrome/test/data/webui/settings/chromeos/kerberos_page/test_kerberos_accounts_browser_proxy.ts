@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {KerberosConfigErrorCode, KerberosErrorType} from 'chrome://os-settings/chromeos/os_settings.js';
+import {KerberosAccount, KerberosAccountsBrowserProxy, KerberosConfigErrorCode, KerberosErrorType, ValidateKerberosConfigResult} from 'chrome://os-settings/chromeos/os_settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 // List of fake accounts.
@@ -39,8 +39,10 @@ export const TEST_KERBEROS_ACCOUNTS = [
   },
 ];
 
-/** @implements {KerberosAccountsBrowserProxy} */
-export class TestKerberosAccountsBrowserProxy extends TestBrowserProxy {
+export class TestKerberosAccountsBrowserProxy extends TestBrowserProxy
+    implements KerberosAccountsBrowserProxy {
+  addAccountError: KerberosErrorType;
+  validateConfigResult: ValidateKerberosConfigResult;
   constructor() {
     super([
       'getAccounts',
@@ -56,38 +58,35 @@ export class TestKerberosAccountsBrowserProxy extends TestBrowserProxy {
     // Simulated error from a validateConfig call.
     this.validateConfigResult = {
       error: KerberosErrorType.NONE,
-      errorInfo: {code: KerberosConfigErrorCode.NONE},
+      errorInfo: {code: KerberosConfigErrorCode.NONE, lineIndex: 0},
     };
   }
 
-  /** @override */
-  getAccounts() {
+  getAccounts(): Promise<KerberosAccount[]> {
     this.methodCalled('getAccounts');
     return Promise.resolve(TEST_KERBEROS_ACCOUNTS);
   }
 
-  /** @override */
-  addAccount(principalName, password, rememberPassword, config, allowExisting) {
+  addAccount(
+      principalName: string, password: string, rememberPassword: boolean,
+      config: string, allowExisting: boolean): Promise<KerberosErrorType> {
     this.methodCalled(
         'addAccount',
         [principalName, password, rememberPassword, config, allowExisting]);
     return Promise.resolve(this.addAccountError);
   }
 
-  /** @override */
-  removeAccount(account) {
+  removeAccount(account: KerberosAccount): Promise<KerberosErrorType> {
     this.methodCalled('removeAccount', account);
     return Promise.resolve(KerberosErrorType.NONE);
   }
 
-  /** @override */
-  validateConfig(account) {
-    this.methodCalled('validateConfig', account);
+  validateConfig(krb5Conf: string): Promise<ValidateKerberosConfigResult> {
+    this.methodCalled('validateConfig', krb5Conf);
     return Promise.resolve(this.validateConfigResult);
   }
 
-  /** @override */
-  setAsActiveAccount(account) {
+  setAsActiveAccount(account: KerberosAccount): void {
     this.methodCalled('setAsActiveAccount', account);
   }
 }

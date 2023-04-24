@@ -350,8 +350,8 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ],
  ['InternetSubpage', 'internet_subpage_tests.js'],
  ['InternetSubpageMenu', 'internet_subpage_menu_test.js'],
- ['KerberosAccounts', 'kerberos_accounts_test.js'],
- ['KerberosPage', 'kerberos_page_test.js'],
+ ['KerberosPage', 'kerberos_page/kerberos_page_test.js'],
+ ['KerberosPageKerberosAccounts', 'kerberos_page/kerberos_accounts_test.js'],
  [
    'KeyboardShortcutBanner',
    'keyboard_shortcut_banner/keyboard_shortcut_banner_test.js'

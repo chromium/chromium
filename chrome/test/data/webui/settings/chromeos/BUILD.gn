@@ -63,8 +63,6 @@ build_webui_tests("build") {
     "internet_page_tests.js",
     "internet_subpage_tests.js",
     "internet_subpage_menu_test.js",
-    "kerberos_accounts_test.js",
-    "kerberos_page_test.js",
     "lock_screen_subpage_test.ts",
     "manage_users_subpage_tests.js",
     "multidevice_feature_item_tests.js",
@@ -114,7 +112,6 @@ build_webui_tests("build") {
     "test_crostini_browser_proxy.js",
     "test_cups_printers_browser_proxy.js",
     "test_device_name_browser_proxy.js",
-    "test_kerberos_accounts_browser_proxy.js",
     "test_metrics_consent_browser_proxy.ts",
     "test_os_languages_browser_proxy.js",
     "test_os_languages_metrics_proxy.js",
@@ -189,6 +186,10 @@ build_webui_tests("build") {
     "internet_page/network_summary_test.ts",
     "internet_page/test_internet_page_browser_proxy.ts",
     "internet_page/tether_connection_dialog_test.ts",
+
+    "kerberos_page/kerberos_accounts_test.js",
+    "kerberos_page/kerberos_page_test.ts",
+    "kerberos_page/test_kerberos_accounts_browser_proxy.ts",
 
     "keyboard_shortcut_banner/keyboard_shortcut_banner_test.ts",
 
