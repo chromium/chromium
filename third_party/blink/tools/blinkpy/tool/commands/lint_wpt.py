@@ -365,7 +365,8 @@ class LintWPT(Command):
     def _manifest(self, repo_root: str) -> WPTManifest:
         wpt_dir = self._fs.normpath(
             self._fs.relpath(repo_root, self._finder.path_from_web_tests()))
-        return self._default_port.wpt_manifest(wpt_dir)
+        return self._default_port.wpt_manifest(
+            pathlib.Path(wpt_dir).as_posix())
 
     def _is_dir_metadata(self, path: str) -> bool:
         return self._fs.basename(path) == '__dir__.ini'
