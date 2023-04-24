@@ -329,7 +329,7 @@ TEST_F(PowerButtonTest, ButtonStatesGuestMode) {
   SimulateGuestLogin();
   SimulatePowerButtonPress();
   EXPECT_TRUE(IsMenuShowing());
-  EXPECT_TRUE(GetEmailButton()->GetVisible());
+  EXPECT_EQ(nullptr, GetEmailButton());
   EXPECT_EQ(nullptr, GetLockButton());
   EXPECT_TRUE(GetSignOutButton()->GetVisible());
   EXPECT_TRUE(GetPowerOffButton()->GetVisible());
@@ -351,15 +351,6 @@ TEST_F(PowerButtonTest, EmailIsShownForChildAccount) {
   // The multi-profile user chooser is disabled for child accounts.
   EXPECT_FALSE(GetEmailButton()->GetEnabled());
   EXPECT_EQ(u"child@gmail.com", GetEmailButton()->title());
-}
-
-TEST_F(PowerButtonTest, GuestIsShownForGuestMode) {
-  SimulateGuestLogin();
-  SimulatePowerButtonPress();
-  EXPECT_TRUE(GetEmailButton()->GetVisible());
-  // The multi-profile user chooser is disabled in guest mode.
-  EXPECT_FALSE(GetEmailButton()->GetEnabled());
-  EXPECT_EQ(u"Guest", GetEmailButton()->title());
 }
 
 TEST_F(PowerButtonTest, EmailIsNotShownForPublicAccount) {

@@ -117,8 +117,8 @@ bool ShouldShowEmailMenuItem() {
   switch (user_session->user_info.type) {
     case user_manager::USER_TYPE_REGULAR:
     case user_manager::USER_TYPE_CHILD:
-    case user_manager::USER_TYPE_GUEST:
       return true;
+    case user_manager::USER_TYPE_GUEST:
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
     case user_manager::USER_TYPE_KIOSK_APP:
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
@@ -129,28 +129,12 @@ bool ShouldShowEmailMenuItem() {
   }
 }
 
-// Returns the icon for the email address item in the power menu.
-const gfx::VectorIcon& GetEmailMenuItemIcon() {
-  // The 0th user session is the current one.
-  const UserSession* user_session =
-      Shell::Get()->session_controller()->GetUserSession(/*index=*/0);
-  CHECK(user_session);
-  if (user_session->user_info.type == user_manager::USER_TYPE_GUEST) {
-    return kSystemMenuGuestIcon;
-  }
-  return kSystemMenuNewUserIcon;
-}
-
 // Returns the text for the email address item in the power menu.
 std::u16string GetEmailMenuItemText() {
   // The 0th user session is the current one.
   const UserSession* user_session =
       Shell::Get()->session_controller()->GetUserSession(/*index=*/0);
   CHECK(user_session);
-  // Guest mode shows the string "Guest".
-  if (user_session->user_info.type == user_manager::USER_TYPE_GUEST) {
-    return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_GUEST_LABEL);
-  }
   return base::UTF8ToUTF16(user_session->user_info.display_email);
 }
 
@@ -254,7 +238,7 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
     if (ShouldShowEmailMenuItem()) {
       context_menu_model_->AddItemWithIcon(
           VIEW_ID_QS_POWER_EMAIL_MENU_BUTTON, GetEmailMenuItemText(),
-          ui::ImageModel::FromVectorIcon(GetEmailMenuItemIcon(),
+          ui::ImageModel::FromVectorIcon(kSystemMenuNewUserIcon,
                                          ui::kColorAshSystemUIMenuIcon,
                                          kTrayTopShortcutButtonIconSize));
       context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);

@@ -969,13 +969,15 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {
     sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
     sm_.ExpectSpeech("Battery");
 
+    // Guest mode sign out button.
+    if (GetParam() == kTestAsGuestUser) {
+      sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
+      sm_.ExpectSpeech("Exit guest");
+    }
+
     // Shutdown button.
     sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
-    if (base::FeatureList::IsEnabled(features::kQsRevamp)) {
-      sm_.ExpectSpeech("Power menu");
-    } else {
-      sm_.ExpectSpeech("Shut down");
-    }
+    sm_.ExpectSpeech("Power menu");
     sm_.ExpectSpeech("Button");
 
     sm_.Replay();
@@ -994,11 +996,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {
 
   // Shutdown button.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_B); });
-  if (base::FeatureList::IsEnabled(features::kQsRevamp)) {
-    sm_.ExpectSpeech("Power menu");
-  } else {
-    sm_.ExpectSpeech("Shut down");
-  }
+  sm_.ExpectSpeech("Shut down");
   sm_.ExpectSpeech("Button");
 
   sm_.Replay();

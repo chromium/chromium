@@ -18,6 +18,7 @@ class PrefRegistrySimple;
 namespace ash {
 
 class IconButton;
+class PillButton;
 class UnifiedSystemTrayController;
 
 // A base class for both `QsBatteryLabelView` and `QsBatteryIconView`. This view
@@ -109,6 +110,7 @@ class ASH_EXPORT QuickSettingsFooter : public views::View {
 
   // Owned by views hierarchy.
   raw_ptr<PowerButton, ExperimentalAsh> power_button_ = nullptr;
+  raw_ptr<PillButton, ExperimentalAsh> sign_out_button_ = nullptr;
 
   // The registrar used to watch prefs changes.
   PrefChangeRegistrar local_state_pref_change_registrar_;

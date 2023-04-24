@@ -13,6 +13,7 @@
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
@@ -22,6 +23,7 @@
 #include "ash/system/unified/power_button.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "ash/system/user/login_status.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
@@ -41,6 +43,23 @@ constexpr int kQuickSettingFooterItemBetweenSpacing = 8;
 constexpr int kImageLabelSpacing = 2;
 constexpr int kHorizontalSpacing = 12;
 constexpr int kPaddingReduction = 0;
+
+bool ShouldShowSignOutButton() {
+  auto* session_controller = Shell::Get()->session_controller();
+  // Don't show before login.
+  if (!session_controller->IsActiveUserSessionStarted()) {
+    return false;
+  }
+  // Show "Exit guest" or "Exit session" button for special account types.
+  if (session_controller->IsUserGuest() ||
+      session_controller->IsUserPublicAccount()) {
+    return true;
+  }
+  // For regular accounts, only show if there is more than one account on the
+  // device.
+  absl::optional<int> user_count = session_controller->GetExistingUsersCount();
+  return user_count.has_value() && user_count.value() > 1;
+}
 
 }  // namespace
 
@@ -170,13 +189,28 @@ QuickSettingsFooter::QuickSettingsFooter(
       front_buttons_container->SetLayoutManager(
           std::make_unique<views::BoxLayout>(
               views::BoxLayout::Orientation::kHorizontal));
-  button_container_layout->set_between_child_spacing(16);
+  button_container_layout->set_between_child_spacing(8);
 
   power_button_ = front_buttons_container->AddChildView(
       std::make_unique<PowerButton>(controller));
 
-  // TODO(b/278323464): Add a "Sign out" button to `front_buttons_container` if
-  // there are multiple accounts on the device.
+  if (ShouldShowSignOutButton()) {
+    sign_out_button_ =
+        front_buttons_container->AddChildView(std::make_unique<PillButton>(
+            base::BindRepeating(
+                [](UnifiedSystemTrayController* controller) {
+                  quick_settings_metrics_util::RecordQsButtonActivated(
+                      QsButtonCatalogName::kSignOutButton);
+                  controller->HandleSignOutAction();
+                },
+                base::Unretained(controller)),
+            user::GetLocalizedSignOutStringForStatus(
+                Shell::Get()->session_controller()->login_status(),
+                /*multiline=*/false),
+            PillButton::Type::kDefaultWithoutIcon,
+            /*icon=*/nullptr));
+    sign_out_button_->SetID(VIEW_ID_QS_SIGN_OUT_BUTTON);
+  }
 
   // `PowerButton` should start aligned , also battery icons and
   // `settings_button_` should be end aligned, so here adding a empty spacing

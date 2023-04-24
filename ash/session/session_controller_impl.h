@@ -119,6 +119,9 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   // Returns true if the current user is a child account.
   bool IsUserChild() const;
 
+  // Returns true if the current user is a guest account.
+  bool IsUserGuest() const;
+
   // Returns true if the current user is a public account.
   bool IsUserPublicAccount() const;
 
