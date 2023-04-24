@@ -119,8 +119,7 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   // First-Party Sets and disjoint from each other. It doesn't require
   // disjointness with other sources, such as the public sets, since this policy
   // will be used override First-Party Sets in those sources.
-  static std::pair<base::expected<absl::monostate, ParseError>,
-                   std::vector<ParseWarning>>
+  static std::pair<base::expected<void, ParseError>, std::vector<ParseWarning>>
   ValidateEnterprisePolicy(const base::Value::Dict& policy);
 
   // Returns whether First-Party Sets is enabled.

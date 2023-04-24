@@ -69,18 +69,18 @@ FirstPartySetsHandlerImpl* FirstPartySetsHandlerImpl::GetInstance() {
 }
 
 // static
-std::pair<base::expected<absl::monostate, FirstPartySetsHandler::ParseError>,
+std::pair<base::expected<void, FirstPartySetsHandler::ParseError>,
           std::vector<FirstPartySetsHandler::ParseWarning>>
 FirstPartySetsHandler::ValidateEnterprisePolicy(
     const base::Value::Dict& policy) {
   auto [parsed, warnings] =
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy);
 
-  return {parsed.transform(
-              [](const FirstPartySetParser::ParsedPolicySetLists& set_lists) {
-                return absl::monostate();
-              }),
-          warnings};
+  const auto discard_value = [](const auto&)
+      -> base::expected<void, FirstPartySetsHandler::ParseError> {
+    return base::ok();
+  };
+  return {parsed.and_then(discard_value), warnings};
 }
 
 // static
