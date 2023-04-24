@@ -71186,6 +71186,13 @@ Called by update_use_counter_css.py.-->
   <int value="18" label="isolated-app"/>
 </enum>
 
+<enum name="NavigationSuddenTerminationDisabler">
+  <int value="0" label="Subframe-None"/>
+  <int value="1" label="MainFrame-None"/>
+  <int value="2" label="Subframe-Unload"/>
+  <int value="3" label="MainFrame-Unload"/>
+</enum>
+
 <enum name="NavigationSuggestionDigitalAssetLinkValidationEvent">
   <int value="0" label="kNone"/>
   <int value="1" label="kStarted">

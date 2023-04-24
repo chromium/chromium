@@ -5387,6 +5387,13 @@ void NavigationRequest::CommitNavigation() {
       frame_tree_node()->frame_tree().GetSessionStorageKey(
           commit_params_->storage_key);
 
+  if (!NavigationTypeUtils::IsSameDocument(common_params_->navigation_type)) {
+    // We want to record this for the frame that we are navigating away from.
+    frame_tree_node_->render_manager()
+        ->current_frame_host()
+        ->RecordNavigationSuddenTerminationHandlers();
+  }
+
   if (IsServedFromBackForwardCache() || IsPrerenderedPageActivation()) {
     CommitPageActivation();
     return;

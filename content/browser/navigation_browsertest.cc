@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <variant>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -29,6 +30,7 @@
 #include "content/browser/browser_url_handler_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
@@ -92,6 +94,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
@@ -6267,6 +6270,211 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWarnSandboxIneffective,
 
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_EQ(console_observer.messages().size(), 0u);
+}
+
+// We may have an unload handler in the main frame or a subframe or nowhere.
+enum class UnloadFrameType {
+  kMainFrame,
+  kSubFrame,
+  kNone,
+};
+
+static std::string ToString(UnloadFrameType v) {
+  switch (v) {
+    case UnloadFrameType::kMainFrame:
+      return "MainFrame";
+    case UnloadFrameType::kSubFrame:
+      return "SubFrame";
+    case UnloadFrameType::kNone:
+      return "None";
+  }
+}
+
+// We may navigate the main frame, the subframe that may have an unload handler
+// or another subframe that will never have an unload handler.
+enum class NavigateFrameType {
+  kMainFrame,
+  kSubFrame,
+  kOther,
+};
+
+static std::string ToString(NavigateFrameType v) {
+  switch (v) {
+    case NavigateFrameType::kMainFrame:
+      return "MainFrame";
+    case NavigateFrameType::kSubFrame:
+      return "SubFrame";
+    case NavigateFrameType::kOther:
+      return "Other";
+  }
+}
+
+void AddUnloadHandler(RenderFrameHostImpl* rfh) {
+  ASSERT_TRUE(ExecJs(rfh, "addEventListener('unload', () => {})"));
+  ASSERT_TRUE(rfh->GetSuddenTerminationDisablerState(
+      blink::mojom::SuddenTerminationDisablerType::kUnloadHandler));
+}
+
+class NavigationSuddenTerminationDisablerTypeBrowserTest
+    : public NavigationBrowserTest,
+      public ::testing::WithParamInterface<
+          std::tuple<UnloadFrameType, NavigateFrameType>> {
+ public:
+  static std::string DescribeParams(
+      const ::testing::TestParamInfo<ParamType>& info) {
+    return "Unload" + ToString(std::get<0>(info.param)) + "Navigate" +
+           ToString(std::get<1>(info.param));
+  }
+
+ protected:
+  UnloadFrameType GetUnloadFrameType() { return std::get<0>(GetParam()); }
+  NavigateFrameType GetNavigateFrameType() { return std::get<1>(GetParam()); }
+
+  void MaybeAddUnloadHandler() {
+    RenderFrameHostImpl* rfh = nullptr;
+    switch (GetUnloadFrameType()) {
+      case UnloadFrameType::kMainFrame:
+        rfh = current_frame_host();
+        break;
+      case UnloadFrameType::kSubFrame:
+        rfh = DescendantRenderFrameHostImplAt(current_frame_host(), {0});
+        break;
+      case UnloadFrameType::kNone:
+        break;
+    }
+    if (rfh) {
+      AddUnloadHandler(rfh);
+    }
+  }
+
+  RenderFrameHostImpl* GetFrameToNavigate() {
+    switch (GetNavigateFrameType()) {
+      case NavigateFrameType::kMainFrame:
+        return current_frame_host();
+      case NavigateFrameType::kSubFrame:
+        return DescendantRenderFrameHostImplAt(current_frame_host(), {0});
+      case NavigateFrameType::kOther:
+        return DescendantRenderFrameHostImplAt(current_frame_host(), {1});
+    }
+  }
+
+  bool NavigatedFrameHasUnload() {
+    switch (GetNavigateFrameType()) {
+      case NavigateFrameType::kOther:
+        // It never has unload.
+        return false;
+      case NavigateFrameType::kMainFrame:
+        // Navigating the main will have unload if there is any unload.
+        return GetUnloadFrameType() != UnloadFrameType::kNone;
+      case NavigateFrameType::kSubFrame:
+        // Navigating the subframe will have unload if the subframe has unload.
+        return GetUnloadFrameType() == UnloadFrameType::kSubFrame;
+    }
+  }
+};
+
+// Set up a page with 2 subframes. The main frame or one of the subframes may
+// have an unload handler. Then navigate one of the frames and verify that we
+// correctly record which type of frame navigates combined with whether it
+// involved an unload handler.
+IN_PROC_BROWSER_TEST_P(NavigationSuddenTerminationDisablerTypeBrowserTest,
+                       RecordUma) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/cross_site_iframe_factory.html?a(a,a)")));
+
+  // Set up the unload handler if needed.
+  MaybeAddUnloadHandler();
+
+  // Navigate the relevant frame and capture histograms.
+  base::HistogramTester histograms;
+  ASSERT_TRUE(NavigateFrameToURL(GetFrameToNavigate()->frame_tree_node(),
+                                 GURL("about:blank")));
+
+  // Check that we got the expected histogram value.
+  uint32_t expected_histogram_value = 0;
+  if (GetNavigateFrameType() == NavigateFrameType::kMainFrame) {
+    expected_histogram_value |= RenderFrameHostImpl::
+        NavigationSuddenTerminationDisablerType::kMainFrame;
+  }
+  if (NavigatedFrameHasUnload()) {
+    expected_histogram_value |=
+        RenderFrameHostImpl::NavigationSuddenTerminationDisablerType::kUnload;
+  }
+  histograms.ExpectUniqueSample(
+      "Navigation.SuddenTerminationDisabler.AllOrigins",
+      expected_histogram_value, 1);
+  histograms.ExpectUniqueSample(
+      "Navigation.SuddenTerminationDisabler.SameOrigin",
+      expected_histogram_value, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NavigationSuddenTerminationDisablerTypeBrowserTest,
+    ::testing::Combine(::testing::Values(UnloadFrameType::kMainFrame,
+                                         UnloadFrameType::kSubFrame,
+                                         UnloadFrameType::kNone),
+                       ::testing::Values(NavigateFrameType::kMainFrame,
+                                         NavigateFrameType::kSubFrame,
+                                         NavigateFrameType::kOther)),
+    &NavigationSuddenTerminationDisablerTypeBrowserTest::DescribeParams);
+
+// Test that "SameOrigin" only considers frames that have an unbroken path of
+// same-origin frames from the frame that navigates.
+IN_PROC_BROWSER_TEST_F(
+    NavigationBrowserTest,
+    NavigationSuddenTerminationDisablerTypeRecordUmaSameOrigin) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/cross_site_iframe_factory.html?a(b(a))")));
+
+  // Set up the unload handler in the a.com subframe.
+  AddUnloadHandler(
+      DescendantRenderFrameHostImplAt(current_frame_host(), {0, 0}));
+  // Navigate the main frame and capture histograms.
+  base::HistogramTester histograms;
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+
+  histograms.ExpectUniqueSample(
+      "Navigation.SuddenTerminationDisabler.AllOrigins",
+      RenderFrameHostImpl::NavigationSuddenTerminationDisablerType::kMainFrame |
+          RenderFrameHostImpl::NavigationSuddenTerminationDisablerType::kUnload,
+      1);
+  histograms.ExpectUniqueSample(
+      "Navigation.SuddenTerminationDisabler.SameOrigin",
+      RenderFrameHostImpl::NavigationSuddenTerminationDisablerType::kMainFrame,
+      1);
+}
+
+// Test that we record when the navigation involves restoring from BFCache.
+// This is tested because the code path for a navigation involving activation
+// is different from one involving a pageload.
+IN_PROC_BROWSER_TEST_F(
+    NavigationBrowserTest,
+    NavigationSuddenTerminationDisablerTypeRecordUmaActivation) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  // Set up the unload handler in the b.com page.
+  AddUnloadHandler(current_frame_host());
+  // Navigate the main frame and capture histograms.
+  base::HistogramTester histograms;
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+
+  histograms.ExpectUniqueSample(
+      "Navigation.SuddenTerminationDisabler.AllOrigins",
+      RenderFrameHostImpl::NavigationSuddenTerminationDisablerType::kMainFrame |
+          RenderFrameHostImpl::NavigationSuddenTerminationDisablerType::kUnload,
+      1);
+  histograms.ExpectUniqueSample(
+      "Navigation.SuddenTerminationDisabler.SameOrigin",
+      RenderFrameHostImpl::NavigationSuddenTerminationDisablerType::kMainFrame |
+          RenderFrameHostImpl::NavigationSuddenTerminationDisablerType::kUnload,
+      1);
 }
 
 }  // namespace content
