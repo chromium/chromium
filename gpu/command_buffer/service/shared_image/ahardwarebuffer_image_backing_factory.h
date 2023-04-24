@@ -104,7 +104,7 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
   // Constructs and returns a FormatInfo corresponding to `format`, which must
   // be a supported format.
   static FormatInfo FormatInfoForSupportedFormat(
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       const gles2::Validators* validators);
 
   bool ValidateUsage(uint32_t usage,
