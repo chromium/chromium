@@ -882,20 +882,10 @@ suite('InternetPage', function() {
       });
 
   test('Nagivate to Passpoint detail page', async () => {
-    const subId = 'a_passpoint_id';
-    const sub = {
-      id: subId,
-      domains: ['passpoint.example.com'],
-      friendlyName: 'Passpoint Example Ltd.',
-      provisioningSource: 'app.passpoint.example.com',
-      trustedCa: '',
-      expirationEpochMs: 0n,
-    };
-    passpointService_.addSubscription(sub);
     await init();
 
     const params = new URLSearchParams();
-    params.append('id', subId);
+    params.append('id', 'a_passpoint_id');
 
     // Navigate straight to Passpoint detail subpage.
     Router.getInstance().navigateTo(routes.PASSPOINT_DETAIL, params);
