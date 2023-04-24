@@ -59,8 +59,10 @@ class CORE_EXPORT DocumentSpeculationRules
                             const AtomicString& new_value);
   void ReferrerPolicyAttributeChanged(HTMLAnchorElement* link);
   void RelAttributeChanged(HTMLAnchorElement* link);
+  void TargetAttributeChanged(HTMLAnchorElement* link);
   void DocumentReferrerPolicyChanged();
   void DocumentBaseURLChanged();
+  void DocumentBaseTargetChanged();
   void LinkMatchedSelectorsUpdated(HTMLAnchorElement* link);
   void LinkGainedOrLostComputedStyle(HTMLAnchorElement* link);
   void DocumentStyleUpdated();
@@ -92,6 +94,11 @@ class CORE_EXPORT DocumentSpeculationRules
   // Initializes |link_map_| with all links in the document by traversing
   // through the document in shadow-including tree order.
   void InitializeIfNecessary();
+
+  // Helper methods that are used to deal with link/document attribute changes
+  // that could invalidate the list of speculation candidates.
+  void LinkAttributeChanged(HTMLAnchorElement* link);
+  void DocumentPropertyChanged();
 
   // Helper methods to modify |link_map_|.
   void AddLink(HTMLAnchorElement* link);

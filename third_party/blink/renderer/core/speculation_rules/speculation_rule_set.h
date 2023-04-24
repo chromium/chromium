@@ -94,6 +94,9 @@ class CORE_EXPORT SpeculationRuleSet final
   bool HasError() const;
   bool ShouldReportUMAForError() const;
 
+  static mojom::blink::SpeculationTargetHint SpeculationTargetHintFromString(
+      const StringView& target_hint_str);
+
   void Trace(Visitor*) const;
 
  private:

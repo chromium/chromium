@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
+#include "third_party/blink/renderer/core/html/html_base_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
@@ -1900,6 +1901,15 @@ auto HasAction(::testing::Matcher<mojom::blink::SpeculationAction> matcher) {
       "action", &mojom::blink::SpeculationCandidate::action, matcher));
 }
 
+// Matches a SpeculationCandidatePtr with a SpeculationTargetHint.
+auto HasTargetHint(
+    ::testing::Matcher<mojom::blink::SpeculationTargetHint> matcher) {
+  return ::testing::Pointee(::testing::Field(
+      "target_hint",
+      &mojom::blink::SpeculationCandidate::target_browsing_context_name_hint,
+      matcher));
+}
+
 // Matches a SpeculationCandidatePtr with a ReferrerPolicy.
 auto HasReferrerPolicy(
     ::testing::Matcher<network::mojom::ReferrerPolicy> matcher) {
@@ -2598,6 +2608,97 @@ TEST_F(DocumentRulesTest, BaseURLChanged) {
   // "https://bar.com/bar*" and doesn't match. "/bart" is resolved to
   // "https://bar.com/bart" and matches with "https://bar.com/bar*".
   EXPECT_THAT(candidates, HasURLs("https://bar.com/bart"));
+}
+
+TEST_F(DocumentRulesTest, TargetHintFromLink) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  auto* anchor_1 = AddAnchor(*document.body(), "https://foo.com/bar");
+  anchor_1->setAttribute(html_names::kTargetAttr, "_blank");
+  auto* anchor_2 = AddAnchor(*document.body(), "https://fizz.com/buzz");
+  anchor_2->setAttribute(html_names::kTargetAttr, "_self");
+  AddAnchor(*document.body(), "https://hello.com/world");
+
+  String speculation_script = R"(
+    {
+      "prefetch": [{
+        "source": "document",
+        "where": {"href_matches": "https://foo.com/bar"}
+      }],
+      "prerender": [{"source": "document"}]
+    }
+  )";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(
+      candidates,
+      ::testing::UnorderedElementsAre(
+          ::testing::AllOf(
+              HasAction(mojom::blink::SpeculationAction::kPrefetch),
+              HasTargetHint(mojom::blink::SpeculationTargetHint::kNoHint)),
+          ::testing::AllOf(
+              HasURL(KURL("https://foo.com/bar")),
+              HasAction(mojom::blink::SpeculationAction::kPrerender),
+              HasTargetHint(mojom::blink::SpeculationTargetHint::kBlank)),
+          ::testing::AllOf(
+              HasURL(KURL("https://fizz.com/buzz")),
+              HasAction(mojom::blink::SpeculationAction::kPrerender),
+              HasTargetHint(mojom::blink::SpeculationTargetHint::kSelf)),
+          ::testing::AllOf(
+              HasURL(KURL("https://hello.com/world")),
+              HasAction(mojom::blink::SpeculationAction::kPrerender),
+              HasTargetHint(mojom::blink::SpeculationTargetHint::kNoHint))));
+}
+
+TEST_F(DocumentRulesTest, TargetHintFromSpeculationRuleOverridesLinkTarget) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  auto* anchor = AddAnchor(*document.body(), "https://foo.com/bar");
+  anchor->setAttribute(html_names::kTargetAttr, "_blank");
+
+  String speculation_script = R"(
+    {"prerender": [{"source": "document", "target_hint": "_self"}]}
+  )";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(candidates, ::testing::ElementsAre(HasTargetHint(
+                              mojom::blink::SpeculationTargetHint::kSelf)));
+}
+
+TEST_F(DocumentRulesTest, TargetHintFromLinkDynamic) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  auto* anchor = AddAnchor(*document.body(), "https://foo.com/bar");
+
+  String speculation_script = R"({"prerender": [{"source": "document"}]})";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(candidates, ::testing::ElementsAre(HasTargetHint(
+                              mojom::blink::SpeculationTargetHint::kNoHint)));
+
+  HTMLBaseElement* base_element;
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
+    base_element = MakeGarbageCollected<HTMLBaseElement>(document);
+    base_element->setAttribute(html_names::kTargetAttr, "_self");
+    document.head()->appendChild(base_element);
+  });
+  EXPECT_THAT(candidates, ::testing::ElementsAre(HasTargetHint(
+                              mojom::blink::SpeculationTargetHint::kSelf)));
+
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
+    anchor->setAttribute(html_names::kTargetAttr, "_blank");
+  });
+  EXPECT_THAT(candidates, ::testing::ElementsAre(HasTargetHint(
+                              mojom::blink::SpeculationTargetHint::kBlank)));
 }
 
 // Tests that "selector_matches" is not parsed without the RuntimeEnabledFeature

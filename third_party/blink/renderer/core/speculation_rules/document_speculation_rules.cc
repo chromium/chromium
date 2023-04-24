@@ -254,31 +254,19 @@ void DocumentSpeculationRules::HrefAttributeChanged(
 
 void DocumentSpeculationRules::ReferrerPolicyAttributeChanged(
     HTMLAnchorElement* link) {
-  if (!initialized_)
-    return;
-
-  DCHECK(link->isConnected());
-  InvalidateLink(link);
-
-  QueueUpdateSpeculationCandidates();
+  LinkAttributeChanged(link);
 }
 
 void DocumentSpeculationRules::RelAttributeChanged(HTMLAnchorElement* link) {
-  if (!initialized_)
-    return;
+  LinkAttributeChanged(link);
+}
 
-  DCHECK(link->isConnected());
-  InvalidateLink(link);
-
-  QueueUpdateSpeculationCandidates();
+void DocumentSpeculationRules::TargetAttributeChanged(HTMLAnchorElement* link) {
+  LinkAttributeChanged(link);
 }
 
 void DocumentSpeculationRules::DocumentReferrerPolicyChanged() {
-  if (!initialized_)
-    return;
-
-  InvalidateAllLinks();
-  QueueUpdateSpeculationCandidates();
+  DocumentPropertyChanged();
 }
 
 void DocumentSpeculationRules::DocumentBaseURLChanged() {
@@ -296,6 +284,10 @@ void DocumentSpeculationRules::DocumentBaseURLChanged() {
   if (initialized_)
     InvalidateAllLinks();
   QueueUpdateSpeculationCandidates();
+}
+
+void DocumentSpeculationRules::DocumentBaseTargetChanged() {
+  DocumentPropertyChanged();
 }
 
 void DocumentSpeculationRules::LinkMatchedSelectorsUpdated(
@@ -502,6 +494,9 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
             rule->eagerness().value_or(
                 mojom::blink::SpeculationEagerness::kEager);
 
+        CHECK(!rule->target_browsing_context_name_hint() ||
+              action == mojom::blink::SpeculationAction::kPrerender);
+
         candidates.push_back(MakeGarbageCollected<SpeculationCandidate>(
             url, action, referrer.value(),
             rule->requires_anonymous_client_ip_when_cross_origin(),
@@ -644,15 +639,25 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
                 rule->eagerness().value_or(
                     mojom::blink::SpeculationEagerness::kConservative);
 
-            // TODO(crbug.com/1371522): We should be generating a target hint
-            // based on the link's target.
+            mojom::blink::SpeculationTargetHint target_hint =
+                mojom::blink::SpeculationTargetHint::kNoHint;
+            if (action == mojom::blink::SpeculationAction::kPrerender) {
+              if (rule->target_browsing_context_name_hint()) {
+                target_hint = rule->target_browsing_context_name_hint().value();
+              } else {
+                // Obtain target hint from the link's target (if specified).
+                target_hint =
+                    SpeculationRuleSet::SpeculationTargetHintFromString(
+                        link->GetEffectiveTarget());
+              }
+            }
+
             SpeculationCandidate* candidate =
                 MakeGarbageCollected<SpeculationCandidate>(
                     link->HrefURL(), action, referrer.value(),
                     rule->requires_anonymous_client_ip_when_cross_origin(),
-                    rule->target_browsing_context_name_hint().value_or(
-                        mojom::blink::SpeculationTargetHint::kNoHint),
-                    eagerness, rule->no_vary_search_expected().Clone(),
+                    target_hint, eagerness,
+                    rule->no_vary_search_expected().Clone(),
                     rule->injection_world(), rule_set, link);
             link_candidates->push_back(std::move(candidate));
           }
@@ -706,6 +711,23 @@ void DocumentSpeculationRules::InitializeIfNecessary() {
     else if (auto* area = DynamicTo<HTMLAreaElement>(node))
       pending_links_.insert(area);
   }
+}
+
+void DocumentSpeculationRules::LinkAttributeChanged(HTMLAnchorElement* link) {
+  if (!initialized_) {
+    return;
+  }
+  DCHECK(link->isConnected());
+  InvalidateLink(link);
+  QueueUpdateSpeculationCandidates();
+}
+
+void DocumentSpeculationRules::DocumentPropertyChanged() {
+  if (!initialized_) {
+    return;
+  }
+  InvalidateAllLinks();
+  QueueUpdateSpeculationCandidates();
 }
 
 void DocumentSpeculationRules::AddLink(HTMLAnchorElement* link) {

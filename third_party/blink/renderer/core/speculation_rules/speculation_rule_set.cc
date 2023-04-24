@@ -261,16 +261,8 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
                                target_hint_str + "\".");
       return nullptr;
     }
-    // Currently only "_blank" and "_self" are supported.
-    // TODO(https://crbug.com/1354049): Support more browsing context names and
-    // keywords.
-    if (EqualIgnoringASCIICase(target_hint_str, "_blank")) {
-      target_hint = mojom::blink::SpeculationTargetHint::kBlank;
-    } else if (EqualIgnoringASCIICase(target_hint_str, "_self")) {
-      target_hint = mojom::blink::SpeculationTargetHint::kSelf;
-    } else {
-      target_hint = mojom::blink::SpeculationTargetHint::kNoHint;
-    }
+    target_hint =
+        SpeculationRuleSet::SpeculationTargetHintFromString(target_hint_str);
   }
 
   // Let referrerPolicy be the empty string.
@@ -528,6 +520,22 @@ bool SpeculationRuleSet::ShouldReportUMAForError() const {
     case SpeculationRuleSetErrorType::kNoError:
     case SpeculationRuleSetErrorType::kInvalidRulesSkipped:
       return false;
+  }
+}
+
+// static
+mojom::blink::SpeculationTargetHint
+SpeculationRuleSet::SpeculationTargetHintFromString(
+    const StringView& target_hint_str) {
+  // Currently only "_blank" and "_self" are supported.
+  // TODO(https://crbug.com/1354049): Support more browsing context names and
+  // keywords.
+  if (EqualIgnoringASCIICase(target_hint_str, "_blank")) {
+    return mojom::blink::SpeculationTargetHint::kBlank;
+  } else if (EqualIgnoringASCIICase(target_hint_str, "_self")) {
+    return mojom::blink::SpeculationTargetHint::kSelf;
+  } else {
+    return mojom::blink::SpeculationTargetHint::kNoHint;
   }
 }
 

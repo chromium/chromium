@@ -4513,6 +4513,7 @@ void Document::ProcessBaseElement() {
     UpdateBaseURL();
   }
 
+  AtomicString old_base_target = base_target_;
   if (target) {
     if (target->Contains('\n') || target->Contains('\r'))
       UseCounter::Count(*this, WebFeature::kBaseWithNewlinesInTarget);
@@ -4521,6 +4522,11 @@ void Document::ProcessBaseElement() {
     base_target_ = *target;
   } else {
     base_target_ = g_null_atom;
+  }
+  if (old_base_target != base_target_) {
+    if (auto* document_rules = DocumentSpeculationRules::FromIfExists(*this)) {
+      document_rules->DocumentBaseTargetChanged();
+    }
   }
 }
 
