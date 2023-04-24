@@ -1175,7 +1175,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       self.passwordCheckItem.detailText =
           l10n_util::GetNSStringF(IDS_IOS_PASSWORD_CHECKUP_REUSED_COUNT,
                                   base::NumberToString16(reusedPasswordCount));
-      self.passwordCheckItem.warningState = WarningState::kWarning;
+      self.passwordCheckItem.trailingImage = nil;
       break;
     }
     case PasswordCheckRowStateWeakPasswords: {
@@ -1185,7 +1185,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       self.passwordCheckItem.detailText =
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
               IDS_IOS_PASSWORD_CHECKUP_WEAK_COUNT, weakPasswordCount));
-      self.passwordCheckItem.warningState = WarningState::kWarning;
+      self.passwordCheckItem.trailingImage = nil;
       break;
     }
     case PasswordCheckRowStateDismissedWarnings: {
@@ -1195,7 +1195,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       self.passwordCheckItem.detailText =
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
               IDS_IOS_PASSWORD_CHECKUP_DISMISSED_COUNT, dismissedWarningCount));
-      self.passwordCheckItem.warningState = WarningState::kWarning;
+      self.passwordCheckItem.trailingImage = nil;
       break;
     }
     case PasswordCheckRowStateDisabled:

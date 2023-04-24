@@ -1652,10 +1652,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
         password_manager::WarningType::kCompromisedPasswordsWarning) {
       _safetyCheckItem.warningState = WarningState::kSevereWarning;
     } else {
-      // Severe warning is of higher priority than a regular warning. Only show
-      // the regular warning icon if there isn't any severe warning existing for
-      // another part of the Safety Check module.
-      _safetyCheckItem.warningState = WarningState::kWarning;
+      // Getting here means that there are reused, weak and/or muted passwords.
+      // In Safety Check, an icon is shown for passwords only when all passwords
+      // are safe or when there are unmuted compromised passwords. When there
+      // are reused, weak and/or muted passwords, no icon is shown.
+      _safetyCheckItem.trailingImage = nil;
     }
   }
   [self reconfigureCellsForItems:@[ _safetyCheckItem ]];
