@@ -797,6 +797,32 @@ TEST_F(AutocorrectManagerTest, MovingCursorOutsideRangeHidesAssistiveWindow) {
 }
 
 TEST_F(AutocorrectManagerTest,
+       MovingCursorInsideRangeAndRemovingCharactersHidesAssistiveWindow) {
+  manager_.OnSurroundingTextChanged(u"the ", gfx::Range(4));
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  AssistiveWindowProperties properties =
+      CreateVisibleUndoWindowWithLearnMoreButtonProperties(u"teh", u"the");
+
+  {
+    ::testing::InSequence seq;
+
+    AssistiveWindowProperties shown_properties =
+        CreateVisibleUndoWindowWithLearnMoreButtonProperties(u"teh", u"the");
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, shown_properties, _));
+
+    AssistiveWindowProperties hidden_properties =
+        CreateHiddenUndoWindowProperties();
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, hidden_properties, _));
+  }
+
+  manager_.OnSurroundingTextChanged(u"the ", gfx::Range(2));
+  manager_.OnSurroundingTextChanged(u"te ", gfx::Range(1));
+}
+
+TEST_F(AutocorrectManagerTest,
        MovingCursorRetriesPrevFailedUndoWindowHide) {
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(4));

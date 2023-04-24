@@ -907,7 +907,16 @@ void AutocorrectManager::OnSurroundingTextChanged(
 
   // If cursor is inside autocorrect range (inclusive), show undo window and
   // record relevant metrics.
-  if (cursor_pos >= range.start() && cursor_pos <= range.end() &&
+  // On Lacros, the async behaviors accidentally delay the update of autocorrect
+  // range after the onSurroundingTextChanged. When users delete a few
+  // characters of the suggested words, this code still uses the outdated range,
+  // hence allowing the undo window to show.
+  // TODO(b/278616918): Consider remove the
+  // IsAutocorrectSuggestionInSurroundingText logic once async behaviors are
+  // corrected.
+  if (IsAutocorrectSuggestionInSurroundingText(
+          text, range, pending_autocorrect_->suggested_text) &&
+      cursor_pos >= range.start() && cursor_pos <= range.end() &&
       selection_range.is_empty()) {
     ShowUndoWindow(range, text);
   } else {
