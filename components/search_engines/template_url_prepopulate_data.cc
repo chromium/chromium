@@ -1345,9 +1345,10 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedTemplateURLData(
 
   for (const base::Value& engine : list) {
     if (engine.is_dict()) {
-      auto t_url = TemplateURLDataFromOverrideDictionary(engine);
-      if (t_url)
-        t_urls.push_back(std::move(t_url));
+    auto t_url = TemplateURLDataFromOverrideDictionary(engine.GetDict());
+    if (t_url) {
+      t_urls.push_back(std::move(t_url));
+    }
     }
   }
   return t_urls;

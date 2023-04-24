@@ -357,7 +357,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
 }
 
 std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
-    const base::Value& engine) {
+    const base::Value::Dict& engine_dict) {
   const std::string* string_value = nullptr;
 
   std::u16string name;
@@ -365,8 +365,6 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
   std::string search_url;
   std::string favicon_url;
   std::string encoding;
-
-  const base::Value::Dict& engine_dict = engine.GetDict();
 
   string_value = engine_dict.FindString("name");
   if (string_value) {
