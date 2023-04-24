@@ -291,7 +291,7 @@ class FakeConnection : public Connection {
         RandomSessionId session_id,
         SharedSecret shared_secret,
         SharedSecret secondary_shared_secret,
-        base::OnceClosure on_connection_closed,
+        ConnectionClosedCallback on_connection_closed,
         ConnectionAuthenticatedCallback on_connection_authenticated) override {
       auto connection = std::make_unique<FakeConnection>(
           nearby_connection, session_id, shared_secret, secondary_shared_secret,
@@ -308,7 +308,7 @@ class FakeConnection : public Connection {
                  RandomSessionId session_id,
                  SharedSecret shared_secret,
                  SharedSecret secondary_shared_secret,
-                 base::OnceClosure on_connection_closed,
+                 ConnectionClosedCallback on_connection_closed,
                  ConnectionAuthenticatedCallback on_connection_authenticated)
       : Connection(nearby_connection,
                    session_id,

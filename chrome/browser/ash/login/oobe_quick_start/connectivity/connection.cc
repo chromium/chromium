@@ -31,7 +31,7 @@ std::unique_ptr<Connection> Connection::Factory::Create(
     RandomSessionId session_id,
     SharedSecret shared_secret,
     SharedSecret secondary_shared_secret,
-    base::OnceClosure on_connection_closed,
+    ConnectionClosedCallback on_connection_closed,
     ConnectionAuthenticatedCallback on_connection_authenticated) {
   auto nonce_generator = std::make_unique<NonceGenerator>();
   return std::make_unique<Connection>(
@@ -52,7 +52,7 @@ Connection::Connection(
     SharedSecret shared_secret,
     SharedSecret secondary_shared_secret,
     std::unique_ptr<NonceGenerator> nonce_generator,
-    base::OnceClosure on_connection_closed,
+    ConnectionClosedCallback on_connection_closed,
     ConnectionAuthenticatedCallback on_connection_authenticated)
     : nearby_connection_(nearby_connection),
       random_session_id_(session_id),
@@ -226,7 +226,9 @@ void Connection::SendPayloadAndReadResponse(
 }
 
 void Connection::OnConnectionClosed() {
-  std::move(on_connection_closed_).Run();
+  // TODO (b/278898402): Handle other connection closed reasons.
+  std::move(on_connection_closed_)
+      .Run(TargetDeviceConnectionBroker::ConnectionClosedReason::kComplete);
 }
 
 }  // namespace ash::quick_start

@@ -37,6 +37,8 @@ class Connection
   using ConnectionAuthenticatedCallback = base::OnceCallback<void(
       base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>)>;
 
+  using ConnectionClosedCallback = base::OnceCallback<void(
+      TargetDeviceConnectionBroker::ConnectionClosedReason)>;
   class Factory {
    public:
     Factory() = default;
@@ -49,7 +51,7 @@ class Connection
         RandomSessionId session_id,
         SharedSecret shared_secret,
         SharedSecret secondary_shared_secret,
-        base::OnceClosure on_connection_closed,
+        ConnectionClosedCallback on_connection_closed,
         ConnectionAuthenticatedCallback on_connection_authenticated);
   };
 
@@ -68,7 +70,7 @@ class Connection
              SharedSecret shared_secret,
              SharedSecret secondary_shared_secret,
              std::unique_ptr<NonceGenerator> nonce_generator,
-             base::OnceClosure on_connection_closed,
+             ConnectionClosedCallback on_connection_closed,
              ConnectionAuthenticatedCallback on_connection_authenticated);
 
   Connection(const Connection&) = delete;
@@ -140,7 +142,7 @@ class Connection
   SharedSecret shared_secret_;
   SharedSecret secondary_shared_secret_;
   std::unique_ptr<NonceGenerator> nonce_generator_;
-  base::OnceClosure on_connection_closed_;
+  ConnectionClosedCallback on_connection_closed_;
   bool authenticated_ = false;
   ConnectionAuthenticatedCallback on_connection_authenticated_;
   std::string challenge_b64url_;

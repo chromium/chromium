@@ -396,7 +396,8 @@ TEST_F(ConnectionTest, SendPayloadAndReadResponse) {
 }
 
 TEST_F(ConnectionTest, TestDisconnectionTriggersListener) {
-  base::test::TestFuture<void> future;
+  base::test::TestFuture<TargetDeviceConnectionBroker::ConnectionClosedReason>
+      future;
   std::unique_ptr<Connection> connection_under_test =
       std::make_unique<Connection>(
           fake_nearby_connection_.get(), session_id_, kSharedSecret,
@@ -409,6 +410,8 @@ TEST_F(ConnectionTest, TestDisconnectionTriggersListener) {
   fake_nearby_connection_->Close();
 
   ASSERT_TRUE(future.IsReady());
+  ASSERT_EQ(future.Get(),
+            TargetDeviceConnectionBroker::ConnectionClosedReason::kComplete);
 }
 
 TEST_F(ConnectionTest, InitiateHandshake) {
