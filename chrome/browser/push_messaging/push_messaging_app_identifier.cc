@@ -7,11 +7,11 @@
 #include <string.h>
 
 #include "base/check_op.h"
-#include "base/guid.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -129,7 +129,8 @@ PushMessagingAppIdentifier PushMessagingAppIdentifier::GenerateInternal(
     const absl::optional<base::Time>& expiration_time) {
   // Use uppercase GUID for consistency with GUIDs Push has already sent to GCM.
   // Also allows detecting case mangling; see code commented "crbug.com/461867".
-  std::string guid = base::ToUpperASCII(base::GenerateGUID());
+  std::string guid =
+      base::ToUpperASCII(base::Uuid::GenerateRandomV4().AsLowercaseString());
   if (use_instance_id) {
     guid.replace(guid.size() - kGuidSuffixLength, kGuidSuffixLength,
                  kInstanceIDGuidSuffix);
@@ -308,12 +309,12 @@ void PushMessagingAppIdentifier::DCheckValid() const {
   // kInstanceIDGuidSuffix (which contains non-hex characters invalid in GUIDs).
   std::string guid = app_id_.substr(app_id_.size() - kGuidLength);
   if (UseInstanceID(app_id_)) {
-    DCHECK(!base::IsValidGUID(guid));
+    DCHECK(!base::Uuid::ParseCaseInsensitive(guid).is_valid());
 
     // Replace suffix with valid hex so we can validate the rest of the string.
     guid = guid.replace(guid.size() - kGuidSuffixLength, kGuidSuffixLength,
                         kGuidSuffixLength, 'C');
   }
-  DCHECK(base::IsValidGUID(guid));
+  DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
 #endif  // DCHECK_IS_ON()
 }
