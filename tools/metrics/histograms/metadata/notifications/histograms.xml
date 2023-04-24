@@ -157,41 +157,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Notifications.Blocker.ScreenCapture.Action.{Action}"
-    units="notifications" expires_after="M96">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the number of times the 'Notifications muted' notification got shown
-    before the user took an action. Clicking on 'Show' and 'Snooze' can only be
-    recorded once per session while 'Body' and 'Close' may be recorded multiple
-    times. Logged each time the user interacts with the notification. {Action}
-  </summary>
-  <token key="Action">
-    <variant name="Body"/>
-    <variant name="Close"/>
-    <variant name="Show"/>
-    <variant name="Snooze"/>
-  </token>
-</histogram>
-
-<histogram name="Notifications.Blocker.ScreenCapture.ActionTiming.{Action}"
-    units="ms" expires_after="M96">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the time between showing the 'Notifications muted' notification and
-    the user taking an action on it. Logged each time the user interacts with
-    the notification. {Action}
-  </summary>
-  <token key="Action">
-    <variant name="Body"/>
-    <variant name="Close"/>
-    <variant name="Show"/>
-    <variant name="Snooze"/>
-  </token>
-</histogram>
-
 <histogram name="Notifications.Blocker.ScreenCapture.ClosedCount"
     units="notifications" expires_after="2023-09-10">
   <owner>knollr@chromium.org</owner>

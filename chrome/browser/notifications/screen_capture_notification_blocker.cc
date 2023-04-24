@@ -22,22 +22,6 @@
 
 namespace {
 
-// Suffix for a mute notification action. Should match suffixes of the
-// Notifications.Blocker.ScreenCapture.* metrics in
-// metadata/notifications/histograms.xml
-std::string MutedActionSuffix(MutedNotificationHandler::Action action) {
-  switch (action) {
-    case MutedNotificationHandler::Action::kUserClose:
-      return "Close";
-    case MutedNotificationHandler::Action::kBodyClick:
-      return "Body";
-    case MutedNotificationHandler::Action::kShowClick:
-      return "Show";
-    case MutedNotificationHandler::Action::kSnoozeClick:
-      return "Snooze";
-  }
-}
-
 void RecordScreenCaptureCount(const std::string& suffix, int count) {
   base::UmaHistogramCounts100(
       base::StrCat({"Notifications.Blocker.ScreenCapture.", suffix}), count);
@@ -101,7 +85,6 @@ void ScreenCaptureNotificationBlocker::OnAction(
     MutedNotificationHandler::Action action) {
   DCHECK(state_ == NotifyState::kNotifyMuted);
   CloseMuteNotification();
-  ReportMuteNotificationAction(action);
 
   switch (action) {
     case MutedNotificationHandler::Action::kUserClose:
@@ -161,20 +144,6 @@ void ScreenCaptureNotificationBlocker::ReportSessionMetrics(bool revealed) {
   RecordScreenCaptureCount("SnoozedCount", snoozed_notification_count_);
 
   reported_session_metrics_ = true;
-}
-
-void ScreenCaptureNotificationBlocker::ReportMuteNotificationAction(
-    MutedNotificationHandler::Action action) {
-  std::string action_suffix = MutedActionSuffix(action);
-  RecordScreenCaptureCount(
-      base::StrCat({"Action.", action_suffix}),
-      muted_notification_count_ + replaced_notification_count_);
-
-  auto elapsed_time = base::TimeTicks::Now() - last_mute_notification_time_;
-  base::UmaHistogramMediumTimes(
-      base::StrCat(
-          {"Notifications.Blocker.ScreenCapture.ActionTiming.", action_suffix}),
-      elapsed_time);
 }
 
 void ScreenCaptureNotificationBlocker::DisplayMuteNotification() {
