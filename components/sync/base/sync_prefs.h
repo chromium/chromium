@@ -28,7 +28,6 @@ class SyncPrefObserver {
  public:
   virtual void OnSyncManagedPrefChange(bool is_sync_managed) = 0;
   virtual void OnFirstSetupCompletePrefChange(bool is_first_setup_complete) = 0;
-  virtual void OnSyncRequestedPrefChange(bool is_sync_requested) = 0;
   virtual void OnPreferredDataTypesPrefChange() = 0;
 
  protected:
@@ -60,9 +59,15 @@ class SyncPrefs {
   void SetFirstSetupComplete();
   void ClearFirstSetupComplete();
 
+  // Whether the user wants Sync to run. This is false by default, but gets set
+  // to true early in the Sync setup flow, after the user has pressed "turn on
+  // Sync" but before they have actually confirmed the settings (that's
+  // IsFirstSetupComplete()). After Sync is enabled, this can get set to false
+  // via signout (which also clears IsFirstSetupComplete) or, on ChromeOS Ash,
+  // when Sync gets reset from the dashboard.
   bool IsSyncRequested() const;
   void SetSyncRequested(bool is_requested);
-  void SetSyncRequestedIfNotSetExplicitly();
+  bool IsSyncRequestedSetExplicitly() const;
 
   bool HasKeepEverythingSynced() const;
 
@@ -127,7 +132,6 @@ class SyncPrefs {
 
   void OnSyncManagedPrefChanged();
   void OnFirstSetupCompletePrefChange();
-  void OnSyncRequestedPrefChange();
 
   // Never null.
   const raw_ptr<PrefService> pref_service_;
@@ -139,8 +143,6 @@ class SyncPrefs {
   BooleanPrefMember pref_sync_managed_;
 
   BooleanPrefMember pref_first_setup_complete_;
-
-  BooleanPrefMember pref_sync_requested_;
 
   bool local_sync_enabled_;
 

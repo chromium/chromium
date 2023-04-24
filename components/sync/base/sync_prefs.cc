@@ -36,10 +36,6 @@ SyncPrefs::SyncPrefs(PrefService* pref_service) : pref_service_(pref_service) {
       prefs::kSyncFirstSetupComplete, pref_service_,
       base::BindRepeating(&SyncPrefs::OnFirstSetupCompletePrefChange,
                           base::Unretained(this)));
-  pref_sync_requested_.Init(
-      prefs::kSyncRequested, pref_service_,
-      base::BindRepeating(&SyncPrefs::OnSyncRequestedPrefChange,
-                          base::Unretained(this)));
 
   // Cache the value of the kEnableLocalSyncBackend pref to avoid it flipping
   // during the lifetime of the service.
@@ -118,14 +114,12 @@ void SyncPrefs::SetSyncRequested(bool is_requested) {
   pref_service_->SetBoolean(prefs::kSyncRequested, is_requested);
 }
 
-void SyncPrefs::SetSyncRequestedIfNotSetExplicitly() {
+bool SyncPrefs::IsSyncRequestedSetExplicitly() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // GetUserPrefValue() returns nullptr if there is no user-set value for this
   // pref (there might still be a non-default value, e.g. from a policy, but we
   // explicitly don't care about that here).
-  if (!pref_service_->GetUserPrefValue(prefs::kSyncRequested)) {
-    pref_service_->SetBoolean(prefs::kSyncRequested, true);
-  }
+  return pref_service_->GetUserPrefValue(prefs::kSyncRequested) != nullptr;
 }
 
 bool SyncPrefs::HasKeepEverythingSynced() const {
@@ -305,12 +299,6 @@ void SyncPrefs::OnFirstSetupCompletePrefChange() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (SyncPrefObserver& observer : sync_pref_observers_)
     observer.OnFirstSetupCompletePrefChange(*pref_first_setup_complete_);
-}
-
-void SyncPrefs::OnSyncRequestedPrefChange() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (SyncPrefObserver& observer : sync_pref_observers_)
-    observer.OnSyncRequestedPrefChange(*pref_sync_requested_);
 }
 
 // static

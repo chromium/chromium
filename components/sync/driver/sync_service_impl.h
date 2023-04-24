@@ -198,7 +198,6 @@ class SyncServiceImpl : public SyncService,
   // SyncPrefObserver implementation.
   void OnSyncManagedPrefChange(bool is_sync_managed) override;
   void OnFirstSetupCompletePrefChange(bool is_first_setup_complete) override;
-  void OnSyncRequestedPrefChange(bool is_sync_requested) override;
   void OnPreferredDataTypesPrefChange() override;
 
   // KeyedService implementation.  This must be called exactly
@@ -445,10 +444,6 @@ class SyncServiceImpl : public SyncService,
   // profiles types such as system and guest profiles, as well as sign-in and
   // lockscreen profiles on Ash.
   const bool is_regular_profile_for_uma_;
-
-  // Used in OnSyncRequestedPrefChange() to know whether the notification was
-  // caused by the service itself setting the pref.
-  bool is_setting_sync_requested_;
 
   // Used for UMA to determine whether TrustedVaultErrorShownOnStartup
   // histogram needs to recorded. Set to false iff histogram was already

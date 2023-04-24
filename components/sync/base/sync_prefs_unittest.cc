@@ -49,7 +49,6 @@ class MockSyncPrefObserver : public SyncPrefObserver {
  public:
   MOCK_METHOD(void, OnSyncManagedPrefChange, (bool), (override));
   MOCK_METHOD(void, OnFirstSetupCompletePrefChange, (bool), (override));
-  MOCK_METHOD(void, OnSyncRequestedPrefChange, (bool), (override));
   MOCK_METHOD(void, OnPreferredDataTypesPrefChange, (), (override));
 };
 
@@ -60,8 +59,6 @@ TEST_F(SyncPrefsTest, ObservedPrefs) {
   EXPECT_CALL(mock_sync_pref_observer, OnSyncManagedPrefChange(false));
   EXPECT_CALL(mock_sync_pref_observer, OnFirstSetupCompletePrefChange(true));
   EXPECT_CALL(mock_sync_pref_observer, OnFirstSetupCompletePrefChange(false));
-  EXPECT_CALL(mock_sync_pref_observer, OnSyncRequestedPrefChange(true));
-  EXPECT_CALL(mock_sync_pref_observer, OnSyncRequestedPrefChange(false));
 
   ASSERT_FALSE(sync_prefs_->IsSyncClientDisabledByPolicy());
   ASSERT_FALSE(sync_prefs_->IsFirstSetupComplete());

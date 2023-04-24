@@ -158,7 +158,6 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
           base::BindRepeating(&CreateHttpBridgeFactory)),
       start_behavior_(init_params.start_behavior),
       is_regular_profile_for_uma_(init_params.is_regular_profile_for_uma),
-      is_setting_sync_requested_(false),
       should_record_trusted_vault_error_shown_on_startup_(true),
 #if BUILDFLAG(IS_ANDROID)
       sessions_invalidations_enabled_(false) {
@@ -254,8 +253,9 @@ void SyncServiceImpl::Initialize() {
   // Local Sync bypasses the IsSyncRequested() check, so no need to set it in
   // that case.
   // TODO(crbug.com/920158): Get rid of AUTO_START and remove this workaround.
-  if (start_behavior_ == AUTO_START && !IsLocalSyncEnabled()) {
-    sync_prefs_.SetSyncRequestedIfNotSetExplicitly();
+  if (start_behavior_ == AUTO_START && !IsLocalSyncEnabled() &&
+      !sync_prefs_.IsSyncRequestedSetExplicitly()) {
+    SetSyncFeatureRequested();
   }
   bool force_immediate = (start_behavior_ == AUTO_START &&
                           !HasDisableReason(DISABLE_REASON_USER_CHOICE) &&
@@ -600,6 +600,18 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
 void SyncServiceImpl::SetSyncFeatureRequested() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_prefs_.SetSyncRequested(true);
+
+  // If the Sync engine was already initialized (probably running in transport
+  // mode), just reconfigure.
+  if (engine_ && engine_->IsInitialized()) {
+    ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
+  } else {
+    // Otherwise try to start up. Note that there might still be other disable
+    // reasons remaining, in which case this will effectively do nothing.
+    startup_controller_->TryStart(/*force_immediate=*/true);
+  }
+
+  NotifyObservers();
 }
 
 SyncUserSettings* SyncServiceImpl::GetUserSettings() {
@@ -628,7 +640,7 @@ SyncService::DisableReasonSet SyncServiceImpl::GetDisableReasons() const {
     if (!IsSignedIn()) {
       result.Put(DISABLE_REASON_NOT_SIGNED_IN);
     }
-    if (!user_settings_->IsSyncRequested()) {
+    if (!sync_prefs_.IsSyncRequested()) {
       result.Put(DISABLE_REASON_USER_CHOICE);
     }
   }
@@ -1550,34 +1562,6 @@ void SyncServiceImpl::OnFirstSetupCompletePrefChange(
   }
 }
 
-void SyncServiceImpl::OnSyncRequestedPrefChange(bool is_sync_requested) {
-  // Ignore the notification if the service itself set the pref.
-  if (is_setting_sync_requested_) {
-    is_setting_sync_requested_ = false;
-    return;
-  }
-
-  if (is_sync_requested) {
-    // If the Sync engine was already initialized (probably running in transport
-    // mode), just reconfigure.
-    if (engine_ && engine_->IsInitialized()) {
-      ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
-    } else {
-      // Otherwise try to start up. Note that there might still be other disable
-      // reasons remaining, in which case this will effectively do nothing.
-      startup_controller_->TryStart(/*force_immediate=*/true);
-    }
-
-    NotifyObservers();
-  } else {
-    // This will notify the observers.
-    // TODO(crbug.com/856179): Evaluate whether we can get away without a
-    // full restart in this case (i.e. just reconfigure).
-    ResetEngine(ShutdownReason::STOP_SYNC_AND_KEEP_DATA,
-                ResetEngineReason::kRequestedPrefChange);
-  }
-}
-
 void SyncServiceImpl::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
@@ -1796,18 +1780,7 @@ void SyncServiceImpl::StopAndClear() {
   // will need to reenter it if sync gets re-enabled.
   sync_prefs_.ClearEncryptionBootstrapToken();
 
-  // Clear the sync-requested bit, but avoid side effects in
-  // OnSyncRequestedPrefChange() by leveraging |is_setting_sync_requested_|.
-  //
-  // For a no-op, OnSyncRequestedPrefChange() wouldn't be called and
-  // |is_setting_sync_requested_| wouldn't get reset, so check.
-  if (user_settings_->IsSyncRequested()) {
-    CHECK(!is_setting_sync_requested_);
-    is_setting_sync_requested_ = true;
-    user_settings_->ClearSyncRequested();
-    // OnSyncRequestedPrefChange() should have cleared the flag.
-    CHECK(!is_setting_sync_requested_);
-  }
+  sync_prefs_.SetSyncRequested(false);
 
   // Also let observers know that Sync-the-feature is now fully disabled
   // (before it possibly starts up again in transport-only mode).
