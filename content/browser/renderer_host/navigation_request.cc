@@ -233,25 +233,6 @@ const char kIsolatedAppCSP[] =
     "font-src 'self' blob: data:;"
     "require-trusted-types-for 'script';";
 
-// Corresponds to the "NavigationURLScheme" histogram enumeration type in
-// src/tools/metrics/histograms/enums.xml.
-//
-// DO NOT REORDER OR CHANGE THE MEANING OF THESE VALUES.
-enum class NavigationURLScheme {
-  UNKNOWN = 0,
-  ABOUT = 1,
-  BLOB = 2,
-  CONTENT = 3,
-  CONTENT_ID = 4,
-  DATA = 5,
-  FILE = 6,
-  FILE_SYSTEM = 7,
-  FTP = 8,
-  HTTP = 9,
-  HTTPS = 10,
-  kMaxValue = HTTPS
-};
-
 // Denotes the type of user agent string value sent in the User-Agent request
 // header.
 //
@@ -632,25 +613,6 @@ void RecordReadyToCommitMetrics(
       UMA_HISTOGRAM_BOOLEAN(
           "Navigation.RequiresDedicatedProcess.HTTPOrHTTPS",
           new_rfh->GetSiteInstance()->RequiresDedicatedProcess());
-    }
-  }
-
-  // Navigation.IsSameProcess
-  {
-    ui::PageTransition transition =
-        ui::PageTransitionFromInt(common_params.transition);
-    UMA_HISTOGRAM_BOOLEAN("Navigation.IsSameProcess", is_same_process);
-    if (transition & ui::PAGE_TRANSITION_FORWARD_BACK) {
-      UMA_HISTOGRAM_BOOLEAN("Navigation.IsSameProcess.BackForward",
-                            is_same_process);
-    } else if (ui::PageTransitionCoreTypeIs(transition,
-                                            ui::PAGE_TRANSITION_RELOAD)) {
-      UMA_HISTOGRAM_BOOLEAN("Navigation.IsSameProcess.Reload", is_same_process);
-    } else if (ui::PageTransitionIsNewNavigation(transition)) {
-      UMA_HISTOGRAM_BOOLEAN("Navigation.IsSameProcess.NewNavigation",
-                            is_same_process);
-    } else {
-      NOTREACHED() << "Invalid page transition: " << transition;
     }
   }
 
@@ -7497,23 +7459,6 @@ void NavigationRequest::RestartCommitTimeout() {
 
 void NavigationRequest::OnCommitTimeout() {
   DCHECK_EQ(READY_TO_COMMIT, state_);
-  PingNetworkService(base::BindOnce(
-      [](base::Time start_time) {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Navigation.CommitTimeout.NetworkServicePingTime",
-            base::Time::Now() - start_time);
-      },
-      base::Time::Now()));
-  UMA_HISTOGRAM_ENUMERATION(
-      "Navigation.CommitTimeout.NetworkServiceAvailability",
-      GetNetworkServiceAvailability());
-  base::TimeDelta last_crash_time = GetTimeSinceLastNetworkServiceCrash();
-  if (!last_crash_time.is_zero()) {
-    UMA_HISTOGRAM_LONG_TIMES(
-        "Navigation.CommitTimeout.NetworkServiceLastCrashTime",
-        last_crash_time);
-  }
-  base::UmaHistogramSparse("Navigation.CommitTimeout.ErrorCode", -net_error_);
   render_process_blocked_state_changed_subscription_ = {};
   GetRenderFrameHost()->GetRenderWidgetHost()->RendererIsUnresponsive(
       base::BindRepeating(&NavigationRequest::RestartCommitTimeout,

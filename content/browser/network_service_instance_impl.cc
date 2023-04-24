@@ -31,7 +31,6 @@
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -752,36 +751,6 @@ void ShutDownNetworkService() {
     g_in_process_instance = nullptr;
   }
   GetNetworkTaskRunnerStorage().reset();
-}
-
-NetworkServiceAvailability GetNetworkServiceAvailability() {
-  if (!g_network_service_remote)
-    return NetworkServiceAvailability::NOT_CREATED;
-  else if (!g_network_service_remote->is_bound())
-    return NetworkServiceAvailability::NOT_BOUND;
-  else if (!g_network_service_remote->is_connected())
-    return NetworkServiceAvailability::ENCOUNTERED_ERROR;
-  else if (!g_network_service_is_responding)
-    return NetworkServiceAvailability::NOT_RESPONDING;
-  else
-    return NetworkServiceAvailability::AVAILABLE;
-}
-
-base::TimeDelta GetTimeSinceLastNetworkServiceCrash() {
-  if (g_last_network_service_crash.is_null())
-    return base::TimeDelta();
-  return base::Time::Now() - g_last_network_service_crash;
-}
-
-void PingNetworkService(base::OnceClosure closure) {
-  GetNetworkService();
-  // Unfortunately, QueryVersion requires a RepeatingCallback.
-  g_network_service_remote->QueryVersion(base::BindOnce(
-      [](base::OnceClosure closure, uint32_t) {
-        if (closure)
-          std::move(closure).Run();
-      },
-      std::move(closure)));
 }
 
 namespace {

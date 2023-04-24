@@ -2864,7 +2864,6 @@ chromium-metrics-reviews@google.com.
       label="process priority = foreground"/>
   <suffix name="NewNavigation" label="New navigation"/>
   <suffix name="Reload" label="Reload"/>
-  <affected-histogram name="Navigation.IsSameProcess"/>
   <affected-histogram name="Navigation.ReadyToCommitUntilCommit2"/>
   <affected-histogram name="Navigation.StartToCommit"/>
   <affected-histogram name="Navigation.StartToCommit.CrossProcess"/>

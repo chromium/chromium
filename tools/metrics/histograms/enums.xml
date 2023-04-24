@@ -70846,11 +70846,6 @@ Called by update_use_counter_css.py.-->
   <int value="1" label="Same BrowsingInstance navigation"/>
 </enum>
 
-<enum name="NavigationIsSameProcess">
-  <int value="0" label="Cross process navigation"/>
-  <int value="1" label="Same process navigation"/>
-</enum>
-
 <enum name="NavigationIsSameSiteInstance">
   <int value="0" label="Cross SiteInstance navigation"/>
   <int value="1" label="Same SiteInstance navigation"/>
@@ -71028,20 +71023,6 @@ Called by update_use_counter_css.py.-->
   <int value="15"
       label="A navigation suggestion is found using a combo squatting match
              against an engaged site."/>
-</enum>
-
-<enum name="NavigationURLScheme">
-  <int value="0" label="(Unknown)"/>
-  <int value="1" label="about"/>
-  <int value="2" label="blob"/>
-  <int value="3" label="content"/>
-  <int value="4" label="cid"/>
-  <int value="5" label="data"/>
-  <int value="6" label="file"/>
-  <int value="7" label="filesystem"/>
-  <int value="8" label="ftp"/>
-  <int value="9" label="http"/>
-  <int value="10" label="https"/>
 </enum>
 
 <enum name="NavigationWasServedFromCache">
@@ -73825,14 +73806,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="16" label="WPA 1/2/3"/>
   <int value="17" label="Enterprise WPA 1/2/3"/>
   <int value="18" label="Enterprise WEP"/>
-</enum>
-
-<enum name="NetworkServiceAvailability">
-  <int value="0" label="Available"/>
-  <int value="1" label="Not created"/>
-  <int value="2" label="Not bound"/>
-  <int value="3" label="Encountered Error"/>
-  <int value="4" label="Not responding"/>
 </enum>
 
 <enum name="NetworkServiceCorpResult">

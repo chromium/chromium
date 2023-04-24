@@ -579,48 +579,6 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </token>
 </histogram>
 
-<histogram name="Navigation.CommitTimeout.NetworkServiceAvailability"
-    enum="NetworkServiceAvailability" expires_after="M82">
-  <owner>cduvall@chromium.org</owner>
-  <owner>cmumford@chromium.org</owner>
-  <summary>
-    Logged with the status of the network service for each navigation commit
-    timeout. This will be used to debug http://crbug.com/934317.
-  </summary>
-</histogram>
-
-<histogram name="Navigation.CommitTimeout.NetworkServiceLastCrashTime"
-    units="ms" expires_after="M82">
-  <owner>cduvall@chromium.org</owner>
-  <owner>cmumford@chromium.org</owner>
-  <summary>
-    Logged with the time since the last network service crash if available for
-    each navigation commit timeout. This will be used to debug
-    http://crbug.com/934317.
-  </summary>
-</histogram>
-
-<histogram name="Navigation.CommitTimeout.NetworkServicePingTime" units="ms"
-    expires_after="M82">
-  <owner>cduvall@chromium.org</owner>
-  <owner>cmumford@chromium.org</owner>
-  <summary>
-    Logs the time it takes to make a round trip call to the network service for
-    each navigation commit timeout. This will be used to debug
-    http://crbug.com/934317.
-  </summary>
-</histogram>
-
-<histogram name="Navigation.CommitTimeout.Scheme" enum="NavigationURLScheme"
-    expires_after="M82">
-  <owner>cduvall@chromium.org</owner>
-  <owner>cmumford@chromium.org</owner>
-  <summary>
-    Logged with the navigation URL scheme for each navigation commit timeout.
-    This will be used to debug http://crbug.com/934317.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.DownloadPolicy.LogArbitraryPolicyPerDownload"
     enum="NavigationDownloadPolicy" expires_after="2020-11-01">
   <owner>csharrison@chromium.org</owner>
@@ -805,13 +763,6 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   <summary>
     Whether a main frame navigation led to a change of BrowsingInstance or not.
   </summary>
-</histogram>
-
-<histogram name="Navigation.IsSameProcess" enum="NavigationIsSameProcess"
-    expires_after="M85">
-  <owner>clamy@chromium.org</owner>
-  <owner>nasko@chromium.org</owner>
-  <summary>Whether the navigation led to a change of process or not.</summary>
 </histogram>
 
 <histogram name="Navigation.IsSameSiteInstance"
