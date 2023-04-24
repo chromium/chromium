@@ -133,6 +133,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     // while the side sheet is running with the maximize button option on.
     private boolean mMaximizeButtonEnabled;
 
+    private OnClickListener mCloseClickListener;
+
     /**
      * Whether to use the toolbar as handle to resize the Window height.
      */
@@ -227,14 +229,20 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     @Override
     protected void setCustomTabCloseClickHandler(OnClickListener listener) {
+        mCloseClickListener = listener;
         if (mHandleStrategy == null) {
+            // Normal CCT does not have HandleStrategy.
             mCloseButton.setOnClickListener(listener);
         } else {
-            // Let the close button click initiate the closing animation first. The actual
-            // closing task will follow the animation.
-            mCloseButton.setOnClickListener(v -> mHandleStrategy.startCloseAnimation());
-            mHandleStrategy.setCloseClickHandler(listener);
+            setHandleStrategyCloseClickHandler(listener);
         }
+    }
+
+    private void setHandleStrategyCloseClickHandler(OnClickListener listener) {
+        // Let the close button click initiate the closing animation first. The actual
+        // closing task will follow the animation.
+        mCloseButton.setOnClickListener(v -> mHandleStrategy.startCloseAnimation());
+        mHandleStrategy.setCloseClickHandler(listener);
     }
 
     @Override
@@ -432,18 +440,14 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         return false;
     }
 
-    public void setHandleStrategy(@Nullable HandleStrategy strategy) {
+    public void setHandleStrategy(HandleStrategy strategy) {
         if (!CustomTabsConnection.getInstance().isDynamicFeatureEnabled(
                     ChromeFeatureList.CCT_BRAND_TRANSPARENCY)) {
             mLocationBar.showBranding();
         }
 
-        // When the (P)CCT does not need to be resized the handle strategy can be null.
-        if (strategy == null) {
-            mHandleStrategy = null;
-            return;
-        }
         mHandleStrategy = strategy;
+        if (mCloseClickListener != null) setHandleStrategyCloseClickHandler(mCloseClickListener);
     }
 
     /**

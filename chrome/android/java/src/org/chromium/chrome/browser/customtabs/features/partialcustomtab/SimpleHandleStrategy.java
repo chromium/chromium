@@ -46,4 +46,8 @@ public class SimpleHandleStrategy implements CustomTabToolbar.HandleStrategy {
     public void close() {
         mOnClickCloseListener.onClick(null);
     }
+
+    public OnClickListener getClickCloseHandlerForTesting() {
+        return mOnClickCloseListener;
+    }
 }

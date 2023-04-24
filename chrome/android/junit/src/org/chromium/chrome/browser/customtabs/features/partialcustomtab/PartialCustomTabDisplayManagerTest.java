@@ -236,6 +236,31 @@ public class PartialCustomTabDisplayManagerTest {
     }
 
     @Test
+    public void closeAnimationNotInvokedTwice() {
+        mPCCTTestRule.configPortraitMode();
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
+        assertEquals("Bottom-Sheet should be the active strategy",
+                PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
+        Runnable finish = Mockito.mock(Runnable.class);
+        assertTrue("Close animation didn't run", displayManager.handleCloseAnimation(finish));
+        Runnable finish2 = Mockito.mock(Runnable.class);
+        assertFalse("Close animation shouldn't run", displayManager.handleCloseAnimation(finish2));
+
+        mPCCTTestRule.configLandscapeMode();
+        displayManager = createPcctDisplayManager();
+        assertEquals("Side-Sheet should be the active strategy", PartialCustomTabType.SIDE_SHEET,
+                displayManager.getActiveStrategyType());
+        assertTrue("Close animation didn't run", displayManager.handleCloseAnimation(finish));
+        assertFalse("Close animation shouldn't run", displayManager.handleCloseAnimation(finish2));
+
+        displayManager = createPcctDisplayManager(0, 0);
+        assertEquals("Full-Size PCCT should be created", PartialCustomTabType.FULL_SIZE,
+                displayManager.getActiveStrategyType());
+        assertTrue("Close animation didn't run", displayManager.handleCloseAnimation(finish));
+        assertFalse("Close animation shouldn't run", displayManager.handleCloseAnimation(finish2));
+    }
+
+    @Test
     public void
     transitionFromBottomSheetTo900dpBottomSheetWhenOrientationChangedToLandscape_andHeightSetWidthNot() {
         mPCCTTestRule.configPortraitMode();

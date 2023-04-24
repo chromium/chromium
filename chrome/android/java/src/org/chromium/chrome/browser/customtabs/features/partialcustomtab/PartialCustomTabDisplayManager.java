@@ -181,8 +181,8 @@ public class PartialCustomTabDisplayManager
      * @see {@link BaseCustomTabRootUiCoordinator#handleCloseAnimation()}
      */
     @Override
-    public void handleCloseAnimation(Runnable finishRunnable) {
-        mStrategy.handleCloseAnimation(finishRunnable);
+    public boolean handleCloseAnimation(Runnable finishRunnable) {
+        return mStrategy.handleCloseAnimation(finishRunnable);
     }
 
     /**

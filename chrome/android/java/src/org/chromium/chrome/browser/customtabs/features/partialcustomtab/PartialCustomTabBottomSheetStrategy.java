@@ -788,24 +788,18 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     }
 
     @Override
-    public void handleCloseAnimation(Runnable finishRunnable) {
-        // Swiping/tap on close button may have already started the animation and completed
-        // the closing task. Only the closing flow by back button/gesture can proceed.
-        if (mStatus == HeightStatus.CLOSE) {
-            if (finishRunnable != null) finishRunnable.run();
-            return;
-        }
-
-        mFinishRunnable = finishRunnable;
+    public boolean handleCloseAnimation(Runnable finishRunnable) {
+        if (!super.handleCloseAnimation(finishRunnable)) return false;
 
         mVersionCompat.setImeStateCallback(null);
 
         // Tapping the close button while in transition state should be ignored.
         // Delay it till the height settles in to either top/initial state, where the animation
         // begins when it detects the presence of |mFinishRunnable|.
-        if (mStatus == HeightStatus.TRANSITION) return;
+        if (mStatus == HeightStatus.TRANSITION) return false;
 
         animateTabTo(HeightStatus.CLOSE, /*autoResize=*/true);
+        return true;
     }
 
     // DragEventCallback implementation
@@ -927,6 +921,11 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     @VisibleForTesting
     int getNavbarHeightForTesting() {
         return mNavbarHeight;
+    }
+
+    @VisibleForTesting
+    CustomTabToolbar.HandleStrategy getHandleStrategyForTesting() {
+        return mHandleStrategy;
     }
 
     @VisibleForTesting

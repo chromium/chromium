@@ -97,8 +97,9 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
 
     /**
      * @see {@link BaseCustomTabRootUiCoordinator#handleCloseAnimation()}
+     * @return {@code true} if the animation will be performed.
      */
-    public void handleCloseAnimation(Runnable finishRunnable) {
+    public boolean handleCloseAnimation(Runnable finishRunnable) {
         throw new IllegalStateException(
                 "Custom close animation should be performed only on partial CCT.");
     }

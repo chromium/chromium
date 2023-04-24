@@ -11,7 +11,6 @@ import static org.chromium.chrome.browser.browserservices.intents.BrowserService
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
-import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -465,14 +464,16 @@ public abstract class PartialCustomTabBaseStrategy
     }
 
     @Override
-    public void handleCloseAnimation(Runnable finishRunnable) {
-        if (mFinishRunnable != null) return;
-
+    public boolean handleCloseAnimation(Runnable finishRunnable) {
+        // Can be entered twice - first from CustomTabToolbar (with a tap on close button)/
+        // HandleStrategy (swiping down), once again from RootUiCoordinator. Just run the passed
+        // runnable and return for the second invocation.
+        if (mFinishRunnable != null) {
+            if (finishRunnable != null) finishRunnable.run();
+            return false;
+        }
         mFinishRunnable = finishRunnable;
-        configureLayoutBeyondScreen(true);
-        AnimatorUpdateListener updater = animator -> setWindowY((int) animator.getAnimatedValue());
-        int start = mActivity.getWindow().getAttributes().y;
-        startAnimation(start, mHeight, updater, this::onCloseAnimationEnd);
+        return true;
     }
 
     protected void configureLayoutBeyondScreen(boolean enable) {

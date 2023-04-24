@@ -104,10 +104,9 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     }
 
     @Override
-    public void handleCloseAnimation(Runnable finishRunnable) {
-        if (mFinishRunnable != null) return;
+    public boolean handleCloseAnimation(Runnable finishRunnable) {
+        if (!super.handleCloseAnimation(finishRunnable)) return false;
 
-        mFinishRunnable = finishRunnable;
         configureLayoutBeyondScreen(true);
         Window window = mActivity.getWindow();
         AnimatorUpdateListener closeAnimation;
@@ -123,6 +122,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             closeAnimation = (animator) -> setWindowX((int) animator.getAnimatedValue());
         }
         startAnimation(start, end, closeAnimation, this::onCloseAnimationEnd, true);
+        return true;
     }
 
     @Override

@@ -8,6 +8,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
 
+import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.app.Activity;
 import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
@@ -74,6 +75,17 @@ public class PartialCustomTabFullSizeStrategy extends PartialCustomTabBaseStrate
         setCoordinatorLayoutHeight(MATCH_PARENT);
 
         updateDragBarVisibility(/*dragHandlebarVisibility*/ View.GONE);
+    }
+
+    @Override
+    public boolean handleCloseAnimation(Runnable finishRunnable) {
+        if (!super.handleCloseAnimation(finishRunnable)) return false;
+
+        configureLayoutBeyondScreen(true);
+        AnimatorUpdateListener updater = animator -> setWindowY((int) animator.getAnimatedValue());
+        int start = mActivity.getWindow().getAttributes().y;
+        startAnimation(start, mHeight, updater, this::onCloseAnimationEnd);
+        return true;
     }
 
     @Override
