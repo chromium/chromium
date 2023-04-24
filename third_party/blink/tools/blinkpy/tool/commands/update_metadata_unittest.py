@@ -18,7 +18,7 @@ from blinkpy.tool.mock_tool import MockBlinkTool
 from blinkpy.tool.commands.update_metadata import (
     UpdateMetadata,
     MetadataUpdater,
-    generate_configs,
+    TestConfigurations,
     load_and_update_manifests,
     sort_metadata_ast,
 )
@@ -578,7 +578,7 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
 
     def test_generate_configs(self):
         linux, linux_highdpi, mac = sorted(
-            generate_configs(self.tool),
+            TestConfigurations.generate(self.tool),
             key=lambda config: (config['os'], config['flag_specific']))
 
         self.assertEqual(linux['os'], 'linux')
@@ -627,11 +627,12 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                     **result
                 } for result in report['results']]
 
-            configs = {
-                metadata.RunInfo(report['run_info']):
-                report.pop('test_port', self.tool.port_factory.get())
-                for report in reports
-            }
+            configs = TestConfigurations(
+                self.tool.filesystem, {
+                    metadata.RunInfo(report['run_info']): report.pop(
+                        'test_port', self.tool.port_factory.get())
+                    for report in reports
+                })
             updater = MetadataUpdater.from_manifests(manifests, configs,
                                                      self.tool.filesystem,
                                                      **options)

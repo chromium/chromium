@@ -19,16 +19,20 @@ from blinkpy.common import path_finder
 from blinkpy.common.host import Host
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.tool.commands.command import Command
+from blinkpy.tool.commands.update_metadata import (
+    BUG_PATTERN,
+    TestConfigurations,
+)
 from blinkpy.w3c.wpt_manifest import WPTManifest
-from blinkpy.tool.commands.update_metadata import BUG_PATTERN, generate_configs
+from blinkpy.web_tests.port.base import Port
 
 path_finder.bootstrap_wpt_imports()
 from tools.lint import lint as wptlint
 from tools.lint import rules
-from wptrunner import metadata, wptmanifest
+from wptrunner import manifestupdate, metadata, wptmanifest
 from wptrunner.manifestexpected import fuzzy_prop
 from wptrunner.wptmanifest import node as wptnode
-from wptrunner.wptmanifest.backends.static import Compiler
+from wptrunner.wptmanifest.backends import conditional, static
 
 _log = logging.getLogger(__name__)
 
@@ -222,6 +226,19 @@ class MetadataSingleElementList(MetadataRule):
     """
 
 
+class MetadataLongTimeout(MetadataRule):
+    name = 'META-LONG-TIMEOUT'
+    description = ('%(test)r should be disabled when it consistently times '
+                   "out even with 'timeout=long'")
+    to_fix = """
+    To reduce resource waste, add a `disabled: ...` key that disables the test
+    for configurations where there are consistent timeouts.
+
+    Splitting a `testharness.js` test with many subtests may also help them run
+    to completion.
+    """
+
+
 LintError = Tuple[str, str, str, Optional[int]]
 ValueNode = Union[wptnode.ValueNode, wptnode.AtomNode, wptnode.ListNode]
 Condition = Optional[wptnode.Node]
@@ -249,13 +266,13 @@ class LintWPT(Command):
 
     def __init__(self,
                  tool: Host,
-                 configs: Optional[Collection[metadata.RunInfo]] = None):
+                 configs: Optional[TestConfigurations] = None):
         super().__init__()
         self._tool = tool
         self._fs = self._tool.filesystem
         self._default_port = self._tool.port_factory.get()
         self._finder = path_finder.PathFinder(self._fs)
-        self._configs = configs or generate_configs(self._tool)
+        self._configs = configs or TestConfigurations.generate(self._tool)
 
     def parse_args(self, args: List[str]) -> Tuple[optparse.Values, List[str]]:
         # TODO(crbug.com/1431070): Migrate `blink_tool.py` to stdlib's
@@ -359,7 +376,8 @@ class LintWPT(Command):
             return [MetadataBadSyntax.error(path, context, error.line)]
 
         test_type = manifest.get_test_type(test_path) if test_path else None
-        linter = MetadataLinter(path, test_type, manifest, self._configs)
+        linter = MetadataLinter(path, test_path, test_type, manifest,
+                                repo_root, self._configs)
         return linter.find_errors(ast)
 
     def _manifest(self, repo_root: str) -> WPTManifest:
@@ -379,12 +397,20 @@ class LintWPT(Command):
         return None
 
 
-class MetadataLinter(Compiler):
-    def __init__(self, path: str, test_type: str, manifest: WPTManifest,
-                 configs: Collection[metadata.RunInfo]):
+class MetadataLinter(static.Compiler):
+    def __init__(
+        self,
+        path: str,
+        test_path: Optional[str],
+        test_type: Optional[str],
+        manifest: WPTManifest,
+        metadata_root: str,
+        configs: TestConfigurations,
+    ):
+        super().__init__()
         self.path = path
-        self.test_type = test_type
-        self.manifest = manifest
+        self.test_path, self.test_type = test_path, test_type
+        self.manifest, self.metadata_root = manifest, metadata_root
         self.configs = configs
         # `context` contains information about the current section type,
         # heading, and key as it becomes available during the traversal. It's
@@ -392,7 +418,7 @@ class MetadataLinter(Compiler):
         self.context = {}
         self.errors = set()
         # Check that all configurations have the same keys.
-        assert len(set({frozenset(config.data) for config in configs})) == 1
+        assert len({frozenset(config.data) for config in configs}) == 1
 
     @contextlib.contextmanager
     def using_context(self, **context):
@@ -408,11 +434,35 @@ class MetadataLinter(Compiler):
         self.errors.clear()
         if self.test_type:
             initial_type = SectionType.ROOT
+            url_base = Port.WPT_DIRS[self.manifest.wpt_dir]
+            # Since the long timeout check requires examining both `disabled`
+            # and `expected` at the same time, use the high-level expectations
+            # API instead of checking during the syntax tree traversal.
+            expected = conditional.compile_ast(ast,
+                                               manifestupdate.data_cls_getter,
+                                               test_path=self.test_path,
+                                               run_info_properties=([], {}),
+                                               url_base=url_base)
+            self._check_for_long_timeouts(expected)
         else:
             initial_type = SectionType.DIRECTORY
         with self.using_context(next_type=initial_type):
             self.visit(ast)
         return sorted(self.errors, key=lambda error: error[:3])
+
+    def _check_for_long_timeouts(self,
+                                 expected: manifestupdate.ExpectedManifest):
+        for test_id in sorted(expected.child_map):
+            test = expected.get_test(test_id)
+            if test_id.startswith('/'):
+                test_id = test_id[1:]
+            if not self.manifest.is_slow_test(test_id):
+                continue
+            configs = self.configs.enabled_configs(test, self.metadata_root)
+            for config in configs:
+                with contextlib.suppress(KeyError):
+                    if test.get('expected', config) == 'TIMEOUT':
+                        self._error(MetadataLongTimeout, test=test_id)
 
     def visit(self, node: wptnode.Node):
         try:

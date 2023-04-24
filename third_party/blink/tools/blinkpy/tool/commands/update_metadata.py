@@ -169,7 +169,7 @@ class UpdateMetadata(Command):
         manifests = load_and_update_manifests(self._path_finder)
         updater = MetadataUpdater.from_manifests(
             manifests,
-            generate_configs(self._tool),
+            TestConfigurations.generate(self._tool),
             self._tool.filesystem,
             self._explicit_include_patterns(options, args),
             options.exclude,
@@ -468,46 +468,121 @@ class UpdateMetadata(Command):
         setattr(parser.values, option.dest, reports)
 
 
-def generate_configs(host: Host) -> Dict[metadata.RunInfo, Port]:
-    """Construct run info representing all Chromium test environments.
+class TestConfigurations(collections.abc.Mapping):
+    def __init__(self, fs: FileSystem, configs):
+        self._fs = fs
+        self._finder = path_finder.PathFinder(self._fs)
+        self._configs = configs
+        self._get_dir_manifest = memoized(manifestexpected.get_dir_manifest)
 
-    Each property in a config represents a value that metadata keys can be
-    conditioned on (e.g., 'os').
-    """
-    configs = {}
-    wptrunner_builders = {
-        builder
-        for builder in host.builders.all_builder_names()
-        if host.builders.uses_wptrunner(builder)
-    }
+    def __getitem__(self, config: metadata.RunInfo) -> Port:
+        return self._configs[config]
 
-    for builder in wptrunner_builders:
-        port_name = host.builders.port_name_for_builder_name(builder)
-        _, build_config, *_ = host.builders.specifiers_for_builder(builder)
+    def __len__(self) -> int:
+        return len(self._configs)
 
-        for step in host.builders.step_names_for_builder(builder):
-            flag_specific = host.builders.flag_specific_option(builder, step)
-            port = host.port_factory.get(
-                port_name,
-                optparse.Values({
-                    'configuration': build_config,
-                    'flag_specific': flag_specific,
-                }))
-            product = host.builders.product_for_build_step(builder, step)
-            config = metadata.RunInfo({
-                'product':
-                product,
-                'os':
-                port.operating_system(),
-                'port':
-                port.version(),
-                'debug':
-                port.get_option('configuration') == 'Debug',
-                'flag_specific':
-                flag_specific or '',
-            })
-            configs[config] = port
-    return configs
+    def __iter__(self) -> Iterator[metadata.RunInfo]:
+        return iter(self._configs)
+
+    @classmethod
+    def generate(cls, host: Host) -> 'TestConfigurations':
+        """Construct run info representing all Chromium test environments.
+
+        Each property in a config represents a value that metadata keys can be
+        conditioned on (e.g., 'os').
+        """
+        configs = {}
+        wptrunner_builders = {
+            builder
+            for builder in host.builders.all_builder_names()
+            if host.builders.uses_wptrunner(builder)
+        }
+
+        for builder in wptrunner_builders:
+            port_name = host.builders.port_name_for_builder_name(builder)
+            _, build_config, *_ = host.builders.specifiers_for_builder(builder)
+
+            for step in host.builders.step_names_for_builder(builder):
+                flag_specific = host.builders.flag_specific_option(
+                    builder, step)
+                port = host.port_factory.get(
+                    port_name,
+                    optparse.Values({
+                        'configuration': build_config,
+                        'flag_specific': flag_specific,
+                    }))
+                product = host.builders.product_for_build_step(builder, step)
+                debug = port.get_option('configuration') == 'Debug'
+                config = metadata.RunInfo({
+                    'product': product,
+                    'os': port.operating_system(),
+                    'port': port.version(),
+                    'debug': debug,
+                    'flag_specific': flag_specific or '',
+                })
+                configs[config] = port
+        return cls(host.filesystem, configs)
+
+    def enabled_configs(self, test: manifestupdate.TestNode,
+                        metadata_root: str) -> Set[metadata.RunInfo]:
+        """Find configurations where the given test is enabled.
+
+        This method also checks parent `__dir__.ini` to give a definitive
+        answer.
+
+        Arguments:
+            test: Test node holding expectations in conditional form.
+            test_path: Path to the test file (relative to the test root).
+            metadata_root: Absolute path to where the `.ini` files are stored.
+        """
+        return {
+            config
+            for config in self._configs
+            if not self._config_disabled(config, test, metadata_root)
+        }
+
+    def _config_disabled(
+        self,
+        config: metadata.RunInfo,
+        test: manifestupdate.TestNode,
+        metadata_root: str,
+    ) -> bool:
+        with contextlib.suppress(KeyError):
+            port = self._configs[config]
+            if port.default_smoke_test_only():
+                test_id = test.id
+                if test_id.startswith('/'):
+                    test_id = test_id[1:]
+                if (not self._finder.is_wpt_internal_path(test_id)
+                        and not self._finder.is_wpt_path(test_id)):
+                    test_id = self._finder.wpt_prefix() + test_id
+                if port.skipped_due_to_smoke_tests(test_id):
+                    return True
+        with contextlib.suppress(KeyError):
+            return test.get('disabled', config)
+        test_dir = test.parent.test_path
+        while test_dir:
+            test_dir = self._fs.dirname(test_dir)
+            abs_test_dir = self._fs.join(metadata_root, test_dir)
+            disabled = self._directory_disabled(abs_test_dir, config)
+            if disabled is not None:
+                return disabled
+        return False
+
+    def _directory_disabled(self, dir_path: str,
+                            config: metadata.RunInfo) -> Optional[bool]:
+        """Check if a `__dir__.ini` in the given directory disables tests.
+
+        Returns:
+            * True if the directory disables tests.
+            * False if the directory explicitly enables tests.
+            * None if the key is not present (e.g., `__dir__.ini` doesn't
+              exist). We may need to search other `__dir__.ini` to get a
+              conclusive answer.
+        """
+        metadata_path = self._fs.join(dir_path, '__dir__.ini')
+        manifest = self._get_dir_manifest(metadata_path, config)
+        return manifest.disabled if manifest else None
 
 
 class UpdateAbortError(Exception):
@@ -527,8 +602,7 @@ class MetadataUpdater:
         self,
         test_files: TestFileMap,
         slow_tests: Set[str],
-        configs: Dict[metadata.RunInfo, Port],
-        fs: FileSystem,
+        configs: TestConfigurations,
         primary_properties: Optional[List[str]] = None,
         dependent_properties: Optional[Mapping[str, str]] = None,
         overwrite_conditions: Literal['yes', 'no', 'fill'] = 'fill',
@@ -539,7 +613,6 @@ class MetadataUpdater:
     ):
         self._configs = configs
         self._slow_tests = slow_tests
-        self._fs = fs
         self._default_expected = _default_expected_by_type()
         self._primary_properties = primary_properties or [
             'debug',
@@ -595,7 +668,7 @@ class MetadataUpdater:
                                   if getattr(test, 'timeout', None) == 'long')
             finally:
                 manifest.itertypes = itertypes
-        return cls(test_files, slow_tests, configs, fs, **options)
+        return cls(test_files, slow_tests, configs, **options)
 
     def collect_results(self, reports: Iterable[io.TextIOBase]) -> Set[str]:
         """Parse and record test results."""
@@ -660,11 +733,8 @@ class MetadataUpdater:
             # instead of replaying every result.
             if not updated_configs:
                 continue
-            enabled_configs = {
-                config
-                for config in self._configs
-                if not self._config_disabled(test_file, test, config)
-            }
+            enabled_configs = self._configs.enabled_configs(
+                test, test_file.metadata_path)
             missing_configs = enabled_configs - updated_configs
             for config in missing_configs:
                 self._updater.suite_start({'run_info': config.data})
@@ -749,53 +819,6 @@ class MetadataUpdater:
         subtests = test_file.data.get(test_id, {})
         subtest_data = subtests.get(subtest_id, [])
         return frozenset(run_info for _, run_info, _ in subtest_data)
-
-    def _config_disabled(
-        self,
-        test_file: metadata.TestFileData,
-        test: manifestupdate.TestNode,
-        config: metadata.RunInfo,
-    ) -> bool:
-        """Check if a test is disabled for a given configuration."""
-        with contextlib.suppress(KeyError):
-            port = self._configs[config]
-            if port.default_smoke_test_only():
-                finder = path_finder.PathFinder(self._fs)
-                test_id = test.id
-                if test_id.startswith('/'):
-                    test_id = test_id[1:]
-                if (not finder.is_wpt_internal_path(test_id)
-                        and not finder.is_wpt_path(test_id)):
-                    test_id = finder.wpt_prefix() + test_id
-                if port.skipped_due_to_smoke_tests(test_id):
-                    return True
-        with contextlib.suppress(KeyError):
-            return test.get('disabled', config)
-        test_dir = test_file.test_path
-        while test_dir:
-            test_dir = self._fs.dirname(test_dir)
-            abs_test_dir = self._fs.join(test_file.metadata_path, test_dir)
-            disabled = self._directory_disabled(abs_test_dir, config)
-            if disabled is not None:
-                return disabled
-        return False
-
-    @memoized
-    def _directory_disabled(self, dir_path: str,
-                            config: metadata.RunInfo) -> Optional[bool]:
-        """Check if a `__dir__.ini` in the given directory disables tests.
-
-        Returns:
-            * True if the directory disables tests.
-            * False if the directory explicitly enables tests.
-            * None if the key is not present (e.g., `__dir__.ini` doesn't
-              exist). We may need to search other `__dir__.ini` to get a
-              conclusive answer.
-        """
-        metadata_path = self._fs.join(dir_path, '__dir__.ini')
-        manifest = manifestexpected.get_dir_manifest(metadata_path,
-                                                     config.data)
-        return manifest.disabled if manifest else None
 
     def update(self, test_file: metadata.TestFileData) -> bool:
         """Update and serialize the AST of a metadata file.

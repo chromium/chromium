@@ -11,9 +11,10 @@ from unittest import mock
 from typing import List
 
 from blinkpy.common import path_finder
+from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.tool.mock_tool import MockBlinkTool
 from blinkpy.tool.commands.lint_wpt import LintError, LintWPT
-from blinkpy.common.system.log_testing import LoggingTestCase
+from blinkpy.tool.commands.update_metadata import TestConfigurations
 
 path_finder.bootstrap_wpt_imports()
 from wptrunner import metadata
@@ -47,7 +48,12 @@ class LintWPTTest(LoggingTestCase):
             'flag_specific': 'fake-flag',
             'product': 'content_shell',
         }]
-        self.command = LintWPT(self.tool, set(map(metadata.RunInfo, configs)))
+        configs = {
+            metadata.RunInfo(config):
+            self.tool.port_factory.get('test-linux-trusty')
+            for config in configs
+        }
+        self.command = LintWPT(self.tool, TestConfigurations(self.fs, configs))
         self.fs.write_text_file(self.finder.path_from_wpt_tests('lint.ignore'),
                                 '')
         self.fs.write_text_file(
@@ -71,8 +77,12 @@ class LintWPTTest(LoggingTestCase):
                         },
                         'variant.html': [
                             'b8db5972284d1ac6bbda0da81621d9bca5d04ee7',
-                            ['variant.html?foo=bar/abc', {}],
-                            ['variant.html?foo=baz', {}],
+                            ['variant.html?foo=bar/abc', {
+                                'timeout': 'long'
+                            }],
+                            ['variant.html?foo=baz', {
+                                'timeout': 'long'
+                            }],
                         ],
                     },
                 },
@@ -210,14 +220,14 @@ class LintWPTTest(LoggingTestCase):
         out_of_order_subtests, out_of_order_tests = self._check_metadata(
             """\
             [variant.html?foo=baz]
-              expected: TIMEOUT
+              expected: PRECONDITION_FAILED
               [subtest 2]
                 expected: NOTRUN
               [subtest 1]
-                expected: TIMEOUT
+                expected: PRECONDITION_FAILED
 
             [variant.html?foo=bar/abc]
-              expected: TIMEOUT
+              expected: PRECONDITION_FAILED
             """, 'variant.html.ini')
         name, description, path, _ = out_of_order_tests
         self.assertEqual(name, 'META-UNSORTED-SECTION')
@@ -626,3 +636,36 @@ class LintWPTTest(LoggingTestCase):
         self.assertEqual(
             description, "Test '[reftest.html]' key 'expected' has "
             "a single-element list that should be unwrapped to 'FAIL'")
+
+    def test_metadata_long_timeout(self):
+        (error, ) = self._check_metadata(
+            """\
+            [variant.html?foo=bar/abc]
+              disabled:
+                if os == "mac": slow
+              expected:
+                # Already disabled
+                if os == "mac": TIMEOUT
+                # Does not need to be disabled because the test sometimes runs OK.
+                [TIMEOUT, OK]
+            [variant.html?foo=baz]
+              expected:
+                if os == "mac": TIMEOUT
+            """, 'variant.html.ini')
+        name, description, path, _ = error
+        self.assertEqual(name, 'META-LONG-TIMEOUT')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description, "'variant.html?foo=baz' should be disabled when "
+            "it consistently times out even with 'timeout=long'")
+
+    def test_metadata_long_timeout_already_disabled(self):
+        self.fs.write_text_file(
+            self.finder.path_from_wpt_tests('__dir__.ini'),
+            'disabled: bulk disable of slow tests that timeout\n')
+        with self._patch_builtins():
+            errors = self._check_metadata("""\
+                [variant.html?foo=baz]
+                  expected: TIMEOUT
+                """)
+        self.assertEqual(errors, [])
