@@ -10,7 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -44,9 +44,15 @@ namespace {
 PrintManager* g_receiver_for_testing = nullptr;
 
 // Keeps track of pending scripted print preview closures.
-// No locking, only access on the UI thread.
-base::LazyInstance<std::map<content::RenderProcessHost*, base::OnceClosure>>::
-    Leaky g_scripted_print_preview_closure_map = LAZY_INSTANCE_INITIALIZER;
+using ScriptedPrintPreviewClosureMap =
+    std::map<content::RenderProcessHost*, base::OnceClosure>;
+
+ScriptedPrintPreviewClosureMap& GetScriptedPrintPreviewClosureMap() {
+  // No locking, only access on the UI thread.
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  static base::NoDestructor<ScriptedPrintPreviewClosureMap> closure_map;
+  return *closure_map;
+}
 
 }  // namespace
 
@@ -193,7 +199,7 @@ void PrintViewManager::PrintPreviewDone() {
   is_switching_to_system_dialog_ = false;
 
   if (print_preview_state_ == SCRIPTED_PREVIEW) {
-    auto& map = g_scripted_print_preview_closure_map.Get();
+    auto& map = GetScriptedPrintPreviewClosureMap();
     auto it = map.find(scripted_print_preview_rph_);
     CHECK(it != map.end());
     std::move(it->second).Run();
@@ -345,7 +351,7 @@ void PrintViewManager::SetupScriptedPrintPreview(
     return;
   }
 
-  auto& map = g_scripted_print_preview_closure_map.Get();
+  auto& map = GetScriptedPrintPreviewClosureMap();
   if (base::Contains(map, rph)) {
     // Renderer already handling window.print(). Abort this attempt to prevent
     // the renderer from having multiple nested loops. If multiple nested loops
