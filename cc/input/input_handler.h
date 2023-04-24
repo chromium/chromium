@@ -437,6 +437,8 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
       const gfx::Vector2dF& scroll_delta,
       ui::ScrollGranularity granularity);
 
+  bool CurrentScrollNeedsFrameAlignment() const;
+
   // Used to set the pinch gesture active state when the pinch gesture is
   // handled on another layer tree. In a page with OOPIFs, only the main
   // frame's layer tree directly handles pinch events. But layer trees for

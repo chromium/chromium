@@ -355,21 +355,19 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
         gesture_event.SourceDevice() == WebGestureDevice::kTouchpad &&
         is_first_gesture_scroll_update;
 
+    bool queue_was_empty = compositor_event_queue_->empty();
+    compositor_event_queue_->Queue(std::move(event_with_callback),
+                                   tick_clock_->NowTicks());
+
     // |synchronous_input_handler_| is WebView only. WebView has different
     // mechanisms and we want to forward all events immediately.
     if (is_from_blocking_touch || is_scroll_end_from_wheel ||
         is_first_wheel_scroll_update || synchronous_input_handler_) {
-      compositor_event_queue_->Queue(std::move(event_with_callback),
-                                     tick_clock_->NowTicks());
-      DispatchQueuedInputEvents();
-      return;
+      DispatchQueuedInputEvents(false /* frame_aligned */);
     }
-
-    bool needs_animate_input = compositor_event_queue_->empty();
-    compositor_event_queue_->Queue(std::move(event_with_callback),
-                                   tick_clock_->NowTicks());
-    if (needs_animate_input)
+    if (queue_was_empty && !compositor_event_queue_->empty()) {
       input_handler_->SetNeedsAnimateInput();
+    }
     return;
   }
 
@@ -436,7 +434,7 @@ void InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest(
   // We blocked the compositor gesture event queue while the hit test was
   // pending so scroll updates may be waiting in the queue. Now that we've
   // finished the hit test and performed the scroll begin, flush the queue.
-  DispatchQueuedInputEvents();
+  DispatchQueuedInputEvents(false /* frame_aligned */);
 }
 
 void InputHandlerProxy::DispatchSingleInputEvent(
@@ -517,7 +515,7 @@ void InputHandlerProxy::DispatchSingleInputEvent(
                                     std::move(current_scroll_result_data_));
 }
 
-bool InputHandlerProxy::HasQueuedEventsReadyForDispatch() {
+bool InputHandlerProxy::HasQueuedEventsReadyForDispatch(bool frame_aligned) {
   // Block flushing the compositor gesture event queue while there's an async
   // scroll begin hit test outstanding. We'll flush the queue when the hit test
   // responds.
@@ -526,14 +524,25 @@ bool InputHandlerProxy::HasQueuedEventsReadyForDispatch() {
     return false;
   }
 
-  return !compositor_event_queue_->empty();
+  if (compositor_event_queue_->empty()) {
+    return false;
+  }
+
+  // Defer scroll updates if they need to be frame-aligned.
+  if (compositor_event_queue_->PeekType() ==
+          WebGestureEvent::Type::kGestureScrollUpdate &&
+      input_handler_->CurrentScrollNeedsFrameAlignment() && !frame_aligned) {
+    return false;
+  }
+  return true;
 }
 
-void InputHandlerProxy::DispatchQueuedInputEvents() {
+void InputHandlerProxy::DispatchQueuedInputEvents(bool frame_aligned) {
   // Calling |NowTicks()| is expensive so we only want to do it once.
   base::TimeTicks now = tick_clock_->NowTicks();
-  while (HasQueuedEventsReadyForDispatch())
+  while (HasQueuedEventsReadyForDispatch(frame_aligned)) {
     DispatchSingleInputEvent(compositor_event_queue_->Pop(), now);
+  }
 }
 
 void InputHandlerProxy::UpdateElasticOverscroll() {
@@ -1504,10 +1513,10 @@ void InputHandlerProxy::UpdateRootLayerStateForSynchronousInputHandler(
 void InputHandlerProxy::DeliverInputForBeginFrame(
     const viz::BeginFrameArgs& args) {
   if (!scroll_predictor_)
-    DispatchQueuedInputEvents();
+    DispatchQueuedInputEvents(true /* frame_aligned */);
 
   // Resampling GSUs and dispatch queued input events.
-  while (HasQueuedEventsReadyForDispatch()) {
+  while (HasQueuedEventsReadyForDispatch(true /* frame_aligned */)) {
     std::unique_ptr<EventWithCallback> event_with_callback =
         scroll_predictor_->ResampleScrollEvents(compositor_event_queue_->Pop(),
                                                 args.frame_time, args.interval);
@@ -1519,7 +1528,7 @@ void InputHandlerProxy::DeliverInputForBeginFrame(
 void InputHandlerProxy::DeliverInputForHighLatencyMode() {
   // When prediction enabled, do not handle input after commit complete.
   if (!scroll_predictor_)
-    DispatchQueuedInputEvents();
+    DispatchQueuedInputEvents(false /* frame_aligned */);
 }
 
 void InputHandlerProxy::SetSynchronousInputHandler(

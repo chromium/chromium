@@ -200,4 +200,9 @@ bool ScrollTimeline::IsScrollTimeline() const {
   return true;
 }
 
+bool ScrollTimeline::IsLinkedToScroller(ElementId scroller) const {
+  auto& id = active_id();
+  return id && id.value() == scroller;
+}
+
 }  // namespace cc

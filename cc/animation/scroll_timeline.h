@@ -113,6 +113,7 @@ class CC_ANIMATION_EXPORT ScrollTimeline : public AnimationTimeline {
   }
 
   bool IsScrollTimeline() const override;
+  bool IsLinkedToScroller(ElementId scroller) const override;
 
  protected:
   ~ScrollTimeline() override;

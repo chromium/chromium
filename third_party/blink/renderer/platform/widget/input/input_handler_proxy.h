@@ -256,7 +256,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
 
   void DispatchSingleInputEvent(std::unique_ptr<EventWithCallback>,
                                 const base::TimeTicks);
-  void DispatchQueuedInputEvents();
+  void DispatchQueuedInputEvents(bool frame_aligned);
   void UpdateElasticOverscroll();
 
   // Helper functions for handling more complicated input events.
@@ -325,7 +325,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
                          uint32_t main_thread_hit_tested_reasons,
                          uint32_t main_thread_repaint_reasons);
 
-  bool HasQueuedEventsReadyForDispatch();
+  bool HasQueuedEventsReadyForDispatch(bool frame_aligned);
 
   InputHandlerProxyClient* client_;
 

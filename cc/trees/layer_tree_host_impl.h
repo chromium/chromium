@@ -385,6 +385,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void UpdateBrowserControlsState(BrowserControlsState constraints,
                                   BrowserControlsState current,
                                   bool animate) override;
+  bool HasScrollLinkedAnimation(ElementId for_scroller) const override;
 
   bool CanInjectJankOnMain() const;
   FrameSequenceTrackerCollection& frame_trackers() { return frame_trackers_; }

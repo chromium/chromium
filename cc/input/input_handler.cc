@@ -2235,4 +2235,16 @@ void InputHandler::UpdateBrowserControlsState(BrowserControlsState constraints,
                                                    animate);
 }
 
+bool InputHandler::CurrentScrollNeedsFrameAlignment() const {
+  if (const ScrollNode* node = CurrentlyScrollingNode()) {
+    // We need frame-aligned handling of GestureScrollUpdate if an animation
+    // is linked to the scroll position.  If we update the scroll offset between
+    // tick and draw, then things will be out of sync in the drawn frame.
+    if (compositor_delegate_->HasScrollLinkedAnimation(node->element_id)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace cc
