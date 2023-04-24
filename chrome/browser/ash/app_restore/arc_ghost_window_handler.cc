@@ -199,7 +199,7 @@ void ArcGhostWindowHandler::OnWindowInfoUpdated(int window_id,
   }
 
   session_id_to_pending_window_info_[window_info->window_id] =
-      std::move(window_info);
+      window_info->Clone();
 
   if (is_app_instance_connected_) {
     ::arc::UpdateWindowInfo(std::move(window_info));
