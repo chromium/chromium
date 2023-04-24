@@ -4200,6 +4200,22 @@
       "features": [
         "disable_accelerated_vp9_encode"
       ]
+    },
+    {
+      "id": 412,
+      "cr_bugs": [1217298, 1107331],
+      "description": "Disable VP9 HW encode on Intel GPUs preceding Ice Lake",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "intel_gpu_generation": {
+        "op": "<",
+        "value": "11"
+      },
+      "features": [
+        "disable_accelerated_vp9_encode"
+      ]
     }
   ]
 }
