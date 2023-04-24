@@ -136,4 +136,26 @@ ios::CapabilitiesDict* GetCapabilitiesDictionary(
       performAction:grey_tap()];
 }
 
+// Tests sign-in promo behavior in landscape. It should appears if and only if
+// the device is an ipad.
+- (void)testNoSignInPromoInLandscapeMode {
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
+                                error:nil];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey setCapabilities:GetCapabilitiesDictionary(
+                                      SystemIdentityCapabilityResult::kTrue)
+                      forIdentity:fakeIdentity];
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    VerifySigninPromoSufficientlyVisible();
+  } else {
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::UpgradeSigninPromoMatcher()]
+        assertWithMatcher:grey_notVisible()];
+  }
+}
+
 @end

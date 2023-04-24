@@ -374,9 +374,9 @@ using signin_metrics::PromoAction;
   [self.mediator cancelSignin];
 }
 
-// Called when `self.viewController` is dismissed. The sign-in is
-// finished and `runCompletionCallbackWithSigninResult:completionInfo:` is
-// called.
+// Called when `self.viewController` is dismissed. The sign-in ends based on
+// `signinResult` and  `runCompletionCallbackWithSigninResult:completionInfo:`
+// is called.
 - (void)viewControllerDismissedWithResult:(SigninCoordinatorResult)signinResult
                            completionInfo:
                                (SigninCompletionInfo*)completionInfo {
@@ -417,8 +417,10 @@ using signin_metrics::PromoAction;
 }
 
 // Displays the user sign-in view controller using the available base
-// controller. First run requires an additional transitional fade animation when
-// presenting this view.
+// controller if the orientation is supported. First run requires an additional
+// transitional fade animation when presenting this view.
+// If the orientation is not supported, the view controller is not displayed
+// and the coordinator is aborted using `SigninCoordinatorResultInterrupted`.
 - (void)presentUserSigninViewController {
   // Always set the -UIViewController.modalPresentationStyle before accessing
   // -UIViewController.presentationController.
@@ -433,23 +435,25 @@ using signin_metrics::PromoAction;
       UIInterfaceOrientation orientation = GetInterfaceOrientation();
       NSUInteger supportedOrientationsMask =
           [self.viewController supportedInterfaceOrientations];
-      if (!((1 << orientation) & supportedOrientationsMask)) {
-        SigninCompletionInfo* completionInfo = [SigninCompletionInfo
-            signinCompletionInfoWithIdentity:self.unifiedConsentCoordinator
-                                                 .selectedIdentity];
-        [self runCompletionCallbackWithSigninResult:
-                  SigninCoordinatorResultInterrupted
-                                     completionInfo:completionInfo];
-        return;
+      BOOL isOrientationSupported =
+          ((1 << orientation) & supportedOrientationsMask) != 0;
+      if (isOrientationSupported) {
+        break;
       }
-      [self presentUserViewControllerToBaseViewController];
-      break;
+      SigninCompletionInfo* completionInfo =
+          [SigninCompletionInfo signinCompletionInfoWithIdentity:nil];
+      // The view controller has never been presented. We can call
+      // -[UserSigninCoordinator
+      // viewControllerDismissedWithResult:completionInfo].
+      [self viewControllerDismissedWithResult:SigninCoordinatorResultInterrupted
+                               completionInfo:completionInfo];
+      return;
     }
     case UserSigninIntentSignin: {
-      [self presentUserViewControllerToBaseViewController];
       break;
     }
   }
+  [self presentUserViewControllerToBaseViewController];
 }
 
 // Presents `self.viewController`.

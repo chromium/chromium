@@ -249,7 +249,9 @@ using signin_metrics::PromoAction;
   DCHECK(((signinResult == SigninCoordinatorResultSuccess) &&
           completionInfo.identity) ||
          ((signinResult != SigninCoordinatorResultSuccess) &&
-          !completionInfo.identity));
+          !completionInfo.identity))
+      << "signinResult: " << signinResult
+      << ", identity: " << (completionInfo.identity ? "YES" : "NO");
   // If `self.signinCompletion` is nil, this method has been probably called
   // twice.
   DCHECK(self.signinCompletion);
