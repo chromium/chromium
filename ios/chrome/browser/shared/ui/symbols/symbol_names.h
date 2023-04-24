@@ -153,6 +153,7 @@ extern NSString* const kTabsSymbol;
 extern NSString* const kHighlighterSymbol;
 extern NSString* const kSquareOnSquareDashedSymbol;
 extern NSString* const kDocPlaintext;
+extern NSString* const kFlagSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.
