@@ -77,7 +77,8 @@ void Fence::reportEvent(ScriptState* script_state,
         "fully active");
     return;
   }
-  if (event->eventData().length() > blink::kFencedFrameMaxBeaconLength) {
+  if (event->hasEventData() &&
+      event->eventData().length() > blink::kFencedFrameMaxBeaconLength) {
     exception_state.ThrowSecurityError(
         "The data provided to reportEvent() exceeds the maximum length, which "
         "is 64KB.");
@@ -100,7 +101,7 @@ void Fence::reportEvent(ScriptState* script_state,
   for (const V8FenceReportingDestination& web_destination :
        event->destination()) {
     frame->GetLocalFrameHostRemote().SendFencedFrameReportingBeacon(
-        event->eventData(), event->eventType(),
+        event->getEventDataOr(String{""}), event->eventType(),
         ToPublicDestination(web_destination));
   }
 }
@@ -120,7 +121,8 @@ void Fence::setReportEventDataForAutomaticBeacons(
                       " is not a valid automatic beacon event type.");
     return;
   }
-  if (event->eventData().length() > blink::kFencedFrameMaxBeaconLength) {
+  if (event->hasEventData() &&
+      event->eventData().length() > blink::kFencedFrameMaxBeaconLength) {
     exception_state.ThrowSecurityError(
         "The data provided to setReportEventDataForAutomaticBeacons() exceeds "
         "the maximum length, which is 64KB.");
@@ -144,7 +146,7 @@ void Fence::setReportEventDataForAutomaticBeacons(
     destination_vector.push_back(ToPublicDestination(web_destination));
   }
   frame->GetLocalFrameHostRemote().SetFencedFrameAutomaticBeaconReportEventData(
-      event->eventData(), destination_vector);
+      event->getEventDataOr(String{""}), destination_vector);
 }
 
 HeapVector<Member<FencedFrameConfig>> Fence::getNestedConfigs(

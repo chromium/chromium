@@ -597,9 +597,8 @@ interface LocalFrameHost {
   //
   // A document in a fenced frame can invoke the reportEvent API to request the
   // browser to send `eventData` in a beacon toward the URL registered against
-  // `eventType` by the worklet in registerAdBeacon. Depending on the declared
-  // `destination`, the beacon is sent to either the buyer's or the seller's
-  // registered URL.
+  // `eventType` by the worklet in registerAdBeacon. Please see enum
+  // `ReportingDestination` for egilible reporting entities.
   SendFencedFrameReportingBeacon(string event_data,
                                  string event_type,
                                  ReportingDestination destination);

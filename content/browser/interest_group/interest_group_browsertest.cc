@@ -12608,6 +12608,42 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(network_responder_->HasReceivedRequest());
 }
 
+// Call `setReportEventDataForAutomaticBeacons` without `eventData` field. The
+// beacon should be sent with empty event data.
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupFencedFrameAdComponentAutomaticBeaconBrowserTest,
+    AdComponentFencedFrameNoEventData) {
+  GURL ad_component_url = https_server_->GetURL(
+      "a.test", "/set-header?Supports-Loading-Mode: fenced-frame");
+
+  ASSERT_NO_FATAL_FAILURE(RunAdAuctionAndLoadAdComponent(ad_component_url));
+
+  RenderFrameHostImpl* ad_frame = GetFencedFrameRenderFrameHost(shell());
+  RenderFrameHostImpl* ad_component_frame =
+      GetFencedFrameRenderFrameHost(ad_frame);
+
+  // Set automatic beacon data for ad component without the eventData field.
+  EXPECT_TRUE(ExecJs(ad_component_frame, (R"(
+                        window.fence.setReportEventDataForAutomaticBeacons(
+                          {
+                            eventType: 'reserved.top_navigation',
+                            destination: ['seller']
+                          }
+                        );
+                      )")));
+
+  // Perform a cross-origin `_unfencedTop` navigation.
+  GURL navigation_url = https_server_->GetURL(
+      "b.test", "/set-header?Supports-Loading-Mode: fenced-frame");
+  EXPECT_TRUE(
+      ExecJs(ad_component_frame,
+             JsReplace("window.open($1, '_unfencedTop');", navigation_url)));
+
+  // Expect automatic beacon being sent successfully with empty event data.
+  EXPECT_TRUE(network_responder_->GetRequest()->content.empty());
+  EXPECT_TRUE(network_responder_->HasReceivedRequest());
+}
+
 }  // namespace
 
 }  // namespace content

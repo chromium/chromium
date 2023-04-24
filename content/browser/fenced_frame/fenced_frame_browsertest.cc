@@ -4627,6 +4627,12 @@ class FencedFrameReportEventBrowserTest
     struct Event {
       std::string type;
       std::string reporting_destination;
+      // Optional `eventData` field for reportEvent.
+      // 1. If this is `absl::nullopt`, reportEvent is called without the
+      // `eventData` field.
+      // 2. Otherwise, the event data is the given string appended with the
+      // `navigation_index` of each step.
+      absl::optional<std::string> data;
     };
     struct Destination {
       // The origin for the navigation.
@@ -4635,8 +4641,9 @@ class FencedFrameReportEventBrowserTest
       std::string path;
     };
 
-    // Specifies the reporting destination and event type for reportEvent.
-    Event event{"click", "buyer"};
+    // Specifies the reporting destination, event type and event data for
+    // reportEvent.
+    Event event{"click", "buyer", "click data"};
 
     // The initial navigation destination (may be redirected).
     Destination destination;
@@ -4955,17 +4962,31 @@ class FencedFrameReportEventBrowserTest
       }
 
       // Perform the reportEvent call, with a unique body.
-      const char report_event_script[] = R"(
-          window.fence.reportEvent({
-          eventType: $2,
-          eventData: $2 + ' $1',
-          destination: [$3],
-          });
-      )";
-      EXPECT_TRUE(
-          ExecJs(navigation_target_node,
-                 JsReplace(report_event_script, navigation_index,
-                           step.event.type, step.event.reporting_destination)));
+      if (!step.event.data) {
+        // Call reportEvent without `eventData` field.
+        EXPECT_TRUE(ExecJs(
+            navigation_target_node,
+            JsReplace(R"(
+              window.fence.reportEvent({
+                eventType: $1,
+                destination: [$2]
+              });
+            )",
+                      step.event.type, step.event.reporting_destination)));
+      } else {
+        // Call reportEvent with `eventData`.
+        EXPECT_TRUE(
+            ExecJs(navigation_target_node,
+                   JsReplace(R"(
+              window.fence.reportEvent({
+                eventType: $1,
+                eventData: $3 + ' $4',
+                destination: [$2]
+              });
+            )",
+                             step.event.type, step.event.reporting_destination,
+                             step.event.data.value(), navigation_index)));
+      }
 
       // If relevant, check that the event report succeeded.
       if (step.report_event_result == Step::Result::kSuccess) {
@@ -4994,9 +5015,13 @@ class FencedFrameReportEventBrowserTest
         response.WaitForRequest();
 
         // Verify the request has the correct content.
-        EXPECT_EQ(
-            response.http_request()->content,
-            step.event.type + " " + base::NumberToString(navigation_index));
+        if (!step.event.data) {
+          EXPECT_TRUE(response.http_request()->content.empty());
+        } else {
+          EXPECT_EQ(response.http_request()->content,
+                    step.event.data.value() + " " +
+                        base::NumberToString(navigation_index));
+        }
         // Verify the request contains the eligibility header.
         if (step.expect_attribution_reporting_allowed) {
           EXPECT_EQ(response.http_request()->headers.at(
@@ -5103,6 +5128,22 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
   RunTest(config);
 }
 
+// The `eventData` field of `fence.reportEvent` should be optional.
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
+                       FencedFrameReportEventWithoutEventData) {
+  std::vector<Step> config = {
+      {
+          .is_embedder_initiated = true,
+          .is_opaque = true,
+          .event = {/*type=*/"click", /*reporting_destination=*/"buyer",
+                    /*data=*/absl::nullopt},
+          .destination = {"a.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kSuccess,
+      },
+  };
+  RunTest(config);
+}
+
 // reportEvent shouldn't work if there is no associated reporting metadata with
 // the reporting destination.
 IN_PROC_BROWSER_TEST_F(
@@ -5112,7 +5153,9 @@ IN_PROC_BROWSER_TEST_F(
       {
           .is_embedder_initiated = true,
           .is_opaque = true,
-          .event = {"click", "component-seller"},
+          .event = {/*type=*/"click",
+                    /*reporting_destination=*/"component-seller",
+                    /*data=*/"click data"},
           .destination = {"a.test", "/fenced_frames/title1.html"},
           .report_event_result = Step::Result::kNoDestination,
       },
@@ -5128,7 +5171,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
       {
           .is_embedder_initiated = true,
           .is_opaque = true,
-          .event = {"invalid-event", "buyer"},
+          .event = {/*type=*/"invalid-event", /*reporting_destination=*/"buyer",
+                    /*data=*/"click data"},
           .destination = {"a.test", "/fenced_frames/title1.html"},
           .report_event_result = Step::Result::kNoReportingURL,
       },
@@ -5143,7 +5187,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
       {
           .is_embedder_initiated = true,
           .is_opaque = true,
-          .event = {"click", "seller"},
+          .event = {/*type=*/"click", /*reporting_destination=*/"seller",
+                    /*data=*/"click data"},
           .destination = {"a.test", "/fenced_frames/title1.html"},
           .report_event_result = Step::Result::kInvalidReportingURL,
       },
@@ -6200,8 +6245,11 @@ class FencedFrameAutomaticBeaconBrowserTest
     Destination starting_url;
     Destination navigation_url;
 
-    // The message to be sent as part of the payload.
-    std::string message = "data";
+    // Optional message to be sent as part of the payload.
+    // 1. If this is `absl::nullopt`, `setReportEventDataForAutomaticBeacons()`
+    // is called without the `eventData` field.
+    // 2. Otherwise, the event data is the given string.
+    absl::optional<std::string> message = "data";
 
     // Whether there is a call to `setReportEventDataForAutomaticBeacons()`.
     bool register_beacon_data = true;
@@ -6360,15 +6408,33 @@ class FencedFrameAutomaticBeaconBrowserTest
     ad_frame_observer.WaitForCommit();
 
     if (config.register_beacon_data) {
-      EXPECT_TRUE(ExecJs(
-          ad_frame_root_node,
-          JsReplace("window.fence.setReportEventDataForAutomaticBeacons({"
-                    "eventType: $2,"
-                    "eventData: $1,"
-                    "destination: ['seller', 'buyer']"
-                    "});",
-                    config.message, blink::kFencedFrameTopNavigationBeaconType),
-          ad_frame_execjs_options));
+      if (!config.message) {
+        // Call `setReportEventDataForAutomaticBeacons()` without `eventData`
+        // field.
+        EXPECT_TRUE(
+            ExecJs(ad_frame_root_node,
+                   JsReplace(R"(
+              window.fence.setReportEventDataForAutomaticBeacons({
+                eventType: $1,
+                destination: ['seller', 'buyer']
+              });
+            )",
+                             blink::kFencedFrameTopNavigationBeaconType),
+                   ad_frame_execjs_options));
+      } else {
+        // Call `setReportEventDataForAutomaticBeacons()` with `eventData`.
+        EXPECT_TRUE(ExecJs(ad_frame_root_node,
+                           JsReplace(R"(
+              window.fence.setReportEventDataForAutomaticBeacons({
+                eventType: $1,
+                eventData: $2,
+                destination: ['seller', 'buyer']
+              });
+            )",
+                                     blink::kFencedFrameTopNavigationBeaconType,
+                                     config.message.value()),
+                           ad_frame_execjs_options));
+      }
     }
 
     std::string target;
@@ -6426,7 +6492,11 @@ class FencedFrameAutomaticBeaconBrowserTest
 
     response.WaitForRequest();
     // Verify the request has the correct content.
-    EXPECT_EQ(response.http_request()->content, config.message);
+    if (!config.message) {
+      EXPECT_TRUE(response.http_request()->content.empty());
+    } else {
+      EXPECT_EQ(response.http_request()->content, config.message);
+    }
     // Verify the request contains the eligibility header.
     EXPECT_EQ(
         response.http_request()->headers.at("Attribution-Reporting-Eligible"),
@@ -6475,6 +6545,28 @@ IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest, EmptyMessage) {
       .starting_url = {"a.test", "/fenced_frames/title1.html"},
       .navigation_url = {"b.test", "/fenced_frames/title1.html"},
       .message = "",
+      .expected_success = true,
+  };
+  RunTest(config);
+}
+
+IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest,
+                       HasEventDataField) {
+  Config config = {
+      .starting_url = {"a.test", "/fenced_frames/title1.html"},
+      .navigation_url = {"b.test", "/fenced_frames/title1.html"},
+      .message = "Has event data.",
+      .expected_success = true,
+  };
+  RunTest(config);
+}
+
+IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest,
+                       NoEventDataField) {
+  Config config = {
+      .starting_url = {"a.test", "/fenced_frames/title1.html"},
+      .navigation_url = {"b.test", "/fenced_frames/title1.html"},
+      .message = absl::nullopt,
       .expected_success = true,
   };
   RunTest(config);
