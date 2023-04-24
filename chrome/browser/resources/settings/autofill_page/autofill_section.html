@@ -48,7 +48,9 @@
                 </span>
               </span>
               <iron-icon icon="cr20:cloud-off"
-                  hidden$="[[isInAccountOrSyncable_(item, accountInfo_)]]">
+                  hidden$="[[isInAccountOrSyncable_(item, accountInfo_)]]"
+                  aria-label="$i18n{localAddressIconA11yLabel}"
+                  role="img">
               </iron-icon>
             </div>
             <cr-icon-button class="icon-more-vert address-menu"
