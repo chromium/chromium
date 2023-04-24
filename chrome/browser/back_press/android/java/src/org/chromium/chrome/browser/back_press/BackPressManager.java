@@ -182,11 +182,7 @@ public class BackPressManager implements Destroyable {
     }
 
     private void backPressStateChanged() {
-        boolean intercept = shouldInterceptBackPress();
-        // If not using system back and MINIMIZE_APP_AND_CLOSE_TAB has registered, this must be
-        // true, since MINIMIZE_APP_AND_CLOSE_TAB unconditionally consumes last back press.
-        assert mUseSystemBack || !has(Type.MINIMIZE_APP_AND_CLOSE_TAB) || intercept;
-        mCallback.setEnabled(intercept || !mUseSystemBack);
+        mCallback.setEnabled(shouldInterceptBackPress());
     }
 
     private void handleBackPress() {
