@@ -31,16 +31,16 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
-#include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/protocol/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 namespace {
 
@@ -72,36 +72,37 @@ sync_pb::LocalTrustedVault ReadMD5HashedFile(const base::FilePath& file_path) {
 
   sync_pb::LocalTrustedVault data_proto;
   if (!base::PathExists(file_path)) {
-    RecordTrustedVaultFileReadStatus(
+    trusted_vault::RecordTrustedVaultFileReadStatus(
         TrustedVaultFileReadStatusForUMA::kNotFound);
     return data_proto;
   }
   if (!base::ReadFileToString(file_path, &file_content)) {
-    RecordTrustedVaultFileReadStatus(
+    trusted_vault::RecordTrustedVaultFileReadStatus(
         TrustedVaultFileReadStatusForUMA::kFileReadFailed);
     return data_proto;
   }
   sync_pb::LocalTrustedVaultFileContent file_proto;
   if (!file_proto.ParseFromString(file_content)) {
-    RecordTrustedVaultFileReadStatus(
+    trusted_vault::RecordTrustedVaultFileReadStatus(
         TrustedVaultFileReadStatusForUMA::kFileProtoDeserializationFailed);
     return data_proto;
   }
 
   if (base::MD5String(file_proto.serialized_local_trusted_vault()) !=
       file_proto.md5_digest_hex_string()) {
-    RecordTrustedVaultFileReadStatus(
+    trusted_vault::RecordTrustedVaultFileReadStatus(
         TrustedVaultFileReadStatusForUMA::kMD5DigestMismatch);
     return data_proto;
   }
 
   if (!data_proto.ParseFromString(
           file_proto.serialized_local_trusted_vault())) {
-    RecordTrustedVaultFileReadStatus(
+    trusted_vault::RecordTrustedVaultFileReadStatus(
         TrustedVaultFileReadStatusForUMA::kDataProtoDeserializationFailed);
     return data_proto;
   }
-  RecordTrustedVaultFileReadStatus(TrustedVaultFileReadStatusForUMA::kSuccess);
+  trusted_vault::RecordTrustedVaultFileReadStatus(
+      TrustedVaultFileReadStatusForUMA::kSuccess);
   return data_proto;
 }
 
@@ -538,7 +539,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
     per_user_vault->set_gaia_id(primary_account->gaia);
   }
   if (base::FeatureList::IsEnabled(
-          kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling)) {
+          syncer::kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling)) {
     degraded_recoverability_handler_ =
         std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(
             connection_.get(), /*delegate=*/this, primary_account_.value(),
@@ -568,7 +569,8 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
     base::UmaHistogramBoolean(
         "Sync.TrustedVaultDeviceRegistered",
         per_user_vault->local_device_registration_info().device_registered());
-    RecordTrustedVaultDeviceRegistrationState(*registration_state);
+    trusted_vault::RecordTrustedVaultDeviceRegistrationState(
+        *registration_state);
 
     // If the local state indicates that the device is already registered and
     // there is no ongoing re-registration attempt, and behind a feature toggle,
@@ -577,7 +579,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
     if (*registration_state ==
             TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV1 &&
         base::FeatureList::IsEnabled(
-            kSyncTrustedVaultVerifyDeviceRegistration)) {
+            syncer::kSyncTrustedVaultVerifyDeviceRegistration)) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(
@@ -643,7 +645,7 @@ void StandaloneTrustedVaultBackend::GetIsRecoverabilityDegraded(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> cb) {
   if (base::FeatureList::IsEnabled(
-          kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling)) {
+          syncer::kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling)) {
     if (account_info == primary_account_) {
       degraded_recoverability_handler_->GetIsRecoverabilityDegraded(
           std::move(cb));
@@ -939,7 +941,7 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
   // `kAlreadyRegistered`.
   DCHECK(!per_user_vault->local_device_registration_info()
               .last_registration_returned_local_data_obsolete());
-  RecordTrustedVaultDeviceRegistrationOutcome(
+  trusted_vault::RecordTrustedVaultDeviceRegistrationOutcome(
       GetDeviceRegistrationOutcomeForUMAFromResponse(status));
   switch (status) {
     case TrustedVaultRegistrationStatus::kSuccess:
@@ -1095,7 +1097,7 @@ void StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded(
 
   std::move(cb).Run();
   if (base::FeatureList::IsEnabled(
-          kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling)) {
+          syncer::kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling)) {
     degraded_recoverability_handler_->HintDegradedRecoverabilityChanged(
         TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA::
             kRecoveryMethodAdded);
@@ -1120,8 +1122,8 @@ void StandaloneTrustedVaultBackend::FulfillOngoingFetchKeys(
         per_user_vault->local_device_registration_info().device_registered() &&
         per_user_vault->local_device_registration_info()
                 .device_registered_version() == 1;
-    RecordTrustedVaultDownloadKeysStatus(*status_for_uma,
-                                         also_log_with_v1_suffix);
+    trusted_vault::RecordTrustedVaultDownloadKeysStatus(
+        *status_for_uma, also_log_with_v1_suffix);
   }
 
   std::vector<std::vector<uint8_t>> vault_keys;
@@ -1146,7 +1148,7 @@ bool StandaloneTrustedVaultBackend::AreConnectionRequestsThrottled() {
   DCHECK(per_user_vault);
 
   const base::Time current_time = clock_->Now();
-  base::Time last_failed_request_time = ProtoTimeToTime(
+  base::Time last_failed_request_time = syncer::ProtoTimeToTime(
       per_user_vault->last_failed_request_millis_since_unix_epoch());
 
   // Fix |last_failed_request_time| if it's set to the future.
@@ -1165,7 +1167,7 @@ void StandaloneTrustedVaultBackend::
 
   FindUserVault(primary_account_->gaia)
       ->set_last_failed_request_millis_since_unix_epoch(
-          TimeToProtoTime(clock_->Now()));
+          syncer::TimeToProtoTime(clock_->Now()));
   WriteDataToDisk();
 }
 
@@ -1215,7 +1217,7 @@ void StandaloneTrustedVaultBackend::VerifyDeviceRegistrationForUMA(
 
   if (AreConnectionRequestsThrottled()) {
     // Keys download attempt is not possible.
-    RecordVerifyRegistrationStatus(
+    trusted_vault::RecordVerifyRegistrationStatus(
         TrustedVaultDownloadKeysStatusForUMA::kThrottledClientSide,
         also_log_with_v1_suffix);
     return;
@@ -1226,7 +1228,7 @@ void StandaloneTrustedVaultBackend::VerifyDeviceRegistrationForUMA(
           ProtoStringToBytes(per_user_vault->local_device_registration_info()
                                  .private_key_material()));
   if (!key_pair) {
-    RecordVerifyRegistrationStatus(
+    trusted_vault::RecordVerifyRegistrationStatus(
         TrustedVaultDownloadKeysStatusForUMA::kCorruptedLocalDeviceRegistration,
         also_log_with_v1_suffix);
     return;
@@ -1247,7 +1249,7 @@ void StandaloneTrustedVaultBackend::VerifyDeviceRegistrationForUMA(
              TrustedVaultDownloadKeysStatus status,
              const std::vector<std::vector<uint8_t>>& new_vault_keys,
              int last_vault_key_version) {
-            RecordVerifyRegistrationStatus(
+            trusted_vault::RecordVerifyRegistrationStatus(
                 GetDownloadKeysStatusForUMAFromResponse(status),
                 also_log_with_v1_suffix);
           },
@@ -1258,4 +1260,4 @@ void StandaloneTrustedVaultBackend::WriteDataToDisk() {
   WriteMD5HashedFileToDisk(data_, md5_hashed_file_path_);
 }
 
-}  // namespace syncer
+}  // namespace trusted_vault

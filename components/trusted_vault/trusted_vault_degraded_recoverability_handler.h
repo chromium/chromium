@@ -11,15 +11,15 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
 
 namespace sync_pb {
 class LocalTrustedVaultDegradedRecoverabilityState;
 enum DegradedRecoverabilityValue : int;
 }  // namespace sync_pb
 
-namespace syncer {
+namespace trusted_vault {
 // Refreshs the degraded recoverability state by scheduling the requests based
 // on the current state, heuristics and last refresh time.
 class TrustedVaultDegradedRecoverabilityHandler {
@@ -86,6 +86,6 @@ class TrustedVaultDegradedRecoverabilityHandler {
       pending_get_is_recoverability_degraded_callback_;
 };
 
-}  // namespace syncer
+}  // namespace trusted_vault
 
 #endif  // COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_DEGRADED_RECOVERABILITY_HANDLER_H_

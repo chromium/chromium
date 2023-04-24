@@ -23,7 +23,7 @@
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 namespace {
 
@@ -407,4 +407,4 @@ TrustedVaultConnectionImpl::GetOrCreateURLLoaderFactory() {
   return url_loader_factory_;
 }
 
-}  // namespace syncer
+}  // namespace trusted_vault

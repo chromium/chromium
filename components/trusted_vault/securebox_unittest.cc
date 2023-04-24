@@ -17,7 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 namespace {
 
@@ -319,4 +319,4 @@ TEST_F(SecureBoxTest, ShouldDecryptTestVectorsInSymmetricMode) {
 
 }  // namespace
 
-}  // namespace syncer
+}  // namespace trusted_vault

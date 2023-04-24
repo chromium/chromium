@@ -12,11 +12,11 @@
 #include "base/timer/timer.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
-#include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/protocol/local_trusted_vault.pb.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 namespace {
 
@@ -63,9 +63,9 @@ TrustedVaultDegradedRecoverabilityHandler::
       degraded_recoverability_state.degraded_recoverability_value();
   if (degraded_recoverability_state
           .has_last_refresh_time_millis_since_unix_epoch()) {
-    base::Time last_refresh_time =
-        ProtoTimeToTime(degraded_recoverability_state
-                            .last_refresh_time_millis_since_unix_epoch());
+    base::Time last_refresh_time = syncer::ProtoTimeToTime(
+        degraded_recoverability_state
+            .last_refresh_time_millis_since_unix_epoch());
     if (base::Time::Now() >= last_refresh_time) {
       last_refresh_time_ =
           base::TimeTicks::Now() - (base::Time::Now() - last_refresh_time);
@@ -73,9 +73,9 @@ TrustedVaultDegradedRecoverabilityHandler::
   }
 
   long_degraded_recoverability_refresh_period_ =
-      kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get();
+      syncer::kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get();
   short_degraded_recoverability_refresh_period_ =
-      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get();
+      syncer::kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get();
   UpdateCurrentRefreshPeriod();
 }
 
@@ -86,7 +86,8 @@ void TrustedVaultDegradedRecoverabilityHandler::
     HintDegradedRecoverabilityChanged(
         TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA reason) {
   if (next_refresh_timer_.IsRunning()) {
-    RecordTrustedVaultHintDegradedRecoverabilityChangedReason(reason);
+    trusted_vault::RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
+        reason);
     next_refresh_timer_.FireNow();
   }
 }
@@ -172,4 +173,4 @@ void TrustedVaultDegradedRecoverabilityHandler::
       &TrustedVaultDegradedRecoverabilityHandler::Refresh);
 }
 
-}  // namespace syncer
+}  // namespace trusted_vault

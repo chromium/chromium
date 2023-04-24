@@ -19,7 +19,7 @@ class PendingSharedURLLoaderFactory;
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace syncer {
+namespace trusted_vault {
 
 // This class is created on UI thread and used/destroyed on trusted vault
 // backend thread.
@@ -93,6 +93,6 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
   GURL trusted_vault_service_url_;
 };
 
-}  // namespace syncer
+}  // namespace trusted_vault
 
 #endif  // COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_CONNECTION_IMPL_H_

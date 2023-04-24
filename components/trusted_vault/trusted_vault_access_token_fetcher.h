@@ -16,7 +16,7 @@ namespace signin {
 struct AccessTokenInfo;
 }  // namespace signin
 
-namespace syncer {
+namespace trusted_vault {
 
 // Allows asynchronous OAuth2 access token fetching from sequences other than
 // the UI thread.
@@ -53,6 +53,6 @@ class TrustedVaultAccessTokenFetcher {
   virtual std::unique_ptr<TrustedVaultAccessTokenFetcher> Clone() = 0;
 };
 
-}  // namespace syncer
+}  // namespace trusted_vault
 
 #endif  // COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_ACCESS_TOKEN_FETCHER_H_

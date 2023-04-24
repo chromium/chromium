@@ -285,7 +285,7 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
           identity_manager));
 #else
   trusted_vault_client_ =
-      std::make_unique<syncer::StandaloneTrustedVaultClient>(
+      std::make_unique<trusted_vault::StandaloneTrustedVaultClient>(
           profile_->GetPath().Append(kTrustedVaultFilename),
           profile_->GetPath().Append(kDeprecatedTrustedVaultFilename),
           identity_manager,

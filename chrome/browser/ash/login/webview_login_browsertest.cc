@@ -643,7 +643,9 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithSyncTrustedVaultEnabled,
   fake_gaia_keys.encryption_key_version = 91;
   // Create a random-but-valid public key, the precisely value is not relevant.
   fake_gaia_keys.trusted_public_keys.push_back(
-      syncer::SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes());
+      trusted_vault::SecureBoxKeyPair::GenerateRandom()
+          ->public_key()
+          .ExportToBytes());
   fake_gaia_.fake_gaia()->SetSyncTrustedVaultKeys(FakeGaiaMixin::kFakeUserEmail,
                                                   fake_gaia_keys);
 
@@ -699,7 +701,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithSyncTrustedVaultEnabled,
   {
     base::RunLoop loop;
     std::vector<uint8_t> actual_public_key;
-    static_cast<syncer::StandaloneTrustedVaultClient*>(
+    static_cast<trusted_vault::StandaloneTrustedVaultClient*>(
         sync_service->GetSyncClientForTest()->GetTrustedVaultClient())
         ->GetLastAddedRecoveryMethodPublicKeyForTesting(
             base::BindLambdaForTesting([&](const std::vector<uint8_t>& key) {

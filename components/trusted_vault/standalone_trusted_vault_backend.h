@@ -17,10 +17,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/protocol/local_trusted_vault.pb.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_degraded_recoverability_handler.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -32,7 +32,7 @@ namespace signin {
 struct AccountsInCookieJarInfo;
 }  // namespace signin
 
-namespace syncer {
+namespace trusted_vault {
 
 // Provides interfaces to store/remove keys to/from file storage.
 // This class performs expensive operations and expected to be run from
@@ -318,6 +318,6 @@ class StandaloneTrustedVaultBackend
       pending_get_is_recoverability_degraded_;
 };
 
-}  // namespace syncer
+}  // namespace trusted_vault
 
 #endif  // COMPONENTS_TRUSTED_VAULT_STANDALONE_TRUSTED_VAULT_BACKEND_H_

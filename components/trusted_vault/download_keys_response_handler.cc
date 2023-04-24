@@ -16,7 +16,7 @@
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 namespace {
 
@@ -237,4 +237,4 @@ DownloadKeysResponseHandler::ProcessResponse(
                            /*last_key_version=*/new_keys.back().version);
 }
 
-}  // namespace syncer
+}  // namespace trusted_vault

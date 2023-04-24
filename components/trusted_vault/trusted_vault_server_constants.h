@@ -12,7 +12,7 @@
 #include "base/containers/span.h"
 #include "url/gurl.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 inline constexpr int kUnknownConstantKeyVersion = 0;
 
@@ -41,6 +41,6 @@ GURL GetFullGetSecurityDomainMemberURLForTesting(
     base::span<const uint8_t> public_key);
 GURL GetFullGetSecurityDomainURLForTesting(const GURL& server_url);
 
-}  // namespace syncer
+}  // namespace trusted_vault
 
 #endif  // COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_SERVER_CONSTANTS_H_

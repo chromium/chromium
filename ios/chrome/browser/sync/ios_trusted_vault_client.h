@@ -72,7 +72,7 @@ class IOSTrustedVaultClient : public syncer::TrustedVaultClient {
 
   const base::raw_ptr<ChromeAccountManagerService> account_manager_service_;
   const base::raw_ptr<TrustedVaultClientBackend> backend_;
-  syncer::TrustedVaultRegistrationVerifier registration_verifier_;
+  trusted_vault::TrustedVaultRegistrationVerifier registration_verifier_;
   base::WeakPtrFactory<IOSTrustedVaultClient> weak_ptr_factory_{this};
 };
 

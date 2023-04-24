@@ -11,7 +11,7 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 namespace {
 const char kCryptAuthOAuth2Scope[] =
@@ -118,4 +118,4 @@ void TrustedVaultAccessTokenFetcherFrontend::FulfillPendingRequests(
   pending_requests_.clear();
 }
 
-}  // namespace syncer
+}  // namespace trusted_vault

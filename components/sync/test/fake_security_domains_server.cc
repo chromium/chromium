@@ -12,7 +12,7 @@
 #include "components/trusted_vault/trusted_vault_crypto.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 namespace {
 
@@ -444,4 +444,4 @@ FakeSecurityDomainsServer::HandleGetSecurityDomainRequest(
   return response;
 }
 
-}  // namespace syncer
+}  // namespace trusted_vault

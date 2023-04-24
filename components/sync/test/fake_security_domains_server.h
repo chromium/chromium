@@ -19,7 +19,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 // Mimics behavior of the security domains server. This class is designed to be
 // used with EmbeddedTestServer via registration of HandleRequest() method.
@@ -127,6 +127,6 @@ class FakeSecurityDomainsServer {
   const scoped_refptr<base::ObserverListThreadSafe<Observer>> observers_;
 };
 
-}  // namespace syncer
+}  // namespace trusted_vault
 
 #endif  // COMPONENTS_SYNC_TEST_FAKE_SECURITY_DOMAINS_SERVER_H_

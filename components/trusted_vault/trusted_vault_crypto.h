@@ -11,7 +11,7 @@
 #include "components/trusted_vault/securebox.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace syncer {
+namespace trusted_vault {
 
 class SecureBoxPrivateKey;
 class SecureBoxPublicKey;
@@ -49,6 +49,6 @@ bool VerifyRotationProof(const std::vector<uint8_t>& trusted_vault_key,
                          const std::vector<uint8_t>& prev_trusted_vault_key,
                          const std::vector<uint8_t>& rotation_proof);
 
-}  // namespace syncer
+}  // namespace trusted_vault
 
 #endif  // COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_CRYPTO_H_
