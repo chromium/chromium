@@ -28,7 +28,6 @@ import {UserUtilMixin} from './user_utils_mixin.js';
 
 export interface SettingsSectionElement {
   $: {
-    addShortcutBanner: CrLinkRowElement,
     autosigninToggle: PrefToggleButtonElement,
     blockedSitesList: HTMLElement,
     passwordToggle: PrefToggleButtonElement,
@@ -87,6 +86,13 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
       trustedVaultBannerState_: {
         type: Object,
         value: TrustedVaultBannerState.NOT_SHOWN,
+      },
+
+      canAddShortcut_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('canAddShortcut');
+        },
       },
     };
   }

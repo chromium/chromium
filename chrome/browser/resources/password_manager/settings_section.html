@@ -97,10 +97,12 @@
   <template is="dom-if" if="[[hasPasswordsToExport_]]" restamp>
     <passwords-exporter></passwords-exporter>
   </template>
-  <cr-link-row id="addShortcutBanner" class="cr-row settings-cr-link-row"
-      on-click="onAddShortcutClick_" label="$i18n{addShortcut}" hide-icon
-      sub-label="$i18n{addShortcutDescription}" role-description="button">
-  </cr-link-row>
+  <template is="dom-if" if="[[canAddShortcut_]]">
+    <cr-link-row id="addShortcutBanner" class="cr-row settings-cr-link-row"
+        on-click="onAddShortcutClick_" label="$i18n{addShortcut}" hide-icon
+        sub-label="$i18n{addShortcutDescription}" role-description="button">
+    </cr-link-row>
+  </template>
   <if expr="is_win or is_macosx">
     <template is="dom-if" if="[[hasPasskeys_]]" restamp>
       <cr-link-row id="managePasskeysRow" external

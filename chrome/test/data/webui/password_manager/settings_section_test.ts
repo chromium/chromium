@@ -251,13 +251,29 @@ suite('SettingsSectionTest', function() {
 
   // Add Shortcut banner is shown and clickable.
   test('showAddShortcutBanner', async function() {
+    loadTimeData.overrideValues({canAddShortcut: true});
+
     const settings = document.createElement('settings-section');
     document.body.appendChild(settings);
     await flushTasks();
 
-    assertTrue(isVisible(settings.$.addShortcutBanner));
-    settings.$.addShortcutBanner.click();
+    const addShortcutBanner =
+        settings.shadowRoot!.querySelector<HTMLElement>('#addShortcutBanner');
+    assertTrue(!!addShortcutBanner);
+    assertTrue(isVisible(addShortcutBanner));
+    addShortcutBanner.click();
     await passwordManager.whenCalled('showAddShortcutDialog');
+  });
+
+  // Add Shortcut banner is shown and clickable.
+  test('addShortcutBanner hidden', async function() {
+    loadTimeData.overrideValues({canAddShortcut: false});
+
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    await flushTasks();
+
+    assertFalse(!!settings.shadowRoot!.querySelector('#addShortcutBanner'));
   });
 
   test('import hidden when policy disabled', async function() {

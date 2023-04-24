@@ -18,6 +18,8 @@
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -409,6 +411,11 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
 
   source->AddString("importPasswordsHelpURL",
                     chrome::kPasswordManagerImportLearnMoreURL);
+
+  source->AddBoolean(
+      "canAddShortcut",
+      web_app::WebAppProvider::GetForWebApps(profile) != nullptr &&
+          web_app::AreWebAppsUserInstallable(profile));
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
