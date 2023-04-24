@@ -17,10 +17,20 @@ using ::testing::ElementsAre;
 class RankingClusterFinalizerTest : public ::testing::Test {
  public:
   void SetUp() override {
-    cluster_finalizer_ = std::make_unique<RankingClusterFinalizer>();
+    // Reset config so tests are clean.
+    Config config;
+    SetConfigForTesting(config);
+
+    cluster_finalizer_ = std::make_unique<RankingClusterFinalizer>(
+        ClusteringRequestSource::kJourneysPage);
   }
 
   void TearDown() override { cluster_finalizer_.reset(); }
+
+  void ResetClusterFinalizer(
+      std::unique_ptr<RankingClusterFinalizer> cluster_finalizer) {
+    cluster_finalizer_ = std::move(cluster_finalizer);
+  }
 
   void FinalizeCluster(history::Cluster& cluster) {
     cluster_finalizer_->FinalizeCluster(cluster);
@@ -136,6 +146,31 @@ TEST_F(RankingClusterFinalizerTest, ScoreMultipleVisitsDifferentDurations) {
           testing::VisitResult(10, 0.5))));
 }
 
+TEST_F(
+    RankingClusterFinalizerTest,
+    ScoreTwoVisitsSameURLBookmarkedNtpFlagOnButStillUsesGenericRankingForJourneysPage) {
+  Config config;
+  config.use_ntp_specific_intracluster_ranking = true;
+  SetConfigForTesting(config);
+
+  // Visit2 has the same URL as Visit1.
+  history::ClusterVisit visit = testing::CreateClusterVisit(
+      testing::CreateDefaultAnnotatedVisit(1, GURL("https://bar.com/")));
+  visit.annotated_visit.context_annotations.is_existing_bookmark = true;
+
+  history::ClusterVisit visit2 = testing::CreateClusterVisit(
+      testing::CreateDefaultAnnotatedVisit(2, GURL("https://bar.com/")));
+  visit2.duplicate_visits.push_back(
+      testing::ClusterVisitToDuplicateClusterVisit(visit));
+
+  history::Cluster cluster;
+  cluster.visits = {visit2};
+  FinalizeCluster(cluster);
+  EXPECT_THAT(testing::ToVisitResults({cluster}),
+              ElementsAre(ElementsAre(testing::VisitResult(
+                  2, 1.0, {history::DuplicateClusterVisit{1}}))));
+}
+
 TEST_F(RankingClusterFinalizerTest, ScoreTwoVisitsSameURLBookmarked) {
   // Visit2 has the same URL as Visit1.
   history::ClusterVisit visit = testing::CreateClusterVisit(
@@ -173,6 +208,61 @@ TEST_F(RankingClusterFinalizerTest, ScoreTwoVisitsWithBookmarksAndDuration) {
   EXPECT_THAT(testing::ToVisitResults({cluster}),
               ElementsAre(ElementsAre(testing::VisitResult(1, 1.0),
                                       testing::VisitResult(2, 0.5))));
+}
+
+TEST_F(
+    RankingClusterFinalizerTest,
+    ScoreTwoVisitsWithBookmarksAndDurationNtpButSpecificRankingFlagNotEnabled) {
+  Config config;
+  config.use_ntp_specific_intracluster_ranking = false;
+  SetConfigForTesting(config);
+
+  ResetClusterFinalizer(std::make_unique<RankingClusterFinalizer>(
+      ClusteringRequestSource::kNewTabPage));
+
+  history::ClusterVisit visit = testing::CreateClusterVisit(
+      testing::CreateDefaultAnnotatedVisit(1, GURL("https://bar.com/")));
+  visit.annotated_visit.context_annotations.is_existing_bookmark = true;
+  visit.annotated_visit.visit_row.visit_duration = base::Seconds(20);
+
+  history::ClusterVisit visit2 = testing::CreateClusterVisit(
+      testing::CreateDefaultAnnotatedVisit(2, GURL("https://foo.com/")));
+  visit2.annotated_visit.context_annotations.is_existing_bookmark = true;
+  visit2.annotated_visit.visit_row.visit_duration = base::Seconds(0);
+
+  history::Cluster cluster;
+  cluster.visits = {visit, visit2};
+  FinalizeCluster(cluster);
+  EXPECT_THAT(testing::ToVisitResults({cluster}),
+              ElementsAre(ElementsAre(testing::VisitResult(1, 1.0),
+                                      testing::VisitResult(2, 0.5))));
+}
+
+TEST_F(RankingClusterFinalizerTest,
+       NtpScoreTwoVisitsSameDurationOtherAttributesDontMatter) {
+  Config config;
+  config.use_ntp_specific_intracluster_ranking = true;
+  SetConfigForTesting(config);
+
+  ResetClusterFinalizer(std::make_unique<RankingClusterFinalizer>(
+      ClusteringRequestSource::kNewTabPage));
+
+  history::ClusterVisit visit = testing::CreateClusterVisit(
+      testing::CreateDefaultAnnotatedVisit(1, GURL("https://bar.com/")));
+  visit.annotated_visit.context_annotations.is_existing_bookmark = true;
+  visit.annotated_visit.visit_row.visit_duration = base::Seconds(20);
+
+  history::ClusterVisit visit2 = testing::CreateClusterVisit(
+      testing::CreateDefaultAnnotatedVisit(2, GURL("https://foo.com/")));
+  visit2.annotated_visit.context_annotations.is_existing_bookmark = false;
+  visit2.annotated_visit.visit_row.visit_duration = base::Seconds(20);
+
+  history::Cluster cluster;
+  cluster.visits = {visit, visit2};
+  FinalizeCluster(cluster);
+  EXPECT_THAT(testing::ToVisitResults({cluster}),
+              ElementsAre(ElementsAre(testing::VisitResult(1, 1.0),
+                                      testing::VisitResult(2, 1.0))));
 }
 
 TEST_F(RankingClusterFinalizerTest,

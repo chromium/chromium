@@ -17,6 +17,7 @@
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/search/ntp_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace history_clusters {
@@ -394,6 +395,19 @@ Config::Config() {
   {
     apply_zero_state_filtering =
         base::FeatureList::IsEnabled(internal::kJourneysZeroStateFiltering);
+  }
+
+  // The `kNtpChromeCartInHistoryClusterModule` child params.
+  {
+    use_ntp_specific_intracluster_ranking = GetFieldTrialParamByFeatureAsBool(
+        ntp_features::kNtpChromeCartInHistoryClusterModule,
+        "use_ntp_specific_intracluster_ranking",
+        use_ntp_specific_intracluster_ranking);
+
+    ntp_visit_duration_ranking_weight = GetFieldTrialParamByFeatureAsDouble(
+        ntp_features::kNtpChromeCartInHistoryClusterModule,
+        "ntp_visit_duration_ranking_weight", ntp_visit_duration_ranking_weight);
+    DCHECK_GE(ntp_visit_duration_ranking_weight, 0.0f);
   }
 
   // Lonely features without child params.

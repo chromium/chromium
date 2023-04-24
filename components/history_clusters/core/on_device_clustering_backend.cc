@@ -542,7 +542,8 @@ OnDeviceClusteringBackend::GetClustersForUIOnBackgroundThread(
   std::vector<std::unique_ptr<ClusterFinalizer>> cluster_finalizers;
   cluster_finalizers.push_back(
       std::make_unique<SimilarVisitDeduperClusterFinalizer>());
-  cluster_finalizers.push_back(std::make_unique<RankingClusterFinalizer>());
+  cluster_finalizers.push_back(
+      std::make_unique<RankingClusterFinalizer>(clustering_request_source));
   cluster_finalizers.push_back(std::make_unique<LabelClusterFinalizer>(
       &entity_id_to_entity_metadata_map));
 
@@ -592,7 +593,8 @@ OnDeviceClusteringBackend::GetClusterTriggerabilityOnBackgroundThread(
     // TODO(b/259466296): Remove this block once that path is fully launched.
     cluster_finalizers.push_back(
         std::make_unique<SimilarVisitDeduperClusterFinalizer>());
-    cluster_finalizers.push_back(std::make_unique<RankingClusterFinalizer>());
+    cluster_finalizers.push_back(std::make_unique<RankingClusterFinalizer>(
+        ClusteringRequestSource::kJourneysPage));
     cluster_finalizers.push_back(std::make_unique<LabelClusterFinalizer>(
         &entity_id_to_entity_metadata_map));
   }
