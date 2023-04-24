@@ -14,7 +14,7 @@ namespace extensions_features {
 // Controls the availability of the runtime.getContexts() API.
 BASE_FEATURE(kApiRuntimeGetContexts,
              "ApiRuntimeGetContexts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Other Features

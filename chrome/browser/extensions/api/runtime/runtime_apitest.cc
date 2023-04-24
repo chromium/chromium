@@ -36,7 +36,6 @@
 #include "extensions/browser/offscreen_document_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -612,10 +611,7 @@ IN_PROC_BROWSER_TEST_P(BackgroundPageOnlyRuntimeApiTest,
 
 class RuntimeGetContextsApiTest : public ExtensionApiTest {
  public:
-  RuntimeGetContextsApiTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kApiRuntimeGetContexts);
-  }
+  RuntimeGetContextsApiTest() = default;
   RuntimeGetContextsApiTest(const RuntimeGetContextsApiTest&) = delete;
   RuntimeGetContextsApiTest& operator=(const RuntimeGetContextsApiTest&) =
       delete;
@@ -727,7 +723,6 @@ class RuntimeGetContextsApiTest : public ExtensionApiTest {
   raw_ptr<const Extension, DanglingUntriaged> extension_ = nullptr;
   TestExtensionDir test_dir_;
   ScopedCurrentChannel channel_override_{version_info::Channel::UNKNOWN};
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests retrieving the background service worker context using
