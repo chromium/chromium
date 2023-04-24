@@ -5,8 +5,8 @@
 <p id="description">Tests if tick marks are drawn in the correct positions even when the element has padding. <a href="https://bugs.webkit.org/show_bug.cgi?id=93791">Bug 93791</a></p>
 <input type=range list=foo style="width: 200px; padding: 0 40px;" value=20 />
 <input type=range list=foo dir=rtl style="width: 200px; padding: 0 40px;" value=20 />
-<input type=range list=foo style="-webkit-appearance:slider-vertical; width: 20px; height: 200px; padding: 40px 0;" value=20 />
-<input type=range list=foo dir=rtl style="-webkit-appearance:slider-vertical; width: 20px; height: 200px; padding: 40px 0;" value=20 />
+<input type=range list=foo style="writing-mode: vertical-lr; width: 20px; height: 200px; padding: 40px 0;" value=20 />
+<input type=range list=foo dir=rtl style="writing-mode: vertical-lr; width: 20px; height: 200px; padding: 40px 0;" value=20 />
 <datalist id=foo>
     <option>0</option>
     <option>10</option>

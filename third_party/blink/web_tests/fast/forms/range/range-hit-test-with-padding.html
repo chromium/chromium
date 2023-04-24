@@ -8,8 +8,8 @@
 <div id="console"></div>
 <input id="ltr" type=range min=0 max=50 step=1 value="0" style="width: 100px; padding: 0 40px;">
 <input id="rtl" dir="rtl" type=range min=0 max=50 step=1 value="0" style="width: 100px; padding: 0 40px;">
-<input id="vertical_ltr" type=range min=0 max=50 step=1 value="0" style="-webkit-appearance:slider-vertical; width: 20px; height: 100px; padding: 40px 0;">
-<input id="vertical_rtl" dir="rtl" type=range min=0 max=50 step=1 value="0" style="-webkit-appearance:slider-vertical; width: 20px; height: 100px; padding: 40px 0;">
+<input id="vertical_ltr" type=range min=0 max=50 step=1 value="0" style="writing-mode: vertical-lr; width: 20px; height: 100px; padding: 40px 0;">
+<input id="vertical_rtl" dir="rtl" type=range min=0 max=50 step=1 value="0" style="writing-mode: vertical-lr; width: 20px; height: 100px; padding: 40px 0;">
 <script>
 function clickHorizontalSlider(input, offsetLeft) {
     var centerY = input.offsetTop + input.offsetHeight / 2;
