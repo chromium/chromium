@@ -180,24 +180,20 @@ void DispatchOnTestSuiteSkipCheck(DevToolsWindow* window,
                                   const char* method,
                                   T... args) {
   WebContents* wc = DevToolsWindowTesting::Get(window)->main_web_contents();
-  std::string result;
   const char* args_array[] = {method, args...};
   std::ostringstream script;
   script << "uiTests.dispatchOnTestSuite([";
   for (size_t i = 0; i < std::size(args_array); ++i)
     script << (i ? "," : "") << '\"' << args_array[i] << '\"';
   script << "])";
-  ASSERT_TRUE(
-      content::ExecuteScriptAndExtractString(wc, script.str(), &result));
-  EXPECT_EQ("[OK]", result);
+  EXPECT_EQ("[OK]", content::EvalJs(wc, script.str(),
+                                    content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
 void LoadLegacyFilesInFrontend(DevToolsWindow* window) {
-  std::string result;
   WebContents* wc = DevToolsWindowTesting::Get(window)->main_web_contents();
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      wc, "uiTests.setupLegacyFilesForTest();", &result));
-  ASSERT_EQ("[OK]", result);
+  ASSERT_EQ("[OK]", content::EvalJs(wc, "uiTests.setupLegacyFilesForTest();",
+                                    content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
 template <typename... T>
@@ -3093,14 +3089,11 @@ namespace {
 class DevToolsLocalizationTest : public DevToolsTest {
  public:
   bool NavigatorLanguageMatches(const std::string& expected_locale) {
-    bool result = false;
-    const bool execute_result = content::ExecuteScriptAndExtractBool(
-        main_web_contents(),
-        "window.domAutomationController.send(window.navigator.language === "
-        "'" +
-            expected_locale + "')",
-        &result);
-    return execute_result && result;
+    return content::EvalJs(main_web_contents(),
+                           "window.navigator.language === "
+                           "'" +
+                               expected_locale + "'")
+        .ExtractBool();
   }
 };
 
