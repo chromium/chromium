@@ -38,6 +38,9 @@ void FinalizeNewProfileSetup(Profile* profile,
   CHECK(entry);
   CHECK(!profile_name.empty());
 
+  // We don't expect this to be run for profiles where the user already had a
+  // chance to set a custom profile name.
+  DCHECK(entry->IsUsingDefaultName());
   entry->SetLocalProfileName(profile_name, is_default_name);
 
   if (!entry->IsOmitted()) {

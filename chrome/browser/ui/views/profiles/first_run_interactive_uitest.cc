@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/signin/profile_customization_util.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/startup/first_run_test_util.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_interactive_uitest_base.h"
@@ -36,10 +38,23 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !BUILDFLAG(ENABLE_DICE_SUPPORT)
 #error "Unsupported platform"
 #endif
+
+namespace {
+
+void FillNonCoreInfo(AccountInfo& account_info, const std::string& given_name) {
+  account_info.given_name = given_name;
+  account_info.full_name = base::StrCat({given_name, " Doe"});
+  account_info.locale = "en";
+  account_info.picture_url = base::StrCat({"https://picture.url/", given_name});
+  account_info.hosted_domain = kNoHostedDomainFound;
+}
+
+}  // namespace
 
 class FirstRunInteractiveUiTest
     : public FirstRunServiceBrowserTestBase,
@@ -49,6 +64,9 @@ class FirstRunInteractiveUiTest
   ~FirstRunInteractiveUiTest() override = default;
 
  protected:
+  const std::string kTestGivenName = "Joe";
+  const std::string kTestEmail = "joe.consumer@gmail.com";
+
   // FirstRunServiceBrowserTestBase:
   void SetUpInProcessBrowserTestFixture() override {
     FirstRunServiceBrowserTestBase::SetUpInProcessBrowserTestFixture();
@@ -65,11 +83,16 @@ class FirstRunInteractiveUiTest
     return url_loader_factory_helper_.test_url_loader_factory();
   }
 
-  void SimulateSignInAndWaitForSyncOptInPage() {
+  void SimulateSignInAndWaitForSyncOptInPage(
+      const std::string& account_email,
+      const std::string& account_given_name) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
     AccountInfo account_info = signin::MakeAccountAvailableWithCookies(
-        identity_manager, test_url_loader_factory(), "joe.consumer@gmail.com",
-        signin::GetTestGaiaIdForEmail("joe.consumer@gmail.com"));
+        identity_manager, test_url_loader_factory(), account_email,
+        signin::GetTestGaiaIdForEmail(account_email));
+    FillNonCoreInfo(account_info, account_given_name);
+    ASSERT_TRUE(account_info.IsValid());
+
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
     WaitForLoadStop(AppendSyncConfirmationQueryParams(
         GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow));
@@ -93,6 +116,8 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, CloseWindow) {
   SendCloseWindowKeyboardCommand();
   WaitForPickerClosed();
   EXPECT_EQ(kForYouFreCloseShouldProceed.Get(), proceed_future.Get());
+
+  ASSERT_TRUE(IsProfileNameDefault());
 
   // Checking the expected metrics from this flow.
   histogram_tester.ExpectUniqueSample(
@@ -130,6 +155,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, SignInAndSync) {
   base::test::TestFuture<bool> proceed_future;
   base::HistogramTester histogram_tester;
 
+  ASSERT_TRUE(IsProfileNameDefault());
   ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
   fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
                                       proceed_future.GetCallback());
@@ -152,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, SignInAndSync) {
       "Signin.SignIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
 
-  SimulateSignInAndWaitForSyncOptInPage();
+  SimulateSignInAndWaitForSyncOptInPage(kTestEmail, kTestGivenName);
 
   histogram_tester.ExpectUniqueSample(
       "Signin.SignIn.Completed",
@@ -174,6 +200,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, SignInAndSync) {
 
   EXPECT_TRUE(GetFirstRunFinishedPrefValue());
   EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());
+  EXPECT_EQ(base::ASCIIToUTF16(kTestGivenName), GetProfileName());
 
   // Re-assessment of all metrics from this flow, and check for no
   // double-logs.
@@ -201,6 +228,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, DeclineSync) {
   base::test::TestFuture<bool> proceed_future;
   base::HistogramTester histogram_tester;
 
+  ASSERT_TRUE(IsProfileNameDefault());
   fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
                                       proceed_future.GetCallback());
 
@@ -211,13 +239,15 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, DeclineSync) {
       web_contents()->GetURL(), "continueWithAccount", base::Value::List());
   WaitForLoadStop(GetSigninChromeSyncDiceUrl());
 
-  SimulateSignInAndWaitForSyncOptInPage();
+  SimulateSignInAndWaitForSyncOptInPage(kTestEmail, kTestGivenName);
 
   LoginUIServiceFactory::GetForProfile(profile())->SyncConfirmationUIClosed(
       LoginUIService::ABORT_SYNC);
   WaitForPickerClosed();
 
   EXPECT_TRUE(proceed_future.Get());
+
+  EXPECT_EQ(base::ASCIIToUTF16(kTestGivenName), GetProfileName());
 
   // Checking the expected metrics from this flow.
   histogram_tester.ExpectUniqueSample(
@@ -272,6 +302,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, MAYBE_PeekAndDeclineSignIn) {
   base::HistogramTester histogram_tester;
   base::test::TestFuture<bool> proceed_future;
 
+  ASSERT_TRUE(IsProfileNameDefault());
   ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
   fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
                                       proceed_future.GetCallback());
@@ -321,6 +352,8 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, MAYBE_PeekAndDeclineSignIn) {
   EXPECT_EQ(true, EvalJsInPickerContents(kClickDontSignInScript));
   WaitForPickerClosed();
   EXPECT_EQ(kForYouFreCloseShouldProceed.Get(), proceed_future.Get());
+
+  ASSERT_TRUE(IsProfileNameDefault());
 
   // Checking the expected metrics from this flow.
   histogram_tester.ExpectUniqueSample(

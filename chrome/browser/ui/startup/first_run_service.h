@@ -20,6 +20,7 @@
 class PrefRegistrySimple;
 class Profile;
 class SilentSyncEnabler;
+class ProfileNameResolver;
 
 namespace base {
 class FeatureList;
@@ -53,6 +54,18 @@ class FirstRunService : public KeyedService {
     kWebAppContextMenu = 3,
 
     kMaxValue = kWebAppContextMenu
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class FinishedReason {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    kExperimentCounterfactual = 0,
+#endif
+    kFinishedFlow = 1,
+    kProfileAlreadySetUp = 2,
+    kSkippedByPolicies = 3,
+    kMaxValue = kSkippedByPolicies,
   };
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -150,6 +163,14 @@ class FirstRunService : public KeyedService {
   // Processes the outcome from the FRE and resumes the user's interrupted task.
   void OnFirstRunHasExited(ProfilePicker::FirstRunExitStatus status);
 
+  // Marks the first run as finished and updates the profile entry based on
+  // the info obtained during the first run.
+  // Noting that the latter part is done by calling `FinishProfileSetUp()`,
+  // which will be done asynchronously in most cases.
+  void FinishFirstRun(FinishedReason reason);
+
+  void FinishProfileSetUp(std::u16string profile_name);
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void StartSilentSync(base::OnceClosure callback);
   void ClearSilentSyncEnabler();
@@ -162,7 +183,10 @@ class FirstRunService : public KeyedService {
   std::unique_ptr<SilentSyncEnabler> silent_sync_enabler_;
 #endif
 
+  std::unique_ptr<ProfileNameResolver> profile_name_resolver_;
+
   ResumeTaskCallback resume_task_callback_;
+
   base::WeakPtrFactory<FirstRunService> weak_ptr_factory_{this};
 };
 

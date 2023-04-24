@@ -190,7 +190,7 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
 
     FinalizeNewProfileSetup(profile_,
                             profiles::GetDefaultNameForNewEnterpriseProfile(),
-                            /*is_default_name=*/true);
+                            /*is_default_name=*/false);
 
     auto continue_callback = PostHostClearedCallback(
         base::BindOnce(&FinishSamlSignInStepController::ContinueSAMLSignin,

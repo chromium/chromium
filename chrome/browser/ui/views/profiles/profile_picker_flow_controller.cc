@@ -231,7 +231,7 @@ class ProfileCreationSignedInFlowController
     profile_name_resolver_.reset();
 
     FinalizeNewProfileSetup(profile(), name_for_signed_in_profile,
-                            /*is_default_name=*/true);
+                            /*is_default_name=*/false);
 
     ProfileMetrics::LogProfileAddNewUser(
         ProfileMetrics::ADD_NEW_PROFILE_PICKER_SIGNED_IN);

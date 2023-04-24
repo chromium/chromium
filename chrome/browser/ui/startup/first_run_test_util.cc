@@ -9,6 +9,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/common/chrome_switches.h"
@@ -46,6 +48,12 @@ bool GetFirstRunFinishedPrefValue() {
   return g_browser_process->local_state()->GetBoolean(prefs::kFirstRunFinished);
 }
 
+// -- FirstRunServiceBrowserTestBase -------------------------------------------
+
+FirstRunServiceBrowserTestBase::FirstRunServiceBrowserTestBase() = default;
+
+FirstRunServiceBrowserTestBase::~FirstRunServiceBrowserTestBase() = default;
+
 void FirstRunServiceBrowserTestBase::SetUpOnMainThread() {
   // We can remove flags and state suppressing the first run only after the
   // browsertest's initial browser is opened. Otherwise we would have to
@@ -64,4 +72,25 @@ Profile* FirstRunServiceBrowserTestBase::profile() const {
 
 FirstRunService* FirstRunServiceBrowserTestBase::fre_service() const {
   return FirstRunServiceFactory::GetForBrowserContext(profile());
+}
+
+std::u16string FirstRunServiceBrowserTestBase::GetProfileName() const {
+  return g_browser_process->profile_manager()
+      ->GetProfileAttributesStorage()
+      .GetProfileAttributesWithPath(profile()->GetPath())
+      ->GetLocalProfileName();
+}
+
+bool FirstRunServiceBrowserTestBase::IsProfileNameDefault() const {
+  auto& storage =
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+  bool is_default = storage.IsDefaultProfileName(
+      GetProfileName(),
+      /*include_check_for_legacy_profile_name=*/false);
+
+  EXPECT_EQ(storage.GetProfileAttributesWithPath(profile()->GetPath())
+                ->IsUsingDefaultName(),
+            is_default);
+
+  return is_default;
 }

@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/ui/signin/profile_customization_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/signin/public/base/signin_buildflags.h"
 
@@ -31,18 +32,38 @@ bool GetFirstRunFinishedPrefValue();
 // `FirstRunService` does not exist yet.
 class FirstRunServiceBrowserTestBase : public InProcessBrowserTest {
  public:
+  FirstRunServiceBrowserTestBase();
+  FirstRunServiceBrowserTestBase(const FirstRunServiceBrowserTestBase&) =
+      delete;
+  FirstRunServiceBrowserTestBase& operator=(
+      const FirstRunServiceBrowserTestBase&) = delete;
+  ~FirstRunServiceBrowserTestBase() override;
+
   void SetUpOnMainThread() override;
 
  protected:
   Profile* profile() const;
-
   FirstRunService* fre_service() const;
+
+  // -- Utilities for checks on the profile state after the first run ----------
+
+  std::u16string GetProfileName() const;
+
+  // Returns whether the profile's name is the default one (e.g. "Person 1").
+  // Also asserts that the name is marked as default (`IsUsingDefaultName`)
+  // according to the pattern of the actual name.
+  bool IsProfileNameDefault() const;
 
  private:
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Only Dice guards the FRE behind a feature flag.
   base::test::ScopedFeatureList scoped_feature_list_{kForYouFre};
 #endif
+
+  ProfileNameResolver::ScopedInfoFetchTimeoutOverride
+      profile_name_fetch_timeout_override_ =
+          ProfileNameResolver::CreateScopedInfoFetchTimeoutOverrideForTesting(
+              base::TimeDelta());
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_FIRST_RUN_TEST_UTIL_H_
