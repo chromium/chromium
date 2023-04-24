@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -65,8 +64,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 }  // namespace
 
-@interface AutofillProfileEditTableViewController () <
-    TableViewTextEditItemDelegate>
+@interface AutofillProfileEditTableViewController ()
 
 // The AutofillProfileEditTableViewControllerDelegate for this ViewController.
 @property(nonatomic, weak) id<AutofillProfileEditTableViewControllerDelegate>
@@ -113,6 +111,9 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 // Points to the save/update button in the modal view.
 @property(nonatomic, strong) TableViewTextButtonItem* modalSaveUpdateButton;
+
+// If YES, denotes that the view is laid out for the migration prompt.
+@property(nonatomic, assign) BOOL migrationPrompt;
 
 @end
 
@@ -270,19 +271,16 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   }
 }
 
-- (void)loadMessageAndButtonForModalIfSaveOrUpdate:(BOOL)update
-                                 orMigrationPrompt:(BOOL)migrationPrompt {
+- (void)loadMessageAndButtonForModalIfSaveOrUpdate:(BOOL)update {
   CHECK(!self.settingsView);
   TableViewModel* model = self.controller.tableViewModel;
-  if (self.accountProfile || migrationPrompt) {
+  if (self.accountProfile || self.migrationPrompt) {
     DCHECK([_userEmail length] > 0);
-    [model addItem:[self footerItemForModalViewIfSaveOrUpdate:update
-                                            orMigrationPrompt:migrationPrompt]
+    [model addItem:[self footerItemForModalViewIfSaveOrUpdate:update]
         toSectionWithIdentifier:SectionIdentifierFields];
   }
 
-  [model addItem:[self saveButtonIfSaveOrUpdate:update
-                              orMigrationPrompt:migrationPrompt]
+  [model addItem:[self saveButtonIfSaveOrUpdate:update]
       toSectionWithIdentifier:SectionIdentifierFields];
 }
 
@@ -299,7 +297,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 }
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
-  if (self.autofillAccountProfilesUnionViewEnabled && self.accountProfile) {
+  if (self.autofillAccountProfilesUnionViewEnabled &&
+      (self.accountProfile || self.migrationPrompt)) {
     [self computeErrorIfRequiredTextField:tableViewItem];
     if (self.settingsView) {
       [self updateDoneButtonStatus];
@@ -328,9 +327,12 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
           base::mac::ObjCCastStrict<TableViewMultiDetailTextItem>(item);
       multiDetailTextItem.trailingDetailText = self.homeAddressCountry;
     } else if ([self isItemTypeTextEditCell:item.type]) {
-      TableViewTextEditItem* tableViewTextEditItem =
-          base::mac::ObjCCastStrict<TableViewTextEditItem>(item);
-      [self computeErrorIfRequiredTextField:tableViewTextEditItem];
+      // No requirement checks for local profiles.
+      if (self.accountProfile || self.migrationPrompt) {
+        TableViewTextEditItem* tableViewTextEditItem =
+            base::mac::ObjCCastStrict<TableViewTextEditItem>(item);
+        [self computeErrorIfRequiredTextField:tableViewTextEditItem];
+      }
     }
     [self.controller reconfigureCellsForItems:@[ item ]];
   }
@@ -533,13 +535,11 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 }
 
 // Returns the footer element for the save/update prompts.
-- (TableViewTextItem*)footerItemForModalViewIfSaveOrUpdate:(BOOL)update
-                                         orMigrationPrompt:
-                                             (BOOL)migrationPrompt {
+- (TableViewTextItem*)footerItemForModalViewIfSaveOrUpdate:(BOOL)update {
   CHECK(!self.settingsView);
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:ItemTypeFooter];
-  if (migrationPrompt) {
+  if (self.migrationPrompt) {
     item.text = l10n_util::GetNSStringF(
         IDS_IOS_AUTOFILL_ADDRESS_MIGRATE_IN_ACCOUNT_FOOTER,
         base::SysNSStringToUTF16(_userEmail));
@@ -555,13 +555,12 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 }
 
 // Returns the button element for the save/update prompts.
-- (TableViewTextButtonItem*)saveButtonIfSaveOrUpdate:(BOOL)update
-                                   orMigrationPrompt:(BOOL)migrationPrompt {
+- (TableViewTextButtonItem*)saveButtonIfSaveOrUpdate:(BOOL)update {
   CHECK(!self.settingsView);
   self.modalSaveUpdateButton =
       [[TableViewTextButtonItem alloc] initWithType:ItemTypeSaveButton];
   self.modalSaveUpdateButton.textAlignment = NSTextAlignmentNatural;
-  if (migrationPrompt) {
+  if (self.migrationPrompt) {
     self.modalSaveUpdateButton.buttonText = l10n_util::GetNSString(
         IDS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_OK_BUTTON_LABEL);
   } else {

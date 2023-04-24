@@ -38,14 +38,16 @@
 
 // Called from the edit profile modal for adding the message and the Save/Update
 // button.
-- (void)loadMessageAndButtonForModalIfSaveOrUpdate:(BOOL)update
-                                 orMigrationPrompt:(BOOL)migrationPrompt;
+- (void)loadMessageAndButtonForModalIfSaveOrUpdate:(BOOL)update;
 
 // Called when the edit button is pressed.
 - (void)editButtonPressed;
 
 // Returns YES if the `cellPath` belongs to a text field.
 - (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath;
+
+// Setter called only for the migration prompt view.
+- (BOOL)setMigrationPrompt:(BOOL)migrationPrompt;
 
 @end
 

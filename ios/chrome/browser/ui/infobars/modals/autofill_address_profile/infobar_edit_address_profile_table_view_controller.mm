@@ -83,10 +83,10 @@
 
 - (void)loadModel {
   [super loadModel];
+  [self.handler setMigrationPrompt:self.migrationPrompt];
   [self.handler loadModel];
   [self.handler
-      loadMessageAndButtonForModalIfSaveOrUpdate:self.isEditForUpdate
-                               orMigrationPrompt:self.migrationPrompt];
+      loadMessageAndButtonForModalIfSaveOrUpdate:self.isEditForUpdate];
 }
 
 #pragma mark - UITableViewDataSource

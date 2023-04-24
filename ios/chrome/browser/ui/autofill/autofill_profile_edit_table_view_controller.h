@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_PROFILE_EDIT_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_PROFILE_EDIT_TABLE_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_consumer.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_handler.h"
@@ -14,7 +15,9 @@
 // The table view shared between the settings and messages UI for the edit
 // functionality.
 @interface AutofillProfileEditTableViewController
-    : NSObject <AutofillProfileEditConsumer, AutofillProfileEditHandler>
+    : NSObject <AutofillProfileEditConsumer,
+                AutofillProfileEditHandler,
+                TableViewTextEditItemDelegate>
 
 // Initializes a AutofillProfileEditTableViewController with passed `delegate`
 // and `userEmail`.
