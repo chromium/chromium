@@ -905,6 +905,8 @@ TextInputMethod::InputContext InputMethodAsh::GetInputContext() const {
   input_context.personalization_mode = client->ShouldDoLearning()
                                            ? PersonalizationMode::kEnabled
                                            : PersonalizationMode::kDisabled;
+  input_context.has_been_password =
+      flags & ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD;
   return input_context;
 }
 
