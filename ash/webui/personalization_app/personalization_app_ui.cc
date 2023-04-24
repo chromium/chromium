@@ -293,6 +293,7 @@ void AddStrings(content::WebUIDataSource* source) {
       {"wallpaperColorDescription",
        IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WALLPAPER_COLOR_DESCRIPTION},
       {"zoneTitle", IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_ZONE_TITLE},
+      {"keyboardZonesTitle", IDS_PERSONALIZATION_APP_KEYBOARD_ZONES_TITLE},
 
       // Google Photos strings
       // TODO(b/229149314): Finalize error and retry strings.

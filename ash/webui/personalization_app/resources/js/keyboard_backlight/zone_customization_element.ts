@@ -17,6 +17,7 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BacklightColor, CurrentBacklightState} from '../../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -99,6 +100,16 @@ export class ZoneCustomizationElement extends WithPersonalizationStore {
         'currentBacklightState_',
         state => state.keyboardBacklight.currentBacklightState);
     this.updateFromStore();
+    // Set focus on the currently selected zone to overwrite the default focus
+    // on the dialog title.
+    afterNextRender(this, () => {
+      const selectedZoneElem =
+          this.shadowRoot!.querySelector('.zone-tab[aria-selected=true]') as
+          HTMLElement;
+      if (selectedZoneElem) {
+        selectedZoneElem.focus();
+      }
+    });
   }
 
   private computeZoneIdxs_(): number[] {
@@ -201,6 +212,16 @@ export class ZoneCustomizationElement extends WithPersonalizationStore {
     // Set only the currently selected zone to be tabbable (tabindex="0") and
     // others are not tabbable (tabindex="-1") by default.
     return zoneIdx === zoneSelected ? '0' : '-1';
+  }
+
+  private getZoneTabListAriaLabel_() {
+    return this.i18n('keyboardZonesTitle');
+  }
+
+  private getZoneColorDescription_(
+      zoneSelected: number, zoneColors: BacklightColor[]): string {
+    const zoneColorId = this.getColorId_(zoneSelected, zoneColors);
+    return zoneColorId ? this.i18n(zoneColorId) : '';
   }
 
   private getZoneAriaSelected_(zoneIdx: number, zoneSelected: number) {

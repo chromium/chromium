@@ -2611,6 +2611,9 @@
         <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_TITLE" desc="Title for the keyboard backlight section of personalization hub.">
           Keyboard backlight
         </message>
+        <message name="IDS_PERSONALIZATION_APP_KEYBOARD_ZONES_TITLE" desc="Title for the keyboard zones in zone customization section of personalization hub.">
+          Keyboard zones
+        </message>
         <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WALLPAPER_COLOR_LABEL" desc="Label for the wallpaper extracted color in the keyboard backlight section of personalization hub.">
           Wallpaper color
         </message>
