@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/containers/adapters.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
@@ -211,7 +210,7 @@ bool IntRangePolicyHandlerBase::EnsureInRange(const base::Value* input,
     if (!clamp_)
       return false;
 
-    value = base::clamp(value, min_, max_);
+    value = std::clamp(value, min_, max_);
   }
 
   if (output)

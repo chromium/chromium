@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
@@ -1183,7 +1182,7 @@ base::TimeDelta Display::GetEstimatedDisplayDrawTime(base::TimeDelta interval,
     // We do not want the deadline adjustmens to exceed a default of 1/3 VSync,
     // as we would not give other processes enough time to produce content. So
     // this would make high latency situations worse.
-    return base::clamp(
+    return std::clamp(
         draw_time_without_scheduling_waits_.Percentile(percentile),
         kMinEstimatedDisplayDrawTime, default_estimate);
   }

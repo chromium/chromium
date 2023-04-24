@@ -4,12 +4,12 @@
 
 #include "components/metrics/clean_exit_beacon.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_string_value_serializer.h"
@@ -143,7 +143,7 @@ void MaybeIncrementCrashStreak(bool did_previous_session_exit_cleanly,
     local_state->SetInteger(kVariationsCrashStreak, num_crashes);
   }
   base::UmaHistogramSparse("Variations.SafeMode.Streak.Crashes",
-                           base::clamp(num_crashes, 0, 100));
+                           std::clamp(num_crashes, 0, 100));
 }
 
 // Records |file_state| in a histogram.

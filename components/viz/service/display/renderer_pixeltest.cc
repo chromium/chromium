@@ -5,11 +5,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <tuple>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/aligned_memory.h"
@@ -5145,9 +5145,9 @@ class ColorTransformPixelTest
       }
       transform->Transform(&color, 1);
       color.Scale(alpha);
-      color.set_x(base::clamp(color.x(), 0.0f, 1.0f));
-      color.set_y(base::clamp(color.y(), 0.0f, 1.0f));
-      color.set_z(base::clamp(color.z(), 0.0f, 1.0f));
+      color.set_x(std::clamp(color.x(), 0.0f, 1.0f));
+      color.set_y(std::clamp(color.y(), 0.0f, 1.0f));
+      color.set_z(std::clamp(color.z(), 0.0f, 1.0f));
       expected_output_colors[i] =
           SkColorSetARGB(255, static_cast<size_t>(255.f * color.x() + 0.5f),
                          static_cast<size_t>(255.f * color.y() + 0.5f),

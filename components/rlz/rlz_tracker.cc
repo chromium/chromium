@@ -11,7 +11,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -289,7 +288,7 @@ bool RLZTracker::Init(bool first_run,
   if (delegate_->ShouldEnableZeroDelayForTesting())
     EnableZeroDelayForTesting();
 
-  delay = base::clamp(delay, min_init_delay_, kMaxInitDelay);
+  delay = std::clamp(delay, min_init_delay_, kMaxInitDelay);
 
   if (delegate_->GetBrand(&brand_) && !delegate_->IsBrandOrganic(brand_)) {
     // Register for notifications from the omnibox so that we can record when

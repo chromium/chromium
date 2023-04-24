@@ -4,10 +4,10 @@
 
 #include "components/services/paint_preview_compositor/paint_preview_compositor_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
@@ -106,8 +106,8 @@ gfx::Rect AdjustClipRect(const gfx::Rect& clip_rect,
 
   // Clamp the x/y to be within the bounds of the picture.
   gfx::Rect out_rect;
-  out_rect.set_x(base::clamp(clip_rect.x(), 0, picture_size.width()));
-  out_rect.set_y(base::clamp(clip_rect.y(), 0, picture_size.height()));
+  out_rect.set_x(std::clamp(clip_rect.x(), 0, picture_size.width()));
+  out_rect.set_y(std::clamp(clip_rect.y(), 0, picture_size.height()));
 
   // Default the width/height to be that of the picture if no value was
   // provided.
