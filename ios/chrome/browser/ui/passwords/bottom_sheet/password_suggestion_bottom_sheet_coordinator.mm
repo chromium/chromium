@@ -51,7 +51,8 @@
     self.viewController = [[PasswordSuggestionBottomSheetViewController alloc]
         initWithHandler:self];
 
-    ChromeBrowserState* browserState = self.browser->GetBrowserState();
+    ChromeBrowserState* browserState =
+        browser->GetBrowserState()->GetOriginalChromeBrowserState();
     _savedPasswordsPresenter =
         std::make_unique<password_manager::SavedPasswordsPresenter>(
             IOSChromeAffiliationServiceFactory::GetForBrowserState(
@@ -64,9 +65,8 @@
     self.mediator = [[PasswordSuggestionBottomSheetMediator alloc]
            initWithWebStateList:browser->GetWebStateList()
                   faviconLoader:IOSChromeFaviconLoaderFactory::
-                                    GetForBrowserState(
-                                        browser->GetBrowserState())
-                    prefService:browser->GetBrowserState()->GetPrefs()
+                                    GetForBrowserState(browserState)
+                    prefService:browserState->GetPrefs()
                          params:params
         savedPasswordsPresenter:_savedPasswordsPresenter.get()];
     self.viewController.delegate = self.mediator;
