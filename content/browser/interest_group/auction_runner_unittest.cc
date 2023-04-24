@@ -3935,6 +3935,61 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency2) {
                                                  /*value=*/180072)))));
 }
 
+// Test of currency handling in a component auction where bid is passed
+// straight through by the component seller.
+TEST_F(AuctionRunnerTest, ComponentAuctionCurrencyPassThrough) {
+  const char kBidScript[] = R"(
+    const inBid = %d;
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      return {bid: inBid, bidCurrency: 'USD',
+              render: interestGroup.ads[0].renderUrl,
+              allowComponentAuction: true};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+    }
+  )";
+
+  const char kDecisionScript[] = R"(
+    const suffix = "%s";
+    function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+                      browserSignals) {
+      if (browserSignals.bidCurrency !== 'USD') {
+        throw 'Wrong bidCurrency in scoreAd() for ' + suffix;
+      }
+      return {desirability: bid,
+              allowComponentAuction: true,
+              ad: adMetadata};
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+    }
+  )";
+
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kComponentSeller1,
+                                    /*bid_from_component_auction_wins=*/true,
+                                    /*report_post_auction_signals=*/true);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         base::StringPrintf(kBidScript, 1));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder2Url,
+                                         base::StringPrintf(kBidScript, 2));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kComponentSeller1Url,
+      base::StringPrintf(kDecisionScript, "component"));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      base::StringPrintf(kDecisionScript, "top-level"));
+  ASSERT_EQ(component_auctions_.size(), 1u);
+
+  RunStandardAuction();
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+}
+
 // Test a component auction where the top level seller rejects all bids. This
 // should fail with kAllBidsRejected instead of kNoBids.
 TEST_F(AuctionRunnerTest, ComponentAuctionTopSellerRejectsBids) {
