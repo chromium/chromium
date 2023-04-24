@@ -25,6 +25,9 @@ export default {
     file: 'lib/iife/mapperTab.js',
     sourcemap: true,
     format: 'iife',
+    globals: {
+      crypto: 'crypto',
+    },
   },
   plugins: [nodeResolve(), commonjs(), terser()],
 };

@@ -66,7 +66,8 @@
         "tsc"
       ],
       "files": [
-        "lib/cjs/bidiMapper/index.js"
+        "lib/cjs/bidiMapper/index.js",
+        "rollup.config.mjs"
       ],
       "output": [
         "lib/iife/mapperTab.js"
