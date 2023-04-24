@@ -49,6 +49,12 @@ chromium-metrics-reviews@google.com.
   <variant name="L2tpIpsec" summary="L2TP/IPsec"/>
 </variants>
 
+<variants name="PhysicalTechnology">
+  <variant name="Cellular" summary="Cellular"/>
+  <variant name="Ethernet" summary="Ethernet"/>
+  <variant name="Wifi" summary="Wifi"/>
+</variants>
+
 <variants name="VPNType">
   <variant name="ARC" summary="Android VPN"/>
   <variant name="Ikev2" summary="IKEv2"/>
@@ -2796,7 +2802,7 @@ chromium-metrics-reviews@google.com.
   <token key="VPNType" variants="IPsecVPNType"/>
 </histogram>
 
-<histogram name="Network.Shill.Vpn.{VPNType}.IPType" enum="VPNIPType"
+<histogram name="Network.Shill.Vpn.{VPNType}.IPType" enum="NetworkIPType"
     expires_after="2023-12-31">
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
@@ -3648,6 +3654,21 @@ chromium-metrics-reviews@google.com.
     ChromeOS network performance metric that tracks the result of user-initiated
     WiFi connection attempts.
   </summary>
+</histogram>
+
+<histogram name="Network.Shill.{Technology}.IPType" enum="NetworkIPType"
+    expires_after="2023-12-31">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted after a {Technology} connection has
+    been connected for 30 seconds, to track the IP type on this connection. Wait
+    for 30 seconds because IPv4 and IPv6 configuration are usually provisioned
+    at different time. Note that no metric will be emitted if the duration of
+    the connection is shorter than 30 seconds.
+  </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
 </histogram>
 
 <histogram name="Network.Wifi.Channel" enum="NetworkChannelType"

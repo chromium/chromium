@@ -73606,6 +73606,13 @@ Called by update_net_trust_anchors.py.-->
       label="Installed both managed and unmanaged cellular networks"/>
 </enum>
 
+<enum name="NetworkIPType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="IPv4"/>
+  <int value="2" label="IPv6"/>
+  <int value="3" label="Dual-stack"/>
+</enum>
+
 <enum name="NetworkIsolationKeyPresent">
   <int value="0" label="Network Isolation Key Not Present. Cacheable Request."/>
   <int value="1"
@@ -107087,13 +107094,6 @@ others/histograms.xml -->
   <int value="4" label="HMAC_SHA1_96"/>
   <int value="5" label="AES_XCBC_96"/>
   <int value="6" label="AES_CMAC_96"/>
-</enum>
-
-<enum name="VPNIPType">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="IPv4"/>
-  <int value="2" label="IPv6"/>
-  <int value="3" label="Dual-stack"/>
 </enum>
 
 <enum name="VPNL2TPIPsecTunnelGroupUsage">
