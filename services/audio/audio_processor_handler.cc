@@ -4,7 +4,8 @@
 
 #include "services/audio/audio_processor_handler.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
@@ -84,7 +85,7 @@ void AudioProcessorHandler::GetStats(GetStatsCallback callback) {
 void AudioProcessorHandler::SetPreferredNumCaptureChannels(
     int32_t num_preferred_channels) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  num_preferred_channels = base::clamp(
+  num_preferred_channels = std::clamp(
       num_preferred_channels, 1, audio_processor_->output_format().channels());
   num_preferred_channels_.store(num_preferred_channels,
                                 std::memory_order_release);
