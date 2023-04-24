@@ -255,6 +255,8 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
               '#deleteFileOption');
       assert(deleteFileOption);
       deleteFile = deleteFileOption.checked;
+      chrome.metricsPrivate.recordBoolean(
+          'PasswordManager.Import.FileDeletionSelected', deleteFile);
     }
     await this.passwordManager_.resetImporter(deleteFile);
   }

@@ -539,6 +539,10 @@ export class PasswordsImportDialogElement extends
       const deleteFile = !this.shouldHideDeleteFileOption_() &&
           this.$.deleteFileOption.checked;
       await this.passwordManager_.resetImporter(deleteFile);
+      if (!this.shouldHideDeleteFileOption_) {
+        chrome.metricsPrivate.recordBoolean(
+            'PasswordManager.Import.FileDeletionSelected', deleteFile);
+      }
     }
     this.$.dialog.close();
   }

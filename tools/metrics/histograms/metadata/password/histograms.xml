@@ -1726,6 +1726,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.Import.FileDeletionSelected" units="Boolean"
+    expires_after="2023-10-15">
+  <owner>eliaskh@chromium.org</owner>
+  <owner>natiahlyi@google.com</owner>
+  <summary>
+    Records if the user selected to delete a file after a succesful import with
+    no errors. Reported before the import success dialog is closed.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.Import.Only{ErrorType}" units="Boolean"
     expires_after="2023-09-15">
   <owner>eliaskh@chromium.org</owner>
