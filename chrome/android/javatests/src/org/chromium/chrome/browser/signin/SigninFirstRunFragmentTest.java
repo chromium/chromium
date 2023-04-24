@@ -17,6 +17,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
@@ -65,6 +66,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo.OwnedState;
 import org.chromium.chrome.browser.enterprise.util.FakeEnterpriseInfo;
@@ -84,6 +86,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninChecker;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunMediator.LoadPoint;
+import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
@@ -99,6 +102,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -137,6 +141,9 @@ public class SigninFirstRunFragmentTest {
 
     @Rule
     public final SigninTestRule mSigninTestRule = new SigninTestRule();
+
+    @Rule
+    public AutomotiveContextWrapperTestRule mAutoTestRule = new AutomotiveContextWrapperTestRule();
 
     @Rule
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
@@ -489,6 +496,7 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testSigninWithDefaultAccount() {
         mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         launchActivityWithFragment();
@@ -511,6 +519,80 @@ public class SigninFirstRunFragmentTest {
         verify(mFirstRunPageDelegateMock).advanceToNextPage();
         verify(mFirstRunPageDelegateMock)
                 .recordFreProgressHistogram(MobileFreProgress.WELCOME_SIGNIN_WITH_DEFAULT_ACCOUNT);
+    }
+
+    @Test
+    @MediumTest
+    public void testContinueButton_automotiveDevice_signInWithDefaultAccount() {
+        mAutoTestRule.setIsAutomotive(true);
+
+        mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
+        launchActivityWithFragment();
+        final String continueAsText = mActivityTestRule.getActivity().getString(
+                R.string.sync_promo_continue_as, GIVEN_NAME1);
+
+        // Click and continue to the device lock page
+        onView(withText(continueAsText)).perform(click());
+        CriteriaHelper.pollUiThread(() -> {
+            return mFragment.getView().findViewById(R.id.device_lock_title).isShown();
+        });
+
+        // Verify that sign-in has not proceeded
+        verify(mFirstRunPageDelegateMock, never()).acceptTermsOfService(anyBoolean());
+        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+
+        // Continue past the device lock page
+        TestThreadUtils.runOnUiThreadBlocking(() -> mFragment.onDeviceLockReady());
+
+        // ToS should be accepted right away, without waiting for the sign-in to complete.
+        verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
+
+        CriteriaHelper.pollUiThread(() -> {
+            return IdentityServicesProvider.get()
+                    .getIdentityManager(Profile.getLastUsedRegularProfile())
+                    .hasPrimaryAccount(ConsentLevel.SIGNIN);
+        });
+        final CoreAccountInfo primaryAccount =
+                mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN);
+        Assert.assertEquals(TEST_EMAIL1, primaryAccount.getEmail());
+        // Sign-in has completed, so the FRE should advance to the next page.
+        verify(mFirstRunPageDelegateMock).advanceToNextPage();
+        verify(mFirstRunPageDelegateMock)
+                .recordFreProgressHistogram(MobileFreProgress.WELCOME_SIGNIN_WITH_DEFAULT_ACCOUNT);
+    }
+
+    @Test
+    @MediumTest
+    public void testContinueButton_automotiveDevice_dismissSignInFromDeviceLockPage() {
+        mAutoTestRule.setIsAutomotive(true);
+
+        mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
+        launchActivityWithFragment();
+        final String continueAsText = mActivityTestRule.getActivity().getString(
+                R.string.sync_promo_continue_as, GIVEN_NAME1);
+
+        // Click and continue to the device lock page
+        onView(withText(continueAsText)).perform(click());
+        CriteriaHelper.pollUiThread(() -> {
+            return mFragment.getView().findViewById(R.id.device_lock_title).isShown();
+        });
+
+        // Verify that sign-in has not proceeded
+        verify(mFirstRunPageDelegateMock, never()).acceptTermsOfService(anyBoolean());
+        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+
+        // Continue past the device lock page
+        TestThreadUtils.runOnUiThreadBlocking(() -> mFragment.onDeviceLockRefused());
+
+        CriteriaHelper.pollUiThread(() -> {
+            return !IdentityServicesProvider.get()
+                            .getIdentityManager(Profile.getLastUsedRegularProfile())
+                            .hasPrimaryAccount(ConsentLevel.SIGNIN);
+        });
+        verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
+        verify(mFirstRunPageDelegateMock).advanceToNextPage();
+        verify(mFirstRunPageDelegateMock)
+                .recordFreProgressHistogram(MobileFreProgress.WELCOME_DISMISS);
     }
 
     @Test

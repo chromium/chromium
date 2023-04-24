@@ -39,6 +39,9 @@ public class SigninFirstRunCoordinator {
         /** Called when the interaction with the page is over and the next page should be shown. */
         void advanceToNextPage();
 
+        /** Called to display the device lock page  */
+        void displayDeviceLockPage();
+
         /**
          * Records the FRE progress histogram MobileFre.Progress.*.
          * @param state FRE state to record.
@@ -134,5 +137,13 @@ public class SigninFirstRunCoordinator {
 
     public void onAccountSelected(String accountName) {
         mMediator.onAccountSelected(accountName);
+    }
+
+    public void continueSignIn() {
+        mMediator.proceedWithSignIn();
+    }
+
+    public void cancelSignInAndDismiss() {
+        mMediator.dismiss();
     }
 }

@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.ResolveInfo;
+import android.view.View;
 
 import androidx.constraintlayout.utils.widget.MockView;
 
@@ -304,6 +305,9 @@ public class DeviceLockMediatorUnitTest {
     }
 
     private class MockDelegate implements DeviceLockCoordinator.Delegate {
+        @Override
+        public void setView(View view) {}
+
         @Override
         public void onDeviceLockReady() {}
 

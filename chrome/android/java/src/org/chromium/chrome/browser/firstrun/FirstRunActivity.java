@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.metrics.LowEntropySource;
+import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -600,5 +601,11 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     public static void setObserverForTest(FirstRunActivityObserver observer) {
         assert sObserver == null;
         sObserver = observer;
+    }
+
+    @Override
+    protected ActivityWindowAndroid createWindowAndroid() {
+        return new ActivityWindowAndroid(
+                this, /* listenToActivityState= */ true, getIntentRequestTracker());
     }
 }

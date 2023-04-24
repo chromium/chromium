@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Defines the host interface for First Run Experience pages.
@@ -106,4 +107,9 @@ public interface FirstRunPageDelegate {
      * FRE is shown in a dialog.
      */
     boolean canUseLandscapeLayout();
+
+    /**
+     * Return the {@link WindowAndroid} for the FirstRunActivity.
+     */
+    WindowAndroid getWindowAndroid();
 }

@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.firstrun.SkipTosDialogPolicyListener;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunCoordinator;
 import org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunView;
@@ -42,16 +43,19 @@ import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 /**
  * This fragment handles the sign-in without sync consent during the FRE.
  */
-public class SigninFirstRunFragment
-        extends Fragment implements FirstRunFragment, SigninFirstRunCoordinator.Delegate {
+public class SigninFirstRunFragment extends Fragment implements FirstRunFragment,
+                                                                SigninFirstRunCoordinator.Delegate,
+                                                                DeviceLockCoordinator.Delegate {
     @VisibleForTesting
     static final int ADD_ACCOUNT_REQUEST_CODE = 1;
 
     // Used as a view holder for the current orientation of the device.
     private FrameLayout mFragmentView;
+    private View mMainView;
     private ModalDialogManager mModalDialogManager;
     private SkipTosDialogPolicyListener mSkipTosDialogPolicyListener;
     private SigninFirstRunCoordinator mSigninFirstRunCoordinator;
+    private DeviceLockCoordinator mDeviceLockCoordinator;
     private boolean mExitFirstRunCalled;
 
     public SigninFirstRunFragment() {}
@@ -88,16 +92,18 @@ public class SigninFirstRunFragment
         super.onConfigurationChanged(newConfig);
         // Inflate the view required for the current configuration and set it as the fragment view.
         mFragmentView.removeAllViews();
-        mFragmentView.addView(inflateFragmentView(
+        mMainView = inflateFragmentView(
                 (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE),
-                newConfig));
+                newConfig);
+        mFragmentView.addView(mMainView);
     }
 
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mFragmentView = new FrameLayout(getActivity());
-        mFragmentView.addView(inflateFragmentView(inflater, getResources().getConfiguration()));
+        mMainView = inflateFragmentView(inflater, getResources().getConfiguration());
+        mFragmentView.addView(mMainView);
 
         return mFragmentView;
     }
@@ -225,5 +231,34 @@ public class SigninFirstRunFragment
                 null, false);
         mSigninFirstRunCoordinator.setView(view);
         return view;
+    }
+
+    @Override
+    public void displayDeviceLockPage() {
+        mDeviceLockCoordinator = new DeviceLockCoordinator(
+                true, this, getPageDelegate().getWindowAndroid(), requireContext());
+    }
+
+    @Override
+    public void setView(View view) {
+        mFragmentView.removeAllViews();
+        mFragmentView.addView(view);
+    }
+
+    @Override
+    public void onDeviceLockReady() {
+        restoreMainView();
+        mDeviceLockCoordinator = null;
+        mSigninFirstRunCoordinator.continueSignIn();
+    }
+
+    @Override
+    public void onDeviceLockRefused() {
+        mSigninFirstRunCoordinator.cancelSignInAndDismiss();
+    }
+
+    private void restoreMainView() {
+        mFragmentView.removeAllViews();
+        mFragmentView.addView(mMainView);
     }
 }

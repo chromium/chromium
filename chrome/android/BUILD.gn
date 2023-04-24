@@ -1504,6 +1504,8 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/touch_to_fill/payments/android/internal:java_resources",
       "//chrome/browser/ui/android/appmenu:java",
       "//chrome/browser/ui/android/appmenu/test:test_support_java",
+      "//chrome/browser/ui/android/device_lock:java",
+      "//chrome/browser/ui/android/device_lock:java_resources",
       "//chrome/browser/ui/android/device_lock:javatests",
       "//chrome/browser/ui/android/favicon:java",
       "//chrome/browser/ui/android/layouts:java",
