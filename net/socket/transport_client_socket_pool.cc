@@ -806,19 +806,27 @@ TransportClientSocketPool::TransportClientSocketPool(
 
 void TransportClientSocketPool::OnSSLConfigChanged(
     SSLClientContext::SSLConfigChangeType change_type) {
-  // When the user changes the SSL config, flush all idle sockets so they won't
-  // get re-used.
+  const char* message = nullptr;
+  // When the SSL config or cert verifier config changes, flush all idle
+  // sockets so they won't get re-used, and allow any active sockets to finish,
+  // but don't put them back in the socket pool.
   switch (change_type) {
     case SSLClientContext::SSLConfigChangeType::kSSLConfigChanged:
-      FlushWithError(ERR_NETWORK_CHANGED, kNetworkChanged);
+      message = kNetworkChanged;
       break;
     case SSLClientContext::SSLConfigChangeType::kCertDatabaseChanged:
-      FlushWithError(ERR_CERT_DATABASE_CHANGED, kCertDatabaseChanged);
+      message = kCertDatabaseChanged;
       break;
     case SSLClientContext::SSLConfigChangeType::kCertVerifierChanged:
-      FlushWithError(ERR_CERT_VERIFIER_CHANGED, kCertVerifierChanged);
+      message = kCertVerifierChanged;
       break;
   };
+
+  base::TimeTicks now = base::TimeTicks::Now();
+  for (auto it = group_map_.begin(); it != group_map_.end();) {
+    it = RefreshGroup(it, now, message);
+  }
+  CheckForStalledSocketGroups();
 }
 
 // TODO(crbug.com/1206799): Get `server` as SchemeHostPort?
