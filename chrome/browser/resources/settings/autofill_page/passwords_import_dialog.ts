@@ -83,8 +83,15 @@ export enum PasswordsImportDesktopInteractions {
   DIALOG_OPENED_FROM_THREE_DOT_MENU = 0,
   DIALOG_OPENED_FROM_EMPTY_STATE = 1,
   CANCELED_BEFORE_FILE_SELECT = 2,
+  UPM_STORE_PICKER_OPENED = 3,
+  UPM_FILE_SELECT_LAUNCHED = 4,
+  UPM_VIEW_PASSWORDS_CLICKED = 5,
+  CONFLICTS_CANCELED = 6,
+  CONFLICTS_REAUTH_FAILED = 7,
+  CONFLICTS_SKIP_CLICKED = 8,
+  CONFLICTS_REPLACE_CLICKED = 9,
   // Must be last.
-  COUNT = 3,
+  COUNT = 10,
 }
 
 export class PasswordsImportDialogElement extends
@@ -293,6 +300,8 @@ export class PasswordsImportDialogElement extends
 
   private async onSkipClick_() {
     assert(this.isState_(ImportDialogState.CONFLICTS));
+    recordPasswordsImportInteraction(
+        PasswordsImportDesktopInteractions.CONFLICTS_SKIP_CLICKED);
     this.inProgress_ = true;
     this.results_ =
         await this.passwordManager_.continueImport(/*selectedIds=*/[]);
@@ -301,6 +310,8 @@ export class PasswordsImportDialogElement extends
 
   private async onReplaceClick_() {
     assert(this.isState_(ImportDialogState.CONFLICTS));
+    recordPasswordsImportInteraction(
+        PasswordsImportDesktopInteractions.CONFLICTS_REPLACE_CLICKED);
     this.inProgress_ = true;
     this.results_ = await this.passwordManager_.continueImport(
         this.conflictsSelectedForReplace_);
@@ -351,6 +362,10 @@ export class PasswordsImportDialogElement extends
         this.dialogState = ImportDialogState.ERROR;
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.DISMISSED:
+        if (this.isState_(ImportDialogState.CONFLICTS)) {
+          recordPasswordsImportInteraction(
+              PasswordsImportDesktopInteractions.CONFLICTS_REAUTH_FAILED);
+        }
         // Dialog state should not change if a system file picker was dismissed.
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.IMPORT_ALREADY_ACTIVE:
@@ -513,6 +528,10 @@ export class PasswordsImportDialogElement extends
     if (this.isState_(ImportDialogState.START)) {
       recordPasswordsImportInteraction(
           PasswordsImportDesktopInteractions.CANCELED_BEFORE_FILE_SELECT);
+    }
+    if (this.isState_(ImportDialogState.CONFLICTS)) {
+      recordPasswordsImportInteraction(
+          PasswordsImportDesktopInteractions.CONFLICTS_CANCELED);
     }
     if (this.enablePasswordsImportM2_) {
       // Trigger the file deletion if checkbox is ticked in SUCCESS (with no
