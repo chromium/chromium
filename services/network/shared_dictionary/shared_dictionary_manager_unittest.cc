@@ -148,40 +148,40 @@ TEST_F(SharedDictionaryManagerTest, WriterForUseAsDictionaryHeader) {
       // Invalid dictionary.
       {"()", false},
 
-      // No `p` value.
+      // No `match` value.
       {"dummy", false},
 
-      // Valid `p` value.
-      {"p=\"/test\"", true},
-      {"p=\"test\"", true},
+      // Valid `match` value.
+      {"match=\"/test\"", true},
+      {"match=\"test\"", true},
 
-      // List `p` value is not supported.
-      {"p=(\"test1\" \"test2\")", false},
-      // Token `p` value is not supported.
-      {"p=test", false},
+      // List `match` value is not supported.
+      {"match=(\"test1\" \"test2\")", false},
+      // Token `match` value is not supported.
+      {"match=test", false},
 
-      // Valid `e` value.
-      {"p=\"test\", e=1000", true},
-      // List `e` value is not supported.
-      {"p=\"test\", e=(1000 2000)", false},
-      // String `e` value is not supported.
-      {"p=\"test\", e=PI", false},
+      // Valid `expires` value.
+      {"match=\"test\", expires=1000", true},
+      // List `expires` value is not supported.
+      {"match=\"test\", expires=(1000 2000)", false},
+      // String `expires` value is not supported.
+      {"match=\"test\", expires=PI", false},
 
-      // Valid `h` value.
-      {"p=\"test\", h=sha-256", true},
-      {"p=\"test\", h=(sha-256)", true},
-      {"p=\"test\", h=(sha-256 sha-512)", true},
+      // Valid `algorithms` value.
+      {"match=\"test\", algorithms=sha-256", true},
+      {"match=\"test\", algorithms=(sha-256)", true},
+      {"match=\"test\", algorithms=(sha-256 sha-512)", true},
 
       // The sha-256 token must be lowercase.
       // TODO(crbug.com/1413922): Investigate the spec and decide whether to
       // support it or not.
-      {"p=\"test\", h=SHA-256", false},
+      {"match=\"test\", algorithms=SHA-256", false},
 
-      // Each item in `h` value must be a token.
-      {"p=\"test\", h=(\"sha-256\")", false},
+      // Each item in `algorithms` value must be a token.
+      {"match=\"test\", algorithms=(\"sha-256\")", false},
 
-      // Unsupported `h` value. We only support sha-256.
-      {"p=\"test\", h=(sha-512)", false},
+      // Unsupported `algorithms` value. We only support sha-256.
+      {"match=\"test\", algorithms=(sha-512)", false},
   };
   for (const auto& testcase : kTestCases) {
     SCOPED_TRACE(base::StringPrintf("header_string: %s",
@@ -210,7 +210,7 @@ TEST_F(SharedDictionaryManagerTest, WriteAndGetDictionary) {
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-           ":  p=\"/testfile*\"\n\n"}));
+           ": match=\"/testfile*\"\n\n"}));
   ASSERT_TRUE(headers);
 
   // Write the test data to the dictionary.
@@ -241,7 +241,7 @@ TEST_F(SharedDictionaryManagerTest, WriteAndReadDictionary) {
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-           ":  p=\"/testfile*\"\n\n"}));
+           ": match=\"/testfile*\"\n\n"}));
   ASSERT_TRUE(headers);
   base::Time now_time = base::Time::Now();
 
@@ -308,7 +308,7 @@ TEST_F(SharedDictionaryManagerTest, ZeroSizeDictionaryShouldNotBeStored) {
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-           ":  p=\"/testfile*\"\n\n"}));
+           ": match=\"/testfile*\"\n\n"}));
   ASSERT_TRUE(headers);
   base::Time now_time = base::Time::Now();
 

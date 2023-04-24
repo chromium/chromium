@@ -19,6 +19,15 @@ constexpr int64_t kDefaultExpiration = 31536000;
 COMPONENT_EXPORT(NETWORK_SERVICE)
 extern const char kUseAsDictionaryHeaderName[];
 
+// The dictionary option name of "match".
+COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameMatch[];
+
+// The dictionary option name of "expires".
+COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameExpires[];
+
+// The dictionary option name of "algorithms".
+COMPONENT_EXPORT(NETWORK_SERVICE) extern const char kOptionNameAlgorithms[];
+
 }  // namespace network::shared_dictionary
 
 #endif  // SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_CONSTANTS_H_

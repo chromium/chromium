@@ -52,19 +52,19 @@ absl::optional<UseAsDictionaryHeaderInfo> ParseUseAsDictionaryHeaderInfo(
   absl::optional<int64_t> e_value;
   absl::optional<std::vector<std::string>> h_value;
   for (const auto& entry : dictionary.value()) {
-    if (entry.first == "p") {
+    if (entry.first == shared_dictionary::kOptionNameMatch) {
       if ((entry.second.member.size() != 1u) ||
           !entry.second.member.front().item.is_string()) {
         return absl::nullopt;
       }
       p_value = entry.second.member.front().item.GetString();
-    } else if (entry.first == "e") {
+    } else if (entry.first == shared_dictionary::kOptionNameExpires) {
       if ((entry.second.member.size() != 1u) ||
           !entry.second.member.front().item.is_integer()) {
         return absl::nullopt;
       }
       e_value = entry.second.member.front().item.GetInteger();
-    } else if (entry.first == "h") {
+    } else if (entry.first == shared_dictionary::kOptionNameAlgorithms) {
       std::vector<std::string> tmp_vec;
       for (const auto& h_item : entry.second.member) {
         if (!h_item.item.is_token()) {

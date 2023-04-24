@@ -74,7 +74,8 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
   void NotifyLoaderClientOnReceiveResponseWithUseAsDictionaryHeader(
       std::vector<std::pair<std::string, std::string>> extra_headers = {}) {
     extra_headers.emplace_back(
-        network::shared_dictionary::kUseAsDictionaryHeaderName, "p=\"/path*\"");
+        network::shared_dictionary::kUseAsDictionaryHeaderName,
+        "match=\"/path*\"");
     NotifyLoaderClientOnReceiveResponse(extra_headers,
                                         std::move(consumer_handle_));
   }

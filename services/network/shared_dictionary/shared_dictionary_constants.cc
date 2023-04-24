@@ -8,4 +8,8 @@ namespace network::shared_dictionary {
 
 const char kUseAsDictionaryHeaderName[] = "use-as-dictionary";
 
+const char kOptionNameMatch[] = "match";
+const char kOptionNameExpires[] = "expires";
+const char kOptionNameAlgorithms[] = "algorithms";
+
 }  // namespace network::shared_dictionary
