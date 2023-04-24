@@ -57,7 +57,8 @@
   self.styler.cellBackgroundColor = [UIColor colorNamed:kBackgroundColor];
   self.tableView.sectionHeaderHeight = 0;
   self.tableView.estimatedRowHeight = 56;
-  self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+  [self.tableView
+      setSeparatorInset:UIEdgeInsetsMake(0, kTableViewHorizontalSpacing, 0, 0)];
 
   // Configure the NavigationBar.
   UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]

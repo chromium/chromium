@@ -61,6 +61,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 const CGFloat kSymbolSize = 16;
 
+// Defines the separator inset value for this table view.
+const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
+
 }  // namespace
 
 @interface InfobarSaveAddressProfileTableViewController ()
@@ -119,7 +122,13 @@ const CGFloat kSymbolSize = 16;
   self.styler.cellBackgroundColor = [UIColor colorNamed:kBackgroundColor];
   self.tableView.sectionHeaderHeight = 0;
   self.tableView.sectionFooterHeight = 0;
-  self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+  [self.tableView
+      setSeparatorInset:UIEdgeInsetsMake(
+                            0,
+                            self.isUpdateModal
+                                ? kTableViewHorizontalSpacing
+                                : kInfobarSaveAddressProfileSeparatorInset,
+                            0, 0)];
 
   if (!self.isMigrationToAccount || self.currentAddressProfileSaved) {
     // Do not show the cancel button when the migration prompt is presented and
@@ -205,6 +214,9 @@ const CGFloat kSymbolSize = 16;
                addTarget:self
                   action:@selector(saveAddressProfileButtonWasPressed:)
         forControlEvents:UIControlEventTouchUpInside];
+    // Hide the separator line.
+    cell.separatorInset =
+        UIEdgeInsetsMake(0, 0, 0, self.tableView.bounds.size.width);
   } else if (itemType == ItemTypeAddressProfileNoThanksButton) {
     TableViewTextButtonCell* tableViewTextButtonCell =
         base::mac::ObjCCastStrict<TableViewTextButtonCell>(cell);
@@ -213,6 +225,13 @@ const CGFloat kSymbolSize = 16;
                   action:@selector(noThanksButtonWasPressed:)
         forControlEvents:UIControlEventTouchUpInside];
   } else {
+    if (itemType == ItemTypeFooter ||
+        itemType == ItemTypeUpdateModalDescription ||
+        itemType == ItemTypeUpdateModalTitle) {
+      // Hide the separator line.
+      cell.separatorInset =
+          UIEdgeInsetsMake(0, 0, 0, self.tableView.bounds.size.width);
+    }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
   }
   return cell;
@@ -338,9 +357,6 @@ const CGFloat kSymbolSize = 16;
         toSectionWithIdentifier:SectionIdentifierFields];
   }
 
-  // Store the last added field to the modal other than the update button.
-  SettingsImageDetailTextItem* lastAddedItem = nil;
-
   for (NSNumber* type in self.profileDataDiff) {
     if ([self.profileDataDiff[type][0] length] > 0) {
       SettingsImageDetailTextItem* newItem =
@@ -351,7 +367,6 @@ const CGFloat kSymbolSize = 16;
                               text:self.profileDataDiff[type][0]
                             symbol:[self symbolForAutofillInputTypeNumber:type]
               imageTintColorIsGrey:NO];
-      lastAddedItem = newItem;
       [model addItem:newItem toSectionWithIdentifier:SectionIdentifierFields];
     }
   }
@@ -373,7 +388,6 @@ const CGFloat kSymbolSize = 16;
                             text:self.profileDataDiff[type][1]
                           symbol:[self symbolForAutofillInputTypeNumber:type]
             imageTintColorIsGrey:YES];
-        lastAddedItem = oldItem;
         [model addItem:oldItem toSectionWithIdentifier:SectionIdentifierFields];
       }
     }
@@ -384,9 +398,6 @@ const CGFloat kSymbolSize = 16;
     [model addItem:[self updateFooterItem]
         toSectionWithIdentifier:SectionIdentifierFields];
   }
-
-  // Remove the separator after the last field.
-  lastAddedItem.useCustomSeparator = self.profileAnAccountProfile;
 
   [model addItem:[self saveUpdateButton]
       toSectionWithIdentifier:SectionIdentifierFields];
@@ -401,15 +412,11 @@ const CGFloat kSymbolSize = 16;
                       autofillUIType:AutofillUITypeProfileHomeAddressStreet];
   [model addItem:addressItem toSectionWithIdentifier:SectionIdentifierFields];
 
-  // Store the last added field to the modal other than the save button.
-  SettingsImageDetailTextItem* lastAddedItem = addressItem;
-
   if ([self.emailAddress length]) {
     SettingsImageDetailTextItem* emailItem =
         [self detailItemForSaveModalWithText:self.emailAddress
                               autofillUIType:AutofillUITypeProfileEmailAddress];
     [model addItem:emailItem toSectionWithIdentifier:SectionIdentifierFields];
-    lastAddedItem = emailItem;
   }
 
   if ([self.phoneNumber length]) {
@@ -418,7 +425,6 @@ const CGFloat kSymbolSize = 16;
                               autofillUIType:
                                   AutofillUITypeProfileHomePhoneWholeNumber];
     [model addItem:phoneItem toSectionWithIdentifier:SectionIdentifierFields];
-    lastAddedItem = phoneItem;
   }
 
   if (self.isMigrationToAccount || self.profileAnAccountProfile) {
@@ -426,10 +432,6 @@ const CGFloat kSymbolSize = 16;
     [model addItem:[self saveFooterItem]
         toSectionWithIdentifier:SectionIdentifierFields];
   }
-
-  // Remove the separator after the last field.
-  lastAddedItem.useCustomSeparator =
-      (self.isMigrationToAccount || self.profileAnAccountProfile);
 
   [model addItem:[self saveUpdateButton]
       toSectionWithIdentifier:SectionIdentifierFields];
@@ -608,7 +610,6 @@ const CGFloat kSymbolSize = 16;
   detailItem.alignImageWithFirstLineOfText = YES;
   if (symbol) {
     detailItem.image = symbol;
-    detailItem.useCustomSeparator = YES;
     if (imageTintColorIsGrey) {
       detailItem.imageViewTintColor = [UIColor colorNamed:kGrey400Color];
     } else {

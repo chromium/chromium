@@ -198,6 +198,10 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   NSInteger itemType =
       [self.controller.tableViewModel itemTypeForIndexPath:indexPath];
   if (itemType == ItemTypeFooter || itemType == ItemTypeError) {
+    if (!self.settingsView) {
+      cell.separatorInset = UIEdgeInsetsMake(
+          0, self.controller.tableView.bounds.size.width, 0, 0);
+    }
     return cell;
   }
 
