@@ -766,8 +766,6 @@ component("platform") {
     "geometry/layout_point.h",
     "geometry/layout_rect.cc",
     "geometry/layout_rect.h",
-    "geometry/layout_rect_outsets.cc",
-    "geometry/layout_rect_outsets.h",
     "geometry/layout_size.cc",
     "geometry/layout_size.h",
     "geometry/layout_unit.cc",

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 
-#include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {

@@ -99,10 +99,6 @@ void PhysicalRect::Expand(const NGPhysicalBoxStrut& strut) {
   ExpandEdges(strut.top, strut.right, strut.bottom, strut.left);
 }
 
-void PhysicalRect::Expand(const LayoutRectOutsets& outsets) {
-  ExpandEdges(outsets.Top(), outsets.Right(), outsets.Bottom(), outsets.Left());
-}
-
 void PhysicalRect::ExpandEdgesToPixelBoundaries() {
   int left = FloorToInt(offset.left);
   int top = FloorToInt(offset.top);
@@ -116,11 +112,6 @@ void PhysicalRect::ExpandEdgesToPixelBoundaries() {
 
 void PhysicalRect::Contract(const NGPhysicalBoxStrut& strut) {
   ExpandEdges(-strut.top, -strut.right, -strut.bottom, -strut.left);
-}
-
-void PhysicalRect::Contract(const LayoutRectOutsets& outsets) {
-  ExpandEdges(-outsets.Top(), -outsets.Right(), -outsets.Bottom(),
-              -outsets.Left());
 }
 
 void PhysicalRect::Intersect(const PhysicalRect& other) {
