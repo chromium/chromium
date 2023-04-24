@@ -12,6 +12,7 @@
 #include "base/cancelable_callback.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -83,7 +84,7 @@ class AudioStreamHandler::AudioStreamContainer
       base::AutoLock al(state_lock_);
 
       delayed_stop_posted_ = false;
-      stop_closure_.Reset(base::BindRepeating(&AudioStreamContainer::StopStream,
+      stop_closure_.Reset(base::BindRepeating(&AudioStreamContainer::Stop,
                                               base::Unretained(this)));
 
       if (started_) {
@@ -109,8 +110,18 @@ class AudioStreamHandler::AudioStreamContainer
   void Stop() {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-    StopStream();
+    if (started_) {
+      // Do not hold the |state_lock_| while stopping the output stream.
+      if (g_observer_for_testing) {
+        g_observer_for_testing->OnStop();
+      } else {
+        device_->Pause();
+      }
+    }
+
+    started_ = false;
     stop_closure_.Cancel();
+    device_.reset();
   }
 
  private:
@@ -135,23 +146,9 @@ class AudioStreamHandler::AudioStreamContainer
   }
 
   void OnRenderError() override {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AudioStreamContainer::Stop, base::Unretained(this)));
-  }
-
-  void StopStream() {
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
-
-    if (started_) {
-      // Do not hold the |state_lock_| while stopping the output stream.
-      if (g_observer_for_testing)
-        g_observer_for_testing->OnStop();
-      else
-        device_->Pause();
-    }
-
-    started_ = false;
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(&AudioStreamContainer::Stop,
+                                          weak_factory_.GetWeakPtr()));
   }
 
   bool started_ = false;
@@ -164,6 +161,9 @@ class AudioStreamHandler::AudioStreamContainer
   bool delayed_stop_posted_ = false;
   std::unique_ptr<media::AudioHandler> audio_handler_;
   base::CancelableRepeatingClosure stop_closure_;
+
+  base::WeakPtrFactory<AudioStreamHandler::AudioStreamContainer> weak_factory_{
+      this};
 };
 
 AudioStreamHandler::AudioStreamHandler(
@@ -213,6 +213,9 @@ AudioStreamHandler::AudioStreamHandler(
 }
 
 AudioStreamHandler::~AudioStreamHandler() {
+  // TODO(b/279455052): A question about the overall design for if this class
+  // need to post functions into `task_runner`. Same questions for the `Play`
+  // and `Stop`.
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (IsInitialized()) {
     task_runner_->PostTask(FROM_HERE,
