@@ -345,7 +345,6 @@ def _SymbolsFromNodes(nodes, source_map):
     symbols_bucket.sort(key=lambda s: s.full_name)
   return symbol_buckets
 
-
 def _GenDexStringsUsedByClasses(dexfile, class_deobfuscation_map):
   """Emit strings used in code_items and associate them with classes.
 
@@ -375,14 +374,12 @@ def _GenDexStringsUsedByClasses(dexfile, class_deobfuscation_map):
     if not (name.startswith('L') and name.endswith(';')):
       num_bad_name += 1
       return name
-    name = name[1:-1]
+    # Change "L{X};" to "{X}", and convert path name to class name.
+    name = name[1:-1].replace('/', '.')
     deobfuscated_name = class_deobfuscation_map.get(name, None)
     if deobfuscated_name is not None:
       name = deobfuscated_name
       num_deobfus_names += 1
-    elif '/' in name:
-      # Has path: Assume not obfuscated, and convert to class name.
-      name = name.replace('/', '.')
     else:
       num_failed_deobfus += 1
     return name
