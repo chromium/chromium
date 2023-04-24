@@ -62,7 +62,7 @@ void WriteToClipboard(const std::u16string& text, bool is_confidential) {
 // dialog left margin + the back button insets to make sure all icons are
 // vertically aligned with the back button.
 gfx::Insets ComputeRowMargins() {
-  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  const auto* const layout_provider = ChromeLayoutProvider::Get();
   gfx::Insets margins = layout_provider->GetInsetsMetric(views::INSETS_DIALOG);
   margins.set_top_bottom(0, 0);
   margins.set_left(
@@ -105,6 +105,23 @@ std::unique_ptr<views::Label> CreateErrorLabel(std::u16string error_msg) {
       .SetMultiLine(true)
       .SetMaximumWidth(kErrorLabelMaxWidth)
       .Build();
+}
+
+// Aligns `error_label` such that the error message is vertically aligned with
+// the text in the corropsnding textfield/textarea.
+void AlignErrorLabelWithTextFieldContents(raw_ptr<views::Label> error_label) {
+  // Create a border around the error message that has the left insets matching
+  // the inner padding in the textarea above to align the error message with the
+  // text in the textarea. The border has zero insets on all other sides.
+  gfx::Insets insets;
+  int textfield_inner_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING);
+  if (base::i18n::IsRTL()) {
+    insets.set_right(textfield_inner_padding);
+  } else {
+    insets.set_left(textfield_inner_padding);
+  }
+  error_label->SetBorder(views::CreateEmptyBorder(insets));
 }
 
 // Creates a view of the same height as the height of the each row in the table,
@@ -263,12 +280,13 @@ std::unique_ptr<views::View> CreateEditUsernameRow(
     raw_ptr<views::Textfield>* textfield,
     raw_ptr<views::Label>* error_label) {
   DCHECK(form.username_value.empty());
+  const auto* const layout_provider = ChromeLayoutProvider::Get();
   auto row = std::make_unique<views::FlexLayoutView>();
   row->SetCollapseMargins(true);
   row->SetInteriorMargin(ComputeRowMargins());
   row->SetDefault(
       views::kMarginsKey,
-      gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
+      gfx::Insets::VH(0, layout_provider->GetDistanceMetric(
                              views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
   row->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
   row->AddChildView(CreateWrappedView(CreateIconView(kAccountCircleIcon)));
@@ -276,6 +294,9 @@ std::unique_ptr<views::View> CreateEditUsernameRow(
       row->AddChildView(std::make_unique<views::BoxLayoutView>());
   username_with_error_label_view->SetOrientation(
       views::BoxLayout::Orientation::kVertical);
+  username_with_error_label_view->SetBetweenChildSpacing(
+      layout_provider->GetDistanceMetric(
+          DISTANCE_CONTENT_LIST_VERTICAL_SINGLE));
   username_with_error_label_view->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
@@ -292,6 +313,7 @@ std::unique_ptr<views::View> CreateEditUsernameRow(
           IDS_SETTINGS_PASSWORD_USERNAME_ALREADY_USED,
           base::UTF8ToUTF16(password_manager::GetShownOrigin(
               url::Origin::Create(form.url))))));
+  AlignErrorLabelWithTextFieldContents(*error_label);
   return row;
 }
 
@@ -299,12 +321,13 @@ std::unique_ptr<views::View> CreateEditNoteRow(
     const password_manager::PasswordForm& form,
     raw_ptr<views::Textarea>* textarea,
     raw_ptr<views::Label>* error_label) {
+  const auto* const layout_provider = ChromeLayoutProvider::Get();
   auto row = std::make_unique<views::FlexLayoutView>();
   row->SetCollapseMargins(true);
   row->SetInteriorMargin(ComputeRowMargins());
   row->SetDefault(
       views::kMarginsKey,
-      gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
+      gfx::Insets::VH(0, layout_provider->GetDistanceMetric(
                              views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
   row->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
 
@@ -313,6 +336,9 @@ std::unique_ptr<views::View> CreateEditNoteRow(
       row->AddChildView(std::make_unique<views::BoxLayoutView>());
   note_with_error_label_view->SetOrientation(
       views::BoxLayout::Orientation::kVertical);
+  note_with_error_label_view->SetBetweenChildSpacing(
+      layout_provider->GetDistanceMetric(
+          DISTANCE_CONTENT_LIST_VERTICAL_SINGLE));
   note_with_error_label_view->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
@@ -336,6 +362,7 @@ std::unique_ptr<views::View> CreateEditNoteRow(
           IDS_PASSWORD_MANAGER_UI_NOTE_CHARACTER_COUNT_WARNING,
           base::NumberToString16(
               password_manager::constants::kMaxPasswordNoteLength))));
+  AlignErrorLabelWithTextFieldContents(*error_label);
   return row;
 }
 
@@ -345,7 +372,7 @@ std::unique_ptr<views::View> CreateEditNoteRow(
 std::unique_ptr<views::View> ManagePasswordsDetailsView::CreateTitleView(
     const password_manager::PasswordForm& password_form,
     base::RepeatingClosure on_back_clicked_callback) {
-  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  const auto* const layout_provider = ChromeLayoutProvider::Get();
   auto header = std::make_unique<views::BoxLayoutView>();
   // Set the space between the icon and title similar to the space in the row
   // below to make sure the bubble title and the labels below are vertically
