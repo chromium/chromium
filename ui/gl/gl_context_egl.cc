@@ -351,7 +351,8 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
   // it might indicate that an unsupported ES version was requested. Try
   // falling back to a lower version.
   GLint error = eglGetError();
-  if (gl_display_->ext->b_EGL_KHR_no_config_context && error == EGL_BAD_MATCH) {
+  if (gl_display_->ext->b_EGL_KHR_no_config_context &&
+      (error == EGL_BAD_MATCH || error == EGL_BAD_ATTRIBUTE)) {
     // Set up the list of versions to try: 3.1 -> 3.0 -> 2.0
     std::vector<std::pair<EGLint, EGLint>> candidate_versions;
     if (context_client_major_version == 3 &&
