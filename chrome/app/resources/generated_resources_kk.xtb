@@ -5936,7 +5936,7 @@
 <translation id="6243774244933267674">Сервер қолжетімсіз</translation>
 <translation id="6244245036423700521">ONC файлын импорттау</translation>
 <translation id="6246790815526961700">Құрылғыдан жүктеп салу</translation>
-<translation id="6247557882553405851">Google Құпия сөз менеджері</translation>
+<translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6247620186971210352">Ешқандай қолданбалар табылмады.</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Жүйе: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6233,7 +6233,7 @@
 <translation id="6520876759015997832"><ph name="LIST_POSITION" />/<ph name="LIST_SIZE" /> іздеу нәтижесі: <ph name="SEARCH_RESULT_TEXT" />. Бөлімге өту үшін Enter пернесін басыңыз.</translation>
 <translation id="6521214596282732365">Сайттар әдетте сіздің қаріптеріңізді пайдаланады, сондықтан дизайн мен графикаға арналған онлайн құралдардың көмегімен жоғары сапалы контент құруыңызға болады.</translation>
 <translation id="6523303810310758032">Барлық немесе белгілі бір сайттағы браузерді қолдану тарихын жойған кезде, оған қатысты өлшем ақпараты да жойылады. <ph name="BEGIN_LINK" />Браузерді қолдану тарихын<ph name="END_LINK" /> қараңыз.</translation>
-<translation id="6523574494641144162">Google Құпия сөз менеджері бұл құпия сөздерді Google аккаунтыңызға сақтай алмады. Оларды осы құрылғыға сақтай аласыз.</translation>
+<translation id="6523574494641144162">Google Password Manager бұл құпия сөздерді Google аккаунтыңызға сақтай алмады. Оларды осы құрылғыға сақтай аласыз.</translation>
 <translation id="6524735478670290456">Бұл дерек қалай пайдаланылады:</translation>
 <translation id="652492607360843641"><ph name="NETWORK_TYPE" /> желісіне жалғандыңыз.</translation>
 <translation id="6527303717912515753">Бөлісу</translation>
@@ -6317,9 +6317,9 @@
 <translation id="6595187330192059106"><ph name="HOST" /> сайтының MIDI құрылғыларын толық басқаруына әрқашан тыйым салу</translation>
 <translation id="6595408197871512625">{COUNT,plural, =1{Ұрланған құпия сөз өзгертілді.
 
-Тағы # құпия сөзіңіз ұрланған. Google Құпия сөз менеджері бұл құпия сөзді дереу тексеруді ұсынады.}other{Ұрланған құпия сөз өзгертілді.
+Тағы # құпия сөзіңіз ұрланған. Google Password Manager бұл құпия сөзді дереу тексеруді ұсынады.}other{Ұрланған құпия сөз өзгертілді.
 
-Тағы # құпия сөзіңіз ұрланған. Google Құпия сөз менеджері бұл құпия сөздерді дереу тексеруді ұсынады.}}</translation>
+Тағы # құпия сөзіңіз ұрланған. Google Password Manager бұл құпия сөздерді дереу тексеруді ұсынады.}}</translation>
 <translation id="6596325263575161958">Шифрлау опциялары</translation>
 <translation id="6596816719288285829">IP мекенжайы</translation>
 <translation id="6597017209724497268">Үлгілер</translation>
@@ -6676,7 +6676,7 @@
 <translation id="6903916726032521638">Іздеу: <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6904344821472985372">Файлға кіру құқығын қайтарып алу</translation>
 <translation id="6904655473976120856">Шығу үшін "Қолданба" түймесін басыңыз</translation>
-<translation id="6906095067383230422">{NUM_MINS,plural, =1{Құпия сөздерді қорғау үшін Google Құпия сөз менеджері 1 минут әрекетсіздіктен кейін экранды құлыптайды.}other{Құпия сөздерді қорғау үшін Google Құпия сөз менеджері {NUM_MINS} минут әрекетсіздіктен кейін экранды құлыптайды.}}</translation>
+<translation id="6906095067383230422">{NUM_MINS,plural, =1{Құпия сөздерді қорғау үшін Google Password Manager 1 минут әрекетсіздіктен кейін экранды құлыптайды.}other{Құпия сөздерді қорғау үшін Google Password Manager {NUM_MINS} минут әрекетсіздіктен кейін экранды құлыптайды.}}</translation>
 <translation id="6909422577741440844">Осы құрылғыдан алу керек пе?</translation>
 <translation id="6910211073230771657">Жойылды</translation>
 <translation id="691106080621596509"><ph name="SITE_GROUP_NAME" /> сайттар тобында, қатысты сайттарда және орнатылған қолданбаларда сақталған деректер мен cookie файлдарының барлығы өшіріледі.</translation>
@@ -8862,7 +8862,7 @@
 <translation id="8850251000316748990">Жаю…</translation>
 <translation id="885246833287407341">API функциясының айнымалылары</translation>
 <translation id="8853586775156634952">Бұл карта осы құрылғыға ғана сақталады.</translation>
-<translation id="8853731677580212469">Интернеттегі Google Құпия сөз менеджері</translation>
+<translation id="8853731677580212469">Интернеттегі Google Password Manager</translation>
 <translation id="8854745870658584490">Таңбашаны таңдау</translation>
 <translation id="8855977033756560989">Бұл Chromebook Enterprise құрылғысы Chrome Enterprise лицензиясымен бірге беріледі. Корпоративтік функциялардың барлығын пайдалана алу үшін осы құрылғыны әкімшілерге арналған Google аккаунтымен тіркеңіз.</translation>
 <translation id="8856028055086294840">Қолданбалар мен беттерді қалпына келтіру</translation>
@@ -9261,7 +9261,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" /> домені <ph name="FOLDERNAME" /> қалтасындағы файлдарды өзгерте алады.</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> арқылы іздеу</translation>
 <translation id="9201023452444595544">Барлық офлайн деректер өшіріледі.</translation>
-<translation id="9201117361710210082">Алдында көрілген.</translation>
+<translation id="9201117361710210082">Бұрын көрген</translation>
 <translation id="9201220332032049474">Экран құлпы опциялары</translation>
 <translation id="9201842707396338580">Бірдеңе дұрыс болмады. Құрылғының иесіне немесе әкімшісіне хабарласыңыз. Қате коды: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Профильдеу қосылған</translation>
