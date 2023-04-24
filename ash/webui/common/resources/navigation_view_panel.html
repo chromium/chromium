@@ -23,6 +23,7 @@
     display: grid;
     grid-template-areas: var(--areas-nav-banner);
     grid-template-columns: var(--columns-nav);
+    grid-template-rows: auto auto 1fr;
     width: 100%;
   }
 
@@ -30,6 +31,7 @@
     display: grid;
     grid-template-areas: var(--areas-no-header-nav-banner);
     grid-template-columns: var(--columns-nav);
+    grid-template-rows: auto 1fr;
     width: 100%;
   }
 
@@ -37,6 +39,7 @@
     display: grid;
     grid-template-areas: var(--areas-nav);
     grid-template-columns: var(--columns-nav);
+    grid-template-rows: auto 1fr;
     width: 100%;
   }
 
@@ -58,6 +61,11 @@
     position: sticky;
     top: 56px;
     z-index: 3;
+  }
+
+  #container {
+    height: 100%;
+    overflow: hidden;
   }
 
   cr-drawer {
@@ -85,10 +93,13 @@
   }
 
   #navigationBody {
+    box-sizing: border-box;
     grid-area: main;
-    justify-self: center;
+    height: 100%;
     min-width: 0;
+    overflow: overlay;
     padding-inline: var(--container-padding-nav);
+    width: 100%;
   }
 
   .left-aligned {
