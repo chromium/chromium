@@ -7,12 +7,39 @@
     display: flex;
   }
 
+  .list-item[sync-revamp-enabled] {
+    align-items: center;
+    flex-direction: row;
+    gap: 16px;
+    padding: 14px 20px;
+  }
+
+  #tooltipIcon {
+    --cr-tooltip-icon-fill-color: var(--cros-color-secondary);
+    margin-inline-end: 20px;
+  }
+
+  #tooltipIcon::part(tooltip) {
+    --paper-tooltip-background: var(--cros-bg-color) ;
+    --paper-tooltip-text-color: var(--cros-text-color-secondary);
+    --paper-tooltip-delay-in: 0;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px var(--cros-shadow-color-key),
+                0 4px 8px var(--cros-separator-color);
+    font: var(--cros-body-2-font);
+  }
+
+  #tooltipIcon[label-disabled]::part(tooltip) {
+    visibility: hidden;
+  }
+
   .list-item > div {
     flex: 1;
   }
 
-  div[label-disabled] {
-    opacity: var(--cr-disabled-opacity);
+  div[label-disabled],
+  cr-tooltip-icon[label-disabled] {
+    opacity: var(--cros-disabled-opacity);
   }
 </style>
 <div id="featureLabel" class="settings-box">
@@ -37,14 +64,22 @@
   <h2 class="cr-title-text flex">$i18n{syncData}</h2>
 </div>
 <div class="list-frame" id="sync-data-types">
-  <div class="list-item" hidden="[[!osSyncPrefs.osAppsRegistered]]">
+  <div class="list-item" sync-revamp-enabled="[[showSyncSettingsRevamp_]]"
+      hidden="[[!osSyncPrefs.osAppsRegistered]]">
     <div id="osAppsCheckboxLabel"
         label-disabled$="[[areDataTypeTogglesDisabled_]]">
       $i18n{osSyncAppsCheckboxLabel}
-      <div class="secondary" hidden="[[!showAppsCheckboxSublabel_]]">
-        $i18n{osSyncAppsCheckboxSublabel}
+      <div class="secondary" hidden="[[!showSyncSettingsRevamp_]]">
+          $i18n{osSyncAppsCheckboxSublabel}
       </div>
     </div>
+    <cr-tooltip-icon id="tooltipIcon"
+        tooltip-text="$i18n{osSyncAppsTooltipText}" icon-class="cr:help-outline"
+        icon-aria-label="$i18n{osSyncAppsTooltipText}"
+        hidden="[[!showSyncSettingsRevamp_]]"
+        label-disabled$="[[areDataTypeTogglesDisabled_]]"
+        exportparts="tooltip">
+    </cr-tooltip-icon>
     <cr-toggle id="osAppsControl"
         checked="{{osSyncPrefs.osAppsSynced}}"
         on-change="onSingleSyncDataTypeChanged_"
@@ -52,10 +87,14 @@
         aria-labelledby="osAppsCheckboxLabel">
     </cr-toggle>
   </div>
-  <div class="list-item" hidden="[[!osSyncPrefs.osPreferencesRegistered]]">
+  <div class="list-item" sync-revamp-enabled="[[showSyncSettingsRevamp_]]"
+      hidden="[[!osSyncPrefs.osPreferencesRegistered]]">
     <div id="osSettingsCheckboxLabel"
         label-disabled$="[[areDataTypeTogglesDisabled_]]">
       $i18n{osSyncSettingsCheckboxLabel}
+      <div class="secondary" hidden="[[!showSyncSettingsRevamp_]]">
+        $i18n{osSyncSettingsCheckboxSublabel}
+      </div>
     </div>
     <cr-toggle id="osPreferencesControl"
         checked="{{osSyncPrefs.osPreferencesSynced}}"
@@ -64,11 +103,14 @@
         aria-labelledby="osSettingsCheckboxLabel">
     </cr-toggle>
   </div>
-  <div class="list-item"
+  <div class="list-item" sync-revamp-enabled="[[showSyncSettingsRevamp_]]"
        hidden="[[!osSyncPrefs.osWifiConfigurationsRegistered]]">
     <div id="osWifiConfigurationsCheckboxLabel"
         label-disabled$="[[areDataTypeTogglesDisabled_]]">
       $i18n{osSyncWifiConfigurationsCheckboxLabel}
+      <div class="secondary" hidden="[[!showSyncSettingsRevamp_]]">
+        $i18n{osSyncWifiCheckboxSublabel}
+      </div>
     </div>
     <cr-toggle checked="{{osSyncPrefs.osWifiConfigurationsSynced}}"
         on-change="onSingleSyncDataTypeChanged_"
@@ -76,7 +118,8 @@
         aria-labelledby="osWifiConfigurationsCheckboxLabel">
     </cr-toggle>
   </div>
-  <div class="list-item" hidden="[[!osSyncPrefs.osAppsRegistered]]">
+  <div class="list-item" sync-revamp-enabled="[[showSyncSettingsRevamp_]]"
+      hidden="[[!osSyncPrefs.osAppsRegistered]]">
     <!-- Wallpaper sync is a special case; its implementation relies upon
          OS Settings to be synced. Thus, the wallpaper label and toggle are
          only enabled when the Settings sync toggle above is on. -->
@@ -84,6 +127,9 @@
         label-disabled$="[[shouldWallpaperSyncSectionBeDisabled_(
             areDataTypeTogglesDisabled_, osSyncPrefs.osAppsSynced)]]">
       $i18n{wallpaperCheckboxLabel}
+      <div class="secondary" hidden="[[!showSyncSettingsRevamp_]]">
+        $i18n{osSyncWallpaperCheckboxSublabel}
+      </div>
     </div>
     <cr-toggle checked="{{osSyncPrefs.wallpaperEnabled}}"
         on-change="onSingleSyncDataTypeChanged_"
