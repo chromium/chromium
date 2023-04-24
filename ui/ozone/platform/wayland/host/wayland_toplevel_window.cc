@@ -385,6 +385,11 @@ bool WaylandToplevelWindow::IsScreenCoordinatesEnabled() const {
   return screen_coordinates_enabled_;
 }
 
+bool WaylandToplevelWindow::SupportsConfigureMinimizedState() const {
+  return shell_toplevel_ && shell_toplevel_->IsSupportedOnAuraToplevel(
+                                ZAURA_TOPLEVEL_STATE_MINIMIZED_SINCE_VERSION);
+}
+
 void WaylandToplevelWindow::UpdateWindowScale(bool update_bounds) {
   auto old_scale = applied_state().window_scale;
   WaylandWindow::UpdateWindowScale(update_bounds);
@@ -412,8 +417,7 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
   // Store the old state to propagte state changes if Wayland decides to change
   // the state to something else.
   PlatformWindowState old_state = state_;
-  if ((!IsSupportedOnAuraSurface(
-           ZAURA_TOPLEVEL_STATE_MINIMIZED_SINCE_VERSION) &&
+  if ((!SupportsConfigureMinimizedState() &&
        state_ == PlatformWindowState::kMinimized &&
        !window_states.is_activated) ||
       window_states.is_minimized) {
@@ -775,7 +779,8 @@ void WaylandToplevelWindow::SetImmersiveFullscreenStatus(bool status) {
 void WaylandToplevelWindow::ShowSnapPreview(
     WaylandWindowSnapDirection snap_direction,
     bool allow_haptic_feedback) {
-  if (IsSupportedOnAuraSurface(ZAURA_TOPLEVEL_INTENT_TO_SNAP_SINCE_VERSION)) {
+  if (shell_toplevel_ && shell_toplevel_->IsSupportedOnAuraToplevel(
+                             ZAURA_TOPLEVEL_INTENT_TO_SNAP_SINCE_VERSION)) {
     shell_toplevel_->ShowSnapPreview(snap_direction, allow_haptic_feedback);
     return;
   }
@@ -803,24 +808,18 @@ void WaylandToplevelWindow::ShowSnapPreview(
 void WaylandToplevelWindow::CommitSnap(
     WaylandWindowSnapDirection snap_direction,
     float snap_ratio) {
-  if (shell_toplevel_ && shell_toplevel_->IsSupportedOnAuraToplevel(
-                             ZAURA_TOPLEVEL_UNSET_SNAP_SINCE_VERSION)) {
+  // If aura_toplevel does not support `WaylandWindowSnapDirection::kNone` let
+  // it fallthrough to `zaura_surface_unset_snap()`.
+  const bool use_shell_toplevel =
+      shell_toplevel_ &&
+      (shell_toplevel_->IsSupportedOnAuraToplevel(
+           ZAURA_TOPLEVEL_UNSET_SNAP_SINCE_VERSION) ||
+       (snap_direction != WaylandWindowSnapDirection::kNone &&
+        shell_toplevel_->IsSupportedOnAuraToplevel(
+            ZAURA_TOPLEVEL_SET_SNAP_PRIMARY_SINCE_VERSION)));
+  if (use_shell_toplevel) {
     shell_toplevel_->CommitSnap(snap_direction, snap_ratio);
     return;
-  }
-
-  if (shell_toplevel_ && shell_toplevel_->IsSupportedOnAuraToplevel(
-                             ZAURA_TOPLEVEL_SET_SNAP_PRIMARY_SINCE_VERSION)) {
-    switch (snap_direction) {
-      case WaylandWindowSnapDirection::kNone:
-        // Toplevel does not support `WaylandWindowSnapDirection::kNone` yet.
-        // Let it fallthrough to `zaura_surface_unset_snap()`.
-        break;
-      case WaylandWindowSnapDirection::kPrimary:
-      case WaylandWindowSnapDirection::kSecondary:
-        shell_toplevel_->CommitSnap(snap_direction, snap_ratio);
-        return;
-    }
   }
 
   if (IsSupportedOnAuraSurface(ZAURA_SURFACE_UNSET_SNAP_SINCE_VERSION)) {

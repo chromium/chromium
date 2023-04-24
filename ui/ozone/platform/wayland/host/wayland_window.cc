@@ -329,6 +329,10 @@ void WaylandWindow::OnChannelDestroyed() {
                                      std::move(subsurfaces_to_overlays)));
 }
 
+bool WaylandWindow::SupportsConfigureMinimizedState() const {
+  return false;
+}
+
 void WaylandWindow::SetAuraSurface(zaura_surface* aura_surface) {
   DCHECK(connection()->zaura_shell());
   DCHECK_NE(aura_surface_.get(), aura_surface);

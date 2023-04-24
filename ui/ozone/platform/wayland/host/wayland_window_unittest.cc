@@ -904,8 +904,7 @@ TEST_P(WaylandWindowTest, ServerInitiatedRestoreFromMinimizedState) {
   window_->HandleSurfaceConfigure(3);
   EXPECT_EQ(PlatformWindowState::kMinimized, window_->GetPlatformWindowState());
 
-  if (window_->IsSupportedOnAuraSurface(
-          ZAURA_TOPLEVEL_STATE_MINIMIZED_SINCE_VERSION)) {
+  if (window_->SupportsConfigureMinimizedState()) {
     // If the minimized state is supported via the zaura extension, while
     // minimized a restore event from the server should return the window to the
     // normal state.
