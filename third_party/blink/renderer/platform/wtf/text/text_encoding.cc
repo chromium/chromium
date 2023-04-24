@@ -62,8 +62,30 @@ std::string TextEncoding::Encode(const String& string,
   if (string.empty())
     return std::string();
 
-  recordreplay::Assert("[RUN-1350-1765] TextEncoding::Encode %u %s %d", string.length(), GetName(),
-                       (int)handling);
+  // For RUN-1350-1797 (add text contents to assertion.)
+  constexpr size_t BUF_SZ = 16;
+  constexpr size_t BUF_LEN = BUF_SZ - 1;
+  char buf1[BUF_SZ] = {0};
+  const char* sep = "";
+  char buf2[BUF_SZ] = {0};
+
+  // This won't play well with UTF8 strings with non-singlebyte codepoints.
+  std::string strUtf8 = string.Utf8();
+  if (strUtf8.length() < BUF_LEN) {
+    strUtf8.copy(buf1, BUF_LEN);
+  } else if (strUtf8.length() < BUF_LEN * 2) {
+    strUtf8.copy(buf1, BUF_LEN);
+    strUtf8.copy(buf2, BUF_LEN, BUF_LEN);
+  } else {
+    strUtf8.copy(buf1, BUF_LEN);
+    strUtf8.copy(buf2, BUF_LEN, strUtf8.length() - BUF_LEN);
+    sep = "..";
+  }
+  recordreplay::Assert("[RUN-1350-1797] TextEncoding::Encode %u %s %d (%s%s%s)",
+    string.length(),
+    GetName(),
+    (int)handling,
+    buf1, sep, buf2);
 
   std::unique_ptr<TextCodec> text_codec = NewTextCodec(*this);
   std::string encoded_string;
