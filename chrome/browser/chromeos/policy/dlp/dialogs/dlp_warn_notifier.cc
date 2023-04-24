@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_notifier.h"
 
 #include <memory>
 
 #include "base/containers/cxx20_erase.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_dialog.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"
@@ -82,9 +84,20 @@ int DlpWarnNotifier::ActiveWarningDialogsCountForTesting() const {
 base::WeakPtr<views::Widget> DlpWarnNotifier::ShowDlpWarningDialog(
     OnDlpRestrictionCheckedCallback callback,
     DlpWarnDialog::DlpWarnDialogOptions options) {
-  views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
-      std::make_unique<DlpWarnDialog>(std::move(callback), options),
-      /*context=*/nullptr, /*parent=*/nullptr);
+  views::Widget* widget;
+  if (options.restriction == PolicyDialogBase::Restriction::kFiles) {
+    // TODO(aidazolic): Pass parent.
+    widget = views::DialogDelegate::CreateDialogWidget(
+        std::make_unique<FilesPolicyDialog>(
+            std::move(callback), options.confidential_files,
+            options.files_destination.value(), options.files_action.value()),
+        /*context=*/nullptr, /*parent=*/nullptr);
+  } else {
+    widget = views::DialogDelegate::CreateDialogWidget(
+        std::make_unique<DlpWarnDialog>(std::move(callback), options),
+        /*context=*/nullptr, /*parent=*/nullptr);
+  }
+
   widget->Show();
   // We disable the dialog's hide animations after showing it so that it doesn't
   // end up showing in the screenshots, video recording, or screen share.

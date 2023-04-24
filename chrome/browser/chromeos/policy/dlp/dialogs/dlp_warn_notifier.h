@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_WARN_NOTIFIER_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_WARN_NOTIFIER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DIALOGS_DLP_WARN_NOTIFIER_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DIALOGS_DLP_WARN_NOTIFIER_H_
 
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_dialog.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -92,4 +93,4 @@ class DlpWarnNotifier : public views::WidgetObserver {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_WARN_NOTIFIER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DLP_DIALOGS_DLP_WARN_NOTIFIER_H_

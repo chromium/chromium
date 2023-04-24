@@ -14,7 +14,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "dbus/message.h"

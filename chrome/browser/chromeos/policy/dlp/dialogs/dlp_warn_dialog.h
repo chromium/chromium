@@ -2,47 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_WARN_DIALOG_H_
-#define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_WARN_DIALOG_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DIALOGS_DLP_WARN_DIALOG_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DIALOGS_DLP_WARN_DIALOG_H_
 
+#include <memory>
 #include <string>
 
-#include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/window/dialog_delegate.h"
 
 namespace policy {
 
-// The callback function that is invoked when the user addresses the
-// DlpWarnDialog. When `should_proceed` is set to true, the action will continue
-// as if there was no restricted content. Otherwise, the operation is aborted.
-using OnDlpRestrictionCheckedCallback =
-    base::OnceCallback<void(bool should_proceed)>;
-
-// DlpWarnDialog is a system modal dialog shown when Data Leak Protection
-// files and on screen restriction (Screen Capture, Printing, Screen Share)
-// level is set to WARN.
-class DlpWarnDialog : public views::DialogDelegateView {
+// DlpWarnDialog is a system modal dialog shown when Data Leak Protection on
+// screen restriction (Screen Capture, Printing, Screen Share) level is set to
+// WARN.
+class DlpWarnDialog : public PolicyDialogBase {
  public:
   METADATA_HEADER(DlpWarnDialog);
 
-  // Type of the restriction for which the dialog is created, used to determine
-  // the text shown in the dialog.
-  enum class Restriction {
-    kScreenCapture,
-    kVideoCapture,
-    kPrinting,
-    kScreenShare,
-    kFiles
-  };
-
   // A structure to keep track of optional and configurable parameters of a
   // DlpWarnDialog.
+  // TODO(b/278046656): Clean this up.
   struct DlpWarnDialogOptions {
     DlpWarnDialogOptions() = delete;
     explicit DlpWarnDialogOptions(Restriction restriction);
@@ -96,9 +81,22 @@ class DlpWarnDialog : public views::DialogDelegateView {
                 DlpWarnDialogOptions options);
   DlpWarnDialog(const DlpWarnDialog& other) = delete;
   DlpWarnDialog& operator=(const DlpWarnDialog& other) = delete;
-  ~DlpWarnDialog() override = default;
+  ~DlpWarnDialog() override;
+
+ private:
+  // PolicyDialogBase overrides:
+  void AddGeneralInformation() override;
+  void MaybeAddConfidentialRows() override;
+  std::u16string GetOkButton() override;
+  std::u16string GetCancelButton() override;
+  std::u16string GetTitle() override;
+  std::u16string GetMessage() override;
+
+  Restriction restriction_;
+  absl::optional<std::u16string> application_title_;
+  DlpConfidentialContents contents_;
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_WARN_DIALOG_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DLP_DIALOGS_DLP_WARN_DIALOG_H_

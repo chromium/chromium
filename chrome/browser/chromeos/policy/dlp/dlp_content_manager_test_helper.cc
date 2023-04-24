@@ -6,9 +6,9 @@
 
 #include <memory>
 
+#include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
