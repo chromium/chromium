@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -694,6 +695,16 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, NoCrashWhenExitingTabletMode) {
   auto window = CreateAppWindow();
   ShowMultitaskMenu(*window);
   TabletModeControllerTestApi().LeaveTabletMode();
+}
+
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, HidesWhenMinimized) {
+  auto window = CreateAppWindow();
+  ShowMultitaskMenu(*window);
+
+  Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
+      WINDOW_MINIMIZE, {});
+  ASSERT_TRUE(WindowState::Get(window.get())->IsMinimized());
+  EXPECT_FALSE(GetMultitaskMenu());
 }
 
 }  // namespace ash

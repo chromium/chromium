@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
 #include "ui/aura/window.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/focus/widget_focus_manager.h"
@@ -26,8 +25,7 @@ class TabletModeMultitaskMenuView;
 // Creates and maintains the multitask menu. Responsible for showing,
 // hiding, and animating the menu.
 class ASH_EXPORT TabletModeMultitaskMenu
-    : public aura::WindowObserver,
-      public views::WidgetFocusChangeListener,
+    : public views::WidgetFocusChangeListener,
       public display::DisplayObserver {
  public:
   TabletModeMultitaskMenu(TabletModeMultitaskMenuEventHandler* event_handler,
@@ -37,8 +35,6 @@ class ASH_EXPORT TabletModeMultitaskMenu
   TabletModeMultitaskMenu& operator=(const TabletModeMultitaskMenu&) = delete;
 
   ~TabletModeMultitaskMenu() override;
-
-  aura::Window* window() { return window_; }
 
   views::Widget* widget() { return widget_.get(); }
 
@@ -60,9 +56,6 @@ class ASH_EXPORT TabletModeMultitaskMenu
   // Calls the event handler to destroy `this`.
   void Reset();
 
-  // aura::WindowObserver:
-  void OnWindowDestroying(aura::Window* window) override;
-
   // views::WidgetFocusChangeListener:
   void OnNativeFocusChanged(gfx::NativeView focused_now) override;
 
@@ -77,9 +70,6 @@ class ASH_EXPORT TabletModeMultitaskMenu
   // `this`.
   raw_ptr<TabletModeMultitaskMenuEventHandler, ExperimentalAsh> event_handler_;
 
-  // The window that opened this multitask menu.
-  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
-
   // Widget implementation that is created and maintained by `this`.
   views::UniqueWidgetPtr widget_ = std::make_unique<views::Widget>();
 
@@ -88,10 +78,6 @@ class ASH_EXPORT TabletModeMultitaskMenu
 
   // Initial y location in `window_` coordinates. Only relevant for drags.
   float initial_y_;
-
-  // Window observer for `window_`.
-  base::ScopedObservation<aura::Window, aura::WindowObserver> observed_window_{
-      this};
 
   display::ScopedOptionalDisplayObserver display_observer_{this};
 

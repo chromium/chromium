@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
+#include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/view.h"
@@ -25,7 +26,8 @@ class SplitButtonView;
 // contains a separate button to open a dogfood feedback page, to be removed in
 // M114/launch.
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
-    : public views::View {
+    : public views::View,
+      public aura::WindowObserver {
  public:
   METADATA_HEADER(MultitaskMenuView);
 
@@ -41,7 +43,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   // should be passed when we want the functionality of auto-closing the menu
   // when the mouse moves out of the menu or the anchor.
   MultitaskMenuView(aura::Window* window,
-                    base::RepeatingClosure on_any_button_pressed,
+                    base::RepeatingClosure close_callback,
                     uint8_t buttons,
                     views::View* anchor_view);
 
@@ -56,6 +58,14 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   // views::View:
   void AddedToWidget() override;
   void OnThemeChanged() override;
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* parent_window) override;
+  void OnWindowBoundsChanged(aura::Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override;
+  void OnWindowVisibilityChanging(aura::Window* window, bool visible) override;
 
   // If the menu is opened because of mouse hover, moving the mouse outside the
   // menu for 3 seconds will result in it auto closing. This function reduces
@@ -90,19 +100,23 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   raw_ptr<MultitaskButton> full_button_for_testing_ = nullptr;
   raw_ptr<MultitaskButton> float_button_for_testing_ = nullptr;
 
-  // The window which the buttons act on. It is guaranteed to outlive `this`.
-  const raw_ptr<aura::Window, ExperimentalAsh> window_;
+  // The window which the buttons act on.
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 
   // The view the menu is anchored to if any. This is only passed if we want to
   // close the menu when the mouse moves out of the multitask menu or its anchor
   // view.
   const raw_ptr<views::View, ExperimentalAsh> anchor_view_;
 
-  // Runs after any of the buttons are pressed, or a press out of the menu
+  // Runs when the widget which contains `this` should be destroyed. For
+  // example, after any of the buttons are pressed, or a press out of the menu
   // bounds.
   base::RepeatingClosure close_callback_;
 
   std::unique_ptr<MenuPreTargetHandler> event_handler_;
+
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
 };
 
 }  // namespace chromeos

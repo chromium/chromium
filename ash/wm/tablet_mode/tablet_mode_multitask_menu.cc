@@ -203,10 +203,8 @@ END_METADATA
 TabletModeMultitaskMenu::TabletModeMultitaskMenu(
     TabletModeMultitaskMenuEventHandler* event_handler,
     aura::Window* window)
-    : event_handler_(event_handler), window_(window) {
-  // Start observing the window.
-  DCHECK(window);
-  observed_window_.Observe(window);
+    : event_handler_(event_handler) {
+  CHECK(window);
 
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
@@ -233,12 +231,12 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
 
   menu_view_ =
       widget_->SetContentsView(std::make_unique<TabletModeMultitaskMenuView>(
-          window_, base::BindRepeating(&TabletModeMultitaskMenu::AnimateFadeOut,
-                                       weak_factory_.GetWeakPtr())));
+          window, base::BindRepeating(&TabletModeMultitaskMenu::AnimateFadeOut,
+                                      weak_factory_.GetWeakPtr())));
 
   // Set the widget on the top center of the window.
   const gfx::Size menu_size(menu_view_->GetPreferredSize());
-  const gfx::Rect window_bounds(window_->GetBoundsInScreen());
+  const gfx::Rect window_bounds(window->GetBoundsInScreen());
 
   // The invisible widget needs to be big enough to include both the menu and
   // shadow otherwise it would mask parts out. Explicitly set the widget size
@@ -278,10 +276,12 @@ void TabletModeMultitaskMenu::Animate(bool show) {
   if (view_layer->GetAnimator()->is_animating()) {
     return;
   }
+
   if (show) {
     RecordMultitaskMenuEntryType(
         chromeos::MultitaskMenuEntryType::kGestureScroll);
   }
+
   views::AnimationBuilder()
       .OnEnded(show ? base::DoNothing()
                     : base::BindRepeating(&TabletModeMultitaskMenu::Reset,
@@ -300,8 +300,14 @@ void TabletModeMultitaskMenu::Animate(bool show) {
 
 void TabletModeMultitaskMenu::AnimateFadeOut() {
   ui::Layer* view_layer = menu_view_->layer();
-  if (view_layer->GetAnimator()->is_animating())
+  // If the fade out animation is already underway, no need to start another
+  // one. This can happen for example if buttons are clicked rapidly while fade
+  // out has started.
+  if (view_layer->GetAnimator()->is_animating() &&
+      view_layer->GetTargetOpacity() == 0.0f) {
     return;
+  }
+
   views::AnimationBuilder()
       .OnEnded(base::BindRepeating(&TabletModeMultitaskMenu::Reset,
                                    weak_factory_.GetWeakPtr()))
@@ -351,16 +357,6 @@ void TabletModeMultitaskMenu::EndDrag() {
 
 void TabletModeMultitaskMenu::Reset() {
   event_handler_->ResetMultitaskMenu();
-}
-
-void TabletModeMultitaskMenu::OnWindowDestroying(aura::Window* window) {
-  DCHECK(observed_window_.IsObservingSource(window));
-
-  observed_window_.Reset();
-  window_ = nullptr;
-
-  // Destroys `this`.
-  Reset();
 }
 
 void TabletModeMultitaskMenu::OnNativeFocusChanged(

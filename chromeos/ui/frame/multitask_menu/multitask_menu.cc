@@ -11,6 +11,7 @@
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "chromeos/ui/wm/window_util.h"
+#include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -93,7 +94,6 @@ MultitaskMenu::MultitaskMenu(views::View* anchor,
       kButtonHeight);
 
   display_observer_.emplace(this);
-  parent_window_observation_.Observe(parent_window());
 }
 
 MultitaskMenu::~MultitaskMenu() = default;
@@ -107,27 +107,6 @@ void MultitaskMenu::HideBubble() {
 
   // Destroys `this`.
   widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
-}
-
-void MultitaskMenu::OnWindowDestroying(aura::Window* parent_window) {
-  DCHECK(parent_window_observation_.IsObservingSource(parent_window));
-  HideBubble();
-}
-
-void MultitaskMenu::OnWindowBoundsChanged(aura::Window* window,
-                                          const gfx::Rect& old_bounds,
-                                          const gfx::Rect& new_bounds,
-                                          ui::PropertyChangeReason reason) {
-  DCHECK(parent_window_observation_.IsObservingSource(window));
-  HideBubble();
-}
-
-void MultitaskMenu::OnWindowVisibilityChanging(aura::Window* window,
-                                               bool visible) {
-  DCHECK(parent_window_observation_.IsObservingSource(window));
-  if (!visible) {
-    HideBubble();
-  }
 }
 
 void MultitaskMenu::OnDisplayTabletStateChanged(display::TabletState state) {

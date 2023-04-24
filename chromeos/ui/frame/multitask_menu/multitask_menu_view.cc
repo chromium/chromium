@@ -169,6 +169,8 @@ MultitaskMenuView::MultitaskMenuView(aura::Window* window,
   DCHECK(close_callback_);
   SetUseDefaultFillLayout(true);
 
+  window_observation_.Observe(window);
+
   // The display orientation. This determines whether menu is in
   // landscape/portrait mode.
   const bool is_portrait_mode = !chromeos::IsDisplayLayoutHorizontal(
@@ -279,6 +281,30 @@ void MultitaskMenuView::OnThemeChanged() {
           kDogfoodPawIcon,
           color_provider->GetColor(
               ui::kColorMultitaskFeedbackButtonLabelForeground)));
+}
+
+void MultitaskMenuView::OnWindowDestroying(aura::Window* window) {
+  CHECK(window_observation_.IsObservingSource(window));
+
+  window_observation_.Reset();
+  window_ = nullptr;
+  close_callback_.Run();
+}
+
+void MultitaskMenuView::OnWindowBoundsChanged(aura::Window* window,
+                                              const gfx::Rect& old_bounds,
+                                              const gfx::Rect& new_bounds,
+                                              ui::PropertyChangeReason reason) {
+  CHECK(window_observation_.IsObservingSource(window));
+  close_callback_.Run();
+}
+
+void MultitaskMenuView::OnWindowVisibilityChanging(aura::Window* window,
+                                                   bool visible) {
+  CHECK(window_observation_.IsObservingSource(window));
+  if (!visible) {
+    close_callback_.Run();
+  }
 }
 
 // static
