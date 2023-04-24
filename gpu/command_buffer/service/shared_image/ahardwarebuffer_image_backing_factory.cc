@@ -566,6 +566,49 @@ void AHardwareBufferImageBacking::EndOverlayAccess() {
   read_sync_fd_ = gl::MergeFDs(std::move(read_sync_fd_), std::move(fence_fd));
 }
 
+// static
+AHardwareBufferImageBackingFactory::FormatInfo
+AHardwareBufferImageBackingFactory::FormatInfoForSupportedFormat(
+    viz::ResourceFormat format,
+    const gles2::Validators* validators) {
+  CHECK(AHardwareBufferSupportedFormat(format));
+
+  FormatInfo info;
+  info.ahb_format = AHardwareBufferFormat(format);
+
+  // TODO(vikassoni): In future when we use GL_TEXTURE_EXTERNAL_OES target
+  // with AHB, we need to check if oes_egl_image_external is supported or
+  // not.
+  const bool is_egl_image_supported =
+      gl::g_current_gl_driver->ext.b_GL_OES_EGL_image;
+  if (!is_egl_image_supported) {
+    return info;
+  }
+
+  // Check if AHB backed GL texture can be created using this format and
+  // gather GL related format info.
+  // TODO(vikassoni): Add vulkan related information in future.
+  GLuint internal_format = viz::GLInternalFormat(format);
+  GLenum gl_format = viz::GLDataFormat(format);
+  GLenum gl_type = viz::GLDataType(format);
+
+  //  GLImageAHardwareBuffer supports internal format GL_RGBA and GL_RGB.
+  if (internal_format != GL_RGBA && internal_format != GL_RGB) {
+    return info;
+  }
+
+  // Validate if GL format, type and internal format is supported.
+  if (validators->texture_internal_format.IsValid(internal_format) &&
+      validators->texture_format.IsValid(gl_format) &&
+      validators->pixel_type.IsValid(gl_type)) {
+    info.gl_supported = true;
+    info.gl_format = gl_format;
+    info.gl_type = gl_type;
+    info.internal_format = internal_format;
+  }
+  return info;
+}
+
 AHardwareBufferImageBackingFactory::AHardwareBufferImageBackingFactory(
     const gles2::FeatureInfo* feature_info,
     const GpuPreferences& gpu_preferences)
@@ -573,9 +616,6 @@ AHardwareBufferImageBackingFactory::AHardwareBufferImageBackingFactory(
       use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder &&
                        gl::PassthroughCommandDecoderSupported()) {
   DCHECK(base::AndroidHardwareBufferCompat::IsSupportAvailable());
-  const gles2::Validators* validators = feature_info->validators();
-  const bool is_egl_image_supported =
-      gl::g_current_gl_driver->ext.b_GL_OES_EGL_image;
 
   // Build the feature info for all the resource formats.
   for (int i = 0; i <= viz::RESOURCE_FORMAT_MAX; ++i) {
@@ -583,44 +623,14 @@ AHardwareBufferImageBackingFactory::AHardwareBufferImageBackingFactory(
 
     // If AHB does not support this format, we will not be able to create this
     // backing.
-    if (!AHardwareBufferSupportedFormat(format))
-      continue;
-
-    FormatInfo info;
-    info.ahb_format = AHardwareBufferFormat(format);
-
-    // TODO(vikassoni): In future when we use GL_TEXTURE_EXTERNAL_OES target
-    // with AHB, we need to check if oes_egl_image_external is supported or
-    // not.
-    if (!is_egl_image_supported) {
-      format_infos_[viz::SharedImageFormat::SinglePlane(format)] = info;
+    if (!AHardwareBufferSupportedFormat(format)) {
       continue;
     }
 
-    // Check if AHB backed GL texture can be created using this format and
-    // gather GL related format info.
-    // TODO(vikassoni): Add vulkan related information in future.
-    GLuint internal_format = viz::GLInternalFormat(format);
-    GLenum gl_format = viz::GLDataFormat(format);
-    GLenum gl_type = viz::GLDataType(format);
-
-    //  GLImageAHardwareBuffer supports internal format GL_RGBA and GL_RGB.
-    if (internal_format != GL_RGBA && internal_format != GL_RGB) {
-      format_infos_[viz::SharedImageFormat::SinglePlane(format)] = info;
-      continue;
-    }
-
-    // Validate if GL format, type and internal format is supported.
-    if (validators->texture_internal_format.IsValid(internal_format) &&
-        validators->texture_format.IsValid(gl_format) &&
-        validators->pixel_type.IsValid(gl_type)) {
-      info.gl_supported = true;
-      info.gl_format = gl_format;
-      info.gl_type = gl_type;
-      info.internal_format = internal_format;
-    }
-    format_infos_[viz::SharedImageFormat::SinglePlane(format)] = info;
+    format_infos_[viz::SharedImageFormat::SinglePlane(format)] =
+        FormatInfoForSupportedFormat(format, feature_info->validators());
   }
+
   // TODO(vikassoni): We are using below GL api calls for now as Vulkan mode
   // doesn't exist. Once we have vulkan support, we shouldn't query GL in this
   // code until we are asked to make a GL representation (or allocate a
@@ -865,6 +875,7 @@ bool AHardwareBufferImageBackingFactory::IsSupported(
 }
 
 AHardwareBufferImageBackingFactory::FormatInfo::FormatInfo() = default;
+
 AHardwareBufferImageBackingFactory::FormatInfo::~FormatInfo() = default;
 
 std::unique_ptr<SharedImageBacking>
