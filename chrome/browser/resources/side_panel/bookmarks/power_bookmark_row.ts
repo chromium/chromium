@@ -96,6 +96,16 @@ export class PowerBookmarkRowElement extends PolymerElement {
   trailingIconTooltip: string;
   imageUrls: string[];
 
+  constructor() {
+    super();
+
+    // The row has a [tabindex] attribute on it to move focus using iron-list
+    // but the row itself should not be focusable. By setting `delegatesFocus`
+    // to true, the browser will automatically move focus to the focusable
+    // elements within it when the row itself tries to gain focus.
+    this.attachShadow({mode: 'open', delegatesFocus: true});
+  }
+
   override connectedCallback() {
     super.connectedCallback();
     this.onInputDisplayChange_();
