@@ -177,6 +177,8 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
                                             HeuristicMemorySaverPolicy>(
         performance_manager::features::
             kHeuristicMemorySaverAvailableMemoryThresholdPercent.Get(),
+        performance_manager::features::
+            kHeuristicMemorySaverAvailableMemoryThresholdMb.Get(),
         base::Seconds(
             performance_manager::features::
                 kHeuristicMemorySaverThresholdReachedHeartbeatSeconds.Get()),

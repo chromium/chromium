@@ -81,6 +81,9 @@ const base::FeatureParam<int>
     kHeuristicMemorySaverAvailableMemoryThresholdPercent{
         &kHeuristicMemorySaver, "threshold_percent", 5};
 
+const base::FeatureParam<int> kHeuristicMemorySaverAvailableMemoryThresholdMb{
+    &kHeuristicMemorySaver, "threshold_mb", 4096};
+
 const base::FeatureParam<int> kHeuristicMemorySaverMinimumMinutesInBackground{
     &kHeuristicMemorySaver, "minimum_minutes_in_background", 120};
 

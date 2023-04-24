@@ -19,20 +19,27 @@ class HeuristicMemorySaverPolicy : public GraphOwned {
  public:
   using AvailableMemoryCallback = base::RepeatingCallback<uint64_t()>;
   using TotalMemoryCallback = base::RepeatingCallback<uint64_t()>;
-  // `pmf_threshold_percent`: the amount of free memory this policy tries to
-  // maintain, i.e. it will start discarding when the percentage available
-  // memory < pmf_threshold_percent
+  // `pmf_threshold_percent` and `pmf_threshold_mb`: the amount of free memory
+  // this policy tries to maintain, i.e. it will start discarding when the
+  // percentage available memory < `pmf_threshold_percent` AND available memory
+  // < `pmf_threshold_mb`
+  //
   // `threshold_reached_heartbeat_interval`: the time interval at which this
   // policy will check whether a tab should be discarded, when the last check
   // found that the threshold was reached.
+  //
   // `threshold_not_reached_heartbeat_interval`: the time interval at which this
   // policy will check whether a tab should be discarded, when the last check
-  // found that the threshold was not reached. `minimum_time_in_background`: the
-  // minimum amount of time a page must spend in the background before being
-  // considered eligible for discarding. `available_memory_cb` and
-  // `total_memory_cb` allow mocking memory measurements for testing.
+  // found that the threshold was not reached.
+  //
+  // `minimum_time_in_background`: the minimum amount of time a page must spend
+  // in the background before being considered eligible for discarding.
+  //
+  // `available_memory_cb` and `total_memory_cb` allow mocking memory
+  // measurements for testing.
   HeuristicMemorySaverPolicy(
       uint64_t pmf_threshold_percent,
+      uint64_t pmf_threshold_mb,
       base::TimeDelta threshold_reached_heartbeat_interval,
       base::TimeDelta threshold_not_reached_heartbeat_interval,
       base::TimeDelta minimum_time_in_background,
@@ -60,6 +67,7 @@ class HeuristicMemorySaverPolicy : public GraphOwned {
   static uint64_t DefaultGetAmountOfPhysicalMemory();
 
   uint64_t pmf_threshold_percent_;
+  uint64_t pmf_threshold_bytes_;
   base::TimeDelta threshold_reached_heartbeat_interval_;
   base::TimeDelta threshold_not_reached_heartbeat_interval_;
   base::TimeDelta minimum_time_in_background_;

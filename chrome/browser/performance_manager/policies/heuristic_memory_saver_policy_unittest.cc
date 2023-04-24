@@ -13,6 +13,8 @@ namespace performance_manager::policies {
 const uint64_t kDefaultAvailableMemoryValue = 60;
 const uint64_t kDefaultTotalMemoryValue = 100;
 
+const uint64_t kBytesPerGb = 1024 * 1024 * 1024;
+
 const base::TimeDelta kDefaultHeartbeatInterval = base::Seconds(10);
 const base::TimeDelta kLongHeartbeatInterval = base::Minutes(1);
 const base::TimeDelta kDefaultMinimumTimeInBackground = base::Seconds(11);
@@ -65,6 +67,7 @@ class HeuristicMemorySaverPolicyTest
   // always return 60 and 100.
   void CreatePolicy(
       uint64_t pmf_threshold_percent,
+      uint64_t pmf_threshold_mb,
       base::TimeDelta threshold_reached_heartbeat_interval,
       base::TimeDelta threshold_not_reached_heartbeat_interval,
       base::TimeDelta minimum_time_in_background,
@@ -75,7 +78,8 @@ class HeuristicMemorySaverPolicyTest
       HeuristicMemorySaverPolicy::TotalMemoryCallback total_memory_callback =
           base::BindRepeating([]() { return kDefaultTotalMemoryValue; })) {
     auto policy = std::make_unique<HeuristicMemorySaverPolicy>(
-        pmf_threshold_percent, threshold_reached_heartbeat_interval,
+        pmf_threshold_percent, pmf_threshold_mb,
+        threshold_reached_heartbeat_interval,
         threshold_not_reached_heartbeat_interval, minimum_time_in_background,
         available_memory_callback, total_memory_callback);
     policy_ = policy.get();
@@ -112,6 +116,7 @@ class HeuristicMemorySaverPolicyTest
 TEST_F(HeuristicMemorySaverPolicyTest, NoDiscardIfPolicyInactive) {
   CreatePolicy(
       /*pmf_threshold_percent=*/100,
+      /*pmf_threshold_mb=*/100,
       /*threshold_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
       /*threshold_not_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
       /*minimum_time_in_background=*/kDefaultMinimumTimeInBackground);
@@ -136,6 +141,7 @@ TEST_F(HeuristicMemorySaverPolicyTest, NoDiscardIfPolicyInactive) {
 TEST_F(HeuristicMemorySaverPolicyTest, DiscardIfPolicyActive) {
   CreatePolicy(
       /*pmf_threshold_percent=*/100,
+      /*pmf_threshold_mb=*/100,
       /*threshold_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
       /*threshold_not_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
       /*minimum_time_in_background=*/kDefaultMinimumTimeInBackground);
@@ -162,12 +168,101 @@ TEST_F(HeuristicMemorySaverPolicyTest, DiscardIfPolicyActive) {
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(HeuristicMemorySaverPolicyTest, NoDiscardIfUnderThreshold) {
+TEST_F(HeuristicMemorySaverPolicyTest, NoDiscardIfAboveThreshold) {
   CreatePolicy(
       /*pmf_threshold_percent=*/30,
+      /*pmf_threshold_mb=*/100,
       /*threshold_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
       /*threshold_not_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
       /*minimum_time_in_background=*/kDefaultMinimumTimeInBackground);
+
+  policy()->SetActive(true);
+
+  page_node()->SetType(PageType::kTab);
+  // Toggle visibility so that the page node updates its last visibility timing
+  // information.
+  page_node()->SetIsVisible(true);
+  page_node()->SetIsVisible(false);
+
+  // Advance the time by at least `minimum_time_in_background` +
+  // `heartbeat_interval`. If a tab is to be discarded, it will be at this
+  // point.
+  task_env().FastForwardBy(kDefaultHeartbeatInterval +
+                           kDefaultMinimumTimeInBackground);
+  // No discard.
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+}
+
+// Tests the case used as an example in the
+// `kHeuristicMemorySaverAvailableMemoryThresholdPercent` comment:
+//
+// A device with 8Gb of installed RAM, 1Gb of which is available is under the
+// threshold and will discard tabs (12.5% available and 1Gb < 2048Mb)
+TEST_F(HeuristicMemorySaverPolicyTest,
+       DiscardIfPolicyActiveAndUnderBothThresholds) {
+  MemoryMetricsMocker mocker;
+  mocker.SetAvailableMemory(1 * kBytesPerGb);
+  mocker.SetTotalMemory(8 * kBytesPerGb);
+
+  CreatePolicy(
+      /*pmf_threshold_percent=*/20,
+      /*pmf_threshold_mb=*/2048,
+      /*threshold_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
+      /*threshold_not_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
+      /*minimum_time_in_background=*/kDefaultMinimumTimeInBackground,
+      /*available_memory_callback=*/
+      base::BindRepeating(&MemoryMetricsMocker::GetAvailableMemory,
+                          base::Unretained(&mocker)),
+      /*total_memory_callback=*/
+      base::BindRepeating(&MemoryMetricsMocker::GetTotalMemory,
+                          base::Unretained(&mocker)));
+
+  policy()->SetActive(true);
+
+  page_node()->SetType(PageType::kTab);
+  // Toggle visibility so that the page node updates its last visibility timing
+  // information.
+  page_node()->SetIsVisible(true);
+  page_node()->SetIsVisible(false);
+
+  // Advance the time by at least `minimum_time_in_background`
+  task_env().FastForwardBy(kDefaultMinimumTimeInBackground);
+  // No discard yet.
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+
+  // Advance by at least the heartbeat interval, this should discard the
+  // now-eligible tab.
+  EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
+      .WillOnce(::testing::Return(true));
+  task_env().FastForwardBy(kDefaultHeartbeatInterval);
+
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+}
+
+// Tests the case used as an example in the
+// `kHeuristicMemorySaverAvailableMemoryThresholdPercent` comment:
+//
+// A device with 16Gb of installed RAM, 3Gb of which are available is under
+// the percentage threshold but will not discard tabs because it's above the
+// absolute Mb threshold (18.75% available, but 3Gb > 2048Mb)
+TEST_F(HeuristicMemorySaverPolicyTest,
+       NoDiscardIfUnderPercentThresholdAboveMbThreshold) {
+  MemoryMetricsMocker mocker;
+  mocker.SetAvailableMemory(3 * kBytesPerGb);
+  mocker.SetTotalMemory(16 * kBytesPerGb);
+
+  CreatePolicy(
+      /*pmf_threshold_percent=*/20,
+      /*pmf_threshold_mb=*/2048,
+      /*threshold_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
+      /*threshold_not_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
+      /*minimum_time_in_background=*/kDefaultMinimumTimeInBackground,
+      /*available_memory_callback=*/
+      base::BindRepeating(&MemoryMetricsMocker::GetAvailableMemory,
+                          base::Unretained(&mocker)),
+      /*total_memory_callback=*/
+      base::BindRepeating(&MemoryMetricsMocker::GetTotalMemory,
+                          base::Unretained(&mocker)));
 
   policy()->SetActive(true);
 
@@ -193,6 +288,7 @@ TEST_F(HeuristicMemorySaverPolicyTest, DifferentThresholds) {
 
   CreatePolicy(
       /*pmf_threshold_percent=*/30,
+      /*pmf_threshold_mb=*/100,
       /*threshold_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
       /*threshold_not_reached_heartbeat_interval=*/kLongHeartbeatInterval,
       /*minimum_time_in_background=*/kDefaultMinimumTimeInBackground,

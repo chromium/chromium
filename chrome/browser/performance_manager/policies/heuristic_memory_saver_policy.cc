@@ -11,16 +11,21 @@ namespace performance_manager::policies {
 
 namespace {
 HeuristicMemorySaverPolicy* g_heuristic_memory_saver_policy = nullptr;
+
+const uint64_t kBytesPerMb = 1024 * 1024;
+
 }  // namespace
 
 HeuristicMemorySaverPolicy::HeuristicMemorySaverPolicy(
     uint64_t pmf_threshold_percent,
+    uint64_t pmf_threshold_mb,
     base::TimeDelta threshold_reached_heartbeat_interval,
     base::TimeDelta threshold_not_reached_heartbeat_interval,
     base::TimeDelta minimum_time_in_background,
     AvailableMemoryCallback available_memory_cb,
     TotalMemoryCallback total_memory_cb)
     : pmf_threshold_percent_(pmf_threshold_percent),
+      pmf_threshold_bytes_(pmf_threshold_mb * kBytesPerMb),
       threshold_reached_heartbeat_interval_(
           threshold_reached_heartbeat_interval),
       threshold_not_reached_heartbeat_interval_(
@@ -29,6 +34,7 @@ HeuristicMemorySaverPolicy::HeuristicMemorySaverPolicy(
       available_memory_cb_(available_memory_cb),
       total_memory_cb_(total_memory_cb) {
   CHECK(!g_heuristic_memory_saver_policy);
+  CHECK_LE(pmf_threshold_percent_, 100UL);
   g_heuristic_memory_saver_policy = this;
 }
 
@@ -75,9 +81,10 @@ void HeuristicMemorySaverPolicy::OnHeartbeatCallback() {
 
   base::TimeDelta next_interval = threshold_not_reached_heartbeat_interval_;
 
-  if (static_cast<float>(available_memory) /
-          static_cast<float>(total_physical_memory) * 100.f <
-      static_cast<float>(pmf_threshold_percent_)) {
+  if (available_memory < pmf_threshold_bytes_ &&
+      static_cast<float>(available_memory) /
+              static_cast<float>(total_physical_memory) * 100.f <
+          static_cast<float>(pmf_threshold_percent_)) {
     PageDiscardingHelper::GetFromGraph(graph_)->DiscardAPage(
         /*post_discard_cb=*/base::DoNothing(),
         PageDiscardingHelper::DiscardReason::PROACTIVE,
