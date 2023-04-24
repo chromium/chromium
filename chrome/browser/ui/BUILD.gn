@@ -5496,6 +5496,8 @@ static_library("ui") {
       "views/webid/account_selection_bubble_view_interface.h",
       "views/webid/fedcm_account_selection_view_desktop.cc",
       "views/webid/fedcm_account_selection_view_desktop.h",
+      "views/webid/fedcm_modal_dialog_view.cc",
+      "views/webid/fedcm_modal_dialog_view.h",
       "views/webid/identity_provider_display_data.cc",
       "views/webid/identity_provider_display_data.h",
       "webauthn/account_hover_list_model.cc",
