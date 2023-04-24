@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -19,6 +20,8 @@
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/apps/app_service/uninstall_dialog.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
@@ -152,6 +155,9 @@ void AppServiceProxyAsh::Initialize() {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&AppServiceProxyAsh::InitAppPlatformMetrics,
                                   weak_ptr_factory_.GetWeakPtr()));
+  }
+  if (ash::features::ArePromiseIconsEnabled()) {
+    promise_app_service_ = std::make_unique<apps::PromiseAppService>(profile_);
   }
 }
 
@@ -388,12 +394,18 @@ void AppServiceProxyAsh::ReadIconsForTesting(AppType app_type,
             std::move(callback));
 }
 
-apps::PromiseAppRegistryCache& AppServiceProxyAsh::PromiseAppRegistryCache() {
-  return promise_app_registry_cache_;
+apps::PromiseAppRegistryCache* AppServiceProxyAsh::PromiseAppRegistryCache() {
+  if (!promise_app_service_) {
+    return nullptr;
+  }
+  return promise_app_service_->PromiseAppRegistryCache();
 }
 
 void AppServiceProxyAsh::OnPromiseApp(PromiseAppPtr delta) {
-  promise_app_registry_cache_.OnPromiseApp(std::move(delta));
+  if (!PromiseAppRegistryCache()) {
+    return;
+  }
+  PromiseAppRegistryCache()->OnPromiseApp(std::move(delta));
 }
 
 void AppServiceProxyAsh::Shutdown() {

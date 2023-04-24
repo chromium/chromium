@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -112,7 +113,7 @@ void AppServiceInternalsPageHandlerImpl::GetPromiseApps(
     return;
   }
   for (auto const& promise_app :
-       proxy->PromiseAppRegistryCache().GetAllPromiseApps()) {
+       proxy->PromiseAppRegistryCache()->GetAllPromiseApps()) {
     std::stringstream debug_info;
     debug_info << *promise_app;
     result.emplace_back(absl::in_place,

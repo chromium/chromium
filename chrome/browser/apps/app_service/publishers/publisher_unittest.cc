@@ -40,6 +40,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps.h"
@@ -472,14 +473,6 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
               NOTREACHED();
             }));
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  PromiseAppPtr& GetPromiseApp(const PackageId& package_id) {
-    PromiseAppRegistryCache& cache =
-        AppServiceProxyFactory::GetForProfile(profile())
-            ->PromiseAppRegistryCache();
-    return cache.promise_app_map_.find(package_id)->second;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1398,17 +1391,22 @@ TEST_F(PublisherTest, ArcPublishPromiseApps) {
 
   ArcAppTest arc_test;
   arc_test.SetUp(profile());
+
+  AppServiceProxy* proxy = AppServiceProxyFactory::GetForProfile(profile());
+  proxy->ReinitializeForTesting(profile());
+  PromiseAppRegistryCache* cache = proxy->PromiseAppRegistryCache();
+
   std::string package_name = "test.package.name";
   PackageId package_id = PackageId(AppType::kArc, package_name);
 
   // Confirm that there isn't a promise app yet.
-  ASSERT_FALSE(GetPromiseApp(package_id));
+  ASSERT_FALSE(cache->GetPromiseAppForTesting(package_id));
 
   // Notify the publisher about a started installation.
   arc_test.app_instance()->SendInstallationStarted(package_name);
 
   // Verify the ARC promise app is added to PromiseAppRegistryCache.
-  PromiseAppPtr& promise_app = GetPromiseApp(package_id);
+  const PromiseApp* promise_app = cache->GetPromiseAppForTesting(package_id);
   ASSERT_TRUE(promise_app);
   ASSERT_EQ(promise_app->package_id, package_id);
 }

@@ -20,6 +20,7 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
@@ -528,6 +529,9 @@ TEST_F(ArcAppsPublisherTest, LaunchAppWithIntent_ShareFilesIntent_SendsExtras) {
 TEST_F(ArcAppsPublisherTest, OnInstallationStarted_RegistersPromiseApp) {
   base::test::ScopedFeatureList feature_list_;
   feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
+  app_service_proxy()->ReinitializeForTesting(profile());
+  apps::PromiseAppRegistryCache* cache =
+      app_service_proxy()->PromiseAppRegistryCache();
 
   std::string package_name = "com.example.this";
   apps::PackageId package_id =
@@ -535,15 +539,13 @@ TEST_F(ArcAppsPublisherTest, OnInstallationStarted_RegistersPromiseApp) {
 
   // Verify that the promise app is not yet registered.
   const apps::PromiseApp* promise_app_before =
-      app_service_proxy()->PromiseAppRegistryCache().GetPromiseAppForTesting(
-          package_id);
+      cache->GetPromiseAppForTesting(package_id);
   EXPECT_FALSE(promise_app_before);
 
   arc_test()->app_instance()->SendInstallationStarted(package_name);
 
   // Verify that the promise app is now registered.
   const apps::PromiseApp* promise_app_after =
-      app_service_proxy()->PromiseAppRegistryCache().GetPromiseAppForTesting(
-          package_id);
+      cache->GetPromiseAppForTesting(package_id);
   EXPECT_TRUE(promise_app_after);
 }
