@@ -344,9 +344,10 @@ void LazyLoadImageObserver::DocumentOnLoadFinished(Document* root_document) {
 void LazyLoadImageObserver::CreateLazyLoadIntersectionObserver(
     Document* root_document) {
   HeapVector<Member<Element>> existing_targets;
-  if (lazy_load_intersection_observer_) {
+  IntersectionObserver* existing_observer = lazy_load_intersection_observer_;
+  if (existing_observer) {
     for (const IntersectionObservation* observation :
-         lazy_load_intersection_observer_->Observations()) {
+         existing_observer->Observations()) {
       existing_targets.push_back(observation->Target());
     }
   }
@@ -363,6 +364,9 @@ void LazyLoadImageObserver::CreateLazyLoadIntersectionObserver(
       LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
 
   for (Element* element : existing_targets) {
+    if (existing_observer) {
+      existing_observer->unobserve(element);
+    }
     lazy_load_intersection_observer_->observe(element);
   }
 }
