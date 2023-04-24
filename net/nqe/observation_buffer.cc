@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/containers/cxx20_erase.h"
-#include "base/cxx17_backports.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "net/nqe/network_quality_estimator_params.h"
@@ -145,7 +144,7 @@ void ObservationBuffer::ComputeWeightedObservations(
     }
 
     double weight = time_weight * signal_strength_weight;
-    weight = base::clamp(weight, DBL_MIN, 1.0);
+    weight = std::clamp(weight, DBL_MIN, 1.0);
 
     weighted_observations->push_back(
         WeightedObservation(observation.value(), weight));
