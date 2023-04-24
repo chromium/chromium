@@ -15,8 +15,10 @@ namespace {
 
 // The names of the pixel tests that use the "positive if only" algorithm.
 // This list should be removed when all existing tests are migrated.
-const std::array<std::string, 3> kMigratedTests = {
-    {"DemoAshPixelDiffTest", "LoginShelf", "AmbientInfoViewTest"}};
+// NOTE: maintain the array in the alphabetical order.
+const std::array<std::string, 5> kMigratedTests = {
+    {"AmbientInfoViewTest", "AshNotificationView", "DemoAshPixelDiffTest",
+     "LoginShelf", "ScreenCaptureNotification"}};
 
 // Returns true if the test specified by `screenshot_prefix` should use the
 // "positive if only" algorithm.

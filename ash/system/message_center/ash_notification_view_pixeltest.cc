@@ -159,7 +159,7 @@ TEST_P(AshNotificationViewTitlePixelTest, NotificationTitleTest) {
   // Compare pixels.
   const std::string screenshot = GetParam().second;
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      screenshot, /*revision_number=*/1, notification_view));
+      screenshot, /*revision_number=*/2, notification_view));
 }
 
 class ScreenCaptureNotificationPixelTest
@@ -224,7 +224,7 @@ TEST_P(ScreenCaptureNotificationPixelTest, VerifyPopup) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       base::StrCat({"screen_capture_popup_notification_",
                     GetDisplayTypeName(GetParam())}),
-      /*revision_number=*/0,
+      /*revision_number=*/1,
       test_api()->GetPopupViewForId(kScreenCaptureNotificationId)));
 }
 
