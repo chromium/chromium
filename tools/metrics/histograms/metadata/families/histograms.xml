@@ -172,6 +172,8 @@ chromium-metrics-reviews@google.com.
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records an error that occurs in the parent access widget. ChromeOS Only.
+    WebApprovals metrics are available from M110 onwards. ExtensionApprovals
+    metrics are available from M115 onwards.
   </summary>
   <token key="FlowType">
     <variant name="All"/>
@@ -189,9 +191,12 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records an error where the parent access widget dialog cannot be shown.
     Reported by the browser when the dialog fails to show. ChromeOS only.
+    WebApprovals metrics are available from M110 onwards. ExtensionApprovals
+    metrics are available from M115 onwards.
   </summary>
   <token key="FlowType">
     <variant name="All"/>
+    <variant name="ExtensionApprovals"/>
     <variant name="WebApprovals"/>
   </token>
 </histogram>
