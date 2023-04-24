@@ -440,6 +440,8 @@ public abstract class ChromeFeatureList {
     public static final String READER_MODE_IN_CCT = "ReaderModeInCCT";
     public static final String RECORD_SUPPRESSION_METRICS = "RecordSuppressionMetrics";
     public static final String RECOVER_FROM_NEVER_SAVE_ANDROID = "RecoverFromNeverSaveAndroid";
+    public static final String REDUCE_TOOLBAR_UPDATES_FOR_SAME_DOC_NAVIGATIONS =
+            "ReduceToolbarUpdatesForSameDocNavigations";
     public static final String REENGAGEMENT_NOTIFICATION = "ReengagementNotification";
     public static final String RELATED_SEARCHES = "RelatedSearches";
     public static final String REQUEST_DESKTOP_SITE_DEFAULTS = "RequestDesktopSiteDefaults";

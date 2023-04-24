@@ -4694,6 +4694,11 @@ void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
               ChromeTrackEvent::kRenderFrameHost, this, "url",
               params->url.possibly_invalid_spec());
 
+  // TODO(peilinwang): remove after the
+  // kReduceToolbarUpdatesForSameDocNavigations experiment is complete.
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Navigation.DidCommitSameDocumentNavigation.Duration");
+
   ScopedActiveURL scoped_active_url(params->url,
                                     GetMainFrame()->GetLastCommittedOrigin());
   ScopedCommitStateResetter commit_state_resetter(this);
