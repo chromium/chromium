@@ -32,27 +32,42 @@
 
 namespace blink {
 
-class PLATFORM_EXPORT AudioDelayDSPKernel : public AudioDSPKernel {
+class PLATFORM_EXPORT AudioDelayDSPKernel {
  public:
   AudioDelayDSPKernel(double max_delay_time,
                       float sample_rate,
                       unsigned render_quantum_frames);
 
-  // Process the delay.  Basically dispatches to either ProcessKRate or
-  // ProcessARate.
-  void Process(const float* source,
-               float* destination,
-               uint32_t frames_to_process) override;
-
-  // Handles k-rate processing
+  // Handles k-rate processing.  Call `SetDelayFrames()` or `SetDelayTime()` to
+  // set the delay before calling this function.
   void ProcessKRate(const float* source,
                     float* destination,
                     uint32_t frames_to_process);
 
-  // Handles a-rate processing
+  // Handles a-rate processing.  Fill the return value of `DelayTimes()` with
+  // the delay value for each frame before calling this function.
   void ProcessARate(const float* source,
                     float* destination,
                     uint32_t frames_to_process);
+
+  void Reset();
+
+  float MaxDelayTime() const { return max_delay_time_; }
+
+  // Set the delay in frames for `ProcessKRate()`
+  void SetDelayFrames(double number_of_frames) {
+    desired_delay_frames_ = number_of_frames;
+  }
+
+  // Set the delay in seconds for `ProcessKRate()`
+  void SetDelayTime(double seconds) {
+    desired_delay_frames_ = seconds * sample_rate_;
+  }
+
+  // Fill the return value of this before calling `ProcessARate()`
+  float* DelayTimes() { return delay_times_.Data(); }
+
+ protected:
   // Main processing loop for ProcessARate using scalar operations.  Returns the
   // new write_index.
   int ProcessARateScalar(unsigned start,
@@ -66,32 +81,19 @@ class PLATFORM_EXPORT AudioDelayDSPKernel : public AudioDSPKernel {
       float* destination,
       uint32_t frames_to_process) const;
 
-  // Handle an NaN values in |delay_times|.  Replace NaN with |max_time|.
+  // Handle NaN values in `delay_times`.  Replace NaN with `max_time`.
   void HandleNaN(float* delay_times,
                  uint32_t frames_to_process,
                  float max_time);
 
-  void Reset() override;
-
-  float MaxDelayTime() const { return max_delay_time_; }
-
-  void SetDelayFrames(double number_of_frames) {
-    desired_delay_frames_ = number_of_frames;
-  }
-
-  double TailTime() const override;
-  double LatencyTime() const override;
-  bool RequiresTailProcessing() const override;
-
- protected:
   AudioDelayDSPKernel(AudioDSPKernelProcessor*,
                       size_t processing_size_in_frames);
 
-  virtual bool HasSampleAccurateValues();
-  virtual void CalculateSampleAccurateValues(float* delay_times,
-                                             uint32_t frames_to_process);
-  virtual double DelayTime(float sample_rate);
-  virtual bool IsAudioRate();
+  double DelayTime(float sample_rate);
+
+  size_t BufferLengthForDelay(double delay_time,
+                              double sample_rate,
+                              unsigned render_quantum_frames) const;
 
   AudioFloatArray buffer_;
 
@@ -99,8 +101,8 @@ class PLATFORM_EXPORT AudioDelayDSPKernel : public AudioDSPKernel {
   // floats, so make this a float to keep everything consistent.
   float max_delay_time_;
 
-  int write_index_;
-  double desired_delay_frames_;
+  int write_index_ = 0;
+  double desired_delay_frames_ = 0;
 
   AudioFloatArray delay_times_;
 
@@ -108,9 +110,7 @@ class PLATFORM_EXPORT AudioDelayDSPKernel : public AudioDSPKernel {
   // needed.
   AudioFloatArray temp_buffer_;
 
-  size_t BufferLengthForDelay(double delay_time,
-                              double sample_rate,
-                              unsigned render_quantum_frames) const;
+  float sample_rate_;
 };
 
 }  // namespace blink

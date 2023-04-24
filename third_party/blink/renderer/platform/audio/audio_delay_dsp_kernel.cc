@@ -35,25 +35,43 @@
 
 namespace blink {
 
-// Delay nodes have a max allowed delay time of this many seconds.
-const float kMaxDelayTimeSeconds = 30;
+namespace {
 
-AudioDelayDSPKernel::AudioDelayDSPKernel(AudioDSPKernelProcessor* processor,
-                                         size_t processing_size_in_frames)
-    : AudioDSPKernel(processor),
-      write_index_(0),
-      delay_times_(processing_size_in_frames),
-      temp_buffer_(processing_size_in_frames) {}
+void CopyToCircularBuffer(float* buffer,
+                          int write_index,
+                          int buffer_length,
+                          const float* source,
+                          uint32_t frames_to_process) {
+  // The algorithm below depends on this being true because we don't expect to
+  // have to fill the entire buffer more than once.
+  DCHECK_GE(static_cast<uint32_t>(buffer_length), frames_to_process);
+
+  // Copy `frames_to_process` values from `source` to the circular buffer that
+  // starts at `buffer` of length `buffer_length`.  The copy starts at index
+  // `write_index` into the buffer.
+  float* write_pointer = &buffer[write_index];
+  int remainder = buffer_length - write_index;
+
+  // Copy the sames over, carefully handling the case where we need to wrap
+  // around to the beginning of the buffer.
+  memcpy(write_pointer, source,
+         sizeof(*write_pointer) *
+             std::min(static_cast<int>(frames_to_process), remainder));
+  memcpy(buffer, source + remainder,
+         sizeof(*write_pointer) *
+             std::max(0, static_cast<int>(frames_to_process) - remainder));
+}
+
+}  // namespace
 
 AudioDelayDSPKernel::AudioDelayDSPKernel(double max_delay_time,
                                          float sample_rate,
                                          unsigned render_quantum_frames)
-    : AudioDSPKernel(sample_rate, render_quantum_frames),
-      max_delay_time_(max_delay_time),
-      write_index_(0),
-      temp_buffer_(render_quantum_frames) {
+    : max_delay_time_(max_delay_time),
+      delay_times_(render_quantum_frames),
+      temp_buffer_(render_quantum_frames),
+      sample_rate_(sample_rate) {
   DCHECK_GT(max_delay_time_, 0.0);
-  DCHECK_LE(max_delay_time_, kMaxDelayTimeSeconds);
   DCHECK(std::isfinite(max_delay_time_));
 
   size_t buffer_length =
@@ -69,7 +87,7 @@ size_t AudioDelayDSPKernel::BufferLengthForDelay(
     double sample_rate,
     unsigned render_quantum_frames) const {
   // Compute the length of the buffer needed to handle a max delay of
-  // |maxDelayTime|. Add an additional render quantum frame size so we can
+  // `maxDelayTime`. Add an additional render quantum frame size so we can
   // vectorize the delay processing.  The extra space is needed so that writes
   // to the buffer won't overlap reads from the buffer.
   return render_quantum_frames +
@@ -77,45 +95,8 @@ size_t AudioDelayDSPKernel::BufferLengthForDelay(
                                             audio_utilities::kRoundUp);
 }
 
-bool AudioDelayDSPKernel::HasSampleAccurateValues() {
-  return false;
-}
-
-void AudioDelayDSPKernel::CalculateSampleAccurateValues(float*, uint32_t) {
-  NOTREACHED();
-}
-
-bool AudioDelayDSPKernel::IsAudioRate() {
-  return true;
-}
-
 double AudioDelayDSPKernel::DelayTime(float sample_rate) {
   return desired_delay_frames_ / sample_rate;
-}
-
-static void CopyToCircularBuffer(float* buffer,
-                                 int write_index,
-                                 int buffer_length,
-                                 const float* source,
-                                 uint32_t frames_to_process) {
-  // The algorithm below depends on this being true because we don't expect to
-  // have to fill the entire buffer more than once.
-  DCHECK_GE(static_cast<uint32_t>(buffer_length), frames_to_process);
-
-  // Copy |frames_to_process| values from |source| to the circular buffer that
-  // starts at |buffer| of length |buffer_length|.  The copy starts at index
-  // |write_index| into the buffer.
-  float* write_pointer = &buffer[write_index];
-  int remainder = buffer_length - write_index;
-
-  // Copy the sames over, carefully handling the case where we need to wrap
-  // around to the beginning of the buffer.
-  memcpy(write_pointer, source,
-         sizeof(*write_pointer) *
-             std::min(static_cast<int>(frames_to_process), remainder));
-  memcpy(buffer, source + remainder,
-         sizeof(*write_pointer) *
-             std::max(0, static_cast<int>(frames_to_process) - remainder));
 }
 
 #if !(defined(ARCH_CPU_X86_FAMILY) || defined(CPU_ARM_NEON))
@@ -150,7 +131,7 @@ int AudioDelayDSPKernel::ProcessARateScalar(unsigned start,
   DCHECK_GE(write_index_, 0);
   DCHECK_LT(write_index_, buffer_length);
 
-  float sample_rate = SampleRate();
+  float sample_rate = sample_rate_;
   const float* delay_times = delay_times_.Data();
 
   for (unsigned i = start; i < frames_to_process; ++i) {
@@ -202,7 +183,6 @@ void AudioDelayDSPKernel::ProcessARate(const float* source,
   DCHECK_LT(write_index_, buffer_length);
 
   float* delay_times = delay_times_.Data();
-  CalculateSampleAccurateValues(delay_times, frames_to_process);
 
   // Any NaN's get converted to max time
   // TODO(crbug.com/1013345): Don't need this if that bug is fixed
@@ -234,18 +214,11 @@ void AudioDelayDSPKernel::ProcessKRate(const float* source,
   DCHECK_GE(write_index_, 0);
   DCHECK_LT(write_index_, buffer_length);
 
-  float sample_rate = SampleRate();
+  float sample_rate = sample_rate_;
   double max_time = MaxDelayTime();
 
   // This is basically the same as above, but optimized for the case where the
   // delay time is constant for the current render.
-  //
-  // TODO(crbug.com/1012198): There are still some further optimizations that
-  // could be done.  |interpolation_factor| could be a float to eliminate
-  // several conversions between floats and doubles.  It might be possible to
-  // get rid of the wrapping if the buffer were longer.  This may also allow
-  // |write_index_| to be different from |read_index1| or |read_index2| which
-  // simplifies the loop a bit.
 
   double delay_time = DelayTime(sample_rate);
   // Make sure the delay time is in a valid range.
@@ -258,8 +231,8 @@ void AudioDelayDSPKernel::ProcessKRate(const float* source,
     read_position -= buffer_length;
   }
 
-  // Linearly interpolate in-between delay times.  |read_index1| and
-  // |read_index2| are the indices of the frames to be used for
+  // Linearly interpolate in-between delay times.  `read_index1` and
+  // `read_index2` are the indices of the frames to be used for
   // interpolation.
   int read_index1 = static_cast<int>(read_position);
   float interpolation_factor = read_position - read_index1;
@@ -325,37 +298,8 @@ void AudioDelayDSPKernel::ProcessKRate(const float* source,
   }
 }
 
-void AudioDelayDSPKernel::Process(const float* source,
-                                  float* destination,
-                                  uint32_t frames_to_process) {
-  if (HasSampleAccurateValues() && IsAudioRate()) {
-    ProcessARate(source, destination, frames_to_process);
-  } else {
-    ProcessKRate(source, destination, frames_to_process);
-  }
-}
-
 void AudioDelayDSPKernel::Reset() {
   buffer_.Zero();
-}
-
-bool AudioDelayDSPKernel::RequiresTailProcessing() const {
-  // Always return true even if the tail time and latency might both
-  // be zero. This is for simplicity; most interesting delay nodes
-  // have non-zero delay times anyway.  And it's ok to return true. It
-  // just means the node lives a little longer than strictly
-  // necessary.
-  return true;
-}
-
-double AudioDelayDSPKernel::TailTime() const {
-  // Account for worst case delay.
-  // Don't try to track actual delay time which can change dynamically.
-  return max_delay_time_;
-}
-
-double AudioDelayDSPKernel::LatencyTime() const {
-  return 0;
 }
 
 }  // namespace blink

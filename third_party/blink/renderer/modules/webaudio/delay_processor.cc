@@ -34,40 +34,30 @@ namespace blink {
 
 namespace {
 
-class DelayDSPKernel final : public AudioDelayDSPKernel {
+class DelayDSPKernel final : public AudioDSPKernel {
  public:
   explicit DelayDSPKernel(DelayProcessor* processor)
-      : AudioDelayDSPKernel(processor, processor->RenderQuantumFrames()) {
+      : AudioDSPKernel(processor),
+        delay_(processor->MaxDelayTime(),
+               processor->SampleRate(),
+               processor->RenderQuantumFrames()) {
     DCHECK(processor);
     DCHECK_GT(processor->SampleRate(), 0);
-
-    max_delay_time_ = processor->MaxDelayTime();
-    DCHECK_GE(max_delay_time_, 0);
-    DCHECK(!std::isnan(max_delay_time_));
-
-    buffer_.Allocate(BufferLengthForDelay(max_delay_time_,
-                                          processor->SampleRate(),
-                                          processor->RenderQuantumFrames()));
-    buffer_.Zero();
   }
 
- protected:
-  bool HasSampleAccurateValues() override {
-    return GetDelayProcessor()->DelayTime().HasSampleAccurateValues();
-  }
-
-  void CalculateSampleAccurateValues(float* delay_times,
-                                     uint32_t frames_to_process) override {
-    GetDelayProcessor()->DelayTime().CalculateSampleAccurateValues(
-        delay_times, frames_to_process);
-  }
-
-  double DelayTime(float sample_rate) override {
-    return GetDelayProcessor()->DelayTime().FinalValue();
-  }
-
-  bool IsAudioRate() override {
-    return GetDelayProcessor()->DelayTime().IsAudioRate();
+  // Process the delay.  Basically dispatches to either ProcessKRate or
+  // ProcessARate.
+  void Process(const float* source,
+               float* destination,
+               uint32_t frames_to_process) override {
+    if (HasSampleAccurateValues() && IsAudioRate()) {
+      GetDelayProcessor()->DelayTime().CalculateSampleAccurateValues(
+          delay_.DelayTimes(), frames_to_process);
+      delay_.ProcessARate(source, destination, frames_to_process);
+    } else {
+      delay_.SetDelayTime(GetDelayProcessor()->DelayTime().FinalValue());
+      delay_.ProcessKRate(source, destination, frames_to_process);
+    }
   }
 
   void ProcessOnlyAudioParams(uint32_t frames_to_process) override {
@@ -79,10 +69,37 @@ class DelayDSPKernel final : public AudioDelayDSPKernel {
         values, frames_to_process);
   }
 
+  void Reset() override { delay_.Reset(); }
+
+  double TailTime() const override {
+    // Account for worst case delay.
+    // Don't try to track actual delay time which can change dynamically.
+    return delay_.MaxDelayTime();
+  }
+
+  double LatencyTime() const override { return 0; }
+
+  bool RequiresTailProcessing() const override {
+    // Always return true even if the tail time and latency might both
+    // be zero. This is for simplicity; most interesting delay nodes
+    // have non-zero delay times anyway.  And it's ok to return true. It
+    // just means the node lives a little longer than strictly
+    // necessary.
+    return true;
+  }
+
  private:
+  bool HasSampleAccurateValues() {
+    return GetDelayProcessor()->DelayTime().HasSampleAccurateValues();
+  }
+
+  bool IsAudioRate() { return GetDelayProcessor()->DelayTime().IsAudioRate(); }
+
   DelayProcessor* GetDelayProcessor() {
     return static_cast<DelayProcessor*>(Processor());
   }
+
+  AudioDelayDSPKernel delay_;
 };
 
 }  // namespace

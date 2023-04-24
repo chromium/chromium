@@ -55,7 +55,7 @@ std::tuple<unsigned, int> AudioDelayDSPKernel::ProcessARateVector(
   const int buffer_length = buffer_.size();
   const float* buffer = buffer_.Data();
 
-  const float sample_rate = SampleRate();
+  const float sample_rate = sample_rate_;
   const float* delay_times = delay_times_.Data();
 
   int w_index = write_index_;
