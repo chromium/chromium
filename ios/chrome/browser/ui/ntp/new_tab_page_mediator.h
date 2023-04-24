@@ -25,7 +25,6 @@ class GURL;
 @protocol LogoVendor;
 @protocol NewTabPageConsumer;
 @protocol NewTabPageHeaderConsumer;
-@class NTPHomeMetrics;
 class TemplateURLService;
 class UrlLoadingBrowserAgent;
 @protocol UserAccountImageUpdateDelegate;
@@ -47,8 +46,6 @@ class UrlLoadingBrowserAgent;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Recorder for the metrics related to the NTP.
-@property(nonatomic, strong) NTPHomeMetrics* NTPMetrics;
 // Recorder for the metrics related to the feed.
 @property(nonatomic, strong) FeedMetricsRecorder* feedMetricsRecorder;
 // Mediator for the ContentSuggestions.

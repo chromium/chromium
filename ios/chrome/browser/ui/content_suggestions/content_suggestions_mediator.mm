@@ -58,10 +58,10 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_tile_saver.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/content_suggestions/start_suggest_service_factory.h"
 #import "ios/chrome/browser/ui/ntp/feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
@@ -291,9 +291,10 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 - (void)openMostVisitedItem:(NSObject*)item
                     atIndex:(NSInteger)mostVisitedIndex {
+  // Checks if the item is a shortcut tile. Does not include Most Visited URL
+  // tiles.
   if ([item isKindOfClass:[ContentSuggestionsMostVisitedActionItem class]]) {
-    [self.NTPMetrics recordContentSuggestionsActionForType:
-                         IOSContentSuggestionsActionType::kShortcuts];
+    [self.NTPMetricsDelegate shortcutTileOpened];
     ContentSuggestionsMostVisitedActionItem* mostVisitedItem =
         base::mac::ObjCCastStrict<ContentSuggestionsMostVisitedActionItem>(
             item);
@@ -335,8 +336,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 }
 
 - (void)openMostRecentTab {
-  [self.NTPMetrics recordContentSuggestionsActionForType:
-                       IOSContentSuggestionsActionType::kReturnToRecentTab];
+  [self.NTPMetricsDelegate recentTabTileOpened];
   [self.contentSuggestionsMetricsRecorder recordMostRecentTabOpened];
   [self hideRecentTabTile];
   WebStateList* web_state_list = self.browser->GetWebStateList();
@@ -499,13 +499,12 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 // Logs a histogram due to a Most Visited item being opened.
 - (void)logMostVisitedOpening:(ContentSuggestionsMostVisitedItem*)item
                       atIndex:(NSInteger)mostVisitedIndex {
-  [self.NTPMetrics
-      recordAction:new_tab_page_uma::ACTION_OPENED_MOST_VISITED_ENTRY];
-  [self.NTPMetrics recordContentSuggestionsActionForType:
-                       IOSContentSuggestionsActionType::kMostVisitedTile];
+  [self.NTPMetricsDelegate mostVisitedTileOpened];
   [self.contentSuggestionsMetricsRecorder
       recordMostVisitedTileOpened:item
-                          atIndex:mostVisitedIndex];
+                          atIndex:mostVisitedIndex
+                         webState:self.browser->GetWebStateList()
+                                      ->GetActiveWebState()];
 }
 
 // Shows a snackbar with an action to undo the removal of the most visited item

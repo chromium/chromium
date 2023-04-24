@@ -16,6 +16,7 @@
 class DiscoverFeedRefresher;
 @protocol FeedControlDelegate;
 @protocol NewTabPageFollowDelegate;
+@protocol NewTabPageMetricsDelegate;
 
 namespace base {
 class Time;
@@ -35,6 +36,9 @@ class Time;
 
 // Object that can refresh the feed.
 @property(nonatomic, assign) DiscoverFeedRefresher* feedRefresher;
+
+// Delegate for reporting feed actions to the NTP metrics recorder.
+@property(nonatomic, weak) id<NewTabPageMetricsDelegate> NTPMetricsDelegate;
 
 // Records the trigger where a feed refresh is requested.
 + (void)recordFeedRefreshTrigger:(FeedRefreshTrigger)trigger;

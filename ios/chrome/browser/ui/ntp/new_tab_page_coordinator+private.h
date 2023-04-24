@@ -14,6 +14,7 @@
 
 @class ContentSuggestionsCoordinator;
 @class NewTabPageHeaderViewController;
+@class NewTabPageMetricsRecorder;
 @class NewTabPageViewController;
 
 // This is a private category that is intended to only be imported in
@@ -35,6 +36,8 @@
 @property(nonatomic, readonly) BOOL visible;
 
 @property(nonatomic, strong) NewTabPageViewController* NTPViewController;
+
+@property(nonatomic, strong) NewTabPageMetricsRecorder* NTPMetricsRecorder;
 
 - (void)configureNTPViewController;
 

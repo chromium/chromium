@@ -29,6 +29,17 @@ enum class OverscrollActionType {
   kMaxValue = kCloseTab,
 };
 
+// These values are persisted to IOS.Home.ActionOn* histograms.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class IOSHomeActionType {
+  kMostVisitedTile = 0,
+  kShortcuts = 1,
+  kReturnToRecentTab = 2,
+  kFeedCard = 3,
+  kFakebox = 4,
+  kMaxValue = kFakebox,
+};
+
 // Metrics recorder for the new tab page.
 @interface NewTabPageMetricsRecorder : NSObject
 
@@ -56,6 +67,10 @@ enum class OverscrollActionType {
 
 // Logs a metric for the identity disc being tapped in the NTP.
 - (void)recordIdentityDiscTapped;
+
+// Logs a Home action and attributes it to the NTP or Start surface.
+- (void)recordHomeActionType:(IOSHomeActionType)type
+              onStartSurface:(BOOL)isStartSurface;
 
 @end
 

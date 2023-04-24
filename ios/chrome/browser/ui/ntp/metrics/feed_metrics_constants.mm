@@ -89,9 +89,6 @@ const char kFollowCountAfterUnfollow[] =
     "ContentSuggestions.Feed.WebFeed.FollowCount.AfterUnfollow";
 const char kFollowCountWhenEngaged[] =
     "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged";
-const char kActionOnNTP[] = "IOS.ContentSuggestions.ActionOnNTP";
-const char kActionOnStartSurface[] =
-    "IOS.ContentSuggestions.ActionOnStartSurface";
 const char kDiscoverIndexWhenSwitchingFeed[] =
     "ContentSuggestions.Feed.CardIndexOnSwitch";
 const char kFollowingIndexWhenSwitchingFeed[] =

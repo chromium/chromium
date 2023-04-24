@@ -53565,15 +53565,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="12" label="AccessibilityExtraExtraExtraLarge"/>
 </enum>
 
-<enum name="IOSContentSuggestionsActionType">
-  <int value="0" label="Most Visited Tiles"/>
-  <int value="1" label="Shortcuts"/>
-  <int value="2" label="Return to Recent Tab tile"/>
-  <int value="3" label="Feed Card"/>
-  <int value="4" label="Fake Omnibox"/>
-  <int value="5" label="Trending Queries"/>
-</enum>
-
 <enum name="iOSCredentialIdentityStoreErrorForReporting">
   <int value="0" label="Unknown Error"/>
   <int value="1" label="Internal Error"/>
@@ -53745,6 +53736,14 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="0" label="Unknown Origin"/>
   <int value="1" label="Chrome on iOS"/>
   <int value="2" label="Chrome on Mac"/>
+</enum>
+
+<enum name="IOSHomeActionType">
+  <int value="0" label="Most Visited Tiles"/>
+  <int value="1" label="Shortcuts"/>
+  <int value="2" label="Return to Recent Tab tile"/>
+  <int value="3" label="Feed Card"/>
+  <int value="4" label="Fake Omnibox"/>
 </enum>
 
 <enum name="IOSInspectConsoleAction">

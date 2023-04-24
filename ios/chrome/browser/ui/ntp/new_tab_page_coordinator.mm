@@ -67,7 +67,6 @@
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_constants.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_preview_delegate.h"
@@ -94,6 +93,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_commands.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_mediator.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
@@ -138,6 +138,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
                                      NewTabPageDelegate,
                                      NewTabPageFollowDelegate,
                                      NewTabPageHeaderCommands,
+                                     NewTabPageMetricsDelegate,
                                      OverscrollActionsControllerDelegate,
                                      PrefObserverDelegate,
                                      SceneStateObserver> {
@@ -259,11 +260,6 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 // on `start`.
 @property(nonatomic, strong) id<NewTabPageComponentFactoryProtocol>
     componentFactory;
-
-// Recorder for the metrics related to the NTP.
-// TODO(crbug.com/1431193): Merge this with NewTabPageMetricsRecorder and
-// ContentSuggestionsMetricsRecorder.
-@property(nonatomic, strong) NTPHomeMetrics* NTPMetrics;
 
 // Recorder for new tab page metrics.
 @property(nonatomic, strong) NewTabPageMetricsRecorder* NTPMetricsRecorder;
@@ -406,7 +402,6 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   [self.feedTopSectionCoordinator stop];
   self.feedTopSectionCoordinator = nil;
 
-  self.NTPMetrics = nil;
   self.NTPMetricsRecorder = nil;
 
   if (self.feedSignInPromoCoordinator) {
@@ -627,9 +622,6 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
       [componentFactory contentSuggestionsCoordinatorForBrowser:browser];
   self.feedMetricsRecorder =
       [componentFactory feedMetricsRecorderForBrowser:browser];
-  self.NTPMetrics =
-      [[NTPHomeMetrics alloc] initWithBrowserState:browser->GetBrowserState()];
-  self.NTPMetrics.webState = self.webState;
   self.NTPMetricsRecorder = [[NewTabPageMetricsRecorder alloc] init];
 }
 
@@ -692,9 +684,9 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 // Configures `self.contentSuggestionsCoordiantor`.
 - (void)configureContentSuggestionsCoordinator {
   self.contentSuggestionsCoordinator.webState = self.webState;
-  self.contentSuggestionsCoordinator.ntpDelegate = self;
+  self.contentSuggestionsCoordinator.NTPDelegate = self;
   self.contentSuggestionsCoordinator.feedDelegate = self;
-  self.contentSuggestionsCoordinator.NTPMetrics = self.NTPMetrics;
+  self.contentSuggestionsCoordinator.NTPMetricsDelegate = self;
   [self.contentSuggestionsCoordinator start];
 }
 
@@ -715,6 +707,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 - (void)configureFeedMetricsRecorder {
   self.feedMetricsRecorder.feedControlDelegate = self;
   self.feedMetricsRecorder.followDelegate = self;
+  self.feedMetricsRecorder.NTPMetricsDelegate = self;
 }
 
 // Configures `self.NTPViewController` and sets it up as the main ViewController
@@ -799,15 +792,8 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 }
 
 - (void)fakeboxTapped {
-  // TODO(crbug.com/1431193): Move these logs to the `NTPMetricsRecorder`.
-  if (NewTabPageTabHelper::FromWebState(self.webState)
-          ->ShouldShowStartSurface()) {
-    UMA_HISTOGRAM_ENUMERATION("IOS.ContentSuggestions.ActionOnStartSurface",
-                              IOSContentSuggestionsActionType::kFakebox);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION("IOS.ContentSuggestions.ActionOnNTP",
-                              IOSContentSuggestionsActionType::kFakebox);
-  }
+  [self.NTPMetricsRecorder recordHomeActionType:IOSHomeActionType::kFakebox
+                                 onStartSurface:[self isStartSurface]];
   [self focusFakebox];
 }
 
@@ -1194,11 +1180,11 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 }
 
 - (BOOL)isStartSurface {
-  // If the NTP is in another tab, it is never a start surface.
-  if (!self.visible) {
+  // The web state is nil if the NTP is in another tab. In this case, it is
+  // never a start surface.
+  if (!self.webState) {
     return NO;
   }
-  CHECK(self.webState);
   NewTabPageTabHelper* NTPHelper =
       NewTabPageTabHelper::FromWebState(self.webState);
   return NTPHelper && NTPHelper->ShouldShowStartSurface();
@@ -1234,6 +1220,30 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
     return @[];
 
   return followBrowserAgent->GetFollowedWebSites();
+}
+
+#pragma mark - NewTabPageMetricsDelegate
+
+- (void)recentTabTileOpened {
+  [self.NTPMetricsRecorder
+      recordHomeActionType:IOSHomeActionType::kReturnToRecentTab
+            onStartSurface:[self isStartSurface]];
+}
+
+- (void)feedArticleOpened {
+  [self.NTPMetricsRecorder recordHomeActionType:IOSHomeActionType::kFeedCard
+                                 onStartSurface:[self isStartSurface]];
+}
+
+- (void)mostVisitedTileOpened {
+  [self.NTPMetricsRecorder
+      recordHomeActionType:IOSHomeActionType::kMostVisitedTile
+            onStartSurface:[self isStartSurface]];
+}
+
+- (void)shortcutTileOpened {
+  [self.NTPMetricsRecorder recordHomeActionType:IOSHomeActionType::kShortcuts
+                                 onStartSurface:[self isStartSurface]];
 }
 
 #pragma mark - LogoAnimationControllerOwnerOwner
@@ -1687,7 +1697,6 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   _webState = webState;
   self.NTPMediator.webState = _webState;
   self.contentSuggestionsCoordinator.webState = _webState;
-  self.NTPMetrics.webState = _webState;
 }
 
 // Called when the NTP changes visibility, either when the user navigates to

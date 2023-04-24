@@ -35,7 +35,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
+#import "ios/chrome/browser/ui/ntp/metrics/new_tab_page_metrics_recorder.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/url_loading/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
@@ -119,10 +120,6 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     mediator_.consumer = consumer_;
     mediator_.webStateList = browser_.get()->GetWebStateList();
     mediator_.webState = fake_web_state_.get();
-    NTPMetrics_ = [[NTPHomeMetrics alloc]
-        initWithBrowserState:browser_->GetBrowserState()];
-    mediator_.NTPMetrics = NTPMetrics_;
-    mediator_.NTPMetrics.webState = fake_web_state_.get();
 
     metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc] init];
     mediator_.contentSuggestionsMetricsRecorder = metrics_recorder_;
@@ -163,7 +160,6 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
   std::unique_ptr<favicon::LargeIconServiceImpl> large_icon_service_;
   std::unique_ptr<MockPromosManager> promos_manager_;
   ContentSuggestionsMediator* mediator_;
-  NTPHomeMetrics* NTPMetrics_;
   FakeUrlLoadingBrowserAgent* url_loader_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   ContentSuggestionsMetricsRecorder* metrics_recorder_;
@@ -174,16 +170,12 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
 TEST_F(ContentSuggestionsMediatorTest, TestOpenReadingList) {
   OCMExpect([dispatcher_ showReadingList]);
 
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnNTP",
-      IOSContentSuggestionsActionType::kShortcuts, 0);
+  OCMExpect([mediator_.NTPMetricsDelegate shortcutTileOpened]);
+
   // Action.
   ContentSuggestionsMostVisitedActionItem* readingList =
       ReadingListActionItem();
   [mediator_ openMostVisitedItem:readingList atIndex:1];
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnNTP",
-      IOSContentSuggestionsActionType::kShortcuts, 1);
 
   // Test.
   EXPECT_OCMOCK_VERIFY(dispatcher_);
@@ -195,14 +187,10 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenMostVisited) {
   ContentSuggestionsMostVisitedItem* item =
       [[ContentSuggestionsMostVisitedItem alloc] init];
   item.URL = url;
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnNTP",
-      IOSContentSuggestionsActionType::kMostVisitedTile, 0);
+  OCMExpect([mediator_.NTPMetricsDelegate mostVisitedTileOpened]);
+
   // Action.
   [mediator_ openMostVisitedItem:item atIndex:0];
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnNTP",
-      IOSContentSuggestionsActionType::kMostVisitedTile, 1);
 
   // Test.
   EXPECT_EQ(url, url_loader_->last_params.web_params.url);
@@ -228,7 +216,6 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenMostRecentTab) {
                                   WebStateOpener());
   web::WebState* ntp_web_state = web_state_list_->GetActiveWebState();
   mediator_.webState = ntp_web_state;
-  mediator_.NTPMetrics.webState = ntp_web_state;
   NewTabPageTabHelper::FromWebState(ntp_web_state)->SetShowStartSurface(true);
 
   OCMExpect([consumer_ showReturnToRecentTabTileWithConfig:[OCMArg any]]);
@@ -237,13 +224,9 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenMostRecentTab) {
                                    timeLabel:@"12 hours ago"];
 
   OCMExpect([consumer_ hideReturnToRecentTabTile]);
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnStartSurface",
-      IOSContentSuggestionsActionType::kReturnToRecentTab, 0);
+  OCMExpect([mediator_.NTPMetricsDelegate recentTabTileOpened]);
+
   [mediator_ openMostRecentTab];
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnStartSurface",
-      IOSContentSuggestionsActionType::kReturnToRecentTab, 1);
   // Verify the most recent tab was opened.
   EXPECT_EQ(recent_tab_index, web_state_list_->active_index());
 }
@@ -278,16 +261,11 @@ TEST_F(ContentSuggestionsMediatorTest, TestStartSurfaceRecentTabObserving) {
 TEST_F(ContentSuggestionsMediatorTest, TestOpenWhatsNew) {
   OCMExpect([dispatcher_ showWhatsNew]);
 
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnNTP",
-      IOSContentSuggestionsActionType::kShortcuts, 0);
+  OCMExpect([mediator_.NTPMetricsDelegate shortcutTileOpened]);
 
   // Action.
   ContentSuggestionsMostVisitedActionItem* whatsNew = WhatsNewActionItem();
   [mediator_ openMostVisitedItem:whatsNew atIndex:1];
-  histogram_tester_->ExpectUniqueSample(
-      "IOS.ContentSuggestions.ActionOnNTP",
-      IOSContentSuggestionsActionType::kShortcuts, 1);
   // Test.
   EXPECT_OCMOCK_VERIFY(dispatcher_);
 }

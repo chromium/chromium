@@ -231,24 +231,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.ContentSuggestions.ActionOnNTP"
-    enum="IOSContentSuggestionsActionType" expires_after="2023-10-08">
-  <owner>thegreenfrog@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
-  <summary>
-    When the user taps on a Content Suggestions Module on the NTP Surface.
-  </summary>
-</histogram>
-
-<histogram name="IOS.ContentSuggestions.ActionOnStartSurface"
-    enum="IOSContentSuggestionsActionType" expires_after="2023-10-08">
-  <owner>thegreenfrog@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
-  <summary>
-    When the user taps on a Content Suggestions Module on the Start Surface.
-  </summary>
-</histogram>
-
 <histogram name="IOS.CredentialExtension.ConsentVerifiedCount" units="count"
     expires_after="2023-08-13">
   <owner>ginnyhuang@chromium.org</owner>
@@ -986,6 +968,25 @@ chromium-metrics-reviews@google.com.
   <summary>
     This event is recorded each time a Handoff is received by Chrome on iOS. The
     enumeration indicates the source of the Handoff.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Home.ActionOnNTP" enum="IOSHomeActionType"
+    expires_after="2023-10-08">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    This histogram is logged whenever a Home action is taken on the NTP.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Home.ActionOnStartSurface" enum="IOSHomeActionType"
+    expires_after="2023-10-08">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    This histogram is logged whenever a Home action is taken on the Start
+    surface.
   </summary>
 </histogram>
 

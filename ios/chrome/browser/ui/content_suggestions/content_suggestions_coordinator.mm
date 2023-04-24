@@ -107,6 +107,8 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 
 - (void)start {
   DCHECK(self.browser);
+  DCHECK(self.NTPMetricsDelegate);
+
   if (self.started) {
     // Prevent this coordinator from being started twice in a row
     return;
@@ -146,7 +148,7 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
       PromosManagerFactory::GetForBrowserState(self.browser->GetBrowserState());
 
   BOOL isGoogleDefaultSearchProvider =
-      [self.ntpDelegate isGoogleDefaultSearchEngine];
+      [self.NTPDelegate isGoogleDefaultSearchEngine];
 
   self.contentSuggestionsMetricsRecorder =
       [[ContentSuggestionsMetricsRecorder alloc] init];
@@ -161,7 +163,6 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
                             browser:self.browser];
   self.contentSuggestionsMediator.feedDelegate = self.feedDelegate;
   self.contentSuggestionsMediator.promosManager = promosManager;
-  self.contentSuggestionsMediator.NTPMetrics = self.NTPMetrics;
   self.contentSuggestionsMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
@@ -173,6 +174,7 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
   self.contentSuggestionsMediator.webStateList =
       self.browser->GetWebStateList();
   self.contentSuggestionsMediator.webState = self.webState;
+  self.contentSuggestionsMediator.NTPMetricsDelegate = self.NTPMetricsDelegate;
 
   self.contentSuggestionsViewController =
       [[ContentSuggestionsViewController alloc] init];
@@ -228,12 +230,12 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 }
 
 - (void)returnToRecentTabWasAdded {
-  [self.ntpDelegate updateFeedLayout];
-  [self.ntpDelegate setContentOffsetToTop];
+  [self.NTPDelegate updateFeedLayout];
+  [self.NTPDelegate setContentOffsetToTop];
 }
 
 - (void)moduleWasRemoved {
-  [self.ntpDelegate updateFeedLayout];
+  [self.NTPDelegate updateFeedLayout];
 }
 
 - (UIEdgeInsets)safeAreaInsetsForDiscoverFeed {

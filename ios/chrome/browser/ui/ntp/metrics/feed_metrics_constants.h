@@ -298,11 +298,6 @@ extern const char kFollowCountAfterUnfollow[];
 // After engaging with the Following feed.
 extern const char kFollowCountWhenEngaged[];
 
-// Histogram for an action taken on the regular NTP (not start surface).
-extern const char kActionOnNTP[];
-// Histogram for an action taken on the start surface.
-extern const char kActionOnStartSurface[];
-
 // Histogram name for last visible card when switching from Discover to
 // Following feed.
 extern const char kDiscoverIndexWhenSwitchingFeed[];

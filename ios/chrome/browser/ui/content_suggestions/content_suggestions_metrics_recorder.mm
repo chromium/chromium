@@ -75,13 +75,17 @@
 }
 
 - (void)recordMostVisitedTileOpened:(ContentSuggestionsMostVisitedItem*)item
-                            atIndex:(NSInteger)index {
+                            atIndex:(NSInteger)index
+                           webState:(web::WebState*)webState {
   base::RecordAction(base::UserMetricsAction("MobileNTPMostVisited"));
 
   ntp_tiles::metrics::RecordTileClick(ntp_tiles::NTPTileImpression(
       index, item.source, item.titleSource,
       [self getVisualTypeFromAttributes:item.attributes],
       [self getIconTypeFromAttributes:item.attributes], item.URL));
+
+  new_tab_page_uma::RecordAction(
+      false, webState, new_tab_page_uma::ACTION_OPENED_MOST_VISITED_ENTRY);
 }
 
 - (void)recordMostVisitedTileRemoved {

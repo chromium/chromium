@@ -9,6 +9,10 @@
 
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 
+namespace web {
+class WebState;
+}
+
 typedef NS_ENUM(NSInteger, NTPCollectionShortcutType);
 
 @class ContentSuggestionsMostVisitedItem;
@@ -35,9 +39,10 @@ typedef NS_ENUM(NSInteger, NTPCollectionShortcutType);
 - (void)recordMostVisitedTileShown:(ContentSuggestionsMostVisitedItem*)item
                            atIndex:(NSInteger)index;
 
-// Logs a most visited tile `item` being opened at `index`.
+// Logs a most visited tile `item` being opened at `index` in `webState`.
 - (void)recordMostVisitedTileOpened:(ContentSuggestionsMostVisitedItem*)item
-                            atIndex:(NSInteger)index;
+                            atIndex:(NSInteger)index
+                           webState:(web::WebState*)webState;
 
 // Logs a most visited tile being removed.
 - (void)recordMostVisitedTileRemoved;

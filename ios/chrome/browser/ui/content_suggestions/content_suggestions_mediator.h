@@ -34,7 +34,7 @@ class Browser;
 @protocol FeedDelegate;
 class GURL;
 class LargeIconCache;
-@class NTPHomeMetrics;
+@protocol NewTabPageMetricsDelegate;
 class PromosManager;
 class ReadingListModel;
 @protocol SnackbarCommands;
@@ -87,8 +87,9 @@ class WebStateList;
 // The promos manager to alert if the user uses What's New.
 @property(nonatomic, assign) PromosManager* promosManager;
 
-// Recorder for the metrics related to the NTP.
-@property(nonatomic, assign) NTPHomeMetrics* NTPMetrics;
+// Delegate for reporting content suggestions actions to the NTP metrics
+// recorder.
+@property(nonatomic, weak) id<NewTabPageMetricsDelegate> NTPMetricsDelegate;
 
 // Recorder for content suggestions metrics.
 @property(nonatomic, assign)

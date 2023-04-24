@@ -57,6 +57,15 @@
   base::RecordAction(base::UserMetricsAction("MobileNTPIdentityDiscTapped"));
 }
 
+- (void)recordHomeActionType:(IOSHomeActionType)type
+              onStartSurface:(BOOL)isStartSurface {
+  if (isStartSurface) {
+    UMA_HISTOGRAM_ENUMERATION("IOS.Home.ActionOnStartSurface", type);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION("IOS.Home.ActionOnNTP", type);
+  }
+}
+
 #pragma mark - Private
 
 // Records an NTP impression for the tile ablation retention feature.

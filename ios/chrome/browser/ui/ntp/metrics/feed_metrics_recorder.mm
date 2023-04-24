@@ -12,11 +12,11 @@
 #import "base/time/time.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_refresher.h"
 #import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_session_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_follow_delegate.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -1283,13 +1283,7 @@ using feed::FeedUserActionType;
   [defaults setInteger:[self.feedControlDelegate selectedFeed]
                 forKey:kLastUsedFeedForGoodVisitsKey];
 
-  if (self.isShownOnStartSurface) {
-    UMA_HISTOGRAM_ENUMERATION(kActionOnStartSurface,
-                              IOSContentSuggestionsActionType::kFeedCard);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION(kActionOnNTP,
-                              IOSContentSuggestionsActionType::kFeedCard);
-  }
+  [self.NTPMetricsDelegate feedArticleOpened];
 
   switch ([self.feedControlDelegate selectedFeed]) {
     case FeedTypeDiscover:
