@@ -1156,6 +1156,8 @@ void AutocorrectManager::HighlightButtons(
     LOG(ERROR) << "Failed to highlight undo button.";
     return;
   }
+  learn_more_button_.announce_string =
+      l10n_util::GetStringUTF16(IDS_SUGGESTION_AUTOCORRECT_LEARN_MORE);
   suggestion_handler_->SetButtonHighlighted(
       context_id_, learn_more_button_, should_highlight_learn_more, &error);
   if (!error.empty()) {

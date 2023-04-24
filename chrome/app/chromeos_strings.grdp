@@ -6368,6 +6368,9 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_SUGGESTION_AUTOCORRECT_UNDO_TEXT" desc="Label for autocorrect undo button in undo window.">
     Undo
   </message>
+  <message name="IDS_SUGGESTION_AUTOCORRECT_LEARN_MORE" desc="String announced by screenreader when a button to learn more about autocorrect is highlighted.">
+    Autocorrect learn more button. Go to autocorrection settings page. Press enter to activate, escape to dismiss.
+  </message>
   <message name="IDS_SUGGESTION_AUTOCORRECT_UNDO_BUTTON" desc="String announced by screenreader when a button to undo an autocorrect is highlighted. Example, user types 'hllo', system autocorrects to 'hello', user then prepares to revert the autocorrect.">
     Undo autocorrect button. Revert to <ph name="TYPED_WORD">$1<ex>hllo</ex></ph>.  Press enter to activate, escape to dismiss.
   </message>

@@ -394,7 +394,8 @@ ui::ime::AssistiveWindowButton CreateHighlightedUndoButton(
 ui::ime::AssistiveWindowButton CreateHighlightedLearnMoreButton() {
   ui::ime::AssistiveWindowButton button = ui::ime::AssistiveWindowButton();
   button.id = ui::ime::ButtonId::kLearnMore;
-  button.announce_string = l10n_util::GetStringUTF16(IDS_LEARN_MORE);
+  button.announce_string =
+      l10n_util::GetStringUTF16(IDS_SUGGESTION_AUTOCORRECT_LEARN_MORE);
   button.window_type = ash::ime::AssistiveWindowType::kLearnMore;
   return button;
 }

@@ -201,8 +201,6 @@ void AssistiveWindowController::SetButtonHighlighted(
         return;
 
       suggestion_window_view_->SetButtonHighlighted(button, highlighted);
-      if (highlighted)
-        Announce(button.announce_string);
       break;
     case ash::ime::AssistiveWindowType::kLearnMore:
     case ash::ime::AssistiveWindowType::kUndoWindow:
@@ -210,18 +208,18 @@ void AssistiveWindowController::SetButtonHighlighted(
         return;
 
       undo_window_->SetButtonHighlighted(button, highlighted);
-      Announce(button.announce_string);
       break;
     case ash::ime::AssistiveWindowType::kGrammarSuggestion:
       if (!grammar_suggestion_window_)
         return;
 
       grammar_suggestion_window_->SetButtonHighlighted(button, highlighted);
-      if (highlighted)
-        Announce(button.announce_string);
       break;
     case ash::ime::AssistiveWindowType::kNone:
       break;
+  }
+  if (highlighted) {
+    Announce(button.announce_string);
   }
 }
 
