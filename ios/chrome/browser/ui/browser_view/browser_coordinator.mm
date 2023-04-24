@@ -1122,17 +1122,15 @@ enum class ToolbarKind {
   self.viewController.infobarBannerOverlayContainerViewController =
       self.infobarBannerOverlayContainerCoordinator.viewController;
 
-  if (IsPriceTrackingEnabled(self.browser->GetBrowserState())) {
-    self.priceNotificationsIPHCoordinator =
-        [[PriceNotificationsIPHCoordinator alloc]
-            initWithBaseViewController:self.viewController
-                               browser:self.browser];
-    [self.priceNotificationsIPHCoordinator start];
-    // Updates the priceNotificationsIPHPresenter value inside
-    // tabLifecycleMediator.
-    self.tabLifecycleMediator.priceNotificationsIPHPresenter =
-        self.priceNotificationsIPHCoordinator;
-  }
+  self.priceNotificationsIPHCoordinator =
+      [[PriceNotificationsIPHCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser];
+  [self.priceNotificationsIPHCoordinator start];
+  // Updates the priceNotificationsIPHPresenter value inside
+  // tabLifecycleMediator.
+  self.tabLifecycleMediator.priceNotificationsIPHPresenter =
+      self.priceNotificationsIPHCoordinator;
 
   if (IsCredentialProviderExtensionPromoEnabled()) {
     _credentialProviderPromoCoordinator =
