@@ -622,7 +622,7 @@ size_t VerdictCacheManager::GetStoredRealTimeUrlCheckVerdictCount() {
     for (auto item : source.setting_value.GetDict()) {
       if (item.first == base::StringPiece(kRealTimeUrlCacheKey)) {
         stored_verdict_count_real_time_url_check_.value() +=
-            item.second.DictSize();
+            item.second.GetDict().size();
       }
     }
   }
@@ -1060,10 +1060,9 @@ size_t VerdictCacheManager::GetPhishGuardVerdictCountForURL(
 
   int verdict_cnt = 0;
   if (trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE) {
-    base::Value* password_on_focus_dict =
-        cache_dictionary_value.GetDict().Find(kPasswordOnFocusCacheKey);
-    verdict_cnt +=
-        password_on_focus_dict ? password_on_focus_dict->DictSize() : 0;
+    base::Value::Dict* password_on_focus_dict =
+        cache_dictionary_value.GetDict().FindDict(kPasswordOnFocusCacheKey);
+    verdict_cnt += password_on_focus_dict ? password_on_focus_dict->size() : 0;
   } else {
     for (auto [key, value] : cache_dictionary_value.GetDict()) {
       if (key == kPasswordOnFocusCacheKey) {
