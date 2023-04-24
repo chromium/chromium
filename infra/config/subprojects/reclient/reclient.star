@@ -152,6 +152,28 @@ fyi_reclient_test_builder(
     console_view_category = "linux",
 )
 
+fyi_reclient_test_builder(
+    name = "Linux Builder reclient test (unified uploads)",
+    builder_spec = builder_config.copy_from(
+        "ci/Linux Builder",
+        lambda spec: structs.evolve(
+            spec,
+            gclient_config = structs.extend(
+                spec.gclient_config,
+                apply_configs = [
+                    "reclient_test",
+                ],
+            ),
+            build_gs_bucket = "chromium-fyi-archive",
+        ),
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_category = "linux",
+    reclient_bootstrap_env = {
+        "GLOG_use_unified_uploads": "true",
+    },
+)
+
 fyi_reclient_staging_builder(
     name = "Mac Builder reclient staging",
     builder_spec = builder_config.copy_from(
