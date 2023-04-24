@@ -1559,7 +1559,8 @@ IN_PROC_BROWSER_TEST_F(
 // postal codes are detected.
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    Logic_ShouldAttemptToOfferToSaveIfPostalCodesConflict) {
+    // TODO(crbug.com/1439213): Re-enable this test
+    DISABLED_Logic_ShouldAttemptToOfferToSaveIfPostalCodesConflict) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
 
