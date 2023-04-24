@@ -6,10 +6,10 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -570,14 +570,14 @@ void FileVideoCaptureDevice::OnSetPhotoOptions(
   }
 
   if (settings->has_pan) {
-    pan_ = base::clamp(int(settings->pan), 0, zoom_max_levels_);
+    pan_ = std::clamp(int(settings->pan), 0, zoom_max_levels_);
   }
 
   if (settings->has_tilt) {
-    tilt_ = base::clamp(int(settings->tilt), 0, zoom_max_levels_);
+    tilt_ = std::clamp(int(settings->tilt), 0, zoom_max_levels_);
   }
   if (settings->has_zoom) {
-    zoom_ = base::clamp(int(settings->zoom), 0, zoom_max_levels_);
+    zoom_ = std::clamp(int(settings->zoom), 0, zoom_max_levels_);
   }
 
   std::move(callback).Run(true);

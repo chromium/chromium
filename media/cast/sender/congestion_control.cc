@@ -18,7 +18,6 @@
 #include <algorithm>
 #include <deque>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -428,8 +427,8 @@ int AdaptiveCongestionControl::GetBitrate(base::TimeTicks playout_time,
   TRACE_COUNTER_ID1("cast.stream", "Empty Buffer Fraction", this,
                     empty_buffer_fraction);
 
-  return base::clamp(bits_per_second, min_bitrate_configured_,
-                     max_bitrate_configured_);
+  return std::clamp(bits_per_second, min_bitrate_configured_,
+                    max_bitrate_configured_);
 }
 
 }  // namespace cast

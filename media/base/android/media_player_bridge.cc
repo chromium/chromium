@@ -11,7 +11,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -421,7 +420,7 @@ void MediaPlayerBridge::Release() {
 }
 
 void MediaPlayerBridge::SetVolume(double volume) {
-  volume_ = base::clamp(volume, 0.0, 1.0);
+  volume_ = std::clamp(volume, 0.0, 1.0);
   UpdateVolumeInternal();
 }
 

@@ -10,12 +10,12 @@
 #include <mftransform.h>
 #include <objbase.h>
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/features.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -812,7 +812,7 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
       bitrate_allocation.GetMode() == bitrate_allocation_.GetMode(),
       "Invalid bitrate mode", );
   framerate =
-      base::clamp(framerate, 1u, static_cast<uint32_t>(kMaxFrameRateNumerator));
+      std::clamp(framerate, 1u, static_cast<uint32_t>(kMaxFrameRateNumerator));
 
   if (framerate == frame_rate_ && bitrate_allocation == bitrate_allocation_) {
     return;

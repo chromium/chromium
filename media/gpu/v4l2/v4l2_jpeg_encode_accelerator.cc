@@ -9,11 +9,11 @@
 #include <string.h>
 #include <sys/mman.h>
 
+#include <algorithm>
 #include <memory>
 #include <tuple>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/bind_post_task.h"
@@ -162,7 +162,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstance::FillQuantizationTable(
   for (size_t i = 0; i < kDctSize; i++) {
     temp = ((unsigned int)basic_table[kZigZag8x8[i]] * quality + 50) / 100;
     /* limit the values to the valid range */
-    dst_table[i] = base::clamp(temp, 1u, 255u);
+    dst_table[i] = std::clamp(temp, 1u, 255u);
   }
 }
 
@@ -1006,7 +1006,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::FillQuantizationTable(
   for (size_t i = 0; i < kDctSize; i++) {
     temp = ((unsigned int)basic_table[kZigZag8x8[i]] * quality + 50) / 100;
     /* limit the values to the valid range */
-    dst_table[i] = base::clamp(temp, 1u, 255u);
+    dst_table[i] = std::clamp(temp, 1u, 255u);
   }
 }
 

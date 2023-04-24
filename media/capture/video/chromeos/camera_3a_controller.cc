@@ -4,10 +4,10 @@
 
 #include "media/capture/video/chromeos/camera_3a_controller.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/typed_macros.h"
@@ -545,10 +545,10 @@ void Camera3AController::SetPointOfInterest(gfx::Point point) {
 
   // (xmin, ymin, xmax, ymax, weight)
   std::vector<int32_t> region = {
-      base::clamp(point.x() - roi_radius, 0, active_array_size.width() - 1),
-      base::clamp(point.y() - roi_radius, 0, active_array_size.height() - 1),
-      base::clamp(point.x() + roi_radius, 0, active_array_size.width() - 1),
-      base::clamp(point.y() + roi_radius, 0, active_array_size.height() - 1),
+      std::clamp(point.x() - roi_radius, 0, active_array_size.width() - 1),
+      std::clamp(point.y() - roi_radius, 0, active_array_size.height() - 1),
+      std::clamp(point.x() + roi_radius, 0, active_array_size.width() - 1),
+      std::clamp(point.y() + roi_radius, 0, active_array_size.height() - 1),
       1,
   };
 

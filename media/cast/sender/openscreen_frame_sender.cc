@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -110,8 +109,8 @@ void OpenscreenFrameSender::SetTargetPlayoutDelay(
     return;
   }
 
-  new_target_playout_delay = base::clamp(
-      new_target_playout_delay, min_playout_delay_, max_playout_delay_);
+  new_target_playout_delay = std::clamp(new_target_playout_delay,
+                                        min_playout_delay_, max_playout_delay_);
   VLOG_WITH_SSRC(2) << "Target playout delay changing from "
                     << target_playout_delay_.InMilliseconds() << " ms to "
                     << new_target_playout_delay.InMilliseconds() << " ms.";

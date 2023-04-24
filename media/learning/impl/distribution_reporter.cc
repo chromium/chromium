@@ -4,7 +4,8 @@
 
 #include "media/learning/impl/distribution_reporter.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -214,7 +215,7 @@ class UkmRegressionReporter : public DistributionReporter {
             (task().ukm_max_input_value - task().ukm_min_input_value) +
         output_min;
     // Clip to [0, 100] and truncate to an integer.
-    return base::clamp(static_cast<int>(scaled_value), output_min, output_max);
+    return std::clamp(static_cast<int>(scaled_value), output_min, output_max);
   }
 };
 

@@ -5,9 +5,10 @@
 #include "media/gpu/vaapi/test/vp8_decoder.h"
 
 #include <va/va.h>
+
+#include <algorithm>
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "media/filters/ivf_parser.h"
 #include "media/gpu/vaapi/test/macros.h"
 #include "media/parsers/vp8_parser.h"
@@ -94,7 +95,7 @@ void Vp8Decoder::FillVp8DataStructures(const Vp8FrameHeader& frame_hdr,
       }
     }
 
-#define CLAMP_Q(q) base::clamp(q, 0, 127)
+#define CLAMP_Q(q) std::clamp(q, 0, 127)
     iq_matrix_buf.quantization_index[i][0] = CLAMP_Q(q);
     iq_matrix_buf.quantization_index[i][1] = CLAMP_Q(q + quant_hdr.y_dc_delta);
     iq_matrix_buf.quantization_index[i][2] = CLAMP_Q(q + quant_hdr.y2_dc_delta);
@@ -154,7 +155,7 @@ void Vp8Decoder::FillVp8DataStructures(const Vp8FrameHeader& frame_hdr,
       }
     }
 
-    pic_param.loop_filter_level[i] = base::clamp(lf_level, 0, 63);
+    pic_param.loop_filter_level[i] = std::clamp(lf_level, 0, 63);
   }
 
   static_assert(

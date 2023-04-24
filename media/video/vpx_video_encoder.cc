@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/stringprintf.h"
@@ -687,7 +686,7 @@ base::TimeDelta VpxVideoEncoder::GetFrameDuration(const VideoFrame& frame) {
   constexpr auto min_duration = base::Seconds(1.0 / 60.0);
   constexpr auto max_duration = base::Seconds(1.0 / 24.0);
   auto duration = frame.timestamp() - last_frame_timestamp_;
-  return base::clamp(duration, min_duration, max_duration);
+  return std::clamp(duration, min_duration, max_duration);
 }
 
 VpxVideoEncoder::~VpxVideoEncoder() {

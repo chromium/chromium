@@ -4,9 +4,9 @@
 
 #include "media/capture/video/chromeos/camera_app_device_impl.h"
 
+#include <algorithm>
 #include <cmath>
 
-#include "base/cxx17_backports.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -474,8 +474,8 @@ void CameraAppDeviceImpl::OnDetectedDocumentCornersOnMojoThread(
   // Rotate a point in coordination space {x: [0.0, 1.0], y: [0.0, 1.0]} with
   // anchor point {x: 0.5, y: 0.5}.
   auto rotate_corner = [&](const gfx::PointF& corner) -> gfx::PointF {
-    float x = base::clamp(corner.x(), 0.0f, 1.0f);
-    float y = base::clamp(corner.y(), 0.0f, 1.0f);
+    float x = std::clamp(corner.x(), 0.0f, 1.0f);
+    float y = std::clamp(corner.y(), 0.0f, 1.0f);
 
     switch (rotation) {
       case VIDEO_ROTATION_0:
