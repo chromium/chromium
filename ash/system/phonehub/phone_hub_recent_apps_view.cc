@@ -411,9 +411,11 @@ void PhoneHubRecentAppsView::Update() {
     case RecentAppsUiState::PLACEHOLDER_VIEW:
       recent_app_buttons_view_->SetVisible(false);
       placeholder_view_->SetVisible(true);
-      header_view_->SetErrorButtonVisible(false);
-      if (loading_view_) {
-        loading_view_->SetVisible(false);
+      if (features::IsEcheNetworkConnectionStateEnabled()) {
+        header_view_->SetErrorButtonVisible(false);
+        if (loading_view_) {
+          loading_view_->SetVisible(false);
+        }
       }
       SetVisible(true);
       break;
