@@ -415,13 +415,7 @@ PrintPreviewUI::PrintPreviewUI(content::WebUI* web_ui,
   web_ui->AddMessageHandler(std::move(handler));
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  // Register with print backend service manager; it is beneficial to have a
-  // the print backend service be present and ready for at least as long as
-  // this UI is around.
-  if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
-    service_manager_client_id_ =
-        PrintBackendServiceManager::GetInstance().RegisterQueryClient();
-  }
+  RegisterPrintBackendServiceManagerClient();
 #endif
 }
 
@@ -440,25 +434,32 @@ PrintPreviewUI::PrintPreviewUI(content::WebUI* web_ui)
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  // Register with print backend service manager; it is beneficial to have a
-  // the print backend service be present and ready for at least as long as
-  // this UI is around.
-  if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
-    service_manager_client_id_ =
-        PrintBackendServiceManager::GetInstance().RegisterQueryClient();
-  }
+  RegisterPrintBackendServiceManagerClient();
 #endif
 }
 
 PrintPreviewUI::~PrintPreviewUI() {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
+  UnregisterPrintBackendServiceManagerClient();
+#endif
+  ClearPreviewUIId();
+}
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+void PrintPreviewUI::RegisterPrintBackendServiceManagerClient() {
+  if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
+    service_manager_client_id_ =
+        PrintBackendServiceManager::GetInstance().RegisterQueryClient();
+  }
+}
+
+void PrintPreviewUI::UnregisterPrintBackendServiceManagerClient() {
   if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
     PrintBackendServiceManager::GetInstance().UnregisterClient(
         service_manager_client_id_);
   }
-#endif
-  ClearPreviewUIId();
 }
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 mojo::PendingAssociatedRemote<mojom::PrintPreviewUI>
 PrintPreviewUI::BindPrintPreviewUI() {
