@@ -25,6 +25,7 @@ const char kMockMerchantCartURL[] = "https://www.foo.com/cart";
 const char kMockProductImageURLA[] = "https://www.foo.com/imageA";
 const char kMockProductImageURLB[] = "https://www.foo.com/imageB";
 const char kMockMerchantPageURL[] = "https://www.foo.com/test";
+const char kMockMerchantDiscountText[] = "15% off";
 
 class MockCartService : public CartService {
  public:
@@ -193,6 +194,8 @@ TEST_F(CartProcessorTest, TestCartToMojom) {
   cart_proto.set_merchant_cart_url(kMockMerchantCartURL);
   cart_proto.add_product_image_urls(kMockProductImageURLA);
   cart_proto.add_product_image_urls(kMockProductImageURLB);
+  cart_proto.mutable_discount_info()->set_discount_text(
+      kMockMerchantDiscountText);
   std::vector<CartDB::KeyAndValue> carts = {{kMockMerchantDomain, cart_proto}};
   EXPECT_CALL(cart_service, LoadAllActiveCarts(testing::_))
       .Times(1)
@@ -222,6 +225,7 @@ TEST_F(CartProcessorTest, TestCartToMojom) {
   ASSERT_EQ(cart_mojom->product_image_urls.size(), 2u);
   ASSERT_EQ(cart_mojom->product_image_urls[0], GURL(kMockProductImageURLA));
   ASSERT_EQ(cart_mojom->product_image_urls[1], GURL(kMockProductImageURLB));
+  ASSERT_EQ(cart_mojom->discount_text, kMockMerchantDiscountText);
 }
 
 TEST_F(CartProcessorTest, TestFakeCart) {
