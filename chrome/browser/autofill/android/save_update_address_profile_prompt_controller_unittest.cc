@@ -10,10 +10,10 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "base/uuid.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -78,7 +78,8 @@ class SaveUpdateAddressProfilePromptControllerTest
 
   // Profile with verified data as it is returned from Java.
   AutofillProfile GetFullProfileWithVerifiedData() {
-    AutofillProfile profile(base::GenerateGUID(), test::kEmptyOrigin);
+    AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                            test::kEmptyOrigin);
     profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"Mona J. Liza",
                                              VerificationStatus::kUserVerified);
     test::SetProfileInfo(&profile, "", "", "", "email@example.com",
