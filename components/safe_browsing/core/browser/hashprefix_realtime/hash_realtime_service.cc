@@ -6,13 +6,11 @@
 
 #include "base/base64url.h"
 #include "base/containers/contains.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/crash/core/common/crash_key.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
@@ -522,121 +520,12 @@ HashRealTimeService::ParseResponseAndUpdateBackoff(
   return response;
 }
 
-void HashRealTimeService::LogTemporaryUnmatchedFullHashesDebugInfo(
-    const std::unique_ptr<V5::SearchHashesResponse>& response,
-    const std::set<std::string>& requested_hash_prefixes_set) const {
-  auto replace_embedded_nulls = [](std::string hash) {
-    // DumpWithoutCrashing does not allow embedded nulls. We replace any
-    // embedded nulls with a dummy different character (X).
-    std::replace(hash.begin(), hash.end(), '\0', 'X');
-    return hash;
-  };
-
-  static crash_reporter::CrashKeyString<64> full_hash_crash_key(
-      "hprt-full-hash");
-  static crash_reporter::CrashKeyString<32> full_hash_size_crash_key(
-      "hprt-full-hash-size");
-  bool found_unmatched_full_hashes = false;
-  for (const auto& full_hash : response->full_hashes()) {
-    if (!base::Contains(
-            requested_hash_prefixes_set,
-            hash_realtime_utils::GetHashPrefix(full_hash.full_hash()))) {
-      found_unmatched_full_hashes = true;
-      full_hash_crash_key.Set(replace_embedded_nulls(full_hash.full_hash()));
-      full_hash_size_crash_key.Set(
-          base::NumberToString(full_hash.full_hash().length()));
-      // There may be multiple full hashes that don't match, but just one is
-      // sufficient for debugging purposes.
-      break;
-    }
-  }
-  if (!found_unmatched_full_hashes) {
-    return;
-  }
-
-  using ArrayItemKey8 = crash_reporter::CrashKeyString<8>;
-  static ArrayItemKey8 prefix_crash_keys[] = {
-      {"hprt-prefix-0", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-1", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-2", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-3", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-4", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-5", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-6", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-7", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-8", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-9", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-10", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-11", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-12", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-13", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-14", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-15", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-16", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-17", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-18", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-19", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-20", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-21", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-22", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-23", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-24", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-25", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-26", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-27", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-28", ArrayItemKey8::Tag::kArray},
-      {"hprt-prefix-29", ArrayItemKey8::Tag::kArray},
-  };
-
-  static crash_reporter::CrashKeyString<32>
-      num_requested_prefixes_hash_crash_key("hprt-num-requested-prefixes");
-  static crash_reporter::CrashKeyString<4> some_prefix_size_too_big_crash_key(
-      "hprt-some-prefix-size-too-big");
-  static crash_reporter::CrashKeyString<4> some_prefix_size_too_small_crash_key(
-      "hprt-some-prefix-size-too-small");
-  some_prefix_size_too_big_crash_key.Set("F");
-  some_prefix_size_too_small_crash_key.Set("F");
-  num_requested_prefixes_hash_crash_key.Set(
-      base::NumberToString(requested_hash_prefixes_set.size()));
-  size_t i = 0;
-  for (const auto& requested_hash_prefix : requested_hash_prefixes_set) {
-    if (i >= std::size(prefix_crash_keys)) {
-      // We should only ever have up to 30 hash prefixes (same as the size of
-      // |prefix_crash_keys|). |hprt-num-requested-prefixes| will identify if
-      // there are times where that's not the case.
-      break;
-    }
-    if (requested_hash_prefix.length() > 4) {
-      some_prefix_size_too_big_crash_key.Set("T");
-    }
-    if (requested_hash_prefix.length() < 4) {
-      some_prefix_size_too_small_crash_key.Set("T");
-    }
-    prefix_crash_keys[i].Set(replace_embedded_nulls(requested_hash_prefix));
-    ++i;
-  }
-
-  base::debug::DumpWithoutCrashing();
-
-  // Clear all the crash keys.
-  full_hash_crash_key.Clear();
-  full_hash_size_crash_key.Clear();
-  for (auto& prefix_crash_key : prefix_crash_keys) {
-    prefix_crash_key.Clear();
-  }
-  num_requested_prefixes_hash_crash_key.Clear();
-  some_prefix_size_too_big_crash_key.Clear();
-  some_prefix_size_too_small_crash_key.Clear();
-}
-
 void HashRealTimeService::RemoveUnmatchedFullHashes(
     std::unique_ptr<V5::SearchHashesResponse>& response,
     const std::vector<std::string>& requested_hash_prefixes) const {
   size_t initial_full_hashes_count = response->full_hashes_size();
   std::set<std::string> requested_hash_prefixes_set(
       requested_hash_prefixes.begin(), requested_hash_prefixes.end());
-  LogTemporaryUnmatchedFullHashesDebugInfo(response,
-                                           requested_hash_prefixes_set);
   auto* mutable_full_hashes = response->mutable_full_hashes();
   mutable_full_hashes->erase(
       std::remove_if(

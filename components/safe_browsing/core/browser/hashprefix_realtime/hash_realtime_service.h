@@ -282,11 +282,6 @@ class HashRealTimeService : public KeyedService {
       std::unique_ptr<V5::SearchHashesResponse>& response,
       const std::vector<std::string>& requested_hash_prefixes) const;
 
-  // Log temporary debugging info for crbug.com/1430928.
-  void LogTemporaryUnmatchedFullHashesDebugInfo(
-      const std::unique_ptr<V5::SearchHashesResponse>& response,
-      const std::set<std::string>& requested_hash_prefixes_set) const;
-
   // Removes any |FullHashDetail| within the |response| that has invalid
   // |ThreatType| or |ThreatAttribute| enums. This is for forward compatibility,
   // for when the API starts returning new threat types or attributes that the

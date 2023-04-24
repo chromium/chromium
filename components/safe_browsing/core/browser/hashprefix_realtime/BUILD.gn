@@ -15,7 +15,6 @@ static_library("hash_realtime_service") {
   deps = [
     ":hash_realtime_utils",
     "//base:base",
-    "//components/crash/core/common:crash_key",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
