@@ -37,7 +37,6 @@
 <translation id="10614374240317010">Gemmes aldrig</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Bogmærker på pc</translation>
-<translation id="1067561478268651872">Politikken <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> anvendes ikke, medmindre politikken <ph name="SECURE_DNS_SALT" /> er konfigureret.</translation>
 <translation id="1068672505746868501">Oversæt aldrig sider på <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070853536588271387">Hybridkøretøjer og alternative motorkøretøjer</translation>
 <translation id="1070901266639972381">Nat</translation>
@@ -3224,7 +3223,6 @@ Yderligere oplysninger:
 <translation id="8913778647360618320">Knappen Administrer betalingsmetoder – tryk på Enter for at administrere oplysninger om dine betalinger og betalingskort i Chrome-indstillingerne</translation>
 <translation id="8922013791253848639">Tillad altid annoncer på dette website</translation>
 <translation id="892588693504540538">Hul øverst til højre</translation>
-<translation id="8930098617363288380">Værdien <ph name="SECURE_DNS_SALT" /> er ikke relevant og anvendes ikke, medmindre politikken <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> er konfigureret.</translation>
 <translation id="8930330541574156305">Fast ejendom</translation>
 <translation id="8931333241327730545">Vil du gemme dette kort på din Google-konto?</translation>
 <translation id="8932102934695377596">Dit ur er bagud</translation>

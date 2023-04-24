@@ -37,7 +37,6 @@
 <translation id="10614374240317010">ഒരിക്കലും സംരക്ഷിച്ചില്ല</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">ഡെസ്‌ക്‌ടോപ്പ് ബുക്ക്‌മാർക്കുകൾ</translation>
-<translation id="1067561478268651872"><ph name="SECURE_DNS_SALT" /> നയം സജ്ജീകരിക്കുന്നത് വരെ <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> നയം ഉപയോഗിക്കില്ല.</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> ഭാഷയിലുള്ള പേജുകൾ ഒരിക്കലും വിവർത്തനം ചെയ്യരുത്</translation>
 <translation id="1070853536588271387">ഹൈബ്രിഡ്, ഇതര ഇന്ധന വാഹനങ്ങൾ</translation>
 <translation id="1070901266639972381">രാത്രി</translation>
@@ -3223,7 +3222,6 @@
 <translation id="8913778647360618320">'പേയ്‌മെന്റ് രീതികൾ മാനേജ് ചെയ്യുക' ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ പേയ്‌മെന്റുകളും ക്രെഡിറ്റ് കാർഡ് വിവരങ്ങളും മാനേജ് ചെയ്യാൻ 'Enter' അമർത്തുക</translation>
 <translation id="8922013791253848639">ഈ സൈറ്റിൽ എല്ലായ്‌പ്പോഴും പരസ്യങ്ങൾ അനുവദിക്കുക</translation>
 <translation id="892588693504540538">മുകളിൽ വലതുവശത്ത് പഞ്ച് ചെയ്യുക</translation>
-<translation id="8930098617363288380"><ph name="SECURE_DNS_SALT" /> എന്ന മൂല്യം പ്രസക്തമല്ല, <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> നയം സജ്ജീകരിക്കുന്നത് വരെ അത് ഉപയോഗിക്കുകയുമില്ല.</translation>
 <translation id="8930330541574156305">റിയൽ എസ്റ്റേറ്റ്</translation>
 <translation id="8931333241327730545">ഈ കാർഡ് നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിക്കണോ?</translation>
 <translation id="8932102934695377596">നിങ്ങളുടെ ക്ലോക്ക് വളരെ പിന്നിലാണ്</translation>

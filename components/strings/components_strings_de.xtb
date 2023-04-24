@@ -37,7 +37,6 @@
 <translation id="10614374240317010">Nie speichern für…</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Desktop-Lesezeichen</translation>
-<translation id="1067561478268651872">Die Richtlinie „<ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" />“ wird nur verwendet, wenn die Richtlinie „<ph name="SECURE_DNS_SALT" />“ konfiguriert ist.</translation>
 <translation id="1068672505746868501">Seiten auf <ph name="SOURCE_LANGUAGE" /> nie übersetzen</translation>
 <translation id="1070853536588271387">Hybridfahrzeuge und Fahrzeuge mit alternativem Antrieb</translation>
 <translation id="1070901266639972381">Nacht</translation>
@@ -3224,7 +3223,6 @@ Weitere Details:
 <translation id="8913778647360618320">Schaltfläche „Zahlungsmethoden verwalten“ – drücke die Eingabetaste, um Zahlungen und Kreditkartendaten in den Chrome-Einstellungen zu verwalten</translation>
 <translation id="8922013791253848639">Werbung auf dieser Website immer zulassen</translation>
 <translation id="892588693504540538">Lochung oben rechts</translation>
-<translation id="8930098617363288380">Der <ph name="SECURE_DNS_SALT" />-Wert ist nicht relevant und wird nur verwendet, wenn die Richtlinie „<ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" />“ konfiguriert ist.</translation>
 <translation id="8930330541574156305">Immobilien</translation>
 <translation id="8931333241327730545">Möchtest du diese Karte in deinem Google-Konto speichern?</translation>
 <translation id="8932102934695377596">Deine Uhr geht nach</translation>

@@ -410,6 +410,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="9054037008353851982">Start på nytt for å oppdatere – fanene åpnes på nytt</translation>
 <translation id="911206726377975832">Vil du slette all nettlesingsdata også?</translation>
 <translation id="9138603949443464873">For å bruke endringene dine må du starte Chrome på nytt</translation>
+<translation id="9190003950176692491">{NUM_DEVICES,plural, =0{Google Chrome brukte en HID-enhet}=1{Google Chrome bruker en HID-enhet}other{Google Chrome bruker HID-enheter}}</translation>
 <translation id="9195993889682885387">Chrome kan anslå interessene dine basert på nettleserloggen din fra de siste ukene. Denne informasjonen blir værende på enheten din.</translation>
 <translation id="919706545465235479">Oppdater Chrome for å starte synkroniseringen</translation>
 <translation id="922152298093051471">Tilpass Chrome</translation>

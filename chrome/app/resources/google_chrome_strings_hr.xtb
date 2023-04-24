@@ -411,6 +411,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="9054037008353851982">Ponovno pokrenite da biste ažurirali – kartice će se ponovno otvoriti</translation>
 <translation id="911206726377975832">Izbrisati i podatke o pregledavanju?</translation>
 <translation id="9138603949443464873">Da bi se vaše promjene primijenile, ponovo pokrenite Chrome</translation>
+<translation id="9190003950176692491">{NUM_DEVICES,plural, =0{Google Chrome pristupao je HID uređaju}=1{Google Chrome pristupa HID uređaju}one{Google Chrome pristupa HID uređajima}few{Google Chrome pristupa HID uređajima}other{Google Chrome pristupa HID uređajima}}</translation>
 <translation id="9195993889682885387">Chrome može procijeniti vaše interese na temelju vaše povijesti pregledavanja iz posljednjih nekoliko tjedana. Te informacije ostaju na vašem uređaju.</translation>
 <translation id="919706545465235479">Ažurirajte Chrome da bi se pokrenula sinkronizacija</translation>
 <translation id="922152298093051471">Prilagodi Chrome</translation>

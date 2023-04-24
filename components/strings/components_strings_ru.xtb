@@ -37,7 +37,6 @@
 <translation id="10614374240317010">Сайты, пароли для которых не сохраняются</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Закладки на компьютере</translation>
-<translation id="1067561478268651872">Если правило <ph name="SECURE_DNS_SALT" /> не настроено, то правило <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> не будет работать.</translation>
 <translation id="1068672505746868501">Не переводить <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070853536588271387">Гибридные автомобили и транспортные средства, работающие на альтернативном топливе</translation>
 <translation id="1070901266639972381">До ночи</translation>
@@ -3221,7 +3220,6 @@
 <translation id="8913778647360618320">Кнопка управления способами оплаты. Нажмите Ввод, чтобы изменить данные о способах оплаты и банковских картах в настройках Chrome.</translation>
 <translation id="8922013791253848639">Всегда разрешать рекламу на этом сайте</translation>
 <translation id="892588693504540538">Отверстие в правом верхнем углу</translation>
-<translation id="8930098617363288380">Если правило <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> не настроено, то значение строки <ph name="SECURE_DNS_SALT" /> нерелевантно и не будет использовано.</translation>
 <translation id="8930330541574156305">Недвижимость</translation>
 <translation id="8931333241327730545">Сохранить эту карту в аккаунте Google?</translation>
 <translation id="8932102934695377596">Часы отстают</translation>

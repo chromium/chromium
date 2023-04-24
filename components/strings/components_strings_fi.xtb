@@ -37,7 +37,6 @@
 <translation id="10614374240317010">Ei tallenneta</translation>
 <translation id="1064054731605354900">A3 x 5</translation>
 <translation id="106701514854093668">Työpöytäkirjanmerkit</translation>
-<translation id="1067561478268651872"><ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" />-käytäntöä ei käytetä, ellei <ph name="SECURE_DNS_SALT" />-käytäntöä ole asetettu.</translation>
 <translation id="1068672505746868501">Älä koskaan käännä kielellä <ph name="SOURCE_LANGUAGE" /> kirjoitettuja sivuja.</translation>
 <translation id="1070853536588271387">Hybridi- ja vaihtoehtopolttoainekäyttöiset ajoneuvot</translation>
 <translation id="1070901266639972381">Yö</translation>
@@ -3227,7 +3226,6 @@ Lisätietoja:
 <translation id="8913778647360618320">Ylläpidä maksutapoja ‑painike, paina Enter ylläpitääksesi maksu- ja credit-korttitietoja Chromen asetuksissa</translation>
 <translation id="8922013791253848639">Salli aina mainokset tällä sivustolla.</translation>
 <translation id="892588693504540538">Reikä oikeassa yläkulmassa</translation>
-<translation id="8930098617363288380"><ph name="SECURE_DNS_SALT" />-arvo ei ole olennainen, eikä sitä käytetä, ellei <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" />-käytäntöä aseteta.</translation>
 <translation id="8930330541574156305">Kiinteistöala</translation>
 <translation id="8931333241327730545">Haluatko tallentaa tämän kortin Google-tilillesi?</translation>
 <translation id="8932102934695377596">Kellosi jätättää</translation>

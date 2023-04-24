@@ -91,6 +91,7 @@
 <translation id="1676557873873341166">Video jäädvustamine</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-lahendaja on olemas</translation>
+<translation id="1708602061922134366">Google'i sinine</translation>
 <translation id="1710499924611012470">Juurdepääsufunktsioonidega navigeerimine</translation>
 <translation id="1715359911173058521">Skanneriga ühenduse loomisel on probleeme. Kontrollige võrgu- või USB-ühendust ja proovige uuesti.</translation>
 <translation id="1717874160321062422">Seadet haldab <ph name="FIRST_MANAGER" /> ja <ph name="SECOND_MANAGER" /></translation>
@@ -105,6 +106,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Autentimise tüüp</translation>
+<translation id="1776228893584526149">Taustapildi toon</translation>
 <translation id="1782199038061388045">tõlge</translation>
 <translation id="1790209694022261219">Aknad ja töölauad</translation>
 <translation id="1792647875738159689">Skannimise tühistamine</translation>
@@ -483,6 +485,7 @@
 <translation id="5166918508782100047">Kiirvastuste seaded</translation>
 <translation id="5168185087976003268">Aku seisukord</translation>
 <translation id="5170568018924773124">Kuva kaustas</translation>
+<translation id="5180712487038406644">Ilmekas</translation>
 <translation id="5190187232518914472">Taaselustage oma lemmikmälestused. Albumite lisamiseks või muutmiseks avage rakendus <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Logi välja</translation>
@@ -648,6 +651,7 @@
 <translation id="6527081081771465939">Tundmatu WiFi-turvaprotokoll</translation>
 <translation id="6535178685492749208">Võrguühendus puudub. Tagasiside saadetakse hiljem.</translation>
 <translation id="65587193855025101">Tasaskanner</translation>
+<translation id="6560196641871357166">Ergas</translation>
 <translation id="6564646048574748301">Ebaõnnestus – printeriga ei saa ühendust</translation>
 <translation id="6566314079205407217">Mitme lehe skannimine</translation>
 <translation id="6574762126505704998">Täida</translation>
@@ -877,6 +881,7 @@
 <translation id="8575298406870537639">Teie operaator võib võrguga ühendamiseks seda valikut nõuda. Lisateavet küsige operaatorilt.</translation>
 <translation id="8576249514688522074">Lähtestamata</translation>
 <translation id="8620617069779373398">Rändluse olek</translation>
+<translation id="86356131183441916">Helelilla</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">Jaga URL:</translation>
 <translation id="8660881923941176839">naela</translation>
@@ -961,6 +966,7 @@
 <translation id="945522503751344254">Tagasiside saatmine</translation>
 <translation id="952992212772159698">Aktiveerimata</translation>
 <translation id="960719561871045870">Operaatori kood</translation>
+<translation id="979450713603643090">Heleroosa</translation>
 <translation id="982713511914535780">Käita tühjenemise test</translation>
 <translation id="987264212798334818">Üldine</translation>
 </translationbundle>

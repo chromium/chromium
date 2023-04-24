@@ -55,6 +55,7 @@
 <translation id="104419033123549300">Стил на распоред на копчиња</translation>
 <translation id="1046219820096501039"><ph name="BEGIN_PARAGRAPH1" />Ако дозволите уредите со ChromeOS да испраќаат автоматски извештаи, тоа ќе ни помогне да правиме приоритетни поправки и да го подобруваме ChromeOS. Извештаиве може да содржат податоци за падовите на ChromeOS, кои функции ги користите и колку меморија типично користите. Ако е овозможена и синхронизацијата на апликациите, ќе се прибираат и дијагностички и податоци за користењето на други апликации, меѓу кои и апликации за Android и веб-апликациите.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Може да ги дозволите или да ги откажете извештаиве во секое време во поставките за уредот со ChromeOS на вашето дете. Ако сте администратор на доменот, поставкава може да ја промените во администраторската конзола.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{Увезена е 1 лозинка во <ph name="BRAND" /> на уредов}one{Увезени се {NUM_PASSWORDS} лозинка во <ph name="BRAND" /> на уредов}other{Увезени се {NUM_PASSWORDS} лозинки во <ph name="BRAND" /> на уредов}}</translation>
 <translation id="104710386808485638">Да се рестартира Linux?</translation>
 <translation id="1047431265488717055">Копирај го &amp;текстот на врската</translation>
 <translation id="1048286738600630630">Екрани</translation>
@@ -137,6 +138,7 @@
 <translation id="1110155001042129815">Чекај</translation>
 <translation id="1110965959145884739">Изберете кои јазици да се инсталираат на уредов. Јазичните датотеки се споделуваат меѓу корисниците за да се заштеди простор на дискот. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Картичка во заднина користи Bluetooth</translation>
+<translation id="1112998165730922436">Емитувањето е паузирано</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Diamond</translation>
 <translation id="1114427165525619358">Лозинки на уредов и во сметката на Google</translation>
@@ -1042,6 +1044,7 @@
 <translation id="1854180393107901205">Запри со емитување</translation>
 <translation id="1856715684130786728">Додај локација...</translation>
 <translation id="1858585891038687145">Имајте доверба во сертификатов за идентификување на производителите на софтвер</translation>
+<translation id="1859339856433307593">Веќе е зачувана лозинка за сметкава во вашиот <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">Папкава е празна</translation>
 <translation id="1862311223300693744">Дали имате инсталирано посебна VPN, прокси, заштитен ѕид или
     софтвер NAS?</translation>
@@ -3770,6 +3773,7 @@
 <translation id="4242145785130247982">Не се поддржани повеќе клиентски сертификати</translation>
 <translation id="4242533952199664413">Отвори ги поставките</translation>
 <translation id="4242577469625748426">Не успеа да инсталира поставки за правило на уредот: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4242928980248289922">Зачувано: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="4243504193894350135">Печатачот е паузиран</translation>
 <translation id="4244238649050961491">Најди други апликации за пенкало</translation>
 <translation id="4246980464509998944">Дополнителни коментари:</translation>
@@ -4185,6 +4189,7 @@
 <translation id="4598776695426288251">Wi-Fi е достапно преку повеќе уреди</translation>
 <translation id="4600071396330666617">Број на предлози</translation>
 <translation id="4601426376352205922">Обележи како непрочитано</translation>
+<translation id="460190672235687855">Прегледајте ги лозинките</translation>
 <translation id="4602466770786743961">Секогаш дозволувај <ph name="HOST" /> да пристапи до камерата и микрофонот</translation>
 <translation id="4606551464649945562">Не дозволувај им на сајтовите да создаваат 3D-карта на опкружувањето или да ја следат позицијата на камерата</translation>
 <translation id="4608500690299898628">&amp;Најди...</translation>
@@ -6927,6 +6932,7 @@
 <translation id="70641621694466590">Одете на страницата со лозинки</translation>
 <translation id="7064734931812204395">Се конфигурира контејнерот за Linux. Ова може да потрае до 30 минути.</translation>
 <translation id="7065223852455347715">Уредот е заклучен во режим што спречува запишување во компанија. Доколку сакате да го запишете уредот, потребно е прво да направите обнова на уредот.</translation>
+<translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{Увезена е 1 лозинка во <ph name="BRAND" /> за <ph name="USER_EMAIL" />}one{Увезени се {NUM_PASSWORDS} лозинка во <ph name="BRAND" /> за <ph name="USER_EMAIL" />}other{Увезени се {NUM_PASSWORDS} лозинки во <ph name="BRAND" /> за <ph name="USER_EMAIL" />}}</translation>
 <translation id="7065534935986314333">За системот</translation>
 <translation id="706626672220389329">Грешка при монтирање на споделувањето. Наведеното споделување е веќе монтирано.</translation>
 <translation id="7067396782363924830">Амбиентални бои</translation>
@@ -7812,6 +7818,7 @@
 <translation id="7861846108263890455">Јазик на сметката на Google</translation>
 <translation id="7864539943188674973">Оневозможи Bluetooth</translation>
 <translation id="7865127013871431856">Опции за „Преведи“</translation>
+<translation id="7866941897628979955">Зачувано: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - спарено</translation>
 <translation id="7869655448736341731">Сите</translation>
 <translation id="787069710204604994">На пример, ако посетите сајт што продава патики за маратон, сајтот може да одлучи дека сте заинтересирани да трчате маратон. Подоцна ако посетите друг сајт, тој сајт може да ви прикаже реклама за патики за трчање предложени од првиот сајт.</translation>

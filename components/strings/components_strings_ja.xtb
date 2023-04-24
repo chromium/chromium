@@ -37,7 +37,6 @@
 <translation id="10614374240317010">常に保存しない</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">パソコンのブックマーク</translation>
-<translation id="1067561478268651872"><ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> ポリシーは、<ph name="SECURE_DNS_SALT" /> ポリシーが設定されていない限り使用されません。</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" />のページを翻訳しない</translation>
 <translation id="1070853536588271387">ハイブリッド車、代替燃料車</translation>
 <translation id="1070901266639972381">夜間</translation>
@@ -3227,7 +3226,6 @@
 <translation id="8913778647360618320">お支払い方法を管理するボタンです。Enter キーを押すと、Chrome の設定でお支払いとクレジット カードの情報を管理します</translation>
 <translation id="8922013791253848639">このサイトで常に広告を許可します</translation>
 <translation id="892588693504540538">パンチ（右上）</translation>
-<translation id="8930098617363288380"><ph name="SECURE_DNS_SALT" /> の値は関連するものでないため、<ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> ポリシーが設定されていない限り使用されません。</translation>
 <translation id="8930330541574156305">不動産</translation>
 <translation id="8931333241327730545">このカードを Google アカウントに保存しますか？</translation>
 <translation id="8932102934695377596">時計が遅れています</translation>

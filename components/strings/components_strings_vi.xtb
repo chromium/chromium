@@ -37,7 +37,6 @@
 <translation id="10614374240317010">Không bao giờ lưu</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Dấu trang máy tính</translation>
-<translation id="1067561478268651872">Chính sách <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> sẽ không được sử dụng trừ phi bạn đặt chính sách <ph name="SECURE_DNS_SALT" />.</translation>
 <translation id="1068672505746868501">Không bao giờ dịch các trang viết bằng <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070853536588271387">Xe sử dụng nhiên liệu thay thế &amp; xe có động cơ lai</translation>
 <translation id="1070901266639972381">Đêm</translation>
@@ -3227,7 +3226,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8913778647360618320">Nút Quản lý phương thức thanh toán, nhấn phím Enter để quản lý thông tin thanh toán và thẻ tín dụng trong phần cài đặt của Chrome</translation>
 <translation id="8922013791253848639">Luôn cho phép quảng cáo trên trang web này</translation>
 <translation id="892588693504540538">Đục lỗ trên cùng bên phải</translation>
-<translation id="8930098617363288380">Giá trị <ph name="SECURE_DNS_SALT" /> không phù hợp và sẽ không được dùng trừ phi bạn đặt chính sách <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" />.</translation>
 <translation id="8930330541574156305">Bất động sản</translation>
 <translation id="8931333241327730545">Bạn có muốn lưu thẻ này vào Tài khoản Google của mình không?</translation>
 <translation id="8932102934695377596">Đồng hồ của bạn chạy chậm</translation>

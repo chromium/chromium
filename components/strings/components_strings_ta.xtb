@@ -37,7 +37,6 @@
 <translation id="10614374240317010">எப்போதும் சேமிக்காதவை</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">டெஸ்க்டாப் புக்மார்க்குகள்</translation>
-<translation id="1067561478268651872"><ph name="SECURE_DNS_SALT" /> கொள்கை அமைக்கப்படும் வரை <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> கொள்கை பயன்படுத்தப்படாது.</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> மொழியில் உள்ள பக்கங்களை ஒருபோதும் மொழிபெயர்க்காதே</translation>
 <translation id="1070853536588271387">ஹைப்ரிட் &amp; மாற்று வாகனங்கள்</translation>
 <translation id="1070901266639972381">இரவு</translation>
@@ -3217,7 +3216,6 @@
 <translation id="8913778647360618320">’கட்டண முறைகளை நிர்வகி’ பட்டன், Chrome அமைப்புகளில் பேமெண்ட்டுகள், கிரெடிட் கார்டு ஆகியவை குறித்த தகவலை நிர்வகிக்க Enter விசையை அழுத்துங்கள்</translation>
 <translation id="8922013791253848639">இந்தத் தளத்தில் எப்போதும் விளம்பரங்களை அனுமதி</translation>
 <translation id="892588693504540538">பஞ்ச் டாப் ரைட்</translation>
-<translation id="8930098617363288380"><ph name="SECURE_DNS_SALT" /> மதிப்பு தொடர்புடையதாக இல்லை என்பதால் <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> கொள்கையை அமைக்கும் வரை பயன்படுத்தப்படாது.</translation>
 <translation id="8930330541574156305">ரியல் எஸ்டேட்</translation>
 <translation id="8931333241327730545">இந்தக் கார்டை உங்கள் Google கணக்கில் சேமிக்க வேண்டுமா?</translation>
 <translation id="8932102934695377596">உங்கள் கடிகாரம் மிகவும் பின்தங்கி இருக்கிறது</translation>

@@ -37,7 +37,6 @@
 <translation id="10614374240317010">ဘယ်တော့မှ မသိမ်းဆည်းရန်</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">ဒက်စတော့ စာညှပ်</translation>
-<translation id="1067561478268651872"><ph name="SECURE_DNS_SALT" /> မူဝါဒကို သတ်မှတ်မထားပါက <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> မူဝါဒကို မသုံးပါ။</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> ဘာသာ စာမျက်နှာများကို ဘယ်သောအခါမျှ ဘာသာမပြန်ရန်</translation>
 <translation id="1070853536588271387">ဟိုက်ဘရစ်နှင့် အစားထိုးယာဉ်များ</translation>
 <translation id="1070901266639972381">ည</translation>
@@ -3228,7 +3227,6 @@
 <translation id="8913778647360618320">ငွေပေးချေနည်းလမ်း စီမံရန်ခလုတ်၊ Chrome ဆက်တင်များတွင် ငွေပေးချေမှုများနှင့် ခရက်ဒစ်ကတ် အချက်အလက်ကို စီမံရန် Enter နှိပ်ပါ</translation>
 <translation id="8922013791253848639">ဤဝဘ်ဆိုက်တွင် ကြော်ငြာများကို အမြဲတမ်း ခွင့်ပြုရန်</translation>
 <translation id="892588693504540538">ညာဘက်ထိပ်တွင် ဖောက်ရန်</translation>
-<translation id="8930098617363288380"><ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> မူဝါဒကို သတ်မှတ်မထားပါက <ph name="SECURE_DNS_SALT" /> တန်ဖိုးသည် သက်ဆိုင်မှုမရှိသဖြင့် သုံးမည်မဟုတ်ပါ။</translation>
 <translation id="8930330541574156305">အိမ်၊ ခြံ၊ မြေ ဝန်ဆောင်မှု</translation>
 <translation id="8931333241327730545">သင့် Google အကောင့်သို့ ဤကဒ်ကိုသိမ်းလိုပါသလား။</translation>
 <translation id="8932102934695377596">သင်၏ နာရီ နောက်ကျနေ</translation>

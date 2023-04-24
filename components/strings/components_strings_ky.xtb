@@ -37,7 +37,6 @@
 <translation id="10614374240317010">Эч качан сакталбайт</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Иштактадагы кыстармалар</translation>
-<translation id="1067561478268651872"><ph name="SECURE_DNS_SALT" /> саясаты коюлмайынча, <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> колдонулбайт.</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> тилиндеги барактар эч качан которулбасын</translation>
 <translation id="1070853536588271387">Гибриддик жана альтернативдик унаалар</translation>
 <translation id="1070901266639972381">Түн</translation>
@@ -3224,7 +3223,6 @@
 <translation id="8913778647360618320">Төлөм ыкмаларын башкаруу баскычы. Chrome'дун параметрлерине өтүп, төлөмдөрүңүздү жана насыя карточкасынын маалыматын башкаруу үчүн, Enter баскычын басыңыз</translation>
 <translation id="8922013791253848639">Бул сайттагы жарнамалар дайыма көрүнсүн</translation>
 <translation id="892588693504540538">Жогорку оң жагын тешүү</translation>
-<translation id="8930098617363288380"><ph name="SECURE_DNS_SALT" /> мааниси ылайыксыз, андыктан <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> деп коюлмайынча, ал колдонулбайт.</translation>
 <translation id="8930330541574156305">Кыймылсыз мүлк</translation>
 <translation id="8931333241327730545">Бул карточканы Google аккаунтуңузга сактап коесузбу?</translation>
 <translation id="8932102934695377596">Саатыңыз артта</translation>

@@ -91,6 +91,7 @@
 <translation id="1676557873873341166">Bideoa grabatzen</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS bidezko ebazlea badago</translation>
+<translation id="1708602061922134366">Google-ren urdina</translation>
 <translation id="1710499924611012470">Nabigazio erabilerraza</translation>
 <translation id="1715359911173058521">Arazo bat izan da eskanerrarekin komunikatzean. Egiaztatu sarea edo USB bidezko konexioa behar bezala funtzionatzen ari direla eta saiatu berriro.</translation>
 <translation id="1717874160321062422">Kudeatzaileak: <ph name="FIRST_MANAGER" /> eta <ph name="SECOND_MANAGER" /></translation>
@@ -105,6 +106,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Autentifikazio mota</translation>
+<translation id="1776228893584526149">Horma-paperaren tonua</translation>
 <translation id="1782199038061388045">itzulpena</translation>
 <translation id="1790209694022261219">Leihoak eta lan-eremuak</translation>
 <translation id="1792647875738159689">Eskaneatzeko prozesua bertan behera uzten</translation>
@@ -483,6 +485,7 @@
 <translation id="5166918508782100047">Erantzun bizkorrak eginbidearen ezarpenak</translation>
 <translation id="5168185087976003268">Bateriaren egoera</translation>
 <translation id="5170568018924773124">Erakutsi karpetan</translation>
+<translation id="5180712487038406644">Adierazkorra</translation>
 <translation id="5190187232518914472">Ekarri gogora gogoko oroitzapenak. Albumak gehitu edo editatzeko, joan <ph name="LINK_BEGIN" />Google Argazkiak<ph name="LINK_END" /> zerbitzura.</translation>
 <translation id="5212593641110061691">Tabloidea</translation>
 <translation id="5222676887888702881">Amaitu saioa</translation>
@@ -648,6 +651,7 @@
 <translation id="6527081081771465939">Wifiaren segurtasun-protokoloa ezezaguna da</translation>
 <translation id="6535178685492749208">Ez dago Interneteko konexiorik. Geroago bidaliko dira oharrak.</translation>
 <translation id="65587193855025101">Eskaner horizontala</translation>
+<translation id="6560196641871357166">Animatua</translation>
 <translation id="6564646048574748301">Hutsegitea - Inprimagailua ez da aurkitu</translation>
 <translation id="6566314079205407217">Hainbat orritako eskaneatzea</translation>
 <translation id="6574762126505704998">Bete</translation>
@@ -877,6 +881,7 @@
 <translation id="8575298406870537639">Baliteke zure operadoreak aukera hau eskatzea haren sarera konektatzeko. Horri buruzko xehetasunak lortzeko, jarri operadorearekin harremanetan.</translation>
 <translation id="8576249514688522074">Hasieratu gabe</translation>
 <translation id="8620617069779373398">Ibiltaritza-egoera</translation>
+<translation id="86356131183441916">More argia</translation>
 <translation id="8655295600908251630">Kanala</translation>
 <translation id="8655828773034788261">Partekatzeko URLa:</translation>
 <translation id="8660881923941176839">libra</translation>
@@ -961,6 +966,7 @@
 <translation id="945522503751344254">Bidali oharrak</translation>
 <translation id="952992212772159698">Ez da aktibatu</translation>
 <translation id="960719561871045870">Operadorearen kodea</translation>
+<translation id="979450713603643090">Arrosa argia</translation>
 <translation id="982713511914535780">Egin bateria deskargatzeko prozesuaren proba</translation>
 <translation id="987264212798334818">Orokorra</translation>
 </translationbundle>

@@ -37,7 +37,6 @@
 <translation id="10614374240317010">कभी नहीं सेव किया गया</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">डेस्कटॉप बुकमार्क</translation>
-<translation id="1067561478268651872">जब तक <ph name="SECURE_DNS_SALT" /> नीति सेट नहीं की जाती, तब तक <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> नीति का इस्तेमाल नहीं किया जाएगा.</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> भाषा के पेज का कभी भी अनुवाद न करें</translation>
 <translation id="1070853536588271387">हाइब्रिड और मॉडिफ़ाई किए गए वाहन</translation>
 <translation id="1070901266639972381">रात</translation>
@@ -3223,7 +3222,6 @@
 <translation id="8913778647360618320">'पैसे चुकाने के तरीके प्रबंधित करें' बटन, Chrome की सेटिंग में पैसे चुकाने से जुड़ी जानकारी और क्रेडिट कार्ड की जानकारी प्रबंधित करने के लिए, Enter दबाएं</translation>
 <translation id="8922013791253848639">इस साइट पर विज्ञापनों की हमेशा अनुमति दें</translation>
 <translation id="892588693504540538">सबसे ऊपर दाईं ओर पंच</translation>
-<translation id="8930098617363288380"><ph name="SECURE_DNS_SALT" /> की वैल्यू सही नहीं है. साथ ही, इसका इस्तेमाल तब तक नहीं किया जाएगा, जब तक <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> नीति को सेट नहीं किया जाता.</translation>
 <translation id="8930330541574156305">रीयल एस्टेट</translation>
 <translation id="8931333241327730545">क्या आप इस कार्ड को अपने Google खाते में सेव करना चाहते हैं?</translation>
 <translation id="8932102934695377596">आपकी घड़ी पीछे है</translation>

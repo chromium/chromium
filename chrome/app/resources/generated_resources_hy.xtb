@@ -55,6 +55,7 @@
 <translation id="104419033123549300">Ստեղնաշարի դասավորության ոճը</translation>
 <translation id="1046219820096501039"><ph name="BEGIN_PARAGRAPH1" />Դուք կարող եք թույլ տալ, որ ChromeOS սարքերն ավտոմատ կերպով հաշվետվություններ ուղարկեն Google-ին։ Դա մեզ կօգնի որոշել, թե ինչը առաջնահերթ բարելավման կարիք ունի։ Այդպիսի հաշվետվությունները կարող են պարունակել տվյալներ ChromeOS-ի խափանումների, օգտագործվող գործառույթների և սովորաբար օգտագործվող հիշողության ծավալի մասին։ Եթե նաև հավելվածների համաժամացումն է միացված, կհավաքվեն հավելվածների, այդ թվում՝ Android և վեբ հավելվածների օգտագործման և դիագնոստիկ այլ տվյալներ։<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Հաշվետվությունների ուղարկումը ցանկացած ժամանակ կարելի է թույլատրել կամ արգելել ձեր երեխայի ChromeOS սարքի կարգավորումներում։ Եթե դուք տիրույթի ադմինիստրատորն եք, ապա կարող եք փոխել այս կարգավորումը ադմինիստրատորի վահանակում։<ph name="END_PARAGRAPH2" /></translation>
+<translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 գաղտնաբառ ներմուծվեց <ph name="BRAND" /> այս սարքում}one{{NUM_PASSWORDS} գաղտնաբառ ներմուծվեց <ph name="BRAND" /> այս սարքում}other{{NUM_PASSWORDS} գաղտնաբառ ներմուծվեց <ph name="BRAND" /> այս սարքում}}</translation>
 <translation id="104710386808485638">Վերագործարկե՞լ Լինուքսը</translation>
 <translation id="1047431265488717055">Պատճենել հղման տեքստը</translation>
 <translation id="1048286738600630630">Էկրաններ</translation>
@@ -135,6 +136,7 @@
 <translation id="1110155001042129815">Սպասել</translation>
 <translation id="1110965959145884739">Ընտրեք, թե որ լեզուները տեղադրել այս սարքում։ Սկավառակի վրա տարածքը խնայելու համար լեզվի փաթեթները հասանելի են բոլոր օգտատերերին։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Ֆոնային ներդիրում օգտագործվում է Bluetooth-ը</translation>
+<translation id="1112998165730922436">Հեռարձակումը դադարեցված է</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">Ադամանդ</translation>
 <translation id="1114427165525619358">Այս սարքում և ձեր Google հաշվում պահվող գաղտնաբառերը</translation>
@@ -1032,6 +1034,7 @@
 <translation id="1854180393107901205">Դադարեցնել հեռարձակումը</translation>
 <translation id="1856715684130786728">Ավելացնել գրացուցակ…</translation>
 <translation id="1858585891038687145">Վստահել այս հավաստագրին ծրագրակազմ արտադրողների նույնականացման համար</translation>
+<translation id="1859339856433307593">Այս հաշվի գաղտնաբառն արդեն պահված է ձեր <ph name="BRAND" />ում (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">Այս պանակը դատարկ է</translation>
 <translation id="1862311223300693744">Ձեր համակարգչում տեղադրվա՞ծ է որևէ հատուկ VPN, պրոքսի, հրապատ կամ NAS ծրագրաշար։</translation>
 <translation id="1863182668524159459">Հաջորդական միացքներ չեն գտնվել</translation>
@@ -3756,6 +3759,7 @@
 <translation id="4242145785130247982">Սպասառուների բազմակի վկայագրեր չեն աջակցվում</translation>
 <translation id="4242533952199664413">Բացել կարգավորումները</translation>
 <translation id="4242577469625748426">Չհաջողվեց քաղաքականության կարգավորումները կիրառել սարքի նկատմամբ՝ <ph name="VALIDATION_ERROR" />:</translation>
+<translation id="4242928980248289922">Դուք տնտեսել եք <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="4243504193894350135">Տպիչի աշխատանքը դադարեցված է</translation>
 <translation id="4244238649050961491">Որոնել ստիլուսի համար այլ հավելվածներ</translation>
 <translation id="4246980464509998944">Լրացուցիչ մեկնաբանություններ՝</translation>
@@ -4170,6 +4174,7 @@
 <translation id="4598776695426288251">Մի քանի սարքերի միջոցով հասանելի են Wi-Fi ցանցեր</translation>
 <translation id="4600071396330666617">Հուշումների թիվը</translation>
 <translation id="4601426376352205922">Նշել որպես չկարդացված</translation>
+<translation id="460190672235687855">Դիտել գաղտնաբառերը</translation>
 <translation id="4602466770786743961">Միշտ թույլ տալ <ph name="HOST" />-ին օգտագործել ձեր խոսափողը</translation>
 <translation id="4606551464649945562">Թույլ չտալ կայքերին ստեղծել շրջակայքի եռաչափ քարտեզը և հետագծել տեսախցիկի դիրքը</translation>
 <translation id="4608500690299898628">&amp;Գտնել…</translation>
@@ -6912,6 +6917,7 @@
 <translation id="70641621694466590">Անցնել գաղտնաբառերի էջ</translation>
 <translation id="7064734931812204395">Լինուքսի կոնտեյները կարգավորվում է։ Սա կարող է տևել մինչև 30 րոպե։</translation>
 <translation id="7065223852455347715">Այս սարքը արգելափակված է ձեռնարկության գրանցումը կանխող ռեժիմով: Սարքը գրանցելու համար նախ հարկավոր է անցնել սարքի վերականգնման գործընթաց:</translation>
+<translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{1 գաղտնաբառ ներմուծվեց <ph name="USER_EMAIL" /> հաշվի <ph name="BRAND" />}one{{NUM_PASSWORDS} գաղտնաբառ ներմուծվեց <ph name="USER_EMAIL" /> հաշվի <ph name="BRAND" />}other{{NUM_PASSWORDS} գաղտնաբառ ներմուծվեց <ph name="USER_EMAIL" /> հաշվի <ph name="BRAND" />}}</translation>
 <translation id="7065534935986314333">Տեղեկություններ համակարգի մասին</translation>
 <translation id="706626672220389329">Ընդհանուր միացման սխալ կա։ Նշված սարքն արդեն միացված է։</translation>
 <translation id="7067396782363924830">Ամբիենտ գույներ</translation>
@@ -7796,6 +7802,7 @@
 <translation id="7861846108263890455">Google հաշվի լեզուն</translation>
 <translation id="7864539943188674973">Անջատել Bluetooth-ը</translation>
 <translation id="7865127013871431856">Թարգմանության կարգավորումներ</translation>
+<translation id="7866941897628979955">Դուք տնտեսել եք <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> սարք՝ զուգակցված է</translation>
 <translation id="7869655448736341731">Ցանկացած</translation>
 <translation id="787069710204604994">Օրինակ, եթե դուք այցելում եք կայք, որում վաճառվում են երկար տարածությունների վազքի մարզակոշիկներ, այդ կայքը կարող է որոշել, որ դուք հետաքրքրված եք մարաթոններով։ Ավելի ուշ, երբ դուք այցելեք մեկ այլ կայք, այնտեղ ձեզ կարող է վազքի մարզակոշիկների գովազդ ցուցադրվել։</translation>

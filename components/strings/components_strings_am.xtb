@@ -37,7 +37,6 @@
 <translation id="10614374240317010">በጭራሽ አልተቀመጠም</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">የዴስክቶፕ ዕልባቶች</translation>
-<translation id="1067561478268651872">የ<ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> መመሪያው የ<ph name="SECURE_DNS_SALT" /> መመሪያ ካልተቀናበረ በስተቀር ሥራ ላይ አይውልም።</translation>
 <translation id="1068672505746868501">በ<ph name="SOURCE_LANGUAGE" /> ውስጥ ገጾችን በጭራሽ አትተርጉም</translation>
 <translation id="1070853536588271387">የተደባለቀ እና ተለዋጭ ተሽከርካሪዎች</translation>
 <translation id="1070901266639972381">ማታ</translation>
@@ -3225,7 +3224,6 @@
 <translation id="8913778647360618320">የክፍያ ዘዴዎች አዝራርን ያቀናብሩ፣ የእርስዎን ክፍያዎች እና የክሬዲት ካርድ መረጃ በChrome ቅንብሮች ውስጥ ለማቀናበር አስገባን ይጫኑ</translation>
 <translation id="8922013791253848639">ሁልጊዜ በዚህ ጣቢያ ላይ ማስታወቂያዎችን አሳይ</translation>
 <translation id="892588693504540538">ከላይ ቀኝ በኩል ብሳ</translation>
-<translation id="8930098617363288380">የ<ph name="SECURE_DNS_SALT" /> እሴት አግባብነት የለውም እና የ<ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> መመሪያው ካልተቀናበረ በስተቀር ሥራ ላይ አይውልም።</translation>
 <translation id="8930330541574156305">ሪል እስቴት</translation>
 <translation id="8931333241327730545">ይህን ካርድ በእርስዎ የGoogle መለያ ላይ ማስቀመጥ ይፈልጋሉ?</translation>
 <translation id="8932102934695377596">የእርስዎ ሰዓት ወደ ኋላ ቀርቷል</translation>

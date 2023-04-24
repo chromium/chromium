@@ -37,7 +37,6 @@
 <translation id="10614374240317010">कहिले पनि बचत नगर्नुहोस्</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">डेस्कटप पृष्ठमञ्जूषाहरू</translation>
-<translation id="1067561478268651872"><ph name="SECURE_DNS_SALT" /> नीति लागू गरिएको छ भने मात्र <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> नीति लागू गरिने छ।</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> मा भएका पृष्ठहरूलाई कहिल्यै अनुवाद नगर्नुहोस्‌</translation>
 <translation id="1070853536588271387">हाइब्रिड तथा वैकल्पिक सवारी साधनहरू</translation>
 <translation id="1070901266639972381">राति</translation>
@@ -3223,7 +3222,6 @@
 <translation id="8913778647360618320">'भुक्तानी विधिहरू व्यवस्थित गर्नुहोस्' नामक बटन, Chrome का सेटिङमा गई आफ्ना भुक्तानी तथा क्रेडिट कार्डसम्बन्धी जानकारी व्यवस्थित गर्न Enter थिच्नुहोस्</translation>
 <translation id="8922013791253848639">यो साइटमा सधैँ विज्ञापनहरू राख्ने अनुमति दिनुहोस्</translation>
 <translation id="892588693504540538">सिरानको दायाँपट्टि प्वाल</translation>
-<translation id="8930098617363288380"><ph name="SECURE_DNS_SALT" /> को मान सान्दर्भिक छैन र <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> नीति लागू गरिएको छ भने मात्र सो मान प्रयोग गरिने छ।</translation>
 <translation id="8930330541574156305">घर जग्गा</translation>
 <translation id="8931333241327730545">तपाईं आफ्नो Google खातामा यो कार्ड सुरक्षित गर्न चाहनुहुन्छ?</translation>
 <translation id="8932102934695377596">तपाईंको घडी ढिला छ</translation>

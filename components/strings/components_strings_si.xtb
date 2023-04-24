@@ -37,7 +37,6 @@
 <translation id="10614374240317010">කිසිවිටෙක සුරැක නැත</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">වැඩතල පිටුසලකුණු</translation>
-<translation id="1067561478268651872"><ph name="SECURE_DNS_SALT" /> ප්‍රතිපත්තිය සකසන්නේ නම් මිස, <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> ප්‍රතිපත්තිය භාවිතා කරනු නොලැබේ.</translation>
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> හි පිටු කිසිදාක පරිවර්තනය කරන්න එපා</translation>
 <translation id="1070853536588271387">දෙමුහුන් සහ විකල්ප වාහන</translation>
 <translation id="1070901266639972381">රාත්‍රී</translation>
@@ -3222,7 +3221,6 @@
 <translation id="8913778647360618320">ගෙවීම් ක්‍රම කළමනාකරණය කිරීමේ බොත්තම, Chrome සැකසීම් තුළ ඔබගේ ගෙවීම් සහ ණය කාඩ්පත් තතු කළමනාකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="8922013791253848639">මෙම අඩවිය මත වෙළඳ දැන්වීම්වලට සැම විටම ඉඩ දෙන්න</translation>
 <translation id="892588693504540538">ඉහළ දකුණ අනින්න</translation>
-<translation id="8930098617363288380"><ph name="SECURE_DNS_SALT" /> අගය අදාළ නැති අතර, <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> ප්‍රතිපත්තිය සකසන්නේ නම් මිස, එය භාවිතා කරනු නොලැබේ.</translation>
 <translation id="8930330541574156305">දේපළ වෙළදාම්</translation>
 <translation id="8931333241327730545">ඔබට ඔබේ Google ගිණුම වෙත මෙම කාඩ්පත සුරැකීමට අවශ්‍යද?</translation>
 <translation id="8932102934695377596">ඔබගේ ඔරලෝසුව ඇත්තේ පිටුපසින් ය</translation>

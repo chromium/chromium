@@ -37,7 +37,6 @@
 <translation id="10614374240317010">هرگز ذخیره نمی‌شود</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">نشانک‌های دسک‌تاپ</translation>
-<translation id="1067561478268651872">خط‌مشی <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> استفاده نمی‌شود مگراینکه خط‌مشی <ph name="SECURE_DNS_SALT" /> تنظیم شده باشد.</translation>
 <translation id="1068672505746868501">هرگز صفحه‌های <ph name="SOURCE_LANGUAGE" /> ترجمه نشوند</translation>
 <translation id="1070853536588271387">وسیله نقلیه دوگانه‌سوز و با سوخت جایگزین</translation>
 <translation id="1070901266639972381">شب</translation>
@@ -3226,7 +3225,6 @@
 <translation id="8913778647360618320">‏دکمه «مدیریت روش‌های پرداخت»، برای مدیریت اطلاعات کارت اعتباری و پرداخت‌ها در تنظیمات Chrome، کلید Enter (ورود) را فشار دهید</translation>
 <translation id="8922013791253848639">آگهی‌ها همیشه در این سایت مجاز باشند</translation>
 <translation id="892588693504540538">سوراخ در بالا سمت راست</translation>
-<translation id="8930098617363288380">مقدار <ph name="SECURE_DNS_SALT" /> مرتبط نیست و استفاده نخواهد شد، مگراینکه خط‌مشی <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> تنظیم شده باشد.</translation>
 <translation id="8930330541574156305">املاک و مستغلات</translation>
 <translation id="8931333241327730545">‏می‌خواهید این کارت را در حساب Google خود ذخیره کنید؟</translation>
 <translation id="8932102934695377596">ساعت شما عقب است</translation>

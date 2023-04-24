@@ -37,7 +37,6 @@
 <translation id="10614374240317010">ક્યારેય ન સચવાયેલું</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">ડેસ્કટૉપ બુકમાર્ક</translation>
-<translation id="1067561478268651872">જ્યાં સુધી <ph name="SECURE_DNS_SALT" /> પૉલિસી સેટ કરવામાં ન આવે, ત્યાં સુધી <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> પૉલિસીનો ઉપયોગ કરવામાં આવતો નથી.</translation>
 <translation id="1068672505746868501">પેજનો ક્યારેય પણ <ph name="SOURCE_LANGUAGE" />માં અનુવાદ કરશો નહીં</translation>
 <translation id="1070853536588271387">હાઇબ્રિડ અને વૈકલ્પિક વાહનો</translation>
 <translation id="1070901266639972381">રાત</translation>
@@ -3226,7 +3225,6 @@
 <translation id="8913778647360618320">ચુકવણી પદ્ધતિ મેનેજ કરો બટન, Chrome સેટિંગમાં તમારી ચુકવણીઓ અને ક્રેડિટ કાર્ડની માહિતી મેનેજ કરવા માટે Enter દબાવો</translation>
 <translation id="8922013791253848639">આ સાઇટ પર જાહેરાતો માટે હંમેશાં પરવાનગી આપે છે</translation>
 <translation id="892588693504540538">ઉપર જમણી બાજુએ કાણું પાડો</translation>
-<translation id="8930098617363288380"><ph name="SECURE_DNS_SALT" />નું મૂલ્ય સુસંગત નથી અને જ્યાં સુધી <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> પૉલિસી સેટ કરવામાં ન આવે, ત્યાં સુધી તેનો ઉપયોગ કરવામાં આવશે નહીં.</translation>
 <translation id="8930330541574156305">રિઅલ એસ્ટેટ</translation>
 <translation id="8931333241327730545">શું તમે આ કાર્ડને તમારા Google એકાઉન્ટમાં સાચવવા માગો છો?</translation>
 <translation id="8932102934695377596">તમારી ઘડિયાળ પાછળ છે</translation>

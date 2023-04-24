@@ -37,7 +37,6 @@
 <translation id="10614374240317010">一律不儲存</translation>
 <translation id="1064054731605354900">A3 x 5</translation>
 <translation id="106701514854093668">電腦版書籤</translation>
-<translation id="1067561478268651872">除非已設定 <ph name="SECURE_DNS_SALT" /> 政策，否則系統不會使用 <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> 政策。</translation>
 <translation id="1068672505746868501">一律不翻譯<ph name="SOURCE_LANGUAGE" />網頁</translation>
 <translation id="1070853536588271387">混合與替代動力車輛</translation>
 <translation id="1070901266639972381">晚上</translation>
@@ -3222,7 +3221,6 @@
 <translation id="8913778647360618320">「管理付款方式」按鈕，按下 Enter 鍵即可在 Chrome 設定中管理付款和信用卡資訊</translation>
 <translation id="8922013791253848639">一律允許在這個網站中顯示廣告</translation>
 <translation id="892588693504540538">打孔 (右上方)</translation>
-<translation id="8930098617363288380">除非已設定 <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> 政策，否則 <ph name="SECURE_DNS_SALT" /> 值不具關聯性，系統也不會使用該值。</translation>
 <translation id="8930330541574156305">房地產</translation>
 <translation id="8931333241327730545">您要將這張卡片的資訊儲存到您的 Google 帳戶嗎？</translation>
 <translation id="8932102934695377596">你的時鐘時間過慢</translation>

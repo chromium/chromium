@@ -37,7 +37,6 @@
 <translation id="10614374240317010">Nuk u ruaj asnjëherë</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Faqeshënuesit e desktopit</translation>
-<translation id="1067561478268651872">Politika <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" /> nuk përdoret, përveçse nëse është caktuar politika <ph name="SECURE_DNS_SALT" />.</translation>
 <translation id="1068672505746868501">Mos përkthe asnjëherë faqet që janë në <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070853536588271387">Automjetet hibride dhe alternative</translation>
 <translation id="1070901266639972381">Natë</translation>
@@ -3221,7 +3220,6 @@ Detaje shtesë:
 <translation id="8913778647360618320">Butoni "Menaxho mënyrat e pagesës", shtyp "Enter" për të menaxhuar informacionet e pagesave dhe të kartës së kreditit te cilësimet e Chrome</translation>
 <translation id="8922013791253848639">Lejo gjithmonë reklamat në këtë sajt</translation>
 <translation id="892588693504540538">Shpim lart djathtas</translation>
-<translation id="8930098617363288380">Vlera <ph name="SECURE_DNS_SALT" /> nuk është e përshtatshme dhe nuk do të përdoret, përveçse nëse është caktuar politika <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" />.</translation>
 <translation id="8930330541574156305">Pasuritë e patundshme</translation>
 <translation id="8931333241327730545">Dëshiron që ta ruash këtë kartë te llogaria jote e Google?</translation>
 <translation id="8932102934695377596">Ora ka mbetur prapa</translation>

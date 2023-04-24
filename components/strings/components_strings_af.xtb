@@ -37,7 +37,6 @@
 <translation id="10614374240317010">Nooit gestoor nie</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Werkskermboekmerke</translation>
-<translation id="1067561478268651872">Die <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" />-beleid word nie gebruik nie, tensy die <ph name="SECURE_DNS_SALT" />-beleid gestel is.</translation>
 <translation id="1068672505746868501">Moet nooit bladsye in <ph name="SOURCE_LANGUAGE" /> vertaal nie</translation>
 <translation id="1070853536588271387">Hibried- en alternatiewe voertuie</translation>
 <translation id="1070901266639972381">Nag</translation>
@@ -3226,7 +3225,6 @@ Bykomende besonderhede:
 <translation id="8913778647360618320">Bestuur Betaalmetodes-knoppie; druk Enter om jou betalings- en kredietkaartinligting in Chrome-instellings te bestuur</translation>
 <translation id="8922013791253848639">Laat advertensies altyd op hierdie werf toe</translation>
 <translation id="892588693504540538">Pons regs bo</translation>
-<translation id="8930098617363288380">Die <ph name="SECURE_DNS_SALT" />-waarde is nie relevant nie, en sal nie gebruik word nie, tensy die <ph name="SECURE_DNS_TEMPLATES_WITH_IDENTIFIERS" />-beleid gestel is.</translation>
 <translation id="8930330541574156305">Eiendom</translation>
 <translation id="8931333241327730545">Wil jy hierdie kaart in jou Google-rekening stoor?</translation>
 <translation id="8932102934695377596">Jou horlosie is agter</translation>
