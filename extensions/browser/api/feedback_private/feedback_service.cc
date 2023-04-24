@@ -22,6 +22,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/feedback/feedback_data.h"
 #include "components/feedback/feedback_report.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 #include "content/public/browser/browser_context.h"
@@ -79,6 +80,12 @@ void LoadBluetoothLogs(scoped_refptr<feedback::FeedbackData> feedback_data) {
 #endif
 
 constexpr char kLacrosLogEntryPrefix[] = "Lacros ";
+
+void RedactFeedbackData(scoped_refptr<feedback::FeedbackData> feedback_data) {
+  redaction::RedactionTool redactor(nullptr);
+  feedback_data->RedactDescription(redactor);
+}
+
 }  // namespace
 
 FeedbackService::FeedbackService(content::BrowserContext* browser_context)
@@ -91,6 +98,17 @@ FeedbackService::FeedbackService(content::BrowserContext* browser_context,
     : browser_context_(browser_context), delegate_(delegate) {}
 
 FeedbackService::~FeedbackService() = default;
+
+void FeedbackService::RedactThenSendFeedback(
+    const FeedbackParams& params,
+    scoped_refptr<feedback::FeedbackData> feedback_data,
+    SendFeedbackCallback callback) {
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&RedactFeedbackData, feedback_data),
+      base::BindOnce(&FeedbackService::SendFeedback, this, params,
+                     feedback_data, std::move(callback)));
+}
 
 // After the attached file and screenshot if available are fetched, the callback
 // will be invoked. Other further processing will be done in background. The

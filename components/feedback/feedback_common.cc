@@ -182,6 +182,10 @@ void FeedbackCommon::PrepareReport(
     feedback_data->set_bucket(category_tag());
 }
 
+void FeedbackCommon::RedactDescription(redaction::RedactionTool& redactor) {
+  description_ = redactor.Redact(description_);
+}
+
 // static
 bool FeedbackCommon::IncludeInSystemLogs(const std::string& key,
                                          bool is_google_email) {

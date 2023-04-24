@@ -18,7 +18,7 @@ class MockFeedbackService : public FeedbackService {
                       FeedbackPrivateDelegate* delegate);
 
   MOCK_METHOD(void,
-              SendFeedback,
+              RedactThenSendFeedback,
               (const FeedbackParams&,
                scoped_refptr<feedback::FeedbackData>,
                SendFeedbackCallback),

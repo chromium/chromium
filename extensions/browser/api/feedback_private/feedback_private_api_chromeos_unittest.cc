@@ -150,7 +150,7 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
     auto mock = base::MakeRefCounted<MockFeedbackService>(browser_context());
 
     // scoped_refptr<FeedbackData> actual_feedback_data;
-    EXPECT_CALL(*mock, SendFeedback(_, _, _))
+    EXPECT_CALL(*mock, RedactThenSendFeedback(_, _, _))
         .WillOnce([&](const FeedbackParams& params,
                       scoped_refptr<FeedbackData> feedback_data,
                       SendFeedbackCallback callback) {
