@@ -9,7 +9,7 @@
  */
 :root {
   --cros-sys-app_base: var(--grey-900);
-  --cros-sys-app_base_elevated: var(--grey-200);
+  --cros-sys-base_elevated: var(--grey-200);
   --cros-sys-focus_ring: var(--blue-300);
   --cros-sys-inverse_on_surface: black;
   --cros-sys-on_surface: var(--grey-200);

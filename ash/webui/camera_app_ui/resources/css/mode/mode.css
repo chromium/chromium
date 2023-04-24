@@ -3,7 +3,7 @@
  * found in the LICENSE file. */
 
 .mode-subgroup {
-  background: var(--cros-sys-app_base_elevated);
+  background: var(--cros-sys-base_elevated);
   border-radius: var(--border-radius-rounded-with-short-side);
   bottom: calc(var(--bottom-line) * 2 + 8px);
   color: var(--cros-sys-on_surface);
