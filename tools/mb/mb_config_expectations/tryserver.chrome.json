@@ -368,20 +368,6 @@
       "use_remoteexec": true
     }
   },
-  "linux-chrome-beta": {
-    "gn_args": {
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "use_remoteexec": true
-    }
-  },
-  "linux-chrome-stable": {
-    "gn_args": {
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "use_remoteexec": true
-    }
-  },
   "linux-chromeos-chrome": {
     "gn_args": {
       "exclude_unwind_tables": false,
@@ -426,22 +412,6 @@
       "use_remoteexec": true
     }
   },
-  "mac-chrome-beta": {
-    "gn_args": {
-      "ignore_missing_widevine_signing_cert": true,
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "use_remoteexec": true
-    }
-  },
-  "mac-chrome-stable": {
-    "gn_args": {
-      "ignore_missing_widevine_signing_cert": true,
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "use_remoteexec": true
-    }
-  },
   "win-branded-compile-rel": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -471,22 +441,6 @@
       "use_remoteexec": true
     }
   },
-  "win-chrome-beta": {
-    "gn_args": {
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "target_cpu": "x86",
-      "use_remoteexec": true
-    }
-  },
-  "win-chrome-stable": {
-    "gn_args": {
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "target_cpu": "x86",
-      "use_remoteexec": true
-    }
-  },
   "win-finch-smoke-chrome": {
     "gn_args": {
       "is_chrome_branded": true,
@@ -495,22 +449,6 @@
     }
   },
   "win64-chrome": {
-    "gn_args": {
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "target_cpu": "x64",
-      "use_remoteexec": true
-    }
-  },
-  "win64-chrome-beta": {
-    "gn_args": {
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "target_cpu": "x64",
-      "use_remoteexec": true
-    }
-  },
-  "win64-chrome-stable": {
     "gn_args": {
       "is_chrome_branded": true,
       "is_official_build": true,
