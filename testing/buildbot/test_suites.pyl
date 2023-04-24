@@ -1269,9 +1269,6 @@
         'use_isolated_scripts_api': True,
       },
       'chrome_junit_tests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.nougat-x86-rel.chrome_junit_tests.filter',
-        ],
         'mixins': [
           'x86-64',
           'linux-bionic',

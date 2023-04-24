@@ -1651,7 +1651,7 @@ if (enable_java_templates && is_android) {
         "//third_party/robolectric:robolectric_runtime_jars",
       ]
       if (defined(invoker.shared_libraries)) {
-        deps += invoker.shared_libraries
+        data_deps = invoker.shared_libraries
       }
 
       # Add non-libary deps, since the __host target does not depend on them.

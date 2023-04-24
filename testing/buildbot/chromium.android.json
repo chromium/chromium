@@ -31257,7 +31257,6 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.nougat-x86-rel.chrome_junit_tests.filter",
           "--use-persistent-shell"
         ],
         "isolate_name": "chrome_junit_tests",
