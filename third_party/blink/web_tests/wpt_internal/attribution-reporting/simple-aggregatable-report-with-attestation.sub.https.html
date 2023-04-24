@@ -16,7 +16,7 @@ attribution_reporting_promise_test(async (t) => {
       geoValue: '0x5',
     },
   };
-  await registerAttributionSrc(t, {
+  await registerAttributionSrc({
     source,
     cookie: 'foo=bar;Secure;HttpOnly;Path=/',
   });

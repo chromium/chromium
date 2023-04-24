@@ -17,7 +17,7 @@ attribution_reporting_promise_test(async t => {
     source_event_id: generateSourceEventId(),
     destination: 'https://{{host}}',
   };
-  await registerAttributionSrc(t, {
+  await registerAttributionSrc({
     source,
     cookie: 'foo=bar;Secure;HttpOnly;Path=/',
     reportingOrigin,
@@ -25,7 +25,7 @@ attribution_reporting_promise_test(async t => {
   await waitForSourceToBeRegistered(source.source_event_id);
 
   const trigger = {event_trigger_data: [{trigger_data: '2'}]};
-  await registerAttributionSrc(t, {trigger, reportingOrigin});
+  await registerAttributionSrc({trigger, reportingOrigin});
 
   const payload = await pollEventLevelReports(reportingOrigin);
   assert_equals(payload.reports.length, 1);

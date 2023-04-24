@@ -41,7 +41,7 @@ const expected_support =
 
 promise_test(async t => {
   // Set mixed-case query params to ensure that they are propagated correctly.
-  await registerAttributionSrc(t, {
+  await registerAttributionSrc({
     method: 'variant',
     extraQueryParams: {'aB': 'Cd', 'store-request': 'true'},
   });

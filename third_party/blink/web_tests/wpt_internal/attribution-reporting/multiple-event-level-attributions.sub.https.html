@@ -13,20 +13,20 @@ attribution_reporting_promise_test(async t => {
       source_event_id: generateSourceEventId(),
       destination: 'https://{{host}}',
     };
-  await registerAttributionSrc(t, {
+  await registerAttributionSrc({
     source,
     method: 'a',
   });
   await waitForSourceToBeRegistered(source.source_event_id);
 
   await Promise.all([
-    registerAttributionSrc(t, {trigger: {
+    registerAttributionSrc({trigger: {
       event_trigger_data: [{trigger_data: '3'}],
     }}),
-    registerAttributionSrc(t, {trigger: {
+    registerAttributionSrc({trigger: {
       event_trigger_data: [{trigger_data: '4'}],
     }}),
-    registerAttributionSrc(t, {trigger: {
+    registerAttributionSrc({trigger: {
       event_trigger_data: [{trigger_data: '5'}],
     }}),
   ]);
@@ -52,7 +52,7 @@ attribution_reporting_promise_test(async t => {
   assert_equals(reports[1].trigger_data, '4');
   assert_equals(reports[2].trigger_data, '5');
 
-  await registerAttributionSrc(t, {
+  await registerAttributionSrc({
     trigger: {
       event_trigger_data: [{
         trigger_data: '7'

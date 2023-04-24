@@ -17,7 +17,7 @@ attribution_reporting_promise_test(async t => {
       campaignCounts: '0x159',
     },
   };
-  await registerAttributionSrc(t, {
+  await registerAttributionSrc({
     source,
     method: 'open',
   });
@@ -34,7 +34,7 @@ attribution_reporting_promise_test(async t => {
     debug_reporting: true,
   };
 
-  await registerAttributionSrc(t, {
+  await registerAttributionSrc({
     trigger,
   });
 
@@ -47,7 +47,7 @@ attribution_reporting_promise_test(async t => {
 
   trigger.aggregatable_values.campaignCounts = 1;
 
-  await registerAttributionSrc(t, {
+  await registerAttributionSrc({
     trigger,
     cookie: attributionDebugCookie,
   });

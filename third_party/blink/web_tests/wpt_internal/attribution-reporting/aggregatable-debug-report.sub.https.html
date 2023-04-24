@@ -15,14 +15,14 @@ attribution_reporting_promise_test(async t => {
     },
     debug_key: '246',
   };
-  await registerAttributionSrc(t, {
+  await registerAttributionSrc({
     source,
     cookie: attributionDebugCookie,
   });
   await waitForSourceToBeRegistered(source.source_event_id);
 
   const trigger_debug_key = '357';
-  await registerAttributionSrc(t, {
+  await registerAttributionSrc({
     trigger: {
       debug_key: trigger_debug_key,
       aggregatable_trigger_data: [

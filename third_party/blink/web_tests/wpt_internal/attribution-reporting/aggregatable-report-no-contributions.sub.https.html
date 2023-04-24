@@ -16,13 +16,13 @@ attribution_reporting_promise_test(async t => {
     },
     debug_key: '456',
   };
-  await registerAttributionSrc(t, {
+  await registerAttributionSrc({
     source,
     cookie: attributionDebugCookie,
   });
   await waitForSourceToBeRegistered(source.source_event_id);
 
-  await registerAttributionSrc(t, {
+  await registerAttributionSrc({
     trigger : {
       aggregatable_values: {
         geoValue: 32768,

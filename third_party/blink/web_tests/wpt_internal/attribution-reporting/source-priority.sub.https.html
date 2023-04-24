@@ -21,10 +21,10 @@ attribution_reporting_promise_test(async t => {
       destination: 'https://{{host}}',
       priority: '12',
     }]
-  await Promise.all(sources.map(source => registerAttributionSrc(t, {source})));
+  await Promise.all(sources.map(source => registerAttributionSrc({source})));
   await Promise.all(sources.map(source => waitForSourceToBeRegistered(source.source_event_id)));
 
-  await registerAttributionSrc(t, {trigger: {
+  await registerAttributionSrc({trigger: {
     event_trigger_data: [{}],
   }});
 

@@ -61,12 +61,12 @@ await resetEventLevelReports();
 
 ### registerAttributionSrc
 
-This works to register a source or a trigger. You just need to pass in the name
-of the header and the body of the header.
+This works to register a source or a trigger. You just need to pass the body of
+the headers that you want to register.
 
 ```javascript
 const sourceEvent = {...};
-registerAttributionSrc('Attribution-Reporting-Register-Source', sourceEvent);
+registerAttributionSrc({ source: sourceEvent });
 ```
 
 The

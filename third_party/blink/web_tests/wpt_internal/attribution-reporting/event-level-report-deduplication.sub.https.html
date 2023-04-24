@@ -14,13 +14,13 @@ attribution_reporting_promise_test(async t => {
     source_event_id: generateSourceEventId(),
     destination: host,
   };
-  await registerAttributionSrc(t, {
+  await registerAttributionSrc({
     source,
     method: 'open',
   });
   await waitForSourceToBeRegistered(source.source_event_id);
 
-  await registerAttributionSrc(t, {
+  await registerAttributionSrc({
     trigger: {
       event_trigger_data: [{
         deduplication_key: '666',
@@ -36,7 +36,7 @@ attribution_reporting_promise_test(async t => {
   assert_equals(report.trigger_data, '5');
   assert_equals(report.attribution_destination, host);
 
-  await registerAttributionSrc(t, {
+  await registerAttributionSrc({
     trigger: {
       event_trigger_data: [{
         deduplication_key: '666',

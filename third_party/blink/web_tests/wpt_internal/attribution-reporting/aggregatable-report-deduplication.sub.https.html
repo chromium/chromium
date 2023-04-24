@@ -22,7 +22,7 @@ const aggregatable_dedup_promise_test = (testCase) => {
         'x': ['y', 'z'],
       }
     };
-    await registerAttributionSrc(t, {
+    await registerAttributionSrc({
       source,
       method: 'open',
       cookie: attributionDebugCookie,
@@ -43,7 +43,7 @@ const aggregatable_dedup_promise_test = (testCase) => {
       debug_reporting: true,
     };
 
-    await registerAttributionSrc(t, {
+    await registerAttributionSrc({
       trigger,
     });
 
@@ -57,7 +57,7 @@ const aggregatable_dedup_promise_test = (testCase) => {
     trigger.aggregatable_deduplication_keys =
         testCase.aggregatable_deduplication_keys;
 
-    await registerAttributionSrc(t, {
+    await registerAttributionSrc({
       trigger,
       cookie: attributionDebugCookie,
     });

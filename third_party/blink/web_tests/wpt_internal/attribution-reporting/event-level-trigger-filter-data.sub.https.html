@@ -18,13 +18,13 @@ const filter_data_promise_test = (testCase) =>
       destination: 'https://{{host}}',
         filter_data: testCase.source_filter_data,
     };
-    await registerAttributionSrc(t, {
+    await registerAttributionSrc({
       source,
       method: testCase.method === undefined ? 'open' : testCase.method,
     });
     await waitForSourceToBeRegistered(source.source_event_id);
 
-    await registerAttributionSrc(t, {
+    await registerAttributionSrc({
       trigger: {
         event_trigger_data: testCase.event_trigger_data,
         debug_reporting: testCase.debug_reporting,
