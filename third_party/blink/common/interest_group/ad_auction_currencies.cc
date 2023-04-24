@@ -18,16 +18,17 @@ bool IsValidAdCurrencyCode(const std::string& code) {
          base::IsAsciiUpper(code[2]);
 }
 
-bool IsValidOrUnspecifiedAdCurrencyCode(const std::string& input) {
-  return input == kUnspecifiedAdCurrency || IsValidAdCurrencyCode(input);
-}
-
-bool VerifyAdCurrencyCode(const std::string& expected,
-                          const std::string& actual) {
+bool VerifyAdCurrencyCode(const absl::optional<AdCurrency>& expected,
+                          const absl::optional<AdCurrency>& actual) {
   // TODO(morlovich): Eventually we want to drop the compatibility
   // exceptions.
-  return expected == actual || expected == kUnspecifiedAdCurrency ||
-         actual == kUnspecifiedAdCurrency;
+  return !expected.has_value() || !actual.has_value() ||
+         expected->currency_code() == actual->currency_code();
+}
+
+std::string PrintableAdCurrency(const absl::optional<AdCurrency>& currency) {
+  return currency.has_value() ? currency->currency_code()
+                              : kUnspecifiedAdCurrency;
 }
 
 }  // namespace blink

@@ -322,7 +322,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     context_recycler.set_bid_bindings()->ReInitialize(
         base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/false, params.get(),
-        blink::kUnspecifiedAdCurrency,
+        /*per_buyer_currency=*/absl::nullopt,
         /*is_ad_excluded=*/ignore_arg_return_false,
         /*is_component_ad_excluded=*/ignore_arg_return_false);
 
@@ -357,7 +357,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     context_recycler.set_bid_bindings()->ReInitialize(
         base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/false, params.get(),
-        blink::kUnspecifiedAdCurrency,
+        /*per_buyer_currency=*/absl::nullopt,
         /*is_ad_excluded=*/ignore_arg_return_false,
         /*is_component_ad_excluded=*/ignore_arg_return_false);
 
@@ -396,7 +396,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     context_recycler.set_bid_bindings()->ReInitialize(
         base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/true, params.get(),
-        blink::kUnspecifiedAdCurrency,
+        /*per_buyer_currency=*/absl::nullopt,
         /*is_ad_excluded=*/ignore_arg_return_false,
         /*is_component_ad_excluded=*/ignore_arg_return_false);
 
@@ -437,7 +437,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     context_recycler.set_bid_bindings()->ReInitialize(
         base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/true, params.get(),
-        blink::kUnspecifiedAdCurrency,
+        /*per_buyer_currency=*/absl::nullopt,
         /*is_ad_excluded=*/ignore_arg_return_false,
         /*is_component_ad_excluded=*/ignore_arg_return_false);
 
@@ -491,7 +491,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     context_recycler.set_bid_bindings()->ReInitialize(
         base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/false, params.get(),
-        blink::kUnspecifiedAdCurrency,
+        /*per_buyer_currency=*/absl::nullopt,
         /*is_ad_excluded=*/ignore_arg_return_false,
         /*is_component_ad_excluded=*/ignore_arg_return_false);
 
@@ -533,7 +533,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     context_recycler.set_bid_bindings()->ReInitialize(
         base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/false, params.get(),
-        blink::kUnspecifiedAdCurrency,
+        /*per_buyer_currency=*/absl::nullopt,
         /*is_ad_excluded=*/matches_ad1,
         /*is_component_ad_excluded=*/matches_ad1);
 
@@ -566,7 +566,7 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
     context_recycler.set_bid_bindings()->ReInitialize(
         base::TimeTicks::Now(),
         /*has_top_level_seller_origin=*/false, params.get(),
-        blink::kUnspecifiedAdCurrency,
+        /*per_buyer_currency=*/absl::nullopt,
         /*is_ad_excluded=*/matches_ad1,
         /*is_component_ad_excluded=*/matches_ad1);
 
@@ -600,7 +600,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
 
     context_recycler.set_bid_bindings()->ReInitialize(
         base::TimeTicks::Now(),
-        /*has_top_level_seller_origin=*/false, params.get(), "USD",
+        /*has_top_level_seller_origin=*/false, params.get(),
+        blink::AdCurrency::From("USD"),
         /*is_ad_excluded=*/matches_ad1,
         /*is_component_ad_excluded=*/matches_ad1);
 
@@ -619,7 +620,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
         context_recycler.set_bid_bindings()->TakeBid();
     EXPECT_EQ("https://example.com/ad2", bid->ad_descriptor.url);
     EXPECT_EQ(10.0, bid->bid);
-    EXPECT_EQ("USD", bid->bid_currency);
+    ASSERT_TRUE(bid->bid_currency.has_value());
+    EXPECT_EQ("USD", bid->bid_currency->currency_code());
   }
 
   {
@@ -633,7 +635,8 @@ TEST_F(ContextRecyclerTest, SetBidBindings) {
 
     context_recycler.set_bid_bindings()->ReInitialize(
         base::TimeTicks::Now(),
-        /*has_top_level_seller_origin=*/false, params.get(), "CAD",
+        /*has_top_level_seller_origin=*/false, params.get(),
+        blink::AdCurrency::From("CAD"),
         /*is_ad_excluded=*/matches_ad1,
         /*is_component_ad_excluded=*/matches_ad1);
 

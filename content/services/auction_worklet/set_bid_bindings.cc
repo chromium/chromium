@@ -144,7 +144,7 @@ void SetBidBindings::ReInitialize(
     base::TimeTicks start,
     bool has_top_level_seller_origin,
     const mojom::BidderWorkletNonSharedParams* bidder_worklet_non_shared_params,
-    const std::string& per_buyer_currency,
+    const absl::optional<blink::AdCurrency>& per_buyer_currency,
     base::RepeatingCallback<bool(const GURL&)> is_ad_excluded,
     base::RepeatingCallback<bool(const GURL&)> is_component_ad_excluded) {
   DCHECK(bidder_worklet_non_shared_params->ads.has_value());
@@ -171,7 +171,7 @@ void SetBidBindings::Reset() {
   bid_.reset();
   // Make sure we don't keep any dangling references to auction input.
   bidder_worklet_non_shared_params_ = nullptr;
-  per_buyer_currency_.clear();
+  per_buyer_currency_ = absl::nullopt;
   is_ad_excluded_.Reset();
   is_component_ad_excluded_.Reset();
 }
@@ -240,21 +240,23 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
     return true;
   }
 
-  std::string bid_currency = blink::kUnspecifiedAdCurrency;
-  if (result_dict.Get("bidCurrency", &bid_currency)) {
-    if (!blink::IsValidAdCurrencyCode(bid_currency)) {
+  absl::optional<blink::AdCurrency> bid_currency;
+  std::string bid_currency_str;
+  if (result_dict.Get("bidCurrency", &bid_currency_str)) {
+    if (!blink::IsValidAdCurrencyCode(bid_currency_str)) {
       errors_out.push_back(
           base::StringPrintf("%sbidCurrency of '%s' is not a currency code.",
-                             error_prefix.c_str(), bid_currency.c_str()));
+                             error_prefix.c_str(), bid_currency_str.c_str()));
       return false;
     }
+    bid_currency = blink::AdCurrency::From(bid_currency_str);
   }
 
   if (!blink::VerifyAdCurrencyCode(per_buyer_currency_, bid_currency)) {
     errors_out.push_back(base::StringPrintf(
         "%sbidCurrency mismatch; returned '%s', expected '%s'.",
-        error_prefix.c_str(), bid_currency.c_str(),
-        per_buyer_currency_.c_str()));
+        error_prefix.c_str(), blink::PrintableAdCurrency(bid_currency).c_str(),
+        blink::PrintableAdCurrency(per_buyer_currency_).c_str()));
     return false;
   }
 

@@ -229,14 +229,19 @@ union AuctionAdConfigMaybePromiseBuyerTimeouts {
   AuctionAdConfigBuyerTimeouts value;
 };
 
+struct AdCurrency {
+  // Must meet blink::IsValidAdCurrencyCode
+  string currency_code;
+};
+
 // See blink::AuctionConfig::BuyerCurrencies
 struct AuctionAdConfigBuyerCurrencies {
   // Requirement for bid currency that, if specified, will apply to all bids
   // made by buyers not specified in `per_buyer_currencies`.
-  string? all_buyers_currency;
+  AdCurrency? all_buyers_currency;
 
   // Can provide a requirement for bid currency for buyers by origin.
-  map<url.mojom.Origin, string>? per_buyer_currencies;
+  map<url.mojom.Origin, AdCurrency>? per_buyer_currencies;
 };
 
 // See blink::AuctionConfig::MaybePromiseBuyerCurrencies
@@ -313,7 +318,7 @@ struct AuctionAdConfigNonSharedParams {
   // Expectations for currency provided by seller when modifying bids for
   // parent auctions or to help with mixed-currency reporting. If this is set,
   // any currency annotation from seller will be checked against it.
-  string? seller_currency;
+  AdCurrency? seller_currency;
 
   // Expectations for currencies used by buyers to bid. If a currency is
   // specified for a buyer here, and they annotate their bid with a currency,

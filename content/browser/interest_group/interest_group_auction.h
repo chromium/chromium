@@ -263,7 +263,7 @@ class CONTENT_EXPORT InterestGroupAuction
     Bid(BidRole bid_role,
         std::string ad_metadata,
         double bid,
-        std::string bid_currency,
+        absl::optional<blink::AdCurrency> bid_currency,
         absl::optional<double> ad_cost,
         blink::AdDescriptor ad_descriptor,
         std::vector<blink::AdDescriptor> ad_component_descriptors,
@@ -297,7 +297,7 @@ class CONTENT_EXPORT InterestGroupAuction
     // auction_worklet::mojom::BidderWorkletBid.
     const std::string ad_metadata;
     const double bid;
-    const std::string bid_currency;
+    const absl::optional<blink::AdCurrency> bid_currency;
     const absl::optional<double> ad_cost;
     const blink::AdDescriptor ad_descriptor;
     const std::vector<blink::AdDescriptor> ad_component_descriptors;

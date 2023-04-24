@@ -153,7 +153,7 @@ void MockBidderWorklet::FinishGenerateBid(
     const absl::optional<std::string>& auction_signals_json,
     const absl::optional<std::string>& per_buyer_signals_json,
     const absl::optional<base::TimeDelta> per_buyer_timeout,
-    const std::string& per_buyer_currency,
+    const absl::optional<blink::AdCurrency>& per_buyer_currency,
     const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
     const absl::optional<GURL>& direct_from_seller_auction_signals) {
   // per_buyer_timeout passed to GenerateBid() should not be empty, because
@@ -191,7 +191,7 @@ void MockBidderWorklet::SetBiddingLatency(base::TimeDelta delta) {
 
 void MockBidderWorklet::InvokeGenerateBidCallback(
     absl::optional<double> bid,
-    const std::string& bid_currency,
+    const absl::optional<blink::AdCurrency>& bid_currency,
     const blink::AdDescriptor& ad_descriptor,
     auction_worklet::mojom::BidderWorkletKAnonEnforcedBidPtr mojo_kanon_bid,
     absl::optional<std::vector<blink::AdDescriptor>> ad_component_descriptors,
@@ -312,14 +312,14 @@ MockSellerWorklet::~MockSellerWorklet() {
 void MockSellerWorklet::ScoreAd(
     const std::string& ad_metadata_json,
     double bid,
-    const std::string& bid_currency,
+    const absl::optional<blink::AdCurrency>& bid_currency,
     const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
     const absl::optional<GURL>& direct_from_seller_seller_signals,
     const absl::optional<GURL>& direct_from_seller_auction_signals,
     auction_worklet::mojom::ComponentAuctionOtherSellerPtr
         browser_signals_other_seller,
-    const absl::optional<std::string>& component_expect_bid_currency,
+    const absl::optional<blink::AdCurrency>& component_expect_bid_currency,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
     const std::vector<GURL>& browser_signal_ad_components,

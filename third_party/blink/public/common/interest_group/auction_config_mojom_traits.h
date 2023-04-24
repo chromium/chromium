@@ -13,6 +13,7 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-shared.h"
 
@@ -149,14 +150,25 @@ struct BLINK_COMMON_EXPORT
 
 template <>
 struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::AdCurrencyDataView, blink::AdCurrency> {
+  static const std::string& currency_code(const blink::AdCurrency& params) {
+    return params.currency_code();
+  }
+
+  static bool Read(blink::mojom::AdCurrencyDataView data,
+                   blink::AdCurrency* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::AuctionAdConfigBuyerCurrenciesDataView,
                  blink::AuctionConfig::BuyerCurrencies> {
-  static const absl::optional<base::flat_map<url::Origin, std::string>>&
+  static const absl::optional<base::flat_map<url::Origin, blink::AdCurrency>>&
   per_buyer_currencies(const blink::AuctionConfig::BuyerCurrencies& params) {
     return params.per_buyer_currencies;
   }
 
-  static const absl::optional<std::string>& all_buyers_currency(
+  static const absl::optional<blink::AdCurrency>& all_buyers_currency(
       const blink::AuctionConfig::BuyerCurrencies& params) {
     return params.all_buyers_currency;
   }
@@ -237,7 +249,7 @@ struct BLINK_COMMON_EXPORT
     return params.buyer_timeouts;
   }
 
-  static const absl::optional<std::string>& seller_currency(
+  static const absl::optional<blink::AdCurrency>& seller_currency(
       const blink::AuctionConfig::NonSharedParams& params) {
     return params.seller_currency;
   }

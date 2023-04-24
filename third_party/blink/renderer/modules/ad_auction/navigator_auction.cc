@@ -1501,7 +1501,8 @@ ConvertNonPromisePerBuyerCurrenciesFromV8ToMojo(const ScriptState& script_state,
       mojom::blink::AuctionAdConfigBuyerCurrencies::New();
   buyer_currencies->per_buyer_currencies.emplace();
   for (const auto& per_buyer_currency : decoded) {
-    if (!IsValidAdCurrencyCode(per_buyer_currency.second.Ascii())) {
+    std::string per_buyer_currency_str = per_buyer_currency.second.Ascii();
+    if (!IsValidAdCurrencyCode(per_buyer_currency_str)) {
       exception_state.ThrowTypeError(ErrorInvalidAuctionConfigSeller(
           seller_name, "perBuyerCurrencies currency", per_buyer_currency.second,
           "must be a 3-letter uppercase currency code."));
@@ -1509,7 +1510,8 @@ ConvertNonPromisePerBuyerCurrenciesFromV8ToMojo(const ScriptState& script_state,
     }
 
     if (per_buyer_currency.first == "*") {
-      buyer_currencies->all_buyers_currency = per_buyer_currency.second;
+      buyer_currencies->all_buyers_currency =
+          blink::AdCurrency::From(per_buyer_currency_str);
       continue;
     }
     scoped_refptr<const SecurityOrigin> buyer =
@@ -1520,8 +1522,8 @@ ConvertNonPromisePerBuyerCurrenciesFromV8ToMojo(const ScriptState& script_state,
           "must be \"*\" (wildcard) or a valid https origin."));
       return nullptr;
     }
-    buyer_currencies->per_buyer_currencies->insert(buyer,
-                                                   per_buyer_currency.second);
+    buyer_currencies->per_buyer_currencies->insert(
+        buyer, blink::AdCurrency::From(per_buyer_currency_str));
   }
 
   return buyer_currencies;
@@ -1847,14 +1849,15 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
   }
 
   if (config.hasSellerCurrency()) {
-    if (!IsValidAdCurrencyCode(config.sellerCurrency().Ascii())) {
+    std::string seller_currency_str = config.sellerCurrency().Ascii();
+    if (!IsValidAdCurrencyCode(seller_currency_str)) {
       exception_state.ThrowTypeError(ErrorInvalidAuctionConfigSeller(
           config.seller(), "sellerCurrency", config.sellerCurrency(),
           "must be a 3-letter uppercase currency code."));
       return mojom::blink::AuctionAdConfigPtr();
     }
     mojo_config->auction_ad_config_non_shared_params->seller_currency =
-        config.sellerCurrency();
+        blink::AdCurrency::From(seller_currency_str);
   }
 
   // Recursively handle component auctions, if there are any.
