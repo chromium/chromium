@@ -360,7 +360,8 @@
 #pragma mark - PasswordDetailsMediatorDelegate
 
 - (void)showDismissWarningDialogWithPasswordDetails:(PasswordDetails*)password {
-  NSString* title = l10n_util::GetNSString(IDS_IOS_DISMISS_WARNING);
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_DISMISS_WARNING_DIALOG_TITLE);
   NSString* message =
       l10n_util::GetNSString(IDS_IOS_DISMISS_WARNING_DIALOG_MESSAGE);
   self.alertCoordinator =

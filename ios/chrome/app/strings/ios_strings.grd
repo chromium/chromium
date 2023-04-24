@@ -2998,8 +2998,11 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_DISMISS_WARNING" desc="Button or dialog title which is shown on Password Details Screen to allow the user to dismiss a compromised password warning. [iOS only]" meaning="Title-cased">
         Dismiss Warning
       </message>
+      <message name="IDS_IOS_DISMISS_WARNING_DIALOG_TITLE" desc="Title of the dialog presented to the user when they want to dismiss a compromised password warning. [iOS only]" meaning="Title-cased">
+        Dismiss Warning?
+      </message>
       <message name="IDS_IOS_DISMISS_WARNING_DIALOG_MESSAGE" desc="Message of the dialog presented to the user when they want to dismiss a compromised password warning. [iOS only]">
-        The warning can be found again later under Dismissed Warnings in Compromised Passwords section.
+        This password was exposed in a data breach on the internet. If you don't have time to change it right now, Google recommends keeping this warning to remind yourself later.
       </message>
       <message name="IDS_IOS_DISMISS_WARNING_DIALOG_DISMISS_BUTTON" desc="Button of the dialog presented to the user when they want to dismiss a compromised password warning. Button is used to confirm that they want to dismiss the warning. [iOS only]">
         Dismiss
