@@ -370,9 +370,13 @@ void PersonalDataManager::Init(
     return;
   }
 
-  database_helper_->GetLocalDatabase()->SetAutofillProfileChangedCallback(
-      base::BindRepeating(&PersonalDataManager::OnAutofillProfileChanged,
-                          weak_factory_.GetWeakPtr()));
+  // No profile change callbacks are expected in the Incognito mode, this check ensures
+  // that the origin profile (which is actually used) change callback is not overridden.
+  if (!is_off_the_record) {
+    database_helper_->GetLocalDatabase()->SetAutofillProfileChangedCallback(
+        base::BindRepeating(&PersonalDataManager::OnAutofillProfileChanged,
+                            weak_factory_.GetWeakPtr()));
+  }
 
   Refresh();
 
