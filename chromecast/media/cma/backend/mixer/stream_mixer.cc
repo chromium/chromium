@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -921,7 +920,7 @@ void StreamMixer::WriteMixedPcm(int frames, int64_t expected_playback_time) {
   // Hard limit to [1.0, -1.0]
   for (int i = 0; i < frames * loopback_channel_count; ++i) {
     // TODO(bshaya): Warn about clipping here.
-    loopback_data[i] = base::clamp(loopback_data[i], -1.0f, 1.0f);
+    loopback_data[i] = std::clamp(loopback_data[i], -1.0f, 1.0f);
   }
 
   loopback_handler_->SendData(expected_playback_time,
@@ -933,7 +932,7 @@ void StreamMixer::WriteMixedPcm(int frames, int64_t expected_playback_time) {
 
   // Hard limit to [1.0, -1.0].
   for (int i = 0; i < frames * num_output_channels_; ++i) {
-    linearized_data[i] = base::clamp(linearized_data[i], -1.0f, 1.0f);
+    linearized_data[i] = std::clamp(linearized_data[i], -1.0f, 1.0f);
   }
 
   bool playback_interrupted = false;

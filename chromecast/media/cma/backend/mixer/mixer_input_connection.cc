@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -1196,8 +1195,8 @@ int MixerInputConnection::FillTimestampedAudio(int num_frames,
                               input_samples_per_second_);
 
     const int64_t error =
-        base::clamp(playout_time - desired_playout_time, -kTimestampErrorLimit,
-                    kTimestampErrorLimit);
+        std::clamp(playout_time - desired_playout_time, -kTimestampErrorLimit,
+                   kTimestampErrorLimit);
     if (error < -max_timestamp_error_ ||
         (after_silence &&
          error < -1e6 / (input_samples_per_second_ * playback_rate_))) {

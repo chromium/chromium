@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -35,10 +34,10 @@ bool ParseVolumeLimit(const base::Value::Dict* dict, float* min, float* max) {
   *min = 0.0f;
   *max = 1.0f;
   if (min_value) {
-    *min = base::clamp(static_cast<float>(min_value.value()), 0.0f, 1.0f);
+    *min = std::clamp(static_cast<float>(min_value.value()), 0.0f, 1.0f);
   }
   if (max_value) {
-    *max = base::clamp(static_cast<float>(max_value.value()), *min, 1.0f);
+    *max = std::clamp(static_cast<float>(max_value.value()), *min, 1.0f);
   }
   return true;
 }

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -431,7 +430,7 @@ void AudioSinkAndroidAudioTrackImpl::SetLimiterVolumeMultiplier(
     float multiplier) {
   RUN_ON_FEEDER_THREAD(SetLimiterVolumeMultiplier, multiplier);
 
-  limiter_volume_multiplier_ = base::clamp(multiplier, 0.0f, 1.0f);
+  limiter_volume_multiplier_ = std::clamp(multiplier, 0.0f, 1.0f);
   LOG(INFO) << __func__ << "(" << this << "): device_id_=" << device_id_
             << " limiter_multiplier=" << limiter_volume_multiplier_
             << " effective=" << EffectiveVolume();
