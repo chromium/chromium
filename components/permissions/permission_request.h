@@ -109,6 +109,10 @@ class PermissionRequest {
   virtual std::u16string GetMessageTextFragment() const;
 #endif
 
+  // Returns true if the request has two origins and should use the two origin
+  // prompt. Returns false otherwise.
+  bool ShouldUseTwoOriginPrompt() const;
+
   // Called when the user has granted the requested permission.
   // If |is_one_time| is true the permission will last until all tabs of
   // |origin| are closed or navigated away from, and then the permission will

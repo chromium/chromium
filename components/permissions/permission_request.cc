@@ -235,6 +235,10 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
 }
 #endif
 
+bool PermissionRequest::ShouldUseTwoOriginPrompt() const {
+  return request_type_ == RequestType::kStorageAccess;
+}
+
 void PermissionRequest::PermissionGranted(bool is_one_time) {
   std::move(permission_decided_callback_)
       .Run(CONTENT_SETTING_ALLOW, is_one_time,
