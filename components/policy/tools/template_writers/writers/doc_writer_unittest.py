@@ -35,7 +35,7 @@ class DocWriterUnittest(writer_unittest_common.WriterUnittestCommon):
         config={
             'app_name': 'Chrome',
             'frame_name': 'Chrome Frame',
-            'os_name': 'Chrome OS',
+            'os_name': 'ChromeOS',
             'webview_name': 'WebView',
             'android_webview_restriction_prefix': 'mock.prefix:',
             'win_config': {
@@ -671,7 +671,7 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         '<li>Chrome (Linux) ..8..</li>'
         '<li>Chrome (Android) ..30..</li>'
         '<li>WebView (Android) ..47..</li>'
-        '<li>Chrome (Chrome OS) ..55..</li>'
+        '<li>Chrome (ChromeOS) ..55..</li>'
         '</ul>'
         '</dd>'
         '<dt style="style_dt;">_test_supported_features</dt>'
@@ -804,7 +804,7 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         '<li>Chrome (Windows) ..8..</li>'
         '<li>Chrome (Mac) ..8..</li>'
         '<li>Chrome (Linux) ..8..</li>'
-        '<li>Chrome OS (Chrome OS) ..8..</li>'
+        '<li>ChromeOS (ChromeOS) ..8..</li>'
         '</ul>'
         '</dd>'
         '<dt style="style_dt;">_test_supported_features</dt>'
@@ -1045,7 +1045,7 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         '<li>Chrome (Mac) ..8..</li>'
         '<li>Chrome (Linux) ..8..</li>'
         '<li>Chrome (Android) ..30..</li>'
-        '<li>Chrome (Chrome OS) ..53..</li>'
+        '<li>Chrome (ChromeOS) ..53..</li>'
         '</ul>'
         '</dd>'
         '<dt style="style_dt;">_test_supported_features</dt>'
@@ -1149,7 +1149,7 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         '<ul style="style_ul;">'
         '<li>Chrome (Windows) ..7..</li>'
         '<li>Chrome (Mac) ..7..</li>'
-        '<li>Chrome OS (Chrome OS) ..7..</li>'
+        '<li>ChromeOS (ChromeOS) ..7..</li>'
         '</ul>'
         '</dd>'
         '<dt style="style_dt;">_test_supported_features</dt>'
@@ -1238,7 +1238,7 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         '<ul style="style_ul;">'
         '<li>Chrome (Windows) ..7..</li>'
         '<li>Chrome (Mac) ..7..</li>'
-        '<li>Chrome OS (Chrome OS) ..7..</li>'
+        '<li>ChromeOS (ChromeOS) ..7..</li>'
         '</ul>'
         '</dd>'
         '<dt style="style_dt;">_test_supported_features</dt>'
@@ -1732,7 +1732,7 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         '<root><p>Paragraph 1</p><p>Paragraph 2</p><p>Paragraph 3</p></root>')
 
   def testGoogleCloudChromeOsPolicies(self):
-    # Tests whether Chrome OS policies with management type 'google_cloud'
+    # Tests whether ChromeOS policies with management type 'google_cloud'
     # don't print example values etc. since they are managed through Google's
     # Admin console, not Active Directory GPO.
     policy = {
@@ -1767,7 +1767,7 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         '<dt style="style_dt;">_test_supported_on</dt>'
         '<dd>'
         '<ul style="style_ul;">'
-        '<li>Chrome OS (Chrome OS) ..8..</li>'
+        '<li>ChromeOS (ChromeOS) ..8..</li>'
         '</ul>'
         '</dd>'
         '<dt style="style_dt;">_test_supported_features</dt>'
@@ -1780,7 +1780,7 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         '</root>')
 
   def testActiveDirectoryChromeOsPolicies(self):
-    # Tests whether Chrome OS policies with management type 'active_directory'
+    # Tests whether ChromeOS policies with management type 'active_directory'
     # print example values etc.
     policy = {
         'name':
@@ -1816,7 +1816,7 @@ See <a href="http://policy-explanation.example.com">http://policy-explanation.ex
         '<dt style="style_dt;">_test_supported_on</dt>'
         '<dd>'
         '<ul style="style_ul;">'
-        '<li>Chrome OS (Chrome OS) ..8..</li>'
+        '<li>ChromeOS (ChromeOS) ..8..</li>'
         '</ul>'
         '</dd>'
         '<dt style="style_dt;">_test_supported_features</dt>'

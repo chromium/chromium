@@ -336,17 +336,17 @@ class PolicyJson(skeleton_gatherer.SkeletonGatherer):
 
     if '_chromium' in defines:
       self._config = {
-        'build': 'chromium',
-        'app_name': 'Chromium',
-        'frame_name': 'Chromium Frame',
-        'os_name': 'Chromium OS',
+          'build': 'chromium',
+          'app_name': 'Chromium',
+          'frame_name': 'Chromium Frame',
+          'os_name': 'ChromiumOS',
       }
     elif '_google_chrome' in defines:
       self._config = {
-        'build': 'chrome',
-        'app_name': 'Google Chrome',
-        'frame_name': 'Google Chrome Frame',
-        'os_name': 'Google Chrome OS',
+          'build': 'chrome',
+          'app_name': 'Google Chrome',
+          'frame_name': 'Google Chrome Frame',
+          'os_name': 'Google ChromeOS',
       }
     else:
       raise Exception('Unknown build')
