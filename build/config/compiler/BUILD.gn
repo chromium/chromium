@@ -2399,6 +2399,7 @@ config("win_pdbaltpath") {
 
 # Full symbols.
 config("symbols") {
+  rustflags = []
   if (is_win) {
     if (is_clang) {
       cflags = [
@@ -2437,11 +2438,13 @@ config("symbols") {
     if (!is_nacl && current_os != "aix") {
       if (use_dwarf5) {
         cflags += [ "-gdwarf-5" ]
+        rustflags += [ "-Zdwarf-version=5" ]
       } else if (!is_apple) {
         # Recent clang versions default to DWARF5 on Linux, and Android is about
         # to switch. TODO: Adopt that in controlled way.
         # Apple platforms still default to 4, so the flag is not needed there.
         cflags += [ "-gdwarf-4" ]
+        rustflags += [ "-Zdwarf-version=4" ]
       }
     }
 
@@ -2532,7 +2535,7 @@ config("symbols") {
       ]
     }
   }
-  rustflags = [ "-g" ]
+  rustflags += [ "-g" ]
 }
 
 # Minimal symbols.
