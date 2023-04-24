@@ -2862,9 +2862,9 @@ id<GREYMatcher> EditDoneButton() {
   }
 
   GREYAssert([PasswordSettingsAppInterface
-                 saveInsecurePassword:@"concrete password"
-                             userName:@"concrete username"
-                               origin:@"https://example.com"],
+                 saveCompromisedPassword:@"concrete password"
+                                userName:@"concrete username"
+                                  origin:@"https://example.com"],
              @"Stored form was not found in the PasswordStore results.");
 
   OpenPasswordManager();
