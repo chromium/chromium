@@ -3135,10 +3135,9 @@ bool RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes() {
   // Spare renderer actually hurts performance on low-memory devices.  See
   // https://crbug.com/843775 for more details.
   //
-  // The comparison below is using 1077 rather than 1024 because 1) this helps
+  // The comparison below is using 1077 rather than 1024 because this helps
   // ensure that devices with exactly 1GB of RAM won't get included because of
-  // inaccuracies or off-by-one errors and 2) this is the bucket boundary in
-  // Memory.Stats.Win.TotalPhys2.
+  // inaccuracies or off-by-one errors.
   if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 1077)
     return false;
 
