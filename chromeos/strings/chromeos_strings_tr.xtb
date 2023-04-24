@@ -91,6 +91,7 @@
 <translation id="1676557873873341166">Video çekiliyor</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Çözümleyici Varlığı</translation>
+<translation id="1708602061922134366">Google mavisi</translation>
 <translation id="1710499924611012470">Erişilebilirlik gezinmesi</translation>
 <translation id="1715359911173058521">Tarayıcı ile iletişimde bir sorun var. Ağ veya USB bağlantısını kontrol edip tekrar deneyin.</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> ve <ph name="SECOND_MANAGER" /> tarafından yönetiliyor</translation>
@@ -105,6 +106,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Kimlik doğrulama türü</translation>
+<translation id="1776228893584526149">Duvar kağıdı tonu</translation>
 <translation id="1782199038061388045">çeviri</translation>
 <translation id="1790209694022261219">Pencereler ve Masalar</translation>
 <translation id="1792647875738159689">Tarama iptal ediliyor</translation>
@@ -483,6 +485,7 @@
 <translation id="5166918508782100047">Bil bakalım ayarları</translation>
 <translation id="5168185087976003268">Pil sağlığı</translation>
 <translation id="5170568018924773124">Klasörde göster</translation>
+<translation id="5180712487038406644">Vurgulu</translation>
 <translation id="5190187232518914472">En sevdiğiniz anılarınızı yeniden yaşayın. <ph name="LINK_BEGIN" />Google Fotoğraflar<ph name="LINK_END" />'a giderek istediğiniz albümleri ekleyin veya düzenleyin.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Çıkış</translation>
@@ -648,6 +651,7 @@
 <translation id="6527081081771465939">Bilinmeyen kablosuz ağ güvenlik protokolü</translation>
 <translation id="6535178685492749208">Çevrimdışısınız. Geri bildiriminiz daha sonra gönderilecek.</translation>
 <translation id="65587193855025101">Düz Yataklı</translation>
+<translation id="6560196641871357166">Canlı</translation>
 <translation id="6564646048574748301">İşlem başarısız - Yazıcıya ulaşılamıyor</translation>
 <translation id="6566314079205407217">Çok sayfalı tarama</translation>
 <translation id="6574762126505704998">Tam kaplama</translation>
@@ -877,6 +881,7 @@
 <translation id="8575298406870537639">Operatörünüz, ağlarına bağlanmak için bu seçeneği gerektirebilir. Ayrıntılı bilgiler için operatörünüzle iletişime geçin.</translation>
 <translation id="8576249514688522074">Başlatılmamış</translation>
 <translation id="8620617069779373398">Dolaşım durumu</translation>
+<translation id="86356131183441916">Açık mor</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">URL'yi paylaş:</translation>
 <translation id="8660881923941176839">libre</translation>
@@ -961,6 +966,7 @@
 <translation id="945522503751344254">Geri bildirim gönder</translation>
 <translation id="952992212772159698">Etkin değil</translation>
 <translation id="960719561871045870">Operatör kodu</translation>
+<translation id="979450713603643090">Açık pembe</translation>
 <translation id="982713511914535780">Deşarj testini çalıştır</translation>
 <translation id="987264212798334818">Genel</translation>
 </translationbundle>

@@ -91,6 +91,7 @@
 <translation id="1676557873873341166">動画を撮影しています</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Resolver の存在</translation>
+<translation id="1708602061922134366">Google ブルー</translation>
 <translation id="1710499924611012470">ユーザー補助の操作</translation>
 <translation id="1715359911173058521">スキャナとの通信に問題が発生しました。ネットワークまたは USB の接続を確認してから、もう一度お試しください。</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> と <ph name="SECOND_MANAGER" /> によって管理されています</translation>
@@ -105,6 +106,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">認証タイプ</translation>
+<translation id="1776228893584526149">壁紙のトーン</translation>
 <translation id="1782199038061388045">翻訳</translation>
 <translation id="1790209694022261219">ウィンドウとデスク</translation>
 <translation id="1792647875738159689">スキャンをキャンセルしています</translation>
@@ -483,6 +485,7 @@
 <translation id="5166918508782100047">クイック アンサーの設定</translation>
 <translation id="5168185087976003268">電池の状態</translation>
 <translation id="5170568018924773124">フォルダを開く</translation>
+<translation id="5180712487038406644">Expressive</translation>
 <translation id="5190187232518914472">いつでも思い出の写真を。アルバムを追加または編集するには、<ph name="LINK_BEGIN" />Google フォト<ph name="LINK_END" />にアクセスしてください。</translation>
 <translation id="5212593641110061691">タブロイド</translation>
 <translation id="5222676887888702881">ログアウト</translation>
@@ -648,6 +651,7 @@
 <translation id="6527081081771465939">Wi-Fi のセキュリティ プロトコルが不明です</translation>
 <translation id="6535178685492749208">オフラインです。フィードバックは後で送信されます。</translation>
 <translation id="65587193855025101">フラットベッド</translation>
+<translation id="6560196641871357166">Vibrant</translation>
 <translation id="6564646048574748301">失敗 - プリンタにアクセスできません</translation>
 <translation id="6566314079205407217">複数のページをスキャン</translation>
 <translation id="6574762126505704998">全画面</translation>
@@ -877,6 +881,7 @@
 <translation id="8575298406870537639">ご利用の携帯通信会社でのネットワーク接続にこのオプションが必要な場合があります。詳しくは携帯通信会社にお問い合わせください。</translation>
 <translation id="8576249514688522074">初期化が未完了</translation>
 <translation id="8620617069779373398">ローミング状態</translation>
+<translation id="86356131183441916">ライトパープル</translation>
 <translation id="8655295600908251630">チャンネル</translation>
 <translation id="8655828773034788261">URL を共有:</translation>
 <translation id="8660881923941176839">ポンド</translation>
@@ -961,6 +966,7 @@
 <translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="952992212772159698">無効</translation>
 <translation id="960719561871045870">事業者コード</translation>
+<translation id="979450713603643090">ライトピンク</translation>
 <translation id="982713511914535780">放電テストを実行</translation>
 <translation id="987264212798334818">全般</translation>
 </translationbundle>

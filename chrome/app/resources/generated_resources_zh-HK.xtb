@@ -55,6 +55,7 @@
 <translation id="104419033123549300">按鍵配置樣式</translation>
 <translation id="1046219820096501039"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，可協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包括 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量。如果同時啟用「應用程式同步」功能，系統亦會收集其他應用程式診斷和使用資料 (包括 Android 和網絡應用程式)。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您隨時可在子女的 ChromeOS 裝置設定中啟用或停用這類報告。如果您是網域管理員，亦可在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{已向此裝置上的「<ph name="BRAND" />」匯入 1 個密碼}other{已向此裝置上的「<ph name="BRAND" />」匯入 {NUM_PASSWORDS} 個密碼}}</translation>
 <translation id="104710386808485638">要重新啟動 Linux 嗎？</translation>
 <translation id="1047431265488717055">複製連結文字(&amp;X)</translation>
 <translation id="1048286738600630630">顯示</translation>
@@ -137,6 +138,7 @@
 <translation id="1110155001042129815">等一下</translation>
 <translation id="1110965959145884739">選取要在此裝置上安裝的語言。為節省磁碟空間，語言檔案會由裝置的所有使用者共用。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">背景分頁正在使用藍牙</translation>
+<translation id="1112998165730922436">已暫停投放</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">菱形鍵</translation>
 <translation id="1114427165525619358">儲存在此裝置和 Google 帳戶中的密碼</translation>
@@ -292,6 +294,7 @@
 <translation id="1240903469550363138">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享您的姓名、電郵地址和個人檔案相片。查看此網站的《<ph name="BEGIN_LINK1" />私隱權政策<ph name="END_LINK1" />》和《<ph name="BEGIN_LINK2" />服務條款<ph name="END_LINK2" />》。</translation>
 <translation id="1241066500170667906">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態</translation>
 <translation id="124116460088058876">更多語言</translation>
+<translation id="1241381048229838873">顯示所有書籤</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> 要求重設您的設定。</translation>
 <translation id="1243314992276662751">上載</translation>
 <translation id="1243436884219965846">檢查密碼</translation>
@@ -1040,6 +1043,7 @@
 <translation id="1854180393107901205">停止投放</translation>
 <translation id="1856715684130786728">新增位置…</translation>
 <translation id="1858585891038687145">信任這個用於識別軟件製造商的憑證</translation>
+<translation id="1859339856433307593">此帳戶的密碼已儲存在「<ph name="BRAND" />」中 (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">此資料夾中沒有內容</translation>
 <translation id="1862311223300693744">您有安裝任何特殊的 VPN、Proxy、防火牆或 NAS 軟件
     嗎？</translation>
@@ -1275,7 +1279,6 @@
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{按一下即可安裝擴充程式}other{按一下即可安裝這些擴充程式}}</translation>
 <translation id="2073496667646280609">裝置或所選的備份位置可能沒有足夠的免費儲存空間。請嘗試騰出空間，或選擇備份至另一個位置。</translation>
 <translation id="2073505299004274893">最多只可輸入 <ph name="CHARACTER_LIMIT" /> 個字元</translation>
-<translation id="2074060876831574159">已儲存的密碼會在這裡顯示。&lt;a target='_blank' href='chrome://password-manager/'&gt;匯入密碼&lt;/a&gt;</translation>
 <translation id="2075474481720804517">電量：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2076269580855484719">隱藏此外掛程式</translation>
 <translation id="2076672359661571384">中 (建議)</translation>
@@ -1832,6 +1835,7 @@
 <translation id="2508428939232952663">Google Play 商店帳戶</translation>
 <translation id="2509495747794740764">縮放比例必須介乎 10 和 200 之間的數字。</translation>
 <translation id="2509566264613697683">8 倍</translation>
+<translation id="2510332280791537533">此 Chrome 個人檔案正受標準安全保護功能保護</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (已選取)</translation>
 <translation id="2513396635448525189">登入圖片</translation>
 <translation id="2514326558286966059">指紋加快解鎖速度</translation>
@@ -3452,7 +3456,6 @@
 <translation id="3937640725563832867">憑證發行者替代名稱</translation>
 <translation id="3937734102568271121">一律翻譯<ph name="LANGUAGE" /></translation>
 <translation id="3938128855950761626">來自供應商 <ph name="VENDOR_ID" /> 的裝置</translation>
-<translation id="3940233957883229251">啟用自動重複</translation>
 <translation id="3941565636838060942">如要隱藏這個程式的存取權，您必須使用控制台中的
   「<ph name="CONTROL_PANEL_APPLET_NAME" />」解除安裝此程式。
 
@@ -3770,6 +3773,7 @@
 <translation id="4242145785130247982">不支援多個用戶端憑證</translation>
 <translation id="4242533952199664413">開啟設定</translation>
 <translation id="4242577469625748426">無法在裝置上安裝政策設定：<ph name="VALIDATION_ERROR" />。</translation>
+<translation id="4242928980248289922">已節省 <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="4243504193894350135">打印機已暫停</translation>
 <translation id="4244238649050961491">尋找更多觸控筆應用程式</translation>
 <translation id="4246980464509998944">其他意見：</translation>
@@ -4185,6 +4189,7 @@
 <translation id="4598776695426288251">可透過多部裝置使用 Wi-Fi</translation>
 <translation id="4600071396330666617">建議數量</translation>
 <translation id="4601426376352205922">標示為未讀取</translation>
+<translation id="460190672235687855">查看密碼</translation>
 <translation id="4602466770786743961">永遠允許 <ph name="HOST" /> 存取您的相機和麥克風</translation>
 <translation id="4606551464649945562">不允許網站建立您身處環境的 3D 地圖或追蹤攝錄機位置</translation>
 <translation id="4608500690299898628">尋找(&amp;F)…</translation>
@@ -4930,6 +4935,7 @@
 <translation id="5294097441441645251">開頭必須為小寫字元或底線</translation>
 <translation id="5294618183559481278"><ph name="DEVICE_TYPE" /> 會使用內置感應器偵測裝置前的人。系統會在裝置上立即處理所有資料，然後刪除。系統不會將感應器資料傳送至 Google。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5296350763804564124">使用朗讀功能，讓您無需查看螢幕亦可使用裝置。您可透過已連接裝置使用點字功能。</translation>
+<translation id="5296536303670088158">Chrome 最強大的安全功能可協助防範有害網站</translation>
 <translation id="5297005732522718715">重新整理網絡共享設定</translation>
 <translation id="5297082477358294722">密碼已儲存。查看和管理儲存在「<ph name="SAVED_PASSWORDS_STORE" />」的密碼。</translation>
 <translation id="5297946558563358707">當有人窺探您的螢幕時，螢幕右下方會顯示「私隱權」眼睛圖示</translation>
@@ -5529,7 +5535,6 @@
 <translation id="5841270259333717135">設定以太網絡</translation>
 <translation id="5842497610951477805">藍牙開關</translation>
 <translation id="5844574845205796324">建議可探索的新內容</translation>
-<translation id="5845424750482472447">{COUNT,plural, =1{1 個重新對應的鍵}other{{COUNT} 個重新對應的鍵}}</translation>
 <translation id="5846200638699387931">關聯語法錯誤：<ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">沒有陰影</translation>
 <translation id="5846504156837627898">管理網站權限</translation>
@@ -5813,7 +5818,6 @@
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 屬於未命名嘅群組</translation>
 <translation id="6085886413119427067">判斷如何透過安全連線連接網站</translation>
 <translation id="6086004606538989567">您已驗證的帳戶無權存取此裝置。</translation>
-<translation id="6086347269144967242">讀取附加的裝置資訊和資料</translation>
 <translation id="6086846494333236931">已由管理員安裝</translation>
 <translation id="6087746524533454243">要查看瀏覽器的「關於」頁面嗎？請前往</translation>
 <translation id="6087960857463881712">開懷大笑</translation>
@@ -6925,6 +6929,7 @@
 <translation id="70641621694466590">去密碼頁面</translation>
 <translation id="7064734931812204395">正在設定 Linux 容器。過程可能需時 30 分鐘。</translation>
 <translation id="7065223852455347715">這部裝置已鎖定為防止企業註冊的模式。如果您要使用該裝置註冊，必須先完成裝置復原操作。</translation>
+<translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{已將 1 個密碼匯入至 <ph name="USER_EMAIL" /> 的「<ph name="BRAND" />」}other{已將 {NUM_PASSWORDS} 個密碼匯入至 <ph name="USER_EMAIL" /> 的「<ph name="BRAND" />」}}</translation>
 <translation id="7065534935986314333">關於系統</translation>
 <translation id="706626672220389329">連接共用裝置時發生錯誤。指定的共用裝置已連接。</translation>
 <translation id="7067396782363924830">氛圍顏色</translation>
@@ -7809,6 +7814,7 @@
 <translation id="7861846108263890455">Google 帳戶語言</translation>
 <translation id="7864539943188674973">停用藍牙</translation>
 <translation id="7865127013871431856">翻譯選項</translation>
+<translation id="7866941897628979955">已節省 <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 已配對</translation>
 <translation id="7869655448736341731">不限</translation>
 <translation id="787069710204604994">例如，如果您瀏覽售賣長距離跑步鞋的網站，該網站可能會判斷您有興趣參加馬拉松。如果您日後瀏覽其他網站，該網站就可以向您顯示第一個網站所建議的跑步鞋廣告。</translation>
@@ -8910,7 +8916,6 @@
 <translation id="8823704566850948458">建議密碼…</translation>
 <translation id="8823963789776061136">您亦可選取打印機 PPD。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">新增網頁(&amp;G)…</translation>
-<translation id="8827083388261088094">按一下即可管理「<ph name="EXTENSION" />」的權限</translation>
 <translation id="8827125715368568315">已封鎖<ph name="PERMISSION" />和其他 <ph name="COUNT" /> 個項目</translation>
 <translation id="8827289157496676362">固定擴充功能</translation>
 <translation id="8827752199525959199">更多操作，<ph name="USERNAME" /> 喺 <ph name="DOMAIN" /> 上面嘅密碼</translation>
@@ -9040,7 +9045,6 @@
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" />已關閉</translation>
 <translation id="894191600409472540">建立安全度高的密碼</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
-<translation id="8943937581166190941">擴充程式正在使用 HID 裝置</translation>
 <translation id="8944099748578356325">加快耗電量 (目前為 <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944725102565796255">如果您只想使用此帳戶一次，可以<ph name="GUEST_LINK_BEGIN" />透過訪客身份使用裝置<ph name="GUEST_LINK_END" />。如要新增其他人的帳戶，請<ph name="LINK_BEGIN" />新增使用者<ph name="LINK_END" />至您的 <ph name="DEVICE_TYPE" />。
 

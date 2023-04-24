@@ -91,6 +91,7 @@
 <translation id="1676557873873341166">Videó készítése…</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-névfeloldó működik</translation>
+<translation id="1708602061922134366">Google-kék</translation>
 <translation id="1710499924611012470">Kisegítő lehetőségekkel való navigáció</translation>
 <translation id="1715359911173058521">Hiba történt a szkennerrel való kommunikáció során. Ellenőrizze a hálózati vagy USB-kapcsolatot, és próbálja újra.</translation>
 <translation id="1717874160321062422">A következők kezelik: <ph name="FIRST_MANAGER" /> és <ph name="SECOND_MANAGER" /></translation>
@@ -105,6 +106,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Hitelesítés típusa</translation>
+<translation id="1776228893584526149">Háttérkép tónusa</translation>
 <translation id="1782199038061388045">Fordítás</translation>
 <translation id="1790209694022261219">Ablakok és asztalok</translation>
 <translation id="1792647875738159689">Beolvasás megszakítása…</translation>
@@ -483,6 +485,7 @@
 <translation id="5166918508782100047">Gyors válaszok beállításai</translation>
 <translation id="5168185087976003268">Akkumulátor egészsége</translation>
 <translation id="5170568018924773124">Megjelenítés mappában</translation>
+<translation id="5180712487038406644">Kifejező</translation>
 <translation id="5190187232518914472">Élje át újra kedvenc emlékeit. Albumok létrehozásához és szerkesztéséhez lépjen a <ph name="LINK_BEGIN" />Google Fotók<ph name="LINK_END" /> alkalmazásba.</translation>
 <translation id="5212593641110061691">„Tabloid” méret</translation>
 <translation id="5222676887888702881">Kijelentkezés</translation>
@@ -648,6 +651,7 @@
 <translation id="6527081081771465939">Ismeretlen Wi-Fi biztonsági protokoll</translation>
 <translation id="6535178685492749208">Offline állapotban van. A visszajelzést később küldi majd el a rendszer.</translation>
 <translation id="65587193855025101">Síkágy</translation>
+<translation id="6560196641871357166">Élénk</translation>
 <translation id="6564646048574748301">Sikertelen – Nem lehet hozzáférni a nyomtatóhoz</translation>
 <translation id="6566314079205407217">Többoldalas keresés</translation>
 <translation id="6574762126505704998">Kitöltés</translation>
@@ -877,6 +881,7 @@
 <translation id="8575298406870537639">Szolgáltatója előírhatja ennek a beállításnak a használatát a hálózathoz való csatlakozás érdekében. További információért forduljon a szolgáltatójához.</translation>
 <translation id="8576249514688522074">Nincs inicializálva</translation>
 <translation id="8620617069779373398">Roaming állapota</translation>
+<translation id="86356131183441916">Világoslila</translation>
 <translation id="8655295600908251630">Csatorna</translation>
 <translation id="8655828773034788261">URL megosztása:</translation>
 <translation id="8660881923941176839">font</translation>
@@ -961,6 +966,7 @@
 <translation id="945522503751344254">Visszajelzés küldése</translation>
 <translation id="952992212772159698">Nincs aktiválva</translation>
 <translation id="960719561871045870">Operátorkód</translation>
+<translation id="979450713603643090">Világos rózsaszín</translation>
 <translation id="982713511914535780">Lemerítési teszt futtatása</translation>
 <translation id="987264212798334818">Általános</translation>
 </translationbundle>

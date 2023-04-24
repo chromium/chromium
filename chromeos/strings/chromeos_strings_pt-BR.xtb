@@ -91,6 +91,7 @@
 <translation id="1676557873873341166">Captura de vídeo ativada</translation>
 <translation id="1703835215927279855">Carta</translation>
 <translation id="1706391837335750954">Resolvedor de DNS presente</translation>
+<translation id="1708602061922134366">Azul do Google</translation>
 <translation id="1710499924611012470">Navegação de acessibilidade</translation>
 <translation id="1715359911173058521">Ocorreu um problema na comunicação com o scanner. Verifique a rede ou a conexão USB e tente novamente.</translation>
 <translation id="1717874160321062422">Gerenciado por <ph name="FIRST_MANAGER" /> e <ph name="SECOND_MANAGER" /></translation>
@@ -105,6 +106,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Tipo de autenticação</translation>
+<translation id="1776228893584526149">Tom do plano de fundo</translation>
 <translation id="1782199038061388045">tradução</translation>
 <translation id="1790209694022261219">Janelas e espaços de trabalho</translation>
 <translation id="1792647875738159689">Cancelando digitalização</translation>
@@ -483,6 +485,7 @@
 <translation id="5166918508782100047">Configurações das Respostas rápidas</translation>
 <translation id="5168185087976003268">Integridade da bateria</translation>
 <translation id="5170568018924773124">Mostrar na pasta</translation>
+<translation id="5180712487038406644">Expressiva</translation>
 <translation id="5190187232518914472">Reviva suas lembranças favoritas. Para adicionar ou editar álbuns, acesse o <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloide</translation>
 <translation id="5222676887888702881">Sair</translation>
@@ -648,6 +651,7 @@
 <translation id="6527081081771465939">Protocolo de segurança de Wi-Fi desconhecido</translation>
 <translation id="6535178685492749208">Você está off-line. O feedback será enviado mais tarde.</translation>
 <translation id="65587193855025101">Scanner de mesa</translation>
+<translation id="6560196641871357166">Vibrante</translation>
 <translation id="6564646048574748301">Falha - Impressora inacessível</translation>
 <translation id="6566314079205407217">Digitalização de várias páginas</translation>
 <translation id="6574762126505704998">Preencher</translation>
@@ -877,6 +881,7 @@
 <translation id="8575298406870537639">Pode ser necessário ativar esta opção para se conectar à rede da sua operadora. Entre em contato com a operadora para mais informações.</translation>
 <translation id="8576249514688522074">Não inicializado</translation>
 <translation id="8620617069779373398">Status do roaming</translation>
+<translation id="86356131183441916">Roxo-claro</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655828773034788261">Compartilhar URL:</translation>
 <translation id="8660881923941176839">libras</translation>
@@ -961,6 +966,7 @@
 <translation id="945522503751344254">Enviar comentários</translation>
 <translation id="952992212772159698">Desativado</translation>
 <translation id="960719561871045870">Código da operadora</translation>
+<translation id="979450713603643090">Rosa-claro</translation>
 <translation id="982713511914535780">Executar teste de descarga da bateria</translation>
 <translation id="987264212798334818">Geral</translation>
 </translationbundle>

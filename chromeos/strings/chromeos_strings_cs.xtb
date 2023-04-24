@@ -91,6 +91,7 @@
 <translation id="1676557873873341166">Pořizování videa</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Přítomnost resolveru DNS</translation>
+<translation id="1708602061922134366">Modrá (Google)</translation>
 <translation id="1710499924611012470">Navigace pro usnadnění přístupu</translation>
 <translation id="1715359911173058521">Při komunikaci se skenerem došlo k problému. Zkontrolujte připojení k síti nebo připojení USB a zkuste to znovu.</translation>
 <translation id="1717874160321062422">Spravuje <ph name="FIRST_MANAGER" /> a <ph name="SECOND_MANAGER" /></translation>
@@ -105,6 +106,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Typ ověření</translation>
+<translation id="1776228893584526149">Tón tapety</translation>
 <translation id="1782199038061388045">překlad</translation>
 <translation id="1790209694022261219">Okna a plochy</translation>
 <translation id="1792647875738159689">Rušení skenování</translation>
@@ -483,6 +485,7 @@
 <translation id="5166918508782100047">Nastavení rychlých odpovědí</translation>
 <translation id="5168185087976003268">Opotřebení baterie</translation>
 <translation id="5170568018924773124">Zobrazit ve složce</translation>
+<translation id="5180712487038406644">Výrazná</translation>
 <translation id="5190187232518914472">Oživte své oblíbené vzpomínky. Alba můžete přidat a upravit ve <ph name="LINK_BEGIN" />Fotkách Google<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Odhlásit se</translation>
@@ -648,6 +651,7 @@
 <translation id="6527081081771465939">Neznámý bezpečnostní protokol Wi-Fi</translation>
 <translation id="6535178685492749208">Jste offline. Zpětná vazba se odešle později.</translation>
 <translation id="65587193855025101">Předlohové sklo</translation>
+<translation id="6560196641871357166">Živá</translation>
 <translation id="6564646048574748301">Tisk selhal – tiskárna není dostupná</translation>
 <translation id="6566314079205407217">Skenování několika stránek</translation>
 <translation id="6574762126505704998">Vyplnit</translation>
@@ -877,6 +881,7 @@
 <translation id="8575298406870537639">Někteří operátoři k připojení k síti vyžadují tuto možnost. Na podrobnosti se zeptejte mobilního operátora.</translation>
 <translation id="8576249514688522074">Neinicializováno</translation>
 <translation id="8620617069779373398">Stav roamingu</translation>
+<translation id="86356131183441916">Světle fialová</translation>
 <translation id="8655295600908251630">Kanál</translation>
 <translation id="8655828773034788261">Sdílet adresu URL:</translation>
 <translation id="8660881923941176839">libry</translation>
@@ -961,6 +966,7 @@
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
 <translation id="952992212772159698">Není aktivováno</translation>
 <translation id="960719561871045870">Kód operátora</translation>
+<translation id="979450713603643090">Světle růžová</translation>
 <translation id="982713511914535780">Spustit test vybíjení</translation>
 <translation id="987264212798334818">Všeobecné</translation>
 </translationbundle>

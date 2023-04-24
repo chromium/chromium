@@ -91,6 +91,7 @@
 <translation id="1676557873873341166">正在錄影</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS 解析器存在</translation>
+<translation id="1708602061922134366">Google 藍色</translation>
 <translation id="1710499924611012470">無障礙功能導覽</translation>
 <translation id="1715359911173058521">與掃瞄器通訊時發生問題。請檢查網絡或 USB 連線，然後再試一次。</translation>
 <translation id="1717874160321062422">由 <ph name="FIRST_MANAGER" /> 和 <ph name="SECOND_MANAGER" /> 管理</translation>
@@ -105,6 +106,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">驗證類型</translation>
+<translation id="1776228893584526149">桌布色調</translation>
 <translation id="1782199038061388045">翻譯</translation>
 <translation id="1790209694022261219">視窗和桌面</translation>
 <translation id="1792647875738159689">取消掃瞄中</translation>
@@ -483,6 +485,7 @@
 <translation id="5166918508782100047">「快速解答」設定</translation>
 <translation id="5168185087976003268">電池狀態</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
+<translation id="5180712487038406644">熱情奔放</translation>
 <translation id="5190187232518914472">重溫美好回憶。如要新增或編輯相簿，請前往「<ph name="LINK_BEGIN" />Google 相片<ph name="LINK_END" />」。</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">登出</translation>
@@ -648,6 +651,7 @@
 <translation id="6527081081771465939">未知的 Wi-Fi 安全通訊協定</translation>
 <translation id="6535178685492749208">您已離線。意見將會在稍後傳送。</translation>
 <translation id="65587193855025101">平台式</translation>
+<translation id="6560196641871357166">鮮艷</translation>
 <translation id="6564646048574748301">失敗 - 無法連接打印機</translation>
 <translation id="6566314079205407217">多頁掃瞄</translation>
 <translation id="6574762126505704998">填滿</translation>
@@ -877,6 +881,7 @@
 <translation id="8575298406870537639">流動網絡供應商可能會要求您必須選擇此選項，才能連接他們的網絡。詳情請聯絡流動網絡供應商。</translation>
 <translation id="8576249514688522074">未初始化</translation>
 <translation id="8620617069779373398">漫遊狀態</translation>
+<translation id="86356131183441916">淺紫色</translation>
 <translation id="8655295600908251630">版本</translation>
 <translation id="8655828773034788261">分享網址：</translation>
 <translation id="8660881923941176839">磅</translation>
@@ -961,6 +966,7 @@
 <translation id="945522503751344254">提供意見反映</translation>
 <translation id="952992212772159698">未啟用</translation>
 <translation id="960719561871045870">流動網絡供應商代碼</translation>
+<translation id="979450713603643090">淺粉紅色</translation>
 <translation id="982713511914535780">執行放電測試</translation>
 <translation id="987264212798334818">一般</translation>
 </translationbundle>

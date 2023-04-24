@@ -293,6 +293,7 @@
 <translation id="1240903469550363138">ಮುಂದುವರಿಸಲು, ಈ ಸೈಟ್‌ನ ಜೊತೆಗೆ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ನಿಮ್ಮ ಹೆಸರು, ಇಮೇಲ್ ವಿಳಾಸ ಮತ್ತು ಪ್ರೊಫೈಲ್ ಚಿತ್ರವನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ. ಈ ಸೈಟ್‌ನ <ph name="BEGIN_LINK1" />ಗೌಪ್ಯತೆ ನೀತಿ<ph name="END_LINK1" /> ಮತ್ತು <ph name="BEGIN_LINK2" />ಸೇವಾ ನಿಯಮಗಳನ್ನು<ph name="END_LINK2" /> ನೋಡಿ.</translation>
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> ಗಾಗಿ ಪ್ರಯೋಗದ ಸ್ಥಿತಿಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="124116460088058876">ಹೆಚ್ಚಿನ ಭಾಷೆಗಳು</translation>
+<translation id="1241381048229838873">ಎಲ್ಲ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ತೋರಿಸು</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮರುಹೊಂದಿಸಲು ಬಯಸುತ್ತದೆ.</translation>
 <translation id="1243314992276662751">ಅಪ್‌ಲೋಡ್</translation>
 <translation id="1243436884219965846">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
@@ -807,6 +808,7 @@
 <translation id="1666232093776384142">ಬಾಹ್ಯ ಸಾಧನಗಳಿಗೆ ಡೇಟಾ ಪ್ರವೇಶದ ಸುರಕ್ಷತೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1667842670298352129">ನಿರ್ದಿಷ್ಠ ಪಠ್ಯವನ್ನು ಗಟ್ಟಿಯಾಗಿ ಓದುವುದನ್ನು ಆಲಿಸಿ ಮೊದಲು, ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನ ಕೆಳಭಾಗದಲ್ಲಿ ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ ಐಕಾನ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ, ನಂತರ ಪಠ್ಯವನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ. ನೀವು ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಸಹ ಬಳಸಬಹುದು: ಪಠ್ಯವನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ, ನಂತರ Search + S ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="1668435968811469751">ಹಸ್ತಚಾಲಿತವಾಗಿ ನೋಂದಾಯಿಸಿ</translation>
+<translation id="1668804837842452164"><ph name="EMAIL" /> ಗಾಗಿ <ph name="BRAND" /> ಗೆ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="1668979692599483141">ಸಲಹೆಗಳ ಕುರಿತು ತಿಳಿದುಕೊಳ್ಳಿ</translation>
 <translation id="1670399744444387456">ಮೂಲ</translation>
 <translation id="1673137583248014546">ನಿಮ್ಮ ಸುರಕ್ಷತಾ ಕೀಯ ತಯಾರಕರ ಬ್ರಾಂಡ್ ಹೆಸರು  ಮತ್ತು ಮಾದರಿಯನ್ನು <ph name="URL" /> ನೋಡಲು ಬಯಸುತ್ತದೆ</translation>
@@ -1267,7 +1269,6 @@
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{ವಿಸ್ತರಣೆಯನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ}one{ಈ ವಿಸ್ತರಣೆಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ}other{ಈ ವಿಸ್ತರಣೆಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ}}</translation>
 <translation id="2073496667646280609">ನಿಮ್ಮ ಸಾಧನ ಅಥವಾ ಆಯ್ಕೆಮಾಡಿದ ಬ್ಯಾಕಪ್ ಸ್ಥಳದಲ್ಲಿ ನೀವು ಸಾಕಷ್ಟು ಉಚಿತ ಸಂಗ್ರಹಣೆಯನ್ನು ಹೊಂದಿಲ್ಲದಿರಬಹುದು. ಸ್ಪೇಸ್ ಅನ್ನು ಮುಕ್ತಗೊಳಿಸಲು ಅಥವಾ ಬೇರೆ ಸ್ಥಳವನ್ನು ಆಯ್ಕೆಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2073505299004274893"><ph name="CHARACTER_LIMIT" /> ಅಥವಾ ಅದಕ್ಕಿಂತ ಕಡಿಮೆ ಅಕ್ಷರಗಳನ್ನು ಬಳಸಿ</translation>
-<translation id="2074060876831574159">ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ.  &lt;a target='_blank' href='chrome://password-manager/'&gt;ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆಮದು ಮಾಡಿ&lt;/a&gt;</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% ಬ್ಯಾಟರಿ</translation>
 <translation id="2076269580855484719">ಈ ಪ್ಲಗ್‌ಇನ್ ಅನ್ನು ಮರೆಮಾಡು</translation>
 <translation id="2076672359661571384">ಮಧ್ಯಮ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
@@ -1575,6 +1576,7 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />ಗಮನಿಸಿ:<ph name="END_BOLD" /> ಪ್ರಕ್ರಿಯೆ ನಡೆಯುವಾಗ ಸಿಸ್ಟಂ ರೀಬೂಟ್ ಆಗುತ್ತದೆ.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ಹೆಚ್ಚುವರಿ ಅನುಮತಿಗಳನ್ನು ವಿನಂತಿಸಿದ್ದಾರೆ.</translation>
+<translation id="2306794767168143227">ಈ ಸಾಧನದಲ್ಲಿ <ph name="BRAND" /> ಗೆ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="2307462900900812319">ನೆಟ್‌ವರ್ಕ್ ಕಾನ್ಫಿಗರ್ ಮಾಡು</translation>
 <translation id="2307553512430195144">ನೀವು ಸಮ್ಮತಿಸುವುದಾದರೆ, "Ok Google" ಅನ್ನು ಪತ್ತೆಮಾಡಲು Google Assistant ಸ್ಟ್ಯಾಂಡ್‌ಬೈ ಮೋಡ್‌ನಲ್ಲಿ ಕಾಯುತ್ತದೆ ಮತ್ತು Voice Match ಮೂಲಕ <ph name="SUPERVISED_USER_NAME" /> ಅವರು ಮಾತನಾಡುತ್ತಿದ್ದಾರೆ ಎಂಬುದನ್ನು ಗುರುತಿಸಬಹುದು.
     <ph name="BR" />
@@ -1823,6 +1825,7 @@
 <translation id="2508428939232952663">Google Play Store  ಖಾತೆ</translation>
 <translation id="2509495747794740764">ಸ್ಕೇಲ್ ಪ್ರಮಾಣವು 10 ಮತ್ತು 200 ನಡುವಿನ ಸಂಖ್ಯೆಯಾಗಿರಬೇಕು.</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2510332280791537533">ಈ Chrome ಪ್ರೊಫೈಲ್‌ಗಾಗಿ ನೀವು ಪ್ರಮಾಣಿತ ಭದ್ರತಾ ರಕ್ಷಣೆಯನ್ನು ಪಡೆಯುತ್ತಿದ್ದೀರಿ</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="2513396635448525189">ಲಾಗಿನ್ ಚಿತ್ರ</translation>
 <translation id="2514326558286966059">ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಮೂಲಕ ವೇಗವಾಗಿ ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
@@ -3444,7 +3447,6 @@
 <translation id="3937640725563832867">ಪ್ರಮಾಣಪತ್ರ ನೀಡುವಿಕೆ ಪರ್ಯಾಯ ಹೆಸರು</translation>
 <translation id="3937734102568271121">ಯಾವಾಗಲೂ ಅನುವಾದಿಸಿ <ph name="LANGUAGE" /></translation>
 <translation id="3938128855950761626"><ph name="VENDOR_ID" /> ಮಾರಾಟಗಾರರಿಂದ ಸಾಧನಗಳು</translation>
-<translation id="3940233957883229251">ಸ್ವಯಂ-ಪುನರಾವರ್ತನೆ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="3941565636838060942">ಈ ಪ್ರೋಗ್ರಾಂಗೆ ಪ್ರವೇಶವನ್ನು ಮರೆಮಾಡಲು, ನಿಯಂತ್ರಣ ಫಲಕದಲ್ಲಿ <ph name="CONTROL_PANEL_APPLET_NAME" /> ಅನ್ನು ಬಳಸಿಕೊಂಡು
   ನೀವದನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ.
 
@@ -4922,6 +4924,7 @@
 <translation id="5294097441441645251">ಸಣ್ಣಕ್ಷರ ಅಥವಾ ಅಂಡರ್‌ಸ್ಕೋರ್ ಮೂಲಕ ಪ್ರಾರಂಭವಾಗಬೇಕು</translation>
 <translation id="5294618183559481278">ನಿಮ್ಮ ಸಾಧನದ ಮುಂದೆ ಜನರನ್ನು ಪತ್ತೆಹಚ್ಚಲು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅಂತರ್ನಿರ್ಮಿತ ಸೆನ್ಸರ್ ಅನ್ನು ಬಳಸುತ್ತದೆ. ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ತಕ್ಷಣವೇ ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗುತ್ತದೆ ಹಾಗೂ ನಂತರ ಅಳಿಸಲಾಗುತ್ತದೆ. ಸೆನ್ಸಾರ್ ಡೇಟಾವನ್ನು ಎಂದಿಗೂ Google ಗೆ ಕಳುಹಿಸಲಾಗುವುದಿಲ್ಲ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="5296350763804564124">ಮಾತಿನ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಆಲಿಸಿ ಇದರಿಂದ ನೀವು ಸ್ಕ್ರೀನ್ ಅನ್ನು ನೋಡದೆಯೇ ನಿಮ್ಮ ಸಾಧನವನ್ನು ಬಳಸಬಹುದು. ಸಂಪರ್ಕಿತ ಸಾಧನದೊಂದಿಗೆ ಬ್ರೈಲ್ ಪ್ರತಿಕ್ರಿಯೆ ಲಭ್ಯವಿದೆ.</translation>
+<translation id="5296536303670088158">ಹಾನಿಕಾರಕ ವೆಬ್‌ಸೈಟ್‌ಗಳ ವಿರುದ್ಧ ನೀವು Chrome ನ ಪ್ರಬಲ ಭದ್ರತೆಯನ್ನು ಹೊಂದಿದ್ದೀರಿ</translation>
 <translation id="5297005732522718715">ಟೆಥರಿಂಗ್ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="5297082477358294722">ಪಾಸ್‌ವರ್ಡ್ ಉಳಿಸಲಾಗಿದೆ. ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ <ph name="SAVED_PASSWORDS_STORE" /> ನಲ್ಲಿ ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ.</translation>
 <translation id="5297946558563358707">ಬೇರೊಬ್ಬರು ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ನೋಡಿದಾಗ, ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನ ಕೆಳಗಿನ ಬಲಭಾಗದಲ್ಲಿ ಗೌಪ್ಯತೆ ಕಣ್ಣಿನ ಐಕಾನ್ ಅನ್ನು ತೋರಿಸಿ</translation>
@@ -5524,7 +5527,6 @@
 <translation id="5841270259333717135">ಇಥರ್ನೆಟ್ ಕಾನ್ಫಿಗರ್ ಮಾಡಿ</translation>
 <translation id="5842497610951477805">ಬ್ಲೂಟೂತ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="5844574845205796324">ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಲು ಹೊಸ ವಿಷಯವನ್ನು ಸೂಚಿಸಿ</translation>
-<translation id="5845424750482472447">{COUNT,plural, =1{1 ಮರು ಮ್ಯಾಪ್ ಮಾಡಲಾದ ಕೀ}one{{COUNT} ಮರು ಮ್ಯಾಪ್ ಮಾಡಲಾದ ಕೀಗಳು}other{{COUNT} ಮರು ಮ್ಯಾಪ್ ಮಾಡಲಾದ ಕೀಗಳು}}</translation>
 <translation id="5846200638699387931">ರಿಲೇಶನ್ ಸಿಂಟ್ಯಾಕ್ಸ್ ದೋಷ: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">ಯಾವುದೇ ಶ್ಯಾಡೋ ಇಲ್ಲ</translation>
 <translation id="5846504156837627898">ಸೈಟ್ ಅನುಮತಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
@@ -5809,7 +5811,6 @@
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - ಹೆಸರಿಸದ ಗುಂಪಿಗೆ ಸೇರಿದೆ</translation>
 <translation id="6085886413119427067">ಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್‌ನ ಮೂಲಕ ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡುವುದು ಹೇಗೆ ಎಂಬುದನ್ನು ನಿರ್ಣಯಿಸುತ್ತದೆ</translation>
 <translation id="6086004606538989567">ನೀವು ದೃಢೀಕರಿಸಿದ ಖಾತೆಗೆ ಈ ಸಾಧನವನ್ನು ಪ್ರವೇಶಿಸಲು ಅನುಮತಿಯಿಲ್ಲ.</translation>
-<translation id="6086347269144967242">ಲಗತ್ತಿಸಲಾದ ಸಾಧನದ ಮಾಹಿತಿ ಮತ್ತು ಡೇಟಾವನ್ನು ಓದಿರಿ</translation>
 <translation id="6086846494333236931">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಸ್ಥಾಪಿಸಿದ್ದಾರೆ</translation>
 <translation id="6087746524533454243">ಬ್ರೌಸರ್ ಕುರಿತ ಪುಟವನ್ನು ಹುಡುಕುತ್ತಿರುವಿರಾ? ಭೇಟಿ ನೀಡಿ</translation>
 <translation id="6087960857463881712">ಅದ್ಭುತ ಮುಖ</translation>
@@ -7138,7 +7139,7 @@
 <translation id="7283555985781738399">ಅತಿಥಿ ಮೋಡ್</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{ಈ ಸಾಧನವನ್ನು 1 ದಿನಕ್ಕಾಗಿ ಉಳಿಸಲಾಗುತ್ತದೆ ಹಾಗೂ ಮುಂದಿನ ಬಾರಿ ನೀವು ಕೋಡ್ ಇಲ್ಲದೆಯೇ ಕನೆಕ್ಟ್ ಮಾಡಬಹುದು. ಇದನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಸೆಟ್ ಮಾಡಿದ್ದಾರೆ.}one{ಈ ಸಾಧನವನ್ನು {DAYS} ದಿನಗಳಿಗಾಗಿ ಉಳಿಸಲಾಗುತ್ತದೆ ಹಾಗೂ ಮುಂದಿನ ಬಾರಿ ನೀವು ಕೋಡ್ ಇಲ್ಲದೆಯೇ ಕನೆಕ್ಟ್ ಮಾಡಬಹುದು. ಇದನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಸೆಟ್ ಮಾಡಿದ್ದಾರೆ.}other{ಈ ಸಾಧನವನ್ನು {DAYS} ದಿನಗಳಿಗಾಗಿ ಉಳಿಸಲಾಗುತ್ತದೆ ಹಾಗೂ ಮುಂದಿನ ಬಾರಿ ನೀವು ಕೋಡ್ ಇಲ್ಲದೆಯೇ ಕನೆಕ್ಟ್ ಮಾಡಬಹುದು. ಇದನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಸೆಟ್ ಮಾಡಿದ್ದಾರೆ.}}</translation>
 <translation id="7284411326658527427">ಪ್ರತಿಯೊಬ್ಬ ವ್ಯಕ್ತಿಯು ತಮ್ಮ ಖಾತೆಯನ್ನು ವೈಯಕ್ತಿಕಗೊಳಿಸಬಹುದು ಮತ್ತು ಡೇಟಾವನ್ನು ಖಾಸಗಿಯಾಗಿರಿಸಬಹುದು.</translation>
-<translation id="7287143125007575591">ಪ್ರವೇಶ ನೀರಾಕರಿಸಲಾಗಿದೆ.</translation>
+<translation id="7287143125007575591">ಆ್ಯಕ್ಸೆಸ್ ನೀರಾಕರಿಸಲಾಗಿದೆ.</translation>
 <translation id="7287411021188441799">ಡೀಫಾಲ್ಟ್ ಹಿನ್ನೆಲೆ ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - ಅನುಮತಿಯನ್ನು ವಿನಂತಿಸಲಾಗಿದೆ, ಪ್ರತಿಕ್ರಿಯಿಸಲು F6 ಒತ್ತಿರಿ</translation>
@@ -8905,7 +8906,6 @@
 <translation id="8823704566850948458">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೂಚಿಸಿ...</translation>
 <translation id="8823963789776061136">ಪರ್ಯಾಯವಾಗಿ, ಪ್ರಿಂಟರ್ PPD ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">&amp;ಪುಟ ಸೇರಿಸು...</translation>
-<translation id="8827083388261088094">"<ph name="EXTENSION" />" ಗಾಗಿ ಅನುಮತಿಗಳನ್ನು ನಿರ್ವಹಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="8827125715368568315"><ph name="PERMISSION" /> ಮತ್ತು <ph name="COUNT" /> ಕ್ಕೂ ಹೆಚ್ಚಿನವುಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="8827289157496676362">ವಿಸ್ತರಣೆಯನ್ನು ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="8827752199525959199">ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು, <ph name="USERNAME" /> ಅವರಿಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು <ph name="DOMAIN" /> ನಲ್ಲಿ</translation>
@@ -9035,7 +9035,6 @@
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="894191600409472540">ಸದೃಢ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಚಿಸಿ</translation>
 <translation id="894360074127026135">Netscape ಅಂತರರಾಷ್ಟ್ರೀಯ ಸ್ಟೆಪ್-ಅಪ್</translation>
-<translation id="8943937581166190941">ವಿಸ್ತರಣೆಯು HID ಸಾಧನವನ್ನು ಬಳಸುತ್ತಿದೆ</translation>
 <translation id="8944099748578356325">ಇನ್ನಷ್ಟು ತ್ವರಿತವಾಗಿ ಬ್ಯಾಟರಿ ಬಳಸಿ (ಪ್ರಸ್ತುತವಾಗಿ <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944725102565796255">ಈ ಖಾತೆಯನ್ನು ನೀವು ಒಂದು ಬಾರಿ ಮಾತ್ರ ಬಳಸಲು ಬಯಸಿದರೆ, ನೀವು <ph name="GUEST_LINK_BEGIN" />ಸಾಧನವನ್ನು ಅತಿಥಿಯಾಗಿ ಬಳಸಬಹುದು<ph name="GUEST_LINK_END" />. ನೀವು ಬೇರೊಬ್ಬರಿಗಾಗಿ ಖಾತೆಯನ್ನು ಸೇರಿಸಲು ಬಯಸಿದರೆ, ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗೆ<ph name="LINK_BEGIN" /> ಹೊಸ ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸಿ<ph name="LINK_END" />.
 

@@ -25,7 +25,6 @@
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome อัปเดตเสร็จแล้ว คุณจะใช้เวอร์ชันล่าสุดได้ทันทีที่เปิดอีกครั้ง หลังจากนั้น แท็บปัจจุบันจะเปิดขึ้นอีกครั้ง}=1{Chrome อัปเดตเสร็จแล้ว คุณจะใช้เวอร์ชันล่าสุดได้ทันทีที่เปิดอีกครั้ง หลังจากนั้น แท็บปัจจุบันจะเปิดขึ้นอีกครั้ง หน้าต่างที่ไม่ระบุตัวตนจะไม่เปิดขึ้นอีก}other{Chrome อัปเดตเสร็จแล้ว คุณจะใช้เวอร์ชันล่าสุดได้ทันทีที่เปิดอีกครั้ง หลังจากนั้น แท็บปัจจุบันจะเปิดขึ้นอีกครั้ง หน้าต่างที่ไม่ระบุตัวตนจำนวน # หน้าต่างจะไม่เปิดขึ้นอีก}}</translation>
 <translation id="1434626383986940139">แอป Chrome Canary</translation>
 <translation id="1492280395845991349">เปิดอีกครั้งเพื่อให้การอัปเดต Chrome เสร็จสิ้น</translation>
-<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome ไม่ได้เชื่อมต่อกับอุปกรณ์ HID ในขณะนี้}=1{Google Chrome เชื่อมต่อกับอุปกรณ์ HID}other{Google Chrome เชื่อมต่อกับอุปกรณ์ HID}}</translation>
 <translation id="1507198376417198979">ปรับแต่งโปรไฟล์ Chrome ใหม่</translation>
 <translation id="1516530951338665275">Google Chrome ต้องการสิทธิ์เข้าถึงบลูทูธเพื่อจับคู่ต่อ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS เกิดขึ้นได้ด้วยการสนับสนุนจาก<ph name="BEGIN_LINK_CROS_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_CROS_OSS" />อื่นเพิ่มเติม</translation>

@@ -27,7 +27,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen.}=1{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen. Your incognito window won't reopen.}other{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen. Your # incognito windows won't reopen.}}</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
 <translation id="1492280395845991349">Relaunch to finish Chrome update</translation>
-<translation id="1496905273983707119">{NUM_DEVICES,plural, =0{Google Chrome was connected to an HID device}=1{Google Chrome is connected to an HID device}other{Google Chrome is connected to HID devices}}</translation>
 <translation id="1507198376417198979">Customise your new Chrome profile</translation>
 <translation id="1516530951338665275">Google Chrome needs Bluetooth access to continue pairing. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />.</translation>
@@ -419,6 +418,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9054037008353851982">Relaunch to update – Your tabs will reopen</translation>
 <translation id="911206726377975832">Also delete your browsing data?</translation>
 <translation id="9138603949443464873">To apply your changes, relaunch Chrome</translation>
+<translation id="9190003950176692491">{NUM_DEVICES,plural, =0{Google Chrome was accessing a HID device}=1{Google Chrome is accessing a HID device}other{Google Chrome is accessing HID devices}}</translation>
 <translation id="9195993889682885387">Chrome can estimate your interests based on your browsing history from the last few weeks. This info stays on your device.</translation>
 <translation id="919706545465235479">Update Chrome to start sync</translation>
 <translation id="922152298093051471">Customise Chrome</translation>

@@ -134,6 +134,7 @@ Yalnız parolunuzu bilən kimsə şifrələnmiş datanızı oxuya bilər. Bu par
 <translation id="1820259098641718022">Oxu Siyahısına əlavə edildi</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Oğurlanmış Parollar}=1{{COUNT} Oğurlanmış Parol}other{{COUNT} Oğurlanmış Parol}}</translation>
 <translation id="1832848789136765277">Həmişə sinxronlaşdırılmış datanıza girişinizin olduğuna əmin olmaq üçün kimliyinizi doğrulayın</translation>
+<translation id="1836891464494477513">{count,plural, =1{Əlfəcin Google Hesabında ({email}) yadda saxlandı}other{Əlfəcinlər Google Hesabında ({email}) yadda saxlandı}}</translation>
 <translation id="1870148520156231997">Parolu Göstərin</translation>
 <translation id="1872096359983322073">Fənər</translation>
 <translation id="1883255238294161206">Siyahını yığcamlaşdırın</translation>
@@ -1042,6 +1043,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7845466610722898">Oxu Siyahısını göstərin</translation>
 <translation id="784551991304901159">Məzmunu görmək üçün menyudan "Aktiv edin" seçimini edin</translation>
 <translation id="7846158885638438868">{count,plural, =1{"{title}" bölməsində saxlandı}other{"{title}" bölməsində saxlandı}}</translation>
+<translation id="7852017611907717397">GERİ QAYTARIN</translation>
 <translation id="7853202427316060426">Fəalliyyət</translation>
 <translation id="7856733331829174190">Yüklənmədi</translation>
 <translation id="785938070103630874">Parolları, Ödəniş Metodlarını və ya Ünvanı və daha çoxunu açın</translation>

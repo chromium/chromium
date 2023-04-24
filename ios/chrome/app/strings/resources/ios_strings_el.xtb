@@ -127,6 +127,7 @@
 <translation id="1757699834933698436">{count,plural, =1{{count} ασθενής κωδικός πρόσβασης}other{{count} ασθενείς κωδικοί πρόσβασης}}</translation>
 <translation id="1767766085187034454">Μετάφραση Google</translation>
 <translation id="1789803444939621101">Καλώς ορίσατε πάλι, <ph name="USER_NAME" /></translation>
+<translation id="179367147360747549">Βεβαιωθείτε ότι οι κωδικοί πρόσβασης είναι ασφαλείς, μάθετε εάν έχουν παραβιαστεί και λάβετε συμβουλές για να προστατευτείτε στο διαδίκτυο. <ph name="BEGIN_LINK" />Μάθετε περισσότερα.<ph name="END_LINK" /></translation>
 <translation id="1803264062614276815">Όνομα κατόχου κάρτας</translation>
 <translation id="1809939268435598390">Διαγραφή φακέλου</translation>
 <translation id="1813414402673211292">Διαγραφή δεδ. περιήγ.</translation>
@@ -134,6 +135,7 @@
 <translation id="1820259098641718022">Προστέθηκε στη λίστα ανάγνωσης</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Παραβιασμένοι κωδικοί πρόσβασης}=1{{COUNT} παραβιασμένος κωδικός πρόσβασης}other{{COUNT} παραβιασμένοι κωδικοί πρόσβασης}}</translation>
 <translation id="1832848789136765277">Για να βεβαιωθείτε ότι έχετε πάντα πρόσβαση στα δεδομένα συγχρονισμού σας, επαληθεύστε την ταυτότητά σας.</translation>
+<translation id="1836891464494477513">{count,plural, =1{Ο σελιδοδείκτης αποθηκεύτηκε στον Λογαριασμό σας Google, {email}}other{Οι σελιδοδείκτες αποθηκεύτηκαν στον Λογαριασμό σας Google, {email}}}</translation>
 <translation id="1870148520156231997">Αποκάλυψη κωδικού πρόσβασης</translation>
 <translation id="1872096359983322073">Φακός</translation>
 <translation id="1883255238294161206">Σύμπτυξη λίστας</translation>
@@ -1043,6 +1045,7 @@
 <translation id="7845466610722898">Εμφάνιση λίστας ανάγνωσης</translation>
 <translation id="784551991304901159">Για εμφάνιση περιεχομένου, από το μενού, επιλέξτε Ενεργοποίηση</translation>
 <translation id="7846158885638438868">{count,plural, =1{Ο σελιδοδείκτης προστέθηκε στον φάκελο {title}}other{Οι σελιδοδείκτες προστέθηκαν στον φάκελο {title}}}</translation>
+<translation id="7852017611907717397">ΑΝΑΙΡΕΣΗ</translation>
 <translation id="7853202427316060426">Δραστηριότητα</translation>
 <translation id="7856733331829174190">Δεν ήταν δυνατή η λήψη</translation>
 <translation id="785938070103630874">Ανοίξτε τους κωδικούς πρόσβασης, τους τρόπους πληρωμής, τη διεύθυνση και άλλα</translation>

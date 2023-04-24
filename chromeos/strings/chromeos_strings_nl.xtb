@@ -91,6 +91,7 @@
 <translation id="1676557873873341166">Video opnemen</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolver aanwezig</translation>
+<translation id="1708602061922134366">Google-blauw</translation>
 <translation id="1710499924611012470">Toegankelijkheidsnavigatie</translation>
 <translation id="1715359911173058521">Er is een communicatieprobleem met de scanner. Check het netwerk of de USB-aansluiting en probeer het opnieuw.</translation>
 <translation id="1717874160321062422">Beheerd door <ph name="FIRST_MANAGER" /> en <ph name="SECOND_MANAGER" /></translation>
@@ -105,6 +106,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Verificatietype</translation>
+<translation id="1776228893584526149">Achtergrondtint</translation>
 <translation id="1782199038061388045">vertaling</translation>
 <translation id="1790209694022261219">Vensters en bureaus</translation>
 <translation id="1792647875738159689">Scannen annuleren</translation>
@@ -483,6 +485,7 @@
 <translation id="5166918508782100047">Instellingen voor Snelle antwoorden</translation>
 <translation id="5168185087976003268">Batterijconditie</translation>
 <translation id="5170568018924773124">Tonen in map</translation>
+<translation id="5180712487038406644">Expressief</translation>
 <translation id="5190187232518914472">Beleef je favoriete herinneringen opnieuw. Ga naar <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" /> om albums toe te voegen of te bewerken.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Uitloggen</translation>
@@ -648,6 +651,7 @@
 <translation id="6527081081771465939">Onbekend wifi-beveiligingsprotocol</translation>
 <translation id="6535178685492749208">Je bent offline. Feedback wordt later verstuurd.</translation>
 <translation id="65587193855025101">Flatbed</translation>
+<translation id="6560196641871357166">Levendig</translation>
 <translation id="6564646048574748301">Mislukt - Printer is niet bereikbaar</translation>
 <translation id="6566314079205407217">Meerdere pagina's scannen</translation>
 <translation id="6574762126505704998">Uitvullen</translation>
@@ -877,6 +881,7 @@
 <translation id="8575298406870537639">Je provider kan deze optie vereisen om verbinding te maken met hun netwerk. Neem contact op met je provider voor meer informatie.</translation>
 <translation id="8576249514688522074">Niet geïnitialiseerd</translation>
 <translation id="8620617069779373398">Roamingstatus</translation>
+<translation id="86356131183441916">Lichtpaars</translation>
 <translation id="8655295600908251630">Kanaal</translation>
 <translation id="8655828773034788261">URL delen:</translation>
 <translation id="8660881923941176839">pound</translation>
@@ -961,6 +966,7 @@
 <translation id="945522503751344254">Feedback sturen</translation>
 <translation id="952992212772159698">Niet geactiveerd</translation>
 <translation id="960719561871045870">Operatorcode</translation>
+<translation id="979450713603643090">Lichtroze</translation>
 <translation id="982713511914535780">Ontlaadtest uitvoeren</translation>
 <translation id="987264212798334818">Algemeen</translation>
 </translationbundle>

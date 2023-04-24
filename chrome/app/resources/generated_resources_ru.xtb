@@ -293,6 +293,7 @@
 <translation id="1240903469550363138">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт. Ознакомьтесь с его <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />условиями использования<ph name="END_LINK2" />.</translation>
 <translation id="1241066500170667906">Выбрать статус эксперимента "<ph name="EXPERIMENT_NAME" />"</translation>
 <translation id="124116460088058876">Другие языки</translation>
+<translation id="1241381048229838873">Показать все закладки</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> предлагает сбросить настройки</translation>
 <translation id="1243314992276662751">Загрузить</translation>
 <translation id="1243436884219965846">Проверить пароли</translation>
@@ -804,6 +805,7 @@
 <translation id="1666232093776384142">Снять ограничение на доступ к данным для периферийных устройств?</translation>
 <translation id="1667842670298352129">Читать вслух выбранный текст. Чтобы воспользоваться функцией, нажмите на значок "Озвучивание при нажатии" внизу экрана и выделите нужный текст. Также вы можете выделить текст и нажать Поиск + S.</translation>
 <translation id="1668435968811469751">Зарегистрировать вручную</translation>
+<translation id="1668804837842452164">Сохранить в сервисе "<ph name="BRAND" />" (<ph name="EMAIL" />)</translation>
 <translation id="1668979692599483141">Подробнее о подсказках…</translation>
 <translation id="1670399744444387456">Основные настройки</translation>
 <translation id="1673137583248014546">Сайт <ph name="URL" /> запрашивает доступ к производителю и модели вашего Электронного ключа</translation>
@@ -1264,7 +1266,6 @@
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Нажмите, чтобы установить его.}one{Нажмите, чтобы установить их.}few{Нажмите, чтобы установить их.}many{Нажмите, чтобы установить их.}other{Нажмите, чтобы установить их.}}</translation>
 <translation id="2073496667646280609">Возможно, на диске или выбранном устройстве недостаточно места. Удалите ненужные файлы или сохраните резервные копии на другом устройстве.</translation>
 <translation id="2073505299004274893">Макс. количество символов: <ph name="CHARACTER_LIMIT" />.</translation>
-<translation id="2074060876831574159">Здесь появятся сохраненные пароли.  &lt;a target='_blank' href='chrome://password-manager/'&gt;Импортировать пароли&lt;/a&gt;</translation>
 <translation id="2075474481720804517">Батарея заряжена на <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2076269580855484719">Скрыть подключаемый модуль</translation>
 <translation id="2076672359661571384">Средний (рекомендуется)</translation>
@@ -1569,6 +1570,7 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Примечание.<ph name="END_BOLD" /> Система будет перезагружена.</translation>
 <translation id="23030561267973084">Приложение "<ph name="EXTENSION_NAME" />" запросило дополнительные разрешения.</translation>
+<translation id="2306794767168143227">Сохранить в сервисе "<ph name="BRAND" />" на этом устройстве</translation>
 <translation id="2307462900900812319">Настройка сети</translation>
 <translation id="2307553512430195144">Если вы согласитесь, Google Ассистент будет ждать команды "Окей, Google" и с помощью функции Voice Match сможет определять, что говорит пользователь <ph name="SUPERVISED_USER_NAME" />.
     <ph name="BR" />
@@ -3437,7 +3439,6 @@
 <translation id="3937640725563832867">Альтернативное имя издателя сертификата</translation>
 <translation id="3937734102568271121">Всегда переводить <ph name="LANGUAGE" /></translation>
 <translation id="3938128855950761626">Устройства от поставщика <ph name="VENDOR_ID" /></translation>
-<translation id="3940233957883229251">Включить автоматический повтор ввода</translation>
 <translation id="3941565636838060942">Чтобы скрыть доступ к этой программе, удалите ее с помощью компонента
   "<ph name="CONTROL_PANEL_APPLET_NAME" />" в панели управления.
 
@@ -4054,6 +4055,7 @@
 <translation id="450552327874992444">Это слово уже добавлено.</translation>
 <translation id="4507128560633489176">Данные удалены.</translation>
 <translation id="4507373251891673233">Вы заблокировали все расширения с сайта <ph name="HOST" />.</translation>
+<translation id="4508032221004253235">Приложения и сайты с доступом к сведениям о местоположении, а также ChromeOS смогут использовать геоданные, полученные на основе информации о Wi-Fi и мобильных сетях. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="450867954911715010">Настройки специальных возможностей</translation>
 <translation id="4508765956121923607">Исходный код страницы</translation>
 <translation id="4509421746503122514">Перезапустить и обновить</translation>
@@ -4845,6 +4847,7 @@
 <translation id="5235750401727657667">Замена страницы, которая появляется на новой вкладке</translation>
 <translation id="5236374273162681467">Перенесите пароли в аккаунт Google, чтобы использовать их на всех своих устройствах.</translation>
 <translation id="523862956770478816">Разрешения на доступ к сайтам</translation>
+<translation id="5239752869099890912">Чтобы применить измененные настройки к расширениям на сайте, обновите страницу</translation>
 <translation id="5242724311594467048">Включить приложение "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Повторите попытку через несколько секунд</translation>
 <translation id="5244474230056479698">Синхронизация с <ph name="EMAIL" /></translation>
@@ -5513,7 +5516,6 @@
 <translation id="5841270259333717135">Настроить Ethernet</translation>
 <translation id="5842497610951477805">Включение и отключение Bluetooth</translation>
 <translation id="5844574845205796324">Предлагать контент</translation>
-<translation id="5845424750482472447">{COUNT,plural, =1{1 клавиша переназначена}one{{COUNT} клавиша переназначена}few{{COUNT} клавиши переназначены}many{{COUNT} клавиш переназначены}other{{COUNT} клавиши переназначены}}</translation>
 <translation id="5846200638699387931">Ошибка синтаксиса отношений: <ph name="ERROR_LINE" />.</translation>
 <translation id="5846455742152785308">Без тени</translation>
 <translation id="5846504156837627898">Управление разрешениями сайтов</translation>
@@ -5798,7 +5800,6 @@
 <translation id="608531959444400877">"<ph name="WINDOW_TITLE" />" – элемент группы без названия</translation>
 <translation id="6085886413119427067">Определяет, как подключаться к сайтам, используя защищенное соединение.</translation>
 <translation id="6086004606538989567">У аккаунта, который вы подтвердили, нет доступа к этому устройству.</translation>
-<translation id="6086347269144967242">Чтение информации о подключенных устройствах и данных на них.</translation>
 <translation id="6086846494333236931">Установлено администратором</translation>
 <translation id="6087746524533454243">Ищете информацию о браузере? Перейдите на страницу</translation>
 <translation id="6087960857463881712">Модник</translation>
@@ -8124,6 +8125,7 @@
 <translation id="8138997515734480534">Статус ВМ "<ph name="VM_NAME" />"</translation>
 <translation id="8139447493436036221">Файлы на Google Диске</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
+<translation id="8141260936970642964">Разрешить приложениям и сайтам, а также функции системного часового пояса использовать данные о местоположении, полученные с помощью геолокации Google. Если доступ к таким данным закрыт, местоположение может определяться по IP-адресу.</translation>
 <translation id="8141418916163800697">Вы можете настроить больше функций в разделе "Управление телефоном".</translation>
 <translation id="8141584439523427891">Запуск альтернативного браузера…</translation>
 <translation id="8141725884565838206">Управление паролями</translation>
@@ -8196,6 +8198,7 @@
 <translation id="8195737548602430447">Автоматический перевод субтитров на целевой язык.</translation>
 <translation id="8197673340773315084">Укажите название, например "Рабочий"</translation>
 <translation id="8198456017687137612">Трансляция вкладки</translation>
+<translation id="8198511718495409170">Чтобы применить измененные настройки к расширению "<ph name="EXTENSION_NAME" />" на сайте, обновите страницу</translation>
 <translation id="8199300056570174101">Настройки сети и устройства</translation>
 <translation id="8200772114523450471">Возобновить</translation>
 <translation id="8200789660596905522">Трансляция возможна только при принятии запроса на устройстве <ph name="DEVICE_NAME" /></translation>
@@ -8901,7 +8904,6 @@
 <translation id="8823704566850948458">Сгенерировать пароль</translation>
 <translation id="8823963789776061136">Вы также можете выбрать PPD-файл для принтера. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">Добавить &amp;страницу</translation>
-<translation id="8827083388261088094">Нажмите, чтобы управлять разрешениями расширения "<ph name="EXTENSION" />".</translation>
 <translation id="8827125715368568315">Отключены разрешения: <ph name="PERMISSION" /> и ещё <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Закрепить расширение</translation>
 <translation id="8827752199525959199">Пароль для аккаунта <ph name="USERNAME" /> на сайте <ph name="DOMAIN" /></translation>
@@ -9031,7 +9033,6 @@
 <translation id="8941688920560496412">Устройство "<ph name="DEVICE_NAME" />" отключено</translation>
 <translation id="894191600409472540">Создайте надежные пароли</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
-<translation id="8943937581166190941">HID-устройство используется расширением</translation>
 <translation id="8944099748578356325">Начнет быстрее расходовать заряд батареи (сейчас она заряжена на <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944725102565796255">Если этот аккаунт вам больше не понадобится, можно <ph name="GUEST_LINK_BEGIN" />воспользоваться устройством в гостевом режиме<ph name="GUEST_LINK_END" />. Чтобы добавить аккаунт для другого человека, <ph name="LINK_BEGIN" />создайте профиль пользователя<ph name="LINK_END" /> на <ph name="DEVICE_TYPE" />.
 

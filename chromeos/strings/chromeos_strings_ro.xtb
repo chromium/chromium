@@ -91,6 +91,7 @@
 <translation id="1676557873873341166">Se înregistrează un videoclip</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Rezolvitor DNS prezent</translation>
+<translation id="1708602061922134366">Albastru Google</translation>
 <translation id="1710499924611012470">Navigare pentru accesibilitate</translation>
 <translation id="1715359911173058521">Există o problemă de comunicare cu scanerul. Verifică-ți conexiunea USB sau la rețea și încearcă din nou.</translation>
 <translation id="1717874160321062422">Gestionat de <ph name="FIRST_MANAGER" /> și de <ph name="SECOND_MANAGER" /></translation>
@@ -105,6 +106,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Tip de autentificare</translation>
+<translation id="1776228893584526149">Tonul imaginii de fundal</translation>
 <translation id="1782199038061388045">traducere</translation>
 <translation id="1790209694022261219">Ferestre și desktopuri</translation>
 <translation id="1792647875738159689">Se anulează scanarea</translation>
@@ -483,6 +485,7 @@
 <translation id="5166918508782100047">Setări pentru Răspunsuri rapide</translation>
 <translation id="5168185087976003268">Buna funcționare a bateriei:</translation>
 <translation id="5170568018924773124">Afișează în dosar</translation>
+<translation id="5180712487038406644">Expresiv</translation>
 <translation id="5190187232518914472">Retrăiește amintirile preferate. Pentru a adăuga sau a edita albume, accesează <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Deconectează-te</translation>
@@ -648,6 +651,7 @@
 <translation id="6527081081771465939">Protocol de securitate Wi-Fi necunoscut</translation>
 <translation id="6535178685492749208">Ești offline. Feedbackul se va trimite mai târziu.</translation>
 <translation id="65587193855025101">Suport plat</translation>
+<translation id="6560196641871357166">Vibrant</translation>
 <translation id="6564646048574748301">Nereușită – Imprimanta nu poate fi accesată</translation>
 <translation id="6566314079205407217">Scanare pentru mai multe pagini</translation>
 <translation id="6574762126505704998">Umplere</translation>
@@ -877,6 +881,7 @@
 <translation id="8575298406870537639">Operatorul poate solicita această opțiune ca să te conectezi la rețeaua respectivă. Contactează operatorul pentru detalii.</translation>
 <translation id="8576249514688522074">Neinițializată</translation>
 <translation id="8620617069779373398">Stare roaming</translation>
+<translation id="86356131183441916">Mov deschis</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655828773034788261">Trimite adresa URL:</translation>
 <translation id="8660881923941176839">livre</translation>
@@ -961,6 +966,7 @@
 <translation id="945522503751344254">Trimite feedback</translation>
 <translation id="952992212772159698">Neactivat</translation>
 <translation id="960719561871045870">Cod operator</translation>
+<translation id="979450713603643090">Roz deschis</translation>
 <translation id="982713511914535780">Rulează testul Descărcare</translation>
 <translation id="987264212798334818">General</translation>
 </translationbundle>

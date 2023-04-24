@@ -134,6 +134,7 @@
 <translation id="1820259098641718022">Додано в список читання</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Зламані паролі}=1{{COUNT} зламаний пароль}one{{COUNT} зламаний пароль}few{{COUNT} зламані паролі}many{{COUNT} зламаних паролів}other{{COUNT} зламаного пароля}}</translation>
 <translation id="1832848789136765277">Щоб не втратити доступ до своїх даних синхронізації, підтвердьте свою особу</translation>
+<translation id="1836891464494477513">{count,plural, =1{Закладку збережено у вашому обліковому записі Google ({email})}one{Закладки збережено у вашому обліковому записі Google ({email})}few{Закладки збережено у вашому обліковому записі Google ({email})}many{Закладки збережено у вашому обліковому записі Google ({email})}other{Закладки збережено у вашому обліковому записі Google ({email})}}</translation>
 <translation id="1870148520156231997">Показати пароль</translation>
 <translation id="1872096359983322073">Ліхтарик</translation>
 <translation id="1883255238294161206">Згорнути список</translation>
@@ -1042,6 +1043,7 @@
 <translation id="7845466610722898">Показати список читання</translation>
 <translation id="784551991304901159">Щоб побачити контент, у меню виберіть "Увімкнути"</translation>
 <translation id="7846158885638438868">{count,plural, =1{Закладку збережено в папці "{title}"}one{Закладки збережено в папці "{title}"}few{Закладки збережено в папці "{title}"}many{Закладки збережено в папці "{title}"}other{Закладки збережено в папці "{title}"}}</translation>
+<translation id="7852017611907717397">ВІДМІНИТИ</translation>
 <translation id="7853202427316060426">Активність</translation>
 <translation id="7856733331829174190">Не вдалося завантажити</translation>
 <translation id="785938070103630874">Відкрийте розділ "Паролі", "Способи оплати" або "Адреса тощо"</translation>

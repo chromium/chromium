@@ -134,6 +134,7 @@
 <translation id="1820259098641718022">Ավելացվել է ընթերցանության ցանկում</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Կոտրված գաղտնաբառեր}=1{{COUNT} կոտրված գաղտնաբառ}one{{COUNT} կոտրված գաղտնաբառ}other{{COUNT} կոտրված գաղտնաբառ}}</translation>
 <translation id="1832848789136765277">Հաստատեք ձեր ինքնությունը, որպեսզի համաժամացված տվյալները միշտ հասանելի լինեն ձեզ</translation>
+<translation id="1836891464494477513">{count,plural, =1{Էջանիշն ավելացվել է ձեր Google հաշվում, {email}}one{Էջանիշն ավելացվել է ձեր Google հաշվում, {email}}other{Էջանիշներն ավելացվել են ձեր Google հաշվում, {email}}}</translation>
 <translation id="1870148520156231997">Ցուցադրել գաղտնաբառը</translation>
 <translation id="1872096359983322073">Լապտեր</translation>
 <translation id="1883255238294161206">Ծալել ցանկը</translation>
@@ -1042,6 +1043,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7845466610722898">Ցույց տալ ընթերցանության ցանկը</translation>
 <translation id="784551991304901159">Բովանդակությունը տեսնելու համար ընտրացանկում սեղմեք «Միացնել»</translation>
 <translation id="7846158885638438868">{count,plural, =1{Էջանիշը պահվեց «{title}» պանակում}one{Էջանիշը պահվեց «{title}» պանակում}other{Էջանիշները պահվեցին «{title}» պանակում}}</translation>
+<translation id="7852017611907717397">ՀԵՏԱՐԿԵԼ</translation>
 <translation id="7853202427316060426">Գործողություններ</translation>
 <translation id="7856733331829174190">Չհաջողվեց ներբեռնել</translation>
 <translation id="785938070103630874">Բացեք գաղտնաբառեր, վճարման եղանակներ, հասցեներ և ավելին</translation>

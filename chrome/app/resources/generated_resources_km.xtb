@@ -292,6 +292,7 @@
 <translation id="1240903469550363138">ដើម្បីបន្ត <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> នឹងចែករំលែកឈ្មោះ អាសយដ្ឋានអ៊ីមែល និងរូបភាពកម្រងព័ត៌មានរបស់អ្នកជាមួយគេហទំព័រនេះ។ សូមមើល<ph name="BEGIN_LINK1" />គោលការណ៍ឯកជនភាព<ph name="END_LINK1" /> និង<ph name="BEGIN_LINK2" />លក្ខខណ្ឌប្រើប្រាស់<ph name="END_LINK2" />របស់គេហទំព័រនេះ។</translation>
 <translation id="1241066500170667906">ជ្រើសរើសស្ថានភាពពិសោធន៍សម្រាប់ <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">ភាសា​ច្រើន​ទៀត</translation>
+<translation id="1241381048229838873">បង្ហាញចំណាំទាំងអស់</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> ចង់កំណត់ការកំណត់របស់អ្នកឡើងវិញ</translation>
 <translation id="1243314992276662751">ទាញឡើង</translation>
 <translation id="1243436884219965846">ពិនិត្យមើល​ពាក្យសម្ងាត់</translation>
@@ -1275,7 +1276,6 @@
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{ចុចដើម្បីដំឡើង​កម្មវិធីបន្ថែម}other{ចុចដើម្បីដំឡើង​កម្មវិធីបន្ថែម​ទាំងនេះ}}</translation>
 <translation id="2073496667646280609">អ្នកប្រហែលជាមិនមានទំហំផ្ទុកទំនេរគ្រប់គ្រាន់នៅលើឧបករណ៍របស់អ្នក ឬទីតាំងបម្រុងទុកដែលបានជ្រើសរើស។ សូមសាកល្បងបង្កើនទំហំផ្ទុកទំនេរ ឬជ្រើសរើសទីតាំងផ្សេង។</translation>
 <translation id="2073505299004274893">ប្រើប្រាស់ <ph name="CHARACTER_LIMIT" /> តួអក្សរ ឬតិចជាងនេះ</translation>
-<translation id="2074060876831574159">ពាក្យសម្ងាត់ដែលបានរក្សាទុកនឹងបង្ហាញ​នៅទីនេះ។  &lt;a target='_blank' href='chrome://password-manager/'&gt;នាំ​ចូល​ពាក្យសម្ងាត់&lt;/a&gt;</translation>
 <translation id="2075474481720804517">ថ្ម <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2076269580855484719">លាក់កម្មវិធីជំនួយនេះ</translation>
 <translation id="2076672359661571384">មធ្យម (បានណែនាំ)</translation>
@@ -1832,6 +1832,7 @@
 <translation id="2508428939232952663">គណនី Google Play Store</translation>
 <translation id="2509495747794740764">ចំនួនមាត្រដ្ឋានត្រូវតែជាលេខចន្លោះពី 10 ទៅ 200 ។</translation>
 <translation id="2509566264613697683">8x</translation>
+<translation id="2510332280791537533">អ្នកកំពុង​ទទួលបាន​ការការពារ​សុវត្ថិភាព​ស្តង់ដារ​សម្រាប់​កម្រងព័ត៌មាន Chrome នេះ</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (បានជ្រើសរើស)</translation>
 <translation id="2513396635448525189">រូបភាពចូលគណនី</translation>
 <translation id="2514326558286966059">ដោះសោរហ័សជាងមុនដោយប្រើស្នាម​ម្រាមដៃរបស់អ្នក</translation>
@@ -3452,7 +3453,6 @@
 <translation id="3937640725563832867">ឈ្មោះជម្រើសអ្នកចេញផ្សាយវិញ្ញាបនប័ត្រ</translation>
 <translation id="3937734102568271121">បកប្រែ <ph name="LANGUAGE" /> ជានិច្ច</translation>
 <translation id="3938128855950761626">ឧបករណ៍ពី​អ្នកលក់ <ph name="VENDOR_ID" /></translation>
-<translation id="3940233957883229251">បើកដំណើរការធ្វើឡើងវិញស្វ័យប្រវត្តិ</translation>
 <translation id="3941565636838060942">ដើម្បីលាក់ការចូលប្រើកម្មវិធីនេះ អ្នកត្រូវលុបការតំឡើងវាដោយប្រើ
   <ph name="CONTROL_PANEL_APPLET_NAME" /> នៅក្នុងផ្ទាំងបញ្ជា
 
@@ -4930,6 +4930,7 @@
 <translation id="5294097441441645251">ត្រូវតែ​ចាប់ផ្ដើមដោយ​តួអក្សរតូច ឬសញ្ញា (_)</translation>
 <translation id="5294618183559481278"><ph name="DEVICE_TYPE" /> របស់អ្នកប្រើ​ឧបករណ៍ចាប់សញ្ញា​ដែលភ្ជាប់មកជាមួយស្រាប់ ដើម្បីចាប់ដឹងថា​មានមនុស្សនៅពី​មុខឧបករណ៍របស់អ្នក។ ទិន្នន័យទាំងអស់​ត្រូវបានដំណើរការ​នៅលើឧបករណ៍របស់​អ្នកភ្លាមៗ បន្ទាប់មកត្រូវបានលុប។ ទិន្នន័យឧបករណ៍​ចាប់សញ្ញាមិនត្រូវ​បានផ្ញើទៅ Google ទេ។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="5296350763804564124">ស្ដាប់​ការអានអេក្រង់ ដើម្បីឱ្យ​អ្នក​អាច​ប្រើប្រាស់​ឧបករណ៍​របស់អ្នក ដោយ​មិនចាំបាច់​មើល​អេក្រង់។ ការអាន​អក្សរស្ទាប​អាចប្រើបាន​ជាមួយ​ឧបករណ៍​ដែលបានភ្ជាប់។</translation>
+<translation id="5296536303670088158">អ្នកមាន​សុវត្ថិភាពខ្លាំងបំផុត​របស់ Chrome ប្រឆាំងនឹង​គេហទំព័រដែល​បង្កគ្រោះថ្នាក់</translation>
 <translation id="5297005732522718715">ផ្ទុក​ការកំណត់រចនាសម្ព័ន្ធនៃការភ្ជាប់ឡើងវិញ</translation>
 <translation id="5297082477358294722">បាន​រក្សាទុក​ពាក្យសម្ងាត់។ សូមមើល និងគ្រប់គ្រង​ពាក្យសម្ងាត់​ដែលបាន​រក្សាទុក​នៅក្នុង <ph name="SAVED_PASSWORDS_STORE" /> របស់អ្នក។</translation>
 <translation id="5297946558563358707">នៅពេលនរណា​ម្នាក់ផ្សេងទៀត​មើលទៅអេក្រង់​របស់អ្នក សូមបង្ហាញ​រូបភ្នែកឯកជនភាព​នៅខាងក្រោមផ្នែក​ខាងស្ដាំនៃអេក្រង់របស់អ្នក</translation>
@@ -5532,7 +5533,6 @@
 <translation id="5841270259333717135">កំណត់​រចនាសម្ព័ន្ធ​អ៊ីសឺរណិត</translation>
 <translation id="5842497610951477805">បើក​ប៊្លូធូស</translation>
 <translation id="5844574845205796324">ណែនាំខ្លឹមសារថ្មី ដើម្បីរុករក</translation>
-<translation id="5845424750482472447">{COUNT,plural, =1{គ្រាប់ចុច​ដែល​បាន​រៀបចំ​ឡើងវិញ 1}other{គ្រាប់ចុច​ដែល​បាន​រៀបចំ​ឡើងវិញ {COUNT}}}</translation>
 <translation id="5846200638699387931">វាក្យសម្ព័ន្ធទំនាក់ទំនង​មានបញ្ហា៖ <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">គ្មាន​ស្រមោល</translation>
 <translation id="5846504156837627898">គ្រប់គ្រងការអនុញ្ញាតគេហទំព័រ</translation>
@@ -5817,7 +5817,6 @@
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - ផ្នែកនៃក្រុមដែលមិនបានដាក់ឈ្មោះ</translation>
 <translation id="6085886413119427067">កំណត់របៀបភ្ជាប់​គេហទំព័រ​តាមរយៈការតភ្ជាប់ដែលមានសុវត្ថិភាព</translation>
 <translation id="6086004606538989567">គណនីដែលអ្នកបានផ្ទៀងផ្ទាត់​មិនមានសិទ្ធិចូលប្រើ​ឧបករណ៍នេះទេ។</translation>
-<translation id="6086347269144967242">អាន​ទិន្នន័យ និង​ព័ត៌មានឧបករណ៍​ដែលបានភ្ជាប់</translation>
 <translation id="6086846494333236931">បានដំឡើងដោយអ្នកគ្រប់គ្រងរបស់អ្នក</translation>
 <translation id="6087746524533454243">កំពុង​រកមើល​ទំព័រ "អំពី" របស់កម្មវិធីរុករកតាមអ៊ីនធឺណិតឬ? ចូលមើល</translation>
 <translation id="6087960857463881712">មុខដ៏ស្រស់ស្អាត</translation>
@@ -8914,7 +8913,6 @@
 <translation id="8823704566850948458">ណែនាំ​ពាក្យសម្ងាត់...</translation>
 <translation id="8823963789776061136">ឬម្យ៉ាង​ទៀត សូម​ជ្រើសរើស PPD ម៉ាស៊ីន​បោះពុម្ព។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">បន្ថែមទំព័រ...</translation>
-<translation id="8827083388261088094">ចុច​ដើម្បី​គ្រប់គ្រង​ការ​អនុញ្ញាត​សម្រាប់ "<ph name="EXTENSION" />"</translation>
 <translation id="8827125715368568315">បាន​ទប់ស្កាត់ <ph name="PERMISSION" /> និង <ph name="COUNT" /> ទៀត</translation>
 <translation id="8827289157496676362">ខ្ទាស់កម្មវិធីបន្ថែម​</translation>
 <translation id="8827752199525959199">សកម្មភាព​ច្រើនទៀត ពាក្យសម្ងាត់​សម្រាប់ <ph name="USERNAME" /> នៅលើ <ph name="DOMAIN" /></translation>
@@ -9044,7 +9042,6 @@
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> ត្រូវបានបិទ</translation>
 <translation id="894191600409472540">បង្កើតពាក្យសម្ងាត់ខ្លាំង</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
-<translation id="8943937581166190941">កម្មវិធីបន្ថែម​​កំពុង​ប្រើ​ឧបករណ៍ HID</translation>
 <translation id="8944099748578356325">ប្រើថ្មអស់លឿន​ជាងមុន (បច្ចុប្បន្ន <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944725102565796255">ប្រសិន​បើ​អ្នក​ចង់​ប្រើប្រាស់គណនី​នេះ​តែ​មួយលើក អ្នក​អាច<ph name="GUEST_LINK_BEGIN" />ប្រើប្រាស់​ឧបករណ៍​ក្នុងនាម​ជា​ភ្ញៀវ<ph name="GUEST_LINK_END" />។ ប្រសិនបើអ្នកចង់បញ្ចូលគណនីសម្រាប់អ្នកផ្សេងទៀត សូម<ph name="LINK_BEGIN" />បញ្ចូលមនុស្សថ្មី<ph name="LINK_END" />ទៅក្នុង <ph name="DEVICE_TYPE" /> របស់អ្នក។
 

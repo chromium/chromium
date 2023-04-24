@@ -91,6 +91,7 @@
 <translation id="1676557873873341166">Spelar in video</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolver finns</translation>
+<translation id="1708602061922134366">Google-blå</translation>
 <translation id="1710499924611012470">Tillgänglighetsnavigering</translation>
 <translation id="1715359911173058521">Det gick inte att kommunicera med skannern. Kontrollera nätverket eller USB-anslutningen och försök igen.</translation>
 <translation id="1717874160321062422">Hanteras av <ph name="FIRST_MANAGER" /> och <ph name="SECOND_MANAGER" /></translation>
@@ -105,6 +106,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Autentiseringstyp</translation>
+<translation id="1776228893584526149">Bakgrundston</translation>
 <translation id="1782199038061388045">Översätt</translation>
 <translation id="1790209694022261219">Fönster och skrivbord</translation>
 <translation id="1792647875738159689">Skanningen avbryts</translation>
@@ -481,8 +483,9 @@
 <translation id="5154917547274118687">Minne</translation>
 <translation id="5160857336552977725">Logga in på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="5166918508782100047">Inställningar för snabbinfo</translation>
-<translation id="5168185087976003268">Batterinivå</translation>
+<translation id="5168185087976003268">Batterihälsa</translation>
 <translation id="5170568018924773124">Visa i mapp</translation>
+<translation id="5180712487038406644">Uttrycksfull</translation>
 <translation id="5190187232518914472">Återupplev dina favoritminnen. Öppna <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" /> om du vill lägga till eller redigera album.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Logga ut</translation>
@@ -648,6 +651,7 @@
 <translation id="6527081081771465939">Okänt säkerhetsprotokoll för wifi</translation>
 <translation id="6535178685492749208">Du är offline. Din feedback skickas senare.</translation>
 <translation id="65587193855025101">Flatbädd</translation>
+<translation id="6560196641871357166">Livfullt</translation>
 <translation id="6564646048574748301">Misslyckades – skrivaren kan inte nås</translation>
 <translation id="6566314079205407217">Skanning av flera sidor</translation>
 <translation id="6574762126505704998">Fyll</translation>
@@ -877,6 +881,7 @@
 <translation id="8575298406870537639">Det här alternativet kan krävas för att du ska kunna ansluta till operatörens nätverk. Kontakta operatören för mer information.</translation>
 <translation id="8576249514688522074">Inte initierat</translation>
 <translation id="8620617069779373398">Dirigeringsstatus</translation>
+<translation id="86356131183441916">Ljuslila</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">Dela webbadress:</translation>
 <translation id="8660881923941176839">pund</translation>
@@ -961,6 +966,7 @@
 <translation id="945522503751344254">Skicka feedback</translation>
 <translation id="952992212772159698">Inte aktiverat</translation>
 <translation id="960719561871045870">Operatörskod</translation>
+<translation id="979450713603643090">Ljusrosa</translation>
 <translation id="982713511914535780">Kör urladdningstest</translation>
 <translation id="987264212798334818">Allmänt</translation>
 </translationbundle>

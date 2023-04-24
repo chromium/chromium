@@ -91,6 +91,7 @@
 <translation id="1676557873873341166">Cymryd fideo</translation>
 <translation id="1703835215927279855">Llythyr</translation>
 <translation id="1706391837335750954">Mae Datryswr DNS yn Bresennol</translation>
+<translation id="1708602061922134366">Glas Google</translation>
 <translation id="1710499924611012470">Llywio hygyrchedd</translation>
 <translation id="1715359911173058521">Mae problem wrth gyfathrebu â'r sganiwr. Gwiriwch y cysylltiad rhwydwaith neu USB a rhowch gynnig arall arni.</translation>
 <translation id="1717874160321062422">Rheolir gan <ph name="FIRST_MANAGER" /> a <ph name="SECOND_MANAGER" /></translation>
@@ -105,6 +106,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Math o ddilysu</translation>
+<translation id="1776228893584526149">Tôn papur wal</translation>
 <translation id="1782199038061388045">cyfieithiad</translation>
 <translation id="1790209694022261219">Ffenestri a Desgiau</translation>
 <translation id="1792647875738159689">Wrthi'n canslo sganio</translation>
@@ -483,6 +485,7 @@
 <translation id="5166918508782100047">Gosodiadau atebion cyflym</translation>
 <translation id="5168185087976003268">Iechyd y batri</translation>
 <translation id="5170568018924773124">Dangos yn y ffolder</translation>
+<translation id="5180712487038406644">Mynegiannol</translation>
 <translation id="5190187232518914472">Ail-fyw eich hoff atgofion. I ychwanegu neu olygu albymau, ewch i <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Allgofnodi</translation>
@@ -648,6 +651,7 @@
 <translation id="6527081081771465939">Protocol diogelwch Wi-Fi anhysbys</translation>
 <translation id="6535178685492749208">Rydych chi all-lein. Bydd yr adborth yn cael ei anfon yn nes ymlaen.</translation>
 <translation id="65587193855025101">Wyneb fflat</translation>
+<translation id="6560196641871357166">Llachar</translation>
 <translation id="6564646048574748301">Wedi methu - Ni ellid cyrraedd yr argraffydd</translation>
 <translation id="6566314079205407217">Sganio mwy nag un tudalen</translation>
 <translation id="6574762126505704998">Llenwi</translation>
@@ -877,6 +881,7 @@
 <translation id="8575298406870537639">Mae'n bosib y bydd eich cludwr yn gofyn am gysylltu â'ch rhwydwaith. Cysylltwch â'ch cludwr am fanylion.</translation>
 <translation id="8576249514688522074">Heb ei gychwyn</translation>
 <translation id="8620617069779373398">Statws crwydro</translation>
+<translation id="86356131183441916">Porffor golau</translation>
 <translation id="8655295600908251630">Sianel</translation>
 <translation id="8655828773034788261">Rhannu URL:</translation>
 <translation id="8660881923941176839">pwysau</translation>
@@ -961,6 +966,7 @@
 <translation id="945522503751344254">Danfon adborth</translation>
 <translation id="952992212772159698">Heb ei weithredu</translation>
 <translation id="960719561871045870">Cod gweithredwr</translation>
+<translation id="979450713603643090">Pinc golau</translation>
 <translation id="982713511914535780">Rhedeg prawf Dadwefru</translation>
 <translation id="987264212798334818">Cyffredinol</translation>
 </translationbundle>

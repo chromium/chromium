@@ -55,6 +55,7 @@
 <translation id="104419033123549300">किम्यापको शैली</translation>
 <translation id="1046219820096501039"><ph name="BEGIN_PARAGRAPH1" />तपाईंले आफ्ना ChromeOS डिभाइसहरूलाई रिपोर्ट स्वतः पठाउने अनुमति दिनुभयो भने हामी ChromeOS मा सबैभन्दा पहिले समाधान गर्नु पर्ने समस्या र सुधार्नु पर्ने कुराहरूका बारेमा थाहा पाउन सक्छौँ। यी रिपोर्टअन्तर्गत ChromeOS क्र्यास भएको समय, प्रयोग गरिएका सुविधा, सामान्यतया प्रयोग गरिएको मेमोरीलगायतका कुराहरू समावेश हुन सक्छन्। एपहरू सिंक गर्ने सुविधा पनि अन गरिएको खण्डमा Android तथा वेब एपका साथै अन्य एपका डाइग्नोस्टिक्स तथा प्रयोगसम्बन्धी डेटा सङ्कलन गरिने छ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />तपाईं जुनसुकै बेला आफ्ना बच्चाको ChromeOS डिभाइसका सेटिङमा गई यी रिपोर्ट पठाउने अनुमति दिन वा नदिन सक्नुहुन्छ। तपाईं कुनै डोमेनको एड्मिन हुनुहुन्छ भने तपाईं एड्मिन कन्सोलमा गई यो सेटिङ बदल्न सक्नुहुन्छ।<ph name="END_PARAGRAPH2" /></translation>
+<translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{यो डिभाइसमा भएको <ph name="BRAND" /> मा एउटा पासवर्ड इम्पोर्ट गरिएको छ}other{यो डिभाइसमा भएको <ph name="BRAND" /> मा {NUM_PASSWORDS} वटा पासवर्ड इम्पोर्ट गरिएका छन्}}</translation>
 <translation id="104710386808485638">Linux पुनः सुरु गर्ने हो?</translation>
 <translation id="1047431265488717055">लिंक पाठ प्रतिलिपि गर्नुहोस्</translation>
 <translation id="1048286738600630630">प्रदर्शनहरू</translation>
@@ -133,6 +134,7 @@
 <translation id="1110155001042129815">प्रतिक्षा गर्नुहोस्</translation>
 <translation id="1110965959145884739">तपाईं यो डिभाइसमा जुन जुन भाषा इन्स्टल गर्न चाहनुहुन्छ ती भाषा चयन गर्नुहोस्। डिस्कमा ठाउँ बचत गर्न प्रयोगकर्ताहरूसँग भाषा विशेषका फाइलहरू सेयर गरिन्छ। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">पृष्ठभूमि ट्याबले ब्लुटुथ प्रयोग गर्दै छ</translation>
+<translation id="1112998165730922436">कास्ट गर्ने कार्य पज गरिएको छ</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">हीरा</translation>
 <translation id="1114427165525619358">यो डिभाइसमा र तपाईंको Google खातामा सुरक्षित गरिएका पासवर्डहरू</translation>
@@ -204,6 +206,7 @@
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> मा संवेदनशील वा खतरनाक डेटा छ। तपाईंका एड्मिन यसो भन्छन्: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> कुनै HID यन्त्रसँग जोडिन चाहन्छ</translation>
 <translation id="1172750555846831341">चौडाइपट्टिको भागबाट पल्टाउनुहोस्</translation>
+<translation id="1173332155861271669">पासपोइन्ट प्रदायकसम्बन्धी विवरणहरू</translation>
 <translation id="1173894706177603556">पुन: नामाकरण गर्नुहोस्</translation>
 <translation id="1174073918202301297">सर्टकट थपियो</translation>
 <translation id="1174366174291287894">Chrome ले तपाईंको कनेक्सन सुरक्षित छैन भनेको अवस्थामा बाहेक तपाईंको कनेक्सन सधैँ सुरक्षित हुन्छ</translation>
@@ -288,6 +291,7 @@
 <translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि यो साइटसँग तपाईंको नाम, इमेल ठेगाना र प्रोफाइल फोटो सेयर गर्ने छ। यो साइटको <ph name="BEGIN_LINK1" />गोपनीयता नीति<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />सेवाका सर्तहरू<ph name="END_LINK2" /> हेर्नुहोस्।</translation>
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> को परीक्षणको स्थिति चयन गर्नुहोस्</translation>
 <translation id="124116460088058876">थप भाषाहरू</translation>
+<translation id="1241381048229838873">सबै पुस्तक चिन्हहरू देखाउनुहोस्</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> तपाईँका सेटिङहरू रिसेट गर्न चाहन्छ।</translation>
 <translation id="1243314992276662751">अपलोड गर्नुहोस्</translation>
 <translation id="1243436884219965846">पासवर्डहरू समीक्षा गर्नुहोस्</translation>
@@ -937,6 +941,7 @@
 <translation id="1791662854739702043">स्थापना गरियो</translation>
 <translation id="1792619191750875668">विस्तारित प्रदर्शन</translation>
 <translation id="1794051631868188691"><ph name="MERCHANT" /> कहिल्यै नदेखाइयोस्</translation>
+<translation id="1794212650797661990"><ph name="DOMAIN" /> को पासवर्ड लुकाइयोस्</translation>
 <translation id="1794791083288629568">हामीलाई यस समस्याको समाधान गर्नमा मद्दत गर्न प्रतिक्रिया पठाउनुहोस्।</translation>
 <translation id="1795214765651529549">क्लासिक प्रयोग गर्नुहोस्</translation>
 <translation id="1796588414813960292">जुन सुविधा चल्न ध्वनि चाहिन्छ ती सुविधाले काम गर्ने छैनन्</translation>
@@ -1026,6 +1031,7 @@
 <translation id="1854180393107901205">Cast गर्न रोक्नुहोस्</translation>
 <translation id="1856715684130786728">स्थान थप्नुहोस्...</translation>
 <translation id="1858585891038687145">सफ्टवेयर निर्माताहरूको पहिचान गर्न यस प्रमाणपत्रमाथि विश्वास गर्नुहोस्</translation>
+<translation id="1859339856433307593">यो खाताको पासवर्ड <ph name="BRAND" /> (<ph name="USER_EMAIL" />) मा सेभ गरिसकिएको छ</translation>
 <translation id="1861262398884155592">यो फोल्डर खाली छ</translation>
 <translation id="1862311223300693744">तपाईंले कुनै पनि विशेष VPN, प्रोक्सी, फायरवाल वा NAS सफ्टवेयर इन्स्टल गर्नुभएको छ?</translation>
 <translation id="1863182668524159459">कुनै पनि सिरियल पोर्ट फेला परेन</translation>
@@ -1260,7 +1266,6 @@
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{एक्स्टेन्सन स्थापना गर्न क्लिक गर्नुहोस्}other{एक्स्टेन्सनहरू स्थापना गर्न क्लिक गर्नुहोस्}}</translation>
 <translation id="2073496667646280609">तपाईंको डिभाइस वा तपाईंले ब्याकअप गर्नका निम्ति चयन गरेको लोकेसनमा पर्याप्त खाली ठाउँ नहुन सक्छ। ठाउँ खाली गरी हेर्नुहोस् वा ब्याकअप गर्ने अर्को लोकेसन रोजी हेर्नुहोस्।</translation>
 <translation id="2073505299004274893"><ph name="CHARACTER_LIMIT" /> वा सोभन्दा कम वर्णहरू प्रयोग गर्नुहोस्</translation>
-<translation id="2074060876831574159">सेभ गरिएका पासवर्डहरू यहाँ देखिने छन्।  &lt;a target='_blank' href='chrome://password-manager/'&gt;पासवर्डहरू इम्पोर्ट गर्नुहोस्&lt;/a&gt;</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% ब्याट्री</translation>
 <translation id="2076269580855484719">यो प्लगइनलाई लुकाउनुहोस्</translation>
 <translation id="2076672359661571384">मध्यम (सिफारिस गरिएको)</translation>
@@ -1814,6 +1819,7 @@
 <translation id="2508428939232952663">Google Play Store खाता</translation>
 <translation id="2509495747794740764">मापनको परिमाण १० देखि २०० बीचको संख्या हुनु पर्छ।</translation>
 <translation id="2509566264613697683">८ गुणा</translation>
+<translation id="2510332280791537533">तपाईं यो Chrome प्रोफाइलका हकमा सामान्य सुरक्षा प्राप्त गरिरहनुभएको छ</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (चयन गरिएको)</translation>
 <translation id="2513396635448525189">प्रोफाइल फोटो</translation>
 <translation id="2514326558286966059">फिंगरप्रिन्ट प्रयोग गरी अझ छिटो अनलक गर्नुहोस्</translation>
@@ -2213,6 +2219,7 @@
 <translation id="2856776373509145513">नयाँ कन्टेनर बनाउनुहोस्</translation>
 <translation id="2859741939921354763">पासवर्डहरू <ph name="BRAND" /> मा इम्पोर्ट गर्नुहोस्</translation>
 <translation id="2861301611394761800">सिस्टम अपडेट पूरा भयो। कृपया सिस्टमलाई फेरि सुरु गर्नुहोस्।</translation>
+<translation id="2861402191395139055">पासपोइन्टका सदस्यताहरू</translation>
 <translation id="2861941300086904918">स्वदेशी ग्राहक सुरक्षा व्यवस्थापक</translation>
 <translation id="2862815659905780618">Linux डेभलपमेन्ट इनभारमेन्ट हटाउनुहोस्</translation>
 <translation id="2864601841139725659">आफ्नो प्रोफाइल तस्बिर सेट गर्नुहोस्</translation>
@@ -2926,6 +2933,7 @@
 <translation id="3508920295779105875">अर्को फोल्डर रोज्नुहोस्...</translation>
 <translation id="3509379002674019679">तपाईं साइट र एपहरूमा सजिलै साइन इन गर्न चाहनुहुन्छ भने पासवर्ड सिर्जना गर्नुहोस्, सेभ गर्नुहोस् र व्यवस्थापन गर्नुहोस्।</translation>
 <translation id="3511200754045804813">पुन: स्क्यान गर्नुहोस्</translation>
+<translation id="3511269949096797228">{COUNT,plural, =0{कुनै पनि की रिम्याप गरिएको छैन}=1{एउटा की रिम्याप गरिएको छ}other{{COUNT} वटा की रिम्याप गरिएका छन्}}</translation>
 <translation id="3511307672085573050">लिङ्क ठेगा&amp;नाको कपी गर्नुहोस्</translation>
 <translation id="351152300840026870">निश्चित-चौडाइ फन्ट</translation>
 <translation id="3511528412952710609">छोटो</translation>
@@ -3435,7 +3443,6 @@
 <translation id="3937640725563832867">प्रमाणपत्र जारीकर्ता वैकल्पिक नाम</translation>
 <translation id="3937734102568271121">जुनसुकै बेला <ph name="LANGUAGE" /> भाषामा अनुवाद गर्नुहोस्</translation>
 <translation id="3938128855950761626">विक्रेता <ph name="VENDOR_ID" /> का यन्त्रहरू</translation>
-<translation id="3940233957883229251">स्वतः पुनरावृत्ति सक्षम गर्नु</translation>
 <translation id="3941565636838060942">यो कार्यक्रमको पहुँचलाई लुकाउउन चाहनुहुन्छ भने, तपाईंले नियन्त्रण प्यानलमा रहेको <ph name="CONTROL_PANEL_APPLET_NAME" /> मा प्रयोग गरेर यसको स्थापना हटाउनु पर्दछ।
 
 के तपाईं <ph name="CONTROL_PANEL_APPLET_NAME" /> सुरु गर्न चाहनुहुन्छ?</translation>
@@ -3752,6 +3759,7 @@
 <translation id="4242145785130247982">एकभन्दा बढी क्लाइन्टका प्रमाणपत्रहरू समर्थित छैनन्</translation>
 <translation id="4242533952199664413">सेटिङहरू खोल्नुहोस्</translation>
 <translation id="4242577469625748426">यन्त्रमा नीति सेटिङहरू स्थापना गर्न असफल भयो। <ph name="VALIDATION_ERROR" />।</translation>
+<translation id="4242928980248289922"><ph name="MEMORY_SAVINGS" /> बचत गरिएको छ</translation>
 <translation id="4243504193894350135">प्रिन्टर केही समयका लागि रोकिएको छ</translation>
 <translation id="4244238649050961491">स्टाइलस सम्बन्धी थप एपहरू भेट्टाउनुहोस्</translation>
 <translation id="4246980464509998944">थप टिप्पणीहरू:</translation>
@@ -4166,6 +4174,7 @@
 <translation id="4598776695426288251">विभिन्‍न यन्त्रहरू मार्फत Wi-Fi उपलब्ध छ</translation>
 <translation id="4600071396330666617">सुझावहरूको सङ्ख्या</translation>
 <translation id="4601426376352205922">'नपढिएको' सामग्रीका रूपमा चिन्ह लगाउनुहोस्</translation>
+<translation id="460190672235687855">पासवर्डहरू हेर्नुहोस्</translation>
 <translation id="4602466770786743961"><ph name="HOST" /> लाई जहिले पनि तपाइँको क्यामेरा र माइक्रोफोन पहुँच गर्ने अनुमति दिनुहोस्</translation>
 <translation id="4606551464649945562">साइटहरूलाई आफू वरपरको ठाउँको 3D नक्सा बनाउन वा क्यामेराको अवस्था पत्ता लगाउन नदिनुहोस्</translation>
 <translation id="4608500690299898628">&amp;फेला पार्नुहोस्...</translation>
@@ -4639,6 +4648,7 @@
 <translation id="5040823038948176460">सामग्रीका अतिरिक्त सेटिङहरू</translation>
 <translation id="5041509233170835229">Chrome एप</translation>
 <translation id="5043440033854483429">नाममा अक्षर, सङ्ख्या र हाइफन चिन्ह (-) प्रयोग गर्न मिल्छ र १ देखि १५ वटा वर्ण प्रयोग गरिनु पर्छ।</translation>
+<translation id="5045367873597907704">HID डिभाइसहरूका बारेमा जानकारी</translation>
 <translation id="5045550434625856497">गलत पासवर्ड</translation>
 <translation id="504561833207953641">विद्यमान ब्राउजर सत्रमा खोल्दै।</translation>
 <translation id="5049614114599109018">यसअघि इनपुट गरिएका कुरा प्रयोग गरियोस्</translation>
@@ -4687,6 +4697,7 @@
 <translation id="5086874064903147617">डिफल्ट गृहपृष्ठलाई पुनर्स्थापना गर्ने हो?</translation>
 <translation id="5087249366037322692">तेस्रो-पक्षद्वारा थपिएको</translation>
 <translation id="5087580092889165836">कार्ड थप्नुहोस्</translation>
+<translation id="5088427648965532275">पासपोइन्ट प्रदायक</translation>
 <translation id="5088534251099454936">RSA को साथमा PKCS #1 SHA-512 गुप्तलेखन</translation>
 <translation id="5089763948477033443">साइड प्यानल रिसाइज ह्यान्डल</translation>
 <translation id="5090637338841444533">तपाईंको क्यामेराको स्थिति ट्र्याक गर्ने अनुमति नदिइएका साइटहरू</translation>
@@ -4911,6 +4922,7 @@
 <translation id="5294097441441645251">अनिवार्य रूपमा लोअरकेस वर्ण वा underscore बाट सुरु हुनु पर्छ</translation>
 <translation id="5294618183559481278">तपाईंको <ph name="DEVICE_TYPE" /> को अगाडि कोही छ कि छैन भन्ने कुरा पत्ता लगाउन तपाईंको डिभाइसले अन्तर्निर्मित सेन्सर प्रयोग गर्छ। सबै डेटा तुरुन्तै तपाईंको डिभाइसमै प्रोसेस गरिन्छ अनि मेटाइन्छ। सेन्सरमार्फत सङ्कलन गरिएको डेटा कहिले पनि Google मा पठाइँदैन। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="5296350763804564124">तपाईं स्क्रिनमा नहेरिकन आफ्नो डिभाइस प्रयोग गर्न सक्नुहोस् भन्नाका लागि बोलेर दिइने प्रतिक्रिया सुन्नुहोस्। डिभाइस कनेक्ट गरेर ब्रेल प्रतिक्रिया प्राप्त गर्न सकिन्छ।</translation>
+<translation id="5296536303670088158">तपाईं Chrome को सबैभन्दा भरपर्दो सुरक्षा प्रणालीका सहायताले खतरनाक वेबसाइटहरूबाट सुरक्षित हुनुहुन्छ</translation>
 <translation id="5297005732522718715">टेदरिङको कन्फिगुरेसन रिफ्रेस गर्नुहोस्</translation>
 <translation id="5297082477358294722">पासवर्ड सेभ गरियो। सुरक्षित गरिएका पासवर्डहरू हेर्न र व्यवस्थापन गर्न आफ्नो <ph name="SAVED_PASSWORDS_STORE" />.मा जानुहोस्।</translation>
 <translation id="5297946558563358707">अरू कसैले तपाईंको डिभाइसको स्क्रिनमा हेर्दा स्क्रिनको पुछारमा दायाँतिर गोपनीयता जनाउने आँखाको आइकन देखाइयोस्</translation>
@@ -5512,7 +5524,6 @@
 <translation id="5841270259333717135">इथरनेट कन्फिगर गर्नुहोस्</translation>
 <translation id="5842497610951477805">ब्लुटुथ सक्षम</translation>
 <translation id="5844574845205796324">अन्वेषण गरिनु पर्ने नयाँ सामग्री सिफारिस गरियोस्</translation>
-<translation id="5845424750482472447">{COUNT,plural, =1{रिम्याप गरिएको एउटा की}other{रिम्याप गरिएका {COUNT} वटा की}}</translation>
 <translation id="5846200638699387931">सम्बन्धको विन्याससम्बन्धी त्रुटि: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">कुनै पनि छाया छैन</translation>
 <translation id="5846504156837627898">साइटलाई दिइएका अनुमतिहरू व्यवस्थापन गर्नुहोस्</translation>
@@ -5574,6 +5585,7 @@
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
 <translation id="5895335062901455404">तपाईंले आफ्नो Google खातामार्फत साइन इन गर्नुभयो भने ChromeOS Flex चल्ने कुनै पनि डिभाइसमा तपाईंले सेभ गरेका प्राथमिकता तथा गतिविधि उपलब्ध हुने छन्। तपाईं सेटिङमा गई आफूले सिंक गर्न चाहेका कुराहरू छनौट गर्न सक्नुहुन्छ।</translation>
 <translation id="589541317545606110"><ph name="VISUAL_SEARCH_PROVIDER" /> मार्फत पेज खोज्नुहोस्</translation>
+<translation id="5895758411979561724"><ph name="APP_ORIGIN" /> ले तपाईंको स्क्रिन रेकर्ड गरिरहेको छ</translation>
 <translation id="5896436821193322561">अनुमति नदिनुहोस्</translation>
 <translation id="5899860758576822363">ChromeVox ले बोल्दा अडियो कम आवाजमा बजाउनुहोस्</translation>
 <translation id="5900243355162006650">टेदरिङको कन्फिगुरेसन:</translation>
@@ -5796,7 +5808,6 @@
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - नामविहीन समूहको अंश</translation>
 <translation id="6085886413119427067">यसले सुरक्षित इन्टरनेटमार्फत वेबसाइटहरूमा जोडिने तरिका निर्धारण गर्छ</translation>
 <translation id="6086004606538989567">तपाईंले पुष्टि गर्नुभएको खाता प्रयोग गरी यो डिभाइस चलाउन मिल्दैन।</translation>
-<translation id="6086347269144967242">डिभाइससम्बन्धी एट्याच गरिएको जानकारी र डेटा पढ्नुहोस्</translation>
 <translation id="6086846494333236931">तपाईँको प्रशासकद्वारा स्थापना गरियो</translation>
 <translation id="6087746524533454243">ब्राउजरसम्बन्धी जानकारी भएको पेज खोज्दै हुनुहुन्छ? यहाँ जानुहोस्</translation>
 <translation id="6087960857463881712">उत्कृष्ट अनुहार</translation>
@@ -6521,6 +6532,7 @@
 <translation id="6745592621698551453">अहिले अपडेट गर्नुहोस्</translation>
 <translation id="6746124502594467657">तल सार्नुहोस्</translation>
 <translation id="674632704103926902">ट्याप तान्नु सक्षम गर्नुहोस्</translation>
+<translation id="67465227497040338"><ph name="DOMAIN" /> को पासवर्ड देखाइयोस्</translation>
 <translation id="6748465660675848252">तपाईँले अघि बढ्न सक्नुहुन्छ, तर केवल तपाईँको सिंक भएको डेटा र सेटिङहरू मात्र पुनःप्राप्त हुनुे छ। सबै स्थानीय डेटा नष्ट हुने छन्।</translation>
 <translation id="6748980958975836188">मैले <ph name="BEGIN_LINK1" />Google का सेवाका सर्त<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Chrome र ChromeOS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" /> पढेको छु र म ती सर्तहरूमा सहमत छु।</translation>
 <translation id="6750757184909117990">सेलुलर नेटवर्क असक्षम पार्नुहोस्</translation>
@@ -6907,6 +6919,7 @@
 <translation id="70641621694466590">"पासवर्डहरू" पेजमा जानुहोस्</translation>
 <translation id="7064734931812204395">Linux कन्टेनर कन्फिगर गरिँदै। यो प्रक्रिया पूरा हुन ३० मिनेटसम्म लाग्न सक्छ।</translation>
 <translation id="7065223852455347715">यो डिभाइस उद्यम दर्ता रोक्ने एउटा मोडमा लक भएको छ। यदि तपाईं यस यन्त्रलाई दर्ता गर्न चाहनुहुन्छ भने तपाईंले यन्त्र पुनःप्राप्ति सूचीमार्फत जानुपर्ने हुन्छ।</translation>
+<translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{<ph name="USER_EMAIL" /> को <ph name="BRAND" /> मा एउटा पासवर्ड इम्पोर्ट गरिएको छ}other{<ph name="USER_EMAIL" /> को <ph name="BRAND" /> मा {NUM_PASSWORDS} वटा पासवर्ड इम्पोर्ट गरिएका छन्}}</translation>
 <translation id="7065534935986314333">प्रणालीबारे</translation>
 <translation id="706626672220389329">आदान प्रदान माउन्ट गर्ने क्रममा त्रुटि भयो। तोकिएको आदान प्रदान पहिले नै माउन्ट गरिसकिएको छ।</translation>
 <translation id="7067396782363924830">परिवेशी रङ्ग</translation>
@@ -7792,6 +7805,7 @@
 <translation id="7861846108263890455">Google खाताको भाषा</translation>
 <translation id="7864539943188674973">ब्लुटुथ अक्षम बनाउनुहोस्</translation>
 <translation id="7865127013871431856">अनुवादसम्बन्धी विकल्पहरू</translation>
+<translation id="7866941897628979955"><ph name="MEMORY_SAVINGS" /> बचत गरिएको छ</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - जोडा बनाइयो</translation>
 <translation id="7869655448736341731">कुनै पनि प्रयोजनका लागि</translation>
 <translation id="787069710204604994">उदाहरणका लागि, तपाईं लामो दूरीको दौडमा लगाइने जुत्ता बेच्ने कुनै साइटमा जानुभयो भने उक्त साइटले तपाईं म्याराथन दौडमा रुचि राख्नुहुन्छ भन्ने कुरा बुझ्न सक्छ। तपाईं पछि अर्कै साइटमा जानुभयो भने उक्त साइटले तपाईंलाई पहिलो साइटले सिफारिस गरेको दौडिँदा लगाइने जुत्ताको विज्ञापन देखाउन सक्छ।</translation>
@@ -8305,6 +8319,7 @@
 <translation id="8293206222192510085">बुकमार्क थप्नुहोस्</translation>
 <translation id="8294431847097064396">स्रोत</translation>
 <translation id="8295449579927246485">लाइभ अनुवाद</translation>
+<translation id="8297292446125062288">HID का सेटिङ</translation>
 <translation id="8298429963694909221">तपाईं अब आफ्नो फोनका सूचनाहरू <ph name="DEVICE_TYPE" /> मा प्राप्त गर्न सक्नुहुन्छ। तपाईंले <ph name="DEVICE_TYPE" /> मा देखाइने सूचनाहरू हटाउनुभयो भने ती सूचना तपाईंको फोनबाट पनि हट्ने छन्। तपाईंको फोन नजिकै छ र त्यसको ब्लुटुथ र Wi-Fi अन छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="8299319456683969623">तपाईं हाल अफलाइन हुनुहुन्छ।</translation>
 <translation id="8300011035382349091">यस ट्याबको पुस्तक चिन्ह सम्पादन गर्नुहोस्</translation>
@@ -8892,7 +8907,6 @@
 <translation id="8823704566850948458">पासवर्ड सिफारिस गर्नुहोस्...</translation>
 <translation id="8823963789776061136">अथवा प्रिन्टर PPD चयन गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">पृ&amp;ष्ठ थप्नुहोस्...</translation>
-<translation id="8827083388261088094">"<ph name="EXTENSION" />" लाई दिइएका अनुमतिहरू व्यवस्थापन गर्न क्लिक गर्नुहोस्</translation>
 <translation id="8827125715368568315">तपाईंले हालसालै <ph name="PERMISSION" /> सम्बन्धी अनुमति र अन्य <ph name="COUNT" /> वटा अनुमति ब्लक गर्नुभएको छ</translation>
 <translation id="8827289157496676362">एक्स्टेन्सन पिन गर्नुहोस्</translation>
 <translation id="8827752199525959199">थप कारबाहीहरू, <ph name="USERNAME" /> को <ph name="DOMAIN" /> मा रहेको पासवर्ड</translation>
@@ -9022,7 +9036,6 @@
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> अफ छ</translation>
 <translation id="894191600409472540">भरपर्दा पासवर्डहरू सिर्जना गर्नुहोस्</translation>
 <translation id="894360074127026135">नेटस्केप इन्टरनेश्नल स्टेप-अप</translation>
-<translation id="8943937581166190941">कुनै एक्स्टेन्सनले HID डिभाइस प्रयोग गरिरहेको छ</translation>
 <translation id="8944099748578356325">अझ छिटो उक्त ब्याट्री प्रयोग गर्नुहोस् (हाल <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944725102565796255">तपाईं यो खाता एक पटक मात्र प्रयोग गर्न चाहनुहुन्छ भने तपाईं <ph name="GUEST_LINK_BEGIN" />अतिथिका रूपमा यो डिभाइस प्रयोग गर्न<ph name="GUEST_LINK_END" /> सक्नुहुन्छ। तपाईं अरू कसैको खाता लिंक गर्न चाहनुहुन्छ भने उहाँलाई <ph name="LINK_BEGIN" />नयाँ व्यक्तिका रूपमा<ph name="LINK_END" /> आफ्नो <ph name="DEVICE_TYPE" /> मा सामेल गराउनुहोस्।
 

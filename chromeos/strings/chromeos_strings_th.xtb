@@ -91,6 +91,7 @@
 <translation id="1676557873873341166">กำลังถ่ายวิดีโอ</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">มีรีโซลเวอร์ DNS</translation>
+<translation id="1708602061922134366">น้ำเงิน Google</translation>
 <translation id="1710499924611012470">การนำทางสำหรับการช่วยเหลือพิเศษ</translation>
 <translation id="1715359911173058521">เกิดปัญหาในการสื่อสารกับเครื่องสแกน ตรวจสอบการเชื่อมต่อเครือข่ายหรือ USB แล้วลองอีกครั้ง</translation>
 <translation id="1717874160321062422">จัดการโดย <ph name="FIRST_MANAGER" /> และ <ph name="SECOND_MANAGER" /></translation>
@@ -105,6 +106,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">ประเภทการตรวจสอบสิทธิ์</translation>
+<translation id="1776228893584526149">โทนสีวอลเปเปอร์</translation>
 <translation id="1782199038061388045">การแปล</translation>
 <translation id="1790209694022261219">หน้าต่างและเดสก์</translation>
 <translation id="1792647875738159689">กำลังยกเลิกการสแกน</translation>
@@ -483,6 +485,7 @@
 <translation id="5166918508782100047">การตั้งค่าคำตอบด่วน</translation>
 <translation id="5168185087976003268">ประสิทธิภาพของแบตเตอรี่</translation>
 <translation id="5170568018924773124">แสดงในโฟลเดอร์</translation>
+<translation id="5180712487038406644">ชัดเจน</translation>
 <translation id="5190187232518914472">ระลึกถึงความทรงจำดีๆ ที่คุณโปรดปราน หากต้องการเพิ่มหรือแก้ไขอัลบั้ม ให้ไปที่ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /></translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">ออกจากระบบ</translation>
@@ -648,6 +651,7 @@
 <translation id="6527081081771465939">โปรโตคอลรักษาความปลอดภัย WiFi ที่ไม่รู้จัก</translation>
 <translation id="6535178685492749208">คุณออฟไลน์อยู่ ระบบจะส่งความคิดเห็นในภายหลัง</translation>
 <translation id="65587193855025101">แผ่นกระจกสำหรับสแกน</translation>
+<translation id="6560196641871357166">ฉูดฉาด</translation>
 <translation id="6564646048574748301">ไม่สำเร็จ - เข้าถึงเครื่องพิมพ์ไม่ได้</translation>
 <translation id="6566314079205407217">การสแกนหลายหน้า</translation>
 <translation id="6574762126505704998">เติม</translation>
@@ -877,6 +881,7 @@
 <translation id="8575298406870537639">ผู้ให้บริการอาจกำหนดให้ใช้ตัวเลือกนี้เพื่อให้เชื่อมต่อเครือข่ายของตนได้ โปรดติดต่อสอบถามรายละเอียดจากผู้ให้บริการ</translation>
 <translation id="8576249514688522074">ยังไม่ได้เริ่มต้น</translation>
 <translation id="8620617069779373398">สถานะการโรมมิ่ง</translation>
+<translation id="86356131183441916">ม่วงอ่อน</translation>
 <translation id="8655295600908251630">ช่องทาง</translation>
 <translation id="8655828773034788261">แชร์ URL:</translation>
 <translation id="8660881923941176839">ปอนด์</translation>
@@ -961,6 +966,7 @@
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
 <translation id="952992212772159698">ไม่ได้เปิดการใช้งาน</translation>
 <translation id="960719561871045870">รหัสผู้ให้บริการ</translation>
+<translation id="979450713603643090">ชมพูอ่อน</translation>
 <translation id="982713511914535780">ทดสอบการคายประจุของแบตเตอรี่</translation>
 <translation id="987264212798334818">ทั่วไป</translation>
 </translationbundle>

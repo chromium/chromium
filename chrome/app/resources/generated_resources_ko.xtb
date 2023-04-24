@@ -292,6 +292,7 @@
 <translation id="1240903469550363138">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일 주소, 프로필 사진을 이 사이트와 공유해야 합니다. 이 사이트의 <ph name="BEGIN_LINK1" />개인정보처리방침<ph name="END_LINK1" />과 <ph name="BEGIN_LINK2" />서비스 약관<ph name="END_LINK2" />을 확인하세요.</translation>
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" />의 실험 상태 선택</translation>
 <translation id="124116460088058876">다른 언어</translation>
+<translation id="1241381048229838873">모든 북마크 표시</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" />에서 설정을 재설정하려 합니다.</translation>
 <translation id="1243314992276662751">업로드</translation>
 <translation id="1243436884219965846">비밀번호 검토</translation>
@@ -805,6 +806,7 @@
 <translation id="1666232093776384142">주변기기 데이터 액세스 보호 중지</translation>
 <translation id="1667842670298352129">특정 텍스트를 소리 내어 읽어줍니다. 먼저 화면 하단에 있는 텍스트 읽어주기 아이콘을 선택한 다음 텍스트를 강조표시하세요. 단축키를 사용할 수도 있습니다. 텍스트를 강조표시한 다음 검색 + S를 누르세요.</translation>
 <translation id="1668435968811469751">직접 등록</translation>
+<translation id="1668804837842452164"><ph name="EMAIL" />의 <ph name="BRAND" />에 저장</translation>
 <translation id="1668979692599483141">추천에 관해 알아보기</translation>
 <translation id="1670399744444387456">기본</translation>
 <translation id="1673137583248014546"><ph name="URL" />에서 보안 키 제조업체와 모델을 확인하려고 합니다.</translation>
@@ -1275,7 +1277,6 @@
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{확장 프로그램을 설치하려면 클릭하세요.}other{확장 프로그램을 설치하려면 클릭하세요.}}</translation>
 <translation id="2073496667646280609">기기 또는 선택한 백업 위치의 여유 공간이 부족할 수 있습니다. 여유 공간을 확보하거나 다른 위치를 선택해 보세요.</translation>
 <translation id="2073505299004274893"><ph name="CHARACTER_LIMIT" />자(영문 기준) 이하여야 합니다.</translation>
-<translation id="2074060876831574159">저장한 비밀번호가 여기에 표시됩니다.  &lt;a target='_blank' href='chrome://password-manager/'&gt;비밀번호 가져오기&lt;/a&gt;</translation>
 <translation id="2075474481720804517">배터리 <ph name="BATTERY_PERCENTAGE" />% 남음</translation>
 <translation id="2076269580855484719">이 플러그인 숨기기</translation>
 <translation id="2076672359661571384">중간(권장)</translation>
@@ -1584,6 +1585,7 @@
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 프로세스를 진행하는 동안 시스템이 재부팅됩니다.</translation>
 <translation id="23030561267973084">'<ph name="EXTENSION_NAME" />'이(가) 추가 승인을 요청했습니다.</translation>
+<translation id="2306794767168143227">이 기기의 <ph name="BRAND" />에 저장</translation>
 <translation id="2307462900900812319">네트워크 설정</translation>
 <translation id="2307553512430195144">동의하는 경우 Google 어시스턴트가 대기 모드로 기다리다가 'Hey Google'을 감지하며 Voice Match를 사용해 말하는 사람이 <ph name="SUPERVISED_USER_NAME" />님임을 인식할 수 있습니다.
     <ph name="BR" />
@@ -3452,7 +3454,6 @@
 <translation id="3937640725563832867">인증서 발행기관 대체 이름</translation>
 <translation id="3937734102568271121"><ph name="LANGUAGE" /> 항상 번역</translation>
 <translation id="3938128855950761626">공급업체 <ph name="VENDOR_ID" />의 기기</translation>
-<translation id="3940233957883229251">자동 반복 사용</translation>
 <translation id="3941565636838060942">이 프로그램에 대한 액세스를 숨기려면 제어판의
   <ph name="CONTROL_PANEL_APPLET_NAME" />을(를) 사용하여 프로그램을 제거해야 합니다.
 
@@ -5529,7 +5530,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5841270259333717135">이더넷 구성</translation>
 <translation id="5842497610951477805">블루투스 사용</translation>
 <translation id="5844574845205796324">둘러볼 새 콘텐츠 추천</translation>
-<translation id="5845424750482472447">{COUNT,plural, =1{다시 매핑된 키 1개}other{다시 매핑된 키 {COUNT}개}}</translation>
 <translation id="5846200638699387931">관계 구문 오류: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">음영 없음</translation>
 <translation id="5846504156837627898">사이트 권한 관리</translation>
@@ -5814,7 +5814,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 이름이 지정되지 않은 그룹에 속함</translation>
 <translation id="6085886413119427067">보안 연결을 통해 웹사이트에 연결하는 방법을 지정합니다.</translation>
 <translation id="6086004606538989567">인증한 계정은 이 기기에 액세스할 권한이 없습니다.</translation>
-<translation id="6086347269144967242">연결된 기기 정보 및 데이터 읽기</translation>
 <translation id="6086846494333236931">관리자가 설치함</translation>
 <translation id="6087746524533454243">브라우저의 정보 페이지를 찾는다면 다음으로 이동하세요.</translation>
 <translation id="6087960857463881712">멋진 얼굴</translation>
@@ -8911,7 +8910,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8823704566850948458">비밀번호 추천...</translation>
 <translation id="8823963789776061136">또는 프린터 PPD를 선택합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">페이지 추가(&amp;G)...</translation>
-<translation id="8827083388261088094">"<ph name="EXTENSION" />"의 권한을 관리하려면 클릭하세요.</translation>
 <translation id="8827125715368568315"><ph name="PERMISSION" /> 외 <ph name="COUNT" />개 차단함</translation>
 <translation id="8827289157496676362">확장 프로그램 고정</translation>
 <translation id="8827752199525959199">추가 작업입니다. <ph name="DOMAIN" /> <ph name="USERNAME" />의 비밀번호입니다.</translation>
@@ -9041,7 +9039,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> 꺼짐</translation>
 <translation id="894191600409472540">안전한 비밀번호를 만드세요.</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
-<translation id="8943937581166190941">확장 프로그램에서 HID 기기 사용 중</translation>
 <translation id="8944099748578356325">배터리 소모가 빨라짐(현재 <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944725102565796255">이 계정을 한 번만 사용하려면 <ph name="GUEST_LINK_BEGIN" />기기를 게스트로 사용<ph name="GUEST_LINK_END" />하세요. 다른 사용자를 위해 계정을 추가하려면 <ph name="DEVICE_TYPE" />에 <ph name="LINK_BEGIN" />새 사용자를 추가<ph name="LINK_END" />하세요.
 

@@ -439,6 +439,7 @@
 <translation id="2003775180883135320">Τετραπλό τρύπημα στο επάνω μέρος</translation>
 <translation id="201174227998721785">Διαχειριστείτε άδειες και δεδομένα που έχουν αποθηκευτεί σε ιστοτόπους από τις ρυθμίσεις του Chrome</translation>
 <translation id="2019607688127825327">Κουμπί Διαχείριση ρυθμίσεων προσβασιμότητας, πατήστε το πλήκτρο Enter για να εξατομικεύσετε τα εργαλεία προσβασιμότητάς σας στις ρυθμίσεις του Chrome</translation>
+<translation id="2021333772895814435">Αυτή η πολιτική απενεργοποιεί αυτόματα τον συγχρονισμό σε όλες τις συσκευές για τα εξής: <ph name="ACTION_LIST" />.</translation>
 <translation id="202224654587969958">12 x 19 ίντσες</translation>
 <translation id="2025115093177348061">Επαυξημένη πραγματικότητα</translation>
 <translation id="2025186561304664664">Ο διακομιστής μεσολάβησης έχει ρυθμιστεί σε αυτόματη διαμόρφωση.</translation>
@@ -1226,6 +1227,7 @@
 <translation id="4031179711345676612">Επιτρέπεται το μικρόφωνο</translation>
 <translation id="4040350669425716613">Κολέγια και πανεπιστήμια</translation>
 <translation id="4047351652147966654">18 x 24 ίντσες</translation>
+<translation id="4047620889508350431">Μπορείτε πλέον να χρησιμοποιείτε διευθύνσεις από τον Λογαριασμό σας Google.</translation>
 <translation id="405399507749852140">Λάβετε ειδοποιήσεις σε περίπτωση πτώσης τιμής σε οποιονδήποτε ιστότοπο</translation>
 <translation id="4056223980640387499">Σέπια</translation>
 <translation id="4063063121357725926">Επιτρέψτε στο Google να σας βοηθήσει να βρείτε εκπτώσεις για τα καλάθια σας</translation>
@@ -1589,7 +1591,6 @@
 <translation id="4877083676943085827">{COUNT,plural, =0{Κανένας}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Αναζήτηση <ph name="TEXT" /></translation>
 <translation id="4879491255372875719">Αυτόματο (προεπιλογή)</translation>
-<translation id="4879723019639546076">Αυτή η διεύθυνση έχει αποθηκευτεί μόνο στο Chrome. Για να τη χρησιμοποιήσετε σε διάφορα προϊόντα Google, αποθηκεύστε τη στον Λογαριασμό σας Google, (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">Αναζήτηση ιστορικού</translation>
 <translation id="4881695831933465202">Άνοιγμα</translation>
 <translation id="4881808915112408168">24 x 31,5 ίντσες</translation>
@@ -2158,7 +2159,6 @@
 <translation id="6301104306974789820">Λάβετε ειδοποιήσεις παρακολούθησης τιμών</translation>
 <translation id="6305205051461490394">Δεν είναι δυνατή η πρόσβαση στο <ph name="URL" />.</translation>
 <translation id="6306713302480826305">Η συγκεκριμένη διεύθυνση θα διαγραφεί από αυτήν και τις άλλες συνδεδεμένες συσκευές σας</translation>
-<translation id="6311165245110979290">Η εικονική κάρτα είναι διαθέσιμη</translation>
 <translation id="6312113039770857350">Η ιστοσελίδα δεν είναι διαθέσιμη</translation>
 <translation id="6316226860534107313">Σκούτερ και μοτοποδήλατα</translation>
 <translation id="63172326633386613">Διαχείριση ρυθμίσεων προσβασιμότητας</translation>

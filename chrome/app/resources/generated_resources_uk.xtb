@@ -295,6 +295,7 @@
 <translation id="1240903469550363138">Щоб продовжити, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> надасть ваші ім’я, електронну адресу й зображення профілю цьому сайту. Перегляньте його <ph name="BEGIN_LINK1" />політику конфіденційності<ph name="END_LINK1" /> й <ph name="BEGIN_LINK2" />умови використання<ph name="END_LINK2" />.</translation>
 <translation id="1241066500170667906">Виберіть стан експерименту "<ph name="EXPERIMENT_NAME" />"</translation>
 <translation id="124116460088058876">Інші мови</translation>
+<translation id="1241381048229838873">Показати всі закладки</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> хоче скинути ваші налаштування.</translation>
 <translation id="1243314992276662751">Завантажити</translation>
 <translation id="1243436884219965846">Перевірити паролі</translation>
@@ -808,6 +809,7 @@
 <translation id="1666232093776384142">Вимкнути обмеження доступу до даних для периферійних пристроїв</translation>
 <translation id="1667842670298352129">Озвучуйте текст. Спершу натисніть значок функції "Читання з екрана" внизу, а потім виділіть потрібний текст. Також можна скористатися комбінацією клавіш: виділіть текст і натисніть клавішу пошуку + S.</translation>
 <translation id="1668435968811469751">Зареєструвати вручну</translation>
+<translation id="1668804837842452164">Зберегти в додатку <ph name="BRAND" /> для облікового запису <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Докладніше про підказки</translation>
 <translation id="1670399744444387456">Основні параметри</translation>
 <translation id="1673137583248014546">Сайт <ph name="URL" /> хоче бачити марку й модель вашого ключа безпеки</translation>
@@ -1277,7 +1279,6 @@
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Натисніть, щоб установити розширення}one{Натисніть, щоб установити ці розширення}few{Натисніть, щоб установити ці розширення}many{Натисніть, щоб установити ці розширення}other{Натисніть, щоб установити ці розширення}}</translation>
 <translation id="2073496667646280609">Можливо, на пристрої або в місці, вибраному для резервних копій, недостатньо вільної пам’яті. Спробуйте видалити непотрібні файли або виберіть інше місце.</translation>
 <translation id="2073505299004274893">Максимальна кількість символів – <ph name="CHARACTER_LIMIT" /></translation>
-<translation id="2074060876831574159">Тут відображатимуться збережені паролі.  &lt;a target='_blank' href='chrome://password-manager/'&gt;Імпортувати паролі&lt;/a&gt;</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% заряду акумулятора</translation>
 <translation id="2076269580855484719">Сховати цей плагін</translation>
 <translation id="2076672359661571384">Середній (рекомендовано)</translation>
@@ -1585,6 +1586,7 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Примітка<ph name="END_BOLD" />. Під час цього процесу система перезапуститься.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" запитує додаткові дозволи.</translation>
+<translation id="2306794767168143227">Зберегти в додатку <ph name="BRAND" /> на цьому пристрої</translation>
 <translation id="2307462900900812319">Установити параметри мережі</translation>
 <translation id="2307553512430195144">Якщо ви погодитеся, Google Асистент виявлятиме фразу "Ok Google" у режимі очікування. За допомогою Voice Match він розпізнаватиме, що говорить саме <ph name="SUPERVISED_USER_NAME" />.
     <ph name="BR" />
@@ -3453,7 +3455,6 @@
 <translation id="3937640725563832867">Альтернативне ім'я видавця сертифіката</translation>
 <translation id="3937734102568271121">Завжди перекладати з такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="3938128855950761626">Пристрої від постачальника <ph name="VENDOR_ID" /></translation>
-<translation id="3940233957883229251">Увімкнути автоповтор</translation>
 <translation id="3941565636838060942">Щоб сховати доступ до цієї програми, потрібно видалити її за допомогою міні-додатка
   <ph name="CONTROL_PANEL_APPLET_NAME" /> на панелі керування.
 
@@ -4071,6 +4072,7 @@
 <translation id="450552327874992444">Слово вже додано</translation>
 <translation id="4507128560633489176">Дані видалено.</translation>
 <translation id="4507373251891673233">Ви заборонили всім розширенням отримувати доступ до сайту <ph name="HOST" /></translation>
+<translation id="4508032221004253235">Додатки й веб-сайти, які мають дозвіл на доступ до геоданих, і ChromeOS зможуть використовувати геодані, визначені за допомогою Wi-Fi або мобільних мереж. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="450867954911715010">Налаштування спеціальних можливостей</translation>
 <translation id="4508765956121923607">Переглянути д&amp;жерело</translation>
 <translation id="4509421746503122514">Перезапустити, щоб оновити дані</translation>
@@ -4862,6 +4864,7 @@
 <translation id="5235750401727657667">Відкривати нову вкладку на місці поточної сторінки</translation>
 <translation id="5236374273162681467">Щоб користуватися паролями на всіх своїх пристроях, перенесіть їх в обліковий запис Google</translation>
 <translation id="523862956770478816">Дозволи на доступ до сайтів</translation>
+<translation id="5239752869099890912">Щоб застосувати оновлені налаштування на цьому сайті для вибраних розширень, оновіть сторінку</translation>
 <translation id="5242724311594467048">Увімкнути розширення "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Повторіть спробу через кілька хвилин</translation>
 <translation id="5244474230056479698">Синхронізація з обліковим записом <ph name="EMAIL" /></translation>
@@ -5528,7 +5531,6 @@
 <translation id="5841270259333717135">Налаштувати Ethernet</translation>
 <translation id="5842497610951477805">Увімкнути Bluetooth</translation>
 <translation id="5844574845205796324">Пропонувати новий контент</translation>
-<translation id="5845424750482472447">{COUNT,plural, =1{1 перепризначена клавіша}one{{COUNT} перепризначена клавіша}few{{COUNT} перепризначені клавіші}many{{COUNT} перепризначених клавіш}other{{COUNT} перепризначеної клавіші}}</translation>
 <translation id="5846200638699387931">Синтаксична помилка у відношенні: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Без тіні</translation>
 <translation id="5846504156837627898">Керувати дозволами для сайту</translation>
@@ -5812,7 +5814,6 @@
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – частина групи без назви</translation>
 <translation id="6085886413119427067">Визначає, як безпечно підключатися до веб-сайтів</translation>
 <translation id="6086004606538989567">Обліковий запис, який ви підтвердили, не має доступу до цього пристрою.</translation>
-<translation id="6086347269144967242">Читання інформації і даних із підключених пристроїв</translation>
 <translation id="6086846494333236931">Установив адміністратор</translation>
 <translation id="6087746524533454243">Шукаєте сторінку з інформацією про веб-переглядач? Перейдіть на сторінку</translation>
 <translation id="6087960857463881712">Гарне обличчя</translation>
@@ -8138,6 +8139,7 @@
 <translation id="8138997515734480534">Статус віртуальної машини <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">Файли з Google Диска</translation>
 <translation id="8140070492745508800">"<ph name="FIRST_DEVICE" />", "<ph name="SECOND_DEVICE" />"</translation>
+<translation id="8141260936970642964">Дозволити додаткам і веб-сайтам, а також часовому поясу системи використовувати геодані, визначені за допомогою функції Точність геолокації Google. Навіть якщо доступ до геоданих вимкнено, їх можна визначити за IP-адресою.</translation>
 <translation id="8141418916163800697">Ви можете ввімкнути більше параметрів у налаштуваннях функції "Керування телефоном"</translation>
 <translation id="8141584439523427891">Відкривання в альтернативному веб-переглядачі</translation>
 <translation id="8141725884565838206">Керування паролями</translation>
@@ -8210,6 +8212,7 @@
 <translation id="8195737548602430447">Автоматично перекладати субтитри цільовою мовою.</translation>
 <translation id="8197673340773315084">Додайте назву або мітку, як-от "Робочий" або "Особистий"</translation>
 <translation id="8198456017687137612">Трансляція вкладки</translation>
+<translation id="8198511718495409170">Щоб застосувати оновлені налаштування для розширення "<ph name="EXTENSION_NAME" />" на цьому сайті, оновіть сторінку</translation>
 <translation id="8199300056570174101">Параметри мережі (служби) і пристрою</translation>
 <translation id="8200772114523450471">Відновити</translation>
 <translation id="8200789660596905522">Переконайтеся, що ви прийняли запит на трансляцію на пристрої "<ph name="DEVICE_NAME" />".</translation>
@@ -8915,7 +8918,6 @@
 <translation id="8823704566850948458">Запропонувати пароль…</translation>
 <translation id="8823963789776061136">Або виберіть файл PPD для принтера. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">Додати стор&amp;інку...</translation>
-<translation id="8827083388261088094">Натисніть, щоб керувати дозволами для розширення <ph name="EXTENSION" /></translation>
 <translation id="8827125715368568315">Заблоковано: <ph name="PERMISSION" /> і ще <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Закріпити розширення</translation>
 <translation id="8827752199525959199">Додаткові дії, пароль користувача <ph name="USERNAME" /> у домені <ph name="DOMAIN" /></translation>
@@ -9045,7 +9047,6 @@
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" /> вимкнено</translation>
 <translation id="894191600409472540">Створіть надійні паролі</translation>
 <translation id="894360074127026135">Програма підвищення до міжнародного рівня Netscape</translation>
-<translation id="8943937581166190941">Розширення використовує пристрій HID</translation>
 <translation id="8944099748578356325">швидше виснажуватиме акумулятор (наразі <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944725102565796255">Якщо ви хочете ввійти в цей обліковий запис лише один раз, <ph name="GUEST_LINK_BEGIN" />використовуйте пристрій у режимі гостя<ph name="GUEST_LINK_END" />. Якщо ви хочете додати обліковий запис для іншого користувача, <ph name="LINK_BEGIN" />зробіть це<ph name="LINK_END" /> на пристрої <ph name="DEVICE_TYPE" />.
 

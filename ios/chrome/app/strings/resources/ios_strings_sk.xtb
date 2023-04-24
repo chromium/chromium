@@ -127,6 +127,7 @@
 <translation id="1757699834933698436">{count,plural, =1{{count} slabé heslo}few{{count} slabé heslá}many{{count} Weak Passwords}other{{count} slabých hesiel}}</translation>
 <translation id="1767766085187034454">Prekladač Google</translation>
 <translation id="1789803444939621101">Vitajte späť, <ph name="USER_NAME" /></translation>
+<translation id="179367147360747549">Skontrolujte, či sú vaše heslá bezpečné, či nedošlo k ich odhaleniu, a získajte radu, ako sa chrániť na internete. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="1803264062614276815">Meno majiteľa karty</translation>
 <translation id="1809939268435598390">Odstrániť priečinok</translation>
 <translation id="1813414402673211292">Vymazať dáta prehliadania</translation>
@@ -134,6 +135,7 @@
 <translation id="1820259098641718022">Pridané do čitateľského zoznamu</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Odhalené heslá}=1{{COUNT} odhalené heslo}few{{COUNT} odhalené heslá}many{{COUNT} Compromised Passwords}other{{COUNT} odhalených hesiel}}</translation>
 <translation id="1832848789136765277">Ak chcete mať neustály prístup k svojim synchronizovaným údajom, overte svoju totožnosť</translation>
+<translation id="1836891464494477513">{count,plural, =1{Záložka bola uložená do vášho účtu Google {email}}few{Záložky boli uložené do vášho účtu Google {email}}many{Záložky boli uložené do vášho účtu Google {email}}other{Záložky boli uložené do vášho účtu Google {email}}}</translation>
 <translation id="1870148520156231997">Odhaliť heslo</translation>
 <translation id="1872096359983322073">Baterka</translation>
 <translation id="1883255238294161206">Zbaliť zoznam</translation>
@@ -1042,6 +1044,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7845466610722898">Zobraziť čitateľský zoznam</translation>
 <translation id="784551991304901159">Ak si chcete zobraziť obsah, vyberte v ponuke Zapnúť</translation>
 <translation id="7846158885638438868">{count,plural, =1{Záložka bola pridaná do priečinka {title}}few{Záložky boli pridané do priečinka {title}}many{Bookmarked to "{title}"}other{Záložky boli pridané do priečinka {title}}}</translation>
+<translation id="7852017611907717397">SPÄŤ</translation>
 <translation id="7853202427316060426">Aktivita</translation>
 <translation id="7856733331829174190">Sťahovanie zlyhalo</translation>
 <translation id="785938070103630874">Otvorte heslá, spôsoby platby alebo adresu a podobne</translation>

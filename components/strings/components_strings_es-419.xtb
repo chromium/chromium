@@ -1227,6 +1227,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4031179711345676612">Micrófono permitido</translation>
 <translation id="4040350669425716613">Colegios universitarios y universidades</translation>
 <translation id="4047351652147966654">45.72 × 60.96 cm</translation>
+<translation id="4047620889508350431">Ahora puedes usar las direcciones desde tu Cuenta de Google.</translation>
 <translation id="405399507749852140">Recibe alertas si baja el precio en algún sitio</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4063063121357725926">Permite que Google te ayude a encontrar descuentos para tus carritos</translation>
@@ -1589,7 +1590,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4877083676943085827">{COUNT,plural, =0{Ninguna}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Búsqueda de <ph name="TEXT" /></translation>
 <translation id="4879491255372875719">Automático (predeterminado)</translation>
-<translation id="4879723019639546076">Esta dirección solo se guarda en Chrome. Para usarla en los productos de Google, guárdala en tu Cuenta de Google (<ph name="ACCOUNT" />).</translation>
 <translation id="4880827082731008257">Buscar historial</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4881808915112408168">61 × 80 cm (24 × 31.5 in)</translation>
@@ -2158,7 +2158,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6301104306974789820">Recibir notificaciones de seguimiento de precios</translation>
 <translation id="6305205051461490394">No se puede acceder a <ph name="URL" />.</translation>
 <translation id="6306713302480826305">Se borrará esta dirección de este y otros dispositivos en los que accediste a tu cuenta</translation>
-<translation id="6311165245110979290">Tarjeta virtual disponible</translation>
 <translation id="6312113039770857350">Página web no disponible</translation>
 <translation id="6316226860534107313">Ciclomotores y motonetas</translation>
 <translation id="63172326633386613">Administrar la configuración de accesibilidad</translation>

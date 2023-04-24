@@ -134,6 +134,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1820259098641718022">Aggiunta all'elenco di lettura</translation>
 <translation id="1829392566394960110">{COUNT,plural, =0{Password compromesse}=1{{COUNT} password compromessa}other{{COUNT} password compromesse}}</translation>
 <translation id="1832848789136765277">Per assicurarti di poter accedere ai tuoi dati di sincronizzazione in qualsiasi momento, verifica la tua identità</translation>
+<translation id="1836891464494477513">{count,plural, =1{Preferito salvato nel tuo Account Google {email}}other{Preferiti salvati nel tuo Account Google {email}}}</translation>
 <translation id="1870148520156231997">Mostra password</translation>
 <translation id="1872096359983322073">Torcia</translation>
 <translation id="1883255238294161206">Comprimi elenco</translation>
@@ -1042,6 +1043,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7845466610722898">Mostra Elenco di lettura</translation>
 <translation id="784551991304901159">Per visualizzare i contenuti, seleziona Attiva dal menu</translation>
 <translation id="7846158885638438868">{count,plural, =1{Preferito aggiunto alla cartella "{title}"}other{Preferiti aggiunti alla cartella "{title}"}}</translation>
+<translation id="7852017611907717397">ANNULLA</translation>
 <translation id="7853202427316060426">Attività</translation>
 <translation id="7856733331829174190">Download non riuscito</translation>
 <translation id="785938070103630874">Apri password, metodi di pagamento o indirizzo e altro</translation>

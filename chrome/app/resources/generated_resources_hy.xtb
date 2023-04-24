@@ -292,6 +292,7 @@
 <translation id="1240903469550363138">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունը կփոխանցի ձեր անունը, էլ․ հասցեն և պրոֆիլի նկարը այս կայքին։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK1" />գաղտնիության քաղաքականությանը<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />օգտագործման պայմաններին<ph name="END_LINK2" />։</translation>
 <translation id="1241066500170667906">Ընտրեք «<ph name="EXPERIMENT_NAME" />» փորձարկման կարգավիճակը</translation>
 <translation id="124116460088058876">Այլ լեզուներ</translation>
+<translation id="1241381048229838873">Ցուցադրել բոլոր էջանիշները</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" />-ը ցանկանում է վերակայել ձեր կարգավորումները:</translation>
 <translation id="1243314992276662751">Վերբեռնել</translation>
 <translation id="1243436884219965846">Ստուգել գաղտնաբառերը</translation>
@@ -1265,7 +1266,6 @@
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Սեղմեք՝ ընդլայնումը տեղադրելու համար}one{Սեղմեք՝ այս ընդլայնումները տեղադրելու համար}other{Սեղմեք՝ այս ընդլայնումները տեղադրելու համար}}</translation>
 <translation id="2073496667646280609">Հնարավոր է՝ ձեր կամ պահուստավորման համար ընտրված սարքում բավարար տարածք չկա։ Տարածք ազատեք կամ պահուստավորման համար ընտրեք մեկ այլ սարք։</translation>
 <translation id="2073505299004274893">Մուտքագրեք մինչև <ph name="CHARACTER_LIMIT" /> նիշ</translation>
-<translation id="2074060876831574159">Պահված գաղտնաբառերը կցուցադրվեն այստեղ։  &lt;a target='_blank' href='chrome://password-manager/'&gt;Ներմուծել գաղտնաբառերը&lt;/a&gt;</translation>
 <translation id="2075474481720804517">Մարտկոցի լիցքը՝ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2076269580855484719">Թաքցնել այս փլագինը</translation>
 <translation id="2076672359661571384">Միջին (առաջարկվող)</translation>
@@ -3439,7 +3439,6 @@
 <translation id="3937640725563832867">Վկայագիր թողարկողի այլընտրանքային անունը</translation>
 <translation id="3937734102568271121">Միշտ թարգմանել <ph name="LANGUAGE" /> էջերը</translation>
 <translation id="3938128855950761626">Սարքեր <ph name="VENDOR_ID" /> մատակարարից</translation>
-<translation id="3940233957883229251">Միացնել ինքնակրկնումը</translation>
 <translation id="3941565636838060942">Այս ծրագրի մուտքը փակելու համար պետք է ապատեղադրեք այն՝
  Հսկիչ վահանակում անցնելով <ph name="CONTROL_PANEL_APPLET_NAME" />:
 
@@ -5518,7 +5517,6 @@
 <translation id="5841270259333717135">Կարգավորել Ethernet-ը</translation>
 <translation id="5842497610951477805">Միացնել/անջատել Bluetooth-ը</translation>
 <translation id="5844574845205796324">Առաջարկել նոր բովանդակություն ուսումնասիրման համար</translation>
-<translation id="5845424750482472447">{COUNT,plural, =1{1 վերանշանակված ստեղն}one{{COUNT} վերանշանակված ստեղն}other{{COUNT} վերանշանակված ստեղն}}</translation>
 <translation id="5846200638699387931">Հարաբերությունների շարահյուսության սխալ՝ <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Առանց շողքի</translation>
 <translation id="5846504156837627898">Կառավարել կայքի թույլտվությունները</translation>
@@ -5802,7 +5800,6 @@
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – անանուն խմբից</translation>
 <translation id="6085886413119427067">Սահմանում է, թե ինչպես միանալ կայքերին ապահով կապի միջոցով</translation>
 <translation id="6086004606538989567">Այս սարքը հասանելի չէ ձեր հաստատած հաշվի համար։</translation>
-<translation id="6086347269144967242">Կարդալ կցված սարքերի տեղեկությունները և տվյալները</translation>
 <translation id="6086846494333236931">Տեղադրվել է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="6087746524533454243">Դիտարկիչի մասին է՞ջն եք փնտրում։ Անցեք</translation>
 <translation id="6087960857463881712">Հիացած դեմք</translation>
@@ -8900,7 +8897,6 @@
 <translation id="8823704566850948458">Ստեղծել գաղտնաբառ...</translation>
 <translation id="8823963789776061136">Կամ ընտրեք տպիչի PPD ֆայլ։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">Հավելել է&amp;ջ...</translation>
-<translation id="8827083388261088094">Սեղմեք՝ կառավարելու «<ph name="EXTENSION" />» ընդլայնման համար թույլտվությունները</translation>
 <translation id="8827125715368568315">Արգելափակված թույլտվություններ՝ <ph name="PERMISSION" /> ու ևս <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Ամրացնել ընդլայնումը</translation>
 <translation id="8827752199525959199">Այլ գործողություններ, գաղտնաբառ <ph name="USERNAME" />-ի համար <ph name="DOMAIN" /> տիրույթում</translation>
@@ -9030,7 +9026,6 @@
 <translation id="8941688920560496412"><ph name="DEVICE_NAME" />ն անջատված է</translation>
 <translation id="894191600409472540">Ստեղծեք հուսալի գաղտնաբառեր</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
-<translation id="8943937581166190941">HID սարքն օգտագործվում է ընդլայնման կողմից</translation>
 <translation id="8944099748578356325">Մարտկոցի լիցքավորումն ավելի արագ կսպառվի (այժմ լիցքավորված է <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="8944725102565796255">Եթե ուզում եք այս հաշիվն օգտագործել միայն մեկ անգամ, կարող եք <ph name="GUEST_LINK_BEGIN" />օգտագործել սարքը որպես հյուր<ph name="GUEST_LINK_END" />։ Եթե ուզում եք հաշիվ ավելացնել մեկ ուրիշի համար, <ph name="LINK_BEGIN" />ավելացրեք նոր օգտատեր<ph name="LINK_END" /> ձեր <ph name="DEVICE_TYPE" /> սարքում։
 

@@ -40,7 +40,6 @@
 <translation id="1779089405699405702">Декодер на слики</translation>
 <translation id="1785415724048343560">Препорачано за најдобро доживување</translation>
 <translation id="1818308510395330587">За да овозможите <ph name="APP_NAME" /> да користи AR, вклучете ја дозволата за камерата и во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
-<translation id="1864927262126810325">Од <ph name="SOURCE_NAME" /></translation>
 <translation id="187227595286001730">Слични сајтов може да ја гледаат вашата активност во групата</translation>
 <translation id="1887786770086287077">Пристапот до локацијата е исклучен за уредов. Вклучете го во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Спушти</translation>
@@ -126,14 +125,13 @@
 <translation id="3162899666601560689">Сајтовите може да користат колачиња за да го подобрат вашето доживување со прелистувањето, на пример, да ве одржат најавени или да запомнат ставки во кошничката за купување</translation>
 <translation id="3165022941318558018">Дозволете му на сајт да користи колачиња од трети страни</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> складирани податоци</translation>
-<translation id="3203366800380907218">Од интернет</translation>
 <translation id="321187648315454507">За да овозможите <ph name="APP_NAME" /> да ви испраќа известувања, вклучете ја дозволата за известувања и во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3248611290851046188">Сајтов ги дефинира интересите што другите сајтови може да ги користат за да ви прикажуваат реклами. Сајтов ги добива вашите интереси и од Chrome за да ви прикажува порелевантни реклами.</translation>
 <translation id="3277252321222022663">Дозволете сајтовите да пристапуваат до сензорите (препорачано)</translation>
 <translation id="3285500645985761267">Дозволувај поврзаните сајтови да ја гледаат мојата активност во групата</translation>
 <translation id="3295019059349372795">Поглавје 11: Чудесниот смарагден град Оз</translation>
-<translation id="3295602654194328831">Сокриј ги информациите</translation>
+<translation id="3295602654194328831">Скриј ги информациите</translation>
 <translation id="3328801116991980348">Информации за веб-локација</translation>
 <translation id="3333961966071413176">Сите контакти</translation>
 <translation id="3362437373201486687">Скенира за уреди со Bluetooth</translation>

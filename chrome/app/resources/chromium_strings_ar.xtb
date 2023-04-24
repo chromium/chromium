@@ -20,7 +20,6 @@
 <translation id="1625909126243026060">‏يمكنك مراجعة العناصر الرئيسية للتحكّم في الخصوصية والأمان في Chromium.</translation>
 <translation id="1632539827495546968">‏إذا أردت استخدام هذا الحساب لمرة واحدة فقط، يمكنك استخدام <ph name="GUEST_LINK_BEGIN" />وضع الضيف<ph name="GUEST_LINK_END" /> في متصفّح Chromium. وإذا أردت إضافة حساب لمستخدم آخر، <ph name="LINK_BEGIN" />أضِف مستخدمًا جديدًا<ph name="LINK_END" /> إلى <ph name="DEVICE_TYPE" />، مع العِلم بأنّ الأذونات التي سبق لك منحها إلى المواقع الإلكترونية والتطبيقات يمكن أن تنطبق على هذا الحساب. يمكنك إدارة حساباتك على Google من خلال <ph name="SETTINGS_LINK_BEGIN" />الإعدادات<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1640672724030957280">جارٍ التنزيل...</translation>
-<translation id="1691024636239527281">{NUM_DEVICES,plural, =0{‏‫Chromium غير متصل بأي جهاز HID.}=1{‏‫Chromium متصل بجهاز HID واحد.}two{‏‫Chromium متصل بجهازَي HID.}few{‏‫Chromium متصل بأجهزة HID.}many{‏‫Chromium متصل بأجهزة HID.}other{‏‫Chromium متصل بأجهزة HID.}}</translation>
 <translation id="1708666629004767631">‏يتوفر إصدار جديد وأكثر أمانًا Chromium.</translation>
 <translation id="17264556997921157">‏يمكنك الاطّلاع على المواضيع التي تهمّك وتستخدمها المواقع الإلكترونية لعرض الإعلانات لك، وبإمكانك كذلك إزالة ما تشاء من هذه المواضيع. ويعمل Chromium على تقديم تقديرات حول اهتماماتك بناءً على سجل التصفّح الأخير.</translation>
 <translation id="1733725117201708356">‏سيحذف Chromium بيانات التصفُّح قريبًا</translation>
