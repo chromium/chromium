@@ -157,7 +157,7 @@ source_set("gtest_main") {
   deps = [ ":gtest" ]
 }
 
-# Do NOT depend on this directly. Use //testing/gmock:gmock_main instead.
+# Do NOT depend on this directly. Use //testing/gmock instead.
 # See README.chromium for details.
 source_set("gmock") {
   testonly = true
