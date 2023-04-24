@@ -50,13 +50,8 @@ class SystemLogUploader : public UploadJob::Delegate {
   static const int64_t kLogThrottleCount;
   static const base::TimeDelta kLogThrottleWindowDuration;
 
-  // Http header constants to upload non-zipped logs.
-  static const char* const kNameFieldTemplate;
-  static const char* const kFileTypeHeaderName;
-  static const char* const kFileTypeLogFile;
-  static const char* const kContentTypePlainText;
-
   // Http header constants to upload zipped logs.
+  static const char* const kFileTypeHeaderName;
   static const char* const kFileTypeZippedLogFile;
   static const char* const kZippedLogsName;
   static const char* const kZippedLogsFileName;
@@ -148,9 +143,6 @@ class SystemLogUploader : public UploadJob::Delegate {
   // The callback is invoked by the Delegate if system logs have been loaded
   // from disk, adds policy dump and calls UploadSystemLogs.
   void OnSystemLogsLoaded(std::unique_ptr<SystemLogs> system_logs);
-
-  // Uploads system logs.
-  void UploadSystemLogs(std::unique_ptr<SystemLogs> system_logs);
 
   // Uploads zipped system logs.
   void UploadZippedSystemLogs(std::string zipped_system_logs);

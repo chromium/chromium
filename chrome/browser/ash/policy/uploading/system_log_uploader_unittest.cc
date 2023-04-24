@@ -27,8 +27,6 @@ namespace policy {
 
 namespace {
 
-// Pseudo-location of policy dump file.
-constexpr char kPolicyDumpFileLocation[] = "/var/log/policy_dump.json";
 constexpr char kPolicyDump[] = "{}";
 
 // The list of tested system log file names.
@@ -49,9 +47,7 @@ class MockUploadJob : public UploadJob {
  public:
   // If is_upload_error is false OnSuccess() will be invoked when the
   // Start() method is called, otherwise OnFailure() will be invoked.
-  MockUploadJob(UploadJob::Delegate* delegate,
-                bool is_upload_error,
-                int max_files);
+  MockUploadJob(UploadJob::Delegate* delegate, bool is_upload_error);
   ~MockUploadJob() override;
 
   // policy::UploadJob:
@@ -64,19 +60,13 @@ class MockUploadJob : public UploadJob {
  protected:
   raw_ptr<UploadJob::Delegate, ExperimentalAsh> delegate_;
   bool is_upload_error_;
-  int file_index_;
-  int max_files_;
 };
 
 MockUploadJob::MockUploadJob(UploadJob::Delegate* delegate,
-                             bool is_upload_error,
-                             int max_files)
-    : delegate_(delegate),
-      is_upload_error_(is_upload_error),
-      file_index_(0),
-      max_files_(max_files) {}
+                             bool is_upload_error)
+    : delegate_(delegate), is_upload_error_(is_upload_error) {}
 
-MockUploadJob::~MockUploadJob() {}
+MockUploadJob::~MockUploadJob() = default;
 
 void MockUploadJob::AddDataSegment(
     const std::string& name,
@@ -84,77 +74,6 @@ void MockUploadJob::AddDataSegment(
     const std::map<std::string, std::string>& header_entries,
     std::unique_ptr<std::string> data) {
   // Test all fields to upload.
-  EXPECT_LT(file_index_, max_files_);
-  EXPECT_GE(file_index_, 0);
-
-  EXPECT_EQ(base::StringPrintf(SystemLogUploader::kNameFieldTemplate,
-                               file_index_ + 1),
-            name);
-
-  if (file_index_ == max_files_ - 1) {
-    EXPECT_EQ(kPolicyDumpFileLocation, filename);
-  } else {
-    EXPECT_EQ(kTestSystemLogFileNames[file_index_], filename);
-  }
-
-  EXPECT_EQ(2U, header_entries.size());
-  EXPECT_EQ(
-      SystemLogUploader::kFileTypeLogFile,
-      header_entries.find(SystemLogUploader::kFileTypeHeaderName)->second);
-  EXPECT_EQ(SystemLogUploader::kContentTypePlainText,
-            header_entries.find(net::HttpRequestHeaders::kContentType)->second);
-
-  if (file_index_ == max_files_ - 1) {
-    EXPECT_EQ(kPolicyDump, *data);
-  } else {
-    EXPECT_EQ(kTestSystemLogFileNames[file_index_], *data);
-  }
-
-  file_index_++;
-}
-
-void MockUploadJob::Start() {
-  DCHECK(delegate_);
-  // Check if all files were uploaded.
-  EXPECT_EQ(max_files_, file_index_);
-
-  if (is_upload_error_) {
-    // Send any ErrorCode.
-    delegate_->OnFailure(UploadJob::ErrorCode::NETWORK_ERROR);
-  } else {
-    delegate_->OnSuccess();
-  }
-}
-
-class MockZippedUploadJob : public MockUploadJob {
- public:
-  // If is_upload_error is false OnSuccess() will be invoked when the
-  // Start() method is called, otherwise OnFailure() will be invoked.
-  MockZippedUploadJob(UploadJob::Delegate* delegate, bool is_upload_error);
-  ~MockZippedUploadJob() override;
-
-  // policy::UploadJob:
-  void AddDataSegment(const std::string& name,
-                      const std::string& filename,
-                      const std::map<std::string, std::string>& header_entries,
-                      std::unique_ptr<std::string> data) override;
-};
-
-MockZippedUploadJob::MockZippedUploadJob(UploadJob::Delegate* delegate,
-                                         bool is_upload_error)
-    : MockUploadJob(delegate, is_upload_error, /*max_files=*/1) {}
-
-MockZippedUploadJob::~MockZippedUploadJob() {}
-
-void MockZippedUploadJob::AddDataSegment(
-    const std::string& name,
-    const std::string& filename,
-    const std::map<std::string, std::string>& header_entries,
-    std::unique_ptr<std::string> data) {
-  // Test all fields to upload.
-  EXPECT_LT(file_index_, max_files_);
-  EXPECT_GE(file_index_, 0);
-
   EXPECT_EQ(SystemLogUploader::kZippedLogsName, name);
 
   EXPECT_EQ(SystemLogUploader::kZippedLogsFileName, filename);
@@ -167,8 +86,17 @@ void MockZippedUploadJob::AddDataSegment(
             header_entries.find(net::HttpRequestHeaders::kContentType)->second);
 
   EXPECT_EQ(kZippedData, *data);
+}
 
-  file_index_++;
+void MockUploadJob::Start() {
+  DCHECK(delegate_);
+
+  if (is_upload_error_) {
+    // Send any ErrorCode.
+    delegate_->OnFailure(UploadJob::ErrorCode::NETWORK_ERROR);
+  } else {
+    delegate_->OnSuccess();
+  }
 }
 
 // MockSystemLogDelegate - mock class that creates an upload job and runs upload
@@ -176,12 +104,9 @@ void MockZippedUploadJob::AddDataSegment(
 class MockSystemLogDelegate : public SystemLogUploader::Delegate {
  public:
   MockSystemLogDelegate(bool is_upload_error,
-                        const SystemLogUploader::SystemLogs& system_logs,
-                        bool is_zipped_upload)
-      : is_upload_error_(is_upload_error),
-        system_logs_(system_logs),
-        is_zipped_upload_(is_zipped_upload) {}
-  ~MockSystemLogDelegate() override {}
+                        const SystemLogUploader::SystemLogs& system_logs)
+      : is_upload_error_(is_upload_error), system_logs_(system_logs) {}
+  ~MockSystemLogDelegate() override = default;
 
   std::string GetPolicyAsJSON() override { return kPolicyDump; }
 
@@ -194,15 +119,11 @@ class MockSystemLogDelegate : public SystemLogUploader::Delegate {
   std::unique_ptr<UploadJob> CreateUploadJob(
       const GURL& url,
       UploadJob::Delegate* delegate) override {
-    if (is_zipped_upload_)
-      return std::make_unique<MockZippedUploadJob>(delegate, is_upload_error_);
-    return std::make_unique<MockUploadJob>(delegate, is_upload_error_,
-                                           system_logs_.size() + 1);
+    return std::make_unique<MockUploadJob>(delegate, is_upload_error_);
   }
 
   void ZipSystemLogs(std::unique_ptr<SystemLogUploader::SystemLogs> system_logs,
                      ZippedLogUploadCallback upload_callback) override {
-    EXPECT_TRUE(is_zipped_upload_);
     for (const auto& log : system_logs_)
       EXPECT_TRUE(base::Contains(*system_logs, log));
     std::move(upload_callback).Run(std::string(kZippedData));
@@ -216,7 +137,6 @@ class MockSystemLogDelegate : public SystemLogUploader::Delegate {
   bool is_upload_allowed_;
   bool is_upload_error_;
   SystemLogUploader::SystemLogs system_logs_;
-  bool is_zipped_upload_;
 };
 
 }  //  namespace
@@ -224,12 +144,8 @@ class MockSystemLogDelegate : public SystemLogUploader::Delegate {
 class SystemLogUploaderTest : public testing::TestWithParam<bool> {
  public:
   TestingPrefServiceSimple local_state_;
-  SystemLogUploaderTest()
-      : task_runner_(new base::TestSimpleTaskRunner()),
-        is_zipped_upload_(GetParam()) {
-    feature_list.InitWithFeatureState(features::kUploadZippedSystemLogs,
-                                      is_zipped_upload_);
-  }
+  SystemLogUploaderTest() : task_runner_(new base::TestSimpleTaskRunner()) {}
+
   void SetUp() override {
     RegisterLocalState(local_state_.registry());
     TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
@@ -269,24 +185,19 @@ class SystemLogUploaderTest : public testing::TestWithParam<bool> {
   void ExpectSuccessHistogram(int amount) {
     histogram_tester_.ExpectUniqueSample(
         SystemLogUploader::kSystemLogUploadResultHistogram,
-        is_zipped_upload_ ? SystemLogUploader::ZIPPED_LOGS_UPLOAD_SUCCESS
-                          : SystemLogUploader::NON_ZIPPED_LOGS_UPLOAD_SUCCESS,
-        amount);
+        SystemLogUploader::ZIPPED_LOGS_UPLOAD_SUCCESS, amount);
   }
 
   void ExpectFailureHistogram(int amount) {
     histogram_tester_.ExpectUniqueSample(
         SystemLogUploader::kSystemLogUploadResultHistogram,
-        is_zipped_upload_ ? SystemLogUploader::ZIPPED_LOGS_UPLOAD_FAILURE
-                          : SystemLogUploader::NON_ZIPPED_LOGS_UPLOAD_FAILURE,
-        amount);
+        SystemLogUploader::ZIPPED_LOGS_UPLOAD_FAILURE, amount);
   }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   ash::ScopedCrosSettingsTestHelper settings_helper_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  bool is_zipped_upload_;
   base::test::ScopedFeatureList feature_list;
   base::HistogramTester histogram_tester_;
 };
@@ -299,7 +210,7 @@ TEST_P(SystemLogUploaderTest, LogThrottleTest) {
        upload_num < SystemLogUploader::kLogThrottleCount + 3; upload_num++) {
     EXPECT_FALSE(task_runner_->HasPendingTask());
     auto syslog_delegate = std::make_unique<MockSystemLogDelegate>(
-        false, SystemLogUploader::SystemLogs(), is_zipped_upload_);
+        false, SystemLogUploader::SystemLogs());
 
     syslog_delegate->set_upload_allowed(true);
     settings_helper_.SetBoolean(ash::kSystemLogUploadEnabled, true);
@@ -323,7 +234,7 @@ TEST_P(SystemLogUploaderTest, LogThrottleTest) {
 TEST_P(SystemLogUploaderTest, ImmediateLogUpload) {
   EXPECT_FALSE(task_runner_->HasPendingTask());
   auto syslog_delegate = std::make_unique<MockSystemLogDelegate>(
-      false, SystemLogUploader::SystemLogs(), is_zipped_upload_);
+      false, SystemLogUploader::SystemLogs());
 
   syslog_delegate->set_upload_allowed(true);
   settings_helper_.SetBoolean(ash::kSystemLogUploadEnabled, true);
@@ -344,8 +255,7 @@ TEST_P(SystemLogUploaderTest, Basic) {
 
   std::unique_ptr<MockSystemLogDelegate> syslog_delegate(
       new MockSystemLogDelegate(/*is_upload_error=*/false,
-                                SystemLogUploader::SystemLogs(),
-                                is_zipped_upload_));
+                                SystemLogUploader::SystemLogs()));
   syslog_delegate->set_upload_allowed(false);
   SystemLogUploader uploader(std::move(syslog_delegate), task_runner_);
 
@@ -360,8 +270,7 @@ TEST_P(SystemLogUploaderTest, SuccessTest) {
 
   std::unique_ptr<MockSystemLogDelegate> syslog_delegate(
       new MockSystemLogDelegate(/*is_upload_error=*/false,
-                                SystemLogUploader::SystemLogs(),
-                                is_zipped_upload_));
+                                SystemLogUploader::SystemLogs()));
   syslog_delegate->set_upload_allowed(true);
   settings_helper_.SetBoolean(ash::kSystemLogUploadEnabled, true);
   SystemLogUploader uploader(std::move(syslog_delegate), task_runner_);
@@ -379,8 +288,7 @@ TEST_P(SystemLogUploaderTest, ThreeFailureTest) {
 
   std::unique_ptr<MockSystemLogDelegate> syslog_delegate(
       new MockSystemLogDelegate(/*is_upload_error=*/true,
-                                SystemLogUploader::SystemLogs(),
-                                is_zipped_upload_));
+                                SystemLogUploader::SystemLogs()));
   syslog_delegate->set_upload_allowed(true);
   settings_helper_.SetBoolean(ash::kSystemLogUploadEnabled, true);
   SystemLogUploader uploader(std::move(syslog_delegate), task_runner_);
@@ -405,8 +313,7 @@ TEST_P(SystemLogUploaderTest, CheckHeaders) {
 
   SystemLogUploader::SystemLogs system_logs = GenerateTestSystemLogFiles();
   std::unique_ptr<MockSystemLogDelegate> syslog_delegate(
-      new MockSystemLogDelegate(/*is_upload_error=*/false, system_logs,
-                                is_zipped_upload_));
+      new MockSystemLogDelegate(/*is_upload_error=*/false, system_logs));
   syslog_delegate->set_upload_allowed(true);
   settings_helper_.SetBoolean(ash::kSystemLogUploadEnabled, true);
   SystemLogUploader uploader(std::move(syslog_delegate), task_runner_);
@@ -424,8 +331,7 @@ TEST_P(SystemLogUploaderTest, DisableLogUpload) {
 
   std::unique_ptr<MockSystemLogDelegate> syslog_delegate(
       new MockSystemLogDelegate(/*is_upload_error=*/true,
-                                SystemLogUploader::SystemLogs(),
-                                is_zipped_upload_));
+                                SystemLogUploader::SystemLogs()));
   MockSystemLogDelegate* mock_delegate = syslog_delegate.get();
   settings_helper_.SetBoolean(ash::kSystemLogUploadEnabled, true);
   mock_delegate->set_upload_allowed(true);

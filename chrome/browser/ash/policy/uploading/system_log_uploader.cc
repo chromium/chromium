@@ -296,15 +296,6 @@ const base::TimeDelta SystemLogUploader::kLogThrottleWindowDuration =
 // String constant identifying the header field which stores the file type.
 const char* const SystemLogUploader::kFileTypeHeaderName = "File-Type";
 
-// String constant signalling that the data segment contains log files.
-const char* const SystemLogUploader::kFileTypeLogFile = "log_file";
-
-// String constant signalling that the segment contains a plain text.
-const char* const SystemLogUploader::kContentTypePlainText = "text/plain";
-
-// Template string constant for populating the name field.
-const char* const SystemLogUploader::kNameFieldTemplate = "file%d";
-
 // String constant signalling that the data segment contains zipped log files.
 const char* const SystemLogUploader::kFileTypeZippedLogFile = "zipped_log_file";
 
@@ -358,11 +349,9 @@ void SystemLogUploader::OnSuccess() {
   log_upload_in_progress_ = false;
   retry_count_ = 0;
 
-  UMA_HISTOGRAM_ENUMERATION(
-      kSystemLogUploadResultHistogram,
-      base::FeatureList::IsEnabled(features::kUploadZippedSystemLogs)
-          ? ZIPPED_LOGS_UPLOAD_SUCCESS
-          : NON_ZIPPED_LOGS_UPLOAD_SUCCESS);
+  // TODO(b/279419095): Remove the histogram.
+  UMA_HISTOGRAM_ENUMERATION(kSystemLogUploadResultHistogram,
+                            ZIPPED_LOGS_UPLOAD_SUCCESS);
 
   // On successful log upload schedule the next log upload after
   // upload_frequency_ time from now.
@@ -374,11 +363,9 @@ void SystemLogUploader::OnFailure(UploadJob::ErrorCode error_code) {
   last_upload_attempt_ = base::Time::NowFromSystemTime();
   log_upload_in_progress_ = false;
 
-  UMA_HISTOGRAM_ENUMERATION(
-      kSystemLogUploadResultHistogram,
-      base::FeatureList::IsEnabled(features::kUploadZippedSystemLogs)
-          ? ZIPPED_LOGS_UPLOAD_FAILURE
-          : NON_ZIPPED_LOGS_UPLOAD_FAILURE);
+  // TODO(b/279419095): Remove the histogram.
+  UMA_HISTOGRAM_ENUMERATION(kSystemLogUploadResultHistogram,
+                            ZIPPED_LOGS_UPLOAD_FAILURE);
   //  If we have hit the maximum number of retries, terminate this upload
   //  attempt and schedule the next one using the normal delay. Otherwise, retry
   //  uploading after kErrorUploadDelayMs milliseconds.
@@ -421,35 +408,6 @@ void SystemLogUploader::RefreshUploadSettings() {
   if (!settings->GetBoolean(ash::kSystemLogUploadEnabled, &upload_enabled_)) {
     upload_enabled_ = false;
   }
-}
-
-void SystemLogUploader::UploadSystemLogs(
-    std::unique_ptr<SystemLogs> system_logs) {
-  // Must be called on the main thread.
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(!upload_job_);
-
-  SYSLOG(INFO) << "Uploading system logs.";
-
-  GURL upload_url(GetUploadUrl());
-  DCHECK(upload_url.is_valid());
-  upload_job_ = syslog_delegate_->CreateUploadJob(upload_url, this);
-
-  // Start a system log upload.
-  int file_number = 1;
-  for (const auto& syslog_entry : *system_logs) {
-    std::map<std::string, std::string> header_fields;
-    std::unique_ptr<std::string> data =
-        std::make_unique<std::string>(syslog_entry.second);
-    header_fields.insert(std::make_pair(kFileTypeHeaderName, kFileTypeLogFile));
-    header_fields.insert(std::make_pair(net::HttpRequestHeaders::kContentType,
-                                        kContentTypePlainText));
-    upload_job_->AddDataSegment(
-        base::StringPrintf(kNameFieldTemplate, file_number), syslog_entry.first,
-        header_fields, std::move(data));
-    ++file_number;
-  }
-  upload_job_->Start();
 }
 
 void SystemLogUploader::UploadZippedSystemLogs(std::string zipped_system_logs) {
@@ -506,16 +464,11 @@ void SystemLogUploader::OnSystemLogsLoaded(
   system_logs->push_back(std::make_pair(kPolicyDumpFileLocation,
                                         syslog_delegate_->GetPolicyAsJSON()));
 
-  if (base::FeatureList::IsEnabled(features::kUploadZippedSystemLogs)) {
-    SYSLOG(INFO) << "Starting zipped system log upload.";
-    syslog_delegate_->ZipSystemLogs(
-        std::move(system_logs),
-        base::BindOnce(&SystemLogUploader::UploadZippedSystemLogs,
-                       weak_factory_.GetWeakPtr()));
-  } else {
-    SYSLOG(INFO) << "Starting system log upload.";
-    UploadSystemLogs(std::move(system_logs));
-  }
+  SYSLOG(INFO) << "Starting zipped system log upload.";
+  syslog_delegate_->ZipSystemLogs(
+      std::move(system_logs),
+      base::BindOnce(&SystemLogUploader::UploadZippedSystemLogs,
+                     weak_factory_.GetWeakPtr()));
 }
 
 // Update the list of logs within kLogThrottleWindowDuration window and add the

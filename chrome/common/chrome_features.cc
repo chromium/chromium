@@ -1372,13 +1372,6 @@ const base::FeatureParam<base::TimeDelta>
         base::Seconds(5)};
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enable uploading of a zip archive of system logs instead of individual files.
-BASE_FEATURE(kUploadZippedSystemLogs,
-             "UploadZippedSystemLogs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kUseChromiumUpdater,
              "UseChromiumUpdater",
