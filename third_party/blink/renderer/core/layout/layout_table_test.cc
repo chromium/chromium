@@ -252,12 +252,9 @@ TEST_F(LayoutTableTest, PaddingWithCollapsedBorder) {
   EXPECT_EQ(0, table->PaddingRight());
   EXPECT_EQ(0, table->PaddingTop());
   EXPECT_EQ(0, table->PaddingBottom());
-  EXPECT_EQ(0, table->PaddingStart());
   EXPECT_EQ(0, table->PaddingEnd());
   EXPECT_EQ(0, table->PaddingBefore());
   EXPECT_EQ(0, table->PaddingAfter());
-  EXPECT_EQ(0, table->PaddingOver());
-  EXPECT_EQ(0, table->PaddingUnder());
 }
 
 TEST_F(LayoutTableTest, OutOfOrderHeadAndBody) {
