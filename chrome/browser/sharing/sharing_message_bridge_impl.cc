@@ -4,8 +4,8 @@
 
 #include "chrome/browser/sharing/sharing_message_bridge_impl.h"
 
-#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/uuid.h"
 #include "chrome/browser/sharing/features.h"
 #include "components/sync/model/dummy_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
@@ -85,7 +85,8 @@ void SharingMessageBridgeImpl::SendSharingMessage(
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       CreateMetadataChangeList();
   // Fill in the internal message id with unique generated identifier.
-  const std::string message_id = base::GenerateGUID();
+  const std::string message_id =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
   specifics->set_message_id(message_id);
   std::unique_ptr<syncer::EntityData> entity_data =
       MoveToEntityData(std::move(specifics));
