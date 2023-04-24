@@ -1419,8 +1419,8 @@ virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream
 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-finished-add.https.html
 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-supported-by-feature-policy.html
 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html
-virtual/fenced-frame-mparch/wpt_internal/fenced_frame/script-focus.https.html
-virtual/fenced-frame-mparch/wpt_internal/fenced_frame/unique-cookie-partition.https.html
+virtual/fenced-frame-mparch/external/wpt/fenced-frame/script-focus.https.html
+virtual/fenced-frame-mparch/external/wpt/fenced-frame/unique-cookie-partition.https.html
 virtual/fledge/http/tests/inspector-protocol/storage/interest-groups.js
 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-interested-element-indicated.html
 virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/backplate/forced-colors-mode-backplate-01.html
