@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/types/expected.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
@@ -99,21 +100,21 @@ base::expected<void, GLError> ConvertYUVACommon(
                SkYUVAInfo::kMaxPlanes>& yuva_images) {
   if (yuv_color_space_in < 0 ||
       yuv_color_space_in > kLastEnum_SkYUVColorSpace) {
-    return base::unexpected<GLError>(
+    return base::unexpected(
         GLError(GL_INVALID_ENUM, function_name,
                 "yuv_color_space must be a valid SkYUVColorSpace"));
   }
   sk_yuv_color_space = static_cast<SkYUVColorSpace>(yuv_color_space_in);
   if (plane_config_in < 0 ||
       plane_config_in > static_cast<GLenum>(SkYUVAInfo::PlaneConfig::kLast)) {
-    return base::unexpected<GLError>(
+    return base::unexpected(
         GLError(GL_INVALID_ENUM, function_name,
                 "plane_config must be a valid SkYUVAInfo::PlaneConfig"));
   }
   sk_plane_config = static_cast<SkYUVAInfo::PlaneConfig>(plane_config_in);
   if (subsampling_in < 0 ||
       subsampling_in > static_cast<GLenum>(SkYUVAInfo::Subsampling::kLast)) {
-    return base::unexpected<GLError>(
+    return base::unexpected(
         GLError(GL_INVALID_ENUM, function_name,
                 "subsampling must be a valid SkYUVAInfo::Subsampling"));
   }
@@ -144,14 +145,14 @@ base::expected<void, GLError> ConvertYUVACommon(
           "Attempting to operate on unknown mailbox for plane index " +
           base::NumberToString(i) + " using plane config " +
           base::NumberToString(plane_config_in) + ".";
-      return base::unexpected<GLError>(
+      return base::unexpected(
           GLError(GL_INVALID_OPERATION, function_name, msg));
     }
   }
   rgba_image =
       representation_factory->ProduceSkia(rgba_mailbox, shared_context_state);
   if (!rgba_image) {
-    return base::unexpected<GLError>(
+    return base::unexpected(
         GLError(GL_INVALID_OPERATION, "ConvertYUVAMailboxesToRGB",
                 "Attempting to operate on unknown dest mailbox."));
   }
@@ -330,16 +331,16 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertRGBAToYUVAMailboxes(
       rgba_image->BeginScopedReadAccess(&begin_semaphores, &end_semaphores);
   if (!rgba_scoped_access) {
     DCHECK(begin_semaphores.empty());
-    return base::unexpected<GLError>(
-        GLError(GL_INVALID_OPERATION, "glConvertYUVAMailboxesToRGB",
-                "RGBA shared image is not readable"));
+    return base::unexpected(GLError(GL_INVALID_OPERATION,
+                                    "glConvertYUVAMailboxesToRGB",
+                                    "RGBA shared image is not readable"));
   }
   auto rgba_sk_image =
       rgba_scoped_access->CreateSkImage(shared_context_state_->gr_context());
   if (!rgba_sk_image) {
-    return base::unexpected<GLError>(
-        GLError(GL_INVALID_OPERATION, "glReadbackImagePixels",
-                "Couldn't create SkImage for reading."));
+    return base::unexpected(GLError(GL_INVALID_OPERATION,
+                                    "glReadbackImagePixels",
+                                    "Couldn't create SkImage for reading."));
   }
 
   std::array<std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>,
@@ -354,7 +355,7 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertRGBAToYUVAMailboxes(
           "Couldn't write shared image for mailbox of plane index " +
           base::NumberToString(i) + " using plane config " +
           base::NumberToString(plane_config) + ".";
-      return base::unexpected<GLError>(
+      return base::unexpected(
           GLError(GL_INVALID_OPERATION, "glConvertRGBAToYUVAMailboxes", msg));
     }
   }
@@ -417,7 +418,7 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
       SharedImageRepresentation::AllowUnclearedAccess::kYes);
   if (!dest_scoped_access) {
     DCHECK(begin_semaphores.empty());
-    return base::unexpected<GLError>(
+    return base::unexpected(
         GLError(GL_INVALID_VALUE, "glConvertYUVAMailboxesToRGB",
                 "Destination shared image is not writable"));
   }
@@ -436,7 +437,7 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
           "Couldn't access shared image for mailbox of plane index " +
           base::NumberToString(i) + " using plane config " +
           base::NumberToString(plane_config) + ".";
-      result = base::unexpected<GLError>(
+      result = base::unexpected(
           GLError(GL_INVALID_OPERATION, "glConvertYUVAMailboxesToRGB", msg));
       break;
     }
@@ -475,7 +476,7 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
         shared_context_state_->gr_context(), yuva_backend_textures,
         src_rgb_color_space);
     if (!result_image) {
-      result = base::unexpected<GLError>(
+      result = base::unexpected(
           GLError(GL_INVALID_OPERATION, "glConvertYUVAMailboxesToRGB",
                   "Couldn't create destination images from provided sources"));
     } else {
@@ -522,7 +523,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
       << "CopySubTexture was passed an invalid mailbox";
 
   if (source_mailbox == dest_mailbox) {
-    return base::unexpected<GLError>(
+    return base::unexpected(
         GLError(GL_INVALID_OPERATION, "glCopySubTexture",
                 "source and destination mailboxes are the same"));
   }
@@ -531,16 +532,15 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
       dest_mailbox,
       scoped_refptr<gpu::SharedContextState>(shared_context_state_));
   if (!dest_shared_image) {
-    return base::unexpected<GLError>(
+    return base::unexpected(
         GLError(GL_INVALID_VALUE, "glCopySubTexture", "unknown mailbox"));
   }
 
   gfx::Size dest_size = dest_shared_image->size();
   gfx::Rect dest_rect(xoffset, yoffset, width, height);
   if (!gfx::Rect(dest_size).Contains(dest_rect)) {
-    return base::unexpected<GLError>(
-        GLError(GL_INVALID_VALUE, "glCopySubTexture",
-                "destination texture bad dimensions."));
+    return base::unexpected(GLError(GL_INVALID_VALUE, "glCopySubTexture",
+                                    "destination texture bad dimensions."));
   }
 
   std::vector<GrBackendSemaphore> begin_semaphores;
@@ -552,24 +552,21 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
           &begin_semaphores, &end_semaphores,
           SharedImageRepresentation::AllowUnclearedAccess::kYes);
   if (!dest_scoped_access) {
-    return base::unexpected<GLError>(
-        GLError(GL_INVALID_VALUE, "glCopySubTexture",
-                "Dest shared image is not writable"));
+    return base::unexpected(GLError(GL_INVALID_VALUE, "glCopySubTexture",
+                                    "Dest shared image is not writable"));
   }
 
   gfx::Rect new_cleared_rect;
   gfx::Rect old_cleared_rect = dest_shared_image->ClearedRect();
-  if (gles2::TextureManager::CombineAdjacentRects(old_cleared_rect, dest_rect,
-                                                  &new_cleared_rect)) {
-    DCHECK(old_cleared_rect.IsEmpty() ||
-           new_cleared_rect.Contains(old_cleared_rect));
-  } else {
+  if (!gles2::TextureManager::CombineAdjacentRects(old_cleared_rect, dest_rect,
+                                                   &new_cleared_rect)) {
     // No users of RasterDecoder leverage this functionality. Clearing uncleared
     // regions could be added here if needed.
-    return base::unexpected<GLError>(
-        GLError(GL_INVALID_VALUE, "glCopySubTexture",
-                "Cannot clear non-combineable rects."));
+    return base::unexpected(GLError(GL_INVALID_VALUE, "glCopySubTexture",
+                                    "Cannot clear non-combineable rects."));
   }
+  DCHECK(old_cleared_rect.IsEmpty() ||
+         new_cleared_rect.Contains(old_cleared_rect));
 
   // Attempt to upload directly from CPU shared memory to destination texture.
   if (TryCopySubTextureINTERNALMemory(
@@ -606,16 +603,15 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
 
     // Note, that we still generate error for the client to indicate there was
     // problem.
-    return base::unexpected<GLError>(GLError(
-        GL_INVALID_VALUE, "glCopySubTexture", "unknown source image mailbox."));
+    return base::unexpected(GLError(GL_INVALID_VALUE, "glCopySubTexture",
+                                    "unknown source image mailbox."));
   }
 
   gfx::Size source_size = source_shared_image->size();
   gfx::Rect source_rect(x, y, width, height);
   if (!gfx::Rect(source_size).Contains(source_rect)) {
-    return base::unexpected<GLError>(GLError(GL_INVALID_VALUE,
-                                             "glCopySubTexture",
-                                             "source texture bad dimensions."));
+    return base::unexpected(GLError(GL_INVALID_VALUE, "glCopySubTexture",
+                                    "source texture bad dimensions."));
   }
 
   std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
@@ -632,16 +628,15 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
     FlushSurface(dest_scoped_access.get());
     SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
                       is_drdc_enabled_);
-    return base::unexpected<GLError>(
-        GLError(GL_INVALID_VALUE, "glCopySubTexture",
-                "Source shared image is not accessable"));
+    return base::unexpected(GLError(GL_INVALID_VALUE, "glCopySubTexture",
+                                    "Source shared image is not accessable"));
   }
 
   base::expected<void, GLError> result = base::ok();
   auto source_image =
       source_scoped_access->CreateSkImage(shared_context_state_->gr_context());
   if (!source_image) {
-    result = base::unexpected<GLError>(
+    result = base::unexpected(
         GLError(GL_INVALID_VALUE, "glCopySubTexture",
                 "Couldn't create SkImage from source shared image."));
   } else {
@@ -844,9 +839,8 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
           &begin_semaphores, &end_semaphores);
 
   if (!source_scoped_access) {
-    return base::unexpected<GLError>(
-        GLError(GL_INVALID_VALUE, "glReadbackImagePixels",
-                "Source shared image is not accessible"));
+    return base::unexpected(GLError(GL_INVALID_VALUE, "glReadbackImagePixels",
+                                    "Source shared image is not accessible"));
   }
 
   if (!begin_semaphores.empty()) {
@@ -869,18 +863,15 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
   }
 
   base::expected<void, GLError> result = base::ok();
-  if (sk_image) {
-    bool success =
-        sk_image->readPixels(dst_info, pixel_address, row_bytes, src_x, src_y);
-    if (!success) {
-      result = base::unexpected<GLError>(
-          GLError(GL_INVALID_OPERATION, "glReadbackImagePixels",
-                  "Failed to read pixels from SkImage"));
-    }
-  } else {
-    result = base::unexpected<GLError>(
-        GLError(GL_INVALID_OPERATION, "glReadbackImagePixels",
-                "Couldn't create SkImage for reading."));
+  if (!sk_image) {
+    result =
+        base::unexpected(GLError(GL_INVALID_OPERATION, "glReadbackImagePixels",
+                                 "Couldn't create SkImage for reading."));
+  } else if (!sk_image->readPixels(dst_info, pixel_address, row_bytes, src_x,
+                                   src_y)) {
+    result =
+        base::unexpected(GLError(GL_INVALID_OPERATION, "glReadbackImagePixels",
+                                 "Failed to read pixels from SkImage"));
   }
 
   source_scoped_access->ApplyBackendSurfaceEndState();
