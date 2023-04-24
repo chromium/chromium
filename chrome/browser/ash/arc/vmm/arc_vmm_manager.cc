@@ -7,6 +7,7 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
 #include "base/feature_list.h"
@@ -117,7 +118,7 @@ void ArcVmmManager::SendSwapRequest(
   }
 
   vm_tools::concierge::SwapVmRequest request;
-  request.set_name("arcvm");
+  request.set_name(kArcVmName);
   request.set_owner_id(user_id_hash_);
   request.set_operation(operation);
   client->SwapVm(
