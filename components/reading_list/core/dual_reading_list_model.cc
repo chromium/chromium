@@ -222,9 +222,11 @@ bool DualReadingListModel::NeedsExplicitUploadToSyncServer(
   DCHECK(!local_or_syncable_model_->IsTrackingSyncMetadata() ||
          !account_model_->IsTrackingSyncMetadata());
 
-  return account_model_->IsTrackingSyncMetadata() &&
+  return !local_or_syncable_model_->IsTrackingSyncMetadata() &&
          local_or_syncable_model_->GetEntryByURL(url) != nullptr &&
-         account_model_->GetEntryByURL(url) == nullptr;
+         account_model_->GetEntryByURL(url) == nullptr &&
+         base::FeatureList::IsEnabled(
+             switches::kReadingListEnableSyncTransportModeUponSignIn);
 }
 
 const ReadingListEntry& DualReadingListModel::AddOrReplaceEntry(
