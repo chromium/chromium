@@ -47,21 +47,14 @@
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "chromeos-amd64-generic-rel",
-          "group": "tryserver.chromium.chromiumos"
-        },
-        {
-          "builder": "chromeos-amd64-generic-rel-rts",
-          "group": "tryserver.chromium.chromiumos"
-        }
-      ]
+      "rts_config": {
+        "condition": "QUICK_RUN_ONLY"
+      }
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 500,
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 150,
     "metrics_project": "chromium-reclient-metrics"
   },
   "$recipe_engine/resultdb/test_presentation": {
@@ -71,9 +64,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.chromiumos",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium"
-  ]
+  "builder_group": "tryserver.chromium.chromiumos",
+  "recipe": "chromium_trybot"
 }

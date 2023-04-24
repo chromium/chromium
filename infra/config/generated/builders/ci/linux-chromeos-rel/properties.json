@@ -48,6 +48,10 @@
         {
           "builder": "linux-chromeos-rel",
           "group": "tryserver.chromium.chromiumos"
+        },
+        {
+          "builder": "linux-chromeos-rel-rts",
+          "group": "tryserver.chromium.chromiumos"
         }
       ]
     }

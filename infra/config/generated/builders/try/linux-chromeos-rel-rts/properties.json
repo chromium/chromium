@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "chromeos-amd64-generic-rel",
+              "builder": "linux-chromeos-rel",
               "project": "chromium"
             },
             "builder_spec": {
@@ -19,20 +19,13 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "cros_boards_with_qemu_images": [
-                  "amd64-generic-vm"
-                ],
                 "target_arch": "intel",
-                "target_bits": 64,
-                "target_cros_boards": [
-                  "amd64-generic"
-                ],
-                "target_platform": "chromeos"
+                "target_bits": 64
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "chromeos",
-                  "checkout_lacros_sdk"
+                  "use_clang_coverage",
+                  "chromeos"
                 ],
                 "config": "chromium"
               }
@@ -43,25 +36,18 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "chromeos-amd64-generic-rel",
+          "builder": "linux-chromeos-rel",
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "chromeos-amd64-generic-rel",
-          "group": "tryserver.chromium.chromiumos"
-        },
-        {
-          "builder": "chromeos-amd64-generic-rel-rts",
-          "group": "tryserver.chromium.chromiumos"
-        }
-      ]
+      "rts_config": {
+        "condition": "QUICK_RUN_ONLY"
+      }
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 500,
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 150,
     "metrics_project": "chromium-reclient-metrics"
   },
   "$recipe_engine/resultdb/test_presentation": {
@@ -71,9 +57,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.chromiumos",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium"
-  ]
+  "builder_group": "tryserver.chromium.chromiumos",
+  "recipe": "chromium_trybot"
 }

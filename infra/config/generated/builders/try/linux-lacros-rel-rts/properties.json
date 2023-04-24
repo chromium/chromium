@@ -68,21 +68,26 @@
       "builder_ids": [
         {
           "bucket": "ci",
+          "builder": "linux-lacros-builder-rel",
+          "project": "chromium"
+        }
+      ],
+      "builder_ids_in_scope_for_testing": [
+        {
+          "bucket": "ci",
           "builder": "linux-lacros-tester-rel",
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux-lacros-rel",
-          "group": "tryserver.chromium.chromiumos"
-        },
-        {
-          "builder": "linux-lacros-rel-rts",
-          "group": "tryserver.chromium.chromiumos"
-        }
-      ]
+      "rts_config": {
+        "condition": "QUICK_RUN_ONLY"
+      }
     }
+  },
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 150,
+    "metrics_project": "chromium-reclient-metrics"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -91,9 +96,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.chromiumos",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium"
-  ]
+  "builder_group": "tryserver.chromium.chromiumos",
+  "recipe": "chromium_trybot"
 }
