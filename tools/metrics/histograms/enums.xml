@@ -44559,7 +44559,9 @@ Called by update_permissions_policy_enum.py.-->
 </enum>
 
 <enum name="FirstRunSentinelResult">
-  <summary>Result of sentinel file has been written.</summary>
+  <summary>
+    The result of an attempt to create the first run sentinel file.
+  </summary>
   <int value="0" label="Written successfully"/>
   <int value="1" label="Failed to get file path"/>
   <int value="2" label="File exists"/>

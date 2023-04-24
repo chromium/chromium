@@ -569,4 +569,8 @@ void RecordExternalStartupMetric(const char* histogram_name,
     SetNonBrowserUIDisplayed();
 }
 
+void RecordFirstRunSentinelCreation(FirstRunSentinelCreationResult result) {
+  base::UmaHistogramEnumeration("FirstRun.Sentinel.Created", result);
+}
+
 }  // namespace startup_metric_utils

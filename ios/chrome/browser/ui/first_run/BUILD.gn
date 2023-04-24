@@ -128,6 +128,7 @@ source_set("utils") {
     "//components/metrics",
     "//components/policy/core/common:common_constants",
     "//components/signin/public/identity_manager",
+    "//components/startup_metric_utils/browser",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",

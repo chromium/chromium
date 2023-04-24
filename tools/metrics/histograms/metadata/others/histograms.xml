@@ -6282,7 +6282,12 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
-  <summary>Result of sentinel file has been written.</summary>
+  <summary>
+    Records the result of an attempt to create the first run sentinel file.
+
+    On iOS, file system errors are detailed further by the
+    FirstRun.Sentinel.CreatedFileError histogram.
+  </summary>
 </histogram>
 
 <histogram name="FirstRun.Sentinel.CreatedFileError" enum="PlatformFileError"
