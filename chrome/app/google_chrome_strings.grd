@@ -589,6 +589,9 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before exporting passwords to a file.">
           Google Chrome wants to export your passwords. Type your Windows password to allow this.
         </message>
+        <message name="IDS_PASSWORDS_PAGE_IMPORT_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before overriding passwords during Import.">
+          Google Chrome is trying to replace existing passwords. Type your Windows password to allow this.
+        </message>
         <message name="IDS_INSTALL_HIGHER_VERSION" desc="Error displayed when higher version already exists.">
           This computer already has a more recent version of Google Chrome. If the software is not working, please uninstall Google Chrome and try again.
         </message>

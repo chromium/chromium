@@ -96,6 +96,9 @@ std::u16string GetMessageForLoginPrompt(
     case password_manager::ReauthPurpose::EXPORT:
       return l10n_util::GetStringUTF16(
           IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
+    case password_manager::ReauthPurpose::IMPORT:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_IMPORT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
   }
 }
 

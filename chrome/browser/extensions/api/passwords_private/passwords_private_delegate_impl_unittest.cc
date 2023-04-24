@@ -623,6 +623,49 @@ TEST_F(PasswordsPrivateDelegateImplTest,
                                         kExpectedStatus, 1);
 }
 
+TEST_F(PasswordsPrivateDelegateImplTest, TestReauthFailedOnImport) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(),
+                                                        /*instance=*/nullptr);
+  auto* client =
+      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
+
+  scoped_refptr<PasswordsPrivateDelegateImpl> delegate = CreateDelegate();
+
+  auto fake_porter = std::make_unique<FakePasswordManagerPorter>();
+  auto* fake_porter_ptr = fake_porter.get();
+  delegate->SetPorterForTesting(std::move(fake_porter));
+  ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
+      .WillByDefault(Return(false));
+
+  const auto kExpectedStatus =
+      password_manager::ImportResults::Status::DISMISSED;
+  fake_porter_ptr->set_import_result_status(kExpectedStatus);
+
+  MockReauthCallback reauth_callback;
+  delegate->set_os_reauth_call(reauth_callback.Get());
+
+  EXPECT_CALL(reauth_callback, Run(ReauthPurpose::IMPORT, _))
+      .WillOnce(testing::WithArg<1>(
+          [](password_manager::PasswordAccessAuthenticator::AuthResultCallback
+                 callback) { std::move(callback).Run(false); }));
+
+  base::MockCallback<PasswordsPrivateDelegate::ImportResultsCallback>
+      import_callback;
+  EXPECT_CALL(
+      import_callback,
+      Run(::testing::Field(&api::passwords_private::ImportResults::status,
+                           api::passwords_private::ImportResultsStatus::
+                               IMPORT_RESULTS_STATUS_DISMISSED)))
+      .Times(1);
+
+  delegate->ContinueImport(/*selected_ids=*/{1}, import_callback.Get());
+  task_environment()->RunUntilIdle();
+
+  histogram_tester().ExpectUniqueSample("PasswordManager.ImportResultsStatus2",
+                                        kExpectedStatus, 1);
+}
+
 TEST_F(PasswordsPrivateDelegateImplTest,
        ContinueImportLogsImportResultsStatus) {
   std::unique_ptr<content::WebContents> web_contents =

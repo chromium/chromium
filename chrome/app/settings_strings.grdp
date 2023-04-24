@@ -360,6 +360,9 @@
   <message name="IDS_SETTINGS_AUTOFILL_AND_PASSWORDS" desc="Name of the settings page which allows managing passwords, payment methods and addresses settings.">
     Autofill and passwords
   </message>
+  <message name="IDS_PASSWORDS_PAGE_IMPORT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX" desc="Shown after 'Google Chrome is trying to ' (or in some languages, 'Google Chrome wants to ') in a dialog message. Text for the dialog box that prompts the user for the biometric authentication before replacing passwords during Import.">
+    replace existing passwords
+  </message>
   <message name="IDS_SETTINGS_GOOGLE_PAYMENTS" desc="Label used to differentiate when an address or credit card entry comes from Google Pay. This should follow the casing of the 'Google Pay' brand. 'Google Pay' should not be translated as it is the product name.">
     Google Pay
   </message>

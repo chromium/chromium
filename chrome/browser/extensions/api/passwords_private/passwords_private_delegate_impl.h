@@ -195,6 +195,11 @@ class PasswordsPrivateDelegateImpl
       content::WebContents* web_contents,
       bool authenticated);
 
+  // Callback for ContinueImport() after authentication check.
+  void OnImportPasswordsAuthResult(ImportResultsCallback results_callback,
+                                   const std::vector<int>& selected_ids,
+                                   bool authenticated);
+
   void OnAccountStorageOptInStateChanged();
 
   // Decides whether an authentication check is successful. Passes the result

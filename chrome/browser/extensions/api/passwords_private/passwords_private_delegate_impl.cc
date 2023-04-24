@@ -660,10 +660,18 @@ void PasswordsPrivateDelegateImpl::ImportPasswords(
 void PasswordsPrivateDelegateImpl::ContinueImport(
     const std::vector<int>& selected_ids,
     ImportResultsCallback results_callback) {
-  // TODO(crbug/1417650): Add re-auth before ContinueImport.
-  password_manager_porter_->ContinueImport(
-      selected_ids,
-      base::BindOnce(&ConvertImportResults).Then(std::move(results_callback)));
+  if (selected_ids.empty()) {
+    password_manager_porter_->ContinueImport(
+        selected_ids, base::BindOnce(&ConvertImportResults)
+                          .Then(std::move(results_callback)));
+    return;
+  }
+
+  password_access_authenticator_.ForceUserReauthentication(
+      password_manager::ReauthPurpose::IMPORT,
+      base::BindOnce(&PasswordsPrivateDelegateImpl::OnImportPasswordsAuthResult,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(results_callback), selected_ids));
 }
 
 void PasswordsPrivateDelegateImpl::ResetImporter(bool delete_file) {
@@ -893,6 +901,25 @@ void PasswordsPrivateDelegateImpl::OnExportPasswordsAuthResult(
   bool accepted = password_manager_porter_->Export(web_contents);
   std::move(accepted_callback)
       .Run(accepted ? std::string() : kExportInProgress);
+}
+
+void PasswordsPrivateDelegateImpl::OnImportPasswordsAuthResult(
+    ImportResultsCallback results_callback,
+    const std::vector<int>& selected_ids,
+    bool authenticated) {
+  if (!authenticated) {
+    password_manager::ImportResults result;
+    // TODO(crbug/1417650): Use specific enum for reauth_failed.
+    // TODO(crbug/1417650): Record metric for reauth failed.
+    result.status = password_manager::ImportResults::DISMISSED;
+    std::move(results_callback).Run(ConvertImportResults(result));
+    return;
+  }
+
+  CHECK(password_manager_porter_);
+  password_manager_porter_->ContinueImport(
+      selected_ids,
+      base::BindOnce(&ConvertImportResults).Then(std::move(results_callback)));
 }
 
 void PasswordsPrivateDelegateImpl::OnAccountStorageOptInStateChanged() {

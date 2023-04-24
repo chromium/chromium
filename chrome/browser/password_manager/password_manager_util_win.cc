@@ -344,14 +344,15 @@ std::u16string GetMessageForLoginPrompt(
     case password_manager::ReauthPurpose::COPY_PASSWORD:
       return l10n_util::GetStringUTF16(
           IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT);
-
     case password_manager::ReauthPurpose::EDIT_PASSWORD:
       return l10n_util::GetStringUTF16(
           IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT);
-
     case password_manager::ReauthPurpose::EXPORT:
       return l10n_util::GetStringUTF16(
           IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT);
+    case password_manager::ReauthPurpose::IMPORT:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_IMPORT_AUTHENTICATION_PROMPT);
   }
 }
 
