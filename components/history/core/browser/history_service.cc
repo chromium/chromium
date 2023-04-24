@@ -1378,6 +1378,7 @@ void HistoryService::ScheduleTask(SchedulePriority priority,
   TRACE_EVENT0("browser", "HistoryService::ScheduleTask");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(backend_task_runner_);
+  CHECK(!task.is_null());
   // TODO(brettw): Do prioritization.
   // NOTE(mastiz): If this implementation changes, be cautious with implications
   // for sync, because a) the sync engine (sync thread) post tasks directly to
