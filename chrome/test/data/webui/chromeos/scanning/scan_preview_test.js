@@ -453,10 +453,10 @@ suite('scanPreviewTest', function() {
 
     // Mock media query state for light mode.
     await setFakePrefersColorSchemeDark(false);
-    assertEquals(getReadyToScanSvg().src, lightModeSvg);
+    assertEquals(lightModeSvg, getReadyToScanSvg().src);
 
     // Mock media query state for dark mode.
     await setFakePrefersColorSchemeDark(true);
-    assertEquals(getReadyToScanSvg().src, darkModeSvg);
+    assertEquals(darkModeSvg, getReadyToScanSvg().src);
   });
 });

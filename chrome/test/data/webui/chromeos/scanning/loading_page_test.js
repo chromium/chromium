@@ -130,11 +130,11 @@ suite('loadingPageTest', function() {
     // Setup UI to display no scanners div.
     loadingPage.appState = AppState.NO_SCANNERS;
     await setFakePrefersColorSchemeDark(false);
-    assertEquals(getNoScannersSvg().src, lightModeSvg);
+    assertEquals(lightModeSvg, getNoScannersSvg().src);
 
     // Mock media query state for dark mode.
     await setFakePrefersColorSchemeDark(true);
-    assertEquals(getNoScannersSvg().src, darkModeSvg);
+    assertEquals(darkModeSvg, getNoScannersSvg().src);
   });
 
   // TODO(b/276493795): After the Jelly experiment is launched, remove test.
@@ -149,11 +149,11 @@ suite('loadingPageTest', function() {
     // Setup UI to display no scanners div.
     loadingPage.appState = AppState.NO_SCANNERS;
     await setFakePrefersColorSchemeDark(false);
-    assertEquals(getLoadingSvg().src, lightModeSvg);
+    assertEquals(lightModeSvg, getLoadingSvg().src);
 
     // Mock media query state for dark mode.
     await setFakePrefersColorSchemeDark(true);
-    assertEquals(getLoadingSvg().src, darkModeSvg);
+    assertEquals(darkModeSvg, getLoadingSvg().src);
   });
 
   // Verify "loading scanners" dynamic SVG use when dynamic colors enabled.
