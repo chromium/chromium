@@ -66,7 +66,7 @@ public class PostMessageHandler implements OriginVerificationListener {
             }
 
             Bundle bundle = null;
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_POST_MESSAGE_ORIGIN)) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TRUSTED_WEB_ACTIVITY_POST_MESSAGE)) {
                 GURL url = mWebContents.getMainFrame().getLastCommittedURL();
                 if (url != null) {
                     String origin = GURLUtils.getOrigin(url.getSpec());

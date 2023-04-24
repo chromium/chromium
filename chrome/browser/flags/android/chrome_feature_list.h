@@ -54,7 +54,6 @@ BASE_DECLARE_FEATURE(kCCTIncognitoAvailableToThirdParty);
 BASE_DECLARE_FEATURE(kCCTIntentFeatureOverrides);
 BASE_DECLARE_FEATURE(kCCTNewDownloadTab);
 BASE_DECLARE_FEATURE(kCCTPostMessageAPI);
-BASE_DECLARE_FEATURE(kCCTPostMessageOrigin);
 BASE_DECLARE_FEATURE(kCCTPrefetchDelayShowOnStart);
 BASE_DECLARE_FEATURE(kCCTRealTimeEngagementSignals);
 BASE_DECLARE_FEATURE(kCCTRealTimeEngagementSignalsAlternativeImpl);

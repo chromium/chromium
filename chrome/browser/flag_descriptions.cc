@@ -4304,6 +4304,11 @@ const char kTranslateMessageUIDescription[] =
     "Controls whether the Translate Message UI will be shown instead of the "
     "Translate InfoBar.";
 
+const char kTwaPostMessageName[] = "PostMessage for Trusted Web Activities";
+const char kTwaPostMessageDescription[] =
+    "Enables PostMessage between the "
+    "shell app and the web page in Trusted Web Activities.";
+
 const char kUpdateMenuBadgeName[] = "Force show update menu badge";
 const char kUpdateMenuBadgeDescription[] =
     "When enabled, a badge will be shown on the app menu button if the update "

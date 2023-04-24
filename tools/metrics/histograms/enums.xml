@@ -59303,6 +59303,7 @@ from previous Chrome versions.
   <int value="-1530133175" label="StartSurfaceOnTablet:disabled"/>
   <int value="-1529907580" label="ImeServiceConnectable:disabled"/>
   <int value="-1529631789" label="enable-unsafe-fast-js-calls"/>
+  <int value="-1529238282" label="TrustedWebActivityPostMessage:enabled"/>
   <int value="-1529140321" label="ReadLater:enabled"/>
   <int value="-1528455406" label="OmniboxPedalSuggestions:enabled"/>
   <int value="-1527094429" label="ArcRtVcpuQuadCore:disabled"/>
@@ -61523,6 +61524,7 @@ from previous Chrome versions.
   <int value="-344343842" label="disable-experimental-app-list"/>
   <int value="-343971624" label="BorealisPermitted:disabled"/>
   <int value="-343769596" label="ServiceWorkerScriptStreaming:disabled"/>
+  <int value="-343485937" label="TrustedWebActivityPostMessage:disabled"/>
   <int value="-343314036" label="WebBluetooth:enabled"/>
   <int value="-342421456" label="EnableOverviewRoundedCorners:disabled"/>
   <int value="-340622848" label="disable-javascript-harmony-shipping"/>
