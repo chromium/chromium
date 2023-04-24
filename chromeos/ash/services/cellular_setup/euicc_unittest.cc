@@ -6,9 +6,11 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/network/fake_network_connection_handler.h"
@@ -232,10 +234,13 @@ TEST_F(EuiccTest, InstallPendingProfileFromActivationCode) {
   EXPECT_EQ(2u, observer()->profile_list_change_calls().size());
 }
 
-TEST_F(EuiccTest, RequestPendingProfiles) {
+TEST_F(EuiccTest, RequestPendingProfiles_DBusMigrationDisabled) {
   static const char kOperationResultMetric[] =
       "Network.Cellular.ESim.RequestPendingProfiles.OperationResult";
   base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+
+  feature_list.InitAndDisableFeature(ash::features::kSmdsDbusMigration);
 
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
   ASSERT_TRUE(euicc.is_bound());
@@ -270,6 +275,30 @@ TEST_F(EuiccTest, RequestPendingProfiles) {
   histogram_tester.ExpectBucketCount(
       kOperationResultMetric, Euicc::RequestPendingProfilesResult::kSuccess,
       /*expected_count=*/1);
+}
+
+TEST_F(EuiccTest, RequestPendingProfiles_DBusMigrationEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kSmdsDbusMigration);
+
+  mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
+  ASSERT_TRUE(euicc.is_bound());
+
+  HermesEuiccClient::TestInterface* euicc_test =
+      HermesEuiccClient::Get()->GetTestInterface();
+  // Verify that pending profile request errors are return properly.
+  euicc_test->QueueHermesErrorStatus(HermesResponseStatus::kErrorNoResponse);
+  EXPECT_EQ(mojom::ESimOperationResult::kFailure,
+            RequestPendingProfiles(euicc));
+  EXPECT_EQ(0u, observer()->profile_list_change_calls().size());
+
+  constexpr base::TimeDelta kHermesInteractiveDelay = base::Milliseconds(3000);
+  HermesEuiccClient::Get()->GetTestInterface()->SetInteractiveDelay(
+      kHermesInteractiveDelay);
+
+  // Verify that successful request returns correct status code.
+  EXPECT_EQ(mojom::ESimOperationResult::kSuccess,
+            RequestPendingProfiles(euicc));
 }
 
 TEST_F(EuiccTest, GetEidQRCode) {

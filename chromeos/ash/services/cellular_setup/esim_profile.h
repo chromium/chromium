@@ -76,6 +76,11 @@ class ESimProfile : public mojom::ESimProfile {
   void OnRequestInstalledProfiles(
       EnsureProfileExistsOnEuiccCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
+  void OnRefreshSmdxProfiles(
+      EnsureProfileExistsOnEuiccCallback callback,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+      HermesResponseStatus status,
+      const std::vector<dbus::ObjectPath>& profile_paths);
   void OnRequestPendingProfiles(
       EnsureProfileExistsOnEuiccCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,

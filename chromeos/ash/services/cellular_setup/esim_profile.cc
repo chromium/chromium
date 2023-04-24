@@ -272,11 +272,21 @@ void ESimProfile::EnsureProfileExistsOnEuicc(
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
           std::move(inhibit_lock));
     } else {
-      HermesEuiccClient::Get()->RequestPendingProfiles(
-          euicc_->path(), /*root_smds=*/ESimManager::GetRootSmdsAddress(),
-          base::BindOnce(&ESimProfile::OnRequestPendingProfiles,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                         std::move(inhibit_lock)));
+      if (ash::features::IsSmdsDbusMigrationEnabled()) {
+        HermesEuiccClient::Get()->RefreshSmdxProfiles(
+            euicc_->path(),
+            /*activation_code=*/ESimManager::GetRootSmdsAddress(),
+            /*restore_slot=*/true,
+            base::BindOnce(&ESimProfile::OnRefreshSmdxProfiles,
+                           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                           std::move(inhibit_lock)));
+      } else {
+        HermesEuiccClient::Get()->RequestPendingProfiles(
+            euicc_->path(), /*root_smds=*/ESimManager::GetRootSmdsAddress(),
+            base::BindOnce(&ESimProfile::OnRequestPendingProfiles,
+                           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                           std::move(inhibit_lock)));
+      }
     }
     return;
   }
@@ -292,6 +302,21 @@ void ESimProfile::OnRequestInstalledProfiles(
   if (!success) {
     NET_LOG(ERROR) << "Error requesting installed profiles to ensure profile "
                    << "exists on Euicc";
+  }
+  OnRequestProfiles(std::move(callback), std::move(inhibit_lock), success);
+}
+
+void ESimProfile::OnRefreshSmdxProfiles(
+    EnsureProfileExistsOnEuiccCallback callback,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+    HermesResponseStatus status,
+    const std::vector<dbus::ObjectPath>& profile_paths) {
+  NET_LOG(EVENT) << "Refresh SM-DX profiles found " << profile_paths.size()
+                 << " available profiles";
+  bool success = status == HermesResponseStatus::kSuccess;
+  if (!success) {
+    NET_LOG(ERROR) << "Error refreshing SM-DX profiles to ensure profile "
+                   << "exists on Euicc; status: " << status;
   }
   OnRequestProfiles(std::move(callback), std::move(inhibit_lock), success);
 }

@@ -64,7 +64,10 @@ class Euicc : public mojom::Euicc {
   const mojom::EuiccPropertiesPtr& properties() { return properties_; }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(EuiccTest, RequestPendingProfiles);
+  FRIEND_TEST_ALL_PREFIXES(EuiccTest,
+                           RequestPendingProfiles_DBusMigrationDisabled);
+  FRIEND_TEST_ALL_PREFIXES(EuiccTest,
+                           RequestPendingProfiles_DBusMigrationEnabled);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -85,6 +88,11 @@ class Euicc : public mojom::Euicc {
   void PerformRequestPendingProfiles(
       RequestPendingProfilesCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
+  void OnRefreshSmdxProfilesResult(
+      RequestPendingProfilesCallback callback,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+      HermesResponseStatus status,
+      const std::vector<dbus::ObjectPath>& profile_paths);
   void OnRequestPendingProfilesResult(
       RequestPendingProfilesCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,

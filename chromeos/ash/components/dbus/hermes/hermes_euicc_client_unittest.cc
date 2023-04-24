@@ -349,8 +349,7 @@ TEST_F(HermesEuiccClientTest, TestRefreshInstalledProfiles) {
 
 TEST_F(HermesEuiccClientTest, TestRefreshSmdxProfiles) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {{ash::features::kSmdsSupport, ash::features::kSmdsDbusMigration}}, {{}});
+  feature_list.InitAndEnableFeature(ash::features::kSmdsDbusMigration);
 
   dbus::ObjectPath test_euicc_path(kTestEuiccPath);
   dbus::MethodCall method_call(hermes::kHermesEuiccInterface,

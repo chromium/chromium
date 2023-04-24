@@ -330,7 +330,7 @@ void FakeHermesEuiccClient::RefreshSmdxProfiles(
     const std::string& activation_code,
     bool restore_slot,
     RefreshSmdxProfilesCallback callback) {
-  DCHECK(ash::features::IsSmdsSupportEnabled());
+  DCHECK(ash::features::IsSmdsDbusMigrationEnabled());
   last_restore_slot_arg_ = restore_slot;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -504,7 +504,7 @@ void FakeHermesEuiccClient::DoRefreshSmdxProfiles(
     const std::string& activation_code,
     RefreshSmdxProfilesCallback callback) {
   // Use CHECK() here since the only caller has a DCHECK().
-  CHECK(ash::features::IsSmdsSupportEnabled());
+  CHECK(ash::features::IsSmdsDbusMigrationEnabled());
 
   DVLOG(1) << "Refresh SM-DX Profiles Requested";
 
