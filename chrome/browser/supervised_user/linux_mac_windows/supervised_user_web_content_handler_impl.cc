@@ -9,11 +9,8 @@
 
 SupervisedUserWebContentHandlerImpl::SupervisedUserWebContentHandlerImpl(
     content::WebContents* web_contents,
-    int frame_id,
-    int64_t interstitial_navigation_id)
-    : ChromeSupervisedUserWebContentHandlerBase(web_contents,
-                                                frame_id,
-                                                interstitial_navigation_id) {}
+    int frame_id)
+    : ChromeSupervisedUserWebContentHandlerBase(web_contents, frame_id) {}
 
 SupervisedUserWebContentHandlerImpl::~SupervisedUserWebContentHandlerImpl() =
     default;

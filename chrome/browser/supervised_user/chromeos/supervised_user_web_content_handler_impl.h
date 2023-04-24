@@ -30,8 +30,7 @@ class SupervisedUserWebContentHandlerImpl
       content::WebContents* web_contents,
       const GURL& url,
       favicon::LargeIconService& large_icon_service,
-      int frame_id,
-      int64_t interstitial_navigation_id);
+      int frame_id);
 
   SupervisedUserWebContentHandlerImpl(
       const SupervisedUserWebContentHandlerImpl&) = delete;
