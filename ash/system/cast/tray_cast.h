@@ -12,6 +12,7 @@
 #include "ash/public/cpp/cast_config_controller.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
@@ -69,6 +70,8 @@ class ASH_EXPORT CastDetailedView : public TrayDetailedView,
 
   // View shown when no cast devices are available (with QsRevamp).
   raw_ptr<views::View, ExperimentalAsh> zero_state_view_ = nullptr;
+
+  base::WeakPtrFactory<CastDetailedView> weak_factory_{this};
 };
 
 }  // namespace ash

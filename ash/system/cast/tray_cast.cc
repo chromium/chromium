@@ -182,12 +182,15 @@ void CastDetailedView::HandleViewClicked(views::View* view) {
   // Find the receiver we are going to cast to.
   auto it = view_to_sink_map_.find(view);
   if (it != view_to_sink_map_.end()) {
+    // `CastToSink()` sometimes opens a screen picker, which causes a window
+    // activation, which closes the quick settings bubble and deletes `this`.
+    auto weak_this = weak_factory_.GetWeakPtr();
     CastConfigController::Get()->CastToSink(it->second);
     base::RecordAction(
         base::UserMetricsAction("StatusArea_Cast_Detailed_Launch_Cast"));
     // Close the system tray to emphasize the pinned Cast notification.
-    if (features::IsQsRevampEnabled()) {
-      CloseBubble();  // Deletes `this`.
+    if (weak_this && features::IsQsRevampEnabled()) {
+      weak_this->CloseBubble();  // Deletes `this`.
     }
   } else if (view == add_access_code_device_) {
     base::RecordAction(base::UserMetricsAction(
