@@ -12,6 +12,7 @@
 #include "ash/accelerators/accelerator_alias_converter.h"
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/accelerator_configuration.mojom-shared.h"
 #include "ash/public/mojom/accelerator_configuration.mojom.h"
@@ -19,6 +20,7 @@
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_keys.mojom.h"
 #include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/check.h"
@@ -297,6 +299,10 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider()
   // Observe top row keys are f-keys preference changes.
   Shell::Get()->keyboard_capability()->AddObserver(this);
 
+  if (features::IsInputDeviceSettingsSplitEnabled()) {
+    Shell::Get()->input_device_settings_controller()->AddObserver(this);
+  }
+
   ash_accelerator_configuration_->AddAcceleratorsUpdatedCallback(
       base::BindRepeating(
           &AcceleratorConfigurationProvider::OnAcceleratorsUpdated,
@@ -327,6 +333,9 @@ AcceleratorConfigurationProvider::~AcceleratorConfigurationProvider() {
     Shell::Get()->keyboard_capability()->RemoveObserver(this);
     Shell::Get()->accelerator_controller()->SetPreventProcessingAccelerators(
         /*prevent_processing_accelerators=*/false);
+    if (features::IsInputDeviceSettingsSplitEnabled()) {
+      Shell::Get()->input_device_settings_controller()->RemoveObserver(this);
+    }
   }
 }
 
@@ -389,6 +398,21 @@ void AcceleratorConfigurationProvider::InputMethodChanged(
 }
 
 void AcceleratorConfigurationProvider::OnTopRowKeysAreFKeysChanged() {
+  NotifyAcceleratorsUpdated();
+}
+
+void AcceleratorConfigurationProvider::OnKeyboardConnected(
+    const mojom::Keyboard& keyboard) {
+  NotifyAcceleratorsUpdated();
+}
+
+void AcceleratorConfigurationProvider::OnKeyboardDisconnected(
+    const mojom::Keyboard& keyboard) {
+  NotifyAcceleratorsUpdated();
+}
+
+void AcceleratorConfigurationProvider::OnKeyboardSettingsUpdated(
+    const mojom::Keyboard& keyboard) {
   NotifyAcceleratorsUpdated();
 }
 

@@ -6,7 +6,9 @@
 
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/ash/keyboard_capability.h"
@@ -118,8 +120,15 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAliases(
     return {};
   }
 
-  const bool top_row_are_fkeys =
-      Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys();
+  const bool top_row_are_fkeys = [&]() -> bool {
+    if (features::IsInputDeviceSettingsSplitEnabled()) {
+      const auto* settings =
+          Shell::Get()->input_device_settings_controller()->GetKeyboardSettings(
+              priority_keyboard->id);
+      return settings && settings->top_row_are_fkeys;
+    }
+    return Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys();
+  }();
   absl::optional<ui::KeyboardCode> function_key =
       Shell::Get()->keyboard_capability()->GetCorrespondingFunctionKey(
           *priority_keyboard, *action_key);

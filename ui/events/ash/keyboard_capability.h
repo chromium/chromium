@@ -258,6 +258,8 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // function keys instead of having them rewritten into back, forward,
   // brightness, volume, etc. or if the user has specified that they desire
   // top-row keys to be treated as function keys globally.
+  // Only useful when InputDeviceSettingsSplit flag is disabled. Otherwise, it
+  // returns non-useful data.
   bool TopRowKeysAreFKeys() const;
 
   // Enable or disable top row keys as F-Keys.
