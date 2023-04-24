@@ -7,9 +7,9 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <algorithm>
 #include <cmath>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
@@ -671,13 +671,13 @@ float GetStylusForceFromXEvent(const x11::Event& x11_event) {
 float GetStylusTiltXFromXEvent(const x11::Event& x11_event) {
   double tilt = GetParamFromXEvent(
       x11_event, ui::DeviceDataManagerX11::DT_STYLUS_TILT_X, 0.0);
-  return base::clamp<float>(tilt, -90, 90);
+  return std::clamp<float>(tilt, -90, 90);
 }
 
 float GetStylusTiltYFromXEvent(const x11::Event& x11_event) {
   double tilt = GetParamFromXEvent(
       x11_event, ui::DeviceDataManagerX11::DT_STYLUS_TILT_Y, 0.0);
-  return base::clamp<float>(tilt, -90, 90);
+  return std::clamp<float>(tilt, -90, 90);
 }
 
 PointerDetails GetStylusPointerDetailsFromXEvent(const x11::Event& xev) {

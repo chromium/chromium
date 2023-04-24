@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
@@ -2488,11 +2487,10 @@ gfx::Rect MenuController::CalculateMenuBounds(MenuItemView* item,
   }
 
   // Ensure the menu is not displayed off screen.
-  menu_bounds.set_x(base::clamp(menu_bounds.x(), monitor_bounds.x(),
-                                monitor_bounds.right() - menu_bounds.width()));
-  menu_bounds.set_y(
-      base::clamp(menu_bounds.y(), monitor_bounds.y(),
-                  monitor_bounds.bottom() - menu_bounds.height()));
+  menu_bounds.set_x(std::clamp(menu_bounds.x(), monitor_bounds.x(),
+                               monitor_bounds.right() - menu_bounds.width()));
+  menu_bounds.set_y(std::clamp(menu_bounds.y(), monitor_bounds.y(),
+                               monitor_bounds.bottom() - menu_bounds.height()));
 
   return menu_bounds;
 }
@@ -2702,8 +2700,8 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
                       border_and_shadow_insets.bottom();
     DCHECK_LE(x_min, x_max);
     DCHECK_LE(y_min, y_max);
-    x = base::clamp(x, x_min, x_max);
-    y = base::clamp(y, y_min, y_max);
+    x = std::clamp(x, x_min, x_max);
+    y = std::clamp(y, y_min, y_max);
   } else {
     // This is a sub-menu, position it relative to the parent menu.
     const gfx::Rect item_bounds = item->GetBoundsInScreen();
@@ -2765,7 +2763,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
                                       menu_size.height()
                                 : monitor_bounds.bottom() - menu_size.height() +
                                       border_and_shadow_insets.top();
-    y = base::clamp(y, y_min, y_max);
+    y = std::clamp(y, y_min, y_max);
   }
 
   auto menu_bounds = gfx::Rect(x, y, menu_size.width(), menu_size.height());

@@ -4,7 +4,8 @@
 
 #include "ui/native_theme/scrollbar_animator_mac.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "base/task/single_thread_task_runner.h"
 
 namespace ui {
@@ -47,7 +48,7 @@ void ScrollbarAnimationTimerMac::TimerFired() {
     timer_.Stop();
 
   double fraction = delta / duration_;
-  fraction = base::clamp(fraction, 0.0, 1.0);
+  fraction = std::clamp(fraction, 0.0, 1.0);
   double progress = timing_function_->GetValue(fraction);
   // Note that `this` may be destroyed from within `callback_`, so it is not
   // safe to call any other code after it.

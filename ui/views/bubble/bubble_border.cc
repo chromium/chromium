@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -556,8 +555,8 @@ bool BubbleBorder::AddArrowToBubbleCornerAndPointTowardsAnchor(
     }
 
     // Make sure the x position is limited to the range defined by the bubble.
-    x_position = base::clamp(x_optimal_position, leftmost_position_on_bubble,
-                             rightmost_position_on_bubble);
+    x_position = std::clamp(x_optimal_position, leftmost_position_on_bubble,
+                            rightmost_position_on_bubble);
 
     // Calculate the y position of the arrow to be either on top of below the
     // bubble.
@@ -581,7 +580,7 @@ bool BubbleBorder::AddArrowToBubbleCornerAndPointTowardsAnchor(
     }
 
     int popup_y_adjusted =
-        base::clamp(popup_bounds.y(), popup_y_lower_bound, popup_y_upper_bound);
+        std::clamp(popup_bounds.y(), popup_y_lower_bound, popup_y_upper_bound);
     popup_bounds.set_y(popup_y_adjusted);
 
     // For an horizontal arrow, the x position is either the left or the right
@@ -608,8 +607,8 @@ bool BubbleBorder::AddArrowToBubbleCornerAndPointTowardsAnchor(
     // Here, there is no differentiation between the different positions of a
     // left or right aligned arrow.
     y_position =
-        base::clamp(anchor_rect.CenterPoint().y() - kVisibleArrowRadius,
-                    topmost_position_on_bubble, bottommost_position_on_bubble);
+        std::clamp(anchor_rect.CenterPoint().y() - kVisibleArrowRadius,
+                   topmost_position_on_bubble, bottommost_position_on_bubble);
   }
 
   visible_arrow_rect_.set_size(GetVisibleArrowSize(arrow_));

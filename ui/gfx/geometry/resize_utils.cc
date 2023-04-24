@@ -4,10 +4,10 @@
 
 #include "ui/gfx/geometry/resize_utils.h"
 
+#include <algorithm>
 #include <ostream>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -56,9 +56,9 @@ void SizeRectToAspectRatio(ResizeEdge resize_edge,
         (max_window_size.has_value() &&
          new_size.height() > max_window_size->height())) {
       if (max_window_size.has_value()) {
-        new_size.set_height(base::clamp(new_size.height(),
-                                        min_window_size.height(),
-                                        max_window_size->height()));
+        new_size.set_height(std::clamp(new_size.height(),
+                                       min_window_size.height(),
+                                       max_window_size->height()));
       } else {
         new_size.set_height(min_window_size.height());
       }
@@ -70,9 +70,8 @@ void SizeRectToAspectRatio(ResizeEdge resize_edge,
         (max_window_size.has_value() &&
          new_size.width() > max_window_size->width())) {
       if (max_window_size.has_value()) {
-        new_size.set_width(base::clamp(new_size.width(),
-                                       min_window_size.width(),
-                                       max_window_size->width()));
+        new_size.set_width(std::clamp(new_size.width(), min_window_size.width(),
+                                      max_window_size->width()));
       } else {
         new_size.set_width(min_window_size.width());
       }

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/gfx/geometry/transform_operation.h"
+
+#include <algorithm>
 #include <limits>
 #include <utility>
 
-#include "ui/gfx/geometry/transform_operation.h"
-
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/numerics/math_constants.h"
 #include "base/numerics/ranges.h"
@@ -271,7 +271,7 @@ bool TransformOperation::BlendTransformOperations(
         to_perspective_m43 = to->perspective_m43;
       }
 
-      result->perspective_m43 = base::clamp(
+      result->perspective_m43 = std::clamp(
           BlendSkScalars(from_perspective_m43, to_perspective_m43, progress),
           -1.0f, 0.0f);
       result->Bake();

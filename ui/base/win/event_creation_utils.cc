@@ -9,7 +9,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace ui {
@@ -20,8 +19,8 @@ bool SendMouseEvent(const gfx::Point& point, int flags) {
   // coordinates required by SendInput.
   const int screen_width = ::GetSystemMetrics(SM_CXSCREEN);
   const int screen_height = ::GetSystemMetrics(SM_CYSCREEN);
-  int screen_x = base::clamp(point.x(), 0, screen_width - 1);
-  int screen_y = base::clamp(point.y(), 0, screen_height - 1);
+  int screen_x = std::clamp(point.x(), 0, screen_width - 1);
+  int screen_y = std::clamp(point.y(), 0, screen_height - 1);
 
   // In normalized absolute coordinates, (0, 0) maps onto the upper-left corner
   // of the display surface, while (65535, 65535) maps onto the lower-right

@@ -8,6 +8,7 @@
 #include <dlfcn.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
@@ -15,7 +16,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/leak_annotations.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -962,7 +962,7 @@ gchar* GetText(AtkText* atk_text, gint start_offset, gint end_offset) {
   } else {
     end_offset = obj->UnicodeToUTF16OffsetInText(end_offset);
     end_offset =
-        base::clamp(static_cast<int>(text.size()), start_offset, end_offset);
+        std::clamp(static_cast<int>(text.size()), start_offset, end_offset);
   }
 
   DCHECK_GE(start_offset, 0);

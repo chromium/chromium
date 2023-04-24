@@ -4,7 +4,8 @@
 
 #include "ui/views/layout/layout_manager_base.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,13 +50,13 @@ class TestLayoutManagerBase : public LayoutManagerBase {
       return *forced_layout_;
 
     ProposedLayout layout;
-    layout.host_size.set_width(base::clamp<SizeBound>(size_bounds.width(),
-                                                      kMinimumSize.width(),
-                                                      kPreferredSize.width())
+    layout.host_size.set_width(std::clamp<SizeBound>(size_bounds.width(),
+                                                     kMinimumSize.width(),
+                                                     kPreferredSize.width())
                                    .value());
-    layout.host_size.set_height(base::clamp<SizeBound>(size_bounds.height(),
-                                                       kMinimumSize.height(),
-                                                       kPreferredSize.height())
+    layout.host_size.set_height(std::clamp<SizeBound>(size_bounds.height(),
+                                                      kMinimumSize.height(),
+                                                      kPreferredSize.height())
                                     .value());
     return layout;
   }

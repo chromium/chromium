@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -582,7 +581,7 @@ bool SubmenuView::OnScroll(float dx, float dy) {
 
   // Ensure that we never try to scroll outside the actual child view.
   // Note: the old code here was effectively:
-  //   base::clamp(y, 0, full_bounds.height() - vis_bounds.height() - 1)
+  //   std::clamp(y, 0, full_bounds.height() - vis_bounds.height() - 1)
   // but the -1 there prevented fully scrolling to the bottom here. As a
   // worked example, suppose that:
   //   full_bounds = { x = 0, y = 0, w = 100, h = 1000 }
@@ -598,7 +597,7 @@ bool SubmenuView::OnScroll(float dx, float dy) {
   //   new_vis_bounds = { x = 0, y = 499, w = 100, h = 500 }
   // so pixels y=499 through y=998 of this view are drawn, and pixel y=999 is
   // hidden - oops.
-  y = base::clamp(y, 0, full_bounds.height() - vis_bounds.height());
+  y = std::clamp(y, 0, full_bounds.height() - vis_bounds.height());
 
   gfx::Rect new_vis_bounds(x, y, vis_bounds.width(), vis_bounds.height());
   if (new_vis_bounds != vis_bounds) {

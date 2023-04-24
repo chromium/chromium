@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -473,7 +472,7 @@ int ScrollBar::CalculateContentsOffset(float thumb_position,
 
 void ScrollBar::SetContentsScrollOffset(int contents_scroll_offset) {
   contents_scroll_offset_ =
-      base::clamp(contents_scroll_offset, GetMinPosition(), GetMaxPosition());
+      std::clamp(contents_scroll_offset, GetMinPosition(), GetMaxPosition());
 }
 
 ScrollBar::ScrollAmount ScrollBar::DetermineScrollAmountByKeyCode(

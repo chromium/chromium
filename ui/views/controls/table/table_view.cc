@@ -13,7 +13,6 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
@@ -1206,8 +1205,8 @@ TableView::PaintRegion TableView::GetPaintRegion(
 
   PaintRegion region;
   region.min_row = static_cast<size_t>(
-      base::clamp(bounds.y() / row_height_, 0,
-                  base::saturated_cast<int>(GetRowCount() - 1)));
+      std::clamp(bounds.y() / row_height_, 0,
+                 base::saturated_cast<int>(GetRowCount() - 1)));
   region.max_row = static_cast<size_t>(bounds.bottom() / row_height_);
   if (bounds.bottom() % row_height_ != 0)
     region.max_row++;

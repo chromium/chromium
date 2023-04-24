@@ -9,7 +9,6 @@
 #include <ostream>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 
 namespace ui {
@@ -178,8 +177,8 @@ bool TouchHandle::WillHandleTouchEvent(const MotionEvent& event) {
         return false;
       const gfx::PointF touch_point(event.GetX(), event.GetY());
       const float touch_radius =
-          base::clamp(event.GetTouchMajor(), kMinTouchMajorForHitTesting,
-                      kMaxTouchMajorForHitTesting) *
+          std::clamp(event.GetTouchMajor(), kMinTouchMajorForHitTesting,
+                     kMaxTouchMajorForHitTesting) *
           0.5f;
       const gfx::RectF drawable_bounds = drawable_->GetVisibleBounds();
       // Only use the touch radius for targetting if the touch is at or below
@@ -408,7 +407,7 @@ void TouchHandle::EndFade() {
 }
 
 void TouchHandle::SetAlpha(float alpha) {
-  alpha = base::clamp(alpha, 0.0f, 1.0f);
+  alpha = std::clamp(alpha, 0.0f, 1.0f);
   if (alpha_ == alpha)
     return;
   alpha_ = alpha;

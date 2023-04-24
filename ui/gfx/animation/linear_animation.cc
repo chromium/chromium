@@ -10,7 +10,6 @@
 #include <algorithm>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -44,7 +43,7 @@ double LinearAnimation::GetCurrentValue() const {
 }
 
 void LinearAnimation::SetCurrentValue(double new_value) {
-  new_value = base::clamp(new_value, 0.0, 1.0);
+  new_value = std::clamp(new_value, 0.0, 1.0);
   const base::TimeDelta time_delta = duration_ * (new_value - state_);
   SetStartTime(start_time() - time_delta);
   state_ = new_value;
