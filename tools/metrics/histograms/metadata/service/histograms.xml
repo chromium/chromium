@@ -459,8 +459,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The result of the RaceNetworkRequest. RaceNetworkRequest runs a race between
     the network request which bypasses ServiceWorker, and the other request
-    which goes through the fetch handler. This metric is recorded for both main
-    and subresources, respectively.
+    which goes through the fetch handler. This metric is recorded for
+    {Resource}.
   </summary>
   <token key="Resource">
     <variant name="MainResource" summary="main resource"/>
