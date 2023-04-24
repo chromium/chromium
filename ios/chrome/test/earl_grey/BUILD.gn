@@ -138,6 +138,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/omnibox:eg_app_support+eg2",
     "//ios/chrome/browser/ui/omnibox:omnibox_internal",
+    "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
     "//ios/chrome/browser/ui/omnibox/keyboard_assist",
     "//ios/chrome/browser/ui/omnibox/popup:popup_accessibility_identifier_constants",
     "//ios/chrome/browser/ui/partial_translate:eg_app_support+eg2",

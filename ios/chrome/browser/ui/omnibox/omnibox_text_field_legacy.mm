@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/ui/util/reversed_animation.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/common/material_timing.h"
@@ -897,6 +898,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   [_selection setFont:self.currentFont];
   [_selection setTextColor:_displayedTextColor];
   [_selection setOpaque:NO];
+  [_selection setAccessibilityIdentifier:
+                  kOmniboxAutocompleteLabelAccessibilityIdentifier];
   [_selection setBackgroundColor:UIColor.clearColor];
   _selection.lineBreakMode = NSLineBreakByClipping;
   [self addSubview:_selection];

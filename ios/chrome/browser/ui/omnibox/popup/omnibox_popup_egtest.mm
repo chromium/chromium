@@ -147,6 +147,28 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey clearBrowsingHistory];
 }
 
+// Test inline autocomplete of legacy text field implementation.
+- (void)testLegacyInlineAutocompleteSuggestion {
+  // Skip if new text field implementation is enabled.
+  if (base::FeatureList::IsEnabled(kIOSNewOmniboxImplementation)) {
+    return;
+  }
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage1];
+
+  // Clears the url and replace it with local url host.
+  [ChromeEarlGreyUI focusOmniboxAndType:base::SysUTF8ToNSString(_URL1.host())];
+
+  // We expect to have an autocomplete for URL1.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::OmniboxAutocompleteLabel()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // We expect to have a suggestion autocomplete.
+  [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(_URL1)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 // Tests that tapping the switch to open tab button, switch to the open tab,
 // doesn't close the tab.
 - (void)testSwitchToOpenTab {

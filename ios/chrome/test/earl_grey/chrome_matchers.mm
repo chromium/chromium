@@ -170,6 +170,10 @@ id<GREYMatcher> OmniboxContainingText(const std::string& text) {
       omniboxContainingText:base::SysUTF8ToNSString(text)];
 }
 
+id<GREYMatcher> OmniboxAutocompleteLabel() {
+  return [ChromeMatchersAppInterface omniboxAutocompleteLabel];
+}
+
 id<GREYMatcher> LocationViewContainingText(const std::string& text) {
   return [ChromeMatchersAppInterface
       locationViewContainingText:base::SysUTF8ToNSString(text)];

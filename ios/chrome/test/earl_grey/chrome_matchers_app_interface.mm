@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/ui/location_bar/location_bar_steady_view.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views_utils.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -362,6 +363,12 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                                                   text]];
       }];
   return matcher;
+}
+
++ (id<GREYMatcher>)omniboxAutocompleteLabel {
+  return grey_allOf(
+      grey_accessibilityID(kOmniboxAutocompleteLabelAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)locationViewContainingText:(NSString*)text {

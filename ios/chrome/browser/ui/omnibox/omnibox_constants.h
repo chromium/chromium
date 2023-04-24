@@ -16,4 +16,6 @@ extern NSString* const kOmniboxLeadingImageEmptyTextAccessibilityIdentifier;
 extern NSString* const
     kOmniboxLeadingImageSuggestionImageAccessibilityIdentifier;
 
+extern NSString* const kOmniboxAutocompleteLabelAccessibilityIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_CONSTANTS_H_

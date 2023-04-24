@@ -18,3 +18,6 @@ NSString* const kOmniboxLeadingImageEmptyTextAccessibilityIdentifier =
 
 NSString* const kOmniboxLeadingImageSuggestionImageAccessibilityIdentifier =
     @"OmniboxLeadingImageSuggestionImageAccessibilityIdentifier";
+
+NSString* const kOmniboxAutocompleteLabelAccessibilityIdentifier =
+    @"OmniboxAutocompleteLabelAccessibilityIdentifier";
