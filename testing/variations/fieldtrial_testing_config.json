@@ -2148,6 +2148,21 @@
             ]
         }
     ],
+    "CCTRealTimeEngagementSignalsAlternativeImpl": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CCTRealTimeEngagementSignalsAlternativeImpl"
+                    ]
+                }
+            ]
+        }
+    ],
     "CPSS": [
         {
             "platforms": [
