@@ -120,8 +120,10 @@ suite('loadingPageTest', function() {
     assertTrue(learnMoreEventFired);
   });
 
+  // TODO(b/276493795): After the Jelly experiment is launched, remove test.
   // Verify correct 'no scanners' svg displayed when page is in dark mode.
   test('noScannersSvgSetByColorScheme', async () => {
+    await setJellyEnabled(false);
     const lightModeSvg = `${scanningSrcBase}svg/no_scanners.svg`;
     const darkModeSvg = `${scanningSrcBase}svg/no_scanners_dark.svg`;
     const getNoScannersSvg = () => (/** @type {!HTMLImageElement} */ (
@@ -135,6 +137,25 @@ suite('loadingPageTest', function() {
     // Mock media query state for dark mode.
     await setFakePrefersColorSchemeDark(true);
     assertEquals(darkModeSvg, getNoScannersSvg().src);
+  });
+
+  // Verify "no scanners" dynamic SVG use when dynamic colors enabled.
+  test('jellyColors_NoScannersSvg', async () => {
+    await setJellyEnabled(true);
+    const dynamicSvg = `svg/illo_no_scanner.svg#illo_no_scanner`;
+    const getNoScannersSvgValue = () =>
+        (/** @type {!SVGUseElement} */ (
+             loadingPage.shadowRoot.querySelector('#noScannersDiv > svg > use'))
+             .href.baseVal);
+
+    // Setup UI to display no scanners div.
+    loadingPage.appState = AppState.NO_SCANNERS;
+    await setFakePrefersColorSchemeDark(false);
+    assertEquals(dynamicSvg, getNoScannersSvgValue());
+
+    // Mock media query state for dark mode.
+    await setFakePrefersColorSchemeDark(true);
+    assertEquals(dynamicSvg, getNoScannersSvgValue());
   });
 
   // TODO(b/276493795): After the Jelly experiment is launched, remove test.
