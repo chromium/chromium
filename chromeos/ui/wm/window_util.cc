@@ -134,6 +134,12 @@ bool CanFloatWindow(aura::Window* window) {
     return false;
   }
 #endif
+
+  if (window->GetProperty(aura::client::kZOrderingKey) !=
+      ui::ZOrderLevel::kNormal) {
+    return false;
+  }
+
   return TabletState::Get()->InTabletMode() ? CanFloatWindowInTablet(window)
                                             : CanFloatWindowInClamshell(window);
 }

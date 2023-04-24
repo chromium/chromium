@@ -173,7 +173,7 @@ class WindowFloatTest : public AshTestBase {
   std::unique_ptr<aura::Window> CreateFloatedWindow() {
     std::unique_ptr<aura::Window> floated_window = CreateAppWindow();
     PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-    DCHECK(WindowState::Get(floated_window.get())->IsFloated());
+    CHECK(WindowState::Get(floated_window.get())->IsFloated());
     return floated_window;
   }
 
@@ -847,6 +847,17 @@ TEST_F(WindowFloatTest, PinnedWindow) {
   // Try pinning the floated window. It should still be visible.
   window_util::PinWindow(floated_window.get(), /*trusted=*/true);
   EXPECT_TRUE(floated_window->IsVisible());
+}
+
+// Tests that there is no crash when trying to float an always on top window.
+// Regression test for b/279366443.
+TEST_F(WindowFloatTest, AlwaysOnTopWindow) {
+  std::unique_ptr<aura::Window> always_on_top_window = CreateAppWindow();
+  always_on_top_window->SetProperty(aura::client::kZOrderingKey,
+                                    ui::ZOrderLevel::kFloatingWindow);
+
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(WindowState::Get(always_on_top_window.get())->IsFloated());
 }
 
 // A test class that uses a mock time test environment.

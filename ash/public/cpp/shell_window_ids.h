@@ -90,7 +90,6 @@ enum ShellWindowId {
   kShellWindowId_AlwaysOnTopContainer,
 
   // The container for the floating window.
-  // Experimental feature, please don't use this container.
   kShellWindowId_FloatContainer,
 
   // The container for the app list.
