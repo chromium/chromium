@@ -48,15 +48,6 @@ PrintManager* g_receiver_for_testing = nullptr;
 base::LazyInstance<std::map<content::RenderProcessHost*, base::OnceClosure>>::
     Leaky g_scripted_print_preview_closure_map = LAZY_INSTANCE_INITIALIZER;
 
-content::WebContents* GetPrintPreviewDialog(
-    content::WebContents* web_contents) {
-  PrintPreviewDialogController* dialog_controller =
-      PrintPreviewDialogController::GetInstance();
-  if (!dialog_controller)
-    return nullptr;
-  return dialog_controller->GetPrintPreviewForContents(web_contents);
-}
-
 }  // namespace
 
 PrintViewManager::PrintViewManager(content::WebContents* web_contents)
@@ -471,12 +462,18 @@ void PrintViewManager::OnRequestPrintPreviewCallback(
   if (!render_frame_host || !render_frame_host->IsRenderFrameLive())
     return;
 
+  auto* dialog_controller = PrintPreviewDialogController::GetInstance();
+  if (!dialog_controller) {
+    PrintPreviewDone();
+    return;
+  }
+
   if (params->webnode_only)
     PrintPreviewForWebNode(render_frame_host);
 
-  PrintPreviewDialogController::PrintPreview(web_contents());
-  PrintPreviewUI::SetInitialParams(GetPrintPreviewDialog(web_contents()),
-                                   *params);
+  dialog_controller->PrintPreview(web_contents());
+  PrintPreviewUI::SetInitialParams(
+      dialog_controller->GetPrintPreviewForContents(web_contents()), *params);
   PrintPreviewAllowedForTesting();
 }
 
