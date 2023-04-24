@@ -134,7 +134,6 @@
 #include "chrome/browser/password_manager/android/password_accessory_controller_impl.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
-#include "chrome/browser/password_manager/android/password_manager_ui_util_android.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller_autofill_delegate.h"
 #include "components/messages/android/messages_feature.h"
@@ -341,8 +340,8 @@ void ChromePasswordManagerClient::FocusedInputChanged(
       ->NotifyFocusedInputChanged(focused_field_id, focused_field_type);
   password_manager::ContentPasswordManagerDriver* content_driver =
       static_cast<password_manager::ContentPasswordManagerDriver*>(driver);
-  if (!ShouldAcceptFocusEvent(web_contents(), content_driver,
-                              focused_field_type)) {
+  if (!PasswordAccessoryControllerImpl::ShouldAcceptFocusEvent(
+          web_contents(), content_driver, focused_field_type)) {
     return;
   }
 
@@ -996,32 +995,29 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
   if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
           rfh, ui_data.form_data.url,
           BadMessageReason::
-              CPMD_BAD_ORIGIN_AUTOMATIC_GENERATION_STATUS_CHANGED)) {
+              CPMD_BAD_ORIGIN_AUTOMATIC_GENERATION_STATUS_CHANGED))
     return;
-  }
 #if BUILDFLAG(IS_ANDROID)
-  password_manager::ContentPasswordManagerDriver* driver =
-      driver_factory_->GetDriverForFrame(rfh);
+  PasswordManagerDriver* driver = driver_factory_->GetDriverForFrame(rfh);
   // This method is called over Mojo via a RenderFrameHostReceiverSet; the
   // current target frame must be live.
   // TODO(crbug.com/1294378): Remove reference to nested frames once
   // EnablePasswordManagerWithinFencedFrame is launched.
-  CHECK(driver || rfh->IsNestedWithinFencedFrame());
-  if (!driver ||
-      !ShouldAcceptFocusEvent(web_contents(), driver,
-                              FocusedFieldType::kFillablePasswordField)) {
+  DCHECK(driver || rfh->IsNestedWithinFencedFrame());
+  if (!driver) {
     return;
   }
 
   PasswordGenerationController* generation_controller =
-      PasswordGenerationController::GetOrCreate(web_contents());
+      PasswordGenerationController::GetIfExisting(web_contents());
+  DCHECK(generation_controller);
 
   gfx::RectF element_bounds_in_screen_space = TransformToRootCoordinates(
       password_generation_driver_receivers_.GetCurrentTargetFrame(),
       ui_data.bounds);
 
   generation_controller->OnAutomaticGenerationAvailable(
-      driver->AsWeakPtr(), ui_data, element_bounds_in_screen_space);
+      driver, ui_data, element_bounds_in_screen_space);
 #else
   password_manager::ContentPasswordManagerDriver* driver =
       driver_factory_->GetDriverForFrame(rfh);
@@ -1029,7 +1025,7 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
   // current target frame must be live.
   // TODO(crbug.com/1294378): Remove reference to nested frames once
   // EnablePasswordManagerWithinFencedFrame is launched.
-  CHECK(driver || rfh->IsNestedWithinFencedFrame());
+  DCHECK(driver || rfh->IsNestedWithinFencedFrame());
   if (!driver)
     return;
 

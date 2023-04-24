@@ -30,7 +30,6 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_document.h"
-#include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -484,7 +483,7 @@ bool PasswordGenerationAgent::SetUpTriggeredGeneration() {
   return true;
 }
 
-bool PasswordGenerationAgent::HandleFocusChangeComplete(
+bool PasswordGenerationAgent::FocusedNodeHasChanged(
     const blink::WebNode& node) {
   if (node.IsNull() || !node.IsElementNode()) {
     return false;
@@ -620,9 +619,8 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
     // Notify `password_agent_` of text changes to the other confirmation
     // password fields.
     for (const auto& password_element :
-         current_generation_item_->password_elements_) {
+         current_generation_item_->password_elements_)
       password_agent_->UpdateStateForTextChange(password_element);
-    }
   }
   return true;
 }
@@ -693,10 +691,8 @@ void PasswordGenerationAgent::PasswordNoLongerGenerated() {
   // Do not treat the password as generated, either here or in the browser.
   current_generation_item_->password_is_generated_ = false;
   current_generation_item_->password_edited_ = false;
-  for (WebInputElement& password :
-       current_generation_item_->password_elements_) {
+  for (WebInputElement& password : current_generation_item_->password_elements_)
     password.SetAutofillState(WebAutofillState::kNotFilled);
-  }
   password_generation::LogPasswordGenerationEvent(
       password_generation::PASSWORD_DELETED);
   // Clear all other password fields.
