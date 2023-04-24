@@ -41,6 +41,8 @@ INSTANTIATE_TEST_SUITE_P(
         "https://outlook.live.com",
         "https://outlook.office.com",
         "https://quizlet.com",
+        "https://reddit.com",
+        "https://teams.microsoft.com",
         "https://twitter.com",
         "https://whatsapp.com",
 
