@@ -162,6 +162,8 @@ class TouchToFillCreditCardMediator {
                         .Builder(TouchToFillCreditCardProperties.CreditCardProperties.ALL_KEYS)
                         .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_ICON_ID,
                                 card.getIssuerIconDrawableId())
+                        .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_ART_URL,
+                                card.getCardArtUrl())
                         .with(TouchToFillCreditCardProperties.CreditCardProperties.NETWORK_NAME, "")
                         .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME,
                                 card.getCardNameForAutofillDisplay())

@@ -13,6 +13,7 @@ android_library("java") {
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/autofill/android:java",
     "//chrome/browser/autofill/android:java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/touch_to_fill/android/internal:java",
     "//chrome/browser/touch_to_fill/common/android:java",
     "//chrome/browser/touch_to_fill/common/android:java_resources",
@@ -26,6 +27,7 @@ android_library("java") {
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_resources",
+    "//url:gurl_java",
   ]
 
   sources = [

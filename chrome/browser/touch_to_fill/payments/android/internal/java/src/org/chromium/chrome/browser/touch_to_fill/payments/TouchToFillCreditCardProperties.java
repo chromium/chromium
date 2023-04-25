@@ -9,6 +9,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.url.GURL;
 
 /**
  * Properties defined here reflect the visible state of the TouchToFillCreditCard component.
@@ -43,6 +44,8 @@ class TouchToFillCreditCardProperties {
     static class CreditCardProperties {
         static final PropertyModel.ReadableIntPropertyKey CARD_ICON_ID =
                 new PropertyModel.ReadableIntPropertyKey("card_icon_id");
+        static final PropertyModel.ReadableObjectPropertyKey<GURL> CARD_ART_URL =
+                new PropertyModel.ReadableObjectPropertyKey<>("card_art_url");
         static final PropertyModel.ReadableObjectPropertyKey<String> NETWORK_NAME =
                 new PropertyModel.ReadableObjectPropertyKey<>("network_name");
         static final PropertyModel.ReadableObjectPropertyKey<String> CARD_NAME =
@@ -56,8 +59,8 @@ class TouchToFillCreditCardProperties {
         static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_CLICK_ACTION =
                 new PropertyModel.ReadableObjectPropertyKey<>("on_click_action");
 
-        static final PropertyKey[] ALL_KEYS = {CARD_ICON_ID, NETWORK_NAME, CARD_NAME, CARD_NUMBER,
-                CARD_EXPIRATION, VIRTUAL_CARD_LABEL, ON_CLICK_ACTION};
+        static final PropertyKey[] ALL_KEYS = {CARD_ICON_ID, CARD_ART_URL, NETWORK_NAME, CARD_NAME,
+                CARD_NUMBER, CARD_EXPIRATION, VIRTUAL_CARD_LABEL, ON_CLICK_ACTION};
 
         private CreditCardProperties() {}
     }
