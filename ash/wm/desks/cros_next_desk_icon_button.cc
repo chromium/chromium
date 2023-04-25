@@ -4,6 +4,8 @@
 
 #include "ash/wm/desks/cros_next_desk_icon_button.h"
 
+#include <algorithm>
+
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/color_util.h"
@@ -15,7 +17,6 @@
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/canvas.h"
