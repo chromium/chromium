@@ -66,6 +66,7 @@
 #import "ios/chrome/browser/optimization_guide/optimization_guide_tab_helper.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_validation_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
+#import "ios/chrome/browser/passwords/password_controller.h"
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
 #import "ios/chrome/browser/passwords/well_known_change_password_tab_helper.h"
 #import "ios/chrome/browser/permissions/permissions_tab_helper.h"
@@ -150,7 +151,6 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
       web_state);
   password_manager::WellKnownChangePasswordTabHelper::CreateForWebState(
       web_state);
-  BottomSheetTabHelper::CreateForWebState(web_state);
 
   InvalidUrlTabHelper::CreateForWebState(web_state);
 
@@ -242,6 +242,11 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     ChromeIOSTranslateClient::CreateForWebState(web_state);
 
     PasswordTabHelper::CreateForWebState(web_state);
+    // TODO(crbug.com/1434606): PasswordTabHelper and BottomSheetTabHelper must
+    // share a password controller until the Butter notice is removed.
+    BottomSheetTabHelper::CreateForWebState(
+        web_state, PasswordTabHelper::FromWebState(web_state)
+                       ->GetPasswordsAccountStorageNoticeHandler());
     AutofillTabHelper::CreateForWebState(
         web_state,
         PasswordTabHelper::FromWebState(web_state)->GetPasswordManager());

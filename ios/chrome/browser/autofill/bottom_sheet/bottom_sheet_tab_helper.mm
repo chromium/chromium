@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/password_manager/ios/password_account_storage_notice_handler.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -27,39 +28,60 @@ constexpr int kIosPasswordBottomSheetMaxDismissCount = 3;
 
 BottomSheetTabHelper::~BottomSheetTabHelper() = default;
 
-BottomSheetTabHelper::BottomSheetTabHelper(web::WebState* web_state)
-    : web_state_(web_state) {}
+BottomSheetTabHelper::BottomSheetTabHelper(
+    web::WebState* web_state,
+    id<PasswordsAccountStorageNoticeHandler>
+        password_account_storage_notice_handler)
+    : password_account_storage_notice_handler_(
+          password_account_storage_notice_handler),
+      web_state_(web_state) {}
 
 // Public methods
 
 void BottomSheetTabHelper::SetPasswordBottomSheetHandler(
-    id<PasswordBottomSheetCommands> handler) {
-  handler_ = handler;
+    id<PasswordBottomSheetCommands> password_bottom_sheet_commands_handler) {
+  password_bottom_sheet_commands_handler_ =
+      password_bottom_sheet_commands_handler;
 }
 
 void BottomSheetTabHelper::OnFormMessageReceived(
     const web::ScriptMessage& message) {
   autofill::FormActivityParams params;
-  if (handler_ && autofill::FormActivityParams::FromMessage(message, &params)) {
-    [handler_ showPasswordBottomSheet:params];
+  if (!password_bottom_sheet_commands_handler_ ||
+      !password_account_storage_notice_handler_ ||
+      !autofill::FormActivityParams::FromMessage(message, &params)) {
+    return;
   }
+
+  if (![password_account_storage_notice_handler_
+          shouldShowAccountStorageNotice]) {
+    [password_bottom_sheet_commands_handler_ showPasswordBottomSheet:params];
+    return;
+  }
+
+  __weak id<PasswordBottomSheetCommands>
+      weak_password_bottom_sheet_commands_handler =
+          password_bottom_sheet_commands_handler_;
+  [password_account_storage_notice_handler_ showAccountStorageNotice:^{
+    [weak_password_bottom_sheet_commands_handler
+        showPasswordBottomSheet:params];
+  }];
 }
 
 void BottomSheetTabHelper::AttachListeners(
     const std::vector<autofill::FieldRendererId>& renderer_ids,
     web::WebFrame* frame) {
-  // Verify that the password bottom sheet feature is enabled.
+  // Verify that the password bottom sheet feature is enabled and that it hasn't
+  // been dismissed too many times.
   if (!base::FeatureList::IsEnabled(
-          password_manager::features::kIOSPasswordBottomSheet)) {
+          password_manager::features::kIOSPasswordBottomSheet) ||
+      HasReachedDismissLimit()) {
     return;
   }
 
-  // Verify that the password bottom sheet hasn't been dismissed too many times.
-  if (!HasReachedDismissLimit()) {
-    // Enable the password bottom sheet.
-    BottomSheetJavaScriptFeature::GetInstance()->AttachListeners(renderer_ids,
-                                                                 frame);
-  }
+  // Enable the password bottom sheet.
+  BottomSheetJavaScriptFeature::GetInstance()->AttachListeners(renderer_ids,
+                                                               frame);
 }
 
 void BottomSheetTabHelper::DetachListenersAndRefocus(web::WebFrame* frame) {

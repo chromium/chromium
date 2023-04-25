@@ -14,8 +14,10 @@ class WebFrame;
 }  // namespace web
 
 @class CommandDispatcher;
+@protocol PasswordsAccountStorageNoticeHandler;
 @protocol PasswordBottomSheetCommands;
 
+// TODO(crbug.com/1422361): Rename this class to include the notion of autofill.
 class BottomSheetTabHelper
     : public web::WebStateUserData<BottomSheetTabHelper> {
  public:
@@ -28,7 +30,8 @@ class BottomSheetTabHelper
   void OnFormMessageReceived(const web::ScriptMessage& message);
 
   // Sets the CommandDispatcher.
-  void SetPasswordBottomSheetHandler(id<PasswordBottomSheetCommands> handler);
+  void SetPasswordBottomSheetHandler(
+      id<PasswordBottomSheetCommands> password_bottom_sheet_commands_handler);
 
   // Prepare bottom sheet using data from the password form prediction.
   void AttachListeners(
@@ -41,13 +44,23 @@ class BottomSheetTabHelper
  private:
   friend class web::WebStateUserData<BottomSheetTabHelper>;
 
-  explicit BottomSheetTabHelper(web::WebState* web_state);
+  explicit BottomSheetTabHelper(web::WebState* web_state,
+                                id<PasswordsAccountStorageNoticeHandler>
+                                    password_account_storage_notice_handler);
 
   // Check whether the password bottom sheet has been dismissed too many times
   // by the user.
   bool HasReachedDismissLimit();
 
-  id<PasswordBottomSheetCommands> handler_;
+  // Handler used to request showing the password bottom sheet.
+  __weak id<PasswordBottomSheetCommands>
+      password_bottom_sheet_commands_handler_;
+
+  // Handler used for the passwords account storage notice.
+  // TODO(crbug.com/1434606): Remove this when the move to account storage
+  // notice is removed.
+  __weak id<PasswordsAccountStorageNoticeHandler>
+      password_account_storage_notice_handler_;
 
   // The WebState with which this object is associated.
   web::WebState* const web_state_;
