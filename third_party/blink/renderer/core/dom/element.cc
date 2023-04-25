@@ -76,7 +76,6 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
 #include "third_party/blink/renderer/core/css/selector_query.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
-#include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
@@ -3676,20 +3675,6 @@ StyleRecalcChange Element::RecalcOwnStyle(
   }
   SetComputedStyle(new_style);
 
-  // Update style containment tree if the style containment of the element
-  // has changed.
-  if ((!new_style && old_style && old_style->ContainsStyle()) ||
-      (old_style && new_style &&
-       old_style->ContainsStyle() != new_style->ContainsStyle())) {
-    StyleContainmentScopeTree& tree =
-        GetDocument().GetStyleEngine().GetStyleContainmentScopeTree();
-    if (new_style && new_style->ContainsStyle()) {
-      tree.CreateScopeForElement(*this);
-    } else {
-      tree.DestroyScopeForElement(*this);
-    }
-  }
-
   ProcessContainIntrinsicSizeChanges();
 
   if (!child_change.ReattachLayoutTree() &&
@@ -6461,10 +6446,6 @@ void Element::UpdateFirstLetterPseudoElement(
   //
   // The StyleUpdatePhase tells where we are in the process of updating style
   // and layout tree.
-
-  // We need to update quotes to create the correct text fragments before the
-  // first letter element update.
-  GetDocument().GetStyleEngine().GetStyleContainmentScopeTree().UpdateQuotes();
 
   PseudoElement* element = GetPseudoElement(kPseudoIdFirstLetter);
   if (!element) {

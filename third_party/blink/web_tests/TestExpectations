@@ -1123,6 +1123,13 @@ crbug.com/910725 external/wpt/css/css-tables/tentative/paint/overflow-hidden-tab
 crbug.com/694374 external/wpt/css/css-tables/anonymous-table-ws-001.html [ Failure ]
 crbug.com/694374 external/wpt/css/css-tables/whitespace-001.html [ Failure ]
 
+# [css-contain]
+
+crbug.com/882385 external/wpt/css/css-contain/quote-scoping-001.html [ Failure ]
+crbug.com/882385 external/wpt/css/css-contain/quote-scoping-002.html [ Failure ]
+crbug.com/882385 external/wpt/css/css-contain/quote-scoping-003.html [ Failure ]
+crbug.com/882385 external/wpt/css/css-contain/quote-scoping-004.html [ Failure ]
+
 # [css-align]
 
 crbug.com/722287 crbug.com/886585 external/wpt/css/css-flexbox/abspos/flex-abspos-staticpos-align-self-safe-001.html [ Failure ]

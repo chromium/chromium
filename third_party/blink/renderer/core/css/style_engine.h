@@ -74,7 +74,6 @@ namespace blink {
 class ComputedStyleBuilder;
 class CounterStyle;
 class CounterStyleMap;
-class StyleContainmentScopeTree;
 class CSSFontSelector;
 class CSSPropertyValueSet;
 class CSSStyleSheet;
@@ -343,10 +342,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   StyleResolver& GetStyleResolver() const {
     DCHECK(resolver_);
     return *resolver_;
-  }
-
-  StyleContainmentScopeTree& GetStyleContainmentScopeTree() const {
-    return *style_containment_scope_tree_;
   }
 
   void SetRuleUsageTracker(StyleRuleUsageTracker*);
@@ -826,9 +821,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool AllowSkipStyleRecalcForScope() const;
 
   Member<Document> document_;
-
-  // Tree of style containment scopes. Is in charge of the document's quotes.
-  Member<StyleContainmentScopeTree> style_containment_scope_tree_;
 
   // Tracks the number of currently loading top-level stylesheets. Sheets loaded
   // using the @import directive are not included in this count. We use this

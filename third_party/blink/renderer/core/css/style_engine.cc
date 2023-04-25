@@ -62,7 +62,6 @@
 #include "third_party/blink/renderer/core/css/resolver/viewport_style_resolver.h"
 #include "third_party/blink/renderer/core/css/shadow_tree_style_sheet_collection.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
-#include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
 #include "third_party/blink/renderer/core/css/style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -131,8 +130,6 @@ CSSFontSelector* CreateCSSFontSelectorFor(Document& document) {
 
 StyleEngine::StyleEngine(Document& document)
     : document_(&document),
-      style_containment_scope_tree_(
-          MakeGarbageCollected<StyleContainmentScopeTree>()),
       document_style_sheet_collection_(
           MakeGarbageCollected<DocumentStyleSheetCollection>(document)),
       resolver_(MakeGarbageCollected<StyleResolver>(document)),
@@ -2754,7 +2751,6 @@ void StyleEngine::EnvironmentVariableChanged() {
 
 void StyleEngine::NodeWillBeRemoved(Node& node) {
   if (auto* element = DynamicTo<Element>(node)) {
-    style_containment_scope_tree_->ElementWillBeRemoved(*element);
     pending_invalidations_.RescheduleSiblingInvalidationsAsDescendants(
         *element);
   }
@@ -3140,8 +3136,6 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
     RebuildLayoutTree(&container);
   }
 
-  // Update quotes only if there are any scopes marked dirty.
-  style_containment_scope_tree_->UpdateQuotes();
   if (container == GetDocument().documentElement()) {
     // If the container is the root element, there may be body styles which have
     // changed as a result of the new container query evaluation, and if
@@ -3320,8 +3314,6 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
       SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES("Style.RebuildLayoutTreeTime");
       RebuildLayoutTree();
     }
-    // Update quotes only if there are any scopes marked dirty.
-    style_containment_scope_tree_->UpdateQuotes();
   } else {
     style_recalc_root_.Clear();
   }
@@ -3849,7 +3841,6 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(ua_view_transition_style_);
   visitor->Trace(style_image_cache_);
   visitor->Trace(fill_or_clip_path_uri_value_cache_);
-  visitor->Trace(style_containment_scope_tree_);
   FontSelectorClient::Trace(visitor);
 }
 
