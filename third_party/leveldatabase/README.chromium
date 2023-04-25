@@ -29,3 +29,8 @@ Local Additions:
 * leveldb_chrome::NewMemEnv() to create memory Env instances that are tracked to
   know if a database open request is in-memory. These memory Env instances report
   memory usage to memory-infra.
+* leveldb_chrome.cc and env_chromium.cc to use
+  base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled() instead of
+  base::SysUtils::IsLowEndDevice(). Will run an experiment with
+  PartialLowEndMode enabled on Android 4gb and 6gb devices to see how
+  memory performance and cpu performance will change.

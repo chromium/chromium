@@ -472,7 +472,7 @@ Options::Options() {
   // memory buffer which won't be written until it hits the maximum size
   // (leveldb::Options::write_buffer_size - 4MB by default). The downside here
   // is that databases opens take longer as the open is blocked on compaction.
-  reuse_logs = !base::SysInfo::IsLowEndDevice();
+  reuse_logs = !base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled();
 #endif
   // By default use a single shared block cache to conserve memory. The owner of
   // this object can create their own, or set to NULL to have leveldb create a
