@@ -437,9 +437,10 @@ void KioskLaunchController::OnTimerFire() {
     CloseSplashScreen();
   } else if (app_state_ == AppState::kInstalled) {
     LaunchApp();
-  } else {
-    launch_on_install_ = true;
   }
+  // Always set `launch_on_install_` to true so that Kiosk launch will happen
+  // immediately after retrying due to network issue.
+  launch_on_install_ = true;
 }
 
 void KioskLaunchController::CloseSplashScreen() {
