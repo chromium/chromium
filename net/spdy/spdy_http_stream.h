@@ -39,6 +39,7 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
  public:
   static const size_t kRequestBodyBufferSize;
   // |spdy_session| must not be NULL.
+  // TODO(https://crbug.com/1426477): Remove `pushed_stream_id` argument.
   SpdyHttpStream(const base::WeakPtr<SpdySession>& spdy_session,
                  spdy::SpdyStreamId pushed_stream_id,
                  NetLogSource source_dependency,
@@ -157,6 +158,7 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   // The ID of the pushed stream if one is claimed by this request.
   // In this case, the request fails if it cannot use that pushed stream.
   // Otherwise set to kNoPushedStreamFound.
+  // TODO(https://crbug.com/1426477): Remove.
   const spdy::SpdyStreamId pushed_stream_id_;
 
   bool is_reused_;

@@ -34,6 +34,7 @@ namespace net {
 
 namespace {
 
+// TODO(https://crbug.com/1426477): Remove.
 bool ValidatePushedHeaders(
     const HttpRequestInfo& request_info,
     const spdy::Http2HeaderBlock& pushed_request_headers,

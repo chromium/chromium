@@ -34,6 +34,7 @@ const spdy::SpdyStreamId kNoPushedStreamFound = 0;
 // SpdySession uses this class to register, unregister and query pushed streams.
 // HttpStreamFactory::Job uses this class to find a SpdySession with a pushed
 // stream matching the request, if such exists.
+// TODO(https://crbug.com/1426477): Remove.
 class NET_EXPORT Http2PushPromiseIndex {
  public:
   // Interface for validating pushed streams, signaling when a pushed stream is
