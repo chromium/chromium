@@ -53,7 +53,6 @@ build_webui_tests("build") {
     "hotspot_summary_item_tests.js",
     "google_assistant_subpage_test.js",
     "guest_os_shared_paths_test.js",
-    "input_device_mojo_interface_provider_test.js",
     "input_method_options_page_test.js",
     "input_page_test.js",
     "internet_config_test.js",
@@ -166,6 +165,7 @@ build_webui_tests("build") {
 
     "device_page/device_page_tests.js",
     "device_page/fake_input_device_settings_provider_test.ts",
+    "device_page/input_device_mojo_interface_provider_test.ts",
     "device_page/per_device_keyboard_remap_keys_test.ts",
     "device_page/per_device_keyboard_subsection_test.ts",
     "device_page/per_device_keyboard_test.ts",
