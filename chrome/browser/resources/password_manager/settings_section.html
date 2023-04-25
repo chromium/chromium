@@ -29,10 +29,6 @@
     --cr-icon-button-margin-end: 10px;
   }
 
-  cr-link-row[hide-icon]::part(icon) {
-    opacity: 0;
-  }
-
   @media all and (display-mode: standalone) {
     #addShortcutBanner {
       display: none;
@@ -112,7 +108,7 @@
   </template>
   <template is="dom-if" if="[[canAddShortcut_]]">
     <cr-link-row id="addShortcutBanner" class="cr-row settings-cr-link-row"
-        on-click="onAddShortcutClick_" label="$i18n{addShortcut}" hide-icon
+        on-click="onAddShortcutClick_" label="$i18n{addShortcut}"
         sub-label="$i18n{addShortcutDescription}" role-description="button">
     </cr-link-row>
   </template>
