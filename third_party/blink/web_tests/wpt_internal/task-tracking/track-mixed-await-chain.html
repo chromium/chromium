@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Verify that await tasks can be properly tracked.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/mixed-promise-helper.js"></script>
+</head>
+<body>
+<script>
+
+const run_await_test = () => {
+  promise_test(async () => {
+    const promise_task = scheduler.taskId;
+    const response = await fetch("/resources/blank.html")
+    await new Promise(r => {
+      // A JS-based promise, resolved when the image loads.
+      assert_equals(scheduler.isAncestor(parent_task), "ancestor");
+      assert_equals(scheduler.isAncestor(sibling_task), "not ancestor");
+      assert_equals(scheduler.taskId, promise_task);
+      assert_not_equals(scheduler.taskId, parent_task);
+      image_loaded = r;
+      image_can_load();
+    });
+    assert_equals(scheduler.isAncestor(parent_task), "ancestor");
+    assert_equals(scheduler.isAncestor(sibling_task), "not ancestor");
+    assert_equals(scheduler.taskId, promise_task);
+    const body = await response.text();
+    assert_equals(scheduler.isAncestor(parent_task), "ancestor");
+    assert_equals(scheduler.isAncestor(sibling_task), "not ancestor");
+    assert_equals(scheduler.taskId, promise_task);
+  }, "All microtasks in the await chain after fetching a resource  are " +
+     "descendants of the initiating task.");
+};
+
+run_test("run_await_test()");
+</script>
+</body>
+</html>
