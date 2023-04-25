@@ -180,7 +180,8 @@
                 selected-temperature-unit="[[temperatureUnitToString_(temperatureUnit_)]]">
             </ambient-weather-unit>
             <template is="dom-if" if="[[isScreenSaverDurationEnabled_]]">
-              <duration-list></duration-list>
+              <duration-list duration="[[duration_]]">
+              </duration-list>
             </template>
           </template>
         </template>

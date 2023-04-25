@@ -56,6 +56,10 @@ export class AmbientSubpage extends WithPersonalizationStore {
         value: null,
         observer: 'onAmbientModeEnabledChanged_',
       },
+      duration_: {
+        type: Number,
+        value: null,
+      },
       temperatureUnit_: {
         type: Number,
         value: null,
@@ -91,8 +95,10 @@ export class AmbientSubpage extends WithPersonalizationStore {
   private albums_: AmbientModeAlbum[]|null;
   private ambientModeEnabled_: boolean|null;
   private animationTheme_: AnimationTheme|null;
+  private duration_: number|null;
   private temperatureUnit_: TemperatureUnit|null;
   private topicSource_: TopicSource|null;
+  private isScreenSaverDurationEnabled_: boolean;
   private isPersonalizationJellyEnabled_: boolean;
 
   // Refetch albums if the user is currently viewing ambient subpage, focuses
@@ -130,6 +136,8 @@ export class AmbientSubpage extends WithPersonalizationStore {
         'temperatureUnit_', state => state.ambient.temperatureUnit);
     this.watch<AmbientSubpage['topicSource_']>(
         'topicSource_', state => state.ambient.topicSource);
+    this.watch<AmbientSubpage['duration_']>(
+        'duration_', state => state.ambient.duration);
     this.updateFromStore();
 
     getAmbientProvider().setPageViewed();
@@ -226,7 +234,8 @@ export class AmbientSubpage extends WithPersonalizationStore {
 
   private computeLoading_(): boolean {
     return this.ambientModeEnabled_ === null || this.albums_ === null ||
-        this.topicSource_ === null || this.temperatureUnit_ === null;
+        this.topicSource_ === null || this.temperatureUnit_ === null ||
+        (this.isScreenSaverDurationEnabled_ && this.duration_ === null);
   }
 
   private getPlaceholders_(x: number): number[] {

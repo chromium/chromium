@@ -71,6 +71,7 @@ class PersonalizationAppAmbientProviderImpl
   // Notify WebUI the latest values.
   void OnAmbientModeEnabledChanged();
   void OnAmbientUiSettingsChanged();
+  void OnScreenSaverDurationChanged();
   void OnTemperatureUnitChanged();
   void OnTopicSourceChanged();
   void OnAlbumsChanged();

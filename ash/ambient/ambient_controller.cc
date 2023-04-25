@@ -718,10 +718,10 @@ void AmbientController::SetScreenSaverDuration(int minutes) {
                     base::Value(minutes));
 }
 
-int AmbientController::GetScreenSaverDuration() {
+absl::optional<int> AmbientController::GetScreenSaverDuration() {
   auto* pref_service = GetPrimaryUserPrefService();
-  if (!ash::features::IsScreenSaverDurationEnabled() || !pref_service) {
-    return -1;
+  if (!pref_service) {
+    return absl::nullopt;
   }
   return pref_service->GetInteger(
       ambient::prefs::kAmbientModeRunningDurationMinutes);

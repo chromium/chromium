@@ -37,6 +37,11 @@ export class DurationList extends WithPersonalizationStore {
       /**
        * Used to refer to the enum values in HTML file.
        */
+      duration: {
+        type: Number,
+        observer: 'onDurationChanged_',
+      },
+
       options_: {
         type: Array,
         value: [
@@ -70,8 +75,15 @@ export class DurationList extends WithPersonalizationStore {
     };
   }
 
+  private duration: number|null;
   private options_: DurationOption[];
   private selectedDuration_: string;
+
+  private onDurationChanged_(value: number|null) {
+    if (value) {
+      this.selectedDuration_ = value.toString();
+    }
+  }
 
   private setScreenSaverDuration_(minutes: number) {
     setScreenSaverDuration(minutes, getAmbientProvider(), this.getStore());

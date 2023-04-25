@@ -73,6 +73,10 @@ class TestAmbientObserver
     albums_ = std::move(albums);
   }
 
+  void OnScreenSaverDurationChanged(uint32_t minutes) override {
+    duration_ = minutes;
+  }
+
   void OnTemperatureUnitChanged(
       ash::AmbientModeTemperatureUnit temperature_unit) override {
     temperature_unit_ = temperature_unit;
@@ -139,6 +143,7 @@ class TestAmbientObserver
   bool ambient_mode_enabled_ = false;
 
   ash::AmbientTheme animation_theme_ = ash::AmbientTheme::kSlideshow;
+  uint32_t duration_ = 10;
   ash::AmbientModeTopicSource topic_source_ =
       ash::AmbientModeTopicSource::kArtGallery;
   ash::AmbientModeTemperatureUnit temperature_unit_ =

@@ -232,7 +232,7 @@ class AmbientAshTestBase : public AshTestBase {
 
   void SetScreenSaverDuration(int minutes);
 
-  int GetScreenSaverDuration();
+  absl::optional<int> GetScreenSaverDuration();
 
  private:
   void SpinWaitForAmbientViewAvailable(

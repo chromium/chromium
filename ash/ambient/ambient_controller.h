@@ -147,8 +147,8 @@ class ASH_EXPORT AmbientController
   void SetScreenSaverDuration(int minutes);
 
   // Get the number of minutes to run screen saver before sleep from
-  // pref_service.
-  int GetScreenSaverDuration();
+  // pref_service. A nullopt means failed to fetch duration pref value.
+  absl::optional<int> GetScreenSaverDuration();
 
   void StartTimerToReleaseWakeLock();
 

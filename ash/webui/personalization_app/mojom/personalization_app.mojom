@@ -618,6 +618,11 @@ interface AmbientObserver {
   // Notifies the JS side about the current state of TopicSource.
   OnTopicSourceChanged(TopicSource topic_source);
 
+  // Notifies the JS side about the current state of ScreenSaverDuration.
+  //
+  // SPECIAL NOTE: 0 means forever.
+  OnScreenSaverDurationChanged(uint32 minutes);
+
   // Notifies the JS side about the current state of TemperatureUnit.
   OnTemperatureUnitChanged(TemperatureUnit temperature_unit);
 

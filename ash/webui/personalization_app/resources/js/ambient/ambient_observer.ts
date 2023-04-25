@@ -11,7 +11,7 @@ import {Paths} from '../personalization_router_element.js';
 import {PersonalizationStore} from '../personalization_store.js';
 import {isNonEmptyArray, isRecentHighlightsAlbum} from '../utils.js';
 
-import {setAlbumsAction, setAmbientModeEnabledAction, setAmbientUiVisibilityAction, setAnimationThemeAction, setPreviewsAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
+import {setAlbumsAction, setAmbientModeEnabledAction, setAmbientUiVisibilityAction, setAnimationThemeAction, setPreviewsAction, setScreenSaverDurationAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 
 /** @fileoverview listens for updates on ambient mode changes. */
@@ -68,6 +68,11 @@ export class AmbientObserver implements AmbientObserverInterface {
   onAnimationThemeChanged(animationTheme: AnimationTheme): void {
     const store = PersonalizationStore.getInstance();
     store.dispatch(setAnimationThemeAction(animationTheme));
+  }
+
+  onScreenSaverDurationChanged(minutes: number): void {
+    const store = PersonalizationStore.getInstance();
+    store.dispatch(setScreenSaverDurationAction(minutes));
   }
 
   onTopicSourceChanged(topicSource: TopicSource) {

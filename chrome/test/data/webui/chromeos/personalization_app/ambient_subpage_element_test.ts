@@ -420,6 +420,9 @@ suite('AmbientSubpageTest', function() {
         5, durationOptions!.length, 'Duration should have exactly 5 options');
 
     const optionFiveMin = durationOptions[0];
+    const optionTenMin = durationOptions[1];
+    assertTrue(
+        optionTenMin!.checked, 'Ten minutes option is initially selected');
     personalizationStore.expectAction(
         AmbientActionName.SET_SCREEN_SAVER_DURATION);
 
