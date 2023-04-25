@@ -7219,6 +7219,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "tab-grid-new-transitions",
+    "owners": [ "pakzhygitov", "bling-flags@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "tab-grid-recency-sort",
     "owners": [ "gambard", "bling-flags@google.com" ],
     "expiry_milestone": 120

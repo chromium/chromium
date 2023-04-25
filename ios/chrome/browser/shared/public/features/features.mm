@@ -180,6 +180,14 @@ bool IsTabGridSortedByRecency() {
   return base::FeatureList::IsEnabled(kTabGridRecencySort);
 }
 
+BASE_FEATURE(kTabGridNewTransitions,
+             "TabGridNewTransitions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsNewTabGridTransitionsEnabled() {
+  return base::FeatureList::IsEnabled(kTabGridNewTransitions);
+}
+
 BASE_FEATURE(kMultilineFadeTruncatingLabel,
              "MultilineFadeTruncatingLabel",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -914,6 +914,11 @@ extern const char kSFSymbolsFollowUpDescription[];
 extern const char kTabGridRecencySortName[];
 extern const char kTabGridRecencySortDescription[];
 
+// Title and description for the flag to enable the new transitions in the
+// TabGrid.
+extern const char kTabGridNewTransitionsName[];
+extern const char kTabGridNewTransitionsDescription[];
+
 // Title and description for the flag to determine tab inactivity in the
 // TabGrid.
 extern const char kTabInactivityThresholdName[];

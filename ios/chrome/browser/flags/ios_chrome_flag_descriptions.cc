@@ -1047,6 +1047,11 @@ const char kTabGridRecencySortName[] = "Change TabGrid sorting";
 const char kTabGridRecencySortDescription[] =
     "When enabled, the tabs in the Tab Grid are sorted differently.";
 
+const char kTabGridNewTransitionsName[] = "Enable new TabGrid transitions";
+const char kTabGridNewTransitionsDescription[] =
+    "When enabled, the new Tab Grid to Browser (and vice versa) transitions"
+    "are used.";
+
 const char kTabInactivityThresholdName[] = "Change Tab inactivity threshold";
 const char kTabInactivityThresholdDescription[] =
     "When enabled, the tabs older than the threshold are considered inactive "

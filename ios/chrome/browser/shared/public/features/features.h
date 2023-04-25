@@ -141,6 +141,12 @@ BASE_DECLARE_FEATURE(kTabGridRecencySort);
 // Whether the tab grid tabs should be sorted by recency.
 bool IsTabGridSortedByRecency();
 
+// When enabled uses new transitions in the TabGrid.
+BASE_DECLARE_FEATURE(kTabGridNewTransitions);
+
+// Whether the new tab grid tabs transitions should be enabled.
+bool IsNewTabGridTransitionsEnabled();
+
 // Feature to enable multiline gradient support in fade truncating label.
 BASE_DECLARE_FEATURE(kMultilineFadeTruncatingLabel);
 
