@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -37,7 +38,8 @@ class ToastManagerImplTest;
 class SystemToastStyle;
 
 class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
-                                public KeyboardControllerObserver {
+                                public KeyboardControllerObserver,
+                                public UnifiedSystemTray::Observer {
  public:
   class ASH_EXPORT Delegate {
    public:
@@ -64,7 +66,6 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
                const std::u16string& dismiss_text,
                const gfx::VectorIcon& leading_icon,
                base::TimeDelta duration,
-               bool show_on_lock_screen,
                bool persist_on_hover,
                aura::Window* root_window,
                base::RepeatingClosure dismiss_callback);
@@ -90,6 +91,9 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // Returns false if `is_dismiss_button_highlighted_` is false.
   bool MaybeActivateHighlightedDismissButton();
 
+  // UnifiedSystemTray::Observer:
+  void OnSliderBubbleHeightChanged() override;
+
  private:
   friend class ToastManagerImplTest;
   friend class ClipboardHistoryControllerRefreshTest;
@@ -100,6 +104,10 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
 
   // Returns the current bounds of the overlay, which is based on visibility.
   gfx::Rect CalculateOverlayBounds();
+
+  // Calculates the y offset used to shift side aligned toasts up whenever a
+  // slider bubble is visible.
+  int CalculateSliderBubbleOffset();
 
   // Executed the callback and closes the toast.
   void OnButtonClicked();
@@ -133,6 +141,9 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // `current_toast_expiration_timer_` if we are allowing for the toast to
   // persist on hover.
   std::unique_ptr<ToastHoverObserver> hover_observer_;
+
+  base::ScopedObservation<UnifiedSystemTray, UnifiedSystemTray::Observer>
+      scoped_unified_system_tray_observer_{this};
 };
 
 }  // namespace ash

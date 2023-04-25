@@ -149,8 +149,8 @@ enum ShellWindowId {
   // The container for menus.
   kShellWindowId_MenuContainer,
 
-  // The container for drag/drop images, tooltips, and widgets that are tagged
-  // with ui::ZOrderLevel::kSecuritySurface.
+  // The container for drag/drop images, tooltips, toasts and widgets that are
+  // tagged with ui::ZOrderLevel::kSecuritySurface.
   kShellWindowId_DragImageAndTooltipContainer,
 
   // The container for the fullscreen power button menu.

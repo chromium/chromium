@@ -56,9 +56,9 @@ class ASH_EXPORT AshMessagePopupCollection
   // Start observing the system.
   void StartObserving(display::Screen* screen, const display::Display& display);
 
-  // Sets the current height of the system tray bubble (or legacy notification
-  // bubble) so that notification toasts can avoid it.
-  void SetTrayBubbleHeight(int height);
+  // Sets an offset from the baseline so that notification popups can shift up
+  // without overlapping with slider bubbles.
+  void SetBaselineOffset(int baseline_offset);
 
   // message_center::MessagePopupCollection:
   int GetPopupOriginX(const gfx::Rect& popup_bounds) const override;
@@ -87,8 +87,8 @@ class ASH_EXPORT AshMessagePopupCollection
   // Sets `animation_idle_closure_`.
   void SetAnimationIdleClosureForTest(base::OnceClosure closure);
 
-  // Returns the current tray bubble height or 0 if there is no bubble.
-  int tray_bubble_height_for_test() const { return tray_bubble_height_; }
+  // Returns the current baseline offset.
+  int baseline_offset_for_test() const { return baseline_offset_; }
 
   int popups_animating_for_test() const { return popups_animating_; }
 
@@ -129,7 +129,7 @@ class ASH_EXPORT AshMessagePopupCollection
   raw_ptr<display::Screen, ExperimentalAsh> screen_;
   gfx::Rect work_area_;
   raw_ptr<Shelf, ExperimentalAsh> shelf_;
-  int tray_bubble_height_;
+  int baseline_offset_ = 0;
 
   std::set<views::Widget*> tracked_widgets_;
 

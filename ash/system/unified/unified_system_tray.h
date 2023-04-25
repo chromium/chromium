@@ -82,6 +82,9 @@ class ASH_EXPORT UnifiedSystemTray
 
     // Gets called when leaving from the calendar view.
     virtual void OnLeavingCalendarView() {}
+
+    // Gets called when a slider bubble is shown or closed.
+    virtual void OnSliderBubbleHeightChanged() {}
   };
 
   explicit UnifiedSystemTray(Shelf* shelf);
@@ -105,14 +108,20 @@ class ASH_EXPORT UnifiedSystemTray
   // accelerator is shown.
   bool IsSliderBubbleShown() const;
 
+  // Gets the height of the slider bubble used to calculate the baseline of
+  // notification popups and side aligned toasts so they don't overlap.
+  int GetSliderBubbleHeight() const;
+
   // True if the bubble containing notifications is visible..
   bool IsMessageCenterBubbleShown() const;
 
   // True if the bubble is active.
   bool IsBubbleActive() const;
 
-  // Closes all non-system tray bubbles (e.g. volume/brightness, and toasts) if
-  // any are shown.
+  // Closes all secondary bubbles (e.g. volume/brightness sliders, autozoom,
+  // privacy screen toast) if any are shown.
+  // TODO(b/279044049): Consider making autozoom and privacy screen slider
+  // bubbles, or have them extend a common class with sliders.
   void CloseSecondaryBubbles();
 
   // Activates the system tray bubble.
@@ -154,10 +163,10 @@ class ASH_EXPORT UnifiedSystemTray
   // message center opens.
   void SetTargetNotification(const std::string& notification_id);
 
-  // Sets the height of the system tray bubble from the edge of the work area
-  // so that the notification popups don't overlap with the tray. Pass 0 if no
-  // bubble is shown.
-  void SetTrayBubbleHeight(int height);
+  // Notifies the height of the secondary bubble (e.g. Volume/Brightness
+  // sliders, Privacy screen/Autozoom toast) if one is showing so notification
+  // popups or toasts won't overlap with it. Pass 0 if no bubble is shown.
+  void NotifySecondaryBubbleHeight(int height);
 
   // Transfer focus to the message center bubble. Will focus only on the message
   // center if vox is enabled. Otherwise, will focus on the first element in the

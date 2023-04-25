@@ -70,8 +70,7 @@ void PrivacyScreenToastController::ShowToast() {
   StartAutoCloseTimer();
   UpdateToastView();
 
-  tray_->SetTrayBubbleHeight(
-      bubble_widget_->GetWindowBoundsInScreen().height());
+  tray_->NotifySecondaryBubbleHeight(toast_view_->height());
 
   // Activate the bubble so ChromeVox can announce the toast.
   if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
@@ -85,7 +84,7 @@ void PrivacyScreenToastController::HideToast() {
   if (!bubble_widget_ || bubble_widget_->IsClosed())
     return;
   bubble_widget_->Close();
-  tray_->SetTrayBubbleHeight(0);
+  tray_->NotifySecondaryBubbleHeight(0);
 }
 
 void PrivacyScreenToastController::BubbleViewDestroyed() {

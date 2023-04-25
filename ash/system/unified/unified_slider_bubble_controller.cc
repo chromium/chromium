@@ -110,11 +110,15 @@ void UnifiedSliderBubbleController::CloseBubble() {
     return;
   }
   bubble_widget_->Close();
-  tray_->SetTrayBubbleHeight(0);
+  tray_->NotifySecondaryBubbleHeight(0);
 }
 
 bool UnifiedSliderBubbleController::IsBubbleShown() const {
-  return !!bubble_widget_;
+  return !!bubble_widget_ && !bubble_widget_->IsClosed();
+}
+
+int UnifiedSliderBubbleController::GetBubbleHeight() const {
+  return !!slider_view_ ? slider_view_->height() : 0;
 }
 
 void UnifiedSliderBubbleController::BubbleViewDestroyed() {
@@ -302,9 +306,9 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
 
   bubble_view_ = new TrayBubbleView(init_params);
   bubble_view_->SetCanActivate(false);
-  UnifiedSliderView* slider_view = static_cast<UnifiedSliderView*>(
+  slider_view_ = static_cast<UnifiedSliderView*>(
       bubble_view_->AddChildView(slider_controller_->CreateView()));
-  ConfigureSliderViewStyle(slider_view);
+  ConfigureSliderViewStyle(slider_view_);
 
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
 
@@ -313,13 +317,12 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
 
   // Notify value change accessibility event because the popup is triggered by
   // changing value using an accessor key like VolUp.
-  slider_view->slider()->NotifyAccessibilityEvent(
+  slider_view_->slider()->NotifyAccessibilityEvent(
       ax::mojom::Event::kValueChanged, true);
 
   StartAutoCloseTimer();
 
-  tray_->SetTrayBubbleHeight(
-      bubble_widget_->GetWindowBoundsInScreen().height());
+  tray_->NotifySecondaryBubbleHeight(slider_view_->height());
 }
 
 void UnifiedSliderBubbleController::CreateSliderController() {

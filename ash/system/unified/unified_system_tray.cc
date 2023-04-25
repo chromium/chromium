@@ -94,8 +94,8 @@ class UnifiedSystemTray::UiDelegate : public MessageCenterUiDelegate {
 
   MessageCenterUiController* ui_controller() { return ui_controller_.get(); }
 
-  void SetTrayBubbleHeight(int height) {
-    message_popup_collection_->SetTrayBubbleHeight(height);
+  void NotifySecondaryBubbleHeight(int height) {
+    message_popup_collection_->SetBaselineOffset(height);
   }
 
   message_center::MessagePopupView* GetPopupViewForNotificationID(
@@ -161,7 +161,7 @@ bool UnifiedSystemTray::UiDelegate::ShowPopups() {
 }
 
 void UnifiedSystemTray::UiDelegate::HidePopups() {
-  message_popup_collection_->SetTrayBubbleHeight(0);
+  message_popup_collection_->SetBaselineOffset(0);
 }
 
 bool UnifiedSystemTray::UiDelegate::ShowMessageCenter() {
@@ -328,6 +328,10 @@ bool UnifiedSystemTray::IsSliderBubbleShown() const {
   return slider_bubble_controller_->IsBubbleShown();
 }
 
+int UnifiedSystemTray::GetSliderBubbleHeight() const {
+  return slider_bubble_controller_->GetBubbleHeight();
+}
+
 bool UnifiedSystemTray::IsMessageCenterBubbleShown() const {
   if (message_center_bubble_) {
     return message_center_bubble_->IsMessageCenterVisible();
@@ -404,8 +408,11 @@ void UnifiedSystemTray::ShowNetworkDetailedViewBubble() {
   bubble_->ShowNetworkDetailedView(true /* force */);
 }
 
-void UnifiedSystemTray::SetTrayBubbleHeight(int height) {
-  ui_delegate_->SetTrayBubbleHeight(height);
+void UnifiedSystemTray::NotifySecondaryBubbleHeight(int height) {
+  ui_delegate_->NotifySecondaryBubbleHeight(height);
+  for (auto& observer : observers_) {
+    observer.OnSliderBubbleHeightChanged();
+  }
 }
 
 bool UnifiedSystemTray::FocusMessageCenter(bool reverse,

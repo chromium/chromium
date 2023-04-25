@@ -135,10 +135,11 @@ SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
 
   if (!leading_icon_->is_empty()) {
     leading_icon_view_ = AddChildView(std::make_unique<views::ImageView>());
-    leading_icon_view_->SetPreferredSize(gfx::Size(
-        kLeadingIconSize + kLeadingIconRightPadding, kLeadingIconSize));
-    leading_icon_view_->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::TLBR(0, 0, 0, kLeadingIconRightPadding)));
+    leading_icon_view_->SetPreferredSize(
+        gfx::Size(kLeadingIconSize, kLeadingIconSize));
+    auto* icon_padding = AddChildView(std::make_unique<views::View>());
+    icon_padding->SetPreferredSize(
+        gfx::Size(kLeadingIconRightPadding, kLeadingIconSize));
   }
 
   label_ = AddChildView(std::make_unique<SystemToastInnerLabel>(text));

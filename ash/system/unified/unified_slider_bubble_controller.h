@@ -53,6 +53,10 @@ class ASH_EXPORT UnifiedSliderBubbleController
   // True if a slider bubble is shown.
   bool IsBubbleShown() const;
 
+  // Returns the height of the bubble. Used to calculate baseline offset for
+  // notification popups or side aligned toasts.
+  int GetBubbleHeight() const;
+
   // TrayBubbleView::Delegate:
   void BubbleViewDestroyed() override;
   void OnMouseEnteredView() override;
@@ -96,6 +100,7 @@ class ASH_EXPORT UnifiedSliderBubbleController
 
   raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
   raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
+  UnifiedSliderView* slider_view_ = nullptr;
 
   // Type of the currently shown slider.
   SliderType slider_type_ = SLIDER_TYPE_VOLUME;
