@@ -318,7 +318,14 @@ TEST_F(KeyboardShortcutViewTest, FrameAndBackgroundColorUpdates) {
   EXPECT_EQ(kTitleAndFrameColorDark, GetView()->GetBackground()->get_color());
 }
 
-TEST_F(KeyboardShortcutViewTest, AccessibilityProperties) {
+// TODO(https://crbug.com/1439747): Flaky on ASAN, probably due to hard-coded
+// timeout.
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_AccessibilityProperties DISABLED_AccessibilityProperties
+#else
+#define MAYBE_AccessibilityProperties AccessibilityProperties
+#endif
+TEST_F(KeyboardShortcutViewTest, MAYBE_AccessibilityProperties) {
   // Show the widget.
   Toggle();
 
