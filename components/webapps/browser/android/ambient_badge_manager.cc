@@ -12,6 +12,10 @@
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/messages/android/messages_feature.h"
+#include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/input_context.h"
+#include "components/segmentation_platform/public/result.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/ambient_badge_metrics.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
@@ -19,19 +23,30 @@
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/features.h"
-#include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-using base::android::JavaParamRef;
 
 namespace webapps {
 
+namespace {
+
+InstallableParams ParamsToPerformWorkerCheck() {
+  InstallableParams params;
+  params.has_worker = true;
+  return params;
+}
+
+}  // namespace
+
 AmbientBadgeManager::AmbientBadgeManager(
     content::WebContents* web_contents,
-    base::WeakPtr<AppBannerManagerAndroid> app_banner_manager)
+    base::WeakPtr<AppBannerManagerAndroid> app_banner_manager,
+    segmentation_platform::SegmentationPlatformService*
+        segmentation_platform_service)
     : web_contents_(web_contents->GetWeakPtr()),
-      app_banner_manager_(app_banner_manager) {}
+      app_banner_manager_(app_banner_manager),
+      segmentation_platform_service_(segmentation_platform_service) {}
 
 AmbientBadgeManager::~AmbientBadgeManager() {
   RecordAmbientBadgeTeminateState(state_);
@@ -56,7 +71,15 @@ void AmbientBadgeManager::MaybeShow(
 
   UpdateState(State::kActive);
 
-  MaybeShowAmbientBadgeLegacy();
+  if (base::FeatureList::IsEnabled(features::kInstallPromptSegmentation)) {
+    InstallableParams params = ParamsToPerformWorkerCheck();
+    params.wait_for_worker = false;
+    PerformWorkerCheckForAmbientBadge(
+        params, base::BindOnce(&AmbientBadgeManager::MaybeShowAmbientBadgeSmart,
+                               weak_factory_.GetWeakPtr()));
+  } else {
+    MaybeShowAmbientBadgeLegacy();
+  }
 }
 
 void AmbientBadgeManager::AddToHomescreenFromBadge() {
@@ -115,8 +138,11 @@ void AmbientBadgeManager::MaybeShowAmbientBadgeLegacy() {
   if (a2hs_params_->app_type == AddToHomescreenParams::AppType::WEBAPK &&
       features::SkipServiceWorkerForInstallPromotion() &&
       !passed_worker_check_) {
-    UpdateState(State::kPendingWorker);
-    PerformWorkerCheckForAmbientBadge();
+    InstallableParams params = ParamsToPerformWorkerCheck();
+    params.wait_for_worker = true;
+    PerformWorkerCheckForAmbientBadge(
+        params, base::BindOnce(&AmbientBadgeManager::OnWorkerCheckResult,
+                               weak_factory_.GetWeakPtr()));
     return;
   }
 
@@ -148,9 +174,13 @@ bool AmbientBadgeManager::ShouldSuppressAmbientBadgeOnFirstVisit() {
   return AppBannerManager::GetCurrentTime() - *last_could_show_time > period;
 }
 
-void AmbientBadgeManager::PerformWorkerCheckForAmbientBadge() {
+void AmbientBadgeManager::PerformWorkerCheckForAmbientBadge(
+    InstallableParams params,
+    InstallableCallback callback) {
+  UpdateState(State::kPendingWorker);
   // TODO(crbug/1425546): Move the worker check logic from AppBannerManager.
-  app_banner_manager_->PerformWorkerCheckForAmbientBadge();
+  app_banner_manager_->PerformWorkerCheckForAmbientBadge(params,
+                                                         std::move(callback));
 }
 
 void AmbientBadgeManager::OnWorkerCheckResult(const InstallableData& data) {
@@ -162,6 +192,48 @@ void AmbientBadgeManager::OnWorkerCheckResult(const InstallableData& data) {
   if (state_ == State::kPendingWorker) {
     ShowAmbientBadge();
   }
+}
+
+void AmbientBadgeManager::MaybeShowAmbientBadgeSmart(
+    const InstallableData& data) {
+  if (!segmentation_platform_service_) {
+    return;
+  }
+
+  UpdateState(State::kSegmentation);
+
+  segmentation_platform::PredictionOptions prediction_options;
+  prediction_options.on_demand_execution = true;
+
+  auto input_context =
+      base::MakeRefCounted<segmentation_platform::InputContext>();
+  input_context->metadata_args.emplace("url", validated_url_);
+  input_context->metadata_args.emplace("maskable_icon",
+                                       a2hs_params_->has_maskable_primary_icon);
+  segmentation_platform_service_->GetClassificationResult(
+      segmentation_platform::kWebAppInstallationPromoKey, prediction_options,
+      input_context,
+      base::BindOnce(&AmbientBadgeManager::OnGotClassificationResult,
+                     base::Unretained(this)));
+}
+
+void AmbientBadgeManager::OnGotClassificationResult(
+    const segmentation_platform::ClassificationResult& result) {
+  if (result.status != segmentation_platform::PredictionStatus::kSucceeded) {
+    return;
+  }
+
+  // TODO(eirage): replace this with label type.
+  if (result.ordered_labels[0] == "ShowMessage") {
+    if (!ShouldMessageBeBlockedByGuardrail()) {
+      ShowAmbientBadge();
+    }
+  }
+}
+
+bool AmbientBadgeManager::ShouldMessageBeBlockedByGuardrail() {
+  // TODO(eirage): implement guardrail blocks.
+  return false;
 }
 
 void AmbientBadgeManager::ShowAmbientBadge() {

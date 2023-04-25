@@ -51,6 +51,7 @@ source_set("browser") {
     "//components/password_manager/content/common",
     "//components/permissions",
     "//components/security_state/core",
+    "//components/segmentation_platform/public:public",
     "//components/site_engagement/content",
     "//components/variations",
     "//components/webapps/common",

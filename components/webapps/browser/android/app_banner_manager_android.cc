@@ -28,7 +28,6 @@
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/features.h"
-#include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/webapps_client.h"
@@ -170,19 +169,10 @@ void AppBannerManagerAndroid::PerformInstallableWebAppCheck() {
   AppBannerManager::PerformInstallableWebAppCheck();
 }
 
-void AppBannerManagerAndroid::PerformWorkerCheckForAmbientBadge() {
-  manager()->GetData(
-      ParamsToPerformWorkerCheck(),
-      base::BindOnce(
-          &AppBannerManagerAndroid::OnDidPerformWorkerCheckForAmbientBadge,
-          weak_factory_.GetWeakPtr()));
-}
-
-void AppBannerManagerAndroid::OnDidPerformWorkerCheckForAmbientBadge(
-    const InstallableData& data) {
-  if (ambient_badge_manager_) {
-    ambient_badge_manager_->OnWorkerCheckResult(data);
-  }
+void AppBannerManagerAndroid::PerformWorkerCheckForAmbientBadge(
+    InstallableParams params,
+    InstallableCallback callback) {
+  manager()->GetData(params, std::move(callback));
 }
 
 void AppBannerManagerAndroid::ResetCurrentPageData() {
@@ -530,7 +520,8 @@ void AppBannerManagerAndroid::Install(
 
 void AppBannerManagerAndroid::MaybeShowAmbientBadge() {
   ambient_badge_manager_ = std::make_unique<AmbientBadgeManager>(
-      web_contents(), GetAndroidWeakPtr());
+      web_contents(), GetAndroidWeakPtr(),
+      nullptr /* segmentation_platform_service */);
   ambient_badge_manager_->MaybeShow(
       validated_url_, GetAppName(),
       CreateAddToHomescreenParams(InstallableMetrics::GetInstallSource(

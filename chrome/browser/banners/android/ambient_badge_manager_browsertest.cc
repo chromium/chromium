@@ -30,7 +30,7 @@ class TestAmbientBadgeManager : public AmbientBadgeManager {
   explicit TestAmbientBadgeManager(
       content::WebContents* web_contents,
       base::WeakPtr<AppBannerManagerAndroid> app_banner_manager)
-      : AmbientBadgeManager(web_contents, app_banner_manager) {}
+      : AmbientBadgeManager(web_contents, app_banner_manager, nullptr) {}
 
   TestAmbientBadgeManager(const TestAmbientBadgeManager&) = delete;
   TestAmbientBadgeManager& operator=(const TestAmbientBadgeManager&) = delete;
@@ -91,13 +91,6 @@ class TestAppBannerManager : public AppBannerManagerAndroid {
             web_contents(), InstallTrigger::AMBIENT_BADGE)),
         base::BindOnce(&AppBannerManagerAndroid::ShowBannerFromBadge,
                        AppBannerManagerAndroid::GetAndroidWeakPtr()));
-  }
-
-  void OnDidPerformWorkerCheckForAmbientBadge(
-      const InstallableData& data) override {
-    if (ambient_badge_test_) {
-      ambient_badge_test_->OnWorkerCheckResult(data);
-    }
   }
 
  private:

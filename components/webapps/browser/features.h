@@ -32,6 +32,8 @@ BASE_DECLARE_FEATURE(kSkipServiceWorkerCheckInstallOnly);
 BASE_DECLARE_FEATURE(kDesktopPWAsDetailedInstallDialog);
 BASE_DECLARE_FEATURE(kSkipServiceWorkerForInstallPrompt);
 
+BASE_DECLARE_FEATURE(kInstallPromptSegmentation);
+
 bool SkipInstallServiceWorkerCheck();
 bool SkipServiceWorkerForInstallPromotion();
 

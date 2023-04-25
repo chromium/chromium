@@ -14,13 +14,6 @@ BASE_FEATURE(kAddToHomescreenMessaging,
              "AddToHomescreenMessaging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAmbientBadgeSiteEngagement,
-             "AmbientBadgeSiteEngagement",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-extern const base::FeatureParam<int> kAmbientBadgeSiteEngagement_MinEngagement{
-    &kAmbientBadgeSiteEngagement, "minimal_engagement", 0};
-
 BASE_FEATURE(kAmbientBadgeSuppressFirstVisit,
              "AmbientBadgeSuppressFirstVisit",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -90,6 +83,11 @@ BASE_FEATURE(kDesktopPWAsDetailedInstallDialog,
 BASE_FEATURE(kSkipServiceWorkerForInstallPrompt,
              "SkipServiceWorkerForInstallPromot",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Use segmentation to decide whether install prompt should be shown.
+BASE_FEATURE(kInstallPromptSegmentation,
+             "InstallPromptSegmentation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool SkipInstallServiceWorkerCheck() {
   return base::FeatureList::IsEnabled(kSkipServiceWorkerCheckInstallOnly);

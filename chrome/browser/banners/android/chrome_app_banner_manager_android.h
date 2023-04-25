@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_BANNERS_ANDROID_CHROME_APP_BANNER_MANAGER_ANDROID_H_
 #define CHROME_BROWSER_BANNERS_ANDROID_CHROME_APP_BANNER_MANAGER_ANDROID_H_
 
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -42,6 +43,9 @@ class ChromeAppBannerManagerAndroid
   // show it was made, but false if conditions (e.g. engagement score) for
   // showing where not deemed adequate.
   bool MaybeShowInProductHelp() const;
+
+  raw_ptr<segmentation_platform::SegmentationPlatformService>
+      segmentation_platform_service_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
