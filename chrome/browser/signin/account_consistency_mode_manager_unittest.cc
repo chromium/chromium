@@ -13,6 +13,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_notifier_impl.h"
@@ -257,3 +258,39 @@ TEST(AccountConsistencyModeManagerTest, MirrorDisabledForOffTheRecordProfile) {
 }
 
 #endif  // BUILDFLAG(ENABLE_MIRROR)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+
+// In CrosApi guest sessions, profiles can be both regular and guest.
+class TestingProfileForCrosApiGuestSession : public TestingProfile {
+ public:
+  bool IsGuestSession() const override { return true; }
+};
+
+TEST(AccountConsistencyModeManagerTest,
+     MirrorDisabledForCrosApiGuestSessionType) {
+  // Creation of this object sets the current thread's id as UI thread.
+  content::BrowserTaskEnvironment task_environment;
+
+  TestingProfileForCrosApiGuestSession profile;
+  ASSERT_TRUE(profile.IsRegularProfile());
+  ASSERT_TRUE(profile.IsGuestSession());
+
+  // Re-create the AccountConsistencyModeManager, because `IsGuestSession()` is
+  // virtual and `TestingProfile` initializes its factories in its constructor.
+  AccountConsistencyModeManagerFactory::GetInstance()->SetTestingFactory(
+      &profile, base::BindRepeating([](content::BrowserContext* context)
+                                        -> std::unique_ptr<KeyedService> {
+        return std::make_unique<AccountConsistencyModeManager>(
+            Profile::FromBrowserContext(context));
+      }));
+
+  EXPECT_FALSE(
+      AccountConsistencyModeManager::IsMirrorEnabledForProfile(&profile));
+  EXPECT_FALSE(
+      AccountConsistencyModeManager::IsDiceEnabledForProfile(&profile));
+  EXPECT_EQ(signin::AccountConsistencyMethod::kDisabled,
+            AccountConsistencyModeManager::GetMethodForProfile(&profile));
+}
+
+#endif
