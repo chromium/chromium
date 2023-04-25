@@ -30,8 +30,6 @@ PasswordStoreAndroidBackendBridgeHelper::Create() {
 }
 
 bool PasswordStoreAndroidBackendBridgeHelper::CanCreateBackend() {
-  // TODO(crbug.com/1394715): Either move this call to the background thread or
-  // use cached GMS Core version from `BuildInfo.gmsVersionCode`.
   return PasswordStoreAndroidBackendDispatcherBridge::CanCreateBackend();
 }
 

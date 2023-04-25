@@ -23,8 +23,6 @@ public abstract class PasswordStoreAndroidBackendFactory {
      * @return The shared {@link PasswordStoreAndroidBackendFactory} instance.
      */
     public static PasswordStoreAndroidBackendFactory getInstance() {
-        // TODO(crbug.com/1394715): assert running on background thread once CanCreateBackend is
-        // updated to use non-UI thread.
         if (sInstance == null) sInstance = new PasswordStoreAndroidBackendFactoryImpl();
         return sInstance;
     }
