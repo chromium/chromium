@@ -40,18 +40,27 @@
           # https://crbug.com/1289764
           '--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*',
         ],
+        'swarming': {
+          'shards': 4,
+        },
       },
       'android-12l-x64-dbg-tests': {
         'args': [
           # https://crbug.com/1289764
           '--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*',
         ],
+        'swarming': {
+          'shards': 4,
+        },
       },
       'android-13-x64-rel': {
         'args': [
           # https://crbug.com/1414886
           '--gtest_filter=-OfferNotificationControllerAndroidBrowserTestForMessagesUi.MessageShown',
         ],
+        'swarming': {
+          'shards': 4,
+        },
       },
       # If you change this, make similar changes in android-x86-code-coverage below
       'android-nougat-x86-rel': {
@@ -1879,7 +1888,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.content_browsertests.filter',
         ],
         'swarming': {
-          'shards': 25,
+          'shards': 40,
         },
       },
       'android-12l-x64-dbg-tests': {
@@ -1887,7 +1896,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter',
         ],
         'swarming': {
-          'shards': 25,
+          'shards': 40,
         },
       },
       'android-13-x64-rel': {
@@ -1895,7 +1904,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter',
         ],
         'swarming': {
-          'shards': 25,
+          'shards': 40,
         },
       },
       'android-arm64-proguard-rel': {
