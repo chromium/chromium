@@ -646,7 +646,7 @@ void PaintLayerScrollableArea::VisibleSizeChanged() {
 PhysicalRect PaintLayerScrollableArea::LayoutContentRect(
     IncludeScrollbarsInRect scrollbar_inclusion) const {
   // LayoutContentRect is conceptually the same as the box's client rect.
-  LayoutSize layer_size(Layer()->Size());
+  LayoutSize layer_size = Size();
   LayoutUnit border_width = GetLayoutBox()->BorderWidth();
   LayoutUnit border_height = GetLayoutBox()->BorderHeight();
   NGPhysicalBoxStrut scrollbars;
@@ -882,6 +882,12 @@ LayoutBox* PaintLayerScrollableArea::GetLayoutBox() const {
 
 PaintLayer* PaintLayerScrollableArea::Layer() const {
   return layer_;
+}
+
+LayoutSize PaintLayerScrollableArea::Size() const {
+  return layer_->IsRootLayer()
+             ? LayoutSize(GetLayoutBox()->GetFrameView()->Size())
+             : GetLayoutBox()->Size();
 }
 
 LayoutUnit PaintLayerScrollableArea::ScrollWidth() const {
@@ -3098,7 +3104,7 @@ void PaintLayerScrollableArea::TraceComputeScrollbarExistence(
         ctx.AddDebugAnnotation("early_exit", early_exit);
         ctx.AddDebugAnnotation("h_mode", static_cast<int>(h_mode));
         ctx.AddDebugAnnotation("v_mode", static_cast<int>(v_mode));
-        ctx.AddDebugAnnotation("layer_size", Layer()->Size().ToString());
+        ctx.AddDebugAnnotation("layer_size", Size().ToString());
         ctx.AddDebugAnnotation("overflow_rect", overflow_rect_.ToString());
         ctx.AddDebugAnnotation("is_root", Layer()->IsRootLayer());
         ctx.AddDebugAnnotation("is_main_frame",

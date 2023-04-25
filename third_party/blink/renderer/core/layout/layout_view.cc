@@ -484,8 +484,7 @@ void LayoutView::AbsoluteQuads(Vector<gfx::QuadF>& quads,
                                MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   quads.push_back(LocalRectToAbsoluteQuad(
-      PhysicalRect(PhysicalOffset(), PhysicalSizeToBeNoop(Layer()->Size())),
-      mode));
+      PhysicalRect(PhysicalOffset(), GetScrollableArea()->Size()), mode));
 }
 
 void LayoutView::CommitPendingSelection() {

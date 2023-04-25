@@ -394,6 +394,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
     in_resize_mode_ = in_resize_mode;
   }
 
+  LayoutSize Size() const;
   LayoutUnit ScrollWidth() const;
   LayoutUnit ScrollHeight() const;
 
