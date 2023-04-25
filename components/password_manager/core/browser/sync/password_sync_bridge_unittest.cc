@@ -1519,11 +1519,28 @@ TEST_F(PasswordSyncBridgeTest, ShouldReportDownloadedPasswordsIfAccountStore) {
   base::HistogramTester histogram_tester;
   absl::optional<syncer::ModelError> error = bridge()->MergeFullSyncData(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
-  EXPECT_FALSE(error);
+  ASSERT_FALSE(error);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.AccountStoreCredentialsAfterOptIn", 2, 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.AccountStoreBlocklistedEntriesAfterOptIn", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.ProfileStore.TotalAccountsBeforeInitialSync", 0);
+}
+
+TEST_F(PasswordSyncBridgeTest, ShouldReportStoredPasswordsIfProfileStore) {
+  ON_CALL(*mock_password_store_sync(), IsAccountStore())
+      .WillByDefault(Return(false));
+
+  fake_db()->AddLoginWithPrimaryKey(MakePasswordForm(kSignonRealm1, 100));
+  fake_db()->AddLoginWithPrimaryKey(MakePasswordForm(kSignonRealm2, 101));
+
+  base::HistogramTester histogram_tester;
+  absl::optional<syncer::ModelError> error = bridge()->MergeFullSyncData(
+      bridge()->CreateMetadataChangeList(), syncer::EntityChangeList());
+  ASSERT_FALSE(error);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ProfileStore.TotalAccountsBeforeInitialSync", 2, 1);
 }
 
 TEST_F(PasswordSyncBridgeTest,

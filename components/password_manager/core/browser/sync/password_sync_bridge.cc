@@ -658,6 +658,10 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
     metrics_util::
         LogDownloadedBlocklistedEntriesCountFromAccountStoreAfterUnlock(
             entity_data.size() - password_count);
+  } else {
+    base::UmaHistogramCustomCounts(
+        "PasswordManager.ProfileStore.TotalAccountsBeforeInitialSync",
+        key_to_local_specifics_map.size(), 0, 1000, 100);
   }
 
   sync_enabled_or_disabled_cb_.Run();
