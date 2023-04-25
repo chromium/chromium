@@ -1231,12 +1231,11 @@ void HTMLElement::UpdatePopoverAttribute(String value) {
           HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
           /*exception_state=*/nullptr);
       // Event handlers could have changed the popover, including by removing
-      // the popover attribute, or changing its value. If that happened, defer
-      // to the change that already happened, and don't reset it again here.
-      if (!isConnected() || !HasPopoverAttribute() ||
-          original_type != FastGetAttribute(html_names::kPopoverAttr)) {
-        return;
-      }
+      // the popover attribute, or changing its value. If that happened, we need
+      // to make sure that PopoverData's copy of the popover attribute stays in
+      // sync.
+      type = GetPopoverTypeFromAttributeValue(
+          FastGetAttribute(html_names::kPopoverAttr));
     }
   }
   if (type == PopoverValueType::kNone) {
