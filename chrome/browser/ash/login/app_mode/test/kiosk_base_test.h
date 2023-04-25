@@ -111,8 +111,6 @@ class KioskBaseTest : public OobeBaseTest {
 
   void WaitForAppLaunchSuccess();
 
-  void WaitForAppLaunchNetworkTimeout();
-
   void RunAppLaunchNetworkDownTest();
 
   void SimulateNetworkOnline();
