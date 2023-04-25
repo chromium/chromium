@@ -5,6 +5,7 @@
 package com.android.webview.chromium;
 
 import org.chromium.base.annotations.JniIgnoreNatives;
+import org.chromium.build.annotations.UsedByReflection;
 
 @JniIgnoreNatives
 class DrawFunctor {
@@ -12,7 +13,9 @@ class DrawFunctor {
         return nativeGetFunctionTable();
     }
 
-    // The Android framework performs manual JNI registration on this method,
-    // so the method signature cannot change without updating the framework.
+    // The Android framework performs manual JNI registration on these methods, so the method
+    // signatures cannot change without updating the framework. We use @UsedByReflection, while not
+    // technically true, as a way to preserve these methods and their names.
+    @UsedByReflection("Android framework manual registration")
     private static native long nativeGetFunctionTable();
 }
