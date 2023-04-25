@@ -172,13 +172,15 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
   if (visibility.autofill !== false) {
     r.AUTOFILL = r.BASIC.createSection(
         '/autofill', 'autofill', loadTimeData.getString('autofillPageTitle'));
-    r.PASSWORDS = r.AUTOFILL.createChild('/passwords');
-    if (loadTimeData.getBoolean('enablePasswordViewPage')) {
-      r.PASSWORD_VIEW = r.PASSWORDS.createChild('view');
-    }
-    r.CHECK_PASSWORDS = r.PASSWORDS.createChild('check');
+    if (!loadTimeData.getBoolean('enableNewPasswordManagerPage')) {
+      r.PASSWORDS = r.AUTOFILL.createChild('/passwords');
+      if (loadTimeData.getBoolean('enablePasswordViewPage')) {
+        r.PASSWORD_VIEW = r.PASSWORDS.createChild('view');
+      }
+      r.CHECK_PASSWORDS = r.PASSWORDS.createChild('check');
 
-    r.DEVICE_PASSWORDS = r.PASSWORDS.createChild('device');
+      r.DEVICE_PASSWORDS = r.PASSWORDS.createChild('device');
+    }
 
     r.PAYMENTS = r.AUTOFILL.createChild('/payments');
     r.ADDRESSES = r.AUTOFILL.createChild('/addresses');
