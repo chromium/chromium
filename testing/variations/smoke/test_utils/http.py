@@ -16,8 +16,8 @@ SRC_DIR = os.path.abspath(
 HTTP_DATA_BASEDIR = os.path.join(
     SRC_DIR, 'chrome', 'test', 'data', 'chromedriver')
 
-def start_http_server(port:int = 8000, directory: str = None) \
-  -> http.server.HTTPServer:
+def start_http_server(port:int = 8000,
+                      directory: str = None) -> http.server.HTTPServer:
   """Starts a HTTP server serving the given directory."""
   if directory is None:
     directory = HTTP_DATA_BASEDIR
