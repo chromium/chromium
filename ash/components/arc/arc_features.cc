@@ -351,4 +351,21 @@ const base::FeatureParam<int> kVmmSwapOutTimeIntervalSecond{
 // Controls the time interval of ARC silence. The default value is 15 minutes.
 const base::FeatureParam<int> kVmmSwapArcSilenceIntervalSecond{
     &kVmmSwapPolicy, "arc_silence_interval_sec", 60 * 15};
+
+// Controls the feature to delay low memory kills of high priority apps when the
+// memory pressure is below foreground.
+BASE_FEATURE(kPriorityAppLmkDelay,
+             "ArcPriorityAppLmkDelay",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls the time to wait for inactivity of a high priority app before
+// considering it to be killed. The default value is 5 minutes.
+const base::FeatureParam<int> kPriorityAppLmkDelaySecond{
+    &kPriorityAppLmkDelay, "priority_app_lmk_delay_sec", 60 * 5};
+
+// Controls the list of apps to be considered as high priority that would have a
+// delay before considered to be killed.
+const base::FeatureParam<std::string> kPriorityAppLmkDelayList{
+    &kPriorityAppLmkDelay, "priority_app_lmk_delay_list", ""};
+
 }  // namespace arc
