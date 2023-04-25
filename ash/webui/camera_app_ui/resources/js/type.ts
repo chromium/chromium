@@ -440,10 +440,10 @@ export class NoChunkError extends Error {
 }
 
 /**
- * Throws when the GIF recording is ended with no frame captured.
+ * Throws when the GIF or time lapse recording is ended with no frame captured.
  */
 export class NoFrameError extends Error {
-  constructor(message = 'No frames captured during GIF recording') {
+  constructor(message = 'No frames captured during the recording') {
     super(message);
     this.name = this.constructor.name;
   }

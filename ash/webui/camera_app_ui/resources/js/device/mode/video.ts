@@ -643,9 +643,15 @@ export class Video extends ModeBase {
         assert(param !== null);
         timeLapseSaver = await this.captureTimeLapse(param);
       } finally {
-        // TODO(b/236800499): Handle video too short.
         state.set(state.State.RECORDING, false);
         this.recordTime.stop({pause: false});
+      }
+
+      if (this.recordTime.inMilliseconds() <
+          (MINIMUM_VIDEO_DURATION_IN_MILLISECONDS * TIME_LAPSE_INITIAL_SPEED)) {
+        toast.show(I18nString.ERROR_MSG_VIDEO_TOO_SHORT);
+        timeLapseSaver.cancel();
+        return [Promise.resolve()];
       }
 
       return [this.handler.onTimeLapseCaptureDone({
