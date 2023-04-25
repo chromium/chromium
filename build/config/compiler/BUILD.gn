@@ -685,6 +685,7 @@ config("compiler") {
         "/lldltocache:" +
             rebase_path("$root_out_dir/thinlto-cache", root_build_dir),
         "/lldltocachepolicy:$cache_policy",
+        "-mllvm:-disable-auto-upgrade-debug-info",
       ]
     } else {
       ldflags += [ "-flto=thin" ]
@@ -725,6 +726,14 @@ config("compiler") {
       }
 
       ldflags += [ "-Wl,-mllvm,-import-instr-limit=$import_instr_limit" ]
+
+      if (!is_chromeos) {
+        # TODO(https://crbug.com/972449): turn on for ChromeOS when that
+        # toolchain has this flag.
+        # We only use one version of LLVM within a build so there's no need to
+        # upgrade debug info, which can be expensive since it runs the verifier.
+        ldflags += [ "-Wl,-mllvm,-disable-auto-upgrade-debug-info" ]
+      }
     }
 
     # TODO(https://crbug.com/1211155): investigate why this isn't effective on
