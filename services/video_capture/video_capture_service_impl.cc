@@ -43,6 +43,11 @@
 #include "services/video_capture/lacros/device_factory_adapter_lacros.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(IS_LINUX)
+#include "media/capture/capture_switches.h"
+#include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 namespace video_capture {
 
 // Intended usage of this class is to instantiate on any sequence, and then
@@ -104,6 +109,88 @@ class VideoCaptureServiceImpl::GpuDependenciesContext {
       this};
 };
 
+#if BUILDFLAG(IS_LINUX)
+// Intended usage of this class is to create viz::Gpu in utility process and
+// connect to viz::GpuClient of browser process, which will call to Gpu service.
+// Also, this class holds the viz::ContextProvider to listen and monitor Gpu
+// context lost event. The viz::Gpu and viz::ContextProvider need be created in
+// the main thread of utility process. The |main_task_runner_| is initialized as
+// the default single thread task runner of main thread. The
+// viz::ContextProvider will call BindToCurrentSequence on |main_task_runner_|
+// sequence of main thread. Then, the gpu context lost event will be called in
+// the |main_task_runner_| sequence, which will be notified to the
+// media::VideoCaptureGpuMemoryBufferManager.
+class VideoCaptureServiceImpl::VizGpuContextProvider
+    : public viz::ContextLostObserver {
+ public:
+  VizGpuContextProvider(std::unique_ptr<viz::Gpu> viz_gpu)
+      : main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
+        viz_gpu_(std::move(viz_gpu)) {
+    StartContextProviderIfNeeded();
+  }
+  ~VizGpuContextProvider() override {
+    // Ensure destroy context provider and not receive callbacks before clear up
+    // |viz_gpu_|
+    if (context_provider_) {
+      context_provider_.reset();
+    }
+  }
+
+  // viz::ContextLostObserver implementation.
+  void OnContextLost() override {
+    context_provider_->RemoveObserver(this);
+    context_provider_.reset();
+
+    StartContextProviderIfNeeded();
+  }
+
+ private:
+  void StartContextProviderIfNeeded() {
+    DCHECK_EQ(context_provider_, nullptr);
+    DCHECK(main_task_runner_->BelongsToCurrentThread());
+
+    if (!viz_gpu_) {
+      return;
+    }
+
+    if (!viz_gpu_->GetGpuChannel() || viz_gpu_->GetGpuChannel()->IsLost()) {
+      scoped_refptr<gpu::GpuChannelHost> gpu_channel_host =
+          viz_gpu_->EstablishGpuChannelSync();
+    }
+
+    scoped_refptr<viz::ContextProvider> context_provider =
+        base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
+            viz_gpu_->GetGpuChannel(), viz_gpu_->GetGpuMemoryBufferManager(),
+            0 /* stream ID */, gpu::SchedulingPriority::kNormal,
+            gpu::kNullSurfaceHandle,
+            GURL(std::string("chrome://gpu/VideoCapture")),
+            false /* automatic flushes */, false /* support locking */,
+            false /* support grcontext */,
+            gpu::SharedMemoryLimits::ForMailboxContext(),
+            gpu::ContextCreationAttribs(),
+            viz::command_buffer_metrics::ContextType::VIDEO_CAPTURE);
+
+    const gpu::ContextResult context_result =
+        context_provider->BindToCurrentSequence();
+    if (context_result != gpu::ContextResult::kSuccess) {
+      LOG(ERROR) << "Bind context provider failed.";
+      return;
+    }
+
+    context_provider->AddObserver(this);
+    context_provider_ = std::move(context_provider);
+  }
+
+  // Task runner for operating |viz_gpu_| and
+  // |context_provider_| on. This must be the main service thread as the
+  // |viz_gpu_| required.
+  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+  std::unique_ptr<viz::Gpu> viz_gpu_;
+  scoped_refptr<viz::ContextProvider> context_provider_;
+  base::WeakPtrFactory<VizGpuContextProvider> weak_ptr_factory_{this};
+};
+#endif  // BUILDFLAG(IS_LINUX)
+
 VideoCaptureServiceImpl::VideoCaptureServiceImpl(
     mojo::PendingReceiver<mojom::VideoCaptureService> receiver,
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
@@ -163,6 +250,13 @@ void VideoCaptureServiceImpl::BindControlsForTesting(
 void VideoCaptureServiceImpl::LazyInitializeGpuDependenciesContext() {
   if (!gpu_dependencies_context_)
     gpu_dependencies_context_ = std::make_unique<GpuDependenciesContext>();
+
+#if BUILDFLAG(IS_LINUX)
+  if (!viz_gpu_context_provider_) {
+    viz_gpu_context_provider_ =
+        std::make_unique<VizGpuContextProvider>(std::move(viz_gpu_));
+  }
+#endif  // BUILDFLAG(IS_LINUX)
 }
 
 void VideoCaptureServiceImpl::LazyInitializeDeviceFactory() {
@@ -240,6 +334,12 @@ void VideoCaptureServiceImpl::OnLastSourceProviderClientDisconnected() {
 void VideoCaptureServiceImpl::OnGpuInfoUpdate(const CHROME_LUID& luid) {
   LazyInitializeDeviceFactory();
   device_factory_->OnGpuInfoUpdate(luid);
+}
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+void VideoCaptureServiceImpl::SetVizGpu(std::unique_ptr<viz::Gpu> viz_gpu) {
+  viz_gpu_ = std::move(viz_gpu);
 }
 #endif
 

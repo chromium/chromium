@@ -24,6 +24,10 @@
 #include "services/video_capture/ash/video_capture_device_factory_ash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_LINUX)
+#include "services/viz/public/cpp/gpu/gpu.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 namespace video_capture {
 
 class VirtualDeviceEnabledDeviceFactory;
@@ -58,6 +62,9 @@ class VideoCaptureServiceImpl : public mojom::VideoCaptureService {
 #if BUILDFLAG(IS_WIN)
   void OnGpuInfoUpdate(const CHROME_LUID& luid) override;
 #endif
+#if BUILDFLAG(IS_LINUX)
+  void SetVizGpu(std::unique_ptr<viz::Gpu> viz_gpu);
+#endif  // BUILDFLAG(IS_LINUX)
  private:
   class GpuDependenciesContext;
 
@@ -79,6 +86,12 @@ class VideoCaptureServiceImpl : public mojom::VideoCaptureService {
   mojo::ReceiverSet<crosapi::mojom::VideoCaptureDeviceFactory>
       factory_receivers_ash_;
 #endif
+
+#if BUILDFLAG(IS_LINUX)
+  class VizGpuContextProvider;
+  std::unique_ptr<VizGpuContextProvider> viz_gpu_context_provider_;
+  std::unique_ptr<viz::Gpu> viz_gpu_;
+#endif  // BUILDFLAG(IS_LINUX)
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 };

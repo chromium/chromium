@@ -39,6 +39,12 @@ namespace base {
 class Thread;
 }  // namespace base
 
+#if BUILDFLAG(IS_LINUX)
+namespace viz {
+class GpuClient;
+}  // namespace viz
+#endif
+
 namespace content {
 class BrowserChildProcessHostImpl;
 class InProcessChildThreadParams;
@@ -202,6 +208,10 @@ class CONTENT_EXPORT UtilityProcessHost
   // Collection of callbacks to be run once the process is actually started (or
   // fails to start).
   std::vector<RunServiceDeprecatedCallback> pending_run_service_callbacks_;
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+  std::unique_ptr<viz::GpuClient, base::OnTaskRunnerDeleter> gpu_client_;
 #endif
 
   std::unique_ptr<Client> client_;

@@ -104,6 +104,10 @@ extern sandbox::TargetServices* g_utility_target_services;
 #include "ui/accessibility/accessibility_features.h"
 #endif  // BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
 
+#if BUILDFLAG(IS_LINUX)
+#include "services/viz/public/cpp/gpu/gpu.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 namespace content {
 base::LazyInstance<NetworkBinderCreationCallback>::Leaky
     g_network_binder_creation_callback_for_testing = LAZY_INSTANCE_INITIALIZER;
@@ -298,8 +302,17 @@ auto RunTracing(
 
 auto RunVideoCapture(
     mojo::PendingReceiver<video_capture::mojom::VideoCaptureService> receiver) {
-  return std::make_unique<UtilityThreadVideoCaptureServiceImpl>(
+  auto service = std::make_unique<UtilityThreadVideoCaptureServiceImpl>(
       std::move(receiver), base::SingleThreadTaskRunner::GetCurrentDefault());
+#if BUILDFLAG(IS_LINUX)
+  mojo::PendingRemote<viz::mojom::Gpu> remote_gpu;
+  content::UtilityThread::Get()->BindHostReceiver(
+      remote_gpu.InitWithNewPipeAndPassReceiver());
+  std::unique_ptr<viz::Gpu> viz_gpu = viz::Gpu::Create(
+      std::move(remote_gpu), content::UtilityThread::Get()->GetIOTaskRunner());
+  service->SetVizGpu(std::move(viz_gpu));
+#endif  // BUILDFLAG(IS_LINUX)
+  return service;
 }
 
 #if BUILDFLAG(ENABLE_VR) && !BUILDFLAG(IS_ANDROID)

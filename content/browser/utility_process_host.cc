@@ -69,6 +69,13 @@
 #include "media/capture/capture_switches.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "base/task/sequenced_task_runner.h"
+#include "components/viz/host/gpu_client.h"
+#include "media/capture/capture_switches.h"
+#include "services/video_capture/public/mojom/video_capture_service.mojom.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 namespace content {
 
 namespace {
@@ -122,6 +129,9 @@ UtilityProcessHost::UtilityProcessHost(std::unique_ptr<Client> client)
       started_(false),
       name_(u"utility process"),
       file_data_(std::make_unique<ChildProcessLauncherFileData>()),
+#if BUILDFLAG(IS_LINUX)
+      gpu_client_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
+#endif
       client_(std::move(client)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   process_ = std::make_unique<BrowserChildProcessHostImpl>(
@@ -407,6 +417,17 @@ bool UtilityProcessHost::StartProcess() {
           GetContentClient()->browser()->GetNetworkContextsParentDirectory();
       file_data_->files_to_preload[kNetworkContextParentDirsDescriptor] =
           PassNetworkContextParentDirs(std::move(network_context_parent_dirs));
+    }
+#endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_LINUX)
+    if (metrics_name_ == video_capture::mojom::VideoCaptureService::Name_) {
+      if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kDisableVideoCaptureUseGpuMemoryBuffer) &&
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kVideoCaptureUseGpuMemoryBuffer)) {
+        cmd_line->AppendSwitch(switches::kVideoCaptureUseGpuMemoryBuffer);
+      }
     }
 #endif  // BUILDFLAG(IS_LINUX)
 
