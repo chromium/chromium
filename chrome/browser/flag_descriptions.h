@@ -895,6 +895,9 @@ extern const char kFileHandlingIconsDescription[];
 extern const char kFillingAcrossAffiliatedWebsitesName[];
 extern const char kFillingAcrossAffiliatedWebsitesDescription[];
 
+extern const char kFillingAcrossGroupedSitesName[];
+extern const char kFillingAcrossGroupedSitesDescription[];
+
 extern const char kFillOnAccountSelectName[];
 extern const char kFillOnAccountSelectDescription[];
 

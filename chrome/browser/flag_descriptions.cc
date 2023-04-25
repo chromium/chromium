@@ -1597,6 +1597,12 @@ const char kFillingAcrossAffiliatedWebsitesDescription[] =
     "Enables filling password on a website when there is saved "
     "password on affiliated website.";
 
+const char kFillingAcrossGroupedSitesName[] =
+    "Password filling across grouped websites";
+const char kFillingAcrossGroupedSitesDescription[] =
+    "This flag enables password filling across grouped websites. Information "
+    "about website groups is provided by the affiliation service.";
+
 const char kFillOnAccountSelectName[] = "Fill passwords on account selection";
 const char kFillOnAccountSelectDescription[] =
     "Filling of passwords when an account is explicitly selected by the user "

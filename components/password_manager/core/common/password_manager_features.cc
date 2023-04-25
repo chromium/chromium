@@ -76,6 +76,13 @@ BASE_FEATURE(kFillingAcrossAffiliatedWebsites,
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
+
+// This flag enables password filling across grouped websites. Information about
+// website groups is provided by the affiliation service.
+BASE_FEATURE(kFillingAcrossGroupedSites,
+             "FillingAcrossGroupedSites",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the experiment for the password manager to only fill on account
 // selection, rather than autofilling on page load, with highlighting of fields.
 BASE_FEATURE(kFillOnAccountSelect,
