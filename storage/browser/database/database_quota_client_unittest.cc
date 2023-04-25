@@ -69,22 +69,25 @@ class MockDatabaseTracker : public DatabaseTracker {
                      OriginInfo* info) override {
     auto found =
         mock_origin_infos_.find(GetOriginFromIdentifier(origin_identifier));
-    if (found == mock_origin_infos_.end())
+    if (found == mock_origin_infos_.end()) {
       return false;
+    }
     *info = OriginInfo(found->second);
     return true;
   }
 
   bool GetAllOriginIdentifiers(
       std::vector<std::string>* origins_identifiers) override {
-    for (const auto& origin_info : mock_origin_infos_)
+    for (const auto& origin_info : mock_origin_infos_) {
       origins_identifiers->push_back(origin_info.second.GetOriginIdentifier());
+    }
     return true;
   }
 
   bool GetAllOriginsInfo(std::vector<OriginInfo>* origins_info) override {
-    for (const auto& origin_info : mock_origin_infos_)
-      origins_info->push_back(OriginInfo(origin_info.second));
+    for (const auto& origin_info : mock_origin_infos_) {
+      origins_info->emplace_back(origin_info.second);
+    }
     return true;
   }
 
@@ -179,17 +182,17 @@ class DatabaseQuotaClientTest : public testing::TestWithParam<bool> {
 
   bool is_incognito() const { return GetParam(); }
 
-  BucketLocator CreateBucketForTesting(const blink::StorageKey& storage_key,
-                                       const std::string& name,
-                                       blink::mojom::StorageType type) {
+  storage::QuotaErrorOr<BucketLocator> CreateBucketForTesting(
+      const blink::StorageKey& storage_key,
+      const std::string& name,
+      blink::mojom::StorageType type) {
     base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>>
         bucket_future;
     quota_manager_->proxy()->CreateBucketForTesting(
         storage_key, name, type, base::SequencedTaskRunner::GetCurrentDefault(),
         bucket_future.GetCallback());
-    auto bucket = bucket_future.Take();
-    EXPECT_TRUE(bucket.has_value());
-    return bucket->ToBucketLocator();
+    return bucket_future.Take().transform(
+        &storage::BucketInfo::ToBucketLocator);
   }
 
   int64_t GetBucketUsage(mojom::QuotaClient& client,
@@ -235,15 +238,17 @@ TEST_P(DatabaseQuotaClientTest, GetBucketUsage) {
   DatabaseQuotaClient client(*mock_tracker_);
   auto bucket_a =
       CreateBucketForTesting(kStorageKeyA, kDefaultBucketName, kTemp);
+  ASSERT_TRUE(bucket_a.has_value());
   auto bucket_b =
       CreateBucketForTesting(kStorageKeyB, kDefaultBucketName, kTemp);
+  ASSERT_TRUE(bucket_b.has_value());
 
-  EXPECT_EQ(0, GetBucketUsage(client, bucket_a));
+  EXPECT_EQ(0, GetBucketUsage(client, *bucket_a));
 
   mock_tracker_->AddMockDatabase(kStorageKeyA.origin(), "fooDB", 1000);
-  EXPECT_EQ(1000, GetBucketUsage(client, bucket_a));
+  EXPECT_EQ(1000, GetBucketUsage(client, *bucket_a));
 
-  EXPECT_EQ(0, GetBucketUsage(client, bucket_b));
+  EXPECT_EQ(0, GetBucketUsage(client, *bucket_b));
 }
 
 TEST_P(DatabaseQuotaClientTest, GetStorageKeysForType) {
@@ -262,26 +267,28 @@ TEST_P(DatabaseQuotaClientTest, DeleteBucketData) {
   DatabaseQuotaClient client(*mock_tracker_);
   auto bucket_a =
       CreateBucketForTesting(kStorageKeyA, kDefaultBucketName, kTemp);
+  ASSERT_TRUE(bucket_a.has_value());
 
   mock_tracker_->set_async_delete(false);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk,
-            DeleteBucketData(client, bucket_a));
+            DeleteBucketData(client, *bucket_a));
   EXPECT_EQ(1, mock_tracker_->delete_called_count());
 
   mock_tracker_->set_async_delete(true);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk,
-            DeleteBucketData(client, bucket_a));
+            DeleteBucketData(client, *bucket_a));
   EXPECT_EQ(2, mock_tracker_->delete_called_count());
 }
 
 TEST_P(DatabaseQuotaClientTest, NonDefaultBucket) {
   DatabaseQuotaClient client(*mock_tracker_);
   auto bucket = CreateBucketForTesting(kStorageKeyA, "inbox_bucket", kTemp);
-  ASSERT_FALSE(bucket.is_default);
+  ASSERT_TRUE(bucket.has_value());
+  ASSERT_FALSE(bucket->is_default);
 
-  EXPECT_EQ(0, GetBucketUsage(client, bucket));
+  EXPECT_EQ(0, GetBucketUsage(client, *bucket));
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk,
-            DeleteBucketData(client, bucket));
+            DeleteBucketData(client, *bucket));
 }
 
 INSTANTIATE_TEST_SUITE_P(DatabaseQuotaClientTests,

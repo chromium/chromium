@@ -227,8 +227,7 @@ TEST_P(QuotaDatabaseTest, UpdateOrCreateBucket) {
   EXPECT_EQ(QuotaError::kQuotaExceeded, result.error());
 
   // It doesn't affect the update case.
-  result = db->UpdateOrCreateBucket(params, 1);
-  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE(db->UpdateOrCreateBucket(params, 1).has_value());
 }
 
 TEST_P(QuotaDatabaseTest, UpdateBucket) {
@@ -434,15 +433,19 @@ TEST_P(QuotaDatabaseTest, GetBucketsForHost) {
   QuotaErrorOr<BucketInfo> temp_example_bucket1 = db->CreateBucketForTesting(
       StorageKey::CreateFromStringForTesting("https://example.com/"),
       kDefaultBucketName, kTemp);
+  ASSERT_TRUE(temp_example_bucket1.has_value());
   QuotaErrorOr<BucketInfo> temp_example_bucket2 = db->CreateBucketForTesting(
       StorageKey::CreateFromStringForTesting("http://example.com:123/"),
       kDefaultBucketName, kTemp);
+  ASSERT_TRUE(temp_example_bucket2.has_value());
   QuotaErrorOr<BucketInfo> perm_google_bucket1 = db->CreateBucketForTesting(
       StorageKey::CreateFromStringForTesting("http://google.com/"),
       kDefaultBucketName, kSync);
+  ASSERT_TRUE(perm_google_bucket1.has_value());
   QuotaErrorOr<BucketInfo> temp_google_bucket2 = db->CreateBucketForTesting(
       StorageKey::CreateFromStringForTesting("http://google.com:123/"),
       kDefaultBucketName, kTemp);
+  ASSERT_TRUE(temp_google_bucket2.has_value());
 
   QuotaErrorOr<std::set<BucketInfo>> result =
       db->GetBucketsForHost("example.com", kTemp);
@@ -516,7 +519,7 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   std::set<BucketId> bucket_exceptions;
   QuotaErrorOr<BucketLocator> result =
       db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
-  EXPECT_FALSE(result.has_value());
+  ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 
   // Insert bucket entries into BucketTable.
@@ -574,7 +577,7 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
       QuotaError::kNone);
 
   result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   EXPECT_EQ(bucket_id1, result.value().id);
 
   // Test that unlimited origins are excluded from eviction, but
@@ -583,29 +586,29 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   policy->AddUnlimited(storage_key1.origin().GetURL());
   policy->AddProtected(storage_key2.origin().GetURL());
   result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, policy.get());
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   EXPECT_EQ(bucket_id2, result.value().id);
 
   // Test that durable origins are excluded from eviction.
   policy->AddDurable(storage_key2.origin().GetURL());
   result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, policy.get());
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   EXPECT_EQ(bucket_id3, result.value().id);
 
   // Bucket exceptions exclude specified buckets.
   bucket_exceptions.insert(bucket_id1);
   result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   EXPECT_EQ(bucket_id2, result.value().id);
 
   bucket_exceptions.insert(bucket_id2);
   result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   EXPECT_EQ(bucket_id3, result.value().id);
 
   bucket_exceptions.insert(bucket_id3);
   result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
-  EXPECT_FALSE(result.has_value());
+  ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 
   EXPECT_EQ(db->SetBucketLastAccessTime(bucket_id1, base::Time::Now()),
@@ -624,13 +627,13 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   // Querying again to see if the deletion has worked.
   bucket_exceptions.clear();
   result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   EXPECT_EQ(bucket_id2, result.value().id);
 
   bucket_exceptions.insert(bucket_id1);
   bucket_exceptions.insert(bucket_id2);
   result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
-  EXPECT_FALSE(result.has_value());
+  ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 }
 
@@ -641,7 +644,7 @@ TEST_P(QuotaDatabaseTest, BucketPersistence) {
   std::set<BucketId> bucket_exceptions;
   QuotaErrorOr<BucketLocator> result =
       db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
-  EXPECT_FALSE(result.has_value());
+  ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 
   // Insert bucket entries into BucketTable.
@@ -673,12 +676,12 @@ TEST_P(QuotaDatabaseTest, BucketPersistence) {
       QuotaError::kNone);
 
   result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   EXPECT_EQ(bucket_id1, result.value().id);
 
   ASSERT_TRUE(db->UpdateBucketPersistence(bucket_id1, true).has_value());
   result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   EXPECT_EQ(bucket_id2, result.value().id);
 }
 
@@ -696,13 +699,14 @@ TEST_P(QuotaDatabaseTest, SetStorageKeyLastAccessTime) {
 
   QuotaErrorOr<BucketInfo> bucket =
       db->CreateBucketForTesting(storage_key, kDefaultBucketName, kTemp);
+  ASSERT_TRUE(bucket.has_value());
 
   EXPECT_EQ(db->SetStorageKeyLastAccessTime(storage_key, kTemp, now),
             QuotaError::kNone);
 
   QuotaErrorOr<mojom::BucketTableEntryPtr> info =
       db->GetBucketInfoForTest(bucket->id);
-  EXPECT_TRUE(info.has_value());
+  ASSERT_TRUE(info.has_value());
   EXPECT_EQ(now, info.value()->last_accessed);
   EXPECT_EQ(1, info.value()->use_count);
 }
@@ -744,29 +748,29 @@ TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
 
   QuotaErrorOr<std::set<BucketLocator>> result =
       db->GetBucketsModifiedBetween(kTemp, base::Time(), base::Time::Max());
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   std::set<BucketLocator> buckets = result.value();
   EXPECT_TRUE(buckets.empty());
 
   QuotaErrorOr<BucketInfo> result1 = db->CreateBucketForTesting(
       StorageKey::CreateFromStringForTesting("http://example-a/"), "bucket_a",
       kTemp);
-  EXPECT_TRUE(result1.has_value());
+  ASSERT_TRUE(result1.has_value());
   BucketInfo bucket1 = result1.value();
   QuotaErrorOr<BucketInfo> result2 = db->CreateBucketForTesting(
       StorageKey::CreateFromStringForTesting("http://example-b/"), "bucket_b",
       kTemp);
-  EXPECT_TRUE(result2.has_value());
+  ASSERT_TRUE(result2.has_value());
   BucketInfo bucket2 = result2.value();
   QuotaErrorOr<BucketInfo> result3 = db->CreateBucketForTesting(
       StorageKey::CreateFromStringForTesting("http://example-c/"), "bucket_c",
       kTemp);
-  EXPECT_TRUE(result3.has_value());
+  ASSERT_TRUE(result3.has_value());
   BucketInfo bucket3 = result3.value();
   QuotaErrorOr<BucketInfo> result4 = db->CreateBucketForTesting(
       StorageKey::CreateFromStringForTesting("http://example-d/"),
       kDefaultBucketName, kSync);
-  EXPECT_TRUE(result4.has_value());
+  ASSERT_TRUE(result4.has_value());
   BucketInfo bucket4 = result4.value();
 
   // Report last modified time for the buckets.
@@ -790,7 +794,7 @@ TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
 
   result =
       db->GetBucketsModifiedBetween(kTemp, base::Time(), base::Time::Max());
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   buckets = result.value();
   EXPECT_EQ(3U, buckets.size());
   EXPECT_TRUE(ContainsBucket(buckets, bucket1));
@@ -800,7 +804,7 @@ TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
 
   result = db->GetBucketsModifiedBetween(kTemp, base::Time::FromJavaTime(5),
                                          base::Time::Max());
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   buckets = result.value();
   EXPECT_EQ(2U, buckets.size());
   EXPECT_FALSE(ContainsBucket(buckets, bucket1));
@@ -810,7 +814,7 @@ TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
 
   result = db->GetBucketsModifiedBetween(kTemp, base::Time::FromJavaTime(15),
                                          base::Time::Max());
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   buckets = result.value();
   EXPECT_EQ(1U, buckets.size());
   EXPECT_FALSE(ContainsBucket(buckets, bucket1));
@@ -820,13 +824,13 @@ TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
 
   result = db->GetBucketsModifiedBetween(kTemp, base::Time::FromJavaTime(25),
                                          base::Time::Max());
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   buckets = result.value();
   EXPECT_TRUE(buckets.empty());
 
   result = db->GetBucketsModifiedBetween(kTemp, base::Time::FromJavaTime(5),
                                          base::Time::FromJavaTime(15));
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   buckets = result.value();
   EXPECT_EQ(1U, buckets.size());
   EXPECT_FALSE(ContainsBucket(buckets, bucket1));
@@ -836,7 +840,7 @@ TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
 
   result = db->GetBucketsModifiedBetween(kTemp, base::Time::FromJavaTime(0),
                                          base::Time::FromJavaTime(20));
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   buckets = result.value();
   EXPECT_EQ(2U, buckets.size());
   EXPECT_TRUE(ContainsBucket(buckets, bucket1));
@@ -846,7 +850,7 @@ TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
 
   result = db->GetBucketsModifiedBetween(kSync, base::Time::FromJavaTime(0),
                                          base::Time::FromJavaTime(35));
-  EXPECT_TRUE(result.has_value());
+  ASSERT_TRUE(result.has_value());
   buckets = result.value();
   EXPECT_EQ(1U, buckets.size());
   EXPECT_FALSE(ContainsBucket(buckets, bucket1));
@@ -879,7 +883,7 @@ TEST_P(QuotaDatabaseTest, RegisterInitialStorageKeyInfo) {
 
   QuotaErrorOr<mojom::BucketTableEntryPtr> info =
       db->GetBucketInfoForTest(bucket_result->id);
-  EXPECT_TRUE(info.has_value());
+  ASSERT_TRUE(info.has_value());
   EXPECT_EQ(0, info.value()->use_count);
 
   EXPECT_EQ(db->SetStorageKeyLastAccessTime(
@@ -887,14 +891,14 @@ TEST_P(QuotaDatabaseTest, RegisterInitialStorageKeyInfo) {
                 base::Time::FromDoubleT(1.0)),
             QuotaError::kNone);
   info = db->GetBucketInfoForTest(bucket_result->id);
-  EXPECT_TRUE(info.has_value());
+  ASSERT_TRUE(info.has_value());
   EXPECT_EQ(1, info.value()->use_count);
 
   EXPECT_EQ(db->RegisterInitialStorageKeyInfo(storage_keys_by_type),
             QuotaError::kNone);
 
   info = db->GetBucketInfoForTest(bucket_result->id);
-  EXPECT_TRUE(info.has_value());
+  ASSERT_TRUE(info.has_value());
   EXPECT_EQ(1, info.value()->use_count);
 }
 
@@ -1027,8 +1031,7 @@ TEST_F(QuotaDatabaseTest, QuotaDatabasePathMigration) {
   // Create database, add bucket and close by leaving scope.
   {
     auto db = CreateDatabase(/*is_incognito=*/false);
-    auto result = db->UpdateOrCreateBucket(params, 0);
-    ASSERT_TRUE(result.has_value());
+    ASSERT_TRUE(db->UpdateOrCreateBucket(params, 0).has_value());
   }
   // Move db file paths to legacy file path for path migration test setup.
   {
@@ -1039,8 +1042,8 @@ TEST_F(QuotaDatabaseTest, QuotaDatabasePathMigration) {
   // Reopen database, check that db is migrated to new path with bucket data.
   {
     auto db = CreateDatabase(/*is_incognito=*/false);
-    auto result = db->GetBucket(params.storage_key, params.name, kTemp);
-    EXPECT_TRUE(result.has_value());
+    EXPECT_TRUE(
+        db->GetBucket(params.storage_key, params.name, kTemp).has_value());
     EXPECT_FALSE(base::PathExists(kLegacyFilePath));
     EXPECT_TRUE(base::PathExists(DbPath()));
   }
@@ -1056,8 +1059,7 @@ TEST_F(QuotaDatabaseTest, QuotaDatabasePathBadMigration) {
   // Create database, add bucket and close by leaving scope.
   {
     auto db = CreateDatabase(/*is_incognito=*/false);
-    auto result = db->UpdateOrCreateBucket(params, 0);
-    ASSERT_TRUE(result.has_value());
+    ASSERT_TRUE(db->UpdateOrCreateBucket(params, 0).has_value());
   }
   // Copy db file paths to legacy file path to mimic bad migration state.
   base::CopyFile(DbPath(), kLegacyFilePath);
@@ -1065,8 +1067,8 @@ TEST_F(QuotaDatabaseTest, QuotaDatabasePathBadMigration) {
   // Reopen database, check that db is migrated and is in a good state.
   {
     auto db = CreateDatabase(/*is_incognito=*/false);
-    auto result = db->GetBucket(params.storage_key, params.name, kTemp);
-    EXPECT_TRUE(result.has_value());
+    EXPECT_TRUE(
+        db->GetBucket(params.storage_key, params.name, kTemp).has_value());
     EXPECT_TRUE(base::PathExists(DbPath()));
   }
 }
@@ -1088,9 +1090,8 @@ TEST_F(QuotaDatabaseTest, QuotaDatabaseDirectoryMigrationError) {
   {
     auto db = CreateDatabase(/*is_incognito=*/false);
     // Create two buckets to check that ids are different after database reset.
-    auto result = db->UpdateOrCreateBucket(google_params, 0);
-    ASSERT_TRUE(result.has_value());
-    result = db->UpdateOrCreateBucket(example_params, 0);
+    ASSERT_TRUE(db->UpdateOrCreateBucket(google_params, 0).has_value());
+    auto result = db->UpdateOrCreateBucket(example_params, 0);
     ASSERT_TRUE(result.has_value());
     example_id = result->id;
   }
@@ -1122,8 +1123,7 @@ TEST_F(QuotaDatabaseTest, UpdateOrCreateBucket_CorruptedDatabase) {
       "google_bucket");
 
   {
-    QuotaErrorOr<BucketInfo> result = db.UpdateOrCreateBucket(params, 0);
-    ASSERT_TRUE(result.has_value())
+    ASSERT_TRUE(db.UpdateOrCreateBucket(params, 0).has_value())
         << "Failed to create bucket to be used in test";
   }
 
@@ -1139,8 +1139,7 @@ TEST_F(QuotaDatabaseTest, UpdateOrCreateBucket_CorruptedDatabase) {
   {
     base::HistogramTester histograms;
 
-    QuotaErrorOr<BucketInfo> result = db.UpdateOrCreateBucket(params, 0);
-    EXPECT_FALSE(result.has_value());
+    EXPECT_FALSE(db.UpdateOrCreateBucket(params, 0).has_value());
 
     histograms.ExpectTotalCount("Quota.QuotaDatabaseError", 1);
     histograms.ExpectBucketCount("Quota.QuotaDatabaseError",
