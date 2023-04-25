@@ -172,7 +172,6 @@ class MailboxVideoFrameConverter::ScopedSharedImage {
 
 // static
 std::unique_ptr<MailboxVideoFrameConverter> MailboxVideoFrameConverter::Create(
-    UnwrapFrameCB unwrap_frame_cb,
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     GetCommandBufferStubCB get_stub_cb,
     bool enable_unsafe_webgpu) {
@@ -192,17 +191,15 @@ std::unique_ptr<MailboxVideoFrameConverter> MailboxVideoFrameConverter::Create(
       gpu_task_runner, std::move(get_gpu_channel_cb));
 
   return base::WrapUnique(new MailboxVideoFrameConverter(
-      std::move(unwrap_frame_cb), std::move(gpu_task_runner),
-      std::move(gpu_delegate), enable_unsafe_webgpu));
+      std::move(gpu_task_runner), std::move(gpu_delegate),
+      enable_unsafe_webgpu));
 }
 
 MailboxVideoFrameConverter::MailboxVideoFrameConverter(
-    UnwrapFrameCB unwrap_frame_cb,
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     std::unique_ptr<GpuDelegate> gpu_delegate,
     bool enable_unsafe_webgpu)
-    : unwrap_frame_cb_(std::move(unwrap_frame_cb)),
-      gpu_task_runner_(std::move(gpu_task_runner)),
+    : gpu_task_runner_(std::move(gpu_task_runner)),
       gpu_delegate_(std::move(gpu_delegate)),
       enable_unsafe_webgpu_(enable_unsafe_webgpu) {
   DVLOGF(2);
@@ -561,6 +558,12 @@ bool MailboxVideoFrameConverter::HasPendingFrames() const {
   DVLOGF(4) << "Number of pending frames: " << input_frame_queue_.size();
 
   return !input_frame_queue_.empty();
+}
+
+void MailboxVideoFrameConverter::set_unwrap_frame_cb(
+    UnwrapFrameCB unwrap_frame_cb) {
+  DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
+  unwrap_frame_cb_ = std::move(unwrap_frame_cb);
 }
 
 void MailboxVideoFrameConverter::OnError(const base::Location& location,

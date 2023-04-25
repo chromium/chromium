@@ -71,17 +71,11 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
         const gpu::SyncToken& sync_token) = 0;
   };
 
-  // Creates a MailboxVideoFrameConverter instance. If |unwrap_frame_cb| is
-  // non-null, the MailboxVideoFrameConverter instance assumes that callers will
-  // call ConvertFrame() with wrapped VideoFrames and |unwrap_frame_cb| is the
-  // callback needed to unwrap them. If |unwrap_frame_cb| is null, the instance
-  // assumes that callers will call ConvertFrame() with unwrapped VideoFrames.
-  // |gpu_task_runner| is the task runner of the GPU main thread.
-  // |enable_unsafe_webgpu| hints whether to request the creation of
-  // SharedImages with SHARED_IMAGE_USAGE_WEBGPU. Returns nullptr if the
-  // MailboxVideoFrameConverter can't be created.
+  // Creates a MailboxVideoFrameConverter instance. |gpu_task_runner| is the
+  // task runner of the GPU main thread. |enable_unsafe_webgpu| hints whether to
+  // request the creation of SharedImages with SHARED_IMAGE_USAGE_WEBGPU.
+  // Returns nullptr if the MailboxVideoFrameConverter can't be created.
   static std::unique_ptr<MailboxVideoFrameConverter> Create(
-      UnwrapFrameCB unwrap_frame_cb,
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
       GetCommandBufferStubCB get_stub_cb,
       bool enable_unsafe_webgpu);
@@ -96,15 +90,26 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
                   OutputCB output_cb);
 
   // Enqueues |frame| to be converted to a gpu::Mailbox-backed VideoFrame. If
-  // the |unwrap_frame_cb| supplied in Create() is non-null, |frame| must wrap
-  // a GpuMemoryBuffer-backed VideoFrame that is retrieved via that callback.
-  // Otherwise, |frame| will be used directly and must be a
-  // GpuMemoryBuffer-backed VideoFrame. The generated gpu::Mailbox is kept
-  // alive until the GpuMemoryBuffer-backed VideoFrame is destroyed. These
-  // methods must be called on |parent_task_runner_|
+  // set_unwrap_frame_cb() was called with a non-null callback, |frame| must
+  // wrap a GpuMemoryBuffer-backed VideoFrame that is retrieved via that
+  // callback. Otherwise, |frame| will be used directly and must be a
+  // GpuMemoryBuffer-backed VideoFrame. The generated gpu::Mailbox is kept alive
+  // until the GpuMemoryBuffer-backed VideoFrame is destroyed. These methods
+  // must be called on |parent_task_runner_|.
   void ConvertFrame(scoped_refptr<VideoFrame> frame);
   void AbortPendingFrames();
   bool HasPendingFrames() const;
+
+  // Sets the callback to unwrap VideoFrames provided to ConvertFrame(). If
+  // |unwrap_frame_cb| is null or this method is never called at all,
+  // ConvertFrame() assumes it's called with unwrapped VideoFrames.
+  //
+  // This method must be called on |parent_task_runner_|.
+  //
+  // Note: if |unwrap_frame_cb| is called at all, it will be called only during
+  // a call to ConvertFrame(), so it's guaranteed to be called on
+  // |parent_task_runner_|.
+  void set_unwrap_frame_cb(UnwrapFrameCB unwrap_frame_cb);
 
  private:
   friend struct std::default_delete<MailboxVideoFrameConverter>;
@@ -118,7 +123,6 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
   class ScopedSharedImage;
 
   MailboxVideoFrameConverter(
-      UnwrapFrameCB unwrap_frame_cb,
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
       std::unique_ptr<GpuDelegate> gpu_delegate,
       bool enable_unsafe_webgpu);

@@ -375,8 +375,13 @@ VideoDecoderPipeline::~VideoDecoderPipeline() {
 
   decoder_weak_this_factory_.InvalidateWeakPtrs();
 
-  main_frame_pool_.reset();
+  // Destroy |frame_converter_| before |main_frame_pool_| because the former may
+  // have a raw pointer to the latter (in the unwrap-frame callback).
+  //
+  // TODO(andrescj): consider making the unwrap-frame callback work with WeakPtr
+  // instead.
   frame_converter_.reset();
+  main_frame_pool_.reset();
   decoder_.reset();
 #if BUILDFLAG(IS_CHROMEOS)
   buffer_transcryptor_.reset();
@@ -542,6 +547,31 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
         base::BindOnce(std::move(init_cb),
                        DecoderStatus::Codes::kFailedToCreateDecoder));
     return;
+  }
+
+  if (frame_converter_) {
+    MailboxVideoFrameConverter::UnwrapFrameCB unwrap_frame_cb;
+
+    if (uses_oop_video_decoder_) {
+      // TODO(b/277832201): provide an |unwrap_frame_cb| for the OOP-VD path.
+    } else {
+      CHECK(main_frame_pool_);
+      PlatformVideoFramePool* platform_video_frame_pool =
+          main_frame_pool_->AsPlatformVideoFramePool();
+      // When a |frame_converter_| is used, the |main_frame_pool_| should always
+      // be a PlatformVideoFramePool.
+      CHECK(platform_video_frame_pool);
+
+      // Note: base::Unretained() is safe because either a) the
+      // |main_frame_pool_| outlives |frame_converter_| or b) we call
+      // |frame_converter_|->set_unwrap_frame_cb() with a null UnwrapFrameCB
+      // before destroying |main_frame_pool_|.
+      unwrap_frame_cb =
+          base::BindRepeating(&PlatformVideoFramePool::UnwrapFrame,
+                              base::Unretained(platform_video_frame_pool));
+    }
+
+    frame_converter_->set_unwrap_frame_cb(std::move(unwrap_frame_cb));
   }
 
   estimated_num_buffers_for_renderer_ =
@@ -926,6 +956,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     // to the preferred formats. There's no need to allocate frames.
     // This is not compatible with VdVideoDecodeAccelerator, which
     // expects GPU buffers in VdVideoDecodeAccelerator::GetPicture()
+    frame_converter_->set_unwrap_frame_cb(base::NullCallback());
     main_frame_pool_.reset();
     return *viable_candidate;
   }
