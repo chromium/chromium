@@ -11,7 +11,6 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/switches.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -109,13 +108,13 @@ testing::AssertionResult RunCreationWithFlags(
 
 TEST(ExtensionTest, ExtensionManifestVersions) {
   auto get_manifest = [](absl::optional<int> manifest_version) {
-    DictionaryBuilder builder;
-    builder.Set("name", "My Extension")
-        .Set("version", "0.1")
-        .Set("description", "An awesome extension");
+    auto manifest = base::Value::Dict()
+                        .Set("name", "My Extension")
+                        .Set("version", "0.1")
+                        .Set("description", "An awesome extension");
     if (manifest_version)
-      builder.Set("manifest_version", *manifest_version);
-    return builder.Build();
+      manifest.Set("manifest_version", *manifest_version);
+    return manifest;
   };
 
   const Manifest::Type kType = Manifest::TYPE_EXTENSION;
@@ -152,17 +151,17 @@ TEST(ExtensionTest, ExtensionManifestVersions) {
 
 TEST(ExtensionTest, PlatformAppManifestVersions) {
   auto get_manifest = [](absl::optional<int> manifest_version) {
-    DictionaryBuilder background;
-    background.Set("scripts", ListBuilder().Append("background.js").Build());
-    DictionaryBuilder builder;
-    builder.Set("name", "My Platform App")
-        .Set("version", "0.1")
-        .Set("description", "A platform app")
-        .Set("app",
-             DictionaryBuilder().Set("background", background.Build()).Build());
+    base::Value::Dict background;
+    background.Set("scripts", base::Value::List().Append("background.js"));
+    auto manifest = base::Value::Dict()
+                        .Set("name", "My Platform App")
+                        .Set("version", "0.1")
+                        .Set("description", "A platform app")
+                        .Set("app", base::Value::Dict().Set(
+                                        "background", std::move(background)));
     if (manifest_version)
-      builder.Set("manifest_version", *manifest_version);
-    return builder.Build();
+      manifest.Set("manifest_version", *manifest_version);
+    return manifest;
   };
 
   const Manifest::Type kType = Manifest::TYPE_PLATFORM_APP;
@@ -193,16 +192,16 @@ TEST(ExtensionTest, PlatformAppManifestVersions) {
 
 TEST(ExtensionTest, HostedAppManifestVersions) {
   auto get_manifest = [](absl::optional<int> manifest_version) {
-    DictionaryBuilder builder;
-    DictionaryBuilder app;
-    app.Set("urls", ListBuilder().Append("http://example.com").Build());
-    builder.Set("name", "My Hosted App")
-        .Set("version", "0.1")
-        .Set("description", "A hosted app")
-        .Set("app", app.Build());
+    base::Value::Dict app;
+    app.Set("urls", base::Value::List().Append("http://example.com"));
+    auto manifest = base::Value::Dict()
+                        .Set("name", "My Hosted App")
+                        .Set("version", "0.1")
+                        .Set("description", "A hosted app")
+                        .Set("app", std::move(app));
     if (manifest_version)
-      builder.Set("manifest_version", *manifest_version);
-    return builder.Build();
+      manifest.Set("manifest_version", *manifest_version);
+    return manifest;
   };
 
   const Manifest::Type kType = Manifest::TYPE_HOSTED_APP;
@@ -223,14 +222,14 @@ TEST(ExtensionTest, HostedAppManifestVersions) {
 
 TEST(ExtensionTest, UserScriptManifestVersions) {
   auto get_manifest = [](absl::optional<int> manifest_version) {
-    DictionaryBuilder builder;
-    builder.Set("name", "My Extension")
-        .Set("version", "0.1")
-        .Set("description", "An awesome extension")
-        .Set("converted_from_user_script", true);
+    auto manifest = base::Value::Dict()
+                        .Set("name", "My Extension")
+                        .Set("version", "0.1")
+                        .Set("description", "An awesome extension")
+                        .Set("converted_from_user_script", true);
     if (manifest_version)
-      builder.Set("manifest_version", *manifest_version);
-    return builder.Build();
+      manifest.Set("manifest_version", *manifest_version);
+    return manifest;
   };
 
   const Manifest::Type kType = Manifest::TYPE_USER_SCRIPT;
@@ -250,12 +249,11 @@ TEST(ExtensionTest, UserScriptManifestVersions) {
 }
 
 TEST(ExtensionTest, LoginScreenFlag) {
-  DictionaryBuilder builder;
-  builder.Set("name", "My Extension")
-      .Set("version", "0.1")
-      .Set("description", "An awesome extension")
-      .Set("manifest_version", 2);
-  base::Value::Dict manifest = builder.Build();
+  auto manifest = base::Value::Dict()
+                      .Set("name", "My Extension")
+                      .Set("version", "0.1")
+                      .Set("description", "An awesome extension")
+                      .Set("manifest_version", 2);
 
   EXPECT_TRUE(RunCreationWithFlags(manifest, ManifestLocation::kExternalPolicy,
                                    Manifest::TYPE_EXTENSION,

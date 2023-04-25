@@ -28,7 +28,6 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/switches.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/test_context_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -341,10 +340,10 @@ TEST_F(SimpleFeatureTest, Context) {
   feature.set_min_manifest_version(21);
   feature.set_max_manifest_version(25);
 
-  base::Value::Dict manifest;
-  manifest.Set("name", "test");
-  manifest.Set("version", "1");
-  manifest.Set("manifest_version", 21);
+  auto manifest = base::Value::Dict()
+                      .Set("name", "test")
+                      .Set("version", "1")
+                      .Set("manifest_version", 21);
   manifest.SetByDottedPath("app.launch.local_path", "foo.html");
 
   std::string error;
@@ -465,10 +464,10 @@ TEST_F(SimpleFeatureTest, Context) {
 }
 
 TEST_F(SimpleFeatureTest, SessionType) {
-  base::Value::Dict manifest;
-  manifest.Set("name", "test");
-  manifest.Set("version", "1");
-  manifest.Set("manifest_version", 2);
+  auto manifest = base::Value::Dict()
+                      .Set("name", "test")
+                      .Set("version", "1")
+                      .Set("manifest_version", 2);
   manifest.SetByDottedPath("app.launch.local_path", "foo.html");
 
   std::string error;

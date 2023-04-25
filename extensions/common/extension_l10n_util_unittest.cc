@@ -43,8 +43,7 @@ TEST(ExtensionL10nUtil, ValidateLocalesWithBadLocale) {
   std::string data = "{ \"name\":";
   ASSERT_TRUE(base::WriteFile(messages_file, data));
 
-  base::Value::Dict manifest;
-  manifest.Set(keys::kDefaultLocale, "en");
+  auto manifest = base::Value::Dict().Set(keys::kDefaultLocale, "en");
   std::string error;
   EXPECT_FALSE(extension_l10n_util::ValidateExtensionLocales(temp.GetPath(),
                                                              manifest, &error));

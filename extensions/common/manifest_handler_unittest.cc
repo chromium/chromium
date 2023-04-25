@@ -18,7 +18,6 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/scoped_testing_manifest_handler_registry.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -186,19 +185,16 @@ TEST_F(ManifestHandlerTest, DependentHandlers) {
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(DictionaryBuilder()
-                           .Set("name", "no name")
-                           .Set("version", "0")
-                           .Set("manifest_version", 2)
-                           .Set("a", 1)
-                           .Set("b", 2)
-                           .Set("c", DictionaryBuilder()
-                                         .Set("d", 3)
-                                         .Set("e", 4)
-                                         .Set("f", 5)
-                                         .Build())
-                           .Set("g", 6)
-                           .Build())
+          .SetManifest(
+              base::Value::Dict()
+                  .Set("name", "no name")
+                  .Set("version", "0")
+                  .Set("manifest_version", 2)
+                  .Set("a", 1)
+                  .Set("b", 2)
+                  .Set("c",
+                       base::Value::Dict().Set("d", 3).Set("e", 4).Set("f", 5))
+                  .Set("g", 6))
           .Build();
 
   // A, B, C.EZ, C.D, K
@@ -213,12 +209,11 @@ TEST_F(ManifestHandlerTest, FailingHandlers) {
   ScopedTestingManifestHandlerRegistry scoped_registry;
   // Can't use ExtensionBuilder, because this extension will fail to
   // be parsed.
-  base::Value::Dict manifest_a(DictionaryBuilder()
+  base::Value::Dict manifest_a(base::Value::Dict()
                                    .Set("name", "no name")
                                    .Set("version", "0")
                                    .Set("manifest_version", 2)
-                                   .Set("a", 1)
-                                   .Build());
+                                   .Set("a", 1));
 
   // Succeeds when "a" is not recognized.
   std::string error;
@@ -244,13 +239,12 @@ TEST_F(ManifestHandlerTest, Validate) {
   ScopedTestingManifestHandlerRegistry scoped_registry;
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", "no name")
                            .Set("version", "0")
                            .Set("manifest_version", 2)
                            .Set("a", 1)
-                           .Set("b", 2)
-                           .Build())
+                           .Set("b", 2))
           .Build();
   EXPECT_TRUE(extension.get());
 
