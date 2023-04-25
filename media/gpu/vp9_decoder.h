@@ -140,6 +140,10 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
   size_t GetRequiredNumOfPictures() const override;
   size_t GetNumReferenceFrames() const override;
 
+  void set_ignore_resolution_changes_to_smaller_for_testing(bool value) {
+    ignore_resolution_changes_to_smaller_for_testing_ = value;
+  }
+
  private:
   // Decode and possibly output |pic| (if the picture is to be shown).
   // Return kOk on success, kTryAgain if this should be attempted again on the
@@ -177,6 +181,13 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
 
   // Color space provided by the container.
   const VideoColorSpace container_color_space_;
+
+  // For VP9 validation purposes, this class can be indicated that it's OK to
+  // keep the decoding reference frames etc when the resolution decreases
+  // without a keyframe; this is an arcane feature of VP9, and are rare in the
+  // wild, but part of VP9 verification sets (see[1] "frm_resize" and
+  // "sub8x8_sf"). [1] https://www.webmproject.org/vp9/levels/#test-descriptions
+  bool ignore_resolution_changes_to_smaller_for_testing_ = false;
 
   // Reference frames currently in use.
   Vp9ReferenceFrameVector ref_frames_;

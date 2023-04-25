@@ -608,6 +608,11 @@ void VaapiVideoDecoder::SurfaceReady(scoped_refptr<VASurface> va_surface,
   output_cb_.Run(std::move(video_frame));
 }
 
+void VaapiVideoDecoder::
+    set_ignore_resolution_changes_to_smaller_vp9_for_testing(bool value) {
+  ignore_resolution_changes_to_smaller_for_testing_ = value;
+}
+
 void VaapiVideoDecoder::ApplyResolutionChange() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_ == State::kChangingResolution ||
@@ -1139,6 +1144,12 @@ VaapiStatus VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
 
     decoder_ = std::make_unique<VP9Decoder>(std::move(accelerator), profile_,
                                             color_space_);
+
+    if (ignore_resolution_changes_to_smaller_for_testing_) {
+      static_cast<VP9Decoder*>(decoder_.get())
+          ->set_ignore_resolution_changes_to_smaller_for_testing(  // IN-TEST
+              true);
+    }
   }
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   else if (profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX) {

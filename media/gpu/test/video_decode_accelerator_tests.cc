@@ -5,10 +5,12 @@
 #include <limits>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/encryption_scheme.h"
@@ -183,6 +185,16 @@ class VideoDecoderTest : public ::testing::Test {
 
     config.implementation = g_env->GetDecoderImplementation();
     config.linear_output = g_env->ShouldOutputLinearBuffers();
+#if BUILDFLAG(USE_VAAPI)
+    // VP9 verification "frm_resize" and "sub8x8_sf" vectors utilize
+    // keyframeless resolution changes, see:
+    // https://www.webmproject.org/vp9/levels/#test-descriptions.
+    config.ignore_resolution_changes_to_smaller_vp9 =
+        base::Contains(base::ToLowerASCII(g_env->Video()->FilePath().value()),
+                       "frm_resize") ||
+        base::Contains(base::ToLowerASCII(g_env->Video()->FilePath().value()),
+                       "sub8x8_sf");
+#endif
 
     auto video_player = DecoderListener::Create(
         config, std::move(frame_renderer), std::move(frame_processors));

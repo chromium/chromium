@@ -229,6 +229,33 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
 }
 
 // static
+std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForTesting(
+    scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+    std::unique_ptr<MediaLog> media_log,
+    bool ignore_resolution_changes_to_smaller_for_testing) {
+  CreateDecoderFunctionCB
+#if BUILDFLAG(USE_VAAPI)
+      create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
+#elif BUILDFLAG(USE_V4L2_CODEC)
+      create_decoder_function_cb = base::BindOnce(&V4L2VideoDecoder::Create);
+#endif
+
+  auto* pipeline = new VideoDecoderPipeline(
+      gpu::GpuDriverBugWorkarounds(), std::move(client_task_runner),
+      std::make_unique<PlatformVideoFramePool>(),
+      /*frame_converter=*/nullptr,
+      VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
+      std::move(media_log), std::move(create_decoder_function_cb),
+      /*uses_oop_video_decoder=*/false);
+
+  if (ignore_resolution_changes_to_smaller_for_testing)
+    pipeline->ignore_resolution_changes_to_smaller_for_testing_ = true;
+
+  return std::make_unique<AsyncDestroyVideoDecoder<VideoDecoderPipeline>>(
+      base::WrapUnique(pipeline));
+}
+
+// static
 std::vector<Fourcc> VideoDecoderPipeline::DefaultPreferredRenderableFourccs() {
   // Preferred output formats in order of preference.
   // TODO(mcasas): query the platform for its preferred formats and modifiers.
@@ -519,6 +546,14 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
 
   estimated_num_buffers_for_renderer_ =
       EstimateRequiredRendererPipelineBuffers(low_delay);
+
+#if BUILDFLAG(USE_VAAPI)
+  if (ignore_resolution_changes_to_smaller_for_testing_) {
+    static_cast<VaapiVideoDecoder*>(decoder_.get())
+        ->set_ignore_resolution_changes_to_smaller_vp9_for_testing(  // IN-TEST
+            true);
+  }
+#endif
 
   decoder_->Initialize(
       config, /* low_delay=*/false, cdm_context,
