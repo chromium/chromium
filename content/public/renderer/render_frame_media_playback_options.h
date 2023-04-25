@@ -5,19 +5,10 @@
 #ifndef CONTENT_PUBLIC_RENDERER_RENDER_FRAME_MEDIA_PLAYBACK_OPTIONS_H_
 #define CONTENT_PUBLIC_RENDERER_RENDER_FRAME_MEDIA_PLAYBACK_OPTIONS_H_
 
-#include "build/build_config.h"
+#include "content/common/media/constants.h"
 #include "content/public/common/media_playback_renderer_type.mojom.h"
 
 namespace content {
-
-// Default value for is_background_suspend_enabled is determined statically in
-// Chromium, but some content embedders (e.g. Cast) may need to change it at
-// runtime.
-#if BUILDFLAG(IS_ANDROID)
-const bool kIsBackgroundMediaSuspendEnabled = true;
-#else
-const bool kIsBackgroundMediaSuspendEnabled = false;
-#endif
 
 struct RenderFrameMediaPlaybackOptions {
   // Whether the renderer should automatically suspend media playback on
