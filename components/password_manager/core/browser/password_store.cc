@@ -292,7 +292,7 @@ void PasswordStore::GetLogins(const PasswordFormDigest& form,
   }
   // If there is no helper to retrieve affiliations with, inform the
   // `request_handler` that there are no affiliated logins.
-  request_handler->AffiliatedLoginsClosure().Run({});
+  request_handler->NonFormLoginsClosure().Run({});
 
   // And request the regular logins for `form`.
   backend_->FillMatchingLoginsAsync(request_handler->LoginsForFormClosure(),
@@ -541,7 +541,7 @@ void PasswordStore::GetLoginsForFormAndForAffiliatedRealms(
 
   auto branding_injection_for_affiliations_callback =
       base::BindOnce(&PasswordStore::InjectAffiliationAndBrandingInformation,
-                     this, request_handler->AffiliatedLoginsClosure());
+                     this, request_handler->NonFormLoginsClosure());
 
   // This callback is to be owned and executed from `affiliated_match_helper_`.
   // Since `Shutdown` resets the `affiliated_match_helper_` before shutting down
