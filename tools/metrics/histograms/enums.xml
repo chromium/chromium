@@ -13625,6 +13625,13 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Zip has AES"/>
 </enum>
 
+<enum name="BootlockboxAvailability">
+  <int value="0" label="Available"/>
+  <int value="1" label="Write Locked"/>
+  <int value="2" label="Need Power Wash"/>
+  <int value="3" label="Unknown"/>
+</enum>
+
 <enum name="BorealisInstallResult">
   <int value="0" label="Success"/>
   <int value="1" label="User cancelled installation"/>

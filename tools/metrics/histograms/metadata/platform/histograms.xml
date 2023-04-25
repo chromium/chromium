@@ -67,6 +67,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Bootlockbox.AvailabilityAtStart"
+    enum="BootlockboxAvailability" expires_after="2023-10-24">
+  <owner>yich@google.com</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>
+    Record the bootlockbox space availability when bootlockbox started.
+  </summary>
+</histogram>
+
 <histogram name="Platform.BootMode.DevSwitch"
     enum="Platform.BootMode.SwitchStatus" expires_after="2022-04-03">
   <owner>mnissler@chromium.org</owner>
