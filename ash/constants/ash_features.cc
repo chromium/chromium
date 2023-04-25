@@ -903,6 +903,17 @@ BASE_FEATURE(kFastPairSavedDevicesStrictOptIn,
              "FastPairSavedDevicesStrictOptIn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Restricts the time-of-day wallpaper/screensaver features to the intended
+// target population, whereas the `kTimeOfDayScreenSaver|Wallpaper` flags
+// control the feature's rollout within said target population. These flags are
+// only intended to be modified by the feature_management module.
+BASE_FEATURE(kFeatureManagementTimeOfDayScreenSaver,
+             "FeatureManagementTimeOfDayScreenSaver",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFeatureManagementTimeOfDayWallpaper,
+             "FeatureManagementTimeOfDayWallpaper",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the federated service. If enabled, launches federated service when
 // user first login.
 BASE_FEATURE(kFederatedService,
@@ -3352,11 +3363,15 @@ bool IsStylusBatteryStatusEnabled() {
 }
 
 bool IsTimeOfDayScreenSaverEnabled() {
+  // TODO(b/270597524): Check `kFeatureManagementTimeOfDayScreenSaver` flag as
+  // well when feature management team has completed their design.
   return base::FeatureList::IsEnabled(kTimeOfDayScreenSaver) &&
          IsTimeOfDayWallpaperEnabled();
 }
 
 bool IsTimeOfDayWallpaperEnabled() {
+  // TODO(b/270597524): Check `kFeatureManagementTimeOfDayWallpaper` flag as
+  // well when feature management team has completed their design.
   return base::FeatureList::IsEnabled(kTimeOfDayWallpaper);
 }
 
