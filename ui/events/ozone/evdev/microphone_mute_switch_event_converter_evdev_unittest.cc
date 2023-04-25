@@ -26,6 +26,22 @@ namespace {
 
 const char kTestDevicePath[] = "/dev/input/test-device";
 
+constexpr char kPuffMicrophoneMuteSwitchDescription[] =
+    R"(class=ui::MicrophoneMuteSwitchEventConverterEvdev id=1
+base class=ui::EventConverterEvdev id=1
+ path="/dev/input/test-device"
+member class=ui::InputDevice id=1
+ input_device_type=ui::InputDeviceType::INPUT_DEVICE_INTERNAL
+ name="mic_mute_switch"
+ phys=""
+ enabled=0
+ suspected_imposter=0
+ sys_path=""
+ vendor_id=0001
+ product_id=0001
+ version=0100
+)";
+
 class TestMicrophoneMuteObserver
     : public ui::MicrophoneMuteSwitchMonitor::Observer {
  public:
@@ -137,4 +153,14 @@ TEST_F(MicrophoneMuteSwitchEventConverterEvdevTest, MuteChangeEvents) {
 
   EXPECT_EQ(std::vector<bool>{false},
             test_observer.GetAndResetObservedValues());
+}
+
+TEST_F(MicrophoneMuteSwitchEventConverterEvdevTest, DescribeStateForLog) {
+  std::unique_ptr<ui::MicrophoneMuteSwitchEventConverterEvdev> dev =
+      CreateDevice(ui::kPuffMicrophoneMuteSwitch);
+
+  std::stringstream output;
+  dev->DescribeForLog(output);
+
+  EXPECT_EQ(output.str(), kPuffMicrophoneMuteSwitchDescription);
 }

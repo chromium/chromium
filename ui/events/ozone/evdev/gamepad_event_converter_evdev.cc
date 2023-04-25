@@ -296,4 +296,14 @@ void GamepadEventConverterEvdev::OnSync(const base::TimeTicks& timestamp) {
     will_send_frame_ = false;
   }
 }
+
+std::ostream& GamepadEventConverterEvdev::DescribeForLog(
+    std::ostream& os) const {
+  os << "class=ui::GamepadEventConverterEvdev id=" << input_device_.id
+     << std::endl
+     << " supports_rumble=" << supports_rumble_ << std::endl
+     << "base ";
+  return EventConverterEvdev::DescribeForLog(os);
+}
+
 }  //  namespace ui

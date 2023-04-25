@@ -6,6 +6,7 @@
 #define UI_EVENTS_OZONE_EVDEV_EVENT_CONVERTER_EVDEV_IMPL_H_
 
 #include <bitset>
+#include <ostream>
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
@@ -58,6 +59,9 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
   std::vector<uint64_t> GetKeyboardKeyBits() const override;
 
   void ProcessEvents(const struct input_event* inputs, int count);
+
+  // Describe converter for system log
+  std::ostream& DescribeForLog(std::ostream& os) const override;
 
  private:
   void ConvertKeyEvent(const input_event& input);

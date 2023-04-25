@@ -8,6 +8,7 @@
 #include <libevdev/libevdev.h>
 
 #include <memory>
+#include <ostream>
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
@@ -78,6 +79,8 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
       HapticTouchpadEffect effect,
       HapticTouchpadEffectStrength strength) override;
   void ApplyDeviceSettings(const InputDeviceSettingsEvdev& settings) override;
+
+  std::ostream& DescribeForLog(std::ostream& os) const override;
 
  private:
   static void OnSynReport(void* data,

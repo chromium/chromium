@@ -71,4 +71,12 @@ void StylusButtonEventConverterEvdev::ProcessEvent(const input_event& input) {
   }
 }
 
+std::ostream& StylusButtonEventConverterEvdev::DescribeForLog(
+    std::ostream& os) const {
+  os << "class=ui::StylusButtonEventConverterEvdev id=" << input_device_.id
+     << std::endl
+     << "base ";
+  return EventConverterEvdev::DescribeForLog(os);
+}
+
 }  // namespace ui

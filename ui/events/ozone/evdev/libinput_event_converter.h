@@ -8,6 +8,7 @@
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
 
 #include <libinput.h>
+#include <ostream>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -122,6 +123,8 @@ class LibInputEventConverter : public EventConverterEvdev {
   bool HasTouchpad() const final;
 
   bool HasTouchscreen() const final;
+
+  std::ostream& DescribeForLog(std::ostream& os) const override;
 
  private:
   void OnFileCanReadWithoutBlocking(int fd) final;

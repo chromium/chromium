@@ -96,6 +96,23 @@ void TabletEventConverterEvdev::OnFileCanReadWithoutBlocking(int fd) {
   ProcessEvents(inputs, read_size / sizeof(*inputs));
 }
 
+std::ostream& TabletEventConverterEvdev::DescribeForLog(
+    std::ostream& os) const {
+  os << "class=ui::TabletEventConverterEvdev id=" << input_device_.id
+     << std::endl
+     << " x_abs_min=" << x_abs_min_ << std::endl
+     << " x_abs_range=" << x_abs_range_ << std::endl
+     << " y_abs_min=" << y_abs_min_ << std::endl
+     << " y_abs_range=" << y_abs_range_ << std::endl
+     << " tilt_x_min=" << tilt_x_min_ << std::endl
+     << " tilt_x_range=" << tilt_x_range_ << std::endl
+     << " tilt_y_min=" << tilt_y_min_ << std::endl
+     << " tilt_y_range=" << tilt_y_range_ << std::endl
+     << " pressure_max=" << pressure_max_ << std::endl
+     << "base ";
+  return EventConverterEvdev::DescribeForLog(os);
+}
+
 void TabletEventConverterEvdev::ProcessEvents(const input_event* inputs,
                                               int count) {
   for (int i = 0; i < count; ++i) {

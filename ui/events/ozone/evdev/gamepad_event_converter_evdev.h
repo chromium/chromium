@@ -5,6 +5,7 @@
 #ifndef UI_EVENTS_OZONE_EVDEV_GAMEPAD_EVENT_CONVERTER_EVDEV_H_
 #define UI_EVENTS_OZONE_EVDEV_GAMEPAD_EVENT_CONVERTER_EVDEV_H_
 
+#include <ostream>
 #include <vector>
 
 #include "base/component_export.h"
@@ -55,6 +56,8 @@ class COMPONENT_EXPORT(EVDEV) GamepadEventConverterEvdev
 
   // This function stops the gamepad device's vibration effect.
   void StopVibration() override;
+
+  std::ostream& DescribeForLog(std::ostream& os) const override;
 
  private:
   // This function processes EV_KEY event from gamepad device.
