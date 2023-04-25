@@ -75,7 +75,8 @@ class HistoryClustersModuleServiceTest : public testing::Test {
     history_clusters_module_service_ =
         std::make_unique<HistoryClustersModuleService>(
             test_history_clusters_service_.get(), mock_cart_service_.get(),
-            template_url_service_.get());
+            template_url_service_.get(),
+            /*optimization_guide_keyed_service=*/nullptr);
   }
 
   history_clusters::TestHistoryClustersService&
@@ -243,14 +244,9 @@ TEST_F(HistoryClustersModuleServiceTest, ClusterVisitsCulled) {
 TEST_F(HistoryClustersModuleServiceTest, IneligibleClusterNonProminent) {
   base::HistogramTester histogram_tester;
 
-  const history::Cluster kSampleCluster = history::Cluster(
-      1, {},
-      {{u"apples", history::ClusterKeywordData()},
-       {u"Red Oranges", history::ClusterKeywordData()}},
-      /*should_show_on_prominent_ui_surfaces=*/false,
-      /*label=*/
-      l10n_util::GetStringFUTF16(
-          IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_SEARCH_TERMS, u"Red fruits"));
+  history::Cluster kSampleCluster =
+      SampleCluster(/*srp_visits=*/0, /*non_srp_visits=*/3);
+  kSampleCluster.should_show_on_prominent_ui_surfaces = false;
   test_history_clusters_service().SetClustersToReturn({kSampleCluster});
 
   std::vector<history::Cluster> clusters = GetClusters();

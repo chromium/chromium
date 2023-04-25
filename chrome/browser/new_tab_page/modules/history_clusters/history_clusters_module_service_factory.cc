@@ -4,12 +4,15 @@
 
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service_factory.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "components/search/ntp_features.h"
 #include "content/public/browser/browser_context.h"
 
 HistoryClustersModuleService*
@@ -34,6 +37,7 @@ HistoryClustersModuleServiceFactory::HistoryClustersModuleServiceFactory()
   DependsOn(HistoryClustersServiceFactory::GetInstance());
   DependsOn(CartServiceFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
 HistoryClustersModuleServiceFactory::~HistoryClustersModuleServiceFactory() =
@@ -53,5 +57,18 @@ KeyedService* HistoryClustersModuleServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
   return new HistoryClustersModuleService(
-      hcs, CartServiceFactory::GetForProfile(profile), tus);
+      hcs, CartServiceFactory::GetForProfile(profile), tus,
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile));
+}
+
+bool HistoryClustersModuleServiceFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  // If using the model for ranking, create the service with browser context to
+  // increase the probability of the model being available for initial NTP load.
+  return base::FeatureList::IsEnabled(
+      ntp_features::kNtpHistoryClustersModuleUseModelRanking);
+}
+
+bool HistoryClustersModuleServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
 }

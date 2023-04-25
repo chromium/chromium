@@ -23,6 +23,7 @@ struct QueryClustersContinuationParams;
 
 class CartService;
 class HistoryClustersModuleRanker;
+class OptimizationGuideKeyedService;
 class TemplateURLService;
 
 // Handles requests to get clusters for the History Clusters Module.
@@ -32,7 +33,8 @@ class HistoryClustersModuleService : public KeyedService {
   HistoryClustersModuleService(
       history_clusters::HistoryClustersService* history_clusters_service,
       CartService* cart_service,
-      TemplateURLService* template_url_service);
+      TemplateURLService* template_url_service,
+      OptimizationGuideKeyedService* optimization_guide_keyed_service);
   ~HistoryClustersModuleService() override;
 
   using GetClustersCallback =
@@ -58,7 +60,13 @@ class HistoryClustersModuleService : public KeyedService {
                            std::vector<history::Cluster> clusters);
 
   // The filtering parameters to use for all calls to fetch clusters.
-  history_clusters::QueryClustersFilterParams filter_params_;
+  const history_clusters::QueryClustersFilterParams filter_params_;
+
+  // The max number of clusters to return.
+  const size_t max_clusters_to_return_;
+
+  // The categories to boost.
+  const base::flat_set<std::string> category_boostlist_;
 
   raw_ptr<history_clusters::HistoryClustersService> history_clusters_service_;
   raw_ptr<CartService> cart_service_;

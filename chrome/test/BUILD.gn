@@ -7338,9 +7338,10 @@ test("unit_tests") {
       "../browser/new_tab_page/modules/drive/drive_service_unittest.cc",
       "../browser/new_tab_page/modules/feed/feed_handler_unittest.cc",
       "../browser/new_tab_page/modules/history_clusters/cart/cart_processor_unittest.cc",
-      "../browser/new_tab_page/modules/history_clusters/history_clusters_module_ranker_unittest.cc",
       "../browser/new_tab_page/modules/history_clusters/history_clusters_module_service_unittest.cc",
+      "../browser/new_tab_page/modules/history_clusters/history_clusters_module_util_unittest.cc",
       "../browser/new_tab_page/modules/history_clusters/history_clusters_page_handler_unittest.cc",
+      "../browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranker_unittest.cc",
       "../browser/new_tab_page/modules/new_tab_page_modules_unittest.cc",
       "../browser/new_tab_page/modules/photos/photos_service_unittest.cc",
       "../browser/new_tab_page/modules/recipes/recipes_service_unittest.cc",
@@ -7348,6 +7349,11 @@ test("unit_tests") {
       "../browser/new_tab_page/modules/safe_browsing/safe_browsing_handler_unittest.cc",
       "../browser/search/ntp_features_unittest.cc",
     ]
+    if (build_with_tflite_lib) {
+      sources += [ "../browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_model_handler_unittest.cc" ]
+      data += [ "//components/test/data/omnibox/adder.tflite" ]
+      deps += [ "//chrome/browser/new_tab_page/modules/history_clusters/ranking:history_clusters_module_proto" ]
+    }
 
     sources += [
       # Android uses a different way of showing browser windows.

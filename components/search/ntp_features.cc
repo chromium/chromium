@@ -285,6 +285,10 @@ BASE_FEATURE(kNtpChromeCartInHistoryClusterModule,
              "NtpChromeCartInHistoryClusterModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNtpHistoryClustersModuleUseModelRanking,
+             "NtpHistoryClustersModuleUseModelRanking",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<double>
     kNtpElementLuminosityChangeForLightBackgroundParam{
         &kNtpComprehensiveTheming,

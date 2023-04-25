@@ -70,7 +70,7 @@ class MockHistoryClustersTabHelper
 class MockHistoryClustersModuleService : public HistoryClustersModuleService {
  public:
   MockHistoryClustersModuleService()
-      : HistoryClustersModuleService(nullptr, nullptr, nullptr) {}
+      : HistoryClustersModuleService(nullptr, nullptr, nullptr, nullptr) {}
 
   MOCK_METHOD1(
       GetClusters,
