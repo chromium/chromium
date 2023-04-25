@@ -68,10 +68,10 @@ TEST_F(PrintBackendTest, MANUAL_GetXmlPrinterCapabilitiesForXpsDriver) {
   EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(printer_list),
             mojom::ResultCode::kSuccess);
   for (const auto& printer : printer_list) {
-    base::expected<std::string, mojom::ResultCode> result =
-        GetPrintBackend()->GetXmlPrinterCapabilitiesForXpsDriver(
-            printer.printer_name);
-    EXPECT_TRUE(result.has_value());
+    EXPECT_TRUE(
+        GetPrintBackend()
+            ->GetXmlPrinterCapabilitiesForXpsDriver(printer.printer_name)
+            .has_value());
   }
 }
 
