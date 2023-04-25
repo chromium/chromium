@@ -44,7 +44,9 @@ namespace ash {
 
 namespace {
 
-constexpr int kDialogVerticalMargin = 50;
+// Offset to place dialog in the vertical center of bubble due to
+// PhoneStatusView.
+constexpr int kDialogVerticalOffset = 25;
 
 constexpr int kDialogWidth = 330;
 
@@ -304,20 +306,16 @@ void AppStreamConnectionErrorDialog::UpdateBounds() {
     return;
   }
 
-  gfx::Point anchor_point_in_screen(host_view_->width() / 2, 0);
+  gfx::Point anchor_point_in_screen(host_view_->width() / 2,
+                                    host_view_->height() / 2);
   views::View::ConvertPointToScreen(host_view_, &anchor_point_in_screen);
 
-  const int offset_for_frame_insets =
-      widget_->non_client_view() && widget_->non_client_view()->frame_view()
-          ? widget_->non_client_view()->frame_view()->GetInsets().top()
-          : 0;
-  const int vertical_offset = kDialogVerticalMargin - offset_for_frame_insets;
-
   gfx::Size dialog_size = widget_->GetContentsView()->GetPreferredSize();
-  widget_->SetBounds(
-      gfx::Rect(gfx::Point(anchor_point_in_screen.x() - dialog_size.width() / 2,
-                           anchor_point_in_screen.y() + vertical_offset),
-                dialog_size));
+  widget_->SetBounds(gfx::Rect(
+      gfx::Point(anchor_point_in_screen.x() - dialog_size.width() / 2,
+                 anchor_point_in_screen.y() - dialog_size.height() / 2 -
+                     kDialogVerticalOffset),
+      dialog_size));
 }
 
 void AppStreamConnectionErrorDialog::OnWidgetDestroying(views::Widget* widget) {
