@@ -96,6 +96,7 @@ class TargetDeviceConnectionBrokerImpl
   void OnStopNearbyConnectionsAdvertising(
       base::OnceClosure callback,
       NearbyConnectionsManager::ConnectionsStatus status);
+  const Connection::SessionContext BuildConnectionSessionContext() const;
 
   // A 4-digit decimal pin code derived from the connection's authentication
   // token for the pin authentication flow.

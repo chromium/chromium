@@ -98,11 +98,13 @@ void FakeTargetDeviceConnectionBroker::AuthenticateConnection(
   NearbyConnection* nearby_connection = fake_nearby_connection_.get();
   mojo::PendingRemote<mojom::QuickStartDecoder> remote;
   fake_quick_start_decoder_ = std::make_unique<FakeQuickStartDecoder>();
-  auto random_session_id = RandomSessionId();
+  Connection::SessionContext session_context = {
+      .session_id = RandomSessionId(),
+      .shared_secret = kSharedSecret,
+      .secondary_shared_secret = kSecondarySharedSecret};
   auto connection_factory = std::make_unique<Connection::Factory>();
   auto connection = connection_factory->Create(
-      nearby_connection, random_session_id, kSharedSecret,
-      kSecondarySharedSecret, base::DoNothing(),
+      nearby_connection, session_context, base::DoNothing(),
       base::BindOnce(
           &FakeTargetDeviceConnectionBroker::OnConnectionAuthenticated,
           weak_ptr_factory_.GetWeakPtr()));

@@ -47,6 +47,12 @@ class Connection
     kClosed    // The connection is closed
   };
 
+  struct SessionContext {
+    RandomSessionId session_id;
+    SharedSecret shared_secret;
+    SharedSecret secondary_shared_secret;
+  };
+
   class Factory {
    public:
     Factory() = default;
@@ -56,9 +62,7 @@ class Connection
 
     virtual std::unique_ptr<Connection> Create(
         NearbyConnection* nearby_connection,
-        RandomSessionId session_id,
-        SharedSecret shared_secret,
-        SharedSecret secondary_shared_secret,
+        Connection::SessionContext session_context,
         ConnectionClosedCallback on_connection_closed,
         ConnectionAuthenticatedCallback on_connection_authenticated);
   };
@@ -74,9 +78,7 @@ class Connection
   };
 
   Connection(NearbyConnection* nearby_connection,
-             RandomSessionId session_id,
-             SharedSecret shared_secret,
-             SharedSecret secondary_shared_secret,
+             SessionContext session_context,
              std::unique_ptr<NonceGenerator> nonce_generator,
              ConnectionClosedCallback on_connection_closed,
              ConnectionAuthenticatedCallback on_connection_authenticated);

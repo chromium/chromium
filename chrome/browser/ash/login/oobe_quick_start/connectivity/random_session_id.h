@@ -22,8 +22,8 @@ class RandomSessionId {
 
   RandomSessionId();
   explicit RandomSessionId(base::span<const uint8_t, kLength> bytes);
-  RandomSessionId(RandomSessionId&) = default;
-  RandomSessionId& operator=(RandomSessionId&) = default;
+  RandomSessionId(const RandomSessionId&) = default;
+  RandomSessionId& operator=(const RandomSessionId&) = default;
   ~RandomSessionId() = default;
 
   base::span<const uint8_t, kLength> AsBytes() const { return bytes_; }

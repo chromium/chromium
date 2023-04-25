@@ -107,7 +107,7 @@ class ConnectionTest : public testing::Test {
     NearbyConnection* nearby_connection = fake_nearby_connection_.get();
     fake_quick_start_decoder_ = std::make_unique<FakeQuickStartDecoder>();
     connection_ = std::make_unique<Connection>(
-        nearby_connection, session_id_, kSharedSecret, kSecondarySharedSecret,
+        nearby_connection, session_context_,
         std::make_unique<ConstantNonceGenerator>(),
         /*on_connection_closed=*/base::DoNothing(),
         /*on_connection_authenticated=*/
@@ -146,6 +146,10 @@ class ConnectionTest : public testing::Test {
   std::unique_ptr<FakeNearbyConnection> fake_nearby_connection_;
   std::unique_ptr<Connection> connection_;
   RandomSessionId session_id_ = RandomSessionId(kRandomSessionId);
+  Connection::SessionContext session_context_ = {
+      .session_id = session_id_,
+      .shared_secret = kSharedSecret,
+      .secondary_shared_secret = kSecondarySharedSecret};
   bool ran_assertion_response_callback_ = false;
   bool ran_connection_authenticated_callback_ = false;
   base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
@@ -400,8 +404,8 @@ TEST_F(ConnectionTest, TestClose) {
       future;
   std::unique_ptr<Connection> connection_under_test =
       std::make_unique<Connection>(
-          fake_nearby_connection_.get(), session_id_, kSharedSecret,
-          kSecondarySharedSecret, std::make_unique<ConstantNonceGenerator>(),
+          fake_nearby_connection_.get(), session_context_,
+          std::make_unique<ConstantNonceGenerator>(),
           /*on_connection_closed=*/future.GetCallback(),
           /*on_connection_authenticated=*/base::DoNothing());
 
@@ -422,8 +426,8 @@ TEST_F(ConnectionTest, TestDisconnectsWithoutCloseIssueUnknownError) {
       future;
   std::unique_ptr<Connection> connection_under_test =
       std::make_unique<Connection>(
-          fake_nearby_connection_.get(), session_id_, kSharedSecret,
-          kSecondarySharedSecret, std::make_unique<ConstantNonceGenerator>(),
+          fake_nearby_connection_.get(), session_context_,
+          std::make_unique<ConstantNonceGenerator>(),
           /*on_connection_closed=*/future.GetCallback(),
           /*on_connection_authenticated=*/base::DoNothing());
 

@@ -288,14 +288,11 @@ class FakeConnection : public Connection {
     // Connection::Factory:
     std::unique_ptr<Connection> Create(
         NearbyConnection* nearby_connection,
-        RandomSessionId session_id,
-        SharedSecret shared_secret,
-        SharedSecret secondary_shared_secret,
+        Connection::SessionContext session_context,
         ConnectionClosedCallback on_connection_closed,
         ConnectionAuthenticatedCallback on_connection_authenticated) override {
       auto connection = std::make_unique<FakeConnection>(
-          nearby_connection, session_id, shared_secret, secondary_shared_secret,
-          std::move(on_connection_closed),
+          nearby_connection, session_context, std::move(on_connection_closed),
           std::move(on_connection_authenticated));
       instance_ = connection->weak_ptr_factory_.GetWeakPtr();
       return std::move(connection);
@@ -305,15 +302,11 @@ class FakeConnection : public Connection {
   };
 
   FakeConnection(NearbyConnection* nearby_connection,
-                 RandomSessionId session_id,
-                 SharedSecret shared_secret,
-                 SharedSecret secondary_shared_secret,
+                 Connection::SessionContext session_context,
                  ConnectionClosedCallback on_connection_closed,
                  ConnectionAuthenticatedCallback on_connection_authenticated)
       : Connection(nearby_connection,
-                   session_id,
-                   secondary_shared_secret,
-                   shared_secret,
+                   session_context,
                    std::make_unique<Connection::NonceGenerator>(),
                    std::move(on_connection_closed),
                    std::move(on_connection_authenticated)) {}

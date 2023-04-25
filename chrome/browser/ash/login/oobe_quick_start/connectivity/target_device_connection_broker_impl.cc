@@ -430,8 +430,7 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
 
   // TODO(b/234655072): Handle Connection Closed in the Connection Broker
   connection_ = connection_factory_->Create(
-      nearby_connection, random_session_id_, shared_secret_,
-      secondary_shared_secret_, base::DoNothing(),
+      nearby_connection, BuildConnectionSessionContext(), base::DoNothing(),
       base::BindOnce(
           &TargetDeviceConnectionBrokerImpl::OnConnectionAuthenticated,
           weak_ptr_factory_.GetWeakPtr()));
@@ -448,6 +447,16 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
     // fully implemented.
     connection_->InitiateHandshake(*auth_token, base::DoNothing());
   }
+}
+
+const Connection::SessionContext
+TargetDeviceConnectionBrokerImpl::BuildConnectionSessionContext() const {
+  Connection::SessionContext context = {
+      .session_id = random_session_id_,
+      .shared_secret = shared_secret_,
+      .secondary_shared_secret = secondary_shared_secret_};
+
+  return context;
 }
 
 }  // namespace ash::quick_start
