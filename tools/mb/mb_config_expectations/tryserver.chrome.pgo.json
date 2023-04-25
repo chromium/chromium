@@ -39,7 +39,6 @@
       "chrome_pgo_phase": 1,
       "chromeos_is_browser_only": true,
       "dcheck_always_on": false,
-      "is_cfi": true,
       "is_chrome_branded": true,
       "is_chromeos_device": true,
       "is_debug": false,
@@ -47,8 +46,7 @@
       "is_on_release_branch": true,
       "symbol_level": 0,
       "target_os": "chromeos",
-      "use_remoteexec": true,
-      "use_thin_lto": true
+      "use_remoteexec": true
     }
   },
   "lacros-arm-generic-pgo": {
@@ -57,7 +55,6 @@
       "chrome_pgo_phase": 1,
       "chromeos_is_browser_only": true,
       "dcheck_always_on": false,
-      "is_cfi": true,
       "is_chrome_branded": true,
       "is_chromeos_device": true,
       "is_debug": false,
@@ -65,8 +62,7 @@
       "is_on_release_branch": true,
       "symbol_level": 0,
       "target_os": "chromeos",
-      "use_remoteexec": true,
-      "use_thin_lto": true
+      "use_remoteexec": true
     }
   },
   "lacros-arm64-generic-pgo": {
@@ -75,7 +71,6 @@
       "chrome_pgo_phase": 1,
       "chromeos_is_browser_only": true,
       "dcheck_always_on": false,
-      "is_cfi": true,
       "is_chrome_branded": true,
       "is_chromeos_device": true,
       "is_debug": false,
@@ -83,8 +78,7 @@
       "is_on_release_branch": true,
       "symbol_level": 0,
       "target_os": "chromeos",
-      "use_remoteexec": true,
-      "use_thin_lto": true
+      "use_remoteexec": true
     }
   },
   "linux-pgo": {
