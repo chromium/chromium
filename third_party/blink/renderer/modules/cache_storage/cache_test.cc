@@ -40,6 +40,8 @@
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/fetch/response.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache_storage_blob_client_list.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -277,11 +279,13 @@ class TestCache : public Cache {
   TestCache(
       GlobalFetch::ScopedFetcher* fetcher,
       mojo::PendingAssociatedRemote<mojom::blink::CacheStorageCache> remote,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      ContextLifecycleNotifier* context)
       : Cache(fetcher,
               MakeGarbageCollected<CacheStorageBlobClientList>(),
               std::move(remote),
-              std::move(task_runner)) {}
+              std::move(task_runner),
+              context) {}
 
   bool IsAborted() const {
     return abort_controller_ && abort_controller_->signal()->aborted();
@@ -316,7 +320,8 @@ class CacheStorageTest : public PageTestBase {
         cache_.get(), cache_remote.BindNewEndpointAndPassDedicatedReceiver());
     return MakeGarbageCollected<TestCache>(
         fetcher, cache_remote.Unbind(),
-        blink::scheduler::GetSingleThreadTaskRunnerForTesting());
+        blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+        GetFrame().DomWindow());
   }
 
   ErrorCacheForTests* test_cache() { return cache_.get(); }

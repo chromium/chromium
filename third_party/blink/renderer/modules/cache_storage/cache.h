@@ -7,7 +7,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -16,6 +15,7 @@
 #include "third_party/blink/renderer/core/fetch/global_fetch.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -56,7 +56,8 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
   Cache(GlobalFetch::ScopedFetcher*,
         CacheStorageBlobClientList* blob_client_list,
         mojo::PendingAssociatedRemote<mojom::blink::CacheStorageCache>,
-        scoped_refptr<base::SingleThreadTaskRunner>);
+        scoped_refptr<base::SingleThreadTaskRunner>,
+        ContextLifecycleNotifier*);
 
   Cache(const Cache&) = delete;
   Cache& operator=(const Cache&) = delete;
@@ -135,8 +136,8 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
   Member<GlobalFetch::ScopedFetcher> scoped_fetcher_;
   Member<CacheStorageBlobClientList> blob_client_list_;
 
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::AssociatedRemote<mojom::blink::CacheStorageCache> cache_remote_;
+  blink::HeapMojoAssociatedRemote<mojom::blink::CacheStorageCache>
+      cache_remote_;
 };
 
 }  // namespace blink
