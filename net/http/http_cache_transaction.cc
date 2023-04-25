@@ -1805,7 +1805,7 @@ int HttpCache::Transaction::DoStartPartialCacheValidation() {
 }
 
 int HttpCache::Transaction::DoCompletePartialCacheValidation(int result) {
-  if (!result) {
+  if (!result && reading_) {
     // This is the end of the request.
     DoneWithEntry(true);
     TransitionToState(STATE_FINISH_HEADERS);
