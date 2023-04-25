@@ -167,8 +167,19 @@ void EncodedFormData::AppendData(const void* data, wtf_size_t size) {
   if (elements_.empty() || elements_.back().type_ != FormDataElement::kData)
     elements_.push_back(FormDataElement());
 
-  recordreplay::Assert("[RUN-1350-1386] EncodedFormData::AppendData len=%u",
-    (unsigned) size);
+  if (recordreplay::IsRecordingOrReplaying()) {
+    uintptr_t replayed_size = size;
+    uintptr_t recorded_size = recordreplay::RecordReplayValue(
+      "EncodedFormData::AppendData", replayed_size
+    );
+    if (recorded_size != replayed_size) {
+      recordreplay::Warning(
+        "[RUN-1350-1805] EncodedFormData::AppendData size mismatch: "
+        "recorded %u, replayed %u",
+        (unsigned) recorded_size, (unsigned) replayed_size
+      );
+    }
+  }
 
   FormDataElement& e = elements_.back();
   wtf_size_t old_size = e.data_.size();
