@@ -1077,19 +1077,20 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 #pragma mark - UIScrollViewDelegate
 
-- (void)scrollViewDidChangeAdjustedContentInset:(UIScrollView*)scrollView {
-  self.emptyStateView.scrollViewContentInsets = scrollView.contentInset;
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  [self.delegate gridViewControllerScrollViewDidScroll:self];
+  if (!self.thumbStripEnabled) {
+    return;
+  }
+  [self updateFractionVisibleOfLastItem];
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
   [self.delegate gridViewControllerWillBeginDragging:self];
 }
 
-- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
-  [self.delegate gridViewControllerScrollViewDidScroll:self];
-  if (!self.thumbStripEnabled)
-    return;
-  [self updateFractionVisibleOfLastItem];
+- (void)scrollViewDidChangeAdjustedContentInset:(UIScrollView*)scrollView {
+  self.emptyStateView.scrollViewContentInsets = scrollView.contentInset;
 }
 
 #pragma mark - GridCellDelegate
