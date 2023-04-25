@@ -400,12 +400,19 @@ chromeos::FrameSizeButton* GetFrameSizeButton(aura::Window* window) {
 }
 
 // Gets the target window for accelerator action. This can be the top visible
-// window, or active window if the accelerator is pressed during a window drag.
-// Returns nullptr if neither exist.
+// window not in overview, or active window if the accelerator is pressed during
+// a window drag. Returns nullptr if neither exist.
 aura::Window* GetTargetWindow() {
   aura::Window* window = window_util::GetTopWindow();
-  return window && window->IsVisible() ? window
-                                       : window_util::GetActiveWindow();
+  if (!window) {
+    return window_util::GetActiveWindow();
+  }
+  if (auto* overview_controller = Shell::Get()->overview_controller();
+      overview_controller->InOverviewSession() &&
+      overview_controller->overview_session()->IsWindowInOverview(window)) {
+    return nullptr;
+  }
+  return window->IsVisible() ? window : nullptr;
 }
 
 }  // namespace
@@ -1424,6 +1431,11 @@ void ToggleMaximized() {
 bool ToggleMinimized() {
   aura::Window* window = window_util::GetTopWindow();
   if (!window) {
+    return false;
+  }
+  if (auto* overview_controller = Shell::Get()->overview_controller();
+      overview_controller->InOverviewSession() &&
+      overview_controller->overview_session()->IsWindowInOverview(window)) {
     return false;
   }
   WindowState* window_state = WindowState::Get(window);

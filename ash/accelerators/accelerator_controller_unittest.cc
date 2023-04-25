@@ -1191,6 +1191,20 @@ TEST_F(AcceleratorControllerTest, DontToggleFullscreenWhenOverviewStarts) {
                   ->IsWindowInOverview(widget->GetNativeWindow()));
 }
 
+// Tests that window shortcuts don't work on a minimized, i.e. not visible,
+// window in overview.
+TEST_F(AcceleratorControllerTest, MinimizedWindowInOverview) {
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShellWithBounds(gfx::Rect(5, 5, 20, 20)));
+  WindowState* window_state = WindowState::Get(window.get());
+  window_state->Minimize();
+  EXPECT_TRUE(window_state->IsMinimized());
+  ToggleOverview();
+  GetEventGenerator()->PressKey(ui::VKEY_OEM_4, ui::EF_ALT_DOWN);
+  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(window_state->IsMinimized());
+}
+
 // TODO(oshima): Fix this test to use EventGenerator.
 TEST_F(AcceleratorControllerTest, ProcessOnce) {
   // The IME event filter interferes with the basic key event propagation we
