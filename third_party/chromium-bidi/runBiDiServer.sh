@@ -32,7 +32,7 @@ readonly HEADLESS="${HEADLESS:-true}"
 readonly LOG_DIR="${LOG_DIR:-logs}"
 
 # The file to which to write BiDi logs.
-readonly LOG_FILE="$LOG_DIR/$(date +%s).log"
+readonly LOG_FILE="$LOG_DIR/$(date '+%Y-%m-%d-%H-%M-%S').log"
 
 # Node.JS options
 readonly NODE_OPTIONS="${NODE_OPTIONS:---unhandled-rejections=strict}"
@@ -51,4 +51,4 @@ DEBUG="$DEBUG" \
 DEBUG_COLORS="$DEBUG_COLORS" \
 NODE_OPTIONS="$NODE_OPTIONS" \
 PORT="$PORT" \
-npm run server -- --channel="$CHANNEL" --headless="$HEADLESS" "$@" 2>&1 | tee -a "$LOG_FILE")
+node lib/cjs/bidiServer/index.js --channel="$CHANNEL" --headless="$HEADLESS" "$@" 2>&1 | tee -a "$LOG_FILE")

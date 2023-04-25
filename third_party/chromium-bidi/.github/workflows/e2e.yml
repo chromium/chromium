@@ -40,11 +40,27 @@ jobs:
       - name: Run E2E tests
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.head == 'headful' }}
         timeout-minutes: 15
-        run: CHROME_BIN="${{ env.chromium_binary }}" xvfb-run --auto-servernum npm run e2e-${{ matrix.head }}
+        run: >
+          VERBOSE=true
+          DEBUG=*
+          CHROME_BIN="${{ env.chromium_binary }}"
+          xvfb-run --auto-servernum
+          npm run e2e-${{ matrix.head }}
       - name: Run E2E tests
         if: ${{ matrix.os == 'macos-latest' || (matrix.os == 'ubuntu-latest' && matrix.head == 'headless') }}
         timeout-minutes: 15
-        run: CHROME_BIN="${{ env.chromium_binary }}" npm run e2e-${{ matrix.head }}
+        run: >
+          VERBOSE=true
+          DEBUG=*
+          CHROME_BIN="${{ env.chromium_binary }}"
+          npm run e2e-${{ matrix.head }}
+      - name: Upload artifacts
+        # Force run task even if the previous tasks failed.
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}-${{ matrix.head }}-artifacts
+          path: logs
 
 env:
   DEBUG: bidiServer:log

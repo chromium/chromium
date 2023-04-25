@@ -8,7 +8,7 @@
     "coverage": "nyc mocha",
     "e2e-headful": "wireit",
     "e2e-headless": "wireit",
-    "e2e": "npm run e2e-headless",
+    "e2e": "npm run e2e-headless --",
     "e2e-only": "python3 -m pytest",
     "eslint": "wireit",
     "flake8": "flake8 examples/ tests/",
@@ -32,13 +32,13 @@
       ]
     },
     "e2e-headful": {
-      "command": "npm run e2e-only",
+      "command": "npm run e2e-only --",
       "dependencies": [
         "server-headful"
       ]
     },
     "e2e-headless": {
-      "command": "npm run e2e-only",
+      "command": "npm run e2e-only --",
       "dependencies": [
         "server-headless"
       ]
@@ -72,7 +72,7 @@
       ]
     },
     "server-headful": {
-      "command": "node lib/cjs/bidiServer/index.js --headless=false",
+      "command": "./runBiDiServer.sh --headless=false",
       "files": [
         "lib/cjs/bidiServer/index.js"
       ],
@@ -86,7 +86,7 @@
       ]
     },
     "server-headless": {
-      "command": "node lib/cjs/bidiServer/index.js",
+      "command": "./runBiDiServer.sh --headless=true",
       "files": [
         "lib/cjs/bidiServer/index.js"
       ],
@@ -130,7 +130,7 @@
     "devtools-protocol": "*"
   },
   "devDependencies": {
-    "@puppeteer/browsers": "0.5.0",
+    "@puppeteer/browsers": "0.1.1",
     "@rollup/plugin-commonjs": "24.1.0",
     "@rollup/plugin-node-resolve": "15.0.2",
     "@rollup/plugin-terser": "0.4.1",

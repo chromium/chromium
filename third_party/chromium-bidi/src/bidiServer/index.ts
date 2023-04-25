@@ -64,6 +64,7 @@ function parseArguments() {
   parser.add_argument('-v', '--verbose', {
     help: 'If present, the Mapper debug log, including CDP commands and events will be logged into the server output.',
     action: 'store_true',
+    default: process.env['VERBOSE'] === 'true' || false,
   });
 
   const args = parser.parse_known_args();
@@ -130,12 +131,12 @@ async function onNewBidiConnectionOpen(
     'about:blank',
   ];
 
-  const executablePath = chromeChannel
-    ? computeSystemExecutablePath({
-        browser: Browser.CHROME,
-        channel: chromeChannel,
-      })
-    : process.env['CHROME_BIN'];
+  const executablePath =
+    process.env['CHROME_BIN'] ??
+    computeSystemExecutablePath({
+      browser: Browser.CHROME,
+      channel: chromeChannel ?? ChromeReleaseChannel.DEV,
+    });
 
   if (!executablePath) {
     throw new Error('Could not find Chrome binary');
