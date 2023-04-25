@@ -83,7 +83,8 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
         mDisplayDensity = activity.getResources().getDisplayMetrics().density;
     }
 
-    private void displayInitialScreenshot() {
+    @VisibleForTesting
+    void displayInitialScreenshot() {
         mEntryManager.addBitmapGeneratorObserver(new EntryManager.BitmapGeneratorObserver() {
             @Override
             public void onStatusChange(int status) {
