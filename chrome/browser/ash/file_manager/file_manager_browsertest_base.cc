@@ -2602,9 +2602,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
       CHECK(web_contents) << "Couldn't find the SWA WebContents without appId"
                           << " command data: " << *data;
     }
-    CHECK(ExecuteScriptAndExtractString(
-        web_contents,
-        base::StrCat({"test.swaTestMessageListener(", *data, ")"}), output));
+    *output = content::EvalJs(
+                  web_contents,
+                  base::StrCat({"test.swaTestMessageListener(", *data, ")"}),
+                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                  .ExtractString();
     return;
   }
 
@@ -2649,7 +2651,10 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
                 ash::file_manager::kChromeUIFileManagerUntrustedURL) {
               const std::string* script = value.FindString("data");
               EXPECT_TRUE(script);
-              CHECK(ExecuteScriptAndExtractString(frame, *script, output));
+              *output =
+                  content::EvalJs(frame, *script,
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                      .ExtractString();
               found = true;
               return content::RenderFrameHost::FrameIterationAction::kStop;
             }
@@ -3549,20 +3554,17 @@ void FileManagerBrowserTestBase::LoadSwaTestUtils(
     content::WebContents* web_contents) {
   CHECK(web_contents);
 
-  bool result;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents, "test.swaLoadTestUtils()", &result));
-  ASSERT_TRUE(result);
+  ASSERT_EQ(true, content::EvalJs(web_contents, "test.swaLoadTestUtils()",
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
 std::string FileManagerBrowserTestBase::GetSwaAppId(
     content::WebContents* web_contents) {
   CHECK(web_contents);
 
-  std::string app_id;
-  CHECK(content::ExecuteScriptAndExtractString(web_contents,
-                                               "test.getSwaAppId()", &app_id));
-  return app_id;
+  return content::EvalJs(web_contents, "test.getSwaAppId()",
+                         content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+      .ExtractString();
 }
 
 std::vector<content::WebContents*>

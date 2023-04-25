@@ -61,6 +61,7 @@
 #include "components/user_manager/user.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/entry_info.h"
@@ -414,14 +415,11 @@ content::EvalJsResult WaitForImageAlt(content::WebContents* web_ui,
 
 // Runs the provided `script` in a non-isolated JS world that can access
 // variables defined in global scope (otherwise only DOM queries are allowed).
-// The script must call `domAutomationController.send(result)` to return, where
-// `result` is a string.
+// The script's completion value must be a string.
 std::string ExtractStringInGlobalScope(content::WebContents* web_ui,
                                        const std::string& script) {
-  std::string result;
   content::RenderFrameHost* app = MediaAppUiBrowserTest::GetAppFrame(web_ui);
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(app, script, &result));
-  return result;
+  return content::EvalJs(app, script).ExtractString();
 }
 
 // Waits for the "filetraversalenabled" attribute to show up in the MediaApp's
@@ -1478,8 +1476,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
 
   constexpr char kScript[] =
       "lastLoadedReceivedFileList().item(0).deleteOriginalFile()"
-      ".then(() => domAutomationController.send('bad-success'))"
-      ".catch(e => domAutomationController.send(e.name));";
+      ".then(() => 'bad-success')"
+      ".catch(e => e.name);";
   EXPECT_EQ("InvalidModificationError",
             ExtractStringInGlobalScope(web_ui, kScript));
 
@@ -1586,7 +1584,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, ToggleBrowserFullscreen) {
   constexpr char kToggleFullscreen[] = R"(
       (async function toggleFullscreen() {
         await customLaunchData.delegate.toggleBrowserFullscreenMode();
-        domAutomationController.send("success");
+        return "success";
       })();
   )";
 
@@ -1614,7 +1612,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MaybeTriggerPdfHats) {
   constexpr char kMaybeTriggerPdfHats[] = R"(
       (async function triggerPdfHats() {
         await customLaunchData.delegate.maybeTriggerPdfHats();
-        domAutomationController.send("success");
+        return "success";
       })();
   )";
 
@@ -1723,13 +1721,12 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, GuestCanReadLocalFonts) {
           const blob = await response.blob();
 
           if (response.status === 200 && blob.size > 0) {
-            domAutomationController.send('success');
+            return 'success';
           } else {
-            domAutomationController.send(
-                `Failed: status:$${response.status} size:$${blob.size}`);
+            return `Failed: status:$${response.status} size:$${blob.size}`;
           }
         } catch (e) {
-          domAutomationController.send(`Failed: $${e}`);
+          return `Failed: $${e}`;
         }
       })();
   )";
