@@ -87,7 +87,10 @@ class HashRealTimeService : public KeyedService {
 
  private:
   friend class HashRealTimeServiceTest;
+  friend class HashRealTimeServiceDirectFetchTest;
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest, TestLookupFailure_NetError);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestLookupFailure_RetriableNetError);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestLookupFailure_NetErrorHttpCodeFailure);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
@@ -102,6 +105,8 @@ class HashRealTimeService : public KeyedService {
                            TestLookupFailure_MissingCacheDuration);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest, TestBackoffModeSet);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestBackoffModeSet_RetriableError);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestBackoffModeSet_MissingOhttpKey);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestBackoffModeRespected_FullyCached);
@@ -109,6 +114,8 @@ class HashRealTimeService : public KeyedService {
                            TestBackoffModeRespected_NotCached);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestLogSearchCacheWithNoQueryParamsMetric);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceDirectFetchTest,
+                           TestLookupFailure_RetriableNetError);
 
   constexpr static int kLeastSeverity = std::numeric_limits<int>::max();
   using PendingHPRTLookupRequests =
@@ -220,6 +227,9 @@ class HashRealTimeService : public KeyedService {
   //  - |response_body| is the unparsed response from the server.
   //  - |net_error| is the net error code from the server.
   //  - |response_code| is the HTTP status code from the server.
+  //  - |allow_retriable_errors| specifies whether certain types of errors can
+  //    be considered retriable, meaning they don't increment the backoff
+  //    counter.
   void OnURLLoaderComplete(
       const GURL& url,
       const std::vector<std::string>& hash_prefixes_in_request,
@@ -230,7 +240,8 @@ class HashRealTimeService : public KeyedService {
       SBThreatType locally_cached_results_threat_type,
       std::unique_ptr<std::string> response_body,
       int net_error,
-      int response_code);
+      int response_code,
+      bool allow_retriable_errors);
 
   // Determines the most severe threat type based on |result_full_hashes|, which
   // contains the merged caching and server response results. The |url| is
@@ -263,17 +274,21 @@ class HashRealTimeService : public KeyedService {
       int net_error,
       int http_error,
       std::unique_ptr<std::string> response_body,
-      const std::vector<std::string>& requested_hash_prefixes) const;
+      const std::vector<std::string>& requested_hash_prefixes,
+      bool allow_retriable_errors) const;
 
   // Tries to parse the |response_body| into a |SearchHashesResponse|, and
   // returns either the response proto or an |OperationResult| with details on
   // why the parsing was unsuccessful. |requested_hash_prefixes| is used for a
   // sanitization call into |RemoveUnmatchedFullHashes|.
+  // |allow_retriable_errors| specifies whether certain types of errors can be
+  // considered retriable, meaning they don't increment the backoff counter.
   base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationResult>
   ParseResponse(int net_error,
                 int http_error,
                 std::unique_ptr<std::string> response_body,
-                const std::vector<std::string>& requested_hash_prefixes) const;
+                const std::vector<std::string>& requested_hash_prefixes,
+                bool allow_retriable_errors) const;
 
   // Removes any |FullHash| within the |response| whose hash prefix is not found
   // within |requested_hash_prefixes|. This is not expected to occur, but is

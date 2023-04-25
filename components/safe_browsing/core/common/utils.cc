@@ -19,6 +19,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -32,6 +33,9 @@ namespace {
 // The bearer token prefix in authorization header. Used when various Safe
 // Browsing requests are GAIA-keyed by attaching oauth2 tokens as bearer tokens.
 const char kAuthHeaderBearer[] = "Bearer ";
+
+// Represents the HTTP response code when it has not explicitly been set.
+const int kUnsetHttpResponseCode = 0;
 
 }  // namespace
 
@@ -132,6 +136,12 @@ void RecordHttpResponseOrErrorCode(const char* metric_name,
       net_error == net::OK || net_error == net::ERR_HTTP_RESPONSE_CODE_FAILURE
           ? response_code
           : net_error);
+}
+
+bool ErrorIsRetriable(int net_error, int http_error) {
+  return (net_error == net::ERR_INTERNET_DISCONNECTED ||
+          net_error == net::ERR_NETWORK_CHANGED) &&
+         (http_error == kUnsetHttpResponseCode || http_error == net::HTTP_OK);
 }
 
 }  // namespace safe_browsing

@@ -39,13 +39,6 @@ const size_t kMaxBackOffResetDurationInSeconds = 30 * 60;  // 30 minutes.
 
 const size_t kLookupTimeoutDurationInSeconds = 3;
 
-// TODO(1392143): [Also TODO(thefrog)] For now, we say that no error is
-// retriable. Once ErrorIsRetriable is correct for SBv4, we will refactor it out
-// and reuse it here.
-bool ErrorIsRetriable(int net_error, int http_error) {
-  return false;
-}
-
 SBThreatType MapThreatTypeToSbThreatType(const V5::ThreatType& threat_type) {
   switch (threat_type) {
     case V5::ThreatType::MALWARE:
@@ -420,7 +413,8 @@ void HashRealTimeService::OnOhttpComplete(
       url, std::move(hash_prefixes_in_request), std::move(result_full_hashes),
       request_start_time, std::move(response_callback_task_runner),
       std::move(response_callback), locally_cached_results_threat_type,
-      std::move(response_body_ptr), net_error, response_code);
+      std::move(response_body_ptr), net_error, response_code,
+      /*allow_retriable_errors=*/false);
 }
 
 void HashRealTimeService::OnDirectURLLoaderComplete(
@@ -447,7 +441,8 @@ void HashRealTimeService::OnDirectURLLoaderComplete(
       url, std::move(hash_prefixes_in_request), std::move(result_full_hashes),
       request_start_time, std::move(response_callback_task_runner),
       std::move(response_callback), locally_cached_results_threat_type,
-      std::move(response_body), url_loader->NetError(), response_code);
+      std::move(response_body), url_loader->NetError(), response_code,
+      /*allow_retriable_errors=*/true);
 
   pending_requests_.erase(pending_request_it);
 }
@@ -462,7 +457,8 @@ void HashRealTimeService::OnURLLoaderComplete(
     SBThreatType locally_cached_results_threat_type,
     std::unique_ptr<std::string> response_body,
     int net_error,
-    int response_code) {
+    int response_code,
+    bool allow_retriable_errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time",
                           base::TimeTicks::Now() - request_start_time);
@@ -470,9 +466,9 @@ void HashRealTimeService::OnURLLoaderComplete(
                                 response_code);
 
   base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationResult>
-      response = ParseResponseAndUpdateBackoff(net_error, response_code,
-                                               std::move(response_body),
-                                               hash_prefixes_in_request);
+      response = ParseResponseAndUpdateBackoff(
+          net_error, response_code, std::move(response_body),
+          hash_prefixes_in_request, allow_retriable_errors);
   absl::optional<SBThreatType> sb_threat_type;
   if (response.has_value()) {
     if (cache_manager_) {
@@ -505,10 +501,11 @@ HashRealTimeService::ParseResponseAndUpdateBackoff(
     int net_error,
     int response_code,
     std::unique_ptr<std::string> response_body,
-    const std::vector<std::string>& requested_hash_prefixes) const {
+    const std::vector<std::string>& requested_hash_prefixes,
+    bool allow_retriable_errors) const {
   auto response =
       ParseResponse(net_error, response_code, std::move(response_body),
-                    requested_hash_prefixes);
+                    requested_hash_prefixes, allow_retriable_errors);
   base::UmaHistogramEnumeration(
       "SafeBrowsing.HPRT.OperationResult",
       response.has_value() ? OperationResult::kSuccess : response.error());
@@ -570,7 +567,8 @@ HashRealTimeService::ParseResponse(
     int net_error,
     int response_code,
     std::unique_ptr<std::string> response_body,
-    const std::vector<std::string>& requested_hash_prefixes) const {
+    const std::vector<std::string>& requested_hash_prefixes,
+    bool allow_retriable_errors) const {
   auto response = std::make_unique<V5::SearchHashesResponse>();
   bool net_and_http_ok = net_error == net::OK && response_code == net::HTTP_OK;
   if (net_and_http_ok && response->ParseFromString(*response_body)) {
@@ -588,7 +586,8 @@ HashRealTimeService::ParseResponse(
     return std::move(response);
   } else if (net_and_http_ok) {
     return base::unexpected(OperationResult::kParseError);
-  } else if (ErrorIsRetriable(net_error, response_code)) {
+  } else if (allow_retriable_errors &&
+             ErrorIsRetriable(net_error, response_code)) {
     return base::unexpected(OperationResult::kRetriableError);
   } else if (net_error != net::OK &&
              net_error != net::ERR_HTTP_RESPONSE_CODE_FAILURE) {

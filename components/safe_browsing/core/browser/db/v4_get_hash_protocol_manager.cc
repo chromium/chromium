@@ -33,9 +33,6 @@ using base::Time;
 
 namespace {
 
-// Represents the HTTP response code when it has not explicitly been set.
-const int kUnsetHttpResponseCode = 0;
-
 // Record a GetHash result.
 void RecordGetHashResult(safe_browsing::V4OperationResult result) {
   UMA_HISTOGRAM_ENUMERATION(
@@ -133,12 +130,6 @@ enum V4GetHashCheckResultType {
 void RecordV4GetHashCheckResult(V4GetHashCheckResultType result_type) {
   UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.V4GetHash.Check.Result", result_type,
                             GET_HASH_CHECK_RESULT_MAX);
-}
-
-bool ErrorIsRetriable(int net_error, int http_error) {
-  return (net_error == net::ERR_INTERNET_DISCONNECTED ||
-          net_error == net::ERR_NETWORK_CHANGED) &&
-         (http_error == kUnsetHttpResponseCode || http_error == net::HTTP_OK);
 }
 
 const char kPermission[] = "permission";
