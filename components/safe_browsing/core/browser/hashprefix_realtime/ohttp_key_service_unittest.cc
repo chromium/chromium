@@ -8,10 +8,12 @@
 
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -45,6 +47,10 @@ scoped_refptr<net::HttpResponseHeaders> CreateKeyRotatedHeaders() {
 
 class OhttpKeyServiceTest : public ::testing::Test {
  public:
+  OhttpKeyServiceTest() {
+    feature_list_.InitAndDisableFeature(kSafeBrowsingLookupMechanismExperiment);
+  }
+
   void SetUp() override {
     RegisterProfilePrefs(pref_service_.registry());
     test_url_loader_factory_ =
@@ -90,6 +96,7 @@ class OhttpKeyServiceTest : public ::testing::Test {
               expected_key_value);
   }
 
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<OhttpKeyService> ohttp_key_service_;
@@ -439,6 +446,37 @@ TEST_F(OhttpKeyServiceTest, Shutdown) {
   ohttp_key_service_->GetOhttpKey(response_callback.Get());
   ohttp_key_service_->Shutdown();
   task_environment_.RunUntilIdle();
+}
+
+class OhttpKeyServiceLookupMechnismEnabledTest : public OhttpKeyServiceTest {
+ public:
+  OhttpKeyServiceLookupMechnismEnabledTest() {
+    feature_list_.InitAndEnableFeature(kSafeBrowsingLookupMechanismExperiment);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(OhttpKeyServiceLookupMechnismEnabledTest, AsyncFetch_PrefChanges) {
+  SetupSuccessResponse();
+
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  task_environment_.RunUntilIdle();
+  auto original_expiration = base::Time::Now() + base::Days(7);
+  // New key should be fetched because the service is enabled when enhanced
+  // protection and the lookup mechanism experiment are both enabled.
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            original_expiration);
+
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  task_environment_.FastForwardBy(base::Days(6));
+  task_environment_.RunUntilIdle();
+
+  // The expiration is not extended because the service is disabled when
+  // standard protection and the experiment are both enabled.
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            original_expiration);
 }
 
 }  // namespace safe_browsing
