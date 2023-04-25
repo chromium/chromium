@@ -3723,6 +3723,24 @@ TEST_F(PrivacySandboxServiceM1DelayCreationRestricted,
                     prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate));
 }
 
+TEST_F(PrivacySandboxServiceM1DelayCreationRestricted,
+       RestrictedEnabledDoesntClearAdMeasurementPref) {
+  feature_list()->InitAndEnableFeatureWithParameters(
+      privacy_sandbox::kPrivacySandboxSettings4,
+      {{"restricted-notice", "true"}});
+
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, true);
+
+  CreateService();
+
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled));
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxM1FledgeEnabled));
+  EXPECT_TRUE(
+      prefs()->GetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled));
+}
+
 class PrivacySandboxServiceM1PromptTest : public PrivacySandboxServiceM1Test {
  public:
   void InitializeFeaturesBeforeStart() override {

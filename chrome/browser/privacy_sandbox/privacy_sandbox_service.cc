@@ -246,11 +246,14 @@ PrivacySandboxService::PrivacySandboxService(
     // Disable trials prefs.
     pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
 
-    // Disable M1 prefs.
+    // Disable M1 prefs. Measurement pref should not be reset when restricted
+    // notice feature is enabled.
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, false);
-    pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
-                              false);
+    if (!privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get()) {
+      pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
+                                false);
+    }
 
     // Clear any recorded consent information.
     pref_service_->ClearPref(prefs::kPrivacySandboxTopicsConsentGiven);
