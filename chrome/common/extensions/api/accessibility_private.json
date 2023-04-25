@@ -947,12 +947,12 @@
           },
           {
             "name": "x",
-            "type": "number",
+            "type": "integer",
             "description": "The mouse x position in global coordinates."
           },
           {
             "name": "y",
-            "type": "number",
+            "type": "integer",
             "description": "The mouse y position in global coordinates."
           }
         ]
