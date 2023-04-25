@@ -624,10 +624,11 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
                 if (!mWindowAndroid.hasPermission(Manifest.permission.CAMERA)) {
                     mWindowAndroid.requestPermissions(new String[] {Manifest.permission.CAMERA},
                             (permissions, grantResults) -> {
-                                assert grantResults.length == 1;
-                                if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                                if (grantResults.length == 0
+                                        || grantResults[0] == PackageManager.PERMISSION_DENIED) {
                                     return;
                                 }
+                                assert grantResults.length == 1;
                                 new GetCameraIntentTask(true, mWindowAndroid, this)
                                         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                             });
