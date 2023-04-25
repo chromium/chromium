@@ -126,6 +126,8 @@ source_set("content_suggestions") {
 
 source_set("metrics") {
   sources = [
+    "content_suggestions_metrics_constants.h",
+    "content_suggestions_metrics_constants.mm",
     "content_suggestions_metrics_recorder.h",
     "content_suggestions_metrics_recorder.mm",
   ]
