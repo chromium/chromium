@@ -574,10 +574,9 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, GetPaperPrintableArea) {
                      base::Unretained(this), std::ref(caps_and_info)));
   WaitUntilCallbackReceived();
 
-  // TODO(crbug.com/1432720):  Unlike in-browser behavior of fetching
-  // capabilities, out-of-process still provides the printable area for all
-  // paper sizes.  This is known to be slow, and so the behavior will need to
-  // be changed.
+  // Fetching capabiliities only provides the paper printable area for the
+  // default paper size.  Find a paper which is not the default, which should
+  // have been given an incorrect printable area that matches the paper size.
   ASSERT_TRUE(caps_and_info->is_printer_caps_and_info());
   absl::optional<PrinterSemanticCapsAndDefaults::Paper> non_default_paper;
   const PrinterSemanticCapsAndDefaults::Paper& default_paper =
@@ -591,13 +590,10 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, GetPaperPrintableArea) {
     }
   }
   ASSERT_TRUE(non_default_paper.has_value());
-  // TODO(crbug.com/1432720):  Update this to check that the printable area
-  // matches the paper size for non-default papers, once the workaround for
-  // the slow query is updated to match in-browser query behavior.
-  EXPECT_NE(non_default_paper->printable_area_um,
+  EXPECT_EQ(non_default_paper->printable_area_um,
             gfx::Rect(non_default_paper->size_um));
 
-  // Request the printable area for this paper size, which should not match
+  // Request the printable area for this paper size, which should no longer
   // match the physical size but have real printable area values.
   gfx::Rect printable_area_um;
   PrintSettings::RequestedMedia media(
@@ -609,11 +605,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, GetPaperPrintableArea) {
                      base::Unretained(this), std::ref(printable_area_um)));
   WaitUntilCallbackReceived();
   ASSERT_TRUE(!printable_area_um.IsEmpty());
-  // TODO(crbug.com/1432720):  Update this to check that the printable area
-  // does not match the paper size for non-default papers from
-  // FetchCapabilities(), once the workaround for the slow query is updated to
-  // match in-browser query behavior.
-  EXPECT_EQ(printable_area_um, non_default_paper->printable_area_um);
+  EXPECT_NE(printable_area_um, non_default_paper->printable_area_um);
 }
 #endif  // BUILDFLAG(IS_WIN)
 

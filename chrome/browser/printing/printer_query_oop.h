@@ -30,11 +30,15 @@ class PrinterQueryOop : public PrinterQuery {
   // PrinterQuery overrides:
   std::unique_ptr<PrintJobWorker> TransferContextToNewWorker(
       PrintJob* print_job) override;
+#if BUILDFLAG(IS_WIN)
+  void UpdatePrintableArea(PrintSettings* print_settings,
+                           OnDidUpdatePrintableAreaCallback callback) override;
+#endif
   void SetClientId(PrintBackendServiceManager::ClientId client_id) override;
 
  protected:
-  // Local callback wrappers for Print Backend Service mojom call.  Virtual to
-  // support testing.
+  // Local callback wrappers for Print Backend Service mojom call.  Some
+  // wrappers are virtual to support testing.
   virtual void OnDidUseDefaultSettings(
       SettingsCallback callback,
       mojom::PrintSettingsResultPtr print_settings);
@@ -51,6 +55,11 @@ class PrinterQueryOop : public PrinterQuery {
   void OnDidUpdatePrintSettings(const std::string& device_name,
                                 SettingsCallback callback,
                                 mojom::PrintSettingsResultPtr print_settings);
+#if BUILDFLAG(IS_WIN)
+  void OnDidGetPaperPrintableArea(PrintSettings* print_settings,
+                                  OnDidUpdatePrintableAreaCallback callback,
+                                  const gfx::Rect& printable_area_um);
+#endif
 
   void UseDefaultSettings(SettingsCallback callback) override;
   void GetSettingsWithUI(uint32_t document_page_count,

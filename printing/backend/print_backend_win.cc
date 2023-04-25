@@ -12,7 +12,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/numerics/safe_conversions.h"
@@ -31,7 +30,6 @@
 #include "printing/backend/printing_info_win.h"
 #include "printing/backend/win_helper.h"
 #include "printing/mojom/print.mojom.h"
-#include "printing/printing_features.h"
 #include "printing/printing_utils.h"
 #include "printing/units.h"
 #include "ui/gfx/geometry/rect.h"
@@ -169,8 +167,6 @@ void LoadPaper(const wchar_t* printer,
   if (names.size() != sizes.size())
     names.clear();
 
-  short initial_dm_paper_size = devmode ? devmode->dmPaperSize : -1;
-
   for (size_t i = 0; i < sizes.size(); ++i) {
     PrinterSemanticCapsAndDefaults::Paper paper;
     paper.size_um.SetSize(sizes[i].x * kToUm, sizes[i].y * kToUm);
@@ -206,14 +202,7 @@ void LoadPaper(const wchar_t* printer,
       // platforms if an alternate way of getting the printable area for all
       // paper sizes can be done without a huge performance penalty.  For
       // now this workaround is only made for in-browser queries.
-      // TODO(crbug.com/809738):  Apply a workaround for out-of-process
-      // handling.  While the UI won't be locked up with OOPPD, it will still
-      // take a very long time before the Print Preview will become available
-      // due to the protracted time of these queries.
-      if (devmode &&
-          (devmode->dmPaperSize == ids[i] ||
-           base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers))) {
-        devmode->dmPaperSize = ids[i];
+      if (devmode && (devmode->dmPaperSize == ids[i])) {
         paper.printable_area_um = LoadPaperPrintableAreaUm(printer, devmode);
       }
     }
@@ -233,9 +222,6 @@ void LoadPaper(const wchar_t* printer,
 
   if (!devmode)
     return;
-
-  // Restore the initial default paper size.
-  devmode->dmPaperSize = initial_dm_paper_size;
 
   // Copy paper with the same ID as default paper.
   if (devmode->dmFields & DM_PAPERSIZE) {

@@ -166,7 +166,6 @@ source_set("test_support") {
   deps = [
     ":backend",
     "//base",
-    "//printing:printing_base",
     "//printing/backend/mojom",
     "//printing/mojom",
     "//testing/gmock",

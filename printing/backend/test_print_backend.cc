@@ -17,10 +17,8 @@
 #include "printing/mojom/print.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/expected.h"
-#include "printing/printing_features.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace printing {
@@ -131,14 +129,9 @@ mojom::ResultCode TestPrintBackend::GetPrinterSemanticCapsAndDefaults(
   // paper sizes, only for the default size.  Mimic this behavior by
   // defaulting the printable area to the physical size any other paper
   // sizes.
-  // TODO(crbug.com/1432720):  `PrintBackendWin` only does this when
-  // out-of-process is disabled.  Mimic that here, and remove this
-  // when `PrintBackendWin` does this same behavior also for OOP.
-  if (!base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
-    for (auto& paper : printer_caps->papers) {
-      if (paper != printer_caps->default_paper) {
-        paper.printable_area_um = gfx::Rect(paper.size_um);
-      }
+  for (auto& paper : printer_caps->papers) {
+    if (paper != printer_caps->default_paper) {
+      paper.printable_area_um = gfx::Rect(paper.size_um);
     }
   }
 #endif
