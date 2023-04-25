@@ -9187,11 +9187,11 @@ std::vector<FrameTreeNode*> WebContentsImpl::GetUnattachedOwnedNodes(
 void WebContentsImpl::IsClipboardPasteContentAllowed(
     const GURL& url,
     const ui::ClipboardFormatType& data_type,
-    const std::string& data,
+    ClipboardPasteData clipboard_paste_data,
     IsClipboardPasteContentAllowedCallback callback) {
   ++suppress_unresponsive_renderer_count_;
   GetContentClient()->browser()->IsClipboardPasteContentAllowed(
-      this, url, data_type, data,
+      this, url, data_type, std::move(clipboard_paste_data),
       base::BindOnce(
           &WebContentsImpl::IsClipboardPasteContentAllowedWrapperCallback,
           weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -9199,8 +9199,8 @@ void WebContentsImpl::IsClipboardPasteContentAllowed(
 
 void WebContentsImpl::IsClipboardPasteContentAllowedWrapperCallback(
     IsClipboardPasteContentAllowedCallback callback,
-    const absl::optional<std::string>& data) {
-  std::move(callback).Run(data);
+    absl::optional<ClipboardPasteData> clipboard_paste_data) {
+  std::move(callback).Run(std::move(clipboard_paste_data));
   --suppress_unresponsive_renderer_count_;
 }
 

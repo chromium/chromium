@@ -259,6 +259,29 @@ class TtsControllerDelegate;
 class SmartCardDelegate;
 #endif
 
+// Structure of data pasted from clipboard.
+struct CONTENT_EXPORT ClipboardPasteData {
+  ClipboardPasteData(std::string text,
+                     std::string image,
+                     std::vector<std::string> file_paths);
+  ClipboardPasteData();
+  ClipboardPasteData(const ClipboardPasteData&);
+  ClipboardPasteData(ClipboardPasteData&&);
+  ClipboardPasteData& operator=(ClipboardPasteData&&);
+  bool isEmpty();
+  ~ClipboardPasteData();
+
+  // UTF-8 encoded text data to scan, such as plain text, URLs, HTML, etc.
+  std::string text;
+
+  // Binary image data to scan, such as png (here we assume the data
+  // struct holds one image only).
+  std::string image;
+
+  // A list of full file paths to scan.
+  std::vector<std::string> file_paths;
+};
+
 // Embedder API (or SPI) for participating in browser logic, to be implemented
 // by the client of the content browser. See ChromeContentBrowserClient for the
 // principal implementation. The methods are assumed to be called on the UI
@@ -272,8 +295,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Callback used with IsClipboardPasteContentAllowed() method.  If the paste
   // is not allowed, nullopt is passed to the callback.  Otherwise, the data
   // that should be pasted is passed in.
-  using IsClipboardPasteContentAllowedCallback =
-      base::OnceCallback<void(const absl::optional<std::string>& data)>;
+  using IsClipboardPasteContentAllowedCallback = base::OnceCallback<void(
+      absl::optional<ClipboardPasteData> clipboard_paste_data)>;
 
   virtual ~ContentBrowserClient() = default;
 
@@ -2211,7 +2234,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       content::WebContents* web_contents,
       const GURL& url,
       const ui::ClipboardFormatType& data_type,
-      const std::string& data,
+      ClipboardPasteData content_analyisis_data,
       IsClipboardPasteContentAllowedCallback callback);
 
   // Returns true if a copy to the clipboard from `url` is allowed by the

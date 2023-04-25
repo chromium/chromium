@@ -14521,10 +14521,11 @@ void RenderFrameHostImpl::ReinitializeDocumentAssociatedDataForTesting() {
 
 void RenderFrameHostImpl::IsClipboardPasteContentAllowed(
     const ui::ClipboardFormatType& data_type,
-    const std::string& data,
+    ClipboardPasteData clipboard_paste_data,
     IsClipboardPasteContentAllowedCallback callback) {
   delegate_->IsClipboardPasteContentAllowed(GetLastCommittedURL(), data_type,
-                                            data, std::move(callback));
+                                            std::move(clipboard_paste_data),
+                                            std::move(callback));
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::GetParentOrOuterDocument() const {

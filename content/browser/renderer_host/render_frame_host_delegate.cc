@@ -143,9 +143,9 @@ RenderFrameHostDelegate::GetRecordAggregateWatchTimeCallback(
 void RenderFrameHostDelegate::IsClipboardPasteContentAllowed(
     const GURL& url,
     const ui::ClipboardFormatType& data_type,
-    const std::string& data,
+    ClipboardPasteData clipboard_paste_data,
     IsClipboardPasteContentAllowedCallback callback) {
-  std::move(callback).Run(data);
+  std::move(callback).Run(std::move(clipboard_paste_data));
 }
 
 bool RenderFrameHostDelegate::HasSeenRecentScreenOrientationChange() {

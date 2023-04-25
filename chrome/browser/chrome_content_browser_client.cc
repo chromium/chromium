@@ -1486,7 +1486,8 @@ void HandleExpandedPaths(
                  callback,
              const enterprise_connectors::ContentAnalysisDelegate::Data& data,
              enterprise_connectors::ContentAnalysisDelegate::Result& result) {
-            absl::optional<std::string> final_data;
+            absl::optional<ChromeContentBrowserClient::ClipboardPasteData>
+                clipboard_paste_data;
             auto blocked = fsd->IndexesToBlock(result.paths_results);
             if (blocked.size() != paths.size()) {
               // Build the data string of the allowed paths.
@@ -1500,9 +1501,11 @@ void HandleExpandedPaths(
                   result.paths_results[i] = false;
                 }
               }
-              final_data = base::JoinString(string_paths, "\n");
+              clipboard_paste_data =
+                  ChromeContentBrowserClient::ClipboardPasteData(
+                      std::string(), std::string(), std::move(string_paths));
             }
-            std::move(callback).Run(final_data);
+            std::move(callback).Run(std::move(clipboard_paste_data));
           },
           std::move(fsd), std::move(paths), std::move(callback)),
       safe_browsing::DeepScanAccessPoint::PASTE);
@@ -1521,10 +1524,14 @@ void HandleStringData(
                  callback,
              const enterprise_connectors::ContentAnalysisDelegate::Data& data,
              enterprise_connectors::ContentAnalysisDelegate::Result& result) {
-            std::move(callback).Run(
-                result.text_results[0]
-                    ? absl::optional<std::string>(data.text[0])
-                    : absl::nullopt);
+            absl::optional<ChromeContentBrowserClient::ClipboardPasteData>
+                clipboard_paste_data;
+            clipboard_paste_data =
+                ChromeContentBrowserClient::ClipboardPasteData(
+                    data.text[0], std::string(), {});
+            std::move(callback).Run(result.text_results[0]
+                                        ? std::move(clipboard_paste_data)
+                                        : absl::nullopt);
           },
           std::move(callback)),
       safe_browsing::DeepScanAccessPoint::PASTE);
@@ -7151,14 +7158,14 @@ void ChromeContentBrowserClient::IsClipboardPasteContentAllowed(
     content::WebContents* web_contents,
     const GURL& url,
     const ui::ClipboardFormatType& data_type,
-    const std::string& data,
+    ClipboardPasteData clipboard_paste_data,
     IsClipboardPasteContentAllowedCallback callback) {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   // Safe browsing does not support images, so accept without checking.
   // TODO(crbug.com/1013584): check policy on what to do about unsupported
   // types when it is implemented.
   if (data_type == ui::ClipboardFormatType::BitmapType()) {
-    std::move(callback).Run(data);
+    std::move(callback).Run(std::move(clipboard_paste_data));
     return;
   }
 
@@ -7173,13 +7180,12 @@ void ChromeContentBrowserClient::IsClipboardPasteContentAllowed(
   if (!enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
           profile, web_contents->GetLastCommittedURL(), &dialog_data,
           connector)) {
-    std::move(callback).Run(data);
+    std::move(callback).Run(std::move(clipboard_paste_data));
     return;
   }
 
   if (is_files) {
-    auto string_paths = base::SplitString(data, "\n", base::TRIM_WHITESPACE,
-                                          base::SPLIT_WANT_NONEMPTY);
+    auto string_paths = std::move(clipboard_paste_data.file_paths);
     std::vector<base::FilePath> paths;
     paths.reserve(string_paths.size());
     base::ranges::transform(string_paths, std::back_inserter(paths),
@@ -7191,12 +7197,13 @@ void ChromeContentBrowserClient::IsClipboardPasteContentAllowed(
                                         std::move(dialog_data), connector,
                                         std::move(paths), std::move(callback)));
   } else {
-    dialog_data.text.push_back(data);
+    // TODO(b/261589323): Pass additional info when we send data to local agent.
+    dialog_data.text.push_back(clipboard_paste_data.text);
     HandleStringData(web_contents, std::move(dialog_data), connector,
                      std::move(callback));
   }
 #else
-  std::move(callback).Run(data);
+  std::move(callback).Run(std::move(clipboard_paste_data));
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 }
 

@@ -5183,14 +5183,17 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        IgnoreUnresponsiveRendererDuringPaste) {
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
+  ClipboardPasteData clipboard_paste_data =
+      ClipboardPasteData("random pasted text", std::string(), {});
 
   EXPECT_FALSE(web_contents->ShouldIgnoreUnresponsiveRenderer());
   web_contents->IsClipboardPasteContentAllowed(
       GURL("https://google.com"), ui::ClipboardFormatType::PlainTextType(),
-      "random pasted text",
+      clipboard_paste_data,
       base::BindLambdaForTesting(
-          [&web_contents](const absl::optional<std::string>& data) {
-            EXPECT_TRUE(data);
+          [&web_contents](
+              absl::optional<ClipboardPasteData> clipboard_paste_data) {
+            EXPECT_TRUE(clipboard_paste_data.has_value());
             EXPECT_TRUE(web_contents->ShouldIgnoreUnresponsiveRenderer());
           }));
   EXPECT_FALSE(web_contents->ShouldIgnoreUnresponsiveRenderer());

@@ -320,6 +320,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   using IsClipboardPasteContentAllowedCallback =
       ContentBrowserClient::IsClipboardPasteContentAllowedCallback;
 
+  // Data used with IsClipboardPasteContentAllowed() method.
+  using ClipboardPasteData = content::ClipboardPasteData;
+
   // An accessibility reset is only allowed to prevent very rare corner cases
   // or race conditions where the browser and renderer get out of sync. If
   // this happens more than this many times, kill the renderer.
@@ -574,7 +577,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // description of the latter method for complete details.
   void IsClipboardPasteContentAllowed(
       const ui::ClipboardFormatType& data_type,
-      const std::string& data,
+      ClipboardPasteData clipboard_paste_data,
       IsClipboardPasteContentAllowedCallback callback);
 
   // This is called when accessibility events arrive from renderer to browser.

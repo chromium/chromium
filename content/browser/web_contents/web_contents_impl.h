@@ -175,6 +175,8 @@ struct CONTENT_EXPORT CreatedWindow {
 
 using PageVisibilityState = blink::mojom::PageVisibilityState;
 
+using ClipboardPasteData = content::ClipboardPasteData;
+
 class CONTENT_EXPORT WebContentsImpl : public WebContents,
                                        public FrameTree::Delegate,
                                        public RenderFrameHostDelegate,
@@ -740,11 +742,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void IsClipboardPasteContentAllowed(
       const GURL& url,
       const ui::ClipboardFormatType& data_type,
-      const std::string& data,
+      ClipboardPasteData clipboard_paste_data,
       IsClipboardPasteContentAllowedCallback callback) override;
   void IsClipboardPasteContentAllowedWrapperCallback(
       IsClipboardPasteContentAllowedCallback callback,
-      const absl::optional<std::string>& data);
+      absl::optional<ClipboardPasteData> clipboard_paste_data);
   void OnPageScaleFactorChanged(PageImpl& source) override;
   void BindScreenOrientation(
       RenderFrameHost* rfh,

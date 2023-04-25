@@ -43,6 +43,8 @@ class CONTENT_EXPORT ClipboardHostImpl
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver);
 
+  using ClipboardPasteData = content::ClipboardPasteData;
+
  protected:
   // These types and methods are protected for testing.
 
@@ -52,7 +54,7 @@ class CONTENT_EXPORT ClipboardHostImpl
   // Represents the underlying type of the argument passed to
   // IsClipboardPasteContentAllowedCallback without the const& part.
   using IsClipboardPasteContentAllowedCallbackArgType =
-      absl::optional<std::string>;
+      absl::optional<ClipboardPasteData>;
 
   // Keeps track of a request to see if some clipboard content, identified by
   // its sequence number, is allowed to be pasted into the RenderFrameHost
@@ -117,7 +119,7 @@ class CONTENT_EXPORT ClipboardHostImpl
   // controller doesn't exist.
   void PasteIfPolicyAllowed(ui::ClipboardBuffer clipboard_buffer,
                             const ui::ClipboardFormatType& data_type,
-                            std::string data,
+                            ClipboardPasteData clipboard_paste_data,
                             IsClipboardPasteContentAllowedCallback callback);
 
   // Performs a check to see if pasting |data| is allowed and invokes |callback|
@@ -127,7 +129,7 @@ class CONTENT_EXPORT ClipboardHostImpl
   void PerformPasteIfContentAllowed(
       const ui::ClipboardSequenceNumberToken& seqno,
       const ui::ClipboardFormatType& data_type,
-      std::string data,
+      ClipboardPasteData clipboard_paste_data,
       IsClipboardPasteContentAllowedCallback callback);
 
   // Remove obsolete entries from the outstanding requests map.
@@ -141,7 +143,7 @@ class CONTENT_EXPORT ClipboardHostImpl
   // status for the clipboard data corresponding to sequence number |seqno|.
   void FinishPasteIfContentAllowed(
       const ui::ClipboardSequenceNumberToken& seqno,
-      const absl::optional<std::string>& data);
+      absl::optional<ClipboardPasteData> clipboard_paste_data);
 
   const std::map<ui::ClipboardSequenceNumberToken,
                  IsPasteContentAllowedRequest>&
@@ -225,7 +227,7 @@ class CONTENT_EXPORT ClipboardHostImpl
   virtual void StartIsPasteContentAllowedRequest(
       const ui::ClipboardSequenceNumberToken& seqno,
       const ui::ClipboardFormatType& data_type,
-      std::string data);
+      ClipboardPasteData clipboard_paste_data);
 
   // Completion callback of PasteIfPolicyAllowed. If `is_allowed` is set to
   // true, PerformPasteIfContentAllowed will be invoked. Otherwise `callback`
@@ -233,7 +235,7 @@ class CONTENT_EXPORT ClipboardHostImpl
   void PasteIfPolicyAllowedCallback(
       ui::ClipboardBuffer clipboard_buffer,
       const ui::ClipboardFormatType& data_type,
-      std::string data,
+      ClipboardPasteData clipboard_paste_data,
       IsClipboardPasteContentAllowedCallback callback,
       bool is_allowed);
 

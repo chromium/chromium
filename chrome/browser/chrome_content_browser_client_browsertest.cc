@@ -731,51 +731,73 @@ class IsClipboardPasteContentAllowedTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(IsClipboardPasteContentAllowedTest, BitmapAllowed) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
+  ChromeContentBrowserClient::ClipboardPasteData clipboard_paste_data =
+      ChromeContentBrowserClient::ClipboardPasteData(std::string(), "bitmap",
+                                                     {});
 
   client()->IsClipboardPasteContentAllowed(
       contents, GURL("google.com"), ui::ClipboardFormatType::BitmapType(),
-      "bitmap", base::BindOnce([](const absl::optional<std::string>& data) {
-        EXPECT_TRUE(data.has_value());
-      }));
+      clipboard_paste_data,
+      base::BindOnce(
+          [](absl::optional<ChromeContentBrowserClient::ClipboardPasteData>
+                 clipboard_paste_data) {
+            EXPECT_TRUE(clipboard_paste_data.has_value());
+          }));
 }
 
 IN_PROC_BROWSER_TEST_F(IsClipboardPasteContentAllowedTest, TextAllowed) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
+  ChromeContentBrowserClient::ClipboardPasteData clipboard_paste_data =
+      ChromeContentBrowserClient::ClipboardPasteData("allowed", std::string(),
+                                                     {});
 
   client()->IsClipboardPasteContentAllowed(
       contents, GURL("google.com"), ui::ClipboardFormatType::PlainTextType(),
-      "allowed", base::BindOnce([](const absl::optional<std::string>& data) {
-        EXPECT_TRUE(data.has_value());
-      }));
+      clipboard_paste_data,
+      base::BindOnce(
+          [](absl::optional<ChromeContentBrowserClient::ClipboardPasteData>
+                 clipboard_paste_data) {
+            EXPECT_TRUE(clipboard_paste_data.has_value());
+          }));
 }
 
 IN_PROC_BROWSER_TEST_F(IsClipboardPasteContentAllowedTest, TextBlocked) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
+  ChromeContentBrowserClient::ClipboardPasteData clipboard_paste_data =
+      ChromeContentBrowserClient::ClipboardPasteData("blocked", std::string(),
+                                                     {});
 
   client()->IsClipboardPasteContentAllowed(
       contents, GURL("google.com"), ui::ClipboardFormatType::PlainTextType(),
-      "blocked", base::BindOnce([](const absl::optional<std::string>& data) {
-        EXPECT_FALSE(data.has_value());
-      }));
+      clipboard_paste_data,
+      base::BindOnce(
+          [](absl::optional<ChromeContentBrowserClient::ClipboardPasteData>
+                 clipboard_paste_data) {
+            EXPECT_FALSE(clipboard_paste_data.has_value());
+          }));
 }
 
 IN_PROC_BROWSER_TEST_F(IsClipboardPasteContentAllowedTest, AllFilesAllowed) {
   std::vector<std::string> paths;
   paths.push_back(CreateTestFile(FILE_PATH_LITERAL("allow0"), "data"));
   paths.push_back(CreateTestFile(FILE_PATH_LITERAL("allow1"), "data"));
-  const std::string string_paths = base::JoinString(paths, "\n");
+  ChromeContentBrowserClient::ClipboardPasteData clipboard_paste_data =
+      ChromeContentBrowserClient::ClipboardPasteData(std::string(),
+                                                     std::string(), paths);
 
   content::WebContents* contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
   client()->IsClipboardPasteContentAllowed(
       contents, GURL("google.com"), ui::ClipboardFormatType::FilenamesType(),
-      string_paths,
+      clipboard_paste_data,
       base::BindLambdaForTesting(
-          [string_paths](const absl::optional<std::string>& data) {
-            EXPECT_TRUE(data.has_value());
-            EXPECT_EQ(string_paths, data.value());
+          [paths](absl::optional<ChromeContentBrowserClient::ClipboardPasteData>
+                      clipboard_paste_data) {
+            EXPECT_TRUE(clipboard_paste_data.has_value());
+            EXPECT_EQ(paths[0], clipboard_paste_data->file_paths[0]);
+            EXPECT_EQ(paths[1], clipboard_paste_data->file_paths[1]);
           }));
 }
 
@@ -783,33 +805,41 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteContentAllowedTest, AllFilesBlocked) {
   std::vector<std::string> paths;
   paths.push_back(CreateTestFile(FILE_PATH_LITERAL("block0"), "data"));
   paths.push_back(CreateTestFile(FILE_PATH_LITERAL("block1"), "data"));
-  const std::string string_paths = base::JoinString(paths, "\n");
+
+  ChromeContentBrowserClient::ClipboardPasteData clipboard_paste_data =
+      ChromeContentBrowserClient::ClipboardPasteData(std::string(),
+                                                     std::string(), paths);
 
   content::WebContents* contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
   client()->IsClipboardPasteContentAllowed(
       contents, GURL("google.com"), ui::ClipboardFormatType::FilenamesType(),
-      string_paths,
-      base::BindLambdaForTesting([](const absl::optional<std::string>& data) {
-        EXPECT_FALSE(data.has_value());
-      }));
+      clipboard_paste_data,
+      base::BindLambdaForTesting(
+          [](absl::optional<ChromeContentBrowserClient::ClipboardPasteData>
+                 clipboard_paste_data) {
+            EXPECT_FALSE(clipboard_paste_data.has_value());
+          }));
 }
 
 IN_PROC_BROWSER_TEST_F(IsClipboardPasteContentAllowedTest, SomeFilesBlocked) {
   std::vector<std::string> paths;
   paths.push_back(CreateTestFile(FILE_PATH_LITERAL("allow0"), "data"));
   paths.push_back(CreateTestFile(FILE_PATH_LITERAL("block1"), "data"));
-  const std::string string_paths = base::JoinString(paths, "\n");
+  ChromeContentBrowserClient::ClipboardPasteData clipboard_paste_data =
+      ChromeContentBrowserClient::ClipboardPasteData(std::string(),
+                                                     std::string(), paths);
 
   content::WebContents* contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
   client()->IsClipboardPasteContentAllowed(
       contents, GURL("google.com"), ui::ClipboardFormatType::FilenamesType(),
-      string_paths,
+      clipboard_paste_data,
       base::BindLambdaForTesting(
-          [paths](const absl::optional<std::string>& data) {
-            EXPECT_TRUE(data.has_value());
-            EXPECT_EQ(data.value(), paths[0]);
+          [paths](absl::optional<ChromeContentBrowserClient::ClipboardPasteData>
+                      clipboard_paste_data) {
+            EXPECT_TRUE(clipboard_paste_data.has_value());
+            EXPECT_EQ(clipboard_paste_data->file_paths[0], paths[0]);
           }));
 }
 #endif
