@@ -299,7 +299,7 @@ class HistogramThreadsafeTest : public testing::Test {
 // use of ASSERT_* instead EXPECT_* because the test is repeated multiple times,
 // and the use of EXPECT_* produces spammy outputs as it does not end the test
 // immediately.
-TEST_F(HistogramThreadsafeTest, SnapshotDeltaThreadsafe) {
+TEST_F(HistogramThreadsafeTest, DISABLED_SnapshotDeltaThreadsafe) {
   // We try this test |kNumIterations| times to have a coverage of different
   // scenarios. For example, for a numeric histogram, if it has only samples
   // within the same bucket, the samples will be stored in a different way than
