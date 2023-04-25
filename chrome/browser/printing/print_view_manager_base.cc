@@ -79,9 +79,6 @@ namespace printing {
 
 namespace {
 
-using PrintSettingsCallback =
-    base::OnceCallback<void(std::unique_ptr<PrinterQuery>)>;
-
 void OnDidGetDefaultPrintSettings(
     scoped_refptr<PrintQueriesQueue> queue,
     bool want_pdf_settings,
@@ -222,6 +219,7 @@ void PrintViewManagerBase::PrintForPrintPreview(
     content::RenderFrameHost* rfh,
     PrinterHandler::PrintCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (printing::features::kEnableOopPrintDriversJobPrint.Get() &&
       job_settings.FindBool(kSettingShowSystemDialog).value_or(false)) {
@@ -234,22 +232,22 @@ void PrintViewManagerBase::PrintForPrintPreview(
     }
   }
 #endif
-  PrintSettingsCallback settings_callback =
-      base::BindOnce(&PrintViewManagerBase::OnPrintSettingsDone,
-                     weak_ptr_factory_.GetWeakPtr(), print_data,
-                     job_settings.FindInt(kSettingPreviewPageCount).value(),
-                     std::move(callback));
+
   std::unique_ptr<printing::PrinterQuery> printer_query =
       queue_->CreatePrinterQuery(rfh->GetGlobalId());
+  auto* printer_query_ptr = printer_query.get();
+  const int page_count = job_settings.FindInt(kSettingPreviewPageCount).value();
+
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (query_with_ui_client_id_.has_value()) {
     printer_query->SetClientId(*query_with_ui_client_id_);
   }
 #endif
-  auto* printer_query_ptr = printer_query.get();
   printer_query_ptr->SetSettings(
       std::move(job_settings),
-      base::BindOnce(std::move(settings_callback), std::move(printer_query)));
+      base::BindOnce(&PrintViewManagerBase::OnPrintSettingsDone,
+                     weak_ptr_factory_.GetWeakPtr(), print_data, page_count,
+                     std::move(callback), std::move(printer_query)));
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
