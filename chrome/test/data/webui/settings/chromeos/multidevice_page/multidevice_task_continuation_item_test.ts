@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://os-settings/chromeos/lazy_load.js';
+
+import {SettingsMultideviceTaskContinuationItemElement} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {SyncBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-
-import {TestSyncBrowserProxy} from './test_os_sync_browser_proxy.js';
+import {TestSyncBrowserProxy} from '../test_os_sync_browser_proxy.js';
 
 function getPrefs() {
   return {
@@ -16,14 +18,12 @@ function getPrefs() {
   };
 }
 
-suite('Multidevice', function() {
-  let taskContinuationItem;
+suite('<settings-multidevice-task-continuation-item>', () => {
+  let taskContinuationItem: SettingsMultideviceTaskContinuationItemElement;
 
-  setup(function() {
+  setup(() => {
     const browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
-
-    PolymerTest.clearBody();
 
     taskContinuationItem =
         document.createElement('settings-multidevice-task-continuation-item');
@@ -32,7 +32,7 @@ suite('Multidevice', function() {
     flush();
   });
 
-  teardown(function() {
+  teardown(() => {
     taskContinuationItem.remove();
   });
 
@@ -44,10 +44,10 @@ suite('Multidevice', function() {
     webUIListenerCallback('sync-prefs-changed', prefs);
     flush();
 
-    assertTrue(!!taskContinuationItem.shadowRoot.querySelector(
+    assertTrue(!!taskContinuationItem.shadowRoot!.querySelector(
         'settings-multidevice-task-continuation-disabled-link'));
 
-    const toggle = taskContinuationItem.shadowRoot.querySelector('cr-toggle');
+    const toggle = taskContinuationItem.shadowRoot!.querySelector('cr-toggle');
     assertTrue(!!toggle);
     assertTrue(toggle.disabled);
   });
@@ -58,7 +58,9 @@ suite('Multidevice', function() {
     webUIListenerCallback('sync-prefs-changed', prefs);
     flush();
 
-    assertFalse(!!taskContinuationItem.shadowRoot.querySelector(
-        'settings-multidevice-task-continuation-disabled-link'));
+    assertEquals(
+        null,
+        taskContinuationItem.shadowRoot!.querySelector(
+            'settings-multidevice-task-continuation-disabled-link'));
   });
 });

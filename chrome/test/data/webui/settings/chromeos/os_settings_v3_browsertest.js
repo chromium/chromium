@@ -389,12 +389,12 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'multidevice_page/multidevice_combined_setup_item_test.js'
  ],
  [
-   'MultidevicePageMultideviceWifiSyncItem',
-   'multidevice_page/multidevice_wifi_sync_item_test.js'
+   'MultidevicePageMultideviceTaskContinuationItem',
+   'multidevice_page/multidevice_task_continuation_item_test.js',
  ],
  [
-   'MultideviceTaskContinuationItem',
-   'multidevice_task_continuation_item_tests.js',
+   'MultidevicePageMultideviceWifiSyncItem',
+   'multidevice_page/multidevice_wifi_sync_item_test.js'
  ],
  [
    'MultideviceTaskContinuationDisabledLink',
