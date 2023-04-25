@@ -51,12 +51,9 @@ class HidSystemTrayIcon {
   // Get the image for the status tray icon.
   static gfx::ImageSkia GetStatusTrayIcon();
 
-  // Get the label of the button for managing HID device permission on the HID
-  // system tray icon.
-  static std::u16string GetManageHidDeviceButtonLabel(Profile* profile);
-
   // Get the label of the title of the HID system tray icon.
-  static std::u16string GetTitleLabel(size_t num_connections);
+  static std::u16string GetTitleLabel(size_t num_origins,
+                                      size_t num_connections);
 
   // Returns a label for HID settings button.
   static std::u16string GetContentSettingsLabel();

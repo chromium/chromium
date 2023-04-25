@@ -9,11 +9,13 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -24,23 +26,19 @@ gfx::ImageSkia HidSystemTrayIcon::GetStatusTrayIcon() {
 }
 
 // static
-std::u16string HidSystemTrayIcon::GetManageHidDeviceButtonLabel(
-    Profile* profile) {
-  std::u16string profile_name =
-      base::UTF8ToUTF16(profile->GetProfileUserName());
-  if (profile_name.empty()) {
-    return l10n_util::GetStringUTF16(
-        IDS_WEBHID_SYSTEM_TRAY_ICON_BUTTON_FOR_MANAGE_HID_DEVICE);
+std::u16string HidSystemTrayIcon::GetTitleLabel(size_t num_origins,
+                                                size_t num_connections) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (num_origins == 1) {
+    return l10n_util::GetPluralStringFUTF16(
+        IDS_WEBHID_SYSTEM_TRAY_ICON_TITLE_SINGLE_EXTENSION,
+        static_cast<int>(num_connections));
   }
-  return l10n_util::GetStringFUTF16(
-      IDS_WEBHID_SYSTEM_TRAY_ICON_BUTTON_FOR_MANAGE_HID_DEVICE_WITH_PROFILE_NAME,
-      profile_name);
-}
-
-// static
-std::u16string HidSystemTrayIcon::GetTitleLabel(size_t num_connections) {
-  return l10n_util::GetPluralStringFUTF16(IDS_WEBHID_SYSTEM_TRAY_ICON_TITLE,
-                                          static_cast<int>(num_connections));
+  return l10n_util::GetPluralStringFUTF16(
+      IDS_WEBHID_SYSTEM_TRAY_ICON_TITLE_MULTIPLE_EXTENSIONS,
+      static_cast<int>(num_connections));
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  NOTREACHED_NORETURN();
 }
 
 // static

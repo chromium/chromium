@@ -21,6 +21,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/extension_registry.h"
@@ -135,6 +136,7 @@ class HidStatusIconTest : public HidSystemTrayIconTestBase {
     auto sorted_profile_connection_counts = profile_connection_counts;
     base::ranges::sort(sorted_profile_connection_counts);
     size_t total_connection_count = 0;
+    size_t total_origin_count = 0;
     auto* menu_item = status_icon->menu_item();
     // The system tray icon title (i.e menu_idx == 0) will be checked at the end
     // when |total_connection_count| is calculated.
@@ -144,6 +146,7 @@ class HidStatusIconTest : public HidSystemTrayIconTestBase {
                            expected_command_id++, /*click=*/false);
     for (const auto& [profile, origin_items] :
          sorted_profile_connection_counts) {
+      total_origin_count += origin_items.size();
       auto sorted_origin_items = origin_items;
       // Sort the |origin_items| by origin. This is necessary because the origin
       // items for each profile in the menu are created by iterating through a
@@ -168,7 +171,11 @@ class HidStatusIconTest : public HidSystemTrayIconTestBase {
         total_connection_count += connection_count;
       }
     }
-    CheckMenuItemLabel(menu_item, 0, GetExpectedTitle(total_connection_count));
+    CheckMenuItemLabel(
+        menu_item, 0,
+        GetExpectedTitle(total_origin_count,
+                         override_title_total_connection_count_.value_or(
+                             total_connection_count)));
     EXPECT_LE(expected_command_id, IDC_DEVICE_SYSTEM_TRAY_ICON_LAST + 1);
   }
 
@@ -178,6 +185,13 @@ class HidStatusIconTest : public HidSystemTrayIconTestBase {
     ASSERT_TRUE(status_tray);
     EXPECT_TRUE(status_tray->GetStatusIconsForTest().empty());
   }
+
+ protected:
+  // This is specifically used in the test case of
+  // NumCommandIdOverLimitExtensionOrigin, where the input parameter
+  // profile_connection_counts may not capture all of the origins because the
+  // limit is exceeded.
+  absl::optional<int> override_title_total_connection_count_;
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -248,6 +262,8 @@ TEST_F(HidStatusIconTest, NumCommandIdOverLimitExtensionOrigin) {
         {profile, {{extension->origin(), 1, extension->name()}}});
     base::ranges::sort(profile_connection_counts);
     profile_connection_counts.back().second.clear();
+    // The total connection count in the title still captures all of the origins
+    override_title_total_connection_count_ = 20;
     CheckIcon(profile_connection_counts);
   }
 }

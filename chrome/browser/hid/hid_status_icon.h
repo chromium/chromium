@@ -29,9 +29,6 @@ class HidStatusIcon : public HidSystemTrayIcon,
   void ProfileAdded(Profile* profile) override;
   void ProfileRemoved(Profile* profile) override;
 
-  // Get the total connection count from all the profiles being tracked.
-  size_t GetTotalConnectionCount();
-
   // StatusIconMenuModel::Delegate
   void ExecuteCommand(int command_id, int event_flags) override;
 

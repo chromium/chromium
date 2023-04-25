@@ -42,7 +42,7 @@ class HidSystemTrayIconTestBase : public BrowserWithTestWindowTest {
   virtual void CheckIconHidden() = 0;
 
   std::u16string GetExpectedButtonTitleForProfile(Profile* profile);
-  std::u16string GetExpectedTitle(size_t num_connections);
+  std::u16string GetExpectedTitle(size_t num_origins, size_t num_connections);
 
   // This is used to inject MockHidConnectionTracker.
   BrowserContextKeyedServiceFactory::TestingFactory

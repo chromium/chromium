@@ -120,17 +120,6 @@ void HidStatusIcon::ShowSiteSettings(base::WeakPtr<Profile> profile,
   }
 }
 
-size_t HidStatusIcon::GetTotalConnectionCount() {
-  size_t total_connection_count = 0;
-  for (const auto& [profile, staging] : profiles_) {
-    auto* hid_connection_tracker =
-        HidConnectionTrackerFactory::GetForProfile(profile, /*create=*/false);
-    DCHECK(hid_connection_tracker);
-    total_connection_count += hid_connection_tracker->total_connection_count();
-  }
-  return total_connection_count;
-}
-
 void HidStatusIcon::RefreshIcon() {
   command_id_callbacks_.clear();
   auto* status_tray = g_browser_process->status_tray();
@@ -152,9 +141,11 @@ void HidStatusIcon::RefreshIcon() {
   // |...                                           |
   // |---------------Separator----------------------|
   // |ProfileN section                              |
-  auto title_label = GetTitleLabel(GetTotalConnectionCount());
   auto menu = std::make_unique<StatusIconMenuModel>(this);
-  menu->AddTitle(title_label);
+  int total_connection_count = 0;
+  int total_origin_count = 0;
+  // Title will be updated after looping through profiles below.
+  menu->AddTitle(u"");
   AddItem(menu.get(), GetAboutDeviceLabel(),
           base::BindRepeating(&HidStatusIcon::ShowHelpCenterUrl));
   for (const auto& [profile, staging] : profiles_) {
@@ -174,14 +165,20 @@ void HidStatusIcon::RefreshIcon() {
     auto* connection_tracker =
         HidConnectionTrackerFactory::GetForProfile(profile, /*create=*/false);
     CHECK(connection_tracker);
+    total_origin_count += connection_tracker->origins().size();
     for (const auto& [origin, state] : connection_tracker->origins()) {
       AddItem(menu.get(),
               GetOriginConnectionCountLabel(profile, origin, state.count,
                                             state.name),
               base::BindRepeating(&HidStatusIcon::ShowSiteSettings,
                                   profile->GetWeakPtr(), origin));
+      // Only consider the count that will be shown to the system tray icon, so
+      // that connection count on title and extension buttons can match.
+      total_connection_count += state.count;
     }
   }
+  auto title_label = GetTitleLabel(total_origin_count, total_connection_count);
+  menu->SetLabel(0, title_label);
 
   if (!status_icon_) {
     status_icon_ = status_tray->CreateStatusIcon(

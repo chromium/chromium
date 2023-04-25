@@ -83,12 +83,22 @@ std::u16string HidSystemTrayIconTestBase::GetExpectedButtonTitleForProfile(
 }
 
 std::u16string HidSystemTrayIconTestBase::GetExpectedTitle(
+    size_t num_origins,
     size_t num_connections) {
-  // It might be either ""Chromium is accessing a HID device" or "Google Chrome
-  // is accessing a HID device" depending is_chrome_branded in the build config
-  // file, hence using l10n_util to get the expected string.
-  return l10n_util::GetPluralStringFUTF16(IDS_WEBHID_SYSTEM_TRAY_ICON_TITLE,
-                                          static_cast<int>(num_connections));
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // The text might use "Google Chrome" or "Chromium" depending
+  // is_chrome_branded in the build config file, hence using l10n_util to get
+  // the expected string.
+  if (num_origins == 1) {
+    return l10n_util::GetPluralStringFUTF16(
+        IDS_WEBHID_SYSTEM_TRAY_ICON_TITLE_SINGLE_EXTENSION,
+        static_cast<int>(num_connections));
+  }
+  return l10n_util::GetPluralStringFUTF16(
+      IDS_WEBHID_SYSTEM_TRAY_ICON_TITLE_MULTIPLE_EXTENSIONS,
+      static_cast<int>(num_connections));
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  NOTREACHED_NORETURN();
 }
 
 BrowserContextKeyedServiceFactory::TestingFactory
