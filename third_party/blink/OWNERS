@@ -2,7 +2,6 @@ set noparent
 
 # Top-level owners for cases where there's nobody available with
 # specific context
-bratell.d@gmail.com
 chrishtr@chromium.org
 foolip@chromium.org
 mkwst@chromium.org
