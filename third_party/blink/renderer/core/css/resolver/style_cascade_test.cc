@@ -248,11 +248,12 @@ class TestCascade {
         break;
       case CascadeOrigin::kAuthorPresentationalHint:
         cascade_.MutableMatchResult().FinishAddingPresentationalHints();
+        cascade_.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(
+            GetDocument());
         current_origin_ = CascadeOrigin::kAuthor;
         break;
       case CascadeOrigin::kAuthor:
-        cascade_.MutableMatchResult().FinishAddingAuthorRulesForTreeScope(
-            GetDocument());
+        cascade_.MutableMatchResult().FinishAddingAuthorRulesForTreeScope();
         current_origin_ = CascadeOrigin::kAnimation;
         break;
       case CascadeOrigin::kAnimation:

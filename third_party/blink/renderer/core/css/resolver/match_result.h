@@ -145,7 +145,8 @@ class CORE_EXPORT MatchResult {
   void FinishAddingUARules();
   void FinishAddingUserRules();
   void FinishAddingPresentationalHints();
-  void FinishAddingAuthorRulesForTreeScope(const TreeScope&);
+  void BeginAddingAuthorRulesForTreeScope(const TreeScope&);
+  void FinishAddingAuthorRulesForTreeScope();
 
   void AddCustomHighlightName(const AtomicString& custom_highlight_name) {
     custom_highlight_names_.insert(custom_highlight_name);
@@ -233,6 +234,13 @@ class CORE_EXPORT MatchResult {
 
   const HeapVector<Member<const TreeScope>, 4>& GetTreeScopes() const {
     return tree_scopes_;
+  }
+
+  const TreeScope* CurrentTreeScope() const {
+    if (tree_scopes_.empty()) {
+      return nullptr;
+    }
+    return tree_scopes_.back();
   }
 
   const TreeScope& ScopeFromTreeOrder(uint16_t tree_order) const {

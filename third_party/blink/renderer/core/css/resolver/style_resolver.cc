@@ -530,9 +530,10 @@ static void MatchHostRules(const Element& element,
     return;
   }
   collector.ClearMatchedRules();
+  collector.BeginAddingAuthorRulesForTreeScope(resolver->GetTreeScope());
   resolver->CollectMatchingShadowHostRules(collector);
   collector.SortAndTransferMatchedRules();
-  collector.FinishAddingAuthorRulesForTreeScope(resolver->GetTreeScope());
+  collector.FinishAddingAuthorRulesForTreeScope();
 }
 
 static void MatchSlottedRules(const Element&, ElementRuleCollector&);
@@ -594,9 +595,10 @@ static void MatchSlottedRules(const Element& element,
   for (const auto& [slot, resolver] : base::Reversed(resolvers)) {
     ElementRuleCollector::SlottedRulesScope scope(collector, *slot);
     collector.ClearMatchedRules();
+    collector.BeginAddingAuthorRulesForTreeScope(slot->GetTreeScope());
     resolver->CollectMatchingSlottedRules(collector);
     collector.SortAndTransferMatchedRules();
-    collector.FinishAddingAuthorRulesForTreeScope(slot->GetTreeScope());
+    collector.FinishAddingAuthorRulesForTreeScope();
   }
 }
 
@@ -642,8 +644,12 @@ static void MatchElementScopeRules(const Element& element,
                                    ElementRuleCollector& collector) {
   if (element_scope_resolver) {
     collector.ClearMatchedRules();
+    collector.BeginAddingAuthorRulesForTreeScope(
+        element_scope_resolver->GetTreeScope());
     element_scope_resolver->CollectMatchingElementScopeRules(collector);
     collector.SortAndTransferMatchedRules();
+  } else {
+    collector.BeginAddingAuthorRulesForTreeScope(element.GetTreeScope());
   }
 
   MatchVTTRules(element, collector);
@@ -664,9 +670,7 @@ static void MatchElementScopeRules(const Element& element,
                                         true /* is_inline_style */);
   }
 
-  collector.FinishAddingAuthorRulesForTreeScope(
-      element_scope_resolver ? element_scope_resolver->GetTreeScope()
-                             : element.GetTreeScope());
+  collector.FinishAddingAuthorRulesForTreeScope();
 }
 
 void StyleResolver::MatchPseudoPartRulesForUAHost(
@@ -719,10 +723,11 @@ void StyleResolver::MatchPseudoPartRules(const Element& part_matching_element,
       ElementRuleCollector::PartRulesScope scope(collector,
                                                  const_cast<Element&>(*host));
       collector.ClearMatchedRules();
+      collector.BeginAddingAuthorRulesForTreeScope(resolver->GetTreeScope());
       resolver->CollectMatchingPartPseudoRules(collector, current_names,
                                                for_shadow_pseudo);
       collector.SortAndTransferMatchedRules();
-      collector.FinishAddingAuthorRulesForTreeScope(resolver->GetTreeScope());
+      collector.FinishAddingAuthorRulesForTreeScope();
     }
 
     // If we have now considered the :host/:host() ::part rules in our own tree
@@ -899,17 +904,15 @@ void StyleResolver::MatchAllRules(StyleResolverState& state,
   MatchAuthorRules(element, element_scope_resolver, collector);
 
   if (element.IsStyledElement() && !state.IsForPseudoElement()) {
+    collector.BeginAddingAuthorRulesForTreeScope(element.GetTreeScope());
     // Now check SMIL animation override style.
     auto* svg_element = DynamicTo<SVGElement>(element);
     if (include_smil_properties && svg_element) {
       collector.AddElementStyleProperties(
           svg_element->AnimatedSMILStyleProperties(), false /* isCacheable */);
     }
+    collector.FinishAddingAuthorRulesForTreeScope();
   }
-
-  collector.FinishAddingAuthorRulesForTreeScope(
-      element_scope_resolver ? element_scope_resolver->GetTreeScope()
-                             : element.GetTreeScope());
 }
 
 scoped_refptr<const ComputedStyle> StyleResolver::StyleForViewport() {
@@ -1620,9 +1623,10 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
     cascade.MutableMatchResult().FinishAddingUARules();
     cascade.MutableMatchResult().FinishAddingUserRules();
     cascade.MutableMatchResult().FinishAddingPresentationalHints();
-    cascade.MutableMatchResult().AddMatchedProperties(set);
-    cascade.MutableMatchResult().FinishAddingAuthorRulesForTreeScope(
+    cascade.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(
         element.GetTreeScope());
+    cascade.MutableMatchResult().AddMatchedProperties(set);
+    cascade.MutableMatchResult().FinishAddingAuthorRulesForTreeScope();
     cascade.Apply();
   }
   scoped_refptr<const ComputedStyle> style = state.TakeStyle();
@@ -1767,10 +1771,12 @@ StyleResolver::CascadedValuesForElement(Element* element, PseudoId pseudo_id) {
 
 Element* StyleResolver::FindContainerForElement(
     Element* element,
-    const ContainerSelector& container_selector) {
+    const ContainerSelector& container_selector,
+    const TreeScope* selector_tree_scope) {
   DCHECK(element);
   return ContainerQueryEvaluator::FindContainer(
-      element->ParentOrShadowHostElement(), container_selector);
+      element->ParentOrShadowHostElement(), container_selector,
+      selector_tree_scope);
 }
 
 RuleIndexList* StyleResolver::PseudoCSSRulesForElement(
@@ -2199,9 +2205,10 @@ const CSSValue* StyleResolver::ComputeValue(
   cascade.MutableMatchResult().FinishAddingUARules();
   cascade.MutableMatchResult().FinishAddingUserRules();
   cascade.MutableMatchResult().FinishAddingPresentationalHints();
-  cascade.MutableMatchResult().AddMatchedProperties(set);
-  cascade.MutableMatchResult().FinishAddingAuthorRulesForTreeScope(
+  cascade.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(
       element->GetTreeScope());
+  cascade.MutableMatchResult().AddMatchedProperties(set);
+  cascade.MutableMatchResult().FinishAddingAuthorRulesForTreeScope();
   cascade.Apply();
 
   CSSPropertyRef property_ref(property_name, element->GetDocument());
@@ -2924,8 +2931,9 @@ scoped_refptr<const ComputedStyle> StyleResolver::ResolvePositionFallbackStyle(
   cascade.MutableMatchResult().FinishAddingUARules();
   cascade.MutableMatchResult().FinishAddingUserRules();
   cascade.MutableMatchResult().FinishAddingPresentationalHints();
+  cascade.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(*tree_scope);
   cascade.MutableMatchResult().AddMatchedProperties(&properties);
-  cascade.MutableMatchResult().FinishAddingAuthorRulesForTreeScope(*tree_scope);
+  cascade.MutableMatchResult().FinishAddingAuthorRulesForTreeScope();
   cascade.Apply();
 
   return state.TakeStyle();

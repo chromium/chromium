@@ -1685,10 +1685,13 @@ protocol::Response InspectorDOMAgent::getContainerForNode(
 
   element->GetDocument().UpdateStyleAndLayoutTreeForNode(element);
   StyleResolver& style_resolver = element->GetDocument().GetStyleResolver();
+  // Container rule origin no longer known at this point, match name from all
+  // scopes.
   Element* container = style_resolver.FindContainerForElement(
       element,
       ContainerSelector(AtomicString(container_name.fromMaybe(g_null_atom)),
-                        physical, logical));
+                        physical, logical),
+      nullptr /* selector_tree_scope */);
   if (container)
     *container_node_id = PushNodePathToFrontend(container);
   return protocol::Response::Success();
@@ -1743,9 +1746,13 @@ bool InspectorDOMAgent::ContainerQueriedByElement(Element* container,
     while (parent_rule) {
       auto* container_rule = DynamicTo<CSSContainerRule>(parent_rule);
       if (container_rule) {
+        // Container rule origin no longer known at this point, match name from
+        // all scopes.
         if (container == style_resolver.FindContainerForElement(
-                             element, container_rule->Selector()))
+                             element, container_rule->Selector(),
+                             nullptr /* selector_tree_scope */)) {
           return true;
+        }
       }
 
       parent_rule = parent_rule->parentRule();

@@ -170,8 +170,11 @@ class CORE_EXPORT ElementRuleCollector {
   void FinishAddingPresentationalHints() {
     result_.FinishAddingPresentationalHints();
   }
-  void FinishAddingAuthorRulesForTreeScope(const TreeScope& tree_scope) {
-    result_.FinishAddingAuthorRulesForTreeScope(tree_scope);
+  void BeginAddingAuthorRulesForTreeScope(const TreeScope& tree_scope) {
+    result_.BeginAddingAuthorRulesForTreeScope(tree_scope);
+  }
+  void FinishAddingAuthorRulesForTreeScope() {
+    result_.FinishAddingAuthorRulesForTreeScope();
   }
 
   // Return the pseudo id if the style request is for rules associated with a

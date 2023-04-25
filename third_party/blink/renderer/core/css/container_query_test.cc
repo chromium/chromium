@@ -9,12 +9,15 @@
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -1220,6 +1223,78 @@ TEST_F(ContainerQueryTest, NoStyleQueryWhenDisabled) {
       << "style() should not match when disabled";
   EXPECT_EQ(style.VerticalAlign(), EVerticalAlign::kBaseline)
       << "style() should be unknown when disabled";
+}
+
+TEST_F(ContainerQueryTest, TreeScopedReferenceUserOrigin) {
+  StyleSheetKey user_sheet_key("user_sheet");
+  auto* parsed_user_sheet = MakeGarbageCollected<StyleSheetContents>(
+      MakeGarbageCollected<CSSParserContext>(GetDocument()));
+  parsed_user_sheet->ParseString(R"HTML(
+      @container author-container (width >= 0) {
+        div > span {
+          z-index: 13;
+        }
+      }
+      .user_container {
+        container: user-container / inline-size;
+      }
+  )HTML");
+  GetStyleEngine().InjectSheet(user_sheet_key, parsed_user_sheet,
+                               WebCssOrigin::kUser);
+
+  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+    <style>
+      @container user-container (width >= 0) {
+        div > span {
+          z-index: 17;
+        }
+      }
+      .author_container {
+        container: author-container / inline-size;
+      }
+    </style>
+    <div class="author_container">
+      <span id="author_target"></span>
+    </div>
+    <div class="user_container">
+      <span id="user_target"></span>
+    </div>
+    <div id="host">
+      <template shadowroot="open">
+        <style>
+          @container user-container (width >= 0) {
+            div > span {
+              z-index: 29;
+            }
+          }
+          .author_container {
+            container: author-container / inline-size;
+          }
+        </style>
+        <div class="author_container">
+          <span id="shadow_author_target"></span>
+        </div>
+        <div class="user_container">
+          <span id="shadow_user_target"></span>
+        </div>
+      </template>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* author_target = GetElementById("author_target");
+  Element* user_target = GetElementById("user_target");
+  ShadowRoot* shadow_root = GetElementById("host")->GetShadowRoot();
+  Element* shadow_author_target =
+      shadow_root->getElementById("shadow_author_target");
+  Element* shadow_user_target =
+      shadow_root->getElementById("shadow_user_target");
+
+  EXPECT_EQ(author_target->ComputedStyleRef().ZIndex(), 13);
+  EXPECT_EQ(shadow_author_target->ComputedStyleRef().ZIndex(), 13);
+  EXPECT_EQ(user_target->ComputedStyleRef().ZIndex(), 17);
+  EXPECT_EQ(shadow_user_target->ComputedStyleRef().ZIndex(), 29);
 }
 
 }  // namespace blink
