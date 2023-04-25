@@ -9,6 +9,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "base/values.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/text_fragments/text_fragments_manager.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/text_fragments/text_fragments_java_script_feature.h"
@@ -24,6 +25,7 @@ struct Referrer;
 // Class in charge of highlighting text fragments when they are present in
 // WebStates' loaded URLs.
 class TextFragmentsManagerImpl : public TextFragmentsManager,
+                                 public WebFramesManager::Observer,
                                  public WebStateObserver {
  public:
   explicit TextFragmentsManagerImpl(WebState* web_state);
@@ -56,11 +58,13 @@ class TextFragmentsManagerImpl : public TextFragmentsManager,
       NSString* text,
       std::vector<shared_highlighting::TextFragment> fragments);
 
+  // WebFramesManager::Observer
+  void WebFrameBecameAvailable(WebFramesManager* web_frames_manager,
+                               WebFrame* web_frame) override;
+
   // WebStateObserver methods:
   void DidFinishNavigation(WebState* web_state,
                            NavigationContext* navigation_context) override;
-  void WebFrameDidBecomeAvailable(WebState* web_state,
-                                  WebFrame* web_frame) override;
   void WebStateDestroyed(WebState* web_state) override;
 
   void SetJSFeatureForTesting(TextFragmentsJavaScriptFeature* feature);

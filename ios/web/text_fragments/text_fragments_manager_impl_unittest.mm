@@ -21,6 +21,7 @@
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_test.h"
+#import "ios/web/text_fragments/text_fragments_java_script_feature.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -97,8 +98,12 @@ class TextFragmentsManagerImplTest : public WebTest {
     auto fake_navigation_manager = std::make_unique<FakeNavigationManager>();
     fake_navigation_manager->SetLastCommittedItem(&last_committed_item_);
     web_state_->SetNavigationManager(std::move(fake_navigation_manager));
+    TextFragmentsJavaScriptFeature* feature =
+        TextFragmentsJavaScriptFeature::GetInstance();
     auto fake_web_frames_manager = std::make_unique<FakeWebFramesManager>();
-    web_state_->SetWebFramesManager(std::move(fake_web_frames_manager));
+    web_frames_manager_ = fake_web_frames_manager.get();
+    web_state_->SetWebFramesManager(feature->GetSupportedContentWorld(),
+                                    std::move(fake_web_frames_manager));
   }
 
   TextFragmentsManagerImpl* CreateDefaultManager() {
@@ -162,17 +167,16 @@ class TextFragmentsManagerImplTest : public WebTest {
   }
 
   void AddMainWebFrame(TextFragmentsManagerImpl* fragments_mgr) {
-    FakeWebFramesManager* frames_mgr = static_cast<FakeWebFramesManager*>(
-        web_state_->GetPageWorldWebFramesManager());
-    frames_mgr->AddWebFrame(
+    web_frames_manager_->AddWebFrame(
         FakeWebFrame::CreateMainWebFrame(GURL("https://chromium.org")));
-    fragments_mgr->WebFrameDidBecomeAvailable(web_state_,
-                                              frames_mgr->GetMainWebFrame());
+    fragments_mgr->WebFrameDidBecomeAvailable(
+        web_state_, web_frames_manager_->GetMainWebFrame());
   }
 
   MockJSFeature feature_;
   web::FakeNavigationContext context_;
   FakeWebState* web_state_;
+  FakeWebFramesManager* web_frames_manager_;
   base::test::ScopedFeatureList feature_list_;
   NavigationItemImpl last_committed_item_;
 };
