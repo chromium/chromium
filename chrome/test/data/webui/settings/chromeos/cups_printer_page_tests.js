@@ -44,6 +44,54 @@ function resetGetEulaUrl(cupsPrintersBrowserProxy, eulaUrl) {
   cupsPrintersBrowserProxy.setEulaUrl(eulaUrl);
 }
 
+suite('CupsPrinterUITests', () => {
+  let page = null;
+
+  setup(() => {
+    PolymerTest.clearBody();
+    page = document.createElement('settings-cups-printers');
+    document.body.appendChild(page);
+    assertTrue(!!page);
+    flush();
+  });
+
+  teardown(() => {
+    page.remove();
+    page = null;
+  });
+
+  // Verify the Saved printers section strings.
+  test('SavedPrintersText', () => {
+    return flushTasks()
+        .then(() => {
+          page.savedPrinters_ = [createPrinterListEntry(
+              'nameA', 'printerAddress', 'idA', PrinterType.SAVED)];
+          return flushTasks();
+        })
+        .then(() => {
+          assertEquals(
+              loadTimeData.getString('savedPrintersSubtext'),
+              page.shadowRoot
+                  .querySelector('#savedPrintersContainer .secondary')
+                  .textContent.trim());
+        });
+  });
+
+  // Verify the Nearby printers section strings.
+  test('AvailablePrintersText', () => {
+    return flushTasks().then(() => {
+      assertEquals(
+          loadTimeData.getString('availablePrintersReadyTitle'),
+          page.shadowRoot.querySelector('#availablePrintersReadyTitle')
+              .textContent.trim());
+      assertEquals(
+          loadTimeData.getString('availablePrintersReadySubtext'),
+          page.shadowRoot.querySelector('#availablePrintersReadySubtext')
+              .textContent.trim());
+    });
+  });
+});
+
 suite('CupsAddPrinterDialogTests', function() {
   function fillAddManuallyDialog(addDialog) {
     const name = addDialog.shadowRoot.querySelector('#printerNameInput');

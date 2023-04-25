@@ -245,7 +245,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    {enabled: ['ash::features::kPrinterSettingsRevamp']}
  ],
  ['CupsPrinterLandingPage', 'cups_printer_landing_page_tests.js'],
- ['CupsPrinterPage', 'cups_printer_page_tests.js'],
+ [
+   'CupsPrinterPage', 'cups_printer_page_tests.js',
+   {enabled: ['ash::features::kPrinterSettingsRevamp']}
+ ],
  ['DateTimePage', 'date_time_page_tests.js'],
  ['DateTimePageTimezoneSelector', 'date_time_page/timezone_selector_test.js'],
  ['DateTimePageTimezoneSubpage', 'date_time_page/timezone_subpage_test.js'],
