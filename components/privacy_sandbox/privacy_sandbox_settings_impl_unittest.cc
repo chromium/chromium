@@ -1023,6 +1023,19 @@ TEST_F(PrivacySandboxSettingsMockDelegateTest, IsPrivacySandboxRestricted) {
   EXPECT_FALSE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
 }
 
+TEST_F(PrivacySandboxSettingsMockDelegateTest, IsSubjectToM1NoticeRestricted) {
+  // The settings should return the decision made by the delegate.
+  EXPECT_CALL(*mock_delegate(), IsSubjectToM1NoticeRestricted())
+      .Times(1)
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsSubjectToM1NoticeRestricted());
+
+  EXPECT_CALL(*mock_delegate(), IsSubjectToM1NoticeRestricted())
+      .Times(1)
+      .WillOnce(testing::Return(false));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsSubjectToM1NoticeRestricted());
+}
+
 class PrivacySandboxSettingLocalOverrideTest
     : public PrivacySandboxSettingsTest {
   void InitializeFeaturesBeforeStart() override {

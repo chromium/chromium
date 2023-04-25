@@ -36,6 +36,18 @@ void AccountCapabilitiesTestMutator::set_can_run_chrome_privacy_sandbox_trials(
       value;
 }
 
+void AccountCapabilitiesTestMutator::
+    set_is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(
+        bool value) {
+  // TODO(crbug.com/1430845): once the actual server-defined value is used,
+  // remove this override.
+  capabilities_
+      ->capabilities_map_[kCanRunChromePrivacySandboxTrialsCapabilityName] =
+      !value;
+  capabilities_->capabilities_map_[kIsSubjectToParentalControlsCapabilityName] =
+      !value;
+}
+
 void AccountCapabilitiesTestMutator::set_can_stop_parental_supervision(
     bool value) {
   capabilities_->capabilities_map_[kCanStopParentalSupervisionCapabilityName] =

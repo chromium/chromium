@@ -44,6 +44,18 @@ class PrivacySandboxSettingsDelegateTest : public testing::Test {
                                         account_info);
   }
 
+  void SetRestrictedNoticeCapability(const std::string& account, bool enabled) {
+    auto account_info = identity_test_env()
+                            ->identity_manager()
+                            ->FindExtendedAccountInfoByEmailAddress(kTestEmail);
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator
+        .set_is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(
+            enabled);
+    signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
+                                        account_info);
+  }
+
   PrivacySandboxSettingsDelegate* delegate() { return delegate_.get(); }
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
   signin::IdentityTestEnvironment* identity_test_env() {
@@ -90,6 +102,56 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
   // If the user is not signed in to Chrome then we don't use any age signal and
   // don't restrict the feature.
   EXPECT_FALSE(delegate()->IsPrivacySandboxRestricted());
+}
+
+TEST_F(PrivacySandboxSettingsDelegateTest,
+       RestrictedNoticeRequiredForSignedInUser) {
+  feature_list()->InitAndEnableFeatureWithParameters(
+      privacy_sandbox::kPrivacySandboxSettings4,
+      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+        "true"}});
+  // Sign the user in.
+  identity_test_env()->MakePrimaryAccountAvailable(
+      kTestEmail, signin::ConsentLevel::kSignin);
+
+  // Initially the account capability will be in an unknown state, which
+  // should be interpreted as no restriction.
+  EXPECT_FALSE(delegate()->IsSubjectToM1NoticeRestricted());
+
+  // Validate that the notice is not required when the account is not configured
+  // to show it.
+  SetRestrictedNoticeCapability(kTestEmail, false);
+  EXPECT_FALSE(delegate()->IsSubjectToM1NoticeRestricted());
+
+  // Validate that the notice is required when the account is configured to show
+  // it.
+  SetRestrictedNoticeCapability(kTestEmail, true);
+  EXPECT_TRUE(delegate()->IsSubjectToM1NoticeRestricted());
+}
+
+TEST_F(PrivacySandboxSettingsDelegateTest,
+       RestrictedNoticeRequiredForSignedOutUser) {
+  feature_list()->InitAndEnableFeatureWithParameters(
+      privacy_sandbox::kPrivacySandboxSettings4,
+      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+        "true"}});
+  // If the user is not signed in to Chrome then we don't use any age signal and
+  // don't restrict the feature.
+  EXPECT_FALSE(delegate()->IsSubjectToM1NoticeRestricted());
+}
+
+TEST_F(PrivacySandboxSettingsDelegateTest,
+       RestrictedNoticeRequiredFeatureDisabled) {
+  feature_list()->InitAndEnableFeatureWithParameters(
+      privacy_sandbox::kPrivacySandboxSettings4,
+      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+        "false"}});
+  identity_test_env()->MakePrimaryAccountAvailable(
+      kTestEmail, signin::ConsentLevel::kSignin);
+  SetRestrictedNoticeCapability(kTestEmail, true);
+  // Even if the user is signed in to Chrome, the feature being disabled means
+  // no notice should be shown.
+  EXPECT_FALSE(delegate()->IsSubjectToM1NoticeRestricted());
 }
 
 TEST_F(PrivacySandboxSettingsDelegateTest,

@@ -519,6 +519,10 @@ bool PrivacySandboxSettingsImpl::IsPrivacySandboxRestricted() const {
   return delegate_->IsPrivacySandboxRestricted();
 }
 
+bool PrivacySandboxSettingsImpl::IsSubjectToM1NoticeRestricted() const {
+  return delegate_->IsSubjectToM1NoticeRestricted();
+}
+
 bool PrivacySandboxSettingsImpl::IsRestrictedNoticeEnabled() const {
   return privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get();
 }

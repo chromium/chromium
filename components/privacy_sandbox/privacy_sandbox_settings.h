@@ -52,6 +52,10 @@ class PrivacySandboxSettings : public KeyedService {
     // When this returns false, access control functions for Topics will
     // return as not allowed.
     virtual bool HasAppropriateTopicsConsent() const = 0;
+
+    // Whether the profile is subject to being given notice of restrictions to
+    // the standard set of Privacy Sandbox APIs.
+    virtual bool IsSubjectToM1NoticeRestricted() const = 0;
   };
 
   // Returns whether the Topics API is allowed at all. If false, Topics API
@@ -187,6 +191,11 @@ class PrivacySandboxSettings : public KeyedService {
   // delegate. Forwards directly to the corresponding delegate function.
   // Virtual to allow mocking in tests.
   virtual bool IsPrivacySandboxRestricted() const = 0;
+
+  // Returns whether the privacy sandbox restricted notice should be shown,
+  // based on account characteristics. Forwards to the delegate. Virtual for
+  // mocking in tests.
+  virtual bool IsSubjectToM1NoticeRestricted() const = 0;
 
   // Returns whether the Privacy Sandbox is partially enabled based on
   // restrictions.

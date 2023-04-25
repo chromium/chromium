@@ -41,6 +41,26 @@ bool PrivacySandboxRestrictedByAccountCapability(Profile* profile) {
   return capability == signin::Tribool::kFalse;
 }
 
+bool PrivacySandboxRestrictedNoticeRequired(Profile* profile) {
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+
+  if (!identity_manager ||
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    // The user isn't signed in so we can't apply any capabilties-based
+    // restrictions.
+    return false;
+  }
+
+  const auto core_account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  const AccountInfo account_info =
+      identity_manager->FindExtendedAccountInfo(core_account_info);
+  auto capability =
+      account_info.capabilities
+          .is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice();
+  return capability == signin::Tribool::kTrue;
+}
+
 }  // namespace
 
 PrivacySandboxSettingsDelegate::PrivacySandboxSettingsDelegate(Profile* profile)
@@ -65,6 +85,14 @@ bool PrivacySandboxSettingsDelegate::IsPrivacySandboxRestricted() const {
   }
 
   return restricted_by_capability;
+}
+
+bool PrivacySandboxSettingsDelegate::IsSubjectToM1NoticeRestricted() const {
+  // If the feature is deactivated, the notice shouldn't be shown.
+  if (!privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get()) {
+    return false;
+  }
+  return PrivacySandboxRestrictedNoticeRequired(profile_);
 }
 
 bool PrivacySandboxSettingsDelegate::IsIncognitoProfile() const {
