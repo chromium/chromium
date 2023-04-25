@@ -32,7 +32,7 @@ namespace {
 //
 //  integrity_level_(sandbox::INTEGRITY_LEVEL_LOW),
 //  delayed_integrity_level_(sandbox::INTEGRITY_LEVEL_UNTRUSTED),
-bool AudioPreSpawnTarget(sandbox::TargetConfig* config) {
+bool AudioInitializeConfig(sandbox::TargetConfig* config) {
   // Audio process privilege requirements:
   //  - Lockdown level of USER_NON_ADMIN
   //  - Delayed integrity level of INTEGRITY_LEVEL_LOW
@@ -79,7 +79,7 @@ bool AudioPreSpawnTarget(sandbox::TargetConfig* config) {
 }
 
 // Sets the sandbox policy for the network service process.
-bool NetworkPreSpawnTarget(sandbox::TargetConfig* config) {
+bool NetworkInitializeConfig(sandbox::TargetConfig* config) {
   DCHECK(!config->IsConfigured());
   // LPAC sandbox is enabled, so do not use a restricted token.
   auto result = config->SetTokenLevel(sandbox::USER_UNPROTECTED,
@@ -113,7 +113,7 @@ bool NetworkPreSpawnTarget(sandbox::TargetConfig* config) {
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 // Sets the sandbox policy for the print backend service process.
-bool PrintBackendPreSpawnTarget(sandbox::TargetConfig* config) {
+bool PrintBackendInitializeConfig(sandbox::TargetConfig* config) {
   DCHECK(!config->IsConfigured());
   // Print Backend policy lockdown level must be at least USER_LIMITED and
   // delayed integrity level INTEGRITY_LEVEL_LOW, otherwise ::OpenPrinter()
@@ -131,7 +131,7 @@ std::string UtilityAppContainerId(base::CommandLine& cmd_line) {
   return base::WideToUTF8(cmd_line.GetProgram().value());
 }
 
-bool IconReaderPreSpawnTarget(sandbox::TargetConfig* config) {
+bool IconReaderInitializeConfig(sandbox::TargetConfig* config) {
   DCHECK(!config->IsConfigured());
 
   auto result = config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
@@ -170,9 +170,9 @@ bool IconReaderPreSpawnTarget(sandbox::TargetConfig* config) {
   return true;
 }
 
-bool XrCompositingPreSpawnTarget(sandbox::TargetConfig* config,
-                                 base::CommandLine& cmd_line,
-                                 sandbox::mojom::Sandbox sandbox_type) {
+bool XrCompositingInitializeConfig(sandbox::TargetConfig* config,
+                                   base::CommandLine& cmd_line,
+                                   sandbox::mojom::Sandbox sandbox_type) {
   DCHECK(!config->IsConfigured());
   // TODO(https://crbug.com/881919): Try to harden the XR Compositor
   // sandbox to use mitigations and restrict the token.
@@ -208,8 +208,8 @@ bool XrCompositingPreSpawnTarget(sandbox::TargetConfig* config,
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-bool ScreenAIPreSpawnTarget(sandbox::TargetConfig* config,
-                            sandbox::mojom::Sandbox sandbox_type) {
+bool ScreenAIInitializeConfig(sandbox::TargetConfig* config,
+                              sandbox::mojom::Sandbox sandbox_type) {
   DCHECK(!config->IsConfigured());
 
   auto result = config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
@@ -291,30 +291,30 @@ bool UtilitySandboxedProcessLauncherDelegate::InitializeConfig(
     sandbox::TargetConfig* config) {
   DCHECK(!config->IsConfigured());
   if (sandbox_type_ == sandbox::mojom::Sandbox::kAudio) {
-    if (!AudioPreSpawnTarget(config)) {
+    if (!AudioInitializeConfig(config)) {
       return false;
     }
   }
   if (sandbox_type_ == sandbox::mojom::Sandbox::kNetwork) {
-    if (!NetworkPreSpawnTarget(config)) {
+    if (!NetworkInitializeConfig(config)) {
       return false;
     }
   }
   if (sandbox_type_ == sandbox::mojom::Sandbox::kIconReader) {
-    if (!IconReaderPreSpawnTarget(config)) {
+    if (!IconReaderInitializeConfig(config)) {
       return false;
     }
   }
 
   if (sandbox_type_ == sandbox::mojom::Sandbox::kXrCompositing) {
-    if (!XrCompositingPreSpawnTarget(config, cmd_line_, sandbox_type_)) {
+    if (!XrCompositingInitializeConfig(config, cmd_line_, sandbox_type_)) {
       return false;
     }
   }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (sandbox_type_ == sandbox::mojom::Sandbox::kScreenAI) {
-    if (!ScreenAIPreSpawnTarget(config, sandbox_type_)) {
+    if (!ScreenAIInitializeConfig(config, sandbox_type_)) {
       return false;
     }
   }
@@ -362,7 +362,7 @@ bool UtilitySandboxedProcessLauncherDelegate::InitializeConfig(
   }
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (sandbox_type_ == sandbox::mojom::Sandbox::kPrintBackend) {
-    if (!PrintBackendPreSpawnTarget(config)) {
+    if (!PrintBackendInitializeConfig(config)) {
       return false;
     }
   }
