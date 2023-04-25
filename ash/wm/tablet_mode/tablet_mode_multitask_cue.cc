@@ -28,6 +28,7 @@ constexpr int kCueWidth = 48;
 // Cue timing values.
 constexpr base::TimeDelta kCueDismissTimeout = base::Seconds(6);
 constexpr base::TimeDelta kFadeDuration = base::Milliseconds(100);
+constexpr base::TimeDelta kCueResetDuration = base::Milliseconds(250);
 
 constexpr SkColor kCueColor = SK_ColorGRAY;
 
@@ -52,9 +53,7 @@ TabletModeMultitaskCue::~TabletModeMultitaskCue() {
 void TabletModeMultitaskCue::MaybeShowCue(aura::Window* active_window) {
   DCHECK(active_window);
 
-  // Only show or dismiss the cue when activating app windows.
-  if (static_cast<AppType>(active_window->GetProperty(
-          aura::client::kAppType)) == AppType::NON_APP) {
+  if (!CanShowCue(active_window)) {
     return;
   }
 
@@ -102,7 +101,22 @@ void TabletModeMultitaskCue::MaybeShowCue(aura::Window* active_window) {
   nudge_controller_.MaybeShowNudge(window_);
 }
 
-void TabletModeMultitaskCue::DismissCue(bool menu_opened) {
+bool TabletModeMultitaskCue::CanShowCue(aura::Window* window) const {
+  // Only show or dismiss the cue when activating app windows.
+  if (static_cast<AppType>(window->GetProperty(aura::client::kAppType)) ==
+      AppType::NON_APP) {
+    return false;
+  }
+
+  // Should not refresh cue if `window_` is reactivated.
+  if (window == window_) {
+    return false;
+  }
+
+  return true;
+}
+
+void TabletModeMultitaskCue::DismissCue() {
   cue_dismiss_timer_.Stop();
   window_observation_.Reset();
 
@@ -112,14 +126,19 @@ void TabletModeMultitaskCue::DismissCue(bool menu_opened) {
   }
 
   cue_layer_.reset();
+  nudge_controller_.DismissNudge();
+}
 
-  // If we want to dismiss the cue because the menu was opened, let the nudge
-  // know, so we don't show it anymore. Otherwise, just dismiss it.
-  if (menu_opened) {
-    nudge_controller_.OnMenuOpened(/*tablet_mode=*/true);
-  } else {
-    nudge_controller_.DismissNudge();
+void TabletModeMultitaskCue::ResetPosition() {
+  if (!cue_layer_) {
+    return;
   }
+
+  views::AnimationBuilder()
+      .Once()
+      .SetDuration(kCueResetDuration)
+      .SetTransform(cue_layer_.get(), gfx::Transform(),
+                    gfx::Tween::ACCEL_20_DECEL_100);
 }
 
 void TabletModeMultitaskCue::OnWindowDestroying(aura::Window* window) {
@@ -152,8 +171,12 @@ void TabletModeMultitaskCue::OnWindowActivated(ActivationReason reason,
   // TODO(b/263519133): Stop the cue from reappearing after using non-app
   // windows like popups.
 
-  // The cue should not reappear when tapping off of the menu or selecting a
-  // new layout.
+  // The cue should not reappear when tapping off of the menu onto `window_`
+  // or selecting a new layout. In the case where the menu is open, the cue is
+  // active, and we tap onto another window (e.g., split view), we still want to
+  // show the cue on the new window.
+  // TODO(hewer): Fix this so the cue does not appear when the menu is dismissed
+  // by swiping up or not dragging far enough.
   if (event_handler->multitask_menu() &&
       event_handler->multitask_menu()->widget()->GetNativeWindow() ==
           lost_active) {
@@ -194,7 +217,7 @@ void TabletModeMultitaskCue::OnTimerFinished() {
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .OnEnded(base::BindOnce(&TabletModeMultitaskCue::DismissCue,
-                              base::Unretained(this), /*menu_opened=*/false))
+                              base::Unretained(this)))
       .Once()
       .SetDuration(kFadeDuration)
       .SetOpacity(cue_layer_.get(), 0.0f, gfx::Tween::LINEAR);

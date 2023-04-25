@@ -29,19 +29,17 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
   static bool CanShowMenu(aura::Window* window);
 
   TabletModeMultitaskMenu* multitask_menu() { return multitask_menu_.get(); }
+  TabletModeMultitaskCue* multitask_cue() { return multitask_cue_.get(); }
 
   // Creates and shows the menu.
   void ShowMultitaskMenu(aura::Window* window);
 
-  // Destroys the multitask menu.
+  // Destroys the multitask menu and resets the position of the cue if it is
+  // visible.
   void ResetMultitaskMenu();
 
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;
-
-  TabletModeMultitaskCue* multitask_cue_for_testing() {
-    return multitask_cue_.get();
-  }
 
  private:
   void MaybeCreateMultitaskMenu(aura::Window* active_window);

@@ -67,6 +67,7 @@ void TabletModeMultitaskMenuEventHandler::ShowMultitaskMenu(
 }
 
 void TabletModeMultitaskMenuEventHandler::ResetMultitaskMenu() {
+  multitask_cue_->ResetPosition();
   multitask_menu_.reset();
 }
 
@@ -98,7 +99,7 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
         // We may need to recreate `multitask_menu_` on the new active window.
         multitask_menu_ =
             std::make_unique<TabletModeMultitaskMenu>(this, active_window);
-        multitask_cue_->DismissCue(/*menu_opened=*/true);
+        multitask_cue_->nudge_controller()->OnMenuOpened(/*tablet_mode=*/true);
         multitask_menu_->BeginDrag(window_location.y(), /*down=*/true);
         event->SetHandled();
         is_drag_active_ = true;
@@ -108,6 +109,8 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
                      .Contains(screen_location)) {
         // If the menu is open and scroll up begins, only handle events inside
         // the menu to avoid consuming scroll events outside the menu.
+        // TODO(hewer): Fix the cue reappearing when the menu is dismissed
+        // by swiping up or not dragging far enough.
         multitask_menu_->BeginDrag(window_location.y(), /*down=*/false);
         event->SetHandled();
         is_drag_active_ = true;
@@ -155,7 +158,7 @@ void TabletModeMultitaskMenuEventHandler::MaybeCreateMultitaskMenu(
   if (!multitask_menu_) {
     multitask_menu_ =
         std::make_unique<TabletModeMultitaskMenu>(this, active_window);
-    multitask_cue_->DismissCue(/*menu_opened=*/true);
+    multitask_cue_->nudge_controller()->OnMenuOpened(/*tablet_mode=*/true);
   }
 }
 

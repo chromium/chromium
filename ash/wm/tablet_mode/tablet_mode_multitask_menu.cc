@@ -15,6 +15,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/system_shadow.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
 #include "ash/wm/window_state.h"
 #include "base/functional/bind.h"
@@ -53,6 +54,10 @@ constexpr int kPaddingNarrow = 6;
 // Dogfood feedback button layout values.
 constexpr int kButtonWidth = 120;
 constexpr int kButtonHeight = 28;
+
+// The distance from the bottom of the multitask menu to the cue.
+// TODO(b/277972192): Update this value to match spec.
+constexpr int kCueOffset = 4;
 
 // Menu animation values.
 constexpr base::TimeDelta kPositionAnimationDurationMs =
@@ -282,7 +287,8 @@ void TabletModeMultitaskMenu::Animate(bool show) {
         chromeos::MultitaskMenuEntryType::kGestureScroll);
   }
 
-  views::AnimationBuilder()
+  views::AnimationBuilder animation_builder;
+  animation_builder
       .OnEnded(show ? base::DoNothing()
                     : base::BindRepeating(&TabletModeMultitaskMenu::Reset,
                                           weak_factory_.GetWeakPtr()))
@@ -296,6 +302,16 @@ void TabletModeMultitaskMenu::Animate(bool show) {
                                0, -menu_view_->GetPreferredSize().height() -
                                       kVerticalPosition),
                     gfx::Tween::ACCEL_20_DECEL_100);
+  ui::Layer* cue_layer = event_handler_->multitask_cue()->cue_layer();
+  if (cue_layer && !cue_layer->GetAnimator()->is_animating()) {
+    animation_builder.GetCurrentSequence().SetTransform(
+        cue_layer,
+        show ? gfx::Transform::MakeTranslation(
+                   0, menu_view_->GetPreferredSize().height() +
+                          kVerticalPosition + kCueOffset)
+             : gfx::Transform(),
+        gfx::Tween::ACCEL_20_DECEL_100);
+  }
 }
 
 void TabletModeMultitaskMenu::AnimateFadeOut() {
@@ -326,6 +342,11 @@ void TabletModeMultitaskMenu::BeginDrag(float initial_y, bool down) {
     initial_y_ = menu_view_->bounds().bottom();
     menu_view_->layer()->SetTransform(
         gfx::Transform::MakeTranslation(0, translation_y));
+
+    if (ui::Layer* cue_layer = event_handler_->multitask_cue()->cue_layer()) {
+      cue_layer->SetTransform(
+          gfx::Transform::MakeTranslation(0, initial_y + kCueOffset));
+    }
   } else {
     // Drag up can start from anywhere in the menu; simply save `initial_y` to
     // update drag relative to it.
@@ -341,6 +362,12 @@ void TabletModeMultitaskMenu::UpdateDrag(float current_y, bool down) {
   }
   menu_view_->layer()->SetTransform(
       gfx::Transform::MakeTranslation(0, translation_y));
+
+  if (ui::Layer* cue_layer = event_handler_->multitask_cue()->cue_layer()) {
+    cue_layer->SetTransform(gfx::Transform::MakeTranslation(
+        0, menu_view_->GetPreferredSize().height() + kVerticalPosition +
+               kCueOffset + translation_y));
+  }
 }
 
 void TabletModeMultitaskMenu::EndDrag() {

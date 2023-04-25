@@ -37,7 +37,7 @@ class TabletModeMultitaskCueTest : public AshTestBase {
     return TabletModeControllerTestApi()
         .tablet_mode_window_manager()
         ->tablet_mode_multitask_menu_event_handler()
-        ->multitask_cue_for_testing();
+        ->multitask_cue();
   }
 
   // AshTestBase:
