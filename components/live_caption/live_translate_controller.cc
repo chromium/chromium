@@ -5,6 +5,7 @@
 #include "components/live_caption/live_translate_controller.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -178,40 +179,41 @@ void LiveTranslateController::OnResponseJsonParsed(
     bool is_final,
     OnTranslateEventCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
-    LOG(ERROR) << "Error parsing response: value null";
-    return;
-  }
+  std::string error = [&]() -> std::string {
+    if (!result.has_value()) {
+      return "Error parsing response: value null";
+    }
 
-  if (!result.value().is_dict()) {
-    LOG(ERROR) << "Error parsing response: result value is not a dictionary";
-    return;
-  }
+    if (!result.value().is_dict()) {
+      return "Error parsing response: result value is not a dictionary";
+    }
 
-  const base::Value::Dict* data_dict =
-      result.value().GetDict().FindDict(kDataKey);
-  if (!data_dict) {
-    LOG(ERROR) << "Error parsing response: dictionary not found";
-    return;
-  }
+    const base::Value::Dict* data_dict =
+        result.value().GetDict().FindDict(kDataKey);
+    if (!data_dict) {
+      return "Error parsing response: dictionary not found";
+    }
 
-  const base::Value::List* translations_list =
-      data_dict->FindList(kTranslationsKey);
-  if (!translations_list || translations_list->empty()) {
-    LOG(ERROR) << "Error parsing response: translations not found";
-    return;
-  }
+    const base::Value::List* translations_list =
+        data_dict->FindList(kTranslationsKey);
+    if (!translations_list || translations_list->empty()) {
+      return "Error parsing response: translations not found";
+    }
 
-  const base::Value::Dict* translated_text =
-      (*translations_list)[0].GetIfDict();
-  if (!translated_text) {
-    LOG(ERROR) << "Error parsing response: translated text not found";
-    return;
-  }
+    const base::Value::Dict* translated_text =
+        (*translations_list)[0].GetIfDict();
+    if (!translated_text) {
+      return "Error parsing response: translated text not found";
+    }
 
-  if (const std::string* value =
-          translated_text->FindString(kTranslatedTextKey)) {
-    std::move(callback).Run(media::SpeechRecognitionResult(*value, is_final));
+    if (const std::string* value =
+            translated_text->FindString(kTranslatedTextKey)) {
+      std::move(callback).Run(media::SpeechRecognitionResult(*value, is_final));
+    }
+    return std::string();
+  }();
+  if (!error.empty()) {
+    LOG(ERROR) << std::move(error);
   }
 }
 
