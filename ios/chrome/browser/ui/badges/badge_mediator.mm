@@ -350,8 +350,16 @@ const char kInfobarOverflowBadgeShownUserAction[] =
     base::RecordAction(
         base::UserMetricsAction(kInfobarOverflowBadgeShownUserAction));
   }
+
+  InfoBarIOS* infoBar = nullptr;
+  if (displayedBadge.badgeType == kBadgeTypeSaveAddressProfile) {
+    infoBar = [self
+        infobarWithType:InfobarTypeForBadgeType(displayedBadge.badgeType)];
+  }
+
   [self.consumer updateDisplayedBadge:displayedBadge
-                      fullScreenBadge:self.offTheRecordBadge];
+                      fullScreenBadge:self.offTheRecordBadge
+                              infoBar:infoBar];
   [self updateConsumerReadStatus];
 }
 

@@ -66,7 +66,8 @@ enum class TestParam {
   self.displayedBadge = displayedBadgeItem;
 }
 - (void)updateDisplayedBadge:(id<BadgeItem>)displayedBadgeItem
-             fullScreenBadge:(id<BadgeItem>)fullscreenBadgeItem {
+             fullScreenBadge:(id<BadgeItem>)fullscreenBadgeItem
+                     infoBar:(InfoBarIOS*)infoBar {
   self.hasFullscreenOffTheRecordBadge =
       fullscreenBadgeItem != nil &&
       fullscreenBadgeItem.badgeType == kBadgeTypeIncognito;

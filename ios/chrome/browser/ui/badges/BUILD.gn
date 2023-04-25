@@ -58,6 +58,7 @@ source_set("badges") {
     ":util",
     "resources:incognito_badge_ios14",
     "//base",
+    "//components/autofill/core/browser",
     "//components/password_manager/core/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",

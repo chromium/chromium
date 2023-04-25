@@ -12,6 +12,7 @@
 @class BadgeButtonActionHandler;
 @class BadgeButton;
 @protocol BadgeDelegate;
+class InfoBarIOS;
 
 // BadgeButtonFactory Factory creates BadgButton objects with certain
 // styles and configurations, depending on its type.
@@ -20,8 +21,10 @@
 // Action handler delegate for the buttons.
 @property(nonatomic, weak) id<BadgeDelegate> delegate;
 
-// Returns a properly configured BadgButton associated with `badgeType`.
-- (BadgeButton*)badgeButtonForBadgeType:(BadgeType)badgeType;
+// Returns a properly configured BadgeButton associated with `badgeType` with
+// the use of `infoBar`.
+- (BadgeButton*)badgeButtonForBadgeType:(BadgeType)badgeType
+                           usingInfoBar:(InfoBarIOS*)infoBar;
 
 @end
 
