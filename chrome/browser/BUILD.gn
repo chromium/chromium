@@ -4291,6 +4291,8 @@ static_library("browser") {
       "task_manager/providers/web_contents/tool_task.h",
       "task_manager/providers/web_contents/web_app_tag.cc",
       "task_manager/providers/web_contents/web_app_tag.h",
+      "task_manager/providers/web_contents/web_app_task.cc",
+      "task_manager/providers/web_contents/web_app_task.h",
       "task_manager/providers/web_contents/web_contents_tag.cc",
       "task_manager/providers/web_contents/web_contents_tag.h",
       "task_manager/providers/web_contents/web_contents_tags_manager.cc",

@@ -8,6 +8,7 @@
 
 #include "chrome/browser/task_manager/providers/web_contents/isolated_web_app_task.h"
 #include "chrome/browser/task_manager/providers/web_contents/tab_contents_task.h"
+#include "chrome/browser/task_manager/providers/web_contents/web_app_task.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -22,9 +23,7 @@ std::unique_ptr<RendererTask> WebAppTag::CreateTask(
     return std::make_unique<IsolatedWebAppTask>(web_contents());
   }
 
-  // TODO(crbug.com/1426651): Add Web App Task.
-
-  return std::make_unique<TabContentsTask>(web_contents());
+  return std::make_unique<WebAppTask>(web_contents());
 }
 
 WebAppTag::WebAppTag(content::WebContents* web_contents,

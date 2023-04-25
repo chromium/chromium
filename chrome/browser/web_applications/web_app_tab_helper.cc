@@ -183,8 +183,9 @@ void WebAppTabHelper::OnAssociatedAppChanged(
   } else {
     // case 4:
     if (previous_app_id.has_value() && !previous_app_id->empty()) {
-      // remove WebAppTag.
+      // remove WebAppTag, add TabContentsTag.
       task_manager::WebContentsTags::ClearTag(web_contents());
+      task_manager::WebContentsTags::CreateForTabContents(web_contents());
     }
     // case 2: do nothing
   }

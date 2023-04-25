@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
+
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tag.h"
@@ -11,8 +13,8 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -24,6 +26,131 @@ using testing::Contains;
 using testing::Property;
 
 namespace task_manager {
+
+class WebAppTagWebAppTest : public web_app::WebAppControllerBrowserTest {
+ protected:
+  Browser* LaunchBrowserForWebAppInTabAndWait(const web_app::AppId& app_id,
+                                              const GURL& observe_url) {
+    ui_test_utils::UrlLoadObserver url_observer(
+        observe_url, content::NotificationService::AllSources());
+    Browser* browser = LaunchBrowserForWebAppInTab(app_id);
+    url_observer.Wait();
+    return browser;
+  }
+
+  const std::vector<WebContentsTag*>& tracked_tags() const {
+    return WebContentsTagsManager::GetInstance()->tracked_tags();
+  }
+
+  void NavigateToUrlAndWait(Browser* browser, const GURL& url) {
+    content::WebContents* web_contents =
+        browser->tab_strip_model()->GetActiveWebContents();
+
+    {
+      content::TestNavigationObserver observer(web_contents);
+      NavigateParams params(browser, url, ui::PAGE_TRANSITION_LINK);
+      ui_test_utils::NavigateToURL(&params);
+      observer.WaitForNavigationFinished();
+    }
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppTagWebAppTest, WebAppTaskCreatedForTab) {
+  EXPECT_EQ(1U, tracked_tags().size());
+
+  const GURL start_url =
+      https_server()->GetURL("app.com", "/google/google.html");
+  const web_app::AppId app_id = InstallPWA(start_url);
+
+  MockWebContentsTaskManager task_manager;
+  EXPECT_TRUE(task_manager.tasks().empty());
+
+  EXPECT_EQ(1U, tracked_tags().size());
+
+  Browser* browser = LaunchBrowserForWebAppInTabAndWait(app_id, start_url);
+  ASSERT_TRUE(browser);
+
+  EXPECT_EQ(2U, tracked_tags().size());
+  EXPECT_TRUE(task_manager.tasks().empty());
+
+  // Start observing.
+  task_manager.StartObserving();
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(2U, task_manager.tasks().size());
+
+  EXPECT_THAT(task_manager.tasks(),
+              Contains(Property(&Task::title, u"App: Google")));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppTagWebAppTest, WebAppTaskCreatedForStandalone) {
+  EXPECT_EQ(1U, tracked_tags().size());
+
+  const GURL start_url =
+      https_server()->GetURL("app.com", "/google/google.html");
+  const web_app::AppId app_id = InstallPWA(start_url);
+
+  MockWebContentsTaskManager task_manager;
+  EXPECT_TRUE(task_manager.tasks().empty());
+
+  EXPECT_EQ(1U, tracked_tags().size());
+
+  Browser* browser = LaunchWebAppBrowserAndWait(app_id);
+  ASSERT_TRUE(browser);
+
+  EXPECT_EQ(2U, tracked_tags().size());
+  EXPECT_TRUE(task_manager.tasks().empty());
+
+  // Start observing.
+  task_manager.StartObserving();
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(2U, task_manager.tasks().size());
+
+  EXPECT_THAT(task_manager.tasks(),
+              Contains(Property(&Task::title, u"App: Google")));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppTagWebAppTest, TabNavigatedAwayNotWebAppTask) {
+  EXPECT_EQ(1U, tracked_tags().size());
+
+  const GURL start_url =
+      https_server()->GetURL("app.com", "/google/google.html");
+  const web_app::AppId app_id = InstallPWA(start_url);
+
+  MockWebContentsTaskManager task_manager;
+  EXPECT_TRUE(task_manager.tasks().empty());
+
+  EXPECT_EQ(1U, tracked_tags().size());
+
+  Browser* browser = LaunchBrowserForWebAppInTabAndWait(app_id, start_url);
+  ASSERT_TRUE(browser);
+
+  EXPECT_EQ(2U, tracked_tags().size());
+  EXPECT_TRUE(task_manager.tasks().empty());
+
+  // Start observing.
+  task_manager.StartObserving();
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(2U, task_manager.tasks().size());
+
+  EXPECT_THAT(task_manager.tasks(),
+              Contains(Property(&Task::title, u"App: Google")));
+
+  const GURL not_app_url =
+      https_server()->GetURL("notapp.com", "/google/google.html");
+
+  NavigateToUrlAndWait(browser, not_app_url);
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_THAT(task_manager.tasks(),
+              Contains(Property(&Task::title, u"Tab: Google")));
+}
 
 class WebAppTagIsolatedWebAppTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
@@ -69,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTagIsolatedWebAppTest, IsolatedWebAppTaskCreated) {
 
   Browser* browser = LaunchWebAppBrowserAndWait(app_id);
 
-  EXPECT_TRUE(browser);
+  ASSERT_TRUE(browser);
 
   EXPECT_EQ(2U, tracked_tags().size());
   EXPECT_TRUE(task_manager.tasks().empty());
@@ -97,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTagIsolatedWebAppTest,
 
   Browser* browser = LaunchWebAppBrowserAndWait(app_id);
 
-  EXPECT_TRUE(browser);
+  ASSERT_TRUE(browser);
 
   EXPECT_EQ(2U, tracked_tags().size());
   EXPECT_TRUE(task_manager.tasks().empty());
@@ -126,8 +253,5 @@ IN_PROC_BROWSER_TEST_F(WebAppTagIsolatedWebAppTest,
   EXPECT_THAT(task_manager.tasks(),
               Contains(Property(&Task::title, u"App: Simple Isolated App")));
 }
-
-// TODO(crbug.com/1426651): Test that WebContents changes to other tag when it
-// is dissociated with web app id.
 
 }  // namespace task_manager
