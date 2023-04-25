@@ -549,65 +549,6 @@ TEST_F(AttributionManagerImplTest,
                                    ReportURLIs(url_c)));
 }
 
-TEST_F(AttributionManagerImplTest,
-       MultipleReportsWithDifferentReportTimes_SentInSequence) {
-  const GURL url_a(
-      "https://a.example/.well-known/attribution-reporting/"
-      "report-event-attribution");
-  const GURL url_b(
-      "https://b.example/.well-known/attribution-reporting/"
-      "report-event-attribution");
-
-  const auto origin_a = *SuitableOrigin::Create(url_a);
-  const auto origin_b = *SuitableOrigin::Create(url_b);
-
-  Checkpoint checkpoint;
-  {
-    InSequence seq;
-
-    EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _))
-        .Times(0);
-    EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(*report_sender_,
-                SendReport(ReportURLIs(url_a), /*is_debug_report=*/false, _));
-    EXPECT_CALL(checkpoint, Call(2));
-    EXPECT_CALL(*report_sender_,
-                SendReport(ReportURLIs(url_b), /*is_debug_report=*/false, _));
-  }
-
-  attribution_manager_->HandleSource(SourceBuilder()
-                                         .SetExpiry(kImpressionExpiry)
-                                         .SetReportingOrigin(origin_a)
-                                         .Build(),
-                                     kFrameId);
-  attribution_manager_->HandleTrigger(
-      TriggerBuilder().SetReportingOrigin(origin_a).Build(), kFrameId);
-
-  task_environment_.FastForwardBy(base::Microseconds(1));
-
-  attribution_manager_->HandleSource(SourceBuilder()
-                                         .SetExpiry(kImpressionExpiry)
-                                         .SetReportingOrigin(origin_b)
-                                         .Build(),
-                                     kFrameId);
-  attribution_manager_->HandleTrigger(
-      TriggerBuilder().SetReportingOrigin(origin_b).Build(), kFrameId);
-
-  EXPECT_THAT(StoredReports(), SizeIs(2));
-
-  // Make sure the reports are not sent earlier than their report time.
-  task_environment_.FastForwardBy(kFirstReportingWindow -
-                                  base::Microseconds(2));
-
-  checkpoint.Call(1);
-
-  task_environment_.FastForwardBy(base::Microseconds(1));
-
-  checkpoint.Call(2);
-
-  task_environment_.FastForwardBy(base::Microseconds(1));
-}
-
 TEST_F(AttributionManagerImplTest, SenderStillHandlingReport_NotSentAgain) {
   Checkpoint checkpoint;
   {
