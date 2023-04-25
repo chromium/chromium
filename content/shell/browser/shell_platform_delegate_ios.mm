@@ -30,6 +30,15 @@ static const char kDetailedGraphicsTracingCategories[] =
     "input,benchmark,disabled-by-default-skia,disabled-by-default-skia.gpu,"
     "disabled-by-default-skia.gpu.cache,disabled-by-default-skia.shaders";
 
+static const char kNavigationTracingCategories[] =
+    "-*,benchmark,toplevel,ipc,base,browser,navigation,omnibox,ui,shutdown,"
+    "safe_browsing,loading,startup,mojom,renderer_host,"
+    "disabled-by-default-system_stats,disabled-by-default-cpu_profiler,dwrite,"
+    "fonts,ServiceWorker,passwords,disabled-by-default-file,sql,"
+    "disabled-by-default-user_action_samples,disk_cache";
+
+static const char kAllTracingCategories[] = "*";
+
 }  // namespace
 
 @interface TracingHandler : NSObject {
@@ -338,6 +347,21 @@ static const char kDetailedGraphicsTracingCategories[] =
                                     startTracingWithCategories:
                                         kDetailedGraphicsTracingCategories];
                               }]];
+    [alertController
+        addAction:[UIAlertAction
+                      actionWithTitle:@"Begin Navigation Tracing"
+                                style:UIAlertActionStyleDefault
+                              handler:^(UIAlertAction* action) {
+                                [weakSelf startTracingWithCategories:
+                                              kNavigationTracingCategories];
+                              }]];
+    [alertController
+        addAction:[UIAlertAction actionWithTitle:@"Begin Tracing All Categories"
+                                           style:UIAlertActionStyleDefault
+                                         handler:^(UIAlertAction* action) {
+                                           [weakSelf startTracingWithCategories:
+                                                         kAllTracingCategories];
+                                         }]];
   }
 
   [self presentViewController:alertController animated:YES completion:nil];
