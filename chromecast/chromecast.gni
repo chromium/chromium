@@ -41,11 +41,6 @@ declare_args() {
     display_web_contents_in_service = is_cast_audio_only
   }
 
-  # If true, Chromecast WebUI resources are included in a build.
-  # TODO(antz): default to false for audio-only builds, might need further
-  # clean up (b/27119303)
-  enable_chromecast_webui = !is_cast_audio_only && !is_android
-
   # Set true to enable assistant features.
   enable_assistant = false
 
