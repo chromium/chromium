@@ -97,6 +97,11 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   bool IsSidePanelShowing() const;
 
+  // Returns whether `entry_key` is currently being shown in the side panel.
+  // Note: this returns false if `entry` is current loading but not actually
+  // shown.
+  bool IsSidePanelEntryShowing(const SidePanelEntry::Key& entry_key) const;
+
   // Returns whether `entry` is currently being shown in the side panel. Note:
   // this returns false if `entry` is current loading but not actually shown.
   bool IsSidePanelEntryShowing(const SidePanelEntry* entry) const;

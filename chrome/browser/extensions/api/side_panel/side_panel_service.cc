@@ -13,6 +13,7 @@
 #include "components/sessions/core/session_id.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/pref_types.h"
+#include "extensions/common/extension_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
@@ -53,6 +54,19 @@ SidePanelService::SidePanelService(content::BrowserContext* context)
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(context);
   extension_registry_observation_.Observe(extension_registry);
+}
+
+bool SidePanelService::HasSidePanelActionForTab(const Extension& extension,
+                                                TabId tab_id) {
+  if (!OpenSidePanelOnIconClick(extension.id()) ||
+      !base::FeatureList::IsEnabled(
+          extensions_features::kExtensionSidePanelIntegration)) {
+    return false;
+  }
+
+  api::side_panel::PanelOptions options = GetOptions(extension, tab_id);
+  return options.enabled.has_value() && *options.enabled &&
+         options.path.has_value();
 }
 
 api::side_panel::PanelOptions SidePanelService::GetOptions(
@@ -171,7 +185,7 @@ void SidePanelService::RemoveExtensionOptions(const ExtensionId& id) {
   panels_.erase(id);
 }
 
-bool SidePanelService::GetOpenSidePanelOnIconClick(
+bool SidePanelService::OpenSidePanelOnIconClick(
     const ExtensionId& extension_id) {
   bool open_side_panel_on_icon_click = false;
   ExtensionPrefs::Get(browser_context_)

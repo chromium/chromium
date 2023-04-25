@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
@@ -50,6 +51,8 @@ class TestSidePanelEntryWaiter : public SidePanelEntryObserver {
 
   void WaitForEntryShown() { entry_shown_run_loop_.Run(); }
 
+  void WaitForEntryHidden() { entry_hidden_run_loop_.Run(); }
+
   void WaitForIconUpdated() { icon_updated_run_loop_.Run(); }
 
  private:
@@ -57,11 +60,16 @@ class TestSidePanelEntryWaiter : public SidePanelEntryObserver {
     entry_shown_run_loop_.QuitWhenIdle();
   }
 
+  void OnEntryHidden(SidePanelEntry* entry) override {
+    entry_hidden_run_loop_.QuitWhenIdle();
+  }
+
   void OnEntryIconUpdated(SidePanelEntry* entry) override {
     icon_updated_run_loop_.QuitWhenIdle();
   }
 
   base::RunLoop entry_shown_run_loop_;
+  base::RunLoop entry_hidden_run_loop_;
   base::RunLoop icon_updated_run_loop_;
   base::ScopedObservation<SidePanelEntry, SidePanelEntryObserver>
       side_panel_entry_observation_{this};
@@ -156,6 +164,20 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
     std::string args =
         base::StringPrintf(R"([{%s%s"enabled":%s}])", tab_id_arg.c_str(),
                            path_arg.c_str(), enabled ? "true" : "false");
+    EXPECT_TRUE(api_test_utils::RunFunction(function.get(), args, profile()))
+        << function->GetError();
+  }
+
+  // Calls chrome.sidePanel.setPanelBehavior() for the given `extension` and
+  // `openPanelOnActionClick`, and returns when the API call is complete.
+  void RunSetPanelBehavior(const Extension& extension,
+                           bool openPanelOnActionClick) {
+    auto function = base::MakeRefCounted<SidePanelSetPanelBehaviorFunction>();
+    function->set_extension(&extension);
+
+    std::string args =
+        base::StringPrintf(R"([{"openPanelOnActionClick":%s}])",
+                           openPanelOnActionClick ? "true" : "false");
     EXPECT_TRUE(api_test_utils::RunFunction(function.get(), args, profile()))
         << function->GetError();
   }
@@ -1066,6 +1088,112 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   // Unloading the extension at this point should not crash the browser.
   UnloadExtension(extension->id());
   EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
+}
+
+// Test that when the openSidePanelOnClick pref is true, clicking the extension
+// icon will show the extension's entry if it's not shown, or close
+// the side panel if the extension's entry is shown.
+IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
+                       ToggleExtensionEntryOnUserAction) {
+  scoped_refptr<const extensions::Extension> extension = LoadExtension(
+      test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
+  ASSERT_TRUE(extension);
+
+  // Create a helper that will click the extension's icon from the menu to
+  // trigger an extension action.
+  std::unique_ptr<ExtensionActionTestHelper> action_helper =
+      ExtensionActionTestHelper::Create(browser());
+
+  SidePanelEntry::Key extension_key = GetKey(extension->id());
+
+  RunSetPanelBehavior(*extension, /*openPanelOnActionClick=*/true);
+  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
+
+  {
+    ExtensionTestMessageListener default_path_listener("default_path");
+    // Clicking the icon should show the extension's entry.
+    action_helper->Press(extension->id());
+    ASSERT_TRUE(default_path_listener.WaitUntilSatisfied());
+    EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  }
+
+  // Switch over to another side panel entry.
+  ShowEntryAndWait(SidePanelEntry::Key(SidePanelEntry::Id::kReadingList));
+
+  {
+    TestSidePanelEntryWaiter entry_shown_waiter(
+        global_registry()->GetEntryForKey(extension_key));
+    // Since the extension's entry is not shown, clicking the icon should show
+    // it.
+    action_helper->Press(extension->id());
+    entry_shown_waiter.WaitForEntryShown();
+    EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  }
+
+  {
+    TestSidePanelEntryWaiter entry_hidden_waiter(
+        global_registry()->GetEntryForKey(extension_key));
+    // Clicking the icon when the extension's entry is shown should close the
+    // side panel.
+    action_helper->Press(extension->id());
+    entry_hidden_waiter.WaitForEntryHidden();
+  }
+
+  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
+}
+
+// Test that extension action behavior falls back to defaults if the extension
+// has no side panel panel for the current tab (global or contextual) or if the
+// openSidePanelOnClick pref is false.
+IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
+                       FallbackActionWithoutSidePanel) {
+  scoped_refptr<const extensions::Extension> extension = LoadExtension(
+      test_data_dir_.AppendASCII("api_test/side_panel/with_action_onclick"));
+  ASSERT_TRUE(extension);
+
+  // Create a helper that will click the extension's icon from the menu to
+  // trigger an extension action.
+  std::unique_ptr<ExtensionActionTestHelper> action_helper =
+      ExtensionActionTestHelper::Create(browser());
+
+  SidePanelEntry::Key extension_key = GetKey(extension->id());
+
+  RunSetPanelBehavior(*extension, /*openPanelOnActionClick=*/true);
+  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
+
+  {
+    ExtensionTestMessageListener default_path_listener("default_path");
+    // Clicking the icon should show the extension's entry.
+    action_helper->Press(extension->id());
+    ASSERT_TRUE(default_path_listener.WaitUntilSatisfied());
+    EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  }
+
+  // Set the pref to false.
+  RunSetPanelBehavior(*extension, /*openPanelOnActionClick=*/false);
+
+  {
+    ExtensionTestMessageListener action_clicked_listener("action_clicked");
+    // Since the pref is false, clicking the icon will fall back to triggering
+    // chrome.action.onClicked, which satisfies `action_clicked_listener`.
+    action_helper->Press(extension->id());
+    ASSERT_TRUE(action_clicked_listener.WaitUntilSatisfied());
+    EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  }
+
+  // Set the pref to true but disable the extension's side panel for the current
+  // tab.
+  RunSetPanelBehavior(*extension, /*openPanelOnActionClick=*/true);
+  DisableForCurrentTab(*extension);
+
+  {
+    ExtensionTestMessageListener default_path_listener("default_path");
+    ExtensionTestMessageListener action_clicked_listener("action_clicked");
+    // Clicking the icon will fall back to triggering chrome.action.onClicked,
+    action_helper->Press(extension->id());
+    ASSERT_TRUE(action_clicked_listener.WaitUntilSatisfied());
+    EXPECT_FALSE(default_path_listener.was_satisfied());
+  }
 }
 
 // TODO(crbug.com/1378048): Add a test here which requires a browser in

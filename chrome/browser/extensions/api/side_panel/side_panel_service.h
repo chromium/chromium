@@ -45,9 +45,14 @@ class SidePanelService : public BrowserContextKeyedAPI,
   // BrowserContextKeyedAPI implementation.
   static BrowserContextKeyedAPIFactory<SidePanelService>* GetFactoryInstance();
 
+  using TabId = int;
+
+  // Returns if there is an action to toggle the side panel for the given
+  // `extension` and `tab_id`.
+  bool HasSidePanelActionForTab(const Extension& extension, TabId tab_id);
+
   // Get options for `tab_id`. Options are loaded in order first from service
   // storage, manifest, or an empty object will be returned, if they're unset.
-  using TabId = int;
   api::side_panel::PanelOptions GetOptions(const Extension& extension,
                                            absl::optional<TabId> tab_id);
 
@@ -66,7 +71,7 @@ class SidePanelService : public BrowserContextKeyedAPI,
 
   // Returns whether the extension will open its side panel entry when its icon
   // in the toolbar is clicked.
-  bool GetOpenSidePanelOnIconClick(const ExtensionId& extension_id);
+  bool OpenSidePanelOnIconClick(const ExtensionId& extension_id);
 
   // Updates whether the extension will open its side panel entry when its icon
   // in the toolbar is clicked.

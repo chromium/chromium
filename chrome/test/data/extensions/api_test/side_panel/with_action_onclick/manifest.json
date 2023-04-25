@@ -1,0 +1,11 @@
+{
+  "name": "Side panel extension with action.onclick",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": ["sidePanel"],
+  "background": {
+    "service_worker": "worker.js"
+  },
+  "action": {},
+  "side_panel": {"default_path": "default_path.html"}
+}

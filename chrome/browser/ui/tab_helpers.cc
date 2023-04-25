@@ -229,7 +229,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api.h"
 #include "chrome/browser/extensions/tab_helper.h"
-#include "chrome/browser/ui/extensions/create_side_panel_manager.h"
+#include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics_tab_helper.h"
 #include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
@@ -614,7 +614,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionSidePanelIntegration)) {
-    extensions::CreateSidePanelManagerForWebContents(profile, web_contents);
+    extensions::side_panel_util::CreateSidePanelManagerForWebContents(
+        profile, web_contents);
   }
 
   extensions::WebNavigationTabObserver::CreateForWebContents(web_contents);

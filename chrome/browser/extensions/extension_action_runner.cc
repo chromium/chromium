@@ -18,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
+#include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
@@ -102,26 +103,48 @@ ExtensionActionRunner* ExtensionActionRunner::GetForWebContents(
 ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
     const Extension* extension,
     bool grant_tab_permissions) {
-  if (grant_tab_permissions) {
-    int blocked_actions = GetBlockedActions(extension->id());
-    GrantTabPermissions({extension});
+  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents()).id();
 
+  if (grant_tab_permissions && GetBlockedActions(extension->id())) {
     // If the extension had blocked actions before granting tab permissions,
     // granting active tab will have run the extension. Don't execute further
     // since clicking should run blocked actions *or* the normal extension
     // action, not both.
-    if (blocked_actions)
-      return ExtensionAction::ACTION_NONE;
+    GrantTabPermissions({extension});
+    return ExtensionAction::ACTION_NONE;
   }
 
-  // Anything that gets here should have a page or browser action, and not
-  // blocked actions.
+  // Anything that gets here should have a page or browser action, or toggle the
+  // extension's side panel, and not blocked actions.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionSidePanelIntegration)) {
+    // This method is only called to execute an action by the user, so we can
+    // grant tab permissions unless `action` will toggle the side panel. Tab
+    // permissions are not granted in this case because:
+    //  - the extension's side panel entry can be opened through the side panel
+    //    itself which does not grant tab permissions
+    //  - extension side panels can persist through tab changes and so
+    //  permissions
+    //    granted for one tab shouldn't persist on that side panel across tab
+    //    changes.
+    // TODO(crbug.com/1435530): Evaluate if this is the best course of action.
+    SidePanelService* side_panel_service =
+        SidePanelService::Get(browser_context_);
+    if (side_panel_service &&
+        side_panel_service->HasSidePanelActionForTab(*extension, tab_id)) {
+      return ExtensionAction::ACTION_TOGGLE_SIDE_PANEL;
+    }
+  }
+
+  if (grant_tab_permissions) {
+    GrantTabPermissions({extension});
+  }
+
   ExtensionAction* extension_action =
       ExtensionActionManager::Get(browser_context_)
           ->GetExtensionAction(*extension);
   DCHECK(extension_action);
 
-  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents()).id();
   if (!extension_action->GetIsVisible(tab_id))
     return ExtensionAction::ACTION_NONE;
 

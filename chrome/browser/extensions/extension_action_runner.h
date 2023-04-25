@@ -60,9 +60,15 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   static ExtensionActionRunner* GetForWebContents(
       content::WebContents* web_contents);
 
-  // Executes the action for the given |extension| and |grant_tab_permissions|
-  // if true. Returns any further action (like showing a popup) that should be
-  // taken.
+  // Runs the given extension action. This may trigger a number of different
+  // behaviors, depending on the extension and state, including:
+  // - Running blocked actions (if the extension had withheld permissions)
+  // - Firing the action.onClicked event for the extension
+  // - Determining that a UI action should be taken, indicated by the return
+  //   result.
+  // If `grant_tab_permissions` is true and the action is appropriate, this will
+  // grant tab permissions for the extension to the active tab. This may not
+  // happen in all cases (such as when showing a side panel).
   ExtensionAction::ShowAction RunAction(const Extension* extension,
                                         bool grant_tab_permissions);
 

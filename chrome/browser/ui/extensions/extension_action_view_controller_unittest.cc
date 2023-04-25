@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
+#include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ui/extensions/icon_with_badge_image_source.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/common/extensions/api/side_panel.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -54,6 +56,15 @@ using extensions::mojom::ManifestLocation;
 using SiteInteraction = extensions::SitePermissionsHelper::SiteInteraction;
 using UserSiteSetting = extensions::PermissionsManager::UserSiteSetting;
 using HoverCardState = ToolbarActionViewController::HoverCardState;
+
+namespace {
+
+std::unique_ptr<KeyedService> BuildSidePanelService(
+    content::BrowserContext* context) {
+  return std::make_unique<extensions::SidePanelService>(context);
+}
+
+}  // namespace
 
 class ExtensionActionViewControllerUnitTest : public BrowserWithTestWindowTest {
  public:
@@ -988,4 +999,80 @@ TEST_F(ExtensionActionViewControllerFeatureWithPermittedSitesUnitTest,
             HoverCardState::SiteAccess::kAllExtensionsAllowed);
   EXPECT_EQ(GetHoverCardSiteAccessState(controllerC, web_contents),
             HoverCardState::SiteAccess::kAllExtensionsAllowed);
+}
+
+class ExtensionActionViewControllerWithSidePanelUnitTest
+    : public ExtensionActionViewControllerUnitTest {
+ public:
+  ExtensionActionViewControllerWithSidePanelUnitTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionSidePanelIntegration);
+  }
+
+  void SetUp() override {
+    ExtensionActionViewControllerUnitTest::SetUp();
+    extensions::SidePanelService::GetFactoryInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&BuildSidePanelService));
+  }
+
+ protected:
+  extensions::SidePanelService* side_panel_service() {
+    return extensions::SidePanelService::Get(profile());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test that the extension action is enabled if opening the side panel on icon
+// click is enabled and the extension has a side panel for the current tab.
+TEST_F(ExtensionActionViewControllerWithSidePanelUnitTest,
+       ActionEnabledIfSidePanelPresent) {
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("just side panel")
+          .SetLocation(ManifestLocation::kInternal)
+          .SetManifestVersion(3)
+          .AddPermission("sidePanel")
+          .Build();
+
+  extension_service()->GrantPermissions(extension.get());
+  extension_service()->AddExtension(extension.get());
+  side_panel_service()->SetOpenSidePanelOnIconClick(extension->id(), true);
+
+  ExtensionActionViewController* const action_controller =
+      GetViewControllerForId(extension->id());
+  ASSERT_TRUE(action_controller);
+  EXPECT_EQ(extension.get(), action_controller->extension());
+
+  AddTab(browser(), GURL("https://www.chromium.org/"));
+  content::WebContents* web_contents = GetActiveWebContents();
+  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
+
+  // If the preference is true but there is no side panel for the current tab,
+  // the action should be disabled.
+  std::unique_ptr<IconWithBadgeImageSource> image_source =
+      action_controller->GetIconImageSourceForTesting(web_contents,
+                                                      view_size());
+  EXPECT_TRUE(image_source->grayscale());
+  EXPECT_FALSE(action_controller->IsEnabled(web_contents));
+
+  // Set a side panel for the current tab. This should enable the extension's
+  // action.
+  extensions::api::side_panel::PanelOptions options;
+  options.enabled = true;
+  options.path = "panel.html";
+  options.tab_id = tab_id;
+  side_panel_service()->SetOptions(*extension, std::move(options));
+
+  image_source = action_controller->GetIconImageSourceForTesting(web_contents,
+                                                                 view_size());
+  EXPECT_FALSE(image_source->grayscale());
+  EXPECT_TRUE(action_controller->IsEnabled(web_contents));
+
+  // Setting the preference to false should disable the extension's action.
+  side_panel_service()->SetOpenSidePanelOnIconClick(extension->id(), false);
+  image_source = action_controller->GetIconImageSourceForTesting(web_contents,
+                                                                 view_size());
+  EXPECT_TRUE(image_source->grayscale());
+  EXPECT_FALSE(action_controller->IsEnabled(web_contents));
 }

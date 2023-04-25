@@ -6,7 +6,6 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/extensions/create_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "content/public/browser/browser_context.h"
@@ -24,12 +23,6 @@ namespace {
 const char kExtensionSidePanelManagerKey[] = "extension_side_panel_manager";
 
 }  // namespace
-
-// Defined in create_side_panel_manager.h
-void CreateSidePanelManagerForWebContents(Profile* profile,
-                                          content::WebContents* web_contents) {
-  ExtensionSidePanelManager::GetOrCreateForWebContents(profile, web_contents);
-}
 
 ExtensionSidePanelManager::ExtensionSidePanelManager(
     Profile* profile,

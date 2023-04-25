@@ -375,6 +375,12 @@ bool SidePanelCoordinator::IsSidePanelShowing() const {
 }
 
 bool SidePanelCoordinator::IsSidePanelEntryShowing(
+    const SidePanelEntry::Key& entry_key) const {
+  return IsSidePanelShowing() && current_entry_ &&
+         current_entry_->key() == entry_key;
+}
+
+bool SidePanelCoordinator::IsSidePanelEntryShowing(
     const SidePanelEntry* entry) const {
   return IsSidePanelShowing() && current_entry_ &&
          current_entry_.get() == entry;

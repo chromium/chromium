@@ -70,7 +70,7 @@ ExtensionFunction::ResponseAction
 SidePanelGetPanelBehaviorFunction::RunFunction() {
   api::side_panel::PanelBehavior behavior;
   behavior.open_panel_on_action_click =
-      GetService()->GetOpenSidePanelOnIconClick(extension()->id());
+      GetService()->OpenSidePanelOnIconClick(extension()->id());
 
   return RespondNow(WithArguments(behavior.ToValue()));
 }
