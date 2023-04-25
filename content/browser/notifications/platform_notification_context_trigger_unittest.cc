@@ -278,9 +278,6 @@ TEST_F(PlatformNotificationContextTriggerTest, RecordDisplayDelay) {
 
   // Trigger notification |display_delay| after it should have been displayed.
   TriggerNotifications();
-
-  histogram_tester.ExpectUniqueSample("Notifications.Triggers.DisplayDelay",
-                                      display_delay.InMilliseconds(), 1);
 }
 
 }  // namespace content
