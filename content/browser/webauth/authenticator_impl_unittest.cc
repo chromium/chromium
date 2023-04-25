@@ -500,22 +500,21 @@ std::vector<uint8_t> UncompressLargeBlob(device::LargeBlob blob) {
   data_decoder::Gzipper gzipper;
   std::vector<uint8_t> uncompressed;
   base::RunLoop run_loop;
-  gzipper.Inflate(blob.compressed_data, blob.original_size,
-                  base::BindLambdaForTesting(
-                      [&](absl::optional<mojo_base::BigBuffer> result) {
-                        if (result) {
-                          uncompressed =
-                              device::fido_parsing_utils::Materialize(*result);
-                        } else {
-                          // Magic value to indicate failure.
-                          const char kErrorMsg[] = "decompress error";
-                          uncompressed.assign(
-                              reinterpret_cast<const uint8_t*>(kErrorMsg),
-                              reinterpret_cast<const uint8_t*>(
-                                  std::end(kErrorMsg)));
-                        }
-                        run_loop.Quit();
-                      }));
+  gzipper.Inflate(
+      blob.compressed_data, blob.original_size,
+      base::BindLambdaForTesting(
+          [&](absl::optional<mojo_base::BigBuffer> result) {
+            if (result) {
+              uncompressed = device::fido_parsing_utils::Materialize(*result);
+            } else {
+              // Magic value to indicate failure.
+              const char kErrorMsg[] = "decompress error";
+              uncompressed.assign(
+                  reinterpret_cast<const uint8_t*>(kErrorMsg),
+                  reinterpret_cast<const uint8_t*>(std::end(kErrorMsg)));
+            }
+            run_loop.Quit();
+          }));
   run_loop.Run();
   return uncompressed;
 }
@@ -661,6 +660,24 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
         ->GetWebAuthenticationService(
             authenticator.BindNewPipeAndPassReceiver());
     return authenticator;
+  }
+
+  bool AuthenticatorIsUvpaa() {
+    TestIsUvpaaCallback cb;
+    mojo::Remote<blink::mojom::Authenticator> authenticator =
+        ConnectToAuthenticator();
+    authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(cb.callback());
+    cb.WaitForCallback();
+    return cb.value();
+  }
+
+  bool AuthenticatorIsConditionalMediationAvailable() {
+    TestIsUvpaaCallback cb;
+    mojo::Remote<blink::mojom::Authenticator> authenticator =
+        ConnectToAuthenticator();
+    authenticator->IsConditionalMediationAvailable(cb.callback());
+    cb.WaitForCallback();
+    return cb.value();
   }
 
   struct MakeCredentialResult {
@@ -1494,11 +1511,7 @@ TEST_F(AuthenticatorImplTest, IsUVPAA) {
       fake_win_webauthn_api_.set_available(enable_win_webauthn_api);
       fake_win_webauthn_api_.set_is_uvpaa(is_uvpaa);
 
-      TestIsUvpaaCallback cb;
-      authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(
-          cb.callback());
-      cb.WaitForCallback();
-      EXPECT_EQ(enable_win_webauthn_api && is_uvpaa, cb.value());
+      EXPECT_EQ(AuthenticatorIsUvpaa(), enable_win_webauthn_api && is_uvpaa);
     }
   }
 }
@@ -1507,12 +1520,7 @@ TEST_F(AuthenticatorImplTest, IsUVPAA) {
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(AuthenticatorImplTest, IsUVPAA) {
   NavigateAndCommit(GURL(kTestOrigin1));
-  mojo::Remote<blink::mojom::Authenticator> authenticator =
-      ConnectToAuthenticator();
-  TestIsUvpaaCallback cb;
-  authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(cb.callback());
-  cb.WaitForCallback();
-  EXPECT_FALSE(cb.value());
+  EXPECT_FALSE(AuthenticatorIsUvpaa());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -1530,22 +1538,17 @@ class OffTheRecordAuthenticatorImplTest : public AuthenticatorImplTest {
 // appropriate warning.
 TEST_F(OffTheRecordAuthenticatorImplTest, WinIsUVPAAIncognito) {
   NavigateAndCommit(GURL(kTestOrigin1));
-  mojo::Remote<blink::mojom::Authenticator> authenticator =
-      ConnectToAuthenticator();
   fake_win_webauthn_api_.set_available(true);
   fake_win_webauthn_api_.set_is_uvpaa(true);
 
   for (bool win_api_supports_incognito_warning : {false, true}) {
-    TestIsUvpaaCallback cb;
     SCOPED_TRACE(win_api_supports_incognito_warning
                      ? "supports incognito"
                      : "does not support incognito");
     fake_win_webauthn_api_.set_version(win_api_supports_incognito_warning
                                            ? WEBAUTHN_API_VERSION_4
                                            : WEBAUTHN_API_VERSION_3);
-    authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(cb.callback());
-    cb.WaitForCallback();
-    EXPECT_EQ(cb.value(), win_api_supports_incognito_warning);
+    EXPECT_EQ(AuthenticatorIsUvpaa(), win_api_supports_incognito_warning);
   }
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -2003,8 +2006,9 @@ class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
   std::unique_ptr<AuthenticatorRequestClientDelegate>
   GetWebAuthenticationRequestDelegate(
       RenderFrameHost* render_frame_host) override {
-    if (return_null_delegate)
+    if (return_null_delegate) {
       return nullptr;
+    }
     return std::make_unique<TestAuthenticatorRequestDelegate>(
         render_frame_host,
         action_callbacks_registered_callback
@@ -3274,18 +3278,13 @@ TEST_F(AuthenticatorContentBrowserClientTest,
 
 TEST_F(AuthenticatorContentBrowserClientTest, IsUVPAAOverride) {
   NavigateAndCommit(GURL(kTestOrigin1));
-  mojo::Remote<blink::mojom::Authenticator> authenticator =
-      ConnectToAuthenticator();
 
   for (const bool is_uvpaa : {false, true}) {
     SCOPED_TRACE(::testing::Message() << "is_uvpaa=" << is_uvpaa);
     test_client_.GetTestWebAuthenticationDelegate()->is_uvpaa_override =
         is_uvpaa;
 
-    TestIsUvpaaCallback cb;
-    authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(cb.callback());
-    cb.WaitForCallback();
-    EXPECT_EQ(is_uvpaa, cb.value());
+    EXPECT_EQ(AuthenticatorIsUvpaa(), is_uvpaa);
   }
 }
 
@@ -6372,8 +6371,9 @@ class InternalUVAuthenticatorImplTest : public UVAuthenticatorImplTest {
     for (const bool fingerprints_enrolled : {true, false}) {
       for (const bool supports_pin : {true, false}) {
         // Avoid just testing for PIN.
-        if (!fingerprints_enrolled && supports_pin)
+        if (!fingerprints_enrolled && supports_pin) {
           continue;
+        }
         for (const auto uv : {device::UserVerificationRequirement::kDiscouraged,
                               device::UserVerificationRequirement::kPreferred,
                               device::UserVerificationRequirement::kRequired}) {
@@ -8829,16 +8829,11 @@ class TouchIdAuthenticatorImplTest : public AuthenticatorImplTest {
 
 TEST_F(TouchIdAuthenticatorImplTest, IsUVPAA) {
   NavigateAndCommit(GURL(kTestOrigin1));
-  mojo::Remote<blink::mojom::Authenticator> authenticator =
-      ConnectToAuthenticator();
   for (const bool touch_id_available : {false, true}) {
     SCOPED_TRACE(::testing::Message()
                  << "touch_id_available=" << touch_id_available);
     touch_id_test_environment_.SetTouchIdAvailable(touch_id_available);
-    TestIsUvpaaCallback cb;
-    authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(cb.callback());
-    cb.WaitForCallback();
-    EXPECT_EQ(touch_id_available, cb.value());
+    EXPECT_EQ(AuthenticatorIsUvpaa(), touch_id_available);
   }
 }
 
@@ -9654,11 +9649,7 @@ class AuthenticatorImplWithRequestProxyTest : public AuthenticatorImplTest {
 TEST_F(AuthenticatorImplWithRequestProxyTest, Inactive) {
   request_proxy().config().is_active = false;
   NavigateAndCommit(GURL(kTestOrigin1));
-  mojo::Remote<blink::mojom::Authenticator> authenticator =
-      ConnectToAuthenticator();
-  TestIsUvpaaCallback cb;
-  authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(cb.callback());
-  cb.WaitForCallback();
+  AuthenticatorIsUvpaa();
   EXPECT_EQ(request_proxy().observations().num_isuvpaa, 0u);
 }
 
@@ -9668,25 +9659,30 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, IsUVPAA) {
     SCOPED_TRACE(testing::Message() << "is_uvpaa=" << is_uvpaa);
     request_proxy().config().is_uvpaa = is_uvpaa;
     NavigateAndCommit(GURL(kTestOrigin1));
-    mojo::Remote<blink::mojom::Authenticator> authenticator =
-        ConnectToAuthenticator();
-    TestIsUvpaaCallback cb;
-    authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(cb.callback());
-    cb.WaitForCallback();
-    EXPECT_EQ(cb.value(), is_uvpaa);
+    EXPECT_EQ(AuthenticatorIsUvpaa(), is_uvpaa);
     EXPECT_EQ(request_proxy().observations().num_isuvpaa, ++i);
   }
 }
 
 TEST_F(AuthenticatorImplWithRequestProxyTest, IsConditionalMediationAvailable) {
+  // We can't autofill credentials over the request proxy. Hence, conditional
+  // mediation is unavailable, even if IsUVPAA returns true.
   NavigateAndCommit(GURL(kTestOrigin1));
-  mojo::Remote<blink::mojom::Authenticator> authenticator =
-      ConnectToAuthenticator();
-  TestIsUvpaaCallback cb;
-  authenticator->IsConditionalMediationAvailable(cb.callback());
-  cb.WaitForCallback();
-  EXPECT_FALSE(cb.value());
-  EXPECT_EQ(request_proxy().observations().num_isuvpaa, 0u);
+
+  // Ensure there is no test override set and we're testing the real
+  // implementation.
+  ASSERT_EQ(test_client_.GetTestWebAuthenticationDelegate()->is_uvpaa_override,
+            absl::nullopt);
+
+  // Proxy says `IsUVPAA()` is true.
+  request_proxy().config().is_uvpaa = true;
+  EXPECT_TRUE(AuthenticatorIsUvpaa());
+  EXPECT_EQ(request_proxy().observations().num_isuvpaa, 1u);
+
+  // But `IsConditionalMediationAvailable()` still returns false, bypassing the
+  // proxy.
+  EXPECT_FALSE(AuthenticatorIsConditionalMediationAvailable());
+  EXPECT_EQ(request_proxy().observations().num_isuvpaa, 1u);
 }
 
 TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredential) {
@@ -9934,6 +9930,40 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, GetAssertion_Timeout) {
 
   // Proxy should not hold a pending request after cancellation.
   EXPECT_FALSE(request_proxy().HasPendingRequest());
+}
+
+TEST_F(AuthenticatorImplWithRequestProxyTest,
+       VirtualAuthenticatorTakesPrecedence) {
+  // With the virtual authenticator enabled, no requests should hit the proxy.
+  content::AuthenticatorEnvironment::GetInstance()
+      ->EnableVirtualAuthenticatorFor(
+          static_cast<content::RenderFrameHostImpl*>(main_rfh())
+              ->frame_tree_node(),
+          /*enable_ui=*/false);
+  test_client_.GetTestWebAuthenticationDelegate()->is_uvpaa_override = true;
+
+  NavigateAndCommit(GURL(kTestOrigin1));
+  ASSERT_TRUE(
+      request_proxy().IsActive(url::Origin::Create(GURL(kTestOrigin1))));
+
+  {
+    MakeCredentialResult result = AuthenticatorMakeCredential(
+        GetTestPublicKeyCredentialCreationOptions());
+    EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+    EXPECT_EQ(request_proxy().observations().create_requests.size(), 0u);
+  }
+
+  {
+    GetAssertionResult result =
+        AuthenticatorGetAssertion(GetTestPublicKeyCredentialRequestOptions());
+    EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    EXPECT_EQ(request_proxy().observations().get_requests.size(), 0u);
+  }
+
+  EXPECT_TRUE(AuthenticatorIsUvpaa());
+  EXPECT_EQ(request_proxy().observations().num_isuvpaa, 0u);
+  EXPECT_TRUE(AuthenticatorIsConditionalMediationAvailable());
+  EXPECT_EQ(request_proxy().observations().num_isuvpaa, 0u);
 }
 
 }  // namespace content
