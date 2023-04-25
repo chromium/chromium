@@ -833,6 +833,27 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       {"keyboardAccentMarksSubLabel",
        IDS_SETTINGS_KEYBOARD_ACCENT_MARKS_SUB_LABEL},
       {"noKeyboardsConnected", IDS_SETTINGS_KEYBOARD_NO_KEYBOARDS_HELP_MESSAGE},
+      {"perDeviceKeyboardKeyAlt",
+       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_LEFT_ALT},
+      {"perDeviceKeyboardKeyAssistant",
+       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_ASSISTANT},
+      {"perDeviceKeyboardKeyBackspace",
+       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_BACKSPACE},
+      {"perDeviceKeyboardKeyCapsLock",
+       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_CAPS_LOCK},
+      {"perDeviceKeyboardKeyCommand",
+       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_COMMAND},
+      {"perDeviceKeyboardKeyCtrl",
+       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_LEFT_CTRL},
+      {"perDeviceKeyboardKeyDisabled",
+       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_DISABLED},
+      {"perDeviceKeyboardKeyEscape",
+       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_ESCAPE},
+      {"perDeviceKeyboardKeyExternalMeta",
+       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_EXTERNAL_META},
+      {"perDeviceKeyboardKeySearch",
+       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_SEARCH},
+
   };
   html_source->AddLocalizedStrings(keyboard_strings);
 

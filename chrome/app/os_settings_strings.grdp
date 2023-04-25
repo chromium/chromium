@@ -4836,6 +4836,36 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_KEYBOARD_NO_KEYBOARDS_HELP_MESSAGE" desc="In Keyboard remap keys subpage, the message that notifies users that no keyboards are connected.">
     No keyboard detected
   </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_LEFT_ALT" desc="In keyboard remap keys subpage, the label and dropdown list item for the Alt key.">
+    alt
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_ASSISTANT" desc="In keyboard remap keys subpage, the label and dropdown list item for the Assistant key.">
+    assistant
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_BACKSPACE" desc="In keyboard remap keys subpage, the dropdown list item for the Backspace key.">
+    backspace
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_CAPS_LOCK" desc="In keyboard remap keys subpage, the label and dropdown list item for the Caps Lock key.">
+    caps lock
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_LEFT_CTRL" desc="In keyboard remap keys subpage, the label and dropdown list item for the Ctrl key.">
+    ctrl
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_ESCAPE" desc="In keyboard remap keys subpage, the dropdown list item for the Escape key.">
+    escape
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_COMMAND" desc="In keyboard remap keys subpage, the dropdown list item for the external Command key on Apple keyboards when there's no internal keyboard on the device.">
+    command
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_EXTERNAL_META" desc="In keyboard remap keys subpage, the dropdown list item for the external Meta key (Search key on ChromeOS keyboards, and Windows key on Windows keyboards).">
+    external meta
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_SEARCH" desc="In keyboard remap keys subpage, the label and dropdown list item for the Search key.">
+    search
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_DISABLED" desc="In keyboard remap keys subpage, the dropdown list item for a disabled key.">
+    disabled
+  </message>
 
   <!-- Device Keyboard page (OS settings) -->
   <message name="IDS_SETTINGS_KEYBOARD_TITLE" desc="In Device Settings, the title of the keyboard settings subpage.">
