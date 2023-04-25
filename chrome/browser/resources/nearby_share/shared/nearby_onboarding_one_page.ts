@@ -22,6 +22,7 @@ import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
 
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DeviceNameValidationResult, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -35,6 +36,9 @@ const ONE_PAGE_ONBOARDING_SPLASH_LIGHT_ICON =
 
 const ONE_PAGE_ONBOARDING_SPLASH_DARK_ICON =
     'nearby-images:nearby-onboarding-splash-dark';
+
+const ONE_PAGE_ONBOARDING_SPLASH_JELLY_ICON =
+    'nearby-images:nearby-onboarding-splash-jelly';
 
 export interface NearbyOnboardingOnePageElement {
   $: {
@@ -72,12 +76,25 @@ export class NearbyOnboardingOnePageElement extends
         type: Boolean,
         value: false,
       },
+
+      /**
+       * Return true if the Jelly feature flag is enabled.
+       */
+      isJellyEnabled_: {
+        type: Boolean,
+        readOnly: true,
+        value() {
+          return loadTimeData.valueExists('isJellyEnabled') &&
+              loadTimeData.getBoolean('isJellyEnabled');
+        },
+      },
     };
   }
 
   errorMessage: string;
   settings: NearbySettings|null;
   private isDarkModeActive_: boolean;
+  private isJellyEnabled_: boolean;
 
   override ready(): void {
     super.ready();
@@ -192,6 +209,9 @@ export class NearbyOnboardingOnePageElement extends
    * Returns the icon based on Light/Dark mode.
    */
   private getOnboardingSplashIcon_(): string {
+    if (this.isJellyEnabled_) {
+      return ONE_PAGE_ONBOARDING_SPLASH_JELLY_ICON;
+    }
     return this.isDarkModeActive_ ? ONE_PAGE_ONBOARDING_SPLASH_DARK_ICON :
                                     ONE_PAGE_ONBOARDING_SPLASH_LIGHT_ICON;
   }
