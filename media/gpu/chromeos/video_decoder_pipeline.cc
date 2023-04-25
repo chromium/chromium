@@ -375,8 +375,9 @@ VideoDecoderPipeline::~VideoDecoderPipeline() {
 
   decoder_weak_this_factory_.InvalidateWeakPtrs();
 
-  // Destroy |frame_converter_| before |main_frame_pool_| because the former may
-  // have a raw pointer to the latter (in the unwrap-frame callback).
+  // Destroy |frame_converter_| before |main_frame_pool_| and |decoder| because
+  // the former may have a raw pointer to the latter (in the unwrap-frame
+  // callback).
   //
   // TODO(andrescj): consider making the unwrap-frame callback work with WeakPtr
   // instead.
@@ -535,6 +536,10 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
   // |decoder_| may be Initialize()d multiple times (e.g. on |config| changes)
   // but can only be created once.
   if (!decoder_ && !create_decoder_function_cb_.is_null()) {
+    // Note: because we std::move(create_decoder_function_cb_), we only reach
+    // this code once. Therefore, we don't need to worry about this assignment
+    // potentially destroying an existing |decoder_| which means we don't have
+    // to call |frame_converter_|->SetUnwrapFrameCB() here.
     decoder_ =
         std::move(create_decoder_function_cb_)
             .Run(media_log_->Clone(), decoder_task_runner_, decoder_weak_this_);
@@ -553,7 +558,13 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
     MailboxVideoFrameConverter::UnwrapFrameCB unwrap_frame_cb;
 
     if (uses_oop_video_decoder_) {
-      // TODO(b/277832201): provide an |unwrap_frame_cb| for the OOP-VD path.
+      // Note: base::Unretained() is safe because either a) |decoder_| outlives
+      // the |frame_converter_| or b) we call
+      // |frame_converter_|->set_unwrap_frame_cb() with a null UnwrapFrameCB
+      // before destroying |decoder_|.
+      unwrap_frame_cb = base::BindRepeating(
+          &OOPVideoDecoder::UnwrapFrame,
+          base::Unretained(static_cast<OOPVideoDecoder*>(decoder_.get())));
     } else {
       CHECK(main_frame_pool_);
       PlatformVideoFramePool* platform_video_frame_pool =
@@ -605,6 +616,9 @@ void VideoDecoderPipeline::OnInitializeDone(InitCB init_cb,
     MEDIA_LOG(ERROR, media_log_)
         << "VideoDecoderPipeline |decoder_| Initialize() failed, status: "
         << static_cast<int>(status.code());
+    if (frame_converter_) {
+      frame_converter_->set_unwrap_frame_cb(base::NullCallback());
+    }
     decoder_ = nullptr;
   }
   MEDIA_LOG(INFO, media_log_)
@@ -614,6 +628,9 @@ void VideoDecoderPipeline::OnInitializeDone(InitCB init_cb,
   if (decoder_ && decoder_->NeedsTranscryption()) {
     if (!cdm_context) {
       VLOGF(1) << "CdmContext required for transcryption";
+      if (frame_converter_) {
+        frame_converter_->set_unwrap_frame_cb(base::NullCallback());
+      }
       decoder_ = nullptr;
       status = DecoderStatus::Codes::kUnsupportedEncryptionMode;
     } else {

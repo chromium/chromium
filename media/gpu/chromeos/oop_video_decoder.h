@@ -29,6 +29,11 @@ class MojoDecoderBufferWriter;
 // Proxy video decoder that connects with an out-of-process
 // video decoder via Mojo. This class should be operated and
 // destroyed on |decoder_task_runner_|.
+//
+// TODO(b/195769334): this class (or most of it) would be unnecessary if the
+// MailboxVideoFrameConverter lived together with the remote decoder in the same
+// process. Then, clients can communicate with that process without the GPU
+// process acting as a proxy.
 class OOPVideoDecoder : public VideoDecoderMixin,
                         public stable::mojom::VideoDecoderClient,
                         public stable::mojom::MediaLog {
@@ -93,6 +98,8 @@ class OOPVideoDecoder : public VideoDecoderMixin,
 
   // stable::mojom::MediaLog implementation.
   void AddLogRecord(const MediaLogRecord& event) final;
+
+  VideoFrame* UnwrapFrame(const VideoFrame& wrapped_frame);
 
  private:
   OOPVideoDecoder(std::unique_ptr<media::MediaLog> media_log,
@@ -202,6 +209,23 @@ class OOPVideoDecoder : public VideoDecoderMixin,
   // This is to indicate we should perform transcryption before sending the data
   // to the video decoder utility process.
   bool needs_transcryption_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+  // |received_id_to_decoded_frame_map_| and
+  // |generated_id_to_decoded_frame_map_| are maps that allow us to recycle
+  // buffers safely. In the absence of them, the MailboxVideoFrameConverter
+  // would create a SharedImage for every single incoming frame, and it would
+  // destroy the SharedImage every time the client returns the decoded frame. To
+  // avoid this churn, every time we get a decoded frame from the remote
+  // decoder, we check if we already know about the underlying buffer by looking
+  // it up in |received_id_to_decoded_frame_map_|. If we do, we re-use it for
+  // the next stage in the pipeline. If we don't know about it, we insert it in
+  // |received_id_to_decoded_frame_map_| and we change the GpuMemoryBufferId of
+  // the incoming buffer to guarantee its uniqueness within the GPU process (at
+  // least among all clients of media::GetNextGpuMemoryBufferId()).
+  base::flat_map<gfx::GpuMemoryBufferId, scoped_refptr<VideoFrame>>
+      received_id_to_decoded_frame_map_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::flat_map<gfx::GpuMemoryBufferId, VideoFrame*>
+      generated_id_to_decoded_frame_map_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -11,7 +11,9 @@
 #include "chromeos/components/cdm_factory_daemon/stable_cdm_context_impl.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/format_utils.h"
+#include "media/base/video_util.h"
 #include "media/gpu/buffer_validation.h"
+#include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -85,14 +87,12 @@ namespace {
 constexpr size_t kTimestampCacheSize = 128;
 
 // Converts |mojo_frame| to a media::VideoFrame after performing some
-// validation. The reason we do validation/conversion here and not in mojo
+// validation. The reason we do validation/conversion here and not in the mojo
 // traits is that we don't want every incoming stable::mojom::VideoFrame to
 // result in a media::VideoFrame: we'd like to re-use buffers based on the
 // incoming |mojo_frame|->gpu_memory_buffer_handle.id; if that incoming
-// |mojo_frame| is a frame that we already know about, we can reduce the
+// |mojo_frame| is a frame that we already know about, we can re-use the
 // underlying buffer without creating a media::VideoFrame.
-//
-// TODO(b/277832201): actually re-use buffers.
 scoped_refptr<VideoFrame> MojoVideoFrameToMediaVideoFrame(
     stable::mojom::VideoFramePtr mojo_frame) {
   if (!VerifyGpuMemoryBufferHandle(mojo_frame->format, mojo_frame->coded_size,
@@ -108,6 +108,8 @@ scoped_refptr<VideoFrame> MojoVideoFrameToMediaVideoFrame(
                 "gfx::BufferFormat";
     return nullptr;
   }
+
+  mojo_frame->gpu_memory_buffer_handle.id = GetNextGpuMemoryBufferId();
 
   gpu::GpuMemoryBufferSupport support;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
@@ -863,25 +865,106 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
     return;
   }
 
-  scoped_refptr<VideoFrame> gmb_frame =
-      MojoVideoFrameToMediaVideoFrame(std::move(frame));
-  if (!gmb_frame) {
+  // What follows is all the logic necessary to recycle buffers safely.
+  //
+  // Note that the way we track buffers is with the gfx::GpuMemoryBufferId. In
+  // theory, this should uniquely identify GpuMemoryBuffers. In practice, we
+  // can't trust what comes from the remote decoder. A malicious decoder could
+  // send us two GpuMemoryBuffers that have the same gfx::GpuMemoryBufferId but
+  // actually refer to different dma-bufs. The solution to this is that we
+  // assume that the remote decoder is telling the truth in a sense: if we
+  // receive an incoming buffer with a gfx::GpuMemoryBufferId that we already
+  // know about (by looking it up in |received_id_to_decoded_frame_map_|), we
+  // will re-use the buffer that we know about and ignore the incoming one. The
+  // goal with the rest of the logic below is that if this assumption is
+  // violated, the worst case is a visually incorrect output but not a security
+  // problem.
+  //
+  // When something like a resolution change happens, we assume that the remote
+  // decoder recreated its pool of buffers. Therefore, in those cases we can
+  // forget about all known frames since we shouldn't see those buffers again.
+  // In order to detect those cases, we replicate the logic from
+  // PlatformVideoFramePool::IsSameFormat_Locked().
+  const VideoPixelFormat format = frame->format;
+  const gfx::Size coded_size = frame->coded_size;
+  const gfx::Rect visible_rect = frame->visible_rect;
+  const gfx::Size natural_size = frame->natural_size;
+  const gfx::ColorSpace color_space = frame->color_space;
+  const absl::optional<gfx::HDRMetadata> hdr_metadata = frame->hdr_metadata;
+  const VideoFrameMetadata metadata = frame->metadata;
+  const gfx::GpuMemoryBufferId received_gmb_id =
+      frame->gpu_memory_buffer_handle.id;
+  if (!received_id_to_decoded_frame_map_.empty()) {
+    // It doesn't matter which frame we pick to calculate the current state. All
+    // of them should yield the same result.
+    const VideoPixelFormat current_format =
+        received_id_to_decoded_frame_map_.cbegin()->second->format();
+    const gfx::Size& current_coded_size =
+        received_id_to_decoded_frame_map_.cbegin()->second->coded_size();
+    const gfx::Size& current_visible_rect_size_from_origin =
+        GetRectSizeFromOrigin(
+            received_id_to_decoded_frame_map_.cbegin()->second->visible_rect());
+    const bool currently_uses_protected =
+        received_id_to_decoded_frame_map_.cbegin()
+            ->second->metadata()
+            .hw_protected;
+
+    if (format != current_format || coded_size != current_coded_size ||
+        GetRectSizeFromOrigin(visible_rect) !=
+            current_visible_rect_size_from_origin ||
+        metadata.hw_protected != currently_uses_protected) {
+      received_id_to_decoded_frame_map_.clear();
+      generated_id_to_decoded_frame_map_.clear();
+    }
+  }
+
+  scoped_refptr<VideoFrame> frame_to_wrap;
+  auto decoded_frame_it =
+      received_id_to_decoded_frame_map_.find(received_gmb_id);
+  if (decoded_frame_it != received_id_to_decoded_frame_map_.end()) {
+    frame_to_wrap = decoded_frame_it->second;
+    CHECK_EQ(frame_to_wrap->format(), format);
+    CHECK_EQ(frame_to_wrap->coded_size(), coded_size);
+    CHECK_EQ(GetRectSizeFromOrigin(frame_to_wrap->visible_rect()),
+             GetRectSizeFromOrigin(visible_rect));
+    CHECK_EQ(frame_to_wrap->metadata().hw_protected, metadata.hw_protected);
+  } else {
+    scoped_refptr<VideoFrame> gmb_frame =
+        MojoVideoFrameToMediaVideoFrame(std::move(frame));
+    if (!gmb_frame) {
+      Stop();
+      return;
+    }
+    received_id_to_decoded_frame_map_[received_gmb_id] = gmb_frame;
+    generated_id_to_decoded_frame_map_[gmb_frame->GetGpuMemoryBuffer()
+                                           ->GetId()] = gmb_frame.get();
+    frame_to_wrap = std::move(gmb_frame);
+  }
+
+  scoped_refptr<VideoFrame> wrapped_frame = VideoFrame::WrapVideoFrame(
+      frame_to_wrap, format, visible_rect, natural_size);
+  if (!wrapped_frame) {
+    VLOGF(2) << "Could not wrap the GpuMemoryBuffer-backed VideoFrame";
     Stop();
     return;
   }
-  gmb_frame->set_timestamp(real_timestamp);
+
+  wrapped_frame->set_timestamp(real_timestamp);
+  wrapped_frame->set_color_space(color_space);
+  wrapped_frame->set_hdr_metadata(hdr_metadata);
+  wrapped_frame->set_metadata(metadata);
 
   // The destruction observer will be called after the client releases the
   // video frame. base::BindPostTaskToCurrentDefault() is used to make sure that
   // the WeakPtr is dereferenced on the correct sequence.
-  gmb_frame->AddDestructionObserver(base::BindPostTaskToCurrentDefault(
+  wrapped_frame->AddDestructionObserver(base::BindPostTaskToCurrentDefault(
       base::BindOnce(&OOPVideoDecoder::ReleaseVideoFrame,
                      weak_this_factory_.GetWeakPtr(), release_token)));
 
   can_read_without_stalling_ = can_read_without_stalling;
 
   if (output_cb_)
-    output_cb_.Run(std::move(gmb_frame));
+    output_cb_.Run(std::move(wrapped_frame));
 }
 
 void OOPVideoDecoder::OnWaiting(WaitingReason reason) {
@@ -914,6 +997,16 @@ void OOPVideoDecoder::AddLogRecord(const MediaLogRecord& event) {
   // can't trust anything coming from the remote decoder.
   // if (media_log_)
   //   media_log_->AddLogRecord(std::make_unique<media::MediaLogRecord>(event));
+}
+
+VideoFrame* OOPVideoDecoder::UnwrapFrame(const VideoFrame& wrapped_frame) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CHECK(wrapped_frame.HasGpuMemoryBuffer());
+  auto it = generated_id_to_decoded_frame_map_.find(
+      wrapped_frame.GetGpuMemoryBuffer()->GetId());
+  return (it == generated_id_to_decoded_frame_map_.end()) ? nullptr
+                                                          : it->second;
 }
 
 }  // namespace media

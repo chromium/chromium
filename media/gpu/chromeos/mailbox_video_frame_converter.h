@@ -185,18 +185,31 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
   // Invoked when any error occurs. |msg| is the error message.
   void OnError(const base::Location& location, const std::string& msg);
 
-  // In DmabufVideoFramePool, we recycle the unused frames. To do that, each
-  // time a frame is requested from the pool it is wrapped inside another frame.
-  // A destruction callback is then added to this wrapped frame to automatically
-  // return it to the pool upon destruction. Unfortunately this means that a new
-  // frame is returned each time, and we need a way to uniquely identify the
-  // underlying frame to avoid converting the same frame multiple times.
-  // |unwrap_frame_cb_| is used to get the origin frame.
+  // In DmabufVideoFramePool and OOPVideoDecoder, we recycle the unused frames.
+  // This is done a bit differently for each case:
+  //
+  // - For DmabufVideoFramePool: each time a frame is requested from the pool it
+  //   is wrapped inside another frame. A destruction callback is then added to
+  //   this wrapped frame to automatically return it to the pool upon
+  //   destruction.
+  //
+  // - For OOPVideoDecoder: each time we receive a frame from the remote
+  //   decoder, we look it up in a cache of known, previously received buffers
+  //   (or insert it into this cache if it's a new buffer). We wrap the known or
+  //   new frame inside another frame. A destruction callback is then added to
+  //   this wrapped frame to automatically notify the remote decoder that it can
+  //   re-use the underlying buffer upon destruction.
+  //
+  // Unfortunately this means that a new frame is returned each time (i.e., we
+  // receive a new VideoFrame::unique_id() each time) and we need a way to
+  // uniquely identify the underlying frame to avoid converting the same frame
+  // multiple times. |unwrap_frame_cb_| is used to get the underlying frame.
   //
   // When |unwrap_frame_cb_| is null, we assume it's not necessary to unwrap
-  // incoming VideoFrames, and we just use them directly. This is the case for
-  // out-of-process video decoding in which the frames don't come from a
-  // DmabufVideoFramePool inside the GPU process.
+  // incoming VideoFrames, and we just use them directly.
+  //
+  // TODO(b/195769334): remove the null |unwrap_frame_cb_| path because it
+  // shouldn't be used after https://crrev.com/c/4457504.
   UnwrapFrameCB unwrap_frame_cb_;
 
   const scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
