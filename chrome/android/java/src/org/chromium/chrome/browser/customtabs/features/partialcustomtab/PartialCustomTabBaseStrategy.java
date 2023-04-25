@@ -202,8 +202,8 @@ public abstract class PartialCustomTabBaseStrategy
         attrs.y = 0;
         attrs.x = 0;
         mActivity.getWindow().setAttributes(attrs);
-        updateShadowOffset();
         if (shouldDrawDividerLine()) resetCoordinatorLayoutInsets();
+        setTopMargins(0, 0);
         maybeInvokeResizeCallback();
     }
 
@@ -212,8 +212,8 @@ public abstract class PartialCustomTabBaseStrategy
         // |mNavbarHeight| is zero now. Post the task instead.
         new Handler().post(() -> {
             initializeSize();
-            updateShadowOffset();
             if (shouldDrawDividerLine()) drawDividerLine();
+            updateShadowOffset();
             maybeInvokeResizeCallback();
         });
     }
