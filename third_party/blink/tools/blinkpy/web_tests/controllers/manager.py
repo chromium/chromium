@@ -46,7 +46,6 @@ import sys
 import time
 
 from blinkpy.common import exit_codes
-from blinkpy.common.net.file_uploader import FileUploader
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.tool import grammar
 from blinkpy.web_tests.controllers.test_result_sink import CreateTestResultSink
@@ -213,8 +212,6 @@ class Manager(object):
             self._write_json_files(summarized_full_results,
                                    summarized_failing_results, initial_results,
                                    running_all_tests, run_histories)
-
-            self._upload_json_files()
 
             self._copy_results_html_file(self._artifacts_directory,
                                          'results.html')
@@ -682,46 +679,6 @@ class Manager(object):
                 self._options.write_run_histories_to)
 
         _log.debug('Finished writing JSON files.')
-
-    def _upload_json_files(self):
-        if not self._options.test_results_server:
-            return
-
-        if not self._options.master_name:
-            _log.error(
-                '--test-results-server was set, but --master-name was not.  Not uploading JSON files.'
-            )
-            return
-
-        _log.debug('Uploading JSON files for builder: %s',
-                   self._options.builder_name)
-        attrs = [('builder', self._options.builder_name),
-                 ('testtype', self._options.step_name),
-                 ('master', self._options.master_name)]
-
-        files = [
-            (name, self._filesystem.join(self._artifacts_directory, name))
-            for name in
-            ['failing_results.json', 'full_results.json', 'times_ms.json']
-        ]
-
-        url = 'https://%s/testfile/upload' % self._options.test_results_server
-        # Set uploading timeout in case appengine server is having problems.
-        # 120 seconds are more than enough to upload test results.
-        uploader = FileUploader(url, 120)
-        try:
-            response = uploader.upload_as_multipart_form_data(
-                self._filesystem, files, attrs)
-            if response:
-                if response.code == 200:
-                    _log.debug('JSON uploaded.')
-                else:
-                    _log.debug('JSON upload failed, %d: "%s"', response.code,
-                               response.read())
-            else:
-                _log.error('JSON upload failed; no response returned')
-        except IOError as err:
-            _log.error('Upload failed: %s', err)
 
     def _copy_results_html_file(self, destination_dir, filename):
         """Copies a file from the template directory to the results directory."""
