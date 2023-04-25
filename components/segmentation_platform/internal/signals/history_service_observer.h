@@ -43,7 +43,7 @@ class HistoryServiceObserver : public history::HistoryServiceObserver {
 
   // Sets the list of segment IDs that are based on history data.
   virtual void SetHistoryBasedSegments(
-      base::flat_set<proto::SegmentId>&& history_based_segments);
+      base::flat_set<proto::SegmentId> history_based_segments);
 
  private:
   void DeleteResultsForHistoryBasedSegments();

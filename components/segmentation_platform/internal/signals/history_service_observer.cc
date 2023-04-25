@@ -70,7 +70,7 @@ void HistoryServiceObserver::OnURLsDeleted(
 }
 
 void HistoryServiceObserver::SetHistoryBasedSegments(
-    base::flat_set<proto::SegmentId>&& history_based_segments) {
+    base::flat_set<proto::SegmentId> history_based_segments) {
   history_based_segments_ = std::move(history_based_segments);
   // If a delete is pending, clear the results now.
   if (pending_deletion_based_on_history_based_segments_) {

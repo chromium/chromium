@@ -49,7 +49,7 @@ constexpr UkmMetricHash TestMetric(uint64_t val) {
 class MockHistoryObserver : public HistoryServiceObserver {
  public:
   MOCK_METHOD1(SetHistoryBasedSegments,
-               void(base::flat_set<proto::SegmentId>&& history_based_segments));
+               void(base::flat_set<proto::SegmentId> history_based_segments));
 };
 
 // Noop version. For database calls, just passes the calls to the DB.
