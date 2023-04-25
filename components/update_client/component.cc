@@ -1039,13 +1039,9 @@ void Component::StateDownloadingDiff::DoHandle() {
 void Component::StateDownloadingDiff::DownloadProgress(int64_t downloaded_bytes,
                                                        int64_t total_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (downloaded_bytes != -1 && total_bytes != -1)
-    CHECK_LE(downloaded_bytes, total_bytes);
-
   auto& component = Component::State::component();
   component.downloaded_bytes_ = downloaded_bytes;
   component.total_bytes_ = total_bytes;
-
   component.NotifyObservers(Events::COMPONENT_UPDATE_DOWNLOADING);
 }
 
@@ -1115,13 +1111,9 @@ void Component::StateDownloading::DoHandle() {
 void Component::StateDownloading::DownloadProgress(int64_t downloaded_bytes,
                                                    int64_t total_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (downloaded_bytes != -1 && total_bytes != -1)
-    CHECK_LE(downloaded_bytes, total_bytes);
-
   auto& component = Component::State::component();
   component.downloaded_bytes_ = downloaded_bytes;
   component.total_bytes_ = total_bytes;
-
   component.NotifyObservers(Events::COMPONENT_UPDATE_DOWNLOADING);
 }
 
