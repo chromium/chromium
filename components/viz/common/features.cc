@@ -178,6 +178,12 @@ BASE_FEATURE(kCanSkipRenderPassOverlay,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// Allow SkiaRenderer to skip drawing render passes that contain a single
+// RenderPassDrawQuad.
+BASE_FEATURE(kAllowBypassRenderPassQuads,
+             "AllowBypassRenderPassQuads",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // TODO(crbug.com/1357744): Solve the vulkan flakiness issue before enabling
 // this on Linux.
 BASE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip,

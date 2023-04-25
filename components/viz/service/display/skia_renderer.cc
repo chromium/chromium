@@ -11,6 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -29,6 +30,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
+#include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
@@ -147,6 +149,14 @@ unsigned GetCornerAAFlags(const DrawQuad* quad,
   // & with the overall edge_mask to take into account edges that were clipped
   // by the visible rect.
   return mask & edge_mask;
+}
+
+// This is slightly different than Transform::IsPositiveScaleAndTranslation()
+// in that it also allows zero scales. This is because in the common
+// orthographic case the z scale is 0.
+bool Is2dScaleTranslateTransform(const gfx::Transform& transform) {
+  return transform.IsScaleOrTranslation() && transform.rc(0, 0) >= 0.0f &&
+         transform.rc(1, 1) >= 0.0f && transform.rc(2, 2) >= 0.0f;
 }
 
 bool IsExteriorEdge(unsigned corner_mask1, unsigned corner_mask2) {
@@ -1209,11 +1219,8 @@ void SkiaRenderer::DrawQuadInternal(const DrawQuad* quad,
 
   switch (quad->material) {
     case DrawQuad::Material::kAggregatedRenderPass:
-      // RPDQ should only ever be encountered as a top-level quad, not when
-      // bypassing another renderpass
-      DCHECK(rpdq_params == nullptr);
       DrawRenderPassQuad(AggregatedRenderPassDrawQuad::MaterialCast(quad),
-                         params);
+                         rpdq_params, params);
       break;
     case DrawQuad::Material::kDebugBorder:
       // DebugBorders draw directly into the device space, so are not compatible
@@ -1663,13 +1670,7 @@ void SkiaRenderer::DrawQuadParams::ApplyScissor(
   if (draw_region.has_value())
     return;
 
-  // This is slightly different than
-  // gfx::Transform::IsPositiveScaleAndTranslation in that it also allows zero
-  // scales. This is because in the common orthographic case the z scale is 0.
-  if (!content_device_transform.IsScaleOrTranslation() ||
-      content_device_transform.rc(0, 0) < 0.0f ||
-      content_device_transform.rc(1, 1) < 0.0f ||
-      content_device_transform.rc(2, 2) < 0.0f) {
+  if (!Is2dScaleTranslateTransform(content_device_transform)) {
     return;
   }
 
@@ -1751,23 +1752,20 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectlyInternal(
   if (settings_->disable_render_pass_bypassing)
     return nullptr;
 
-  // TODO(michaelludwig) - For now, this only supports opaque, src-over quads
-  // with invertible transforms and simple content (image or color only).
-  // Can only collapse a single tile quad.
-  if (pass->quad_list.size() != 1)
+  // Only supports bypassing render passes with a single child quad and simple
+  // content.
+  if (pass->quad_list.size() != 1) {
     return nullptr;
+  }
 
   // If it there are supposed to be mipmaps, the renderpass must exist
   if (pass->generate_mipmap)
     return nullptr;
 
   const DrawQuad* quad = *pass->quad_list.BackToFrontBegin();
-  // For simplicity in their draw implementations, debug borders, picture quads,
-  // and nested render passes cannot bypass a render pass
-  // (their draw functions do not accept DrawRPDQParams either).
-  // Note: The check for RPDQ is at the end of the function to log whether other
-  // vetoes would prevent optimizing this case.
-  DCHECK_NE(quad->material, DrawQuad::Material::kCompositorRenderPass);
+  // For simplicity in debug border and picture quad draw implementations, don't
+  // bypass a render pass containing those. Their draw functions do not take a
+  // DrawRPDQParams.
   if (quad->material == DrawQuad::Material::kDebugBorder ||
       quad->material == DrawQuad::Material::kPictureContent)
     return nullptr;
@@ -1829,8 +1827,17 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectlyInternal(
 
   if (const auto* render_pass_quad =
           quad->DynamicCast<AggregatedRenderPassDrawQuad>()) {
-    if (render_pass_quad->mask_resource_id())
+    if (render_pass_quad->mask_resource_id()) {
       return nullptr;
+    }
+
+    // Only allow merging render passes containing RenderPassDrawQuads if they
+    // have 2D scale/translate transform. This allows merging clip rects into
+    // a single intermediate coordinate space.
+    if (!Is2dScaleTranslateTransform(
+            render_pass_quad->shared_quad_state->quad_to_target_transform)) {
+      return nullptr;
+    }
 
     const auto nested_render_pass_id = render_pass_quad->render_pass_id;
     auto it = base::ranges::find_if(
@@ -1841,11 +1848,16 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectlyInternal(
 
     DCHECK(it != current_frame()->render_passes_in_draw_order->end());
     const auto& nested_render_pass = *it;
-    if (nested_render_pass->filters.IsEmpty() &&
-        nested_render_pass->backdrop_filters.IsEmpty()) {
-      *is_directly_drawable_with_single_rpdq = true;
+    if (!nested_render_pass->filters.IsEmpty() ||
+        !nested_render_pass->backdrop_filters.IsEmpty()) {
+      return nullptr;
     }
-    return nullptr;
+
+    *is_directly_drawable_with_single_rpdq = true;
+
+    if (!base::FeatureList::IsEnabled(features::kAllowBypassRenderPassQuads)) {
+      return nullptr;
+    }
   }
 
   // The quad type knows how to apply RPDQ filters, and the quad settings can
@@ -1877,14 +1889,15 @@ SkiaRenderer::BypassMode SkiaRenderer::CalculateBypassParams(
   // The bypass quad will be drawn directly, so update |params| and
   // |rpdq_params| to reflect the change of coordinate system and merge settings
   // between the inner and outer quads.
-  SkMatrix rpdq_to_bypass;
   SkMatrix bypass_to_rpdq = gfx::TransformToFlattenedSkMatrix(
       bypass_quad->shared_quad_state->quad_to_target_transform);
-  bool inverted = bypass_to_rpdq.invert(&rpdq_to_bypass);
-  // Invertibility was a requirement for being bypassable.
-  DCHECK(inverted);
 
   if (params->draw_region) {
+    SkMatrix rpdq_to_bypass;
+    bool inverted = bypass_to_rpdq.invert(&rpdq_to_bypass);
+    // Invertibility was a requirement for being bypassable.
+    DCHECK(inverted);
+
     // The draw region was determined by the RPDQ's geometry, so map the
     // quadrilateral to the bypass'ed quad's coordinate space so that BSP
     // splitting is still respected.
@@ -1892,11 +1905,38 @@ SkiaRenderer::BypassMode SkiaRenderer::CalculateBypassParams(
                              std::size(params->draw_region->points));
   }
 
-  // BypassGeometry holds the RenderPassDrawQuad rect and visible_rect, which
-  // are in the bypassed render pass coordinate space, along with the transform
-  // from bypassed render pass to `bypass_quad` coordinate space.
-  rpdq_params->bypass_geometry = DrawRPDQParams::BypassGeometry{
-      bypass_to_rpdq, params->rect, params->visible_rect};
+  if (rpdq_params->bypass_geometry) {
+    // If BypassGeometry is already populated then this is part of a chain of
+    // bypassed render passes. This merges any additional transform and clip
+    // into the first bypassed render pass coordinate space. This is always
+    // possible as RenderPassDrawQuads are only bypassed if they have 2D
+    // scale/translation transform.
+    auto& bypass_geometry = rpdq_params->bypass_geometry.value();
+    gfx::Transform bypass_transform =
+        gfx::SkMatrixToTransform(bypass_geometry.transform);
+    DCHECK(Is2dScaleTranslateTransform(bypass_transform));
+
+    // `bypass_geometry.visible_rect` is in the first bypassed render pass
+    // coordinate space. The last CalculateBypassParams() updated
+    // `params->visible_rect` so it is in the current bypassed render pass
+    // coordinate space. Transform that into the first bypassed render pass
+    // coordinate space and intersect with existing clip there. That way there
+    // is a single intermediate clip entirely in the original bypassed render
+    // pass coordinate space.
+    gfx::RectF bypass_visible_rect =
+        bypass_transform.MapRect(params->visible_rect);
+    bypass_geometry.visible_rect.Intersect(bypass_visible_rect);
+
+    // Update transform so it maps from `bypass_quad` to the first bypassed
+    // render pass coordinate space.
+    bypass_geometry.transform.preConcat(bypass_to_rpdq);
+  } else {
+    // BypassGeometry holds the RenderPassDrawQuad rect and visible_rect, which
+    // are in the bypassed render pass coordinate space, along with the
+    // transform from bypassed render pass to `bypass_quad` coordinate space.
+    rpdq_params->bypass_geometry = DrawRPDQParams::BypassGeometry{
+        bypass_to_rpdq, params->rect, params->visible_rect};
+  }
 
   if (bypass_quad->shared_quad_state->clip_rect) {
     // If bypass_quad->clip_rect isn't empty then normally it would be added to
@@ -2961,10 +3001,14 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
   return rpdq_params;
 }
 
-void SkiaRenderer::DrawRenderPassQuad(const AggregatedRenderPassDrawQuad* quad,
-                                      DrawQuadParams* params) {
+void SkiaRenderer::DrawRenderPassQuad(
+    const AggregatedRenderPassDrawQuad* quad,
+    const DrawRPDQParams* bypassed_rpdq_params,
+    DrawQuadParams* params) {
   TRACE_EVENT0("viz", "SkiaRenderer::DrawRenderPassQuad");
-  DrawRPDQParams rpdq_params = CalculateRPDQParams(quad, params);
+  DrawRPDQParams rpdq_params = bypassed_rpdq_params
+                                   ? *bypassed_rpdq_params
+                                   : CalculateRPDQParams(quad, params);
 
   // |filter_bounds| is the content space bounds that includes any filtered
   // extents. If empty, the draw can be skipped.
@@ -3020,7 +3064,7 @@ void SkiaRenderer::DrawRenderPassQuad(const AggregatedRenderPassDrawQuad* quad,
   // When the RPDQ was needed because of a copy request, it may not require any
   // advanced filtering/effects at which point it's basically a tiled quad.
   if (!rpdq_params.image_filter && !rpdq_params.backdrop_filter &&
-      !rpdq_params.mask_shader) {
+      !rpdq_params.mask_shader && !rpdq_params.bypass_geometry) {
     DCHECK(!MustFlushBatchedQuads(quad, nullptr, *params));
     AddQuadToBatch(content_image.get(), valid_texel_bounds, params);
     return;

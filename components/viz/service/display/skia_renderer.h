@@ -211,12 +211,15 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
                          const TileDrawQuad* quad,
                          const DrawQuadParams* params);
 
-  // RPDQ, DebugBorder and picture quads cannot be batched. They
-  // either are not textures (debug, picture), or it's very likely
-  // the texture will have advanced paint effects (rpdq). Additionally, they do
-  // not support being drawn directly for a pass-through RenderPass.
+  // RenderPass draw quads can only be batch when they aren't bypassed and
+  // don't have any advanced effects (eg. filter).
   void DrawRenderPassQuad(const AggregatedRenderPassDrawQuad* quad,
+                          const DrawRPDQParams* bypassed_rpdq_params,
                           DrawQuadParams* params);
+
+  // DebugBorder and picture quads cannot be batched since they are not
+  // textures. Additionally, they do not support being drawn directly for a
+  // pass-through RenderPass.
   void DrawDebugBorderQuad(const DebugBorderDrawQuad* quad,
                            DrawQuadParams* params);
   void DrawPictureQuad(const PictureDrawQuad* quad, DrawQuadParams* params);
