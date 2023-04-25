@@ -83,8 +83,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           chromeos::PowerManagerClient::Get())),
       user_action_recorder_(std::make_unique<UserActionRecorderImpl>(
           feature_status_provider_.get())),
-      cros_state_message_recorder_(
-          std::make_unique<CrosStateMessageRecorder>()),
+      cros_state_message_recorder_(std::make_unique<CrosStateMessageRecorder>(
+          feature_status_provider_.get())),
       message_receiver_(
           std::make_unique<MessageReceiverImpl>(connection_manager_.get())),
       message_sender_(std::make_unique<MessageSenderImpl>(

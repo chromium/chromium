@@ -168,7 +168,8 @@ class PhoneStatusProcessorTest : public testing::Test {
         icon_decoder_.get()->decoder_delegate_.get());
     app_stream_launcher_data_model_ =
         std::make_unique<AppStreamLauncherDataModel>();
-    cros_state_message_recorder_ = std::make_unique<CrosStateMessageRecorder>();
+    cros_state_message_recorder_ = std::make_unique<CrosStateMessageRecorder>(
+        fake_feature_status_provider_.get());
 
     multidevice_setup::RegisterFeaturePrefs(pref_service_.registry());
   }

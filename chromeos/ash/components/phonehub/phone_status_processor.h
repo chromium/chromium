@@ -61,7 +61,7 @@ class PhoneStatusProcessor
       PrefService* pref_service,
       AppStreamManager* app_stream_manager,
       AppStreamLauncherDataModel* app_stream_launcher_data_model,
-      IconDecoder* icon_decoder,
+      IconDecoder* icon_decoder_,
       CrosStateMessageRecorder* cros_state_message_recorder);
   ~PhoneStatusProcessor() override;
 

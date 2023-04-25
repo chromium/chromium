@@ -290,6 +290,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PhoneHub.InitialPhoneStatusSnapshot.Received"
+    enum="BooleanSuccess" expires_after="2023-10-15">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Measures success rate of Phone Hub PhoneStatusSnapshot processing during a
+    connection session. Emitted when Phone Hub is disconnected.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.InterstitialScreenEvent.{Screen}"
     enum="PhoneHubInterstitialScreenEvent" expires_after="2023-06-11">
   <owner>jonmann@chromium.org</owner>
