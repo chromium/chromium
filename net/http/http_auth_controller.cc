@@ -490,6 +490,17 @@ int HttpAuthController::HandleGenerateTokenResult(int result) {
 
     // Occurs with GSSAPI, if the user has not already logged in.
     case ERR_MISSING_AUTH_CREDENTIALS:
+      // Usually, GSSAPI doesn't allow explicit credentials and the scheme
+      // cannot succeed anymore hence it gets disabled. However, on ChromeOS
+      // it's not the case so we invalidate the current handler and can ask for
+      // explicit credentials later. (See b/260522530).
+      if (!handler_->AllowsExplicitCredentials()) {
+        InvalidateCurrentHandler(INVALIDATE_HANDLER_AND_DISABLE_SCHEME);
+      } else {
+        InvalidateCurrentHandler(INVALIDATE_HANDLER_AND_CACHED_CREDENTIALS);
+      }
+      auth_token_.clear();
+      return OK;
 
     // Can occur with GSSAPI or SSPI if the underlying library reports
     // a permanent error.

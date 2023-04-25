@@ -119,9 +119,12 @@ TEST(HttpAuthControllerTest, PermanentErrors) {
   // Now try an async handler that returns
   // ERR_MISSING_AUTH_CREDENTIALS.  Async and sync handlers invoke
   // different code paths in HttpAuthController when generating
-  // tokens.
+  // tokens. For this particular error the scheme state depends on
+  // the AllowsExplicitCredentials of the handler (which equals true for
+  // the mock handler). If it's true we expect the same behaviour as
+  // for ERR_INVALID_AUTH_CREDENTIALS so we pass SCHEME_IS_ENABLED.
   RunSingleRoundAuthTest(RUN_HANDLER_ASYNC, ERR_MISSING_AUTH_CREDENTIALS, OK,
-                         SCHEME_IS_DISABLED);
+                         SCHEME_IS_ENABLED);
 
   // If a non-permanent error is returned by the handler, then the
   // controller should report it unchanged.

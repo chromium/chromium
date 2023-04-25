@@ -191,10 +191,10 @@ bool HttpAuthHandlerNegotiate::Init(
   }
   // GSSAPI does not provide a way to enter username/password to obtain a TGT,
   // however ChromesOS provides the user an opportunity to enter their
-  // credentials and generate a new TGT on OS level (see b/265922026). If the
+  // credentials and generate a new TGT on OS level (see b/260522530). If the
   // default credentials are not allowed for a particular site
   // (based on allowlist), fall back to a different scheme.
-  if (!AllowsExplicitCredentials() && !AllowsDefaultCredentials()) {
+  if (!AllowsDefaultCredentials()) {
     return false;
   }
 #endif

@@ -158,6 +158,10 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     // or request->CancelAuth() to cancel the login and display the error page.
     // When it does so, the request will be reissued, restarting the sequence
     // of On* callbacks.
+    //
+    // NOTE: If auth_info.scheme is AUTH_SCHEME_NEGOTIATE on ChromeOS, this
+    // method should not call SetAuth(). Instead, it should show ChromeOS
+    // specific UI and cancel the request. (See b/260522530).
     virtual void OnAuthRequired(URLRequest* request,
                                 const AuthChallengeInfo& auth_info);
 

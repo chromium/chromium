@@ -1935,6 +1935,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // before the callback, the request has been canceled and the callback
   // should not be called.
   //
+  // NOTE: For the Negotiate challenge on ChromeOS the credentials are handled
+  // on OS level. In that case CreateLoginDelegate returns nullptr, since the
+  // credentials are not passed to the browser and the authentication
+  // should be cancelled. (See b/260522530).
+  //
   // |auth_required_callback| may not be called reentrantly. If the request may
   // be handled synchronously, CreateLoginDelegate must post the callback to a
   // separate event loop iteration, taking care not to call it if the
