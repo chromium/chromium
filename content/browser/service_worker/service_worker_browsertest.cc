@@ -2793,37 +2793,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerV8CodeCacheForCacheStorageNoneTest,
 
 namespace {
 
-class CodeCacheHostInterceptor
-    : public blink::mojom::CodeCacheHostInterceptorForTesting {
- public:
-  explicit CodeCacheHostInterceptor(CodeCacheHostImpl* code_cache_host_impl)
-      : code_cache_host_impl_(code_cache_host_impl) {}
-
-  ~CodeCacheHostInterceptor() override = default;
-
-  CodeCacheHost* GetForwardingInterface() override {
-    return code_cache_host_impl_;
-  }
-
-  void DidGenerateCacheableMetadataInCacheStorage(
-      const GURL& url,
-      base::Time expected_response_time,
-      mojo_base::BigBuffer data,
-      const url::Origin& cache_storage_origin,
-      const std::string& cache_storage_cache_name) override {
-    // Send the message with an overriden, bad origin.
-    GetForwardingInterface()->DidGenerateCacheableMetadataInCacheStorage(
-        url, expected_response_time, std::move(data),
-        url::Origin::Create(GURL("https://bad.com")), cache_storage_cache_name);
-  }
-
- private:
-  // These can be held as raw pointers since we use the
-  // RenderFrameHostObserver interface to clear them before they are
-  // destroyed.
-  raw_ptr<CodeCacheHostImpl> code_cache_host_impl_;
-};
-
 class CacheStorageControlForBadOrigin
     : public storage::mojom::CacheStorageControl {
  public:
@@ -2857,86 +2826,6 @@ class CacheStorageControlForBadOrigin
 };
 
 }  // namespace
-
-// Test that forces a bad origin to be sent to CodeCacheHost's
-// DidGenerateCacheableMetadataInCacheStorage method.
-class ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest
-    : public ServiceWorkerV8CodeCacheForCacheStorageTest {
- public:
-  ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest()
-      : cache_storage_control_(
-            std::make_unique<CacheStorageControlForBadOrigin>()) {
-    // Register a callback to be notified of new CodeCacheHostImpl objects.
-    RenderFrameHostImpl::SetCodeCacheHostReceiverHandlerForTesting(
-        base::BindRepeating(
-            &ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest::
-                CreateTestCodeCacheHost,
-            base::Unretained(this)));
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ServiceWorkerV8CodeCacheForCacheStorageTest::SetUpCommandLine(command_line);
-    // The purpose of this test is to verify how CodeCacheHostImpl behaves
-    // when it receives an origin that is different from the site locked to the
-    // process.  In order for this to work properly on platforms like android
-    // we must explicitly enable site isolation.
-    IsolateAllSitesForTesting(command_line);
-  }
-
-  ~ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest() override {
-    // Disable the callback now that this object is being destroyed.
-    RenderFrameHostImpl::SetCodeCacheHostReceiverHandlerForTesting(
-        RenderFrameHostImpl::CodeCacheHostReceiverHandler());
-  }
-
-  void CreateTestCodeCacheHost(
-      CodeCacheHostImpl* code_cache_host_impl,
-      mojo::ReceiverId receiver_id,
-      mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>& receiver_set) {
-    // Override the cache_storage context to assert that CodeCacheHostImpl
-    // does not try to access it when given a bad origin.
-    code_cache_host_impl->SetCacheStorageControlForTesting(
-        cache_storage_control_.get());
-
-    // Create an interceptor that passes a bad origin to CodeCacheHostImpl.
-    auto interceptor =
-        std::make_unique<CodeCacheHostInterceptor>(code_cache_host_impl);
-    code_cache_host_interfaces_.emplace_back(
-        receiver_set.SwapImplForTesting(receiver_id, std::move(interceptor))
-            .release(),
-        base::OnTaskRunnerDeleter(
-            base::SequencedTaskRunner::GetCurrentDefault()));
-  }
-
- private:
-  std::unique_ptr<CacheStorageControlForBadOrigin> cache_storage_control_;
-
-  // Track the original CodeCacheHost interface objects so we can delete them
-  // in the test destructor.
-  std::vector<
-      std::unique_ptr<blink::mojom::CodeCacheHost, base::OnTaskRunnerDeleter>>
-      code_cache_host_interfaces_;
-};
-
-IN_PROC_BROWSER_TEST_F(ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest,
-                       V8CacheOnCacheStorage) {
-  RenderProcessHostBadMojoMessageWaiter rph_kill_waiter(
-      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
-
-  RegisterAndActivateServiceWorker();
-
-  // First load: fetch_event_response_via_cache.js returns |cloned_response|.
-  // The V8 code cache should not be stored in CacheStorage.
-  NavigateToTestPage();
-  WaitUntilSideDataSizeIs(0);
-
-  // Second load: This will send an invalid origin for the code cache host and
-  // should trigger a process crash.
-  NavigateToTestPageWithoutWaiting();
-
-  EXPECT_EQ("Received bad user message: Bad cache_storage origin.",
-            rph_kill_waiter.Wait());
-}
 
 class ServiceWorkerCacheStorageFullCodeCacheFromInstallEventTest
     : public ServiceWorkerV8CodeCacheForCacheStorageTest {

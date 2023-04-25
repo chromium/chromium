@@ -104,7 +104,7 @@ void ServiceWorkerCachedMetadataSender::Send(CodeCacheHost* code_cache_host,
   code_cache_host->get()->DidGenerateCacheableMetadataInCacheStorage(
       response_url_, response_time_,
       mojo_base::BigBuffer(base::make_span(data, size)),
-      WebSecurityOrigin(security_origin_), cache_storage_cache_name_);
+      cache_storage_cache_name_);
 }
 
 // static
@@ -113,7 +113,6 @@ void CachedMetadataSender::SendToCodeCacheHost(
     mojom::blink::CodeCacheType code_cache_type,
     WTF::String url,
     base::Time response_time,
-    scoped_refptr<const SecurityOrigin> origin,
     const String& cache_storage_name,
     const uint8_t* data,
     size_t size) {
@@ -126,8 +125,7 @@ void CachedMetadataSender::SendToCodeCacheHost(
   } else {
     code_cache_host->get()->DidGenerateCacheableMetadataInCacheStorage(
         KURL(url), response_time,
-        mojo_base::BigBuffer(base::make_span(data, size)),
-        WebSecurityOrigin(origin), cache_storage_name);
+        mojo_base::BigBuffer(base::make_span(data, size)), cache_storage_name);
   }
 }
 

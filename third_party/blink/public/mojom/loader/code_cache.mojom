@@ -32,11 +32,9 @@ interface CodeCacheHost {
   ClearCodeCacheEntry(CodeCacheType cache_type, url.mojom.Url url);
 
   // Requests that the browser cache |data| for the specified CacheStorage entry.
-  // TODO(https://crbug.com/779444): Verify or remove |cache_storage_origin|.
   // TODO(kinuko): Consider making the renderer-side code directly call into the
   // origin's CacheStoragePtr.
   DidGenerateCacheableMetadataInCacheStorage(
       url.mojom.Url url, mojo_base.mojom.Time expected_response_time,
-      mojo_base.mojom.BigBuffer data, url.mojom.Origin cache_storage_origin,
-      string cache_storage_cache_name);
+      mojo_base.mojom.BigBuffer data, string cache_storage_cache_name);
 };

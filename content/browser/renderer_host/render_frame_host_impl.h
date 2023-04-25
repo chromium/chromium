@@ -2009,9 +2009,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   void CreateCodeCacheHost(
       mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver);
-  void CreateCodeCacheHostWithIsolationKey(
+  void CreateCodeCacheHostWithKeys(
       mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver,
-      const net::NetworkIsolationKey& nik);
+      const net::NetworkIsolationKey& nik,
+      const blink::StorageKey& storage_key);
 
 #if BUILDFLAG(IS_ANDROID)
   void BindNFCReceiver(mojo::PendingReceiver<device::mojom::NFC> receiver);

@@ -200,7 +200,7 @@ void ServiceWorkerHost::CreateCodeCacheHost(
   }
   code_cache_host_receivers_->Add(version_->embedded_worker()->process_id(),
                                   GetNetworkIsolationKey(),
-                                  std::move(receiver));
+                                  GetBucketStorageKey(), std::move(receiver));
 }
 
 void ServiceWorkerHost::CreateBroadcastChannelProvider(

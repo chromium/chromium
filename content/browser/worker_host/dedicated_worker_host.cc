@@ -746,7 +746,7 @@ void DedicatedWorkerHost::CreateCodeCacheHost(
   RenderProcessHost* rph = GetProcessHost();
   code_cache_host_receivers_.Add(rph->GetID(),
                                  isolation_info_.network_isolation_key(),
-                                 std::move(receiver));
+                                 GetStorageKey(), std::move(receiver));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

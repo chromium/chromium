@@ -11239,19 +11239,20 @@ void RenderFrameHostImpl::CreateInstalledAppProvider(
   InstalledAppProviderImpl::Create(*this, std::move(receiver));
 }
 
-void RenderFrameHostImpl::CreateCodeCacheHostWithIsolationKey(
+void RenderFrameHostImpl::CreateCodeCacheHostWithKeys(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver,
-    const net::NetworkIsolationKey& nik) {
+    const net::NetworkIsolationKey& nik,
+    const blink::StorageKey& storage_key) {
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
-  code_cache_host_receivers_.Add(GetProcess()->GetID(), nik,
+  code_cache_host_receivers_.Add(GetProcess()->GetID(), nik, storage_key,
                                  std::move(receiver),
                                  GetCodeCacheHostReceiverHandler());
 }
 
 void RenderFrameHostImpl::CreateCodeCacheHost(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
-  CreateCodeCacheHostWithIsolationKey(std::move(receiver),
-                                      GetNetworkIsolationKey());
+  CreateCodeCacheHostWithKeys(std::move(receiver), GetNetworkIsolationKey(),
+                              storage_key());
 }
 
 void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(
@@ -12939,10 +12940,17 @@ void RenderFrameHostImpl::SendCommitNavigation(
   mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host;
   mojom::CookieManagerInfoPtr cookie_manager_info;
   mojom::StorageInfoPtr storage_info;
-  CreateCodeCacheHostWithIsolationKey(
+
+  // Until the browser is able to compute the origin accurately in all cases
+  // (see https://crbug.com/888079), this is actually just a provisional
+  // `storage_key`. The final storage key is computed by the document loader
+  // taking into account the origin computed by the renderer.
+  auto& code_cache_storage_key = commit_params->storage_key;
+  CreateCodeCacheHostWithKeys(
       code_cache_host.InitWithNewPipeAndPassReceiver(),
       navigation_request->isolation_info_for_subresources()
-          .network_isolation_key());
+          .network_isolation_key(),
+      code_cache_storage_key);
 
   url::Origin origin_to_commit =
       navigation_request->GetOriginToCommit().value();
