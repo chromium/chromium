@@ -69,20 +69,20 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
         (WebApkDetailsForDefaultOfflinePage)fields[i];
     switch (field_id) {
       case WebApkDetailsForDefaultOfflinePage::SHORT_NAME:
-        dict.Set(default_offline::kAppShortName, resource_strings[i]);
+        dict.Set(error_page::kAppShortName, resource_strings[i]);
         break;
       case WebApkDetailsForDefaultOfflinePage::ICON:
         // Converting to GURL is necessary to correctly interpret the data url,
         // in case it contains embedded carriage returns, etc.
-        dict.Set(default_offline::kIconUrl, GURL(resource_strings[i]).spec());
+        dict.Set(error_page::kIconUrl, GURL(resource_strings[i]).spec());
         break;
     }
   }
 
-  dict.Set(default_offline::kMessage,
+  dict.Set(error_page::kMessage,
            l10n_util::GetStringUTF16(IDS_ERRORPAGES_HEADING_YOU_ARE_OFFLINE));
   alternative_error_page_info->alternative_error_page_params = std::move(dict);
-  alternative_error_page_info->resource_id = IDR_WEBAPP_DEFAULT_OFFLINE_HTML;
+  alternative_error_page_info->resource_id = IDR_WEBAPP_ERROR_PAGE_HTML;
   return alternative_error_page_info;
 }
 

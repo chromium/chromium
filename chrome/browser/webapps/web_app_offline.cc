@@ -6,10 +6,14 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -92,6 +96,17 @@ class DefaultOfflineWebContentsObserver : public content::WebContentsObserver {
 }  // namespace
 
 namespace web_app {
+
+#if !BUILDFLAG(IS_ANDROID)
+content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
+    const GURL& url,
+    content::RenderFrameHost* render_frame_host,
+    content::BrowserContext* browser_context) {
+  return ConstructWebAppErrorPage(
+      url, render_frame_host, browser_context,
+      l10n_util::GetStringUTF16(IDS_ERRORPAGES_HEADING_YOU_ARE_OFFLINE));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void TrackOfflinePageVisibility(content::RenderFrameHost* render_frame_host) {
   if (render_frame_host == nullptr)

@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   // end-to-end test, see WebAppOfflinePageIconShowing in the
   // WebAppOfflinePageTest suite.
   EXPECT_EQ(*info->alternative_error_page_params.Find("icon_url"), "''");
-  EXPECT_EQ(*info->alternative_error_page_params.Find(
-                "web_app_default_offline_message"),
-            "You're offline");
+  EXPECT_EQ(
+      *info->alternative_error_page_params.Find("web_app_error_page_message"),
+      "You're offline");
 }
