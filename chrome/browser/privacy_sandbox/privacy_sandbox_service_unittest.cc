@@ -3641,6 +3641,42 @@ TEST_F(PrivacySandboxServiceM1DelayCreation,
                        prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate));
 }
 
+TEST_F(PrivacySandboxServiceM1DelayCreation,
+       PromptSuppressReasonClearedWhenRestrictedNoticeEnabled) {
+  feature_list()->InitAndEnableFeatureWithParameters(
+      privacy_sandbox::kPrivacySandboxSettings4,
+      {{"restricted-notice", "true"}});
+
+  prefs()->SetInteger(
+      prefs::kPrivacySandboxM1PromptSuppressed,
+      static_cast<int>(
+          PrivacySandboxService::PromptSuppressedReason::kRestricted));
+
+  CreateService();
+
+  EXPECT_EQ(
+      static_cast<int>(PrivacySandboxService::PromptSuppressedReason::kNone),
+      prefs()->GetValue(prefs::kPrivacySandboxM1PromptSuppressed));
+}
+
+TEST_F(PrivacySandboxServiceM1DelayCreation,
+       PromptSuppressReasonNotClearedWhenRestrictedNoticeDisabled) {
+  feature_list()->InitAndEnableFeatureWithParameters(
+      privacy_sandbox::kPrivacySandboxSettings4,
+      {{"restricted-notice", "false"}});
+
+  prefs()->SetInteger(
+      prefs::kPrivacySandboxM1PromptSuppressed,
+      static_cast<int>(
+          PrivacySandboxService::PromptSuppressedReason::kRestricted));
+
+  CreateService();
+
+  EXPECT_EQ(static_cast<int>(
+                PrivacySandboxService::PromptSuppressedReason::kRestricted),
+            prefs()->GetValue(prefs::kPrivacySandboxM1PromptSuppressed));
+}
+
 class PrivacySandboxServiceM1DelayCreationRestricted
     : public PrivacySandboxServiceM1DelayCreation {
  public:

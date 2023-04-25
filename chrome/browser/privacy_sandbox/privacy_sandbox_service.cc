@@ -261,6 +261,15 @@ PrivacySandboxService::PrivacySandboxService(
         prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate);
   }
 
+  // kRestricted prompt suppression reason must be cleared at startup when
+  // restricted notice feature is enabled.
+  if (privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get() &&
+      static_cast<PromptSuppressedReason>(
+          pref_service->GetInteger(prefs::kPrivacySandboxM1PromptSuppressed)) ==
+          PromptSuppressedReason::kRestricted) {
+    pref_service_->ClearPref(prefs::kPrivacySandboxM1PromptSuppressed);
+  }
+
   // Check for FPS pref init at each startup.
   // TODO(crbug.com/1351327): Remove this logic when most users have run init.
   MaybeInitializeFirstPartySetsPref();
