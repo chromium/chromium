@@ -352,7 +352,8 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
     case WM_EVENT_SNAP_SECONDARY:
       CHECK(event->AsSnapEvent());
       DoTabletSnap(window_state, event->type(),
-                   event->AsSnapEvent()->snap_ratio());
+                   event->AsSnapEvent()->snap_ratio(),
+                   event->AsSnapEvent()->snap_action_source());
       return;
     case WM_EVENT_CYCLE_SNAP_PRIMARY:
       CycleTabletSnap(window_state,
@@ -606,7 +607,8 @@ void TabletModeWindowState::CycleTabletSnap(
   }
   // If |window| can snap in split view, then snap |window| in |snap_position|.
   if (split_view_controller->CanSnapWindow(window)) {
-    split_view_controller->SnapWindow(window, snap_position);
+    split_view_controller->SnapWindow(
+        window, snap_position, WindowSnapActionSource::kKeyboardShortcutToSnap);
     window_state->ReadOutWindowCycleSnapAction(
         snap_position == SplitViewController::SnapPosition::kPrimary
             ? IDS_WM_SNAP_WINDOW_TO_LEFT_ON_SHORTCUT
@@ -617,9 +619,11 @@ void TabletModeWindowState::CycleTabletSnap(
   ShowAppCannotSnapToast();
 }
 
-void TabletModeWindowState::DoTabletSnap(WindowState* window_state,
-                                         WMEventType snap_event_type,
-                                         float snap_ratio) {
+void TabletModeWindowState::DoTabletSnap(
+    WindowState* window_state,
+    WMEventType snap_event_type,
+    float snap_ratio,
+    WindowSnapActionSource snap_action_source) {
   DCHECK(snap_event_type == WM_EVENT_SNAP_PRIMARY ||
          snap_event_type == WM_EVENT_SNAP_SECONDARY);
 
@@ -635,8 +639,7 @@ void TabletModeWindowState::DoTabletSnap(WindowState* window_state,
       snap_event_type == WM_EVENT_SNAP_PRIMARY
           ? WindowStateType::kPrimarySnapped
           : WindowStateType::kSecondarySnapped;
-  window_state->RecordAndResetWindowSnapActionSource(
-      window_state->GetStateType(), new_state_type);
+  window_state->RecordWindowSnapActionSource(snap_action_source);
 
   // A snap WMEvent will put the window in tablet split view.
   split_view_controller->OnWMEvent(window, snap_event_type);
@@ -648,13 +651,12 @@ void TabletModeWindowState::DoTabletSnap(WindowState* window_state,
 void TabletModeWindowState::DoRestore(WindowState* window_state) {
   WindowStateType restore_state = window_state->GetRestoreWindowState();
   if (chromeos::IsSnappedWindowStateType(restore_state)) {
-    window_state->set_snap_action_source(
-        WindowSnapActionSource::kSnapByWindowStateRestore);
     DoTabletSnap(window_state,
                  restore_state == WindowStateType::kPrimarySnapped
                      ? WM_EVENT_SNAP_PRIMARY
                      : WM_EVENT_SNAP_SECONDARY,
-                 chromeos::kDefaultSnapRatio);
+                 chromeos::kDefaultSnapRatio,
+                 WindowSnapActionSource::kSnapByWindowStateRestore);
     return;
   }
 

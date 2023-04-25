@@ -546,7 +546,9 @@ void WindowRestoreController::RestoreStateTypeAndClearLaunchedKey(
         const WindowSnapWMEvent snap_event(
             *state_type == chromeos::WindowStateType::kPrimarySnapped
                 ? WM_EVENT_SNAP_PRIMARY
-                : WM_EVENT_SNAP_SECONDARY);
+                : WM_EVENT_SNAP_SECONDARY,
+            WindowSnapActionSource::
+                kSnapByFullRestoreOrDeskTemplateOrSavedDesk);
         window_state->OnWMEvent(&snap_event);
       }
       if (*state_type == chromeos::WindowStateType::kFloated) {

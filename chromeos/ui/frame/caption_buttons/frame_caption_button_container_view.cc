@@ -813,8 +813,9 @@ void FrameCaptionButtonContainerView::ShowSnapPreview(
 }
 
 void FrameCaptionButtonContainerView::CommitSnap(SnapDirection snap) {
-  SnapController::Get()->CommitSnap(frame_->GetNativeWindow(), snap,
-                                    kDefaultSnapRatio);
+  SnapController::Get()->CommitSnap(
+      frame_->GetNativeWindow(), snap, kDefaultSnapRatio,
+      SnapController::SnapRequestSource::kSnapButton);
 }
 
 MultitaskMenuNudgeController*

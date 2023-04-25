@@ -257,16 +257,19 @@ void MultitaskMenuView::SetSkipMouseOutDelayForTesting(bool val) {
 }
 
 void MultitaskMenuView::SplitButtonPressed(SnapDirection direction) {
-  SnapController::Get()->CommitSnap(window_, direction, kDefaultSnapRatio);
+  SnapController::Get()->CommitSnap(
+      window_, direction, kDefaultSnapRatio,
+      SnapController::SnapRequestSource::kWindowLayoutMenu);
   close_callback_.Run();
   RecordMultitaskMenuActionType(MultitaskMenuActionType::kHalfSplitButton);
 }
 
 void MultitaskMenuView::PartialButtonPressed(SnapDirection direction) {
-  SnapController::Get()->CommitSnap(window_, direction,
-                                    direction == SnapDirection::kPrimary
-                                        ? kTwoThirdSnapRatio
-                                        : kOneThirdSnapRatio);
+  SnapController::Get()->CommitSnap(
+      window_, direction,
+      direction == SnapDirection::kPrimary ? kTwoThirdSnapRatio
+                                           : kOneThirdSnapRatio,
+      SnapController::SnapRequestSource::kWindowLayoutMenu);
   close_callback_.Run();
 
   base::RecordAction(base::UserMetricsAction(

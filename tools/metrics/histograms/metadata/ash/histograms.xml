@@ -6667,8 +6667,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Wm.WindowSnapActionSource" enum="WindowSnapActionSource"
-    expires_after="2023-09-03">
+<histogram name="Ash.Wm.WindowSnapActionSource"
+    enum="DeprecatedWindowSnapActionSource" expires_after="2023-05-03">
+  <obsolete>
+    Deprecated Apr 2023. See the new metrics Ash.Wm.WindowSnapActionSource2.
+  </obsolete>
+  <owner>xdai@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <summary>
+    Emitted when a window is to be snapped. Records different ways for a user to
+    snap a window. Deprecated.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.WindowSnapActionSource2" enum="WindowSnapActionSource"
+    expires_after="2024-04-21">
   <owner>xdai@chromium.org</owner>
   <owner>nupurjain@chromium.org</owner>
   <summary>

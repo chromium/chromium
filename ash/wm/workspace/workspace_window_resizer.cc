@@ -861,18 +861,18 @@ void WorkspaceWindowResizer::CompleteDrag() {
     WMEventType type;
     switch (snap_type_) {
       case SnapType::kPrimary: {
-        window_state()->set_snap_action_source(
-            WindowSnapActionSource::kDragWindowToEdgeToSnap);
         base::RecordAction(base::UserMetricsAction("WindowDrag_MaximizeLeft"));
-        const WindowSnapWMEvent snap_primary_event(WM_EVENT_SNAP_PRIMARY);
+        const WindowSnapWMEvent snap_primary_event(
+            WM_EVENT_SNAP_PRIMARY,
+            WindowSnapActionSource::kDragWindowToEdgeToSnap);
         window_state()->OnWMEvent(&snap_primary_event);
         return;
       }
       case SnapType::kSecondary: {
-        window_state()->set_snap_action_source(
-            WindowSnapActionSource::kDragWindowToEdgeToSnap);
         base::RecordAction(base::UserMetricsAction("WindowDrag_MaximizeRight"));
-        const WindowSnapWMEvent snap_secondary_event(WM_EVENT_SNAP_SECONDARY);
+        const WindowSnapWMEvent snap_secondary_event(
+            WM_EVENT_SNAP_SECONDARY,
+            WindowSnapActionSource::kDragWindowToEdgeToSnap);
         window_state()->OnWMEvent(&snap_secondary_event);
         return;
       }
@@ -1707,20 +1707,20 @@ void WorkspaceWindowResizer::SetWindowStateTypeFromGesture(
     case WindowStateType::kPrimarySnapped:
       if (window_state->CanSnap()) {
         window_state->SetRestoreBoundsInParent(restore_bounds_for_gesture_);
-        window_state->set_snap_action_source(
-            WindowSnapActionSource::kDragWindowToEdgeToSnap);
 
-        const WindowSnapWMEvent event(WM_EVENT_SNAP_PRIMARY);
+        const WindowSnapWMEvent event(
+            WM_EVENT_SNAP_PRIMARY,
+            WindowSnapActionSource::kDragWindowToEdgeToSnap);
         window_state->OnWMEvent(&event);
       }
       break;
     case WindowStateType::kSecondarySnapped:
       if (window_state->CanSnap()) {
         window_state->SetRestoreBoundsInParent(restore_bounds_for_gesture_);
-        window_state->set_snap_action_source(
-            WindowSnapActionSource::kDragWindowToEdgeToSnap);
 
-        const WindowSnapWMEvent event(WM_EVENT_SNAP_SECONDARY);
+        const WindowSnapWMEvent event(
+            WM_EVENT_SNAP_SECONDARY,
+            WindowSnapActionSource::kDragWindowToEdgeToSnap);
         window_state->OnWMEvent(&event);
       }
       break;

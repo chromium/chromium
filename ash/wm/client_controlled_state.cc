@@ -347,17 +347,19 @@ void ClientControlledState::UpdateWindowForTransitionEvents(
                                ? WM_EVENT_SNAP_PRIMARY
                                : WM_EVENT_SNAP_SECONDARY);
 
-      if (event_type == WM_EVENT_RESTORE) {
-        window_state->set_snap_action_source(
-            WindowSnapActionSource::kSnapByWindowStateRestore);
-      }
-      window_state->RecordAndResetWindowSnapActionSource(
-          window_state->GetStateType(), next_state_type);
-
-      // Get the desired window bounds for the snap state.
       const bool is_restoring =
           window_state->window()->GetProperty(aura::client::kIsRestoringKey) ||
           event_type == WM_EVENT_RESTORE;
+      if (is_restoring) {
+        window_state->RecordWindowSnapActionSource(
+            WindowSnapActionSource::kSnapByWindowStateRestore);
+      } else {
+        CHECK(event->IsSnapEvent());
+        window_state->RecordWindowSnapActionSource(
+            static_cast<const WindowSnapWMEvent*>(event)->snap_action_source());
+      }
+
+      // Get the desired window bounds for the snap state.
       // TODO(b/246683799): Investigate why window_state->snap_ratio() can be
       // empty.
       // Use the saved `window_state->snap_ratio()` if restoring, otherwise use
