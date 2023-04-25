@@ -429,7 +429,7 @@ enum class BackForwardNavigationType {
 
 // The HTTP headers associated with the current navigation item. These are nil
 // unless the request was a POST.
-- (NSDictionary*)currentHTTPHeaders {
+- (NSDictionary<NSString*, NSString*>*)currentHTTPHeaders {
   web::NavigationItem* currentItem = self.currentNavItem;
   return currentItem ? currentItem->GetHttpRequestHeaders() : nil;
 }
@@ -653,7 +653,7 @@ enum class BackForwardNavigationType {
   // If there are headers in the current session entry add them to `request`.
   // Headers that would overwrite fields already present in `request` are
   // skipped.
-  NSDictionary* headers = self.currentHTTPHeaders;
+  NSDictionary<NSString*, NSString*>* headers = self.currentHTTPHeaders;
   for (NSString* headerName in headers) {
     if (![request valueForHTTPHeaderField:headerName]) {
       [request setValue:[headers objectForKey:headerName]

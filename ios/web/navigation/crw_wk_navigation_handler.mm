@@ -1363,12 +1363,10 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
     // case insensitive, so it's enough to test the lower case only.
     if ([request valueForHTTPHeaderField:cookieHeaderName]) {
       // Case insensitive search in `headers`.
-      NSSet* cookieKeys = [item->GetHttpRequestHeaders()
-          keysOfEntriesPassingTest:^(id key, id obj, BOOL* stop) {
-            NSString* header = (NSString*)key;
+      NSSet<NSString*>* cookieKeys = [item->GetHttpRequestHeaders()
+          keysOfEntriesPassingTest:^(NSString* key, NSString* obj, BOOL* stop) {
             const BOOL found =
-                [header caseInsensitiveCompare:cookieHeaderName] ==
-                NSOrderedSame;
+                [key caseInsensitiveCompare:cookieHeaderName] == NSOrderedSame;
             *stop = found;
             return found;
           }];

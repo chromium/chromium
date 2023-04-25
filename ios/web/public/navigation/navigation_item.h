@@ -5,6 +5,8 @@
 #ifndef IOS_WEB_PUBLIC_NAVIGATION_NAVIGATION_ITEM_H_
 #define IOS_WEB_PUBLIC_NAVIGATION_NAVIGATION_ITEM_H_
 
+#import <Foundation/Foundation.h>
+
 #include <memory>
 #include <string>
 
@@ -33,6 +35,9 @@ extern const size_t kMaxTitleLength;
 // chain of navigation managed by a NavigationManager.
 class NavigationItem : public base::SupportsUserData {
  public:
+  // Dictionary mapping HTTP header key to their value.
+  using HttpRequestHeaders = NSDictionary<NSString*, NSString*>;
+
   // Creates a new NavigationItem.
   static std::unique_ptr<NavigationItem> Create();
 
@@ -119,15 +124,17 @@ class NavigationItem : public base::SupportsUserData {
   virtual bool HasPostData() const = 0;
 
   // Returns the item's current http request headers.
-  virtual NSDictionary* GetHttpRequestHeaders() const = 0;
+  virtual HttpRequestHeaders* GetHttpRequestHeaders() const = 0;
 
   // Adds headers from `additional_headers` to the item's http request headers.
   // Existing headers with the same key will be overridden.
-  virtual void AddHttpRequestHeaders(NSDictionary* additional_headers) = 0;
+  virtual void AddHttpRequestHeaders(
+      HttpRequestHeaders* additional_headers) = 0;
 
   // Returns the type of the HTTPS upgrade that was applied to this navigation.
   // If the navigation wasn't upgraded to HTTPS, returns kNone.
   virtual HttpsUpgradeType GetHttpsUpgradeType() const = 0;
+
   // Sets the type of the HTTPS upgrade that was applied to this navigation. If
   // no upgrade was applied, should be kNone. This function is called from
   // NavigationManager. Once this value is set, it's never reset. Navigations

@@ -334,7 +334,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     if (destination_url_entered_without_scheme) {
       web_params.https_upgrade_type = web::HttpsUpgradeType::kOmnibox;
     }
-    NSMutableDictionary* combinedExtraHeaders =
+    NSMutableDictionary<NSString*, NSString*>* combinedExtraHeaders =
         [web_navigation_util::VariationHeadersForURL(
             url, self.browserState->IsOffTheRecord()) mutableCopy];
     [combinedExtraHeaders addEntriesFromDictionary:web_params.extra_headers];

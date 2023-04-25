@@ -372,7 +372,7 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
   const BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
 
   // Apply variation header data to the params.
-  NSMutableDictionary* combinedExtraHeaders =
+  NSMutableDictionary<NSString*, NSString*>* combinedExtraHeaders =
       [web_navigation_util::VariationHeadersForURL(webParams.url, isIncognito)
           mutableCopy];
   [combinedExtraHeaders addEntriesFromDictionary:webParams.extra_headers];

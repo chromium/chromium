@@ -62,7 +62,8 @@ extern const char kNavigationItemSerializedRequestHeadersSizeHistogram[];
 @property(nonatomic, assign) base::Time timestamp;
 @property(nonatomic, assign) const std::u16string& title;
 @property(nonatomic, assign) web::UserAgentType userAgentType;
-@property(nonatomic, copy) NSDictionary* HTTPRequestHeaders;
+@property(nonatomic, copy)
+    NSDictionary<NSString*, NSString*>* HTTPRequestHeaders;
 
 @end
 

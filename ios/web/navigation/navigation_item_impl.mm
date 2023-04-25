@@ -36,6 +36,8 @@ static int GetUniqueIDInConstructor() {
 
 namespace web {
 
+using HttpRequestHeaders = NavigationItem::HttpRequestHeaders;
+
 // Value 50 was picked experimentally by examining Chrome for iOS UI. Tab strip
 // on 12.9" iPad Pro trucates the title to less than 50 characters (title that
 // only consists of letters "i"). Tab strip has the biggest surface to fit
@@ -48,14 +50,7 @@ std::unique_ptr<NavigationItem> NavigationItem::Create() {
 }
 
 NavigationItemImpl::NavigationItemImpl()
-    : unique_id_(GetUniqueIDInConstructor()),
-      transition_type_(ui::PAGE_TRANSITION_LINK),
-      user_agent_type_(UserAgentType::NONE),
-      is_created_from_hash_change_(false),
-      should_skip_serialization_(false),
-      navigation_initiation_type_(web::NavigationInitiationType::NONE),
-      is_untrusted_(false),
-      https_upgrade_type_(HttpsUpgradeType::kNone) {}
+    : unique_id_(GetUniqueIDInConstructor()) {}
 
 NavigationItemImpl::~NavigationItemImpl() {
 }
@@ -80,7 +75,9 @@ NavigationItemImpl::NavigationItemImpl(const NavigationItemImpl& item)
       navigation_initiation_type_(item.navigation_initiation_type_),
       is_untrusted_(item.is_untrusted_),
       cached_display_title_(item.cached_display_title_),
-      https_upgrade_type_(item.https_upgrade_type_) {}
+      https_upgrade_type_(item.https_upgrade_type_) {
+  CloneDataFrom(item);
+}
 
 int NavigationItemImpl::GetUniqueID() const {
   return unique_id_;
@@ -205,12 +202,12 @@ bool NavigationItemImpl::HasPostData() const {
   return post_data_ != nil;
 }
 
-NSDictionary* NavigationItemImpl::GetHttpRequestHeaders() const {
+HttpRequestHeaders* NavigationItemImpl::GetHttpRequestHeaders() const {
   return [http_request_headers_ copy];
 }
 
 void NavigationItemImpl::AddHttpRequestHeaders(
-    NSDictionary* additional_headers) {
+    HttpRequestHeaders* additional_headers) {
   if (!additional_headers)
     return;
 
