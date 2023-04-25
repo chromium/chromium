@@ -4532,6 +4532,11 @@
           'inverse_quickrun_shards': 12,
         },
       },
+      'win10-code-coverage': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
     },
   },
   'weblayer_browsertests': {
