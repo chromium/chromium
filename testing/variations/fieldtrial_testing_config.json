@@ -10340,6 +10340,32 @@
             ]
         }
     ],
+    "PriceTrackingPageActionIconLabelFeatureIPH": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "availability": "any",
+                        "event_trigger": "name:price_tracking_page_action_icon_label_in_trigger;comparator:==0;window:1;storage:365",
+                        "event_used": "name:used;comparator:any;window:365;storage:365",
+                        "session_rate": "any"
+                    },
+                    "enable_features": [
+                        "IPH_PriceTrackingPageActionIconLabelFeature"
+                    ],
+                    "disable_features": []
+                }
+            ]
+        }
+    ],
     "PrioritizeCompositingAfterDelay": [
         {
             "platforms": [
