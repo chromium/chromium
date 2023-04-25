@@ -43,6 +43,8 @@ struct H264SliceMetadata {
   // Picture number for picture which is marked as long term as defined in
   // section 7.4.3.1.
   int long_term_pic_num = 0;
+  // The CAPTURE queue index this slice is queued in.
+  int capture_queue_buffer_id = -1;
 };
 
 // H264DPB is a class representing a Decoded Picture Buffer (DPB).
