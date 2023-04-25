@@ -88,7 +88,7 @@ bool LayoutNGSVGForeignObject::CreatesNewFormattingContext() const {
   return true;
 }
 
-void LayoutNGSVGForeignObject::UpdateBlockLayout(bool relayout_children) {
+void LayoutNGSVGForeignObject::UpdateBlockLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 

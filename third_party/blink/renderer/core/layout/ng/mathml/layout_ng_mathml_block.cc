@@ -14,7 +14,7 @@ LayoutNGMathMLBlock::LayoutNGMathMLBlock(Element* element)
     : LayoutNGMixin<LayoutBlock>(element) {
 }
 
-void LayoutNGMathMLBlock::UpdateBlockLayout(bool relayout_children) {
+void LayoutNGMathMLBlock::UpdateBlockLayout() {
   if (IsOutOfFlowPositioned()) {
     UpdateOutOfFlowBlockLayout();
     return;

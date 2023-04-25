@@ -30,7 +30,7 @@ class CORE_EXPORT LayoutNGTableSection : public LayoutNGBlock {
 
   // LayoutBlock methods start.
 
-  void UpdateBlockLayout(bool relayout_children) override {
+  void UpdateBlockLayout() override {
     NOT_DESTROYED();
     NOTREACHED();
   }

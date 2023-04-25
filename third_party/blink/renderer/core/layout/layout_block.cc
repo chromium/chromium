@@ -367,10 +367,7 @@ void LayoutBlock::UpdateLayout() {
   if (needs_scroll_anchoring)
     GetScrollableArea()->GetScrollAnchor()->NotifyBeforeLayout();
 
-  // Table cells call UpdateBlockLayout directly, as does
-  // PaintLayerScrollableArea for nested scrollbar layouts. Most logic should be
-  // in UpdateBlockLayout instead of UpdateLayout.
-  UpdateBlockLayout(false);
+  UpdateBlockLayout();
 
   // It's safe to check for control clip here, since controls can never be table
   // cells. If we have a lightweight clip, there can never be any overflow from
@@ -379,7 +376,7 @@ void LayoutBlock::UpdateLayout() {
     ClearLayoutOverflow();
 }
 
-void LayoutBlock::UpdateBlockLayout(bool) {
+void LayoutBlock::UpdateBlockLayout() {
   NOT_DESTROYED();
   ClearNeedsLayout();
   NOTREACHED_NORETURN();

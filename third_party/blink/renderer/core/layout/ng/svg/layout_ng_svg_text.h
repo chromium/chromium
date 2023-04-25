@@ -67,7 +67,7 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
 
   // LayoutBlock override:
   void Paint(const PaintInfo&) const override;
-  void UpdateBlockLayout(bool relayout_children) override;
+  void UpdateBlockLayout() override;
 
   void UpdateFont();
   void UpdateTransformAffectsVectorEffect();

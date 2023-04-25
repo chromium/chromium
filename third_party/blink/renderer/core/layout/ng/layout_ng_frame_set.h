@@ -19,7 +19,7 @@ class LayoutNGFrameSet final : public LayoutNGBlock {
   bool IsChildAllowed(LayoutObject* child, const ComputedStyle&) const override;
   void AddChild(LayoutObject* new_child, LayoutObject* before_child) override;
   void RemoveChild(LayoutObject* child) override;
-  void UpdateBlockLayout(bool relayout_children) override;
+  void UpdateBlockLayout() override;
   CursorDirective GetCursor(const PhysicalOffset& point,
                             ui::Cursor& cursor) const override;
 };

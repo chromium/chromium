@@ -33,12 +33,12 @@ bool LayoutNGView::IsFragmentationContextRoot() const {
   return ShouldUsePrintingLayout();
 }
 
-void LayoutNGView::UpdateBlockLayout(bool relayout_children) {
-  relayout_children |=
-      !ShouldUsePrintingLayout() &&
+void LayoutNGView::UpdateBlockLayout() {
+  bool invalidate_svg_roots =
+      GetDocument().SvgExtensions() && !ShouldUsePrintingLayout() &&
       (!GetFrameView() || LogicalWidth() != ViewLogicalWidthForBoxSizing() ||
        LogicalHeight() != ViewLogicalHeightForBoxSizing());
-  if (relayout_children && GetDocument().SvgExtensions()) {
+  if (invalidate_svg_roots) {
     GetDocument()
         .AccessSVGExtensions()
         .InvalidateSVGRootsWithRelativeLengthDescendents();

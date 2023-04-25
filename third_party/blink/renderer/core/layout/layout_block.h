@@ -154,7 +154,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
 
-  virtual void UpdateBlockLayout(bool relayout_children);
+  virtual void UpdateBlockLayout();
 
   void InsertPositionedObject(LayoutBox*);
   static void RemovePositionedObject(LayoutBox*);

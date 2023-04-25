@@ -128,7 +128,7 @@ LayoutNGTable* LayoutNGTableCell::Table() const {
   return nullptr;
 }
 
-void LayoutNGTableCell::UpdateBlockLayout(bool relayout_children) {
+void LayoutNGTableCell::UpdateBlockLayout() {
   NOT_DESTROYED();
 
   if (IsOutOfFlowPositioned()) {

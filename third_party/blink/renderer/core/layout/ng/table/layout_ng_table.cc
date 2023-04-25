@@ -252,7 +252,7 @@ bool LayoutNGTable::HasBackgroundForPaint() const {
   return false;
 }
 
-void LayoutNGTable::UpdateBlockLayout(bool relayout_children) {
+void LayoutNGTable::UpdateBlockLayout() {
   NOT_DESTROYED();
 
   if (IsOutOfFlowPositioned()) {

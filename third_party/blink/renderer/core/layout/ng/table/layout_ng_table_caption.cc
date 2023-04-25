@@ -53,7 +53,7 @@ void LayoutNGTableCaption::CalculateAndSetMargins(
 }
 
 // TODO(1229581): Remove.
-void LayoutNGTableCaption::UpdateBlockLayout(bool relayout_children) {
+void LayoutNGTableCaption::UpdateBlockLayout() {
   NOT_DESTROYED();
 
   DCHECK(!IsOutOfFlowPositioned()) << "Out of flow captions are blockified.";
