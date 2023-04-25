@@ -52,9 +52,10 @@ class PrinterQueryOop : public PrinterQuery {
       std::unique_ptr<PrintSettings> new_settings,
       mojom::ResultCode result);
 #endif
-  void OnDidUpdatePrintSettings(const std::string& device_name,
-                                SettingsCallback callback,
-                                mojom::PrintSettingsResultPtr print_settings);
+  virtual void OnDidUpdatePrintSettings(
+      const std::string& device_name,
+      SettingsCallback callback,
+      mojom::PrintSettingsResultPtr print_settings);
 #if BUILDFLAG(IS_WIN)
   void OnDidGetPaperPrintableArea(PrintSettings* print_settings,
                                   OnDidUpdatePrintableAreaCallback callback,
