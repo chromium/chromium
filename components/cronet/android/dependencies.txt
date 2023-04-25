@@ -18,7 +18,6 @@
 //buildtools/third_party/libc++abi
 //buildtools/third_party/libunwind
 //build/win
-//clank/third_party/google3
 //components/cronet
 //components/cronet/android
 //components/cronet/native
@@ -37,9 +36,7 @@
 //net/dns/public
 //net/http
 //net/third_party/quiche
-//net/tools/huffman_trie
 //net/tools/root_store_tool
-//net/tools/transport_security_state_generator
 //net/traffic_annotation
 //third_party/abseil-cpp
 //third_party/android_deps
@@ -50,7 +47,6 @@
 //third_party/boringssl
 //third_party/boringssl/src/third_party/fiat
 //third_party/brotli
-//third_party/ced
 //third_party/icu
 //third_party/ijar
 //third_party/jdk
