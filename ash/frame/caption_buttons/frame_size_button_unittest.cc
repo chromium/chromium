@@ -696,8 +696,10 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuFloatFunctionality) {
   EXPECT_TRUE(window_state()->IsNormalStateType());
   ui::test::EventGenerator* generator = GetEventGenerator();
   ShowMultitaskMenu();
-  generator->MoveMouseTo(CenterPointInScreen(
-      GetMultitaskMenu()->multitask_menu_view()->float_button_for_testing()));
+  generator->MoveMouseTo(
+      CenterPointInScreen(GetMultitaskMenu()
+                              ->multitask_menu_view_for_testing()
+                              ->float_button_for_testing()));
   generator->ClickLeftButton();
   EXPECT_TRUE(window_state()->IsFloated());
   histogram_tester.ExpectBucketCount(
@@ -712,7 +714,7 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuHalfFunctionality) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   ShowMultitaskMenu();
   generator->MoveMouseTo(GetMultitaskMenu()
-                             ->multitask_menu_view()
+                             ->multitask_menu_view_for_testing()
                              ->half_button_for_testing()
                              ->GetBoundsInScreen()
                              .left_center());
@@ -732,7 +734,7 @@ TEST_F(MultitaskMenuTest, HalfButtonRTL) {
 
   ShowMultitaskMenu();
   GetEventGenerator()->MoveMouseTo(GetMultitaskMenu()
-                                       ->multitask_menu_view()
+                                       ->multitask_menu_view_for_testing()
                                        ->half_button_for_testing()
                                        ->GetBoundsInScreen()
                                        .left_center());
@@ -760,7 +762,7 @@ TEST_F(MultitaskMenuTest, HalfButtonSecondaryLayout) {
   // snapped state, because in this orientation secondary snapped is actually
   // physically on the left side.
   GetEventGenerator()->MoveMouseToInHost(GetMultitaskMenu()
-                                             ->multitask_menu_view()
+                                             ->multitask_menu_view_for_testing()
                                              ->half_button_for_testing()
                                              ->GetBoundsInScreen()
                                              .left_center());
@@ -788,7 +790,7 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
   // Snap to primary with 0.67f screen ratio.
   ShowMultitaskMenu();
   generator->MoveMouseTo(GetMultitaskMenu()
-                             ->multitask_menu_view()
+                             ->multitask_menu_view_for_testing()
                              ->partial_button()
                              ->GetBoundsInScreen()
                              .left_center());
@@ -807,7 +809,7 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
   // Snap to secondary with 0.33f screen ratio.
   ShowMultitaskMenu();
   generator->MoveMouseTo(GetMultitaskMenu()
-                             ->multitask_menu_view()
+                             ->multitask_menu_view_for_testing()
                              ->partial_button()
                              ->GetRightBottomButton()
                              ->GetBoundsInScreen()
@@ -831,8 +833,10 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuFullFunctionality) {
   ASSERT_TRUE(window_state()->IsNormalStateType());
   ui::test::EventGenerator* generator = GetEventGenerator();
   ShowMultitaskMenu();
-  generator->MoveMouseTo(CenterPointInScreen(
-      GetMultitaskMenu()->multitask_menu_view()->full_button_for_testing()));
+  generator->MoveMouseTo(
+      CenterPointInScreen(GetMultitaskMenu()
+                              ->multitask_menu_view_for_testing()
+                              ->full_button_for_testing()));
   generator->ClickLeftButton();
   EXPECT_TRUE(window_state()->IsFullscreen());
   histogram_tester.ExpectBucketCount(
@@ -920,7 +924,7 @@ TEST_F(MultitaskMenuTest, CloseOnClickOutside) {
   // Snap the window to half so we can click outside the window bounds.
   ShowMultitaskMenu();
   GetEventGenerator()->MoveMouseTo(GetMultitaskMenu()
-                                       ->multitask_menu_view()
+                                       ->multitask_menu_view_for_testing()
                                        ->half_button_for_testing()
                                        ->GetBoundsInScreen()
                                        .left_center());
@@ -932,7 +936,7 @@ TEST_F(MultitaskMenuTest, CloseOnClickOutside) {
   ASSERT_TRUE(multitask_menu);
 
   // Click on a point outside the menu on the screen below.
-  gfx::Point offset_point(multitask_menu->multitask_menu_view()
+  gfx::Point offset_point(multitask_menu->multitask_menu_view_for_testing()
                               ->GetBoundsInScreen()
                               .bottom_right());
   offset_point.Offset(10, 10);

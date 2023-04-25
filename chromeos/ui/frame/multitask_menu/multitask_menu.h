@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
   MultitaskMenu& operator=(const MultitaskMenu&) = delete;
   ~MultitaskMenu() override;
 
-  MultitaskMenuView* multitask_menu_view() {
+  MultitaskMenuView* multitask_menu_view_for_testing() {
     return multitask_menu_view_.get();
   }
 

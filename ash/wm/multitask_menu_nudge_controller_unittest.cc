@@ -165,11 +165,11 @@ TEST_F(MultitaskMenuNudgeControllerTest,
   views::NamedWidgetShownWaiter waiter(
       views::test::AnyWidgetTestPasskey{},
       std::string("MultitaskMenuBubbleWidget"));
-  chromeos::FrameSizeButton* size_button =
+  auto* size_button = static_cast<chromeos::FrameSizeButton*>(
       NonClientFrameViewAsh::Get(window.get())
           ->GetHeaderView()
           ->caption_button_container()
-          ->size_button();
+          ->size_button());
   size_button->ShowMultitaskMenu(
       chromeos::MultitaskMenuEntryType::kFrameSizeButtonHover);
   views::WidgetDelegate* delegate =
@@ -178,10 +178,11 @@ TEST_F(MultitaskMenuNudgeControllerTest,
       static_cast<chromeos::MultitaskMenu*>(delegate->AsDialogDelegate());
 
   // After floating the window from the multitask menu, there is no crash.
-  GetEventGenerator()->MoveMouseTo(multitask_menu->multitask_menu_view()
-                                       ->float_button_for_testing()
-                                       ->GetBoundsInScreen()
-                                       .CenterPoint());
+  GetEventGenerator()->MoveMouseTo(
+      multitask_menu->multitask_menu_view_for_testing()
+          ->float_button_for_testing()
+          ->GetBoundsInScreen()
+          .CenterPoint());
   GetEventGenerator()->ClickLeftButton();
   EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
 }
@@ -299,11 +300,11 @@ TEST_F(MultitaskMenuNudgeControllerTest, MenuShown) {
   views::NamedWidgetShownWaiter waiter(
       views::test::AnyWidgetTestPasskey{},
       std::string("MultitaskMenuBubbleWidget"));
-  chromeos::FrameSizeButton* size_button =
+  auto* size_button = static_cast<chromeos::FrameSizeButton*>(
       NonClientFrameViewAsh::Get(window.get())
           ->GetHeaderView()
           ->caption_button_container()
-          ->size_button();
+          ->size_button());
   size_button->ShowMultitaskMenu(
       chromeos::MultitaskMenuEntryType::kFrameSizeButtonHover);
   waiter.WaitIfNeededAndGet();

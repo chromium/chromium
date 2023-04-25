@@ -11,7 +11,6 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
-#include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button_delegate.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
@@ -103,7 +102,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
     raw_ptr<FrameCaptionButtonContainerView> container_view_;
   };
 
-  chromeos::FrameSizeButton* size_button() { return size_button_; }
+  views::FrameCaptionButton* size_button() { return size_button_; }
 
   // Sets whether the buttons should be painted as active. Does not schedule
   // a repaint.
@@ -216,7 +215,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   raw_ptr<views::FrameCaptionButton> close_button_ = nullptr;
 
   // Stored as a `FrameSizeButton` so the multitask menu can be accessed.
-  raw_ptr<chromeos::FrameSizeButton> size_button_ = nullptr;
+  raw_ptr<views::FrameCaptionButton> size_button_ = nullptr;
 
   // Handles showing the educational nudge for the clamshell multitask menu.
   MultitaskMenuNudgeController nudge_controller_;

@@ -123,9 +123,6 @@ class ASH_EXPORT NonClientFrameViewAsh
   // Updates the windows default frame colors if necessary.
   void UpdateDefaultFrameColors() override;
 
-  // Shows a dogfood feedback page for the multitask menu.
-  void ShowFeedbackPageForMenu();
-
   // Generates a nine patch layer painted with a highlight border.
   std::unique_ptr<HighlightBorderOverlay> highlight_border_overlay_;
 

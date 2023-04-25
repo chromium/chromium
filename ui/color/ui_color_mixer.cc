@@ -63,11 +63,6 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorButtonHoverBackgroundText] = {kColorSysStateHoverOnSubtle};
   mixer[kColorCheckboxForegroundUnchecked] = {kColorSecondaryForeground};
   mixer[kColorCheckboxForegroundChecked] = {kColorButtonForeground};
-  mixer[kColorMultitaskFeedbackButtonLabelBackground] = {
-      dark_mode ? SetAlpha(SK_ColorWHITE, 0x1A)
-                : SetAlpha(SK_ColorBLACK, 0x0D)};
-  mixer[kColorMultitaskFeedbackButtonLabelForeground] = {
-      dark_mode ? gfx::kGoogleGrey200 : gfx::kGoogleGrey900};
   mixer[kColorCustomFrameCaptionForeground] = {SK_ColorWHITE};
   mixer[kColorDebugBoundsOutline] = SetAlpha(SK_ColorRED, 0x30);
   mixer[kColorDebugContentOutline] = SetAlpha(SK_ColorBLUE, 0x30);

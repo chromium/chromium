@@ -165,9 +165,6 @@ class BrowserNonClientFrameViewChromeOS
   // Creates the frame header for the browser window.
   std::unique_ptr<chromeos::FrameHeader> CreateFrameHeader();
 
-  // Shows a dogfood feedpage page for the multitask menu.
-  void ShowFeedbackPageForMenu();
-
   // Triggers the web-app origin and icon animations, assumes the web-app UI
   // elements exist.
   void StartWebAppAnimation();

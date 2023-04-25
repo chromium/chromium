@@ -6,10 +6,10 @@
 #define CHROMEOS_UI_FRAME_MULTITASK_MENU_MULTITASK_MENU_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -22,9 +22,7 @@ enum class SnapDirection;
 class MultitaskButton;
 class SplitButtonView;
 
-// Contains buttons which can fullscreen, snap, or float a window. Also
-// contains a separate button to open a dogfood feedback page, to be removed in
-// M114/launch.
+// Contains buttons which can fullscreen, snap, or float a window.
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
     : public views::View,
       public aura::WindowObserver {
@@ -52,12 +50,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
 
   ~MultitaskMenuView() override;
 
-  SplitButtonView* partial_button() { return partial_button_.get(); }
-  views::LabelButton* feedback_button() { return feedback_button_.get(); }
-
   // views::View:
   void AddedToWidget() override;
-  void OnThemeChanged() override;
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* parent_window) override;
@@ -71,6 +65,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   // menu for 3 seconds will result in it auto closing. This function reduces
   // that 3 second dealy to
   static void SetSkipMouseOutDelayForTesting(bool val);
+
+  SplitButtonView* partial_button() { return partial_button_.get(); }
 
   // For testing.
   SplitButtonView* half_button_for_testing() {
@@ -93,9 +89,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   void FloatButtonPressed();
 
   raw_ptr<SplitButtonView> partial_button_ = nullptr;
-  raw_ptr<views::LabelButton> feedback_button_ = nullptr;
 
-  // Saved for testing purpose.
+  // Saved for testing purposes.
   raw_ptr<SplitButtonView> half_button_for_testing_ = nullptr;
   raw_ptr<MultitaskButton> full_button_for_testing_ = nullptr;
   raw_ptr<MultitaskButton> float_button_for_testing_ = nullptr;

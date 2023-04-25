@@ -260,12 +260,9 @@ void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
         /*anchor=*/this, GetWidget(),
         /*close_on_move_out=*/entry_type ==
             MultitaskMenuEntryType::kFrameSizeButtonHover);
-    auto* menu_delegate_ptr = menu_delegate.get();
     multitask_menu_widget_ =
         base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
             std::move(menu_delegate)));
-    menu_delegate_ptr->multitask_menu_view()->feedback_button()->SetCallback(
-        feedback_callback_);
     multitask_menu_widget_->Show();
     delegate_->GetMultitaskMenuNudgeController()->OnMenuOpened(
         /*tablet_mode=*/false);
@@ -280,12 +277,6 @@ void FrameSizeButton::ToggleMultitaskMenu() {
   } else {
     multitask_menu_widget_->Close();
   }
-}
-
-void FrameSizeButton::SetFeedbackButtonCallback(PressedCallback callback) {
-  // Callback cannot be set on the button here as the multitask menu has not
-  // been created yet, so store it for when it does get created.
-  feedback_callback_ = callback;
 }
 
 bool FrameSizeButton::OnMousePressed(const ui::MouseEvent& event) {

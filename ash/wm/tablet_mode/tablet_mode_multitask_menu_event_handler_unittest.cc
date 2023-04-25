@@ -39,9 +39,7 @@ namespace ash {
 namespace {
 
 // The vertical distance used to end drag to show and start drag to hide.
-// TODO(b/267184500): Revert this value back to 100 when the feedback button is
-// removed.
-constexpr int kMenuDragPoint = 110;
+constexpr int kMenuDragPoint = 100;
 
 }  // namespace
 
@@ -252,17 +250,22 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest,
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
+  // Create a larger display so the menu is within the window bounds when split.
+  UpdateDisplay("1600x1000");
+
   auto window1 = CreateTestWindow(gfx::Rect(800, 600));
   PressHalfButton(window1.get(), /*left=*/true);
   auto window2 = CreateTestWindow(gfx::Rect(800, 600));
   PressHalfButton(window2.get(), /*left=*/false);
 
-  // Start swipe down on the left window, then swap to the right window. Note
-  // that `end_y` must be less than the menu height, to start an animation.
+  // Start swipe down on the left window, then swap to the right window. Swipe
+  // distance must be less than the menu height to start an animation.
   gfx::Rect left_bounds(window1->bounds());
-  GenerateScroll(left_bounds.CenterPoint().x(), 0, /*end_y=*/150);
+  GenerateScroll(left_bounds.CenterPoint().x(), 0,
+                 /*end_y=*/kMenuDragPoint);
   gfx::Rect right_bounds(window2->bounds());
-  GenerateScroll(right_bounds.CenterPoint().x(), 0, /*end_y=*/150);
+  GenerateScroll(right_bounds.CenterPoint().x(), 0,
+                 /*end_y=*/kMenuDragPoint);
   EXPECT_TRUE(window2->GetBoundsInScreen().Contains(
       GetMultitaskMenu()->widget()->GetWindowBoundsInScreen()));
 
@@ -270,8 +273,8 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest,
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->PressTouchId(0, gfx::Point(left_bounds.CenterPoint().x(), 0));
   generator->PressTouchId(1, gfx::Point(right_bounds.CenterPoint().x(), 0));
-  generator->MoveTouchId(gfx::Point(0, 150), 0);
-  generator->MoveTouchId(gfx::Point(0, 150), 1);
+  generator->MoveTouchId(gfx::Point(0, kMenuDragPoint), 0);
+  generator->MoveTouchId(gfx::Point(0, kMenuDragPoint), 1);
 }
 
 // Tests that the multitask menu cannot be shown while in pinned state.

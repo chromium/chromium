@@ -10,15 +10,12 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
-#include "ash/shell.h"
-#include "ash/shell_delegate.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/system_shadow.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
 #include "ash/wm/window_state.h"
-#include "base/functional/bind.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
@@ -31,7 +28,7 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/highlight_border.h"
-#include "ui/views/layout/table_layout.h"
+#include "ui/views/layout/box_layout.h"
 
 namespace ash {
 
@@ -45,15 +42,9 @@ constexpr int kVerticalPosition = 8;
 constexpr int kShadowOutset = 12;
 
 // Menu layout values.
+constexpr int kBetweenButtonSpacing = 12;
 constexpr int kCornerRadius = 8;
-// Padding between the edges of the menu and the elements.
-constexpr int kPaddingWide = 12;
-// Padding between each column of elements.
-constexpr int kPaddingNarrow = 6;
-
-// Dogfood feedback button layout values.
-constexpr int kButtonWidth = 120;
-constexpr int kButtonHeight = 28;
+constexpr gfx::Insets kInsideBorderInsets(16);
 
 // The distance from the bottom of the multitask menu to the cue.
 // TODO(b/277972192): Update this value to match spec.
@@ -114,12 +105,6 @@ class TabletModeMultitaskMenuView : public views::View {
         AddChildView(std::make_unique<chromeos::MultitaskMenuView>(
             window, std::move(callback), buttons, /*anchor_view=*/nullptr));
 
-    // base::Unretained() is safe since `this` also destroys `menu_view_base_`
-    // and its child `feedback_button_`.
-    menu_view_base_->feedback_button()->SetCallback(base::BindRepeating(
-        &TabletModeMultitaskMenuView::ShowFeedbackPageForMenu,
-        base::Unretained(this)));
-
     if (menu_view_base_->partial_button() &&
         !split_view_controller->CanSnapWindow(window,
                                               chromeos::kOneThirdSnapRatio)) {
@@ -131,45 +116,14 @@ class TabletModeMultitaskMenuView : public views::View {
           false);
     }
 
-    auto* layout = menu_view_base_->SetLayoutManager(
-        std::make_unique<views::TableLayout>());
-    layout->AddPaddingColumn(views::TableLayout::kFixedSize, kPaddingWide)
-        .AddColumn(views::LayoutAlignment::kCenter,
-                   views::LayoutAlignment::kCenter,
-                   views::TableLayout::kFixedSize,
-                   views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-        .AddPaddingColumn(views::TableLayout::kFixedSize, kPaddingNarrow)
-        .AddColumn(views::LayoutAlignment::kCenter,
-                   views::LayoutAlignment::kCenter,
-                   views::TableLayout::kFixedSize,
-                   views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-        .AddPaddingColumn(views::TableLayout::kFixedSize, kPaddingNarrow)
-        .AddColumn(views::LayoutAlignment::kCenter,
-                   views::LayoutAlignment::kCenter,
-                   views::TableLayout::kFixedSize,
-                   views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-        .AddPaddingColumn(views::TableLayout::kFixedSize, kPaddingNarrow)
-        .AddColumn(views::LayoutAlignment::kCenter,
-                   views::LayoutAlignment::kCenter,
-                   views::TableLayout::kFixedSize,
-                   views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-        .AddPaddingColumn(views::TableLayout::kFixedSize, kPaddingWide)
-        .AddPaddingRow(views::TableLayout::kFixedSize, kPaddingWide)
-        .AddRows(1, views::TableLayout::kFixedSize, 0)
-        .AddPaddingRow(views::TableLayout::kFixedSize, kPaddingWide)
-        .AddRows(1, views::TableLayout::kFixedSize, kButtonHeight)
-        .AddPaddingRow(views::TableLayout::kFixedSize, kPaddingWide);
-
-    // Feedback button should be ignored by the layout, as otherwise it will be
-    // counted as an element in the table and forced to the second row,
-    // first column.
-    layout->SetChildViewIgnoredByLayout(menu_view_base_->feedback_button(),
-                                        true);
-    auto pref_size = menu_view_base_->GetPreferredSize();
-    menu_view_base_->feedback_button()->SetBounds(
-        (pref_size.width() - kButtonWidth) / 2,
-        pref_size.height() - kButtonHeight - kPaddingWide, kButtonWidth,
-        kButtonHeight);
+    auto* layout =
+        menu_view_base_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kHorizontal, kInsideBorderInsets,
+            kBetweenButtonSpacing));
+    layout->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kCenter);
+    layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
 
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
@@ -190,13 +144,6 @@ class TabletModeMultitaskMenuView : public views::View {
   SystemShadow* shadow() { return shadow_.get(); }
 
  private:
-  // Shows a dogfood feedback page for the multitask menu.
-  void ShowFeedbackPageForMenu() {
-    Shell::Get()->shell_delegate()->OpenFeedbackDialog(
-        ShellDelegate::FeedbackSource::kWindowLayoutMenu,
-        /*description_template=*/"#WindowLayoutMenu");
-  }
-
   raw_ptr<chromeos::MultitaskMenuView> menu_view_base_ = nullptr;
 
   std::unique_ptr<SystemShadow> shadow_;
