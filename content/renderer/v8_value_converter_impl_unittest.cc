@@ -300,7 +300,7 @@ TEST_F(V8ValueConverterImplTest, BasicRoundTrip) {
       converter.ToV8Value(original_root, context).As<v8::Object>();
   ASSERT_FALSE(v8_object.IsEmpty());
 
-  EXPECT_EQ(original_root.DictSize(),
+  EXPECT_EQ(original_root.GetDict().size(),
             v8_object->GetPropertyNames(context).ToLocalChecked()->Length());
   EXPECT_TRUE(
       v8_object
