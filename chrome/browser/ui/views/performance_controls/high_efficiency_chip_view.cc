@@ -192,7 +192,18 @@ bool HighEfficiencyChipView::ShouldHighlightMemorySavingsWithExpandedChip(
       (base::Time::Now() - last_expanded_timestamp) >
       performance_manager::features::kExpandedHighEfficiencyChipFrequency.Get();
 
-  return savings_over_threshold && expanded_chip_not_shown_recently;
+  auto* pre_discard_resource_usage =
+      performance_manager::user_tuning::UserPerformanceTuningManager::
+          PreDiscardResourceUsage::FromWebContents(GetWebContents());
+  bool const tab_discard_time_over_threshold =
+      pre_discard_resource_usage &&
+      (base::TimeTicks::Now() -
+       pre_discard_resource_usage->discard_timetick()) >
+          performance_manager::features::
+              kExpandedHighEfficiencyChipDiscardedDuration.Get();
+
+  return savings_over_threshold && expanded_chip_not_shown_recently &&
+         tab_discard_time_over_threshold;
 }
 
 BEGIN_METADATA(HighEfficiencyChipView, PageActionIconView)

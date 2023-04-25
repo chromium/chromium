@@ -57,7 +57,9 @@ class DiscardMockNavigationHandle : public content::MockNavigationHandle {
 class HighEfficiencyChipViewTest : public TestWithBrowserView {
  public:
  protected:
-  HighEfficiencyChipViewTest() = default;
+  HighEfficiencyChipViewTest()
+      : TestWithBrowserView(
+            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
     feature_list_.InitAndEnableFeature(
@@ -192,11 +194,13 @@ TEST_F(HighEfficiencyChipViewTest, ShouldNotShowForRegularPage) {
 
 // When the savings are above the FeatureParam threshold then the chip is
 // eligible to expand.
-TEST_F(HighEfficiencyChipViewTest, ShouldExpandForSavingsAboveThreshold) {
+TEST_F(HighEfficiencyChipViewTest, ShouldExpandChipWhenConditionsAreMet) {
   SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
   SetHighEfficiencyModeEnabled(true);
   AddNewTab(kHighMemorySavingsKilobytes,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+
+  task_environment()->AdvanceClock(base::Hours(8));
   SetTabDiscardState(0, true);
 
   PageActionIconView* view = GetPageActionIconView();
@@ -209,25 +213,13 @@ TEST_F(HighEfficiencyChipViewTest, ShouldExpandForSavingsAboveThreshold) {
 TEST_F(HighEfficiencyChipViewTest, ShouldNotExpandForSavingsBelowThreshold) {
   SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
   SetHighEfficiencyModeEnabled(true);
+
+  task_environment()->AdvanceClock(base::Hours(8));
   SetTabDiscardState(0, true);
 
   PageActionIconView* view = GetPageActionIconView();
   EXPECT_TRUE(view->GetVisible());
   EXPECT_FALSE(view->ShouldShowLabel());
-}
-
-// When the savings chip hasn't been expanded recently (based on a pref) then it
-// expands to highlight savings.
-TEST_F(HighEfficiencyChipViewTest, ShouldExpandWhenChipHasntExpandedRecently) {
-  SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
-  SetHighEfficiencyModeEnabled(true);
-  AddNewTab(kHighMemorySavingsKilobytes,
-            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
-  SetTabDiscardState(0, true);
-
-  PageActionIconView* view = GetPageActionIconView();
-  EXPECT_TRUE(view->GetVisible());
-  EXPECT_TRUE(view->ShouldShowLabel());
 }
 
 // When the savings chip has been expanded recently then it does not show in
@@ -238,6 +230,23 @@ TEST_F(HighEfficiencyChipViewTest, ShouldNotExpandWhenChipHasExpandedRecently) {
   SetChipExpandedTimeToNow();
   AddNewTab(kHighMemorySavingsKilobytes,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+
+  task_environment()->AdvanceClock(base::Hours(8));
+  SetTabDiscardState(0, true);
+
+  PageActionIconView* view = GetPageActionIconView();
+  EXPECT_TRUE(view->GetVisible());
+  EXPECT_FALSE(view->ShouldShowLabel());
+}
+
+// When the tab has been expanded recently then the chip does not show in the
+// expanded mode.
+TEST_F(HighEfficiencyChipViewTest, ShouldNotExpandWhenTabWasDiscardedRecently) {
+  SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
+  SetHighEfficiencyModeEnabled(true);
+  AddNewTab(kHighMemorySavingsKilobytes,
+            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+
   SetTabDiscardState(0, true);
 
   PageActionIconView* view = GetPageActionIconView();
@@ -448,6 +457,8 @@ TEST_F(HighEfficiencyChipViewDiscardedTabTreatmentDisabledTest,
   SetHighEfficiencyModeEnabled(true);
   AddNewTab(kHighMemorySavingsKilobytes,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+
+  task_environment()->AdvanceClock(base::Hours(8));
   SetTabDiscardState(0, true);
 
   PageActionIconView* view = GetPageActionIconView();

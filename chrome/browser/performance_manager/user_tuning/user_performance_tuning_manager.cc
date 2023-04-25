@@ -106,7 +106,8 @@ UserPerformanceTuningManager::PreDiscardResourceUsage::PreDiscardResourceUsage(
     ::mojom::LifecycleUnitDiscardReason discard_reason)
     : content::WebContentsUserData<PreDiscardResourceUsage>(*contents),
       memory_footprint_estimate_(memory_footprint_estimate),
-      discard_reason_(discard_reason) {}
+      discard_reason_(discard_reason),
+      discard_timetick_(base::TimeTicks::Now()) {}
 
 UserPerformanceTuningManager::PreDiscardResourceUsage::
     ~PreDiscardResourceUsage() = default;
