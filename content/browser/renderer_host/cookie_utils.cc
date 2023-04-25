@@ -11,17 +11,43 @@
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/common/content_client.h"
 #include "net/cookies/cookie_inclusion_status.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace content {
 
 namespace {
 
-void RecordContextDowngradeUKM(RenderFrameHost* rfh,
-                               CookieAccessDetails::Type access_type,
-                               const net::CookieInclusionStatus& status,
-                               const GURL& url) {
-  DCHECK(rfh);
+void RecordRedirectContextDowngradeUKM(RenderFrameHost* rfh,
+                                       CookieAccessDetails::Type access_type,
+                                       const net::CanonicalCookie& cookie,
+                                       const GURL& url) {
+  CHECK(rfh);
+  ukm::SourceId source_id = rfh->GetPageUkmSourceId();
+
+  int64_t samesite_value = static_cast<int64_t>(cookie.SameSite());
+  if (access_type == CookieAccessDetails::Type::kRead) {
+    base::TimeDelta cookie_age = base::Time::Now() - cookie.CreationDate();
+
+    ukm::builders::SamesiteRedirectContextDowngrade(source_id)
+        .SetSamesiteValueReadPerCookie(samesite_value)
+        .SetAgePerCookie(
+            ukm::GetExponentialBucketMinForUserTiming(cookie_age.InMinutes()))
+        .Record(ukm::UkmRecorder::Get());
+  } else {
+    CHECK(access_type == CookieAccessDetails::Type::kChange);
+    ukm::builders::SamesiteRedirectContextDowngrade(source_id)
+        .SetSamesiteValueWritePerCookie(samesite_value)
+        .Record(ukm::UkmRecorder::Get());
+  }
+}
+
+void RecordSchemefulContextDowngradeUKM(
+    RenderFrameHost* rfh,
+    CookieAccessDetails::Type access_type,
+    const net::CookieInclusionStatus& status,
+    const GURL& url) {
+  CHECK(rfh);
   ukm::SourceId source_id = rfh->GetPageUkmSourceId();
 
   auto downgrade_metric =
@@ -31,7 +57,7 @@ void RecordContextDowngradeUKM(RenderFrameHost* rfh,
         .SetRequestPerCookie(downgrade_metric)
         .Record(ukm::UkmRecorder::Get());
   } else {
-    DCHECK(access_type == CookieAccessDetails::Type::kChange);
+    CHECK(access_type == CookieAccessDetails::Type::kChange);
     ukm::builders::SchemefulSameSiteContextDowngrade(source_id)
         .SetResponsePerCookie(downgrade_metric)
         .Record(ukm::UkmRecorder::Get());
@@ -200,13 +226,23 @@ void EmitCookieWarningsAndMetrics(
 
     breaking_context_downgrade =
         breaking_context_downgrade ||
-        cookie->access_result.status.HasDowngradeWarning();
+        cookie->access_result.status.HasSchemefulDowngradeWarning();
 
-    if (cookie->access_result.status.HasDowngradeWarning()) {
-      // Unlike with UMA, do not record cookies that have no downgrade warning.
-      RecordContextDowngradeUKM(rfh, cookie_details->type,
-                                cookie->access_result.status,
-                                cookie_details->url);
+    if (cookie->access_result.status.HasSchemefulDowngradeWarning()) {
+      // Unlike with UMA, do not record cookies that have no schemeful downgrade
+      // warning.
+      RecordSchemefulContextDowngradeUKM(rfh, cookie_details->type,
+                                         cookie->access_result.status,
+                                         cookie_details->url);
+    }
+
+    if (status.HasWarningReason(
+            net::CookieInclusionStatus::
+                WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION) &&
+        cookie->cookie_or_line->is_cookie()) {
+      RecordRedirectContextDowngradeUKM(rfh, cookie_details->type,
+                                        cookie->cookie_or_line->get_cookie(),
+                                        cookie_details->url);
     }
 
     // In order to anticipate the potential effects of the expiry limit in

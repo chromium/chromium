@@ -145,7 +145,7 @@ TEST(CookieInclusionStatusTest, RemoveWarningReason) {
       CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT));
 }
 
-TEST(CookieInclusionStatusTest, HasDowngradeWarning) {
+TEST(CookieInclusionStatusTest, HasSchemefulDowngradeWarning) {
   std::vector<CookieInclusionStatus::WarningReason> downgrade_warnings = {
       CookieInclusionStatus::WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE,
       CookieInclusionStatus::WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE,
@@ -155,19 +155,19 @@ TEST(CookieInclusionStatusTest, HasDowngradeWarning) {
   };
 
   CookieInclusionStatus empty_status;
-  EXPECT_FALSE(empty_status.HasDowngradeWarning());
+  EXPECT_FALSE(empty_status.HasSchemefulDowngradeWarning());
 
   CookieInclusionStatus not_downgrade;
   not_downgrade.AddWarningReason(
       CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT);
-  EXPECT_FALSE(not_downgrade.HasDowngradeWarning());
+  EXPECT_FALSE(not_downgrade.HasSchemefulDowngradeWarning());
 
   for (auto warning : downgrade_warnings) {
     CookieInclusionStatus status;
     status.AddWarningReason(warning);
     CookieInclusionStatus::WarningReason reason;
 
-    EXPECT_TRUE(status.HasDowngradeWarning(&reason));
+    EXPECT_TRUE(status.HasSchemefulDowngradeWarning(&reason));
     EXPECT_EQ(warning, reason);
   }
 }

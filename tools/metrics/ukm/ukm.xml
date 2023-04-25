@@ -20381,6 +20381,36 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="SamesiteRedirectContextDowngrade">
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    A collection of metrics which are recorded for cookies whose inclusion would
+    be changed if the redirect chain was considered in their same-site
+    calculation. This change in inclusion is because the same-site context would
+    &quot;downgrade&quot; from a more permissive context to a less permissive
+    context, one which may not allow a cookie's inclusion.
+  </summary>
+  <metric name="AgePerCookie">
+    <summary>
+      Records the age of the cookies, in minutes, for cookies which are being
+      read (on a requset or via JS). The value rounded down to the exponential
+      bucket with factor of 2.0.
+    </summary>
+  </metric>
+  <metric name="SamesiteValueReadPerCookie" enum="SameSiteCookieValue">
+    <summary>
+      Records the SameSite value of the cookie for cookies which are being read
+      (on a request or via JS).
+    </summary>
+  </metric>
+  <metric name="SamesiteValueWritePerCookie" enum="SameSiteCookieValue">
+    <summary>
+      Records the SameSite value of the cookie for cookies which are being
+      written (on a response or via JS).
+    </summary>
+  </metric>
+</event>
+
 <event name="SchemefulSameSiteContextDowngrade">
   <owner>bingler@chromium.org</owner>
   <metric name="RequestPerCookie"
