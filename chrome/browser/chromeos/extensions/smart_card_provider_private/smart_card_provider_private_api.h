@@ -95,16 +95,6 @@ class SmartCardProviderPrivateAPI
   void SetResponseTimeLimitForTesting(base::TimeDelta);
 
  private:
-  template <typename Callback>
-  struct PendingResult {
-    base::OneShotTimer timer;
-    Callback callback;
-  };
-
-  template <typename Callback>
-  using PendingResultMap =
-      std::map<RequestId, std::unique_ptr<PendingResult<Callback>>>;
-
   // BrowserContextKeyedAPI:
   static const bool kServiceIsCreatedWithBrowserContext = false;
   static const char* service_name() { return "SmartCardProviderPrivateAPI"; }
@@ -143,12 +133,11 @@ class SmartCardProviderPrivateAPI
   void OnDisconnectTimeout(const std::string& provider_extension_id,
                            RequestId request_id);
 
-  template <typename ResultPtr, typename Callback>
+  template <typename ResultPtr>
   void DispatchEventWithTimeout(
       const std::string& event_name,
       extensions::events::HistogramValue histogram_value,
       base::OnceCallback<void(ResultPtr)> callback,
-      PendingResultMap<Callback>& pending_results,
       void (SmartCardProviderPrivateAPI::*OnTimeout)(const std::string&,
                                                      RequestId),
       base::Value::List event_arguments = base::Value::List(),
@@ -162,17 +151,8 @@ class SmartCardProviderPrivateAPI
 
   base::TimeDelta response_time_limit_{base::Minutes(5)};
 
-  PendingResultMap<CreateContextCallback> pending_establish_context_;
-
-  struct PendingReleaseContext;
-  std::map<RequestId, std::unique_ptr<PendingReleaseContext>>
-      pending_release_context_;
-
-  PendingResultMap<ListReadersCallback> pending_list_readers_;
-  PendingResultMap<GetStatusChangeCallback> pending_get_status_change_;
-  PendingResultMap<CancelCallback> pending_cancel_;
-  PendingResultMap<ConnectCallback> pending_connect_;
-  PendingResultMap<DisconnectCallback> pending_disconnect_;
+  struct PendingResult;
+  std::map<RequestId, std::unique_ptr<PendingResult>> pending_results_;
 
   RequestId::Generator request_id_generator_;
   const raw_ref<content::BrowserContext> browser_context_;
