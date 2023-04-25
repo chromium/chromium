@@ -288,25 +288,39 @@ enum class PermissionRequest {
                 withDecisionHandler:
                     (void (^)(WKPermissionDecision decision))handler
     API_AVAILABLE(ios(15.0)) {
-  if (self.webStateImpl) {
-    DCHECK(!self.isBeingDestroyed);
-    // This call may destroy the web state. DO NOT store the web state as a
-    // local variable before this call and keep using it after.
+  // Calling WillDisplayMediaCapturePermissionPrompt(...) may
+  // cause the WebState to be closed and the last reference to
+  // the current object to be destroyed (e.g. if the WebState
+  // is used to pre-render).
+  //
+  // Use a local variable with precise lifetime to force the
+  // current object to be kept alive till the end of the method
+  // to prevent UaF.
+  __attribute__((objc_precise_lifetime)) CRWWKUIHandler* selfRetain = self;
+  if (!selfRetain.isBeingDestroyed) {
+    DCHECK(selfRetain.webStateImpl);
+    // This call may destroy the web state.
     web::GetWebClient()->WillDisplayMediaCapturePermissionPrompt(
-        self.webStateImpl);
+        selfRetain.webStateImpl);
   }
-  web::WebStateImpl* webStateImpl = self.webStateImpl;
-  if (!webStateImpl) {
+
+  // By this point, the WebState may have been destroyed. If
+  // this is the case, then `-isBeingDestroyed` will be YES.
+  if (selfRetain.isBeingDestroyed) {
     // If the web state doesn't exist, it is likely that the web view isn't
     // visible to the user, or that some other issue has happened. Deny
     // permission.
-    DCHECK(self.isBeingDestroyed);
     handler(WKPermissionDecisionDeny);
     return;
   }
-  // Valid web state. Request permission.
+
+  // The WebState must be valid if the object is not destroyed.
+  DCHECK(selfRetain.webStateImpl);
+
+  // Request permission.
   if (web::features::IsMediaPermissionsControlEnabled()) {
-    webStateImpl->RequestPermissionsWithDecisionHandler(permissions, handler);
+    selfRetain.webStateImpl->RequestPermissionsWithDecisionHandler(permissions,
+                                                                   handler);
   } else {
     handler(WKPermissionDecisionPrompt);
   }
