@@ -391,33 +391,6 @@
         android:noHistory="true"
         android:theme="@style/Theme.MaterialComponents">
     </activity>  # DIFF-ANCHOR: 43bfa5de
-    <activity  # DIFF-ANCHOR: b007dcaa
-        android:name="org.chromium.chrome.browser.vr.VrCancelAnimationActivity"
-        android:enableVrMode="@string/gvr_vr_mode_component"
-        android:excludeFromRecents="true"
-        android:exported="false"
-        android:noHistory="true"
-        android:theme="@style/Theme.BrowserUI.NoDisplay">
-      <intent-filter>  # DIFF-ANCHOR: dea53031
-        <action android:name="org.chromium.chrome.browser.dummy.action"/>
-        <category android:name="com.google.intent.category.CARDBOARD"/>
-        <category android:name="com.google.intent.category.DAYDREAM"/>
-      </intent-filter>  # DIFF-ANCHOR: dea53031
-    </activity>  # DIFF-ANCHOR: b007dcaa
-    <activity  # DIFF-ANCHOR: 5e628a6c
-        android:name="org.chromium.chrome.browser.vr.VrFirstRunActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
-        android:enableVrMode="@string/gvr_vr_mode_component"
-        android:excludeFromRecents="true"
-        android:exported="false"
-        android:launchMode="singleInstance"
-        android:theme="@style/VrActivityTheme">
-      <intent-filter>  # DIFF-ANCHOR: dea53031
-        <action android:name="org.chromium.chrome.browser.dummy.action"/>
-        <category android:name="com.google.intent.category.CARDBOARD"/>
-        <category android:name="com.google.intent.category.DAYDREAM"/>
-      </intent-filter>  # DIFF-ANCHOR: dea53031
-    </activity>  # DIFF-ANCHOR: 5e628a6c
     <activity  # DIFF-ANCHOR: 9bb1f409
         android:name="org.chromium.chrome.browser.webapps.ActivateWebApkActivity"
         android:exported="true"
@@ -799,10 +772,6 @@
         android:name="org.chromium.chrome.browser.offlinepages.AutoFetchNotifier$InProgressCancelReceiver"
         android:exported="false">
     </receiver>  # DIFF-ANCHOR: 05f19ac3
-    <receiver  # DIFF-ANCHOR: a3a6e991
-        android:name="org.chromium.chrome.browser.omaha.UpdateNotificationController$UpdateNotificationReceiver"
-        android:exported="false">
-    </receiver>  # DIFF-ANCHOR: a3a6e991
     <receiver  # DIFF-ANCHOR: 226134db
         android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderDino"
         android:exported="true"

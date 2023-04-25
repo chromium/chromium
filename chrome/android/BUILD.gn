@@ -171,23 +171,6 @@ if (current_toolchain == default_toolchain) {
     ]
   }
 
-  if (enable_vr) {
-    # TODO(crbug.com/935982): Currently, adding multiple resource folders to a
-    # resource target may clobber some resources. Once that is fixed we should add
-    # the VR resources to chrome_app_java_resources.
-    android_resources("chrome_vr_java_resources") {
-      # Overrides 'gvr_vr_mode_component' in //third_party/gvr-android-sdk:gvr_common_java
-      # in tests.
-      resource_overlay = true
-      sources = [
-        "//chrome/android/java/res_vr/values-v17/styles.xml",
-        "//chrome/android/java/res_vr/values-vrheadset-v26/styles.xml",
-        "//chrome/android/java/res_vr/values/values.xml",
-      ]
-      deps = [ ":chrome_app_java_resources" ]
-    }
-  }
-
   android_library("app_hooks_java") {
     sources = [ app_hooks_impl ]
     deps = [ ":chrome_java" ]
@@ -611,10 +594,6 @@ if (current_toolchain == default_toolchain) {
 
     # Include sources for start_surface_java_sources.gni
     sources += start_surface_java_sources
-
-    if (enable_vr) {
-      deps += [ ":chrome_vr_java_resources" ]
-    }
 
     srcjar_deps += [ ":chrome_vr_android_java_enums_srcjar" ]
 
