@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <title>Safe Browsing</title>
-    <link rel="stylesheet" href="safe_browsing.css">
     <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+    <link rel="stylesheet" href="safe_browsing.css">
   </head>
   <body>
     <div id="header">
@@ -12,17 +12,19 @@
     </div>
     <cr-tab-box id='tabbox'>
       <div slot="tab" id="preferences">Preferences</div>
-      <div slot="tab" id="db-manager">Database Manager</div>
-      <div slot="tab" id="hash-cache">Hash Cache</div>
-      <div slot="tab" id="csbrr">Client Safe Browsing Report Requests</div>
-      <div slot="tab" id="download-protection">Download Protection</div>
-      <div slot="tab" id="cpr">Client Phishing Requests</div>
-      <div slot="tab" id="password-protection">Password Protection</div>
+      <div slot="tab" id="csbrr">Client Safe Browsing Report Requests</h1></div>
+      <div slot="tab" id="cpr">Client Phishing Requests</h1></div>
+      <div slot="tab" id="password-protection">Password Protection</h1></div>
       <div slot="tab" id="rt-lookup">RT Lookup</div>
       <div slot="tab" id="referrer-chain">Referrer Chain</div>
       <div slot="tab" id="log">Log Messages</div>
+<if expr="not is_android">
       <div slot="tab" id="reporting">Reporting Events</div>
+      <div slot="tab" id="db-manager">Database Manager</div>
+      <div slot="tab" id="hash-cache">Hash Cache</div>
+      <div slot="tab" id="download-protection">Download Protection</div>
       <div slot="tab" id="deep-scan">Deep Scans</div>
+</if>
       <div slot="panel">
         <h2>Experiments</h2>
         <div class="content">
@@ -42,18 +44,6 @@
         </div>
       </div>
       <div slot="panel">
-        <h2>Database Manager</h2>
-        <div class="content">
-          <p id="database-info-list" class="result-container"></p>
-        </div>
-      </div>
-      <div slot="panel">
-        <h2>Full Hash Cache</h2>
-        <div class="content">
-          <p id="full-hash-cache-info"></p>
-        </div>
-      </div>
-      <div slot="panel">
         <h2>CSBRRs (ClientSafeBrowsingReportRequest) sent</h2>
         <div class="content">
           <p id="sent-csbrrs-list" class="result-container"></p>
@@ -61,20 +51,6 @@
         <h2>Hit Reports sent</h2>
         <div class="content">
           <p id="sent-hit-report-list" class="result-container"></p>
-        </div>
-      </div>
-      <div slot="panel">
-        <h2>Download URLs checked</h2>
-        <div class="content">
-          <p id="download-urls-checked-list"></p>
-        </div>
-        <h2>Download requests (ClientDownloadRequest) sent</h2>
-        <div class="content">
-          <p id="sent-client-download-requests-list"></p>
-        </div>
-        <h2>Download responses (ClientDownloadResponse) received</h2>
-        <div class="content">
-          <p id="received-client-download-response-list"></p>
         </div>
       </div>
       <div slot="panel">
@@ -127,6 +103,7 @@
           <p id="log-messages"></p>
         </div>
       </div>
+<if expr="not is_android">
       <div slot="panel">
         <h2>Reporting Events</h2>
         <div class="content">
@@ -134,9 +111,36 @@
         </div>
       </div>
       <div slot="panel">
+        <h2>Database Manager</h2>
+        <div class="content">
+          <p id="database-info-list" class="result-container"></p>
+        </div>
+      </div>
+      <div slot="panel">
+        <h2>Full Hash Cache</h2>
+        <div class="content">
+          <p id="full-hash-cache-info"></p>
+        </div>
+      </div>
+      <div slot="panel">
+        <h2>Download URLs checked</h2>
+        <div class="content">
+          <p id="download-urls-checked-list"></p>
+        </div>
+        <h2>Download requests (ClientDownloadRequest) sent</h2>
+        <div class="content">
+          <p id="sent-client-download-requests-list"></p>
+        </div>
+        <h2>Download responses (ClientDownloadResponse) received</h2>
+        <div class="content">
+          <p id="received-client-download-response-list"></p>
+        </div>
+      </div>
+      <div slot="panel">
         <h2>Deep Scans</h2>
         <table id="deep-scan-list" class="request-response"></table>
       </div>
+</if>
     </cr-tab-box>
     <template id="result-template">
       <div>
