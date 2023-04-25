@@ -74,6 +74,10 @@ void Connection::MarkConnectionAuthenticated() {
   }
 }
 
+Connection::State Connection::GetState() {
+  return connection_state_;
+}
+
 void Connection::RequestWifiCredentials(
     int32_t session_id,
     RequestWifiCredentialsCallback callback) {
@@ -227,6 +231,7 @@ void Connection::SendPayloadAndReadResponse(
 
 void Connection::OnConnectionClosed() {
   // TODO (b/278898402): Handle other connection closed reasons.
+  connection_state_ = Connection::State::kClosed;
   std::move(on_connection_closed_)
       .Run(TargetDeviceConnectionBroker::ConnectionClosedReason::kComplete);
 }

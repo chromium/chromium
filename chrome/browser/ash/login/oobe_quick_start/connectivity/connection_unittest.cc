@@ -406,12 +406,14 @@ TEST_F(ConnectionTest, TestDisconnectionTriggersListener) {
           /*on_connection_authenticated=*/base::DoNothing());
 
   ASSERT_FALSE(future.IsReady());
+  ASSERT_EQ(connection_under_test->GetState(), Connection::State::kOpen);
 
   fake_nearby_connection_->Close();
 
   ASSERT_TRUE(future.IsReady());
   ASSERT_EQ(future.Get(),
             TargetDeviceConnectionBroker::ConnectionClosedReason::kComplete);
+  ASSERT_EQ(connection_under_test->GetState(), Connection::State::kClosed);
 }
 
 TEST_F(ConnectionTest, InitiateHandshake) {
