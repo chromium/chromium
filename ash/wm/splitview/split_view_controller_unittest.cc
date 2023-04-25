@@ -3371,6 +3371,45 @@ TEST_F(SplitViewControllerTest, SnapTwoThirdPartialWindow) {
   EXPECT_TRUE(WindowState::Get(window.get())->IsSnapped());
 }
 
+// Tests that selecting a window that cannot be one third snapped from overview
+// will maximize it and exit splitview. Regression test for b/278921341.
+TEST_F(SplitViewControllerTest, SelectWindowCannotOneThirdSnap) {
+  UpdateDisplay("900x600");
+
+  // The first window can be snapped 2/3, but not 1/2 or 1/3.
+  aura::test::TestWindowDelegate window_delegate1;
+  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithDelegate(
+      &window_delegate1, /*id=*/-1, gfx::Rect(500, 500)));
+  window_delegate1.set_minimum_size(gfx::Size(500, 500));
+  window1->SetProperty(aura::client::kAppType,
+                       static_cast<int>(AppType::BROWSER));
+
+  // The second window can be snapped 1/2 but not 1/3.
+  aura::test::TestWindowDelegate window_delegate2;
+  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithDelegate(
+      &window_delegate2, /*id=*/-1, gfx::Rect(500, 500)));
+  window_delegate2.set_minimum_size(gfx::Size(400, 400));
+  window2->SetProperty(aura::client::kAppType,
+                       static_cast<int>(AppType::BROWSER));
+
+  // Snap `window1` 2/3 to the left.
+  wm::ActivateWindow(window1.get());
+  WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY, chromeos::kTwoThirdSnapRatio);
+  WindowState::Get(window1.get())->OnWMEvent(&snap_primary);
+  ASSERT_EQ(chromeos::kTwoThirdSnapRatio,
+            WindowState::Get(window1.get())->snap_ratio());
+  ASSERT_TRUE(WindowState::Get(window1.get())->IsSnapped());
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // Select `window2`. Test that both windows are maximized and we have exited
+  // splitview.
+  wm::ActivateWindow(window2.get());
+  EXPECT_TRUE(WindowState::Get(window1.get())->IsMaximized());
+  EXPECT_TRUE(WindowState::Get(window2.get())->IsMaximized());
+  EXPECT_EQ(SplitViewController::State::kNoSnap,
+            split_view_controller()->state());
+}
+
 // Tests that, if two windows are snapped and one window has min size, trying to
 // partial split the other window opens Overview and updates bounds correctly.
 TEST_F(SplitViewControllerTest, SnapWindowWithMinSizeOpensOverview) {

@@ -561,7 +561,9 @@ void OverviewItem::UpdateCannotSnapWarningVisibility(bool animate) {
   // Windows which can snap will never show this warning. Or if the window is
   // the drop target window, also do not show this warning.
   bool visible = true;
-  if (SplitViewController::Get(root_window_)->CanSnapWindow(GetWindow()) ||
+  if (SplitViewController::Get(root_window_)
+          ->ComputeSnapRatio(GetWindow())
+          .has_value() ||
       overview_grid_->IsDropTargetWindow(GetWindow())) {
     visible = false;
   } else {

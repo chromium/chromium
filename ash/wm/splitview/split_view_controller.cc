@@ -541,9 +541,12 @@ class SplitViewController::AutoSnapController
       return;
     }
 
+    absl::optional<float> snap_ratio =
+        split_view_controller_->ComputeSnapRatio(window);
+
     // If it's a user positionable window but can't be snapped, end split view
     // mode and show the cannot snap toast.
-    if (!split_view_controller_->CanSnapWindow(window)) {
+    if (!snap_ratio) {
       if (WindowState::Get(window)->IsUserPositionable()) {
         split_view_controller_->EndSplitView(
             EndReason::kUnsnappableWindowActivated);
@@ -557,10 +560,12 @@ class SplitViewController::AutoSnapController
     WindowState::Get(window)->set_snap_action_source(
         WindowSnapActionSource::kAutoSnapBySplitview);
     split_view_controller_->SnapWindow(
-        window, (split_view_controller_->default_snap_position() ==
-                 SnapPosition::kPrimary)
-                    ? SnapPosition::kSecondary
-                    : SnapPosition::kPrimary);
+        window,
+        (split_view_controller_->default_snap_position() ==
+         SnapPosition::kPrimary)
+            ? SnapPosition::kSecondary
+            : SnapPosition::kPrimary,
+        /*activate_window=*/false, *snap_ratio);
   }
 
   void AddWindow(aura::Window* window) {
@@ -839,6 +844,53 @@ bool SplitViewController::CanSnapWindow(aura::Window* window,
   return GetMinimumWindowLength(window, IsLayoutHorizontal(window)) <=
          GetDividerEndPosition() * snap_ratio -
              kSplitviewDividerShortSideLength / 2;
+}
+
+absl::optional<float> SplitViewController::ComputeSnapRatio(
+    aura::Window* window) {
+  // If there is no default snapped window, or it doesn't have a stored snap
+  // ratio try snapping it to 1/2.
+  aura::Window* default_window = GetDefaultSnappedWindow();
+  absl::optional<float> default_window_snap_ratio =
+      default_window ? WindowState::Get(default_window)->snap_ratio()
+                     : absl::nullopt;
+  if (!default_window_snap_ratio) {
+    return CanSnapWindow(window)
+               ? absl::make_optional(chromeos::kDefaultSnapRatio)
+               : absl::nullopt;
+  }
+
+  // Maps the snap ratio of the default window to the snap ratio of the opposite
+  // window.
+  static constexpr auto kOppositeRatiosMap =
+      base::MakeFixedFlatMap<float, float>(
+          {{chromeos::kOneThirdSnapRatio, chromeos::kTwoThirdSnapRatio},
+           {chromeos::kDefaultSnapRatio, chromeos::kDefaultSnapRatio},
+           {chromeos::kTwoThirdSnapRatio, chromeos::kOneThirdSnapRatio}});
+  auto* it = kOppositeRatiosMap.find(*default_window_snap_ratio);
+  // TODO(sammiequon): Investigate if this check is needed. It may be needed for
+  // rounding errors (i.e. 2/3 may be 0.67).
+  if (it == kOppositeRatiosMap.end()) {
+    return CanSnapWindow(window)
+               ? absl::make_optional(chromeos::kDefaultSnapRatio)
+               : absl::nullopt;
+  }
+
+  // If `window` can be snapped to the ideal snap ratio, we are done.
+  float snap_ratio = it->second;
+  if (CanSnapWindow(window, snap_ratio)) {
+    return snap_ratio;
+  }
+
+  // Reaching here, we cannot snap `window` to its ideal snap ratio. If the
+  // ideal snap ratio was 1/3, we try snapping to 1/2, but only if the default
+  // window can be snapped to 1/2 as well.
+  if (snap_ratio == chromeos::kOneThirdSnapRatio && CanSnapWindow(window) &&
+      CanSnapWindow(default_window)) {
+    return chromeos::kDefaultSnapRatio;
+  }
+
+  return absl::nullopt;
 }
 
 void SplitViewController::SnapWindow(aura::Window* window,
@@ -1961,26 +2013,33 @@ void SplitViewController::OnOverviewModeEnding(
 
   OverviewGrid* current_grid =
       overview_session->GetGridWithRootWindow(root_window_);
-  if (!current_grid || current_grid->empty())
+  if (!current_grid || current_grid->empty()) {
     return;
+  }
+
   for (const auto& overview_item : current_grid->window_list()) {
     aura::Window* window = overview_item->GetWindow();
-    if (CanSnapWindow(window) && window != GetDefaultSnappedWindow()) {
-      // Remove the overview item before snapping because the overview session
-      // is unavailable to retrieve outside this function after OnOverviewEnding
-      // is notified.
-      overview_item->RestoreWindow(/*reset_transform=*/false);
-      overview_session->RemoveItem(overview_item.get());
+    if (window != GetDefaultSnappedWindow()) {
+      absl::optional<float> snap_ratio = ComputeSnapRatio(window);
+      if (snap_ratio) {
+        // Remove the overview item before snapping because the overview session
+        // is unavailable to retrieve outside this function after
+        // OnOverviewEnding is notified.
+        overview_item->RestoreWindow(/*reset_transform=*/false);
+        overview_session->RemoveItem(overview_item.get());
 
-      WindowState::Get(window)->set_snap_action_source(
-          WindowSnapActionSource::kAutoSnapBySplitview);
-      SnapWindow(window, (default_snap_position_ == SnapPosition::kPrimary)
-                             ? SnapPosition::kSecondary
-                             : SnapPosition::kPrimary);
-      // If ending overview causes a window to snap, also do not do exiting
-      // overview animation.
-      overview_session->SetWindowListNotAnimatedWhenExiting(root_window_);
-      return;
+        WindowState::Get(window)->set_snap_action_source(
+            WindowSnapActionSource::kAutoSnapBySplitview);
+        SnapWindow(window,
+                   (default_snap_position_ == SnapPosition::kPrimary)
+                       ? SnapPosition::kSecondary
+                       : SnapPosition::kPrimary,
+                   /*activate_window=*/false, *snap_ratio);
+        // If ending overview causes a window to snap, also do not do exiting
+        // overview animation.
+        overview_session->SetWindowListNotAnimatedWhenExiting(root_window_);
+        return;
+      }
     }
   }
 
@@ -1988,8 +2047,10 @@ void SplitViewController::OnOverviewModeEnding(
   // in split view. If overview is ending because of switching between virtual
   // desks, then there is no need to do anything here. Otherwise, end split view
   // and show the cannot snap toast.
-  if (DesksController::Get()->AreDesksBeingModified())
+  if (DesksController::Get()->AreDesksBeingModified()) {
     return;
+  }
+
   EndSplitView();
   ShowAppCannotSnapToast();
 }
