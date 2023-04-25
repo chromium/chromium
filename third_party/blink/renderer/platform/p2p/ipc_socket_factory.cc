@@ -611,7 +611,8 @@ void IpcPacketSocket::OnSendComplete(
   SignalSentPacket(this, rtc::SentPacket(send_metrics.rtc_packet_id,
                                          send_metrics.send_time_ms));
 
-  if (writable_signal_expected_ && send_bytes_available_ > 0) {
+  if (writable_signal_expected_ &&
+      send_bytes_available_ > (max_in_flight_bytes_ / 2)) {
     blink::WebRtcLogMessage(base::StringPrintf(
         "IpcPacketSocket: sending is unblocked. %d packets in flight.",
         static_cast<int>(in_flight_packet_records_.size())));
