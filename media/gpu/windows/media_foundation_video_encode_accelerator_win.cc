@@ -1208,7 +1208,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
       // we encode.
       LONGLONG sample_ts = 0;
       auto hr = input_sample_->GetSampleTime(&sample_ts);
-      DCHECK_EQ(hr, S_OK);
+      DCHECK_EQ(hr, S_OK) << PrintHr(hr);
       int64_t frame_ts = input.frame->timestamp().InMicroseconds() *
                          kOneMicrosecondInMFSampleTimeUnits;
       DCHECK_EQ(frame_ts, sample_ts)
@@ -1272,6 +1272,25 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
     return MF_E_INVALID_STREAM_DATA;
   }
 
+  auto hr = input_sample_->SetSampleTime(frame->timestamp().InMicroseconds() *
+                                         kOneMicrosecondInMFSampleTimeUnits);
+  RETURN_ON_HR_FAILURE(hr, "SetSampleTime() failed", hr);
+
+  UINT64 sample_duration = 0;
+  hr = MFFrameRateToAverageTimePerFrame(frame_rate_, 1, &sample_duration);
+  RETURN_ON_HR_FAILURE(hr, "Couldn't calculate sample duration", hr);
+
+  hr = input_sample_->SetSampleDuration(sample_duration);
+  RETURN_ON_HR_FAILURE(hr, "SetSampleDuration() failed", hr);
+
+  if (input.options.key_frame) {
+    VARIANT var;
+    var.vt = VT_UI4;
+    var.ulVal = 1;
+    hr = codec_api_->SetValue(&CODECAPI_AVEncVideoForceKeyFrame, &var);
+    RETURN_ON_HR_FAILURE(hr, "Set CODECAPI_AVEncVideoForceKeyFrame failed", hr);
+  }
+
   if (frame->storage_type() ==
       VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER) {
     gfx::GpuMemoryBuffer* gmb = frame->GetGpuMemoryBuffer();
@@ -1303,25 +1322,6 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
       LOG(ERROR) << "Failed to map shared memory GMB";
       return E_FAIL;
     }
-  }
-
-  auto hr = input_sample_->SetSampleTime(frame->timestamp().InMicroseconds() *
-                                         kOneMicrosecondInMFSampleTimeUnits);
-  RETURN_ON_HR_FAILURE(hr, "SetSampleTime() failed", hr);
-
-  UINT64 sample_duration = 0;
-  hr = MFFrameRateToAverageTimePerFrame(frame_rate_, 1, &sample_duration);
-  RETURN_ON_HR_FAILURE(hr, "Couldn't calculate sample duration", hr);
-
-  hr = input_sample_->SetSampleDuration(sample_duration);
-  RETURN_ON_HR_FAILURE(hr, "SetSampleDuration() failed", hr);
-
-  if (input.options.key_frame) {
-    VARIANT var;
-    var.vt = VT_UI4;
-    var.ulVal = 1;
-    hr = codec_api_->SetValue(&CODECAPI_AVEncVideoForceKeyFrame, &var);
-    RETURN_ON_HR_FAILURE(hr, "Set CODECAPI_AVEncVideoForceKeyFrame failed", hr);
   }
 
   const auto kTargetPixelFormat = PIXEL_FORMAT_NV12;
