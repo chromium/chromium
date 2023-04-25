@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
@@ -20,6 +21,10 @@
 namespace password_manager {
 
 namespace {
+
+constexpr char kDefaultFallbackIconUrl[] = "https://t1.gstatic.com/faviconV2";
+constexpr char kFallbackIconQueryParams[] =
+    "client=PASSWORD_MANAGER&type=FAVICON&size=32&url=";
 
 // Converts signon_realm (url for federated forms) into GURL and strips path. If
 // form is valid Android credential or conversion fails signon_realm is returned
@@ -200,7 +205,14 @@ FacetBrandingInfo CreateBrandingInfoFromFacetURI(
             : facet_uri.potentially_invalid_spec();
   }
   branding_info.name = group_name;
-  // TODO(crbug.com/1355956): Handle default icon URL.
+
+  GURL::Replacements replacements;
+  std::string query = kFallbackIconQueryParams +
+                      base::EscapeQueryParamValue(credential.GetURL().spec(),
+                                                  /*use_plus=*/false);
+  replacements.SetQueryStr(query);
+  branding_info.icon_url =
+      GURL(kDefaultFallbackIconUrl).ReplaceComponents(replacements);
   return branding_info;
 }
 

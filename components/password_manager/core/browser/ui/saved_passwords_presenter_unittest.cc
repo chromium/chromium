@@ -1426,8 +1426,14 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
   grouped_facets[0].facets = {
       Facet(FacetURI::FromPotentiallyInvalidSpec(form1.signon_realm)),
       Facet(FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm))};
+  grouped_facets[0].branding_info.name = "Form 1";
+  grouped_facets[0].branding_info.icon_url =
+      GURL("https://test1.com/favicon.ico");
   grouped_facets[1].facets = {
       Facet(FacetURI::FromPotentiallyInvalidSpec(form3.signon_realm))};
+  grouped_facets[1].branding_info.name = "Form 3";
+  grouped_facets[1].branding_info.icon_url =
+      GURL("https://test3.com/favicon.ico");
 
   AffiliationService::GroupsCallback callback;
   EXPECT_CALL(affiliation_service(), GetGroupingInfo)
@@ -1443,8 +1449,8 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
       presenter().GetAffiliatedGroups(),
       UnorderedElementsAre(
           AffiliatedGroup({credential1, credential2},
-                          {GetShownOrigin(credential1)}),
-          AffiliatedGroup({credential3}, {GetShownOrigin(credential3)})));
+                          grouped_facets[0].branding_info),
+          AffiliatedGroup({credential3}, grouped_facets[1].branding_info)));
   EXPECT_THAT(presenter().GetBlockedSites(),
               ElementsAre(CredentialUIEntry(blocked_form)));
 
