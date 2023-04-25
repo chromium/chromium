@@ -77,8 +77,10 @@ class PenIdBrowserTest : public InProcessBrowserTest {
 };
 
 void PenIdBrowserTest::SetUpOnMainThread() {
-  if (base::win::GetVersion() < base::win::Version::WIN10_21H2 ||
-      (base::win::GetVersion() == base::win::Version::WIN10_21H2 &&
+  LOG(INFO) << "windows kernel32version = "
+            << static_cast<int>(base::win::OSInfo::Kernel32Version());
+  if (base::win::OSInfo::Kernel32Version() < base::win::Version::WIN10_21H2 ||
+      (base::win::OSInfo::Kernel32Version() == base::win::Version::WIN10_21H2 &&
        base::win::OSInfo::GetInstance()->version_number().patch < 1503)) {
     GTEST_SKIP() << "Pen Device Api not supported on this machine";
   }
