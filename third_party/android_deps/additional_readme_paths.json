@@ -122,7 +122,6 @@
     "libs/javax_inject_javax_inject",
     "libs/net_bytebuddy_byte_buddy",
     "libs/net_bytebuddy_byte_buddy_agent",
-    "libs/net_bytebuddy_byte_buddy_android",
     "libs/net_ltgt_gradle_incap_incap",
     "libs/org_bouncycastle_bcprov_jdk15on",
     "libs/org_ccil_cowan_tagsoup_tagsoup",
