@@ -35,7 +35,6 @@ class SplitViewDividerView : public views::View,
 
   // views::View:
   void Layout() override;
-  void OnThemeChanged() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;

@@ -10,7 +10,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/screen_layout_observer.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
@@ -20,7 +20,9 @@
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_divider_handler_view.h"
 #include "ash/wm/splitview/split_view_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/rect.h"
@@ -56,9 +58,18 @@ SplitViewDividerView::SplitViewDividerView(SplitViewController* controller,
 
   SetPaintToLayer(ui::LAYER_TEXTURED);
   layer()->SetFillsBoundsOpaquely(false);
-  SetBackground(
-      views::CreateSolidBackground(AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kOpaque)));
+
+  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
+
+  SetBackground(views::CreateThemedSolidBackground(
+      is_jellyroll_enabled
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
+          : kColorAshShieldAndBaseOpaque));
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      /*corner_radius=*/0,
+      is_jellyroll_enabled
+          ? views::HighlightBorder::Type::kHighlightBorderNoShadow
+          : views::HighlightBorder::Type::kHighlightBorder1));
 
   if (IsSnapGroupEnabledInClamshellMode()) {
     kebab_button_ = AddChildView(std::make_unique<IconButton>(
@@ -129,17 +140,6 @@ void SplitViewDividerView::Layout() {
         kebab_button_size.width(), kebab_button_size.height());
     kebab_button_->SetBoundsRect(kebab_button_bounds);
   }
-}
-
-void SplitViewDividerView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  background()->SetNativeControlColor(
-      AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kOpaque));
-
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      /*corner_radius=*/0, views::HighlightBorder::Type::kHighlightBorder1));
 }
 
 bool SplitViewDividerView::OnMousePressed(const ui::MouseEvent& event) {
