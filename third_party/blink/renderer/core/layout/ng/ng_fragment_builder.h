@@ -65,6 +65,27 @@ class CORE_EXPORT NGFragmentBuilder {
   }
   TextDirection Direction() const { return writing_direction_.Direction(); }
 
+  // Store the previous break token, if one exists.
+  void SetPreviousBreakToken(const NGBlockBreakToken* break_token) {
+    previous_break_token_ = break_token;
+  }
+  const NGBlockBreakToken* PreviousBreakToken() const {
+    return previous_break_token_;
+  }
+
+  // Either this function or SetBoxType must be called before ToBoxFragment().
+  void SetIsNewFormattingContext(bool is_new_fc) { is_new_fc_ = is_new_fc; }
+
+  NGPhysicalFragment::NGBoxType BoxType() const;
+  void SetBoxType(NGPhysicalFragment::NGBoxType box_type) {
+    box_type_ = box_type;
+  }
+  bool IsFragmentainerBoxType() const {
+    NGPhysicalFragment::NGBoxType box_type = BoxType();
+    return box_type == NGPhysicalFragment::kColumnBox ||
+           box_type == NGPhysicalFragment::kPageBox;
+  }
+
   LayoutUnit InlineSize() const { return size_.inline_size; }
   LayoutUnit BlockSize() const {
     DCHECK(size_.block_size != kIndefiniteSize);
@@ -258,6 +279,25 @@ class CORE_EXPORT NGFragmentBuilder {
   // block layout algorithm, to perform the final OOF layout and positioning.
   void MoveOutOfFlowDescendantCandidatesToDescendants();
 
+  // OOF positioned elements inside a fragmentation context are laid out once
+  // they reach the fragmentation context root, so we need to adjust the offset
+  // of its containing block to be relative to the fragmentation context
+  // root. This allows us to determine the proper offset for the OOF inside the
+  // same context. The block offset returned is the block contribution from
+  // previous fragmentainers, if the current builder is a fragmentainer.
+  // Otherwise, |fragmentainer_consumed_block_size| will be used. In some cases,
+  // for example, we won't be able to calculate the adjustment from the builder.
+  // This would happen when an OOF positioned element is nested inside another
+  // OOF positioned element. The nested OOF will never have propagated up
+  // through a fragmentainer builder. In such cases, the necessary adjustment
+  // will be passed in via |fragmentainer_consumed_block_size|.
+  LayoutUnit BlockOffsetAdjustmentForFragmentainer(
+      LayoutUnit fragmentainer_consumed_block_size = LayoutUnit()) const;
+
+  void SetDisableOOFDescendantsPropagation() {
+    disable_oof_descendants_propagation_ = true;
+  }
+
   bool HasOutOfFlowFragmentChild() const {
     return has_out_of_flow_fragment_child_;
   }
@@ -426,8 +466,7 @@ class CORE_EXPORT NGFragmentBuilder {
       const NGPhysicalFragment& child,
       LogicalOffset child_offset,
       LogicalOffset relative_offset,
-      const NGInlineContainer<LogicalOffset>* inline_container = nullptr,
-      absl::optional<LayoutUnit> adjustment_for_oof_propagation = LayoutUnit());
+      const NGInlineContainer<LogicalOffset>* inline_container = nullptr);
 
   void AddChildInternal(const NGPhysicalFragment*, const LogicalOffset&);
 
@@ -446,9 +485,17 @@ class CORE_EXPORT NGFragmentBuilder {
   scoped_refptr<const ComputedStyle> style_;
   WritingDirectionMode writing_direction_;
   NGStyleVariant style_variant_;
+  NGPhysicalFragment::NGBoxType box_type_ =
+      NGPhysicalFragment::NGBoxType::kNormalBox;
   LogicalSize size_;
   LayoutObject* layout_object_ = nullptr;
+
+  // The break token from the previous fragment, that serves as input now.
+  const NGBlockBreakToken* previous_break_token_ = nullptr;
+
+  // The break token to store in the resulting fragment.
   const NGBreakToken* break_token_ = nullptr;
+
   NGLogicalAnchorQuery* anchor_query_ = nullptr;
   LayoutUnit bfc_line_offset_;
   absl::optional<LayoutUnit> bfc_block_offset_;
@@ -492,6 +539,7 @@ class CORE_EXPORT NGFragmentBuilder {
   bool is_self_collapsing_ = false;
   bool is_pushed_by_floats_ = false;
   bool subtree_modified_margin_strut_ = false;
+  bool is_new_fc_ = false;
   bool is_legacy_layout_root_ = false;
   bool is_block_in_inline_ = false;
   bool has_floating_descendants_for_paint_ = false;
@@ -508,6 +556,7 @@ class CORE_EXPORT NGFragmentBuilder {
   bool should_add_break_tokens_manually_ = false;
   bool has_out_of_flow_fragment_child_ = false;
   bool has_out_of_flow_in_fragmentainer_subtree_ = false;
+  bool disable_oof_descendants_propagation_ = false;
 
 #if DCHECK_IS_ON()
   bool is_may_have_descendant_above_block_start_explicitly_set_ = false;

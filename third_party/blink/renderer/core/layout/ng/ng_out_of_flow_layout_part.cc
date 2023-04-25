@@ -861,11 +861,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
         last_fragment_with_fragmentainer = multicol_box_fragment;
       }
 
-      limited_multicol_container_builder.AddChild(
-          *fragment, offset, /* margin_strut */ nullptr,
-          /* is_self_collapsing */ false, /* relative_offset */ absl::nullopt,
-          /* inline_container */ nullptr,
-          /* adjustment_for_oof_propagation */ absl::nullopt);
+      limited_multicol_container_builder.AddChild(*fragment, offset);
       multicol_children.emplace_back(MulticolChildInfo(&child));
     }
 
@@ -2233,12 +2229,7 @@ void NGOutOfFlowLayoutPart::ReplaceFragmentainer(
 
   if (create_new_fragment) {
     const NGLayoutResult* new_result = algorithm->Layout();
-    container_builder_->AddChild(
-        new_result->PhysicalFragment(), offset,
-        /* margin_strut */ nullptr, /* is_self_collapsing */ false,
-        /* relative_offset */ absl::nullopt,
-        /* inline_container */ nullptr,
-        /* adjustment_for_oof_propagation */ absl::nullopt);
+    container_builder_->AddChild(new_result->PhysicalFragment(), offset);
   } else {
     const NGLayoutResult* new_result = algorithm->Layout();
     const NGPhysicalFragment* new_fragment = &new_result->PhysicalFragment();

@@ -53,6 +53,39 @@ NGLogicalAnchorQuery::SetOptions AnchorQuerySetOptions(
 
 }  // namespace
 
+NGPhysicalFragment::NGBoxType NGFragmentBuilder::BoxType() const {
+  if (box_type_ != NGPhysicalFragment::NGBoxType::kNormalBox) {
+    return box_type_;
+  }
+
+  // When implicit, compute from LayoutObject.
+  DCHECK(layout_object_);
+  if (layout_object_->IsFloating()) {
+    return NGPhysicalFragment::NGBoxType::kFloating;
+  }
+  if (layout_object_->IsOutOfFlowPositioned()) {
+    return NGPhysicalFragment::NGBoxType::kOutOfFlowPositioned;
+  }
+  if (layout_object_->IsRenderedLegend()) {
+    return NGPhysicalFragment::NGBoxType::kRenderedLegend;
+  }
+  if (layout_object_->IsInline()) {
+    // Check |IsAtomicInlineLevel()| after |IsInline()| because |LayoutReplaced|
+    // sets |IsAtomicInlineLevel()| even when it's block-level. crbug.com/567964
+    if (layout_object_->IsAtomicInlineLevel()) {
+      return NGPhysicalFragment::NGBoxType::kAtomicInline;
+    }
+    return NGPhysicalFragment::NGBoxType::kInlineBox;
+  }
+  DCHECK(node_) << "Must call SetBoxType if there is no node";
+  DCHECK_EQ(is_new_fc_, node_.CreatesNewFormattingContext())
+      << "Forgot to call builder.SetIsNewFormattingContext";
+  if (is_new_fc_) {
+    return NGPhysicalFragment::NGBoxType::kBlockFlowRoot;
+  }
+  return NGPhysicalFragment::NGBoxType::kNormalBox;
+}
+
 void NGFragmentBuilder::ReplaceChild(wtf_size_t index,
                                      const NGPhysicalFragment& new_child,
                                      const LogicalOffset offset) {
@@ -105,18 +138,20 @@ void NGFragmentBuilder::PropagateChildData(
     const NGPhysicalFragment& child,
     LogicalOffset child_offset,
     LogicalOffset relative_offset,
-    const NGInlineContainer<LogicalOffset>* inline_container,
-    absl::optional<LayoutUnit> adjustment_for_oof_propagation) {
+    const NGInlineContainer<LogicalOffset>* inline_container) {
   // Propagate anchors from the |child|. Anchors are in |OutOfFlowData| but the
   // |child| itself may have an anchor.
   PropagateChildAnchors(child, child_offset + relative_offset);
 
-  if (adjustment_for_oof_propagation &&
-      child.NeedsOOFPositionedInfoPropagation()) {
+  if (child.NeedsOOFPositionedInfoPropagation() &&
+      !disable_oof_descendants_propagation_) {
+    LayoutUnit adjustment_for_oof_propagation =
+        BlockOffsetAdjustmentForFragmentainer();
+
     PropagateOOFPositionedInfo(child, child_offset, relative_offset,
                                /* offset_adjustment */ LogicalOffset(),
                                inline_container,
-                               *adjustment_for_oof_propagation);
+                               adjustment_for_oof_propagation);
   }
 
   // We only need to report if inflow or floating elements depend on the
@@ -366,6 +401,14 @@ void NGFragmentBuilder::MoveOutOfFlowDescendantCandidatesToDescendants() {
           /* relative_offset */ LogicalOffset());
     }
   }
+}
+
+LayoutUnit NGFragmentBuilder::BlockOffsetAdjustmentForFragmentainer(
+    LayoutUnit fragmentainer_consumed_block_size) const {
+  if (IsFragmentainerBoxType() && PreviousBreakToken()) {
+    return PreviousBreakToken()->ConsumedBlockSize();
+  }
+  return fragmentainer_consumed_block_size;
 }
 
 void NGFragmentBuilder::PropagateOOFPositionedInfo(

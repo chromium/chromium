@@ -96,11 +96,9 @@ void NGSimplifiedOOFLayoutAlgorithm::AddChildFragment(const NGLink& child) {
   absl::optional<LogicalOffset> relative_offset = LogicalOffset();
 
   // Add the fragment to the builder.
-  container_builder_.AddChild(
-      *fragment, child_offset, /* margin_strut */ nullptr,
-      /* is_self_collapsing */ false, relative_offset,
-      /* inline_container */ nullptr,
-      /* adjustment_for_oof_propagation */ absl::nullopt);
+  container_builder_.AddChild(*fragment, child_offset,
+                              /* margin_strut */ nullptr,
+                              /* is_self_collapsing */ false, relative_offset);
 }
 
 }  // namespace blink

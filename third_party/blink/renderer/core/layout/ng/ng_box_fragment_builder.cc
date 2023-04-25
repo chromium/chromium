@@ -116,13 +116,9 @@ void NGBoxFragmentBuilder::AddResult(
   // No margins should pierce outside formatting-context roots.
   DCHECK(!fragment.IsFormattingContextRoot() || end_margin_strut.IsEmpty());
 
-  absl::optional<LayoutUnit> adjustment_for_oof_propagation;
-  if (!disable_oof_descendants_propagation_)
-    adjustment_for_oof_propagation = BlockOffsetAdjustmentForFragmentainer();
-
   AddChild(fragment, offset, &end_margin_strut,
            child_layout_result.IsSelfCollapsing(), relative_offset,
-           inline_container, adjustment_for_oof_propagation);
+           inline_container);
 
   if (UNLIKELY(has_block_fragmentation_))
     PropagateBreakInfo(*result_for_propagation, offset);
@@ -136,14 +132,11 @@ void NGBoxFragmentBuilder::AddChild(
     const NGMarginStrut* margin_strut,
     bool is_self_collapsing,
     absl::optional<LogicalOffset> relative_offset,
-    const NGInlineContainer<LogicalOffset>* inline_container,
-    absl::optional<LayoutUnit> adjustment_for_oof_propagation) {
+    const NGInlineContainer<LogicalOffset>* inline_container) {
 #if DCHECK_IS_ON()
   needs_inflow_bounds_explicitly_set_ = !!relative_offset;
   needs_may_have_descendant_above_block_start_explicitly_set_ =
       !!relative_offset;
-  DCHECK(!disable_oof_descendants_propagation_ ||
-         !adjustment_for_oof_propagation);
 #endif
 
   if (!relative_offset) {
@@ -263,8 +256,7 @@ void NGBoxFragmentBuilder::AddChild(
   }
 
   DCHECK(relative_offset);
-  PropagateChildData(child, child_offset, *relative_offset, inline_container,
-                     adjustment_for_oof_propagation);
+  PropagateChildData(child, child_offset, *relative_offset, inline_container);
   AddChildInternal(&child, child_offset + *relative_offset);
 }
 
@@ -286,33 +278,6 @@ void NGBoxFragmentBuilder::AddOutOfFlowLegacyCandidate(
       node, static_position,
       NGInlineContainer<LogicalOffset>(inline_container,
                                        /* relative_offset */ LogicalOffset()));
-}
-
-NGPhysicalFragment::NGBoxType NGBoxFragmentBuilder::BoxType() const {
-  if (box_type_ != NGPhysicalFragment::NGBoxType::kNormalBox)
-    return box_type_;
-
-  // When implicit, compute from LayoutObject.
-  DCHECK(layout_object_);
-  if (layout_object_->IsFloating())
-    return NGPhysicalFragment::NGBoxType::kFloating;
-  if (layout_object_->IsOutOfFlowPositioned())
-    return NGPhysicalFragment::NGBoxType::kOutOfFlowPositioned;
-  if (layout_object_->IsRenderedLegend())
-    return NGPhysicalFragment::NGBoxType::kRenderedLegend;
-  if (layout_object_->IsInline()) {
-    // Check |IsAtomicInlineLevel()| after |IsInline()| because |LayoutReplaced|
-    // sets |IsAtomicInlineLevel()| even when it's block-level. crbug.com/567964
-    if (layout_object_->IsAtomicInlineLevel())
-      return NGPhysicalFragment::NGBoxType::kAtomicInline;
-    return NGPhysicalFragment::NGBoxType::kInlineBox;
-  }
-  DCHECK(node_) << "Must call SetBoxType if there is no node";
-  DCHECK_EQ(is_new_fc_, node_.CreatesNewFormattingContext())
-      << "Forgot to call builder.SetIsNewFormattingContext";
-  if (is_new_fc_)
-    return NGPhysicalFragment::NGBoxType::kBlockFlowRoot;
-  return NGPhysicalFragment::NGBoxType::kNormalBox;
 }
 
 void NGBoxFragmentBuilder::PropagateSpaceShortage(
@@ -648,13 +613,6 @@ void NGBoxFragmentBuilder::AdjustFragmentainerDescendant(
     descendant.fixedpos_containing_block.SetRequiresContentBeforeBreaking(
         RequiresContentBeforeBreaking());
   }
-}
-
-LayoutUnit NGBoxFragmentBuilder::BlockOffsetAdjustmentForFragmentainer(
-    LayoutUnit fragmentainer_consumed_block_size) const {
-  if (IsFragmentainerBoxType() && PreviousBreakToken())
-    return PreviousBreakToken()->ConsumedBlockSize();
-  return fragmentainer_consumed_block_size;
 }
 
 void NGBoxFragmentBuilder::
