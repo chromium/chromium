@@ -164,6 +164,14 @@ NotificationIconsController::NotificationIconsController(
     DCHECK(!features::IsQsRevampEnabled());
     system_tray_model_observation_.Observe(system_tray_model);
   }
+
+  // Initialize `icons_view_visible_` according to display size. Only do this
+  // when QsRevamp is enabled; without QsRevamp, icons view visibility is
+  // determined by the `UnifiedSystemTrayModel`.
+  if (features::IsQsRevampEnabled()) {
+    UpdateIconsViewVisibleForDisplaySize();
+  }
+
   message_center::MessageCenter::Get()->AddObserver(this);
   Shell::Get()->session_controller()->AddObserver(this);
 }
@@ -233,6 +241,14 @@ void NotificationIconsController::UpdateNotificationIndicators() {
   quiet_mode_view_->Update();
 }
 
+void NotificationIconsController::UpdateIconsViewVisibleForDisplaySize() {
+  aura::Window* window = shelf_->status_area_widget()->GetNativeWindow();
+  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+  const int display_size =
+      std::max(display.size().width(), display.size().height());
+  icons_view_visible_ = display_size >= kIconsViewDisplaySizeThreshold;
+}
+
 void NotificationIconsController::OnSystemTrayButtonSizeChanged(
     UnifiedSystemTrayModel::SystemTrayButtonSize unified_system_tray_size) {
   icons_view_visible_ = unified_system_tray_size !=
@@ -257,13 +273,8 @@ void NotificationIconsController::OnDisplayMetricsChanged(
       display.id()) {
     return;
   }
-
-  const int display_size =
-      std::max(display.size().width(), display.size().height());
-
-  const bool old_icons_view_visible = icons_view_visible_;
-  icons_view_visible_ = display_size >= kIconsViewDisplaySizeThreshold;
-
+  auto old_icons_view_visible = icons_view_visible_;
+  UpdateIconsViewVisibleForDisplaySize();
   if (old_icons_view_visible == icons_view_visible_)
     return;
 

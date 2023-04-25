@@ -148,6 +148,10 @@ class ASH_EXPORT NotificationIconsController
   NotificationIconTrayItemView* GetNotificationIconShownInTray(
       const std::string& id);
 
+  // Updates `icons_view_visible_` according to the size of the display
+  // associated with `shelf_`.
+  void UpdateIconsViewVisibleForDisplaySize();
+
   // Contains notification icon tray items that are added to tray container. All
   // items are owned by views hierarchy.
   std::vector<NotificationIconTrayItemView*> tray_items_;
