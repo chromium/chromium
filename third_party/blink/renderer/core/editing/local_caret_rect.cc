@@ -96,20 +96,35 @@ LocalCaretRect LocalCaretRectOfPositionTemplate(
   if (!layout_object)
     return LocalCaretRect();
 
+  // If the `position` is for `LayoutText` or before/after inline boxes, let
+  // `ComputeLocalCaretRect` compute.
   const PositionWithAffinityTemplate<Strategy>& adjusted =
       ComputeInlineAdjustedPosition(position, rule);
-
   if (adjusted.IsNotNull()) {
     if (auto caret_position =
             ComputeNGCaretPosition(AdjustForNGCaretPosition(adjusted)))
       return ComputeLocalCaretRect(caret_position);
   }
 
-  // DeleteSelectionCommandTest.deleteListFromTable goes here.
+  // If the caret is in an empty `LayoutBlockFlow`, and if it is block-
+  // fragmented, set the first fragment to prevent rendering multiple carets in
+  // following fragments.
+  const NGPhysicalBoxFragment* root_box_fragment = nullptr;
+  if (position.GetPosition().IsOffsetInAnchor() &&
+      !position.GetPosition().OffsetInContainerNode()) {
+    if (const auto* block_flow = DynamicTo<LayoutBlockFlow>(layout_object)) {
+      if (!block_flow->FirstChild() &&
+          block_flow->PhysicalFragmentCount() >= 2) {
+        root_box_fragment = block_flow->GetPhysicalFragment(0);
+      }
+    }
+  }
+
   return LocalCaretRect(layout_object,
                         layout_object->PhysicalLocalCaretRect(
                             position.GetPosition().ComputeEditingOffset(),
-                            extra_width_to_end_of_line));
+                            extra_width_to_end_of_line),
+                        root_box_fragment);
 }
 
 // This function was added because the caret rect that is calculated by
