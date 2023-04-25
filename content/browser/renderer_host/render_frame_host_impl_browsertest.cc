@@ -7237,6 +7237,105 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   }
 }
 
+class ShouldShowLoadingUIDelegate : public WebContentsDelegate {
+ public:
+  void LoadingStateChanged(WebContents* source,
+                           bool should_show_loading_ui) final {
+    is_loading_values_.push_back(source->IsLoading());
+    did_show_loading_ui_values_.push_back(should_show_loading_ui);
+  }
+
+  const std::vector<bool>& is_loading_values() { return is_loading_values_; }
+  const std::vector<bool>& did_show_loading_ui_values() {
+    return did_show_loading_ui_values_;
+  }
+
+ private:
+  std::vector<bool> is_loading_values_;
+  std::vector<bool> did_show_loading_ui_values_;
+};
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       NavigationApiInterceptsBrowserInitiatedSameDocument) {
+  GURL main_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  GURL same_doc_url = embedded_test_server()->GetURL("a.com", "/title1.html#a");
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  std::unique_ptr<ShouldShowLoadingUIDelegate> delegate =
+      std::make_unique<ShouldShowLoadingUIDelegate>();
+  web_contents()->SetDelegate(delegate.get());
+
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             "navigation.onnavigate = e => e.intercept("
+             "{ handler: () => new Promise(r => setTimeout(r, 100)) })"));
+  ASSERT_TRUE(NavigateToURL(shell(), same_doc_url));
+
+  ASSERT_EQ(delegate->is_loading_values().size(), 3ul);
+  ASSERT_EQ(delegate->did_show_loading_ui_values().size(), 3ul);
+
+  // First LoadingStateChanged called: start for a browser-initiated
+  // same-document navigation. NavigationApi hasn't intercepted yet, so the
+  // default same-document behavior of not showing loading UI applies.
+  EXPECT_TRUE(delegate->is_loading_values()[0]);
+  EXPECT_FALSE(delegate->did_show_loading_ui_values()[0]);
+
+  // Navigation commits, and it's a NavigationApi intercept. The commit message
+  // will not trigger DidStartLoading() (because is_loading() is already
+  // true), but when StartLoadingForAsyncNavigationApiCommit() is called, a
+  // LoadingStateChanged to enable loading UI is fired.
+  EXPECT_TRUE(delegate->is_loading_values()[1]);
+  EXPECT_TRUE(delegate->did_show_loading_ui_values()[1]);
+
+  // Navigation completes.
+  EXPECT_FALSE(delegate->is_loading_values()[2]);
+  EXPECT_FALSE(delegate->did_show_loading_ui_values()[2]);
+}
+
+// Like NavigationApiInterceptsBrowserInitiatedSameDocument, but the navigation
+// is fast enough that the browser never receives a
+// StartLoadingForAsyncNavigationApiCommit message from the renderer.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    NavigationApiInterceptsBrowserInitiatedSameDocumentFastHandler) {
+  GURL main_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  GURL same_doc_url = embedded_test_server()->GetURL("a.com", "/title1.html#a");
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  std::unique_ptr<ShouldShowLoadingUIDelegate> delegate =
+      std::make_unique<ShouldShowLoadingUIDelegate>();
+  web_contents()->SetDelegate(delegate.get());
+
+  // Intercept, but take only a short time to execute the handler.
+  // The renderer waits 50ms before sending a
+  // StartLoadingForAsyncNavigationApiCommit, and will not send it at all if,
+  // as in this case, the navigation completes before the timer fires.
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             "navigation.onnavigate = e => e.intercept("
+             "{ handler: () => new Promise(r => setTimeout(r, 10)) })"));
+  ASSERT_TRUE(NavigateToURL(shell(), same_doc_url));
+
+  ASSERT_EQ(delegate->is_loading_values().size(), 2ul);
+  ASSERT_EQ(delegate->did_show_loading_ui_values().size(), 2ul);
+
+  // First LoadingStateChanged called: start for a browser-initiated
+  // same-document navigation. NavigationApi hasn't intercepted yet, so the
+  // default same-document behavior of not showing loading UI applies.
+  EXPECT_TRUE(delegate->is_loading_values()[0]);
+  EXPECT_FALSE(delegate->did_show_loading_ui_values()[0]);
+
+  // Next, the navigation will commit due to the intercept. The commit will not
+  // trigger DidStartLoading() (because is_loading() is already
+  // true), and the renderer will complete its navigation before it would have
+  // called StartLoadingForAsyncNavigationApiCommit(), so we never enable the
+  // loading UI.
+
+  // Navigation completes.
+  EXPECT_FALSE(delegate->is_loading_values()[1]);
+  EXPECT_FALSE(delegate->did_show_loading_ui_values()[1]);
+}
+
 // Ensure that navigating with a frame tree of A(B(A)) results in the right
 // number of beforeunload messages sent.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,

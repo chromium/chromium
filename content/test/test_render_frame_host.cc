@@ -401,6 +401,10 @@ void TestRenderFrameHost::SendDidCommitSameDocumentNavigation(
                                   std::move(same_doc_params));
 }
 
+void TestRenderFrameHost::SendStartLoadingForAsyncNavigationApiCommit() {
+  StartLoadingForAsyncNavigationApiCommit();
+}
+
 void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
     const GURL& url,
     bool has_user_gesture) {

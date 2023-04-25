@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_NAVIGATION_API_NAVIGATE_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_NAVIGATION_API_NAVIGATE_EVENT_H_
 
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
@@ -77,6 +79,8 @@ class NavigateEvent final : public Event,
   }
   void FinalizeNavigationActionPromisesList();
 
+  void Abort(ScriptState* script_state, ScriptValue error);
+
   // FocusedElementChangeObserver implementation:
   void DidChangeFocus() final;
 
@@ -95,6 +99,8 @@ class NavigateEvent final : public Event,
 
   class Reaction;
   void ReactDone(ScriptValue, bool did_fulfill);
+
+  void DelayedLoadStartTimerFired();
 
   String navigation_type_;
   Member<NavigationDestination> destination_;
@@ -124,6 +130,11 @@ class NavigateEvent final : public Event,
   HeapVector<Member<V8NavigationInterceptHandler>>
       navigation_action_handlers_list_;
   bool did_change_focus_during_intercept_ = false;
+
+  // Used to delay the start of the loading UI when the navigation is
+  // intercepted, in order to minimize jittering if any handlers are short.
+  static constexpr base::TimeDelta kDelayLoadStart = base::Milliseconds(50);
+  TaskHandle delayed_load_start_task_handle_;
 };
 
 }  // namespace blink
