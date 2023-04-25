@@ -1750,6 +1750,11 @@
           'inverse_quickrun_shards': 2,
         },
       },
+      'win10-code-coverage': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
     },
   },
   'compositor_unittests': {
