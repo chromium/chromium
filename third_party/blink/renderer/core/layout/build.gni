@@ -29,8 +29,6 @@ blink_core_hot_sources_layout = [
 blink_core_sources_layout = [
   "anchor_scroll_data.cc",
   "anchor_scroll_data.h",
-  "api/selection_state.cc",
-  "api/selection_state.h",
   "background_bleed_avoidance.h",
   "box_layout_extra_input.h",
   "content_change_type.h",
@@ -544,6 +542,8 @@ blink_core_sources_layout = [
   "pointer_events_hit_rules.h",
   "scroll_anchor.cc",
   "scroll_anchor.h",
+  "selection_state.cc",
+  "selection_state.h",
   "shapes/box_shape.cc",
   "shapes/box_shape.h",
   "shapes/ellipse_shape.cc",
@@ -684,7 +684,6 @@ if (is_fuchsia) {
 
 blink_core_tests_layout = [
   "anchor_scroll_data_test.cc",
-  "api/selection_state_test.cc",
   "geometry/axis_test.cc",
   "geometry/logical_rect_test.cc",
   "geometry/physical_rect_test.cc",
@@ -776,6 +775,7 @@ blink_core_tests_layout = [
   "paint_containment_test.cc",
   "scroll_anchor_test.cc",
   "scrollbars_test.cc",
+  "selection_state_test.cc",
   "shapes/box_shape_test.cc",
   "shapes/ellipse_shape_test.cc",
   "style_retain_scope_test.cc",

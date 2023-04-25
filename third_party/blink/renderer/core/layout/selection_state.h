@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_API_SELECTION_STATE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_API_SELECTION_STATE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SELECTION_STATE_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SELECTION_STATE_H_
 
 #include <iosfwd>
 #include "third_party/blink/renderer/core/core_export.h"
@@ -36,4 +36,4 @@ CORE_EXPORT std::ostream& operator<<(std::ostream&, const SelectionState);
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_API_SELECTION_STATE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SELECTION_STATE_H_
