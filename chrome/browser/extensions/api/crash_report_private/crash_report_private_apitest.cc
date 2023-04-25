@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, RedactMessage) {
           {"app_locale=en-US&browser=Chrome&browser_process_uptime_ms=\\d+&"
            "browser_version=1.2."
            "3.4&channel=Stable&column=456&"
-           "error_message=%5BMAC%20OUI%3D06%3A00%3A00%20IFACE%3D1%5D&"
+           "error_message=\\(MAC%20OUI%3D06%3A00%3A00%20IFACE%3D1\\)&"
            "full_url=http%3A%2F%2Fwww.test.com%2Ffoo&line=123&num-experiments="
            "1&"
            "os=ChromeOS&prod=TestApp&renderer_process_uptime_ms=\\d+&"

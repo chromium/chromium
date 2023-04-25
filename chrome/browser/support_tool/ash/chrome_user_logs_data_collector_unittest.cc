@@ -52,14 +52,14 @@ const char kFakeGaiaId[] = "gaia-id";
 const FakeUserLog kFakeUserLogs[] = {
     {/*path=*/base::FilePath("log/chrome"), /*log_name=*/"chrome",
      /*log_contents=*/"Fake Chrome logs\nUser is fakeusername@example.com",
-     /*redacted_contents=*/"Fake Chrome logs\nUser is <email: 1>"},
+     /*redacted_contents=*/"Fake Chrome logs\nUser is (email: 1)"},
     {/*path=*/base::FilePath("log/chrome_00000000-000000"),
      /*log_name=*/"chrome_00000000-000000",
      /*log_contents=*/"Sample logs", /*redacted_contents=*/"Sample logs"},
     {/*path=*/base::FilePath("log/chrome_00000000-111111"),
      /*log_name=*/"chrome_00000000-111111",
      /*log_contents=*/"Sample logs with PII chrome://resources/f?user=bar",
-     /*redacted_contents=*/"Sample logs with PII <URL: 1>"}};
+     /*redacted_contents=*/"Sample logs with PII (URL: 1)"}};
 
 const PIIMap kExpectedPIIMap = {
     {redaction::PIIType::kEmail, {"fakeusername@example.com"}},

@@ -629,7 +629,7 @@ std::string RedactionTool::RedactMACAddresses(
       // If not found, build up a replacement MAC address by generating a new
       // NIC part.
       int mac_id = mac_addresses_.size() - kNumUnredactedMacs;
-      replacement_mac = base::StringPrintf("[MAC OUI=%s IFACE=%d]",
+      replacement_mac = base::StringPrintf("(MAC OUI=%s IFACE=%d)",
                                            oui_string.c_str(), mac_id);
       mac_addresses_[mac] = replacement_mac;
     }
@@ -691,7 +691,7 @@ std::string RedactionTool::RedactHashes(
     if (replacement_hash.empty()) {
       // If not found, build up a replacement value.
       replacement_hash = base::StringPrintf(
-          "<HASH:%s %zd>", hash_prefix_string.c_str(), hashes_.size());
+          "(HASH:%s %zd)", hash_prefix_string.c_str(), hashes_.size());
       hashes_[hash] = replacement_hash;
     }
     if (detected != nullptr) {
@@ -833,7 +833,7 @@ std::string RedactionTool::RedactCustomPatternWithContext(
       // The weird NumberToString trick is because Windows does not like
       // to deal with %zu and a size_t in printf, nor does it support %llu.
       replacement_id = base::StringPrintf(
-          "<%s: %s>", pattern.alias,
+          "(%s: %s)", pattern.alias,
           base::NumberToString(identifier_space->size() + 1).c_str());
       (*identifier_space)[matched_id_as_string] = replacement_id;
     } else {
@@ -951,7 +951,7 @@ std::string RedactionTool::RedactCustomPatternWithoutContext(
         // The weird NumberToString trick is because Windows does not like
         // to deal with %zu and a size_t in printf, nor does it support %llu.
         replacement_id = base::StringPrintf(
-            "<%s: %s>",
+            "(%s: %s)",
             replacement_id.empty() ? pattern.alias : replacement_id.c_str(),
             base::NumberToString(identifier_space->size() + 1).c_str());
         (*identifier_space)[matched_id_as_string] = replacement_id;

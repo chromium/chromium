@@ -269,10 +269,10 @@ TEST_F(ChromeJsErrorReportProcessorTest, RedactMessage) {
   const absl::optional<MockCrashEndpoint::Report>& actual_report =
       endpoint_->last_report();
   ASSERT_TRUE(actual_report);
-  // Escaped version of "<email: 1> says hi to <email: 2>"
+  // Escaped version of "(email: 1) says hi to (email: 2)"
   EXPECT_THAT(actual_report->query,
-              HasSubstr("error_message=%3Cemail%3A%201%3E%20says%20hi%20to%20"
-                        "%3Cemail%3A%202%3E"));
+              HasSubstr("error_message=(email%3A%201)%20says%20hi%20to%20"
+                        "(email%3A%202)"));
   // Redacted messages still need to be removed from stack trace.
   EXPECT_EQ(actual_report->content, "bad_func(1, 2)\nonclick()\n");
 }

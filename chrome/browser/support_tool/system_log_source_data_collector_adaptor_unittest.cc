@@ -49,7 +49,7 @@ const TestData kTestData[] = {
      /*test_logs_pii_redacted=*/
      "Collected data for testing:\n"
      "Will contain some PII sensitive info to test functionality.\n"
-     "Some IP addresss as PII here: <0.0.0.0/8: 1>, <IPv6: 1>\n"},
+     "Some IP addresss as PII here: (0.0.0.0/8: 1), (IPv6: 1)\n"},
     {/*data_source_name=*/"test-log-source-url",
      /*test_logs=*/
      "More data for testing for this log source:\n"
@@ -59,7 +59,7 @@ const TestData kTestData[] = {
      /*test_logs_pii_redacted=*/
      "More data for testing for this log source:\n"
      "For example some URL address that could be visited by user\n"
-     "is <URL: 1> and this will be considered as PII.\n"},
+     "is (URL: 1) and this will be considered as PII.\n"},
 };
 
 // The PII sensitive data that the test data contains.

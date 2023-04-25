@@ -73,26 +73,26 @@ const TestData kTestData[] = {
          "Name": "stub_wifi_device1",
          "Type": "wifi"
       })",
-     /*test_logs_pii_redacted=*/R"("/device/wifi1": {
+     /*test_logs_pii_redacted=*/R"data("/device/wifi1": {
          "Address": "23456789abcd",
          "DBus.Object": "/device/wifi1",
          "DBus.Service": "org.freedesktop.ModemManager1",
          "IPConfigs": {
             "ipconfig_v4_path": {
-               "Address": "<IPv4: 1>",
-               "Gateway": "<IPv4: 2>",
+               "Address": "(IPv4: 1)",
+               "Gateway": "(IPv4: 2)",
                "Method": "ipv4",
                "Prefixlen": 1,
-               "WebProxyAutoDiscoveryUrl": "<URL: 1>"
+               "WebProxyAutoDiscoveryUrl": "(URL: 1)"
             },
             "ipconfig_v6_path": {
-               "Address": "<IPv6: 1>",
+               "Address": "(IPv6: 1)",
                "Method": "ipv6"
             }
          },
          "Name": "*** MASKED ***",
          "Type": "wifi"
-      })"},
+      })data"},
     {/*data_source_name=*/kNetworkServices,
      /*test_logs=*/R"("/service/wifi1": {
          "Connectable": true,
