@@ -6,10 +6,10 @@
 #include <cmath>
 
 #include "base/containers/flat_set.h"
-#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "chrome/browser/fast_checkout/fast_checkout_accessibility_service_impl.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_delegate_impl.h"
@@ -192,7 +192,7 @@ bool FastCheckoutClientImpl::TryToStart(
       personal_data_helper_->GetPersonalDataManager());
   autofill_manager_observation_.Observe(autofill_manager_.get());
   run_id_ =
-      base::HashMetricName(base::GUID::GenerateRandomV4().AsLowercaseString());
+      base::HashMetricName(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   SetFormsToFill();
 

@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/guid.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
@@ -65,7 +65,8 @@ using ::ukm::builders::Autofill_FastCheckoutRunOutcome;
 namespace {
 
 CreditCard GetEmptyCreditCard() {
-  CreditCard credit_card(base::GenerateGUID(), "");
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         "");
   autofill::test::SetCreditCardInfo(&credit_card, /*name_on_card=*/"",
                                     /*card_number=*/"",
                                     autofill::test::NextMonth().c_str(),

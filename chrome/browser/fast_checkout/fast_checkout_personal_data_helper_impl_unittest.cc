@@ -4,7 +4,7 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper_impl.h"
 
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -19,7 +19,8 @@ using ::autofill::CreditCard;
 using ::testing::Eq;
 
 CreditCard GetEmptyCreditCard() {
-  CreditCard credit_card(base::GenerateGUID(), "");
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                         "");
   autofill::test::SetCreditCardInfo(&credit_card, /*name_on_card=*/"",
                                     /*card_number=*/"",
                                     autofill::test::NextMonth().c_str(),
