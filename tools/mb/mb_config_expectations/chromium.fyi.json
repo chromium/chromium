@@ -407,6 +407,16 @@
       "use_remoteexec": true
     }
   },
+  "android-build-perf-developer": {
+    "gn_args": {
+      "enable_nacl": false,
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 2,
+      "target_cpu": "arm64",
+      "target_os": "android"
+    }
+  },
   "android-fieldtrial-rel": {
     "gn_args": {
       "android_static_analysis": "off",
@@ -958,6 +968,14 @@
       "use_remoteexec": true
     }
   },
+  "linux-build-perf-developer": {
+    "gn_args": {
+      "enable_nacl": false,
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 2
+    }
+  },
   "linux-chromeos-annotator-rel": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -1298,6 +1316,14 @@
       "use_goma": false,
       "use_partition_alloc_as_malloc": true,
       "use_remoteexec": true
+    }
+  },
+  "win-build-perf-developer": {
+    "gn_args": {
+      "enable_nacl": false,
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 2
     }
   },
   "win-celab-builder-rel": {
