@@ -100,11 +100,23 @@ BOOL WaitForKeyboardToAppear() {
   if ([self
           isRunningTest:@selector(testShowAccountStorageNoticeBeforeSaving)] ||
       [self
-          isRunningTest:@selector(testShowAccountStorageNoticeBeforeFilling)]) {
+          isRunningTest:@selector(testShowAccountStorageNoticeBeforeFilling)] ||
+      [self isRunningTest:@selector
+            (testShowAccountStorageNoticeBeforeFillingBottomSheet)]) {
     config.features_enabled.push_back(
         password_manager::features::kEnablePasswordsAccountStorage);
     config.features_enabled.push_back(
         password_manager::features::kIOSShowPasswordStorageInSaveInfobar);
+  }
+  if ([self
+          isRunningTest:@selector(testShowAccountStorageNoticeBeforeFilling)]) {
+    config.features_disabled.push_back(
+        password_manager::features::kIOSPasswordBottomSheet);
+  }
+  if ([self isRunningTest:@selector
+            (testShowAccountStorageNoticeBeforeFillingBottomSheet)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kIOSPasswordBottomSheet);
   }
   return config;
 }
@@ -201,6 +213,38 @@ BOOL WaitForKeyboardToAppear() {
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:grey_accessibilityLabel(
                                                           @"user ••••••••")];
+}
+
+- (void)testShowAccountStorageNoticeBeforeFillingBottomSheet {
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"user"
+                         password:@"password"
+                              URL:net::NSURLWithGURL(self.testServer->GetURL(
+                                      "/simple_login_form.html"))];
+  [PasswordManagerAppInterface setAccountStorageNoticeShown:NO];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:NO];
+  [self loadLoginPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityLabel(l10n_util::GetNSString(
+                          IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_TITLE))];
+
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_BUTTON_TEXT))]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                                          @"user ••••••••")];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
+      performAction:grey_tap()];
 }
 
 // Tests that update password prompt is shown on submitting the new password
