@@ -4042,6 +4042,14 @@
                         "CustomizeChromeColorExtraction",
                         "CustomizeChromeSidePanel"
                     ]
+                },
+                {
+                    "name": "Panorama_In_Product_Help",
+                    "enable_features": [
+                        "CustomizeChromeColorExtraction",
+                        "CustomizeChromeSidePanel",
+                        "IPH_DesktopCustomizeChrome"
+                    ]
                 }
             ]
         }
