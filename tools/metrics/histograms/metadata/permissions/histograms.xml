@@ -674,6 +674,26 @@ chromium-metrics-reviews@google.com.
   <token key="PermissionType" variants="Top2PermissionTypes"/>
 </histogram>
 
+<histogram name="Permissions.OneTimePermission.{PermissionType}.Event"
+    enum="OneTimePermissionEvent" expires_after="2024-04-20">
+  <owner>fjacky@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Logs granting, revocation, and expiry behaviors of one time permissions. It
+    records grant events, manual revoke events, expiry due to tab closure or
+    discards, and expiry in the background due to non-usage. Note that the
+    number of grants that expired due to the 24 hour maximum grant time limit
+    can be aproximated by calculating #(granted one time) - #(other events),
+    though this does not take into account one time permissions that are still
+    currently active.
+  </summary>
+  <token key="PermissionType">
+    <variant name="AudioCapture"/>
+    <variant name="Geolocation"/>
+    <variant name="VideoCapture"/>
+  </token>
+</histogram>
+
 <histogram
     name="Permissions.PageInfo.Changed.{PermissionType}.Reallowed.Outcome"
     enum="PermissionChangeInfo" expires_after="2023-10-31">

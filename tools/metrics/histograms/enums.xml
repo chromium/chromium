@@ -76406,6 +76406,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="Enforced by flag for dev"/>
 </enum>
 
+<enum name="OneTimePermissionEvent">
+  <summary>One-time permission events.</summary>
+  <int value="0" label="Granted one time"/>
+  <int value="1" label="Revoked one time grant manually"/>
+  <int value="2" label="Expired due to tab closure or discards"/>
+  <int value="3" label="Expired in the background due to non-usage"/>
+</enum>
+
 <enum name="OnServiceConnectedTimedOutResult">
   <int value="0" label="AlreadyConnected">
     OnServiceConnected is already called. Everything worked as expected.

@@ -252,6 +252,28 @@ enum class AdaptiveTriggers {
   THREE_CONSECUTIVE_DENIES = 0x01,
 };
 
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "OneTimePermissionEvent" in tools/metrics/histograms/enums.xml.
+enum class OneTimePermissionEvent {
+  // Recorded for each one time grant
+  GRANTED_ONE_TIME = 0,
+
+  // Recorded when the user manually revokes a one time grant
+  REVOKED_MANUALLY = 1,
+
+  // Recorded when a one time grant expires because all tabs are either closed
+  // or discarded.
+
+  ALL_TABS_CLOSED_OR_DISCARDED = 2,
+
+  // Recorded when a one time grant expires because the permission was unused in
+  // the background.
+  EXPIRED_IN_BACKGROUND = 3,
+
+  kMaxValue = EXPIRED_IN_BACKGROUND
+};
+
 enum class PermissionAutoRevocationHistory {
   // Permission has not been automatically revoked.
   NONE = 0,
@@ -534,6 +556,9 @@ class PermissionUmaUtil {
 
   static void RecordPageInfoDialogAccessType(
       PageInfoDialogAccessType access_type);
+
+  static void RecordOneTimePermissionEvent(ContentSettingsType type,
+                                           OneTimePermissionEvent event);
 
   static void RecordPageInfoPermissionChangeWithin1m(
       ContentSettingsType type,

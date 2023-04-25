@@ -1276,6 +1276,19 @@ void PermissionUmaUtil::RecordPageInfoDialogAccessType(
 }
 
 // static
+void PermissionUmaUtil::RecordOneTimePermissionEvent(
+    ContentSettingsType type,
+    OneTimePermissionEvent event) {
+  DCHECK(permissions::PermissionUtil::CanPermissionBeAllowedOnce(type));
+
+  std::string permission_type = GetPermissionRequestString(
+      GetUmaValueForRequestType(ContentSettingsTypeToRequestType(type)));
+
+  base::UmaHistogramEnumeration(
+      "Permissions.OneTimePermission." + permission_type + ".Event", event);
+}
+
+// static
 void PermissionUmaUtil::RecordPageInfoPermissionChangeWithin1m(
     ContentSettingsType type,
     PermissionAction previous_action,

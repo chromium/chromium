@@ -15,6 +15,7 @@
 #include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "url/gurl.h"
 
@@ -53,6 +54,11 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
   if (constraints.session_model != content_settings::SessionModel::OneTime) {
     value_map_.DeleteValue(primary_pattern, secondary_pattern,
                            content_settings_type);
+
+    permissions::PermissionUmaUtil::RecordOneTimePermissionEvent(
+        content_settings_type,
+        permissions::OneTimePermissionEvent::REVOKED_MANUALLY);
+
     return false;
   }
   DCHECK_EQ(content_settings::ValueToContentSetting(value),
@@ -65,6 +71,10 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
           .expiration = clock_->Now() + base::Days(1),
           .session_model = content_settings::SessionModel::OneTime,
       });
+
+  permissions::PermissionUmaUtil::RecordOneTimePermissionEvent(
+      content_settings_type,
+      permissions::OneTimePermissionEvent::GRANTED_ONE_TIME);
 
   // We need to handle transitions from Allow to Allow Once gracefully.
   // In that case we add the Allow Once setting in this provider, but also
@@ -112,7 +122,9 @@ void OneTimePermissionProvider::OnLastPageFromOriginClosed(
   for (auto setting_type : {ContentSettingsType::GEOLOCATION,
                             ContentSettingsType::MEDIASTREAM_CAMERA,
                             ContentSettingsType::MEDIASTREAM_MIC}) {
-    DeleteValuesMatchingGurl(setting_type, origin.GetURL());
+    DeleteValuesMatchingGurl(
+        setting_type, origin.GetURL(),
+        permissions::OneTimePermissionEvent::ALL_TABS_CLOSED_OR_DISCARDED);
   }
 }
 
@@ -122,7 +134,9 @@ void OneTimePermissionProvider::OnLastPageFromOriginClosed(
 // origin.
 void OneTimePermissionProvider::OnAllTabsInBackgroundTimerExpired(
     const url::Origin& origin) {
-  DeleteValuesMatchingGurl(ContentSettingsType::GEOLOCATION, origin.GetURL());
+  DeleteValuesMatchingGurl(
+      ContentSettingsType::GEOLOCATION, origin.GetURL(),
+      permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND);
 }
 
 // All tabs to the origin have not shown a tab indicator for video for a certain
@@ -130,8 +144,9 @@ void OneTimePermissionProvider::OnAllTabsInBackgroundTimerExpired(
 // associated with the origin.
 void OneTimePermissionProvider::OnCapturingVideoExpired(
     const url::Origin& origin) {
-  DeleteValuesMatchingGurl(ContentSettingsType::MEDIASTREAM_CAMERA,
-                           origin.GetURL());
+  DeleteValuesMatchingGurl(
+      ContentSettingsType::MEDIASTREAM_CAMERA, origin.GetURL(),
+      permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND);
 }
 
 // All tabs to the origin have not shown a tab indicator for microphone access
@@ -139,13 +154,15 @@ void OneTimePermissionProvider::OnCapturingVideoExpired(
 // permission associated with the origin.
 void OneTimePermissionProvider::OnCapturingAudioExpired(
     const url::Origin& origin) {
-  DeleteValuesMatchingGurl(ContentSettingsType::MEDIASTREAM_MIC,
-                           origin.GetURL());
+  DeleteValuesMatchingGurl(
+      ContentSettingsType::MEDIASTREAM_MIC, origin.GetURL(),
+      permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND);
 }
 
 void OneTimePermissionProvider::DeleteValuesMatchingGurl(
     ContentSettingsType content_setting_type,
-    const GURL& origin_gurl) {
+    const GURL& origin_gurl,
+    permissions::OneTimePermissionEvent trigger_event) {
   std::set<content_settings::OriginIdentifierValueMap::PatternPair>
       patterns_to_delete;
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
@@ -156,6 +173,10 @@ void OneTimePermissionProvider::DeleteValuesMatchingGurl(
     if (rule.primary_pattern.Matches(origin_gurl) &&
         rule.secondary_pattern.Matches(origin_gurl)) {
       patterns_to_delete.insert({rule.primary_pattern, rule.secondary_pattern});
+      if (rule.metadata.expiration >= clock_->Now()) {
+        permissions::PermissionUmaUtil::RecordOneTimePermissionEvent(
+            content_setting_type, trigger_event);
+      }
     }
   }
   rule_iterator.reset();
