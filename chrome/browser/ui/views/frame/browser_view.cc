@@ -1863,13 +1863,27 @@ void BrowserView::UpdateExclusiveAccessExitBubbleContent(
       (!notify_download && bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) ||
       (ShouldUseImmersiveFullscreenForUrl(url) &&
        !profiles::IsPublicSession())) {
-    // |exclusive_access_bubble_.reset()| will trigger callback for current
-    // bubble with |ExclusiveAccessBubbleHideReason::kInterrupted| if available.
-    exclusive_access_bubble_.reset();
     if (bubble_first_hide_callback) {
       std::move(bubble_first_hide_callback)
           .Run(ExclusiveAccessBubbleHideReason::kNotShown);
     }
+
+    // If we intend to close the bubble but it has already been deleted no
+    // action is needed.
+    if (!exclusive_access_bubble_) {
+      return;
+    }
+
+    // `HideImmediately()` will trigger a callback for the current bubble with
+    // `ExclusiveAccessBubbleHideReason::kInterrupted` if available.
+    exclusive_access_bubble_->HideImmediately();
+
+    // Perform the destroy async. State updates in the exclusive access bubble
+    // view may call back into this method. This otherwise results in premature
+    // deletion of the bubble view and UAFs. See crbug.com/1426521.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&BrowserView::DestroyAnyExclusiveAccessBubble,
+                                  GetAsWeakPtr()));
     return;
   }
 
