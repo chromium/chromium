@@ -22,6 +22,8 @@ source_set("fast_pair_handshake") {
     "fast_pair_handshake.h",
     "fast_pair_handshake_impl.cc",
     "fast_pair_handshake_impl.h",
+    "fast_pair_handshake_impl_new.cc",
+    "fast_pair_handshake_impl_new.h",
     "fast_pair_handshake_lookup.cc",
     "fast_pair_handshake_lookup.h",
     "fast_pair_key_pair.cc",
@@ -75,6 +77,7 @@ source_set("unit_tests") {
     "fast_pair_data_encryptor_impl_unittest.cc",
     "fast_pair_encryption_unittest.cc",
     "fast_pair_gatt_service_client_impl_unittest.cc",
+    "fast_pair_handshake_impl_new_unittest.cc",
     "fast_pair_handshake_impl_unittest.cc",
   ]
 
