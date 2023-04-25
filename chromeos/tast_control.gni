@@ -323,6 +323,9 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.VirtualKeyboardHandwriting.floating",
   "inputs.VirtualKeyboardTypingUserMode.incognito",
 
+  # b/279351324: Until crrev.com/c/4475024 upreved.
+  "a11y.LiveCaption.lacros",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
