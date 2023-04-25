@@ -15,8 +15,6 @@ class AccountId;
 
 namespace ash {
 
-typedef std::set<std::string> AffiliationIDSet;
-
 // Returns a callback to retrieve device DMToken if the user with
 // given `account_id` is affiliated on the device.
 base::RepeatingCallback<std::string(const std::vector<std::string>&)>

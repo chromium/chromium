@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+#include <string>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
@@ -61,7 +65,7 @@ constexpr char kEthServicePath[] = "/service/eth1";
 
 constexpr char kSAMLIdPCookieName[] = "saml";
 constexpr char kSAMLIdPCookieValue[] = "value";
-constexpr char kAffiliationID[] = "test id";
+constexpr base::StringPiece kAffiliationID = "test id";
 
 void ErrorCallbackFunction(base::OnceClosure run_loop_quit_closure,
                            const std::string& error_name,
@@ -952,14 +956,13 @@ class SAMLCookieTransferTest : public LockscreenWebUiTest {
         ->set_transfer_saml_cookies(true);
     // Make user affiliated - this is another condition required to transfer
     // saml cookies.
-    const std::set<std::string> device_affiliation_ids = {kAffiliationID};
     auto affiliation_helper = policy::AffiliationTestHelper::CreateForCloud(
         FakeSessionManagerClient::Get());
-    ASSERT_NO_FATAL_FAILURE((affiliation_helper.SetDeviceAffiliationIDs(
-        &device_policy_test_helper, device_affiliation_ids)));
+    ASSERT_NO_FATAL_FAILURE(affiliation_helper.SetDeviceAffiliationIDs(
+        &device_policy_test_helper, std::array{kAffiliationID}));
     policy::UserPolicyBuilder user_policy_builder;
-    ASSERT_NO_FATAL_FAILURE((affiliation_helper.SetUserAffiliationIDs(
-        &user_policy_builder, GetAccountId(), device_affiliation_ids)));
+    ASSERT_NO_FATAL_FAILURE(affiliation_helper.SetUserAffiliationIDs(
+        &user_policy_builder, GetAccountId(), std::array{kAffiliationID}));
   }
 
   // Add some random cookie to user partition. This is needed because during
@@ -1058,14 +1061,13 @@ class SamlSsoProfileTest : public LockscreenWebUiTest {
 
     // Set affiliation and user policies - this is needed for login in tests to
     // work correctly
-    const std::set<std::string> device_affiliation_ids = {kAffiliationID};
     auto affiliation_helper = policy::AffiliationTestHelper::CreateForCloud(
         FakeSessionManagerClient::Get());
-    ASSERT_NO_FATAL_FAILURE((affiliation_helper.SetDeviceAffiliationIDs(
-        &device_policy_test_helper, device_affiliation_ids)));
+    ASSERT_NO_FATAL_FAILURE(affiliation_helper.SetDeviceAffiliationIDs(
+        &device_policy_test_helper, std::array{kAffiliationID}));
     policy::UserPolicyBuilder user_policy_builder;
-    ASSERT_NO_FATAL_FAILURE((affiliation_helper.SetUserAffiliationIDs(
-        &user_policy_builder, GetAccountId(), device_affiliation_ids)));
+    ASSERT_NO_FATAL_FAILURE(affiliation_helper.SetUserAffiliationIDs(
+        &user_policy_builder, GetAccountId(), std::array{kAffiliationID}));
   }
 
  private:

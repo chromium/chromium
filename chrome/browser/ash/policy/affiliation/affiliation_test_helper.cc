@@ -115,13 +115,13 @@ void AffiliationTestHelper::CheckPreconditions() {
 
 void AffiliationTestHelper::SetDeviceAffiliationIDs(
     DevicePolicyCrosTestHelper* test_helper,
-    const std::set<std::string>& device_affiliation_ids) {
+    const base::span<const base::StringPiece>& device_affiliation_ids) {
   ASSERT_NO_FATAL_FAILURE(CheckPreconditions());
 
   DevicePolicyBuilder* device_policy = test_helper->device_policy();
   for (const auto& device_affiliation_id : device_affiliation_ids) {
     device_policy->policy_data().add_device_affiliation_ids(
-        device_affiliation_id);
+        std::string(device_affiliation_id));
   }
   if (management_type_ != ManagementType::kActiveDirectory) {
     // Create keys and sign policy. Note that Active Directory policy is
@@ -140,7 +140,7 @@ void AffiliationTestHelper::SetDeviceAffiliationIDs(
 void AffiliationTestHelper::SetUserAffiliationIDs(
     UserPolicyBuilder* user_policy,
     const AccountId& user_account_id,
-    const std::set<std::string>& user_affiliation_ids) {
+    const base::span<const base::StringPiece>& user_affiliation_ids) {
   ASSERT_NO_FATAL_FAILURE(CheckPreconditions());
   ASSERT_TRUE(management_type_ != ManagementType::kActiveDirectory ||
               user_account_id.GetAccountType() ==
@@ -152,7 +152,8 @@ void AffiliationTestHelper::SetUserAffiliationIDs(
     ASSERT_NO_FATAL_FAILURE(SetUserKeys(*user_policy));
   }
   for (const auto& user_affiliation_id : user_affiliation_ids) {
-    user_policy->policy_data().add_user_affiliation_ids(user_affiliation_id);
+    user_policy->policy_data().add_user_affiliation_ids(
+        std::string(user_affiliation_id));
   }
   user_policy->Build();
 
