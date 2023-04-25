@@ -226,8 +226,7 @@
     </sp-heading>
 
     <div id="bookmarks" class="bookmarks sp-scroller"
-        hidden="[[hasNoBookmarksInActiveFolder_(shownBookmarks_,
-                                                activeFolderPath_.*)]]"
+        hidden="[[!shownBookmarks_.length]]"
         role="[[getBookmarksListRole_(editing_)]]"
         aria-multiselectable="[[editing_]]" scrollable>
       <iron-list id="shownBookmarksIronList"
@@ -278,8 +277,7 @@
   </div>
 
   <sp-empty-state
-      hidden="[[!hasNoBookmarksInActiveFolder_(shownBookmarks_,
-                                               activeFolderPath_.*)]]"
+      hidden="[[shownBookmarks_.length]]"
       guest$="[[guestMode_]]"
       image-path="[[getEmptyImagePath_(labels_.*, searchQuery_)]]"
       dark-image-path="[[getEmptyImagePathDark_(labels_.*, searchQuery_)]]"
@@ -288,8 +286,7 @@
   </sp-empty-state>
   <sp-footer
       hidden="[[shouldShowEmptySearchState_(labels_.*, searchQuery_)]]"
-      pinned="[[!hasNoBookmarksInActiveFolder_(shownBookmarks_,
-                                               activeFolderPath_.*)]]">
+      pinned="[[shownBookmarks_.length]]">
     <cr-button class="floating-button"
         hidden="[[hideAddTabButton_(editing_)]]"
         on-click="onAddTabClicked_"

@@ -693,22 +693,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   private shouldHideHeader_(): boolean {
-    return this.hasActiveLabels_() || !!this.searchQuery_ ||
-        this.hasNoBookmarks_();
-  }
-
-  private hasNoBookmarks_(): boolean {
-    return this.hasNoBookmarksInActiveFolder_() && !this.getActiveFolder_();
-  }
-
-  private hasNoBookmarksInActiveFolder_(): boolean {
-    for (const bookmark of this.shownBookmarks_) {
-      if (bookmark.url || bookmark.parentId !== '0' ||
-          bookmark.children!.length) {
-        return false;
-      }
-    }
-    return true;
+    return this.hasActiveLabels_() || !!this.searchQuery_;
   }
 
   private getSelectedDescription_() {
