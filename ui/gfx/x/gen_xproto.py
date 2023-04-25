@@ -1544,7 +1544,7 @@ class GenReadEvent(FileWriter):
             self.write()
             for name, event, proto in self.events:
                 self.gen_event(name, event, proto)
-            self.write('NOTREACHED();')
+            self.write('// Leave `event` default-initialized.')
         self.write()
         self.write('}  // namespace x11')
 

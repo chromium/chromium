@@ -1372,7 +1372,7 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     return;
   }
 
-  NOTREACHED();
+  // Leave `event` default-initialized.
 }
 
 }  // namespace x11
