@@ -30,10 +30,11 @@ const struct zcr_text_input_extension_v1_interface
         &GetExtendedTextInput,  // get_extended_text_input
 };
 
-TestZcrTextInputExtensionV1::TestZcrTextInputExtensionV1(uint32_t version)
+TestZcrTextInputExtensionV1::TestZcrTextInputExtensionV1(
+    TestZcrTextInputExtensionV1::Version version)
     : GlobalObject(&zcr_text_input_extension_v1_interface,
                    &kTestZcrTextInputExtensionV1Impl,
-                   version) {}
+                   static_cast<uint32_t>(version)) {}
 
 TestZcrTextInputExtensionV1::~TestZcrTextInputExtensionV1() = default;
 

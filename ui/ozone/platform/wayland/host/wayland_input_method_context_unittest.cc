@@ -27,6 +27,7 @@
 #include "ui/ozone/platform/wayland/test/mock_zwp_text_input.h"
 #include "ui/ozone/platform/wayland/test/test_util.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
+#include "ui/ozone/platform/wayland/test/test_zcr_text_input_extension.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
 using ::testing::_;
@@ -292,7 +293,8 @@ INSTANTIATE_TEST_SUITE_P(
     TextInputExtensionV7,
     WaylandInputMethodContextOldServerTest,
     ::testing::Values(wl::ServerConfig{
-        .text_input_extension_version = wl::TextInputExtensionVersion::kV7}));
+        .text_input_extension_version =
+            wl::TestZcrTextInputExtensionV1::Version::kV7}));
 
 TEST_P(WaylandInputMethodContextOldServerTest, SetContentType) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
