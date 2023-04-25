@@ -47,13 +47,12 @@ scoped_refptr<const Extension> CreateExtensionWithPermissions(
     creation_flags |= Extension::ALLOW_FILE_ACCESS;
   return ExtensionBuilder()
       .SetLocation(mojom::ManifestLocation::kInternal)
-      .SetManifest(DictionaryBuilder()
+      .SetManifest(base::Value::Dict()
                        .Set("name", name)
                        .Set("description", "foo")
                        .Set("manifest_version", 2)
                        .Set("version", "0.1.2.3")
-                       .Set("permissions", std::move(permissions))
-                       .Build())
+                       .Set("permissions", std::move(permissions)))
       .AddFlags(creation_flags)
       .SetID(crx_file::id_util::GenerateId(name))
       .Build();
@@ -61,7 +60,11 @@ scoped_refptr<const Extension> CreateExtensionWithPermissions(
 
 // Helper function to create a base::Value from a list of strings.
 base::Value::List StringVectorToValue(const std::vector<std::string>& strings) {
-  return ListBuilder().Append(strings.begin(), strings.end()).Build();
+  base::Value::List lv;
+  for (const auto& s : strings) {
+    lv.Append(s);
+  }
+  return lv;
 }
 
 // Runs permissions.request() with the provided |args|, and returns the result
@@ -112,10 +115,9 @@ class PermissionsAPIUnitTest : public ExtensionServiceTestWithInstall {
                            const std::string& args_string,
                            bool allow_file_access) {
     SCOPED_TRACE(args_string);
-    ListBuilder required_permissions;
-    required_permissions.Append(manifest_permission);
     scoped_refptr<const Extension> extension = CreateExtensionWithPermissions(
-        required_permissions.Build(), "My Extension", allow_file_access);
+        base::Value::List().Append(manifest_permission), "My Extension",
+        allow_file_access);
     ExtensionPrefs::Get(profile())->SetAllowFileAccess(extension->id(),
                                                        allow_file_access);
     scoped_refptr<PermissionsContainsFunction> function(
@@ -636,7 +638,7 @@ TEST_F(PermissionsAPIUnitTest, RequestingChromeURLs) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
           .SetManifestKey("optional_permissions",
-                          ListBuilder().Append("<all_urls>").Build())
+                          base::Value::List().Append("<all_urls>"))
           .Build();
   AddExtensionAndGrantPermissions(*extension);
 

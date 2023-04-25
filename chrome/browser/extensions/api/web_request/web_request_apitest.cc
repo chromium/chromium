@@ -1386,17 +1386,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, HostedAppRequest) {
   scoped_refptr<const Extension> hosted_app =
       ExtensionBuilder()
           .SetManifest(
-              DictionaryBuilder()
+              base::Value::Dict()
                   .Set("name", "Some hosted app")
                   .Set("version", "1")
                   .Set("manifest_version", 2)
-                  .Set("app", DictionaryBuilder()
-                                  .Set("launch", DictionaryBuilder()
-                                                     .Set("web_url",
-                                                          hosted_app_url.spec())
-                                                     .Build())
-                                  .Build())
-                  .Build())
+                  .Set("app",
+                       base::Value::Dict().Set(
+                           "launch", base::Value::Dict().Set(
+                                         "web_url", hosted_app_url.spec()))))
           .Build();
   extension_service()->AddExtension(hosted_app.get());
 

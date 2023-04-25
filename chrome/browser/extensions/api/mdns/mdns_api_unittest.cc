@@ -46,8 +46,8 @@ void AddEventListener(
     const std::string& service_type,
     content::RenderProcessHost* process,
     extensions::EventListenerMap::ListenerList* listener_list) {
-  base::Value::Dict filter;
-  filter.Set(kEventFilterServiceTypeKey, service_type);
+  auto filter =
+      base::Value::Dict().Set(kEventFilterServiceTypeKey, service_type);
   listener_list->push_back(EventListener::ForExtension(
       kEventFilterServiceTypeKey, extension_id, process, std::move(filter)));
 }
@@ -207,10 +207,10 @@ class MDnsAPITest : public extensions::ExtensionServiceTestBase {
       std::string name,
       bool is_platform_app,
       std::string extension_id) {
-    base::Value::Dict manifest;
-    manifest.Set(extensions::manifest_keys::kVersion, "1.0.0.0");
-    manifest.Set(extensions::manifest_keys::kName, name);
-    manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
+    auto manifest = base::Value::Dict()
+                        .Set(extensions::manifest_keys::kVersion, "1.0.0.0")
+                        .Set(extensions::manifest_keys::kName, name)
+                        .Set(extensions::manifest_keys::kManifestVersion, 2);
     if (is_platform_app) {
       // Setting app.background.page = "background.html" is sufficient to make
       // the extension type TYPE_PLATFORM_APP.

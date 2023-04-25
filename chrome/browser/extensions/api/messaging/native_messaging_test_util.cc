@@ -33,18 +33,18 @@ void WriteTestNativeHostManifest(const base::FilePath& target_dir,
                                  const base::FilePath& host_path,
                                  bool user_level,
                                  bool supports_native_initiated_connections) {
-  base::Value::Dict manifest;
-  manifest.Set("name", host_name);
-  manifest.Set("description", "Native Messaging Echo Test");
-  manifest.Set("type", "stdio");
-  manifest.Set("path", host_path.AsUTF8Unsafe());
-  manifest.Set("supports_native_initiated_connections",
-               supports_native_initiated_connections);
+  auto manifest = base::Value::Dict()
+                      .Set("name", host_name)
+                      .Set("description", "Native Messaging Echo Test")
+                      .Set("type", "stdio")
+                      .Set("path", host_path.AsUTF8Unsafe())
+                      .Set("supports_native_initiated_connections",
+                           supports_native_initiated_connections);
 
-  base::Value::List origins;
-  origins.Append(base::StringPrintf(
-      "chrome-extension://%s/", ScopedTestNativeMessagingHost::kExtensionId));
-  manifest.Set("allowed_origins", std::move(origins));
+  manifest.Set("allowed_origins",
+               base::Value::List().Append(base::StringPrintf(
+                   "chrome-extension://%s/",
+                   ScopedTestNativeMessagingHost::kExtensionId)));
 
   base::FilePath manifest_path = target_dir.AppendASCII(host_name + ".json");
   JSONFileValueSerializer serializer(manifest_path);

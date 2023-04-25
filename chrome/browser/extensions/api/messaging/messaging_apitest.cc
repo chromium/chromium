@@ -58,7 +58,6 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/api/runtime.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -81,12 +80,8 @@ class MessageSender : public ExtensionHostRegistry::Observer {
  private:
   static base::Value::List BuildEventArguments(const bool last_message,
                                                const std::string& data) {
-    base::Value::Dict event;
-    event.Set("lastMessage", last_message);
-    event.Set("data", data);
-    base::Value::List arguments;
-    arguments.Append(std::move(event));
-    return arguments;
+    return base::Value::List().Append(
+        base::Value::Dict().Set("lastMessage", last_message).Set("data", data));
   }
 
   static std::unique_ptr<Event> BuildEvent(
@@ -607,11 +602,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, NotInstalled) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetID("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-          .SetManifest(DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", "Fake extension")
                            .Set("version", "1")
-                           .Set("manifest_version", 2)
-                           .Build())
+                           .Set("manifest_version", 2))
           .Build();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
@@ -1478,11 +1472,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
   scoped_refptr<const Extension> invalid =
       ExtensionBuilder()
           .SetID(crx_file::id_util::GenerateId("invalid"))
-          .SetManifest(DictionaryBuilder()
+          .SetManifest(base::Value::Dict()
                            .Set("name", "Fake extension")
                            .Set("version", "1")
-                           .Set("manifest_version", 2)
-                           .Build())
+                           .Set("manifest_version", 2))
           .Build();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));

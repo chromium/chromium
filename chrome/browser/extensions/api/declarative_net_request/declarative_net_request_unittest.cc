@@ -55,7 +55,6 @@
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/url_pattern.h"
-#include "extensions/common/value_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -83,6 +82,15 @@ using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
+
+template <class T>
+base::Value::List VectorToList(const std::vector<T>& values) {
+  base::Value::List lv;
+  for (const auto& value : values) {
+    lv.Append(value);
+  }
+  return lv;
+}
 
 std::string GetErrorWithFilename(
     const std::string& error,
@@ -265,10 +273,7 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
                               const std::vector<TestRule>& rules_to_add,
                               RulesetScope scope,
                               const std::string* expected_error = nullptr) {
-    base::Value::List ids_to_remove_value =
-        ListBuilder()
-            .Append(rule_ids_to_remove.begin(), rule_ids_to_remove.end())
-            .Build();
+    base::Value::List ids_to_remove_value = VectorToList(rule_ids_to_remove);
     base::Value::List rules_to_add_value = ToListValue(rules_to_add);
 
     constexpr const char kParams[] = R"(
@@ -327,10 +332,7 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
           "ruleIds": $1
         }]
       )";
-      base::Value::List rule_ids_value =
-          ListBuilder()
-              .Append(rule_ids.value().begin(), rule_ids.value().end())
-              .Build();
+      base::Value::List rule_ids_value = VectorToList(rule_ids.value());
 
       json_args = content::JsReplace(kParams, std::move(rule_ids_value));
     }
@@ -417,14 +419,8 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
       const std::vector<int>& rule_ids_to_disable,
       const std::vector<int>& rule_ids_to_enable,
       absl::optional<std::string> expected_error) {
-    base::Value::List ids_to_disable =
-        ListBuilder()
-            .Append(rule_ids_to_disable.begin(), rule_ids_to_disable.end())
-            .Build();
-    base::Value::List ids_to_enable =
-        ListBuilder()
-            .Append(rule_ids_to_enable.begin(), rule_ids_to_enable.end())
-            .Build();
+    base::Value::List ids_to_disable = VectorToList(rule_ids_to_disable);
+    base::Value::List ids_to_enable = VectorToList(rule_ids_to_enable);
 
     constexpr const char kParams[] = R"([{ "rulesetId": $1,
                                            "disableRuleIds": $2,
