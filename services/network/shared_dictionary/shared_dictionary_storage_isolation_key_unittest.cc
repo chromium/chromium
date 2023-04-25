@@ -4,6 +4,7 @@
 
 #include "services/network/shared_dictionary/shared_dictionary_storage_isolation_key.h"
 
+#include "net/base/isolation_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -15,61 +16,69 @@ const net::SchemefulSite kSite1(GURL("https://origin1.test/"));
 const net::SchemefulSite kSite2(GURL("https://origin2.test/"));
 }  // namespace
 
-TEST(SharedDictionaryStorageIsolationKey, OpaqueOrigin) {
+TEST(SharedDictionaryStorageIsolationKeyTest, MaybeCreate) {
+  url::Origin origin = url::Origin::Create(kUrl1);
   const absl::optional<SharedDictionaryStorageIsolationKey> isolation_key =
       SharedDictionaryStorageIsolationKey::MaybeCreate(
-          url::Origin::Create(kUrl1).DeriveNewOpaqueOrigin(),
-          net::NetworkIsolationKey(kSite1, kSite1));
+          net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                     origin, origin, net::SiteForCookies()));
+  EXPECT_TRUE(isolation_key);
+}
+
+TEST(SharedDictionaryStorageIsolationKeyTest, MaybeCreateOpaqueTopFrameOrigin) {
+  const absl::optional<SharedDictionaryStorageIsolationKey> isolation_key =
+      SharedDictionaryStorageIsolationKey::MaybeCreate(
+          net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                     url::Origin(), url::Origin::Create(kUrl1),
+                                     net::SiteForCookies()));
   EXPECT_FALSE(isolation_key);
 }
 
-TEST(SharedDictionaryStorageIsolationKey, TransientNetworkIsolationKey) {
+TEST(SharedDictionaryStorageIsolationKeyTest, MaybeCreateOpaqueFrameOrigin) {
+  url::Origin origin = url::Origin::Create(kUrl1);
   const absl::optional<SharedDictionaryStorageIsolationKey> isolation_key =
       SharedDictionaryStorageIsolationKey::MaybeCreate(
-          url::Origin::Create(kUrl1),
-          net::NetworkIsolationKey(kSite1, kSite1,
-                                   base::UnguessableToken::Create()));
+          net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                     origin, url::Origin(),
+                                     net::SiteForCookies()));
   EXPECT_FALSE(isolation_key);
 }
 
-TEST(SharedDictionaryStorageIsolationKey, SameOriginSameNetworkIsokationKey) {
-  const absl::optional<SharedDictionaryStorageIsolationKey> isolation_key1 =
+TEST(SharedDictionaryStorageIsolationKeyTest, MaybeCreateWithNonce) {
+  const absl::optional<SharedDictionaryStorageIsolationKey> isolation_key =
       SharedDictionaryStorageIsolationKey::MaybeCreate(
-          url::Origin::Create(kUrl1), net::NetworkIsolationKey(kSite1, kSite1));
-  const absl::optional<SharedDictionaryStorageIsolationKey> isolation_key2 =
-      SharedDictionaryStorageIsolationKey::MaybeCreate(
-          url::Origin::Create(kUrl1), net::NetworkIsolationKey(kSite1, kSite1));
-  ASSERT_TRUE(isolation_key1);
-  ASSERT_TRUE(isolation_key2);
-  EXPECT_EQ(*isolation_key1, *isolation_key2);
+          net::IsolationInfo::Create(
+              net::IsolationInfo::RequestType::kOther,
+              url::Origin::Create(kUrl1), url::Origin(), net::SiteForCookies(),
+              /*party_context=*/absl::nullopt,
+              /*nonce=*/base::UnguessableToken::Create()));
+  EXPECT_FALSE(isolation_key);
 }
 
-TEST(SharedDictionaryStorageIsolationKey,
-     DifferentOriginSameNetworkIsokationKey) {
-  const absl::optional<SharedDictionaryStorageIsolationKey> isolation_key1 =
-      SharedDictionaryStorageIsolationKey::MaybeCreate(
-          url::Origin::Create(GURL("https://www1.origin1.test/")),
-          net::NetworkIsolationKey(kSite1, kSite1));
-  const absl::optional<SharedDictionaryStorageIsolationKey> isolation_key2 =
-      SharedDictionaryStorageIsolationKey::MaybeCreate(
-          url::Origin::Create(GURL("https://www2.origin1.test/")),
-          net::NetworkIsolationKey(kSite1, kSite1));
-  ASSERT_TRUE(isolation_key1);
-  ASSERT_TRUE(isolation_key2);
-  EXPECT_NE(*isolation_key1, *isolation_key2);
+TEST(SharedDictionaryStorageIsolationKeyTest, SameFrameOriginSameTopFrameSite) {
+  SharedDictionaryStorageIsolationKey isolation_key1(url::Origin::Create(kUrl1),
+                                                     kSite1);
+  SharedDictionaryStorageIsolationKey isolation_key2(url::Origin::Create(kUrl1),
+                                                     kSite1);
+  EXPECT_EQ(isolation_key1, isolation_key2);
 }
 
-TEST(SharedDictionaryStorageIsolationKey,
-     SameOriginDifferentNetworkIsokationKey) {
-  const absl::optional<SharedDictionaryStorageIsolationKey> isolation_key1 =
-      SharedDictionaryStorageIsolationKey::MaybeCreate(
-          url::Origin::Create(kUrl1), net::NetworkIsolationKey(kSite1, kSite1));
-  const absl::optional<SharedDictionaryStorageIsolationKey> isolation_key2 =
-      SharedDictionaryStorageIsolationKey::MaybeCreate(
-          url::Origin::Create(kUrl1), net::NetworkIsolationKey(kSite2, kSite1));
-  ASSERT_TRUE(isolation_key1);
-  ASSERT_TRUE(isolation_key2);
-  EXPECT_NE(*isolation_key1, *isolation_key2);
+TEST(SharedDictionaryStorageIsolationKeyTest,
+     DifferentFrameOriginSameTopFrameSite) {
+  SharedDictionaryStorageIsolationKey isolation_key1(
+      url::Origin::Create(GURL("https://www1.origin1.test/")), kSite1);
+  SharedDictionaryStorageIsolationKey isolation_key2(
+      url::Origin::Create(GURL("https://www2.origin1.test/")), kSite1);
+  EXPECT_NE(isolation_key1, isolation_key2);
+}
+
+TEST(SharedDictionaryStorageIsolationKeyTest,
+     SameFrameOriginDifferentTopFrameSite) {
+  SharedDictionaryStorageIsolationKey isolation_key1(url::Origin::Create(kUrl1),
+                                                     kSite1);
+  SharedDictionaryStorageIsolationKey isolation_key2(url::Origin::Create(kUrl1),
+                                                     kSite2);
+  EXPECT_NE(isolation_key1, isolation_key2);
 }
 
 }  // namespace network

@@ -93,9 +93,7 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
       const GURL& dictionary_url = GURL("https://origin.test/test")) {
     ASSERT_TRUE(isolation_info_.frame_origin());
     absl::optional<SharedDictionaryStorageIsolationKey> isolation_key =
-        SharedDictionaryStorageIsolationKey::MaybeCreate(
-            *isolation_info_.frame_origin(),
-            isolation_info_.network_isolation_key());
+        SharedDictionaryStorageIsolationKey::MaybeCreate(isolation_info_);
     ASSERT_TRUE(isolation_key);
     scoped_refptr<SharedDictionaryStorage> storage =
         network_context()->GetSharedDictionaryManager()->GetStorage(

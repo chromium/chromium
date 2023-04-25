@@ -6,9 +6,13 @@
 #define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_STORAGE_ISOLATION_KEY_H_
 
 #include "base/component_export.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
+
+namespace net {
+class IsolationInfo;
+}  // namespace net
 
 namespace network {
 
@@ -16,15 +20,16 @@ namespace network {
 class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorageIsolationKey {
  public:
   // Creates a SharedDictionaryStorageIsolationKey. Returns nullopt when
-  // `frame_origin` is opaque or `network_isolation_key` is transient.
+  // `frame_origin` or `top_frame_origin` of `isolation_info` is not set or
+  // opaque, or `nonce` is set.
   static absl::optional<SharedDictionaryStorageIsolationKey> MaybeCreate(
-      const url::Origin& frame_origin,
-      const net::NetworkIsolationKey& network_isolation_key);
+      const net::IsolationInfo& isolation_info);
+
+  SharedDictionaryStorageIsolationKey(const url::Origin& frame_origin,
+                                      const net::SchemefulSite& top_frame_site);
 
   const url::Origin& frame_origin() const { return frame_origin_; }
-  const net::NetworkIsolationKey& network_isolation_key() const {
-    return network_isolation_key_;
-  }
+  const net::SchemefulSite top_frame_site() const { return top_frame_site_; }
 
   ~SharedDictionaryStorageIsolationKey();
 
@@ -38,24 +43,20 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorageIsolationKey {
       SharedDictionaryStorageIsolationKey&& other);
 
   bool operator==(const SharedDictionaryStorageIsolationKey& other) const {
-    return std::tie(frame_origin_, network_isolation_key_) ==
-           std::tie(other.frame_origin_, other.network_isolation_key_);
+    return std::tie(frame_origin_, top_frame_site_) ==
+           std::tie(other.frame_origin_, other.top_frame_site_);
   }
   bool operator!=(const SharedDictionaryStorageIsolationKey& other) const {
     return !(*this == other);
   }
   bool operator<(const SharedDictionaryStorageIsolationKey& other) const {
-    return std::tie(frame_origin_, network_isolation_key_) <
-           std::tie(other.frame_origin_, other.network_isolation_key_);
+    return std::tie(frame_origin_, top_frame_site_) <
+           std::tie(other.frame_origin_, other.top_frame_site_);
   }
 
  private:
-  SharedDictionaryStorageIsolationKey(
-      const url::Origin& frame_origin,
-      const net::NetworkIsolationKey& network_isolation_key);
-
   url::Origin frame_origin_;
-  net::NetworkIsolationKey network_isolation_key_;
+  net::SchemefulSite top_frame_site_;
 };
 
 }  // namespace network

@@ -201,12 +201,10 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
     DCHECK_EQ(mojom::kBrowserProcessId, process_id_);
   }
 
-  if (context_->GetSharedDictionaryManager() &&
-      params->isolation_info.frame_origin()) {
+  if (context_->GetSharedDictionaryManager()) {
     absl::optional<SharedDictionaryStorageIsolationKey> isolation_key =
         SharedDictionaryStorageIsolationKey::MaybeCreate(
-            *params->isolation_info.frame_origin(),
-            params->isolation_info.network_isolation_key());
+            params->isolation_info);
     if (isolation_key) {
       shared_dictionary_storage_ =
           context_->GetSharedDictionaryManager()->GetStorage(*isolation_key);

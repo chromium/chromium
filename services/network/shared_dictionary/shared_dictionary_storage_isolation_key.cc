@@ -4,25 +4,30 @@
 
 #include "services/network/shared_dictionary/shared_dictionary_storage_isolation_key.h"
 
+#include "net/base/isolation_info.h"
+
 namespace network {
 
 // static
 absl::optional<SharedDictionaryStorageIsolationKey>
 SharedDictionaryStorageIsolationKey::MaybeCreate(
-    const url::Origin& frame_origin,
-    const net::NetworkIsolationKey& network_isolation_key) {
-  if (frame_origin.opaque() || network_isolation_key.IsTransient()) {
+    const net::IsolationInfo& isolation_info) {
+  if (!isolation_info.frame_origin() ||
+      isolation_info.frame_origin()->opaque() ||
+      !isolation_info.top_frame_origin() ||
+      isolation_info.top_frame_origin()->opaque() ||
+      isolation_info.nonce().has_value()) {
     return absl::nullopt;
   }
-  return SharedDictionaryStorageIsolationKey(frame_origin,
-                                             network_isolation_key);
+  return SharedDictionaryStorageIsolationKey(
+      *isolation_info.frame_origin(),
+      net::SchemefulSite(*isolation_info.top_frame_origin()));
 }
 
 SharedDictionaryStorageIsolationKey::SharedDictionaryStorageIsolationKey(
     const url::Origin& frame_origin,
-    const net::NetworkIsolationKey& network_isolation_key)
-    : frame_origin_(frame_origin),
-      network_isolation_key_(network_isolation_key) {}
+    const net::SchemefulSite& top_frame_site)
+    : frame_origin_(frame_origin), top_frame_site_(top_frame_site) {}
 
 SharedDictionaryStorageIsolationKey::~SharedDictionaryStorageIsolationKey() =
     default;

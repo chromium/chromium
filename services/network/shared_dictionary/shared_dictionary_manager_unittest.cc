@@ -56,21 +56,17 @@ TEST_F(SharedDictionaryManagerTest, SameStorageForSameIsolationKey) {
   std::unique_ptr<SharedDictionaryManager> manager =
       SharedDictionaryManager::CreateInMemory();
 
-  const absl::optional<SharedDictionaryStorageIsolationKey> isolation_key1 =
-      SharedDictionaryStorageIsolationKey::MaybeCreate(
-          url::Origin::Create(kUrl1), net::NetworkIsolationKey(kSite1, kSite1));
-  const absl::optional<SharedDictionaryStorageIsolationKey> isolation_key2 =
-      SharedDictionaryStorageIsolationKey::MaybeCreate(
-          url::Origin::Create(kUrl1), net::NetworkIsolationKey(kSite1, kSite1));
+  SharedDictionaryStorageIsolationKey isolation_key1(url::Origin::Create(kUrl1),
+                                                     kSite1);
+  SharedDictionaryStorageIsolationKey isolation_key2(url::Origin::Create(kUrl1),
+                                                     kSite1);
 
-  ASSERT_TRUE(isolation_key1);
-  ASSERT_TRUE(isolation_key2);
-  EXPECT_EQ(*isolation_key1, *isolation_key1);
+  EXPECT_EQ(isolation_key1, isolation_key1);
 
   scoped_refptr<SharedDictionaryStorage> storage1 =
-      manager->GetStorage(*isolation_key1);
+      manager->GetStorage(isolation_key1);
   scoped_refptr<SharedDictionaryStorage> storage2 =
-      manager->GetStorage(*isolation_key2);
+      manager->GetStorage(isolation_key2);
 
   EXPECT_TRUE(storage1);
   EXPECT_TRUE(storage2);
@@ -81,21 +77,16 @@ TEST_F(SharedDictionaryManagerTest, DifferentStorageForDifferentIsolationKey) {
   std::unique_ptr<SharedDictionaryManager> manager =
       SharedDictionaryManager::CreateInMemory();
 
-  const absl::optional<SharedDictionaryStorageIsolationKey> isolation_key1 =
-      SharedDictionaryStorageIsolationKey::MaybeCreate(
-          url::Origin::Create(kUrl1), net::NetworkIsolationKey(kSite1, kSite1));
-  const absl::optional<SharedDictionaryStorageIsolationKey> isolation_key2 =
-      SharedDictionaryStorageIsolationKey::MaybeCreate(
-          url::Origin::Create(kUrl2), net::NetworkIsolationKey(kSite2, kSite2));
-
-  ASSERT_TRUE(isolation_key1);
-  ASSERT_TRUE(isolation_key2);
-  EXPECT_NE(*isolation_key1, *isolation_key2);
+  SharedDictionaryStorageIsolationKey isolation_key1(url::Origin::Create(kUrl1),
+                                                     kSite1);
+  SharedDictionaryStorageIsolationKey isolation_key2(url::Origin::Create(kUrl2),
+                                                     kSite2);
+  EXPECT_NE(isolation_key1, isolation_key2);
 
   scoped_refptr<SharedDictionaryStorage> storage1 =
-      manager->GetStorage(*isolation_key1);
+      manager->GetStorage(isolation_key1);
   scoped_refptr<SharedDictionaryStorage> storage2 =
-      manager->GetStorage(*isolation_key2);
+      manager->GetStorage(isolation_key2);
 
   EXPECT_TRUE(storage1);
   EXPECT_TRUE(storage2);
@@ -106,14 +97,11 @@ TEST_F(SharedDictionaryManagerTest, NoWriterForNoUseAsDictionaryHeader) {
   std::unique_ptr<SharedDictionaryManager> manager =
       SharedDictionaryManager::CreateInMemory();
 
-  const absl::optional<SharedDictionaryStorageIsolationKey> isolation_key =
-      SharedDictionaryStorageIsolationKey::MaybeCreate(
-          url::Origin::Create(kUrl1), net::NetworkIsolationKey(kSite1, kSite1));
-
-  ASSERT_TRUE(isolation_key);
+  SharedDictionaryStorageIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                    kSite1);
 
   scoped_refptr<SharedDictionaryStorage> storage =
-      manager->GetStorage(*isolation_key);
+      manager->GetStorage(isolation_key);
 
   ASSERT_TRUE(storage);
   scoped_refptr<net::HttpResponseHeaders> headers =
@@ -128,14 +116,11 @@ TEST_F(SharedDictionaryManagerTest, WriterForUseAsDictionaryHeader) {
   std::unique_ptr<SharedDictionaryManager> manager =
       SharedDictionaryManager::CreateInMemory();
 
-  const absl::optional<SharedDictionaryStorageIsolationKey> isolation_key =
-      SharedDictionaryStorageIsolationKey::MaybeCreate(
-          url::Origin::Create(kUrl1), net::NetworkIsolationKey(kSite1, kSite1));
-
-  ASSERT_TRUE(isolation_key);
+  SharedDictionaryStorageIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                    kSite1);
 
   scoped_refptr<SharedDictionaryStorage> storage =
-      manager->GetStorage(*isolation_key);
+      manager->GetStorage(isolation_key);
   ASSERT_TRUE(storage);
 
   struct {
@@ -200,12 +185,10 @@ TEST_F(SharedDictionaryManagerTest, WriterForUseAsDictionaryHeader) {
 TEST_F(SharedDictionaryManagerTest, WriteAndGetDictionary) {
   std::unique_ptr<SharedDictionaryManager> manager =
       SharedDictionaryManager::CreateInMemory();
-  const absl::optional<SharedDictionaryStorageIsolationKey> isolation_key =
-      SharedDictionaryStorageIsolationKey::MaybeCreate(
-          url::Origin::Create(kUrl1), net::NetworkIsolationKey(kSite1, kSite1));
-  ASSERT_TRUE(isolation_key);
+  SharedDictionaryStorageIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                    kSite1);
   scoped_refptr<SharedDictionaryStorage> storage =
-      manager->GetStorage(*isolation_key);
+      manager->GetStorage(isolation_key);
   ASSERT_TRUE(storage);
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
@@ -232,12 +215,10 @@ TEST_F(SharedDictionaryManagerTest, WriteAndGetDictionary) {
 TEST_F(SharedDictionaryManagerTest, WriteAndReadDictionary) {
   std::unique_ptr<SharedDictionaryManager> manager =
       SharedDictionaryManager::CreateInMemory();
-  const absl::optional<SharedDictionaryStorageIsolationKey> isolation_key =
-      SharedDictionaryStorageIsolationKey::MaybeCreate(
-          url::Origin::Create(kUrl1), net::NetworkIsolationKey(kSite1, kSite1));
-  ASSERT_TRUE(isolation_key);
+  SharedDictionaryStorageIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                    kSite1);
   scoped_refptr<SharedDictionaryStorage> storage =
-      manager->GetStorage(*isolation_key);
+      manager->GetStorage(isolation_key);
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
@@ -299,12 +280,10 @@ TEST_F(SharedDictionaryManagerTest, WriteAndReadDictionary) {
 TEST_F(SharedDictionaryManagerTest, ZeroSizeDictionaryShouldNotBeStored) {
   std::unique_ptr<SharedDictionaryManager> manager =
       SharedDictionaryManager::CreateInMemory();
-  const absl::optional<SharedDictionaryStorageIsolationKey> isolation_key =
-      SharedDictionaryStorageIsolationKey::MaybeCreate(
-          url::Origin::Create(kUrl1), net::NetworkIsolationKey(kSite1, kSite1));
-  ASSERT_TRUE(isolation_key);
+  SharedDictionaryStorageIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                    kSite1);
   scoped_refptr<SharedDictionaryStorage> storage =
-      manager->GetStorage(*isolation_key);
+      manager->GetStorage(isolation_key);
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
