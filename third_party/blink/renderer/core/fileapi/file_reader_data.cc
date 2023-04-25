@@ -15,7 +15,7 @@ DOMArrayBuffer* ToDOMArrayBuffer(ArrayBufferContents raw_data) {
   return DOMArrayBuffer::Create(std::move(raw_data));
 }
 
-String ToDataURL(ArrayBufferContents raw_data, const String& data_type = "") {
+String ToDataURL(ArrayBufferContents raw_data, const String& data_type) {
   StringBuilder builder;
   builder.Append("data:");
 
