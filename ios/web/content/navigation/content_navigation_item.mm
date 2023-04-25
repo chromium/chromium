@@ -197,11 +197,12 @@ bool ContentNavigationItem::HasPostData() const {
 }
 
 void ContentNavigationItem::AddHttpRequestHeaders(
-    NSDictionary* additional_headers) {
+    HttpRequestHeaders* additional_headers) {
   NOTREACHED();
 }
 
-NSDictionary* ContentNavigationItem::GetHttpRequestHeaders() const {
+NavigationItem::HttpRequestHeaders*
+ContentNavigationItem::GetHttpRequestHeaders() const {
   auto headers_string = entry_->GetExtraHeaders();
   if (!headers_string.empty()) {
     net::HttpRequestHeaders headers;

@@ -69,9 +69,9 @@ class ContentNavigationItem : public NavigationItem {
 
   bool HasPostData() const override;
 
-  NSDictionary* GetHttpRequestHeaders() const override;
+  HttpRequestHeaders* GetHttpRequestHeaders() const override;
 
-  void AddHttpRequestHeaders(NSDictionary* additional_headers) override;
+  void AddHttpRequestHeaders(HttpRequestHeaders* additional_headers) override;
 
   HttpsUpgradeType GetHttpsUpgradeType() const override;
   void SetHttpsUpgradeType(HttpsUpgradeType https_upgrade_type) override;
@@ -86,7 +86,7 @@ class ContentNavigationItem : public NavigationItem {
   // NavigationEntry isn't changed, the functions are still semantically
   // const.
   mutable Referrer referrer_;
-  mutable NSDictionary* headers_ = nil;
+  mutable HttpRequestHeaders* headers_ = nil;
   mutable FaviconStatus favicon_status_;
   mutable SSLStatus ssl_status_;
 
