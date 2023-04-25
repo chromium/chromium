@@ -28,13 +28,18 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/hit_test.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/wm/core/compound_event_filter.h"
@@ -55,6 +60,10 @@ const int kResizeWidgetPadding = 15;
 const int kResizeWidgetAndLockWidgetDistance = 85;
 
 constexpr int kLockButtonCornerRadius = 20;
+
+// The size of the resize widget when the feature flag `Jellyroll` is enabled.
+constexpr int kLongSideCrOSNext = 64;
+constexpr int kShortSideCrOSNext = 52;
 
 // Returns the widget init params needed to create the resize widget or snap
 // group lock widget.
@@ -151,41 +160,92 @@ class MultiWindowResizeController::ResizeView : public views::View {
   // views::View:
   gfx::Size CalculatePreferredSize() const override {
     const bool vert = direction_ == Direction::kLeftRight;
+
+    if (chromeos::features::IsJellyrollEnabled()) {
+      return gfx::Size(vert ? kLongSideCrOSNext : kShortSideCrOSNext,
+                       vert ? kShortSideCrOSNext : kLongSideCrOSNext);
+    }
+
     return gfx::Size(vert ? kShortSide : kLongSide,
                      vert ? kLongSide : kShortSide);
   }
 
   void OnPaint(gfx::Canvas* canvas) override {
-    cc::PaintFlags flags;
-    flags.setColor(SkColorSetA(SK_ColorBLACK, 0x7F));
-    flags.setAntiAlias(true);
-    canvas->DrawRoundRect(gfx::RectF(GetLocalBounds()), 2, flags);
+    if (!chromeos::features::IsJellyrollEnabled()) {
+      cc::PaintFlags flags;
+      flags.setColor(SkColorSetA(SK_ColorBLACK, 0x7F));
+      flags.setAntiAlias(true);
+      canvas->DrawRoundRect(gfx::RectF(GetLocalBounds()), 2, flags);
 
-    // Craft the left arrow.
-    const SkRect kArrowBounds = SkRect::MakeXYWH(4, 28, 4, 8);
-    SkPath path;
-    path.moveTo(kArrowBounds.right(), kArrowBounds.y());
-    path.lineTo(kArrowBounds.x(), kArrowBounds.centerY());
-    path.lineTo(kArrowBounds.right(), kArrowBounds.bottom());
-    path.close();
+      // Craft the left arrow.
+      const SkRect kArrowBounds = SkRect::MakeXYWH(4, 28, 4, 8);
+      SkPath path;
+      path.moveTo(kArrowBounds.right(), kArrowBounds.y());
+      path.lineTo(kArrowBounds.x(), kArrowBounds.centerY());
+      path.lineTo(kArrowBounds.right(), kArrowBounds.bottom());
+      path.close();
 
-    // Do the same for the right arrow.
-    SkMatrix flip;
-    flip.setScale(-1, 1, kShortSide / 2, kLongSide / 2);
-    path.addPath(path, flip);
+      // Do the same for the right arrow.
+      SkMatrix flip;
+      flip.setScale(-1, 1, kShortSide / 2, kLongSide / 2);
+      path.addPath(path, flip);
 
-    // The arrows are drawn for the vertical orientation; rotate if need be.
-    if (direction_ == Direction::kTopBottom) {
-      SkMatrix transform;
-      constexpr int kHalfShort = kShortSide / 2;
-      constexpr int kHalfLong = kLongSide / 2;
-      transform.setRotate(90, kHalfShort, kHalfLong);
-      transform.postTranslate(kHalfLong - kHalfShort, kHalfShort - kHalfLong);
-      path.transform(transform);
+      // The arrows are drawn for the vertical orientation; rotate if need be.
+      if (direction_ == Direction::kTopBottom) {
+        SkMatrix transform;
+        constexpr int kHalfShort = kShortSide / 2;
+        constexpr int kHalfLong = kLongSide / 2;
+        transform.setRotate(90, kHalfShort, kHalfLong);
+        transform.postTranslate(kHalfLong - kHalfShort, kHalfShort - kHalfLong);
+        path.transform(transform);
+      }
+
+      flags.setColor(SK_ColorWHITE);
+      canvas->DrawPath(path, flags);
+      return;
     }
 
-    flags.setColor(SK_ColorWHITE);
-    canvas->DrawPath(path, flags);
+    cc::PaintFlags flags;
+
+    flags.setColor(
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemBaseElevated));
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setAntiAlias(true);
+
+    canvas->DrawPath(GeneratePath(GetLocalBounds()), flags);
+
+    // Paint the chevron icons.
+    constexpr int kIconSize = 20;
+    constexpr int kHalfLong = kLongSideCrOSNext / 2;
+
+    // Paint the left / up chevron icon.
+    canvas->Save();
+    int long_offset = (kHalfLong - kIconSize) / 2;
+    int short_offset = (kShortSideCrOSNext - kIconSize) / 2;
+    canvas->Translate(direction_ == Direction::kLeftRight
+                          ? gfx::Vector2d(long_offset, short_offset)
+                          : gfx::Vector2d(short_offset, long_offset));
+    gfx::PaintVectorIcon(
+        canvas,
+        direction_ == Direction::kLeftRight ? kOverflowShelfLeftIcon
+                                            : kChevronUpSmallIcon,
+        kIconSize,
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
+    canvas->Restore();
+
+    // Paint the right / down chevron icon.
+    canvas->Save();
+    long_offset = kHalfLong + (kHalfLong - kIconSize) / 2;
+    canvas->Translate(direction_ == Direction::kLeftRight
+                          ? gfx::Vector2d(long_offset, short_offset)
+                          : gfx::Vector2d(short_offset, long_offset));
+    gfx::PaintVectorIcon(
+        canvas,
+        direction_ == Direction::kLeftRight ? kOverflowShelfRightIcon
+                                            : kChevronDownSmallIcon,
+        kIconSize,
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
+    canvas->Restore();
   }
 
   bool OnMousePressed(const ui::MouseEvent& event) override {
@@ -219,6 +279,72 @@ class MultiWindowResizeController::ResizeView : public views::View {
 
   raw_ptr<MultiWindowResizeController, ExperimentalAsh> controller_;
   const Direction direction_;
+
+  SkPath GeneratePath(const gfx::Rect& bounds) {
+    //           /\
+    //      ----    ----
+    //    /              \
+    //    \              /
+    //      ----    ----
+    //           \/
+    //
+    // Generate the path for the shape above when `direction_` is
+    // `Direction::kLeftRight`. If the `direction_` is `Direction::kTopBottom`,
+    // generate the path for the shape above with 90 degree rotated.
+
+    static constexpr int kLargeCurveRadius = 16;
+    static constexpr int kSmallCurveRadius = 10;
+
+    // The resize shape is symmetric horizontally and vertically, hence only
+    // need to manually generate the path for the quarter and then flip twice;
+    const gfx::RectF quarter_bounds(bounds.x(), bounds.y(), bounds.width() / 2,
+                                    bounds.height() / 2);
+    SkPath path;
+    if (direction_ == Direction::kLeftRight) {
+      //           /|
+      //      ----  |
+      //    / ____  |
+
+      // Generate the path for the quarter of the resize shape which looks like
+      // the shape above, starting from left bottom to the right top and then
+      // back to the left bottom.
+      path.moveTo(quarter_bounds.x(), quarter_bounds.bottom());
+      path.arcTo(
+          quarter_bounds.x(), quarter_bounds.bottom() - kLargeCurveRadius,
+          quarter_bounds.x() + kLargeCurveRadius,
+          quarter_bounds.bottom() - kLargeCurveRadius, kLargeCurveRadius);
+      path.lineTo(quarter_bounds.right() - kSmallCurveRadius,
+                  quarter_bounds.bottom() - kLargeCurveRadius);
+      path.arcTo(quarter_bounds.right(),
+                 quarter_bounds.bottom() - kLargeCurveRadius,
+                 quarter_bounds.right(), quarter_bounds.y(), kSmallCurveRadius);
+      path.lineTo(quarter_bounds.right(), quarter_bounds.bottom());
+    } else {
+      // Similar to the way when `direction_` is `Direction::kLeftRight`,
+      // starting from the right top to the left bottom and then back to the
+      // right top.
+      path.moveTo(quarter_bounds.right(), quarter_bounds.y());
+      path.arcTo(quarter_bounds.right() - kLargeCurveRadius, quarter_bounds.y(),
+                 quarter_bounds.right() - kLargeCurveRadius,
+                 quarter_bounds.y() + kLargeCurveRadius, kLargeCurveRadius);
+      path.lineTo(quarter_bounds.right() - kLargeCurveRadius,
+                  quarter_bounds.bottom() - kSmallCurveRadius);
+      path.arcTo(quarter_bounds.right() - kLargeCurveRadius,
+                 quarter_bounds.bottom(), quarter_bounds.x(),
+                 quarter_bounds.bottom(), kSmallCurveRadius);
+      path.lineTo(quarter_bounds.right(), quarter_bounds.bottom());
+    }
+    path.close();
+
+    // Flip vertically and horizontally and vertically to get the full path.
+    SkMatrix flip;
+    flip.setScale(1, -1, quarter_bounds.width(), quarter_bounds.height());
+    path.addPath(path, flip);
+    flip.setScale(-1, 1, quarter_bounds.width(), quarter_bounds.height());
+    path.addPath(path, flip);
+
+    return path;
+  }
 };
 
 // -----------------------------------------------------------------------------
