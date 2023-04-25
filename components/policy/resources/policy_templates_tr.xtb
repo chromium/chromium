@@ -5530,7 +5530,7 @@ Ekran koruyucuyu başlatmak için gereken boşta kalma zaman aşımı ve bir res
 <translation id="6181783961196084973">Uygulama etkinliği toplama düğmesinin değeri. Doğru değerine ayarlanırsa kullanıcının uygulama etkinliği, çocuk ve ebeveyne ait <ph name="PRODUCT_NAME" /> uygulamasında görüntülenmek amacıyla sunucuya bildirilir. Yanlış değerine ayarlanırsa Uygulama başına süre sınırları özelliği çalışmaya devam eder, ancak sunucuya hiçbir veri bildirilmeyeceğinden <ph name="PRODUCT_NAME" /> içinde de görüntülenmez.</translation>
 <translation id="6182206125906000651">HTTPS Yükseltmelerini devre dışı bırak.</translation>
 <translation id="6182563940865917569">Chrome'un medyayı otomatik oynatmasına izin ver</translation>
-<translation id="6184385589352532028">Üçüncü taraf Chrome OS kontrolü için Desk API'yi etkinleştirme</translation>
+<translation id="6184385589352532028">Üçüncü taraf ChromeOS kontrolü için Desk API'yi etkinleştirme</translation>
 <translation id="6190367314942602985">Kullanıcı Kimlik bilgilerini bildir</translation>
 <translation id="6191963383731098056">Bu politika, yöneticilere <ph name="PRODUCT_NAME" /> temasının rengini yapılandırma imkanı tanır. Giriş dizesi, "#RRGGBB" biçimine uygun geçerli bir onaltılık renk dizesi olmalıdır.
 
@@ -5980,7 +5980,7 @@ Ekran koruyucuyu başlatmak için gereken boşta kalma zaman aşımı ve bir res
 <translation id="6557178935482719861">Güvenli Tarama İstemci Tarafı Kimlik Avı Koruması'nı devre dışı bırak</translation>
 <translation id="6558013557780651644">Sistem boştayken yapılan işlemler gerçekleştirilmeden önceki gecikme</translation>
 <translation id="6559057113164934677">Hiçbir sitenin kamera ve mikrofona erişmesine izin verme</translation>
-<translation id="65591220958874949">Windows, macOS, Android ve Chrome OS'te yerleşik DNS istemcisini kullan</translation>
+<translation id="65591220958874949">Windows, macOS, Android ve ChromeOS'te yerleşik DNS istemcisini kullan</translation>
 <translation id="6559221564468029245">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa ses çalarken kullanıcı boşta olarak algılanmaz. Böylece hiçbir zaman boşta kalma zaman aşımı süresi dolmaz ve boşta kalma işlemi uygulanmaz. Ancak ses etkinliğine rağmen yapılandırılmış zaman aşımı sürelerinden sonra yine de ekran karartma, ekran kapatma ve ekran kilitleme işlemi uygulanır.
 
       Politika, Devre Dışı değerine ayarlanırsa ses etkinliğine rağmen sistem, kullanıcıları boşta olarak algılayabilir.</translation>
@@ -7557,7 +7557,7 @@ Bu kurumsal politika ile yöneticiler, kullanıcılarının ek kısıtlamayı et
 
           Politika değeri milisaniye olarak belirtilmelidir. Değerler boşta kalma gecikmesinin altında veya o gecikmeye eşit olacak şekilde ayarlanır.</translation>
 <translation id="7992613144342460685">Bu sitelere pencere yerleşimi izni ver</translation>
-<translation id="7994034037344330969">Chrome OS masalarını kontrol etmek için Desk API'yi kullanmasına izin verilen üçüncü taraf web uygulaması alanlarının listesini belirtir. Bu URL kalıpları, https://developer.chrome.com/docs/extensions/mv3/manifest/externally_connectable/#reference adresinde bulunan "eşleşir" özelliği için tanımlanan biçime uymalıdır</translation>
+<translation id="7994034037344330969">ChromeOS masalarını kontrol etmek için Desk API'yi kullanmasına izin verilen üçüncü taraf web uygulaması alanlarının listesini belirtir. Bu URL kalıpları, https://developer.chrome.com/docs/extensions/mv3/manifest/externally_connectable/#reference adresinde bulunan "eşleşir" özelliği için tanımlanan biçime uymalıdır</translation>
 <translation id="7995610550667275367">Tarama (87 sürümünden itibaren desteklenir)</translation>
 <translation id="7999023147219236247">Uygulamalar için yapılan izin istekleriyle ilgili politika. PERMISSION_POLICY_UNSPECIFIED: Politika belirtilmemiştir. Herhangi bir düzeyde bir izin için politika belirtilmemişse varsayılan olarak "PROMPT" davranışı kullanılır. PROMPT: Kullanıcıdan izin vermesi istenir. GRANT: Otomatik olarak izin verilir. DENY: İzin isteği otomatik olarak reddedilir.</translation>
 <translation id="7999336306414770162">Cihazın VPD bilgileri raporlamasını devre dışı bırak</translation>
@@ -7579,7 +7579,7 @@ Bu kurumsal politika ile yöneticiler, kullanıcılarının ek kısıtlamayı et
 
       Bu politika Etkin değerine ayarlanırsa kullanıcı <ph name="LACROS_NAME" /> tarayıcıyı kullanabilir.</translation>
 <translation id="8016036090567963459">Chrome'un medyayı otomatik oynatmasına izin verme</translation>
-<translation id="8020222525161221827">Üçüncü taraf Chrome OS kontrolü için Desk API'yi etkinleştirme</translation>
+<translation id="8020222525161221827">Üçüncü taraf ChromeOS kontrolü için Desk API'yi etkinleştirme</translation>
 <translation id="802147957407376460">Ekranı 0 derece döndür</translation>
 <translation id="8021777486638359878">Ses çalarken kullanıcıyı işlem yapmıyor olarak değerlendir</translation>
 <translation id="8022909529579794519">Bu ayar hangi <ph name="LACROS_NAME" /> tarayıcının kullanılacağını yapılandırır.
@@ -8748,7 +8748,7 @@ Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" /> varsayılan olar
 
       Politika, Devre Dışı değerine ayarlanırsa kayıtlı cihazlar, ses durumunu kaydetmez veya bildirmez.
       İstisna: M95 ve önceki sürümlerde sisteme ait ses seviyesi bilgileri <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> tarafından kontrol edilir.</translation>
-<translation id="9071527533179676468">Politika, Etkin değerine ayarlanırsa üçüncü taraf web uygulamaları, Chrome OS masalarını kontrol etmek için Desk API'yi kullanabilir. Politika ayarlanmaz veya devre dışı bırakılırsa Desk API kullanılamaz.</translation>
+<translation id="9071527533179676468">Politika, Etkin değerine ayarlanırsa üçüncü taraf web uygulamaları, ChromeOS masalarını kontrol etmek için Desk API'yi kullanabilir. Politika ayarlanmaz veya devre dışı bırakılırsa Desk API kullanılamaz.</translation>
 <translation id="9072475476775217730">Politika, Devre Dışı değerine ayarlanırsa <ph name="BLANK_PAGE_NAME" /> sayfasını hedefleyen pop-up'lara, pop-up'ın açılmasını isteyen sayfaya erişim (JavaScript aracılığıyla) izni verilir.
 
       Politika, Etkin değerine ayarlanırsa veya ayarlanmadan bırakılırsa, anchor'da <ph name="REL_OPENER_ATTRIBUTE" /> belirtilmediği sürece <ph name="WINDOW_OPENER_PROPERTY" /> özelliğinin <ph name="NULL_VALUE" /> değerine ayarlanmasına neden olur.
