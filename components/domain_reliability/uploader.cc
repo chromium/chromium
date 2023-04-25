@@ -133,6 +133,11 @@ class DomainReliabilityUploaderImpl : public DomainReliabilityUploader,
     request->set_allow_credentials(false);
     request->SetExtraRequestHeaderByName(net::HttpRequestHeaders::kContentType,
                                          kJsonMimeType, true /* overwrite */);
+    // Since this is a POST with an upload body and no identifier, these
+    // requests automatically bypass the cache, but for consistency set the
+    // IsolationInfo and load flags such that caching is explicitly disabled.
+    // This does mean we also disable the cache if we're redirected and the
+    // request becomes a GET, but these shouldn't be redirected.
     request->set_isolation_info_from_network_anonymization_key(
         network_anonymization_key);
     request->SetLoadFlags(request->load_flags() | net::LOAD_DISABLE_CACHE);
