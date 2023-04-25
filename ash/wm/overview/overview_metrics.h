@@ -21,7 +21,8 @@ enum class OverviewStartAction {
   kDevTools,
   kTests,
   kOverviewDeskSwitch,
-  kMaxValue = kOverviewDeskSwitch,
+  kDeskButton,
+  kMaxValue = kDeskButton,
 };
 void RecordOverviewStartAction(OverviewStartAction type);
 

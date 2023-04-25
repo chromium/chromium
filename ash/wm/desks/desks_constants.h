@@ -34,6 +34,12 @@ constexpr int kDeskBarGradientZoneLength = 40;
 
 constexpr int kDeskBarDeskPreviewViewFocusRingThicknessAndPadding = 4;
 
+// The minimum horizontal padding of the scroll view. This is set to make sure
+// there is enough space for the scroll buttons.
+constexpr int kDeskBarScrollViewMinimumHorizontalPadding = 32;
+
+constexpr int kDeskBarScrollButtonWidth = 36;
+
 // The duration of scrolling one page.
 constexpr base::TimeDelta kDeskBarScrollDuration = base::Milliseconds(250);
 
