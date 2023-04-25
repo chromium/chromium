@@ -65,7 +65,7 @@ BASE_FEATURE(kExtensionDynamicURLRedirection,
 // Side panel API availability.
 BASE_FEATURE(kExtensionSidePanelIntegration,
              "ExtensionSidePanelIntegration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // IsValidSourceUrl enforcement for ExtensionHostMsg_OpenChannelToExtension IPC.
 BASE_FEATURE(kExtensionSourceUrlEnforcement,
