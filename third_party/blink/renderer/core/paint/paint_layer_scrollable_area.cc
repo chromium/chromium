@@ -2807,7 +2807,10 @@ static bool ScrollControlNeedsPaintInvalidation(
 bool PaintLayerScrollableArea::ShouldDirectlyCompositeScrollbar(
     const Scrollbar& scrollbar) const {
   // Don't composite non-scrollable scrollbars.
-  if (!scrollbar.Maximum()) {
+  // TODO(crbug.com/1020913): !ScrollsOverflow() should imply
+  // !scrollbar.Maximum(), but currently that isn't always true due to
+  // different or incorrect rounding methods for scroll geometries.
+  if (!ScrollsOverflow() || !scrollbar.Maximum()) {
     return false;
   }
   if (scrollbar.IsCustomScrollbar()) {
