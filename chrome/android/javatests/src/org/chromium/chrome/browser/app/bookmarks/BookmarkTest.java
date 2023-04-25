@@ -23,6 +23,7 @@ import static org.chromium.components.browser_ui.widget.highlight.ViewHighlighte
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -782,8 +783,8 @@ public class BookmarkTest {
         BookmarkTestUtil.openMobileBookmarks(
                 mItemsContainer, getBookmarkDelegate(), mBookmarkModel);
 
-        View searchButton = mBookmarkManagerCoordinator.getToolbarForTesting().findViewById(
-                R.id.search_menu_id);
+        BookmarkToolbar toolbar = mBookmarkManagerCoordinator.getToolbarForTesting();
+        MenuItem searchMenuItem = toolbar.getMenu().findItem(R.id.search_menu_id);
 
         BookmarkRow test =
                 (BookmarkRow) mItemsContainer.findViewHolderForAdapterPosition(2).itemView;
@@ -794,7 +795,7 @@ public class BookmarkTest {
         View aMoreButton = a.findViewById(R.id.more);
         View aDragHandle = a.getDragHandleViewForTesting();
 
-        runOnUiThreadBlocking(searchButton::performClick);
+        runOnUiThreadBlocking(() -> toolbar.onMenuItemClick(searchMenuItem));
 
         // Callback occurs when Item "test" is selected.
         CriteriaHelper.pollUiThread(
@@ -1228,9 +1229,9 @@ public class BookmarkTest {
         addFolder(TEST_FOLDER_TITLE);
         openBookmarkManager();
 
-        View searchButton = mBookmarkManagerCoordinator.getToolbarForTesting().findViewById(
-                R.id.search_menu_id);
-        runOnUiThreadBlocking(searchButton::performClick);
+        BookmarkToolbar toolbar = mBookmarkManagerCoordinator.getToolbarForTesting();
+        MenuItem searchMenuItem = toolbar.getMenu().findItem(R.id.search_menu_id);
+        runOnUiThreadBlocking(() -> toolbar.onMenuItemClick(searchMenuItem));
 
         // Callback occurs when Item "test" is selected.
         CriteriaHelper.pollUiThread(
@@ -1922,9 +1923,9 @@ public class BookmarkTest {
     }
 
     private void enterSearch() throws Exception {
-        View searchButton = mBookmarkManagerCoordinator.getToolbarForTesting().findViewById(
-                R.id.search_menu_id);
-        runOnUiThreadBlocking(searchButton::performClick);
+        BookmarkToolbar toolbar = mBookmarkManagerCoordinator.getToolbarForTesting();
+        MenuItem searchMenuItem = toolbar.getMenu().findItem(R.id.search_menu_id);
+        runOnUiThreadBlocking(() -> toolbar.onMenuItemClick(searchMenuItem));
         CriteriaHelper.pollUiThread(
                 ()
                         -> mBookmarkManagerCoordinator.getToolbarForTesting().isSearching(),
