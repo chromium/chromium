@@ -91,7 +91,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   int numberDeselected =
-      [self.tableView numberOfRowsInSection:TabListSectionIdentifier] -
+      [self.tableView
+          numberOfRowsInSection:
+              [self.tableViewModel
+                  sectionForSectionIdentifier:kSectionIdentifierEnumZero]] -
       [self.tableView indexPathsForSelectedRows].count;
   [_delegate
       tabListFromAndroidViewControllerDidDismissWithSwipe:YES
@@ -188,7 +191,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // Called when the cancel button is tapped.
 - (void)cancelButtonTapped {
   int numberDeselected =
-      [self.tableView numberOfRowsInSection:TabListSectionIdentifier] -
+      [self.tableView
+          numberOfRowsInSection:
+              [self.tableViewModel
+                  sectionForSectionIdentifier:kSectionIdentifierEnumZero]] -
       [self.tableView indexPathsForSelectedRows].count;
   [_delegate
       tabListFromAndroidViewControllerDidDismissWithSwipe:NO
