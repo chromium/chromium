@@ -1481,33 +1481,33 @@ Style notes:
       </message>
 
        <!-- Video Conference tray  -->
-        <message name="IDS_ASH_VIDEO_CONFERENCE_TOGGLE_BUBBLE_BUTTON_TOOLTIP" desc="The tooltip for the toggle bubble button in the video conference tray.">
+      <message name="IDS_ASH_VIDEO_CONFERENCE_TOGGLE_BUBBLE_BUTTON_TOOLTIP" desc="The tooltip for the toggle bubble button in the video conference tray.">
         Camera and audio controls
       </message>
-  <message name="VIDEO_CONFERENCE_TOGGLE_BUTTON_TOOLTIP" desc="Tooltip shown for the toggle buttons shown in the shelf tray. There is a different toggle button for each (Microphone, Camera, Screen Capture). If the button is toggled on, it may also be in-use.">
+      <message name="VIDEO_CONFERENCE_TOGGLE_BUTTON_TOOLTIP" desc="Tooltip shown for the toggle buttons shown in the shelf tray. There is a different toggle button for each (Microphone, Camera, Screen Capture). If the button is toggled on, it may also be in-use.">
         Toggle <ph name="CAPTURE_MEDIUM">$1<ex>Camera</ex></ph>. <ph name="CAPTURE_MEDIUM">$1<ex>Camera</ex></ph> is <ph name="CAPTURE_STATE">$2<ex>on and in use</ex></ph>
-  </message>
-  <message name="VIDEO_CONFERENCE_ONE_WAY_TOGGLE_BUTTON_TOOLTIP" desc="Tooltip shown for a toggle button in the shelf tray which is 'one way', which means that activating the button only turns the behavior off and it cannot be turned back on.">
+      </message>
+      <message name="VIDEO_CONFERENCE_ONE_WAY_TOGGLE_BUTTON_TOOLTIP" desc="Tooltip shown for a toggle button in the shelf tray which is 'one way', which means that activating the button only turns the behavior off and it cannot be turned back on.">
         Stop <ph name="CAPTURE_MEDIUM">$1<ex>Camera</ex></ph>. <ph name="CAPTURE_MEDIUM">$1<ex>Camera</ex></ph> is <ph name="CAPTURE_STATE">$2<ex>on and in use</ex></ph>
-  </message>
-   <message name="VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_CAMERA" desc="The portion of the tooltip for the camera toggle button.">
-   Camera
-   </message>
-   <message name="VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_MICROPHONE" desc="The portion of the tooltip for the microphone toggle button.">
-   Microphone
-   </message>
-   <message name="VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_SCREEN_SHARE" desc="The portion of the tooltip for the screen capture toggle button.">
-   Screen Share
-   </message>
-   <message name="VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_ON" desc="The state of the toggle button when the toggle is on but not capturing.">
-   on
-   </message>
-<message name="VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_ON_AND_IN_USE" desc="The state of the toggle button when the toggle is on and capturing.">
-   on and in use
-   </message>
-<message name="VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_OFF" desc="The state of the toggle button when the toggle is muting.">
-   off
-   </message>
+      </message>
+      <message name="VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_CAMERA" desc="The portion of the tooltip for the camera toggle button.">
+        Camera
+      </message>
+      <message name="VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_MICROPHONE" desc="The portion of the tooltip for the microphone toggle button.">
+        Microphone
+      </message>
+      <message name="VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_SCREEN_SHARE" desc="The portion of the tooltip for the screen capture toggle button.">
+        Screen Share
+      </message>
+      <message name="VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_ON" desc="The state of the toggle button when the toggle is on but not capturing.">
+        on
+      </message>
+      <message name="VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_ON_AND_IN_USE" desc="The state of the toggle button when the toggle is on and capturing.">
+        on and in use
+      </message>
+      <message name="VIDEO_CONFERENCE_TOGGLE_BUTTON_STATE_OFF" desc="The state of the toggle button when the toggle is muting.">
+        off
+      </message>
        <!--  Video Conference bubble  -->
       <message name="IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SUMMARY_TEXT" desc="The summary text in the return to app panel of the video conference panel, specifying how many video conferencing apps are in used.">
         Used by <ph name="APP_COUNT">$1<ex>2</ex></ph> apps
@@ -4455,6 +4455,14 @@ Connect your device to power.
       </message>
       <message name="IDS_FAST_PAIR_PAIRING_NOTIFICATION_TITLE" desc="Notification title shown when a there is a device being paired with Fast Pair.">
         Connecting <ph name="NAME">$1<ex>Pixel Buds</ex></ph>
+      </message>
+
+     <!-- Tab Slider Strings -->
+      <message name="TAB_SLIDER_BUTTON_STATE_SELECTED" desc="The state of a single button in a tab slider, which is a group of 2-3 buttons, when that button is activated and the associated behavior is turned on.">
+        <ph name="BUTTON_LABEL">$1<ex>Medium</ex></ph>, selected
+      </message>
+      <message name="TAB_SLIDER_BUTTON_STATE_NOT_SELECTED" desc="The state of a single button in a tab slider, which is a group of 2-3 buttons, when that button is not activated and the associated behavior is turned off.">
+        <ph name="BUTTON_LABEL">$1<ex>Medium</ex></ph>, not selected
       </message>
 
       <!-- In-session auth dialog strings -->

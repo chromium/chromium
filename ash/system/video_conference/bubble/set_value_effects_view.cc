@@ -37,8 +37,10 @@ SetValueEffectSlider::SetValueEffectSlider(const VcHostedEffect* effect)
         views::BoxLayout::MainAxisAlignment::kStart);
     label_container->SetInsideBorderInsets(gfx::Insets::TLBR(0, 8, 0, 0));
 
-    label_container->AddChildView(
+    auto* label = label_container->AddChildView(
         std::make_unique<views::Label>(effect->label_text()));
+    label->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+
     auto* spacer_view =
         label_container->AddChildView(std::make_unique<views::View>());
     // Let the spacer fill the remaining space, pushing the label to the
