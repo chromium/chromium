@@ -2059,9 +2059,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
   if (num_readbacks_performed_ == 2 && GetCanvasRenderingContextHost() &&
       GetCanvasRenderingContextHost()->RenderingContext()) {
     if (will_read_frequently_value == CanvasContextCreationAttributesCore::
-                                          WillReadFrequently::kUndefined ||
-        will_read_frequently_value ==
-            CanvasContextCreationAttributesCore::WillReadFrequently::kFalse) {
+                                          WillReadFrequently::kUndefined) {
       const String& message =
           "Canvas2D: Multiple readback operations using getImageData are "
           "faster with the willReadFrequently attribute set to true. See: "
