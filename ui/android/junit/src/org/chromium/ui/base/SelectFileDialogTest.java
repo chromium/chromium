@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -170,7 +169,7 @@ public class SelectFileDialogTest {
                })
                 .when(windowAndroid)
                 .requestPermissions(aryEq(new String[] {Manifest.permission.CAMERA}),
-                        (PermissionCallback) anyObject());
+                        (PermissionCallback) any());
 
         // Test LAUNCH_CAMERA when permission is denied. Note: this is different from the other
         // events because the MediaPicker dialog stays open and the pipeline should not shut down
@@ -192,7 +191,7 @@ public class SelectFileDialogTest {
                })
                 .when(windowAndroid)
                 .requestPermissions(aryEq(new String[] {Manifest.permission.CAMERA}),
-                        (PermissionCallback) anyObject());
+                        (PermissionCallback) any());
 
         // Since the permission is now allowed, the LAUNCH_CAMERA event should keep the pipeline
         // open.
@@ -232,7 +231,7 @@ public class SelectFileDialogTest {
                })
                 .when(windowAndroid)
                 .showIntent(ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
-                        (WindowAndroid.IntentCallback) anyObject(), anyInt());
+                        (WindowAndroid.IntentCallback) any(), anyInt());
 
         // Rerun the test. Because showIntent now reports success, the upload should still be in
         // progress.
@@ -266,7 +265,7 @@ public class SelectFileDialogTest {
                })
                 .when(windowAndroid)
                 .requestPermissions(aryEq(new String[] {Manifest.permission.CAMERA}),
-                        (PermissionCallback) anyObject());
+                        (PermissionCallback) any());
 
         // Ensure permission request in selectFile can handle interrupted permission flow.
         int callCount = mOnActionCallback.getCallCount();
