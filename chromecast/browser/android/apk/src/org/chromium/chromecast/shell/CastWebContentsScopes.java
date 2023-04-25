@@ -73,7 +73,12 @@ class CastWebContentsScopes {
             contentViewRenderView.setSurfaceViewBackgroundColor(backgroundColor);
             FrameLayout.LayoutParams matchParent = new FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-            layout.addView(contentViewRenderView, matchParent);
+
+            // Use a slightly smaller layout as a mitigation for b/245596038 until the
+            // Android-level fix is available.
+            FrameLayout.LayoutParams talkbackFixLayout = new FrameLayout.LayoutParams(matchParent);
+            talkbackFixLayout.setMargins(0, 0, 1, 1);
+            layout.addView(contentViewRenderView, talkbackFixLayout);
 
             ContentView contentView = ContentView.createContentView(
                     context, null /* eventOffsetHandler */, webContents);
