@@ -84,16 +84,19 @@ void SitePermissionsHelper::UpdateSiteAccess(
     const Extension& extension,
     content::WebContents* web_contents,
     PermissionsManager::UserSiteAccess new_access) {
-  auto current_access = PermissionsManager::Get(profile_)->GetUserSiteAccess(
+  auto* permissions_manager = PermissionsManager::Get(profile_);
+  auto current_access = permissions_manager->GetUserSiteAccess(
       extension, web_contents->GetLastCommittedURL());
   if (new_access == current_access) {
     return;
   }
 
-  const GURL& current_url = web_contents->GetLastCommittedURL();
   ScriptingPermissionsModifier modifier(profile_, &extension);
-  PermissionsManager* permissions_manager = PermissionsManager::Get(profile_);
-  DCHECK(permissions_manager->CanAffectExtension(extension));
+  CHECK(permissions_manager->CanAffectExtension(extension));
+
+  auto current_url = web_contents->GetLastCommittedURL();
+  CHECK(permissions_manager->CanUserSelectSiteAccess(extension, current_url,
+                                                     new_access));
 
   switch (new_access) {
     case PermissionsManager::UserSiteAccess::kOnClick:

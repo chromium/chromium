@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "url/origin.h"
 
 class Browser;
 class Profile;
@@ -188,6 +189,12 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   absl::optional<ContextMenuAction> action_taken_;
 
   ContextMenuSource source_;
+
+  // The origin used for populating the page access items.
+  // TODO(crbug.com/1435117): Web contents may change while the menu is open,
+  // which may affect the context menu contents. We should dynamically update
+  // the context menu, or close it when this happens.
+  url::Origin origin_;
 };
 
 }  // namespace extensions

@@ -1479,6 +1479,45 @@ TEST_F(ExtensionContextMenuModelTest,
             GetPageAccessCommandState(menu, kLearnMore));
 }
 
+// Test that we don't update site access when there is a page navigation with
+// the menu open.
+TEST_F(ExtensionContextMenuModelTest,
+       PageAccess_CustomizeByExtension_PageNavigation) {
+  InitializeEmptyExtensionService();
+  const GURL kOriginalUrl("http://www.example.com/");
+  const GURL kNewUrl("http://www.chromium.org/");
+
+  // Add an extension with all urls, and withhold permissions.
+  const Extension* extension =
+      AddExtensionWithHostPermission("extension", manifest_keys::kBrowserAction,
+                                     ManifestLocation::kInternal, "<all_urls>");
+
+  content::WebContents* web_contents = AddTab(kOriginalUrl);
+  ExtensionContextMenuModel menu(extension, GetBrowser(),
+                                 ExtensionContextMenuModel::PINNED, nullptr,
+                                 true, ContextMenuSource::kToolbarAction);
+
+  // By default, extension is granted access to all sites.
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extension, kOriginalUrl),
+            PermissionsManager::UserSiteAccess::kOnAllSites);
+  EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extension, kNewUrl),
+            PermissionsManager::UserSiteAccess::kOnAllSites);
+
+  // Navigate to another page with the menu open, and execute "on site" command.
+  content::WebContentsTester* web_contents_tester =
+      content::WebContentsTester::For(web_contents);
+  web_contents_tester->NavigateAndCommit(kNewUrl);
+  menu.ExecuteCommand(kOnClick, 0);
+
+  // Since we navigated to a different page, we should not update the site of
+  // either page.
+  EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extension, kOriginalUrl),
+            PermissionsManager::UserSiteAccess::kOnAllSites);
+  EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extension, kNewUrl),
+            PermissionsManager::UserSiteAccess::kOnAllSites);
+}
+
 TEST_F(ExtensionContextMenuModelTest,
        TestTogglingAccessWithSpecificSitesWithUnrequestedUrl) {
   InitializeEmptyExtensionService();
