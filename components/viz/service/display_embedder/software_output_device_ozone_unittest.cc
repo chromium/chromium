@@ -83,6 +83,7 @@ void SoftwareOutputDeviceOzoneTest::SetUp() {
 }
 
 void SoftwareOutputDeviceOzoneTest::TearDown() {
+  surface_ozone_ = nullptr;
   output_device_.reset();
 }
 
