@@ -208,7 +208,7 @@ class CORE_EXPORT HTMLElement : public Element {
   void UpdateDirectionalityAndDescendant(TextDirection direction);
   void UpdateDescendantDirectionality(TextDirection direction);
   void AdjustDirectionalityIfNeededAfterShadowRootChanged();
-  void BeginParsingChildren() override;
+  void ParserDidSetAttributes() override;
 
   V8UnionBooleanOrStringOrUnrestrictedDouble* hidden() const;
   void setHidden(const V8UnionBooleanOrStringOrUnrestrictedDouble*);

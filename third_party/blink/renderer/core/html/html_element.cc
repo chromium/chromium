@@ -3108,8 +3108,8 @@ void HTMLElement::FinishParsingChildren() {
     EnsureElementInternals().TakeStateAndRestore();
 }
 
-void HTMLElement::BeginParsingChildren() {
-  Element::BeginParsingChildren();
+void HTMLElement::ParserDidSetAttributes() {
+  Element::ParserDidSetAttributes();
 
   if (GetDocument().IsDirAttributeDirty() && !HasDirectionAuto() &&
       !ElementAffectsDirectionality(this)) {

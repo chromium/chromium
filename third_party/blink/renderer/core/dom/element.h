@@ -866,7 +866,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // parsing a special case in this respect should be avoided if possible.
   virtual void FinishParsingChildren();
 
-  virtual void BeginParsingChildren() { SetIsFinishedParsingChildren(false); }
+  void BeginParsingChildren() { SetIsFinishedParsingChildren(false); }
 
   // Returns the pseudo element for the given PseudoId type.
   // |view_transition_name| is used to uniquely identify a pseudo element
