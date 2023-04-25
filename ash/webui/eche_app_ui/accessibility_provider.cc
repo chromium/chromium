@@ -5,6 +5,7 @@
 
 #include "ash/webui/eche_app_ui/accessibility_provider.h"
 #include <cstdint>
+#include "ash/webui/eche_app_ui/accessibility_tree_converter.h"
 #include "base/notreached.h"
 
 namespace ash::eche_app {
@@ -14,6 +15,9 @@ AccessibilityProvider::~AccessibilityProvider() = default;
 
 void AccessibilityProvider::HandleAccessibilityEventReceived(
     const std::vector<uint8_t>& serialized_proto) {
+  AccessibilityTreeConverter converter;
+  auto mojom_event_data =
+      converter.ConvertEventDataProtoToMojom(serialized_proto);
   NOTIMPLEMENTED();
 }
 

@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/test/base/js2gtest.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -130,6 +131,7 @@ static_library("eche_app_ui") {
     ":feature_status",
     ":system_info_provider",
     "//ash",
+    "//ash/components/arc/mojom:mojom",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/webui/eche_app_ui/mojom",
@@ -212,7 +214,7 @@ source_set("unit_tests") {
     ":test_support",
     "//ash:test_support",
     "//ash/public/cpp",
-    "//ash/webui/eche_app_ui/proto",
+    "//ash/webui/eche_app_ui/proto:proto",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components:test_support",
@@ -228,6 +230,7 @@ source_set("unit_tests") {
     "//chromeos/ash/services/secure_channel/public/cpp/client:client",
     "//chromeos/ash/services/secure_channel/public/cpp/client:test_support",
     "//chromeos/ash/services/secure_channel/public/cpp/shared:shared",
+    "//components/arc:arc",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//dbus",
@@ -296,4 +299,18 @@ preprocess_if_expr("preprocess_mojo") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_mojo_manifest"
   in_files = [ "ash/webui/eche_app_ui/mojom/eche_app.mojom-lite.js" ]
+}
+
+if (use_libfuzzer) {
+  fuzzer_test("accessibility_event_fuzzer") {
+    sources = [ "accessibility_proto_fuzzer.cc" ]
+    deps = [
+      ":eche_app_ui",
+      "//ash/webui/eche_app_ui/proto:proto",
+      "//base",
+      "//base/test:test_support",
+      "//components/arc",
+      "//third_party/libprotobuf-mutator",
+    ]
+  }
 }
